@@ -1,0 +1,13 @@
+http://www.morewords.com/starts-with/syn/
+
+?SYNTONY:       Platform abstraction layer, OS and API dependent features.
+SYNTROPY:       Core functionalities, data structures, framework overall, debugging, logging, reflection
+
+SYNESTHESIA:    Rendering and GFX
+SYNTHESIS:      Audio and SFX
+SYNTAX:         Parsing, languages, translation, blueprint-like functionalities, scripting
+?SYNOPSIS:      UI/2D
+
+SYNERGY:        Multithread, parallel computing, coroutines
+SYNCHRO:        Networking, load-balancing
+SYNAPSE:        General AI, pathfinding, operations research, NN, genetic
