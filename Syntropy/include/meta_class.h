@@ -281,7 +281,7 @@ namespace syntropy {
             
             virtual const std::type_info& GetTypeInfo() const override;
 
-            const TAny Get() const;
+            const TAny& Get() const;
 
         private:
 
@@ -489,7 +489,7 @@ namespace syntropy {
 
         return typeid(TAny) == any_->GetTypeInfo() ?
                static_cast<const AnyT<TAny>*>(any_.get())->Get() :
-               ;
+               TAny();
 
     }
 
@@ -507,7 +507,7 @@ namespace syntropy {
     }
 
     template <typename TAny>
-    inline const TAny MetaAny::AnyT<TAny>::Get() const {
+    inline const TAny& MetaAny::AnyT<TAny>::Get() const {
 
         return any_;
 
