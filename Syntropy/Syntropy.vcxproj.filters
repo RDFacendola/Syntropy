@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClInclude Include="include\syntropy.h" />
     <ClInclude Include="include\meta_class.h" />
+    <ClInclude Include="include\any.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy.cpp" />

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\any.h" />
     <ClInclude Include="include\meta_class.h">
       <SubType>
       </SubType>

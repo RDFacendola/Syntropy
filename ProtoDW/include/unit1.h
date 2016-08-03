@@ -11,6 +11,8 @@
 
 #include "unit2.h"
 
+#include "any.h"
+
 #include <tuple>
 #include <iostream>
 
@@ -113,18 +115,27 @@ public:
 
     void Do() {
 
-        Foo foo;
+		float val = 65;
 
-        foo.meh = 500;
+		syntropy::Any first(val);
+		syntropy::Any firstcopy(first);
 
-        float value;
+		float value = *(firstcopy.As<float>());
 
-        auto& foo_class = syntropy::MetaClass::GetClass<Foo>();
+		SYN_UNUSED(value);
 
-        auto meh_property = foo_class.GetProperty("meh");
+        //Foo foo;
 
-        //meh_property->Write(foo, 47);
-        meh_property->Read(foo, value);
+        //foo.meh = 500;
+
+        //float value;
+
+        //auto& foo_class = syntropy::MetaClass::GetClass<Foo>();
+
+        //auto meh_property = foo_class.GetProperty("meh");
+
+        ////meh_property->Write(foo, 47);
+        //meh_property->Read(foo, value);
 
     }
 
