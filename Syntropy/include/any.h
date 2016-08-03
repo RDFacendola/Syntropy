@@ -53,6 +53,11 @@ namespace syntropy {
 		template <typename TValue>
 		const TValue* As() const;
 
+        /// \brief Get a typed pointer to the contained value.
+        /// \return Returns a pointer to the contained value if the underlying type is exactly the one specified by the template parameters. Returns nullptr instead.
+        template <typename TValue>
+        TValue* As();
+
         /// \brief Swaps two instances.
         /// \param other Object to swap with the current instance.
 		Any& swap(Any& other) noexcept;
@@ -92,7 +97,7 @@ namespace syntropy {
 
 			virtual std::unique_ptr<IContent> Clone() const override;
 
-			const TValue content_;					///< \brief Actual value.
+			TValue content_;					    ///< \brief Actual value.
 
 		};
 
@@ -145,6 +150,15 @@ namespace syntropy {
 			   nullptr;
 
 	}
+
+    template <typename TValue>
+    inline TValue* Any::As() {
+
+        return (content_ && GetType() == typeid(TValue)) ?
+            &(static_cast<Content<TValue>*>(content_.get())->content_) :
+            nullptr;
+
+    }
 
 	inline Any& Any::swap(Any& other) noexcept {
 
