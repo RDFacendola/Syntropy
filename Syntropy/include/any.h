@@ -10,65 +10,93 @@
 
 namespace syntropy {
 
-	/// \brief 
-	/// \author Kevlin Henney - "Valued Conversion"
+	/// \brief Describes a type-safe container for single values of any type.
+	/// \author Raffaele D. Facendola, based upon "Valued Conversion" by Kevlin Henney
 	class Any {
 
 	public:
 
+        /// \brief Create an empty instance.
 		Any();
 
+        /// \brief Destructor.
 		~Any();
 
+        /// \brief Copy constructor.
+        /// \param other Instance to copy.
 		Any(const Any& other);
 
+        /// \brief Move constructor
+        /// \param other Instance to move.
 		Any(Any&& other);
 
-		template <typename TAny>
-		Any(const TAny& value);
+        /// \brief Create an instance containing a specific object.
+        /// \param value Value to store inside the instance.
+		template <typename TValue>
+		Any(const TValue& value);
 		
+        /// \brief Unified assignment operator.
+        /// \param other Instance to assign from.
 		Any& operator=(Any other);
 
-		template <typename TAny>
-		Any& operator=(const TAny& other);
+        /// \brief Assign a new value to this instance.
+        /// \param other Value to store inside the instance.
+		template <typename TValue>
+		Any& operator=(const TValue& other);
 
+        /// \brief Get the underlying type of the contained value.
+        /// \return Returns the type of the contained value.
 		const std::type_info& GetType() const;
 
+        /// \brief Get a typed pointer to the contained value.
+        /// \return Returns a pointer to the contained value if the underlying type is exactly the one specified by the template parameters. Returns nullptr instead.
 		template <typename TValue>
 		const TValue* As() const;
 
+        /// \brief Swaps two instances.
+        /// \param other Object to swap with the current instance.
 		Any& swap(Any& other) noexcept;
 
 	private:
 
-		struct IAny {
+        /// \brief Base interface for the underlying content.
+		struct IContent {
 
 		public:
 
-			virtual ~IAny();
+            /// \brief Virtual destructor.
+			virtual ~IContent();
 
+            /// \brief Get the type of the underlying contained value.
+            /// \return Returns the type of the contained value.
 			virtual const std::type_info& GetType() const = 0;
 
-			virtual std::unique_ptr<IAny> Clone() const = 0;
+            /// \brief Clone the underlying value to another instance.
+            /// \return Returns a pointer to the new copy of the value.
+			virtual std::unique_ptr<IContent> Clone() const = 0;
 
 		};
 
-		template <typename TAny>
-		struct AnyT : public IAny {
+        /// \brief Strongly typed container for a single value.
+        /// \tparam TValue Type of the contained value.
+		template <typename TValue>
+		struct Content : public IContent {
 
 		public:
 
-			AnyT(const TAny& value);
+            /// \brief Create a new container for a single value.
+            ///\ param value Value to store inside the container.
+            Content(const TValue& value);
 
 			virtual const std::type_info& GetType() const override;
 
-			virtual std::unique_ptr<IAny> Clone() const override;
+			virtual std::unique_ptr<IContent> Clone() const override;
 
-			const TAny content_;					///< \brief Actual content.
+			const TValue content_;					///< \brief Actual value.
 
 		};
 
-		std::unique_ptr<IAny> content_;				///< \brief Wraps the actual value.
+		std::unique_ptr<IContent> content_;         ///< \brief Wraps the actual value.
 
 	};
 
@@ -84,9 +112,9 @@ namespace syntropy {
 	inline Any::Any(Any&& other) :
 		content_(std::move(other.content_)) {}
 
-	template <typename TAny>
-	inline Any::Any(const TAny& value) :
-		content_(std::make_unique<AnyT<TAny>>(value)) {}
+	template <typename TValue>
+	inline Any::Any(const TValue& value) :
+		content_(std::make_unique<Content<TValue>>(value)) {}
 
 	inline Any& Any::operator=(Any other) {
 
@@ -94,8 +122,8 @@ namespace syntropy {
 		
 	}
 
-	template <typename TAny>
-	inline Any& Any::operator=(const TAny& other) {
+	template <typename TValue>
+	inline Any& Any::operator=(const TValue& other) {
 
 		return Any(other).swap(*this);
 
@@ -113,7 +141,7 @@ namespace syntropy {
 	inline const TValue* Any::As() const {
 
 		return (content_ && GetType() == typeid(TValue)) ?
-			   &(static_cast<AnyT<TValue>*>(content_.get())->content_) :
+			   &(static_cast<Content<TValue>*>(content_.get())->content_) :
 			   nullptr;
 
 	}
@@ -126,27 +154,27 @@ namespace syntropy {
 
 	}
 
-	//////////////// ANY :: IANY////////////////
+	//////////////// ANY :: ICONTENT ////////////////
 
-	inline Any::IAny::~IAny() {}
+	inline Any::IContent::~IContent() {}
 
-	//////////////// ANY :: ANY T ////////////////
+	//////////////// ANY :: CONTENT ////////////////
 	
-	template <typename TAny>
-	inline Any::AnyT<TAny>::AnyT(const TAny& value) :
+	template <typename TValue>
+	inline Any::Content<TValue>::Content(const TValue& value) :
 		content_(value) {}
 	
-	template <typename TAny>
-	inline const std::type_info& Any::AnyT<TAny>::GetType() const {
+	template <typename TValue>
+	inline const std::type_info& Any::Content<TValue>::GetType() const {
 
-		return typeid(TAny);
+		return typeid(TValue);
 
 	}
 
-	template <typename TAny>
-	inline std::unique_ptr<Any::IAny> Any::AnyT<TAny>::Clone() const {
+	template <typename TValue>
+	inline std::unique_ptr<Any::IContent> Any::Content<TValue>::Clone() const {
 
-		return std::make_unique<AnyT<TAny>>(content_);
+		return std::make_unique<Content<TValue>>(content_);
 
 	}
 	
