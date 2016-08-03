@@ -16,31 +16,43 @@
 #include <tuple>
 #include <iostream>
 
-class FooBar {
-public:
-};
+class Foo : public Bar {
 
-class Unrelated {
-public:
-};
-
-class Foo : public Bar, public FooBar {
+    friend class syntropy::MetaClassDefinition<Foo>;
 
 public:
 
-    float meh;
-    float* pmeh;
+    Foo()
+        : const_value_(666)
+        , const_pointer_(nullptr){}
 
-    void SetFoo(int foo) { SYN_UNUSED(foo); }
+    float GetValue() const {
 
-    int GetFoo() const { return 0;  }
+        return value_;
 
-    void DoFoo();
+    }
 
+    void SetValue(float value) {
+
+        value_ = value;
+
+    }
+
+    float GetConstValue() const {
+
+        return const_value_;
+
+    }
+    
 private:
 
-    int a_;
-    int b_;
+    float value_;
+    const float const_value_;
+    float* pointer_;
+    const float * pointer_to_const_;
+    float* const const_pointer_;
+
+
 
 };
 
@@ -78,17 +90,6 @@ public:
 };
 
 template <>
-class syntropy::MetaClassDefinition<FooBar> : public syntropy::MetaClassDeclaration {
-
-public:
-
-    MetaClassDefinition() :
-        MetaClassDeclaration("syntropy::FooBar") {}
-
-
-};
-
-template <>
 class syntropy::MetaClassDefinition<Foo> : public syntropy::MetaClassDeclaration {
 
 public:
@@ -96,46 +97,86 @@ public:
     MetaClassDefinition() :
         MetaClassDeclaration("syntropy::Foo"){
 
-        DefineBaseClass<Bar>();
-        DefineBaseClass<FooBar>();       
+        DefineBaseClass<Bar>(); 
 
-        DefineProperty("meh", &Foo::meh);
-        //DefineProperty("pmeh", &Foo::pmeh);
-        //DefineProperty("Foo", &Foo::GetFoo, &Foo::SetFoo);
-        //DefineProperty("FooRO", &Foo::GetFoo);
+        DefineProperty("value", &Foo::value_);
+        DefineProperty("const_value", &Foo::const_value_);
+        DefineProperty("pointer", &Foo::pointer_);
+        DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
+        DefineProperty("const_pointer", &Foo::const_pointer_);
+
+        DefineProperty("PValue", &Foo::GetValue, &Foo::SetValue);
+        DefineProperty("PConstValue", &Foo::GetConstValue);
 
     }
 
 
 };
 
+
+
 class Tester {
 
 public:
 
+    void FieldTest() {
+
+        Foo foo;
+
+        syntropy::MetaInstance meta_foo(foo);
+
+        auto value = syntropy::MetaClass::GetClass<Foo>().GetProperty("value");
+        auto const_value = syntropy::MetaClass::GetClass<Foo>().GetProperty("const_value");
+        auto pointer = syntropy::MetaClass::GetClass<Foo>().GetProperty("pointer");
+        auto pointer_to_const = syntropy::MetaClass::GetClass<Foo>().GetProperty("pointer_to_const");
+        auto const_pointer = syntropy::MetaClass::GetClass<Foo>().GetProperty("const_pointer");
+
+        float x = 100;
+        float* p = &x;
+        const float* q = &x;
+
+        auto b = value->Write(meta_foo, x);
+        auto a = value->Read(meta_foo, x);
+
+        auto d = const_value->Write(meta_foo, x);    // Do nothing
+        auto c = const_value->Read(meta_foo, x);
+
+        auto f = pointer->Write(meta_foo, p);
+        auto e = pointer->Read(meta_foo, p);
+
+        auto h = pointer_to_const->Write(meta_foo, q);
+        auto g = pointer_to_const->Read(meta_foo, q);
+
+        auto j = const_pointer->Write(meta_foo, p);  // Do nothing
+        auto i = const_pointer->Read(meta_foo, p);
+
+        assert(a && b && c && !d && e && f && g && h && i && !j);
+
+    }
+
+    void PropertyTest() {
+
+        Foo foo;
+
+        syntropy::MetaInstance meta_foo(foo);
+
+        auto const_value = syntropy::MetaClass::GetClass<Foo>().GetProperty("PConstValue");
+
+        float x = 100;
+        //float* p = &x;
+        //const float* q = &x;
+
+        auto d = const_value->Write(meta_foo, x);    // Do nothing
+        auto c = const_value->Read(meta_foo, x);
+
+        assert(!d && c);
+
+    }
+
     void Do() {
 
-		float val = 65;
-
-		syntropy::Any first(val);
-		syntropy::Any firstcopy(first);
-
-		float value = *(firstcopy.As<float>());
-
-		SYN_UNUSED(value);
-
-        //Foo foo;
-
-        //foo.meh = 500;
-
-        //float value;
-
-        //auto& foo_class = syntropy::MetaClass::GetClass<Foo>();
-
-        //auto meh_property = foo_class.GetProperty("meh");
-
-        ////meh_property->Write(foo, 47);
-        //meh_property->Read(foo, value);
+        FieldTest();
+        PropertyTest();
 
     }
 
