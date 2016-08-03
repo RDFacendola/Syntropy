@@ -112,8 +112,11 @@ namespace syntropy {
         template <typename TClass, typename TProperty>
         void DefineProperty(const std::string& property_name, TProperty TClass::* property);
 
-        template <typename TClass, typename TPropertyGetter, typename TPropertySetter>
-        void DefineProperty(const std::string& property_name, TPropertyGetter TClass::* getter, TPropertySetter TClass::* setter);
+        template <typename TClass, typename TProperty>
+        void DefineProperty(const std::string& property_name, TProperty (TClass::* getter)() const, void (TClass::* setter)(TProperty));
+
+        template <typename TClass, typename TProperty>
+        void DefineProperty(const std::string& property_name, TProperty(TClass::* getter)() const);
 
         //template <typename TMethod>
         //void DefineMethod(const std::string& method_name, TMethod&& method);
@@ -259,17 +262,16 @@ namespace syntropy {
 
             return [property](const MetaInstance& instance, Any& value) -> bool{
 
+                auto value_ptr = value.As<std::remove_const_t<TProperty>*>();
                 auto instance_ptr = instance.As<TClass>();
 
-                if (instance_ptr) {
+                if (value_ptr && instance_ptr) {
 
-                    // Using a pointer to the property value avoids an useless copy.
-
-                    value = std::addressof(instance_ptr->*property);    
+                    **value_ptr = instance_ptr->*property;
 
                 }
 
-                return !!instance_ptr;
+                return !!value_ptr && !!instance_ptr;
 
             };
 
@@ -315,9 +317,9 @@ namespace syntropy {
         using TSetter = std::function<bool(MetaInstance&, const Any&)>;
 
         template <typename TClass, typename TProperty>
-        TSetter operator() (TProperty TClass::* property) const {
+        TSetter operator() (TProperty TClass::*) const {
 
-            return [property](MetaInstance&, const Any&) -> bool{
+            return [](MetaInstance&, const Any&) -> bool{
 
                 // Readonly - do nothing and notify the failure
 
@@ -435,12 +437,46 @@ namespace syntropy {
 
     }
     
-    template <typename TClass, typename TPropertyGetter, typename TPropertySetter>
-    void MetaClassDeclaration::DefineProperty(const std::string& property_name, TPropertyGetter TClass::* getter, TPropertySetter TClass::* setter) {
+    template <typename TClass, typename TProperty>
+    void MetaClassDeclaration::DefineProperty(const std::string& property_name, TProperty(TClass::* getter)() const, void (TClass::* setter)(TProperty)) {
 
         SYN_UNUSED(property_name);
         SYN_UNUSED(getter);
         SYN_UNUSED(setter);
+
+    }
+
+    template <typename TClass, typename TProperty>
+    void MetaClassDeclaration::DefineProperty(const std::string& property_name, TProperty(TClass::* getter)() const) {
+
+        auto jetter = [getter](const MetaInstance& instance, Any& value) -> bool{
+
+            auto value_ptr = value.As<TProperty*>();
+            auto instance_ptr = instance.As<TClass>();
+
+            if (value_ptr && instance_ptr) {
+
+                **value_ptr = (instance_ptr->*getter)();
+
+            }
+
+            return !!value_ptr && !!instance_ptr;
+
+        };
+
+        auto setter = [](MetaInstance&, const Any&) -> bool{
+
+            // Readonly - do nothing and notify the failure
+
+            return false;
+
+        };
+
+        properties_.insert(std::make_pair(property_name,
+                                          MetaClassProperty(property_name,
+                                                            typeid(TProperty),
+                                                            jetter,
+                                                            setter)));
 
     }
 
@@ -462,23 +498,9 @@ namespace syntropy {
     template <typename TValue>
     inline bool MetaClassProperty::Read(const MetaInstance& instance, TValue& value) const {
 
-        Any read_value;
+        Any ptr_value(std::addressof(value));
 
-        if (getter_(instance, read_value)) {
-
-            auto value_ptr = read_value.As<const TValue*>();
-
-            if (value_ptr) {
-
-                value = **value_ptr;
-
-            }
-
-            return !!value_ptr;
-
-        }
-
-        return false;
+        return getter_(instance, ptr_value);
 
     }
 
