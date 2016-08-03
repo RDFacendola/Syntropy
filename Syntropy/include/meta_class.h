@@ -6,13 +6,14 @@
 
 #pragma once
 
-#include "syntropy.h"
-
 #include <string>
 #include <memory>
 #include <unordered_map>
 #include <type_traits>
 #include <functional>
+
+#include "any.h"
+#include "syntropy.h"
 
 namespace syntropy {
 
@@ -30,9 +31,7 @@ namespace syntropy {
     class MetaClassMethod;
 
     class MetaInstance;
-
-    class MetaAny;
-
+    
 }
 
 namespace syntropy {
@@ -206,10 +205,10 @@ namespace syntropy {
         const std::string& GetName() const;
 
         template <typename TValue>
-        void Read(const MetaInstance& instance, TValue& value) const;
+        bool Read(const MetaInstance& instance, TValue& value) const;
 
         template <typename TValue>
-        void Write(MetaInstance& instance, TValue&& value) const;
+        bool Write(MetaInstance& instance, const TValue& value) const;
 
     private:
 
@@ -217,9 +216,9 @@ namespace syntropy {
 
         const MetaClass& type_;                                         ///< \brief Type of the property.
 
-        std::function<MetaAny(const MetaInstance&)> getter_;            ///< \brief Property getter.
+        std::function<bool(const MetaInstance&, Any&)> getter_;         ///< \brief Property getter.
 
-        std::function<void(MetaInstance&, const MetaAny&)> setter_;     ///< \brief Property setter.
+        std::function<bool(MetaInstance&, const Any&)> setter_;         ///< \brief Property setter.
 
     };
 
@@ -247,49 +246,6 @@ namespace syntropy {
         void* instance_;                            ///< \brief Pointer to the actual object.
 
         const MetaClass& meta_class_;               ///< \brief Describes the type of the object.
-
-    };
-
-    class MetaAny {
-
-    public:
-
-        template <typename TAny>
-        MetaAny(TAny&& any);
-
-        template <typename TAny>
-        operator TAny() const;
-
-    private:
-
-        class Any {
-
-        public:
-
-            virtual ~Any();
-
-            virtual const std::type_info& GetTypeInfo() const = 0;
-
-        };
-
-        template <typename TAny>
-        class AnyT : public Any{
-
-        public:
-
-            AnyT(TAny value);
-            
-            virtual const std::type_info& GetTypeInfo() const override;
-
-            const TAny& Get() const;
-
-        private:
-
-            TAny any_;
-
-        };
-
-        std::unique_ptr<Any> any_;
 
     };
 
@@ -391,17 +347,35 @@ namespace syntropy {
     template <typename TClass, typename TProperty>
     void MetaClassDeclaration::DefineProperty(const std::string& property_name, TProperty TClass::* property) {
 
-        // TODO: const and references are read-only
+        // TODO: const are read-only and therefore have no setter
+        //       pointers are read and written as they were references
 
-        auto getter = [property](const MetaInstance& instance) {
+        auto getter = [property](const MetaInstance& instance, Any& value) -> bool{
 
-            return instance.As<TClass>()->*property;
+            auto instance_ptr = instance.As<TClass>();
+
+            if (instance_ptr) {
+
+                value = std::addressof(instance_ptr->*property);    // Using a pointer to the property value avoids an useless copy.
+
+            }
+
+            return !!instance_ptr;
 
         };
 
-        auto setter = [property](MetaInstance& instance, const MetaAny& value){
+        auto setter = [property](MetaInstance& instance, const Any& value) -> bool{
 
-            instance.As<TClass>()->*property = value;
+            auto value_ptr = value.As<const TProperty*>();          // Using a pointer to the actual value avoids an useless copy.
+            auto instance_ptr = instance.As<TClass>();
+
+            if (value_ptr && instance_ptr) {
+
+                instance_ptr->*property = **value_ptr;
+
+            }
+
+            return !!value_ptr && !!instance_ptr;
 
         };       
 
@@ -438,16 +412,32 @@ namespace syntropy {
     }
 
     template <typename TValue>
-    inline void MetaClassProperty::Read(const MetaInstance& instance, TValue& value) const {
+    inline bool MetaClassProperty::Read(const MetaInstance& instance, TValue& value) const {
 
-        value = getter_(instance);
+        Any read_value;
+
+        if (getter_(instance, read_value)) {
+
+            auto value_ptr = read_value.As<const TValue*>();
+
+            if (value_ptr) {
+
+                value = **value_ptr;
+
+            }
+
+            return !!value_ptr;
+
+        }
+
+        return false;
 
     }
 
     template <typename TValue>
-    inline void MetaClassProperty::Write(MetaInstance& instance, TValue&& value) const {
+    inline bool MetaClassProperty::Write(MetaInstance& instance, const TValue& value) const {
 
-        setter_(instance, std::forward<TValue>(value));
+        return setter_(instance, std::addressof(value));
 
     }
 
@@ -473,43 +463,6 @@ namespace syntropy {
         return meta_class_.IsConvertibleTo(MetaClass::GetClass<meta_type_t<TType>>()) ?
                reinterpret_cast<TType*>(instance_) :
                nullptr;
-
-    }
-
-    //////////////// META ANY ////////////////
-
-    template <typename TAny>
-    inline MetaAny::MetaAny(TAny&& any)
-        : any_(std::make_unique<AnyT<TAny>>(std::forward<TAny>(any))){}
-
-    template <typename TAny>
-    inline MetaAny::operator TAny() const {
-
-        assert(typeid(TAny) == any_->GetTypeInfo());
-
-        return typeid(TAny) == any_->GetTypeInfo() ?
-               static_cast<const AnyT<TAny>*>(any_.get())->Get() :
-               TAny();
-
-    }
-
-    inline MetaAny::Any::~Any() {}
-
-    template <typename TAny>
-    MetaAny::AnyT<TAny>::AnyT(TAny value)
-        : any_(value){}
-
-    template <typename TAny>
-    inline const std::type_info& MetaAny::AnyT<TAny>::GetTypeInfo() const {
-
-        return typeid(TAny);
-
-    }
-
-    template <typename TAny>
-    inline const TAny& MetaAny::AnyT<TAny>::Get() const {
-
-        return any_;
 
     }
 
