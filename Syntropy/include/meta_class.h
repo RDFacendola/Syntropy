@@ -253,7 +253,7 @@ namespace syntropy {
     };
 
     template <typename TType, bool kReadOnly = std::is_const<TType>::value >
-    struct MetaClassPropertyGetter {
+    struct MetaClassFieldGetter {
     
         using TGetter = std::function<bool(const MetaInstance&, Any&)>;
 
@@ -280,10 +280,10 @@ namespace syntropy {
     };
 
     template <typename TType, bool kReadOnly = std::is_const<TType>::value >
-    struct MetaClassPropertySetter {};
+    struct MetaClassFieldSetter {};
 
     template <typename TType>
-    struct MetaClassPropertySetter<TType, false> {
+    struct MetaClassFieldSetter<TType, false> {
 
         using TSetter = std::function<bool(MetaInstance&, const Any&)>;
 
@@ -312,7 +312,7 @@ namespace syntropy {
     };
 
     template <typename TType>
-    struct MetaClassPropertySetter<TType, true> {
+    struct MetaClassFieldSetter<TType, true> {
 
         using TSetter = std::function<bool(MetaInstance&, const Any&)>;
 
@@ -324,6 +324,70 @@ namespace syntropy {
                 // Readonly - do nothing and notify the failure
 
                 return false;   
+
+            };
+
+        }
+
+    };
+
+    template <typename TType>
+    struct MetaClassPropertyGetter {
+
+        using TGetter = std::function<bool(const MetaInstance&, Any&)>;
+
+        template <typename TClass, typename TProperty>
+        TGetter operator() (TProperty(TClass::* getter)() const) const {
+
+            return[getter](const MetaInstance& instance, Any& value) -> bool{
+
+                auto value_ptr = value.As<std::remove_const_t<std::remove_reference_t<TProperty>>*>();
+                auto instance_ptr = instance.As<TClass>();
+
+                if (value_ptr && instance_ptr) {
+
+                    **value_ptr = (instance_ptr->*getter)();
+
+                }
+
+                return !!value_ptr && !!instance_ptr;
+
+            };
+
+        }
+        
+    };
+
+    template <typename TType>
+    struct MetaClassPropertySetter {
+
+        using TSetter = std::function<bool(MetaInstance&, const Any&)>;
+
+        TSetter operator() () const {
+
+            return[](MetaInstance&, const Any&) -> bool {
+
+                return false;   // Readonly - do nothing and notify the failure
+
+            };
+
+        }
+
+        template <typename TClass, typename TProperty>
+        TSetter operator() (void (TClass::* setter)(TProperty)) const {
+
+            return[setter](MetaInstance& instance, const Any& value) -> bool {
+
+                auto value_ptr = value.As<const TProperty*>();
+                auto instance_ptr = instance.As<TClass>();
+
+                if (value_ptr && instance_ptr) {
+
+                    (instance_ptr->*setter)(**value_ptr);
+
+                }
+
+                return !!value_ptr && !!instance_ptr;
 
             };
 
@@ -432,51 +496,30 @@ namespace syntropy {
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(property_name,
                                                             typeid(TProperty),
-                                                            MetaClassPropertyGetter<TProperty>{}(property),
-                                                            MetaClassPropertySetter<TProperty>{}(property))));
+                                                            MetaClassFieldGetter<TProperty>{}(property),
+                                                            MetaClassFieldSetter<TProperty>{}(property))));
 
     }
     
     template <typename TClass, typename TProperty>
     void MetaClassDeclaration::DefineProperty(const std::string& property_name, TProperty(TClass::* getter)() const, void (TClass::* setter)(TProperty)) {
 
-        SYN_UNUSED(property_name);
-        SYN_UNUSED(getter);
-        SYN_UNUSED(setter);
+        properties_.insert(std::make_pair(property_name,
+                                          MetaClassProperty(property_name,
+                                                            typeid(TProperty),
+                                                            MetaClassPropertyGetter<TProperty>{}(getter),
+                                                            MetaClassPropertySetter<TProperty>{}(setter))));
 
     }
 
     template <typename TClass, typename TProperty>
     void MetaClassDeclaration::DefineProperty(const std::string& property_name, TProperty(TClass::* getter)() const) {
 
-        auto jetter = [getter](const MetaInstance& instance, Any& value) -> bool{
-
-            auto value_ptr = value.As<TProperty*>();
-            auto instance_ptr = instance.As<TClass>();
-
-            if (value_ptr && instance_ptr) {
-
-                **value_ptr = (instance_ptr->*getter)();
-
-            }
-
-            return !!value_ptr && !!instance_ptr;
-
-        };
-
-        auto setter = [](MetaInstance&, const Any&) -> bool{
-
-            // Readonly - do nothing and notify the failure
-
-            return false;
-
-        };
-
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(property_name,
                                                             typeid(TProperty),
-                                                            jetter,
-                                                            setter)));
+                                                            MetaClassPropertyGetter<TProperty>{}(getter),
+                                                            MetaClassPropertySetter<TProperty>{}())));
 
     }
 
