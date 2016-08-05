@@ -74,6 +74,18 @@ public:
 
 	}
 
+	const Blob& GetAccessor() const {
+
+		return blob_;
+
+	}
+
+	Blob& GetAccessor() {
+
+		return blob_;
+
+	}
+
 private:
 
     float value_;
@@ -158,12 +170,13 @@ public:
         Foo foo;
 
         syntropy::MetaInstance meta_foo(foo);
+		auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
 
-        auto value = syntropy::MetaClass::GetClass<Foo>().GetProperty("value");
-        auto const_value = syntropy::MetaClass::GetClass<Foo>().GetProperty("const_value");
-        auto pointer = syntropy::MetaClass::GetClass<Foo>().GetProperty("pointer");
-        auto pointer_to_const = syntropy::MetaClass::GetClass<Foo>().GetProperty("pointer_to_const");
-        auto const_pointer = syntropy::MetaClass::GetClass<Foo>().GetProperty("const_pointer");
+        auto value = meta_class.GetProperty("value");
+        auto const_value = meta_class.GetProperty("const_value");
+        auto pointer = meta_class.GetProperty("pointer");
+        auto pointer_to_const = meta_class.GetProperty("pointer_to_const");
+        auto const_pointer = meta_class.GetProperty("const_pointer");
 
         float x = 100;
         float* p = &x;
@@ -193,21 +206,21 @@ public:
         Foo foo;
 
         syntropy::MetaInstance meta_foo(foo);
+		auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
 
-		auto value = syntropy::MetaClass::GetClass<Foo>().GetProperty("PValue");
-        auto const_value = syntropy::MetaClass::GetClass<Foo>().GetProperty("PConstValue");
-		auto pointer = syntropy::MetaClass::GetClass<Foo>().GetProperty("PPointer");
-
-		auto blob = syntropy::MetaClass::GetClass<Foo>().GetProperty("Blob");
+		auto value = meta_class.GetProperty("PValue");
+        auto const_value = meta_class.GetProperty("PConstValue");
+		auto pointer = meta_class.GetProperty("PPointer");
+		auto blob = meta_class.GetProperty("Blob");
 
         float x = 100;
         float* p = &x;
         //const float* q = &x;
 
-		auto a = value->Write(meta_foo, x);
+		auto a = value->Write(meta_foo, 10.0f);
 		auto b = value->Read(meta_foo, x);
 
-        auto d = const_value->Write(meta_foo, x);    // Do nothing
+        auto d = const_value->Write(meta_foo, 20.0f);    // Do nothing
         auto c = const_value->Read(meta_foo, x);
 
 		auto e = pointer->Write(meta_foo, p);
