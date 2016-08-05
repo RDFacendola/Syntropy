@@ -16,6 +16,12 @@
 #include <tuple>
 #include <iostream>
 
+struct Blob{
+
+	int blob_;
+
+};
+
 class Foo : public Bar {
 
     friend class syntropy::MetaClassDefinition<Foo>;
@@ -44,6 +50,30 @@ public:
 
     }
     
+	float* GetPointer() const {
+
+		return pointer_;
+
+	}
+
+	void SetPointer(float* pointer) {
+
+		pointer_ = pointer;
+
+	}
+
+	const Blob& GetBlob() const {
+
+		return blob_;
+
+	}
+
+	void SetBlob(const Blob& blob) {
+
+		blob_ = blob;
+
+	}
+
 private:
 
     float value_;
@@ -52,6 +82,7 @@ private:
     const float * pointer_to_const_;
     float* const const_pointer_;
 
+	Blob blob_;
 
 
 };
@@ -107,6 +138,9 @@ public:
 
         DefineProperty("PValue", &Foo::GetValue, &Foo::SetValue);
         DefineProperty("PConstValue", &Foo::GetConstValue);
+		DefineProperty("PPointer", &Foo::GetPointer, &Foo::SetPointer);
+
+		DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
 
     }
 
@@ -160,16 +194,33 @@ public:
 
         syntropy::MetaInstance meta_foo(foo);
 
+		auto value = syntropy::MetaClass::GetClass<Foo>().GetProperty("PValue");
         auto const_value = syntropy::MetaClass::GetClass<Foo>().GetProperty("PConstValue");
+		auto pointer = syntropy::MetaClass::GetClass<Foo>().GetProperty("PPointer");
+
+		auto blob = syntropy::MetaClass::GetClass<Foo>().GetProperty("Blob");
 
         float x = 100;
-        //float* p = &x;
+        float* p = &x;
         //const float* q = &x;
+
+		auto a = value->Write(meta_foo, x);
+		auto b = value->Read(meta_foo, x);
 
         auto d = const_value->Write(meta_foo, x);    // Do nothing
         auto c = const_value->Read(meta_foo, x);
 
-        assert(!d && c);
+		auto e = pointer->Write(meta_foo, p);
+		auto f = pointer->Read(meta_foo, p);
+
+		Blob bb;
+
+		bb.blob_ = 55;
+
+		auto z = blob->Write(meta_foo, bb);
+		auto w = blob->Read(meta_foo, bb);
+
+        assert(a && b && !d && c && e && f && z && w);
 
     }
 
