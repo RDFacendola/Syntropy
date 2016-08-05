@@ -292,9 +292,7 @@ namespace syntropy {
 
             return[property](MetaInstance& instance, const Any& value) -> bool{
 
-                // Using a pointer to the actual value avoids an useless copy.
-
-                auto value_ptr = value.As<const TProperty*>();
+				auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
                 auto instance_ptr = instance.As<TClass>();
 
                 if (value_ptr && instance_ptr) {
@@ -378,7 +376,7 @@ namespace syntropy {
 
             return[setter](MetaInstance& instance, const Any& value) -> bool {
 
-                auto value_ptr = value.As<const TProperty*>();
+                auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
                 auto instance_ptr = instance.As<TClass>();
 
                 if (value_ptr && instance_ptr) {
