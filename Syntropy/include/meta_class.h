@@ -262,7 +262,7 @@ namespace syntropy {
 
             return [property](const MetaInstance& instance, Any& value) -> bool{
 
-                auto value_ptr = value.As<std::remove_const_t<TProperty>*>();
+                auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
                 auto instance_ptr = instance.As<TClass>();
 
                 if (value_ptr && instance_ptr) {
@@ -288,7 +288,7 @@ namespace syntropy {
         using TSetter = std::function<bool(MetaInstance&, const Any&)>;
 
         template <typename TClass, typename TProperty>
-        TSetter operator() (TProperty TClass::* property)const {
+        TSetter operator() (TProperty TClass::* property) const {
 
             return[property](MetaInstance& instance, const Any& value) -> bool{
 
@@ -339,7 +339,7 @@ namespace syntropy {
 
             return[getter](const MetaInstance& instance, Any& value) -> bool{
 
-                auto value_ptr = value.As<std::remove_const_t<std::remove_reference_t<TProperty>>*>();
+                auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
                 auto instance_ptr = instance.As<TClass>();
 
                 if (value_ptr && instance_ptr) {
