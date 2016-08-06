@@ -1,12 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="include\syntropy.h" />
-    <ClInclude Include="include\meta_class.h" />
-    <ClInclude Include="include\any.h" />
+    <ClInclude Include="include\meta_class.h">
+      <Filter>reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="include\syntropy.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\any.h">
+      <Filter>functional</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fnv1.h">
+      <Filter>hash</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hashed_string.h">
+      <Filter>hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\syntropy.cpp" />
-    <ClCompile Include="src\meta\meta_class.cpp" />
+    <ClCompile Include="src\meta\meta_class.cpp">
+      <Filter>reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\syntropy.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="reflection">
+      <UniqueIdentifier>{98520dcf-672c-4315-87f3-fa14c6797060}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{25e18984-6111-4486-b4ec-241ccfd993d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="functional">
+      <UniqueIdentifier>{3c9988c6-6437-4734-9652-a433d30469dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hash">
+      <UniqueIdentifier>{19d60c50-b69b-472c-8a0d-91be7c701ddc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
