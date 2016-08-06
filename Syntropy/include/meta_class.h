@@ -301,11 +301,11 @@ namespace syntropy {
 
     };
 
-    template <typename TType, bool kReadOnly = std::is_const<TType>::value >
+    template <typename TProperty, bool kReadOnly = std::is_const<TProperty>::value >
     struct MetaClassPropertySetter {};
 
-    template <typename TType>
-    struct MetaClassPropertySetter<TType, true> {
+    template <typename TProperty>
+    struct MetaClassPropertySetter<TProperty, true> {
 
         using TSetter = std::function<bool(MetaInstance&, const Any&)>;
 
@@ -322,13 +322,13 @@ namespace syntropy {
 
     };
 
-    template <typename TType>
-    struct MetaClassPropertySetter<TType, false> {
+    template <typename TProperty>
+    struct MetaClassPropertySetter<TProperty, false> {
 
         using TSetter = std::function<bool(MetaInstance&, const Any&)>;
 
-        template <typename TClass, typename TProperty>
-        TSetter operator() (TProperty TClass::* property) const {
+        template <typename TClass>
+        TSetter operator() (std::remove_reference_t<TProperty> TClass::* property) const {
 
             return[property](MetaInstance& instance, const Any& value) -> bool{
 
@@ -347,7 +347,7 @@ namespace syntropy {
 
         }
         
-        template <typename TClass, typename TProperty>
+        template <typename TClass>
         TSetter operator() (void (TClass::* setter)(TProperty)) const {
 
             return[setter](MetaInstance& instance, const Any& value) -> bool {
@@ -367,7 +367,7 @@ namespace syntropy {
 
         }
 
-        template <typename TClass, typename TProperty>
+        template <typename TClass>
         TSetter operator() (TProperty& (TClass::* setter)()) const {
 
             return[setter](MetaInstance& instance, const Any& value) -> bool {
