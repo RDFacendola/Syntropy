@@ -30,3 +30,4 @@
 build/
 *.db
 *.opendb
+*.VC.db
