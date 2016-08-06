@@ -255,7 +255,6 @@ namespace syntropy {
 
     };
 
-    template <typename TType>
     struct MetaClassPropertyGetter {
 
         using TGetter = std::function<bool(const MetaInstance&, Any&)>;
@@ -491,7 +490,7 @@ namespace syntropy {
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(property_name,
                                                             typeid(TProperty),
-                                                            MetaClassPropertyGetter<TProperty>{}(property),
+                                                            MetaClassPropertyGetter{}(property),
                                                             MetaClassPropertySetter<TProperty>{}(property))));
 
     }
@@ -502,7 +501,7 @@ namespace syntropy {
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(property_name,
                                                             typeid(TProperty),
-                                                            MetaClassPropertyGetter<TProperty>{}(getter),
+                                                            MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter<TProperty>{}(setter))));
 
     }
@@ -513,7 +512,7 @@ namespace syntropy {
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(property_name,
                                                             typeid(TProperty),
-                                                            MetaClassPropertyGetter<TProperty>{}(getter),
+                                                            MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter<TProperty, true>{}(nullptr))));
 
     }
@@ -524,7 +523,7 @@ namespace syntropy {
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(property_name,
                                                             typeid(TProperty),
-                                                            MetaClassPropertyGetter<TProperty>{}(getter),
+                                                            MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter<TProperty>{}(setter))));
 
     }
