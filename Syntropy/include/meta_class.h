@@ -210,21 +210,21 @@ namespace syntropy {
         
         const HashedString& GetName() const;
 
-        template <typename TValue>
-        bool Read(const MetaInstance& instance, TValue& value) const;
+        template <typename TInstance, typename TValue>
+        bool Read(const TInstance& instance, TValue& value) const;
 
-        template <typename TValue>
-        bool Write(MetaInstance& instance, const TValue& value) const;
+        template <typename TInstance, typename TValue>
+        bool Write(TInstance& instance, const TValue& value) const;
 
     private:
 
-        HashedString name_;                                             ///< \brief Property name.
+        HashedString name_;                                    ///< \brief Property name.
 
-        const std::type_info& type_;                                    ///< \brief Type of the property.
+        const std::type_info& type_;                           ///< \brief Type of the property.
 
-        std::function<bool(const MetaInstance&, Any&)> getter_;         ///< \brief Property getter.
+        std::function<bool(Any, Any)> getter_;                 ///< \brief Property getter.
 
-        std::function<bool(MetaInstance&, const Any&)> setter_;         ///< \brief Property setter.
+        std::function<bool(Any, Any)> setter_;                 ///< \brief Property setter.
 
     };
 
@@ -234,42 +234,21 @@ namespace syntropy {
         
     };
 
-    class MetaInstance {
-
-    public:
-
-        template <typename TType>
-        MetaInstance(TType& instance);
-
-        template <typename TType>
-        const TType* As() const;
-
-        template <typename TType>
-        TType* As();
-
-    private:
-
-        void* instance_;                            ///< \brief Pointer to the actual object.
-
-        const MetaClass& meta_class_;               ///< \brief Describes the type of the object.
-
-    };
-
     struct MetaClassPropertyGetter {
 
-        using TGetter = std::function<bool(const MetaInstance&, Any&)>;
+        using TGetter = std::function<bool(Any, Any)>;
 
         template <typename TClass, typename TProperty>
         TGetter operator() (TProperty TClass::* field) const {
 
-            return[field](const MetaInstance& instance, Any& value) -> bool {
+            return[field](Any instance, Any value) -> bool {
 
                 auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
-                auto instance_ptr = instance.As<TClass>();
+                auto instance_ptr = instance.As<std::add_pointer_t<std::add_const_t<TClass>>>();
 
                 if (value_ptr && instance_ptr) {
 
-                    **value_ptr = instance_ptr->*field;
+                    **value_ptr = (*instance_ptr)->*field;
 
                 }
 
@@ -282,14 +261,14 @@ namespace syntropy {
         template <typename TClass, typename TProperty>
         TGetter operator() (TProperty (TClass::* getter)() const) const {
 
-            return[getter](const MetaInstance& instance, Any& value) -> bool {
+            return[getter](Any instance, Any value) -> bool {
 
                 auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
-                auto instance_ptr = instance.As<TClass>();
+                auto instance_ptr = instance.As<std::add_pointer_t<std::add_const_t<TClass>>>();
 
                 if (value_ptr && instance_ptr) {
 
-                    **value_ptr = (instance_ptr->*getter)();
+                    **value_ptr = ((*instance_ptr)->*getter)();
 
                 }
 
@@ -303,19 +282,29 @@ namespace syntropy {
 
     struct MetaClassPropertySetter {
 
-        using TSetter = std::function<bool(MetaInstance&, const Any&)>;
+        using TSetter = std::function<bool(Any, Any)>;
 
+        TSetter operator() () const {
+ 
+            return[](Any, Any) -> bool{
+ 
+                return false;
+ 
+            };
+ 
+         }
+        
         template <typename TClass, typename TProperty>
         TSetter operator() (TProperty TClass::* property, typename std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) const {
 
-            return[property](MetaInstance& instance, const Any& value) -> bool{
+            return[property](Any instance, Any value) -> bool{
 
                 auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                auto instance_ptr = instance.As<TClass>();
+                auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
 
                 if (value_ptr && instance_ptr) {
 
-                    instance_ptr->*property = **value_ptr;
+                    (*instance_ptr)->*property = **value_ptr;
 
                 }
 
@@ -332,27 +321,17 @@ namespace syntropy {
 
         }
 
-        TSetter operator() () const {
- 
-            return[](MetaInstance&, const Any&) -> bool{
- 
-                return false;
- 
-            };
- 
-         }
-        
         template <typename TClass, typename TProperty>
         TSetter operator() (void (TClass::* setter)(TProperty)) const {
 
-            return[setter](MetaInstance& instance, const Any& value) -> bool {
+            return[setter](Any instance, Any value) -> bool {
 
                 auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                auto instance_ptr = instance.As<TClass>();
+                auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
 
                 if (value_ptr && instance_ptr) {
 
-                    (instance_ptr->*setter)(**value_ptr);
+                    ((*instance_ptr)->*setter)(**value_ptr);
 
                 }
 
@@ -365,14 +344,14 @@ namespace syntropy {
         template <typename TClass, typename TProperty>
         TSetter operator() (TProperty& (TClass::* setter)()) const {
 
-            return[setter](MetaInstance& instance, const Any& value) -> bool {
-
+            return[setter](Any instance, Any value) -> bool {
+                
                 auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                auto instance_ptr = instance.As<TClass>();
+                auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
 
                 if (value_ptr && instance_ptr) {
 
-                    (instance_ptr->*setter)() = **value_ptr;
+                    ((*instance_ptr)->*setter)() = **value_ptr;
 
                 }
 
@@ -538,44 +517,23 @@ namespace syntropy {
 
     }
 
-    template <typename TValue>
-    inline bool MetaClassProperty::Read(const MetaInstance& instance, TValue& value) const {
+    template <typename TInstance, typename TValue>
+    inline bool MetaClassProperty::Read(const TInstance& instance, TValue& value) const {
 
-        Any ptr_value(std::addressof(value));
+        static_assert(!std::is_const<TValue>::value, "The value must be a modifiable lvalue");
 
-        return getter_(instance, ptr_value);
-
-    }
-
-    template <typename TValue>
-    inline bool MetaClassProperty::Write(MetaInstance& instance, const TValue& value) const {
-
-        return setter_(instance, std::addressof(value));
+        return getter_(std::addressof(instance), 
+                       std::addressof(value));
 
     }
 
-    //////////////// META INSTANCE ////////////////
+    template <typename TInstance, typename TValue>
+    inline bool MetaClassProperty::Write(TInstance& instance, const TValue& value) const {
 
-    template <typename TType>
-    inline MetaInstance::MetaInstance(TType& instance)
-        : instance_(std::addressof(instance))
-        , meta_class_(MetaClass::GetClass<meta_type_t<TType>>() ){}
+        static_assert(!std::is_const<TInstance>::value, "The instance must be a modifiable lvalue");
 
-    template <typename TType>
-    inline const TType* MetaInstance::As() const {
-
-        return meta_class_.IsConvertibleTo(MetaClass::GetClass<meta_type_t<TType>>()) ?
-               reinterpret_cast<const TType*>(instance_) :
-               nullptr;
-
-    }
-
-    template <typename TType>
-    inline TType* MetaInstance::As() {
-
-        return meta_class_.IsConvertibleTo(MetaClass::GetClass<meta_type_t<TType>>()) ?
-               reinterpret_cast<TType*>(instance_) :
-               nullptr;
+        return setter_(std::addressof(instance), 
+                       std::addressof(value));
 
     }
 

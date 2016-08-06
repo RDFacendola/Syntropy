@@ -155,8 +155,8 @@ namespace syntropy {
     inline TValue* Any::As() {
 
         return (content_ && GetType() == typeid(TValue)) ?
-            &(static_cast<Content<TValue>*>(content_.get())->content_) :
-            nullptr;
+               &(static_cast<Content<TValue>*>(content_.get())->content_) :
+               nullptr;
 
     }
 

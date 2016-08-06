@@ -39,6 +39,18 @@ public:
         : const_value_(666)
         , const_pointer_(nullptr){}
 
+    Foo(const Foo& other)
+        : value_(other.value_)
+        , const_value_(other.const_value_)
+        , pointer_(other.pointer_)
+        , pointer_to_const_(other.pointer_to_const_)
+        , const_pointer_(other.const_pointer_)
+        , blob_(other.blob_) {
+
+        std::cout << "Copy ctor!" << std::endl;
+
+    }
+
     float GetValue() const {
 
         return value_;
@@ -111,7 +123,7 @@ public:
 
     }
 
-private:
+public:
 
     float value_;
     const float const_value_;
@@ -176,7 +188,6 @@ public:
 
         Foo foo;
 
-        syntropy::MetaInstance meta_foo(foo);
         auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
 
         auto value = meta_class.GetProperty("value");
@@ -189,20 +200,20 @@ public:
         float* p = &x;
         const float* q = &x;
 
-        TEST_TRUE(value->Write(meta_foo, 56.0f));
-        TEST_TRUE(value->Read(meta_foo, x));
+        TEST_TRUE(value->Write(foo, 56.0f));
+        TEST_TRUE(value->Read(foo, x));
 
-        TEST_FALSE(const_value->Write(meta_foo, 47.0f));
-        TEST_TRUE(const_value->Read(meta_foo, x));
+        TEST_FALSE(const_value->Write(foo, 47.0f));
+        TEST_TRUE(const_value->Read(foo, x));
 
-        TEST_TRUE(pointer->Write(meta_foo, p));
-        TEST_TRUE(pointer->Read(meta_foo, p));
+        TEST_TRUE(pointer->Write(foo, p));
+        TEST_TRUE(pointer->Read(foo, p));
 
-        TEST_TRUE(pointer_to_const->Write(meta_foo, q));
-        TEST_TRUE(pointer_to_const->Read(meta_foo, q));
+        TEST_TRUE(pointer_to_const->Write(foo, q));
+        TEST_TRUE(pointer_to_const->Read(foo, q));
 
-        TEST_FALSE(const_pointer->Write(meta_foo, p));
-        TEST_TRUE(const_pointer->Read(meta_foo, p));
+        TEST_FALSE(const_pointer->Write(foo, p));
+        TEST_TRUE(const_pointer->Read(foo, p));
 
     }
 
@@ -210,7 +221,6 @@ public:
 
         Foo foo;
 
-        syntropy::MetaInstance meta_foo(foo);
         auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
 
         auto value = meta_class.GetProperty("PValue");
@@ -228,26 +238,28 @@ public:
         float* p = &x;
         const float* q = &x;
 
-        TEST_TRUE(value->Write(meta_foo, x));
-        TEST_TRUE(value->Read(meta_foo, x));
+        const float y(10);
 
-        TEST_FALSE(const_value->Write(meta_foo, 47.0f));
-        TEST_TRUE(const_value->Read(meta_foo, x));
+        TEST_TRUE(value->Write(foo, x));
+        TEST_TRUE(value->Read(foo, x));
 
-        TEST_TRUE(pointer->Write(meta_foo, p));
-        TEST_TRUE(pointer->Read(meta_foo, p));
+        TEST_FALSE(const_value->Write(foo, 47.0f));
+        TEST_TRUE(const_value->Read(foo, x));
 
-        TEST_TRUE(pointer_to_const->Write(meta_foo, q));
-        TEST_TRUE(pointer_to_const->Read(meta_foo, q));
+        TEST_TRUE(pointer->Write(foo, p));
+        TEST_TRUE(pointer->Read(foo, p));
 
-        TEST_FALSE(const_pointer->Write(meta_foo, p));
-        TEST_TRUE(const_pointer->Read(meta_foo, p));
+        TEST_TRUE(pointer_to_const->Write(foo, q));
+        TEST_TRUE(pointer_to_const->Read(foo, q));
 
-        TEST_TRUE(blob->Write(meta_foo, Blob{ 47 }));
-        TEST_TRUE(blob->Read(meta_foo, bb));
+        TEST_FALSE(const_pointer->Write(foo, p));
+        TEST_TRUE(const_pointer->Read(foo, p));
 
-        TEST_TRUE(accessor->Write(meta_foo, Blob{ 999 }));
-        TEST_TRUE(accessor->Read(meta_foo, bb));
+        TEST_TRUE(blob->Write(foo, Blob{ 47 }));
+        TEST_TRUE(blob->Read(foo, bb));
+
+        TEST_TRUE(accessor->Write(foo, Blob{ 999 }));
+        TEST_TRUE(accessor->Read(foo, bb));
 
     }
 
