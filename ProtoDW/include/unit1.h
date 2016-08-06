@@ -184,6 +184,22 @@ class Tester {
 
 public:
 
+    void SynopsisTest() {
+
+        auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
+
+        std::cout << "Class '" << meta_class.GetName().GetString() << "'" << std::endl;
+
+        for (const auto& property : meta_class.GetProperties()) {
+
+            std::cout << "Property '" << property.first.GetString() << "': " << property.second.GetType().name() << std::endl;
+
+        }
+
+        std::cout << std::endl;
+
+    }
+
     void FieldTest() {
 
         Foo foo;
@@ -214,6 +230,8 @@ public:
 
         TEST_FALSE(const_pointer->Write(foo, p));
         TEST_TRUE(const_pointer->Read(foo, p));
+
+        std::cout << std::endl;
 
     }
 
@@ -261,10 +279,13 @@ public:
         TEST_TRUE(accessor->Write(foo, Blob{ 999 }));
         TEST_TRUE(accessor->Read(foo, bb));
 
+        std::cout << std::endl;
+
     }
 
     void Do() {
 
+        SynopsisTest();
         FieldTest();
         PropertyTest();
 

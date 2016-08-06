@@ -102,6 +102,10 @@ namespace syntropy {
         /// \return Returns a pointer to the requested method if any. Returns nullptr otherwise.
         const MetaClassMethod* GetMethod(const HashedString& method_name) const;
 
+        /// \brief Get the class properties list.
+        /// \return Returns the class properties list.
+        const std::unordered_map<HashedString, MetaClassProperty>& GetProperties() const;
+
     protected:
         
         MetaClassDeclaration(const HashedString& name);
@@ -175,6 +179,10 @@ namespace syntropy {
         /// \return Returns a pointer tot he requested method if any. Returns nullptr otherwise.
         const MetaClassMethod* GetMethod(const HashedString& method_name) const;
    
+        /// \brief Get the class properties list.
+        /// \return Returns the class properties list.
+        const std::unordered_map<HashedString, MetaClassProperty>& GetProperties() const;
+
         /// \brief Check whether this meta class is convertible to the specified one.
         /// A class is convertible if it is the same type or derives from another one.
         /// \return Returns true if the class is convertible to the specified type, return false otherwise.
@@ -206,9 +214,11 @@ namespace syntropy {
     public:
 
         template <typename TGetter, typename TSetter>
-        MetaClassProperty(const HashedString& name, const type_info& type, TGetter&& getter, TSetter&& setter);
+        MetaClassProperty(const type_info& type, TGetter&& getter, TSetter&& setter);
         
-        const HashedString& GetName() const;
+        /// \brief Get the property type.
+        /// \return Returns the property type.
+        const std::type_info& GetType() const;
 
         template <typename TInstance, typename TValue>
         bool Read(const TInstance& instance, TValue& value) const;
@@ -404,6 +414,12 @@ namespace syntropy {
 
     }
 
+    inline const std::unordered_map<HashedString, MetaClassProperty>& MetaClass::GetProperties() const {
+
+        return class_->GetProperties();
+
+    }
+
     inline bool MetaClass::IsConvertibleTo(const MetaClass& other) const {
 
         return class_id_ % other.class_id_ == 0;
@@ -449,6 +465,12 @@ namespace syntropy {
         
     }
 
+    inline const std::unordered_map<HashedString, MetaClassProperty>& MetaClassDeclaration::GetProperties() const {
+
+        return properties_;
+
+    }
+
     template <typename TBaseClass>
     inline void MetaClassDeclaration::DefineBaseClass() {
 
@@ -462,8 +484,7 @@ namespace syntropy {
     void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty TClass::* property) {
 
         properties_.insert(std::make_pair(property_name,
-                                          MetaClassProperty(property_name,
-                                                            typeid(TProperty),
+                                          MetaClassProperty(typeid(TProperty),
                                                             MetaClassPropertyGetter{}(property),
                                                             MetaClassPropertySetter{}(property))));
 
@@ -473,8 +494,7 @@ namespace syntropy {
     void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const, void (TClass::* setter)(TProperty)) {
 
         properties_.insert(std::make_pair(property_name,
-                                          MetaClassProperty(property_name,
-                                                            typeid(TProperty),
+                                          MetaClassProperty(typeid(TProperty),
                                                             MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter{}(setter))));
 
@@ -484,8 +504,7 @@ namespace syntropy {
     void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const) {
 
         properties_.insert(std::make_pair(property_name,
-                                          MetaClassProperty(property_name,
-                                                            typeid(TProperty),
+                                          MetaClassProperty(typeid(TProperty),
                                                             MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter{}())));
 
@@ -495,8 +514,7 @@ namespace syntropy {
     void MetaClassDeclaration::DefineProperty(const HashedString& property_name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) {
 
         properties_.insert(std::make_pair(property_name,
-                                          MetaClassProperty(property_name,
-                                                            typeid(TProperty),
+                                          MetaClassProperty(typeid(TProperty),
                                                             MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter{}(setter))));
 
@@ -505,15 +523,14 @@ namespace syntropy {
     //////////////// META CLASS PROPERTY ////////////////
 
     template <typename TGetter, typename TSetter>
-    inline MetaClassProperty::MetaClassProperty(const HashedString& name, const type_info& type, TGetter&& getter, TSetter&& setter)
-        : name_(name)
-        , type_(type)
+    inline MetaClassProperty::MetaClassProperty(const type_info& type, TGetter&& getter, TSetter&& setter)
+        : type_(type)
         , getter_(std::forward<TGetter>(getter))
         , setter_(std::forward<TSetter>(setter)){}
 
-    inline const HashedString& MetaClassProperty::GetName() const {
+    inline const std::type_info& MetaClassProperty::GetType() const {
 
-        return name_;
+        return type_;
 
     }
 
