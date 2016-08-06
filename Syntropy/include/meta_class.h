@@ -280,7 +280,7 @@ namespace syntropy {
         }
 
         template <typename TClass, typename TProperty>
-        TGetter operator() (TProperty(TClass::* getter)() const) const {
+        TGetter operator() (TProperty (TClass::* getter)() const) const {
 
             return[getter](const MetaInstance& instance, Any& value) -> bool {
 
@@ -301,34 +301,12 @@ namespace syntropy {
 
     };
 
-    template <typename TProperty, bool kReadOnly = std::is_const<TProperty>::value >
-    struct MetaClassPropertySetter {};
-
-    template <typename TProperty>
-    struct MetaClassPropertySetter<TProperty, true> {
+    struct MetaClassPropertySetter {
 
         using TSetter = std::function<bool(MetaInstance&, const Any&)>;
 
-        template <typename TAny>
-        TSetter operator() (TAny) const {
-
-            return [](MetaInstance&, const Any&) -> bool{
-
-                return false;       // Readonly
-
-            };
-
-        }
-
-    };
-
-    template <typename TProperty>
-    struct MetaClassPropertySetter<TProperty, false> {
-
-        using TSetter = std::function<bool(MetaInstance&, const Any&)>;
-
-        template <typename TClass>
-        TSetter operator() (std::remove_reference_t<TProperty> TClass::* property) const {
+        template <typename TClass, typename TProperty>
+        TSetter operator() (TProperty TClass::* property, typename std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) const {
 
             return[property](MetaInstance& instance, const Any& value) -> bool{
 
@@ -346,8 +324,25 @@ namespace syntropy {
             };
 
         }
+
+        template <typename TClass, typename TProperty>
+        TSetter operator() (TProperty TClass::*, typename std::enable_if_t<std::is_const<TProperty>::value>* = nullptr) const {
+
+            return (*this)();
+
+        }
+
+        TSetter operator() () const {
+ 
+            return[](MetaInstance&, const Any&) -> bool{
+ 
+                return false;
+ 
+            };
+ 
+         }
         
-        template <typename TClass>
+        template <typename TClass, typename TProperty>
         TSetter operator() (void (TClass::* setter)(TProperty)) const {
 
             return[setter](MetaInstance& instance, const Any& value) -> bool {
@@ -367,7 +362,7 @@ namespace syntropy {
 
         }
 
-        template <typename TClass>
+        template <typename TClass, typename TProperty>
         TSetter operator() (TProperty& (TClass::* setter)()) const {
 
             return[setter](MetaInstance& instance, const Any& value) -> bool {
@@ -491,7 +486,7 @@ namespace syntropy {
                                           MetaClassProperty(property_name,
                                                             typeid(TProperty),
                                                             MetaClassPropertyGetter{}(property),
-                                                            MetaClassPropertySetter<TProperty>{}(property))));
+                                                            MetaClassPropertySetter{}(property))));
 
     }
     
@@ -502,7 +497,7 @@ namespace syntropy {
                                           MetaClassProperty(property_name,
                                                             typeid(TProperty),
                                                             MetaClassPropertyGetter{}(getter),
-                                                            MetaClassPropertySetter<TProperty>{}(setter))));
+                                                            MetaClassPropertySetter{}(setter))));
 
     }
 
@@ -513,7 +508,7 @@ namespace syntropy {
                                           MetaClassProperty(property_name,
                                                             typeid(TProperty),
                                                             MetaClassPropertyGetter{}(getter),
-                                                            MetaClassPropertySetter<TProperty, true>{}(nullptr))));
+                                                            MetaClassPropertySetter{}())));
 
     }
 
@@ -524,7 +519,7 @@ namespace syntropy {
                                           MetaClassProperty(property_name,
                                                             typeid(TProperty),
                                                             MetaClassPropertyGetter{}(getter),
-                                                            MetaClassPropertySetter<TProperty>{}(setter))));
+                                                            MetaClassPropertySetter{}(setter))));
 
     }
 
