@@ -11,7 +11,7 @@
 namespace syntropy {
 
 	/// \brief Describes a type-safe container for single values of any type.
-	/// \author Raffaele D. Facendola, based upon "Valued Conversion" by Kevlin Henney
+	/// \author Raffaele D. Facendola, based on "Valued Conversion" by Kevlin Henney
 	class Any {
 
 	public:

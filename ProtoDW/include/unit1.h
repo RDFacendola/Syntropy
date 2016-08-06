@@ -25,7 +25,7 @@ std::cout << (!(test) ? "PASSED - " : "NOT PASSED - ") << #test << std::endl;
 
 struct Blob{
 
-	int blob_;
+    int blob_;
 
 };
 
@@ -57,17 +57,17 @@ public:
 
     }
     
-	float* GetPointer() const {
+    float* GetPointer() const {
 
-		return pointer_;
+        return pointer_;
 
-	}
+    }
 
-	void SetPointer(float* pointer) {
+    void SetPointer(float* pointer) {
 
-		pointer_ = pointer;
+        pointer_ = pointer;
 
-	}
+    }
 
     const float* GetPointerToConst() const {
 
@@ -87,29 +87,29 @@ public:
 
     }
 
-	const Blob& GetBlob() const {
+    const Blob& GetBlob() const {
 
-		return blob_;
+        return blob_;
 
-	}
+    }
 
-	void SetBlob(const Blob& blob) {
+    void SetBlob(const Blob& blob) {
 
-		blob_ = blob;
+        blob_ = blob;
 
-	}
+    }
 
-	const Blob& GetAccessor() const {
+    const Blob& GetAccessor() const {
 
-		return blob_;
+        return blob_;
 
-	}
+    }
 
-	Blob& GetAccessor() {
+    Blob& GetAccessor() {
 
-		return blob_;
+        return blob_;
 
-	}
+    }
 
 private:
 
@@ -119,7 +119,7 @@ private:
     const float * pointer_to_const_;
     float* const const_pointer_;
 
-	Blob blob_;
+    Blob blob_;
 
 
 };
@@ -153,11 +153,11 @@ public:
 
         DefineProperty("PValue", &Foo::GetValue, &Foo::SetValue);
         DefineProperty("PConstValue", &Foo::GetConstValue);
-		DefineProperty("PPointer", &Foo::GetPointer, &Foo::SetPointer);
+        DefineProperty("PPointer", &Foo::GetPointer, &Foo::SetPointer);
         DefineProperty("PPointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
         DefineProperty("PConstPointer", &Foo::GetConstPointer);
 
-		DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
+        DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
 
     }
 
@@ -175,7 +175,7 @@ public:
         Foo foo;
 
         syntropy::MetaInstance meta_foo(foo);
-		auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
+        auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
 
         auto value = meta_class.GetProperty("value");
         auto const_value = meta_class.GetProperty("const_value");
@@ -209,15 +209,15 @@ public:
         Foo foo;
 
         syntropy::MetaInstance meta_foo(foo);
-		auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
+        auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
 
-		auto value = meta_class.GetProperty("PValue");
+        auto value = meta_class.GetProperty("PValue");
         auto const_value = meta_class.GetProperty("PConstValue");
-		auto pointer = meta_class.GetProperty("PPointer");
+        auto pointer = meta_class.GetProperty("PPointer");
         auto pointer_to_const = meta_class.GetProperty("PPointerToConst");
         auto const_pointer = meta_class.GetProperty("PConstPointer");
 
-		auto blob = meta_class.GetProperty("Blob");
+        auto blob = meta_class.GetProperty("Blob");
 
         Blob bb;
         float x = 100;
@@ -240,7 +240,7 @@ public:
         TEST_TRUE(const_pointer->Read(meta_foo, p));
 
         TEST_TRUE(blob->Write(meta_foo, Blob{ 47 }));
-		TEST_TRUE(blob->Read(meta_foo, bb));
+        TEST_TRUE(blob->Read(meta_foo, bb));
 
     }
 
