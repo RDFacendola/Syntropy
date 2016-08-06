@@ -156,8 +156,10 @@ public:
         DefineProperty("PPointer", &Foo::GetPointer, &Foo::SetPointer);
         DefineProperty("PPointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
         DefineProperty("PConstPointer", &Foo::GetConstPointer);
-
+        
         DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
+
+        DefineProperty("PAccessor", &Foo::GetAccessor, &Foo::GetAccessor);
 
     }
 
@@ -219,6 +221,8 @@ public:
 
         auto blob = meta_class.GetProperty("Blob");
 
+        auto accessor = meta_class.GetProperty("PAccessor");
+
         Blob bb;
         float x = 100;
         float* p = &x;
@@ -241,6 +245,9 @@ public:
 
         TEST_TRUE(blob->Write(meta_foo, Blob{ 47 }));
         TEST_TRUE(blob->Read(meta_foo, bb));
+
+        TEST_TRUE(accessor->Write(meta_foo, Blob{ 999 }));
+        TEST_TRUE(accessor->Read(meta_foo, bb));
 
     }
 
