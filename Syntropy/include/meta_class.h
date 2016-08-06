@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <string>
 #include <memory>
 #include <unordered_map>
 #include <type_traits>
@@ -14,6 +13,7 @@
 
 #include "any.h"
 #include "syntropy.h"
+#include "hashed_string.h"
 
 namespace syntropy {
 
@@ -60,7 +60,7 @@ namespace syntropy {
         /// \brief Get a metaclass instance by class name.
         /// \param class_name Name of the metaclass to get.
         /// \return Returns a pointer to the metaclass whose name is the specified one, if any. Returns nullptr otherwise.
-        const MetaClass* GetClass(const std::string& class_name);
+        const MetaClass* GetClass(const HashedString& class_name);
 
     private:
 
@@ -71,7 +71,7 @@ namespace syntropy {
         /// \brief Private constructor to prevent instantiation.
         MetaClassRegistry();
 
-        std::unordered_map<std::string, MetaClass*> meta_classes_;       ///< \brief List of metaclasses registered so far.
+        std::unordered_map<HashedString, MetaClass*> meta_classes_;       ///< \brief List of metaclasses registered so far.
 
     };
 
@@ -86,7 +86,7 @@ namespace syntropy {
 
         /// \brief Get the name of the metaclass.
         /// \return Returns the type string of the metaclass.
-        const std::string& GetName() const;
+        const HashedString& GetName() const;
 
         /// \brief Get the list of classes that are derived by this class.
         /// \return Returns the list of classes that are derived by this class.
@@ -95,41 +95,41 @@ namespace syntropy {
         /// \brief Get a class property by name.
         /// \param property_name Name of the property to get.
         /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
-        const MetaClassProperty* GetProperty(const std::string& property_name) const;
+        const MetaClassProperty* GetProperty(const HashedString& property_name) const;
 
         /// \brief Get a class method by name.
         /// \param method_name Name of the method to get.
-        /// \return Returns a pointer tot he requested method if any. Returns nullptr otherwise.
-        const MetaClassMethod* GetMethod(const std::string& method_name) const;
+        /// \return Returns a pointer to the requested method if any. Returns nullptr otherwise.
+        const MetaClassMethod* GetMethod(const HashedString& method_name) const;
 
     protected:
         
-        MetaClassDeclaration(const std::string& name);
+        MetaClassDeclaration(const HashedString& name);
 
         template <typename TBaseClass>
         void DefineBaseClass();
 
         template <typename TClass, typename TProperty>
-        void DefineProperty(const std::string& property_name, TProperty TClass::* property);
+        void DefineProperty(const HashedString& property_name, TProperty TClass::* property);
 
         template <typename TClass, typename TProperty>
-        void DefineProperty(const std::string& property_name, TProperty (TClass::* getter)() const, void (TClass::* setter)(TProperty));
+        void DefineProperty(const HashedString& property_name, TProperty (TClass::* getter)() const, void (TClass::* setter)(TProperty));
 
         template <typename TClass, typename TProperty>
-        void DefineProperty(const std::string& property_name, TProperty(TClass::* getter)() const);
+        void DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const);
 
         //template <typename TMethod>
-        //void DefineMethod(const std::string& method_name, TMethod&& method);
+        //void DefineMethod(const HashedString& method_name, TMethod&& method);
 
     private:
 
-        std::string name_;
+        HashedString name_;
 
         std::vector<MetaClass*> base_classes_;
 
-        std::unordered_map<std::string, MetaClassProperty> properties_;
+        std::unordered_map<HashedString, MetaClassProperty> properties_;
 
-        std::unordered_map<std::string, MetaClassMethod> methods_;
+        std::unordered_map<HashedString, MetaClassMethod> methods_;
 
     };
 
@@ -152,7 +152,7 @@ namespace syntropy {
 
         /// \brief Get the name of the metaclass.
         /// \return Returns the type string of the metaclass.
-        const std::string& GetName() const;
+        const HashedString& GetName() const;
         
         /// \brief Get the list of classes that are derived by this class.
         /// \return Returns the list of classes that are derived by this class.
@@ -165,12 +165,12 @@ namespace syntropy {
         /// \brief Get a class property by name.
         /// \param property_name Name of the property to get.
         /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
-        const MetaClassProperty* GetProperty(const std::string& property_name) const;
+        const MetaClassProperty* GetProperty(const HashedString& property_name) const;
 
         /// \brief Get a class method by name.
         /// \param method_name Name of the method to get.
         /// \return Returns a pointer tot he requested method if any. Returns nullptr otherwise.
-        const MetaClassMethod* GetMethod(const std::string& method_name) const;
+        const MetaClassMethod* GetMethod(const HashedString& method_name) const;
    
         /// \brief Check whether this meta class is convertible to the specified one.
         /// A class is convertible if it is the same type or derives from another one.
@@ -203,9 +203,9 @@ namespace syntropy {
     public:
 
         template <typename TGetter, typename TSetter>
-        MetaClassProperty(const std::string& name, const type_info& type, TGetter&& getter, TSetter&& setter);
+        MetaClassProperty(const HashedString& name, const type_info& type, TGetter&& getter, TSetter&& setter);
         
-        const std::string& GetName() const;
+        const HashedString& GetName() const;
 
         template <typename TValue>
         bool Read(const MetaInstance& instance, TValue& value) const;
@@ -215,7 +215,7 @@ namespace syntropy {
 
     private:
 
-        std::string name_;                                              ///< \brief Property name.
+        HashedString name_;                                             ///< \brief Property name.
 
         const std::type_info& type_;                                    ///< \brief Type of the property.
 
@@ -404,7 +404,7 @@ namespace syntropy {
 
     }
         
-    inline const std::string& MetaClass::GetName() const {
+    inline const HashedString& MetaClass::GetName() const {
 
         return class_->GetName();
 
@@ -422,13 +422,13 @@ namespace syntropy {
 
     }
 
-    inline const MetaClassProperty* MetaClass::GetProperty(const std::string& property_name) const {
+    inline const MetaClassProperty* MetaClass::GetProperty(const HashedString& property_name) const {
 
         return class_->GetProperty(property_name);
 
     }
         
-    inline const MetaClassMethod* MetaClass::GetMethod(const std::string& method_name) const {
+    inline const MetaClassMethod* MetaClass::GetMethod(const HashedString& method_name) const {
 
         return class_->GetMethod(method_name);
 
@@ -444,10 +444,10 @@ namespace syntropy {
 
     inline MetaClassDeclaration::~MetaClassDeclaration() {}
 
-    inline MetaClassDeclaration::MetaClassDeclaration(const std::string& name)
+    inline MetaClassDeclaration::MetaClassDeclaration(const HashedString& name)
         : name_(name) {}
 
-    inline const std::string& MetaClassDeclaration::GetName() const {
+    inline const HashedString& MetaClassDeclaration::GetName() const {
 
         return name_;
 
@@ -459,7 +459,7 @@ namespace syntropy {
 
     }
 
-    inline const MetaClassProperty* MetaClassDeclaration::GetProperty(const std::string& property_name) const {
+    inline const MetaClassProperty* MetaClassDeclaration::GetProperty(const HashedString& property_name) const {
 
         auto it = properties_.find(property_name);
 
@@ -469,7 +469,7 @@ namespace syntropy {
                 
     }
 
-    inline const MetaClassMethod* MetaClassDeclaration::GetMethod(const std::string& method_name) const {
+    inline const MetaClassMethod* MetaClassDeclaration::GetMethod(const HashedString& method_name) const {
 
         auto it = methods_.find(method_name);
 
@@ -489,7 +489,7 @@ namespace syntropy {
     }
 
     template <typename TClass, typename TProperty>
-    void MetaClassDeclaration::DefineProperty(const std::string& property_name, TProperty TClass::* property) {
+    void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty TClass::* property) {
 
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(property_name,
@@ -500,7 +500,7 @@ namespace syntropy {
     }
     
     template <typename TClass, typename TProperty>
-    void MetaClassDeclaration::DefineProperty(const std::string& property_name, TProperty(TClass::* getter)() const, void (TClass::* setter)(TProperty)) {
+    void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const, void (TClass::* setter)(TProperty)) {
 
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(property_name,
@@ -511,7 +511,7 @@ namespace syntropy {
     }
 
     template <typename TClass, typename TProperty>
-    void MetaClassDeclaration::DefineProperty(const std::string& property_name, TProperty(TClass::* getter)() const) {
+    void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const) {
 
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(property_name,
@@ -524,13 +524,13 @@ namespace syntropy {
     //////////////// META CLASS PROPERTY ////////////////
 
     template <typename TGetter, typename TSetter>
-    inline MetaClassProperty::MetaClassProperty(const std::string& name, const type_info& type, TGetter&& getter, TSetter&& setter)
+    inline MetaClassProperty::MetaClassProperty(const HashedString& name, const type_info& type, TGetter&& getter, TSetter&& setter)
         : name_(name)
         , type_(type)
         , getter_(std::forward<TGetter>(getter))
         , setter_(std::forward<TSetter>(setter)){}
 
-    inline const std::string& MetaClassProperty::GetName() const {
+    inline const HashedString& MetaClassProperty::GetName() const {
 
         return name_;
 

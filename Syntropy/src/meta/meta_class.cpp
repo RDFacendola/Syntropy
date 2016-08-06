@@ -15,7 +15,7 @@ namespace syntropy {
 
     }
 
-    const MetaClass* MetaClassRegistry::GetClass(const std::string& class_name) {
+    const MetaClass* MetaClassRegistry::GetClass(const HashedString& class_name) {
 
         auto it = meta_classes_.find(class_name);
 
