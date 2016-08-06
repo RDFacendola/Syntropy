@@ -31,3 +31,4 @@ build/
 *.db
 *.opendb
 *.VC.db
+ipch/
