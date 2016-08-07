@@ -208,7 +208,6 @@ namespace syntropy {
 
     };
     
-
     struct MetaClassPropertyGetter {
 
         using TGetter = std::function<bool(Any, Any)>;
@@ -448,6 +447,55 @@ namespace syntropy {
         
     };
 
+    template <typename T>
+    class is_inward_interpretable {
+
+        template<typename TT>
+        static auto test(int) -> decltype(std::declval<std::stringstream&>() << std::declval<TT>(), std::true_type());
+
+        template<typename>
+        static auto test(...) -> std::false_type;
+
+    public:
+
+        static const bool value = decltype(test<T>(0))::value;
+
+    };
+
+    template <typename TValue, typename = void>
+    struct MetaClassPropertyInterpreter {
+
+        template <typename TInstance>
+        bool operator()(const MetaClassPropertyParser::TParser&, TInstance&, const TValue&, std::ios_base::fmtflags) {
+
+            // The provided type does not support inward interpretation
+
+            return false;
+
+        }
+
+    };
+
+    template <typename TValue>
+    struct MetaClassPropertyInterpreter<TValue,
+                                        std::enable_if_t<is_inward_interpretable<TValue>::value>>{
+
+        template <typename TInstance>
+        bool operator()(const MetaClassPropertyParser::TParser& parser, TInstance& instance, const TValue& value, std::ios_base::fmtflags flags) {
+
+            std::stringstream sstream;
+
+            sstream.setf(flags);
+
+            sstream << value;
+
+            return parser(std::addressof(instance),
+                          sstream);
+
+        }
+
+    };
+
     class MetaClassProperty {
 
     public:
@@ -463,13 +511,7 @@ namespace syntropy {
         bool Read(const TInstance& instance, TValue& value) const;
 
         template <typename TInstance, typename TValue>
-        bool Write(TInstance& instance, const TValue& value) const;
-
-        template <typename TInstance, typename TValue>
-        bool Interpret(TInstance& instance, const TValue& value) const;
-       
-        template <typename TInstance, typename TValue>
-        bool Interpret(TInstance& instance, const TValue& value, std::ios_base::fmtflags flags) const;
+        bool Write(TInstance& instance, const TValue& value, std::ios_base::fmtflags flags = 0) const;
 
     private:
 
@@ -602,7 +644,7 @@ namespace syntropy {
     void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty TClass::* property) {
 
         properties_.insert(std::make_pair(property_name,
-                                          MetaClassProperty(typeid(TProperty),
+                                          MetaClassProperty(typeid(std::decay_t<TProperty>),
                                                             MetaClassPropertyGetter{}(property),
                                                             MetaClassPropertySetter{}(property),
                                                             MetaClassPropertyParser{}(property))));
@@ -613,7 +655,7 @@ namespace syntropy {
     void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const, void (TClass::* setter)(TProperty)) {
 
         properties_.insert(std::make_pair(property_name,
-                                          MetaClassProperty(typeid(TProperty),
+                                          MetaClassProperty(typeid(std::decay_t<TProperty>),
                                                             MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter{}(setter),
                                                             MetaClassPropertyParser{}(setter))));
@@ -624,7 +666,7 @@ namespace syntropy {
     void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const) {
 
         properties_.insert(std::make_pair(property_name,
-                                          MetaClassProperty(typeid(TProperty),
+                                          MetaClassProperty(typeid(std::decay_t<TProperty>),
                                                             MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter{}(),
                                                             MetaClassPropertyParser{}())));
@@ -635,7 +677,7 @@ namespace syntropy {
     void MetaClassDeclaration::DefineProperty(const HashedString& property_name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) {
 
         properties_.insert(std::make_pair(property_name,
-                                          MetaClassProperty(typeid(TProperty),
+                                          MetaClassProperty(typeid(std::decay_t<TProperty>),
                                                             MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter{}(setter),
                                                             MetaClassPropertyParser{}(setter))));
@@ -668,39 +710,25 @@ namespace syntropy {
     }
 
     template <typename TInstance, typename TValue>
-    inline bool MetaClassProperty::Write(TInstance& instance, const TValue& value) const {
+    bool MetaClassProperty::Write(TInstance& instance, const TValue& value, std::ios_base::fmtflags flags) const {
 
         static_assert(!std::is_const<TInstance>::value, "The instance must be a modifiable lvalue");
 
-        return setter_(std::addressof(instance), 
-                       std::addressof(value));
+        if (typeid(std::decay_t<TValue>) == type_) {
 
-    }
+            return setter_(std::addressof(instance), 
+                           std::addressof(value));
 
-    template <typename TInstance, typename TValue>
-    inline bool MetaClassProperty::Interpret(TInstance& instance, const TValue& value) const {
+        }
+        else {
 
-        std::stringstream sstream;
+            return MetaClassPropertyInterpreter<TValue>{}(parser_,
+                                                          instance, 
+                                                          value, 
+                                                          flags);
 
-        sstream << value;
-
-        return parser_(std::addressof(instance),
-                       sstream);
-
-    }
-
-    template <typename TInstance, typename TValue>
-    inline bool MetaClassProperty::Interpret(TInstance& instance, const TValue& value, std::ios_base::fmtflags flags) const {
-
-        std::stringstream sstream;
-
-        sstream.setf(flags);
-
-        sstream << value;
-
-        return parser_(std::addressof(instance),
-                       sstream);
-
+        }
+        
     }
 
 }

@@ -29,12 +29,26 @@ struct Blob{
 
 };
 
-inline std::istream& operator>> (std::istream &in, Blob& blob) {
+struct StreamableBlob {
+
+    int blob_;
+
+};
+
+inline std::istream& operator >> (std::istream &in, Blob& blob) {
 
     in >> blob.blob_;
 
     return in;
 
+}
+
+inline std::ostream& operator << (std::ostream &out, const StreamableBlob& blob) {
+ 
+    out << blob.blob_;
+ 
+    return out;
+ 
 }
 
 class Foo : public Bar {
@@ -186,7 +200,7 @@ public:
         DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
         DefineProperty("const_pointer", &Foo::const_pointer_);
         DefineProperty("boolean", &Foo::boolean_);
-
+        
         DefineProperty("Value", &Foo::GetValue, &Foo::SetValue);
         DefineProperty("ConstValue", &Foo::GetConstValue);
         DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer);
@@ -287,41 +301,46 @@ public:
             
         foo.boolean_ = false;
 
-        TEST_TRUE(field_float_value_->Interpret(foo, "256.25") &&
+        TEST_TRUE(field_float_value_->Write(foo, "256.25") &&
                   foo.value_ == 256.25f);
 
-        TEST_TRUE(field_int_value_->Interpret(foo, "47") &&
+        TEST_TRUE(field_int_value_->Write(foo, "47") &&
                   foo.value2_ == 47);
 
-        TEST_TRUE(property_value_->Interpret(foo, "125.50") &&
+        TEST_TRUE(property_value_->Write(foo, "125.50") &&
                   foo.GetValue() == 125.50f);
 
-        TEST_TRUE(property_accessor_->Interpret(foo, "64.00") &&
+        TEST_TRUE(property_accessor_->Write(foo, "64.00") &&
                   foo.GetAccessor().blob_ == 64);
 
-        TEST_TRUE(property_pod_->Interpret(foo, "16.50") &&
+        TEST_TRUE(property_pod_->Write(foo, "16.50") &&
                   foo.GetBlob().blob_ == 16);
 
-        TEST_FALSE(property_pointer_->Interpret(foo, "56.23f"));
+        TEST_FALSE(field_float_value_->Write(foo, Blob{ 50 }));
+
+        TEST_TRUE(field_int_value_->Write(foo, StreamableBlob{ 800 }) &&
+                  foo.value2_ == 800);
+
+        TEST_FALSE(property_pointer_->Write(foo, "56.23f"));
         
-        TEST_TRUE(field_boolean_->Interpret(foo, true, std::ios_base::boolalpha) &&
+        TEST_TRUE(field_boolean_->Write(foo, "1") &&
                   foo.boolean_ == true);
 
-        TEST_TRUE(field_boolean_->Interpret(foo, false, std::ios_base::boolalpha) &&
+        TEST_TRUE(field_boolean_->Write(foo, "0") &&
                   foo.boolean_ == false);
 
-        TEST_FALSE(field_boolean_->Interpret(foo, "whatever"));
+        TEST_TRUE(field_boolean_->Write(foo, "false", std::ios_base::boolalpha) &&      // From string to boolean.
+                  foo.boolean_ == false);
 
-        TEST_TRUE(field_float_value_->Interpret(foo, 512) &&                                    // From int to float.
+        TEST_FALSE(field_boolean_->Write(foo, "whatever"));
+
+        TEST_TRUE(field_float_value_->Write(foo, 512) &&                                // From int to float.
                   foo.value_ == 512.0f);                        
 
-        TEST_TRUE(field_int_value_->Interpret(foo, 1024.5632f) &&                               // From float to int.
+        TEST_TRUE(field_int_value_->Write(foo, 1024.5632f) &&                           // From float to int.
                   foo.value2_ == 1024);
 
-        TEST_TRUE(field_boolean_->Interpret(foo, "false", std::ios_base::boolalpha) &&          // From string to boolean.
-                  foo.boolean_ == false);
-
-        TEST_FALSE(field_float_value_->Interpret(foo, "false"));                                // Wrong types
+        TEST_FALSE(field_float_value_->Write(foo, "false"));                            // Wrong types
 
         std::cout << std::endl;
 
@@ -367,7 +386,7 @@ public:
         assert(field_pointer_to_const_);
         assert(field_const_pointer_);
         assert(field_boolean_);
-        
+
         property_value_ = foo_class_.GetProperty("Value");
         property_const_value_ = foo_class_.GetProperty("ConstValue");
         property_pointer_ = foo_class_.GetProperty("Pointer");
@@ -397,7 +416,7 @@ private:
     const syntropy::MetaClassProperty* field_pointer_to_const_;
     const syntropy::MetaClassProperty* field_const_pointer_;
     const syntropy::MetaClassProperty* field_boolean_;
-    
+
     const syntropy::MetaClassProperty* property_value_;
     const syntropy::MetaClassProperty* property_const_value_;
     const syntropy::MetaClassProperty* property_pointer_;
