@@ -126,13 +126,25 @@ public:
 public:
 
     float value_;
+    int value2_;
     const float const_value_;
     float* pointer_;
     const float * pointer_to_const_;
     float* const const_pointer_;
 
     Blob blob_;
+    
+};
 
+class FooDerived : public Foo {
+
+public:
+
+    FooDerived()
+        : Foo() {}
+
+    FooDerived(const FooDerived& other)
+        : Foo(other) {}
 
 };
 
@@ -157,7 +169,8 @@ public:
 
         DefineBaseClass<Bar>(); 
 
-        DefineProperty("value", &Foo::value_);
+        DefineProperty("float_value", &Foo::value_);
+        DefineProperty("int_value", &Foo::value2_);
         DefineProperty("const_value", &Foo::const_value_);
         DefineProperty("pointer", &Foo::pointer_);
         DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
@@ -172,23 +185,18 @@ public:
         DefineProperty("Accessor", &Foo::GetAccessor, &Foo::GetAccessor);
 
     }
-
-
+    
 };
-
-
 
 class Tester {
 
 public:
 
-    void SynopsisTest() {
+    void SynopsisTest() const {
 
-        auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
+        std::cout << "Class '" << foo_class_.GetName().GetString() << "'" << std::endl;
 
-        std::cout << "Class '" << meta_class.GetName().GetString() << "'" << std::endl;
-
-        for (const auto& property : meta_class.GetProperties()) {
+        for (const auto& property : foo_class_.GetProperties()) {
 
             std::cout << "Property '" << property.first.GetString() << "': " << property.second.GetType().name() << std::endl;
 
@@ -198,54 +206,36 @@ public:
 
     }
 
-    void FieldTest() {
+    void FieldTest() const {
 
         Foo foo;
-
-        auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
-
-        auto value = meta_class.GetProperty("value");
-        auto const_value = meta_class.GetProperty("const_value");
-        auto pointer = meta_class.GetProperty("pointer");
-        auto pointer_to_const = meta_class.GetProperty("pointer_to_const");
-        auto const_pointer = meta_class.GetProperty("const_pointer");
 
         float x = 0;
         float* p = &x;
         const float* q = &x;
 
-        TEST_TRUE(value->Write(foo, 100));
-        TEST_TRUE(value->Read(foo, x));
+        TEST_TRUE(field_float_value_->Write(foo, 40.2f));
+        TEST_TRUE(field_float_value_->Read(foo, x));
 
-        TEST_FALSE(const_value->Write(foo, x));
-        TEST_TRUE(const_value->Read(foo, x));
+        TEST_FALSE(field_const_value_->Write(foo, x));
+        TEST_TRUE(field_const_value_->Read(foo, x));
 
-        TEST_TRUE(pointer->Write(foo, p));
-        TEST_TRUE(pointer->Read(foo, p));
+        TEST_TRUE(field_pointer_->Write(foo, p));
+        TEST_TRUE(field_pointer_->Read(foo, p));
 
-        TEST_TRUE(pointer_to_const->Write(foo, q));
-        TEST_TRUE(pointer_to_const->Read(foo, q));
+        TEST_TRUE(field_pointer_to_const_->Write(foo, q));
+        TEST_TRUE(field_pointer_to_const_->Read(foo, q));
 
-        TEST_FALSE(const_pointer->Write(foo, p));
-        TEST_TRUE(const_pointer->Read(foo, p));
+        TEST_FALSE(field_const_pointer_->Write(foo, p));
+        TEST_TRUE(field_const_pointer_->Read(foo, p));
 
         std::cout << std::endl;
 
     }
 
-    void PropertyTest() {
+    void PropertyTest() const  {
 
         Foo foo;
-
-        auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
-
-        auto value = meta_class.GetProperty("Value");
-        auto const_value = meta_class.GetProperty("ConstValue");
-        auto pointer = meta_class.GetProperty("Pointer");
-        auto pointer_to_const = meta_class.GetProperty("PointerToConst");
-        auto const_pointer = meta_class.GetProperty("ConstPointer");
-        auto blob = meta_class.GetProperty("Blob");
-        auto accessor = meta_class.GetProperty("Accessor");
 
         Blob bb;
 
@@ -255,26 +245,60 @@ public:
 
         const float y(10);
 
-        TEST_TRUE(value->Write(foo, y));
-        TEST_TRUE(value->Read(foo, x));
+        TEST_TRUE(property_value_->Write(foo, y));
+        TEST_TRUE(property_value_->Read(foo, x));
 
-        TEST_FALSE(const_value->Write(foo, y));
-        TEST_TRUE(const_value->Read(foo, x));
+        TEST_FALSE(property_const_value_->Write(foo, y));
+        TEST_TRUE(property_const_value_->Read(foo, x));
 
-        TEST_TRUE(pointer->Write(foo, p));
-        TEST_TRUE(pointer->Read(foo, p));
+        TEST_TRUE(property_pointer_->Write(foo, p));
+        TEST_TRUE(property_pointer_->Read(foo, p));
 
-        TEST_TRUE(pointer_to_const->Write(foo, q));
-        TEST_TRUE(pointer_to_const->Read(foo, q));
+        TEST_TRUE(property_pointer_to_const_->Write(foo, q));
+        TEST_TRUE(property_pointer_to_const_->Read(foo, q));
 
-        TEST_FALSE(const_pointer->Write(foo, p));
-        TEST_TRUE(const_pointer->Read(foo, p));
+        TEST_FALSE(property_const_pointer_->Write(foo, p));
+        TEST_TRUE(property_const_pointer_->Read(foo, p));
 
-        TEST_TRUE(blob->Write(foo, bb));
-        TEST_TRUE(blob->Read(foo, bb));
+        TEST_TRUE(property_pod_->Write(foo, bb));
+        TEST_TRUE(property_pod_->Read(foo, bb));
 
-        TEST_TRUE(accessor->Write(foo, bb));
-        TEST_TRUE(accessor->Read(foo, bb));
+        TEST_TRUE(property_accessor_->Write(foo, bb));
+        TEST_TRUE(property_accessor_->Read(foo, bb));
+
+        std::cout << std::endl;
+
+    }
+
+    void DataDrivenTest() const {
+
+        Foo foo;
+
+        syntropy::Any any(100.0f);      // Read from file
+
+        TEST_TRUE(field_float_value_->Write(foo, any));         // Should test the underlying type of Any
+        TEST_TRUE(field_float_value_->Read(foo, any));          // Should change the underlying type of Any
+
+        std::cout << std::endl;
+
+    }
+
+    void ConversionTest() const {
+
+        Foo foo;
+
+        TEST_TRUE(field_float_value_->Write(foo, 100));         // Inward widening conversion from int to float.
+        TEST_TRUE(field_int_value_->Write(foo, 100.5f));        // Inward narrowing conversion from float to int.
+
+        std::cout << std::endl;
+
+    }
+
+    void PolymorphismTest() const {
+
+        FooDerived dfoo;
+
+        TEST_TRUE(field_float_value_->Write(dfoo, 100.0f));     // dfoo derives from Foo.
 
         std::cout << std::endl;
 
@@ -285,9 +309,65 @@ public:
         SynopsisTest();
         FieldTest();
         PropertyTest();
-
+        DataDrivenTest();
+        ConversionTest();
+        
         system("pause");
 
     }
+
+    Tester() 
+        : foo_class_(syntropy::MetaClass::GetClass<Foo>()){
+    
+        field_int_value_ = foo_class_.GetProperty("int_value");
+        field_float_value_ = foo_class_.GetProperty("float_value");
+        field_const_value_ = foo_class_.GetProperty("const_value");
+        field_pointer_ = foo_class_.GetProperty("pointer");
+        field_pointer_to_const_ = foo_class_.GetProperty("pointer_to_const");
+        field_const_pointer_ = foo_class_.GetProperty("const_pointer");
+
+        assert(field_int_value_);
+        assert(field_float_value_);
+        assert(field_const_value_);
+        assert(field_pointer_);
+        assert(field_pointer_to_const_);
+        assert(field_const_pointer_);
+        
+        property_value_ = foo_class_.GetProperty("Value");
+        property_const_value_ = foo_class_.GetProperty("ConstValue");
+        property_pointer_ = foo_class_.GetProperty("Pointer");
+        property_pointer_to_const_ = foo_class_.GetProperty("PointerToConst");
+        property_const_pointer_ = foo_class_.GetProperty("ConstPointer");
+        property_pod_ = foo_class_.GetProperty("Blob");
+        property_accessor_ = foo_class_.GetProperty("Accessor");
+        
+        assert(property_value_);
+        assert(property_const_value_);
+        assert(property_pointer_);
+        assert(property_pointer_to_const_);
+        assert(property_const_pointer_);
+        assert(property_pod_);
+        assert(property_accessor_);
+
+    }
+
+private:
+
+    const syntropy::MetaClass& foo_class_;
+
+    const syntropy::MetaClassProperty* field_int_value_;
+    const syntropy::MetaClassProperty* field_float_value_;
+    const syntropy::MetaClassProperty* field_const_value_;
+    const syntropy::MetaClassProperty* field_pointer_;
+    const syntropy::MetaClassProperty* field_pointer_to_const_;
+    const syntropy::MetaClassProperty* field_const_pointer_;
+    
+    const syntropy::MetaClassProperty* property_value_;
+    const syntropy::MetaClassProperty* property_const_value_;
+    const syntropy::MetaClassProperty* property_pointer_;
+    const syntropy::MetaClassProperty* property_pointer_to_const_;
+    const syntropy::MetaClassProperty* property_const_pointer_;
+    const syntropy::MetaClassProperty* property_pod_;
+    const syntropy::MetaClassProperty* property_accessor_;
 
 };
