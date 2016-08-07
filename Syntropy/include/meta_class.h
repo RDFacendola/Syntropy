@@ -471,7 +471,13 @@ namespace syntropy {
         bool Parse(TInstance& instance, const std::string& string) const;
 
         template <typename TInstance>
-        bool Parse(TInstance& instance, const std::string& string, std::ios_base::fmtflags flags ) const;
+        bool Parse(TInstance& instance, const std::string& string, std::ios_base::fmtflags flags) const;
+
+        template <typename TInstance, typename TValue>
+        bool Interpret(TInstance& instance, const TValue& value) const;
+       
+        template <typename TInstance, typename TValue>
+        bool Interpret(TInstance& instance, const TValue& value, std::ios_base::fmtflags flags) const;
 
     private:
 
@@ -680,7 +686,7 @@ namespace syntropy {
     }
 
     template <typename TInstance>
-    bool MetaClassProperty::Parse(TInstance& instance, const std::string& string) const {
+    inline bool MetaClassProperty::Parse(TInstance& instance, const std::string& string) const {
 
         std::stringstream sstream(string);
 
@@ -690,7 +696,7 @@ namespace syntropy {
     }
 
     template <typename TInstance>
-    bool MetaClassProperty::Parse(TInstance& instance, const std::string& string, std::ios_base::fmtflags flags) const {
+    inline bool MetaClassProperty::Parse(TInstance& instance, const std::string& string, std::ios_base::fmtflags flags) const {
 
         std::stringstream sstream(string);
         
@@ -700,5 +706,32 @@ namespace syntropy {
                        sstream);
 
     }
+
+    template <typename TInstance, typename TValue>
+    inline bool MetaClassProperty::Interpret(TInstance& instance, const TValue& value) const {
+
+        std::stringstream sstream;
+
+        sstream << value;
+
+        return parser_(std::addressof(instance),
+                       sstream);
+
+    }
+
+    template <typename TInstance, typename TValue>
+    inline bool MetaClassProperty::Interpret(TInstance& instance, const TValue& value, std::ios_base::fmtflags flags) const {
+
+        std::stringstream sstream;
+
+        sstream.setf(flags);
+
+        sstream << value;
+
+        return parser_(std::addressof(instance),
+                       sstream);
+
+    }
+
 
 }

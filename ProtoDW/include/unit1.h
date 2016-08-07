@@ -314,12 +314,20 @@ public:
 
     }
 
-    void ConversionTest() const {
+    void InterpretTest() const {
 
         Foo foo;
+            
+        TEST_TRUE(field_float_value_->Interpret(foo, 512) &&                                    // From int to float.
+                  foo.value_ == 512.0f);                        
 
-        TEST_TRUE(field_float_value_->Write(foo, 100));         // Inward widening conversion from int to float.
-        TEST_TRUE(field_int_value_->Write(foo, 100.5f));        // Inward narrowing conversion from float to int.
+        TEST_TRUE(field_int_value_->Interpret(foo, 1024.5632f) &&                               // From float to int.
+                  foo.value2_ == 1024);
+
+        TEST_TRUE(field_boolean_->Interpret(foo, "false", std::ios_base::boolalpha) &&          // From string to boolean.
+                  foo.boolean_ == false);
+
+        TEST_FALSE(field_float_value_->Interpret(foo, "false"));                                // Wrong types
 
         std::cout << std::endl;
 
@@ -341,7 +349,7 @@ public:
         FieldTest();
         PropertyTest();
         ParsingTest();
-        ConversionTest();
+        InterpretTest();
         PolymorphismTest();
         
         system("pause");
