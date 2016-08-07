@@ -372,7 +372,8 @@ namespace syntropy {
 
                 }
 
-                return !!instance_ptr;
+                return instance_ptr &&
+                       !sstream.fail();
 
             };
 
@@ -398,11 +399,16 @@ namespace syntropy {
 
                     sstream >> property_value;
 
-                    ((*instance_ptr)->*setter)(property_value);
+                    if (!sstream.fail()) {
+
+                        ((*instance_ptr)->*setter)(property_value);
+
+                    }
 
                 }
 
-                return !!instance_ptr;
+                return instance_ptr &&
+                       !sstream.fail();
 
             };
 
@@ -428,7 +434,8 @@ namespace syntropy {
 
                 }
 
-                return !!instance_ptr;
+                return instance_ptr &&
+                       !sstream.fail();
 
             };
 

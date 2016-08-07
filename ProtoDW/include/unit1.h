@@ -139,6 +139,8 @@ public:
     float* pointer_;
     const float * pointer_to_const_;
     float* const const_pointer_;
+    bool boolean_;
+
 
     Blob blob_;
     
@@ -183,6 +185,7 @@ public:
         DefineProperty("pointer", &Foo::pointer_);
         DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
         DefineProperty("const_pointer", &Foo::const_pointer_);
+        DefineProperty("boolean", &Foo::boolean_);
 
         DefineProperty("Value", &Foo::GetValue, &Foo::SetValue);
         DefineProperty("ConstValue", &Foo::GetConstValue);
@@ -299,6 +302,14 @@ public:
 
         TEST_FALSE(property_pointer_->Parse(foo, "56.23f"));
 
+        foo.boolean_ = false;
+
+        TEST_TRUE(field_boolean_->Parse(foo, "true"));
+        TEST_TRUE(foo.boolean_ == true);
+        TEST_TRUE(field_boolean_->Parse(foo, "false"));
+        TEST_TRUE(foo.boolean_ == false);
+        TEST_FALSE(field_boolean_->Parse(foo, "whatever"));
+
         std::cout << std::endl;
 
     }
@@ -331,6 +342,7 @@ public:
         PropertyTest();
         ParsingTest();
         ConversionTest();
+        PolymorphismTest();
         
         system("pause");
 
@@ -345,6 +357,7 @@ public:
         field_pointer_ = foo_class_.GetProperty("pointer");
         field_pointer_to_const_ = foo_class_.GetProperty("pointer_to_const");
         field_const_pointer_ = foo_class_.GetProperty("const_pointer");
+        field_boolean_ = foo_class_.GetProperty("boolean");
 
         assert(field_int_value_);
         assert(field_float_value_);
@@ -352,6 +365,7 @@ public:
         assert(field_pointer_);
         assert(field_pointer_to_const_);
         assert(field_const_pointer_);
+        assert(field_boolean_);
         
         property_value_ = foo_class_.GetProperty("Value");
         property_const_value_ = foo_class_.GetProperty("ConstValue");
@@ -381,6 +395,7 @@ private:
     const syntropy::MetaClassProperty* field_pointer_;
     const syntropy::MetaClassProperty* field_pointer_to_const_;
     const syntropy::MetaClassProperty* field_const_pointer_;
+    const syntropy::MetaClassProperty* field_boolean_;
     
     const syntropy::MetaClassProperty* property_value_;
     const syntropy::MetaClassProperty* property_const_value_;
