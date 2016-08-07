@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <type_traits>
 #include <functional>
+#include <sstream>
 
 #include "any.h"
 #include "syntropy.h"
@@ -209,40 +210,6 @@ namespace syntropy {
 
     };
     
-    class MetaClassProperty {
-
-    public:
-
-        template <typename TGetter, typename TSetter>
-        MetaClassProperty(const type_info& type, TGetter&& getter, TSetter&& setter);
-        
-        /// \brief Get the property type.
-        /// \return Returns the property type.
-        const std::type_info& GetType() const;
-
-        template <typename TInstance, typename TValue>
-        bool Read(const TInstance& instance, TValue& value) const;
-
-        template <typename TInstance, typename TValue>
-        bool Write(TInstance& instance, const TValue& value) const;
-
-    private:
-
-        HashedString name_;                                    ///< \brief Property name.
-
-        const std::type_info& type_;                           ///< \brief Type of the property.
-
-        std::function<bool(Any, Any)> getter_;                 ///< \brief Property getter.
-
-        std::function<bool(Any, Any)> setter_;                 ///< \brief Property setter.
-
-    };
-
-    class MetaClassMethod {
-    
-    public:
-        
-    };
 
     struct MetaClassPropertyGetter {
 
@@ -269,7 +236,7 @@ namespace syntropy {
         }
 
         template <typename TClass, typename TProperty>
-        TGetter operator() (TProperty (TClass::* getter)() const) const {
+        TGetter operator() (TProperty(TClass::* getter)() const) const {
 
             return[getter](Any instance, Any value) -> bool {
 
@@ -295,15 +262,15 @@ namespace syntropy {
         using TSetter = std::function<bool(Any, Any)>;
 
         TSetter operator() () const {
- 
-            return[](Any, Any) -> bool{
- 
+
+            return[](Any, Any) -> bool {
+
                 return false;
- 
+
             };
- 
-         }
-        
+
+        }
+
         template <typename TClass, typename TProperty>
         TSetter operator() (TProperty TClass::* property, typename std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) const {
 
@@ -355,7 +322,7 @@ namespace syntropy {
         TSetter operator() (TProperty& (TClass::* setter)()) const {
 
             return[setter](Any instance, Any value) -> bool {
-                
+
                 auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
                 auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
 
@@ -371,6 +338,149 @@ namespace syntropy {
 
         }
 
+    };
+
+    struct MetaClassPropertyParser {
+
+        using TParser = std::function<bool(Any, std::stringstream)>;
+
+        template <typename TProperty>
+        struct is_parseable : std::integral_constant<bool,
+                                                     !std::is_const<TProperty>::value &&
+                                                     !std::is_pointer<TProperty>::value> {};
+
+        TParser operator() () const {
+
+            return[](Any, std::stringstream) -> bool {
+
+                return false;
+
+            };
+
+        }
+
+        template <typename TClass, typename TProperty>
+        TParser operator() (TProperty TClass::* property, typename std::enable_if_t<is_parseable<TProperty>::value>* = nullptr) const {
+
+            return[property](Any instance, std::stringstream sstream) -> bool{
+
+                auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
+
+                if (instance_ptr) {
+
+                    sstream >> ((*instance_ptr)->*property);
+
+                }
+
+                return !!instance_ptr;
+
+            };
+
+        }
+
+        template <typename TClass, typename TProperty>
+        TParser operator() (TProperty TClass::*, typename std::enable_if_t<!is_parseable<TProperty>::value>* = nullptr) const {
+
+            return (*this)();
+
+        }
+
+        template <typename TClass, typename TProperty>
+        TParser operator() (void (TClass::* setter)(TProperty), typename std::enable_if_t<is_parseable<TProperty>::value>* = nullptr) const {
+
+            return[setter](Any instance, std::stringstream sstream) -> bool {
+
+                auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
+
+                if (instance_ptr) {
+
+                    std::decay_t<TProperty> property_value;
+
+                    sstream >> property_value;
+
+                    ((*instance_ptr)->*setter)(property_value);
+
+                }
+
+                return !!instance_ptr;
+
+            };
+
+        }
+
+        template <typename TClass, typename TProperty>
+        TParser operator() (void (TClass::*)(TProperty), typename std::enable_if_t<!is_parseable<TProperty>::value>* = nullptr) const {
+
+            return (*this)();
+
+        }
+        
+        template <typename TClass, typename TProperty>
+        TParser operator() (TProperty& (TClass::* setter)(), typename std::enable_if_t<is_parseable<TProperty>::value>* = nullptr) const {
+
+            return[setter](Any instance, std::stringstream sstream) -> bool {
+
+                auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
+
+                if (instance_ptr) {
+
+                    sstream >> ((*instance_ptr)->*setter)();
+
+                }
+
+                return !!instance_ptr;
+
+            };
+
+        }
+
+        template <typename TClass, typename TProperty>
+        TParser operator() (TProperty& (TClass::*)(), typename std::enable_if_t<!is_parseable<TProperty>::value>* = nullptr) const {
+
+            return (*this)();
+
+        }
+        
+    };
+
+    class MetaClassProperty {
+
+    public:
+
+        template <typename TGetter, typename TSetter, typename TParser>
+        MetaClassProperty(const type_info& type, TGetter&& getter, TSetter&& setter, TParser&& parser);
+        
+        /// \brief Get the property type.
+        /// \return Returns the property type.
+        const std::type_info& GetType() const;
+
+        template <typename TInstance, typename TValue>
+        bool Read(const TInstance& instance, TValue& value) const;
+
+        template <typename TInstance, typename TValue>
+        bool Write(TInstance& instance, const TValue& value) const;
+
+        template <typename TInstance>
+        bool Parse(TInstance& instance, const std::string& string) const;
+
+    private:
+
+        HashedString name_;                                     ///< \brief Property name.
+
+        const std::type_info& type_;                            ///< \brief Type of the property.
+
+        MetaClassPropertyGetter::TGetter getter_;               ///< \brief Property getter.
+
+        MetaClassPropertySetter::TSetter setter_;               ///< \brief Property setter.
+
+        MetaClassPropertyParser::TParser parser_;               ///< \brief Property parser.
+
+    };
+
+    class MetaClassMethod {
+    
+    public:
+        
     };
 
     //////////////// META CLASS ////////////////
@@ -486,7 +596,8 @@ namespace syntropy {
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(typeid(TProperty),
                                                             MetaClassPropertyGetter{}(property),
-                                                            MetaClassPropertySetter{}(property))));
+                                                            MetaClassPropertySetter{}(property),
+                                                            MetaClassPropertyParser{}(property))));
 
     }
     
@@ -496,7 +607,8 @@ namespace syntropy {
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(typeid(TProperty),
                                                             MetaClassPropertyGetter{}(getter),
-                                                            MetaClassPropertySetter{}(setter))));
+                                                            MetaClassPropertySetter{}(setter),
+                                                            MetaClassPropertyParser{}(setter))));
 
     }
 
@@ -506,7 +618,8 @@ namespace syntropy {
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(typeid(TProperty),
                                                             MetaClassPropertyGetter{}(getter),
-                                                            MetaClassPropertySetter{}())));
+                                                            MetaClassPropertySetter{}(),
+                                                            MetaClassPropertyParser{}())));
 
     }
 
@@ -516,17 +629,19 @@ namespace syntropy {
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(typeid(TProperty),
                                                             MetaClassPropertyGetter{}(getter),
-                                                            MetaClassPropertySetter{}(setter))));
+                                                            MetaClassPropertySetter{}(setter),
+                                                            MetaClassPropertyParser{}(setter))));
 
     }
 
     //////////////// META CLASS PROPERTY ////////////////
 
-    template <typename TGetter, typename TSetter>
-    inline MetaClassProperty::MetaClassProperty(const type_info& type, TGetter&& getter, TSetter&& setter)
+    template <typename TGetter, typename TSetter, typename TParser>
+    inline MetaClassProperty::MetaClassProperty(const type_info& type, TGetter&& getter, TSetter&& setter, TParser&& parser)
         : type_(type)
         , getter_(std::forward<TGetter>(getter))
-        , setter_(std::forward<TSetter>(setter)){}
+        , setter_(std::forward<TSetter>(setter))
+        , parser_(std::forward<TParser>(parser)){}
 
     inline const std::type_info& MetaClassProperty::GetType() const {
 
@@ -551,6 +666,14 @@ namespace syntropy {
 
         return setter_(std::addressof(instance), 
                        std::addressof(value));
+
+    }
+
+    template <typename TInstance>
+    bool MetaClassProperty::Parse(TInstance& instance, const std::string& string) const {
+
+        return parser_(std::addressof(instance),
+                       std::stringstream(string));
 
     }
 

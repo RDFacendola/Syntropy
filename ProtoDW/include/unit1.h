@@ -17,10 +17,10 @@
 #include <iostream>
 
 #define TEST_TRUE(test) \
-std::cout << ((test) ? "PASSED - " : "NOT PASSED - ") << #test << std::endl;
+std::cout << ((test) ? "PASSED - " : "NOT PASSED - ")<< #test << " is true" << std::endl;
 
 #define TEST_FALSE(test) \
-std::cout << (!(test) ? "PASSED - " : "NOT PASSED - ") << #test << std::endl;
+std::cout << (!(test) ? "PASSED - " : "NOT PASSED - ") << #test << " is false" << std::endl;
 
 
 struct Blob{
@@ -28,6 +28,14 @@ struct Blob{
     int blob_;
 
 };
+
+inline std::istream& operator>> (std::istream &in, Blob& blob) {
+
+    in >> blob.blob_;
+
+    return in;
+
+}
 
 class Foo : public Bar {
 
@@ -270,14 +278,26 @@ public:
 
     }
 
-    void DataDrivenTest() const {
+    void ParsingTest() const {
 
         Foo foo;
 
-        syntropy::Any any(100.0f);      // Read from file
+        TEST_TRUE(field_float_value_->Parse(foo, "256.25"));
+        TEST_TRUE(foo.value_ == 256.25f);
 
-        TEST_TRUE(field_float_value_->Write(foo, any));         // Should test the underlying type of Any
-        TEST_TRUE(field_float_value_->Read(foo, any));          // Should change the underlying type of Any
+        TEST_TRUE(field_int_value_->Parse(foo, "47"));
+        TEST_TRUE(foo.value2_ == 47);
+
+        TEST_TRUE(property_value_->Parse(foo, "125.50"));
+        TEST_TRUE(foo.GetValue() == 125.50f);
+
+        TEST_TRUE(property_accessor_->Parse(foo, "64.00"));
+        TEST_TRUE(foo.GetAccessor().blob_ == 64);
+
+        TEST_TRUE(property_pod_->Parse(foo, "16.50"));
+        TEST_TRUE(foo.GetBlob().blob_ == 16);
+
+        TEST_FALSE(property_pointer_->Parse(foo, "56.23f"));
 
         std::cout << std::endl;
 
@@ -309,7 +329,7 @@ public:
         SynopsisTest();
         FieldTest();
         PropertyTest();
-        DataDrivenTest();
+        ParsingTest();
         ConversionTest();
         
         system("pause");
