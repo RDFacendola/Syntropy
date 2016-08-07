@@ -342,7 +342,7 @@ namespace syntropy {
 
     struct MetaClassPropertyParser {
 
-        using TParser = std::function<bool(Any, std::stringstream)>;
+        using TParser = std::function<bool(Any, std::stringstream&)>;
 
         template <typename TProperty>
         struct is_parseable : std::integral_constant<bool,
@@ -351,7 +351,7 @@ namespace syntropy {
 
         TParser operator() () const {
 
-            return[](Any, std::stringstream) -> bool {
+            return[](Any, std::stringstream&) -> bool {
 
                 return false;
 
@@ -362,7 +362,7 @@ namespace syntropy {
         template <typename TClass, typename TProperty>
         TParser operator() (TProperty TClass::* property, typename std::enable_if_t<is_parseable<TProperty>::value>* = nullptr) const {
 
-            return[property](Any instance, std::stringstream sstream) -> bool{
+            return[property](Any instance, std::stringstream& sstream) -> bool{
 
                 auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
 
@@ -389,7 +389,7 @@ namespace syntropy {
         template <typename TClass, typename TProperty>
         TParser operator() (void (TClass::* setter)(TProperty), typename std::enable_if_t<is_parseable<TProperty>::value>* = nullptr) const {
 
-            return[setter](Any instance, std::stringstream sstream) -> bool {
+            return[setter](Any instance, std::stringstream& sstream) -> bool {
 
                 auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
 
@@ -424,7 +424,7 @@ namespace syntropy {
         template <typename TClass, typename TProperty>
         TParser operator() (TProperty& (TClass::* setter)(), typename std::enable_if_t<is_parseable<TProperty>::value>* = nullptr) const {
 
-            return[setter](Any instance, std::stringstream sstream) -> bool {
+            return[setter](Any instance, std::stringstream& sstream) -> bool {
 
                 auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
 
@@ -469,6 +469,9 @@ namespace syntropy {
 
         template <typename TInstance>
         bool Parse(TInstance& instance, const std::string& string) const;
+
+        template <typename TInstance>
+        bool Parse(TInstance& instance, const std::string& string, std::ios_base::fmtflags flags ) const;
 
     private:
 
@@ -679,8 +682,22 @@ namespace syntropy {
     template <typename TInstance>
     bool MetaClassProperty::Parse(TInstance& instance, const std::string& string) const {
 
+        std::stringstream sstream(string);
+
         return parser_(std::addressof(instance),
-                       std::stringstream(string));
+                       sstream);
+
+    }
+
+    template <typename TInstance>
+    bool MetaClassProperty::Parse(TInstance& instance, const std::string& string, std::ios_base::fmtflags flags) const {
+
+        std::stringstream sstream(string);
+        
+        sstream.setf(flags);
+
+        return parser_(std::addressof(instance),
+                       sstream);
 
     }
 

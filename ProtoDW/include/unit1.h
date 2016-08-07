@@ -285,29 +285,29 @@ public:
 
         Foo foo;
 
-        TEST_TRUE(field_float_value_->Parse(foo, "256.25"));
-        TEST_TRUE(foo.value_ == 256.25f);
+        TEST_TRUE(field_float_value_->Parse(foo, "256.25") &&
+                  foo.value_ == 256.25f);
 
-        TEST_TRUE(field_int_value_->Parse(foo, "47"));
-        TEST_TRUE(foo.value2_ == 47);
+        TEST_TRUE(field_int_value_->Parse(foo, "47") &&
+                  foo.value2_ == 47);
 
-        TEST_TRUE(property_value_->Parse(foo, "125.50"));
-        TEST_TRUE(foo.GetValue() == 125.50f);
+        TEST_TRUE(property_value_->Parse(foo, "125.50") &&
+                  foo.GetValue() == 125.50f);
 
-        TEST_TRUE(property_accessor_->Parse(foo, "64.00"));
-        TEST_TRUE(foo.GetAccessor().blob_ == 64);
+        TEST_TRUE(property_accessor_->Parse(foo, "64.00") &&
+                  foo.GetAccessor().blob_ == 64);
 
-        TEST_TRUE(property_pod_->Parse(foo, "16.50"));
-        TEST_TRUE(foo.GetBlob().blob_ == 16);
+        TEST_TRUE(property_pod_->Parse(foo, "16.50") &&
+                  foo.GetBlob().blob_ == 16);
 
         TEST_FALSE(property_pointer_->Parse(foo, "56.23f"));
 
         foo.boolean_ = false;
 
-        TEST_TRUE(field_boolean_->Parse(foo, "true"));
-        TEST_TRUE(foo.boolean_ == true);
-        TEST_TRUE(field_boolean_->Parse(foo, "false"));
-        TEST_TRUE(foo.boolean_ == false);
+        TEST_TRUE(field_boolean_->Parse(foo, "true", std::ios_base::boolalpha) &&
+                  foo.boolean_ == true);
+        TEST_TRUE(field_boolean_->Parse(foo, "false", std::ios_base::boolalpha) &&
+                  foo.boolean_ == false);
         TEST_FALSE(field_boolean_->Parse(foo, "whatever"));
 
         std::cout << std::endl;
