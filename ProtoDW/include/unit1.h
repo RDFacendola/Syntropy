@@ -163,15 +163,13 @@ public:
         DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
         DefineProperty("const_pointer", &Foo::const_pointer_);
 
-        DefineProperty("PValue", &Foo::GetValue, &Foo::SetValue);
-        DefineProperty("PConstValue", &Foo::GetConstValue);
-        DefineProperty("PPointer", &Foo::GetPointer, &Foo::SetPointer);
-        DefineProperty("PPointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
-        DefineProperty("PConstPointer", &Foo::GetConstPointer);
-        
+        DefineProperty("Value", &Foo::GetValue, &Foo::SetValue);
+        DefineProperty("ConstValue", &Foo::GetConstValue);
+        DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer);
+        DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
+        DefineProperty("ConstPointer", &Foo::GetConstPointer);      
         DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
-
-        DefineProperty("PAccessor", &Foo::GetAccessor, &Foo::GetAccessor);
+        DefineProperty("Accessor", &Foo::GetAccessor, &Foo::GetAccessor);
 
     }
 
@@ -216,10 +214,10 @@ public:
         float* p = &x;
         const float* q = &x;
 
-        TEST_TRUE(value->Write(foo, 56.0f));
+        TEST_TRUE(value->Write(foo, 100));
         TEST_TRUE(value->Read(foo, x));
 
-        TEST_FALSE(const_value->Write(foo, 47.0f));
+        TEST_FALSE(const_value->Write(foo, x));
         TEST_TRUE(const_value->Read(foo, x));
 
         TEST_TRUE(pointer->Write(foo, p));
@@ -241,27 +239,26 @@ public:
 
         auto& meta_class = syntropy::MetaClass::GetClass<Foo>();
 
-        auto value = meta_class.GetProperty("PValue");
-        auto const_value = meta_class.GetProperty("PConstValue");
-        auto pointer = meta_class.GetProperty("PPointer");
-        auto pointer_to_const = meta_class.GetProperty("PPointerToConst");
-        auto const_pointer = meta_class.GetProperty("PConstPointer");
-
+        auto value = meta_class.GetProperty("Value");
+        auto const_value = meta_class.GetProperty("ConstValue");
+        auto pointer = meta_class.GetProperty("Pointer");
+        auto pointer_to_const = meta_class.GetProperty("PointerToConst");
+        auto const_pointer = meta_class.GetProperty("ConstPointer");
         auto blob = meta_class.GetProperty("Blob");
-
-        auto accessor = meta_class.GetProperty("PAccessor");
+        auto accessor = meta_class.GetProperty("Accessor");
 
         Blob bb;
+
         float x = 100;
         float* p = &x;
         const float* q = &x;
 
         const float y(10);
 
-        TEST_TRUE(value->Write(foo, x));
+        TEST_TRUE(value->Write(foo, y));
         TEST_TRUE(value->Read(foo, x));
 
-        TEST_FALSE(const_value->Write(foo, 47.0f));
+        TEST_FALSE(const_value->Write(foo, y));
         TEST_TRUE(const_value->Read(foo, x));
 
         TEST_TRUE(pointer->Write(foo, p));
@@ -273,10 +270,10 @@ public:
         TEST_FALSE(const_pointer->Write(foo, p));
         TEST_TRUE(const_pointer->Read(foo, p));
 
-        TEST_TRUE(blob->Write(foo, Blob{ 47 }));
+        TEST_TRUE(blob->Write(foo, bb));
         TEST_TRUE(blob->Read(foo, bb));
 
-        TEST_TRUE(accessor->Write(foo, Blob{ 999 }));
+        TEST_TRUE(accessor->Write(foo, bb));
         TEST_TRUE(accessor->Read(foo, bb));
 
         std::cout << std::endl;
@@ -288,6 +285,8 @@ public:
         SynopsisTest();
         FieldTest();
         PropertyTest();
+
+        system("pause");
 
     }
 
