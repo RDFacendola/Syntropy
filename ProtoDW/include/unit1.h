@@ -281,43 +281,37 @@ public:
 
     }
 
-    void ParsingTest() const {
-
-        Foo foo;
-
-        TEST_TRUE(field_float_value_->Parse(foo, "256.25") &&
-                  foo.value_ == 256.25f);
-
-        TEST_TRUE(field_int_value_->Parse(foo, "47") &&
-                  foo.value2_ == 47);
-
-        TEST_TRUE(property_value_->Parse(foo, "125.50") &&
-                  foo.GetValue() == 125.50f);
-
-        TEST_TRUE(property_accessor_->Parse(foo, "64.00") &&
-                  foo.GetAccessor().blob_ == 64);
-
-        TEST_TRUE(property_pod_->Parse(foo, "16.50") &&
-                  foo.GetBlob().blob_ == 16);
-
-        TEST_FALSE(property_pointer_->Parse(foo, "56.23f"));
-
-        foo.boolean_ = false;
-
-        TEST_TRUE(field_boolean_->Parse(foo, "true", std::ios_base::boolalpha) &&
-                  foo.boolean_ == true);
-        TEST_TRUE(field_boolean_->Parse(foo, "false", std::ios_base::boolalpha) &&
-                  foo.boolean_ == false);
-        TEST_FALSE(field_boolean_->Parse(foo, "whatever"));
-
-        std::cout << std::endl;
-
-    }
-
     void InterpretTest() const {
 
         Foo foo;
             
+        foo.boolean_ = false;
+
+        TEST_TRUE(field_float_value_->Interpret(foo, "256.25") &&
+                  foo.value_ == 256.25f);
+
+        TEST_TRUE(field_int_value_->Interpret(foo, "47") &&
+                  foo.value2_ == 47);
+
+        TEST_TRUE(property_value_->Interpret(foo, "125.50") &&
+                  foo.GetValue() == 125.50f);
+
+        TEST_TRUE(property_accessor_->Interpret(foo, "64.00") &&
+                  foo.GetAccessor().blob_ == 64);
+
+        TEST_TRUE(property_pod_->Interpret(foo, "16.50") &&
+                  foo.GetBlob().blob_ == 16);
+
+        TEST_FALSE(property_pointer_->Interpret(foo, "56.23f"));
+        
+        TEST_TRUE(field_boolean_->Interpret(foo, true, std::ios_base::boolalpha) &&
+                  foo.boolean_ == true);
+
+        TEST_TRUE(field_boolean_->Interpret(foo, false, std::ios_base::boolalpha) &&
+                  foo.boolean_ == false);
+
+        TEST_FALSE(field_boolean_->Interpret(foo, "whatever"));
+
         TEST_TRUE(field_float_value_->Interpret(foo, 512) &&                                    // From int to float.
                   foo.value_ == 512.0f);                        
 
@@ -348,7 +342,6 @@ public:
         SynopsisTest();
         FieldTest();
         PropertyTest();
-        ParsingTest();
         InterpretTest();
         PolymorphismTest();
         

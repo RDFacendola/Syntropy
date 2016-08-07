@@ -30,8 +30,6 @@ namespace syntropy {
     class MetaClassProperty;
 
     class MetaClassMethod;
-
-    class MetaInstance;
     
 }
 
@@ -467,12 +465,6 @@ namespace syntropy {
         template <typename TInstance, typename TValue>
         bool Write(TInstance& instance, const TValue& value) const;
 
-        template <typename TInstance>
-        bool Parse(TInstance& instance, const std::string& string) const;
-
-        template <typename TInstance>
-        bool Parse(TInstance& instance, const std::string& string, std::ios_base::fmtflags flags) const;
-
         template <typename TInstance, typename TValue>
         bool Interpret(TInstance& instance, const TValue& value) const;
        
@@ -685,28 +677,6 @@ namespace syntropy {
 
     }
 
-    template <typename TInstance>
-    inline bool MetaClassProperty::Parse(TInstance& instance, const std::string& string) const {
-
-        std::stringstream sstream(string);
-
-        return parser_(std::addressof(instance),
-                       sstream);
-
-    }
-
-    template <typename TInstance>
-    inline bool MetaClassProperty::Parse(TInstance& instance, const std::string& string, std::ios_base::fmtflags flags) const {
-
-        std::stringstream sstream(string);
-        
-        sstream.setf(flags);
-
-        return parser_(std::addressof(instance),
-                       sstream);
-
-    }
-
     template <typename TInstance, typename TValue>
     inline bool MetaClassProperty::Interpret(TInstance& instance, const TValue& value) const {
 
@@ -732,6 +702,5 @@ namespace syntropy {
                        sstream);
 
     }
-
 
 }
