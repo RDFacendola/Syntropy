@@ -40,16 +40,6 @@ namespace syntropy {
 
 namespace syntropy {
 
-    template <typename TType>
-    struct meta_type {
-
-        using type = std::remove_pointer_t<std::remove_cv_t<std::remove_reference_t<TType>>>;
-
-    };
-
-    template <typename TType>
-    using meta_type_t = typename meta_type<TType>::type;
-
     /// \brief Contains the list of all meta class registered to the application.
     /// This class is used to access any metaclass by name.
     /// \author Raffaele D. Facendola - 2016
