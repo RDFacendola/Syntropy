@@ -35,7 +35,7 @@ namespace syntropy {
  
     //////////////// META CLASS ////////////////
 
-    MetaClass::MetaClass(std::unique_ptr<MetaClassDeclaration> declaration) :
+    MetaClass::MetaClass(std::unique_ptr<IMetaClassDeclaration> declaration) :
         class_(std::move(declaration)) {
 
         class_id_ = 42;

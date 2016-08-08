@@ -20,7 +20,12 @@ namespace syntropy {
 
     // Forward declarations
 
-    template <typename TType>
+    class IMetaClassDeclaration;
+
+    template <typename TClass>
+    class MetaClassDeclaration;
+
+    template <typename TClass>
     class MetaClassDefinition;
 
     class MetaFactory;
@@ -73,55 +78,87 @@ namespace syntropy {
         std::unordered_map<HashedString, MetaClass*> meta_classes_;       ///< \brief List of metaclasses registered so far.
 
     };
-
-    /// \brief Contains the declaration of a class type.
+    
+    /// \brief Interface for class declarations.
     /// \author Raffaele D. Facendola - 2016
-    class MetaClassDeclaration {
+    class IMetaClassDeclaration {
 
     public:
+
+        /// \brief Virtual destructor.
+        virtual ~IMetaClassDeclaration();
+
+        /// \brief Get the name of the metaclass.
+        /// \return Returns the type string of the metaclass.
+        virtual const HashedString& GetName() const = 0;
+
+        /// \brief Get the list of classes that are derived by this class.
+        /// \return Returns the list of classes that are derived by this class.
+        virtual const std::vector<MetaClass*>& GetBaseClasses() const = 0;
+
+        /// \brief Get a class property by name.
+        /// \param property_name Name of the property to get.
+        /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
+        virtual const MetaClassProperty* GetProperty(const HashedString& property_name) const = 0;
+
+        /// \brief Get a class method by name.
+        /// \param method_name Name of the method to get.
+        /// \return Returns a pointer to the requested method if any. Returns nullptr otherwise.
+        virtual const MetaClassMethod* GetMethod(const HashedString& method_name) const = 0;
+
+        /// \brief Get the class properties list.
+        /// \return Returns the class properties list.
+        virtual const std::unordered_map<HashedString, MetaClassProperty>& GetProperties() const = 0;
+
+    };
+    
+    /// \brief Concrete class declaration.
+    /// \author Raffaele D. Facendola - 2016
+    template <typename TClass>
+    class MetaClassDeclaration : public IMetaClassDeclaration {
+
+    public:
+        
+        MetaClassDeclaration(const HashedString& name);
 
         /// \brief Virtual destructor.
         virtual ~MetaClassDeclaration();
 
         /// \brief Get the name of the metaclass.
         /// \return Returns the type string of the metaclass.
-        const HashedString& GetName() const;
+        virtual const HashedString& GetName() const override;
 
         /// \brief Get the list of classes that are derived by this class.
         /// \return Returns the list of classes that are derived by this class.
-        const std::vector<MetaClass*>& GetBaseClasses() const;
+        virtual const std::vector<MetaClass*>& GetBaseClasses() const override;
 
         /// \brief Get a class property by name.
         /// \param property_name Name of the property to get.
         /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
-        const MetaClassProperty* GetProperty(const HashedString& property_name) const;
+        virtual const MetaClassProperty* GetProperty(const HashedString& property_name) const override;
 
         /// \brief Get a class method by name.
         /// \param method_name Name of the method to get.
         /// \return Returns a pointer to the requested method if any. Returns nullptr otherwise.
-        const MetaClassMethod* GetMethod(const HashedString& method_name) const;
+        virtual const MetaClassMethod* GetMethod(const HashedString& method_name) const override;
 
         /// \brief Get the class properties list.
         /// \return Returns the class properties list.
-        const std::unordered_map<HashedString, MetaClassProperty>& GetProperties() const;
-
-    protected:
-        
-        MetaClassDeclaration(const HashedString& name);
+        virtual const std::unordered_map<HashedString, MetaClassProperty>& GetProperties() const override;
 
         template <typename TBaseClass>
         void DefineBaseClass();
 
-        template <typename TClass, typename TProperty>
+        template <typename TProperty>
         void DefineProperty(const HashedString& property_name, TProperty TClass::* property);
 
-        template <typename TClass, typename TProperty>
+        template <typename TProperty>
         void DefineProperty(const HashedString& property_name, TProperty (TClass::* getter)() const, void (TClass::* setter)(TProperty));
 
-        template <typename TClass, typename TProperty>
+        template <typename TProperty>
         void DefineProperty(const HashedString& property_name, TProperty (TClass::* getter)() const);
 
-        template <typename TClass, typename TProperty>
+        template <typename TProperty>
         void DefineProperty(const HashedString& property_name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)());
 
         //template <typename TMethod>
@@ -138,12 +175,20 @@ namespace syntropy {
         std::unordered_map<HashedString, MetaClassMethod> methods_;
 
     };
-
+    
     /// \brief Contains the concrete definition of a class type.
     /// Specialize this template in the same compilation unit where access to the proper meta class is needed.
     /// \author Raffaele D. Facendola - 2016
-    template <typename TType>
-    class MetaClassDefinition : public MetaClassDeclaration {};
+    template <typename TClass>
+    class MetaClassDefinition {
+
+        MetaClassDeclaration<TClass> operator()() const {
+
+            return MetaClassDeclaration<TClass>(typeid(TClass).name());
+
+        }
+
+    };
 
     /// \brief Describes a class type.
     /// \author Raffaele D. Facendola - 2016
@@ -190,11 +235,11 @@ namespace syntropy {
     private:
 
         /// \brief Create a new metaclass from class declaration.
-        MetaClass(std::unique_ptr<MetaClassDeclaration> declaration);
+        MetaClass(std::unique_ptr<IMetaClassDeclaration> declaration);
 
-        size_t class_id_;                                      ///< \brief Unique id of the metaclass.
+        size_t class_id_;                                       ///< \brief Unique id of the metaclass.
 
-        std::unique_ptr<MetaClassDeclaration> class_;          ///< \brief Declaration of the described class.
+        std::unique_ptr<IMetaClassDeclaration> class_;          ///< \brief Declaration of the described class.
 
     };
 
@@ -382,7 +427,7 @@ namespace syntropy {
 				}
 
 				return instance_ptr &&
-					!sstream.fail();
+					   !sstream.fail();
 
 			};
 
@@ -410,7 +455,7 @@ namespace syntropy {
 				}
 
 				return instance_ptr &&
-					!sstream.fail();
+					   !sstream.fail();
 
 			};
 
@@ -430,7 +475,7 @@ namespace syntropy {
 				}
 
 				return instance_ptr &&
-					!sstream.fail();
+					   !sstream.fail();
 
 			};
 
@@ -514,7 +559,11 @@ namespace syntropy {
     template <typename TClass>
     inline static MetaClass& MetaClass::GetClass() {
 
-        static MetaClass meta_class(std::make_unique<MetaClassDefinition<TClass>>());
+        static_assert(std::is_same_v<decltype(std::declval<MetaClassDefinition<TClass>>()()),
+                                     MetaClassDeclaration<TClass>>, 
+                      "syntropy::MetaClassDefinition<TClass>() is expected to return a MetaClassDeclaration<TClass>");
+
+        static MetaClass meta_class(std::make_unique<MetaClassDeclaration<TClass>>(MetaClassDefinition<TClass>{}()));
 
         return meta_class;
 
@@ -562,26 +611,35 @@ namespace syntropy {
 
     }
 
+    //////////////// I META CLASS DEFINITION ////////////////
+
+    inline IMetaClassDeclaration::~IMetaClassDeclaration() {}
+
     //////////////// META CLASS DECLARATION ////////////////
 
-    inline MetaClassDeclaration::~MetaClassDeclaration() {}
+    template <typename TClass>
+    inline MetaClassDeclaration<TClass>::~MetaClassDeclaration() {}
 
-    inline MetaClassDeclaration::MetaClassDeclaration(const HashedString& name)
+    template <typename TClass>
+    inline MetaClassDeclaration<TClass>::MetaClassDeclaration(const HashedString& name)
         : name_(name) {}
 
-    inline const HashedString& MetaClassDeclaration::GetName() const {
+    template <typename TClass>
+    inline const HashedString& MetaClassDeclaration<TClass>::GetName() const {
 
         return name_;
 
     }
     
-    inline const std::vector<MetaClass*>& MetaClassDeclaration::GetBaseClasses() const {
+    template <typename TClass>
+    inline const std::vector<MetaClass*>& MetaClassDeclaration<TClass>::GetBaseClasses() const {
 
         return base_classes_;
 
     }
 
-    inline const MetaClassProperty* MetaClassDeclaration::GetProperty(const HashedString& property_name) const {
+    template <typename TClass>
+    inline const MetaClassProperty* MetaClassDeclaration<TClass>::GetProperty(const HashedString& property_name) const {
 
         auto it = properties_.find(property_name);
 
@@ -591,7 +649,8 @@ namespace syntropy {
                 
     }
 
-    inline const MetaClassMethod* MetaClassDeclaration::GetMethod(const HashedString& method_name) const {
+    template <typename TClass>
+    inline const MetaClassMethod* MetaClassDeclaration<TClass>::GetMethod(const HashedString& method_name) const {
 
         auto it = methods_.find(method_name);
 
@@ -601,23 +660,26 @@ namespace syntropy {
         
     }
 
-    inline const std::unordered_map<HashedString, MetaClassProperty>& MetaClassDeclaration::GetProperties() const {
+    template <typename TClass>
+    inline const std::unordered_map<HashedString, MetaClassProperty>& MetaClassDeclaration<TClass>::GetProperties() const {
 
         return properties_;
 
     }
 
+    template <typename TClass>
     template <typename TBaseClass>
-    inline void MetaClassDeclaration::DefineBaseClass() {
+    inline void MetaClassDeclaration<TClass>::DefineBaseClass() {
 
-        // TODO: Check for unrelated class types.
+        static_assert(std::is_base_of_v<TBaseClass, TClass>, "The specified class is not an actual base class for the meta-class being defined");
 
         base_classes_.push_back(std::addressof(MetaClass::GetClass<TBaseClass>()));
 
     }
 
-    template <typename TClass, typename TProperty>
-    void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty TClass::* property) {
+    template <typename TClass>
+    template <typename TProperty>
+    void MetaClassDeclaration<TClass>::DefineProperty(const HashedString& property_name, TProperty TClass::* property) {
 
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(typeid(std::decay_t<TProperty>),
@@ -627,8 +689,9 @@ namespace syntropy {
 
     }
     
-    template <typename TClass, typename TProperty>
-    void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const, void (TClass::* setter)(TProperty)) {
+    template <typename TClass>
+    template <typename TProperty>
+    void MetaClassDeclaration<TClass>::DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const, void (TClass::* setter)(TProperty)) {
 
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(typeid(std::decay_t<TProperty>),
@@ -638,8 +701,9 @@ namespace syntropy {
 
     }
 
-    template <typename TClass, typename TProperty>
-    void MetaClassDeclaration::DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const) {
+    template <typename TClass>
+    template <typename TProperty>
+    void MetaClassDeclaration<TClass>::DefineProperty(const HashedString& property_name, TProperty(TClass::* getter)() const) {
 
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(typeid(std::decay_t<TProperty>),
@@ -649,8 +713,9 @@ namespace syntropy {
 
     }
 
-    template <typename TClass, typename TProperty>
-    void MetaClassDeclaration::DefineProperty(const HashedString& property_name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) {
+    template <typename TClass>
+    template <typename TProperty>
+    void MetaClassDeclaration<TClass>::DefineProperty(const HashedString& property_name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) {
 
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(typeid(std::decay_t<TProperty>),

@@ -173,41 +173,47 @@ public:
 };
 
 template <>
-class syntropy::MetaClassDefinition<Bar> : public syntropy::MetaClassDeclaration {
+class syntropy::MetaClassDefinition<Bar>  {
 
 public:
 
-    MetaClassDefinition() :
-        MetaClassDeclaration("syntropy::Bar") {}
+    syntropy::MetaClassDeclaration<Bar> operator()() const {
+
+        return syntropy::MetaClassDeclaration<Bar>("syntropy::Bar");
+
+    }
 
 
 };
 
 template <>
-class syntropy::MetaClassDefinition<Foo> : public syntropy::MetaClassDeclaration {
+class syntropy::MetaClassDefinition<Foo> {
 
 public:
 
-    MetaClassDefinition() :
-        MetaClassDeclaration("syntropy::Foo"){
+    syntropy::MetaClassDeclaration<Foo> operator()() const{
 
-        DefineBaseClass<Bar>(); 
+        auto meta_class = syntropy::MetaClassDeclaration<Foo>("syntropy::Foo");
 
-        DefineProperty("float_value", &Foo::value_);
-        DefineProperty("int_value", &Foo::value2_);
-        DefineProperty("const_value", &Foo::const_value_);
-        DefineProperty("pointer", &Foo::pointer_);
-        DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
-        DefineProperty("const_pointer", &Foo::const_pointer_);
-        DefineProperty("boolean", &Foo::boolean_);
+        meta_class.DefineBaseClass<Bar>();
+
+        meta_class.DefineProperty("float_value", &Foo::value_);
+        meta_class.DefineProperty("int_value", &Foo::value2_);
+        meta_class.DefineProperty("const_value", &Foo::const_value_);
+        meta_class.DefineProperty("pointer", &Foo::pointer_);
+        meta_class.DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
+        meta_class.DefineProperty("const_pointer", &Foo::const_pointer_);
+        meta_class.DefineProperty("boolean", &Foo::boolean_);
         
-        DefineProperty("Value", &Foo::GetValue, &Foo::SetValue);
-        DefineProperty("ConstValue", &Foo::GetConstValue);
-        DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer);
-        DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
-        DefineProperty("ConstPointer", &Foo::GetConstPointer);      
-        DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
-        DefineProperty("Accessor", &Foo::GetAccessor, &Foo::GetAccessor);
+        meta_class.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue);
+        meta_class.DefineProperty("ConstValue", &Foo::GetConstValue);
+        meta_class.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer);
+        meta_class.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
+        meta_class.DefineProperty("ConstPointer", &Foo::GetConstPointer);
+        meta_class.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
+        meta_class.DefineProperty<Blob>("Accessor", &Foo::GetAccessor, &Foo::GetAccessor);
+
+        return meta_class;
 
     }
     
@@ -299,6 +305,8 @@ public:
 
         Foo foo;
             
+        int int_val;
+
         foo.boolean_ = false;
 
         TEST_TRUE(field_float_value_->Write(foo, "256.25") &&
@@ -316,9 +324,9 @@ public:
         TEST_TRUE(property_pod_->Write(foo, "16.50") &&
                   foo.GetBlob().blob_ == 16);
 
-        TEST_FALSE(field_float_value_->Write(foo, Blob{ 50 }));
+        TEST_FALSE(field_float_value_->Write(foo, Blob{ 50 }));                         // Blob cannot be inward-interpreted
 
-        TEST_TRUE(field_int_value_->Write(foo, StreamableBlob{ 800 }) &&
+        TEST_TRUE(field_int_value_->Write(foo, StreamableBlob{ 800 }) &&                // Streamable blob can be inward-interpreted
                   foo.value2_ == 800);
 
         TEST_FALSE(property_pointer_->Write(foo, "56.23f"));
@@ -341,6 +349,9 @@ public:
                   foo.value2_ == 1024);
 
         TEST_FALSE(field_float_value_->Write(foo, "false"));                            // Wrong types
+
+        TEST_TRUE(field_float_value_->Read(foo, int_val) &&
+                  static_cast<int>(foo.value_) == int_val);                             // Outward interpreting
 
         std::cout << std::endl;
 
