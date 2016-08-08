@@ -8,13 +8,13 @@
 
 #include <memory>
 #include <unordered_map>
-#include <type_traits>
 #include <functional>
 #include <sstream>
 
 #include "any.h"
 #include "syntropy.h"
 #include "hashed_string.h"
+#include "type_traits.h"
 
 namespace syntropy {
 
@@ -341,11 +341,6 @@ namespace syntropy {
 
         using TParser = std::function<bool(Any, std::stringstream&)>;
 
-        template <typename TProperty>
-        struct is_parseable : std::integral_constant<bool,
-                                                     !std::is_const<TProperty>::value &&
-                                                     !std::is_pointer<TProperty>::value> {};
-
         TParser operator() () const {
 
             return[](Any, std::stringstream&) -> bool {
@@ -357,7 +352,7 @@ namespace syntropy {
         }
 
         template <typename TClass, typename TProperty>
-        TParser operator() (TProperty TClass::* property, typename std::enable_if_t<is_parseable<TProperty>::value>* = nullptr) const {
+        TParser operator() (TProperty TClass::* property, typename std::enable_if_t<is_stream_extractable<std::stringstream, TProperty>::value>* = nullptr) const {
 
             return[property](Any instance, std::stringstream& sstream) -> bool{
 
@@ -377,14 +372,14 @@ namespace syntropy {
         }
 
         template <typename TClass, typename TProperty>
-        TParser operator() (TProperty TClass::*, typename std::enable_if_t<!is_parseable<TProperty>::value>* = nullptr) const {
+        TParser operator() (TProperty TClass::*, typename std::enable_if_t<!is_stream_extractable<std::stringstream, TProperty>::value>* = nullptr) const {
 
             return (*this)();
 
         }
 
         template <typename TClass, typename TProperty>
-        TParser operator() (void (TClass::* setter)(TProperty), typename std::enable_if_t<is_parseable<TProperty>::value>* = nullptr) const {
+        TParser operator() (void (TClass::* setter)(TProperty), typename std::enable_if_t<is_stream_extractable<std::stringstream, std::remove_cv_t<std::remove_reference_t<TProperty>>>::value>* = nullptr) const {
 
             return[setter](Any instance, std::stringstream& sstream) -> bool {
 
@@ -392,7 +387,7 @@ namespace syntropy {
 
                 if (instance_ptr) {
 
-                    std::decay_t<TProperty> property_value;
+					std::remove_cv_t<std::remove_reference_t<TProperty>> property_value;
 
                     sstream >> property_value;
 
@@ -412,14 +407,14 @@ namespace syntropy {
         }
 
         template <typename TClass, typename TProperty>
-        TParser operator() (void (TClass::*)(TProperty), typename std::enable_if_t<!is_parseable<TProperty>::value>* = nullptr) const {
+        TParser operator() (void (TClass::*)(TProperty), typename std::enable_if_t<!is_stream_extractable<std::stringstream, std::remove_cv_t<std::remove_reference_t<TProperty>>>::value>* = nullptr) const {
 
             return (*this)();
 
         }
         
         template <typename TClass, typename TProperty>
-        TParser operator() (TProperty& (TClass::* setter)(), typename std::enable_if_t<is_parseable<TProperty>::value>* = nullptr) const {
+        TParser operator() (TProperty& (TClass::* setter)(), typename std::enable_if_t<is_stream_extractable<std::stringstream, TProperty>::value>* = nullptr) const {
 
             return[setter](Any instance, std::stringstream& sstream) -> bool {
 
@@ -439,27 +434,12 @@ namespace syntropy {
         }
 
         template <typename TClass, typename TProperty>
-        TParser operator() (TProperty& (TClass::*)(), typename std::enable_if_t<!is_parseable<TProperty>::value>* = nullptr) const {
+        TParser operator() (TProperty& (TClass::*)(), typename std::enable_if_t<!is_stream_extractable<std::stringstream, TProperty>::value>* = nullptr) const {
 
             return (*this)();
 
         }
         
-    };
-
-    template <typename T>
-    class is_inward_interpretable {
-
-        template<typename TT>
-        static auto test(int) -> decltype(std::declval<std::stringstream&>() << std::declval<TT>(), std::true_type());
-
-        template<typename>
-        static auto test(...) -> std::false_type;
-
-    public:
-
-        static const bool value = decltype(test<T>(0))::value;
-
     };
 
     template <typename TValue, typename = void>
@@ -478,7 +458,7 @@ namespace syntropy {
 
     template <typename TValue>
     struct MetaClassPropertyInterpreter<TValue,
-                                        std::enable_if_t<is_inward_interpretable<TValue>::value>>{
+                                        std::enable_if_t<is_stream_insertable<std::stringstream, TValue>::value>>{
 
         template <typename TInstance>
         bool operator()(const MetaClassPropertyParser::TParser& parser, TInstance& instance, const TValue& value, std::ios_base::fmtflags flags) {

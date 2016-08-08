@@ -30,6 +30,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\type_traits.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\meta\meta_class.cpp">

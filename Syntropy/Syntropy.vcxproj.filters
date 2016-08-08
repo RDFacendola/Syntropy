@@ -16,6 +16,9 @@
     <ClInclude Include="include\hashed_string.h">
       <Filter>hash</Filter>
     </ClInclude>
+    <ClInclude Include="include\type_traits.h">
+      <Filter>type_traits</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\meta\meta_class.cpp">
@@ -37,6 +40,9 @@
     </Filter>
     <Filter Include="hash">
       <UniqueIdentifier>{19d60c50-b69b-472c-8a0d-91be7c701ddc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="type_traits">
+      <UniqueIdentifier>{d82d2e88-346e-4399-ab6f-52a086fe0456}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
