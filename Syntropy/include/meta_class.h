@@ -337,6 +337,7 @@ namespace syntropy {
 
     };
 
+	template <typename TProperty, typename = void>
     struct MetaClassPropertyParser {
 
         using TParser = std::function<bool(Any, std::stringstream&)>;
@@ -351,102 +352,97 @@ namespace syntropy {
 
         }
 
-        template <typename TClass, typename TProperty>
-        TParser operator() (TProperty TClass::* property, typename std::enable_if_t<is_stream_extractable<std::stringstream, TProperty>::value>* = nullptr) const {
+		template <typename _>
+		TParser operator() (_) const {
 
-            return[property](Any instance, std::stringstream& sstream) -> bool{
+			return (*this)();
 
-                auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
+		}
 
-                if (instance_ptr) {
+    };
 
-                    sstream >> ((*instance_ptr)->*property);
+	template <typename TProperty>
+	struct MetaClassPropertyParser<TProperty,
+								   std::enable_if_t<is_stream_extractable<std::stringstream, 
+																		  TProperty>::value>>{
 
-                }
+		using TParser = std::function<bool(Any, std::stringstream&)>;
 
-                return instance_ptr &&
-                       !sstream.fail();
+		template <typename TClass, typename TProperty>
+		TParser operator() (TProperty TClass::* property) const {
 
-            };
+			return[property](Any instance, std::stringstream& sstream) -> bool{
 
-        }
+				auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
 
-        template <typename TClass, typename TProperty>
-        TParser operator() (TProperty TClass::*, typename std::enable_if_t<!is_stream_extractable<std::stringstream, TProperty>::value>* = nullptr) const {
+				if (instance_ptr) {
 
-            return (*this)();
+					sstream >> ((*instance_ptr)->*property);
 
-        }
+				}
 
-        template <typename TClass, typename TProperty>
-        TParser operator() (void (TClass::* setter)(TProperty), typename std::enable_if_t<is_stream_extractable<std::stringstream, std::remove_cv_t<std::remove_reference_t<TProperty>>>::value>* = nullptr) const {
+				return instance_ptr &&
+					!sstream.fail();
 
-            return[setter](Any instance, std::stringstream& sstream) -> bool {
+			};
 
-                auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
+		}
 
-                if (instance_ptr) {
+		template <typename TClass, typename TProperty>
+		TParser operator() (void (TClass::* setter)(TProperty)) const {
+
+			return[setter](Any instance, std::stringstream& sstream) -> bool {
+
+				auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
+
+				if (instance_ptr) {
 
 					std::remove_cv_t<std::remove_reference_t<TProperty>> property_value;
 
-                    sstream >> property_value;
+					sstream >> property_value;
 
-                    if (!sstream.fail()) {
+					if (!sstream.fail()) {
 
-                        ((*instance_ptr)->*setter)(property_value);
+						((*instance_ptr)->*setter)(property_value);
 
-                    }
+					}
 
-                }
+				}
 
-                return instance_ptr &&
-                       !sstream.fail();
+				return instance_ptr &&
+					!sstream.fail();
 
-            };
+			};
 
-        }
+		}
 
-        template <typename TClass, typename TProperty>
-        TParser operator() (void (TClass::*)(TProperty), typename std::enable_if_t<!is_stream_extractable<std::stringstream, std::remove_cv_t<std::remove_reference_t<TProperty>>>::value>* = nullptr) const {
+		template <typename TClass, typename TProperty>
+		TParser operator() (TProperty& (TClass::* setter)()) const {
 
-            return (*this)();
+			return[setter](Any instance, std::stringstream& sstream) -> bool {
 
-        }
-        
-        template <typename TClass, typename TProperty>
-        TParser operator() (TProperty& (TClass::* setter)(), typename std::enable_if_t<is_stream_extractable<std::stringstream, TProperty>::value>* = nullptr) const {
+				auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
 
-            return[setter](Any instance, std::stringstream& sstream) -> bool {
+				if (instance_ptr) {
 
-                auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
+					sstream >> ((*instance_ptr)->*setter)();
 
-                if (instance_ptr) {
+				}
 
-                    sstream >> ((*instance_ptr)->*setter)();
+				return instance_ptr &&
+					!sstream.fail();
 
-                }
+			};
 
-                return instance_ptr &&
-                       !sstream.fail();
+		}
 
-            };
-
-        }
-
-        template <typename TClass, typename TProperty>
-        TParser operator() (TProperty& (TClass::*)(), typename std::enable_if_t<!is_stream_extractable<std::stringstream, TProperty>::value>* = nullptr) const {
-
-            return (*this)();
-
-        }
-        
-    };
+	};
 
     template <typename TValue, typename = void>
     struct MetaClassPropertyInterpreter {
 
         template <typename TInstance>
-        bool operator()(const MetaClassPropertyParser::TParser&, TInstance&, const TValue&, std::ios_base::fmtflags) {
+        bool operator()(const MetaClassPropertyParser<void>::TParser&, TInstance&, const TValue&, std::ios_base::fmtflags) {
 
             // The provided type does not support inward interpretation
 
@@ -461,7 +457,7 @@ namespace syntropy {
                                         std::enable_if_t<is_stream_insertable<std::stringstream, TValue>::value>>{
 
         template <typename TInstance>
-        bool operator()(const MetaClassPropertyParser::TParser& parser, TInstance& instance, const TValue& value, std::ios_base::fmtflags flags) {
+        bool operator()(const MetaClassPropertyParser<void>::TParser& parser, TInstance& instance, const TValue& value, std::ios_base::fmtflags flags) {
 
             std::stringstream sstream;
 
@@ -503,7 +499,7 @@ namespace syntropy {
 
         MetaClassPropertySetter::TSetter setter_;               ///< \brief Property setter.
 
-        MetaClassPropertyParser::TParser parser_;               ///< \brief Property parser.
+        MetaClassPropertyParser<void>::TParser parser_;			///< \brief Property parser.
 
     };
 
@@ -627,7 +623,7 @@ namespace syntropy {
                                           MetaClassProperty(typeid(std::decay_t<TProperty>),
                                                             MetaClassPropertyGetter{}(property),
                                                             MetaClassPropertySetter{}(property),
-                                                            MetaClassPropertyParser{}(property))));
+                                                            MetaClassPropertyParser<TProperty>{}(property))));
 
     }
     
@@ -638,7 +634,7 @@ namespace syntropy {
                                           MetaClassProperty(typeid(std::decay_t<TProperty>),
                                                             MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter{}(setter),
-                                                            MetaClassPropertyParser{}(setter))));
+                                                            MetaClassPropertyParser<std::remove_cv_t<std::remove_reference_t<TProperty>>>{}(setter))));
 
     }
 
@@ -649,7 +645,7 @@ namespace syntropy {
                                           MetaClassProperty(typeid(std::decay_t<TProperty>),
                                                             MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter{}(),
-                                                            MetaClassPropertyParser{}())));
+                                                            MetaClassPropertyParser<void>{}())));
 
     }
 
@@ -660,7 +656,7 @@ namespace syntropy {
                                           MetaClassProperty(typeid(std::decay_t<TProperty>),
                                                             MetaClassPropertyGetter{}(getter),
                                                             MetaClassPropertySetter{}(setter),
-                                                            MetaClassPropertyParser{}(setter))));
+                                                            MetaClassPropertyParser<TProperty>{}(setter))));
 
     }
 

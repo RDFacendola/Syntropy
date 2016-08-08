@@ -25,6 +25,9 @@ namespace syntropy {
 
 	};
 
+	//template <typename TStream, typename TType>
+	//using is_stream_insertable_v = is_stream_insertable<TStream, TType>::value;
+
 	template <typename TStream, typename TType>
 	class is_stream_extractable {
 
@@ -39,5 +42,8 @@ namespace syntropy {
 		static const bool value = decltype(test<TStream, TType>(0))::value;
 
 	};
+
+	//template <typename TStream, typename TType>
+	//using is_stream_extractable_v = is_stream_extractable<TStream, TType>::value;
 
 }
