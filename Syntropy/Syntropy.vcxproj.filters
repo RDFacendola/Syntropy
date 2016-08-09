@@ -19,6 +19,9 @@
     <ClInclude Include="include\type_traits.h">
       <Filter>type_traits</Filter>
     </ClInclude>
+    <ClInclude Include="meta_any.h">
+      <Filter>reflection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\meta\meta_class.cpp">
