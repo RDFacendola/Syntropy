@@ -148,8 +148,8 @@ namespace syntropy {
         template <typename TProperty>
         void DefineProperty(const HashedString& property_name, TProperty (TClass::* getter)() const);
 
-        template <typename TProperty, typename TActualClass>
-        void DefineProperty(const HashedString& property_name, const TProperty& (TActualClass::* getter)() const, TProperty& (TActualClass::* setter)());
+        template <typename TProperty>
+        void DefineProperty(const HashedString& property_name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)());
 
         //template <typename TMethod>
         //void DefineMethod(const HashedString& method_name, TMethod&& method);
@@ -704,10 +704,8 @@ namespace syntropy {
     }
 
     template <typename TClass>
-	template <typename TProperty, typename TActualClass>
-	void MetaClassDeclaration<TClass>::DefineProperty(const HashedString& property_name, const TProperty& (TActualClass::* getter)() const, TProperty& (TActualClass::* setter)()) {
-
-		static_assert(std::is_same_v<TClass, TActualClass>, "Wrong class provided");
+    template <typename TProperty>
+    void MetaClassDeclaration<TClass>::DefineProperty(const HashedString& property_name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) {
 
         properties_.insert(std::make_pair(property_name,
                                           MetaClassProperty(typeid(std::decay_t<TProperty>),

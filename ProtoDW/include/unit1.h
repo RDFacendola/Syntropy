@@ -211,7 +211,7 @@ public:
         meta_class.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
         meta_class.DefineProperty("ConstPointer", &Foo::GetConstPointer);
         meta_class.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
-        meta_class.DefineProperty("Accessor", &Foo::GetAccessor, &Foo::GetAccessor);
+        meta_class.DefineProperty<Blob>("Accessor", &Foo::GetAccessor, &Foo::GetAccessor);
 
         return meta_class;
 
