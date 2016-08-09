@@ -44,9 +44,9 @@ namespace syntropy {
         template <typename TValue>
         Any& operator=(const TValue& other);
 
-        /// \brief Get the underlying type of the contained value.
-        /// \return Returns the type of the contained value.
-        const std::type_info& GetType() const;
+        /// \brief Check whether the type of value contained inside this instance is the one specified by the template argument.
+        template <typename TValue>
+        bool Is() const;
 
         /// \brief Get a typed pointer to the contained value.
         /// \return Returns a pointer to the contained value if the underlying type is exactly the one specified by the template parameters. Returns nullptr instead.
@@ -57,6 +57,12 @@ namespace syntropy {
         /// \return Returns a pointer to the contained value if the underlying type is exactly the one specified by the template parameters. Returns nullptr instead.
         template <typename TValue>
         TValue* As();
+        
+        const void* GetPointer() const;
+
+        void* GetPointer();
+
+        bool IsEmpty() const;
 
         /// \brief Swaps two instances.
         /// \param other Object to swap with the current instance.
@@ -80,6 +86,11 @@ namespace syntropy {
             /// \return Returns a pointer to the new copy of the value.
             virtual std::unique_ptr<IContent> Clone() const = 0;
 
+            virtual const void* GetPointer() const = 0;
+
+            virtual void* GetPointer() = 0;
+
+
         };
 
         /// \brief Strongly typed container for a single value.
@@ -97,9 +108,17 @@ namespace syntropy {
 
             virtual std::unique_ptr<IContent> Clone() const override;
 
+            virtual const void* GetPointer() const override;
+
+            virtual void* GetPointer() override;
+
             TValue content_;					    ///< \brief Actual value.
 
         };
+
+        /// \brief Get the underlying type of the contained value.
+        /// \return Returns the type of the contained value.
+        const std::type_info& GetType() const;
 
         std::unique_ptr<IContent> content_;         ///< \brief Wraps the actual value.
 
@@ -143,9 +162,16 @@ namespace syntropy {
     }
 
     template <typename TValue>
+    inline bool Any::Is() const {
+
+        return GetType() == typeid(TValue);
+
+    }
+
+    template <typename TValue>
     inline const TValue* Any::As() const {
 
-        return (content_ && GetType() == typeid(TValue)) ?
+        return (content_ && Is<TValue>()) ?
                &(static_cast<Content<TValue>*>(content_.get())->content_) :
                nullptr;
 
@@ -154,9 +180,31 @@ namespace syntropy {
     template <typename TValue>
     inline TValue* Any::As() {
 
-        return (content_ && GetType() == typeid(TValue)) ?
+        return (content_ && Is<TValue>()) ?
                &(static_cast<Content<TValue>*>(content_.get())->content_) :
                nullptr;
+
+    }
+
+    inline const void* Any::GetPointer() const {
+        
+        return content_ ?
+               content_->GetPointer() :
+               nullptr;
+
+    }
+
+    inline void* Any::GetPointer() {
+
+        return content_ ?
+               content_->GetPointer() :
+               nullptr;
+
+    }
+
+    inline bool Any::IsEmpty() const {
+
+        return !!content_;
 
     }
 
@@ -192,4 +240,18 @@ namespace syntropy {
 
     }
     
+    template <typename TValue>
+    inline const void* Any::Content<TValue>::GetPointer() const {
+
+        return std::addressof(content_);
+
+    }
+
+    template <typename TValue>
+    inline void* Any::Content<TValue>::GetPointer() {
+
+        return std::addressof(content_);
+
+    }
+
 }
