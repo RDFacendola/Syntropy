@@ -17,7 +17,7 @@ namespace syntropy {
 		static auto test(int) -> decltype(std::declval<S&>() << std::declval<T>(), std::true_type());
 
 		template<typename, typename>
-		static auto test(...)->std::false_type;
+		static auto test(...) -> std::false_type;
 
 	public:
 
@@ -35,7 +35,7 @@ namespace syntropy {
 		static auto test(int) -> decltype(std::declval<S&>() >> std::declval<T&>(), std::true_type());
 
 		template<typename, typename>
-		static auto test(...)->std::false_type;
+		static auto test(...) -> std::false_type;
 
 	public:
 
