@@ -16,8 +16,6 @@
 
 #include "any.h"
 
-#include <json.hpp>
-
 #include <tuple>
 #include <iostream>
 
