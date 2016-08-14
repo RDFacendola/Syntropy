@@ -22,13 +22,28 @@
     <ClInclude Include="meta_any.h">
       <Filter>reflection</Filter>
     </ClInclude>
+    <ClInclude Include="include\class.h">
+      <Filter>reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="include\class_declaration.h">
+      <Filter>reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="include\property.h">
+      <Filter>reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="include\instance.h">
+      <Filter>reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="include\method.h">
+      <Filter>reflection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\meta\meta_class.cpp">
-      <Filter>reflection</Filter>
-    </ClCompile>
     <ClCompile Include="src\syntropy.cpp">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reflection\class.cpp">
+      <Filter>reflection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

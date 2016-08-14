@@ -7,11 +7,16 @@
 #pragma once
 
 #include "syntropy.h"
-#include "meta_class.h"
+
+#include "class.h"
+#include "class_declaration.h"
+#include "property.h"
 
 #include "unit2.h"
 
 #include "any.h"
+
+#include <json.hpp>
 
 #include <tuple>
 #include <iostream>
@@ -53,7 +58,7 @@ inline std::ostream& operator << (std::ostream &out, const StreamableBlob& blob)
 
 class Foo : public Bar {
 
-    friend class syntropy::MetaClassDefinition<Foo>;
+    friend class syntropy::reflection::ClassDefinition<Foo>;
 
 public:
 
@@ -173,27 +178,26 @@ public:
 };
 
 template <>
-class syntropy::MetaClassDefinition<Bar>  {
+class syntropy::reflection::ClassDefinition<Bar>  {
 
 public:
 
-    syntropy::MetaClassDeclaration<Bar> operator()() const {
+    syntropy::reflection::ClassDeclaration<Bar> operator()() const {
 
-        return syntropy::MetaClassDeclaration<Bar>("syntropy::Bar");
+        return syntropy::reflection::ClassDeclaration<Bar>("Bar");
 
     }
-
-
+    
 };
 
 template <>
-class syntropy::MetaClassDefinition<Foo> {
+class syntropy::reflection::ClassDefinition<Foo> {
 
 public:
 
-    syntropy::MetaClassDeclaration<Foo> operator()() const{
+    syntropy::reflection::ClassDeclaration<Foo> operator()() const{
 
-        auto meta_class = syntropy::MetaClassDeclaration<Foo>("syntropy::Foo");
+        auto meta_class = syntropy::reflection::ClassDeclaration<Foo>("Foo");
 
         meta_class.DefineBaseClass<Bar>();
 
@@ -211,7 +215,10 @@ public:
         meta_class.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
         meta_class.DefineProperty("ConstPointer", &Foo::GetConstPointer);
         meta_class.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
-        meta_class.DefineProperty<Blob>("Accessor", &Foo::GetAccessor, &Foo::GetAccessor);
+       
+        meta_class.DefineProperty("Accessor", 
+                                  static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
+                                  static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor));
 
         return meta_class;
 
@@ -229,7 +236,7 @@ public:
 
         for (const auto& property : foo_class_.GetProperties()) {
 
-            std::cout << "Property '" << property.first.GetString() << "': " << property.second.GetType().name() << std::endl;
+            std::cout << "Property " << property.second.GetName().GetString() /*<< " : " << property.second.GetType().name()*/ << std::endl;
 
         }
 
@@ -245,20 +252,20 @@ public:
         float* p = &x;
         const float* q = &x;
 
-        TEST_TRUE(field_float_value_->Write(foo, 40.2f));
-        TEST_TRUE(field_float_value_->Read(foo, x));
+        TEST_TRUE(field_float_value_->Set(foo, 40.2f));
+        TEST_TRUE(field_float_value_->Get(foo, x));
 
-        TEST_FALSE(field_const_value_->Write(foo, x));
-        TEST_TRUE(field_const_value_->Read(foo, x));
+        TEST_FALSE(field_const_value_->Set(foo, x));
+        TEST_TRUE(field_const_value_->Get(foo, x));
 
-        TEST_TRUE(field_pointer_->Write(foo, p));
-        TEST_TRUE(field_pointer_->Read(foo, p));
+        TEST_TRUE(field_pointer_->Set(foo, p));
+        TEST_TRUE(field_pointer_->Get(foo, p));
 
-        TEST_TRUE(field_pointer_to_const_->Write(foo, q));
-        TEST_TRUE(field_pointer_to_const_->Read(foo, q));
+        TEST_TRUE(field_pointer_to_const_->Set(foo, q));
+        TEST_TRUE(field_pointer_to_const_->Get(foo, q));
 
-        TEST_FALSE(field_const_pointer_->Write(foo, p));
-        TEST_TRUE(field_const_pointer_->Read(foo, p));
+        TEST_FALSE(field_const_pointer_->Set(foo, p));
+        TEST_TRUE(field_const_pointer_->Get(foo, p));
 
         std::cout << std::endl;
 
@@ -276,26 +283,26 @@ public:
 
         const float y(10);
 
-        TEST_TRUE(property_value_->Write(foo, y));
-        TEST_TRUE(property_value_->Read(foo, x));
+        TEST_TRUE(property_value_->Set(foo, y));
+        TEST_TRUE(property_value_->Get(foo, x));
 
-        TEST_FALSE(property_const_value_->Write(foo, y));
-        TEST_TRUE(property_const_value_->Read(foo, x));
+        TEST_FALSE(property_const_value_->Set(foo, y));
+        TEST_TRUE(property_const_value_->Get(foo, x));
 
-        TEST_TRUE(property_pointer_->Write(foo, p));
-        TEST_TRUE(property_pointer_->Read(foo, p));
+        TEST_TRUE(property_pointer_->Set(foo, p));
+        TEST_TRUE(property_pointer_->Get(foo, p));
 
-        TEST_TRUE(property_pointer_to_const_->Write(foo, q));
-        TEST_TRUE(property_pointer_to_const_->Read(foo, q));
+        TEST_TRUE(property_pointer_to_const_->Set(foo, q));
+        TEST_TRUE(property_pointer_to_const_->Get(foo, q));
 
-        TEST_FALSE(property_const_pointer_->Write(foo, p));
-        TEST_TRUE(property_const_pointer_->Read(foo, p));
+        TEST_FALSE(property_const_pointer_->Set(foo, p));
+        TEST_TRUE(property_const_pointer_->Get(foo, p));
 
-        TEST_TRUE(property_pod_->Write(foo, bb));
-        TEST_TRUE(property_pod_->Read(foo, bb));
+        TEST_TRUE(property_pod_->Set(foo, bb));
+        TEST_TRUE(property_pod_->Get(foo, bb));
 
-        TEST_TRUE(property_accessor_->Write(foo, bb));
-        TEST_TRUE(property_accessor_->Read(foo, bb));
+        TEST_TRUE(property_accessor_->Set(foo, bb));
+        TEST_TRUE(property_accessor_->Get(foo, bb));
 
         std::cout << std::endl;
 
@@ -309,49 +316,49 @@ public:
 
         foo.boolean_ = false;
 
-        TEST_TRUE(field_float_value_->Write(foo, "256.25") &&
+        TEST_TRUE(field_float_value_->Set(foo, "256.25") &&
                   foo.value_ == 256.25f);
 
-        TEST_TRUE(field_int_value_->Write(foo, "47") &&
+        TEST_TRUE(field_int_value_->Set(foo, "47") &&
                   foo.value2_ == 47);
 
-        TEST_TRUE(property_value_->Write(foo, "125.50") &&
+        TEST_TRUE(property_value_->Set(foo, "125.50") &&
                   foo.GetValue() == 125.50f);
 
-        TEST_TRUE(property_accessor_->Write(foo, "64.00") &&
+        TEST_TRUE(property_accessor_->Set(foo, "64.00") &&
                   foo.GetAccessor().blob_ == 64);
 
-        TEST_TRUE(property_pod_->Write(foo, "16.50") &&
+        TEST_TRUE(property_pod_->Set(foo, "16.50") &&
                   foo.GetBlob().blob_ == 16);
 
-        TEST_FALSE(field_float_value_->Write(foo, Blob{ 50 }));                         // Blob cannot be inward-interpreted
+        TEST_FALSE(field_float_value_->Set(foo, Blob{ 50 }));                         // Blob cannot be inward-interpreted
 
-        TEST_TRUE(field_int_value_->Write(foo, StreamableBlob{ 800 }) &&                // Streamable blob can be inward-interpreted
+        TEST_TRUE(field_int_value_->Set(foo, StreamableBlob{ 800 }) &&                // Streamable blob can be inward-interpreted
                   foo.value2_ == 800);
 
-        TEST_FALSE(property_pointer_->Write(foo, "56.23f"));
+        TEST_FALSE(property_pointer_->Set(foo, "56.23f"));
         
-        TEST_TRUE(field_boolean_->Write(foo, "1") &&
+        TEST_TRUE(field_boolean_->Set(foo, "1") &&
                   foo.boolean_ == true);
 
-        TEST_TRUE(field_boolean_->Write(foo, "0") &&
+        TEST_TRUE(field_boolean_->Set(foo, "0") &&
                   foo.boolean_ == false);
 
-        TEST_TRUE(field_boolean_->Write(foo, "false", std::ios_base::boolalpha) &&      // From string to boolean.
+        TEST_TRUE(field_boolean_->Set(foo, "false") &&                                // From string to boolean.
                   foo.boolean_ == false);
 
-        TEST_FALSE(field_boolean_->Write(foo, "whatever"));
+        TEST_FALSE(field_boolean_->Set(foo, "whatever"));
 
-        TEST_TRUE(field_float_value_->Write(foo, 512) &&                                // From int to float.
+        TEST_TRUE(field_float_value_->Set(foo, 512) &&                                // From int to float.
                   foo.value_ == 512.0f);                        
 
-        TEST_TRUE(field_int_value_->Write(foo, 1024.5632f) &&                           // From float to int.
+        TEST_TRUE(field_int_value_->Set(foo, 1024.5632f) &&                           // From float to int.
                   foo.value2_ == 1024);
 
-        TEST_FALSE(field_float_value_->Write(foo, "false"));                            // Wrong types
+        TEST_FALSE(field_float_value_->Set(foo, "false"));                            // Wrong types
 
-        TEST_TRUE(field_float_value_->Read(foo, int_val) &&
-                  static_cast<int>(foo.value_) == int_val);                             // Outward interpreting
+        TEST_TRUE(field_float_value_->Get(foo, int_val) &&
+                  static_cast<int>(foo.value_) == int_val);                           // Outward interpreting
 
         std::cout << std::endl;
 
@@ -361,7 +368,7 @@ public:
 
         FooDerived dfoo;
 
-        TEST_TRUE(field_float_value_->Write(dfoo, 100.0f));     // dfoo derives from Foo.
+        TEST_TRUE(field_float_value_->Set(dfoo, 100.0f));     // dfoo derives from Foo.
 
         std::cout << std::endl;
 
@@ -374,13 +381,11 @@ public:
         PropertyTest();
         InterpretTest();
         PolymorphismTest();
-        
-        system("pause");
 
     }
 
     Tester() 
-        : foo_class_(syntropy::MetaClass::GetClass<Foo>()){
+        : foo_class_(syntropy::reflection::Class::GetClass<Foo>()){
     
         field_int_value_ = foo_class_.GetProperty("int_value");
         field_float_value_ = foo_class_.GetProperty("float_value");
@@ -418,22 +423,22 @@ public:
 
 private:
 
-    const syntropy::MetaClass& foo_class_;
+    const syntropy::reflection::Class& foo_class_;
 
-    const syntropy::MetaClassProperty* field_int_value_;
-    const syntropy::MetaClassProperty* field_float_value_;
-    const syntropy::MetaClassProperty* field_const_value_;
-    const syntropy::MetaClassProperty* field_pointer_;
-    const syntropy::MetaClassProperty* field_pointer_to_const_;
-    const syntropy::MetaClassProperty* field_const_pointer_;
-    const syntropy::MetaClassProperty* field_boolean_;
+    const syntropy::reflection::Property* field_int_value_;
+    const syntropy::reflection::Property* field_float_value_;
+    const syntropy::reflection::Property* field_const_value_;
+    const syntropy::reflection::Property* field_pointer_;
+    const syntropy::reflection::Property* field_pointer_to_const_;
+    const syntropy::reflection::Property* field_const_pointer_;
+    const syntropy::reflection::Property* field_boolean_;
 
-    const syntropy::MetaClassProperty* property_value_;
-    const syntropy::MetaClassProperty* property_const_value_;
-    const syntropy::MetaClassProperty* property_pointer_;
-    const syntropy::MetaClassProperty* property_pointer_to_const_;
-    const syntropy::MetaClassProperty* property_const_pointer_;
-    const syntropy::MetaClassProperty* property_pod_;
-    const syntropy::MetaClassProperty* property_accessor_;
+    const syntropy::reflection::Property* property_value_;
+    const syntropy::reflection::Property* property_const_value_;
+    const syntropy::reflection::Property* property_pointer_;
+    const syntropy::reflection::Property* property_pointer_to_const_;
+    const syntropy::reflection::Property* property_const_pointer_;
+    const syntropy::reflection::Property* property_pod_;
+    const syntropy::reflection::Property* property_accessor_;
 
 };

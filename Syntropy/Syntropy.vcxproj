@@ -20,9 +20,29 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\any.h" />
+    <ClInclude Include="include\class.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\class_declaration.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\fnv1.h" />
     <ClInclude Include="include\hashed_string.h" />
+    <ClInclude Include="include\instance.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\meta_class.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\method.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\property.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -37,7 +57,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\meta\meta_class.cpp">
+    <ClCompile Include="src\reflection\class.cpp">
       <SubType>
       </SubType>
     </ClCompile>

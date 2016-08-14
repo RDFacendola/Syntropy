@@ -4,8 +4,8 @@
 #include "stdafx.h"
 
 #include "syntropy.h"
-#include "meta_class.h"
 
+#include "class.h"
 #include "unit1.h"
 #include "unit2.h"
 
@@ -23,6 +23,8 @@ int main()
 
     t.Do();
     
+    system("pause");
+
     return 0;
 
 }
