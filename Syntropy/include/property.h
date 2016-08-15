@@ -9,6 +9,8 @@
 #include "hashed_string.h"
 
 #include "instance.h"
+#include "utils.h"
+
 #include "any.h"
 
 namespace syntropy {
@@ -18,6 +20,11 @@ namespace syntropy {
         class Class;
         class Property;
         class Method;
+
+        struct IClassProvider;
+        
+        template <typename TClass>
+        struct ClassProvider;
 
         class Instance;
 
@@ -176,6 +183,8 @@ namespace syntropy {
                         
             const HashedString& GetName() const noexcept;
 
+            const Class& GetClass() const noexcept;
+
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue& value) const;
 
@@ -183,8 +192,10 @@ namespace syntropy {
             bool Set(TInstance& instance, const TValue& value) const;
 
         private:
-
+            
             HashedString name_;                                     ///< \brief Property name.
+
+            std::unique_ptr<IClassProvider> class_;                 ///< \brief Functor used to get the property class.
 
             PropertyGetter::TGetter getter_;                        ///< \brief Property getter.
 
@@ -197,30 +208,40 @@ namespace syntropy {
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty TClass::* field) noexcept
             : name_(name)
+            , class_(std::make_unique<ClassProvider<TProperty>>())
             , getter_(PropertyGetter()(field))
             , setter_(PropertySetter()(field)){}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
             : name_(name)
+            , class_(std::make_unique<ClassProvider<TProperty>>())
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()()) {}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept
             : name_(name)
+            , class_(std::make_unique<ClassProvider<TProperty>>())
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
 
         template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, const TProperty&(TClass::* getter)() const, TProperty&(TClass::* setter)()) noexcept
+        Property::Property(const HashedString& name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) noexcept
             : name_(name)
+            , class_(std::make_unique<ClassProvider<TProperty>>())
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
 
         inline const HashedString& Property::GetName() const noexcept {
 
             return name_;
+
+        }
+
+        inline const Class& Property::GetClass() const noexcept {
+
+            return (*class_)();
 
         }
         

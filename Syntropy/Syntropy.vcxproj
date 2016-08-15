@@ -24,10 +24,6 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\class_declaration.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\fnv1.h" />
     <ClInclude Include="include\hashed_string.h" />
     <ClInclude Include="include\instance.h">
@@ -46,11 +42,19 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\reflection.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\syntropy.h">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="include\type_traits.h" />
+    <ClInclude Include="include\utils.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="meta_any.h">
       <SubType>
       </SubType>
@@ -58,6 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="src\reflection\reflection.cpp">
       <SubType>
       </SubType>
     </ClCompile>

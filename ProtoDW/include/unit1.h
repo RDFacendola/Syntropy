@@ -9,7 +9,6 @@
 #include "syntropy.h"
 
 #include "class.h"
-#include "class_declaration.h"
 #include "property.h"
 
 #include "unit2.h"
@@ -176,26 +175,26 @@ public:
 };
 
 template <>
-class syntropy::reflection::ClassDefinition<Bar>  {
+struct syntropy::reflection::ClassDeclaration<Bar>  {
 
 public:
 
-    syntropy::reflection::ClassDeclaration<Bar> operator()() const {
+    syntropy::reflection::ClassDefinition<Bar> operator()() const {
 
-        return syntropy::reflection::ClassDeclaration<Bar>("Bar");
+        return syntropy::reflection::ClassDefinition<Bar>("Bar");
 
     }
     
 };
 
 template <>
-class syntropy::reflection::ClassDefinition<Foo> {
+struct syntropy::reflection::ClassDeclaration<Foo> {
 
 public:
 
-    syntropy::reflection::ClassDeclaration<Foo> operator()() const{
+    syntropy::reflection::ClassDefinition<Foo> operator()() const{
 
-        auto meta_class = syntropy::reflection::ClassDeclaration<Foo>("Foo");
+        auto meta_class = syntropy::reflection::ClassDefinition<Foo>("Foo");
 
         meta_class.DefineBaseClass<Bar>();
 

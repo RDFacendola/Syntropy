@@ -10,25 +10,21 @@
 #include <memory>
 
 #include "hashed_string.h"
-#include "class_declaration.h"
+#include "property.h"
+#include "method.h"
 
 namespace syntropy {
 
     namespace reflection {
 
-        class IClassDeclaration;
-
-        template <typename TClass>
-        class ClassDeclaration;
-
         template <typename TClass>
         class ClassDefinition;
-        
-        class Class;
-        class Property;
-        class Method;
 
-        class ClassRegistry;
+        template <typename TClass>
+        struct ClassDeclaration;
+
+        // Forward declarations
+
         class ClassFactory;
 
     }
@@ -55,7 +51,7 @@ namespace syntropy {
             virtual ~Class() = default;
 
             template <typename TClass>
-            static Class& GetClass() noexcept;
+            static Class& GetClass();
 
             /// \brief Get the name of the class.
             /// \return Returns the type string of the class.
@@ -83,141 +79,219 @@ namespace syntropy {
             /// \return Returns the class properties list.
             const std::unordered_map<size_t, Property>& GetProperties() const noexcept;
 
-            /// \brief Check whether this class derives from the specified one.
-            /// A class is convertible if it is the same type or derives from another one.
-            /// \return Returns true if the class is convertible to the specified type, return false otherwise.
-            bool IsDerived(const Class& other) const noexcept;
+            /// \brief Check whether this class is a base class for the specified one.
+            /// \return Returns true if the class described by this instance is a base for the specified one or is the same type, returns false otherwise.
+            bool IsBaseOf(const Class& other) const noexcept;
 
         private:
 
-            /// \brief Create a new class description.
-            /// \param declaration Declaration of the class.
-            Class(std::unique_ptr<IClassDeclaration> declaration);
+            /// \brief Create a new class via explicit class declaration.
+            template <typename TClass>
+            Class(ClassDefinition<TClass> definition);
 
-            size_t class_id_;                                       ///< \brief Unique id of the class.
+            /// \brief Initialize the class instance.
+            void Initialize();
 
-            std::unique_ptr<IClassDeclaration> declaration_;        ///< \brief Declaration of the class.
+            size_t class_id_;                                       ///< \brief Unique id. 
+                                                                    ///< \remarks Can be different at each execution.
+            
+            HashedString name_;                                     ///< \brief Unique name.
+
+            std::vector<Class*> base_classes_;                      ///< \brief List of all classes that are base of this one.
+
+            std::unordered_map<size_t, Property> properties_;       ///< \brief List of all the supported properties.
+
+            std::unordered_map<size_t, Method> methods_;            ///< \brief List of all the supported methods.
 
         };
 
-        /// \brief Contains the list of all classes registered so far.
+        /// \brief Concrete class definition.
         /// \author Raffaele D. Facendola - 2016
-        class ClassRegistry {
+        template <typename TClass>
+        class ClassDefinition {
 
             friend class Class;
 
         public:
 
-            /// \brief Get the singleton instance.
-            /// \return Returns the singleton instance.
-            static ClassRegistry& GetInstance() noexcept;
+            /// \brief Non-copyable.
+            ClassDefinition(const ClassDefinition<TClass>&) = delete;
 
-            /// \brief No copy constructor.
-            ClassRegistry(const ClassRegistry&) = delete;
+            /// \brief Move constructor.
+            ClassDefinition(ClassDefinition<TClass>&& other) noexcept;
+
+            /// \brief Create a named class definition.
+            /// \param name name of the class.
+            ClassDefinition(const HashedString& name) noexcept;
             
-            /// \brief No assignment operator.
-            ClassRegistry& operator=(const ClassRegistry&) = delete;
-            
-            /// \brief Get a class instance by name.
-            /// \param class_name Name of the class to get.
-            /// \return Returns a pointer to the class whose name is the specified one, if any. Returns nullptr otherwise.
-            const Class* GetClass(const HashedString& class_name) noexcept;
+            template <typename TBaseClass>
+            void DefineBaseClass() noexcept;
+
+            /// Properties and getter of the form
+            /// TProperty TClass::*
+            /// TProperty (TClass::*)() const
+            template <typename TProperty>
+            void DefineProperty(const HashedString& name, TProperty&& property) noexcept;
+
+            /// Getters and setters of the form
+            /// TProperty (TClass::*)() const / void (TClass::*)(TProperty)
+            /// const TProperty& (TClass::*)() const / TProperty& (TClass::*)()
+            template <typename TGetter, typename TSetter>
+            void DefineProperty(const HashedString& name, TGetter&& getter, TSetter&& setter) noexcept;
+
+            //template <typename TMethod>
+            //void DefineMethod(const HashedString& method_name, TMethod&& method) noexcept;
 
         private:
 
-            /// \brief Private constructor to prevent instantiation and inheritance.
-            ClassRegistry();
+            HashedString name_;                                     ///< \brief Unique name.
 
-            /// \brief Register a new class to the registry.
-            /// \param class_instance Class to register.
-            void Register(Class& class_instance);
-            
-            std::unordered_map<size_t, Class*> classes_;       ///< \brief List of classes registered so far.
+            std::vector<Class*> base_classes_;                      ///< \brief List of all classes that are base of this one.
+
+            std::unordered_map<size_t, Property> properties_;       ///< \brief List of all the supported properties.
+
+            std::unordered_map<size_t, Method> methods_;            ///< \brief List of all the supported methods.
 
         };
 
-        //////////////// CLASS ////////////////
-
+        /// \brief Functor used to fill a class definition.
+        /// Specialize this functor for each class requiring reflection.
+        /// \author Raffaele D. Facendola - 2016
         template <typename TClass>
-        inline static Class& Class::GetClass() noexcept {
+        struct ClassDeclaration {
 
-            static_assert(std::is_same_v<decltype(std::declval<ClassDefinition<TClass>>()()),
-                                                               ClassDeclaration<TClass>>,
-                          "syntropy::reflection::ClassDefinition<TClass>() is expected to return a syntropy::reflection::ClassDeclaration<TClass>");
+            /// \brief Fill the provided class definition.
+            /// \param definition Definition to fill.
+            ClassDefinition<TClass> operator()() const {
 
-            static Class class_instance(std::make_unique<ClassDeclaration<TClass>>(ClassDefinition<TClass>{}()));
+                return ClassDefinition<TClass>(typeid(TClass).name());
 
-            return class_instance;
+            }
 
-        }
-
-        inline const HashedString& Class::GetName() const noexcept {
-
-            return declaration_->GetName();
-
-        }
-
-        inline const std::vector<Class*>& Class::GetBaseClasses() const noexcept {
-
-            return declaration_->GetBaseClasses();
-
-        }
-
-        inline const ClassFactory* Class::GetFactory() const noexcept {
-
-            return declaration_->GetFactory();
-
-        }
-
-        inline const Property* Class::GetProperty(const HashedString& property_name) const noexcept {
-
-            return declaration_->GetProperty(property_name);
-
-        }
-
-        inline const Method* Class::GetMethod(const HashedString& method_name) const noexcept {
-
-            return declaration_->GetMethod(method_name);
-
-        }
-
-        inline const std::unordered_map<size_t, Property>& Class::GetProperties() const noexcept {
-
-            return declaration_->GetProperties();
-
-        }
-        
-        //////////////// CLASS REGISTRY ////////////////
-
-        inline ClassRegistry& ClassRegistry::GetInstance() noexcept {
-
-            static ClassRegistry instance;
-
-            return instance;
-
-        }
+        };
 
     }
 
 }
 
-namespace std {
+namespace syntropy {
 
-    /// \brief Custom template specialization of std::hash for syntropy::reflection::Class.
-    /// \author Raffaele D. Facendola - 2016
-    template <>
-    struct hash<syntropy::reflection::Class> {
+    namespace reflection {
 
-        using result_type = size_t;
+        // Implementation
 
-        using argument_type = syntropy::reflection::Class;
+        //////////////// CLASS ////////////////
 
-        result_type operator()(const argument_type& argument) {
+        template <typename TClass>
+        inline static Class& Class::GetClass() {
 
-            return argument.GetName().GetHash();
+            static Class instance(ClassDeclaration<TClass>{}());
+
+            return instance;
 
         }
 
-    };
+        template <typename TClass>
+        inline Class::Class(ClassDefinition<TClass> definition) 
+            : name_(std::move(definition.name_))
+            , base_classes_(std::move(definition.base_classes_))
+            , properties_(std::move(definition.properties_))
+            , methods_(std::move(definition.methods_)) {
+
+            Initialize();
+
+        }
+
+        inline const HashedString& Class::GetName() const noexcept {
+
+            return name_;
+
+        }
+    
+        inline const std::vector<Class*>& Class::GetBaseClasses() const noexcept {
+
+            return base_classes_;
+
+        }
+
+        inline const ClassFactory* Class::GetFactory() const noexcept {
+
+            // TODO: implement me!
+            return nullptr;
+
+        }
+
+        inline const Property* Class::GetProperty(const HashedString& property_name) const noexcept {
+
+            auto it = properties_.find(std::hash<HashedString>()(property_name));
+
+            return it != properties_.end() ?
+                   std::addressof(it->second) :
+                   nullptr;
+                
+        }
+
+        inline const Method* Class::GetMethod(const HashedString& method_name) const noexcept {
+
+            auto it = methods_.find(std::hash<HashedString>()(method_name));
+
+            return it != methods_.end() ?
+                   std::addressof(it->second) :
+                   nullptr;
+        
+        }
+
+        inline const std::unordered_map<size_t, Property>& Class::GetProperties() const noexcept {
+
+            return properties_;
+
+        }
+
+        //////////////// CLASS DEFINITION ////////////////
+            
+        template <typename TClass>
+        inline ClassDefinition<TClass>::ClassDefinition(ClassDefinition<TClass>&& other) noexcept
+            : name_(std::move(other.name_))
+            , base_classes_(std::move(other.base_classes_))
+            , properties_(std::move(other.properties_))
+            , methods_(std::move(other.methods_)){}
+
+        template <typename TClass>
+        inline ClassDefinition<TClass>::ClassDefinition(const HashedString& name) noexcept
+            : name_(name) {}
+
+        template <typename TClass>
+        template <typename TBaseClass>
+        inline void ClassDefinition<TClass>::DefineBaseClass() noexcept {
+
+            static_assert(std::is_base_of_v<TBaseClass, TClass>, "The class being defined does not derive from TBaseClass");
+            static_assert(!std::is_same<TBaseClass, TClass>::value, "A class cannot derive from itself");
+
+            base_classes_.push_back(std::addressof(Class::GetClass<TBaseClass>()));
+
+        }
+
+        template <typename TClass>
+        template <typename TProperty>
+        void ClassDefinition<TClass>::DefineProperty(const HashedString& name, TProperty&& property) noexcept {
+
+            properties_.emplace(std::make_pair(std::hash<HashedString>()(name),
+                                               Property(name, 
+                                                        std::forward<TProperty>(property))));
+
+        }
+
+        template <typename TClass>
+        template <typename TGetter, typename TSetter>
+        void ClassDefinition<TClass>::DefineProperty(const HashedString& name, TGetter&& getter, TSetter&& setter) noexcept {
+
+            properties_.emplace(std::make_pair(std::hash<HashedString>()(name),
+                                               Property(name, 
+                                                        std::forward<TGetter>(getter),
+                                                        std::forward<TSetter>(setter))));
+
+        }
+
+    }
 
 }
