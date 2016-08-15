@@ -24,13 +24,13 @@ namespace syntropy {
     public:
 
         /// \brief Create an empty hashed string.
-        HashedStringT();
+        HashedStringT() noexcept;
 
         /// \brief Copy constructor.
-        HashedStringT(const HashedStringT<THashFunction, THash>& other);
+        HashedStringT(const HashedStringT<THashFunction, THash>& other) noexcept;
 
         /// \brief Move constructor.
-        HashedStringT(HashedStringT<THashFunction, THash>&& other);
+        HashedStringT(HashedStringT<THashFunction, THash>&& other) noexcept;
 
         /// \brief Create a new hashed string from any type that can be used to initialize a string.
         /// \param string The string used to create the tag.
@@ -39,39 +39,39 @@ namespace syntropy {
         template <typename TString>
         HashedStringT(TString&& string, 
                       typename std::enable_if<!std::is_same<std::decay_t<TString>,
-                                                            HashedStringT<THashFunction, THash>>::value>::type* = nullptr);
+                                                            HashedStringT<THashFunction, THash>>::value>::type* = nullptr) noexcept;
         
         /// \brief Get the hash associated to this instance.
         /// \return Returns the hash associated to this instance.
-        THash GetHash() const;
+        THash GetHash() const noexcept;
 
         /// \brief Get the string associated to this instance.
         /// \brief Returns the string associated to this instance.
-        const std::string& GetString() const;
+        const std::string& GetString() const noexcept;
 
         /// \brief Equality operator.
         /// \return Returns true if the two hashed strings are identical, returns false otherwise.
-        bool operator==(const HashedStringT<THashFunction, THash>& other) const;
+        bool operator==(const HashedStringT<THashFunction, THash>& other) const noexcept;
 
         /// \brief Inequality operator.
         /// \return Returns true if the two hashed strings are different, returns false otherwise.
-        bool operator!=(const HashedStringT<THashFunction, THash>& other) const;
+        bool operator!=(const HashedStringT<THashFunction, THash>& other) const noexcept;
 
         /// \brief Less-equal operator.
         /// \return Returns true if the current instance is less than or equal to the provided hashed string, returns false otherwise.
-        bool operator<=(const HashedStringT<THashFunction, THash>& other) const;
+        bool operator<=(const HashedStringT<THashFunction, THash>& other) const noexcept;
 
         /// \brief Greater-equal operator.
         /// \return Returns true if the current instance is greater than or equal to the provided hashed string, returns false otherwise.
-        bool operator>=(const HashedStringT<THashFunction, THash>& other) const;
+        bool operator>=(const HashedStringT<THashFunction, THash>& other) const noexcept;
 
         /// \brief Less-than operator.
         /// \return Returns true if the current instance is less than the provided hashed string, returns false otherwise.
-        bool operator<(const HashedStringT<THashFunction, THash>& other) const;
+        bool operator<(const HashedStringT<THashFunction, THash>& other) const noexcept;
 
         /// \brief Greater-than operator.
         /// \return Returns true if the current instance is greater than the provided hashed string, returns false otherwise.
-        bool operator>(const HashedStringT<THashFunction, THash>& other) const;
+        bool operator>(const HashedStringT<THashFunction, THash>& other) const noexcept;
 
     private:
 
@@ -111,76 +111,76 @@ namespace syntropy{
     //////////////// HASHED STRING ////////////////
 
     template <typename THashFunction, typename THash>
-    inline HashedStringT<THashFunction, THash>::HashedStringT()
+    inline HashedStringT<THashFunction, THash>::HashedStringT() noexcept
         : hash_(THashFunction{}("")) {}
 
     template <typename THashFunction, typename THash>
-    HashedStringT<THashFunction, THash>::HashedStringT(const HashedStringT<THashFunction, THash>& other)
+    HashedStringT<THashFunction, THash>::HashedStringT(const HashedStringT<THashFunction, THash>& other) noexcept
         : string_(other.string_)
         , hash_(other.hash_) {}
 
     template <typename THashFunction, typename THash>
-    HashedStringT<THashFunction, THash>::HashedStringT(HashedStringT<THashFunction, THash>&& other)
+    HashedStringT<THashFunction, THash>::HashedStringT(HashedStringT<THashFunction, THash>&& other) noexcept
         : string_(std::move(other.string_))
         , hash_(other.hash_) {}
 
     template <typename THashFunction, typename THash>
     template <typename TString>
-    inline HashedStringT<THashFunction, THash>::HashedStringT(TString&& string, typename std::enable_if<!std::is_same<std::decay_t<TString>, HashedStringT<THashFunction, THash>>::value>::type*)
+    inline HashedStringT<THashFunction, THash>::HashedStringT(TString&& string, typename std::enable_if<!std::is_same<std::decay_t<TString>, HashedStringT<THashFunction, THash>>::value>::type*) noexcept
         : string_(std::forward<TString>(string))
         , hash_(THashFunction{}(string_)) {}
     
     template <typename THashFunction, typename THash>
-    inline THash HashedStringT<THashFunction, THash>::GetHash() const {
+    inline THash HashedStringT<THashFunction, THash>::GetHash() const noexcept {
 
         return hash_;
 
     }
    
     template <typename THashFunction, typename THash>
-    inline const std::string& HashedStringT<THashFunction, THash>::GetString() const {
+    inline const std::string& HashedStringT<THashFunction, THash>::GetString() const noexcept {
 
         return string_;
 
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator==(const HashedStringT<THashFunction, THash>& other) const {
+    inline bool HashedStringT<THashFunction, THash>::operator==(const HashedStringT<THashFunction, THash>& other) const noexcept {
 
         return hash_ == other.hash_;
 
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator!=(const HashedStringT<THashFunction, THash>& other) const {
+    inline bool HashedStringT<THashFunction, THash>::operator!=(const HashedStringT<THashFunction, THash>& other) const noexcept {
 
         return hash_ != other.hash_;
 
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator<=(const HashedStringT<THashFunction, THash>& other) const {
+    inline bool HashedStringT<THashFunction, THash>::operator<=(const HashedStringT<THashFunction, THash>& other) const noexcept {
 
         return hash_ <= other.hash_;
 
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator>=(const HashedStringT<THashFunction, THash>& other) const {
+    inline bool HashedStringT<THashFunction, THash>::operator>=(const HashedStringT<THashFunction, THash>& other) const noexcept {
 
         return hash_ >= other.hash_;
 
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator<(const HashedStringT<THashFunction, THash>& other) const {
+    inline bool HashedStringT<THashFunction, THash>::operator<(const HashedStringT<THashFunction, THash>& other) const noexcept {
 
         return hash_ < other.hash_;
 
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator>(const HashedStringT<THashFunction, THash>& other) const {
+    inline bool HashedStringT<THashFunction, THash>::operator>(const HashedStringT<THashFunction, THash>& other) const noexcept {
 
         return hash_ > other.hash_;
 
