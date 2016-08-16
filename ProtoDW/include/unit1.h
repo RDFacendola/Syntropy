@@ -179,9 +179,9 @@ struct syntropy::reflection::ClassDeclaration<Bar>  {
 
 public:
 
-    syntropy::reflection::ClassDefinition<Bar> operator()() const {
+	std::unique_ptr<syntropy::reflection::ClassDefinition<Bar>> operator()() const {
 
-        return syntropy::reflection::ClassDefinition<Bar>("Bar");
+        return std::make_unique<syntropy::reflection::ClassDefinition<Bar>>("Bar");
 
     }
     
@@ -192,32 +192,32 @@ struct syntropy::reflection::ClassDeclaration<Foo> {
 
 public:
 
-    syntropy::reflection::ClassDefinition<Foo> operator()() const{
+    std::unique_ptr<syntropy::reflection::ClassDefinition<Foo>> operator()() const{
 
-        auto meta_class = syntropy::reflection::ClassDefinition<Foo>("Foo");
+        auto c = std::make_unique<syntropy::reflection::ClassDefinition<Foo>>("Foo");
 
-        meta_class.DefineBaseClass<Bar>();
+        c->DefineBaseClass<Bar>();
 
-        meta_class.DefineProperty("float_value", &Foo::value_);
-        meta_class.DefineProperty("int_value", &Foo::value2_);
-        meta_class.DefineProperty("const_value", &Foo::const_value_);
-        meta_class.DefineProperty("pointer", &Foo::pointer_);
-        meta_class.DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
-        meta_class.DefineProperty("const_pointer", &Foo::const_pointer_);
-        meta_class.DefineProperty("boolean", &Foo::boolean_);
+        c->DefineProperty("float_value", &Foo::value_);
+        c->DefineProperty("int_value", &Foo::value2_);
+        c->DefineProperty("const_value", &Foo::const_value_);
+        c->DefineProperty("pointer", &Foo::pointer_);
+        c->DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
+        c->DefineProperty("const_pointer", &Foo::const_pointer_);
+        c->DefineProperty("boolean", &Foo::boolean_);
         
-        meta_class.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue);
-        meta_class.DefineProperty("ConstValue", &Foo::GetConstValue);
-        meta_class.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer);
-        meta_class.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
-        meta_class.DefineProperty("ConstPointer", &Foo::GetConstPointer);
-        meta_class.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
+        c->DefineProperty("Value", &Foo::GetValue, &Foo::SetValue);
+        c->DefineProperty("ConstValue", &Foo::GetConstValue);
+        c->DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer);
+        c->DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
+        c->DefineProperty("ConstPointer", &Foo::GetConstPointer);
+        c->DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
        
-        meta_class.DefineProperty("Accessor", 
-                                  static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
-                                  static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor));
+        c->DefineProperty("Accessor", 
+                          static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
+                          static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor));
 
-        return meta_class;
+        return c;
 
     }
     
