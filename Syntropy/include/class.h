@@ -142,18 +142,15 @@ namespace syntropy {
 
         public:
 
-            /// \brief Copy constructor
-            ClassDefinition(const ClassDefinition<TClass>& other) noexcept;
+            /// \brief No copy constructor.
+            ClassDefinition(const ClassDefinition<TClass>& other) = delete;
 
-            /// \brief Move constructor.
-            ClassDefinition(ClassDefinition<TClass>&& other) noexcept;
+			/// \brief No assignment operator.
+			ClassDefinition<TClass>& operator=(const ClassDefinition<TClass>& other) = delete;
 
             /// \brief Create a named class definition.
             /// \param name name of the class.
             ClassDefinition(const HashedString& name) noexcept;
-
-			/// \brief Default destructor.
-			~ClassDefinition() = default;
             
 			virtual const HashedString& GetName() const noexcept override;
 
@@ -272,20 +269,6 @@ namespace syntropy {
 
         //////////////// CLASS DEFINITION ////////////////
             
-		template <typename TClass>
-		inline ClassDefinition<TClass>::ClassDefinition(const ClassDefinition<TClass>& other) noexcept
-			: name_(other.name_)
-			, base_classes_(other.base_classes_)
-			, properties_(other.properties_)
-			, methods_(other.methods_) {}
-		
-		template <typename TClass>
-        inline ClassDefinition<TClass>::ClassDefinition(ClassDefinition<TClass>&& other) noexcept
-            : name_(std::move(other.name_))
-            , base_classes_(std::move(other.base_classes_))
-            , properties_(std::move(other.properties_))
-            , methods_(std::move(other.methods_)){}
-
         template <typename TClass>
         inline ClassDefinition<TClass>::ClassDefinition(const HashedString& name) noexcept
             : name_(name) {}
