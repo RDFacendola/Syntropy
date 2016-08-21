@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="include\meta_class.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
     <ClInclude Include="include\syntropy.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -19,16 +16,10 @@
     <ClInclude Include="include\type_traits.h">
       <Filter>type_traits</Filter>
     </ClInclude>
-    <ClInclude Include="meta_any.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
     <ClInclude Include="include\class.h">
       <Filter>reflection</Filter>
     </ClInclude>
     <ClInclude Include="include\property.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="include\instance.h">
       <Filter>reflection</Filter>
     </ClInclude>
     <ClInclude Include="include\method.h">

@@ -59,7 +59,7 @@ class Foo : public Bar {
 
 public:
 
-    Foo()
+    Foo() noexcept
         : const_value_(666)
         , const_pointer_(nullptr){}
 
@@ -166,7 +166,7 @@ class FooDerived : public Foo {
 
 public:
 
-    FooDerived()
+    FooDerived() noexcept
         : Foo() {}
 
     FooDerived(const FooDerived& other)
@@ -179,7 +179,7 @@ struct syntropy::reflection::ClassDeclaration<Bar>  {
 
 public:
 
-	std::unique_ptr<syntropy::reflection::ClassDefinition<Bar>> operator()() const {
+    std::unique_ptr<syntropy::reflection::ClassDefinition<Bar>> operator()() const {
 
         return std::make_unique<syntropy::reflection::ClassDefinition<Bar>>("Bar");
 
@@ -229,7 +229,11 @@ public:
 
     void SynopsisTest() const {
 
-        std::cout << "Class '" << foo_class_.GetName().GetString() << "'" << std::endl;
+        std::cout << "Class '" << foo_class_.GetName().GetString() 
+                  << "' is " << (foo_class_.IsAbstract() ? "" : "not ") << "abstract" << std::endl;
+
+        std::cout << "Class '" << foo_class_.GetName().GetString() 
+                  << "' is " << (foo_class_.GetFactory() ? "" : "not ") << "instantiable" << std::endl;
 
         for (const auto& property : foo_class_.GetProperties()) {
 
@@ -363,9 +367,15 @@ public:
 
     void PolymorphismTest() const {
 
-        FooDerived dfoo;
+        syntropy::reflection::Instance instance(foo_class_.GetFactory()->Instantiate());
 
-        TEST_TRUE(field_float_value_->Set(dfoo, 100.0f));     // dfoo derives from Foo.
+        TEST_TRUE(instance.As<Foo>() != nullptr);
+        TEST_TRUE(instance.As<Bar>() != nullptr);
+        TEST_TRUE(instance.As<FooDerived>() == nullptr);
+
+        FooDerived derived_foo;
+                
+        TEST_TRUE(field_float_value_->Set(derived_foo, 100.0f));     // derived_foo derives from Foo.
 
         std::cout << std::endl;
 

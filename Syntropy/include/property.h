@@ -8,7 +8,6 @@
 
 #include "hashed_string.h"
 
-#include "instance.h"
 #include "utils.h"
 
 #include "any.h"
@@ -25,8 +24,6 @@ namespace syntropy {
         
         template <typename TClass>
         struct ClassProvider;
-
-        class Instance;
 
     }
 
