@@ -117,6 +117,7 @@
       </DisableSpecificWarnings>
       <ShowIncludes>false</ShowIncludes>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
