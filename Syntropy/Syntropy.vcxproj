@@ -30,10 +30,6 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\property.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\reflection.h">
       <SubType>
       </SubType>
@@ -43,10 +39,6 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\type_traits.h" />
-    <ClInclude Include="include\utils.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

@@ -9,7 +9,6 @@
 #include "syntropy.h"
 
 #include "class.h"
-#include "property.h"
 
 #include "unit2.h"
 

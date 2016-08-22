@@ -19,13 +19,7 @@
     <ClInclude Include="include\class.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\property.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
     <ClInclude Include="include\method.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="include\utils.h">
       <Filter>reflection</Filter>
     </ClInclude>
     <ClInclude Include="include\reflection.h">
