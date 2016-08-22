@@ -174,6 +174,23 @@ public:
 };
 
 template <>
+struct syntropy::reflection::ClassDeclaration<Blob> {
+
+public:
+
+    std::unique_ptr<syntropy::reflection::ClassDefinition<Blob>> operator()() const {
+
+        auto c = std::make_unique<syntropy::reflection::ClassDefinition<Blob>>("Blob");
+
+        c->DefineProperty("blob", &Blob::blob_);
+
+        return c;
+
+    }
+
+};
+
+template <>
 struct syntropy::reflection::ClassDeclaration<Bar>  {
 
 public:
@@ -222,6 +239,22 @@ public:
     
 };
 
+template <>
+struct syntropy::reflection::ClassDeclaration<FooDerived> {
+
+public:
+
+    std::unique_ptr<syntropy::reflection::ClassDefinition<FooDerived>> operator()() const{
+
+        auto c = std::make_unique<syntropy::reflection::ClassDefinition<FooDerived>>("FooDerived");
+
+        c->DefineBaseClass<Foo>();
+
+        return c;
+
+    }
+    
+};
 class Tester {
 
 public:
@@ -373,8 +406,85 @@ public:
         TEST_TRUE(instance.As<FooDerived>() == nullptr);
 
         FooDerived derived_foo;
+        Bar base_foo;
                 
-        TEST_TRUE(field_float_value_->Set(derived_foo, 100.0f));     // derived_foo derives from Foo.
+        float x = 0;
+        float* p = &x;
+        const float* q = &x;
+        const float y(10);
+        Blob bb;
+
+        // Applying to a derived class
+
+        TEST_TRUE(field_float_value_->Set(derived_foo, 40.2f));
+        TEST_TRUE(field_float_value_->Get(derived_foo, x));
+
+        TEST_FALSE(field_const_value_->Set(derived_foo, x));
+        TEST_TRUE(field_const_value_->Get(derived_foo, x));
+
+        TEST_TRUE(field_pointer_->Set(derived_foo, p));
+        TEST_TRUE(field_pointer_->Get(derived_foo, p));
+
+        TEST_TRUE(field_pointer_to_const_->Set(derived_foo, q));
+        TEST_TRUE(field_pointer_to_const_->Get(derived_foo, q));
+
+        TEST_FALSE(field_const_pointer_->Set(derived_foo, p));
+        TEST_TRUE(field_const_pointer_->Get(derived_foo, p));
+
+        TEST_TRUE(property_value_->Set(derived_foo, y));
+        TEST_TRUE(property_value_->Get(derived_foo, x));
+
+        TEST_FALSE(property_const_value_->Set(derived_foo, y));
+        TEST_TRUE(property_const_value_->Get(derived_foo, x));
+
+        TEST_TRUE(property_pointer_->Set(derived_foo, p));
+        TEST_TRUE(property_pointer_->Get(derived_foo, p));
+
+        TEST_TRUE(property_pointer_to_const_->Set(derived_foo, q));
+        TEST_TRUE(property_pointer_to_const_->Get(derived_foo, q));
+
+        TEST_FALSE(property_const_pointer_->Set(derived_foo, p));
+        TEST_TRUE(property_const_pointer_->Get(derived_foo, p));
+
+        TEST_TRUE(property_pod_->Set(derived_foo, bb));
+        TEST_TRUE(property_pod_->Get(derived_foo, bb));
+
+        TEST_TRUE(property_accessor_->Set(derived_foo, bb));
+        TEST_TRUE(property_accessor_->Get(derived_foo, bb));
+
+        // Applying to the base class
+
+        TEST_FALSE(field_float_value_->Set(base_foo, 40.2f));
+        TEST_FALSE(field_float_value_->Get(base_foo, x));
+
+        TEST_FALSE(field_const_value_->Get(base_foo, x));
+
+        TEST_FALSE(field_pointer_->Set(base_foo, p));
+        TEST_FALSE(field_pointer_->Get(base_foo, p));
+
+        TEST_FALSE(field_pointer_to_const_->Set(base_foo, q));
+        TEST_FALSE(field_pointer_to_const_->Get(base_foo, q));
+
+        TEST_FALSE(field_const_pointer_->Get(base_foo, p));
+
+        TEST_FALSE(property_value_->Set(base_foo, y));
+        TEST_FALSE(property_value_->Get(base_foo, x));
+
+        TEST_FALSE(property_const_value_->Get(base_foo, x));
+
+        TEST_FALSE(property_pointer_->Set(base_foo, p));
+        TEST_FALSE(property_pointer_->Get(base_foo, p));
+
+        TEST_FALSE(property_pointer_to_const_->Set(base_foo, q));
+        TEST_FALSE(property_pointer_to_const_->Get(base_foo, q));
+
+        TEST_FALSE(property_const_pointer_->Get(base_foo, p));
+
+        TEST_FALSE(property_pod_->Set(base_foo, bb));
+        TEST_FALSE(property_pod_->Get(base_foo, bb));
+
+        TEST_FALSE(property_accessor_->Set(base_foo, bb));
+        TEST_FALSE(property_accessor_->Get(base_foo, bb));
 
         std::cout << std::endl;
 
@@ -385,7 +495,7 @@ public:
         SynopsisTest();
         FieldTest();
         PropertyTest();
-        InterpretTest();
+        //InterpretTest();
         PolymorphismTest();
 
     }

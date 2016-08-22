@@ -46,4 +46,14 @@ namespace syntropy {
 	//template <typename TStream, typename TType>
 	//using is_stream_extractable_v = is_stream_extractable<TStream, TType>::value;
 
+    template <typename TType>
+    struct drop {
+
+        using type = std::remove_cv_t<std::remove_reference_t<std::remove_pointer_t<TType>>>;
+
+    };
+
+    template <typename TType>
+    using drop_t = typename drop<TType>::type;
+
 }

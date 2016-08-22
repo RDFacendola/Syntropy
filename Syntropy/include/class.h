@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "hashed_string.h"
+#include "type_traits.h"
 #include "method.h"
 #include "any.h"
 
@@ -102,13 +103,16 @@ namespace syntropy {
             bool IsBaseOf(const Class& other) const noexcept;
 
         private:
+            
+            template <typename TClass>
+            static Class& GetUnqualifiedClass();
 
             /// \brief Create a new class via explicit class definition.
             Class(std::unique_ptr<IClassDefinition> definition);
             
             size_t class_id_;                                       ///< \brief Unique id. 
                                                                     ///< \remarks Can be different at each execution.
-            
+
             std::unique_ptr<IClassDefinition> definition_;			///< \brief Class definition.
 
 
@@ -213,22 +217,6 @@ namespace syntropy {
             std::unordered_map<size_t, Property> properties_;       ///< \brief List of all the supported properties.
 
             std::unordered_map<size_t, Method> methods_;            ///< \brief List of all the supported methods.
-
-        };
-
-        /// \brief Functor used to fill a class definition.
-        /// Specialize this functor for each class requiring reflection.
-        /// \author Raffaele D. Facendola - 2016
-        template <typename TClass>
-        struct ClassDeclaration {
-
-            /// \brief Fill the provided class definition.
-            /// \param definition Definition to fill.
-            std::unique_ptr<ClassDefinition<TClass>> operator()() const {
-
-                return std::make_unique<ClassDefinition<TClass>>(typeid(TClass).name());
-
-            }
 
         };
 
@@ -384,19 +372,19 @@ namespace syntropy {
 
         struct PropertyGetter {
 
-            using TGetter = std::function<bool(Any, Any)>;
+            using TGetter = std::function<bool(Instance, Any)>;
 
             template <typename TClass, typename TProperty>
             TGetter operator() (TProperty TClass::* field) const {
 
-                return[field](Any instance, Any value) -> bool {
+                return[field](Instance instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
-                    auto instance_ptr = instance.As<std::add_pointer_t<std::add_const_t<TClass>>>();
+                    auto instance_ptr = instance.As<std::add_const_t<TClass>>();
 
                     if (value_ptr && instance_ptr) {
 
-                        **value_ptr = (*instance_ptr)->*field;
+                        **value_ptr = instance_ptr->*field;
 
                     }
 
@@ -409,14 +397,14 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TGetter operator() (TProperty(TClass::* getter)() const) const {
 
-                return[getter](Any instance, Any value) -> bool {
+                return[getter](Instance instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
-                    auto instance_ptr = instance.As<std::add_pointer_t<std::add_const_t<TClass>>>();
+                    auto instance_ptr = instance.As<std::add_const_t<TClass>>();
 
                     if (value_ptr && instance_ptr) {
 
-                        **value_ptr = ((*instance_ptr)->*getter)();
+                        **value_ptr = (instance_ptr->*getter)();
 
                     }
 
@@ -430,11 +418,11 @@ namespace syntropy {
 
         struct PropertySetter {
 
-            using TSetter = std::function<bool(Any, Any)>;
+            using TSetter = std::function<bool(Instance, Any)>;
 
             TSetter operator() () const {
 
-                return[](Any, Any) -> bool {
+                return[](Instance, Any) -> bool {
 
                     return false;
 
@@ -445,14 +433,14 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TSetter operator() (TProperty TClass::* property, typename std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) const {
 
-                return[property](Any instance, Any value) -> bool{
+                return[property](Instance instance, Any value) -> bool{
 
                     auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                    auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
+                    auto instance_ptr = instance.As<TClass>();
 
                     if (value_ptr && instance_ptr) {
 
-                        (*instance_ptr)->*property = **value_ptr;
+                        instance_ptr->*property = **value_ptr;
 
                     }
 
@@ -472,14 +460,14 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TSetter operator() (void (TClass::* setter)(TProperty)) const {
 
-                return[setter](Any instance, Any value) -> bool {
+                return[setter](Instance instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                    auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
+                    auto instance_ptr = instance.As<TClass>();
 
                     if (value_ptr && instance_ptr) {
 
-                        ((*instance_ptr)->*setter)(**value_ptr);
+                        (instance_ptr->*setter)(**value_ptr);
 
                     }
 
@@ -492,14 +480,14 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TSetter operator() (TProperty& (TClass::* setter)()) const {
 
-                return[setter](Any instance, Any value) -> bool {
+                return[setter](Instance instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                    auto instance_ptr = instance.As<std::add_pointer_t<TClass>>();
+                    auto instance_ptr = instance.As<TClass>();
 
                     if (value_ptr && instance_ptr) {
 
-                        ((*instance_ptr)->*setter)() = **value_ptr;
+                        (instance_ptr->*setter)() = **value_ptr;
 
                     }
 
@@ -562,6 +550,64 @@ namespace syntropy {
             
         };
 
+        /// \brief Functor used to fill a class definition.
+        /// Specialize this functor for each class requiring reflection.
+        /// \author Raffaele D. Facendola - 2016
+        template <typename TClass>
+        struct ClassDeclaration;
+
+        template <>
+        struct ClassDeclaration<void> {
+
+        public:
+
+            std::unique_ptr<ClassDefinition<void>> operator()() const {
+
+                return std::make_unique<ClassDefinition<void>>("void");
+                
+            }
+
+        };
+
+        template <>
+        struct ClassDeclaration<int> {
+
+        public:
+
+            std::unique_ptr<ClassDefinition<int>> operator()() const {
+
+                return std::make_unique<ClassDefinition<int>>("int");
+
+            }
+
+        };
+
+        template <>
+        struct ClassDeclaration<float> {
+
+        public:
+
+            std::unique_ptr<ClassDefinition<float>> operator()() const {
+
+                return std::make_unique<ClassDefinition<float>>("float");
+
+            }
+
+        };
+
+        template <>
+        struct ClassDeclaration<bool> {
+
+        public:
+
+            std::unique_ptr<ClassDefinition<bool>> operator()() const {
+
+                return std::make_unique<ClassDefinition<bool>>("bool");
+
+            }
+
+        };
+
     }
 
 }
@@ -576,6 +622,15 @@ namespace syntropy {
 
         template <typename TClass>
         inline static Class& Class::GetClass() {
+
+            // Maps the singleton T, T*, const T and const T* to the same instance of Class<T>
+
+            return GetUnqualifiedClass<drop_t<TClass>>();
+            
+        }
+
+        template <typename TClass>
+        inline static Class& Class::GetUnqualifiedClass() {
 
             static Class instance(ClassDeclaration<TClass>{}());
 
@@ -624,7 +679,7 @@ namespace syntropy {
             return definition_->IsAbstract();
 
         }
-
+        
         //////////////// CLASS DEFINITION ////////////////
             
         template <typename TClass>

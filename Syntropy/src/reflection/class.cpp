@@ -11,8 +11,8 @@ using namespace syntropy::reflection;
 
 size_t kPrimes[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71 };
 
-Class::Class(std::unique_ptr<IClassDefinition> definition) :
-    definition_(std::move(definition)){
+Class::Class(std::unique_ptr<IClassDefinition> definition)
+    : definition_(std::move(definition)){
 
     if (!definition_) {
 
@@ -38,7 +38,7 @@ Class::Class(std::unique_ptr<IClassDefinition> definition) :
 
 bool Class::IsBaseOf(const Class& other) const noexcept {
 
-    return other.class_id_ % class_id_ == 0;
+    return other.class_id_ % class_id_ == 0;            // Other derives from this instance.
 
 }
 
