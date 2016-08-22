@@ -18,11 +18,15 @@
 #include <iostream>
 
 #define TEST_TRUE(test) \
-std::cout << ((test) ? "PASSED - " : "NOT PASSED - ")<< #test << " is true" << std::endl;
+std::cout << ((test) ? "PASSED - " : "NOT PASSED - ")<< #test << " is true\n";
 
 #define TEST_FALSE(test) \
-std::cout << (!(test) ? "PASSED - " : "NOT PASSED - ") << #test << " is false" << std::endl;
+std::cout << (!(test) ? "PASSED - " : "NOT PASSED - ") << #test << " is false\n";
 
+#define RUN_TEST(test) \
+std::cout << "Running test " << #test << "()\n\n"; \
+test(); \
+std::cout << "\n";
 
 struct Blob{
 
@@ -70,7 +74,7 @@ public:
         , const_pointer_(other.const_pointer_)
         , blob_(other.blob_) {
 
-        std::cout << "Copy ctor!" << std::endl;
+        std::cout << "Copy ctor!\n";
 
     }
 
@@ -161,14 +165,14 @@ public:
     
 };
 
-class FooDerived : public Foo {
+class FooBar : public Foo {
 
 public:
 
-    FooDerived() noexcept
+    FooBar() noexcept
         : Foo() {}
 
-    FooDerived(const FooDerived& other)
+    FooBar(const FooBar& other)
         : Foo(other) {}
 
 };
@@ -240,13 +244,13 @@ public:
 };
 
 template <>
-struct syntropy::reflection::ClassDeclaration<FooDerived> {
+struct syntropy::reflection::ClassDeclaration<FooBar> {
 
 public:
 
-    std::unique_ptr<syntropy::reflection::ClassDefinition<FooDerived>> operator()() const{
+    std::unique_ptr<syntropy::reflection::ClassDefinition<FooBar>> operator()() const{
 
-        auto c = std::make_unique<syntropy::reflection::ClassDefinition<FooDerived>>("FooDerived");
+        auto c = std::make_unique<syntropy::reflection::ClassDefinition<FooBar>>("FooDerived");
 
         c->DefineBaseClass<Foo>();
 
@@ -262,18 +266,16 @@ public:
     void SynopsisTest() const {
 
         std::cout << "Class '" << foo_class_.GetName().GetString() 
-                  << "' is " << (foo_class_.IsAbstract() ? "" : "not ") << "abstract" << std::endl;
+                  << "' is " << (foo_class_.IsAbstract() ? "" : "not ") << "abstract\n";
 
-        std::cout << "Class '" << foo_class_.GetName().GetString() 
-                  << "' is " << (foo_class_.GetFactory() ? "" : "not ") << "instantiable" << std::endl;
+        std::cout << "Class '" << foo_class_.GetName().GetString()
+                  << "' is " << (foo_class_.GetFactory() ? "" : "not ") << "instantiable\n";
 
         for (const auto& property : foo_class_.GetProperties()) {
 
-            std::cout << "Property " << property.second.GetName().GetString() /*<< " : " << property.second.GetType().name()*/ << std::endl;
+            std::cout << "Property " << property.second.GetName().GetString() << " : " << property.second.GetClass().GetName().GetString() << "\n";
 
         }
-
-        std::cout << std::endl;
 
     }
 
@@ -299,8 +301,6 @@ public:
 
         TEST_FALSE(field_const_pointer_->Set(foo, p));
         TEST_TRUE(field_const_pointer_->Get(foo, p));
-
-        std::cout << std::endl;
 
     }
 
@@ -336,8 +336,6 @@ public:
 
         TEST_TRUE(property_accessor_->Set(foo, bb));
         TEST_TRUE(property_accessor_->Get(foo, bb));
-
-        std::cout << std::endl;
 
     }
 
@@ -392,21 +390,13 @@ public:
 
         TEST_TRUE(field_float_value_->Get(foo, int_val) &&
                   static_cast<int>(foo.value_) == int_val);                           // Outward interpreting
-
-        std::cout << std::endl;
-
+        
     }
 
     void PolymorphismTest() const {
 
-        syntropy::reflection::Instance instance(foo_class_.GetFactory()->Instantiate());
-
-        TEST_TRUE(instance.As<Foo>() != nullptr);
-        TEST_TRUE(instance.As<Bar>() != nullptr);
-        TEST_TRUE(instance.As<FooDerived>() == nullptr);
-
-        FooDerived derived_foo;
-        Bar base_foo;
+        FooBar foo_bar;
+        Bar bar;
                 
         float x = 0;
         float* p = &x;
@@ -416,92 +406,110 @@ public:
 
         // Applying to a derived class
 
-        TEST_TRUE(field_float_value_->Set(derived_foo, 40.2f));
-        TEST_TRUE(field_float_value_->Get(derived_foo, x));
+        TEST_TRUE(field_float_value_->Set(foo_bar, 40.2f));
+        TEST_TRUE(field_float_value_->Get(foo_bar, x));
 
-        TEST_FALSE(field_const_value_->Set(derived_foo, x));
-        TEST_TRUE(field_const_value_->Get(derived_foo, x));
+        TEST_FALSE(field_const_value_->Set(foo_bar, x));
+        TEST_TRUE(field_const_value_->Get(foo_bar, x));
 
-        TEST_TRUE(field_pointer_->Set(derived_foo, p));
-        TEST_TRUE(field_pointer_->Get(derived_foo, p));
+        TEST_TRUE(field_pointer_->Set(foo_bar, p));
+        TEST_TRUE(field_pointer_->Get(foo_bar, p));
 
-        TEST_TRUE(field_pointer_to_const_->Set(derived_foo, q));
-        TEST_TRUE(field_pointer_to_const_->Get(derived_foo, q));
+        TEST_TRUE(field_pointer_to_const_->Set(foo_bar, q));
+        TEST_TRUE(field_pointer_to_const_->Get(foo_bar, q));
 
-        TEST_FALSE(field_const_pointer_->Set(derived_foo, p));
-        TEST_TRUE(field_const_pointer_->Get(derived_foo, p));
+        TEST_FALSE(field_const_pointer_->Set(foo_bar, p));
+        TEST_TRUE(field_const_pointer_->Get(foo_bar, p));
 
-        TEST_TRUE(property_value_->Set(derived_foo, y));
-        TEST_TRUE(property_value_->Get(derived_foo, x));
+        TEST_TRUE(property_value_->Set(foo_bar, y));
+        TEST_TRUE(property_value_->Get(foo_bar, x));
 
-        TEST_FALSE(property_const_value_->Set(derived_foo, y));
-        TEST_TRUE(property_const_value_->Get(derived_foo, x));
+        TEST_FALSE(property_const_value_->Set(foo_bar, y));
+        TEST_TRUE(property_const_value_->Get(foo_bar, x));
 
-        TEST_TRUE(property_pointer_->Set(derived_foo, p));
-        TEST_TRUE(property_pointer_->Get(derived_foo, p));
+        TEST_TRUE(property_pointer_->Set(foo_bar, p));
+        TEST_TRUE(property_pointer_->Get(foo_bar, p));
 
-        TEST_TRUE(property_pointer_to_const_->Set(derived_foo, q));
-        TEST_TRUE(property_pointer_to_const_->Get(derived_foo, q));
+        TEST_TRUE(property_pointer_to_const_->Set(foo_bar, q));
+        TEST_TRUE(property_pointer_to_const_->Get(foo_bar, q));
 
-        TEST_FALSE(property_const_pointer_->Set(derived_foo, p));
-        TEST_TRUE(property_const_pointer_->Get(derived_foo, p));
+        TEST_FALSE(property_const_pointer_->Set(foo_bar, p));
+        TEST_TRUE(property_const_pointer_->Get(foo_bar, p));
 
-        TEST_TRUE(property_pod_->Set(derived_foo, bb));
-        TEST_TRUE(property_pod_->Get(derived_foo, bb));
+        TEST_TRUE(property_pod_->Set(foo_bar, bb));
+        TEST_TRUE(property_pod_->Get(foo_bar, bb));
 
-        TEST_TRUE(property_accessor_->Set(derived_foo, bb));
-        TEST_TRUE(property_accessor_->Get(derived_foo, bb));
+        TEST_TRUE(property_accessor_->Set(foo_bar, bb));
+        TEST_TRUE(property_accessor_->Get(foo_bar, bb));
 
         // Applying to the base class
 
-        TEST_FALSE(field_float_value_->Set(base_foo, 40.2f));
-        TEST_FALSE(field_float_value_->Get(base_foo, x));
+        TEST_FALSE(field_float_value_->Set(bar, 40.2f));
+        TEST_FALSE(field_float_value_->Get(bar, x));
 
-        TEST_FALSE(field_const_value_->Get(base_foo, x));
+        TEST_FALSE(field_const_value_->Get(bar, x));
 
-        TEST_FALSE(field_pointer_->Set(base_foo, p));
-        TEST_FALSE(field_pointer_->Get(base_foo, p));
+        TEST_FALSE(field_pointer_->Set(bar, p));
+        TEST_FALSE(field_pointer_->Get(bar, p));
 
-        TEST_FALSE(field_pointer_to_const_->Set(base_foo, q));
-        TEST_FALSE(field_pointer_to_const_->Get(base_foo, q));
+        TEST_FALSE(field_pointer_to_const_->Set(bar, q));
+        TEST_FALSE(field_pointer_to_const_->Get(bar, q));
 
-        TEST_FALSE(field_const_pointer_->Get(base_foo, p));
+        TEST_FALSE(field_const_pointer_->Get(bar, p));
 
-        TEST_FALSE(property_value_->Set(base_foo, y));
-        TEST_FALSE(property_value_->Get(base_foo, x));
+        TEST_FALSE(property_value_->Set(bar, y));
+        TEST_FALSE(property_value_->Get(bar, x));
 
-        TEST_FALSE(property_const_value_->Get(base_foo, x));
+        TEST_FALSE(property_const_value_->Get(bar, x));
 
-        TEST_FALSE(property_pointer_->Set(base_foo, p));
-        TEST_FALSE(property_pointer_->Get(base_foo, p));
+        TEST_FALSE(property_pointer_->Set(bar, p));
+        TEST_FALSE(property_pointer_->Get(bar, p));
 
-        TEST_FALSE(property_pointer_to_const_->Set(base_foo, q));
-        TEST_FALSE(property_pointer_to_const_->Get(base_foo, q));
+        TEST_FALSE(property_pointer_to_const_->Set(bar, q));
+        TEST_FALSE(property_pointer_to_const_->Get(bar, q));
 
-        TEST_FALSE(property_const_pointer_->Get(base_foo, p));
+        TEST_FALSE(property_const_pointer_->Get(bar, p));
 
-        TEST_FALSE(property_pod_->Set(base_foo, bb));
-        TEST_FALSE(property_pod_->Get(base_foo, bb));
+        TEST_FALSE(property_pod_->Set(bar, bb));
+        TEST_FALSE(property_pod_->Get(bar, bb));
 
-        TEST_FALSE(property_accessor_->Set(base_foo, bb));
-        TEST_FALSE(property_accessor_->Get(base_foo, bb));
+        TEST_FALSE(property_accessor_->Set(bar, bb));
+        TEST_FALSE(property_accessor_->Get(bar, bb));
 
-        std::cout << std::endl;
+    }
+
+    void InstancingTest() {
+
+        syntropy::reflection::Instance foo(foo_class_.GetFactory()->Instantiate());
+        syntropy::reflection::Instance foobar(foobar_class_.GetFactory()->Instantiate());
+
+        std::cout << "Instancing 'foo' of type " << foo.GetClass().GetName().GetString() << "\n";
+        std::cout << "Instancing 'foobar' of type " << foobar.GetClass().GetName().GetString() << "\n";
+
+        TEST_TRUE(foo.As<Foo>() != nullptr);
+        TEST_TRUE(foo.As<Bar>() != nullptr);
+        TEST_TRUE(foo.As<FooBar>() == nullptr);
+
+        TEST_TRUE(foobar.As<Foo>() != nullptr);
+        TEST_TRUE(foobar.As<Bar>() != nullptr);
+        TEST_TRUE(foobar.As<FooBar>() != nullptr);
 
     }
 
     void Do() {
 
-        SynopsisTest();
-        FieldTest();
-        PropertyTest();
-        //InterpretTest();
-        PolymorphismTest();
+        RUN_TEST(SynopsisTest);
+        RUN_TEST(FieldTest);
+        RUN_TEST(PropertyTest);
+        //RUN_TEST(InterpretTest);
+        RUN_TEST(PolymorphismTest);
+        RUN_TEST(InstancingTest);
 
     }
 
     Tester() 
-        : foo_class_(syntropy::reflection::Class::GetClass<Foo>()){
+        : foo_class_(syntropy::reflection::Class::GetClass<Foo>())
+        , foobar_class_(syntropy::reflection::Class::GetClass<FooBar>()){
     
         field_int_value_ = foo_class_.GetProperty("int_value");
         field_float_value_ = foo_class_.GetProperty("float_value");
@@ -540,6 +548,7 @@ public:
 private:
 
     const syntropy::reflection::Class& foo_class_;
+    const syntropy::reflection::Class& foobar_class_;
 
     const syntropy::reflection::Property* field_int_value_;
     const syntropy::reflection::Property* field_float_value_;
