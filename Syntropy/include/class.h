@@ -538,6 +538,12 @@ namespace syntropy {
             template <typename TInstance, typename TValue>
             bool Set(TInstance& instance, const TValue& value) const;
 
+            template <typename TValue>
+            bool Get(const Instance instance, TValue& value) const;
+
+            template <typename TValue>
+            bool Set(Instance instance, const TValue& value) const;
+
         private:
             
             HashedString name_;                                     ///< \brief Property name.
@@ -954,6 +960,22 @@ namespace syntropy {
             return setter_(std::addressof(instance),
                            std::addressof(value));
 
+
+        }
+
+        template <typename TValue>
+        bool Property::Get(const Instance instance, TValue& value) const {
+
+            return getter_(instance,
+                           std::addressof(value));
+
+        }
+
+        template <typename TValue>
+        bool Property::Set(Instance instance, const TValue& value) const {
+
+            return setter_(instance,
+                           std::addressof(value));
 
         }
 
