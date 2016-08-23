@@ -268,7 +268,7 @@ namespace syntropy {
             }
 
         };
-    
+
         /// \brief Describes a polymorphic type-safe container for single values of any type.
         /// \author Raffaele D. Facendola, based on "Valued Conversion" by Kevlin Henney
         class Instance {
@@ -369,6 +369,14 @@ namespace syntropy {
             std::unique_ptr<IContent> content_;         ///< \brief Wraps the actual value.
 
         };
+
+        template <typename TInstance>
+        Instance wrap_instance(const TInstance& instance);
+
+        template <typename TInstance, typename std::enable_if_t<!std::is_const<TInstance>::value>>
+        Instance wrap_instance(TInstance& instance);
+
+        Instance wrap_instance(Instance instance);
 
         struct PropertyGetter {
 
@@ -537,12 +545,6 @@ namespace syntropy {
 
             template <typename TInstance, typename TValue>
             bool Set(TInstance& instance, const TValue& value) const;
-
-            template <typename TValue>
-            bool Get(const Instance instance, TValue& value) const;
-
-            template <typename TValue>
-            bool Set(Instance instance, const TValue& value) const;
 
         private:
             
@@ -891,6 +893,28 @@ namespace syntropy {
 
         }
 
+        //////////////// INSTANCE ////////////////
+
+        template <typename TInstance>
+        inline Instance wrap_instance(const TInstance& instance) {
+
+            return Instance(std::addressof(instance));
+
+        }
+
+        template <typename TInstance, typename std::enable_if_t<!std::is_const<TInstance>::value>>
+        inline Instance wrap_instance(TInstance& instance) {
+
+            return Instance(std::addressof(instance));
+
+        }
+
+        inline Instance wrap_instance(Instance instance) {
+
+            return instance;
+
+        }
+
         //////////////// CLASS PROVIDER ////////////////
 
         template <typename TClass>
@@ -943,11 +967,11 @@ namespace syntropy {
         }
         
         template <typename TInstance, typename TValue>
-        inline bool Property::Get(const TInstance& instance, TValue& value) const {
+        bool Property::Get(const TInstance& instance, TValue& value) const {
 
-            static_assert(!std::is_const<TValue>::value, "The value must be a modifiable lvalue");
+            static_assert(!std::is_const<TValue>::value, "TValue must be a modifiable lvalue");
 
-            return getter_(std::addressof(instance),
+            return getter_(wrap_instance(instance),
                            std::addressof(value));
 
         }
@@ -955,26 +979,7 @@ namespace syntropy {
         template <typename TInstance, typename TValue>
         bool Property::Set(TInstance& instance, const TValue& value) const {
 
-            static_assert(!std::is_const<TInstance>::value, "The instance must be a modifiable lvalue");
-
-            return setter_(std::addressof(instance),
-                           std::addressof(value));
-
-
-        }
-
-        template <typename TValue>
-        bool Property::Get(const Instance instance, TValue& value) const {
-
-            return getter_(instance,
-                           std::addressof(value));
-
-        }
-
-        template <typename TValue>
-        bool Property::Set(Instance instance, const TValue& value) const {
-
-            return setter_(instance,
+            return setter_(wrap_instance(instance),
                            std::addressof(value));
 
         }
