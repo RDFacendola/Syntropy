@@ -479,9 +479,9 @@ public:
     }
 
     void InstancingTest() {
-
-        syntropy::reflection::Instance bar(bar_class_.GetFactory()->Instantiate());
-        syntropy::reflection::Instance foobar(foobar_class_.GetFactory()->Instantiate());
+                
+        auto bar = bar_class_.GetFactory()->Instantiate();
+        auto foobar = foobar_class_.GetFactory()->Instantiate();
 
         std::cout << "Instancing 'bar' of type " << bar.GetClass().GetName().GetString() << "\n";
         std::cout << "Instancing 'foobar' of type " << foobar.GetClass().GetName().GetString() << "\n";

@@ -34,12 +34,14 @@ namespace syntropy {
         template <typename TClass>
         class Factory;
 
-        class Instance;
+        template <ConstQualifier kConst>
+        class BaseInstance;
+
         class Property;
         struct IClassProvider;
         
     }
-
+    
 }
 
 namespace syntropy {
@@ -50,6 +52,10 @@ namespace syntropy {
         constexpr bool is_instantiable_v = !std::is_abstract_v<TClass> &&
                                             std::is_nothrow_default_constructible_v<TClass>;
 
+        using ConstInstance = BaseInstance<ConstQualifier::kConst>;
+
+        using Instance = BaseInstance<ConstQualifier::kNonConst>;
+        
         /// \brief Describes a class type.
         /// \author Raffaele D. Facendola - 2016
         class Class {
@@ -263,63 +269,56 @@ namespace syntropy {
 
             const IFactory* operator()() const noexcept {
 
-                return std::addressof(Factory<typename std::remove_cv_t<TClass>>::GetInstance());
+                return std::addressof(Factory<typename drop_t<TClass>>::GetInstance());
 
             }
 
         };
 
         /// \brief Describes a polymorphic type-safe container for single values of any type.
-        /// \author Raffaele D. Facendola, based on "Valued Conversion" by Kevlin Henney
-        class Instance {
+        /// Loosely mimic the usage of a type-erased std::reference.
+        /// \author Raffaele D. Facendola
+        template <ConstQualifier kConstQualifier>
+        class BaseInstance {
 
         public:
+            
+            template <typename TInstance>
+            using qualify_t = typename std::conditional_t<kConstQualifier == ConstQualifier::kConst,
+                                                          typename std::add_const_t<TInstance>,
+                                                          typename std::remove_const_t<TInstance>>;
 
             /// \brief Create an empty instance.
-            Instance() = default;
+            BaseInstance() = default;
 
             /// \brief Destructor.
-            ~Instance() = default;
+            ~BaseInstance() = default;
 
             /// \brief Copy constructor.
             /// \param other Instance to copy.
-            Instance(const Instance& other) noexcept;
-
+            BaseInstance(const BaseInstance<kConstQualifier>& other) noexcept;
+            
             /// \brief Move constructor
             /// \param other Instance to move.
-            Instance(Instance&& other) noexcept;
+            BaseInstance(BaseInstance<kConstQualifier>&& other) noexcept;
+
+            operator BaseInstance<ConstQualifier::kConst>() const noexcept;
 
             /// \brief Wraps an object to be referenced via Instance.
             /// \param instance Object to reference.
             template <typename TInstance>
-            Instance(TInstance* instance) noexcept;
+            BaseInstance(TInstance* instance) noexcept;
 
             /// \brief Unified assignment operator.
             /// \param other Instance to assign from.
-            Instance& operator=(Instance other) noexcept;
+            BaseInstance& operator=(BaseInstance<kConstQualifier> other) noexcept;
 
-            /// \brief Wraps a new object via this instance.
-            /// \param other Object to reference via this instance.
-            template <typename TInstance>
-            Instance& operator=(TInstance& other) noexcept;
-
-            /// \brief Check whether the type of the object being referenced derives from the provided class.
-            /// \tparam TInstance Type of class to check against.
-            /// \return Returns true if the wrapped object's type derives from TInstance or is exactly TInstance. returns false otherwise.
-            template <typename TInstance>
-            bool Is() const noexcept;
 
             /// \brief Get a typed pointer to the wrapped object.
             /// \tparam TInstance Type of class to check against.
             /// \return Returns a pointer to the contained object if the underlying type derives from TInstance. Returns nullptr instead.
             template <typename TInstance>
-            const TInstance* As() const noexcept;
-
-            /// \brief Get a typed pointer to the wrapped object.
-            /// \tparam TInstance Type of class to check against.
-            /// \return Returns a pointer to the contained object if the underlying type derives from TInstance. Returns nullptr instead.
-            template <typename TInstance>
-            TInstance* As() noexcept;
+            TInstance* As() const noexcept;
 
             bool IsEmpty() const noexcept;
 
@@ -329,9 +328,11 @@ namespace syntropy {
 
             /// \brief Swaps two instances.
             /// \param other Object to swap with the current instance.
-            Instance& swap(Instance& other) noexcept;
+            BaseInstance<kConstQualifier>& swap(BaseInstance<kConstQualifier>& other) noexcept;
 
         private:
+
+            friend class BaseInstance<ConstQualifier::kNonConst>;       // Needed to grant access to the const-qualified version of the content
 
             /// \brief Base interface for the underlying content.
             struct IContent {
@@ -345,7 +346,11 @@ namespace syntropy {
 
                 /// \brief Clone the underlying value to another instance.
                 /// \return Returns a pointer to the new copy of the value.
-                virtual std::unique_ptr<IContent> Clone() const noexcept = 0;
+                virtual std::unique_ptr<typename BaseInstance<kConstQualifier>::IContent> Clone() const noexcept = 0;
+
+                /// \brief Clone the underlying value to another const instance.
+                /// \return Returns a pointer to the constant copy of the value.
+                virtual std::unique_ptr<typename BaseInstance<ConstQualifier::kConst>::IContent> ConstClone() const noexcept = 0;
 
             };
 
@@ -356,39 +361,72 @@ namespace syntropy {
 
                 /// \brief Create a new container for a single value.
                 ///\ param value Value to store inside the container.
-                Content(TInstance* instance) noexcept;
+                Content(TInstance& instance) noexcept;
 
                 virtual const Class& GetClass() const noexcept override;
 
-                virtual std::unique_ptr<IContent> Clone() const noexcept override;
+                virtual std::unique_ptr<typename BaseInstance<kConstQualifier>::IContent> Clone() const noexcept override;
 
-                TInstance* content_;                    ///< \brief Actual content.
+                virtual std::unique_ptr<typename BaseInstance<ConstQualifier::kConst>::IContent> ConstClone() const noexcept override {
+
+                    // Possible MSVC bug
+                    //
+                    // Defining this function outside the class declaration yields error C2244: 
+                    // 'Instance<kConstQualifier>::Content<TInstance>::ConstClone': unable to match function definition to an existing declaration
+                    //
+                    // [...]: note: existing declarations
+                    // [...]: note: 'std::unique_ptr<Instance<kConstQualifier>::IContent> Instance<kConstQualifier>::Content<TInstance>::ConstClone(void) noexcept const'
+                    //                                        ^^^^^^^^^^^^^^^                                                            ^^^^^^^^^^
+                    //
+                    // This declaration doesn't even exist...
+
+                    using TTargetInstance = BaseInstance<ConstQualifier::kConst>;
+
+                    return std::make_unique<TTargetInstance::Content<TTargetInstance::qualify_t<TInstance>>>(content_);      // Add const-ness
+
+                }
+
+                TInstance& content_;                            ///< \brief Actual content.
 
             };
 
-            std::unique_ptr<IContent> content_;         ///< \brief Wraps the actual value.
+            /// \brief Create a new instance from content pointer.
+            BaseInstance(std::unique_ptr<IContent> content) noexcept;
+
+            /// \brief Check whether the type of the object being referenced derives from the provided class.
+            /// \tparam TInstance Type of class to check against.
+            /// \return Returns true if the wrapped object's type derives from TInstance or is exactly TInstance. returns false otherwise.
+            template <typename TInstance>
+            bool Is() const noexcept;
+
+            std::unique_ptr<IContent> content_;                 ///< \brief Wraps the actual value.
 
         };
 
         template <typename TInstance>
-        Instance wrap_instance(const TInstance& instance);
+        ConstInstance wrap_const_instance(const TInstance& instance);
 
-        template <typename TInstance, typename std::enable_if_t<!std::is_const<TInstance>::value>>
+        template <ConstQualifier kConstQualifier>
+        ConstInstance wrap_const_instance(BaseInstance<kConstQualifier> instance);
+
+        template <typename TInstance>
         Instance wrap_instance(TInstance& instance);
 
-        Instance wrap_instance(Instance instance);
+        Instance wrap_instance(BaseInstance<ConstQualifier::kConst> instance) = delete;         // Denied: conversion loses qualifiers
 
+        Instance wrap_instance(BaseInstance<ConstQualifier::kNonConst> instance);
+        
         struct PropertyGetter {
 
-            using TGetter = std::function<bool(Instance, Any)>;
+            using TGetter = std::function<bool(const ConstInstance&, Any)>;
 
             template <typename TClass, typename TProperty>
             TGetter operator() (TProperty TClass::* field) const {
 
-                return[field](Instance instance, Any value) -> bool {
+                return[field](const ConstInstance& instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
-                    auto instance_ptr = instance.As<std::add_const_t<TClass>>();
+                    auto instance_ptr = instance.As<const TClass>();
 
                     if (value_ptr && instance_ptr) {
 
@@ -405,10 +443,10 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TGetter operator() (TProperty(TClass::* getter)() const) const {
 
-                return[getter](Instance instance, Any value) -> bool {
+                return[getter](const ConstInstance& instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
-                    auto instance_ptr = instance.As<std::add_const_t<TClass>>();
+                    auto instance_ptr = instance.As<const TClass>();
 
                     if (value_ptr && instance_ptr) {
 
@@ -426,11 +464,11 @@ namespace syntropy {
 
         struct PropertySetter {
 
-            using TSetter = std::function<bool(Instance, Any)>;
+            using TSetter = std::function<bool(const Instance&, Any)>;
 
             TSetter operator() () const {
 
-                return[](Instance, Any) -> bool {
+                return[](const Instance&, Any) -> bool {
 
                     return false;
 
@@ -441,7 +479,7 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TSetter operator() (TProperty TClass::* property, typename std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) const {
 
-                return[property](Instance instance, Any value) -> bool{
+                return[property](const Instance& instance, Any value) -> bool{
 
                     auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
                     auto instance_ptr = instance.As<TClass>();
@@ -468,7 +506,7 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TSetter operator() (void (TClass::* setter)(TProperty)) const {
 
-                return[setter](Instance instance, Any value) -> bool {
+                return[setter](const Instance& instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
                     auto instance_ptr = instance.As<TClass>();
@@ -488,7 +526,7 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TSetter operator() (TProperty& (TClass::* setter)()) const {
 
-                return[setter](Instance instance, Any value) -> bool {
+                return[setter](const Instance& instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
                     auto instance_ptr = instance.As<TClass>();
@@ -797,36 +835,42 @@ namespace syntropy {
         template <typename TClass>
         Instance Factory<TClass>::Instantiate() const noexcept {
 
-            return Instance(new TClass());
+            return wrap_instance(*new TClass());
 
         }
 
-        //////////////// INSTANCE ////////////////
+        //////////////// BASE INSTANCE ////////////////
 
-        inline Instance::Instance(const Instance& other) noexcept :
-            content_(other.content_ ? other.content_->Clone() : nullptr) {}
+        template <ConstQualifier kConstQualifier>
+        inline BaseInstance<kConstQualifier>::BaseInstance(const BaseInstance<kConstQualifier>& other) noexcept
+            : content_(other.content_ ? other.content_->Clone() : nullptr) {}
 
-        inline Instance::Instance(Instance&& other) noexcept :
-            content_(std::move(other.content_)) {}
+        template <ConstQualifier kConstQualifier>
+        inline BaseInstance<kConstQualifier>::BaseInstance(BaseInstance<kConstQualifier>&& other) noexcept
+            : content_(std::move(other.content_)) {}
 
+        template <ConstQualifier kConstQualifier>
+        BaseInstance<kConstQualifier>::BaseInstance(std::unique_ptr<IContent> content) noexcept
+            : content_(std::move(content)) {}
+
+        template <ConstQualifier kConstQualifier>
         template <typename TInstance>
-        inline Instance::Instance(TInstance* instance) noexcept :
-            content_(std::make_unique<Content<TInstance>>(instance)) {}
-
-        inline Instance& Instance::operator=(Instance other) noexcept {
-
-            return Instance(other).swap(*this);
+        inline BaseInstance<kConstQualifier>::BaseInstance(TInstance* instance) noexcept
+            : content_(instance ? std::make_unique<Content<qualify_t<TInstance>>>(*instance) : nullptr) {
+        
+            static_assert(std::is_convertible_v<TInstance*, qualify_t<TInstance>*>, "Conversion loses qualifiers.");
 
         }
 
-        template <typename TInstance>
-        inline Instance& Instance::operator=(TInstance& other) noexcept {
+        template <ConstQualifier kConstQualifier>
+        inline BaseInstance<kConstQualifier>& BaseInstance<kConstQualifier>::operator=(BaseInstance<kConstQualifier> other) noexcept {
 
-            return Instance(other).swap(*this);
+            return BaseInstance<kConstQualifier>(other).swap(*this);
 
         }
-
-        inline const Class& Instance::GetClass() const noexcept {
+        
+        template <ConstQualifier kConstQualifier>
+        inline const Class& BaseInstance<kConstQualifier>::GetClass() const noexcept {
 
             return content_ ?
                    content_->GetClass() :
@@ -834,38 +878,40 @@ namespace syntropy {
 
         }
 
+        template <ConstQualifier kConstQualifier>
         template <typename TInstance>
-        inline bool Instance::Is() const noexcept {
+        inline bool BaseInstance<kConstQualifier>::Is() const noexcept {
 
             return Class::GetClass<TInstance>().IsBaseOf(GetClass());
 
         }
 
+        template <ConstQualifier kConstQualifier>
         template <typename TInstance>
-        inline const TInstance* Instance::As() const noexcept {
+        inline TInstance* BaseInstance<kConstQualifier>::As() const noexcept {
 
             return (content_ && Is<TInstance>()) ?
-                   static_cast<Content<TInstance>*>(content_.get())->content_ :
+                   std::addressof(static_cast<Content<qualify_t<TInstance>>*>(content_.get())->content_) :
                    nullptr;
 
         }
 
-        template <typename TInstance>
-        inline TInstance* Instance::As() noexcept {
+        template <ConstQualifier kConstQualifier>
+        inline BaseInstance<kConstQualifier>::operator BaseInstance<ConstQualifier::kConst>() const noexcept {
 
-            return (content_ && Is<TInstance>()) ?
-                    static_cast<Content<TInstance>*>(content_.get())->content_ :
-                    nullptr;
+            return BaseInstance<ConstQualifier::kConst>(content_->ConstClone());
 
         }
-
-        inline bool Instance::IsEmpty() const noexcept {
+        
+        template <ConstQualifier kConstQualifier>
+        inline bool BaseInstance<kConstQualifier>::IsEmpty() const noexcept {
 
             return !!content_;
 
         }
 
-        inline Instance& Instance::swap(Instance& other) noexcept {
+        template <ConstQualifier kConstQualifier>
+        inline BaseInstance<kConstQualifier>& BaseInstance<kConstQualifier>::swap(BaseInstance<kConstQualifier>& other) noexcept {
 
             std::swap(content_, other.content_);
 
@@ -875,41 +921,51 @@ namespace syntropy {
 
         //////////////// INSTANCE :: CONTENT ////////////////
 
+        template <ConstQualifier kConstQualifier>
         template <typename TInstance>
-        inline Instance::Content<TInstance>::Content(TInstance* instance) noexcept
+        inline BaseInstance<kConstQualifier>::Content<TInstance>::Content(TInstance& instance) noexcept
             : content_(instance) {}
 
+        template <ConstQualifier kConstQualifier>
         template <typename TInstance>
-        inline const Class& Instance::Content<TInstance>::GetClass() const noexcept {
+        inline const Class& BaseInstance<kConstQualifier>::Content<TInstance>::GetClass() const noexcept {
 
             return Class::GetClass<TInstance>();
 
         }
 
+        template <ConstQualifier kConstQualifier>
         template <typename TInstance>
-        inline std::unique_ptr<Instance::IContent> Instance::Content<TInstance>::Clone() const noexcept {
+        inline std::unique_ptr<typename BaseInstance<kConstQualifier>::IContent> BaseInstance<kConstQualifier>::Content<TInstance>::Clone() const noexcept {
 
-            return std::make_unique<Content<TInstance>>(content_);
+            return std::make_unique<BaseInstance<kConstQualifier>::Content<TInstance>>(content_);       // Preserve qualifiers
+            
+        }
+
+        //////////////// WRAP INSTANCE ////////////////
+
+        template <typename TInstance>
+        inline ConstInstance wrap_const_instance(const TInstance& instance) {
+
+            return ConstInstance(std::addressof(instance));
 
         }
 
-        //////////////// INSTANCE ////////////////
+        template <ConstQualifier kConstQualifier>
+        inline ConstInstance wrap_const_instance(BaseInstance<kConstQualifier> instance) {
 
-        template <typename TInstance>
-        inline Instance wrap_instance(const TInstance& instance) {
-
-            return Instance(std::addressof(instance));
+            return instance;
 
         }
-
-        template <typename TInstance, typename std::enable_if_t<!std::is_const<TInstance>::value>>
+                        
+        template <typename TInstance>
         inline Instance wrap_instance(TInstance& instance) {
 
             return Instance(std::addressof(instance));
 
         }
 
-        inline Instance wrap_instance(Instance instance) {
+        inline Instance wrap_instance(BaseInstance<ConstQualifier::kNonConst> instance) {
 
             return instance;
 
@@ -971,7 +1027,7 @@ namespace syntropy {
 
             static_assert(!std::is_const<TValue>::value, "TValue must be a modifiable lvalue");
 
-            return getter_(wrap_instance(instance),
+            return getter_(wrap_const_instance(instance),
                            std::addressof(value));
 
         }
