@@ -10,6 +10,8 @@
 #include <memory>
 #include <type_traits>
 
+#include <iostream>
+
 #include "hashed_string.h"
 #include "type_traits.h"
 #include "method.h"
@@ -403,27 +405,83 @@ namespace syntropy {
 
         };
 
+        class ConstInstanceView {
+
+        public:
+
+            ConstInstanceView(const ConstInstance& const_instance) 
+                : const_instance_(std::addressof(const_instance))
+                , qualifier_(ConstQualifier::kConst){}
+
+            ConstInstanceView(const Instance& instance) 
+                : instance_(std::addressof(instance))
+                , qualifier_(ConstQualifier::kNonConst){}
+
+            template <typename TInstance>
+            const TInstance* As() const noexcept {
+
+                return qualifier_ == ConstQualifier::kConst ?
+                       const_instance_->As<const TInstance>() :
+                       instance_->As<const TInstance>();
+
+            }
+
+            bool IsEmpty() const noexcept {
+
+                return qualifier_ == ConstQualifier::kConst ?
+                       const_instance_->IsEmpty() :
+                       instance_->IsEmpty();
+
+            }
+
+            const Class& GetClass() const noexcept {
+
+                return qualifier_ == ConstQualifier::kConst ?
+                       const_instance_->GetClass() :
+                       instance_->GetClass();
+
+            }
+
+        private:
+
+            ConstQualifier qualifier_;
+
+            union {
+
+                const ConstInstance* const_instance_;
+                const Instance* instance_;
+
+            };
+
+        };
+
         template <typename TInstance>
-        ConstInstance wrap_const_instance(const TInstance& instance);
+        ConstInstance wrap_const_instance(const TInstance& instance) noexcept;
 
         template <ConstQualifier kConstQualifier>
-        ConstInstance wrap_const_instance(BaseInstance<kConstQualifier> instance);
+        ConstInstance wrap_const_instance(BaseInstance<kConstQualifier> instance) noexcept;
 
         template <typename TInstance>
-        Instance wrap_instance(TInstance& instance);
+        ConstInstance wrap_const_instance(const TInstance&&) = delete;
 
+        template <typename TInstance>
+        Instance wrap_instance(TInstance& instance) noexcept;
+        
         Instance wrap_instance(BaseInstance<ConstQualifier::kConst> instance) = delete;         // Denied: conversion loses qualifiers
 
-        Instance wrap_instance(BaseInstance<ConstQualifier::kNonConst> instance);
+        Instance wrap_instance(BaseInstance<ConstQualifier::kNonConst> instance) noexcept;
         
+        template <typename TInstance>
+        Instance wrap_instance(const TInstance&&) = delete;
+
         struct PropertyGetter {
 
-            using TGetter = std::function<bool(const ConstInstance&, Any)>;
+            using TGetter = std::function<bool(ConstInstanceView, Any)>;
 
             template <typename TClass, typename TProperty>
             TGetter operator() (TProperty TClass::* field) const {
 
-                return[field](const ConstInstance& instance, Any value) -> bool {
+                return[field](ConstInstanceView instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
                     auto instance_ptr = instance.As<const TClass>();
@@ -443,7 +501,7 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TGetter operator() (TProperty(TClass::* getter)() const) const {
 
-                return[getter](const ConstInstance& instance, Any value) -> bool {
+                return[getter](ConstInstanceView instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
                     auto instance_ptr = instance.As<const TClass>();
@@ -580,9 +638,16 @@ namespace syntropy {
 
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue& value) const;
-
-            template <typename TInstance, typename TValue>
+            
+            template <ConstQualifier kConstQualifier, typename TValue>
+            bool Get(const BaseInstance<kConstQualifier>& instance, TValue& value) const;
+            
+            // SFINAE trick because TInstance& is no worse than const Instance& when TInstance = Instance. This would cause a sub-optimal overload resolution but won't produce any error whatsoever.
+            template <typename TInstance, typename TValue, typename std::enable_if_t<!std::is_same<TInstance, Instance>::value, int> = 0>
             bool Set(TInstance& instance, const TValue& value) const;
+
+            template <typename TValue>
+            bool Set(const Instance& instance, const TValue& value) const;
 
         private:
             
@@ -945,27 +1010,27 @@ namespace syntropy {
         //////////////// WRAP INSTANCE ////////////////
 
         template <typename TInstance>
-        inline ConstInstance wrap_const_instance(const TInstance& instance) {
+        inline ConstInstance wrap_const_instance(const TInstance& instance) noexcept {
 
             return ConstInstance(std::addressof(instance));
 
         }
 
         template <ConstQualifier kConstQualifier>
-        inline ConstInstance wrap_const_instance(BaseInstance<kConstQualifier> instance) {
+        inline ConstInstance wrap_const_instance(BaseInstance<kConstQualifier> instance) noexcept {
 
             return instance;
 
         }
                         
         template <typename TInstance>
-        inline Instance wrap_instance(TInstance& instance) {
+        inline Instance wrap_instance(TInstance& instance) noexcept {
 
             return Instance(std::addressof(instance));
 
         }
 
-        inline Instance wrap_instance(BaseInstance<ConstQualifier::kNonConst> instance) {
+        inline Instance wrap_instance(BaseInstance<ConstQualifier::kNonConst> instance) noexcept {
 
             return instance;
 
@@ -1023,19 +1088,33 @@ namespace syntropy {
         }
         
         template <typename TInstance, typename TValue>
-        bool Property::Get(const TInstance& instance, TValue& value) const {
-
-            static_assert(!std::is_const<TValue>::value, "TValue must be a modifiable lvalue");
+        inline bool Property::Get(const TInstance& instance, TValue& value) const {
 
             return getter_(wrap_const_instance(instance),
                            std::addressof(value));
 
         }
 
-        template <typename TInstance, typename TValue>
-        bool Property::Set(TInstance& instance, const TValue& value) const {
+        template <ConstQualifier kConstQualifier, typename TValue>
+        inline bool Property::Get(const BaseInstance<kConstQualifier>& instance, TValue& value) const {
+    
+            return getter_(instance,
+                           std::addressof(value));
+
+        }
+                
+        template <typename TInstance, typename TValue, typename std::enable_if_t<!std::is_same<TInstance, Instance>::value, int>>
+        inline bool Property::Set(TInstance& instance, const TValue& value) const {
 
             return setter_(wrap_instance(instance),
+                           std::addressof(value));
+
+        }
+
+        template <typename TValue>
+        inline bool Property::Set(const Instance& instance, const TValue& value) const {
+
+            return setter_(instance,
                            std::addressof(value));
 
         }

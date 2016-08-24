@@ -574,6 +574,44 @@ public:
 
     }
 
+    FooBar MakeFooBar() {
+
+        return FooBar();
+
+    }
+
+    syntropy::reflection::ConstInstance MakeConstInstance(const FooBar& foobar) {
+
+        return std::addressof(foobar);
+
+    }
+
+    void ForwardingTest() {
+
+        float x = 0;
+
+        FooBar foobar;
+
+        auto foobar_instance = syntropy::reflection::wrap_instance(foobar);
+        auto const_foobar_instance = syntropy::reflection::wrap_const_instance(foobar);
+
+        
+        TEST_TRUE(field_float_value_->Set(foobar_instance, 999.0f));
+        //TEST_TRUE(field_float_value_->Set(const_foobar_instance, 999.0f));                        // Const instance
+        TEST_TRUE(field_float_value_->Set(foobar_class_.GetFactory()->Instantiate(), 999.0f));
+        //TEST_TRUE(field_float_value_->Set(MakeConstInstance(foobar), 999.0f));                    // Const instance
+        TEST_TRUE(field_float_value_->Set(foobar, 999.0f));
+        //TEST_TRUE(field_float_value_->Set(MakeFooBar(), 999.0f));                                 // r-value reference
+        
+        TEST_TRUE(field_float_value_->Get(foobar_instance, x));
+        TEST_TRUE(field_float_value_->Get(const_foobar_instance, x));
+        TEST_TRUE(field_float_value_->Get(foobar_class_.GetFactory()->Instantiate(), x));
+        TEST_TRUE(field_float_value_->Get(MakeConstInstance(foobar), x));
+        TEST_TRUE(field_float_value_->Get(foobar, x));
+        TEST_TRUE(field_float_value_->Get(MakeFooBar(), x));
+
+    }
+
     void Do() {
 
         RUN_TEST(SynopsisTest);
@@ -582,8 +620,10 @@ public:
         //RUN_TEST(InterpretTest);
         RUN_TEST(PolymorphismTest);
         RUN_TEST(InstancingTest);
+        RUN_TEST(ForwardingTest);
 
     }
+
 
     Tester() 
         : foo_class_(syntropy::reflection::Class::GetClass<Foo>())
