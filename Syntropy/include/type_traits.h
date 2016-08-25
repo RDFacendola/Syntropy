@@ -7,6 +7,7 @@
 #pragma once
 
 #include <type_traits>
+#include <typeinfo>
 
 namespace syntropy {
 
@@ -70,6 +71,23 @@ namespace syntropy {
 
         kConst = true,
         kNonConst = false
+
+    };
+
+    template <typename TType>
+    struct type_base_of {};
+
+    template <typename TType, typename TInstance>
+    struct type_get {};
+
+    template <typename TInstance>
+    struct type_get<std::type_info, TInstance> {
+    
+        const std::type_info& operator()() const noexcept {
+
+            return typeid(TInstance);
+
+        }
 
     };
 
