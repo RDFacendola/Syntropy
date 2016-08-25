@@ -13,6 +13,7 @@
 #include "unit2.h"
 
 #include "any.h"
+#include "any_reference.h"
 
 #include <tuple>
 #include <iostream>
@@ -586,26 +587,26 @@ public:
 
     }
 
+
     void ForwardingTest() {
 
         float x = 0;
 
         FooBar foobar;
 
-        auto foobar_instance = syntropy::reflection::wrap_instance(foobar);
-        auto const_foobar_instance = syntropy::reflection::wrap_const_instance(foobar);
-
-        
+        auto foobar_instance = syntropy::reflection::any_instance(foobar);
+        syntropy::reflection::ConstInstance const_foobar_instance = foobar_instance;    // syntropy::reflection::any_cinstance(foobar);
+                
         TEST_TRUE(field_float_value_->Set(foobar_instance, 999.0f));
         //TEST_TRUE(field_float_value_->Set(const_foobar_instance, 999.0f));                        // Const instance
-        TEST_TRUE(field_float_value_->Set(foobar_class_.GetFactory()->Instantiate(), 999.0f));
+        TEST_TRUE(field_float_value_->Set(foobar_class_.GetFactory()->Instantiate(), 999.0f));      // Also, leak :D
         //TEST_TRUE(field_float_value_->Set(MakeConstInstance(foobar), 999.0f));                    // Const instance
         TEST_TRUE(field_float_value_->Set(foobar, 999.0f));
         //TEST_TRUE(field_float_value_->Set(MakeFooBar(), 999.0f));                                 // r-value reference
         
         TEST_TRUE(field_float_value_->Get(foobar_instance, x));
         TEST_TRUE(field_float_value_->Get(const_foobar_instance, x));
-        TEST_TRUE(field_float_value_->Get(foobar_class_.GetFactory()->Instantiate(), x));
+        TEST_TRUE(field_float_value_->Get(foobar_class_.GetFactory()->Instantiate(), x));           // Also, leak :D
         TEST_TRUE(field_float_value_->Get(MakeConstInstance(foobar), x));
         TEST_TRUE(field_float_value_->Get(foobar, x));
         TEST_TRUE(field_float_value_->Get(MakeFooBar(), x));

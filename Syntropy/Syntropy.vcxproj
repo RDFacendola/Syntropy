@@ -20,6 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\any.h" />
+    <ClInclude Include="include\any_reference.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\class.h">
       <SubType>
       </SubType>
