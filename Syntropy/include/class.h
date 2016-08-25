@@ -577,16 +577,9 @@ namespace syntropy {
 
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue& value) const;
-            
-            template <ConstQualifier kConstQualifier, typename TValue>
-            bool Get(const BaseInstance<kConstQualifier>& instance, TValue& value) const;
-            
-            // SFINAE trick because TInstance& is no worse than const Instance& when TInstance = Instance. This would cause a sub-optimal overload resolution but won't produce any error whatsoever.
-            template <typename TInstance, typename TValue, typename std::enable_if_t<!std::is_same<TInstance, Instance>::value, int> = 0>
-            bool Set(TInstance& instance, const TValue& value) const;
 
-            template <typename TValue>
-            bool Set(const Instance& instance, const TValue& value) const;
+            template <typename TInstance, typename TValue>
+            bool Set(TInstance&& instance, const TValue& value) const;
 
         private:
             
@@ -1024,27 +1017,11 @@ namespace syntropy {
                            std::addressof(value));
 
         }
-
-        template <ConstQualifier kConstQualifier, typename TValue>
-        inline bool Property::Get(const BaseInstance<kConstQualifier>& instance, TValue& value) const {
-    
-            return getter_(instance,
-                           std::addressof(value));
-
-        }
                 
-        template <typename TInstance, typename TValue, typename std::enable_if_t<!std::is_same<TInstance, Instance>::value, int>>
-        inline bool Property::Set(TInstance& instance, const TValue& value) const {
+        template <typename TInstance, typename TValue>
+        inline bool Property::Set(TInstance&& instance, const TValue& value) const {
 
-            return setter_(wrap_instance(instance),
-                           std::addressof(value));
-
-        }
-
-        template <typename TValue>
-        inline bool Property::Set(const Instance& instance, const TValue& value) const {
-
-            return setter_(instance,
+            return setter_(wrap_instance(std::forward<TInstance>(instance)),
                            std::addressof(value));
 
         }
