@@ -83,7 +83,7 @@ namespace syntropy {
     template <typename TInstance>
     struct type_get<std::type_info, TInstance> {
     
-        const std::type_info& operator()() const noexcept {
+        std::type_info operator()() const noexcept {
 
             return typeid(TInstance);
 
