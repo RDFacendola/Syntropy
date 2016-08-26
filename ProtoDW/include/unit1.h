@@ -484,8 +484,8 @@ public:
         auto bar = bar_class_.GetFactory()->Instantiate();
         auto foobar = foobar_class_.GetFactory()->Instantiate();
 
-        std::cout << "Instancing 'bar' of type " << bar.GetClass().GetName().GetString() << "\n";
-        std::cout << "Instancing 'foobar' of type " << foobar.GetClass().GetName().GetString() << "\n";
+        std::cout << "Instancing 'bar' of type " << bar.GetType().GetName().GetString() << "\n";
+        std::cout << "Instancing 'foobar' of type " << foobar.GetType().GetName().GetString() << "\n";
 
         TEST_TRUE(bar.As<Bar>() != nullptr);
         TEST_FALSE(bar.As<Foo>() != nullptr);
