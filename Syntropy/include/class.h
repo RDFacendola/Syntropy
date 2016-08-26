@@ -41,6 +41,9 @@ namespace syntropy {
         class Property;
         struct IClassProvider;
         
+        template <typename TType>
+        const Class& class_of() noexcept;
+
         struct class_base_of;
 
     }
@@ -54,6 +57,12 @@ namespace syntropy {
         template <typename TClass>
         constexpr bool is_instantiable_v = !std::is_abstract_v<TClass> &&
                                             std::is_nothrow_default_constructible_v<TClass>;
+
+        template <typename TType>
+        constexpr bool is_class_name_v = !std::is_pointer<TType>::value &&
+                                         !std::is_reference<TType>::value &&
+                                         !std::is_const<TType>::value &&
+                                         !std::is_volatile<TType>::value;
 
         template <ConstQualifier kConstQualifier>
         using AnyInstance = AnyReferenceWrapper<kConstQualifier, Class, class_base_of>;
@@ -97,7 +106,7 @@ namespace syntropy {
             virtual ~Class() = default;
 
             template <typename TClass>
-            static Class& GetClass();
+            static const Class& GetClass();
 
             /// \brief Get the name of the class.
             /// \return Returns the type string of the class.
@@ -105,7 +114,7 @@ namespace syntropy {
 
             /// \brief Get the list of classes that are derived by this class.
             /// \return Returns the list of classes that are derived by this class.
-            const std::vector<Class*>& GetBaseClasses() const noexcept;
+            const std::vector<const Class*>& GetBaseClasses() const noexcept;
 
             /// \brief Get a factory for this class.
             /// \return Returns an factory for this class if applicable. Returns nullptr otherwise.
@@ -135,9 +144,6 @@ namespace syntropy {
 
         private:
             
-            template <typename TClass>
-            static Class& GetUnqualifiedClass();
-
             /// \brief Create a new class via explicit class definition.
             Class(std::unique_ptr<IClassDefinition> definition);
             
@@ -164,7 +170,7 @@ namespace syntropy {
 
             /// \brief Get the list of classes that are derived by this class.
             /// \return Returns the list of classes that are derived by this class.
-            virtual const std::vector<Class*>& GetBaseClasses() const noexcept = 0;
+            virtual const std::vector<const Class*>& GetBaseClasses() const noexcept = 0;
 
             /// \brief Get a factory for this class.
             /// \return Returns an factory for this class if applicable. Returns nullptr otherwise.
@@ -209,7 +215,7 @@ namespace syntropy {
             
             virtual const HashedString& GetName() const noexcept override;
 
-            virtual const std::vector<Class*>& GetBaseClasses() const noexcept override;
+            virtual const std::vector<const Class*>& GetBaseClasses() const noexcept override;
 
             virtual const IFactory* GetFactory() const noexcept override;
 
@@ -243,7 +249,7 @@ namespace syntropy {
 
             HashedString name_;                                     ///< \brief Unique name.
 
-            std::vector<Class*> base_classes_;                      ///< \brief List of all classes that are base of this one.
+            std::vector<const Class*> base_classes_;                ///< \brief List of all classes that are base of this one.
 
             std::unordered_map<size_t, Property> properties_;       ///< \brief List of all the supported properties.
 
@@ -538,7 +544,14 @@ namespace syntropy {
             }
 
         };
-        
+
+        template <typename TType>
+        const Class& class_of() noexcept{
+
+            return Class::GetClass<drop_t<TType>>();
+
+        }
+
         struct class_base_of {
 
             bool operator()(const reflection::Class& from, const reflection::Class& to) const noexcept {
@@ -556,7 +569,7 @@ namespace syntropy {
 
         const reflection::Class& operator()() const noexcept {
 
-            return reflection::Class::GetClass<TInstance>();
+            return reflection::class_of<TInstance>();
 
         }
 
@@ -602,21 +615,14 @@ namespace syntropy {
         //////////////// CLASS ////////////////
 
         template <typename TClass>
-        inline static Class& Class::GetClass() {
+        inline static const Class& Class::GetClass() {
 
-            // Maps the singleton T, T*, const T and const T* to the same instance of Class<T>
-
-            return GetUnqualifiedClass<drop_t<TClass>>();
-            
-        }
-
-        template <typename TClass>
-        inline static Class& Class::GetUnqualifiedClass() {
+            static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references and/or qualifiers)");
 
             static Class instance(ClassDeclaration<TClass>{}());
 
             return instance;
-
+            
         }
 
         inline const HashedString& Class::GetName() const noexcept {
@@ -625,7 +631,7 @@ namespace syntropy {
 
         }
     
-        inline const std::vector<Class*>& Class::GetBaseClasses() const noexcept {
+        inline const std::vector<const Class*>& Class::GetBaseClasses() const noexcept {
 
             return definition_->GetBaseClasses();
 
@@ -675,7 +681,7 @@ namespace syntropy {
         }
     
         template <typename TClass>
-        inline const std::vector<Class*>& ClassDefinition<TClass>::GetBaseClasses() const noexcept {
+        inline const std::vector<const Class*>& ClassDefinition<TClass>::GetBaseClasses() const noexcept {
 
             return base_classes_;
 
@@ -731,7 +737,7 @@ namespace syntropy {
             static_assert(std::is_base_of_v<TBaseClass, TClass>, "The class being defined does not derive from TBaseClass");
             static_assert(!std::is_same<TBaseClass, TClass>::value, "A class cannot derive from itself");
 
-            base_classes_.push_back(std::addressof(Class::GetClass<TBaseClass>()));
+            base_classes_.push_back(std::addressof(class_of<TBaseClass>()));
 
         }
 
@@ -779,7 +785,7 @@ namespace syntropy {
         template <typename TClass>
         inline const Class& ClassProvider<TClass>::operator()() const noexcept {
 
-            return Class::GetClass<TClass>();
+            return class_of<TClass>();
 
         }
 
