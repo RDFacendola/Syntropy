@@ -125,10 +125,7 @@ namespace syntropy {
         }
 
     };
-
-    template <typename TType>
-    struct type_base_of {};
-
+    
     //////////////// QUALIFIERS ////////////////
 
     /// \brief Enumeration class for const qualifier presence.

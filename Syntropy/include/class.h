@@ -41,6 +41,8 @@ namespace syntropy {
         class Property;
         struct IClassProvider;
         
+        struct class_base_of;
+
     }
     
 }
@@ -54,7 +56,7 @@ namespace syntropy {
                                             std::is_nothrow_default_constructible_v<TClass>;
 
         template <ConstQualifier kConstQualifier>
-        using AnyInstance = AnyReferenceWrapper<kConstQualifier, Class, type_base_of<Class>>;
+        using AnyInstance = AnyReferenceWrapper<kConstQualifier, Class, class_base_of>;
 
         using ConstInstance = AnyInstance<ConstQualifier::kConst>;
         using Instance = AnyInstance<ConstQualifier::kNone>;
@@ -537,19 +539,18 @@ namespace syntropy {
 
         };
         
+        struct class_base_of {
+
+            bool operator()(const reflection::Class& from, const reflection::Class& to) const noexcept {
+
+                return to.IsBaseOf(from);
+
+            }
+
+        };
+
     }
     
-    template <>
-    struct type_base_of<reflection::Class> {
-
-        bool operator()(const reflection::Class& from, const reflection::Class& to) const noexcept {
-
-            return to.IsBaseOf(from);
-
-        }
-
-    };
-
     template <typename TInstance>
     struct type_get<reflection::Class, TInstance> {
 
