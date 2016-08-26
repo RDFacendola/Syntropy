@@ -18,11 +18,25 @@
 #include <tuple>
 #include <iostream>
 
-#define TEST_TRUE(test) \
-std::cout << ((test) ? "PASSED - " : "NOT PASSED - ")<< #test << " is true\n";
+#define SUPPRESS_PASSED_TESTS
 
-#define TEST_FALSE(test) \
-std::cout << (!(test) ? "PASSED - " : "NOT PASSED - ") << #test << " is false\n";
+#ifndef SUPPRESS_PASSED_TESTS
+
+    #define TEST_TRUE(test) \
+    std::cout << ((test) ? "PASSED - " : "NOT PASSED - ")<< #test << " is true\n";
+
+    #define TEST_FALSE(test) \
+    std::cout << (!(test) ? "PASSED - " : "NOT PASSED - ") << #test << " is false\n";
+
+#else
+
+    #define TEST_TRUE(test) \
+    if(!(test)) std::cout << "NOT PASSED - " << #test << " is true\n";
+
+    #define TEST_FALSE(test) \
+    if((test)) std::cout << "NOT PASSED - " << #test << " is false\n";
+
+#endif
 
 #define RUN_TEST(test) \
 std::cout << "Running test " << #test << "()\n\n"; \
@@ -484,9 +498,6 @@ public:
         auto bar = bar_class_.GetFactory()->Instantiate();
         auto foobar = foobar_class_.GetFactory()->Instantiate();
 
-        std::cout << "Instancing 'bar' of type " << bar.GetType().GetName().GetString() << "\n";
-        std::cout << "Instancing 'foobar' of type " << foobar.GetType().GetName().GetString() << "\n";
-
         TEST_TRUE(bar.As<Bar>() != nullptr);
         TEST_FALSE(bar.As<Foo>() != nullptr);
         TEST_FALSE(bar.As<FooBar>() != nullptr);
@@ -494,6 +505,10 @@ public:
         TEST_TRUE(foobar.As<Bar>() != nullptr);
         TEST_TRUE(foobar.As<Foo>() != nullptr);
         TEST_TRUE(foobar.As<FooBar>() != nullptr);
+
+        TEST_TRUE(foobar.As<FooBar*>() == nullptr);
+        TEST_TRUE(foobar.As<const FooBar*>() == nullptr);
+        TEST_TRUE(foobar.As<FooBar**>() == nullptr);
 
         float x = 0;
         float* p = &x;
@@ -591,7 +606,7 @@ public:
     void ForwardingTest() {
 
         float x = 0;
-
+                       
         FooBar foobar;
 
         auto foobar_instance = syntropy::reflection::any_instance(foobar);
