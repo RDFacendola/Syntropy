@@ -57,7 +57,7 @@ namespace syntropy {
         using AnyInstance = AnyReferenceWrapper<kConstQualifier, Class, type_base_of<Class>>;
 
         using ConstInstance = AnyInstance<ConstQualifier::kConst>;
-        using Instance = AnyInstance<ConstQualifier::kNonConst>;
+        using Instance = AnyInstance<ConstQualifier::kNone>;
 
         template <typename TInstance>
         ConstInstance any_cinstance(const TInstance& instance) noexcept;
