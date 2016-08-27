@@ -36,14 +36,12 @@ namespace syntropy {
         template <typename TType>
         const Class& class_of();
 
-        struct class_is;
-
         template <typename TClass>
         struct ClassDeclaration;
 
         // Type
 
-        using Type = BasicType<Class, class_is>;
+        using Type = BasicType<Class>;
 
         template <typename TType>
         const Type& type_of();
@@ -60,7 +58,7 @@ namespace syntropy {
         // Instance
 
         template <ConstQualifier kConstQualifier>
-        using AnyInstance = AnyReferenceWrapper<kConstQualifier, Type, type_is>;
+        using AnyInstance = AnyReferenceWrapper<kConstQualifier, Type>;
 
         using ConstInstance = AnyInstance<ConstQualifier::kConst>;
 
@@ -152,9 +150,9 @@ namespace syntropy {
             /// \return Returns true if the class is abstract, returns false otherwise.
             bool IsAbstract() const noexcept;
 
-            /// \brief Check whether this class is a base class for the specified one.
+            /// \brief Check whether this class can be converted to the specified one.
             /// \return Returns true if the class described by this instance is a base for the specified one or is the same type, returns false otherwise.
-            bool IsBaseOf(const Class& other) const noexcept;
+            bool operator==(const Class& other) const noexcept;
 
         private:
             
@@ -320,7 +318,6 @@ namespace syntropy {
 
         };
 
-      
         struct PropertyGetter {
 
             using TGetter = std::function<bool(const ConstInstance&, Any)>;
@@ -541,16 +538,6 @@ namespace syntropy {
             std::unique_ptr<ClassDefinition<bool>> operator()() const {
 
                 return std::make_unique<ClassDefinition<bool>>("bool");
-
-            }
-
-        };
-
-        struct class_is {
-
-            bool operator()(const reflection::Class& from, const reflection::Class& to) const noexcept {
-
-                return to.IsBaseOf(from);
 
             }
 

@@ -34,9 +34,9 @@ Class::Class(std::unique_ptr<IClassDefinition> definition)
 
 }
 
-bool Class::IsBaseOf(const Class& other) const noexcept {
+bool Class::operator ==(const Class& other) const noexcept {
 
-    return other.class_id_ % class_id_ == 0;            // Other derives from this instance.
+    return class_id_ % other.class_id_ == 0;        // This can be statically casted to other
 
 }
 

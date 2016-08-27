@@ -13,29 +13,26 @@
 
 namespace syntropy {
 
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
+    template <ConstQualifier kConstQualifier, typename TType>
     class AnyReferenceWrapper;
 
-    using AnyReference = AnyReferenceWrapper<ConstQualifier::kNone, std::type_info, std::equal_to<std::type_info>>;
+    using AnyReference = AnyReferenceWrapper<ConstQualifier::kNone, std::type_info>;
 
-    using AnyConstReference = AnyReferenceWrapper<ConstQualifier::kConst, std::type_info, std::equal_to<std::type_info>>;
+    using AnyConstReference = AnyReferenceWrapper<ConstQualifier::kConst, std::type_info>;
 
     /// \brief Represents a type-safe container that wraps a reference of any type in a copyable, assignable object.
     /// The container is const qualified to preserve const-correctness at compile time. Both const and non-const references can be implicitly converted to const-references.
     /// The container grants type-safety via any custom type TType that can be determined via a proper specialization of syntropy::type_get[TType, TInstance].
-    /// The container supports custom comparison among types while accessing the concrete reference to check whether the conversion is safe or not. Certain comparators may yield polymorphic capabilities.
     /// \author Raffaele D. Facendola
     /// \remarks Inspired to both std::reference_wrapper and std::any
-    template <ConstQualifier kConstQualifier,
-              typename TType,
-              typename TTypeComparator>
+    template <ConstQualifier kConstQualifier, typename TType>
     class AnyReferenceWrapper {
 
     public:
             
-        using TReference = AnyReferenceWrapper<ConstQualifier::kNone, TType, TTypeComparator>;
+        using TReference = AnyReferenceWrapper<ConstQualifier::kNone, TType>;
 
-        using TConstReference = AnyReferenceWrapper<ConstQualifier::kConst, TType, TTypeComparator>;
+        using TConstReference = AnyReferenceWrapper<ConstQualifier::kConst, TType>;
         
         template <typename TInstance>
         using qualify_t = typename std::conditional_t<kConstQualifier == ConstQualifier::kConst,
@@ -50,7 +47,7 @@ namespace syntropy {
 
         /// \brief Copy constructor.
         /// \param other Instance to copy.
-        AnyReferenceWrapper(const AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>& other) noexcept;
+        AnyReferenceWrapper(const AnyReferenceWrapper<kConstQualifier, TType>& other) noexcept;
             
         operator TConstReference() const noexcept;
 
@@ -61,7 +58,7 @@ namespace syntropy {
 
         /// \brief Unified assignment operator.
         /// \param other Instance to assign from.
-        AnyReferenceWrapper& operator=(const AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>& other) noexcept;
+        AnyReferenceWrapper& operator=(const AnyReferenceWrapper<kConstQualifier, TType>& other) noexcept;
             
         /// \brief Get a typed pointer to the wrapped object.
         /// \tparam TInstance Type to check against.
@@ -140,26 +137,26 @@ namespace syntropy {
 
     };
 
-    template <typename TType = std::type_info, typename TTypeComparator = std::equal_to<TType>, typename TInstance>
-    AnyReferenceWrapper<ConstQualifier::kConst, TType, TTypeComparator> any_cref(const TInstance& instance) noexcept;
+    template <typename TType = std::type_info, typename TInstance>
+    AnyReferenceWrapper<ConstQualifier::kConst, TType> any_cref(const TInstance& instance) noexcept;
 
-    template <typename TType = std::type_info, typename TTypeComparator = std::equal_to<TType>, ConstQualifier kConstQualifier>
-    AnyReferenceWrapper<ConstQualifier::kConst, TType, TTypeComparator> any_cref(AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator> instance) noexcept;
+    template <typename TType = std::type_info, ConstQualifier kConstQualifier>
+    AnyReferenceWrapper<ConstQualifier::kConst, TType> any_cref(AnyReferenceWrapper<kConstQualifier, TType> instance) noexcept;
 
-    template <typename TType = std::type_info, typename TTypeComparator = std::equal_to<TType>, typename TInstance>
-    AnyReferenceWrapper<ConstQualifier::kConst, TType, TTypeComparator> any_cref(const TInstance&&) = delete;
+    template <typename TType = std::type_info, typename TInstance>
+    AnyReferenceWrapper<ConstQualifier::kConst, TType> any_cref(const TInstance&&) = delete;
 
-    template <typename TType = std::type_info, typename TTypeComparator = std::equal_to<TType>, typename TInstance>
-    AnyReferenceWrapper<ConstQualifier::kNone, TType, TTypeComparator> any_ref(TInstance& instance) noexcept;
+    template <typename TType = std::type_info, typename TInstance>
+    AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(TInstance& instance) noexcept;
         
-    template <typename TType = std::type_info, typename TTypeComparator = std::equal_to<TType>>
-    AnyReferenceWrapper<ConstQualifier::kNone, TType, TTypeComparator> any_ref(AnyReferenceWrapper<ConstQualifier::kConst, TType, TTypeComparator> instance) = delete;         // Denied: conversion loses qualifiers
+    template <typename TType = std::type_info>
+    AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(AnyReferenceWrapper<ConstQualifier::kConst, TType> instance) = delete;         // Denied: conversion loses qualifiers
 
-    template <typename TType = std::type_info, typename TTypeComparator = std::equal_to<TType>>
-    AnyReferenceWrapper<ConstQualifier::kNone, TType, TTypeComparator> any_ref(AnyReferenceWrapper<ConstQualifier::kNone, TType, TTypeComparator> instance) noexcept;
+    template <typename TType = std::type_info>
+    AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(AnyReferenceWrapper<ConstQualifier::kNone, TType> instance) noexcept;
         
-    template <typename TType = std::type_info, typename TTypeComparator = std::equal_to<TType>, typename TInstance>
-    AnyReferenceWrapper<ConstQualifier::kNone, TType, TTypeComparator> any_ref(const TInstance&&) = delete;
+    template <typename TType = std::type_info, typename TInstance>
+    AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(const TInstance&&) = delete;
     
 }
 
@@ -169,25 +166,25 @@ namespace syntropy {
 
     //////////////// ANY REFERENCE ////////////////
 
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
-    inline AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::AnyReferenceWrapper(const AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>& other) noexcept
+    template <ConstQualifier kConstQualifier, typename TType>
+    inline AnyReferenceWrapper<kConstQualifier, TType>::AnyReferenceWrapper(const AnyReferenceWrapper<kConstQualifier, TType>& other) noexcept
         : content_(other.content_ ? other.content_->Clone() : nullptr) {}
 
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
-    AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::AnyReferenceWrapper(std::unique_ptr<IContent> content) noexcept
+    template <ConstQualifier kConstQualifier, typename TType>
+    AnyReferenceWrapper<kConstQualifier, TType>::AnyReferenceWrapper(std::unique_ptr<IContent> content) noexcept
         : content_(std::move(content)) {}
 
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
+    template <ConstQualifier kConstQualifier, typename TType>
     template <typename TInstance>
-    inline AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::AnyReferenceWrapper(TInstance* instance) noexcept
+    inline AnyReferenceWrapper<kConstQualifier, TType>::AnyReferenceWrapper(TInstance* instance) noexcept
         : content_(instance ? std::make_unique<Content<qualify_t<TInstance>>>(*instance) : nullptr) {
         
         static_assert(std::is_convertible_v<TInstance*, qualify_t<TInstance>*>, "Conversion loses qualifiers.");
 
     }
 
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
-    inline AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>& AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::operator=(const AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>& other) noexcept {
+    template <ConstQualifier kConstQualifier, typename TType>
+    inline AnyReferenceWrapper<kConstQualifier, TType>& AnyReferenceWrapper<kConstQualifier, TType>::operator=(const AnyReferenceWrapper<kConstQualifier, TType>& other) noexcept {
 
         content_ = !other.IsEmpty() ?
                    other.content_->Clone() :
@@ -197,8 +194,8 @@ namespace syntropy {
 
     }
         
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
-    inline const TType& AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::GetType() const noexcept {
+    template <ConstQualifier kConstQualifier, typename TType>
+    inline const TType& AnyReferenceWrapper<kConstQualifier, TType>::GetType() const noexcept {
 
         return content_ ?
                content_->GetType() :
@@ -206,25 +203,25 @@ namespace syntropy {
 
     }
 
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
+    template <ConstQualifier kConstQualifier, typename TType>
     template <typename TInstance>
-    inline TInstance* AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::As() const noexcept {
+    inline TInstance* AnyReferenceWrapper<kConstQualifier, TType>::As() const noexcept {
 
-        return (content_ && TTypeComparator()(GetType(), type_get<TType, TInstance>()())) ?
+        return (content_ && GetType() == type_get<TType, TInstance>()()) ?
                 std::addressof(static_cast<Content<qualify_t<TInstance>>*>(content_.get())->content_) :
                 nullptr;
 
     }
 
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
-    inline AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::operator TConstReference() const noexcept {
+    template <ConstQualifier kConstQualifier, typename TType>
+    inline AnyReferenceWrapper<kConstQualifier, TType>::operator TConstReference() const noexcept {
 
         return content_->ConstClone();
 
     }
         
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
-    inline bool AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::IsEmpty() const noexcept {
+    template <ConstQualifier kConstQualifier, typename TType>
+    inline bool AnyReferenceWrapper<kConstQualifier, TType>::IsEmpty() const noexcept {
 
         return !!content_;
 
@@ -232,22 +229,22 @@ namespace syntropy {
 
     //////////////// ANY REFERENCE :: CONTENT ////////////////
 
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
+    template <ConstQualifier kConstQualifier, typename TType>
     template <typename TInstance>
-    inline AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::Content<TInstance>::Content(TInstance& instance) noexcept
+    inline AnyReferenceWrapper<kConstQualifier, TType>::Content<TInstance>::Content(TInstance& instance) noexcept
         : content_(instance) {}
 
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
+    template <ConstQualifier kConstQualifier, typename TType>
     template <typename TInstance>
-    inline const TType& AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::Content<TInstance>::GetType() const noexcept {
+    inline const TType& AnyReferenceWrapper<kConstQualifier, TType>::Content<TInstance>::GetType() const noexcept {
 
         return type_get<TType, TInstance>()();
 
     }
 
-    template <ConstQualifier kConstQualifier, typename TType, typename TTypeComparator>
+    template <ConstQualifier kConstQualifier, typename TType>
     template <typename TInstance>
-    inline std::unique_ptr<typename AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::IContent> AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator>::Content<TInstance>::Clone() const noexcept {
+    inline std::unique_ptr<typename AnyReferenceWrapper<kConstQualifier, TType>::IContent> AnyReferenceWrapper<kConstQualifier, TType>::Content<TInstance>::Clone() const noexcept {
 
         return std::make_unique<Content<TInstance>>(content_);       // Preserve qualifiers
             
@@ -255,29 +252,29 @@ namespace syntropy {
 
     //////////////// ANY CREF \\ ANY REF ////////////////
 
-    template <typename TType, typename TTypeComparator, typename TInstance>
-    inline AnyReferenceWrapper<ConstQualifier::kConst, TType, TTypeComparator> any_cref(const TInstance& instance) noexcept {
+    template <typename TType, typename TInstance>
+    inline AnyReferenceWrapper<ConstQualifier::kConst, TType> any_cref(const TInstance& instance) noexcept {
 
         return std::addressof(instance);
 
     }
 
-    template <typename TType, typename TTypeComparator, ConstQualifier kConstQualifier>
-    inline AnyReferenceWrapper<ConstQualifier::kConst, TType, TTypeComparator> any_cref(AnyReferenceWrapper<kConstQualifier, TType, TTypeComparator> instance) noexcept {
+    template <typename TType, ConstQualifier kConstQualifier>
+    inline AnyReferenceWrapper<ConstQualifier::kConst, TType> any_cref(AnyReferenceWrapper<kConstQualifier, TType> instance) noexcept {
 
         return instance;
 
     }
 
-    template <typename TType, typename TTypeComparator, typename TInstance>
-    inline AnyReferenceWrapper<ConstQualifier::kNone, TType, TTypeComparator> any_ref(TInstance& instance) noexcept {
+    template <typename TType, typename TInstance>
+    inline AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(TInstance& instance) noexcept {
 
         return std::addressof(instance);
 
     }
 
-    template<typename TType, typename TTypeComparator>
-    inline AnyReferenceWrapper<ConstQualifier::kNone, TType, TTypeComparator> any_ref(AnyReferenceWrapper<ConstQualifier::kNone, TType, TTypeComparator> instance) noexcept {
+    template<typename TType>
+    inline AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(AnyReferenceWrapper<ConstQualifier::kNone, TType> instance) noexcept {
 
         return instance;
 
