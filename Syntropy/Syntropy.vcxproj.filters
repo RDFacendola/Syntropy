@@ -28,6 +28,9 @@
     <ClInclude Include="include\any_reference.h">
       <Filter>functional</Filter>
     </ClInclude>
+    <ClInclude Include="include\type.h">
+      <Filter>reflection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy.cpp">

@@ -288,7 +288,7 @@ public:
 
         for (const auto& property : foo_class_.GetProperties()) {
 
-            std::cout << "Property " << property.second.GetName().GetString() << " : " << property.second.GetType().GetName() << "\n";
+            std::cout << "Property " << property.second.GetName().GetString() << " : " << property.second.GetType().GetClass().GetName().GetString() << "\n";
 
         }
 

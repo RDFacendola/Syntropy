@@ -197,6 +197,22 @@ namespace syntropy {
  
     //////////////// TYPES ////////////////
 
+    /// \brief Functor used to an object that can be used to identify and compare the class of TInstance.
+    /// \author Raffaele D. Facendola - August 2016
+    template <typename TType, typename TInstance>
+    struct class_get {};
+
+    template <typename TInstance>
+    struct class_get<std::type_info, TInstance> {
+
+        const std::type_info& operator()() const noexcept {
+
+            return typeid(drop_t<TInstance>);
+
+        }
+
+    };
+
     /// \brief Functor used to an object that can be used to identify and compare the type of TInstance.
     /// \author Raffaele D. Facendola - August 2016
     template <typename TType, typename TInstance>
