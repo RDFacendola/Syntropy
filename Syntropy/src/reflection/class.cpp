@@ -1,7 +1,5 @@
 #include "class.h"
 
-#include <stdexcept>
-
 #include "reflection.h"
 
 using namespace syntropy;
@@ -42,3 +40,93 @@ bool Class::IsBaseOf(const Class& other) const noexcept {
 
 }
 
+//////////////// TYPE ////////////////
+
+bool Type::Is(const Type& other) const noexcept {
+
+    return other.GetTypeInfo() == GetTypeInfo() &&
+           other.GetClass().IsBaseOf(GetClass());
+
+}
+
+std::string Type::GetName() const noexcept{
+
+    std::ostringstream name_stream;
+
+    BuildName(name_stream);
+
+    return name_stream.str();
+    
+}
+
+void Type::BuildName(std::ostringstream& name_stream) const noexcept {
+
+    auto next = GetNext();
+
+    if (next != nullptr) {
+
+        next->BuildName(name_stream);                       // Recursion till the innermost level
+
+    }
+    else {
+
+        name_stream << GetClass().GetName().GetString();    // Append class name
+
+    }
+
+    size_t extent;
+
+    for (size_t dimension = 0; dimension < GetArrayRank(); ++dimension) {
+        
+        extent = GetArraySize(dimension);
+
+        if (extent > 0) {
+
+            name_stream << "[" << extent << "]";
+
+        }
+        else {
+
+            name_stream << "[]";
+
+        }
+                
+    }
+    
+    if (IsLValueReference()) {
+
+        name_stream << "&";
+
+    }
+
+    if (IsRValueReference()) {
+
+        name_stream << "&&";
+
+    }
+        
+    if (IsPointer()) {
+
+        name_stream << "*";
+
+    }
+
+    if (!IsArray()) {
+
+        // Caveat - arrays have the same qualifiers as their nested types: to prevent the same qualifier being printed twice, we skip this level in case of an array.
+
+        if (IsConst()) {
+            
+            name_stream << " const";
+        
+        }
+
+        if (IsVolatile()) {
+
+            name_stream << " volatile";
+
+        }
+
+    }
+    
+}

@@ -9,8 +9,8 @@
 #include <unordered_map>
 #include <memory>
 #include <type_traits>
-
-#include <iostream>
+#include <vector>
+#include <sstream>
 
 #include "hashed_string.h"
 #include "type_traits.h"
@@ -24,6 +24,7 @@ namespace syntropy {
     namespace reflection {
 
         class Class;
+        class Type;
 
         class IClassDefinition;
 
@@ -39,12 +40,14 @@ namespace syntropy {
         class Factory;
 
         class Property;
-        struct IClassProvider;
         
         template <typename TType>
-        const Class& class_of() noexcept;
+        const Class& class_of();
 
-        struct class_base_of;
+        template <typename TType>
+        const Type& type_of();
+
+        struct type_is;
 
     }
     
@@ -61,12 +64,12 @@ namespace syntropy {
         template <typename TType>
         constexpr bool is_class_name_v = !std::is_pointer<TType>::value &&
                                          !std::is_reference<TType>::value &&
+                                         !std::is_array<TType>::value &&
                                          !std::is_const<TType>::value &&
                                          !std::is_volatile<TType>::value;
 
         template <ConstQualifier kConstQualifier>
-        using AnyInstance = AnyReferenceWrapper<kConstQualifier, Class, class_base_of>;
-
+        using AnyInstance = AnyReferenceWrapper<kConstQualifier, Type, type_is>;
         using ConstInstance = AnyInstance<ConstQualifier::kConst>;
         using Instance = AnyInstance<ConstQualifier::kNone>;
 
@@ -90,7 +93,7 @@ namespace syntropy {
         Instance any_instance(const TInstance&&) = delete;
 
                 
-        /// \brief Describes a class type.
+        /// \brief Describes a class implementation.
         /// \author Raffaele D. Facendola - 2016
         class Class {
 
@@ -155,6 +158,94 @@ namespace syntropy {
 
         };
         
+        /// \brief Describes a type.
+        /// \author Raffaele D. Facendola.
+        class Type {
+
+        public:
+
+            /// \brief No copy constructor.
+            Type(const Type&) = delete;
+
+            /// \brief No assignment operator.
+            Type& operator=(const Type&) = delete;
+
+            /// \brief Virtual destructor.
+            virtual ~Type() = default;
+
+            template <typename TType>
+            static const Type& GetType();
+
+            bool Is(const Type& other) const noexcept;
+
+            std::string GetName() const noexcept;
+
+            virtual const Class& GetClass() const = 0;
+
+            virtual bool IsPointer() const noexcept = 0;
+
+            virtual bool IsConst() const noexcept = 0;
+
+            virtual bool IsVolatile() const noexcept = 0;
+
+            virtual bool IsLValueReference() const noexcept = 0;
+ 
+            virtual bool IsRValueReference() const noexcept = 0;
+            
+            virtual bool IsArray() const noexcept = 0;
+
+            virtual size_t GetArrayRank() const noexcept = 0;
+
+            virtual size_t GetArraySize(size_t dimension = 0) const noexcept = 0;
+
+            virtual std::unique_ptr<Type> GetNext() const noexcept = 0;
+
+        protected:
+
+            virtual const std::type_info& GetTypeInfo() const noexcept = 0;
+
+        private:
+
+            template <typename TType>
+            class SubType;
+
+            Type() = default;
+
+            void BuildName(std::ostringstream& name_stream) const noexcept;
+            
+        };
+
+        template <typename TType>
+        class Type::SubType: public Type{
+
+        public:
+
+            virtual const Class& GetClass() const override;
+
+            virtual bool IsPointer() const noexcept override;
+
+            virtual bool IsConst() const noexcept override;
+
+            virtual bool IsVolatile() const noexcept override;
+
+            virtual bool IsLValueReference() const noexcept override;
+
+            virtual bool IsRValueReference() const noexcept override;
+
+            virtual bool IsArray() const noexcept override;
+
+            virtual size_t GetArrayRank() const noexcept override;
+
+            virtual size_t GetArraySize(size_t dimension = 0) const noexcept override;
+
+            virtual std::unique_ptr<Type> GetNext() const noexcept override;
+
+        protected:
+
+            virtual const std::type_info& GetTypeInfo() const noexcept override;
+
+        };
+
         /// \brief Interface for class definition.
         /// \author Raffaele D. Facendola - 2016
         class IClassDefinition {
@@ -436,19 +527,6 @@ namespace syntropy {
 
         };
         
-        struct IClassProvider {
-
-            virtual const Class& operator()() const noexcept = 0;
-
-        };
-
-        template <typename TClass>
-        struct ClassProvider : public IClassProvider {
-
-            virtual const Class& operator()() const noexcept override;
-
-        };
-
         class Property {
 
         public:
@@ -464,10 +542,10 @@ namespace syntropy {
 
             template <typename TClass, typename TProperty>
             Property(const HashedString& name, const TProperty&(TClass::* getter)() const, TProperty&(TClass::* setter)()) noexcept;
-                        
+            
             const HashedString& GetName() const noexcept;
 
-            const Class& GetClass() const noexcept;
+            const Type& GetType() const noexcept;
 
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue& value) const;
@@ -479,7 +557,7 @@ namespace syntropy {
             
             HashedString name_;                                     ///< \brief Property name.
 
-            std::unique_ptr<IClassProvider> class_;                 ///< \brief Functor used to get the property class.
+            const Type& type_;                                      ///< \brief Property type.
 
             PropertyGetter::TGetter getter_;                        ///< \brief Property getter.
 
@@ -546,17 +624,24 @@ namespace syntropy {
         };
 
         template <typename TType>
-        const Class& class_of() noexcept{
+        const Class& class_of(){
 
             return Class::GetClass<drop_t<TType>>();
 
         }
 
-        struct class_base_of {
+        template <typename TType>
+        const Type& type_of() {
 
-            bool operator()(const reflection::Class& from, const reflection::Class& to) const noexcept {
+            return Type::GetType<TType>();
 
-                return to.IsBaseOf(from);
+        }
+               
+        struct type_is {
+
+            bool operator()(const reflection::Type& from, const reflection::Type& to) const noexcept {
+
+                return from.Is(to);
 
             }
 
@@ -565,11 +650,11 @@ namespace syntropy {
     }
     
     template <typename TInstance>
-    struct type_get<reflection::Class, TInstance> {
+    struct type_get<reflection::Type, TInstance> {
 
-        const reflection::Class& operator()() const noexcept {
+        const reflection::Type& operator()() const noexcept {
 
-            return reflection::class_of<TInstance>();
+            return reflection::type_of<TInstance>();
 
         }
 
@@ -617,7 +702,7 @@ namespace syntropy {
         template <typename TClass>
         inline static const Class& Class::GetClass() {
 
-            static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references and/or qualifiers)");
+            static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
 
             static Class instance(ClassDeclaration<TClass>{}());
 
@@ -667,8 +752,111 @@ namespace syntropy {
 
         }
         
-        //////////////// CLASS DEFINITION ////////////////
+        //////////////// TYPE ////////////////
+
+        template <typename TType>
+        inline const Type& Type::GetType() {
+
+            static SubType<TType> type;
+
+            return type;
+
+        }
+
+        //////////////// TYPE :: SUBTYPE ////////////////
+
+        template <typename TType>
+        inline const Class& Type::SubType<TType>::GetClass() const {
+
+            return class_of<TType>();
+
+        }
+
+        template <typename TType>
+        inline bool Type::SubType<TType>::IsPointer() const noexcept {
+
+            return std::is_pointer<TType>::value;
+
+        }
+
+        template <typename TType>
+        inline bool Type::SubType<TType>::IsConst() const noexcept {
+
+            return std::is_const<TType>::value;
+
+        }
+
+        template <typename TType>
+        inline bool Type::SubType<TType>::IsVolatile() const noexcept {
+
+            return std::is_volatile<TType>::value;
+
+        }
+
+        template <typename TType>
+
+        inline bool Type::SubType<TType>::IsLValueReference() const noexcept {
+
+            return std::is_lvalue_reference<TType>::value;
+
+        }
+
+        template <typename TType>
+        inline bool Type::SubType<TType>::IsRValueReference() const noexcept {
+
+            return std::is_rvalue_reference<TType>::value;
+
+        }
+
+        template <typename TType>
+        inline bool Type::SubType<TType>::IsArray() const noexcept {
+
+            return std::is_array<TType>::value;
+
+        }
+
+        template <typename TType>
+        inline size_t Type::SubType<TType>::GetArrayRank() const noexcept {
+
+            return std::rank<TType>::value;
+
+        }
+
+        template <typename TType>
+        inline size_t Type::SubType<TType>::GetArraySize(size_t /*dimension*/) const noexcept{
+
+            return std::extent<TType, 0>::value;
+
+        }
+
+        template <typename TType>
+        inline std::unique_ptr<Type> Type::SubType<TType>::GetNext() const noexcept {
+
+            using TSubType = std::conditional_t<std::is_array<TType>::value || std::is_reference<TType>::value,
+                                                std::remove_all_extents_t<std::remove_reference_t<TType>>,          // Remove references and extents from the outermost level (mutually exclusive)
+                                                std::conditional_t<std::is_pointer<TType>::value,
+                                                                   std::remove_pointer_t<TType>,                    // Remove a pointer level (removes qualifiers as well)
+                                                                   std::remove_cv_t<TType>>>;                       // Remove const and volatile qualifiers from the innermost level
+                
+            return is_class_name_v<TSubType> ?
+                   nullptr :
+                   std::make_unique<SubType<TSubType>>();
+
+        }
+
+        template <typename TType>
+        inline const std::type_info& Type::SubType<TType>::GetTypeInfo() const noexcept {
+
+            // The type info of the actual type is not enough to check for inheritance.
+            // We store the type info of a known class (int) with the same form\qualifiers of the original type.
+            // Checking for a type conversion is a matter of checking whether the form is the same and whether both classes are in the same hierarchy.
             
+            return typeid(replace_t<TType, int>);   
+
+        }
+
+        //////////////// CLASS DEFINITION ////////////////
+
         template <typename TClass>
         inline ClassDefinition<TClass>::ClassDefinition(const HashedString& name) noexcept
             : name_(name) {}
@@ -780,42 +968,33 @@ namespace syntropy {
 
         }
 
-        //////////////// CLASS PROVIDER ////////////////
-
-        template <typename TClass>
-        inline const Class& ClassProvider<TClass>::operator()() const noexcept {
-
-            return class_of<TClass>();
-
-        }
-
         //////////////// PROPERTY ////////////////
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty TClass::* field) noexcept
             : name_(name)
-            , class_(std::make_unique<ClassProvider<TProperty>>())
+            , type_(type_of<TProperty>())
             , getter_(PropertyGetter()(field))
             , setter_(PropertySetter()(field)){}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
             : name_(name)
-            , class_(std::make_unique<ClassProvider<TProperty>>())
+            , type_(type_of<TProperty>())
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()()) {}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept
             : name_(name)
-            , class_(std::make_unique<ClassProvider<TProperty>>())
+            , type_(type_of<TProperty>())
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) noexcept
             : name_(name)
-            , class_(std::make_unique<ClassProvider<TProperty>>())
+            , type_(type_of<TProperty>())
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
 
@@ -825,9 +1004,9 @@ namespace syntropy {
 
         }
 
-        inline const Class& Property::GetClass() const noexcept {
+        inline const Type& Property::GetType() const noexcept {
 
-            return (*class_)();
+            return type_;
 
         }
         

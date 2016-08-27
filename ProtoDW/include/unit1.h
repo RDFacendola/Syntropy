@@ -288,7 +288,7 @@ public:
 
         for (const auto& property : foo_class_.GetProperties()) {
 
-            std::cout << "Property " << property.second.GetName().GetString() << " : " << property.second.GetClass().GetName().GetString() << "\n";
+            std::cout << "Property " << property.second.GetName().GetString() << " : " << property.second.GetType().GetName() << "\n";
 
         }
 
@@ -498,6 +498,11 @@ public:
         auto bar = bar_class_.GetFactory()->Instantiate();
         auto foobar = foobar_class_.GetFactory()->Instantiate();
 
+        FooBar bee;
+        FooBar* beep = &bee;
+
+        auto foobarp = syntropy::reflection::any_instance(beep);
+
         TEST_TRUE(bar.As<Bar>() != nullptr);
         TEST_FALSE(bar.As<Foo>() != nullptr);
         TEST_FALSE(bar.As<FooBar>() != nullptr);
@@ -506,9 +511,13 @@ public:
         TEST_TRUE(foobar.As<Foo>() != nullptr);
         TEST_TRUE(foobar.As<FooBar>() != nullptr);
 
-        TEST_TRUE(foobar.As<FooBar*>() == nullptr);
-        TEST_TRUE(foobar.As<const FooBar*>() == nullptr);
         TEST_TRUE(foobar.As<FooBar**>() == nullptr);
+        TEST_TRUE(foobar.As<FooBar**>() == nullptr);
+        TEST_TRUE(foobar.As<FooBar[][2]>() == nullptr);
+                
+        TEST_TRUE(foobarp.As<FooBar>() == nullptr);
+        TEST_TRUE(foobarp.As<FooBar*>() != nullptr);
+        TEST_TRUE(foobarp.As<FooBar**>() == nullptr);      
 
         float x = 0;
         float* p = &x;
@@ -601,8 +610,7 @@ public:
         return std::addressof(foobar);
 
     }
-
-
+    
     void ForwardingTest() {
 
         float x = 0;
@@ -629,6 +637,7 @@ public:
     }
 
     void Do() {
+                
 
         RUN_TEST(SynopsisTest);
         RUN_TEST(FieldTest);
