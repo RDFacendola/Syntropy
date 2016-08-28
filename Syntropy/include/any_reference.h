@@ -223,7 +223,7 @@ namespace syntropy {
     template <ConstQualifier kConstQualifier, typename TType>
     inline bool AnyReferenceWrapper<kConstQualifier, TType>::IsEmpty() const noexcept {
 
-        return !!content_;
+        return !content_;
 
     }
 
