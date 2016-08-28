@@ -14,9 +14,11 @@
 
 #include "hashed_string.h"
 #include "type_traits.h"
-#include "type.h"
 #include "method.h"
 #include "any.h"
+
+#include "type.h"
+#include "property.h"
 
 #include "any_reference.h"
 
@@ -53,8 +55,10 @@ namespace syntropy {
         template <typename TClass>
         class Factory;
 
-        class Property;
-        
+        // Property
+
+        using Property = BasicProperty<Class>;
+
         // Instance
 
         template <ConstQualifier kConstQualifier>
@@ -309,173 +313,6 @@ namespace syntropy {
 
             }
 
-        };
-
-        struct PropertyGetter {
-
-            using TGetter = std::function<bool(const ConstInstance&, Any)>;
-
-            template <typename TClass, typename TProperty>
-            TGetter operator() (TProperty TClass::* field) const {
-
-                return[field](const ConstInstance& instance, Any value) -> bool {
-
-                    auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
-                    auto instance_ptr = instance.As<const TClass>();
-
-                    if (value_ptr && instance_ptr) {
-
-                        **value_ptr = instance_ptr->*field;
-
-                    }
-
-                    return !!value_ptr && !!instance_ptr;
-
-                };
-
-            }
-
-            template <typename TClass, typename TProperty>
-            TGetter operator() (TProperty(TClass::* getter)() const) const {
-
-                return[getter](const ConstInstance& instance, Any value) -> bool {
-
-                    auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
-                    auto instance_ptr = instance.As<const TClass>();
-
-                    if (value_ptr && instance_ptr) {
-
-                        **value_ptr = (instance_ptr->*getter)();
-
-                    }
-
-                    return !!value_ptr && !!instance_ptr;
-
-                };
-
-            }
-
-        };
-
-        struct PropertySetter {
-
-            using TSetter = std::function<bool(const Instance&, Any)>;
-
-            TSetter operator() () const {
-
-                return[](const Instance&, Any) -> bool {
-
-                    return false;
-
-                };
-
-            }
-
-            template <typename TClass, typename TProperty>
-            TSetter operator() (TProperty TClass::* property, typename std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) const {
-
-                return[property](const Instance& instance, Any value) -> bool{
-
-                    auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                    auto instance_ptr = instance.As<TClass>();
-
-                    if (value_ptr && instance_ptr) {
-
-                        instance_ptr->*property = **value_ptr;
-
-                    }
-
-                    return !!value_ptr && !!instance_ptr;
-
-                };
-
-            }
-
-            template <typename TClass, typename TProperty>
-            TSetter operator() (TProperty TClass::*, typename std::enable_if_t<std::is_const<TProperty>::value>* = nullptr) const {
-
-                return (*this)();
-
-            }
-
-            template <typename TClass, typename TProperty>
-            TSetter operator() (void (TClass::* setter)(TProperty)) const {
-
-                return[setter](const Instance& instance, Any value) -> bool {
-
-                    auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                    auto instance_ptr = instance.As<TClass>();
-
-                    if (value_ptr && instance_ptr) {
-
-                        (instance_ptr->*setter)(**value_ptr);
-
-                    }
-
-                    return !!value_ptr && !!instance_ptr;
-
-                };
-
-            }
-
-            template <typename TClass, typename TProperty>
-            TSetter operator() (TProperty& (TClass::* setter)()) const {
-
-                return[setter](const Instance& instance, Any value) -> bool {
-
-                    auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                    auto instance_ptr = instance.As<TClass>();
-
-                    if (value_ptr && instance_ptr) {
-
-                        (instance_ptr->*setter)() = **value_ptr;
-
-                    }
-
-                    return !!value_ptr && !!instance_ptr;
-
-                };
-
-            }
-
-        };
-        
-        class Property {
-
-        public:
-
-            template <typename TClass, typename TProperty>
-            Property(const HashedString& name, TProperty TClass::* field) noexcept;
-
-            template <typename TClass, typename TProperty>
-            Property(const HashedString& name, TProperty (TClass::* getter)() const) noexcept;
-
-            template <typename TClass, typename TProperty>
-            Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept;
-
-            template <typename TClass, typename TProperty>
-            Property(const HashedString& name, const TProperty&(TClass::* getter)() const, TProperty&(TClass::* setter)()) noexcept;
-            
-            const HashedString& GetName() const noexcept;
-
-            const Type& GetType() const noexcept;
-
-            template <typename TInstance, typename TValue>
-            bool Get(const TInstance& instance, TValue& value) const;
-
-            template <typename TInstance, typename TValue>
-            bool Set(TInstance&& instance, const TValue& value) const;
-
-        private:
-            
-            HashedString name_;                                     ///< \brief Property name.
-
-            const Type& type_;                                 ///< \brief Property type.
-
-            PropertyGetter::TGetter getter_;                        ///< \brief Property getter.
-
-            PropertySetter::TSetter setter_;                        ///< \brief Property setter.
-            
         };
 
         /// \brief Functor used to fill a class definition.
@@ -768,64 +605,7 @@ namespace syntropy {
 
         }
 
-        //////////////// PROPERTY ////////////////
-
-        template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, TProperty TClass::* field) noexcept
-            : name_(name)
-            , type_(type_of<TProperty>())
-            , getter_(PropertyGetter()(field))
-            , setter_(PropertySetter()(field)){}
-
-        template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
-            : name_(name)
-            , type_(type_of<TProperty>())
-            , getter_(PropertyGetter()(getter))
-            , setter_(PropertySetter()()) {}
-
-        template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept
-            : name_(name)
-            , type_(type_of<TProperty>())
-            , getter_(PropertyGetter()(getter))
-            , setter_(PropertySetter()(setter)) {}
-
-        template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) noexcept
-            : name_(name)
-            , type_(type_of<TProperty>())
-            , getter_(PropertyGetter()(getter))
-            , setter_(PropertySetter()(setter)) {}
-
-        inline const HashedString& Property::GetName() const noexcept {
-
-            return name_;
-
-        }
-
-        inline const Type& Property::GetType() const noexcept {
-
-            return type_;
-
-        }
-        
-        template <typename TInstance, typename TValue>
-        inline bool Property::Get(const TInstance& instance, TValue& value) const {
-
-            return getter_(any_cinstance(instance),
-                           std::addressof(value));
-
-        }
-                
-        template <typename TInstance, typename TValue>
-        inline bool Property::Set(TInstance&& instance, const TValue& value) const {
-
-            return setter_(any_instance(std::forward<TInstance>(instance)),
-                           std::addressof(value));
-
-        }
-
+     
     }
 
 }

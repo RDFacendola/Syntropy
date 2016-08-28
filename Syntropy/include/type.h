@@ -45,7 +45,7 @@ namespace syntropy {
             virtual ~BasicType() = default;
 
             template <typename TType>
-            static const BasicType& GetType();
+            static const BasicType<TClass>& GetType();
 
             bool operator==(const BasicType<TClass>& other) const noexcept;
 

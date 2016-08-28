@@ -172,8 +172,7 @@ namespace syntropy {
     /// \brief Helper type replace_class_name<TType, TReplace>.
     template <typename TType, typename TReplace>
     using replace_class_name_t = typename replace_class_name<TType, TReplace>::type;
-
-
+    
     //////////////// IDENTITY ////////////////
     
     /// \brief Provides a member typedef which is the same a TType. Used to disable type deduction on template parameters.
