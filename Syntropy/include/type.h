@@ -253,7 +253,7 @@ namespace syntropy {
             // We store the type info of a known class (int) with the same form\qualifiers of the original type.
             // Checking for a type conversion is a matter of checking whether the form is the same and whether both classes are in the same hierarchy.
             
-            return typeid(replace_t<TType, int>);   
+            return typeid(replace_class_name_t<TType, int>);   
 
         }
         

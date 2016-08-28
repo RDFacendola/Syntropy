@@ -54,132 +54,125 @@ namespace syntropy {
     /// \brief Helper value for is_stream_extractable<TStream, TType>.
     template <typename TStream, typename TType>
     constexpr bool is_stream_extractable_v = is_stream_extractable<TStream, TType>::value;
-        
-    //////////////// REMOVE ALL CV POINTER ////////////////
 
-    /// \brief Provides a member typedef which is the same a TType except that any pointer and qualifiers are removed recursively.
+    //////////////// CLASS ////////////////
+
+    /// \brief Provides a member typedef which is the same as TType except that any pointer, qualifiers, references and extents are removed recursively.
+    /// For example: class_name<int ** const *[1][3]> has a member type 'int'.
     template <typename TType>
-    struct remove_all_cv_pointer {
+    struct class_name {
 
-        using type = typename TType;
+        using type = typename std::remove_cv_t<TType>;
 
     };
 
-    /// \brief Helper type form remove_all_cv_pointer<TType>.
     template <typename TType>
-    using remove_all_cv_pointer_t = typename remove_all_cv_pointer<TType>::type;
+    struct class_name<TType*> : class_name<TType> {};
 
     template <typename TType>
-    struct remove_all_cv_pointer<TType*> : remove_all_cv_pointer<TType> {};
+    struct class_name<TType* const> : class_name<TType> {};
 
     template <typename TType>
-    struct remove_all_cv_pointer<TType const> : remove_all_cv_pointer<TType> {};
+    struct class_name<TType* volatile> : class_name<TType> {};
 
     template <typename TType>
-    struct remove_all_cv_pointer<TType volatile> : remove_all_cv_pointer<TType> {};
+    struct class_name<TType* const volatile> : class_name<TType> {};
 
     template <typename TType>
-    struct remove_all_cv_pointer<TType const volatile> : remove_all_cv_pointer<TType> {};
+    struct class_name<TType&> : class_name<TType> {};
+
+    template <typename TType>
+    struct class_name<TType&&> : class_name<TType> {};
+
+    template <typename TType>
+    struct class_name<TType[]> : class_name<TType> {};
+
+    template <typename TType, size_t size>
+    struct class_name<TType[size]> : class_name<TType> {};
+   
+    /// \brief Helper type for class_name<TType>.
+    template <typename TType>
+    using class_name_t = typename class_name<TType>::type;  
     
-    //////////////// DROP ////////////////
-
-    /// \brief Provides a member typedef which is the same a TType except that any pointer, extents, references and qualifiers are removed recursively.
     template <typename TType>
-    struct drop {
+    constexpr bool is_class_name_v = std::is_same<class_name_t<TType>, TType>::value;
 
-        using type = typename remove_all_cv_pointer_t<std::remove_all_extents_t<std::remove_reference_t<TType>>>;
-        
-    };
-    
-    /// \brief Helper type for drop<TType>.
-    template <typename TType>
-    using drop_t = typename drop<TType>::type;  
-    
-    //////////////// REPLACE ////////////////
-
-    /// \brief Provides a member typedef which is the same a TType except that the class name is replaced with TReplace if TType is non-reference non-array type, otherwise the type is TReplace.
-    /// For example: replace_cv_pointer<int ** const *, float> has a member type 'float ** const *'.
+    /// \brief Provides a member typedef which is the same as TType except that the class name is replaced with TReplace.
+    /// For example: replace_class_name<int ** const *[1][3], float> has a member type 'float ** const *[1][3]'.
     /// \author Raffaele D. Facendola - August 2016
     template <typename TType, typename TReplace>
-    struct replace_cv_pointer {
+    struct replace_class_name {
         
-        using type = typename TReplace;
-
-    };
-
-    /// \brief Helper type replace_cv_pointer<TType, TReplace>.
-    template <typename TType, typename TReplace>
-    using replace_cv_pointer_t = typename replace_cv_pointer<TType, TReplace>::type;
-
-    template <typename TType, typename TReplace>
-    struct replace_cv_pointer<TType*, TReplace> {
-
-        using type = std::add_pointer_t<typename replace_cv_pointer_t<TType, TReplace>>;
+        using type = typename std::conditional_t<std::is_const<TType>::value && std::is_volatile<TType>::value,
+                                                 std::add_cv_t<TReplace>,
+                                                 std::conditional_t<std::is_const<TType>::value,
+                                                                    std::add_const_t<TReplace>,
+                                                                    std::conditional_t<std::is_volatile<TType>::value,
+                                                                                       std::add_volatile_t<TReplace>,
+                                                                                       TReplace>>>;
 
     };
 
     template <typename TType, typename TReplace>
-    struct replace_cv_pointer<TType const, TReplace> {
+    struct replace_class_name<TType*, TReplace> {
 
-        using type = std::add_const_t<typename replace_cv_pointer_t<TType, TReplace>>;
-
-    };
-
-    template <typename TType, typename TReplace>
-    struct replace_cv_pointer<TType volatile, TReplace> {
-
-        using type = std::add_volatile_t<typename replace_cv_pointer_t<TType, TReplace>>;
+        using type = std::add_pointer_t<typename replace_class_name<TType, TReplace>::type>;
 
     };
 
     template <typename TType, typename TReplace>
-    struct replace_cv_pointer<TType const volatile, TReplace> {
+    struct replace_class_name<TType* const, TReplace> {
 
-        using type = std::add_cv_t<typename replace_cv_pointer_t<TType, TReplace>>;
-
-    };
-
-    /// \brief Provides a member typedef which is the same a TType except that the class name is replaced with TReplace.
-    /// For example: replace_cv_pointer<int ** const *[1][3], float> has a member type 'float ** const *[1][3]'.
-    /// \author Raffaele D. Facendola - August 2016
-    template <typename TType, typename TReplace>
-    struct replace {
-
-        using type = typename replace_cv_pointer_t<TType, TReplace>;
-
-    };
-
-    /// \brief Helper type replace<TType, TReplace>.
-    template <typename TType, typename TReplace>
-    using replace_t = typename replace<TType, TReplace>::type;
-    
-    template <typename TType, typename TReplace>
-    struct replace<TType&, TReplace> {
-
-        using type = std::add_lvalue_reference_t<typename replace_t<TType, TReplace>>;
+        using type = std::add_const_t<std::add_pointer_t<typename replace_class_name<TType, TReplace>::type>>;
 
     };
 
     template <typename TType, typename TReplace>
-    struct replace<TType&&, TReplace> {
+    struct replace_class_name<TType* volatile, TReplace> {
 
-        using type = std::add_rvalue_reference_t<typename replace_t<TType, TReplace>>;
+        using type = std::add_volatile_t<std::add_pointer_t<typename replace_class_name<TType, TReplace>::type>>;
 
     };
 
     template <typename TType, typename TReplace>
-    struct replace<TType[], TReplace> {
+    struct replace_class_name<TType* const volatile, TReplace> {
 
-        using type = typename replace_t<TType, TReplace>[];
+        using type = std::add_cv_t<std::add_pointer_t<typename replace_class_name<TType, TReplace>::type>>;
+
+    };
+
+    template <typename TType, typename TReplace>
+    struct replace_class_name<TType&, TReplace> {
+
+        using type = std::add_lvalue_reference_t<typename replace_class_name<TType, TReplace>::type>;
+
+    };
+
+    template <typename TType, typename TReplace>
+    struct replace_class_name<TType&&, TReplace> {
+
+        using type = std::add_rvalue_reference_t<typename replace_class_name<TType, TReplace>::type>;
+
+    };
+
+    template <typename TType, typename TReplace>
+    struct replace_class_name<TType[], TReplace> {
+
+        using type = typename replace_class_name<TType, TReplace>::type[];
 
     };
 
     template <typename TType, typename TReplace, size_t N>
-    struct replace<TType[N], TReplace> {
+    struct replace_class_name<TType[N], TReplace> {
 
-        using type = typename replace_t<TType, TReplace>[N];
+        using type = typename replace_class_name<TType, TReplace>::type[N];
 
     };
+
+    /// \brief Helper type replace_class_name<TType, TReplace>.
+    template <typename TType, typename TReplace>
+    using replace_class_name_t = typename replace_class_name<TType, TReplace>::type;
+
 
     //////////////// IDENTITY ////////////////
     
@@ -207,7 +200,7 @@ namespace syntropy {
 
         const std::type_info& operator()() const noexcept {
 
-            return typeid(drop_t<TInstance>);
+            return typeid(class_name_t<TInstance>);
 
         }
 

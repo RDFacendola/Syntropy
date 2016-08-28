@@ -94,13 +94,6 @@ namespace syntropy {
         template <typename TClass>
         constexpr bool is_instantiable_v = !std::is_abstract_v<TClass> &&
                                             std::is_nothrow_default_constructible_v<TClass>;
-
-        template <typename TType>
-        constexpr bool is_class_name_v = !std::is_pointer<TType>::value &&
-                                         !std::is_reference<TType>::value &&
-                                         !std::is_array<TType>::value &&
-                                         !std::is_const<TType>::value &&
-                                         !std::is_volatile<TType>::value;
         
         /// \brief Describes a class implementation.
         /// \author Raffaele D. Facendola - 2016
@@ -312,7 +305,7 @@ namespace syntropy {
 
             const IFactory* operator()() const noexcept {
 
-                return std::addressof(Factory<typename drop_t<TClass>>::GetInstance());
+                return std::addressof(Factory<typename class_name_t<TClass>>::GetInstance());
 
             }
 
@@ -567,7 +560,7 @@ namespace syntropy {
         template <typename TType>
         const Class& class_of() {
 
-            return Class::GetClass<drop_t<TType>>();
+            return Class::GetClass<class_name_t<TType>>();
 
         }
         
