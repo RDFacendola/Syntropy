@@ -48,13 +48,6 @@ namespace syntropy {
         template <typename TType>
         const Type& type_of();
 
-        // ...
-
-        class IFactory;
-
-        template <typename TClass>
-        class Factory;
-
         // Property
 
         using Property = BasicProperty<Class>;
@@ -87,17 +80,16 @@ namespace syntropy {
         template <typename TInstance>
         Instance any_instance(const TInstance&&) = delete;
 
+        template <typename TInstance, typename = void>
+        struct instantiate;
+
     }
-    
+
 }
 
 namespace syntropy {
 
     namespace reflection {
-
-        template <typename TClass>
-        constexpr bool is_instantiable_v = !std::is_abstract_v<TClass> &&
-                                            std::is_nothrow_default_constructible_v<TClass>;
         
         /// \brief Describes a class implementation.
         /// \author Raffaele D. Facendola - 2016
@@ -125,10 +117,6 @@ namespace syntropy {
             /// \return Returns the list of classes that are derived by this class.
             const std::vector<const Class*>& GetBaseClasses() const noexcept;
 
-            /// \brief Get a factory for this class.
-            /// \return Returns an factory for this class if applicable. Returns nullptr otherwise.
-            const IFactory* GetFactory() const noexcept;
-
             /// \brief Get a class property by name.
             /// \param property_name Name of the property to get.
             /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
@@ -147,9 +135,19 @@ namespace syntropy {
             /// \return Returns true if the class is abstract, returns false otherwise.
             bool IsAbstract() const noexcept;
 
+            /// \brief Check whether the class is instantiable via reflection.
+            /// A class is instantiable if it is non-abstract and is default-constructible.
+            /// \return Returns true if the class is instantiable, returns false otherwise.
+            bool IsInstantiable() const noexcept;
+
             /// \brief Check whether this class can be converted to the specified one.
             /// \return Returns true if the class described by this instance is a base for the specified one or is the same type, returns false otherwise.
             bool operator==(const Class& other) const noexcept;
+
+            /// \brief Create a new instance.
+            /// The method requires that the class is default-constructible and is non-abstract.
+            /// \return Returns a reference to the new instance if the class was default constructible, return an empty reference otherwise.
+            Instance Instantiate() const;
 
         private:
             
@@ -172,7 +170,7 @@ namespace syntropy {
 
             /// \brief Virtual destructor.
             virtual ~IClassDefinition() = default;
-
+            
             /// \brief Get the name of the class.
             /// \return Returns the type string of the class.
             virtual const HashedString& GetName() const noexcept = 0;
@@ -180,11 +178,7 @@ namespace syntropy {
             /// \brief Get the list of classes that are derived by this class.
             /// \return Returns the list of classes that are derived by this class.
             virtual const std::vector<const Class*>& GetBaseClasses() const noexcept = 0;
-
-            /// \brief Get a factory for this class.
-            /// \return Returns an factory for this class if applicable. Returns nullptr otherwise.
-            virtual const IFactory* GetFactory() const noexcept = 0;
-
+            
             /// \brief Get a class property by name.
             /// \param property_name Name of the property to get.
             /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
@@ -202,6 +196,16 @@ namespace syntropy {
             /// \brief Check whether this class is abstract or not.
             /// \return Returns true if the class is abstract, returns false otherwise.
             virtual bool IsAbstract() const noexcept = 0;
+
+            /// \brief Check whether the class is instantiable via reflection.
+            /// A class is instantiable if it is non-abstract and is default-constructible.
+            /// \return Returns true if the class is instantiable, returns false otherwise.
+            virtual bool IsInstantiable() const noexcept = 0;
+
+            /// \brief Create a new instance.
+            /// The method requires that the class is default-constructible and is non-abstract.
+            /// \return Returns a reference to the new instance if the class was default constructible, return an empty reference otherwise.
+            virtual Instance Instantiate() const = 0;
 
         };
 
@@ -221,12 +225,10 @@ namespace syntropy {
             /// \brief Create a named class definition.
             /// \param name name of the class.
             ClassDefinition(const HashedString& name) noexcept;
-            
+
             virtual const HashedString& GetName() const noexcept override;
 
             virtual const std::vector<const Class*>& GetBaseClasses() const noexcept override;
-
-            virtual const IFactory* GetFactory() const noexcept override;
 
             virtual const Property* GetProperty(const HashedString& property_name) const noexcept override;
 
@@ -235,6 +237,10 @@ namespace syntropy {
             virtual const std::unordered_map<size_t, Property>& GetProperties() const noexcept override;
 
             virtual bool IsAbstract() const noexcept override;
+
+            virtual bool IsInstantiable() const noexcept override;
+
+            virtual Instance Instantiate() const override;
 
             template <typename TBaseClass>
             void DefineBaseClass() noexcept;
@@ -263,55 +269,6 @@ namespace syntropy {
             std::unordered_map<size_t, Property> properties_;       ///< \brief List of all the supported properties.
 
             std::unordered_map<size_t, Method> methods_;            ///< \brief List of all the supported methods.
-
-        };
-
-        class IFactory {
-
-        public:
-
-            virtual Instance Instantiate() const noexcept = 0;
-
-        };
-        
-        template <typename TClass>
-        class Factory : public IFactory {
-
-            static_assert(is_instantiable_v<TClass>, "TClass must be nothrow default constructible.");
-
-        public:
-
-            static Factory<TClass>& GetInstance() noexcept;
-
-            virtual Instance Instantiate() const noexcept override;
-
-        private:
-
-            /// \brief Private constructor to prevent direct instantiation.
-            Factory() = default;
-
-        };
-
-        template <typename TClass, typename = void>
-        struct FactoryProvider {
-
-            const IFactory* operator()() const noexcept {
-
-                return nullptr;
-
-            }
-
-        };
-
-        template <typename TClass>
-        struct FactoryProvider<TClass,
-                               typename std::enable_if_t<is_instantiable_v<TClass>>> {
-
-            const IFactory* operator()() const noexcept {
-
-                return std::addressof(Factory<typename class_name_t<TClass>>::GetInstance());
-
-            }
 
         };
 
@@ -408,6 +365,28 @@ namespace syntropy {
 
         }
 
+        template <typename TClass, typename>
+        struct instantiate {
+
+            Instance operator()() const noexcept {
+
+                return Instance();
+
+            }
+
+        };
+
+        template <typename TClass>
+        struct instantiate<TClass, typename std::enable_if_t<std::is_default_constructible_v<TClass>>> {
+
+            Instance operator()() const noexcept {
+
+                return new TClass();
+
+            }
+
+        };
+
         //////////////// ANY CINSTANCE \\ ANY INSTANCE ////////////////
 
         template <typename TInstance>
@@ -462,12 +441,6 @@ namespace syntropy {
 
         }
 
-        inline const IFactory* Class::GetFactory() const noexcept {
-
-            return definition_->GetFactory();
-
-        }
-
         inline const Property* Class::GetProperty(const HashedString& property_name) const noexcept {
 
             return definition_->GetProperty(property_name);
@@ -491,6 +464,18 @@ namespace syntropy {
             return definition_->IsAbstract();
 
         }
+        
+        inline bool Class::IsInstantiable() const noexcept {
+
+            return definition_->IsInstantiable();
+
+        }
+        
+        inline Instance Class::Instantiate() const {
+
+            return definition_->Instantiate();
+
+        }
 
         //////////////// CLASS DEFINITION ////////////////
 
@@ -510,13 +495,6 @@ namespace syntropy {
 
             return base_classes_;
 
-        }
-
-        template <typename TClass>
-        inline const IFactory* ClassDefinition<TClass>::GetFactory() const noexcept {
-
-            return FactoryProvider<TClass>()();
-            
         }
 
         template <typename TClass>
@@ -556,6 +534,20 @@ namespace syntropy {
         }
 
         template <typename TClass>
+        inline bool ClassDefinition<TClass>::IsInstantiable() const noexcept {
+
+            return std::is_default_constructible_v<TClass>;
+            
+        }
+
+        template <typename TClass>
+        inline Instance ClassDefinition<TClass>::Instantiate() const {
+
+            return instantiate<TClass>()();
+
+        }
+        
+        template <typename TClass>
         template <typename TBaseClass>
         inline void ClassDefinition<TClass>::DefineBaseClass() noexcept {
 
@@ -586,25 +578,6 @@ namespace syntropy {
                                                         std::forward<TSetter>(setter))));
 
         }
-
-        //////////////// FACTORY ////////////////
-
-        template <typename TClass>
-        Factory<TClass>& Factory<TClass>::GetInstance() noexcept{
-
-            static Factory<TClass> factory;
-
-            return factory;
-
-        }
-
-        template <typename TClass>
-        Instance Factory<TClass>::Instantiate() const noexcept {
-
-            return any_instance(*new TClass());
-
-        }
-
      
     }
 

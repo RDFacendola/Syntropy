@@ -71,6 +71,14 @@ inline std::ostream& operator << (std::ostream &out, const StreamableBlob& blob)
  
 }
 
+class AbstractFoo {
+
+public:
+
+    virtual void BeAbstract() = 0;
+
+};
+
 class Foo : public Bar {
 
     friend class syntropy::reflection::ClassDefinition<Foo>;
@@ -193,6 +201,19 @@ public:
 };
 
 template <>
+struct syntropy::reflection::ClassDeclaration<AbstractFoo> {
+
+public:
+
+    std::unique_ptr<syntropy::reflection::ClassDefinition<AbstractFoo>> operator()() const {
+
+        return std::make_unique<syntropy::reflection::ClassDefinition<AbstractFoo>>("AbstractFoo");
+        
+    }
+
+};
+
+template <>
 struct syntropy::reflection::ClassDeclaration<Blob> {
 
 public:
@@ -284,7 +305,7 @@ public:
                   << "' is " << (foo_class_.IsAbstract() ? "" : "not ") << "abstract\n";
 
         std::cout << "Class '" << foo_class_.GetName().GetString()
-                  << "' is " << (foo_class_.GetFactory() ? "" : "not ") << "instantiable\n";
+                  << "' is " << (foo_class_.IsInstantiable() ? "" : "not ") << "instantiable\n";
 
         for (const auto& property : foo_class_.GetProperties()) {
 
@@ -494,14 +515,19 @@ public:
     }
 
     void InstancingTest() {
-                
-        auto bar = bar_class_.GetFactory()->Instantiate();
-        auto foobar = foobar_class_.GetFactory()->Instantiate();
+
+        auto bar = bar_class_.Instantiate();
+        auto foobar = foobar_class_.Instantiate();
+        auto abstractfoo = abstract_class_.Instantiate();
 
         FooBar bee;
         FooBar* beep = &bee;
 
         auto foobarp = syntropy::reflection::any_instance(beep);
+
+        TEST_FALSE(bar.IsEmpty());
+        TEST_FALSE(foobar.IsEmpty());
+        TEST_TRUE(abstractfoo.IsEmpty());
 
         TEST_TRUE(bar.As<Bar>() != nullptr);
         TEST_FALSE(bar.As<Foo>() != nullptr);
@@ -610,26 +636,26 @@ public:
         return std::addressof(foobar);
 
     }
-    
+
     void ForwardingTest() {
 
         float x = 0;
-                       
+
         FooBar foobar;
 
         auto foobar_instance = syntropy::reflection::any_instance(foobar);
-        syntropy::reflection::ConstInstance const_foobar_instance = foobar_instance;    // syntropy::reflection::any_cinstance(foobar);
-                
+        syntropy::reflection::ConstInstance const_foobar_instance = foobar_instance;        // syntropy::reflection::any_cinstance(foobar);
+
         TEST_TRUE(field_float_value_->Set(foobar_instance, 999.0f));
-        //TEST_TRUE(field_float_value_->Set(const_foobar_instance, 999.0f));                        // Const instance
-        TEST_TRUE(field_float_value_->Set(foobar_class_.GetFactory()->Instantiate(), 999.0f));      // Also, leak :D
-        //TEST_TRUE(field_float_value_->Set(MakeConstInstance(foobar), 999.0f));                    // Const instance
+        //TEST_TRUE(field_float_value_->Set(const_foobar_instance, 999.0f));                // Const instance
+        TEST_TRUE(field_float_value_->Set(foobar_class_.Instantiate(), 999.0f));            // Also, leak :D
+        //TEST_TRUE(field_float_value_->Set(MakeConstInstance(foobar), 999.0f));            // Const instance
         TEST_TRUE(field_float_value_->Set(foobar, 999.0f));
-        //TEST_TRUE(field_float_value_->Set(MakeFooBar(), 999.0f));                                 // r-value reference
-        
+        //TEST_TRUE(field_float_value_->Set(MakeFooBar(), 999.0f));                         // r-value reference
+
         TEST_TRUE(field_float_value_->Get(foobar_instance, x));
         TEST_TRUE(field_float_value_->Get(const_foobar_instance, x));
-        TEST_TRUE(field_float_value_->Get(foobar_class_.GetFactory()->Instantiate(), x));           // Also, leak :D
+        TEST_TRUE(field_float_value_->Get(foobar_class_.Instantiate(), x));                 // Also, leak :D
         TEST_TRUE(field_float_value_->Get(MakeConstInstance(foobar), x));
         TEST_TRUE(field_float_value_->Get(foobar, x));
         TEST_TRUE(field_float_value_->Get(MakeFooBar(), x));
@@ -637,15 +663,14 @@ public:
     }
 
     void Do() {
-                
 
-        RUN_TEST(SynopsisTest);
-        RUN_TEST(FieldTest);
-        RUN_TEST(PropertyTest);
-        //RUN_TEST(InterpretTest);
-        RUN_TEST(PolymorphismTest);
-        RUN_TEST(InstancingTest);
-        RUN_TEST(ForwardingTest);
+         RUN_TEST(SynopsisTest);
+         RUN_TEST(FieldTest);
+         RUN_TEST(PropertyTest);
+         //RUN_TEST(InterpretTest);
+         RUN_TEST(PolymorphismTest);
+         RUN_TEST(InstancingTest);
+         RUN_TEST(ForwardingTest);
 
     }
 
@@ -653,7 +678,8 @@ public:
     Tester() 
         : foo_class_(syntropy::reflection::Class::GetClass<Foo>())
         , foobar_class_(syntropy::reflection::Class::GetClass<FooBar>())
-        , bar_class_(syntropy::reflection::Class::GetClass<Bar>()){
+        , bar_class_(syntropy::reflection::Class::GetClass<Bar>())
+        , abstract_class_(syntropy::reflection::Class::GetClass<AbstractFoo>()){
     
         field_int_value_ = foo_class_.GetProperty("int_value");
         field_float_value_ = foo_class_.GetProperty("float_value");
@@ -694,6 +720,7 @@ private:
     const syntropy::reflection::Class& bar_class_;
     const syntropy::reflection::Class& foo_class_;
     const syntropy::reflection::Class& foobar_class_;
+    const syntropy::reflection::Class& abstract_class_;
 
     const syntropy::reflection::Property* field_int_value_;
     const syntropy::reflection::Property* field_float_value_;
