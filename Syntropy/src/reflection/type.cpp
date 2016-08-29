@@ -8,8 +8,15 @@ namespace syntropy {
 
         bool Type::operator ==(const Type& other) const noexcept {
 
-            return GetTypeInfo() == other.GetTypeInfo() &&
+            return GetCommonTypeInfo() == other.GetCommonTypeInfo() &&
                    GetClass() == other.GetClass();
+
+        }
+
+        bool Type::operator!=(const Type& other) const noexcept {
+
+            return GetCommonTypeInfo() != other.GetCommonTypeInfo() ||
+                   GetClass() != other.GetClass();
 
         }
 

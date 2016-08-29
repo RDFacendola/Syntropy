@@ -36,7 +36,13 @@ Class::Class(std::unique_ptr<IClassDefinition> definition)
 
 bool Class::operator ==(const Class& other) const noexcept {
 
-    return class_id_ % other.class_id_ == 0;        // This can be statically casted to other
+    return class_id_ % other.class_id_ == 0;
+
+}
+
+bool Class::operator !=(const Class& other) const noexcept {
+
+    return class_id_ % other.class_id_ != 0;
 
 }
 

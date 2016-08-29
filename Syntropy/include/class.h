@@ -77,6 +77,10 @@ namespace syntropy {
             /// \return Returns true if the class described by this instance is a base for the specified one or is the same type, returns false otherwise.
             bool operator==(const Class& other) const noexcept;
 
+            /// \brief Check whether this class cannot be converted to the specified one.
+            /// \return Returns false if the class described by this instance is a base for the specified one or is the same type, returns true otherwise.
+            bool operator!=(const Class& other) const noexcept;
+
             /// \brief Create a new instance.
             /// The method requires that the class is default-constructible and is non-abstract.
             /// \return Returns a reference to the new instance if the class was default constructible, return an empty reference otherwise.
