@@ -14,6 +14,8 @@
 #include "class.h"
 #include "property.h"
 
+#include "fundamental_types.h"
+
 namespace syntropy {
 
     namespace reflection {

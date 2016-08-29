@@ -266,58 +266,6 @@ namespace syntropy {
         template <typename TClass>
         struct ClassDeclaration;
 
-        template <>
-        struct ClassDeclaration<void> {
-
-        public:
-
-            std::unique_ptr<ClassDefinition<void>> operator()() const {
-
-                return std::make_unique<ClassDefinition<void>>("void");
-                
-            }
-
-        };
-
-        template <>
-        struct ClassDeclaration<int> {
-
-        public:
-
-            std::unique_ptr<ClassDefinition<int>> operator()() const {
-
-                return std::make_unique<ClassDefinition<int>>("int");
-
-            }
-
-        };
-
-        template <>
-        struct ClassDeclaration<float> {
-
-        public:
-
-            std::unique_ptr<ClassDefinition<float>> operator()() const {
-
-                return std::make_unique<ClassDefinition<float>>("float");
-
-            }
-
-        };
-
-        template <>
-        struct ClassDeclaration<bool> {
-
-        public:
-
-            std::unique_ptr<ClassDefinition<bool>> operator()() const {
-
-                return std::make_unique<ClassDefinition<bool>>("bool");
-
-            }
-
-        };
-
     }
 
     template <typename TInstance>

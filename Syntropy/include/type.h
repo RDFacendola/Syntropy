@@ -15,17 +15,7 @@ namespace syntropy {
 
     namespace reflection {
 
-        // Forward declarations
-
         class Class;
-
-    }
-
-}
-
-namespace syntropy {
-
-    namespace reflection {
 
         /// \brief Describes a type.
         /// \author Raffaele D. Facendola.
