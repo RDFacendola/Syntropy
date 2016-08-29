@@ -13,13 +13,6 @@
 
 namespace syntropy {
 
-    template <ConstQualifier kConstQualifier, typename TType>
-    class AnyReferenceWrapper;
-
-    using AnyReference = AnyReferenceWrapper<ConstQualifier::kNone, std::type_info>;
-
-    using AnyConstReference = AnyReferenceWrapper<ConstQualifier::kConst, std::type_info>;
-
     /// \brief Represents a type-safe container that wraps a reference of any type in a copyable, assignable object.
     /// The container is const qualified to preserve const-correctness at compile time. Both const and non-const references can be implicitly converted to const-references.
     /// The container grants type-safety via any custom type TType that can be determined via a proper specialization of syntropy::type_get[TType, TInstance].
@@ -137,26 +130,29 @@ namespace syntropy {
 
     };
 
-    template <typename TType = std::type_info, typename TInstance>
-    AnyReferenceWrapper<ConstQualifier::kConst, TType> any_cref(const TInstance& instance) noexcept;
+    using AnyReference = AnyReferenceWrapper<ConstQualifier::kNone, std::type_info>;
 
-    template <typename TType = std::type_info, ConstQualifier kConstQualifier>
-    AnyReferenceWrapper<ConstQualifier::kConst, TType> any_cref(AnyReferenceWrapper<kConstQualifier, TType> instance) noexcept;
+    using AnyConstReference = AnyReferenceWrapper<ConstQualifier::kConst, std::type_info>;
+    
+    template <typename TInstance>
+    AnyConstReference any_cref(const TInstance& instance) noexcept;
 
-    template <typename TType = std::type_info, typename TInstance>
-    AnyReferenceWrapper<ConstQualifier::kConst, TType> any_cref(const TInstance&&) = delete;
+    AnyConstReference any_cref(AnyConstReference instance) noexcept;
 
-    template <typename TType = std::type_info, typename TInstance>
-    AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(TInstance& instance) noexcept;
+    AnyConstReference any_cref(AnyReference instance) noexcept;
+
+    template <typename TInstance>
+    AnyConstReference any_cref(const TInstance&&) = delete;
+
+    template <typename TInstance>
+    AnyReference any_ref(TInstance& instance) noexcept;
         
-    template <typename TType = std::type_info>
-    AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(AnyReferenceWrapper<ConstQualifier::kConst, TType> instance) = delete;         // Denied: conversion loses qualifiers
+    AnyReference any_ref(AnyConstReference instance) = delete;
 
-    template <typename TType = std::type_info>
-    AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(AnyReferenceWrapper<ConstQualifier::kNone, TType> instance) noexcept;
+    AnyReference any_ref(AnyReference instance) noexcept;
         
-    template <typename TType = std::type_info, typename TInstance>
-    AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(const TInstance&&) = delete;
+    template <typename TInstance>
+    AnyReference any_ref(const TInstance&&) = delete;
     
 }
 
@@ -252,29 +248,33 @@ namespace syntropy {
 
     //////////////// ANY CREF \\ ANY REF ////////////////
 
-    template <typename TType, typename TInstance>
-    inline AnyReferenceWrapper<ConstQualifier::kConst, TType> any_cref(const TInstance& instance) noexcept {
+    template <typename TInstance>
+    inline AnyConstReference any_cref(const TInstance& instance) noexcept {
 
         return std::addressof(instance);
 
     }
 
-    template <typename TType, ConstQualifier kConstQualifier>
-    inline AnyReferenceWrapper<ConstQualifier::kConst, TType> any_cref(AnyReferenceWrapper<kConstQualifier, TType> instance) noexcept {
+    inline AnyConstReference any_cref(AnyConstReference instance) noexcept {
 
         return instance;
 
     }
 
-    template <typename TType, typename TInstance>
-    inline AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(TInstance& instance) noexcept {
+    inline AnyConstReference any_cref(AnyReference instance) noexcept {
+
+        return instance;
+
+    }
+
+    template <typename TInstance>
+    inline AnyReference any_ref(TInstance& instance) noexcept {
 
         return std::addressof(instance);
 
     }
 
-    template<typename TType>
-    inline AnyReferenceWrapper<ConstQualifier::kNone, TType> any_ref(AnyReferenceWrapper<ConstQualifier::kNone, TType> instance) noexcept {
+    inline AnyReference any_ref(AnyReference instance) noexcept {
 
         return instance;
 

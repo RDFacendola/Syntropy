@@ -1,6 +1,5 @@
-
 /// \file instance.h
-/// \brief TODO: Add brief description here
+/// \brief This header is part of the syntropy reflection system. It contains methods and classes used to handle object instances.
 ///
 /// \author Raffaele D. Facendola - 2016
 
