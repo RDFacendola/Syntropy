@@ -6,44 +6,24 @@
 
 #pragma once
 
-#include <unordered_map>
 #include <memory>
-#include <type_traits>
+#include <unordered_map>
 #include <vector>
-#include <sstream>
+#include <type_traits>
 
 #include "hashed_string.h"
 #include "type_traits.h"
-#include "method.h"
-#include "any.h"
 
 #include "instance.h"
 #include "property.h"
-
-namespace syntropy {
-
-    namespace reflection {
-
-        // Class
-
-        class Class;
-
-        class IClassDefinition;
-
-        template <typename TClass>
-        class ClassDefinition;
-
-        template <typename TClass>
-        struct ClassDeclaration;
-
-    }
-
-}
+#include "method.h"
 
 namespace syntropy {
 
     namespace reflection {
         
+        class IClassDefinition;
+
         /// \brief Describes a class implementation.
         /// \author Raffaele D. Facendola - 2016
         class Class {
