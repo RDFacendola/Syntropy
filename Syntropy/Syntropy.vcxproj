@@ -34,6 +34,10 @@
     </ClInclude>
     <ClInclude Include="include\fnv1.h" />
     <ClInclude Include="include\hashed_string.h" />
+    <ClInclude Include="include\instance.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\method.h">
       <SubType>
       </SubType>

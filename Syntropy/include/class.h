@@ -17,9 +17,8 @@
 #include "method.h"
 #include "any.h"
 
+#include "instance.h"
 #include "property.h"
-
-#include "any_reference.h"
 
 namespace syntropy {
 
@@ -34,42 +33,8 @@ namespace syntropy {
         template <typename TClass>
         class ClassDefinition;
 
-        template <typename TType>
-        const Class& class_of();
-
         template <typename TClass>
         struct ClassDeclaration;
-
-        template <typename TInstance, typename = void>
-        struct instantiate;
-
-        // Instance
-
-        template <ConstQualifier kConstQualifier>
-        using AnyInstance = AnyReferenceWrapper<kConstQualifier, Type>;
-
-        using ConstInstance = AnyInstance<ConstQualifier::kConst>;
-
-        using Instance = AnyInstance<ConstQualifier::kNone>;
-
-        template <typename TInstance>
-        ConstInstance any_cinstance(const TInstance& instance) noexcept;
-
-        template <ConstQualifier kConstQualifier>
-        ConstInstance any_cinstance(AnyInstance<kConstQualifier> instance) noexcept;
-
-        template <typename TInstance>
-        ConstInstance any_cinstance(const TInstance&&) = delete;
-
-        template <typename TInstance>
-        Instance any_instance(TInstance& instance) noexcept;
-
-        Instance any_instance(ConstInstance instance) = delete;         // Denied: conversion loses qualifiers
-
-        Instance any_instance(Instance instance) noexcept;
-
-        template <typename TInstance>
-        Instance any_instance(const TInstance&&) = delete;
 
     }
 
@@ -149,6 +114,9 @@ namespace syntropy {
 
 
         };
+
+        template <typename TType>
+        const Class& class_of();
 
         /// \brief Interface for class definition.
         /// \author Raffaele D. Facendola - 2016
@@ -287,64 +255,6 @@ namespace syntropy {
 
         // Implementation
 
-        template <typename TType>
-        const Class& class_of() {
-
-            return Class::GetClass<class_name_t<TType>>();
-
-        }
-        
-        template <typename TClass, typename>
-        struct instantiate {
-
-            Instance operator()() const noexcept {
-
-                return Instance();
-
-            }
-
-        };
-
-        template <typename TClass>
-        struct instantiate<TClass, typename std::enable_if_t<std::is_default_constructible_v<TClass>>> {
-
-            Instance operator()() const noexcept {
-
-                return new TClass();
-
-            }
-
-        };
-
-        //////////////// ANY CINSTANCE \\ ANY INSTANCE ////////////////
-
-        template <typename TInstance>
-        inline ConstInstance any_cinstance(const TInstance& instance) noexcept {
-
-            return std::addressof(instance);
-
-        }
-
-        template <ConstQualifier kConstQualifier>
-        inline ConstInstance any_cinstance(AnyInstance<kConstQualifier> instance) noexcept {
-
-            return instance;
-
-        }
-
-        template <typename TInstance>
-        inline Instance any_instance(TInstance& instance) noexcept {
-
-            return std::addressof(instance);
-
-        }
-
-        inline Instance any_instance(Instance instance) noexcept {
-
-            return instance;
-
-        }
-
         //////////////// CLASS ////////////////
 
         template <typename TClass>
@@ -403,6 +313,15 @@ namespace syntropy {
         inline Instance Class::Instantiate() const {
 
             return definition_->Instantiate();
+
+        }
+
+        //////////////// CLASS OF ////////////////
+
+        template <typename TType>
+        const Class& class_of() {
+
+            return Class::GetClass<class_name_t<TType>>();
 
         }
 

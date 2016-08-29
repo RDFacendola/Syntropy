@@ -37,6 +37,9 @@
     <ClInclude Include="include\fundamental_types.h">
       <Filter>reflection</Filter>
     </ClInclude>
+    <ClInclude Include="include\instance.h">
+      <Filter>reflection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy.cpp">

@@ -523,7 +523,7 @@ public:
         FooBar bee;
         FooBar* beep = &bee;
 
-        auto foobarp = syntropy::reflection::any_instance(beep);
+        auto foobarp = syntropy::reflection::as_instance(beep);
 
         TEST_FALSE(bar.IsEmpty());
         TEST_FALSE(foobar.IsEmpty());
@@ -643,8 +643,8 @@ public:
 
         FooBar foobar;
 
-        auto foobar_instance = syntropy::reflection::any_instance(foobar);
-        syntropy::reflection::ConstInstance const_foobar_instance = foobar_instance;        // syntropy::reflection::any_cinstance(foobar);
+        auto foobar_instance = syntropy::reflection::as_instance(foobar);
+        syntropy::reflection::ConstInstance const_foobar_instance = foobar_instance;        // syntropy::reflection::as_cinstance(foobar);
 
         TEST_TRUE(field_float_value_->Set(foobar_instance, 999.0f));
         //TEST_TRUE(field_float_value_->Set(const_foobar_instance, 999.0f));                // Const instance

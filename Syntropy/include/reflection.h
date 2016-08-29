@@ -13,6 +13,7 @@
 #include "type.h"
 #include "class.h"
 #include "property.h"
+#include "instance.h"
 
 #include "fundamental_types.h"
 
