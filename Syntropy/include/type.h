@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <memory>
 #include <typeinfo>
+#include <ostream>
 
 #include "type_traits.h"
 
@@ -96,7 +96,7 @@ namespace syntropy {
             /// If the described type is an array, all its extents are removed at once.
             /// \return Returns a pointer to the type resulting from stripping a level of indirection, references or extents from the current type. If the current type contains the qualified class name only, returns nullptr.
             /// \remarks The type "(((const float) * const)[])", yields the following type sequence: "(?)[]" -> "(?) * const" -> "const float" -> nullptr.
-            virtual std::unique_ptr<Type> GetNext() const noexcept = 0;
+            virtual const Type* GetNext() const noexcept = 0;
 
         protected:
 
@@ -144,7 +144,7 @@ namespace syntropy {
 
             virtual size_t GetArraySize(size_t dimension = 0) const noexcept override;
 
-            virtual std::unique_ptr<Type> GetNext() const noexcept override;
+            virtual const Type* GetNext() const noexcept override;
 
         protected:
 
@@ -155,7 +155,10 @@ namespace syntropy {
         /// \brief Get the type associated to TType.
         /// \return Returns a reference to the type associated to TType.
         template <typename TType>
-        const Type& type_of();
+        const Type& TypeOf();
+
+        /// \brief Stream insertion for Type.
+        std::ostream& operator<<(std::ostream& out, const Type& type);
 
     }
 
@@ -256,17 +259,17 @@ namespace syntropy {
         }
 
         template <typename TType>
-        inline std::unique_ptr<Type> Type::TypeT<TType>::GetNext() const noexcept {
+        inline const Type* Type::TypeT<TType>::GetNext() const noexcept {
 
             using TSubType = std::conditional_t<std::is_array<TType>::value || std::is_reference<TType>::value,
                                                 std::remove_all_extents_t<std::remove_reference_t<TType>>,          // Remove references and extents from the outermost level (mutually exclusive)
                                                 std::conditional_t<std::is_pointer<TType>::value,
                                                                    std::remove_pointer_t<TType>,                    // Remove a pointer level (removes qualifiers as well)
                                                                    std::remove_cv_t<TType>>>;                       // Remove const and volatile qualifiers from the innermost level
-                
+
             return is_class_name_v<TSubType> ?
                    nullptr :
-                   std::make_unique<TypeT<TSubType>>();
+                   std::addressof(TypeOf<TSubType>());
 
         }
 
@@ -280,7 +283,7 @@ namespace syntropy {
         //////////////// TYPE OF ////////////////
 
         template <typename TType>
-        const Type& type_of() {
+        const Type& TypeOf() {
 
             return Type::GetType<TType>();
 

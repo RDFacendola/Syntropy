@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <vector>
 #include <type_traits>
+#include <ostream>
 
 #include "hashed_string.h"
 #include "type_traits.h"
@@ -100,7 +101,7 @@ namespace syntropy {
         };
 
         template <typename TType>
-        const Class& class_of();
+        const Class& ClassOf();
 
         /// \brief Interface for class definition.
         /// \author Raffaele D. Facendola - 2016
@@ -218,6 +219,9 @@ namespace syntropy {
         template <typename TClass>
         struct ClassDeclaration;
 
+        /// \brief Stream insertion for Class.
+        std::ostream& operator<<(std::ostream& out, const Class& class_instance);
+
     }
 
     template <typename TInstance>
@@ -225,7 +229,7 @@ namespace syntropy {
 
         const reflection::Class& operator()() const noexcept {
 
-            return reflection::class_of<TInstance>();
+            return reflection::ClassOf<TInstance>();
 
         }
 
@@ -303,7 +307,7 @@ namespace syntropy {
         //////////////// CLASS OF ////////////////
 
         template <typename TType>
-        const Class& class_of() {
+        const Class& ClassOf() {
 
             return Class::GetClass<class_name_t<TType>>();
 
@@ -386,7 +390,7 @@ namespace syntropy {
             static_assert(std::is_base_of_v<TBaseClass, TClass>, "The class being defined does not derive from TBaseClass");
             static_assert(!std::is_same<TBaseClass, TClass>::value, "A class cannot derive from itself");
 
-            base_classes_.push_back(std::addressof(class_of<TBaseClass>()));
+            base_classes_.push_back(std::addressof(ClassOf<TBaseClass>()));
 
         }
 
@@ -411,6 +415,16 @@ namespace syntropy {
 
         }
      
+        //////////////// STREAM INSERTION ////////////////
+
+        inline std::ostream& operator<<(std::ostream& out, const Class& class_instance) {
+
+            out << class_instance.GetName().GetString();
+
+            return out;
+
+        }
+
     }
 
 }

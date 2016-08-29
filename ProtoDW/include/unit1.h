@@ -301,15 +301,13 @@ public:
 
     void SynopsisTest() const {
 
-        std::cout << "Class '" << foo_class_.GetName().GetString() 
-                  << "' is " << (foo_class_.IsAbstract() ? "" : "not ") << "abstract\n";
+        std::cout << "Class '" << foo_class_ << "' is " << (foo_class_.IsAbstract() ? "" : "not ") << "abstract\n";
 
-        std::cout << "Class '" << foo_class_.GetName().GetString()
-                  << "' is " << (foo_class_.IsInstantiable() ? "" : "not ") << "instantiable\n";
+        std::cout << "Class '" << foo_class_ << "' is " << (foo_class_.IsInstantiable() ? "" : "not ") << "instantiable\n";
 
         for (const auto& property : foo_class_.GetProperties()) {
 
-            std::cout << "Property " << property.second.GetName().GetString() << " : " << property.second.GetType().GetClass().GetName().GetString() << "\n";
+            std::cout << "Property " << property.second.GetName().GetString() << " : " << property.second.GetType() << "\n";
 
         }
 
@@ -664,13 +662,13 @@ public:
 
     void Do() {
 
-         RUN_TEST(SynopsisTest);
-         RUN_TEST(FieldTest);
-         RUN_TEST(PropertyTest);
-         //RUN_TEST(InterpretTest);
-         RUN_TEST(PolymorphismTest);
-         RUN_TEST(InstancingTest);
-         RUN_TEST(ForwardingTest);
+        RUN_TEST(SynopsisTest);
+        RUN_TEST(FieldTest);
+        RUN_TEST(PropertyTest);
+        //RUN_TEST(InterpretTest);
+        RUN_TEST(PolymorphismTest);
+        RUN_TEST(InstancingTest);
+        RUN_TEST(ForwardingTest);
 
     }
 
