@@ -45,6 +45,9 @@
     <ClCompile Include="src\reflection\reflection.cpp">
       <Filter>reflection</Filter>
     </ClCompile>
+    <ClCompile Include="src\reflection\type.cpp">
+      <Filter>reflection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

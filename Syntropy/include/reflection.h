@@ -9,7 +9,10 @@
 #include <unordered_map>
 
 #include "hashed_string.h"
+
+#include "type.h"
 #include "class.h"
+#include "property.h"
 
 namespace syntropy {
 

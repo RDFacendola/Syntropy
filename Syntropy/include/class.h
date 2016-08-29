@@ -17,7 +17,6 @@
 #include "method.h"
 #include "any.h"
 
-#include "type.h"
 #include "property.h"
 
 #include "any_reference.h"
@@ -41,16 +40,8 @@ namespace syntropy {
         template <typename TClass>
         struct ClassDeclaration;
 
-        // Type
-
-        using Type = BasicType<Class>;
-
-        template <typename TType>
-        const Type& type_of();
-
-        // Property
-
-        using Property = BasicProperty<Class>;
+        template <typename TInstance, typename = void>
+        struct instantiate;
 
         // Instance
 
@@ -79,9 +70,6 @@ namespace syntropy {
 
         template <typename TInstance>
         Instance any_instance(const TInstance&&) = delete;
-
-        template <typename TInstance, typename = void>
-        struct instantiate;
 
     }
 
@@ -358,13 +346,6 @@ namespace syntropy {
 
         }
         
-        template <typename TType>
-        const Type& type_of() {
-
-            return Type::GetType<TType>();
-
-        }
-
         template <typename TClass, typename>
         struct instantiate {
 

@@ -15,10 +15,9 @@ namespace syntropy {
 
     namespace reflection {
 
-        template <typename TClass>
-        class BasicType;
+        // Forward declarations
 
-        struct type_is;
+        class Class;
 
     }
 
@@ -30,26 +29,25 @@ namespace syntropy {
 
         /// \brief Describes a type.
         /// \author Raffaele D. Facendola.
-        template <typename TClass>
-        class BasicType {
+        class Type {
 
         public:
 
             /// \brief No copy constructor.
-            BasicType(const BasicType&) = delete;
+            Type(const Type&) = delete;
 
             /// \brief No assignment operator.
-            BasicType& operator=(const BasicType&) = delete;
+            Type& operator=(const Type&) = delete;
 
             /// \brief Virtual destructor.
-            virtual ~BasicType() = default;
+            virtual ~Type() = default;
 
             template <typename TType>
-            static const BasicType<TClass>& GetType();
+            static const Type& GetType();
 
-            bool operator==(const BasicType<TClass>& other) const noexcept;
+            bool operator==(const Type& other) const noexcept;
 
-            virtual const TClass& GetClass() const = 0;
+            virtual const Class& GetClass() const = 0;
 
             virtual bool IsPointer() const noexcept = 0;
 
@@ -67,7 +65,7 @@ namespace syntropy {
 
             virtual size_t GetArraySize(size_t dimension = 0) const noexcept = 0;
 
-            virtual std::unique_ptr<BasicType> GetNext() const noexcept = 0;
+            virtual std::unique_ptr<Type> GetNext() const noexcept = 0;
 
         protected:
 
@@ -76,19 +74,18 @@ namespace syntropy {
         private:
 
             template <typename TType>
-            class SubType;
+            class TypeT;
 
-            BasicType() = default;
+            Type() = default;
                         
         };
 
-        template <typename TClass>
         template <typename TType>
-        class BasicType<TClass>::SubType: public BasicType{
+        class Type::TypeT: public Type{
 
         public:
 
-            virtual const TClass& GetClass() const override;
+            virtual const Class& GetClass() const override;
 
             virtual bool IsPointer() const noexcept override;
 
@@ -106,7 +103,7 @@ namespace syntropy {
 
             virtual size_t GetArraySize(size_t dimension = 0) const noexcept override;
 
-            virtual std::unique_ptr<BasicType> GetNext() const noexcept override;
+            virtual std::unique_ptr<Type> GetNext() const noexcept override;
 
         protected:
 
@@ -114,14 +111,17 @@ namespace syntropy {
 
         };
 
+        template <typename TType>
+        const Type& type_of();
+
     }
 
-    template <typename TInstance, typename TClass>
-    struct type_get<typename reflection::BasicType<TClass>, TInstance> {
+    template <typename TType>
+    struct type_get<typename reflection::Type, TType> {
 
-        const reflection::BasicType<TClass>& operator()() const noexcept {
+        const reflection::Type& operator()() const noexcept {
 
-            return reflection::BasicType<TClass>::GetType<TInstance>();
+            return reflection::Type::GetType<TType>();
 
         }
 
@@ -137,101 +137,82 @@ namespace syntropy {
 
         //////////////// TYPE ////////////////
 
-        template <typename TClass>
         template <typename TType>
-        inline const BasicType<TClass>& BasicType<TClass>::GetType() {
+        inline const Type& Type::GetType() {
 
-            static SubType<TType> type;
+            static TypeT<TType> type;
 
             return type;
 
         }
 
-        template <typename TClass>
-        bool BasicType<TClass>::operator ==(const BasicType<TClass>& other) const noexcept {
+        //////////////// TYPE :: TYPE T ////////////////
 
-            return GetTypeInfo() == other.GetTypeInfo() &&
-                   GetClass() == other.GetClass();
+        template <typename TType>
+        inline const Class& Type::TypeT<TType>::GetClass() const {
+
+            return class_get<Class, TType>()();
 
         }
 
-        //////////////// TYPE :: SUBTYPE ////////////////
-
-        template <typename TClass>
         template <typename TType>
-        inline const TClass& BasicType<TClass>::SubType<TType>::GetClass() const {
-
-            return class_get<TClass, TType>()();
-
-        }
-
-        template <typename TClass>
-        template <typename TType>
-        inline bool BasicType<TClass>::SubType<TType>::IsPointer() const noexcept {
+        inline bool Type::TypeT<TType>::IsPointer() const noexcept {
 
             return std::is_pointer<TType>::value;
 
         }
 
-        template <typename TClass>
         template <typename TType>
-        inline bool BasicType<TClass>::SubType<TType>::IsConst() const noexcept {
+        inline bool Type::TypeT<TType>::IsConst() const noexcept {
 
             return std::is_const<TType>::value;
 
         }
 
-        template <typename TClass>
         template <typename TType>
-        inline bool BasicType<TClass>::SubType<TType>::IsVolatile() const noexcept {
+        inline bool Type::TypeT<TType>::IsVolatile() const noexcept {
 
             return std::is_volatile<TType>::value;
 
         }
 
-        template <typename TClass>
         template <typename TType>
-        inline bool BasicType<TClass>::SubType<TType>::IsLValueReference() const noexcept {
+        inline bool Type::TypeT<TType>::IsLValueReference() const noexcept {
 
             return std::is_lvalue_reference<TType>::value;
 
         }
 
-        template <typename TClass>
         template <typename TType>
-        inline bool BasicType<TClass>::SubType<TType>::IsRValueReference() const noexcept {
+        inline bool Type::TypeT<TType>::IsRValueReference() const noexcept {
 
             return std::is_rvalue_reference<TType>::value;
 
         }
 
-        template <typename TClass>
         template <typename TType>
-        inline bool BasicType<TClass>::SubType<TType>::IsArray() const noexcept {
+        inline bool Type::TypeT<TType>::IsArray() const noexcept {
 
             return std::is_array<TType>::value;
 
         }
 
-        template <typename TClass>
         template <typename TType>
-        inline size_t BasicType<TClass>::SubType<TType>::GetArrayRank() const noexcept {
+        inline size_t Type::TypeT<TType>::GetArrayRank() const noexcept {
 
             return std::rank<TType>::value;
 
         }
 
-        template <typename TClass>
         template <typename TType>
-        inline size_t BasicType<TClass>::SubType<TType>::GetArraySize(size_t /*dimension*/) const noexcept{
+        inline size_t Type::TypeT<TType>::GetArraySize(size_t /*dimension*/) const noexcept{
 
             return std::extent<TType, 0>::value;
 
         }
 
-        template <typename TClass>
         template <typename TType>
-        inline std::unique_ptr<BasicType<TClass>> BasicType<TClass>::SubType<TType>::GetNext() const noexcept {
+        inline std::unique_ptr<Type> Type::TypeT<TType>::GetNext() const noexcept {
 
             using TSubType = std::conditional_t<std::is_array<TType>::value || std::is_reference<TType>::value,
                                                 std::remove_all_extents_t<std::remove_reference_t<TType>>,          // Remove references and extents from the outermost level (mutually exclusive)
@@ -241,22 +222,30 @@ namespace syntropy {
                 
             return is_class_name_v<TSubType> ?
                    nullptr :
-                   std::make_unique<SubType<TSubType>>();
+                   std::make_unique<TypeT<TSubType>>();
 
         }
 
-        template <typename TClass>
         template <typename TType>
-        inline const std::type_info& BasicType<TClass>::SubType<TType>::GetTypeInfo() const noexcept {
+        inline const std::type_info& Type::TypeT<TType>::GetTypeInfo() const noexcept {
 
-            // The type info of the actual type is not enough to check for inheritance.
-            // We store the type info of a known class (int) with the same form\qualifiers of the original type.
+            // The type info alone is not enough to check for inheritance.
+            // Instead we store the type info of a known class (int) with the same form\qualifiers of the original type.
             // Checking for a type conversion is a matter of checking whether the form is the same and whether both classes are in the same hierarchy.
             
             return typeid(replace_class_name_t<TType, int>);   
 
         }
         
+        //////////////// TYPE OF ////////////////
+
+        template <typename TType>
+        const Type& type_of() {
+
+            return Type::GetType<TType>();
+
+        }
+
     }
 
 }

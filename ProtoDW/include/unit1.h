@@ -8,7 +8,7 @@
 
 #include "syntropy.h"
 
-#include "class.h"
+#include "reflection.h"
 
 #include "unit2.h"
 

@@ -61,6 +61,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\reflection\type.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\syntropy.cpp">
       <SubType>
       </SubType>

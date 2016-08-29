@@ -9,30 +9,29 @@
 #include <functional>
 
 #include "hashed_string.h"
-#include "any_reference.h"
 #include "type_traits.h"
 
-#include "any.h"
 #include "type.h"
+#include "any.h"
+#include "any_reference.h"
 
 namespace syntropy {
 
     namespace reflection {
 
-        template <typename TClass>
         struct PropertyGetter {
 
-            using TInstance = typename AnyReferenceWrapper<ConstQualifier::kConst, typename BasicType<TClass>>;
+            using TInstance = typename AnyReferenceWrapper<ConstQualifier::kConst, typename Type>;
             
             using TGetter = std::function<bool(const TInstance&, Any)>;
 
-            template <typename TSubject, typename TProperty>
-            TGetter operator() (TProperty TSubject::* field) const {
+            template <typename TClass, typename TProperty>
+            TGetter operator() (TProperty TClass::* field) const {
 
                 return[field](const TInstance& instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
-                    auto instance_ptr = instance.As<const TSubject>();
+                    auto instance_ptr = instance.As<const TClass>();
 
                     if (value_ptr && instance_ptr) {
 
@@ -46,13 +45,13 @@ namespace syntropy {
 
             }
 
-            template <typename TSubject, typename TProperty>
-            TGetter operator() (TProperty(TSubject::* getter)() const) const {
+            template <typename TClass, typename TProperty>
+            TGetter operator() (TProperty(TClass::* getter)() const) const {
 
                 return[getter](const TInstance& instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
-                    auto instance_ptr = instance.As<const TSubject>();
+                    auto instance_ptr = instance.As<const TClass>();
 
                     if (value_ptr && instance_ptr) {
 
@@ -68,10 +67,9 @@ namespace syntropy {
 
         };
 
-        template <typename TClass>
         struct PropertySetter {
 
-            using TInstance = typename AnyReferenceWrapper<ConstQualifier::kNone, typename BasicType<TClass>>;
+            using TInstance = typename AnyReferenceWrapper<ConstQualifier::kNone, typename Type>;
 
             using TSetter = std::function<bool(const TInstance&, Any)>;
 
@@ -85,13 +83,13 @@ namespace syntropy {
 
             }
 
-            template <typename TSubject, typename TProperty>
-            TSetter operator() (TProperty TSubject::* property, typename std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) const {
+            template <typename TClass, typename TProperty>
+            TSetter operator() (TProperty TClass::* property, typename std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) const {
 
                 return[property](const TInstance& instance, Any value) -> bool{
 
                     auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                    auto instance_ptr = instance.As<TSubject>();
+                    auto instance_ptr = instance.As<TClass>();
 
                     if (value_ptr && instance_ptr) {
 
@@ -105,20 +103,20 @@ namespace syntropy {
 
             }
 
-            template <typename TSubject, typename TProperty>
-            TSetter operator() (TProperty TSubject::*, typename std::enable_if_t<std::is_const<TProperty>::value>* = nullptr) const {
+            template <typename TClass, typename TProperty>
+            TSetter operator() (TProperty TClass::*, typename std::enable_if_t<std::is_const<TProperty>::value>* = nullptr) const {
 
                 return (*this)();
 
             }
 
-            template <typename TSubject, typename TProperty>
-            TSetter operator() (void (TSubject::* setter)(TProperty)) const {
+            template <typename TClass, typename TProperty>
+            TSetter operator() (void (TClass::* setter)(TProperty)) const {
 
                 return[setter](const TInstance& instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                    auto instance_ptr = instance.As<TSubject>();
+                    auto instance_ptr = instance.As<TClass>();
 
                     if (value_ptr && instance_ptr) {
 
@@ -132,13 +130,13 @@ namespace syntropy {
 
             }
 
-            template <typename TSubject, typename TProperty>
-            TSetter operator() (TProperty& (TSubject::* setter)()) const {
+            template <typename TClass, typename TProperty>
+            TSetter operator() (TProperty& (TClass::* setter)()) const {
 
                 return[setter](const TInstance& instance, Any value) -> bool {
 
                     auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
-                    auto instance_ptr = instance.As<TSubject>();
+                    auto instance_ptr = instance.As<TClass>();
 
                     if (value_ptr && instance_ptr) {
 
@@ -154,41 +152,40 @@ namespace syntropy {
 
         };
         
-        template <typename TClass>
-        class BasicProperty {
+        class Property {
 
         public:
 
-            template <typename TSubject, typename TProperty>
-            BasicProperty(const HashedString& name, TProperty TSubject::* field) noexcept;
+            template <typename TClass, typename TProperty>
+            Property(const HashedString& name, TProperty TClass::* field) noexcept;
 
-            template <typename TSubject, typename TProperty>
-            BasicProperty(const HashedString& name, TProperty (TSubject::* getter)() const) noexcept;
+            template <typename TClass, typename TProperty>
+            Property(const HashedString& name, TProperty (TClass::* getter)() const) noexcept;
 
-            template <typename TSubject, typename TProperty>
-            BasicProperty(const HashedString& name, TProperty(TSubject::* getter)() const, void(TSubject::* setter)(TProperty)) noexcept;
+            template <typename TClass, typename TProperty>
+            Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept;
 
-            template <typename TSubject, typename TProperty>
-            BasicProperty(const HashedString& name, const TProperty&(TSubject::* getter)() const, TProperty&(TSubject::* setter)()) noexcept;
+            template <typename TClass, typename TProperty>
+            Property(const HashedString& name, const TProperty&(TClass::* getter)() const, TProperty&(TClass::* setter)()) noexcept;
             
             const HashedString& GetName() const noexcept;
 
-            const typename BasicType<TClass>& GetType() const noexcept;
+            const typename Type& GetType() const noexcept;
 
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue& value) const;
 
             template <ConstQualifier kQualifier, typename TValue>
-            bool Get(AnyReferenceWrapper<kQualifier, typename BasicType<TClass>> instance, TValue& value) const;
+            bool Get(AnyReferenceWrapper<kQualifier, typename Type> instance, TValue& value) const;
             
             template <typename TInstance, typename TValue>
             bool Set(TInstance& instance, const TValue& value) const;
 
             template <typename TValue>
-            bool Set(AnyReferenceWrapper<ConstQualifier::kNone, BasicType<TClass>> instance, const TValue& value) const;
+            bool Set(AnyReferenceWrapper<ConstQualifier::kNone, Type> instance, const TValue& value) const;
 
             template <typename TValue>
-            bool Set(AnyReferenceWrapper<ConstQualifier::kConst, BasicType<TClass>> instance, const TValue& value) const = delete;
+            bool Set(AnyReferenceWrapper<ConstQualifier::kConst, Type> instance, const TValue& value) const = delete;
 
             template <typename TInstance, typename TValue>
             bool Set(TInstance&& instance, const TValue& value) const = delete;
@@ -197,11 +194,11 @@ namespace syntropy {
             
             HashedString name_;                                     ///< \brief Property name.
 
-            const typename BasicType<TClass>& type_;                ///< \brief Property type.
+            const Type& type_;                                      ///< \brief Property type.
 
-            typename PropertyGetter<TClass>::TGetter getter_;       ///< \brief Property getter.
+            typename PropertyGetter::TGetter getter_;               ///< \brief Property getter.
 
-            typename PropertySetter<TClass>::TSetter setter_;       ///< \brief Property setter.
+            typename PropertySetter::TSetter setter_;               ///< \brief Property setter.
             
         };
 
@@ -215,82 +212,72 @@ namespace syntropy {
 
         //////////////// PROPERTY ////////////////
 
-        template <typename TClass>
-        template <typename TSubject, typename TProperty>
-        BasicProperty<TClass>::BasicProperty(const HashedString& name, TProperty TSubject::* field) noexcept
+        template <typename TClass, typename TProperty>
+        Property::Property(const HashedString& name, TProperty TClass::* field) noexcept
             : name_(name)
-            , type_(type_get<BasicType<TClass>, TProperty>()())
-            , getter_(PropertyGetter<TClass>()(field))
-            , setter_(PropertySetter<TClass>()(field)){}
+            , type_(type_get<Type, TProperty>()())
+            , getter_(PropertyGetter()(field))
+            , setter_(PropertySetter()(field)){}
 
-        template <typename TClass>
-        template <typename TSubject, typename TProperty>
-        BasicProperty<TClass>::BasicProperty(const HashedString& name, TProperty(TSubject::* getter)() const) noexcept
+        template <typename TClass, typename TProperty>
+        Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
             : name_(name)
-            , type_(type_get<BasicType<TClass>, TProperty>()())
-            , getter_(PropertyGetter<TClass>()(getter))
-            , setter_(PropertySetter<TClass>()()) {}
+            , type_(type_get<Type, TProperty>()())
+            , getter_(PropertyGetter()(getter))
+            , setter_(PropertySetter()()) {}
 
-        template <typename TClass>
-        template <typename TSubject, typename TProperty>
-        BasicProperty<TClass>::BasicProperty(const HashedString& name, TProperty(TSubject::* getter)() const, void(TSubject::* setter)(TProperty)) noexcept
+        template <typename TClass, typename TProperty>
+        Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept
             : name_(name)
-            , type_(type_get<BasicType<TClass>, TProperty>()())
-            , getter_(PropertyGetter<TClass>()(getter))
-            , setter_(PropertySetter<TClass>()(setter)) {}
+            , type_(type_get<Type, TProperty>()())
+            , getter_(PropertyGetter()(getter))
+            , setter_(PropertySetter()(setter)) {}
 
-        template <typename TClass>
-        template <typename TSubject, typename TProperty>
-        BasicProperty<TClass>::BasicProperty(const HashedString& name, const TProperty& (TSubject::* getter)() const, TProperty& (TSubject::* setter)()) noexcept
+        template <typename TClass, typename TProperty>
+        Property::Property(const HashedString& name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) noexcept
             : name_(name)
-            , type_(type_get<BasicType<TClass>, TProperty>()())
-            , getter_(PropertyGetter<TClass>()(getter))
-            , setter_(PropertySetter<TClass>()(setter)) {}
+            , type_(type_get<Type, TProperty>()())
+            , getter_(PropertyGetter()(getter))
+            , setter_(PropertySetter()(setter)) {}
 
-        template <typename TClass>
-        inline const HashedString& BasicProperty<TClass>::GetName() const noexcept {
+        inline const HashedString& Property::GetName() const noexcept {
 
             return name_;
 
         }
 
-        template <typename TClass>
-        inline const typename BasicType<TClass>& BasicProperty<TClass>::GetType() const noexcept {
+        inline const typename Type& Property::GetType() const noexcept {
 
             return type_;
 
         }
 
-        template <typename TClass>
         template <typename TInstance, typename TValue>
-        inline bool BasicProperty<TClass>::Get(const TInstance& instance, TValue& value) const {
+        inline bool Property::Get(const TInstance& instance, TValue& value) const {
 
             return getter_(std::addressof(instance),
                            std::addressof(value));
 
         }
 
-        template <typename TClass>
         template <ConstQualifier kQualifier, typename TValue>
-        bool BasicProperty<TClass>::Get(AnyReferenceWrapper<kQualifier, BasicType<TClass>> instance, TValue& value) const {
+        bool Property::Get(AnyReferenceWrapper<kQualifier, Type> instance, TValue& value) const {
 
             return getter_(instance,
                            std::addressof(value));
 
         }
 
-        template <typename TClass>
         template <typename TInstance, typename TValue>
-        inline bool BasicProperty<TClass>::Set(TInstance& instance, const TValue& value) const {
+        inline bool Property::Set(TInstance& instance, const TValue& value) const {
 
             return setter_(std::addressof(instance),
                            std::addressof(value));
 
         }
 
-        template <typename TClass>
         template <typename TValue>
-        bool BasicProperty<TClass>::Set(AnyReferenceWrapper<ConstQualifier::kNone, BasicType<TClass>> instance, const TValue& value) const {
+        bool Property::Set(AnyReferenceWrapper<ConstQualifier::kNone, Type> instance, const TValue& value) const {
 
             return setter_(instance,
                            std::addressof(value));
