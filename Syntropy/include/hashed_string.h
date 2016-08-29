@@ -41,6 +41,11 @@ namespace syntropy {
                       typename std::enable_if<!std::is_same<std::decay_t<TString>,
                                                             HashedStringT<THashFunction, THash>>::value>::type* = nullptr) noexcept;
         
+        /// \brief Unified assignment operator.
+        /// \param other Other instance to copy.
+        /// \return Returns a reference to this.
+        HashedStringT<THashFunction, THash>& operator=(HashedStringT<THashFunction, THash> other) noexcept;
+
         /// \brief Get the hash associated to this instance.
         /// \return Returns the hash associated to this instance.
         THash GetHash() const noexcept;
@@ -73,6 +78,10 @@ namespace syntropy {
         /// \return Returns true if the current instance is greater than the provided hashed string, returns false otherwise.
         bool operator>(const HashedStringT<THashFunction, THash>& other) const noexcept;
 
+        /// \brief Swaps two instances.
+        /// \param other Object to swap with the current instance.
+        HashedStringT<THashFunction, THash>& swap(HashedStringT<THashFunction, THash>& other) noexcept;
+
     private:
 
         std::string string_;	        ///< \brief Plain string.
@@ -83,6 +92,10 @@ namespace syntropy {
 
     /// \brief Default hashed string type.
     using HashedString = HashedStringT<FNV1a, uint64_t>;
+    
+    /// \brief Stream insertion for HashedString.
+    template <typename THashFunction, typename THash>
+    std::ostream& operator<<(std::ostream& out, const HashedStringT<THashFunction, THash>& hashed_string);
     
 }
 
@@ -130,6 +143,13 @@ namespace syntropy{
         : string_(std::forward<TString>(string))
         , hash_(THashFunction{}(string_)) {}
     
+    template <typename THashFunction, typename THash>
+    inline HashedStringT<THashFunction, THash>& HashedStringT<THashFunction, THash>::operator=(HashedStringT<THashFunction, THash> other) noexcept {
+
+        return other.swap(*this);
+
+    }
+
     template <typename THashFunction, typename THash>
     inline THash HashedStringT<THashFunction, THash>::GetHash() const noexcept {
 
@@ -183,6 +203,27 @@ namespace syntropy{
     inline bool HashedStringT<THashFunction, THash>::operator>(const HashedStringT<THashFunction, THash>& other) const noexcept {
 
         return hash_ > other.hash_;
+
+    }
+
+    template <typename THashFunction, typename THash>
+    inline HashedStringT<THashFunction, THash>& HashedStringT<THashFunction, THash>::swap(HashedStringT<THashFunction, THash>& other) noexcept {
+
+        std::swap(other.string_, string_);
+        std::swap(other.hash_, hash_);
+
+        return *this;
+
+    }
+
+    //////////////// STREAM INSERTION ////////////////
+
+    template <typename THashFunction, typename THash>
+    inline std::ostream& operator<<(std::ostream& out, const HashedStringT<THashFunction, THash>& hashed_string) {
+
+        out << hashed_string.GetString();
+
+        return out;
 
     }
 
