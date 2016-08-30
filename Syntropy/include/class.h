@@ -433,7 +433,7 @@ namespace syntropy {
 
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name.");
                         
-            return ClassDeclaration<TClass>()();    // TODO: Check for registration problems
+            return ClassDeclaration<TClass>()();
             
         }
 
