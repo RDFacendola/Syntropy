@@ -1,6 +1,6 @@
 
 /// \file fundamental_types.h
-/// \brief TODO: Add brief description here
+/// \brief This header is part of the syntropy reflection system. It contains the definition of all the fundamental types supported by the C++ standard.
 ///
 /// \author Raffaele D. Facendola - 2016
 

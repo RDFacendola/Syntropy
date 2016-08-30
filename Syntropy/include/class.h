@@ -1,6 +1,6 @@
 
 /// \file class.h
-/// \brief TODO: Add brief description here
+/// \brief This header is part of the syntropy reflection system. It contains classes used to handle class definition.
 ///
 /// \author Raffaele D. Facendola - 2016
 
@@ -27,7 +27,9 @@ namespace syntropy {
 
     namespace reflection {
         
-        /// \brief Describes a class implementation.
+        /// \brief Describes a class.
+        /// A class can be used to access fields, properties and methods or eventually instantiate new objects.
+        /// \remarks This class is a singleton.
         /// \author Raffaele D. Facendola - 2016
         class Class {
 
@@ -36,6 +38,8 @@ namespace syntropy {
             template <typename TClass>
             class Definition;
 
+            /// \brief Get the class associated to TClass.
+            /// \return Returns a reference to the singleton describing the class TClass.
             template <typename TClass>
             static const Class& GetClass();
 
@@ -48,25 +52,29 @@ namespace syntropy {
             /// \brief Virtual destructor.
             virtual ~Class() = default;
 
-            /// \brief Check whether this class can be converted to the specified one.
-            /// \return Returns true if the class described by this instance is a base for the specified one or is the same type, returns false otherwise.
+            /// \brief Equality comparison.
+            /// Check whether this class is or derives from the specified one.
+            /// \return Returns true if this class is or derives from the specified class, return false otherwise.
+            /// \remarks This method accounts for inheritance by not for implicit conversion. For example Class(float) == Class(int) is false even if such conversion exists.
             bool operator==(const Class& other) const noexcept;
 
-            /// \brief Check whether this class cannot be converted to the specified one.
-            /// \return Returns false if the class described by this instance is a base for the specified one or is the same type, returns true otherwise.
+            /// \brief Inequality comparison.
+            /// Check whether the class described by this instance doesn't derive from the specified class.
+            /// \return Returns true if this class doesn't derive from the specified one, returns false otherwise.
             bool operator!=(const Class& other) const noexcept;
 
-            /// \brief Get the class name.
-            /// \return Returns the class name.
+            /// \brief Get the default class name.
+            /// \return Returns the default class name.
             virtual const HashedString& GetName() const noexcept = 0;
 
-            /// \brief Get the class names.
-            /// Certain types have different name aliases (like signed short int, short, short int which refers to the same type)
+            /// \brief Get all the class name aliases.
+            /// Certain types have different name aliases (like signed short int, short, short int which refers to the same type).
+            /// The first element in the list is guaranteed to be the default class name.
             /// \brief Returns a list containing the class names.
             virtual const std::vector<HashedString>& GetNames() const noexcept = 0;
 
-            /// \brief Get the list of base classes of this class.
-            /// \return Returns the list of classes that are inherited by this class.
+            /// \brief Get the list of the base classes of this class.
+            /// \return Returns the list of classes that are extended by this class.
             virtual const std::vector<const Class*>& GetBaseClasses() const noexcept = 0;
 
             /// \brief Get a class property by name.
@@ -74,8 +82,8 @@ namespace syntropy {
             /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
             virtual const Property* GetProperty(const HashedString& property_name) const noexcept = 0;
 
-            /// \brief Get the set of properties supported by this class.
-            /// \return Returns the set of properties supported by this class.
+            /// \brief Get the list of properties supported by this class.
+            /// \return Returns the list of properties supported by this class.
             virtual const std::vector<Property>& GetProperties() const noexcept = 0;
 
             /// \brief Check whether this class is abstract or not.
@@ -88,8 +96,8 @@ namespace syntropy {
             virtual bool IsInstantiable() const noexcept = 0;
 
             /// \brief Create a new instance.
-            /// The method requires that the class is default-constructible and is non-abstract.
-            /// \return Returns a reference to the new instance if the class was default constructible, return an empty reference otherwise.
+            /// The method requires that IsInstantiable() is true, that is the class is both default-constructible and concrete.
+            /// \return Returns a reference to the new instance if the class was instantiable, return an empty reference otherwise.
             virtual Instance Instantiate() const = 0;
 
         private:
@@ -103,6 +111,7 @@ namespace syntropy {
         };
 
         /// \brief Concrete class definition.
+        /// This class is used to define class names, properties and methods.
         /// \author Raffaele D. Facendola - 2016
         template <typename TClass>
         class Class::Definition {
@@ -111,32 +120,53 @@ namespace syntropy {
 
         public:
 
+            /// \brief Create a new class definition.
+            /// \param default_name Default class name.
             Definition(std::string default_name);
 
+            /// \brief Default copy constructor.
+            /// \param other Instance to copy.
             Definition(const Definition& other) = default;
 
+            /// \brief Move constructor.
+            /// \param other Instance to move.
             Definition(Definition&& other);
 
+            /// \brief Default assignment operator.
+            /// \param other Instance to copy.
             Definition& operator=(const Definition& other) = default;
 
             /// \brief Define a name alias for the class.
             /// If the name was already defined this method does nothing.
-            /// \param name Name of the class.
+            /// \param name Name alias.
             void DefineNameAlias(HashedString name) noexcept;
 
-            /// \brief Defines a base class.
+            /// \brief Define a base class.
             /// If the base class was already defined this method does nothing.
             /// \tparam TBaseClass Type of the base class.
             template <typename TBaseClass>
             void DefineBaseClass() noexcept;
 
+            /// \brief Define a class property.
+            /// This overload accounts for fields and read-only getters.
             /// 
+            /// Examples:
+            /// d.DefineProperty("foo", &Foo::field)        // Defines a read\write property from a member variable.
+            /// d.DefineProperty("Foo", &Foo::GetField)     // Defines a read-only property from a const getter.
             template <typename TProperty>
             void DefineProperty(const HashedString& name, TProperty&& property);
 
             /// Getters and setters of the form
             /// TProperty (TClass::*)() const / void (TClass::*)(TProperty)
             /// const TProperty& (TClass::*)() const / TProperty& (TClass::*)()
+
+
+            /// \brief Define a class property.
+            /// This overload accounts for properties that are accessed via getters and setters.
+            ///
+            /// Examples:
+            /// d.DefineProperty("Foo", &Foo::GetFoo, &Foo::SetFoo)     // Getter of the form "const Foo& GetFoo() const", setter of the form "void SetFoo(const Foo&)"
+            /// d.DefineProperty("Foo", &Foo::GetFoo, &Foo::AccessFoo)  // Getter of the form "const Foo& GetFoo() const", accessor of the form "Foo& AccessFoo"
             template <typename TGetter, typename TSetter>
             void DefineProperty(const HashedString& name, TGetter&& getter, TSetter&& setter);
 
@@ -146,17 +176,21 @@ namespace syntropy {
 
             std::vector<HashedString> names_;                   ///< \brief Class names.
 
-            std::vector<const Class*> base_classes_;            ///< \brief List of all classes inherited by this one.
+            std::vector<const Class*> base_classes_;            ///< \brief List of all base classes.
 
             std::vector<Property> properties_;                  ///< \brief Reference to the class properties.
 
         };
 
+        /// \brief Describes an actual class.
+        /// Used to perform type erasure.
+        /// \author Raffaele D. Facendola - August 2016
         template <typename TClass>
         class Class::ClassT : public Class {
 
         public:
 
+            /// \brief Create a new class description via class definition.
             ClassT(Definition<TClass> definition);
 
             virtual const HashedString& GetName() const noexcept override;
@@ -179,21 +213,26 @@ namespace syntropy {
 
             using TPropertyHash = std::hash<HashedString>::result_type;
 
+            /// \brief Regenerates the indices used to access properties and methods by name.
             void RegenerateIndices() noexcept;
 
             std::vector<HashedString> names_;                                       ///< \brief Class names.
             
-            std::vector<const Class*> base_classes_;                                ///< \brief List of all classes inherited by this one.
+            std::vector<const Class*> base_classes_;                                ///< \brief List of base classes.
 
-            std::vector<Property> properties_;                                      ///< \brief Class properties.
+            std::vector<Property> properties_;                                      ///< \brief List of class properties.
             
-            std::unordered_map<TPropertyHash, const Property*> properties_index_;   ///< \brief Index over the class properties set. The key is the property name's hash.
+            std::unordered_map<TPropertyHash, const Property*> properties_index_;   ///< \brief Index over the class properties used to access properties by name.
 
         };
 
+        /// \brief Utility method used to get a class by type.
+        /// \return Returns a reference to the class describing TType.
         template <typename TType>
         const Class& ClassOf();
 
+        /// \brief Utility method used to get a class definition by type.
+        /// \return Returns the concrete definition of the class TClass.
         template <typename TClass>
         Class::Definition<TClass> DefinitionOf();
 
@@ -207,6 +246,7 @@ namespace syntropy {
 
     }
 
+    /// \brief Partial specialization of class_get for reflection::Class.
     template <typename TInstance>
     struct class_get<reflection::Class, TInstance> {
 
