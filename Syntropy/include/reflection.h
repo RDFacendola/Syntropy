@@ -44,7 +44,7 @@ namespace syntropy {
 
             /// \brief Register a new class to the registry.
             /// \param class_instance Class to register.
-            bool Register(Class& class_instance);
+            void Register(Class& class_instance);
 
         private:
 

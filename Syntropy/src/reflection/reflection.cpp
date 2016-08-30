@@ -21,11 +21,11 @@ const Class* Reflection::GetClass(const HashedString& class_name) noexcept {
 
 }
 
-bool Reflection::Register(Class& class_instance) {
-
-    bool result = true;
+void Reflection::Register(Class& class_instance) {
 
     std::hash<HashedString>::result_type name_hash;
+
+    auto it = classes_.begin();
 
     // Register each alias as a different entry
 
@@ -33,19 +33,21 @@ bool Reflection::Register(Class& class_instance) {
 
         name_hash = std::hash<HashedString>()(name_alias);
 
-        if (classes_.find(name_hash) == classes_.end()) {
+        it = classes_.find(name_hash);
+
+        if (it == classes_.end()) {
 
             classes_.emplace(std::make_pair(name_hash, &class_instance));
 
         }
         else {
 
-            result = false;
+            // In order to prevent declaration order-dependent behaviors when a name clash occurs, the existing registration is invalidated and the new one is ignored.
+
+            it->second = nullptr;
 
         }
 
     }
-
-    return result;
 
 }
