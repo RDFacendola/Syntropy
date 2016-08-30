@@ -81,7 +81,7 @@ public:
 
 class Foo : public Bar {
 
-    friend class syntropy::reflection::ClassDefinition<Foo>;
+    friend class syntropy::reflection::Class::Definition<Foo>;
 
 public:
 
@@ -205,10 +205,10 @@ struct syntropy::reflection::ClassDeclaration<AbstractFoo> {
 
 public:
 
-    std::unique_ptr<syntropy::reflection::ClassDefinition<AbstractFoo>> operator()() const {
+    auto operator()() const {
+    
+        return syntropy::reflection::Class::Definition<AbstractFoo>("AbstractFoo");
 
-        return std::make_unique<syntropy::reflection::ClassDefinition<AbstractFoo>>("AbstractFoo");
-        
     }
 
 };
@@ -218,13 +218,13 @@ struct syntropy::reflection::ClassDeclaration<Blob> {
 
 public:
 
-    std::unique_ptr<syntropy::reflection::ClassDefinition<Blob>> operator()() const {
+    auto operator()() const {
 
-        auto c = std::make_unique<syntropy::reflection::ClassDefinition<Blob>>("Blob");
+        syntropy::reflection::Class::Definition<Blob> definition("Blob");
 
-        c->DefineProperty("blob", &Blob::blob_);
+        definition.DefineProperty("blob", &Blob::blob_);
 
-        return c;
+        return definition;
 
     }
 
@@ -235,12 +235,12 @@ struct syntropy::reflection::ClassDeclaration<Bar>  {
 
 public:
 
-    std::unique_ptr<syntropy::reflection::ClassDefinition<Bar>> operator()() const {
+    auto operator()() const {
 
-        return std::make_unique<syntropy::reflection::ClassDefinition<Bar>>("Bar");
+        return syntropy::reflection::Class::Definition<Bar>("Bar");
 
     }
-    
+
 };
 
 template <>
@@ -248,32 +248,32 @@ struct syntropy::reflection::ClassDeclaration<Foo> {
 
 public:
 
-    std::unique_ptr<syntropy::reflection::ClassDefinition<Foo>> operator()() const{
-
-        auto c = std::make_unique<syntropy::reflection::ClassDefinition<Foo>>("Foo");
-
-        c->DefineBaseClass<Bar>();
-
-        c->DefineProperty("float_value", &Foo::value_);
-        c->DefineProperty("int_value", &Foo::value2_);
-        c->DefineProperty("const_value", &Foo::const_value_);
-        c->DefineProperty("pointer", &Foo::pointer_);
-        c->DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
-        c->DefineProperty("const_pointer", &Foo::const_pointer_);
-        c->DefineProperty("boolean", &Foo::boolean_);
+    auto operator()() const{
         
-        c->DefineProperty("Value", &Foo::GetValue, &Foo::SetValue);
-        c->DefineProperty("ConstValue", &Foo::GetConstValue);
-        c->DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer);
-        c->DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
-        c->DefineProperty("ConstPointer", &Foo::GetConstPointer);
-        c->DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
-       
-        c->DefineProperty("Accessor", 
-                          static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
-                          static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor));
+        syntropy::reflection::Class::Definition<Foo> definition("Foo");
 
-        return c;
+        definition.DefineBaseClass<Bar>();
+
+        definition.DefineProperty("float_value", &Foo::value_);
+        definition.DefineProperty("int_value", &Foo::value2_);
+        definition.DefineProperty("const_value", &Foo::const_value_);
+        definition.DefineProperty("pointer", &Foo::pointer_);
+        definition.DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
+        definition.DefineProperty("const_pointer", &Foo::const_pointer_);
+        definition.DefineProperty("boolean", &Foo::boolean_);
+        
+        definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue);
+        definition.DefineProperty("ConstValue", &Foo::GetConstValue);
+        definition.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer);
+        definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
+        definition.DefineProperty("ConstPointer", &Foo::GetConstPointer);
+        definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
+       
+        definition.DefineProperty("Accessor",
+                                  static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
+                                  static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor));
+
+        return definition;
 
     }
     
@@ -284,17 +284,18 @@ struct syntropy::reflection::ClassDeclaration<FooBar> {
 
 public:
 
-    std::unique_ptr<syntropy::reflection::ClassDefinition<FooBar>> operator()() const{
+    auto operator()() const{
 
-        auto c = std::make_unique<syntropy::reflection::ClassDefinition<FooBar>>("FooBar");
+        syntropy::reflection::Class::Definition<FooBar> definition("FooBar");
 
-        c->DefineBaseClass<Foo>();
+        definition.DefineBaseClass<Foo>();
 
-        return c;
+        return definition;
 
     }
     
 };
+
 class Tester {
 
 public:
@@ -307,7 +308,7 @@ public:
 
         for (const auto& property : foo_class_.GetProperties()) {
 
-            std::cout << "Property " << property.second.GetName().GetString() << " : " << property.second.GetType() << "\n";
+            std::cout << "Property " << property.GetName() << " : " << property.GetType() << "\n";
 
         }
 

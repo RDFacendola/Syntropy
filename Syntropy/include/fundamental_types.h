@@ -14,8 +14,8 @@
 #define SYN_DEFINE_FUNDAMENTAL_TYPE(type) \
 template <> \
 struct syntropy::reflection::ClassDeclaration<type> { \
-    std::unique_ptr<ClassDefinition<type>> operator()() const{ \
-        return std::make_unique<ClassDefinition<type>>(#type); \
+    auto operator()() const{ \
+        return syntropy::reflection::Class::Definition<type>(#type); \
     } \
 }
 

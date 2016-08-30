@@ -10,6 +10,10 @@
 #include <unordered_map>
 #include <vector>
 #include <type_traits>
+#include <algorithm>
+#include <iterator>
+#include <stdexcept>
+#include <sstream>
 #include <ostream>
 
 #include "hashed_string.h"
@@ -23,13 +27,17 @@ namespace syntropy {
 
     namespace reflection {
         
-        class IClassDefinition;
-
         /// \brief Describes a class implementation.
         /// \author Raffaele D. Facendola - 2016
         class Class {
 
         public:
+
+            template <typename TClass>
+            class Definition;
+
+            template <typename TClass>
+            static const Class& GetClass();
 
             /// \brief No copy constructor.
             Class(const Class&) = delete;
@@ -40,40 +48,6 @@ namespace syntropy {
             /// \brief Virtual destructor.
             virtual ~Class() = default;
 
-            template <typename TClass>
-            static const Class& GetClass();
-
-            /// \brief Get the name of the class.
-            /// \return Returns the type string of the class.
-            const HashedString& GetName() const noexcept;
-
-            /// \brief Get the list of classes that are derived by this class.
-            /// \return Returns the list of classes that are derived by this class.
-            const std::vector<const Class*>& GetBaseClasses() const noexcept;
-
-            /// \brief Get a class property by name.
-            /// \param property_name Name of the property to get.
-            /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
-            const Property* GetProperty(const HashedString& property_name) const noexcept;
-
-            /// \brief Get a class method by name.
-            /// \param method_name Name of the method to get.
-            /// \return Returns a pointer tot he requested method if any. Returns nullptr otherwise.
-            const Method* GetMethod(const HashedString& method_name) const noexcept;
-
-            /// \brief Get the class properties list.
-            /// \return Returns the class properties list.
-            const std::unordered_map<size_t, Property>& GetProperties() const noexcept;
-
-            /// \brief Check whether this class is abstract or not.
-            /// \return Returns true if the class is abstract, returns false otherwise.
-            bool IsAbstract() const noexcept;
-
-            /// \brief Check whether the class is instantiable via reflection.
-            /// A class is instantiable if it is non-abstract and is default-constructible.
-            /// \return Returns true if the class is instantiable, returns false otherwise.
-            bool IsInstantiable() const noexcept;
-
             /// \brief Check whether this class can be converted to the specified one.
             /// \return Returns true if the class described by this instance is a base for the specified one or is the same type, returns false otherwise.
             bool operator==(const Class& other) const noexcept;
@@ -82,57 +56,27 @@ namespace syntropy {
             /// \return Returns false if the class described by this instance is a base for the specified one or is the same type, returns true otherwise.
             bool operator!=(const Class& other) const noexcept;
 
-            /// \brief Create a new instance.
-            /// The method requires that the class is default-constructible and is non-abstract.
-            /// \return Returns a reference to the new instance if the class was default constructible, return an empty reference otherwise.
-            Instance Instantiate() const;
-
-        private:
-            
-            /// \brief Create a new class via explicit class definition.
-            Class(std::unique_ptr<IClassDefinition> definition);
-            
-            size_t class_id_;                                       ///< \brief Unique id. 
-                                                                    ///< \remarks Can be different at each execution.
-
-            std::unique_ptr<IClassDefinition> definition_;			///< \brief Class definition.
-
-
-        };
-
-        template <typename TType>
-        const Class& ClassOf();
-
-        /// \brief Interface for class definition.
-        /// \author Raffaele D. Facendola - 2016
-        class IClassDefinition {
-
-        public:
-
-            /// \brief Virtual destructor.
-            virtual ~IClassDefinition() = default;
-            
-            /// \brief Get the name of the class.
-            /// \return Returns the type string of the class.
+            /// \brief Get the class name.
+            /// \return Returns the class name.
             virtual const HashedString& GetName() const noexcept = 0;
 
-            /// \brief Get the list of classes that are derived by this class.
-            /// \return Returns the list of classes that are derived by this class.
+            /// \brief Get the class names.
+            /// Certain types have different name aliases (like signed short int, short, short int which refers to the same type)
+            /// \brief Returns a list containing the class names.
+            virtual const std::vector<HashedString>& GetNames() const noexcept = 0;
+
+            /// \brief Get the list of base classes of this class.
+            /// \return Returns the list of classes that are inherited by this class.
             virtual const std::vector<const Class*>& GetBaseClasses() const noexcept = 0;
-            
+
             /// \brief Get a class property by name.
             /// \param property_name Name of the property to get.
             /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
             virtual const Property* GetProperty(const HashedString& property_name) const noexcept = 0;
 
-            /// \brief Get a class method by name.
-            /// \param method_name Name of the method to get.
-            /// \return Returns a pointer tot he requested method if any. Returns nullptr otherwise.
-            virtual const Method* GetMethod(const HashedString& method_name) const noexcept = 0;
-
-            /// \brief Get the class properties list.
-            /// \return Returns the class properties list.
-            virtual const std::unordered_map<size_t, Property>& GetProperties() const noexcept = 0;
+            /// \brief Get the set of properties supported by this class.
+            /// \return Returns the set of properties supported by this class.
+            virtual const std::vector<Property>& GetProperties() const noexcept = 0;
 
             /// \brief Check whether this class is abstract or not.
             /// \return Returns true if the class is abstract, returns false otherwise.
@@ -148,34 +92,82 @@ namespace syntropy {
             /// \return Returns a reference to the new instance if the class was default constructible, return an empty reference otherwise.
             virtual Instance Instantiate() const = 0;
 
+        private:
+            
+            template <typename TClass>
+            class ClassT;
+
+            /// \brief Default constructor.
+            Class() = default;
+
         };
 
         /// \brief Concrete class definition.
         /// \author Raffaele D. Facendola - 2016
         template <typename TClass>
-        class ClassDefinition : public IClassDefinition {
+        class Class::Definition {
+
+            friend class Class::ClassT<TClass>;
 
         public:
 
-            /// \brief No copy constructor.
-            ClassDefinition(const ClassDefinition<TClass>& other) = delete;
+            Definition(std::string default_name);
 
-            /// \brief No assignment operator.
-            ClassDefinition<TClass>& operator=(const ClassDefinition<TClass>& other) = delete;
+            Definition(const Definition& other) = default;
 
-            /// \brief Create a named class definition.
-            /// \param name name of the class.
-            ClassDefinition(const HashedString& name) noexcept;
+            Definition(Definition&& other);
+
+            Definition& operator=(const Definition& other) = default;
+
+            /// \brief Define a name alias for the class.
+            /// If the name was already defined this method does nothing.
+            /// \param name Name of the class.
+            void DefineNameAlias(HashedString name) noexcept;
+
+            /// \brief Defines a base class.
+            /// If the base class was already defined this method does nothing.
+            /// \tparam TBaseClass Type of the base class.
+            template <typename TBaseClass>
+            void DefineBaseClass() noexcept;
+
+            /// 
+            template <typename TProperty>
+            void DefineProperty(const HashedString& name, TProperty&& property);
+
+            /// Getters and setters of the form
+            /// TProperty (TClass::*)() const / void (TClass::*)(TProperty)
+            /// const TProperty& (TClass::*)() const / TProperty& (TClass::*)()
+            template <typename TGetter, typename TSetter>
+            void DefineProperty(const HashedString& name, TGetter&& getter, TSetter&& setter);
+
+        private:
+
+            void CheckPropertyNameOrDie(const HashedString& property_name) const;
+
+            std::vector<HashedString> names_;                   ///< \brief Class names.
+
+            std::vector<const Class*> base_classes_;            ///< \brief List of all classes inherited by this one.
+
+            std::vector<Property> properties_;                  ///< \brief Reference to the class properties.
+
+        };
+
+        template <typename TClass>
+        class Class::ClassT : public Class {
+
+        public:
+
+            ClassT(Definition<TClass> definition);
 
             virtual const HashedString& GetName() const noexcept override;
+
+            virtual const std::vector<HashedString>& GetNames() const noexcept override;
 
             virtual const std::vector<const Class*>& GetBaseClasses() const noexcept override;
 
             virtual const Property* GetProperty(const HashedString& property_name) const noexcept override;
 
-            virtual const Method* GetMethod(const HashedString& method_name) const noexcept override;
-
-            virtual const std::unordered_map<size_t, Property>& GetProperties() const noexcept override;
+            virtual const std::vector<Property>& GetProperties() const noexcept override;
 
             virtual bool IsAbstract() const noexcept override;
 
@@ -183,39 +175,30 @@ namespace syntropy {
 
             virtual Instance Instantiate() const override;
 
-            template <typename TBaseClass>
-            void DefineBaseClass() noexcept;
-
-            /// Properties and getter of the form
-            /// TProperty TClass::*
-            /// TProperty (TClass::*)() const
-            template <typename TProperty>
-            void DefineProperty(const HashedString& name, TProperty&& property) noexcept;
-
-            /// Getters and setters of the form
-            /// TProperty (TClass::*)() const / void (TClass::*)(TProperty)
-            /// const TProperty& (TClass::*)() const / TProperty& (TClass::*)()
-            template <typename TGetter, typename TSetter>
-            void DefineProperty(const HashedString& name, TGetter&& getter, TSetter&& setter) noexcept;
-
-            //template <typename TMethod>
-            //void DefineMethod(const HashedString& method_name, TMethod&& method) noexcept;
-
         private:
 
-            HashedString name_;                                     ///< \brief Unique name.
+            using TPropertyHash = std::hash<HashedString>::result_type;
 
-            std::vector<const Class*> base_classes_;                ///< \brief List of all classes that are base of this one.
+            void RegenerateIndices() noexcept;
 
-            std::unordered_map<size_t, Property> properties_;       ///< \brief List of all the supported properties.
+            std::vector<HashedString> names_;                                       ///< \brief Class names.
+            
+            std::vector<const Class*> base_classes_;                                ///< \brief List of all classes inherited by this one.
 
-            std::unordered_map<size_t, Method> methods_;            ///< \brief List of all the supported methods.
+            std::vector<Property> properties_;                                      ///< \brief Class properties.
+            
+            std::unordered_map<TPropertyHash, const Property*> properties_index_;   ///< \brief Index over the class properties set. The key is the property name's hash.
 
         };
 
+        template <typename TType>
+        const Class& ClassOf();
+
+        template <typename TClass>
+        Class::Definition<TClass> DefinitionOf();
+
         /// \brief Functor used to fill a class definition.
         /// Specialize this functor for each class requiring reflection.
-        /// \author Raffaele D. Facendola - 2016
         template <typename TClass>
         struct ClassDeclaration;
 
@@ -250,57 +233,187 @@ namespace syntropy {
 
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
 
-            static Class instance(ClassDeclaration<TClass>{}());
+            static ClassT<TClass> instance(DefinitionOf<TClass>());
 
             return instance;
+
+        }
+
+        //////////////// CLASS :: DEFINITION ////////////////
+
+        template <typename TClass>
+        inline Class::Definition<TClass>::Definition(std::string default_name) {
+
+            names_.push_back(std::move(default_name));
+
+        }
+
+        template <typename TClass>
+        inline Class::Definition<TClass>::Definition(Definition<TClass>&& other)
+            : names_(std::move(other.names_))
+            , base_classes_(std::move(other.base_classes_))
+            , properties_(std::move(other.properties_)) {}
+
+        template <typename TClass>
+        inline void Class::Definition<TClass>::DefineNameAlias(HashedString name) noexcept {
+
+            auto it = std::find_if(names_.begin(), names_.end(), [&name](const HashedString& class_name) { return class_name == name; });
+
+            if (it == names_.end()) {
+            
+                names_.push_back(name);
+
+            }
             
         }
 
-        inline const HashedString& Class::GetName() const noexcept {
+        template <typename TClass>
+        template <typename TBaseClass>
+        inline void Class::Definition<TClass>::DefineBaseClass() noexcept {
 
-            return definition_->GetName();
+            static_assert(std::is_base_of_v<TBaseClass, TClass>, "The class being defined does not derive from TBaseClass");
+            static_assert(!std::is_same<TBaseClass, TClass>::value, "A class cannot derive from itself");
 
-        }
-    
-        inline const std::vector<const Class*>& Class::GetBaseClasses() const noexcept {
+            auto base_class = &ClassOf<TBaseClass>();
 
-            return definition_->GetBaseClasses();
+            auto it = std::find(base_classes_.begin(), base_classes_.end(), base_class);
 
-        }
+            if (it == base_classes_.end()) {
 
-        inline const Property* Class::GetProperty(const HashedString& property_name) const noexcept {
+                base_classes_.push_back(base_class);
 
-            return definition_->GetProperty(property_name);
-                
-        }
-
-        inline const Method* Class::GetMethod(const HashedString& method_name) const noexcept {
-
-            return definition_->GetMethod(method_name);
-
+            }
+            
         }
 
-        inline const std::unordered_map<size_t, Property>& Class::GetProperties() const noexcept {
+        template <typename TClass>
+        template <typename TProperty>
+        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty&& property) {
 
-            return definition_->GetProperties();
+            CheckPropertyNameOrDie(name);
+            
+            properties_.emplace_back(name, 
+                                     std::forward<TProperty>(property));
+
+        }
+
+        template <typename TClass>
+        template <typename TGetter, typename TSetter>
+        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TGetter&& getter, TSetter&& setter) {
+
+            CheckPropertyNameOrDie(name);
+
+            properties_.emplace_back(name, 
+                                     std::forward<TGetter>(getter),
+                                     std::forward<TSetter>(setter));
 
         }
 
-        inline bool Class::IsAbstract() const noexcept {
+        template <typename TClass>
+        void Class::Definition<TClass>::CheckPropertyNameOrDie(const HashedString& property_name) const {
 
-            return definition_->IsAbstract();
+            auto it = std::find_if(properties_.begin(), properties_.end(), [&property_name](const Property& property) { return property.GetName() == property_name; });
+
+            if (it != properties_.end()) {
+
+                std::stringstream ss;
+
+                ss << "A property named '" << property_name << "' already exists.";
+
+                throw std::invalid_argument(ss.str());
+
+            }
 
         }
-        
-        inline bool Class::IsInstantiable() const noexcept {
 
-            return definition_->IsInstantiable();
+        //////////////// CLASS :: CLASS T ////////////////
+
+        template <typename TClass>
+        Class::ClassT<TClass>::ClassT(Definition<TClass> definition)
+            : names_(std::move(definition.names_))
+            , base_classes_(std::move(definition.base_classes_))
+            , properties_(std::move(definition.properties_)){
+
+            RegenerateIndices();
+
+            Reflection::GetInstance().Register(*this);
 
         }
-        
-        inline Instance Class::Instantiate() const {
 
-            return definition_->Instantiate();
+        template <typename TClass>
+        inline const HashedString& Class::ClassT<TClass>::GetName() const noexcept {
+
+            return names_[0];
+
+        }
+
+        template <typename TClass>
+        inline const std::vector<HashedString>& Class::ClassT<TClass>::GetNames() const noexcept {
+
+            return names_;
+
+        }
+
+        template <typename TClass>
+        inline const std::vector<const Class*>& Class::ClassT<TClass>::GetBaseClasses() const noexcept {
+
+            return base_classes_;
+
+        }
+
+        template <typename TClass>
+        inline const Property* Class::ClassT<TClass>::GetProperty(const HashedString& property_name) const noexcept {
+
+            auto it = properties_index_.find(std::hash<HashedString>()(property_name));
+
+            return it != properties_index_.end() ?
+                   it->second :
+                   nullptr;
+
+        }
+
+        template <typename TClass>
+        inline const std::vector<Property>& Class::ClassT<TClass>::GetProperties() const noexcept {
+
+            return properties_;
+
+        }
+
+        template <typename TClass>
+        inline bool Class::ClassT<TClass>::IsAbstract() const noexcept {
+
+            return std::is_abstract_v<TClass>;
+
+        }
+
+        template <typename TClass>
+        inline bool Class::ClassT<TClass>::IsInstantiable() const noexcept {
+
+            return std::is_default_constructible_v<TClass>;
+
+        }
+
+        template <typename TClass>
+        inline Instance Class::ClassT<TClass>::Instantiate() const {
+
+            return instantiate<TClass>()();
+
+        }
+
+        template <typename TClass>
+        inline void Class::ClassT<TClass>::RegenerateIndices() noexcept{
+
+            properties_index_.clear();
+            properties_index_.reserve(properties_.size());
+
+            std::transform(properties_.begin(), properties_.end(),
+                           std::inserter(properties_index_, properties_index_.begin()),
+                           [](const Property& property) {
+
+                                return std::make_pair(std::hash<HashedString>()(property.GetName()),
+                                                      &property);
+
+                           });
 
         }
 
@@ -313,113 +426,22 @@ namespace syntropy {
 
         }
 
-        //////////////// CLASS DEFINITION ////////////////
+        //////////////// DEFINITION OF ////////////////
 
         template <typename TClass>
-        inline ClassDefinition<TClass>::ClassDefinition(const HashedString& name) noexcept
-            : name_(name) {}
+        Class::Definition<TClass> DefinitionOf() {
 
-        template <typename TClass>
-        inline const HashedString& ClassDefinition<TClass>::GetName() const noexcept {
-
-            return name_;
-
-        }
-    
-        template <typename TClass>
-        inline const std::vector<const Class*>& ClassDefinition<TClass>::GetBaseClasses() const noexcept {
-
-            return base_classes_;
-
-        }
-
-        template <typename TClass>
-        inline const Property* ClassDefinition<TClass>::GetProperty(const HashedString& property_name) const noexcept {
-
-            auto it = properties_.find(std::hash<HashedString>()(property_name));
-
-            return it != properties_.end() ?
-                   std::addressof(it->second) :
-                   nullptr;
-                
-        }
-
-        template <typename TClass>
-        inline const Method* ClassDefinition<TClass>::GetMethod(const HashedString& method_name) const noexcept {
-
-            auto it = methods_.find(std::hash<HashedString>()(method_name));
-
-            return it != methods_.end() ?
-                   std::addressof(it->second) :
-                   nullptr;
-        
-        }
-
-        template <typename TClass>
-        inline const std::unordered_map<size_t, Property>& ClassDefinition<TClass>::GetProperties() const noexcept {
-
-            return properties_;
-
-        }
-
-        template <typename TClass>
-        inline bool ClassDefinition<TClass>::IsAbstract() const noexcept {
-
-            return std::is_abstract_v<TClass>;
-
-        }
-
-        template <typename TClass>
-        inline bool ClassDefinition<TClass>::IsInstantiable() const noexcept {
-
-            return std::is_default_constructible_v<TClass>;
+            static_assert(is_class_name_v<TClass>, "TClass must be a plain class name.");
+                        
+            return ClassDeclaration<TClass>()();    // TODO: Check for registration problems
             
         }
 
-        template <typename TClass>
-        inline Instance ClassDefinition<TClass>::Instantiate() const {
-
-            return instantiate<TClass>()();
-
-        }
-        
-        template <typename TClass>
-        template <typename TBaseClass>
-        inline void ClassDefinition<TClass>::DefineBaseClass() noexcept {
-
-            static_assert(std::is_base_of_v<TBaseClass, TClass>, "The class being defined does not derive from TBaseClass");
-            static_assert(!std::is_same<TBaseClass, TClass>::value, "A class cannot derive from itself");
-
-            base_classes_.push_back(std::addressof(ClassOf<TBaseClass>()));
-
-        }
-
-        template <typename TClass>
-        template <typename TProperty>
-        void ClassDefinition<TClass>::DefineProperty(const HashedString& name, TProperty&& property) noexcept {
-
-            properties_.emplace(std::make_pair(std::hash<HashedString>()(name),
-                                               Property(name, 
-                                                        std::forward<TProperty>(property))));
-
-        }
-
-        template <typename TClass>
-        template <typename TGetter, typename TSetter>
-        void ClassDefinition<TClass>::DefineProperty(const HashedString& name, TGetter&& getter, TSetter&& setter) noexcept {
-
-            properties_.emplace(std::make_pair(std::hash<HashedString>()(name),
-                                               Property(name, 
-                                                        std::forward<TGetter>(getter),
-                                                        std::forward<TSetter>(setter))));
-
-        }
-     
         //////////////// STREAM INSERTION ////////////////
 
         inline std::ostream& operator<<(std::ostream& out, const Class& class_instance) {
 
-            out << class_instance.GetName().GetString();
+            out << class_instance.GetName();
 
             return out;
 
