@@ -25,8 +25,6 @@ namespace syntropy {
         /// \author Raffaele D. Facendola - 2016
         class Reflection {
 
-            friend class Class;
-
         public:
 
             /// \brief Get the singleton instance.
@@ -40,22 +38,27 @@ namespace syntropy {
             Reflection& operator=(const Reflection&) = delete;
 
             /// \brief Get a class instance by name.
-            /// \param class_name Name of the class to get.
+            /// \param class_name Name or alias of the class to get.
             /// \return Returns a pointer to the class whose name is the specified one, if any. Returns nullptr otherwise.
             const Class* GetClass(const HashedString& class_name) noexcept;
+
+            /// \brief Register a new class to the registry.
+            /// \param class_instance Class to register.
+            bool Register(Class& class_instance);
 
         private:
 
             /// \brief Private constructor to prevent instantiation and inheritance.
             Reflection();
 
-            /// \brief Register a new class to the registry.
-            /// \param class_instance Class to register.
-            void Register(Class& class_instance);
-
             std::unordered_map<size_t, Class*> classes_;       ///< \brief List of classes registered so far. The key is the class name's hash.
 
         };
+
+        /// \brief Get a class instance by name.
+        /// \param class_name Name or alias of the class to get.
+        /// \return Returns a pointer to the class whose name is the specified one, if any. Returns nullptr otherwise.
+        const Class* GetClass(const HashedString& class_name) noexcept;
 
     }
 
@@ -74,6 +77,14 @@ namespace syntropy {
             static Reflection instance;
 
             return instance;
+
+        }
+
+        //////////////// GET CLASS ////////////////
+
+        inline const Class* GetClass(const HashedString& class_name) noexcept {
+
+            return Reflection::GetInstance().GetClass(class_name);
 
         }
 

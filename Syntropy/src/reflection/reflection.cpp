@@ -21,11 +21,31 @@ const Class* Reflection::GetClass(const HashedString& class_name) noexcept {
 
 }
 
-void Reflection::Register(Class& class_instance) {
+bool Reflection::Register(Class& class_instance) {
 
-    assert(classes_.find(std::hash<HashedString>()(class_instance.GetName())) == classes_.end());
+    bool result = true;
 
-    classes_.emplace(std::make_pair(std::hash<HashedString>()(class_instance.GetName()),
-                                    std::addressof(class_instance)));
+    std::hash<HashedString>::result_type name_hash;
+
+    // Register each alias as a different entry
+
+    for (auto&& name_alias : class_instance.GetNames()) {
+
+        name_hash = std::hash<HashedString>()(name_alias);
+
+        if (classes_.find(name_hash) == classes_.end()) {
+
+            classes_.emplace(std::make_pair(name_hash, &class_instance));
+
+        }
+        else {
+
+            result = false;
+
+        }
+
+    }
+
+    return result;
 
 }
