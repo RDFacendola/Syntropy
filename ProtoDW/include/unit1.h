@@ -17,6 +17,7 @@
 
 #include <tuple>
 #include <iostream>
+#include <iomanip>
 
 #define SUPPRESS_PASSED_TESTS
 
@@ -299,6 +300,91 @@ public:
 class Tester {
 
 public:
+
+    template <typename TType>
+    void PrintType(const char* type_name) const{
+
+        std::cout << std::setw(30) << type_name << ": ";
+
+        for (auto&& name_alias : syntropy::reflection::ClassOf<TType>().GetNames()) {
+
+            std::cout << name_alias << ", ";
+
+        }
+
+        std::cout << "\n";
+
+    }
+    
+    void TypeTest() const {
+
+#define OUTPUT_TYPE(type) PrintType<type>(#type)
+
+        OUTPUT_TYPE(signed char);
+        OUTPUT_TYPE(unsigned char);
+        OUTPUT_TYPE(char);
+
+        std::cout << "\n";
+
+        OUTPUT_TYPE(short int);
+        OUTPUT_TYPE(unsigned short int);
+        OUTPUT_TYPE(int);
+        OUTPUT_TYPE(unsigned int);
+        OUTPUT_TYPE(long int);
+        OUTPUT_TYPE(unsigned long int);
+        OUTPUT_TYPE(long long int);
+        OUTPUT_TYPE(unsigned long long int);
+        
+        std::cout << "\n";
+
+        OUTPUT_TYPE(int8_t);
+        OUTPUT_TYPE(int16_t);
+        OUTPUT_TYPE(int32_t);
+        OUTPUT_TYPE(int64_t);
+
+        std::cout << "\n";
+
+        OUTPUT_TYPE(int_fast8_t);
+        OUTPUT_TYPE(int_fast16_t);
+        OUTPUT_TYPE(int_fast32_t);
+        OUTPUT_TYPE(int_fast64_t);
+
+        std::cout << "\n";
+
+        OUTPUT_TYPE(int_least8_t);
+        OUTPUT_TYPE(int_least16_t);
+        OUTPUT_TYPE(int_least32_t);
+        OUTPUT_TYPE(int_least64_t);
+
+        std::cout << "\n";
+
+        OUTPUT_TYPE(uint8_t);
+        OUTPUT_TYPE(uint16_t);
+        OUTPUT_TYPE(uint32_t);
+        OUTPUT_TYPE(uint64_t);
+
+        std::cout << "\n";
+
+        OUTPUT_TYPE(uint_fast8_t);
+        OUTPUT_TYPE(uint_fast16_t);
+        OUTPUT_TYPE(uint_fast32_t);
+        OUTPUT_TYPE(uint_fast64_t);
+
+        std::cout << "\n";
+
+        OUTPUT_TYPE(uint_least8_t);
+        OUTPUT_TYPE(uint_least16_t);
+        OUTPUT_TYPE(uint_least32_t);
+        OUTPUT_TYPE(uint_least64_t);
+
+        std::cout << "\n";
+
+        OUTPUT_TYPE(intmax_t);
+        OUTPUT_TYPE(intptr_t);
+        OUTPUT_TYPE(uintmax_t);
+        OUTPUT_TYPE(uintptr_t);
+
+    }
 
     void SynopsisTest() const {
 
@@ -663,6 +749,8 @@ public:
 
     void Do() {
 
+        RUN_TEST(TypeTest);
+
         RUN_TEST(SynopsisTest);
         RUN_TEST(FieldTest);
         RUN_TEST(PropertyTest);
@@ -672,8 +760,7 @@ public:
         RUN_TEST(ForwardingTest);
 
     }
-
-
+    
     Tester() 
         : foo_class_(syntropy::reflection::Class::GetClass<Foo>())
         , foobar_class_(syntropy::reflection::Class::GetClass<FooBar>())
