@@ -40,7 +40,7 @@ namespace syntropy {
             /// \brief Get a class instance by name.
             /// \param class_name Name or alias of the class to get.
             /// \return Returns a pointer to the class whose name is the specified one, if any. Returns nullptr otherwise.
-            const Class* GetClass(const HashedString& class_name) noexcept;
+            const Class* GetClass(const HashedString& class_name) const noexcept;
 
             /// \brief Register a new class to the registry.
             /// \param class_instance Class to register.

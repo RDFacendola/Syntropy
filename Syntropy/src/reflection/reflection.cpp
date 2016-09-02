@@ -11,7 +11,7 @@ Reflection::Reflection() {
 
 }
 
-const Class* Reflection::GetClass(const HashedString& class_name) noexcept {
+const Class* Reflection::GetClass(const HashedString& class_name) const noexcept {
 
     auto it = classes_.find(std::hash<HashedString>()(class_name));
 

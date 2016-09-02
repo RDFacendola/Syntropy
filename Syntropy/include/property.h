@@ -240,18 +240,6 @@ namespace syntropy {
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
 
-        inline const HashedString& Property::GetName() const noexcept {
-
-            return name_;
-
-        }
-
-        inline const typename Type& Property::GetType() const noexcept {
-
-            return type_;
-
-        }
-
         template <typename TInstance, typename TValue>
         inline bool Property::Get(const TInstance& instance, TValue& value) const {
 

@@ -25,6 +25,18 @@ namespace syntropy {
 
         }
 
+        //////////////// STREAM INSERTION ////////////////
+
+        std::ostream& operator<<(std::ostream& out, const Class& class_instance) {
+
+            out << class_instance.GetName();
+
+            return out;
+
+        }
+
     }
 
 }
+
+

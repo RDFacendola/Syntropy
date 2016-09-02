@@ -58,6 +58,10 @@ namespace syntropy {
             /// \remarks Pointer, qualifiers, references and extents are not accounted for. For instance Type(float*) and Type(float) have the same class.
             virtual const Class& GetClass() const = 0;
 
+            /// \brief Get the typeid associated to the type.
+            /// \return Returns the type if associated to the type.
+            virtual const std::type_info& GetTypeInfo() const noexcept = 0;
+
             /// \brief Check whether this type refers to a pointer.
             /// \return Returns true if the type is a pointer, returns false otherwise.
             virtual bool IsPointer() const noexcept = 0;
@@ -127,6 +131,8 @@ namespace syntropy {
         public:
 
             virtual const Class& GetClass() const override;
+
+            virtual const std::type_info& GetTypeInfo() const noexcept override;
 
             virtual bool IsPointer() const noexcept override;
 
@@ -199,6 +205,13 @@ namespace syntropy {
         inline const Class& Type::TypeT<TType>::GetClass() const {
 
             return class_get<Class, TType>()();
+
+        }
+
+        template <typename TType>
+        const std::type_info& Type::TypeT<TType>::GetTypeInfo() const noexcept {
+
+            return typeid(TType);
 
         }
 

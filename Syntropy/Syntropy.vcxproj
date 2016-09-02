@@ -65,6 +65,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\reflection\property.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\reflection\reflection.cpp">
       <SubType>
       </SubType>
