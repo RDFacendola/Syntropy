@@ -20,10 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\any.h" />
-    <ClInclude Include="include\any_reference.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\class.h">
       <SubType>
       </SubType>
@@ -62,6 +58,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="src\reflection\instance.cpp">
       <SubType>
       </SubType>
     </ClCompile>

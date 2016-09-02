@@ -13,13 +13,12 @@
 #include "unit2.h"
 
 #include "any.h"
-#include "any_reference.h"
 
 #include <tuple>
 #include <iostream>
 #include <iomanip>
 
-#define SUPPRESS_PASSED_TESTS
+//#define SUPPRESS_PASSED_TESTS
 
 #ifndef SUPPRESS_PASSED_TESTS
 
@@ -184,6 +183,7 @@ public:
     float* const const_pointer_;
     bool boolean_;
 
+    Foo* fooptr_;
 
     Blob blob_;
     
@@ -300,22 +300,6 @@ public:
 class Tester {
 
 public:
-
-    template <typename TType>
-    void PrintType(const char* type_name) const{
-
-        std::cout << std::setw(30) << type_name << ": ";
-
-        for (auto&& name_alias : syntropy::reflection::ClassOf<TType>().GetNames()) {
-
-            std::cout << name_alias << ", ";
-
-        }
-
-        std::cout << "\n";
-
-    }
-    
     void TypeTest() const {
 
 #define OUTPUT_TYPE(type) PrintType<type>(#type)
@@ -460,46 +444,12 @@ public:
 
     }
 
-    void InterpretTest() const {
+    void ConversionTest() const {
 
         Foo foo;
             
-        int int_val;
 
         foo.boolean_ = false;
-
-        TEST_TRUE(field_float_value_->Set(foo, "256.25") &&
-                  foo.value_ == 256.25f);
-
-        TEST_TRUE(field_int_value_->Set(foo, "47") &&
-                  foo.value2_ == 47);
-
-        TEST_TRUE(property_value_->Set(foo, "125.50") &&
-                  foo.GetValue() == 125.50f);
-
-        TEST_TRUE(property_accessor_->Set(foo, "64.00") &&
-                  foo.GetAccessor().blob_ == 64);
-
-        TEST_TRUE(property_pod_->Set(foo, "16.50") &&
-                  foo.GetBlob().blob_ == 16);
-
-        TEST_FALSE(field_float_value_->Set(foo, Blob{ 50 }));                         // Blob cannot be inward-interpreted
-
-        TEST_TRUE(field_int_value_->Set(foo, StreamableBlob{ 800 }) &&                // Streamable blob can be inward-interpreted
-                  foo.value2_ == 800);
-
-        TEST_FALSE(property_pointer_->Set(foo, "56.23f"));
-        
-        TEST_TRUE(field_boolean_->Set(foo, "1") &&
-                  foo.boolean_ == true);
-
-        TEST_TRUE(field_boolean_->Set(foo, "0") &&
-                  foo.boolean_ == false);
-
-        TEST_TRUE(field_boolean_->Set(foo, "false") &&                                // From string to boolean.
-                  foo.boolean_ == false);
-
-        TEST_FALSE(field_boolean_->Set(foo, "whatever"));
 
         TEST_TRUE(field_float_value_->Set(foo, 512) &&                                // From int to float.
                   foo.value_ == 512.0f);                        
@@ -507,10 +457,45 @@ public:
         TEST_TRUE(field_int_value_->Set(foo, 1024.5632f) &&                           // From float to int.
                   foo.value2_ == 1024);
 
-        TEST_FALSE(field_float_value_->Set(foo, "false"));                            // Wrong types
-
-        TEST_TRUE(field_float_value_->Get(foo, int_val) &&
-                  static_cast<int>(foo.value_) == int_val);                           // Outward interpreting
+//         int int_val;
+//
+//         TEST_TRUE(field_float_value_->Set(foo, "256.25") &&
+//                   foo.value_ == 256.25f);
+// 
+//         TEST_TRUE(field_int_value_->Set(foo, "47") &&
+//                   foo.value2_ == 47);
+// 
+//         TEST_TRUE(property_value_->Set(foo, "125.50") &&
+//                   foo.GetValue() == 125.50f);
+// 
+//         TEST_TRUE(property_accessor_->Set(foo, "64.00") &&
+//                   foo.GetAccessor().blob_ == 64);
+// 
+//         TEST_TRUE(property_pod_->Set(foo, "16.50") &&
+//                   foo.GetBlob().blob_ == 16);
+// 
+//         TEST_FALSE(field_float_value_->Set(foo, Blob{ 50 }));                         // Blob cannot be inward-interpreted
+// 
+//         TEST_TRUE(field_int_value_->Set(foo, StreamableBlob{ 800 }) &&                // Streamable blob can be inward-interpreted
+//                   foo.value2_ == 800);
+// 
+//         TEST_FALSE(property_pointer_->Set(foo, "56.23f"));
+//         
+//         TEST_TRUE(field_boolean_->Set(foo, "1") &&
+//                   foo.boolean_ == true);
+// 
+//         TEST_TRUE(field_boolean_->Set(foo, "0") &&
+//                   foo.boolean_ == false);
+// 
+//         TEST_TRUE(field_boolean_->Set(foo, "false") &&                                // From string to boolean.
+//                   foo.boolean_ == false);
+// 
+//         TEST_FALSE(field_boolean_->Set(foo, "whatever"));
+// 
+//         TEST_FALSE(field_float_value_->Set(foo, "false"));                            // Wrong types
+// 
+//         TEST_TRUE(field_float_value_->Get(foo, int_val) &&
+//                   static_cast<int>(foo.value_) == int_val);                           // Outward interpreting
         
     }
 
@@ -608,11 +593,11 @@ public:
         FooBar bee;
         FooBar* beep = &bee;
 
-        auto foobarp = syntropy::reflection::as_instance(beep);
+        auto foobarp = syntropy::reflection::MakeInstance(beep);
 
-        TEST_FALSE(bar.IsEmpty());
-        TEST_FALSE(foobar.IsEmpty());
-        TEST_TRUE(abstractfoo.IsEmpty());
+        TEST_TRUE(bar);
+        TEST_TRUE(foobar);
+        TEST_FALSE(abstractfoo);
 
         TEST_TRUE(bar.As<Bar>() != nullptr);
         TEST_FALSE(bar.As<Foo>() != nullptr);
@@ -624,7 +609,7 @@ public:
 
         TEST_TRUE(foobar.As<FooBar**>() == nullptr);
         TEST_TRUE(foobar.As<FooBar**>() == nullptr);
-        TEST_TRUE(foobar.As<FooBar[][2]>() == nullptr);
+        //TEST_TRUE(foobar.As<FooBar[1][2]>() == nullptr);
                 
         TEST_TRUE(foobarp.As<FooBar>() == nullptr);
         TEST_TRUE(foobarp.As<FooBar*>() != nullptr);
@@ -710,57 +695,72 @@ public:
 
     }
 
-    FooBar MakeFooBar() {
-
-        return FooBar();
-
-    }
-
-    syntropy::reflection::ConstInstance MakeConstInstance(const FooBar& foobar) {
-
-        return std::addressof(foobar);
-
-    }
-
     void ForwardingTest() {
 
         float x = 0;
 
         FooBar foobar;
 
-        auto foobar_instance = syntropy::reflection::as_instance(foobar);
-        syntropy::reflection::ConstInstance const_foobar_instance = foobar_instance;        // syntropy::reflection::as_cinstance(foobar);
+        auto foobar_instance = syntropy::reflection::MakeInstance(foobar);
+        auto const_foobar_instance = syntropy::reflection::MakeConstInstance(foobar_instance);
 
-        TEST_TRUE(field_float_value_->Set(foobar_instance, 999.0f));
-        //TEST_TRUE(field_float_value_->Set(const_foobar_instance, 999.0f));                // Const instance
-        TEST_TRUE(field_float_value_->Set(foobar_class_.Instantiate(), 999.0f));            // Also, leak :D
-        //TEST_TRUE(field_float_value_->Set(MakeConstInstance(foobar), 999.0f));            // Const instance
-        TEST_TRUE(field_float_value_->Set(foobar, 999.0f));
-        //TEST_TRUE(field_float_value_->Set(MakeFooBar(), 999.0f));                         // r-value reference
+        TEST_TRUE(field_float_value_->Set(foobar_instance, 100.0f) && foobar.value_ == 100.0f);
+        TEST_FALSE(field_float_value_->Set(const_foobar_instance, 200.0f) || foobar.value_ == 200.0f);                  // Const instance
+        TEST_TRUE(field_float_value_->Set(foobar_class_.Instantiate(), 300.0f));                                        // Also, leak :D
+        TEST_FALSE(field_float_value_->Set(MakeConstInstance(foobar), 400.0f) || foobar.value_ == 400.0f);              // Const instance
+        TEST_TRUE(field_float_value_->Set(foobar, 500.0f) && foobar.value_ == 500.0f);
+        //TEST_TRUE(field_float_value_->Set(MakeFooBar(), 999.0f));                                                     // r-value reference
 
         TEST_TRUE(field_float_value_->Get(foobar_instance, x));
         TEST_TRUE(field_float_value_->Get(const_foobar_instance, x));
-        TEST_TRUE(field_float_value_->Get(foobar_class_.Instantiate(), x));                 // Also, leak :D
+        TEST_TRUE(field_float_value_->Get(foobar_class_.Instantiate(), x));                                             // Also, leak :D
         TEST_TRUE(field_float_value_->Get(MakeConstInstance(foobar), x));
         TEST_TRUE(field_float_value_->Get(foobar, x));
         TEST_TRUE(field_float_value_->Get(MakeFooBar(), x));
 
     }
 
+    template <typename TType>
+    void PrintType(const char* type_name) const{
+
+        std::cout << std::setw(30) << type_name << ": ";
+
+        for (auto&& name_alias : syntropy::reflection::ClassOf<TType>().GetNames()) {
+
+            std::cout << name_alias << ", ";
+
+        }
+
+        std::cout << "\n";
+
+    }
+
+    FooBar MakeFooBar() {
+
+        return FooBar();
+
+    }
+
+    syntropy::reflection::Instance MakeConstInstance(const FooBar& foobar) {
+
+        return syntropy::reflection::MakeConstInstance(foobar);
+
+    }
+
     void Do() {
 
-        RUN_TEST(TypeTest);
+        //RUN_TEST(TypeTest);
 
         RUN_TEST(SynopsisTest);
         RUN_TEST(FieldTest);
         RUN_TEST(PropertyTest);
-        //RUN_TEST(InterpretTest);
+        RUN_TEST(ConversionTest);
         RUN_TEST(PolymorphismTest);
         RUN_TEST(InstancingTest);
         RUN_TEST(ForwardingTest);
 
     }
-    
+
     Tester() 
         : foo_class_(syntropy::reflection::Class::GetClass<Foo>())
         , foobar_class_(syntropy::reflection::Class::GetClass<FooBar>())

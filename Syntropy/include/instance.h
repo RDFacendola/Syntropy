@@ -5,40 +5,124 @@
 
 #pragma once
 
+#include <memory>
 #include <type_traits>
 
 #include "type.h"
-#include "any_reference.h"
 
 namespace syntropy {
 
     namespace reflection {
 
-        template <ConstQualifier kConstQualifier>
-        using AnyInstance = AnyReferenceWrapper<kConstQualifier, Type>;
+        /// Wraps a reference to any object in a copy, assignable object.
+        /// Based on both std::any and std::reference_wrapper specs.
+        /// \author Raffaele D. Facendola - September 2016
+        class Instance {
 
-        using ConstInstance = AnyReferenceWrapper<ConstQualifier::kConst, Type>;
+        public:
 
-        using Instance = AnyReferenceWrapper<ConstQualifier::kNone, Type>;
+            /// \brief Create a reference to a null object.
+            constexpr Instance() noexcept = default;
 
-        template <typename TInstance>
-        ConstInstance as_cinstance(const TInstance& instance) noexcept;
+            /// \brief Store a reference to content.
+            /// This overload does not participate in overload resolution if TContent is Instance.
+            template <typename TContent, typename = std::enable_if_t<!std::is_same<TContent, Instance>::value>>
+            Instance(TContent& content) noexcept;
 
-        template <ConstQualifier kConstQualifier>
-        ConstInstance as_cinstance(AnyInstance<kConstQualifier> instance) noexcept;
+            /// \brief Construction from temporary object is not allowed.
+            template <typename TContent>
+            Instance(const TContent&& content) = delete;
+            
+            /// \brief Copy constructor.
+            Instance(const Instance& other) noexcept;
 
-        template <typename TInstance>
-        ConstInstance as_cinstance(const TInstance&&) = delete;
+            /// \brief Move constructor.
+            Instance(Instance&& other) noexcept;
 
-        template <typename TInstance>
-        Instance as_instance(TInstance& instance) noexcept;
+            /// \brief Default destructor.
+            ~Instance() = default;
 
-        Instance as_instance(ConstInstance instance) = delete;         // Denied: conversion loses qualifiers
+            /// \brief Copy assignment operator. Drops the current reference and stores a new one.
+            Instance& operator=(const Instance& other) noexcept;
+            
+            /// \brief Move assignment operator. Drops the current reference and stores a new one.
+            Instance& operator=(Instance&& other) noexcept;
 
-        Instance as_instance(Instance instance) noexcept;
+            /// \brief Check whether the instance contains a reference to an actual object or not.
+            /// \return Returns true if the instance contains a reference to an actual object, returns false otherwise.
+            operator bool() const noexcept;
 
-        template <typename TInstance>
-        Instance as_instance(const TInstance&&) = delete;
+            /// \brief Get the constant version of this instance's content.
+            Instance ToConst() const noexcept;
+
+            /// \brief Drops the current reference.
+            void Clear() noexcept;
+
+            /// \brief Swaps the content of this object with another one's.
+            void Swap(Instance& other) noexcept;
+            
+            const Type& GetType() const noexcept;
+
+            template <typename TContent>
+            typename std::remove_reference_t<TContent>* As() const;
+            
+        private:
+
+            struct ConstCloneTag {};
+
+            struct IContent {
+
+                virtual ~IContent() = default;
+
+                virtual const Type& GetType() const noexcept = 0;
+
+                virtual std::unique_ptr<IContent> Clone() const noexcept = 0;
+
+                virtual std::unique_ptr<IContent> ConstClone() const noexcept = 0;
+
+            };
+
+            template <typename TContent>
+            struct Content : IContent {
+
+                Content(TContent& content);
+
+                virtual const Type& GetType() const noexcept override;
+
+                virtual std::unique_ptr<IContent> Clone() const noexcept override;
+
+                virtual std::unique_ptr<IContent> ConstClone() const noexcept override;
+
+                std::reference_wrapper<TContent> content_;
+
+            };
+
+            /// \brief Copy constructor to const.
+            Instance(ConstCloneTag, const Instance& other) noexcept;
+
+            std::unique_ptr<IContent> content_;
+
+        };
+
+        /// This overload does not participate in overload resolution if TContent is Instance.
+        template <typename TContent>
+        Instance MakeInstance(TContent& content);
+
+        Instance MakeInstance(Instance instance);
+
+        /// This overload does not participate in overload resolution if TContent is Instance.
+        template <typename TContent>
+        Instance MakeInstance(const TContent&& content) = delete;
+
+        /// This overload does not participate in overload resolution if TContent is Instance.
+        template <typename TContent>
+        Instance MakeConstInstance(const TContent& instance);
+
+        Instance MakeConstInstance(Instance instance);
+
+        /// This overload does not participate in overload resolution if TContent is Instance.
+        template <typename TContent>
+        Instance MakeConstInstance(const TContent&& content) = delete;
 
         template <typename TClass, typename = void>
         struct instantiate {
@@ -56,7 +140,7 @@ namespace syntropy {
 
             Instance operator()() const noexcept {
 
-                return new TClass();
+                return MakeInstance(*new TClass());
 
             }
 
@@ -66,40 +150,71 @@ namespace syntropy {
 
 }
 
+namespace std {
+
+    void swap(syntropy::reflection::Instance& first, syntropy::reflection::Instance& second) noexcept;
+
+}
+
 namespace syntropy {
 
     namespace reflection {
 
-        // Implementation
+        //////////////// INSTANCE ////////////////
+
+        template <typename TContent, typename>
+        Instance::Instance(TContent& content) noexcept
+            : content_(std::make_unique<Content<TContent>>(content)) {}
+
+        template <typename TContent>
+        typename std::remove_reference_t<TContent>* Instance::As() const {
+
+            return (content_ && GetType() == TypeOf<TContent>()) ?
+                   &(static_cast<Content<std::remove_reference_t<TContent>>*>(content_.get())->content_.get()) :
+                   nullptr;
+
+        }
+
+        //////////////// INSTANCE :: CONTENT ////////////////
+
+        template <typename TContent>
+        inline Instance::Content<TContent>::Content(TContent& content)
+            : content_(std::ref(content)) {}
+
+        template <typename TContent>
+        inline const Type& Instance::Content<TContent>::GetType() const noexcept {
+
+            return TypeOf<TContent>();
+
+        }
+
+        template <typename TContent>
+        inline std::unique_ptr<Instance::IContent> Instance::Content<TContent>::Clone() const noexcept {
+
+            return std::make_unique<Content<TContent>>(content_);
+
+        }
+
+        template <typename TContent>
+        inline std::unique_ptr<Instance::IContent> Instance::Content<TContent>::ConstClone() const noexcept {
+
+            return std::make_unique<Content<const TContent>>(std::cref(content_));
+
+        }
+
+        //////////////// MAKE INSTANCE / MAKE CONST INSTANCE ////////////////
+
+        template <typename TContent>
+        Instance MakeInstance(TContent& content) {
+
+            return Instance(content);
+
+        }
         
-        //////////////// AS CINSTANCE ////////////////
+        template <typename TContent>
+        Instance MakeConstInstance(const TContent& content) {
 
-        template <typename TInstance>
-        inline ConstInstance as_cinstance(const TInstance& instance) noexcept {
-
-            return std::addressof(instance);
-
-        }
-
-        template <ConstQualifier kConstQualifier>
-        inline ConstInstance as_cinstance(AnyInstance<kConstQualifier> instance) noexcept {
-
-            return instance;
-
-        }
-
-        //////////////// AS INSTANCE ////////////////
-
-        template <typename TInstance>
-        inline Instance as_instance(TInstance& instance) noexcept {
-
-            return std::addressof(instance);
-
-        }
-
-        inline Instance as_instance(Instance instance) noexcept {
-
-            return instance;
+            return Instance(content);
 
         }
 

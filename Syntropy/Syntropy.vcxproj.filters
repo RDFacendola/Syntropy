@@ -25,9 +25,6 @@
     <ClInclude Include="include\reflection.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\any_reference.h">
-      <Filter>functional</Filter>
-    </ClInclude>
     <ClInclude Include="include\type.h">
       <Filter>reflection</Filter>
     </ClInclude>
@@ -52,6 +49,9 @@
       <Filter>reflection</Filter>
     </ClCompile>
     <ClCompile Include="src\reflection\type.cpp">
+      <Filter>reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\reflection\instance.cpp">
       <Filter>reflection</Filter>
     </ClCompile>
     <ClCompile Include="src\reflection\property.cpp">

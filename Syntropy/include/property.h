@@ -12,8 +12,7 @@
 #include "type_traits.h"
 
 #include "type.h"
-#include "any.h"
-#include "any_reference.h"
+#include "instance.h"
 
 namespace syntropy {
 
@@ -21,21 +20,19 @@ namespace syntropy {
 
         struct PropertyGetter {
 
-            using TInstance = typename AnyReferenceWrapper<ConstQualifier::kConst, typename Type>;
-            
-            using TGetter = std::function<bool(const TInstance&, Any)>;
+            using TGetter = std::function<bool(Instance, Instance)>;
 
             template <typename TClass, typename TProperty>
             TGetter operator() (TProperty TClass::* field) const {
 
-                return[field](const TInstance& instance, Any value) -> bool {
+                return[field](Instance instance, Instance value) -> bool {
 
-                    auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
+                    auto value_ptr = value.As<std::decay_t<TProperty>>();
                     auto instance_ptr = instance.As<const TClass>();
 
                     if (value_ptr && instance_ptr) {
 
-                        **value_ptr = instance_ptr->*field;
+                        *value_ptr = instance_ptr->*field;
 
                     }
 
@@ -48,14 +45,14 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TGetter operator() (TProperty(TClass::* getter)() const) const {
 
-                return[getter](const TInstance& instance, Any value) -> bool {
+                return[getter](Instance instance, Instance value) -> bool {
 
-                    auto value_ptr = value.As<std::add_pointer_t<std::remove_const_t<std::remove_reference_t<TProperty>>>>();
+                    auto value_ptr = value.As<std::decay_t<TProperty>>();
                     auto instance_ptr = instance.As<const TClass>();
 
                     if (value_ptr && instance_ptr) {
 
-                        **value_ptr = (instance_ptr->*getter)();
+                        *value_ptr = (instance_ptr->*getter)();
 
                     }
 
@@ -69,13 +66,11 @@ namespace syntropy {
 
         struct PropertySetter {
 
-            using TInstance = typename AnyReferenceWrapper<ConstQualifier::kNone, typename Type>;
-
-            using TSetter = std::function<bool(const TInstance&, Any)>;
+            using TSetter = std::function<bool(Instance, Instance)>;
 
             TSetter operator() () const {
 
-                return[](const TInstance&, Any) -> bool {
+                return[](Instance, Instance) -> bool {
 
                     return false;
 
@@ -86,14 +81,14 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TSetter operator() (TProperty TClass::* property, typename std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) const {
 
-                return[property](const TInstance& instance, Any value) -> bool{
+                return [property](Instance instance, Instance value) -> bool{
 
-                    auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
+                    auto value_ptr = value.As<const TProperty>();
                     auto instance_ptr = instance.As<TClass>();
 
                     if (value_ptr && instance_ptr) {
 
-                        instance_ptr->*property = **value_ptr;
+                        instance_ptr->*property = *value_ptr;
 
                     }
 
@@ -113,14 +108,14 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TSetter operator() (void (TClass::* setter)(TProperty)) const {
 
-                return[setter](const TInstance& instance, Any value) -> bool {
+                return[setter](Instance instance, Instance value) -> bool {
 
-                    auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
+                    auto value_ptr = value.As<const std::remove_reference_t<TProperty>>();
                     auto instance_ptr = instance.As<TClass>();
 
                     if (value_ptr && instance_ptr) {
 
-                        (instance_ptr->*setter)(**value_ptr);
+                        (instance_ptr->*setter)(*value_ptr);
 
                     }
 
@@ -133,14 +128,14 @@ namespace syntropy {
             template <typename TClass, typename TProperty>
             TSetter operator() (TProperty& (TClass::* setter)()) const {
 
-                return[setter](const TInstance& instance, Any value) -> bool {
+                return[setter](Instance instance, Instance value) -> bool {
 
-                    auto value_ptr = value.As<std::add_pointer_t<std::add_const_t<TProperty>>>();
+                    auto value_ptr = value.As<const TProperty>();
                     auto instance_ptr = instance.As<TClass>();
 
                     if (value_ptr && instance_ptr) {
 
-                        (instance_ptr->*setter)() = **value_ptr;
+                        (instance_ptr->*setter)() = *value_ptr;
 
                     }
 
@@ -173,22 +168,10 @@ namespace syntropy {
             const typename Type& GetType() const noexcept;
 
             template <typename TInstance, typename TValue>
-            bool Get(const TInstance& instance, TValue& value) const;
-
-            template <ConstQualifier kQualifier, typename TValue>
-            bool Get(AnyReferenceWrapper<kQualifier, typename Type> instance, TValue& value) const;
-            
-            template <typename TInstance, typename TValue>
-            bool Set(TInstance& instance, const TValue& value) const;
-
-            template <typename TValue>
-            bool Set(AnyReferenceWrapper<ConstQualifier::kNone, Type> instance, const TValue& value) const;
-
-            template <typename TValue>
-            bool Set(AnyReferenceWrapper<ConstQualifier::kConst, Type> instance, const TValue& value) const = delete;
+            bool Get(const TInstance& instance, TValue&& value) const;
 
             template <typename TInstance, typename TValue>
-            bool Set(TInstance&& instance, const TValue& value) const = delete;
+            bool Set(TInstance&& instance, const TValue& value) const;
 
         private:
             
@@ -241,34 +224,18 @@ namespace syntropy {
             , setter_(PropertySetter()(setter)) {}
 
         template <typename TInstance, typename TValue>
-        inline bool Property::Get(const TInstance& instance, TValue& value) const {
+        inline bool Property::Get(const TInstance& instance, TValue&& value) const {
 
-            return getter_(std::addressof(instance),
-                           std::addressof(value));
-
-        }
-
-        template <ConstQualifier kQualifier, typename TValue>
-        bool Property::Get(AnyReferenceWrapper<kQualifier, Type> instance, TValue& value) const {
-
-            return getter_(instance,
-                           std::addressof(value));
+            return getter_(MakeConstInstance(instance),
+                           MakeInstance(std::forward<TValue>(value)));
 
         }
 
         template <typename TInstance, typename TValue>
-        inline bool Property::Set(TInstance& instance, const TValue& value) const {
+        inline bool Property::Set(TInstance&& instance, const TValue& value) const {
 
-            return setter_(std::addressof(instance),
-                           std::addressof(value));
-
-        }
-
-        template <typename TValue>
-        bool Property::Set(AnyReferenceWrapper<ConstQualifier::kNone, Type> instance, const TValue& value) const {
-
-            return setter_(instance,
-                           std::addressof(value));
+            return setter_(MakeInstance(std::forward<TInstance>(instance)),
+                           MakeConstInstance(value));
 
         }
 

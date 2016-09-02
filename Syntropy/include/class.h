@@ -155,12 +155,7 @@ namespace syntropy {
             /// d.DefineProperty("Foo", &Foo::GetField)     // Defines a read-only property from a const getter.
             template <typename TProperty>
             void DefineProperty(const HashedString& name, TProperty&& property);
-
-            /// Getters and setters of the form
-            /// TProperty (TClass::*)() const / void (TClass::*)(TProperty)
-            /// const TProperty& (TClass::*)() const / TProperty& (TClass::*)()
-
-
+            
             /// \brief Define a class property.
             /// This overload accounts for properties that are accessed via getters and setters.
             ///
