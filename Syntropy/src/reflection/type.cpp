@@ -90,6 +90,7 @@ namespace syntropy {
         bool Type::operator ==(const Type& other) const noexcept {
 
             return GetCommonTypeInfo() == other.GetCommonTypeInfo() &&
+                   (!IsConst() || other.IsConst()) &&                           // Const check is required because typeid ignores top-level cv qualifiers
                    GetClass() == other.GetClass();
 
         }
@@ -97,6 +98,7 @@ namespace syntropy {
         bool Type::operator!=(const Type& other) const noexcept {
 
             return GetCommonTypeInfo() != other.GetCommonTypeInfo() ||
+                   (IsConst() && !other.IsConst()) ||                           // Const check is required because typeid ignores top-level cv qualifiers
                    GetClass() != other.GetClass();
 
         }
