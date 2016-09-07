@@ -55,6 +55,29 @@ namespace syntropy {
     template <typename TStream, typename TType>
     constexpr bool is_stream_extractable_v = is_stream_extractable<TStream, TType>::value;
 
+    //////////////// OTHER CAPABILITIES ////////////////
+
+    /// \brief If TAssignee = TValue is defined provides the members constant value equal to true, otherwise value is false.
+    /// \author Raffaele D. Facendola - September 2016
+    template <typename TAssignee, typename TValue>
+    class is_assignable{
+
+        template<typename A, typename V>
+        static auto test(int) -> decltype(std::declval<A&>() = std::declval<V>(), std::true_type());
+
+        template<typename, typename>
+        static auto test(...)->std::false_type;
+
+    public:
+
+        static const bool value = decltype(test<TAssignee, TValue>(0))::value;
+
+    };
+
+    /// \brief Helper value for is_assignable<TAssignee, TValue>.
+    template <typename TAssignee, typename TValue>
+    constexpr bool is_assignable_v = is_assignable<TAssignee, TValue>::value;
+
     //////////////// CLASS ////////////////
 
     /// \brief Provides a member typedef which is the same as TType except that any pointer, qualifiers, references and extents are removed recursively.
