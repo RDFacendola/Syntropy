@@ -48,6 +48,12 @@ namespace syntropy {
             /// \brief Move assignment operator. Drops the current reference and stores a new one.
             Instance& operator=(Instance&& other) noexcept;
 
+            /// \brief Assign an unspecified value to the instance referenced by this object.
+            /// \param other Reference to the actual object to copy.
+            /// \return Returns true if the object to copy could be assigned to the instance referenced by this object, returns false otherwise.
+            template <typename TOther>
+            bool Assign(const TOther& other);
+
             /// \brief Check whether the instance contains a reference to an actual object or not.
             /// \return Returns true if the instance contains a reference to an actual object, returns false otherwise.
             operator bool() const noexcept;
@@ -76,6 +82,8 @@ namespace syntropy {
 
                 virtual const Type& GetType() const noexcept = 0;
 
+                virtual bool Assign(Instance other) = 0;
+
                 virtual std::unique_ptr<IContent> Clone() const noexcept = 0;
 
                 virtual std::unique_ptr<IContent> ConstClone() const noexcept = 0;
@@ -88,6 +96,8 @@ namespace syntropy {
                 Content(TContent& content);
 
                 virtual const Type& GetType() const noexcept override;
+
+                virtual bool Assign(Instance other) override;
 
                 virtual std::unique_ptr<IContent> Clone() const noexcept override;
 
@@ -146,6 +156,30 @@ namespace syntropy {
 
         };
 
+        template <typename TAssignee, typename TValue, typename = void>
+        struct assign {
+
+            bool operator()(TAssignee& /*assignee*/, const TValue& /*value*/) {
+            
+                return false;
+            
+            }
+
+        };
+
+        template <typename TAssignee, typename TValue>
+        struct assign<TAssignee, TValue, typename std::enable_if_t<is_assignable_v<TAssignee, TValue>>> {
+
+            bool operator()(TAssignee& assignee, const TValue& value) {
+
+                assignee = value;
+
+                return true;
+
+            }
+
+        };
+
     }
 
 }
@@ -166,6 +200,14 @@ namespace syntropy {
         Instance::Instance(TContent& content) noexcept
             : content_(std::make_unique<Content<TContent>>(content)) {}
 
+        template <typename TOther>
+        bool Instance::Assign(const TOther& other) {
+
+            return content_ &&
+                   content_->Assign(MakeConstInstance(other));
+
+        }
+
         template <typename TContent>
         typename std::remove_reference_t<TContent>* Instance::As() const {
 
@@ -178,25 +220,40 @@ namespace syntropy {
         //////////////// INSTANCE :: CONTENT ////////////////
 
         template <typename TContent>
-        inline Instance::Content<TContent>::Content(TContent& content)
+        Instance::Content<TContent>::Content(TContent& content)
             : content_(std::ref(content)) {}
 
         template <typename TContent>
-        inline const Type& Instance::Content<TContent>::GetType() const noexcept {
+        const Type& Instance::Content<TContent>::GetType() const noexcept {
 
             return TypeOf<TContent>();
 
         }
 
         template <typename TContent>
-        inline std::unique_ptr<Instance::IContent> Instance::Content<TContent>::Clone() const noexcept {
+        bool Instance::Content<TContent>::Assign(Instance other) {
+
+            auto other_value = other.As<const TContent>();
+
+            if (other_value) {
+                
+                assign<TContent, TContent>()(content_.get(), *other_value);
+
+            }
+
+            return !!other_value;
+
+        }
+
+        template <typename TContent>
+        std::unique_ptr<Instance::IContent> Instance::Content<TContent>::Clone() const noexcept {
 
             return std::make_unique<Content<TContent>>(content_);
 
         }
 
         template <typename TContent>
-        inline std::unique_ptr<Instance::IContent> Instance::Content<TContent>::ConstClone() const noexcept {
+        std::unique_ptr<Instance::IContent> Instance::Content<TContent>::ConstClone() const noexcept {
 
             return std::make_unique<Content<const TContent>>(std::cref(content_));
 
@@ -210,7 +267,7 @@ namespace syntropy {
             return Instance(content);
 
         }
-        
+
         template <typename TContent>
         Instance MakeConstInstance(const TContent& content) {
 

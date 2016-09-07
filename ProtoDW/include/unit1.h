@@ -18,30 +18,31 @@
 #include <iostream>
 #include <iomanip>
 
-//#define SUPPRESS_PASSED_TESTS
+#define SUPPRESS_PASSED_TESTS
 
 #ifndef SUPPRESS_PASSED_TESTS
 
     #define TEST_TRUE(test) \
-    std::cout << ((test) ? "PASSED - " : "NOT PASSED - ")<< #test << " is true\n";
+    std::cout << __FUNCTION__ << ((test) ? ": PASSED - " : ": NOT PASSED - ")<< #test << " is true\n";
 
     #define TEST_FALSE(test) \
-    std::cout << (!(test) ? "PASSED - " : "NOT PASSED - ") << #test << " is false\n";
+    std::cout << __FUNCTION__ << (!(test) ? ": PASSED - " : ": NOT PASSED - ") << #test << " is false\n";
 
 #else
 
     #define TEST_TRUE(test) \
-    if(!(test)) std::cout << "NOT PASSED - " << #test << " is true\n";
+    if(!(test)) std::cout << __FUNCTION__ << ": NOT PASSED - " << #test << " is true\n";
 
     #define TEST_FALSE(test) \
-    if((test)) std::cout << "NOT PASSED - " << #test << " is false\n";
+    if((test)) std::cout << __FUNCTION__ << ": NOT PASSED - " << #test << " is false\n";
 
 #endif
 
 #define RUN_TEST(test) \
-std::cout << "Running test " << #test << "()\n\n"; \
-test(); \
-std::cout << "\n";
+test();
+//std::cout << "Running test " << #test << "()\n\n"; \
+//test(); \
+//std::cout << "\n";
 
 struct Blob{
 
@@ -720,6 +721,27 @@ public:
 
     }
 
+    void AssignTest() {
+
+        auto instance = syntropy::reflection::GetClass("int")->Instantiate();
+
+        TEST_TRUE(instance.Assign(5));
+        
+        instance = syntropy::reflection::GetClass("Blob")->Instantiate();
+
+        Blob blob;
+
+        blob.blob_ = 9999;
+
+        TEST_TRUE(instance.Assign(blob));
+        TEST_FALSE(instance.Assign(5));
+
+        auto consti = syntropy::reflection::MakeConstInstance(instance);
+
+        TEST_TRUE(consti.Assign(blob));
+
+    }
+    
     template <typename TType>
     void PrintType(const char* type_name) const{
 
@@ -752,12 +774,16 @@ public:
         //RUN_TEST(TypeTest);
 
         RUN_TEST(SynopsisTest);
+
+        std::cout << "\n\n";
+
         RUN_TEST(FieldTest);
         RUN_TEST(PropertyTest);
         RUN_TEST(ConversionTest);
         RUN_TEST(PolymorphismTest);
         RUN_TEST(InstancingTest);
         RUN_TEST(ForwardingTest);
+        RUN_TEST(AssignTest);
 
     }
 

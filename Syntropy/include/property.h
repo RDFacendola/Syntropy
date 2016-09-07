@@ -36,7 +36,7 @@ namespace syntropy {
 
                     }
 
-                    return !!value_ptr && !!instance_ptr;
+                    return value_ptr && instance_ptr;
 
                 };
 
@@ -56,7 +56,7 @@ namespace syntropy {
 
                     }
 
-                    return !!value_ptr && !!instance_ptr;
+                    return value_ptr && instance_ptr;
 
                 };
 
@@ -92,7 +92,7 @@ namespace syntropy {
 
                     }
 
-                    return !!value_ptr && !!instance_ptr;
+                    return value_ptr && instance_ptr;
 
                 };
 
@@ -119,7 +119,7 @@ namespace syntropy {
 
                     }
 
-                    return !!value_ptr && !!instance_ptr;
+                    return value_ptr && instance_ptr;
 
                 };
 
@@ -139,7 +139,7 @@ namespace syntropy {
 
                     }
 
-                    return !!value_ptr && !!instance_ptr;
+                    return value_ptr && instance_ptr;
 
                 };
 
