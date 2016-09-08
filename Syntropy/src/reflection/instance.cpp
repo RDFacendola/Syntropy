@@ -61,6 +61,18 @@ namespace syntropy {
 
         }
 
+        bool Instance::ReadFromStream(std::istream& input_stream) {
+
+            return !content_ || content_->ReadFromStream(input_stream);     // You can always read "nothing"
+
+        }
+
+        bool Instance::WriteToStream(std::ostream& output_stream) const {
+            
+            return !content_ || content_->WriteToStream(output_stream);     // You can always write "nothing"
+
+        }
+
         //////////////// MAKE INSTANCE ////////////////
 
         Instance MakeInstance(Instance instance) {
@@ -84,6 +96,22 @@ namespace std {
     void swap(syntropy::reflection::Instance& first, syntropy::reflection::Instance& second) noexcept {
 
         first.Swap(second);
+
+    }
+
+    std::istream& operator >> (std::istream& input_stream, syntropy::reflection::Instance& instance) {
+
+        instance.ReadFromStream(input_stream);
+
+        return input_stream;
+
+    }
+
+    std::ostream& operator << (std::ostream& output_stream, const syntropy::reflection::Instance& instance) {
+
+        instance.WriteToStream(output_stream);
+
+        return output_stream;
 
     }
 
