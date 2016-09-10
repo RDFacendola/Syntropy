@@ -55,13 +55,6 @@ namespace syntropy {
             template <typename TOther>
             bool Assign(const TOther& other);
 
-            template <typename TOther>
-            bool Interpret(const TOther& other);
-            
-            bool ReadFromStream(std::istream& input_stream);
-
-            bool WriteToStream(std::ostream& output_stream) const;
-
             /// \brief Check whether the instance contains a reference to an actual object or not.
             /// \return Returns true if the instance contains a reference to an actual object, returns false otherwise.
             operator bool() const noexcept;
@@ -80,6 +73,10 @@ namespace syntropy {
             template <typename TContent>
             typename std::remove_reference_t<TContent>* As() const;
             
+            std::ostream& operator >> (std::ostream& output_stream) const;
+
+            std::istream& operator << (std::istream& input_stream);
+
         private:
 
             struct ConstCloneTag {};
@@ -96,9 +93,9 @@ namespace syntropy {
 
                 virtual std::unique_ptr<IContent> ConstClone() const noexcept = 0;
 
-                virtual bool ReadFromStream(std::istream& input_stream) = 0;
+                virtual std::ostream& operator >> (std::ostream& output_stream) const = 0;
 
-                virtual bool WriteToStream(std::ostream& output_stream) const = 0;
+                virtual std::istream& operator << (std::istream& input_stream) = 0;
 
             };
 
@@ -115,9 +112,9 @@ namespace syntropy {
 
                 virtual std::unique_ptr<IContent> ConstClone() const noexcept override;
 
-                virtual bool ReadFromStream(std::istream& input_stream) override;
+                virtual std::ostream& operator >> (std::ostream& output_stream) const override;
 
-                virtual bool WriteToStream(std::ostream& output_stream) const override;
+                virtual std::istream& operator << (std::istream& input_stream) override;
 
                 std::reference_wrapper<TContent> content_;
 
@@ -172,78 +169,6 @@ namespace syntropy {
 
         };
 
-        template <typename TAssignee, typename TValue, typename = void>
-        struct assign {
-
-            bool operator()(TAssignee& /*assignee*/, const TValue& /*value*/) {
-            
-                return false;
-            
-            }
-
-        };
-
-        template <typename TAssignee, typename TValue>
-        struct assign<TAssignee, TValue, typename std::enable_if_t<is_assignable_v<TAssignee, TValue>>> {
-
-            bool operator()(TAssignee& assignee, const TValue& value) {
-
-                assignee = value;
-
-                return true;
-
-            }
-
-        };
-
-        template <typename TType, typename = void>
-        struct stream_extract {
-
-            bool operator()(std::istream& /*input_stream*/, TType& /*destination*/) {
-
-                return false;
-
-            }
-
-        };
-
-        template <typename TType>
-        struct stream_extract<TType, typename std::enable_if_t<is_stream_extractable_v<std::istream, TType>>> {
-
-            bool operator()(std::istream& input_stream, TType& destination) {
-
-                input_stream >> destination;
-
-                return true;
-
-            }
-
-        };
-
-        template <typename TType, typename = void>
-        struct stream_insert {
-
-            bool operator()(std::ostream& /*output_stream*/, const TType& /*source*/) {
-
-                return false;
-
-            }
-
-        };
-
-        template <typename TType>
-        struct stream_insert<TType, typename std::enable_if_t<is_stream_insertable_v<std::ostream, TType>>> {
-
-            bool operator()(std::ostream& output_stream, const TType& source) {
-
-                output_stream << source;
-
-                return true;
-
-            }
-
-        };
-        
     }
 
 }
@@ -276,24 +201,6 @@ namespace syntropy {
 
         }
         
-        template <typename TOther>
-        bool Instance::Interpret(const TOther& other) {
-
-            if (!content_) {
-
-                return false;
-
-            }
-
-            // TODO: use a more efficient stream as the stringstream will need to access the locale of the current machine in order to determine fractional separators and other stuffs.
-
-            std::stringstream stream;
-            
-            return stream_insert<TOther>()(stream, other) &&
-                   ReadFromStream(stream);
-
-        }
-
         template <typename TContent>
         typename std::remove_reference_t<TContent>* Instance::As() const {
 
@@ -348,16 +255,16 @@ namespace syntropy {
         }
 
         template <typename TContent>
-        bool Instance::Content<TContent>::ReadFromStream(std::istream& input_stream) {
+        std::ostream& Instance::Content<TContent>::operator >> (std::ostream& output_stream) const {
 
-            return stream_extract<TContent>()(input_stream, content_.get());
+            return stream_insert<TContent>()(output_stream, content_.get());
 
         }
 
         template <typename TContent>
-        bool Instance::Content<TContent>::WriteToStream(std::ostream& output_stream) const {
+        std::istream& Instance::Content<TContent>::operator << (std::istream& input_stream) {
 
-            return stream_insert<TContent>()(output_stream, content_.get());
+            return stream_extract<TContent>()(input_stream, content_.get());
 
         }
 

@@ -61,15 +61,19 @@ namespace syntropy {
 
         }
 
-        bool Instance::ReadFromStream(std::istream& input_stream) {
+        std::ostream& Instance::operator >> (std::ostream& output_stream) const {
 
-            return !content_ || content_->ReadFromStream(input_stream);     // You can always read "nothing"
+            return content_ ?
+                   *content_ >> output_stream :
+                   output_stream;                      // Writing nothing to a stream is always a valid operation.
 
         }
 
-        bool Instance::WriteToStream(std::ostream& output_stream) const {
+        std::istream& Instance::operator << (std::istream& input_stream) {
             
-            return !content_ || content_->WriteToStream(output_stream);     // You can always write "nothing"
+            return content_ ?
+                   *content_ << input_stream :
+                   input_stream;                       // Reading nothing from a stream is always a valid operation.
 
         }
 
@@ -101,18 +105,14 @@ namespace std {
 
     std::istream& operator >> (std::istream& input_stream, syntropy::reflection::Instance& instance) {
 
-        instance.ReadFromStream(input_stream);
-
-        return input_stream;
-
+        return instance << input_stream;
+        
     }
 
     std::ostream& operator << (std::ostream& output_stream, const syntropy::reflection::Instance& instance) {
-
-        instance.WriteToStream(output_stream);
-
-        return output_stream;
-
+        
+        return instance >> output_stream;
+        
     }
 
 }

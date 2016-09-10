@@ -55,6 +55,54 @@ namespace syntropy {
     template <typename TStream, typename TType>
     constexpr bool is_stream_extractable_v = is_stream_extractable<TStream, TType>::value;
 
+    template <typename TType, typename = void>
+    struct stream_insert {
+
+        std::ostream& operator()(std::ostream& output_stream, const TType& /*source*/) {
+
+            output_stream.setstate(std::ios::failbit);          // The type doesn't support stream insertion.
+
+            return output_stream;
+
+        }
+
+    };
+
+    template <typename TType>
+    struct stream_insert<TType, typename std::enable_if_t<is_stream_insertable_v<std::ostream, TType>>> {
+
+        std::ostream& operator()(std::ostream& output_stream, const TType& source) {
+
+            return output_stream << source;
+
+        }
+
+    };
+
+    template <typename TType, typename = void>
+    struct stream_extract {
+
+        std::istream& operator()(std::istream& input_stream, TType& /*destination*/) {
+
+            input_stream.setstate(std::ios::failbit);           // The type doesn't support stream extraction.
+
+            return input_stream;
+
+        }
+
+    };
+
+    template <typename TType>
+    struct stream_extract<TType, typename std::enable_if_t<is_stream_extractable_v<std::istream, TType>>> {
+
+        std::istream& operator()(std::istream& input_stream, TType& destination) {
+
+            return input_stream >> destination;
+
+        }
+
+    };
+
     //////////////// OTHER CAPABILITIES ////////////////
 
     /// \brief If TAssignee = TValue is defined provides the members constant value equal to true, otherwise value is false.
@@ -77,6 +125,28 @@ namespace syntropy {
     /// \brief Helper value for is_assignable<TAssignee, TValue>.
     template <typename TAssignee, typename TValue>
     constexpr bool is_assignable_v = is_assignable<TAssignee, TValue>::value;
+
+    template <typename TAssignee, typename TValue, typename = void>
+    struct assign {
+
+        TAssignee& operator()(TAssignee& assignee, const TValue& /*value*/) {
+
+            return assignee;
+
+        }
+
+    };
+
+    template <typename TAssignee, typename TValue>
+    struct assign<TAssignee, TValue, typename std::enable_if_t<is_assignable_v<TAssignee, TValue>>> {
+
+        auto operator()(TAssignee& assignee, const TValue& value) {
+
+            return assignee = value;
+
+        }
+
+    };
 
     //////////////// CLASS ////////////////
 

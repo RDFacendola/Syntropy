@@ -727,8 +727,7 @@ public:
 
         TEST_TRUE(instance.Assign(5) && *instance.As<int>() == 5);
         TEST_TRUE(instance.Assign(47.0f) && *instance.As<int>() == 47);
-        TEST_TRUE(instance.Interpret(47.0f) && *instance.As<int>() == 47);
-
+        
         instance = syntropy::reflection::GetClass("Blob")->Instantiate();
 
         Blob blob;
