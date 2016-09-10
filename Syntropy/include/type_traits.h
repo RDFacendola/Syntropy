@@ -196,36 +196,4 @@ namespace syntropy {
     template <typename TType, typename TReplace>
     using replace_class_name_t = typename replace_class_name<TType, TReplace>::type;
     
-    //////////////// IDENTITY ////////////////
-    
-    /// \brief Provides a member typedef which is the same a TType. Used to disable type deduction on template parameters.
-    template <typename TType>
-    struct identity {
-
-        using type = TType;
-
-    };
-
-    /// \brief Helper type for identity<TType>
-    template <typename TType>
-    using identity_t = typename identity<TType>::type;
-    
-    //////////////// QUALIFIERS ////////////////
-
-    /// \brief Enumeration class for const qualifier presence.
-    enum class ConstQualifier : bool {
-
-        kConst = true,
-        kNone = false
-
-    };
-
-    /// \brief Enumeration class for volatile qualifier presence.
-    enum class VolatileQualifier : bool {
-
-        kVolatile = true,
-        kNone = false
-
-    };
-
 }
