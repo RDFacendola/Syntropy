@@ -241,18 +241,6 @@ namespace syntropy {
 
     }
 
-    /// \brief Partial specialization of class_get for reflection::Class.
-    template <typename TInstance>
-    struct class_get<reflection::Class, TInstance> {
-
-        const reflection::Class& operator()() const noexcept {
-
-            return reflection::ClassOf<TInstance>();
-
-        }
-
-    };
-
 }
 
 namespace syntropy {

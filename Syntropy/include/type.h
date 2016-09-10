@@ -17,6 +17,9 @@ namespace syntropy {
 
         class Class;
 
+        template <typename TType>
+        const Class& ClassOf();
+
         /// \brief Describes a type.
         /// A 'type' is made out of class names, pointers, qualifiers, references and\or extents.
         /// A type has exactly one class name and it may describe a reference, an array or a value, but not both at the same time.
@@ -204,7 +207,7 @@ namespace syntropy {
         template <typename TType>
         inline const Class& Type::TypeT<TType>::GetClass() const {
 
-            return class_get<Class, TType>()();
+            return ClassOf<TType>();
 
         }
 
