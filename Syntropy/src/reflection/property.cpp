@@ -18,6 +18,12 @@ namespace syntropy {
 
         }
 
+        bool Property::IsField() const noexcept {
+
+            return is_field_;
+
+        }
+
     }
 
 }
