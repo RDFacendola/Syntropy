@@ -165,7 +165,8 @@ namespace syntropy {
             
             const HashedString& GetName() const noexcept;
 
-            const typename Type& GetType() const noexcept;
+            const Type& GetType() const noexcept;
+
 
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue&& value) const;
@@ -198,28 +199,28 @@ namespace syntropy {
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty TClass::* field) noexcept
             : name_(name)
-            , type_(type_get<Type, TProperty>()())
+            , type_(TypeOf<TProperty>())
             , getter_(PropertyGetter()(field))
             , setter_(PropertySetter()(field)){}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
             : name_(name)
-            , type_(type_get<Type, TProperty>()())
+            , type_(TypeOf<TProperty>())
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()()) {}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept
             : name_(name)
-            , type_(type_get<Type, TProperty>()())
+            , type_(TypeOf<TProperty>())
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) noexcept
             : name_(name)
-            , type_(type_get<Type, TProperty>()())
+            , type_(TypeOf<TProperty>())
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
 

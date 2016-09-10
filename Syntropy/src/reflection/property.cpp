@@ -12,7 +12,7 @@ namespace syntropy {
 
         }
 
-        const typename Type& Property::GetType() const noexcept {
+        const Type& Property::GetType() const noexcept {
 
             return type_;
 

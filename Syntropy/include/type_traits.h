@@ -209,24 +209,6 @@ namespace syntropy {
     /// \brief Helper type for identity<TType>
     template <typename TType>
     using identity_t = typename identity<TType>::type;
- 
-    //////////////// TYPES ////////////////
-
-    /// \brief Functor used to an object that can be used to identify and compare the type of TInstance.
-    /// \author Raffaele D. Facendola - August 2016
-    template <typename TType, typename TInstance>
-    struct type_get {};
-
-    template <typename TInstance>
-    struct type_get<std::type_info, TInstance> {
-    
-        const std::type_info& operator()() const noexcept {
-
-            return typeid(TInstance);
-
-        }
-
-    };
     
     //////////////// QUALIFIERS ////////////////
 

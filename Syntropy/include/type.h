@@ -171,18 +171,6 @@ namespace syntropy {
 
     }
 
-    /// \brief Partial specialization of type_get<> for syntropy::reflection::Type.
-    template <typename TType>
-    struct type_get<typename reflection::Type, TType> {
-
-        const reflection::Type& operator()() const noexcept {
-
-            return reflection::Type::GetType<TType>();
-
-        }
-
-    };
-
 }
 
 namespace syntropy {
