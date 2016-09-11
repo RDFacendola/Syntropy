@@ -166,9 +166,7 @@ namespace syntropy {
             const HashedString& GetName() const noexcept;
 
             const Type& GetType() const noexcept;
-
-            bool IsField() const noexcept;
-
+            
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue&& value) const;
 
@@ -180,8 +178,6 @@ namespace syntropy {
             HashedString name_;                                     ///< \brief Property name.
 
             const Type& type_;                                      ///< \brief Property type.
-
-            bool is_field_;                                         ///< \brief Whether the property is a field or not.
 
             typename PropertyGetter::TGetter getter_;               ///< \brief Property getter.
 
@@ -203,7 +199,6 @@ namespace syntropy {
         Property::Property(const HashedString& name, TProperty TClass::* field) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , is_field_(true)
             , getter_(PropertyGetter()(field))
             , setter_(PropertySetter()(field)){}
 
@@ -211,7 +206,6 @@ namespace syntropy {
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , is_field_(false)
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()()) {}
 
@@ -219,7 +213,6 @@ namespace syntropy {
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , is_field_(false)
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
 
@@ -227,12 +220,11 @@ namespace syntropy {
         Property::Property(const HashedString& name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , is_field_(false)
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
 
         template <typename TInstance, typename TValue>
-        inline bool Property::Get(const TInstance& instance, TValue&& value) const {
+        bool Property::Get(const TInstance& instance, TValue&& value) const {
 
             return getter_(MakeConstInstance(instance),
                            MakeInstance(std::forward<TValue>(value)));
@@ -240,7 +232,7 @@ namespace syntropy {
         }
 
         template <typename TInstance, typename TValue>
-        inline bool Property::Set(TInstance&& instance, const TValue& value) const {
+        bool Property::Set(TInstance&& instance, const TValue& value) const {
 
             return setter_(MakeInstance(std::forward<TInstance>(instance)),
                            MakeConstInstance(value));

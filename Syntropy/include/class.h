@@ -226,6 +226,11 @@ namespace syntropy {
         template <typename TType>
         const Class& ClassOf();
 
+        /// \brief Utility method used to get a class by type.
+        /// \return Returns a reference to the class describing TType.
+        template <typename TType>
+        const Class& ClassOf(TType&&);
+
         /// \brief Utility method used to get a class definition by type.
         /// \return Returns the concrete definition of the class TClass.
         template <typename TClass>
@@ -446,6 +451,13 @@ namespace syntropy {
         const Class& ClassOf() {
 
             return Class::GetClass<class_name_t<TType>>();
+
+        }
+
+        template <typename TType>
+        const Class& ClassOf(TType&&) {
+
+            return Class::GetClass<class_name_t<TType&&>>();
 
         }
 
