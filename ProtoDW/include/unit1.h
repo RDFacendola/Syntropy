@@ -207,9 +207,9 @@ struct syntropy::reflection::ClassDeclaration<AbstractFoo> {
 
 public:
 
-    auto operator()() const {
-    
-        return syntropy::reflection::Class::Definition<AbstractFoo>("AbstractFoo");
+    constexpr const char* GetName() const noexcept {
+
+        return "AbstractFoo";
 
     }
 
@@ -220,13 +220,16 @@ struct syntropy::reflection::ClassDeclaration<Blob> {
 
 public:
 
-    auto operator()() const {
+    constexpr const char* GetName() const noexcept {
 
-        syntropy::reflection::Class::Definition<Blob> definition("Blob");
+        return "Blob";
+
+    }
+
+    template <typename TDefinition>
+    void operator()(TDefinition& definition) const {
 
         definition.DefineProperty("blob", &Blob::blob_);
-
-        return definition;
 
     }
 
@@ -237,9 +240,9 @@ struct syntropy::reflection::ClassDeclaration<Bar>  {
 
 public:
 
-    auto operator()() const {
+    constexpr const char* GetName() const noexcept {
 
-        return syntropy::reflection::Class::Definition<Bar>("Bar");
+        return "Bar";
 
     }
 
@@ -250,10 +253,15 @@ struct syntropy::reflection::ClassDeclaration<Foo> {
 
 public:
 
-    auto operator()() const{
-        
-        syntropy::reflection::Class::Definition<Foo> definition("Foo");
+    constexpr const char* GetName() const noexcept {
 
+        return "Foo";
+
+    }
+
+    template <typename TDefinition>
+    void operator()(TDefinition& definition) const {
+        
         definition.DefineBaseClass<Bar>();
 
         definition.DefineProperty("float_value", &Foo::value_);
@@ -275,8 +283,6 @@ public:
                                   static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
                                   static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor));
 
-        return definition;
-
     }
     
 };
@@ -286,13 +292,16 @@ struct syntropy::reflection::ClassDeclaration<FooBar> {
 
 public:
 
-    auto operator()() const{
+    constexpr const char* GetName() const noexcept {
 
-        syntropy::reflection::Class::Definition<FooBar> definition("FooBar");
+        return "FooBar";
+
+    }
+
+    template <typename TDefinition>
+    void operator()(TDefinition& definition) const {
 
         definition.DefineBaseClass<Foo>();
-
-        return definition;
 
     }
     

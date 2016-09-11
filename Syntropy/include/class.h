@@ -467,9 +467,15 @@ namespace syntropy {
         Class::Definition<TClass> DefinitionOf() {
 
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name.");
-                        
-            return ClassDeclaration<TClass>()();
-            
+
+            ClassDeclaration<TClass> declaration;
+
+            Class::Definition<TClass> definition(declaration.GetName());
+
+            TryCall(declaration, definition);   // Filling the definition is optional.
+
+            return definition;
+
         }
 
     }

@@ -20,9 +20,10 @@ namespace syntropy {
 
         /// \brief Functor used to define additional name aliases for fixed width integer types.
         template <typename TClass>
-        struct FixedWidthIntegerTypeDefinition {
+        struct FixedWidthIntegerTypeDeclaration {
 
-            Class::Definition<TClass>& operator()(Class::Definition<TClass>& definition) {
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) {
 
                 if (std::is_same<TClass, int8_t>::value)               definition.DefineNameAlias("int8_t");
                 if (std::is_same<TClass, int16_t>::value)              definition.DefineNameAlias("int16_t");
@@ -60,17 +61,15 @@ namespace syntropy {
                 if (std::is_same<TClass, uintmax_t>::value)            definition.DefineNameAlias("uintmax_t");
                 if (std::is_same<TClass, uintptr_t>::value)            definition.DefineNameAlias("uintptr_t");
 
-                return definition;
-
             }
 
         };
 
         /// \brief Helper function for FixedWidthIntegerTypeDefinition() functor.
-        template <typename TClass>
-        Class::Definition<TClass>& AddFixedWidthIntegerTypeDefinition(Class::Definition<TClass>& definition) {
+        template <typename TClass, typename TDefinition>
+        void AddFixedWidthIntegerTypeDefinition(TDefinition& definition) {
 
-            return FixedWidthIntegerTypeDefinition<TClass>()(definition);
+            return FixedWidthIntegerTypeDeclaration<TClass>()(definition);
 
         }
 
@@ -78,10 +77,10 @@ namespace syntropy {
 
         template <>
         struct ClassDeclaration<void> {
-         
-            auto operator()() const {
 
-                return Class::Definition<void>("void");
+            constexpr const char* GetName() const noexcept {
+
+                return "void";
 
             }
 
@@ -92,13 +91,16 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<std::nullptr_t> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                auto definition = Class::Definition<std::nullptr_t>("std::nullptr_t");
+                return "std::nullptr_t";
+
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
 
                 definition.DefineNameAlias("nullptr_t");
-
-                return definition;
 
             }
 
@@ -109,9 +111,9 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<bool> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                return Class::Definition<bool>("bool");
+                return "bool";
 
             }
 
@@ -122,11 +124,16 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<signed char> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<signed char> definition("signed char");
+                return "signed char";
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
+
+                AddFixedWidthIntegerTypeDefinition<signed char>(definition);
 
             }
 
@@ -135,11 +142,16 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<unsigned char> {
 
-            auto operator()() const {
-                
-                Class::Definition<unsigned char> definition("unsigned char");
+            constexpr const char* GetName() const noexcept {
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+                return "unsigned char";
+
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
+
+                AddFixedWidthIntegerTypeDefinition<unsigned char>(definition);
 
             }
 
@@ -148,11 +160,16 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<char> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<char> definition("char");
+                return "char";
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
+
+                AddFixedWidthIntegerTypeDefinition<char>(definition);
 
             }
 
@@ -161,11 +178,16 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<wchar_t> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<wchar_t> definition("wchar_t");
+                return "wchar_t";
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
+
+                AddFixedWidthIntegerTypeDefinition<wchar_t>(definition);
 
             }
 
@@ -174,11 +196,16 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<char16_t> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<char16_t> definition("char16_t");
+                return "char16_t";
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
+
+                AddFixedWidthIntegerTypeDefinition<char16_t>(definition);
 
             }
 
@@ -187,11 +214,16 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<char32_t> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<char32_t> definition("char32_t");
+                return "char32_t";
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
+
+                AddFixedWidthIntegerTypeDefinition<char32_t>(definition);
 
             }
 
@@ -202,15 +234,20 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<short int> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<short int> definition("short int");
+                return "short int";
+
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
 
                 definition.DefineNameAlias("short");
                 definition.DefineNameAlias("signed short");
                 definition.DefineNameAlias("signed short int");
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+                AddFixedWidthIntegerTypeDefinition<short int>(definition);
 
             }
 
@@ -219,13 +256,18 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<unsigned short int> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<unsigned short int> definition("unsigned short int");
+                return "unsigned short int";
 
-                definition.DefineNameAlias("unsigned short");
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
+
+                definition.DefineNameAlias("unsigned short int");
                 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+                AddFixedWidthIntegerTypeDefinition<unsigned short int>(definition);
 
             }
 
@@ -234,14 +276,19 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<int> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<int> definition("int");
+                return "int";
+
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
 
                 definition.DefineNameAlias("signed");
                 definition.DefineNameAlias("signed int");
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+                AddFixedWidthIntegerTypeDefinition<int>(definition);
 
             }
 
@@ -250,13 +297,18 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<unsigned int> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<unsigned int> definition("unsigned int");
+                return "unsigned int";
+
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
 
                 definition.DefineNameAlias("unsigned");
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+                AddFixedWidthIntegerTypeDefinition<unsigned int>(definition);
 
             }
 
@@ -265,15 +317,20 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<long int> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<long int> definition("long int");
+                return "long int";
+
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
                                 
                 definition.DefineNameAlias("long");
                 definition.DefineNameAlias("signed long");
                 definition.DefineNameAlias("signed long int");
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+                AddFixedWidthIntegerTypeDefinition<long int>(definition);
 
             }
 
@@ -282,13 +339,18 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<unsigned long int> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<unsigned long int> definition("unsigned long int");
+                return "unsigned long int";
+
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
 
                 definition.DefineNameAlias("unsigned long");
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+                AddFixedWidthIntegerTypeDefinition<unsigned long int>(definition);
 
             }
 
@@ -297,15 +359,20 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<long long int> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<long long int> definition("long long int");
+                return "long long int";
+
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
 
                 definition.DefineNameAlias("long long");
                 definition.DefineNameAlias("signed long long");
                 definition.DefineNameAlias("signed long long int");
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+                AddFixedWidthIntegerTypeDefinition<long long int>(definition);
 
             }
 
@@ -314,13 +381,18 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<unsigned long long int> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                Class::Definition<unsigned long long int> definition("unsigned long long int");
+                return "unsigned long long int";
+
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
 
                 definition.DefineNameAlias("unsigned long long");
 
-                return AddFixedWidthIntegerTypeDefinition(definition);
+                AddFixedWidthIntegerTypeDefinition<unsigned long long int>(definition);
 
             }
 
@@ -331,9 +403,9 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<float> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                return Class::Definition<float>("float");
+                return "float";
 
             }
 
@@ -342,9 +414,9 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<double> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                return Class::Definition<double>("double");
+                return "double";
 
             }
 
@@ -353,9 +425,9 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<long double> {
 
-            auto operator()() const {
+            constexpr const char* GetName() const noexcept {
 
-                return Class::Definition<long double>("long double");
+                return "long double";
 
             }
 
