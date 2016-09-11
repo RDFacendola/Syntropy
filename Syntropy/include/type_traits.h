@@ -11,6 +11,21 @@
 
 namespace syntropy {
 
+    //////////////// META ////////////////
+
+    /// \brief Don't care functor.
+    /// This type can be constructed or called with any number of arguments and does nothing in either case.
+    /// \author Raffaele D. Facendola - September 2016
+    struct _ {
+
+        template <typename... TArgs>
+        _(TArgs&&...) {}
+
+        template <typename... TArgs>
+        void operator()(TArgs&&...) {}
+
+    };
+
     //////////////// STREAM CAPABILITIES ////////////////
 
     /// \brief If TStream& << TType is defined provides the members constant value equal to true, otherwise value is false.
