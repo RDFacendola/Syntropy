@@ -163,6 +163,52 @@ namespace syntropy {
 
     };
 
+    /// \brief If TCallable(TArgs...) is defined provides the members constant value equal to true, otherwise value is false.
+    /// \author Raffaele D. Facendola - September 2016
+    template <typename TCallable, typename... TArgs>
+    class is_callable {
+
+        template<typename C, typename... A>
+        static auto test(int) -> decltype(std::declval<C&>()(std::declval<A>()...), std::true_type());
+
+        template<typename, typename...>
+        static auto test(...)->std::false_type;
+
+    public:
+
+        static const bool value = decltype(test<TCallable, TArgs...>(0))::value;
+
+    };
+
+    /// \brief Helper value for is_callable_v<TCallable, TArgs...>.
+    template <typename TCallable, typename... TArgs>
+    constexpr bool is_callable_v = is_callable<TCallable, TArgs...>::value;
+    
+    /// \brief Functor used to call a callable object with any parameters.
+    /// \author Raffaele D. Facendola - September 2016
+    struct call {
+
+        template <typename TCallable, typename... TArgs>
+        void operator()(TCallable& callable, TArgs&&... args) {
+
+            return callable(std::forward<TArgs>(args)...);
+
+        }
+
+    };
+
+    /// \brief If TCallable can be called with the parameters TArgs..., the call is performed, otherwise this function does nothing.
+    /// \return Returns the return value if the call could be performed, returns nothing otherwise.
+    /// \author Raffaele D. Facendola - September 2016
+    template <typename TCallable, typename... TArgs>
+    auto TryCall(TCallable& callable, TArgs&&... args) {
+
+        using caller = std::conditional_t<is_callable_v<TCallable, TArgs...>, call, _>;
+
+        return caller()(callable, std::forward<TArgs>(args)...);
+
+    }
+
     //////////////// CLASS ////////////////
 
     /// \brief Provides a member typedef which is the same as TType except that any pointer, qualifiers, references and extents are removed recursively.
