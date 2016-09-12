@@ -11,8 +11,8 @@
 #include "hashed_string.h"
 #include "type_traits.h"
 
-#include "type.h"
-#include "instance.h"
+#include "reflection/type.h"
+#include "reflection/instance.h"
 
 namespace syntropy {
 

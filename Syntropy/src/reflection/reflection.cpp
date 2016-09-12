@@ -1,4 +1,4 @@
-#include "reflection.h"
+#include "reflection/reflection.h"
 
 using namespace syntropy;
 using namespace syntropy::reflection;

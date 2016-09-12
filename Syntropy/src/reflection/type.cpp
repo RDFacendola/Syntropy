@@ -1,8 +1,6 @@
-#include "type.h"
+#include "reflection/type.h"
 
-#include "class.h"
-
-
+#include "reflection/class.h"
 
 namespace syntropy {
 

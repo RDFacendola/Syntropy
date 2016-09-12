@@ -16,25 +16,25 @@
     <ClInclude Include="include\type_traits.h">
       <Filter>type_traits</Filter>
     </ClInclude>
-    <ClInclude Include="include\class.h">
+    <ClInclude Include="include\reflection\class.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\method.h">
+    <ClInclude Include="include\reflection\fundamental_types.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\reflection.h">
+    <ClInclude Include="include\reflection\instance.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\type.h">
+    <ClInclude Include="include\reflection\method.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\property.h">
+    <ClInclude Include="include\reflection\property.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\fundamental_types.h">
+    <ClInclude Include="include\reflection\reflection.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\instance.h">
+    <ClInclude Include="include\reflection\type.h">
       <Filter>reflection</Filter>
     </ClInclude>
   </ItemGroup>
@@ -73,6 +73,9 @@
     </Filter>
     <Filter Include="type_traits">
       <UniqueIdentifier>{d82d2e88-346e-4399-ab6f-52a086fe0456}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="serialization">
+      <UniqueIdentifier>{52727aa0-0114-47ac-9578-3aa3955c6c14}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

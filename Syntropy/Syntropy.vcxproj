@@ -20,29 +20,29 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\any.h" />
-    <ClInclude Include="include\class.h">
+    <ClInclude Include="include\reflection\class.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\fundamental_types.h">
+    <ClInclude Include="include\reflection\fundamental_types.h">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="include\fnv1.h" />
     <ClInclude Include="include\hashed_string.h" />
-    <ClInclude Include="include\instance.h">
+    <ClInclude Include="include\reflection\instance.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\method.h">
+    <ClInclude Include="include\reflection\method.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\property.h">
+    <ClInclude Include="include\reflection\property.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\reflection.h">
+    <ClInclude Include="include\reflection\reflection.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -50,7 +50,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\type.h">
+    <ClInclude Include="include\reflection\type.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -142,7 +142,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(SolutionDir)build\libs\$(MSBuildProjectName)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)libs\$(Configuration)\</OutDir>
-    <IncludePath>.\include;$(IncludePath)</IncludePath>
+    <IncludePath>.\include;$(SolutionDir)dependencies\JSON\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

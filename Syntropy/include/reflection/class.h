@@ -19,9 +19,9 @@
 #include "hashed_string.h"
 #include "type_traits.h"
 
-#include "instance.h"
-#include "property.h"
-#include "method.h"
+#include "reflection/instance.h"
+#include "reflection/property.h"
+#include "reflection/method.h"
 
 namespace syntropy {
 

@@ -1,4 +1,4 @@
-#include "instance.h"
+#include "reflection/instance.h"
 
 namespace syntropy {
 

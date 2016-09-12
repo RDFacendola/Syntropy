@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <iostream>
 
-#include "type.h"
+#include "reflection/type.h"
 
 namespace syntropy {
 

@@ -5,7 +5,6 @@
 
 #include "syntropy.h"
 
-#include "class.h"
 #include "unit1.h"
 #include "unit2.h"
 

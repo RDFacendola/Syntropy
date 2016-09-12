@@ -1,4 +1,4 @@
-#include "property.h"
+#include "reflection/property.h"
 
 namespace syntropy {
 

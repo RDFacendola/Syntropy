@@ -10,12 +10,11 @@
 
 #include "hashed_string.h"
 
-#include "type.h"
-#include "class.h"
-#include "property.h"
-#include "instance.h"
-
-#include "fundamental_types.h"
+#include "reflection/type.h"
+#include "reflection/class.h"
+#include "reflection/property.h"
+#include "reflection/instance.h"
+#include "reflection/fundamental_types.h"
 
 namespace syntropy {
 
