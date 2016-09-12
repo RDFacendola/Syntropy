@@ -37,6 +37,7 @@
     <ClInclude Include="include\reflection\type.h">
       <Filter>reflection</Filter>
     </ClInclude>
+    <ClInclude Include="include\serialization\json.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy.cpp">
