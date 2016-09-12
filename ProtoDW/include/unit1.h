@@ -9,6 +9,7 @@
 #include "syntropy.h"
 
 #include "reflection/reflection.h"
+#include "serialization/json.h"
 
 #include "unit2.h"
 
@@ -767,6 +768,14 @@ public:
 
     }
 
+    void DeserializeTest() {
+
+        Foo foo;
+
+        syntropy::serialization::DeserializeJSON(foo, "data/test1.json");
+
+    }
+
     FooBar MakeFooBar() {
 
         return FooBar();
@@ -794,6 +803,7 @@ public:
         RUN_TEST(InstancingTest);
         RUN_TEST(ForwardingTest);
         RUN_TEST(AssignTest);
+        RUN_TEST(DeserializeTest);
 
     }
 
