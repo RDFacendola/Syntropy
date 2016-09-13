@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\any.h" />
     <ClInclude Include="include\reflection\class.h">
       <SubType>
       </SubType>

@@ -4,9 +4,6 @@
     <ClInclude Include="include\syntropy.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="include\any.h">
-      <Filter>functional</Filter>
-    </ClInclude>
     <ClInclude Include="include\fnv1.h">
       <Filter>hash</Filter>
     </ClInclude>
