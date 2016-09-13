@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <memory>
+#include <functional>
 
 #include "reflection/reflection.h"
 
@@ -16,53 +17,53 @@ namespace syntropy {
 
     namespace serialization {
 
-        class JsonProperty;
+        template <typename TType>
+        struct JsonDeserializer;
 
-        class JsonClass {
+		class JsonPropertySerializer{
 
-        public:
+		public:
 
-            template <typename TClass>
-            class Definition;
+            template<typename TClass, typename TField>
+            JsonPropertySerializer(TField TClass::* field){
 
-            /// \brief Get the JSON class associated to TClass.
-            /// \return Returns a reference to the singleton describing the JSON class TClass.
-            template <typename TClass>
-            static const JsonClass& GetClass();
+                deserializer_ = [field](reflection::Instance instance, const nlohmann::json& json){
 
-            /// \brief No copy constructor.
-            JsonClass(const JsonClass&) = delete;
+                    auto concrete_instance = instance.As<TClass>();
 
-            /// \brief No assignment operator.
-            JsonClass& operator=(const JsonClass&) = delete;
+                    if (concrete_instance){
+                    
+                        JsonDeserializer<TField>()(concrete_instance->*field, json);
 
-            /// \brief Virtual destructor.
-            virtual ~JsonClass() = default;
+                    }
 
-            /// \brief Get the class associated to this JSON class object.
-            const reflection::Class& GetClass() const;
+                };
 
-            /// \brief Get a json class property by name.
-            /// \param property_name Name of the property to get.
-            /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
-            virtual const JsonProperty* GetProperty(const HashedString& property_name) const noexcept = 0;
+            }
+
+            template <typename TInstance>
+            void Deserialize(TInstance&& instance, const nlohmann::json& json){
+
+                deserializer_(reflection::MakeInstance(instance),
+                              json);
+
+            }
+
+            template <typename TInstance>
+            void Serialize(const TInstance& instance, nlohmann::json& json){
+
+                serializer_(reflection::MakeConstInstance(instance),
+                            json);
+
+            }
 
         private:
 
-            template <typename TClass>
-            class ClassT;
+            std::function<void(reflection::Instance, const nlohmann::json&)> deserializer_;
 
-            /// \brief Default constructor.
-            JsonClass() = default;
+            std::function<void(reflection::Instance, nlohmann::json&)> serializer_;
 
-        };
-
-        class JsonProperty {
-
-        public:
-
-
-        };
+		};
 
         template <typename TType>
         struct JsonDeserializer {
@@ -71,15 +72,19 @@ namespace syntropy {
 
                 auto& object_class = reflection::ClassOf(object);
 
-                const reflection::Property* object_property;
-
                 for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
 
-                    object_property = object_class.GetProperty(json_property.key());
+                    auto object_property = object_class.GetProperty(json_property.key());
 
                     if (object_property) {
 
-                        
+						auto serializer = object_property->GetInterface<JsonPropertySerializer>();
+
+						if (serializer){
+						
+                            serializer->Deserialize(object, json);
+
+						}
 
                     }
 

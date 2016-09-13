@@ -167,6 +167,9 @@ namespace syntropy {
 
             const Type& GetType() const noexcept;
             
+			template <typename TInterface>
+			TInterface* GetInterface() const;
+
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue&& value) const;
 
@@ -222,6 +225,13 @@ namespace syntropy {
             , type_(TypeOf<TProperty>())
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
+
+		template <typename TInterface>
+		TInterface* Property::GetInterface() const{
+
+			return nullptr;
+
+		}
 
         template <typename TInstance, typename TValue>
         bool Property::Get(const TInstance& instance, TValue&& value) const {
