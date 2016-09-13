@@ -7,12 +7,16 @@
 #pragma once
 
 #include <functional>
+#include <unordered_map>
+#include <typeindex>
 
 #include "hashed_string.h"
 #include "type_traits.h"
 
 #include "reflection/type.h"
 #include "reflection/instance.h"
+
+#include "linb/any/any.hpp"
 
 namespace syntropy {
 
@@ -167,8 +171,14 @@ namespace syntropy {
 
             const Type& GetType() const noexcept;
             
-			template <typename TInterface>
-			TInterface* GetInterface() const;
+            template <typename TInterface, typename... TArguments>
+            bool AddInterface(TArguments&&... arguments);
+
+            template <typename TInterface>
+            const TInterface* GetInterface() const;
+
+            template <typename TInterface>
+            TInterface* GetInterface();
 
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue&& value) const;
@@ -177,22 +187,24 @@ namespace syntropy {
             bool Set(TInstance&& instance, const TValue& value) const;
 
         private:
-            
-            HashedString name_;                                     ///< \brief Property name.
 
-            const Type& type_;                                      ///< \brief Property type.
+            HashedString name_;                                             ///< \brief Property name.
 
-            typename PropertyGetter::TGetter getter_;               ///< \brief Property getter.
+            const Type& type_;                                              ///< \brief Property type.
 
-            typename PropertySetter::TSetter setter_;               ///< \brief Property setter.
-            
+            typename PropertyGetter::TGetter getter_;                       ///< \brief Property getter.
+
+            typename PropertySetter::TSetter setter_;                       ///< \brief Property setter.
+
+            std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the property.
+
         };
 
     }
 
 }
 
-namespace syntropy {
+namespace syntropy{ 
 
     namespace reflection {
 
@@ -226,12 +238,46 @@ namespace syntropy {
             , getter_(PropertyGetter()(getter))
             , setter_(PropertySetter()(setter)) {}
 
-		template <typename TInterface>
-		TInterface* Property::GetInterface() const{
+        template <typename TInterface, typename... TArguments>
+        bool Property::AddInterface(TArguments&&... arguments) {
 
-			return nullptr;
+            auto interface_type = std::type_index(typeid(TInterface));
 
-		}
+            if (interfaces_.find(interface_type) == interfaces_.end()) {
+
+                interfaces_.insert(std::make_pair(interface_type,
+                                                  linb::any(TInterface(std::forward<TArguments>(arguments)...))));
+
+                return true;
+
+            }
+            else {
+
+                return false;
+
+            }
+
+        }
+
+        template <typename TInterface>
+        const TInterface* Property::GetInterface() const{
+
+            auto interface_type = std::type_index(typeid(TInterface));
+
+            auto it = interfaces_.find(interface_type);
+
+            return it != interfaces_.end() ?
+                   linb::any_cast<TInterface>(&(it->second)) :
+                   nullptr;
+
+        }
+
+        template <typename TInterface>
+        TInterface* Property::GetInterface() {
+
+            return const_cast<TInterface*>(static_cast<const Property*>(this)->GetInterface<TInterface>());
+
+        }
 
         template <typename TInstance, typename TValue>
         bool Property::Get(const TInstance& instance, TValue&& value) const {

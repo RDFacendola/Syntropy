@@ -20,16 +20,16 @@ namespace syntropy {
         template <typename TType>
         struct JsonDeserializer;
 
-		class JsonPropertySerializer{
+        class JsonPropertySerializer{
 
-		public:
+        public:
 
             template<typename TClass, typename TField>
             JsonPropertySerializer(TField TClass::* field){
 
                 deserializer_ = [field](reflection::Instance instance, const nlohmann::json& json){
 
-                    auto concrete_instance = instance.As<TClass>();
+                    auto concrete_instance = instance.As<const TClass>();
 
                     if (concrete_instance){
                     
@@ -42,7 +42,7 @@ namespace syntropy {
             }
 
             template <typename TInstance>
-            void Deserialize(TInstance&& instance, const nlohmann::json& json){
+            void Deserialize(TInstance&& instance, const nlohmann::json& json) const{
 
                 deserializer_(reflection::MakeInstance(instance),
                               json);
@@ -50,7 +50,7 @@ namespace syntropy {
             }
 
             template <typename TInstance>
-            void Serialize(const TInstance& instance, nlohmann::json& json){
+            void Serialize(const TInstance& instance, nlohmann::json& json) const{
 
                 serializer_(reflection::MakeConstInstance(instance),
                             json);
@@ -63,7 +63,7 @@ namespace syntropy {
 
             std::function<void(reflection::Instance, nlohmann::json&)> serializer_;
 
-		};
+        };
 
         template <typename TType>
         struct JsonDeserializer {
@@ -78,13 +78,13 @@ namespace syntropy {
 
                     if (object_property) {
 
-						auto serializer = object_property->GetInterface<JsonPropertySerializer>();
+                        auto serializer = object_property->GetInterface<JsonPropertySerializer>();
 
-						if (serializer){
-						
+                        if (serializer){
+
                             serializer->Deserialize(object, json);
 
-						}
+                        }
 
                     }
 
