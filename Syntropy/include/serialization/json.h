@@ -29,7 +29,7 @@ namespace syntropy {
 
                 deserializer_ = [field](reflection::Instance instance, const nlohmann::json& json){
 
-                    auto concrete_instance = instance.As<const TClass>();
+                    auto concrete_instance = instance.As<TClass>();
 
                     if (concrete_instance){
                     
@@ -82,7 +82,7 @@ namespace syntropy {
 
                         if (serializer){
 
-                            serializer->Deserialize(object, json);
+                            serializer->Deserialize(object, json_property.value());
 
                         }
 
@@ -108,9 +108,21 @@ namespace syntropy {
         template <>
         struct JsonDeserializer<int> {
 
-            void operator()(int& /*object*/, const nlohmann::json& /*json*/) {
+            void operator()(int& object, const nlohmann::json& json) {
 
+                object = json.get<int>();
 
+            }
+
+        };
+
+        template <>
+        struct JsonDeserializer<float> {
+
+            void operator()(float& object, const nlohmann::json& json)
+            {
+
+                object = json.get<float>();
 
             }
 
@@ -133,25 +145,41 @@ namespace syntropy {
         }
 
         template <typename TClass>
-        bool DeserializeJSON(TClass& object, const char* path) {
+        bool DeserializeJSON(TClass& object, const nlohmann::json& json){
 
-            JsonDeserializer<TClass>()(object, ParseJSON(path));
+            JsonDeserializer<TClass>()(object, json);
 
             return true;
 
         }
 
         template <typename TClass>
-        std::unique_ptr<TClass> DeserializeJSON(const char* path) {
+        std::unique_ptr<TClass> DeserializeJSON(const nlohmann::json& json){
 
             TClass* object;
 
-            JsonDeserializer<TClass>()(object, ParseJSON(path));
+            JsonDeserializer<TClass>()(object, json);
 
             return object;
 
         }
+
+        template <typename TClass>
+        bool DeserializeJSON(TClass& object, const char* path) {
+
+            return DeserializeJSON(object, ParseJSON(path));
+            
+        }
+
+        template <typename TClass>
+        std::unique_ptr<TClass> DeserializeJSON(const char* path) {
+
+            return DeserializeJSON(ParseJSON(path));
+
+        }
         
+
+
     }
 
 }

@@ -11,6 +11,8 @@
 #include "reflection/reflection.h"
 #include "serialization/json.h"
 
+#include "nlohmann/json/src/json.hpp"
+
 #include "unit2.h"
 
 #include <tuple>
@@ -770,7 +772,13 @@ public:
 
         Foo foo;
 
-        syntropy::serialization::DeserializeJSON(foo, "data/test1.json");
+        nlohmann::json json = { {"int_value", 42},
+                                {"float_value", 67.5f} };
+
+        syntropy::serialization::DeserializeJSON(foo, json);
+
+        TEST_TRUE(foo.value_ == 67.5f);
+        TEST_TRUE(foo.value2_ == 42);
 
     }
 
