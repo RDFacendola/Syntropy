@@ -255,11 +255,8 @@ namespace syntropy{
                 return true;
 
             }
-            else {
 
-                return false;
-
-            }
+            return false;
 
         }
 

@@ -218,7 +218,7 @@ namespace syntropy {
     /// \return Returns the return value if the call could be performed, returns nothing otherwise.
     /// \author Raffaele D. Facendola - September 2016
     template <typename TCallable, typename... TArgs>
-    auto TryCall(TCallable& callable, TArgs&&... args) {
+    auto conditional_call(TCallable& callable, TArgs&&... args) {
 
         using caller = std::conditional_t<is_callable_v<TCallable, TArgs...>, call, _>;
 

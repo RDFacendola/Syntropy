@@ -472,7 +472,7 @@ namespace syntropy {
 
             Class::Definition<TClass> definition(declaration.GetName());
 
-            TryCall(declaration, definition);   // Filling the definition is optional.
+            conditional_call(declaration, definition);   // Filling the definition is optional.
 
             return definition;
 
