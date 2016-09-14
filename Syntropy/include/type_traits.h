@@ -141,6 +141,9 @@ namespace syntropy {
     template <typename TAssignee, typename TValue>
     constexpr bool is_assignable_v = is_assignable<TAssignee, TValue>::value;
 
+    /// \brief Functor used to assign a value to any object.
+    /// This specialization is used if the assignment operator declval<TAssignee&>() = declval<TValue>() is not defined.
+    /// \author Raffaele D. Facendola - September 2016
     template <typename TAssignee, typename TValue, typename = void>
     struct assign {
 
@@ -151,7 +154,10 @@ namespace syntropy {
         }
 
     };
-
+    
+    /// \brief Functor used to assign a value to any object.
+    /// This specialization is used if the assignment operator declval<TAssignee&>() = declval<TValue>() is defined.
+    /// \author Raffaele D. Facendola - September 2016
     template <typename TAssignee, typename TValue>
     struct assign<TAssignee, TValue, typename std::enable_if_t<is_assignable_v<TAssignee, TValue>>> {
 
@@ -162,6 +168,17 @@ namespace syntropy {
         }
 
     };
+
+    /// \brief If value can be assigned to assignee the call is performed, otherwise this function does nothing.
+    /// \return Returns the new value of assigned if the call could be performed, returns the unchanged value otherwise.
+    /// \author Raffaele D. Facendola - September 2016
+    template <typename TAssignee, typename TValue>
+    auto conditional_assign(TAssignee&& assignee, TValue&& value) {
+
+        return assign<TAssignee, TValue>()(std::forward<TAssignee>(assignee), 
+                                           std::forward<TValue>(value));
+
+    }
 
     /// \brief If TCallable(TArgs...) is defined provides the members constant value equal to true, otherwise value is false.
     /// \author Raffaele D. Facendola - September 2016

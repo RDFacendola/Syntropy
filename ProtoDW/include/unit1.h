@@ -773,12 +773,14 @@ public:
         Foo foo;
 
         nlohmann::json json = { {"int_value", 42},
-                                {"float_value", 67.5f} };
+                                {"float_value", 67.5f},
+                                {"const_value", 100.0f} };
 
         syntropy::serialization::DeserializeJSON(foo, json);
 
         TEST_TRUE(foo.value_ == 67.5f);
         TEST_TRUE(foo.value2_ == 42);
+        TEST_FALSE(foo.const_value_ == 100.0f)
 
     }
 
