@@ -9,12 +9,15 @@
 #include <functional>
 #include <unordered_map>
 #include <typeindex>
+#include <memory>
 
 #include "hashed_string.h"
 #include "type_traits.h"
 
 #include "reflection/type.h"
 #include "reflection/instance.h"
+#include "reflection/property_getter.h"
+#include "reflection/property_setter.h"
 
 #include "linb/any/any.hpp"
 
@@ -22,135 +25,6 @@ namespace syntropy {
 
     namespace reflection {
 
-        struct PropertyGetter {
-
-            using TGetter = std::function<bool(Instance, Instance)>;
-
-            template <typename TClass, typename TProperty>
-            TGetter operator() (TProperty TClass::* field) const {
-
-                return[field](Instance instance, Instance value) -> bool {
-
-                    auto value_ptr = value.As<std::decay_t<TProperty>>();
-                    auto instance_ptr = instance.As<const TClass>();
-
-                    if (value_ptr && instance_ptr) {
-
-                        *value_ptr = instance_ptr->*field;
-
-                    }
-
-                    return value_ptr && instance_ptr;
-
-                };
-
-            }
-
-            template <typename TClass, typename TProperty>
-            TGetter operator() (TProperty(TClass::* getter)() const) const {
-
-                return[getter](Instance instance, Instance value) -> bool {
-
-                    auto value_ptr = value.As<std::decay_t<TProperty>>();
-                    auto instance_ptr = instance.As<const TClass>();
-
-                    if (value_ptr && instance_ptr) {
-
-                        *value_ptr = (instance_ptr->*getter)();
-
-                    }
-
-                    return value_ptr && instance_ptr;
-
-                };
-
-            }
-
-        };
-
-        struct PropertySetter {
-
-            using TSetter = std::function<bool(Instance, Instance)>;
-
-            TSetter operator() () const {
-
-                return[](Instance, Instance) -> bool {
-
-                    return false;
-
-                };
-
-            }
-
-            template <typename TClass, typename TProperty>
-            TSetter operator() (TProperty TClass::* property, typename std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) const {
-
-                return [property](Instance instance, Instance value) -> bool{
-
-                    auto value_ptr = value.As<const TProperty>();
-                    auto instance_ptr = instance.As<TClass>();
-
-                    if (value_ptr && instance_ptr) {
-
-                        instance_ptr->*property = *value_ptr;
-
-                    }
-
-                    return value_ptr && instance_ptr;
-
-                };
-
-            }
-
-            template <typename TClass, typename TProperty>
-            TSetter operator() (TProperty TClass::*, typename std::enable_if_t<std::is_const<TProperty>::value>* = nullptr) const {
-
-                return (*this)();
-
-            }
-
-            template <typename TClass, typename TProperty>
-            TSetter operator() (void (TClass::* setter)(TProperty)) const {
-
-                return[setter](Instance instance, Instance value) -> bool {
-
-                    auto value_ptr = value.As<const std::remove_reference_t<TProperty>>();
-                    auto instance_ptr = instance.As<TClass>();
-
-                    if (value_ptr && instance_ptr) {
-
-                        (instance_ptr->*setter)(*value_ptr);
-
-                    }
-
-                    return value_ptr && instance_ptr;
-
-                };
-
-            }
-
-            template <typename TClass, typename TProperty>
-            TSetter operator() (TProperty& (TClass::* setter)()) const {
-
-                return[setter](Instance instance, Instance value) -> bool {
-
-                    auto value_ptr = value.As<const TProperty>();
-                    auto instance_ptr = instance.As<TClass>();
-
-                    if (value_ptr && instance_ptr) {
-
-                        (instance_ptr->*setter)() = *value_ptr;
-
-                    }
-
-                    return value_ptr && instance_ptr;
-
-                };
-
-            }
-
-        };
-        
         class Property {
 
         public:
@@ -192,9 +66,9 @@ namespace syntropy {
 
             const Type& type_;                                              ///< \brief Property type.
 
-            typename PropertyGetter::TGetter getter_;                       ///< \brief Property getter.
+            std::unique_ptr<PropertyGetter> getter_;                        ///< \brief Property getter.
 
-            typename PropertySetter::TSetter setter_;                       ///< \brief Property setter.
+            typename _PropertySetter::TSetter setter_;                       ///< \brief Property setter.
 
             std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the property.
 
@@ -214,29 +88,29 @@ namespace syntropy{
         Property::Property(const HashedString& name, TProperty TClass::* field) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(PropertyGetter()(field))
-            , setter_(PropertySetter()(field)){}
+            , getter_(std::make_unique<PropertyGetterT<TProperty TClass::*>>(field))
+            , setter_(_PropertySetter()(field)){}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(PropertyGetter()(getter))
-            , setter_(PropertySetter()()) {}
+            , getter_(std::make_unique<PropertyGetterT<TProperty(TClass::*)() const>>(getter))
+            , setter_(_PropertySetter()()) {}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(PropertyGetter()(getter))
-            , setter_(PropertySetter()(setter)) {}
+            , getter_(std::make_unique<PropertyGetterT<TProperty(TClass::*)() const>>(getter))
+            , setter_(_PropertySetter()(setter)) {}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(PropertyGetter()(getter))
-            , setter_(PropertySetter()(setter)) {}
+            , getter_(std::make_unique<PropertyGetterT<const TProperty& (TClass::*)() const>>(getter))
+            , setter_(_PropertySetter()(setter)) {}
 
         template <typename TInterface, typename... TArguments>
         bool Property::AddInterface(TArguments&&... arguments) {
@@ -279,8 +153,8 @@ namespace syntropy{
         template <typename TInstance, typename TValue>
         bool Property::Get(const TInstance& instance, TValue&& value) const {
 
-            return getter_(MakeConstInstance(instance),
-                           MakeInstance(std::forward<TValue>(value)));
+            return (*getter_)(MakeConstInstance(instance),
+                              MakeInstance(std::forward<TValue>(value)));
 
         }
 
