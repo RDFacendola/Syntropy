@@ -41,6 +41,43 @@ namespace syntropy {
 
             }
 
+            template<typename TClass, typename TGetter>
+            JsonPropertySerializer(TGetter(TClass::* /*getter*/)() const) {
+
+                //serializer_ =  lambda(getter)
+
+            }
+
+            template<typename TClass, typename TProperty>
+            JsonPropertySerializer(TProperty(TClass::* /*getter*/)() const, void(TClass::* setter)(TProperty)) {
+
+                deserializer_ = [setter](reflection::Instance instance, const nlohmann::json& json) {
+
+                    auto concrete_instance = instance.As<TClass>();
+
+                    if (concrete_instance) {
+
+                        using TTemp = std::remove_cv_t<std::remove_reference_t<TProperty>>;
+
+                        TTemp temp_value;
+
+                        JsonDeserializer<TTemp>()(temp_value, json);
+
+                        (concrete_instance->*setter)(temp_value);
+                        
+                    }
+
+                };
+
+            }
+
+            template<typename TClass, typename TProperty>
+            JsonPropertySerializer(const TProperty&(TClass::* /*getter*/)() const, TProperty&(TClass::* /*setter*/)()) {
+
+                //serializer_ =  lambda(getter)
+
+            }
+
             template <typename TInstance>
             void Deserialize(TInstance&& instance, const nlohmann::json& json) const{
 

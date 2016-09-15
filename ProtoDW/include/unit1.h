@@ -774,7 +774,8 @@ public:
 
         nlohmann::json json = { {"int_value", 42},
                                 {"float_value", 67.5f},
-                                {"const_value", 100.0f} };
+                                {"const_value", 100.0f},
+                                {"Value", 800 } };
 
         syntropy::serialization::DeserializeJSON(foo, json);
 
