@@ -29,18 +29,27 @@ namespace syntropy {
 
         public:
 
+            /// \brief No copy constructor.
+            Property(const Property&) = delete;
+            
             template <typename TClass, typename TProperty>
             Property(const HashedString& name, TProperty TClass::* field) noexcept;
 
             template <typename TClass, typename TProperty>
             Property(const HashedString& name, TProperty (TClass::* getter)() const) noexcept;
 
-            template <typename TClass, typename TProperty>
-            Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept;
+            template <typename TClass, typename TProperty, typename TReturn>
+            Property(const HashedString& name, TProperty(TClass::* getter)() const, TReturn(TClass::* setter)(TProperty)) noexcept;
 
             template <typename TClass, typename TProperty>
             Property(const HashedString& name, const TProperty&(TClass::* getter)() const, TProperty&(TClass::* setter)()) noexcept;
             
+            /// \brief No assignment operator.
+            Property& operator=(const Property&) = delete;
+
+            /// \brief Default destructor.
+            ~Property() = default;
+
             const HashedString& GetName() const noexcept;
 
             const Type& GetType() const noexcept;
@@ -66,9 +75,9 @@ namespace syntropy {
 
             const Type& type_;                                              ///< \brief Property type.
 
-            std::unique_ptr<PropertyGetter> getter_;                        ///< \brief Property getter.
+            PropertyGetter* getter_;                                        ///< \brief Property getter.
 
-            typename _PropertySetter::TSetter setter_;                       ///< \brief Property setter.
+            PropertySetter* setter_;                                        ///< \brief Property setter.
 
             std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the property.
 
@@ -88,29 +97,29 @@ namespace syntropy{
         Property::Property(const HashedString& name, TProperty TClass::* field) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(std::make_unique<PropertyGetterT<TProperty TClass::*>>(field))
-            , setter_(_PropertySetter()(field)){}
+            , getter_(new PropertyGetterT<TProperty TClass::*>(field))
+            , setter_(new PropertySetterT<TProperty TClass::*>(field)){}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(std::make_unique<PropertyGetterT<TProperty(TClass::*)() const>>(getter))
-            , setter_(_PropertySetter()()) {}
+            , getter_(new PropertyGetterT<TProperty(TClass::*)() const>(getter))
+            , setter_(new PropertySetterT<std::nullptr_t>()) {}
 
-        template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, void(TClass::* setter)(TProperty)) noexcept
+        template <typename TClass, typename TProperty, typename TReturn>
+        Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, TReturn(TClass::* setter)(TProperty)) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(std::make_unique<PropertyGetterT<TProperty(TClass::*)() const>>(getter))
-            , setter_(_PropertySetter()(setter)) {}
+            , getter_(new PropertyGetterT<TProperty(TClass::*)() const>(getter))
+            , setter_(new PropertySetterT<TReturn(TClass::*)(TProperty)>(setter)) {}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(std::make_unique<PropertyGetterT<const TProperty& (TClass::*)() const>>(getter))
-            , setter_(_PropertySetter()(setter)) {}
+            , getter_(new PropertyGetterT<const TProperty& (TClass::*)() const>(getter))
+            , setter_(new PropertySetterT<TProperty& (TClass::*)()>(setter)) {}
 
         template <typename TInterface, typename... TArguments>
         bool Property::AddInterface(TArguments&&... arguments) {
@@ -161,8 +170,8 @@ namespace syntropy{
         template <typename TInstance, typename TValue>
         bool Property::Set(TInstance&& instance, const TValue& value) const {
 
-            return setter_(MakeInstance(std::forward<TInstance>(instance)),
-                           MakeConstInstance(value));
+            return (*setter_)(MakeInstance(std::forward<TInstance>(instance)),
+                              MakeConstInstance(value));
 
         }
 
