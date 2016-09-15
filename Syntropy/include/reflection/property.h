@@ -215,11 +215,7 @@ namespace syntropy{
             : name_(name)
             , type_(TypeOf<TProperty>())
             , getter_(PropertyGetter()(field))
-            , setter_(PropertySetter()(field)){
-        
-            AddInterface<serialization::JsonPropertySerializer>(field);
-        
-        }
+            , setter_(PropertySetter()(field)){}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept

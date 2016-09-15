@@ -323,6 +323,8 @@ namespace syntropy {
             properties_.emplace_back(name, 
                                      std::forward<TProperty>(property));
 
+            properties_.back().AddInterface<serialization::JsonPropertySerializer>(property);
+
         }
 
         template <typename TClass>
@@ -334,6 +336,9 @@ namespace syntropy {
             properties_.emplace_back(name, 
                                      std::forward<TGetter>(getter),
                                      std::forward<TSetter>(setter));
+
+            properties_.back().AddInterface<serialization::JsonPropertySerializer>(getter, setter);
+
 
         }
 
