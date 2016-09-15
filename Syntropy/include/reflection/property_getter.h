@@ -36,7 +36,7 @@ namespace syntropy {
         template <typename TProperty>
         struct PropertyGetterT : PropertyGetter {};
 
-        /// \brief Property getter.
+        /// \brief Concrete property getter.
         /// Template specialization for member variables.
         /// \author Raffaele D. Facendola - September 2016
         template <typename TClass, typename TField>
@@ -70,9 +70,9 @@ namespace syntropy {
 
         };
 
-        /// \brief Property getter.
+        /// \brief Concrete property getter.
         /// Template specialization for const getters.
-        /// The const getter has the form T GetProperty() const. T can either be const or non const.
+        /// The const getter has the form TGetter TClass::GetProperty() const.
         /// \author Raffaele D. Facendola - September 2016
         template <typename TClass, typename TGetter>
         struct PropertyGetterT<TGetter(TClass::*)() const> : PropertyGetter {
