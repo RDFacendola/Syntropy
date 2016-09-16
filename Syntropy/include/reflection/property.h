@@ -32,6 +32,9 @@ namespace syntropy {
             /// \brief No copy constructor.
             Property(const Property&) = delete;
             
+            /// \brief Move constructor.
+            Property(Property&& other) noexcept;
+
             template <typename TClass, typename TProperty>
             Property(const HashedString& name, TProperty TClass::* field) noexcept;
 
@@ -75,9 +78,9 @@ namespace syntropy {
 
             const Type& type_;                                              ///< \brief Property type.
 
-            PropertyGetter* getter_;                                        ///< \brief Property getter.
+            std::unique_ptr<PropertyGetter> getter_;                        ///< \brief Property getter.
 
-            PropertySetter* setter_;                                        ///< \brief Property setter.
+            std::unique_ptr<PropertySetter> setter_;                        ///< \brief Property setter.
 
             std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the property.
 
@@ -97,29 +100,29 @@ namespace syntropy{
         Property::Property(const HashedString& name, TProperty TClass::* field) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(new PropertyGetterT<TProperty TClass::*>(field))
-            , setter_(new PropertySetterT<TProperty TClass::*>(field)){}
+            , getter_(MakePropertyGetter(field))
+            , setter_(MakePropertySetter(field)){}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(new PropertyGetterT<TProperty(TClass::*)() const>(getter))
-            , setter_(new PropertySetterT<std::nullptr_t>()) {}
+            , getter_(MakePropertyGetter(getter))
+            , setter_(MakePropertySetter(nullptr)) {}
 
         template <typename TClass, typename TProperty, typename TReturn>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, TReturn(TClass::* setter)(TProperty)) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(new PropertyGetterT<TProperty(TClass::*)() const>(getter))
-            , setter_(new PropertySetterT<TReturn(TClass::*)(TProperty)>(setter)) {}
+            , getter_(MakePropertyGetter(getter))
+            , setter_(MakePropertySetter(setter)) {}
 
         template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(new PropertyGetterT<const TProperty& (TClass::*)() const>(getter))
-            , setter_(new PropertySetterT<TProperty& (TClass::*)()>(setter)) {}
+            , getter_(MakePropertyGetter(getter))
+            , setter_(MakePropertySetter(setter)) {}
 
         template <typename TInterface, typename... TArguments>
         bool Property::AddInterface(TArguments&&... arguments) {

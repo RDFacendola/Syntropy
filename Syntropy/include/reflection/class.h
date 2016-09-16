@@ -124,17 +124,18 @@ namespace syntropy {
             /// \param default_name Default class name.
             Definition(std::string default_name);
 
-            /// \brief Default copy constructor.
-            /// \param other Instance to copy.
-            Definition(const Definition& other) = default;
+            /// \brief No copy constructor.
+            Definition(const Definition& other) = delete;
 
             /// \brief Move constructor.
             /// \param other Instance to move.
             Definition(Definition&& other);
 
-            /// \brief Default assignment operator.
-            /// \param other Instance to copy.
-            Definition& operator=(const Definition& other) = default;
+            /// \brief No assignment operator
+            Definition& operator=(const Definition& other) = delete;
+
+            /// \brief Default destructor.
+            ~Definition() = default;
 
             /// \brief Define a name alias for the class.
             /// If the name was already defined this method does nothing.
