@@ -34,7 +34,7 @@ namespace syntropy {
         /// \brief Concrete property setter.
         /// Fallback implementation for read-only properties.
         /// \author Raffaele D. Facendola - September 2016
-        template <typename TProperty, typename = void>
+        template <typename TProperty>
         struct PropertySetterT : PropertySetter {
 
             /// \brief Create a new dummy property setter that does nothing.
@@ -50,28 +50,10 @@ namespace syntropy {
         };
 
         /// \brief Concrete property setter.
-        /// Fallback implementation for read-only properties.
-        /// \author Raffaele D. Facendola - September 2016
-        template <>
-        struct PropertySetterT<std::nullptr_t, void> : PropertySetter {
-
-            /// \brief Create a new dummy property setter that does nothing.
-            PropertySetterT() {}
-
-            bool operator()(Instance instance, Instance value) const override {
-
-                return false;
-
-            }
-
-
-        };
-
-        /// \brief Concrete property setter.
         /// Template specialization for non-const member variables.
         /// \author Raffaele D. Facendola - September 2016
         template <typename TClass, typename TField>
-        struct PropertySetterT<TField (TClass::*), std::enable_if_t<!std::is_const<TField>::value>> : PropertySetter {
+        struct PropertySetterT<TField (TClass::*)> : PropertySetter {
 
             /// \brief Create a new property setter for the given member field.
             /// \param field Field to write.
@@ -80,14 +62,14 @@ namespace syntropy {
 
             bool operator()(Instance instance, Instance value) const override {
 
-                auto concrete_value = value.As<const TProperty>();
                 auto concrete_instance = instance.As<TClass>();
+                auto concrete_value = value.As<const TField>();
 
                 if (concrete_value && concrete_instance) {
 
-                    concrete_instance->*field_ = *concrete_value;
+                    conditional_assign(concrete_instance->*field_, *concrete_value);
 
-                    return true;
+                    return !std::is_const_v<TField>;
 
                 }
 
@@ -103,10 +85,9 @@ namespace syntropy {
         
         /// \brief Concrete property setter.
         /// Template specialization for setters of the form TReturn TClass::SetProperty(TSetter). 
-        /// TSetter must not be void.
         /// \author Raffaele D. Facendola - September 2016
         template <typename TClass, typename TSetter, typename TReturn>
-        struct PropertySetterT<TReturn(TClass::*)(TSetter), void> : PropertySetter {
+        struct PropertySetterT<TReturn(TClass::*)(TSetter)> : PropertySetter {
 
             /// \brief Create a new property setter using the provided setter method.
             /// \param setter Setter method used to write the value inside the property.
@@ -120,7 +101,7 @@ namespace syntropy {
 
                 if (concrete_value && concrete_instance) {
 
-                    (concrete_instance->*setter_)(*value_ptr);
+                    (concrete_instance->*setter_)(*concrete_value);
 
                     return true;
 
@@ -140,36 +121,43 @@ namespace syntropy {
         /// Template specialization for setters of the form TSetter& TClass::AccessProperty().
         /// The accessor must return reference to the actual property object to write.
         /// \author Raffaele D. Facendola - September 2016
-        template <typename TClass, typename TSetter>
-        struct PropertySetterT<TSetter&(TClass::*)(), void> : PropertySetter {
+         template <typename TClass, typename TSetter>
+         struct PropertySetterT<TSetter&(TClass::*)()> : PropertySetter {
+ 
+             /// \brief Create a new property setter using the provided setter method.
+             /// \param setter Setter method used to write the value inside the property.
+             PropertySetterT(TSetter&(TClass::* setter)())
+                 : setter_(setter) {}
+ 
+             bool operator()(Instance instance, Instance value) const override {
+ 
+                 auto concrete_instance = instance.As<TClass>();
+                 auto concrete_value = value.As<const TSetter>();
+ 
+                 if (concrete_value && concrete_instance) {
+ 
+                     (concrete_instance->*setter_)() = *concrete_value;
+ 
+                     return true;
+ 
+                 }
+ 
+                 return false;
+ 
+             }
+ 
+         private:
+ 
+             TSetter&(TClass::* setter_)();     /// \brief Setter method used to access the property to write.
+ 
+         };
 
-            /// \brief Create a new property setter using the provided setter method.
-            /// \param setter Setter method used to write the value inside the property.
-            PropertySetterT(TSetter&(TClass::* setter)())
-                : setter_(setter) {}
+         template <typename TSetter>
+         std::unique_ptr<PropertySetterT<TSetter>> MakePropertySetter(TSetter setter) {
 
-            bool operator()(Instance instance, Instance value) const override {
+             return std::make_unique<PropertySetterT<TSetter>>(setter);
 
-                auto concrete_instance = instance.As<TClass>();
-                auto concrete_value = value.As<const TProperty>();
-
-                if (concrete_value && concrete_instance) {
-
-                    (concrete_instance->*setter)() = *concrete_value;
-
-                    return true;
-
-                }
-
-                return false;
-
-            }
-
-        private:
-
-            TSetter&(TClass::* setter_)();     /// \brief Setter method used to access the property to write.
-
-        };
+         }
 
     }
 

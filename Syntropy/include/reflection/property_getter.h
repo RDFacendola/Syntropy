@@ -105,6 +105,13 @@ namespace syntropy {
 
         };
 
+        template <typename TGetter>
+        std::unique_ptr<PropertyGetterT<TGetter>> MakePropertyGetter(TGetter getter) {
+
+            return std::make_unique<PropertyGetterT<TGetter>>(getter);
+
+        }
+
     }
 
 }
