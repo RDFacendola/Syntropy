@@ -324,7 +324,7 @@ namespace syntropy {
             properties_.emplace_back(name, 
                                      std::forward<TProperty>(property));
 
-            properties_.back().AddInterface<serialization::JsonPropertySerializer>(property);
+            properties_.back().AddInterface<serialization::IJsonDeserializer>(property);
 
         }
 
@@ -338,7 +338,7 @@ namespace syntropy {
                                      std::forward<TGetter>(getter),
                                      std::forward<TSetter>(setter));
 
-            properties_.back().AddInterface<serialization::JsonPropertySerializer>(getter, setter);
+            properties_.back().AddInterface<serialization::IJsonDeserializer>(setter);
 
 
         }

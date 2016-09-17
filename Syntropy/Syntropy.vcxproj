@@ -54,6 +54,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\serialization\json.h" />
+    <ClInclude Include="include\serialization\json\deserializers.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\syntropy.h">
       <SubType>
       </SubType>

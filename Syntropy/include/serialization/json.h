@@ -11,21 +11,20 @@
 
 #include "reflection/reflection.h"
 
-#include "nlohmann/json/src/json.hpp"
+#include "serialization/json/deserializers.h"
 
 namespace syntropy {
 
     namespace serialization {
 
-        template <typename TType, typename>
-        struct JsonDeserializer;
+        // Property interface
 
-        class JsonPropertySerializer{
+        class IJsonDeserializer{
 
         public:
 
             template<typename TClass, typename TField>
-            JsonPropertySerializer(TField TClass::* field){
+            IJsonDeserializer(TField TClass::* field){
 
                 deserializer_ = [field](reflection::Instance instance, const nlohmann::json& json){
 
@@ -41,15 +40,19 @@ namespace syntropy {
 
             }
 
-            template<typename TClass, typename TGetter>
-            JsonPropertySerializer(TGetter(TClass::* /*getter*/)() const) {
+            template<typename TClass, typename TProperty>
+            IJsonDeserializer(TProperty(TClass::*)() const) {
 
-                //serializer_ =  lambda(getter)
+                deserializer_ = [](reflection::Instance, const nlohmann::json&) {
+
+                    // Read-only property
+
+                };
 
             }
 
-            template<typename TClass, typename TProperty>
-            JsonPropertySerializer(TProperty(TClass::* /*getter*/)() const, void(TClass::* setter)(TProperty)) {
+            template<typename TClass, typename TProperty, typename TReturn>
+            IJsonDeserializer(TReturn(TClass::* setter)(TProperty)) {
 
                 deserializer_ = [setter](reflection::Instance instance, const nlohmann::json& json) {
 
@@ -72,25 +75,27 @@ namespace syntropy {
             }
 
             template<typename TClass, typename TProperty>
-            JsonPropertySerializer(const TProperty&(TClass::* /*getter*/)() const, TProperty&(TClass::* /*setter*/)()) {
+            IJsonDeserializer(TProperty&(TClass::* setter)()) {
 
-                //serializer_ =  lambda(getter)
+                deserializer_ = [setter](reflection::Instance instance, const nlohmann::json& json) {
+
+                    auto concrete_instance = instance.As<TClass>();
+
+                    if (concrete_instance) {
+
+                        JsonDeserializer<TProperty>()((concrete_instance->*setter)(), json);
+
+                    }
+
+                };
 
             }
 
             template <typename TInstance>
-            void Deserialize(TInstance&& instance, const nlohmann::json& json) const{
+            void operator()(TInstance&& instance, const nlohmann::json& json) const{
 
                 deserializer_(reflection::MakeInstance(instance),
                               json);
-
-            }
-
-            template <typename TInstance>
-            void Serialize(const TInstance& instance, nlohmann::json& json) const{
-
-                serializer_(reflection::MakeConstInstance(instance),
-                            json);
 
             }
 
@@ -98,62 +103,9 @@ namespace syntropy {
 
             std::function<void(reflection::Instance, const nlohmann::json&)> deserializer_;
 
-            std::function<void(reflection::Instance, nlohmann::json&)> serializer_;
-
         };
 
-        // Serializers
-
-        template <typename TType, typename = void>
-        struct JsonDeserializer {
-        
-            void operator()(TType& object, const nlohmann::json& json) {
-
-                auto& object_class = reflection::ClassOf(object);
-
-                for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
-
-                    auto object_property = object_class.GetProperty(json_property.key());
-
-                    if (object_property) {
-
-                        auto serializer = object_property->GetInterface<JsonPropertySerializer>();
-
-                        if (serializer){
-
-                            serializer->Deserialize(object, json_property.value());
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        };
-
-        template <typename TType>
-        struct JsonDeserializer<TType*> {
-
-            void operator()(TType*& /*object*/, const nlohmann::json& /*json*/) {
-
-
-
-            }
-
-        };
-
-        template <typename TType>
-        struct JsonDeserializer<TType, typename std::enable_if_t<std::is_arithmetic_v<TType>>> {
-
-            void operator()(TType& object, const nlohmann::json& json) {
-
-                conditional_assign(object, json.get<TType>());
-
-            }
-
-        };
+        // Utilities
 
         inline nlohmann::json ParseJSON(const char* path) {
 
@@ -206,6 +158,14 @@ namespace syntropy {
         }
         
 
+
+    }
+
+}
+
+namespace syntropy {
+
+    namespace serialization {
 
     }
 
