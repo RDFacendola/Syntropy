@@ -16,8 +16,8 @@
 
 #include "reflection/type.h"
 #include "reflection/instance.h"
-#include "reflection/property_getter.h"
-#include "reflection/property_setter.h"
+#include "reflection/property/property_getter.h"
+#include "reflection/property/property_setter.h"
 
 #include "linb/any/any.hpp"
 

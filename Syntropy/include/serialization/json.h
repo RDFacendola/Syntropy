@@ -11,7 +11,7 @@
 
 #include "reflection/reflection.h"
 
-#include "serialization/json/deserializers.h"
+#include "serialization/json/json_deserializer.h"
 
 namespace syntropy {
 

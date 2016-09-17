@@ -41,11 +41,11 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\reflection\property_getter.h">
+    <ClInclude Include="include\reflection\property\property_getter.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\reflection\property_setter.h">
+    <ClInclude Include="include\reflection\property\property_setter.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -54,7 +54,7 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\serialization\json.h" />
-    <ClInclude Include="include\serialization\json\deserializers.h">
+    <ClInclude Include="include\serialization\json\json_deserializer.h">
       <SubType>
       </SubType>
     </ClInclude>

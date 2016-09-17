@@ -35,9 +35,9 @@
       <Filter>reflection</Filter>
     </ClInclude>
     <ClInclude Include="include\serialization\json.h" />
-    <ClInclude Include="include\reflection\property_getter.h" />
-    <ClInclude Include="include\reflection\property_setter.h" />
-    <ClInclude Include="include\serialization\json\deserializers.h" />
+    <ClInclude Include="include\reflection\property\property_getter.h" />
+    <ClInclude Include="include\reflection\property\property_setter.h" />
+    <ClInclude Include="include\serialization\json\json_deserializer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy.cpp">
