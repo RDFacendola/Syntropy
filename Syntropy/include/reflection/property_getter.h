@@ -105,6 +105,8 @@ namespace syntropy {
 
         };
 
+        /// \brief Create a new getter for the specified property.
+        /// \return Returns a pointer to the property getter.
         template <typename TGetter>
         std::unique_ptr<PropertyGetterT<TGetter>> MakePropertyGetter(TGetter getter) {
 

@@ -152,6 +152,8 @@ namespace syntropy {
  
          };
 
+         /// \brief Create a new setter for the specified property.
+         /// \return Returns a pointer to the property setter.
          template <typename TSetter>
          std::unique_ptr<PropertySetterT<TSetter>> MakePropertySetter(TSetter setter) {
 
