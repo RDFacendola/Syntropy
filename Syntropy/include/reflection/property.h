@@ -36,7 +36,10 @@ namespace syntropy {
             Property(Property&& other) noexcept;
 
             template <typename TClass, typename TProperty>
-            Property(const HashedString& name, TProperty TClass::* field) noexcept;
+            Property(const HashedString& name, TProperty TClass::* field, std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) noexcept;
+
+            template <typename TClass, typename TProperty>
+            Property(const HashedString& name, TProperty TClass::* field, std::enable_if_t<std::is_const<TProperty>::value>* = nullptr) noexcept;
 
             template <typename TClass, typename TProperty>
             Property(const HashedString& name, TProperty (TClass::* getter)() const) noexcept;
@@ -97,18 +100,23 @@ namespace syntropy{
         //////////////// PROPERTY ////////////////
 
         template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, TProperty TClass::* field) noexcept
+        Property::Property(const HashedString& name, TProperty TClass::* field, std::enable_if_t<!std::is_const<TProperty>::value>*) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
             , getter_(MakePropertyGetter(field))
             , setter_(MakePropertySetter(field)){}
 
         template <typename TClass, typename TProperty>
+        Property::Property(const HashedString& name, TProperty TClass::* field, std::enable_if_t<std::is_const<TProperty>::value>*) noexcept
+            : name_(name)
+            , type_(TypeOf<TProperty>())
+            , getter_(MakePropertyGetter(field)) {}
+
+        template <typename TClass, typename TProperty>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
             : name_(name)
             , type_(TypeOf<TProperty>())
-            , getter_(MakePropertyGetter(getter))
-            , setter_(MakePropertySetter(nullptr)) {}
+            , getter_(MakePropertyGetter(getter)) {}
 
         template <typename TClass, typename TProperty, typename TReturn>
         Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, TReturn(TClass::* setter)(TProperty)) noexcept
@@ -172,9 +180,10 @@ namespace syntropy{
 
         template <typename TInstance, typename TValue>
         bool Property::Set(TInstance&& instance, const TValue& value) const {
-
-            return (*setter_)(MakeInstance(std::forward<TInstance>(instance)),
-                              MakeConstInstance(value));
+            
+            return setter_ ?
+                   (*setter_)(MakeInstance(std::forward<TInstance>(instance)), MakeConstInstance(value)) :
+                   false;
 
         }
 

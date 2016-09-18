@@ -149,22 +149,24 @@ namespace syntropy {
             void DefineBaseClass() noexcept;
 
             /// \brief Define a class property.
-            /// This overload accounts for fields and read-only getters.
-            /// 
-            /// Examples:
-            /// d.DefineProperty("foo", &Foo::field)        // Defines a read\write property from a member variable.
-            /// d.DefineProperty("Foo", &Foo::GetField)     // Defines a read-only property from a const getter.
-            template <typename TProperty>
-            void DefineProperty(const HashedString& name, TProperty&& property);
-            
+            template <typename T, typename TProperty>
+            void DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) noexcept;
+
             /// \brief Define a class property.
-            /// This overload accounts for properties that are accessed via getters and setters.
-            ///
-            /// Examples:
-            /// d.DefineProperty("Foo", &Foo::GetFoo, &Foo::SetFoo)     // Getter of the form "const Foo& GetFoo() const", setter of the form "void SetFoo(const Foo&)"
-            /// d.DefineProperty("Foo", &Foo::GetFoo, &Foo::AccessFoo)  // Getter of the form "const Foo& GetFoo() const", accessor of the form "Foo& AccessFoo"
-            template <typename TGetter, typename TSetter>
-            void DefineProperty(const HashedString& name, TGetter&& getter, TSetter&& setter);
+            template <typename T, typename TProperty>
+            void DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<std::is_const<TProperty>::value>* = nullptr) noexcept;
+
+            /// \brief Define a class property.
+            template <typename T, typename TProperty>
+            void DefineProperty(const HashedString& name, TProperty (T::* getter)() const) noexcept;
+
+            /// \brief Define a class property.
+            template <typename T, typename TProperty, typename TReturn>
+            void DefineProperty(const HashedString& name, TProperty (T::* getter)() const, TReturn (T::* setter) (TProperty)) noexcept;
+
+            /// \brief Define a class property.
+            template <typename T, typename TProperty>
+            void DefineProperty(const HashedString& name, const TProperty& (T::* getter)() const, TProperty& (T::* setter)()) noexcept;
 
         private:
 
@@ -316,30 +318,58 @@ namespace syntropy {
         }
 
         template <typename TClass>
-        template <typename TProperty>
-        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty&& property) {
+        template <typename T, typename TProperty>
+        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<!std::is_const<TProperty>::value>*) noexcept {
 
             CheckPropertyNameOrDie(name);
-            
-            properties_.emplace_back(name, 
-                                     std::forward<TProperty>(property));
 
-            properties_.back().AddInterface<serialization::IJsonDeserializer>(property);
+            properties_.emplace_back(name, field);
+
+            properties_.back().AddInterface<serialization::IJsonDeserializer>(field);
 
         }
 
         template <typename TClass>
-        template <typename TGetter, typename TSetter>
-        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TGetter&& getter, TSetter&& setter) {
+        template <typename T, typename TProperty>
+        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<std::is_const<TProperty>::value>*) noexcept {
 
             CheckPropertyNameOrDie(name);
 
-            properties_.emplace_back(name, 
-                                     std::forward<TGetter>(getter),
-                                     std::forward<TSetter>(setter));
+            properties_.emplace_back(name, field);
+
+        }
+
+        template <typename TClass>
+        template <typename T, typename TProperty>
+        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty (T::* getter)() const) noexcept {
+
+            CheckPropertyNameOrDie(name);
+
+            properties_.emplace_back(name, getter);
+            
+        }
+
+        template <typename TClass>
+        template <typename T, typename TProperty, typename TReturn>
+        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty (T::* getter)() const, TReturn(T::* setter)(TProperty)) noexcept {
+
+            CheckPropertyNameOrDie(name);
+
+            properties_.emplace_back(name, getter, setter);
 
             properties_.back().AddInterface<serialization::IJsonDeserializer>(setter);
 
+        }
+
+        template <typename TClass>
+        template <typename T, typename TProperty>
+        void Class::Definition<TClass>::DefineProperty(const HashedString& name, const TProperty& (T::* getter)() const, TProperty&(T::* setter)()) noexcept {
+
+            CheckPropertyNameOrDie(name);
+
+            properties_.emplace_back(name, getter, setter);
+
+            properties_.back().AddInterface<serialization::IJsonDeserializer>(setter);
 
         }
 

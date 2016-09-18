@@ -29,11 +29,11 @@ namespace syntropy {
 
                     if (object_property) {
 
-                        auto serializer = object_property->GetInterface<IJsonDeserializer>();
+                        auto deserializer = object_property->GetInterface<IJsonDeserializer>();
 
-                        if (serializer) {
+                        if (deserializer) {
 
-                            (*serializer)(object, json_property.value());
+                            (*deserializer)(object, json_property.value());
 
                         }
 
