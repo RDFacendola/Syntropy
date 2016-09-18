@@ -148,25 +148,47 @@ namespace syntropy {
             template <typename TBaseClass>
             void DefineBaseClass() noexcept;
 
-            /// \brief Define a class property.
+            /// \brief Define a a property via non-const member field.
+            /// \param name Unique name of the class property.
+            /// \param field Member field used to access the property.
+            /// \return Returns the defined property.
+            /// \remarks Throws if the property name was already taken.
             template <typename T, typename TProperty>
-            void DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) noexcept;
+            Property& DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr);
 
-            /// \brief Define a class property.
+            /// \brief Define a read-only property via const member field.
+            /// \param name Unique name of the class property.
+            /// \param field Member field used to read the property.
+            /// \return Returns the defined property.
+            /// \remarks Throws if the property name was already taken.
             template <typename T, typename TProperty>
-            void DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<std::is_const<TProperty>::value>* = nullptr) noexcept;
+            Property& DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<std::is_const<TProperty>::value>* = nullptr);
 
-            /// \brief Define a class property.
+            /// \brief Define a read-only property via a getter method.
+            /// \param name Unique name of the class property.
+            /// \param getter Getter method used to read the property.
+            /// \return Returns the defined property.
+            /// \remarks Throws if the property name was already taken.
             template <typename T, typename TProperty>
-            void DefineProperty(const HashedString& name, TProperty (T::* getter)() const) noexcept;
+            Property& DefineProperty(const HashedString& name, TProperty (T::* getter)() const);
 
-            /// \brief Define a class property.
+            /// \brief Define a class property via a getter/setter method pair.
+            /// \param name Unique name of the class property.
+            /// \param getter Getter method used to read the property.
+            /// \param setter Setter method used to write the property.
+            /// \return Returns the defined property.
+            /// \remarks Throws if the property name was already taken.
             template <typename T, typename TProperty, typename TReturn>
-            void DefineProperty(const HashedString& name, TProperty (T::* getter)() const, TReturn (T::* setter) (TProperty)) noexcept;
+            Property& DefineProperty(const HashedString& name, TProperty (T::* getter)() const, TReturn (T::* setter) (TProperty));
 
-            /// \brief Define a class property.
+            /// \brief Define a class property via a pair of const/non-const accessors.
+            /// \param name Unique name of the class property.
+            /// \param getter Accessor method used to read the property.
+            /// \param setter Accessor method used to write the property.
+            /// \return Returns the defined property.
+            /// \remarks Throws if the property name was already taken.
             template <typename T, typename TProperty>
-            void DefineProperty(const HashedString& name, const TProperty& (T::* getter)() const, TProperty& (T::* setter)()) noexcept;
+            Property& DefineProperty(const HashedString& name, const TProperty& (T::* getter)() const, TProperty& (T::* setter)());
 
         private:
 
@@ -319,7 +341,9 @@ namespace syntropy {
 
         template <typename TClass>
         template <typename T, typename TProperty>
-        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<!std::is_const<TProperty>::value>*) noexcept {
+        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<!std::is_const<TProperty>::value>*) {
+
+            static_assert(std::is_same<TClass, T>::value, "Properties must refer to the class being defined");
 
             CheckPropertyNameOrDie(name);
 
@@ -327,49 +351,67 @@ namespace syntropy {
 
             properties_.back().AddInterface<serialization::IJsonDeserializer>(field);
 
+            return properties_.back();
+
         }
 
         template <typename TClass>
         template <typename T, typename TProperty>
-        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<std::is_const<TProperty>::value>*) noexcept {
+        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<std::is_const<TProperty>::value>*) {
+
+            static_assert(std::is_same<TClass, T>::value, "Properties must refer to the class being defined");
 
             CheckPropertyNameOrDie(name);
 
             properties_.emplace_back(name, field);
 
+            return properties_.back();
+
         }
 
         template <typename TClass>
         template <typename T, typename TProperty>
-        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty (T::* getter)() const) noexcept {
+        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty (T::* getter)() const) {
+
+            static_assert(std::is_same<TClass, T>::value, "Properties must refer to the class being defined");
 
             CheckPropertyNameOrDie(name);
 
             properties_.emplace_back(name, getter);
-            
+
+            return properties_.back();
+
         }
 
         template <typename TClass>
         template <typename T, typename TProperty, typename TReturn>
-        void Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty (T::* getter)() const, TReturn(T::* setter)(TProperty)) noexcept {
+        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty (T::* getter)() const, TReturn(T::* setter)(TProperty)) {
+
+            static_assert(std::is_same<TClass, T>::value, "Properties must refer to the class being defined");
 
             CheckPropertyNameOrDie(name);
 
             properties_.emplace_back(name, getter, setter);
 
             properties_.back().AddInterface<serialization::IJsonDeserializer>(setter);
+
+            return properties_.back();
 
         }
 
         template <typename TClass>
         template <typename T, typename TProperty>
-        void Class::Definition<TClass>::DefineProperty(const HashedString& name, const TProperty& (T::* getter)() const, TProperty&(T::* setter)()) noexcept {
+        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, const TProperty& (T::* getter)() const, TProperty&(T::* setter)()) {
+
+            static_assert(std::is_same<TClass, T>::value, "Properties must refer to the class being defined");
 
             CheckPropertyNameOrDie(name);
 
             properties_.emplace_back(name, getter, setter);
 
             properties_.back().AddInterface<serialization::IJsonDeserializer>(setter);
+
+            return properties_.back();
 
         }
 
