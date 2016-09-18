@@ -38,6 +38,7 @@
     <ClInclude Include="include\reflection\property\property_getter.h" />
     <ClInclude Include="include\reflection\property\property_setter.h" />
     <ClInclude Include="include\serialization\json\json_deserializer.h" />
+    <ClInclude Include="include\reflection\property\property_traits.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy.cpp">
