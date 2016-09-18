@@ -284,6 +284,9 @@ public:
                                   static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
                                   static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor));
 
+
+        //definition.DefineProperty("Toxic", &Blob::blob_);   // Declaring Blob stuffs inside Foo
+
     }
     
 };
@@ -805,13 +808,13 @@ public:
 
         std::cout << "\n\n";
 
-        RUN_TEST(FieldTest);
-        RUN_TEST(PropertyTest);
-        RUN_TEST(ConversionTest);
-        RUN_TEST(PolymorphismTest);
-        RUN_TEST(InstancingTest);
-        RUN_TEST(ForwardingTest);
-        RUN_TEST(AssignTest);
+//         RUN_TEST(FieldTest);
+//         RUN_TEST(PropertyTest);
+//         RUN_TEST(ConversionTest);
+//         RUN_TEST(PolymorphismTest);
+//         RUN_TEST(InstancingTest);
+//         RUN_TEST(ForwardingTest);
+//         RUN_TEST(AssignTest);
         RUN_TEST(DeserializeTest);
 
     }

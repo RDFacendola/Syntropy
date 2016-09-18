@@ -148,51 +148,21 @@ namespace syntropy {
             template <typename TBaseClass>
             void DefineBaseClass() noexcept;
 
-            /// \brief Define a a property via non-const member field.
+            /// \brief Define a class property.
             /// \param name Unique name of the class property.
-            /// \param field Member field used to access the property.
+            /// \param accessors Member field or methods used to access the property being defined.
             /// \return Returns the defined property.
             /// \remarks Throws if the property name was already taken.
-            template <typename T, typename TProperty>
-            Property& DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr);
-
-            /// \brief Define a read-only property via const member field.
-            /// \param name Unique name of the class property.
-            /// \param field Member field used to read the property.
-            /// \return Returns the defined property.
-            /// \remarks Throws if the property name was already taken.
-            template <typename T, typename TProperty>
-            Property& DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<std::is_const<TProperty>::value>* = nullptr);
-
-            /// \brief Define a read-only property via a getter method.
-            /// \param name Unique name of the class property.
-            /// \param getter Getter method used to read the property.
-            /// \return Returns the defined property.
-            /// \remarks Throws if the property name was already taken.
-            template <typename T, typename TProperty>
-            Property& DefineProperty(const HashedString& name, TProperty (T::* getter)() const);
-
-            /// \brief Define a class property via a getter/setter method pair.
-            /// \param name Unique name of the class property.
-            /// \param getter Getter method used to read the property.
-            /// \param setter Setter method used to write the property.
-            /// \return Returns the defined property.
-            /// \remarks Throws if the property name was already taken.
-            template <typename T, typename TProperty, typename TReturn>
-            Property& DefineProperty(const HashedString& name, TProperty (T::* getter)() const, TReturn (T::* setter) (TProperty));
-
-            /// \brief Define a class property via a pair of const/non-const accessors.
-            /// \param name Unique name of the class property.
-            /// \param getter Accessor method used to read the property.
-            /// \param setter Accessor method used to write the property.
-            /// \return Returns the defined property.
-            /// \remarks Throws if the property name was already taken.
-            template <typename T, typename TProperty>
-            Property& DefineProperty(const HashedString& name, const TProperty& (T::* getter)() const, TProperty& (T::* setter)());
+            template <typename... TAccessors>
+            Property& DefineProperty(const HashedString& name, TAccessors... accessors);
 
         private:
 
-            void CheckPropertyNameOrDie(const HashedString& property_name) const;
+            template <typename... TAccessors>
+            Property& AddCommonPropertyInterface(Property& property, TAccessors... accessors) const;
+
+            template <typename... TAccessors>
+            void CheckPropertyOrDie(const HashedString& property_name, TAccessors... accessors) const;
 
             std::vector<HashedString> names_;                   ///< \brief Class names.
 
@@ -340,85 +310,38 @@ namespace syntropy {
         }
 
         template <typename TClass>
-        template <typename T, typename TProperty>
-        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<!std::is_const<TProperty>::value>*) {
+        template <typename... TAccessors>
+        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, TAccessors... accessors) {
 
-            static_assert(std::is_same<TClass, T>::value, "Properties must refer to the class being defined");
+            CheckPropertyOrDie(name, accessors...);
 
-            CheckPropertyNameOrDie(name);
+            properties_.emplace_back(name, accessors...);
 
-            properties_.emplace_back(name, field);
-
-            properties_.back().AddInterface<serialization::IJsonDeserializer>(field);
-
-            return properties_.back();
+            return AddCommonPropertyInterface(properties_.back(), accessors...);
 
         }
 
         template <typename TClass>
-        template <typename T, typename TProperty>
-        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty T::* field, std::enable_if_t<std::is_const<TProperty>::value>*) {
+        template <typename... TAccessors>
+        Property& Class::Definition<TClass>::AddCommonPropertyInterface(Property& property, TAccessors... /*accessors*/) const {
 
-            static_assert(std::is_same<TClass, T>::value, "Properties must refer to the class being defined");
-
-            CheckPropertyNameOrDie(name);
-
-            properties_.emplace_back(name, field);
-
-            return properties_.back();
+            return property;
 
         }
 
         template <typename TClass>
-        template <typename T, typename TProperty>
-        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty (T::* getter)() const) {
+        template <typename... TAccessors>
+        void Class::Definition<TClass>::CheckPropertyOrDie(const HashedString& property_name, TAccessors...) const {
 
-            static_assert(std::is_same<TClass, T>::value, "Properties must refer to the class being defined");
+            static_assert(std::is_same<property_traits_class_t<TAccessors...>, TClass>::value, "You may only define properties for the class being defined.");
 
-            CheckPropertyNameOrDie(name);
+            auto it = std::find_if(properties_.begin(), 
+                                   properties_.end(), 
+                                   [&property_name](const Property& property) { 
 
-            properties_.emplace_back(name, getter);
+                                       return property.GetName() == property_name; 
 
-            return properties_.back();
-
-        }
-
-        template <typename TClass>
-        template <typename T, typename TProperty, typename TReturn>
-        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, TProperty (T::* getter)() const, TReturn(T::* setter)(TProperty)) {
-
-            static_assert(std::is_same<TClass, T>::value, "Properties must refer to the class being defined");
-
-            CheckPropertyNameOrDie(name);
-
-            properties_.emplace_back(name, getter, setter);
-
-            properties_.back().AddInterface<serialization::IJsonDeserializer>(setter);
-
-            return properties_.back();
-
-        }
-
-        template <typename TClass>
-        template <typename T, typename TProperty>
-        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, const TProperty& (T::* getter)() const, TProperty&(T::* setter)()) {
-
-            static_assert(std::is_same<TClass, T>::value, "Properties must refer to the class being defined");
-
-            CheckPropertyNameOrDie(name);
-
-            properties_.emplace_back(name, getter, setter);
-
-            properties_.back().AddInterface<serialization::IJsonDeserializer>(setter);
-
-            return properties_.back();
-
-        }
-
-        template <typename TClass>
-        void Class::Definition<TClass>::CheckPropertyNameOrDie(const HashedString& property_name) const {
-
-            auto it = std::find_if(properties_.begin(), properties_.end(), [&property_name](const Property& property) { return property.GetName() == property_name; });
+                                   });
 
             if (it != properties_.end()) {
 
