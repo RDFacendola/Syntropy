@@ -36,21 +36,12 @@ namespace syntropy {
             /// \brief Move constructor.
             Property(Property&& other) noexcept;
 
-            template <typename TClass, typename TProperty>
-            Property(const HashedString& name, TProperty TClass::* field, std::enable_if_t<!std::is_const<TProperty>::value>* = nullptr) noexcept;
+            template <typename TProperty>
+            Property(const HashedString& name, TProperty property) noexcept;
 
-            template <typename TClass, typename TProperty>
-            Property(const HashedString& name, TProperty TClass::* field, std::enable_if_t<std::is_const<TProperty>::value>* = nullptr) noexcept;
-
-            template <typename TClass, typename TProperty>
-            Property(const HashedString& name, TProperty (TClass::* getter)() const) noexcept;
-
-            template <typename TClass, typename TProperty, typename TReturn>
-            Property(const HashedString& name, TProperty(TClass::* getter)() const, TReturn(TClass::* setter)(TProperty)) noexcept;
-
-            template <typename TClass, typename TProperty>
-            Property(const HashedString& name, const TProperty&(TClass::* getter)() const, TProperty&(TClass::* setter)()) noexcept;
-            
+            template <typename TGetter, typename TSetter>
+            Property(const HashedString& name, TGetter getter, TSetter setter) noexcept;
+                        
             /// \brief No assignment operator.
             Property& operator=(const Property&) = delete;
 
@@ -100,36 +91,17 @@ namespace syntropy{
 
         //////////////// PROPERTY ////////////////
 
-        template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, TProperty TClass::* field, std::enable_if_t<!std::is_const<TProperty>::value>*) noexcept
+        template <typename TProperty>
+        Property::Property(const HashedString& name, TProperty property) noexcept
             : name_(name)
-            , type_(TypeOf<TProperty>())
-            , getter_(MakePropertyGetter(field))
-            , setter_(MakePropertySetter(field)){}
+            , type_(TypeOf<property_traits_property_t<TProperty>>())
+            , getter_(MakePropertyGetter(property))
+            , setter_(MakePropertySetter(property)){}
 
-        template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, TProperty TClass::* field, std::enable_if_t<std::is_const<TProperty>::value>*) noexcept
+        template <typename TGetter, typename TSetter>
+        Property::Property(const HashedString& name, TGetter getter, TSetter setter) noexcept
             : name_(name)
-            , type_(TypeOf<TProperty>())
-            , getter_(MakePropertyGetter(field)) {}
-
-        template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, TProperty(TClass::* getter)() const) noexcept
-            : name_(name)
-            , type_(TypeOf<TProperty>())
-            , getter_(MakePropertyGetter(getter)) {}
-
-        template <typename TClass, typename TProperty, typename TReturn>
-        Property::Property(const HashedString& name, TProperty(TClass::* getter)() const, TReturn(TClass::* setter)(TProperty)) noexcept
-            : name_(name)
-            , type_(TypeOf<TProperty>())
-            , getter_(MakePropertyGetter(getter))
-            , setter_(MakePropertySetter(setter)) {}
-
-        template <typename TClass, typename TProperty>
-        Property::Property(const HashedString& name, const TProperty& (TClass::* getter)() const, TProperty& (TClass::* setter)()) noexcept
-            : name_(name)
-            , type_(TypeOf<TProperty>())
+            , type_(TypeOf<property_traits_property_t<TGetter, TSetter>>())
             , getter_(MakePropertyGetter(getter))
             , setter_(MakePropertySetter(setter)) {}
 

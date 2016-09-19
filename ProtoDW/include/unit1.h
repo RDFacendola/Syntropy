@@ -808,13 +808,13 @@ public:
 
         std::cout << "\n\n";
 
-//         RUN_TEST(FieldTest);
-//         RUN_TEST(PropertyTest);
-//         RUN_TEST(ConversionTest);
-//         RUN_TEST(PolymorphismTest);
-//         RUN_TEST(InstancingTest);
-//         RUN_TEST(ForwardingTest);
-//         RUN_TEST(AssignTest);
+        RUN_TEST(FieldTest);
+        RUN_TEST(PropertyTest);
+        RUN_TEST(ConversionTest);
+        RUN_TEST(PolymorphismTest);
+        RUN_TEST(InstancingTest);
+        RUN_TEST(ForwardingTest);
+        RUN_TEST(AssignTest);
         RUN_TEST(DeserializeTest);
 
     }
