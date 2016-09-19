@@ -8,8 +8,8 @@
 
 #include <functional>
 
-#include "type_traits.h"
 #include "reflection/instance.h"
+#include "reflection/property/property_traits.h"
 
 namespace syntropy {
 
@@ -46,7 +46,6 @@ namespace syntropy {
 
             }
 
-
         };
 
         /// \brief Concrete property setter.
@@ -67,9 +66,9 @@ namespace syntropy {
 
                 if (concrete_value && concrete_instance) {
 
-                    conditional_assign(concrete_instance->*field_, *concrete_value);
+                    concrete_instance->*field_ = *concrete_value;
 
-                    return !std::is_const_v<TField>;
+                    return true;
 
                 }
 
@@ -152,12 +151,37 @@ namespace syntropy {
  
          };
 
+         template <typename TSetter, bool kHasSetter = property_traits_has_setter_v<TSetter>>
+         struct PropertySetterBuilder { };
+
+         template <typename TSetter>
+         struct PropertySetterBuilder<TSetter, true> {
+
+             std::unique_ptr<PropertySetter> operator()(TSetter setter) {
+
+                 return std::make_unique<PropertySetterT<TSetter>>(setter);
+
+             }
+
+         };
+
+         template <typename TSetter>
+         struct PropertySetterBuilder<TSetter, false> {
+
+             std::unique_ptr<PropertySetter> operator()(TSetter) {
+
+                 return nullptr;
+
+             }
+
+         };
+
          /// \brief Create a new setter for the specified property.
          /// \return Returns a pointer to the property setter.
          template <typename TSetter>
-         std::unique_ptr<PropertySetterT<TSetter>> MakePropertySetter(TSetter setter) {
+         std::unique_ptr<PropertySetter> MakePropertySetter(TSetter setter) {
 
-             return std::make_unique<PropertySetterT<TSetter>>(setter);
+             return PropertySetterBuilder<TSetter>()(setter);
 
          }
 

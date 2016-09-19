@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "reflection/instance.h"
+#include "reflection/property/property_traits.h"
 
 namespace syntropy {
 
@@ -105,12 +106,37 @@ namespace syntropy {
 
         };
 
+        template <typename TGetter, bool kHasSetter = property_traits_has_getter_v<TGetter>>
+        struct PropertyGetterBuilder { };
+
+        template <typename TGetter>
+        struct PropertyGetterBuilder<TGetter, true> {
+
+            std::unique_ptr<PropertyGetter> operator()(TGetter getter) {
+
+                return std::make_unique<PropertyGetterT<TGetter>>(getter);
+
+            }
+
+        };
+
+        template <typename TGetter>
+        struct PropertyGetterBuilder<TGetter, false> {
+
+            std::unique_ptr<PropertyGetter> operator()(TGetter) {
+
+                return nullptr;
+
+            }
+
+        };
+
         /// \brief Create a new getter for the specified property.
         /// \return Returns a pointer to the property getter.
         template <typename TGetter>
-        std::unique_ptr<PropertyGetterT<TGetter>> MakePropertyGetter(TGetter getter) {
+        std::unique_ptr<PropertyGetter> MakePropertyGetter(TGetter getter) {
 
-            return std::make_unique<PropertyGetterT<TGetter>>(getter);
+            return PropertyGetterBuilder<TGetter>()(getter);
 
         }
 
