@@ -19,6 +19,10 @@ namespace syntropy {
             using property_type = typename TField;
 
             using class_type = typename TClass;
+
+            static const bool has_getter = true;
+
+            static const bool has_setter = !std::is_const<TField>::value;
         
         };
 
@@ -29,6 +33,10 @@ namespace syntropy {
 
             using class_type = typename TClass;
 
+            static const bool has_getter = true;
+
+            static const bool has_setter = false;
+
         };
 
         template <typename TClass, typename TProperty, typename TReturn>
@@ -37,6 +45,10 @@ namespace syntropy {
             using property_type = typename std::remove_cv_t<std::remove_reference_t<TProperty>>;
 
             using class_type = typename TClass;
+
+            static const bool has_getter = true;
+
+            static const bool has_setter = true;
 
         };
 
@@ -47,6 +59,10 @@ namespace syntropy {
 
             using class_type = typename TClass;
 
+            static const bool has_getter = true;
+
+            static const bool has_setter = true;
+
         };
 
         template <typename... TProperty>
@@ -54,6 +70,12 @@ namespace syntropy {
 
         template <typename... TProperty>
         using property_traits_property_t = typename property_traits<TProperty...>::class_type;
+
+        template <typename... TProperty>
+        constexpr bool property_traits_has_getter_v = typename property_traits<TProperty...>::has_getter;
+
+        template <typename... TProperty>
+        constexpr bool property_traits_has_setter_v = typename property_traits<TProperty...>::has_setter;
 
     }
 
