@@ -52,8 +52,8 @@ namespace syntropy {
 
             const Type& GetType() const noexcept;
             
-            template <typename TInterface, typename... TArguments>
-            bool AddInterface(TArguments&&... arguments);
+            template <typename TProvider, typename... TRestProviders>
+            void AddInterfaces(TProvider&& provider, TRestProviders&&... rest);
 
             template <typename TInterface>
             const TInterface* GetInterface() const;
@@ -68,6 +68,8 @@ namespace syntropy {
             bool Set(TInstance&& instance, const TValue& value) const;
 
         private:
+
+            void AddInterfaces();
 
             HashedString name_;                                             ///< \brief Property name.
 
@@ -105,23 +107,32 @@ namespace syntropy{
             , getter_(MakePropertyGetter(getter))
             , setter_(MakePropertySetter(setter)) {}
 
-        template <typename TInterface, typename... TArguments>
-        bool Property::AddInterface(TArguments&&... arguments) {
+        template <typename TProvider, typename... TRestProviders>
+        void Property::AddInterfaces(TProvider&& provider, TRestProviders&&... rest){
 
-            auto interface_type = std::type_index(typeid(TInterface));
+            // (1) TODO: Add support to Many-interfaces providers (ie: a single provider adding more than one interface)
+            // (2) TODO: Add support to optional providers (ie: a provider that decides not to add anything based on the type). Should be included in (1)
+
+            // Create an functor interface InterfaceDeclaration used to add interfaces to the property.
+            // Call the provider with both the getter, the setter and the interface above and let the provider handle everything
+
+            // void provider::operator()(TGetter, TSetter, InterfaceDeclarator)
+            // void provider::operator()(TProperty, InterfaceDeclarator)
+
+            auto interface_type = std::type_index(typeid(decltype(provider())));
 
             if (interfaces_.find(interface_type) == interfaces_.end()) {
 
                 interfaces_.insert(std::make_pair(interface_type,
-                                                  linb::any(TInterface(std::forward<TArguments>(arguments)...))));
-
-                return true;
+                                                  linb::any(provider())));
 
             }
 
-            return false;
+            AddInterfaces(rest...);
 
         }
+
+        inline void Property::AddInterfaces() {}
 
         template <typename TInterface>
         const TInterface* Property::GetInterface() const{

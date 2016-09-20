@@ -17,11 +17,11 @@ namespace syntropy {
 
     namespace serialization {
 
-        // Property interface
-
         class IJsonDeserializer{
 
         public:
+
+            IJsonDeserializer() {}
 
             template<typename TClass, typename TField>
             IJsonDeserializer(TField TClass::* field){
@@ -104,6 +104,17 @@ namespace syntropy {
             std::function<void(reflection::Instance, const nlohmann::json&)> deserializer_;
 
         };
+
+         // Property interface
+         struct JsonDeserializable {
+ 
+             IJsonDeserializer operator()() const {
+
+                 return IJsonDeserializer();
+
+             }
+
+         };
 
         // Utilities
 

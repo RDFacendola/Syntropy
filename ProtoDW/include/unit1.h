@@ -260,12 +260,13 @@ public:
 
     }
 
-    template <typename TDefinition>
-    void operator()(TDefinition& definition) const {
+    void operator()(Class::Definition<Foo>& definition) const {
         
+        using syntropy::serialization::JsonDeserializable;
+
         definition.DefineBaseClass<Bar>();
 
-        definition.DefineProperty("float_value", &Foo::value_);
+        definition.DefineProperty("float_value", &Foo::value_).AddInterfaces(JsonDeserializable());
         definition.DefineProperty("int_value", &Foo::value2_);
         definition.DefineProperty("const_value", &Foo::const_value_);
         definition.DefineProperty("pointer", &Foo::pointer_);
