@@ -41,18 +41,6 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\reflection\property\property_getter.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="include\reflection\property\property_setter.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="include\reflection\property\property_traits.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\reflection\reflection.h">
       <SubType>
       </SubType>

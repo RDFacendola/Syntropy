@@ -333,7 +333,7 @@ namespace syntropy {
         template <typename... TAccessors>
         void Class::Definition<TClass>::CheckPropertyOrDie(const HashedString& property_name, TAccessors...) const {
 
-            static_assert(std::is_same<property_traits_class_t<TAccessors...>, TClass>::value, "You may only define properties for the class being defined.");
+            //static_assert(std::is_same<property_traits_class_t<TAccessors...>, TClass>::value, "You may only define properties for the class being defined.");
 
             auto it = std::find_if(properties_.begin(), 
                                    properties_.end(), 
