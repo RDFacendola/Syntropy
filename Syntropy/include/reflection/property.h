@@ -27,79 +27,54 @@ namespace syntropy {
 
         public:
 
-            /// \brief No copy constructor.
-            Property(const Property& other) = delete;
-            
-            /// \brief Move constructor.
-            Property(Property&& other) noexcept;
+            /// \brief Structure containing the actual member pointers to the underlying property.
+            /// See template specializations.
+            template <typename... TAccessors>
+            class PropertyT;
 
-            template <typename TProperty>
-            Property(const HashedString& name, TProperty property) noexcept;
-
-            template <typename TGetter, typename TSetter>
-            Property(const HashedString& name, TGetter getter, TSetter setter) noexcept;
-                        
-            /// \brief No assignment operator.
-            Property& operator=(const Property&) = delete;
+            Property(const char* name);
 
             /// \brief Default destructor.
-            ~Property() = default;
+            virtual ~Property() = default;
 
             const HashedString& GetName() const noexcept;
 
-            const Type& GetType() const noexcept;
+            /// \brief Get the property type.
+            /// \brief Returns the property type.
+            virtual const Type& GetType() const noexcept = 0;
             
-            template <typename TProvider, typename... TRestProviders>
-            void AddInterfaces(TProvider&& provider, TRestProviders&&... rest);
-            
-            template <typename TInterface, typename... TArgs>
-            bool CreateInterface(TArgs&&... arguments);
-
-            template <typename TInterface>
-            const TInterface* GetInterface() const;
-
-            template <typename TInterface>
-            TInterface* GetInterface();
-
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue&& value) const;
 
             template <typename TInstance, typename TValue>
             bool Set(TInstance&& instance, const TValue& value) const;
 
+            template <typename TInterface, typename... TArgs>
+            bool AddInterface(TArgs&&... arguments);
+
+            template <typename TInterface>
+            const TInterface* GetInterface() const;
+
+            template <typename TInterface>
+            TInterface* GetInterface();
+            
+        protected:
+
+            /// \brief Get the property value.
+            /// \param instance Instance the property refers to.
+            /// \param value If the method succeeds, it contains the value read from the property.
+            /// \return Return true if the property was legitimate for the provided instance and the value could be read, returns false otherwise.
+            virtual bool PropertyGet(Instance instance, Instance value) const = 0;
+
+            /// \brief Set the property value.
+            /// \param instance Instance the property refers to.
+            /// \param value Value to set.
+            /// \return Return true if the property was legitimate for the provided instance and the value could be written, returns false otherwise.
+            virtual bool PropertySet(Instance instance, Instance value) const = 0;
+
         private:
 
-            /// \brief Common interface used to access the underlying property.
-            struct IProperty {
-
-                /// \brief Get the property type.
-                /// \brief Returns the property type.
-                virtual const Type& GetType() const noexcept = 0;
-
-                /// \brief Get the property value.
-                /// \param instance Instance the property refers to.
-                /// \param value If the method succeeds, it contains the value read from the property.
-                /// \return Return true if the property was legitimate for the provided instance and the value could be read, returns false otherwise.
-                virtual bool Get(Instance instance, Instance value) const = 0;
-
-                /// \brief Set the property value.
-                /// \param instance Instance the property refers to.
-                /// \param value Value to set.
-                /// \return Return true if the property was legitimate for the provided instance and the value could be written, returns false otherwise.
-                virtual bool Set(Instance instance, Instance value) const = 0;
-
-            };
-
-            /// \brief Structure containing the actual member pointers to the underlying property.
-            /// See template specializations.
-            template <typename... TAccessors>
-            struct PropertyT : IProperty {};
-
-            void AddInterfaces();
-
             HashedString name_;                                             ///< \brief Property name.
-
-            std::unique_ptr<IProperty> property_;                           ///< \brief Actual property pointer.
 
             std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the property.
 
@@ -131,10 +106,13 @@ namespace syntropy{
         //////////////// PROPERTY :: PROPERTY T ////////////////
         
         template <typename TClass, typename TField>
-        struct Property::PropertyT<TField (TClass::*)> : Property::IProperty {
+        class Property::PropertyT<TField (TClass::*)> : public Property {
 
-            PropertyT(TField(TClass::* field))
-                : field_(field) {}
+        public:
+
+            PropertyT(const char* name, TField(TClass::* field))
+                : Property(name)
+                , field_(field) {}
 
             virtual const Type& GetType() const noexcept override {
 
@@ -142,7 +120,9 @@ namespace syntropy{
 
             }
 
-            virtual bool Get(Instance instance, Instance value) const override{
+        protected:
+
+            virtual bool PropertyGet(Instance instance, Instance value) const override{
 
                 auto concrete_instance = instance.As<const TClass>();
                 auto concrete_value = value.As<std::decay_t<TField>>();
@@ -159,7 +139,7 @@ namespace syntropy{
 
             }
 
-            virtual bool Set(Instance instance, Instance value) const override {
+            virtual bool PropertySet(Instance instance, Instance value) const override {
 
                 auto concrete_instance = instance.As<TClass>();
                 auto concrete_value = value.As<const TField>();
@@ -176,15 +156,20 @@ namespace syntropy{
 
             }
 
+        private:
+
             TField TClass::* field_;                ///< \brief Member field.
 
         };
 
         template <typename TClass, typename TProperty>
-        struct Property::PropertyT<TProperty(TClass::*)() const> : Property::IProperty {
+        class Property::PropertyT<TProperty(TClass::*)() const> : public Property {
 
-            PropertyT(TProperty(TClass::* getter)() const)
-                : getter_(getter) {}
+        public:
+
+            PropertyT(const char* name, TProperty(TClass::* getter)() const)
+                : Property(name)
+                , getter_(getter) {}
 
             virtual const Type& GetType() const noexcept override {
 
@@ -192,7 +177,9 @@ namespace syntropy{
 
             }
 
-            virtual bool Get(Instance instance, Instance value) const override {
+        protected:
+
+            virtual bool PropertyGet(Instance instance, Instance value) const override {
 
                 auto concrete_instance = instance.As<const TClass>();
                 auto concrete_value = value.As<std::decay_t<TProperty>>();
@@ -209,21 +196,26 @@ namespace syntropy{
 
             }
 
-            virtual bool Set(Instance instance, Instance value) const override {
+            virtual bool PropertySet(Instance instance, Instance value) const override {
 
                 return false;
 
             }
+
+        private:
 
             TProperty(TClass::* getter_)() const;           ///< \brief Getter method of the property.
 
         };
 
         template <typename TClass, typename TProperty, typename TReturn>
-        struct Property::PropertyT<TProperty(TClass::*)() const, TReturn(TClass::*)(TProperty)> : Property::IProperty {
+        class Property::PropertyT<TProperty(TClass::*)() const, TReturn(TClass::*)(TProperty)> : public Property {
 
-            PropertyT(TProperty(TClass::* getter)() const, TReturn(TClass::* setter)(TProperty))
-                : getter_(getter)
+        public:
+
+            PropertyT(const char* name, TProperty(TClass::* getter)() const, TReturn(TClass::* setter)(TProperty))
+                : Property(name)
+                , getter_(getter)
                 , setter_(setter){}
 
             virtual const Type& GetType() const noexcept override {
@@ -232,7 +224,9 @@ namespace syntropy{
 
             }
 
-            virtual bool Get(Instance instance, Instance value) const override {
+        protected:
+
+            virtual bool PropertyGet(Instance instance, Instance value) const override {
 
                 auto concrete_instance = instance.As<const TClass>();
                 auto concrete_value = value.As<std::decay_t<TProperty>>();
@@ -249,7 +243,7 @@ namespace syntropy{
 
             }
 
-            virtual bool Set(Instance instance, Instance value) const override {
+            virtual bool PropertySet(Instance instance, Instance value) const override {
 
                 auto concrete_instance = instance.As<TClass>();
                 auto concrete_value = value.As<const std::remove_reference_t<TProperty>>();
@@ -266,6 +260,8 @@ namespace syntropy{
 
             }
 
+        private:
+
             TProperty(TClass::* getter_)() const;           ///< \brief Getter method of the property.
 
             TReturn(TClass::* setter_)(TProperty);          ///< \brief Setter method of the property.
@@ -273,10 +269,13 @@ namespace syntropy{
         };
 
         template <typename TClass, typename TProperty>
-        struct Property::PropertyT<const TProperty&(TClass::*)() const, TProperty&(TClass::*)()> : Property::IProperty {
+        class Property::PropertyT<const TProperty&(TClass::*)() const, TProperty&(TClass::*)()> : public Property {
 
-            PropertyT(const TProperty&(TClass::* getter)() const, TProperty&(TClass::* setter)())
-                : getter_(getter)
+        public:
+
+            PropertyT(const char* name, const TProperty&(TClass::* getter)() const, TProperty&(TClass::* setter)())
+                : Property(name)
+                , getter_(getter)
                 , setter_(setter) {}
 
             virtual const Type& GetType() const noexcept override {
@@ -285,7 +284,9 @@ namespace syntropy{
 
             }
 
-            virtual bool Get(Instance instance, Instance value) const override {
+        protected:
+
+            virtual bool PropertyGet(Instance instance, Instance value) const override {
 
                 auto concrete_instance = instance.As<const TClass>();
                 auto concrete_value = value.As<std::decay_t<TProperty>>();
@@ -302,7 +303,7 @@ namespace syntropy{
 
             }
 
-            virtual bool Set(Instance instance, Instance value) const override {
+            virtual bool PropertySet(Instance instance, Instance value) const override {
 
                 auto concrete_instance = instance.As<TClass>();
                 auto concrete_value = value.As<const TProperty>();
@@ -319,6 +320,8 @@ namespace syntropy{
 
             }
 
+        private:
+
             const TProperty&(TClass::* getter_)() const;       ///< \brief Getter method of the property.
 
             TProperty&(TClass::* setter_)();                   ///< \brief Setter method of the property.
@@ -327,27 +330,8 @@ namespace syntropy{
 
         //////////////// PROPERTY ////////////////
 
-        template <typename TProperty>
-        Property::Property(const HashedString& name, TProperty property) noexcept
-            : name_(name)
-            , property_(std::make_unique<PropertyT<TProperty>>(property)) {}
-
-        template <typename TGetter, typename TSetter>
-        Property::Property(const HashedString& name, TGetter getter, TSetter setter) noexcept
-            : name_(name)
-            , property_(std::make_unique<PropertyT<TGetter, TSetter>>(getter, setter)) {}
-
-        template <typename TProvider, typename... TRestProviders>
-        void Property::AddInterfaces(TProvider&& provider, TRestProviders&&... rest){
-
-            provider(/*getter, setter, */InterfaceDeclaration(*this));
-
-            AddInterfaces(rest...);
-
-        }
-
         template <typename TInterface, typename... TArgs>
-        bool Property::CreateInterface(TArgs&&... arguments){
+        bool Property::AddInterface(TArgs&&... arguments){
 
             auto interface_type = std::type_index(typeid(TInterface));
 
@@ -387,16 +371,16 @@ namespace syntropy{
         template <typename TInstance, typename TValue>
         bool Property::Get(const TInstance& instance, TValue&& value) const {
 
-            return property_->Get(MakeConstInstance(instance),
-                                  MakeInstance(std::forward<TValue>(value)));
+            return PropertyGet(MakeConstInstance(instance),
+                               MakeInstance(std::forward<TValue>(value)));
 
         }
 
         template <typename TInstance, typename TValue>
         bool Property::Set(TInstance&& instance, const TValue& value) const {
 
-            return property_->Set(MakeInstance(std::forward<TInstance>(instance)), 
-                                  MakeConstInstance(value));
+            return PropertySet(MakeInstance(std::forward<TInstance>(instance)), 
+                               MakeConstInstance(value));
 
         }
 
@@ -405,7 +389,7 @@ namespace syntropy{
         template <typename TInterface, typename... TArgs>
         bool InterfaceDeclaration::CreateInterface(TArgs&&... arguments){
 
-            return property_.CreateInterface<TInterface>(std::forward<TArgs>(arguments)...);
+            return property_.AddInterface<TInterface>(std::forward<TArgs>(arguments)...);
 
         }
 

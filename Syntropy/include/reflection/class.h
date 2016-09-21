@@ -84,7 +84,7 @@ namespace syntropy {
 
             /// \brief Get the list of properties supported by this class.
             /// \return Returns the list of properties supported by this class.
-            virtual const std::vector<Property>& GetProperties() const noexcept = 0;
+            virtual const std::vector<std::unique_ptr<Property>>& GetProperties() const noexcept = 0;
 
             /// \brief Check whether this class is abstract or not.
             /// \return Returns true if the class is abstract, returns false otherwise.
@@ -154,21 +154,18 @@ namespace syntropy {
             /// \return Returns the defined property.
             /// \remarks Throws if the property name was already taken.
             template <typename... TAccessors>
-            Property& DefineProperty(const HashedString& name, TAccessors... accessors);
+            Property::PropertyT<TAccessors...>& DefineProperty(const char* property_name, TAccessors... accessors);
 
         private:
 
             template <typename... TAccessors>
-            Property& AddCommonPropertyInterface(Property& property, TAccessors... accessors) const;
-
-            template <typename... TAccessors>
             void CheckPropertyOrDie(const HashedString& property_name, TAccessors... accessors) const;
 
-            std::vector<HashedString> names_;                   ///< \brief Class names.
+            std::vector<HashedString> names_;                                   ///< \brief Class names.
 
-            std::vector<const Class*> base_classes_;            ///< \brief List of all base classes.
+            std::vector<const Class*> base_classes_;                            ///< \brief List of all base classes.
 
-            std::vector<Property> properties_;                  ///< \brief Reference to the class properties.
+            std::vector<std::unique_ptr<Property>> properties_;                 ///< \brief Reference to the class properties.
 
         };
 
@@ -191,7 +188,7 @@ namespace syntropy {
 
             virtual const Property* GetProperty(const HashedString& property_name) const noexcept override;
 
-            virtual const std::vector<Property>& GetProperties() const noexcept override;
+            virtual const std::vector<std::unique_ptr<Property>>& GetProperties() const noexcept override;
 
             virtual bool IsAbstract() const noexcept override;
 
@@ -210,7 +207,7 @@ namespace syntropy {
             
             std::vector<const Class*> base_classes_;                                ///< \brief List of base classes.
 
-            std::vector<Property> properties_;                                      ///< \brief List of class properties.
+            std::vector<std::unique_ptr<Property>> properties_;                     ///< \brief List of class properties.
             
             std::unordered_map<TPropertyHash, const Property*> properties_index_;   ///< \brief Index over the class properties used to access properties by name.
 
@@ -311,21 +308,15 @@ namespace syntropy {
 
         template <typename TClass>
         template <typename... TAccessors>
-        Property& Class::Definition<TClass>::DefineProperty(const HashedString& name, TAccessors... accessors) {
+        Property::PropertyT<TAccessors...>& Class::Definition<TClass>::DefineProperty(const char* property_name, TAccessors... accessors) {
 
-            CheckPropertyOrDie(name, accessors...);
+            CheckPropertyOrDie(property_name, accessors...);
 
-            properties_.emplace_back(name, accessors...);
+            auto property = new Property::PropertyT<TAccessors...>(property_name, accessors...);
 
-            return AddCommonPropertyInterface(properties_.back(), accessors...);
+            properties_.push_back(std::unique_ptr<Property>(property));
 
-        }
-
-        template <typename TClass>
-        template <typename... TAccessors>
-        Property& Class::Definition<TClass>::AddCommonPropertyInterface(Property& property, TAccessors... /*accessors*/) const {
-
-            return property;
+            return *property;
 
         }
 
@@ -337,9 +328,9 @@ namespace syntropy {
 
             auto it = std::find_if(properties_.begin(), 
                                    properties_.end(), 
-                                   [&property_name](const Property& property) { 
+                                   [&property_name](const std::unique_ptr<Property>& property) { 
 
-                                       return property.GetName() == property_name; 
+                                       return property->GetName() == property_name; 
 
                                    });
 
@@ -402,7 +393,7 @@ namespace syntropy {
         }
 
         template <typename TClass>
-        inline const std::vector<Property>& Class::ClassT<TClass>::GetProperties() const noexcept {
+        inline const std::vector<std::unique_ptr<Property>>& Class::ClassT<TClass>::GetProperties() const noexcept {
 
             return properties_;
 
@@ -437,10 +428,10 @@ namespace syntropy {
 
             std::transform(properties_.begin(), properties_.end(),
                            std::inserter(properties_index_, properties_index_.begin()),
-                           [](const Property& property) {
+                           [](const std::unique_ptr<Property>& property) {
 
-                                return std::make_pair(std::hash<HashedString>()(property.GetName()),
-                                                      &property);
+                                return std::make_pair(std::hash<HashedString>()(property->GetName()),
+                                                      property.get());
 
                            });
 
