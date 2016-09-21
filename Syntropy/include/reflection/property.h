@@ -118,6 +118,19 @@ namespace syntropy{
 
             }
 
+            /// \brief Apply a functor to this property.
+            /// The arguments passed to the functor are the property and a pointer to the field.
+            /// \usage: property << Foo();          // Resolves to Foo()(property, field)
+            /// \return Returns a reference to the property.
+            template <typename TFunctor>
+            auto operator<<(TFunctor&& functor) {
+
+                functor(*this, field_);
+
+                return *this;
+
+            }
+
         private:
 
             virtual bool PropertyGet(Instance instance, Instance value) const override{
@@ -173,6 +186,19 @@ namespace syntropy{
 
             }
 
+            /// \brief Apply a functor to this property.
+            /// The arguments passed to the functor are the property and a pointer to the getter.
+            /// \usage: property << Foo();          // Resolves to Foo()(property, getter)
+            /// \return Returns a reference to the property.
+            template <typename TFunctor>
+            auto operator<<(TFunctor&& functor) {
+
+                functor(*this, getter_);
+
+                return *this;
+
+            }
+
         private:
 
             virtual bool PropertyGet(Instance instance, Instance value) const override {
@@ -215,6 +241,19 @@ namespace syntropy{
             virtual const Type& GetType() const noexcept override {
 
                 return TypeOf<std::remove_cv_t<std::remove_reference_t<TProperty>>>();
+
+            }
+
+            /// \brief Apply a functor to this property.
+            /// The arguments passed to the functor are the property and a pointer to both the getter and the setter.
+            /// \usage: property << Foo();          // Resolves to Foo()(property, getter, setter)
+            /// \return Returns a reference to the property.
+            template <typename TFunctor>
+            auto operator<<(TFunctor&& functor) {
+
+                functor(*this, getter_, setter_);
+
+                return *this;
 
             }
 
@@ -273,6 +312,19 @@ namespace syntropy{
             virtual const Type& GetType() const noexcept override {
 
                 return TypeOf<TProperty>();
+
+            }
+
+            /// \brief Apply a functor to this property.
+            /// The arguments passed to the functor are the property and a pointer to both the getter and the setter.
+            /// \usage: property << Foo();          // Resolves to Foo()(property, getter, setter)
+            /// \return Returns a reference to the property.
+            template <typename TFunctor>
+            auto operator<<(TFunctor&& functor) {
+
+                functor(*this, getter_, setter_);
+
+                return *this;
 
             }
 
