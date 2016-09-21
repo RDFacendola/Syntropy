@@ -78,21 +78,6 @@ namespace syntropy {
 
         };
 
-        class InterfaceDeclaration{
-
-        public:
-
-            InterfaceDeclaration(Property& property);
-
-            template <typename TInterface, typename... TArgs>
-            bool CreateInterface(TArgs&&... arguments);
-
-        private:
-
-            Property& property_;
-
-        };
-
     }
 
 }
@@ -423,15 +408,6 @@ namespace syntropy{
 
             return PropertySet(MakeInstance(std::forward<TInstance>(instance)), 
                                MakeConstInstance(value));
-
-        }
-
-        //////////////// INTERFACE DECLARATION ////////////////
-
-        template <typename TInterface, typename... TArgs>
-        bool InterfaceDeclaration::CreateInterface(TArgs&&... arguments){
-
-            return property_.AddInterface<TInterface>(std::forward<TArgs>(arguments)...);
 
         }
 

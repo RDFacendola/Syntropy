@@ -15,11 +15,6 @@ namespace syntropy {
 
         }
 
-        //////////////// INTERFACE DECLARATION ////////////////
-        
-        InterfaceDeclaration::InterfaceDeclaration(Property& property)
-            : property_(property){}
-
     }
 
 }
