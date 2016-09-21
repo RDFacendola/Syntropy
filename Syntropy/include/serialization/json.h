@@ -108,9 +108,10 @@ namespace syntropy {
          // Property interface
          struct JsonDeserializable {
  
-             IJsonDeserializer operator()() const {
+             template <typename... TAccessors>
+             void operator()(reflection::InterfaceDeclaration declaration, TAccessors&&... accessors) const {
 
-                 return IJsonDeserializer();
+                 declaration.CreateInterface<IJsonDeserializer>(std::forward<TAccessors>(accessors)...);
 
              }
 

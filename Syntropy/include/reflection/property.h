@@ -54,6 +54,9 @@ namespace syntropy {
             
             template <typename TProvider, typename... TRestProviders>
             void AddInterfaces(TProvider&& provider, TRestProviders&&... rest);
+            
+            template <typename TInterface, typename... TArgs>
+            bool CreateInterface(TArgs&&... arguments);
 
             template <typename TInterface>
             const TInterface* GetInterface() const;
@@ -80,6 +83,21 @@ namespace syntropy {
             std::unique_ptr<PropertySetter> setter_;                        ///< \brief Property setter.
 
             std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the property.
+
+        };
+
+        class InterfaceDeclaration{
+
+        public:
+
+            InterfaceDeclaration(Property& property);
+
+            template <typename TInterface, typename... TArgs>
+            bool CreateInterface(TArgs&&... arguments);
+
+        private:
+
+            Property& property_;
 
         };
 
@@ -113,26 +131,35 @@ namespace syntropy{
             // (1) TODO: Add support to Many-interfaces providers (ie: a single provider adding more than one interface)
             // (2) TODO: Add support to optional providers (ie: a provider that decides not to add anything based on the type). Should be included in (1)
 
-            // Create an functor interface InterfaceDeclaration used to add interfaces to the property.
+            // ** Create an functor interface InterfaceDeclaration used to add interfaces to the property.
             // Call the provider with both the getter, the setter and the interface above and let the provider handle everything
 
             // void provider::operator()(TGetter, TSetter, InterfaceDeclarator)
             // void provider::operator()(TProperty, InterfaceDeclarator)
 
-            auto interface_type = std::type_index(typeid(decltype(provider())));
-
-            if (interfaces_.find(interface_type) == interfaces_.end()) {
-
-                interfaces_.insert(std::make_pair(interface_type,
-                                                  linb::any(provider())));
-
-            }
+            provider(/*getter, setter, */InterfaceDeclaration(*this));
 
             AddInterfaces(rest...);
 
         }
 
-        inline void Property::AddInterfaces() {}
+        template <typename TInterface, typename... TArgs>
+        bool Property::CreateInterface(TArgs&&... arguments){
+
+            auto interface_type = std::type_index(typeid(TInterface));
+
+            if (interfaces_.find(interface_type) == interfaces_.end()){
+
+                interfaces_.insert(std::make_pair(interface_type,
+                                                  linb::any(TInterface(std::forward<TArgs>(arguments)...))));
+
+                return true;
+
+            }
+
+            return false;
+
+        }
 
         template <typename TInterface>
         const TInterface* Property::GetInterface() const{
@@ -168,6 +195,15 @@ namespace syntropy{
             return setter_ ?
                    (*setter_)(MakeInstance(std::forward<TInstance>(instance)), MakeConstInstance(value)) :
                    false;
+
+        }
+
+        //////////////// INTERFACE DECLARATION ////////////////
+
+        template <typename TInterface, typename... TArgs>
+        bool InterfaceDeclaration::CreateInterface(TArgs&&... arguments){
+
+            return property_.CreateInterface<TInterface>(std::forward<TArgs>(arguments)...);
 
         }
 

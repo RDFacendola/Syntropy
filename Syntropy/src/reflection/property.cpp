@@ -26,7 +26,14 @@ namespace syntropy {
             return type_;
 
         }
+
+        void Property::AddInterfaces() {}
+
+        //////////////// INTERFACE DECLARATION ////////////////
         
+        InterfaceDeclaration::InterfaceDeclaration(Property& property)
+            : property_(property){}
+
     }
 
 }
