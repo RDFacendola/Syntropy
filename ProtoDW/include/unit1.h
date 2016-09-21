@@ -266,24 +266,24 @@ public:
 
         definition.DefineBaseClass<Bar>();
 
-        definition.DefineProperty("float_value", &Foo::value_)/*.AddInterfaces(JsonDeserializable())*/;
-        definition.DefineProperty("int_value", &Foo::value2_);
+        definition.DefineProperty("float_value", &Foo::value_) << JsonDeserializable();
+        definition.DefineProperty("int_value", &Foo::value2_) << JsonDeserializable();
         definition.DefineProperty("const_value", &Foo::const_value_);
-        definition.DefineProperty("pointer", &Foo::pointer_);
-        definition.DefineProperty("pointer_to_const", &Foo::pointer_to_const_);
+        definition.DefineProperty("pointer", &Foo::pointer_) << JsonDeserializable();
+        definition.DefineProperty("pointer_to_const", &Foo::pointer_to_const_) << JsonDeserializable();
         definition.DefineProperty("const_pointer", &Foo::const_pointer_);
-        definition.DefineProperty("boolean", &Foo::boolean_);
+        definition.DefineProperty("boolean", &Foo::boolean_) << JsonDeserializable();
         
-        definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue);
+        definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue) << JsonDeserializable();
         definition.DefineProperty("ConstValue", &Foo::GetConstValue);
-        definition.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer);
-        definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst);
+        definition.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer) << JsonDeserializable();
+        definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst) << JsonDeserializable();
         definition.DefineProperty("ConstPointer", &Foo::GetConstPointer);
-        definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob);
+        definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob) << JsonDeserializable();
        
         definition.DefineProperty("Accessor",
                                   static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
-                                  static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor));
+                                  static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor)) << JsonDeserializable();
 
 
         //definition.DefineProperty("Toxic", &Blob::blob_);   // Declaring Blob stuffs inside Foo

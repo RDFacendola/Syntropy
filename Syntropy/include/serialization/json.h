@@ -21,8 +21,6 @@ namespace syntropy {
 
         public:
 
-            IJsonDeserializer() {}
-
             template<typename TClass, typename TField>
             IJsonDeserializer(TField TClass::* field){
 
@@ -52,7 +50,7 @@ namespace syntropy {
             }
 
             template<typename TClass, typename TProperty, typename TReturn>
-            IJsonDeserializer(TReturn(TClass::* setter)(TProperty)) {
+            IJsonDeserializer(TProperty(TClass::* /*getter*/)() const, TReturn(TClass::* setter)(TProperty)) {
 
                 deserializer_ = [setter](reflection::Instance instance, const nlohmann::json& json) {
 
@@ -75,7 +73,7 @@ namespace syntropy {
             }
 
             template<typename TClass, typename TProperty>
-            IJsonDeserializer(TProperty&(TClass::* setter)()) {
+            IJsonDeserializer(const TProperty&(TClass::* /*getter*/)() const, TProperty&(TClass::* setter)()) {
 
                 deserializer_ = [setter](reflection::Instance instance, const nlohmann::json& json) {
 
@@ -109,9 +107,9 @@ namespace syntropy {
          struct JsonDeserializable {
  
              template <typename... TAccessors>
-             void operator()(reflection::InterfaceDeclaration declaration, TAccessors&&... accessors) const {
+             void operator()(reflection::Property& property, TAccessors&&... accessors) const {
 
-                 declaration.CreateInterface<IJsonDeserializer>(std::forward<TAccessors>(accessors)...);
+                 property.AddInterface<IJsonDeserializer>(std::forward<TAccessors>(accessors)...);
 
              }
 
