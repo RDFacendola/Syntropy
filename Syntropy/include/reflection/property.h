@@ -58,7 +58,7 @@ namespace syntropy {
             template <typename TInterface>
             TInterface* GetInterface();
             
-        protected:
+        private:
 
             /// \brief Get the property value.
             /// \param instance Instance the property refers to.
@@ -71,8 +71,6 @@ namespace syntropy {
             /// \param value Value to set.
             /// \return Return true if the property was legitimate for the provided instance and the value could be written, returns false otherwise.
             virtual bool PropertySet(Instance instance, Instance value) const = 0;
-
-        private:
 
             HashedString name_;                                             ///< \brief Property name.
 
@@ -120,7 +118,7 @@ namespace syntropy{
 
             }
 
-        protected:
+        private:
 
             virtual bool PropertyGet(Instance instance, Instance value) const override{
 
@@ -156,8 +154,6 @@ namespace syntropy{
 
             }
 
-        private:
-
             TField TClass::* field_;                ///< \brief Member field.
 
         };
@@ -177,7 +173,7 @@ namespace syntropy{
 
             }
 
-        protected:
+        private:
 
             virtual bool PropertyGet(Instance instance, Instance value) const override {
 
@@ -202,8 +198,6 @@ namespace syntropy{
 
             }
 
-        private:
-
             TProperty(TClass::* getter_)() const;           ///< \brief Getter method of the property.
 
         };
@@ -224,7 +218,7 @@ namespace syntropy{
 
             }
 
-        protected:
+        private:
 
             virtual bool PropertyGet(Instance instance, Instance value) const override {
 
@@ -260,8 +254,6 @@ namespace syntropy{
 
             }
 
-        private:
-
             TProperty(TClass::* getter_)() const;           ///< \brief Getter method of the property.
 
             TReturn(TClass::* setter_)(TProperty);          ///< \brief Setter method of the property.
@@ -284,7 +276,7 @@ namespace syntropy{
 
             }
 
-        protected:
+        private:
 
             virtual bool PropertyGet(Instance instance, Instance value) const override {
 
@@ -319,8 +311,6 @@ namespace syntropy{
                 return false;
 
             }
-
-        private:
 
             const TProperty&(TClass::* getter_)() const;       ///< \brief Getter method of the property.
 
