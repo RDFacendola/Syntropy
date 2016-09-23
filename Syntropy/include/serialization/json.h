@@ -10,6 +10,7 @@
 #include <functional>
 
 #include "reflection/reflection.h"
+#include "reflection/property.h"
 
 #include "serialization/json/json_deserializer.h"
 
@@ -17,103 +18,133 @@ namespace syntropy {
 
     namespace serialization {
 
-        class IJsonDeserializer{
+        class JSONDeserializable{
 
         public:
 
-            template<typename TClass, typename TField>
-            IJsonDeserializer(TField TClass::* field){
-
-                deserializer_ = [field](reflection::Instance instance, const nlohmann::json& json){
-
-                    auto concrete_instance = instance.As<TClass>();
-
-                    if (concrete_instance){
-                    
-                        JsonDeserializer<TField>()(concrete_instance->*field, json);
-
-                    }
-
-                };
-
-            }
-
-            template<typename TClass, typename TProperty>
-            IJsonDeserializer(TProperty(TClass::*)() const) {
-
-                deserializer_ = [](reflection::Instance, const nlohmann::json&) {
-
-                    // Read-only property
-
-                };
-
-            }
-
-            template<typename TClass, typename TProperty, typename TReturn>
-            IJsonDeserializer(TProperty(TClass::* /*getter*/)() const, TReturn(TClass::* setter)(TProperty)) {
-
-                deserializer_ = [setter](reflection::Instance instance, const nlohmann::json& json) {
-
-                    auto concrete_instance = instance.As<TClass>();
-
-                    if (concrete_instance) {
-
-                        using TTemp = std::remove_cv_t<std::remove_reference_t<TProperty>>;
-
-                        TTemp temp_value;
-
-                        JsonDeserializer<TTemp>()(temp_value, json);
-
-                        (concrete_instance->*setter)(temp_value);
-                        
-                    }
-
-                };
-
-            }
-
-            template<typename TClass, typename TProperty>
-            IJsonDeserializer(const TProperty&(TClass::* /*getter*/)() const, TProperty&(TClass::* setter)()) {
-
-                deserializer_ = [setter](reflection::Instance instance, const nlohmann::json& json) {
-
-                    auto concrete_instance = instance.As<TClass>();
-
-                    if (concrete_instance) {
-
-                        JsonDeserializer<TProperty>()((concrete_instance->*setter)(), json);
-
-                    }
-
-                };
-
-            }
-
             template <typename TInstance>
-            void operator()(TInstance&& instance, const nlohmann::json& json) const{
+            void operator()(TInstance&& instance, const nlohmann::json& json) const {
 
-                deserializer_(reflection::MakeInstance(instance),
-                              json);
+                Deserialize(reflection::MakeInstance(instance), json);
 
             }
 
-        private:
+        protected:
 
-            std::function<void(reflection::Instance, const nlohmann::json&)> deserializer_;
+            virtual void Deserialize(reflection::Instance, const nlohmann::json&) const = 0;
 
         };
 
-         // Property interface
-         struct JsonDeserializable {
+        template <typename... TAccessors>
+        class JSONDeserializableT;
+
+        template <typename TClass, typename TField>
+        class JSONDeserializableT<TField TClass::*> : public JSONDeserializable{
+
+        public:
+
+            JSONDeserializableT(TField TClass::* field)
+                : field_(field){}
+
+        private:
+
+            virtual void Deserialize(reflection::Instance, const nlohmann::json&) const override {
+
+                auto concrete_instance = instance.As<TClass>();
+
+                if (concrete_instance){
+
+                    JsonDeserializer<TField>()(concrete_instance->*field, json);
+
+                }
+
+            }
+
+            TField TClass::* field_;                ///< \brief Member field.
+
+        };
+
+        template <typename TClass, typename TProperty>
+        class JSONDeserializableT<TProperty(TClass::*)() const> : public JSONDeserializable {
+
+        public:
+
+            JSONDeserializableT(TProperty(TClass::*)() const) {}
+
+        private:
+
+            virtual void Deserialize(reflection::Instance, const nlohmann::json&) const override {
+
+                // Read-only
+
+            }
+
+        };
+
+        template <typename TClass, typename TProperty, typename TReturn>
+        class JSONDeserializableT<TProperty(TClass::*)() const, TReturn(TClass::*)(TProperty)> : public JSONDeserializable {
+
+        public:
+
+            JSONDeserializableT(TProperty(TClass::*)() const, TReturn(TClass::* setter)(TProperty))
+                : setter_(setter) {}
+            
+        private:
+
+            virtual void Deserialize(reflection::Instance, const nlohmann::json&) const override {
+
+                auto concrete_instance = instance.As<TClass>();
+
+                if (concrete_instance){
+
+                    JsonDeserializer<TProperty>()((concrete_instance->*setter)(), json);
+
+                }
+
+            }
+
+            TReturn(TClass::* setter_)(TProperty);          ///< \brief Setter method of the property.
+
+        };
+
+        template <typename TClass, typename TProperty>
+        class JSONDeserializableT<const TProperty&(TClass::*)() const, TProperty&(TClass::*)()> : public JSONDeserializable {
+
+        public:
+
+            JSONDeserializableT(const TProperty&(TClass::*)() const, TProperty&(TClass::* setter)())
+                : setter_(setter) {}
+
+        private:
+
+            virtual void Deserialize(reflection::Instance, const nlohmann::json&) const override {
+
+                auto concrete_instance = instance.As<TClass>();
+
+                if (concrete_instance){
+
+                    JsonDeserializer<TProperty>()((concrete_instance->*setter)(), json);
+
+                }
+
+            }
+
+            TProperty&(TClass::* setter_)();                   ///< \brief Setter method of the property.
+
+        };
+
+        // Property interface
+
+        struct JsonDeserializable {
  
-             template <typename... TAccessors>
-             void operator()(reflection::Property& property, TAccessors&&... accessors) const {
+            template <typename... TAccessors>
+            void operator()(reflection::Property& property, TAccessors&&... accessors) const {
 
-                 property.AddInterface<IJsonDeserializer>(std::forward<TAccessors>(accessors)...);
+                property.AddInterface<JSONDeserializableT<TAccessors...>>(std::forward<TAccessors>(accessors)...);
 
-             }
+            }
 
-         };
+        };
 
         // Utilities
 
@@ -167,8 +198,6 @@ namespace syntropy {
 
         }
         
-
-
     }
 
 }

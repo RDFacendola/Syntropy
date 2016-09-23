@@ -14,7 +14,7 @@ namespace syntropy {
 
     namespace serialization {
 
-        class IJsonDeserializer;
+        class JSONDeserializable;
 
         template <typename TType, typename = void>
         struct JsonDeserializer {
@@ -29,7 +29,7 @@ namespace syntropy {
 
                     if (object_property) {
 
-                        auto deserializer = object_property->GetInterface<IJsonDeserializer>();
+                        auto deserializer = object_property->GetInterface<JSONDeserializable>();
 
                         if (deserializer) {
 
