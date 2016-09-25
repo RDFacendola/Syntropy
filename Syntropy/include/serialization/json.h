@@ -47,7 +47,7 @@ namespace syntropy {
 
         private:
 
-            virtual void Deserialize(reflection::Instance, const nlohmann::json&) const override {
+            virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override {
 
                 auto concrete_instance = instance.As<TClass>();
 
@@ -90,13 +90,13 @@ namespace syntropy {
             
         private:
 
-            virtual void Deserialize(reflection::Instance, const nlohmann::json&) const override {
+            virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override {
 
                 auto concrete_instance = instance.As<TClass>();
 
                 if (concrete_instance){
 
-                    JsonDeserializer<TProperty>()((concrete_instance->*setter)(), json);
+                    JsonDeserializer<TProperty>()((concrete_instance->*setter_)(), json);
 
                 }
 
@@ -116,13 +116,13 @@ namespace syntropy {
 
         private:
 
-            virtual void Deserialize(reflection::Instance, const nlohmann::json&) const override {
+            virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override {
 
                 auto concrete_instance = instance.As<TClass>();
 
                 if (concrete_instance){
 
-                    JsonDeserializer<TProperty>()((concrete_instance->*setter)(), json);
+                    JsonDeserializer<TProperty>()((concrete_instance->*setter_)(), json);
 
                 }
 
@@ -139,7 +139,7 @@ namespace syntropy {
             template <typename... TAccessors>
             void operator()(reflection::Property& property, TAccessors&&... accessors) const {
 
-                property.AddVirtualInterface<JSONDeserializable, JSONDeserializableT<TAccessors...>>(std::forward<TAccessors>(accessors)...);
+                property.AddVirtualInterface<JSONDeserializable, JSONDeserializableT<std::remove_reference_t<TAccessors>...>>(std::forward<TAccessors>(accessors)...);
 
             }
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "reflection/property.h"
+#include "reflection/reflection.h"
 
 #include "nlohmann/json/src/json.hpp"
 
