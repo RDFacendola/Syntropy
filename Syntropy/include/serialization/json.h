@@ -10,7 +10,6 @@
 #include <functional>
 
 #include "reflection/reflection.h"
-#include "reflection/property.h"
 
 #include "serialization/json/json_deserializer.h"
 
@@ -140,7 +139,7 @@ namespace syntropy {
             template <typename... TAccessors>
             void operator()(reflection::Property& property, TAccessors&&... accessors) const {
 
-                property.AddInterface<JSONDeserializableT<TAccessors...>>(std::forward<TAccessors>(accessors)...);
+                property.AddVirtualInterface<JSONDeserializable, JSONDeserializableT<TAccessors...>>(std::forward<TAccessors>(accessors)...);
 
             }
 
