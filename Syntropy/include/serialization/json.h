@@ -21,35 +21,28 @@ namespace syntropy {
 
         public:
 
-			template <typename... TAccessors>
-			JSONDeserializable(TAccessors&&... /*accessors*/)
-				: content_(nullptr/*std::make_unique<Content<std::decay_t<TAccessors>...>>(std::forward<TAccessors>(accessors)...)*/)
-			{
-			
-				Content<TAccessors...> content;
+            struct property_tag {};
 
-				SYN_UNUSED(content);
+            template <typename... TAccessors>
+            JSONDeserializable(property_tag, TAccessors&&... accessors)
+                : content_(std::make_unique<Content<std::remove_reference_t<TAccessors>...>>(std::forward<TAccessors>(accessors)...)) {}
 
-			
-			}
+            JSONDeserializable(const JSONDeserializable& other) noexcept
+                : content_(other.content_ ? other.content_->Clone() : nullptr)
+            {}
 
-			JSONDeserializable(const JSONDeserializable& other) noexcept
-				: content_(other.content_->Clone())
-			{}
+            JSONDeserializable(JSONDeserializable&& other) noexcept
+                : content_(std::move(other.content_)) {}
 
-			JSONDeserializable(JSONDeserializable&& other) noexcept
-				: content_(std::move(other.content_))
-			{}
+            JSONDeserializable::~JSONDeserializable() = default;
 
-			JSONDeserializable::~JSONDeserializable() = default;
+            JSONDeserializable& operator=(JSONDeserializable other) noexcept {
 
-			JSONDeserializable& operator=(JSONDeserializable other) noexcept{
+                JSONDeserializable(other).Swap(*this);
 
-				JSONDeserializable(other).Swap(*this);
+                return *this;
 
-				return *this;
-
-			}
+            }
 
             template <typename TInstance>
             void operator()(TInstance&& instance, const nlohmann::json& json) const {
@@ -58,37 +51,38 @@ namespace syntropy {
 
             }
 
-		private:
+        private:
 
-			void Swap(JSONDeserializable& other) noexcept{
+            void Swap(JSONDeserializable& other) noexcept{
 
-				std::swap(content_, other.content_);
+                std::swap(content_, other.content_);
 
-			}
+            }
 
-			struct IContent{
+            struct IContent{
 
-				virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const = 0;
+                virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const = 0;
 
-				virtual std::unique_ptr<IContent> Clone() const noexcept = 0;
+                virtual std::unique_ptr<IContent> Clone() const noexcept = 0;
 
-			};
+            };
 
-			template <typename... TAccessors>
-			struct Content : IContent {};
+            template <typename... TAccessors>
+            struct Content : IContent {};
 
-			std::unique_ptr<IContent> content_;
+            std::unique_ptr<IContent> content_;
 
         };
-		
+        
         // Property interface
 
         struct JsonDeserializable {
  
             template <typename... TAccessors>
-            void operator()(reflection::Property& property, TAccessors... accessors) const {
+            void operator()(reflection::Property& property, TAccessors&&... accessors) const {
 
-                property.AddInterface<JSONDeserializable, TAccessors...>(std::forward<TAccessors>(accessors)...);
+                property.AddInterface<JSONDeserializable>(JSONDeserializable::property_tag(), 
+                                                          std::forward<TAccessors>(accessors)...);
 
             }
 
@@ -154,135 +148,118 @@ namespace syntropy {
 
     namespace serialization {
 
-		template <typename TClass, typename TField>
-		struct JSONDeserializable::Content<TField TClass::*> : JSONDeserializable::IContent
-		{
+        template <typename TClass, typename TField>
+        struct JSONDeserializable::Content<TField TClass::*> : JSONDeserializable::IContent
+        {
 
-		public:
+        public:
 
-			Content(TField TClass::* field)
-				: field_(field)
-			{
-			}
+            Content(TField TClass::* field)
+                : field_(field) {}
 
-			virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override
-			{
+            virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override {
 
-				auto concrete_instance = instance.As<TClass>();
+                auto concrete_instance = instance.As<TClass>();
 
-				if (concrete_instance)
-				{
+                if (concrete_instance) {
 
-					JsonDeserializer<TField>()(concrete_instance->*field_, json);
+                    JsonDeserializer<TField>()(concrete_instance->*field_, json);
 
-				}
+                }
 
-			}
+            }
 
-			virtual std::unique_ptr<IContent> Clone() const noexcept override{
-			
-				return std::make_unique<Content<TField TClass::*>>(field_);
+            virtual std::unique_ptr<IContent> Clone() const noexcept override{
+            
+                return std::make_unique<Content<TField TClass::*>>(field_);
 
-			}
+            }
 
-			TField TClass::* field_;                ///< \brief Member field.
+            TField TClass::* field_;                ///< \brief Member field.
 
-		};
+        };
 
-		template <typename TClass, typename TProperty>
-		struct JSONDeserializable::Content<TProperty(TClass::*)() const> : JSONDeserializable::IContent
-		{
+        template <typename TClass, typename TProperty>
+        struct JSONDeserializable::Content<TProperty(TClass::*)() const> : JSONDeserializable::IContent
+        {
 
-			Content(TProperty(TClass::*)() const) {}
+            Content(TProperty(TClass::*)() const) {}
 
-			virtual void Deserialize(reflection::Instance, const nlohmann::json&) const override
-			{
+            virtual void Deserialize(reflection::Instance, const nlohmann::json&) const override{
 
-				// Read-only
+                // Read-only
 
-			}
+            }
 
-			virtual std::unique_ptr<IContent> Clone() const noexcept override
-			{
+            virtual std::unique_ptr<IContent> Clone() const noexcept override{
 
-				return std::make_unique<Content<TProperty(TClass::*)() const>>();
+                return std::make_unique<Content<TProperty(TClass::*)() const>>(nullptr);
 
-			}
+            }
 
-		};
+        };
 
-		template <typename TClass, typename TProperty, typename TReturn>
-		struct JSONDeserializable::Content<TProperty(TClass::*)() const, TReturn(TClass::*)(TProperty)> : JSONDeserializable::IContent
-		{
+        template <typename TClass, typename TProperty, typename TReturn>
+        struct JSONDeserializable::Content<TProperty(TClass::*)() const, TReturn(TClass::*)(TProperty)> : JSONDeserializable::IContent
+        {
 
-			Content(TProperty(TClass::*)() const, TReturn(TClass::* setter)(TProperty))
-				: setter_(setter)
-			{
-			}
+            Content(TProperty(TClass::*)() const, TReturn(TClass::* setter)(TProperty))
+                : setter_(setter) {}
 
-			virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override
-			{
+            virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override{
 
-				auto concrete_instance = instance.As<TClass>();
+                auto concrete_instance = instance.As<TClass>();
 
-				if (concrete_instance)
-				{
+                if (concrete_instance){
 
-					// Deserialize the property on a temporary variable and assign that to the setter.
-					std::remove_cv_t<std::remove_reference_t<TProperty>> property;
+                    // Deserialize the property on a temporary variable and assign that to the setter.
+                    std::remove_cv_t<std::remove_reference_t<TProperty>> property;
 
-					JsonDeserializer<TProperty>()(property, json);
+                    JsonDeserializer<TProperty>()(property, json);
 
-					(concrete_instance->*setter_)(std::move(property));
+                    (concrete_instance->*setter_)(std::move(property));
 
-				}
+                }
 
-			}
+            }
 
-			virtual std::unique_ptr<IContent> Clone() const noexcept override
-			{
+            virtual std::unique_ptr<IContent> Clone() const noexcept override {
 
-				return std::make_unique<Content<TProperty(TClass::*)() const, TReturn(TClass::*)(TProperty)>>(setter_);
+                return std::make_unique<Content<TProperty(TClass::*)() const, TReturn(TClass::*)(TProperty)>>(nullptr, setter_);
 
-			}
+            }
 
-			TReturn(TClass::* setter_)(TProperty);          ///< \brief Setter method of the property.
+            TReturn(TClass::* setter_)(TProperty);          ///< \brief Setter method of the property.
 
-		};
+        };
 
-		template <typename TClass, typename TProperty>
-		struct JSONDeserializable::Content<const TProperty&(TClass::*)() const, TProperty&(TClass::*)()> : JSONDeserializable::IContent
-		{
+        template <typename TClass, typename TProperty>
+        struct JSONDeserializable::Content<const TProperty&(TClass::*)() const, TProperty&(TClass::*)()> : JSONDeserializable::IContent{
 
-			Content(const TProperty&(TClass::*)() const, TProperty&(TClass::* setter)())
-				: setter_(setter)
-			{
-			}
+            Content(const TProperty&(TClass::*)() const, TProperty&(TClass::* setter)())
+                : setter_(setter) {}
 
-			virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override
-			{
+            virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override{
 
-				auto concrete_instance = instance.As<TClass>();
+                auto concrete_instance = instance.As<TClass>();
 
-				if (concrete_instance)
-				{
+                if (concrete_instance){
 
-					JsonDeserializer<TProperty>()((concrete_instance->*setter_)(), json);
+                    JsonDeserializer<TProperty>()((concrete_instance->*setter_)(), json);
 
-				}
+                }
 
-			}
+            }
 
-			virtual std::unique_ptr<IContent> Clone() const noexcept override
-			{
+            virtual std::unique_ptr<IContent> Clone() const noexcept override{
 
-				return std::make_unique<Content<const TProperty&(TClass::*)() const, TProperty&(TClass::*)()>>(setter_);
+                return std::make_unique<Content<const TProperty&(TClass::*)() const, TProperty&(TClass::*)()>>(nullptr, setter_);
 
-			}
+            }
 
-			TProperty&(TClass::* setter_)();                   ///< \brief Setter method of the property.
+            TProperty&(TClass::* setter_)();                   ///< \brief Setter method of the property.
 
-		};
+        };
 
     }
 
