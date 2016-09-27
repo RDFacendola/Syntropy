@@ -76,15 +76,6 @@ namespace syntropy {
             template <typename TInterface, typename... TArgs>
             bool AddInterface(TArgs&&... arguments);
 
-            /// \brief Add a new interface to the property.
-            /// This method behaves similarly to "AddInterface", except that an object of type TConcrete is instanced instead. The interface is registered as it was TInterface.
-            /// TConcere must be a child class of TInterface.
-            /// Note that, unlike AddInterface, TInterface can be abstract or non-instantiable.
-            /// \see AddInterface(...)
-            /// \return Returns true if the method succeeds, return false if there was another interface of type TInterface.
-            template <typename TInterface, typename TConcrete, typename... TArgs>
-            bool AddVirtualInterface(TArgs&&... arguments);
-
             /// \brief Query the property for an interface of type TInterface.
             /// \return If an interface of type TInterface was previously added via AddInterface(.), returns a pointer to that interface, otherwise returns nullptr.
             /// \remarks This method doesn't account for polymorphism. If a class of type Foo derived from Bar is added to the property, GetInterface<Bar>() will return nullptr even if a conversion exists.
@@ -356,7 +347,7 @@ namespace syntropy{
             /// \usage: property << Foo();          // Resolves to Foo()(property, getter, setter)
             /// \return Returns a reference to the property.
             template <typename TFunctor>
-            auto operator<<(TFunctor&& functor) {
+            auto operator<<(TFunctor functor) {
 
                 functor(*this, getter_, setter_);
 
@@ -411,27 +402,18 @@ namespace syntropy{
         template <typename TInterface, typename... TArgs>
         bool Property::AddInterface(TArgs&&... arguments){
 
-            return AddVirtualInterface<TInterface, TInterface>(std::forward<TArgs>(arguments)...);
+			auto interface_type = std::type_index(typeid(TInterface));
 
-        }
+			if (interfaces_.find(interface_type) == interfaces_.end()){
 
-        template <typename TInterface, typename TConcrete, typename... TArgs>
-        bool Property::AddVirtualInterface(TArgs&&... arguments) {
+				interfaces_.insert(std::make_pair(interface_type,
+												  linb::any(TInterface(std::forward<TArgs>(arguments)...))));
 
-            static_assert(std::is_base_of_v<TInterface, TConcrete>, "TInterface must be a base class for TConcrete.");
+				return true;
 
-            auto interface_type = std::type_index(typeid(TInterface));
+			}
 
-            if (interfaces_.find(interface_type) == interfaces_.end()) {
-
-                interfaces_.insert(std::make_pair(interface_type,
-                                   linb::any(TConcrete(std::forward<TArgs>(arguments)...))));
-
-                return true;
-
-            }
-
-            return false;
+			return false;
 
         }
 
