@@ -56,6 +56,7 @@
     <ClCompile Include="src\reflection\property.cpp">
       <Filter>reflection</Filter>
     </ClCompile>
+    <ClCompile Include="include\serialization\json.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

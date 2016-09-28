@@ -17,7 +17,7 @@ namespace syntropy {
         class JSONDeserializable;
 
         template <typename TType, typename = void>
-        struct JsonDeserializer {
+        struct JSONDeserializer {
 
             void operator()(TType& object, const nlohmann::json& json) {
 
@@ -46,7 +46,7 @@ namespace syntropy {
         };
 
         template <typename TType>
-        struct JsonDeserializer<TType*> {
+        struct JSONDeserializer<TType*> {
 
             void operator()(TType*& /*object*/, const nlohmann::json& /*json*/) {
 
@@ -57,7 +57,7 @@ namespace syntropy {
         };
 
         template <typename TType>
-        struct JsonDeserializer<TType, typename std::enable_if_t<std::is_arithmetic_v<TType>>> {
+        struct JSONDeserializer<TType, typename std::enable_if_t<std::is_arithmetic_v<TType>>> {
 
             void operator()(TType& object, const nlohmann::json& json) {
 
