@@ -4,9 +4,12 @@ namespace syntropy {
 
 	namespace serialization {
 
-		JSONDeserializable::JSONDeserializable(const JSONDeserializable& other) noexcept
-			: content_(other.content_ ? other.content_->Clone() : nullptr) {}
+		JSONDeserializable::JSONDeserializable(const JSONDeserializable& other) noexcept {
 
+			reinterpret_cast<const IContent*>(&(other.content_))->Clone(content_);
+
+		}
+		
 		JSONDeserializable::JSONDeserializable(JSONDeserializable&& other) noexcept
 			: content_(std::move(other.content_)) {}
 
