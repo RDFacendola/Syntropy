@@ -29,7 +29,7 @@ namespace syntropy {
 
 		JSONDeserializable::~JSONDeserializable(){
 
-			reinterpret_cast<const IContent*>(&(content_))->~IContent();
+			reinterpret_cast<IContent*>(&(content_))->~IContent();
 			
 		}
 
