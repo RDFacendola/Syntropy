@@ -41,7 +41,7 @@ namespace syntropy {
             JSONDeserializable(JSONDeserializable&& other) noexcept;
 
             /// \brief Default destructor.
-            JSONDeserializable::~JSONDeserializable() = default;
+			JSONDeserializable::~JSONDeserializable();
 
             /// \brief Assignment operator.
             JSONDeserializable& operator=(JSONDeserializable other) noexcept;

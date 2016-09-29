@@ -27,6 +27,12 @@ namespace syntropy {
 
 		}
 
+		JSONDeserializable::~JSONDeserializable(){
+
+			reinterpret_cast<const IContent*>(&(content_))->~IContent();
+			
+		}
+
 	}
 
 }
