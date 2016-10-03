@@ -1,38 +1,62 @@
 #include "serialization/json.h"
 
+#include "reflection/reflection.h"
+
+#include <fstream>
+
 namespace syntropy {
 
-	namespace syntax {
+    namespace syntax {
 
-		JSONDeserializable::JSONDeserializable(const JSONDeserializable& other) noexcept {
+        //////////////// JSON DESERIALIZABLE ////////////////
 
-			reinterpret_cast<const IContent*>(&(other.content_))->Clone(content_);
+        JSONDeserializable::JSONDeserializable(const JSONDeserializable& other) noexcept {
 
-		}
-		
-		JSONDeserializable::JSONDeserializable(JSONDeserializable&& other) noexcept
-			: content_(std::move(other.content_)) {}
+            reinterpret_cast<const IContent*>(&(other.content_))->Clone(content_);
 
-		JSONDeserializable& JSONDeserializable::operator=(JSONDeserializable other) noexcept {
+        }
+        
+        JSONDeserializable::JSONDeserializable(JSONDeserializable&& other) noexcept
+            : content_(std::move(other.content_)) {}
 
-			JSONDeserializable(other).Swap(*this);
+        JSONDeserializable& JSONDeserializable::operator=(JSONDeserializable other) noexcept {
 
-			return *this;
+            JSONDeserializable(other).Swap(*this);
 
-		}
+            return *this;
 
-		void JSONDeserializable::Swap(JSONDeserializable& other) noexcept {
+        }
 
-			std::swap(content_, other.content_);
+        void JSONDeserializable::Swap(JSONDeserializable& other) noexcept {
 
-		}
+            std::swap(content_, other.content_);
 
-		JSONDeserializable::~JSONDeserializable(){
+        }
 
-			reinterpret_cast<IContent*>(&(content_))->~IContent();
-			
-		}
+        JSONDeserializable::~JSONDeserializable(){
 
-	}
+            reinterpret_cast<IContent*>(&(content_))->~IContent();
+            
+        }
+
+        //////////////// METHODS ////////////////
+
+        nlohmann::json ParseJSONFile(const char* path) {
+
+            std::fstream file_stream(path);
+
+            nlohmann::json json;
+
+            if (file_stream.good()) {
+
+                file_stream >> json;
+
+            }
+
+            return json;
+
+        }
+
+    }
 
 }

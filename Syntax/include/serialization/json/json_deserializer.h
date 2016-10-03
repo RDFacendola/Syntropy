@@ -19,7 +19,7 @@ namespace syntropy {
         template <typename TType, typename = void>
         struct JSONDeserializer {
 
-            void operator()(TType& object, const nlohmann::json& json) {
+            bool operator()(TType& object, const nlohmann::json& json) {
 
                 auto& object_class = reflection::ClassOf(object);
 
@@ -41,6 +41,8 @@ namespace syntropy {
 
                 }
 
+                return false;
+
             }
 
         };
@@ -48,9 +50,9 @@ namespace syntropy {
         template <typename TType>
         struct JSONDeserializer<TType*> {
 
-            void operator()(TType*& /*object*/, const nlohmann::json& /*json*/) {
+            bool operator()(TType*& /*object*/, const nlohmann::json& /*json*/) {
 
-
+                return false;
 
             }
 
@@ -59,9 +61,11 @@ namespace syntropy {
         template <typename TType>
         struct JSONDeserializer<TType, typename std::enable_if_t<std::is_arithmetic_v<TType>>> {
 
-            void operator()(TType& object, const nlohmann::json& json) {
+            bool operator()(TType& object, const nlohmann::json& json) {
 
                 conditional_assign(object, json.get<TType>());
+
+                return false;
 
             }
 

@@ -781,7 +781,7 @@ public:
                                 {"const_value", 100.0f},
                                 {"Value", 800 } };
 
-        syntropy::syntax::DeserializeJSON(foo, json);
+        syntropy::syntax::DeserializeObjectFromJSON(foo, json);
 
         TEST_TRUE(foo.value_ == 67.5f);
         TEST_TRUE(foo.value2_ == 42);

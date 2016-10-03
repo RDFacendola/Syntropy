@@ -402,18 +402,18 @@ namespace syntropy{
         template <typename TInterface, typename... TArgs>
         bool Property::AddInterface(TArgs&&... arguments){
 
-			auto interface_type = std::type_index(typeid(TInterface));
+            auto interface_type = std::type_index(typeid(TInterface));
 
-			if (interfaces_.find(interface_type) == interfaces_.end()){
+            if (interfaces_.find(interface_type) == interfaces_.end()){
 
-				interfaces_.insert(std::make_pair(interface_type,
-												  linb::any(TInterface(std::forward<TArgs>(arguments)...))));
+                interfaces_.insert(std::make_pair(interface_type,
+                                                  linb::any(TInterface(std::forward<TArgs>(arguments)...))));
 
-				return true;
+                return true;
 
-			}
+            }
 
-			return false;
+            return false;
 
         }
 

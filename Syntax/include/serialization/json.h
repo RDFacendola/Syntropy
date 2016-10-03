@@ -5,12 +5,8 @@
 
 #pragma once
 
-#include <fstream>
-#include <memory>
-#include <functional>
-#include <type_traits>
 
-#include "reflection/reflection.h"
+#include <type_traits>
 
 #include "serialization/json/json_deserializer.h"
 
@@ -87,8 +83,6 @@ namespace syntropy {
 
         };
         
-        // TODO: REFACTOR
-
         // Property interface
 
         struct JsonDeserializable {
@@ -103,58 +97,24 @@ namespace syntropy {
 
         };
 
-        // Utilities
+        /// \brief Parse a JSON object from file.
+        /// \param path Path of the file to parse.
+        /// \return Returns a JSON object containing the data stored inside the file.
+        nlohmann::json ParseJSONFile(const char* path);
 
-        inline nlohmann::json ParseJSON(const char* path) {
-
-            std::fstream file_stream(path);
-
-            nlohmann::json json;
-
-            if (file_stream.good()) {
-
-                file_stream >> json;
-
-            }
-
-            return json;
-
-        }
-
+        /// \brief Deserialize a JSON object inside a C++ object.
+        ///
+        /// (1) If TClass is a pointer, a new object is instantiated with concrete type equal to the type declared by the JSON object. If the method succeeds the object is guaranteed to have a type that can be statically casted to TClass otherwise the returned pointer is nullptr.
+        /// (2) If TClass is not a pointer, the concrete type declared by the JSON object is ignored as well as all those properties that are not available in TClass.
+        /// (3) The caller takes the *ownership* of all dynamically-allocated objects deserialized this way.
+        /// (4) TClass must either be registered to the Syntropy reflection system or a template specialization of JSONDeserializer<TClass> must be provided, otherwise the program is ill-formed.
+        ///
+        /// \param object Reference to the object to fill with deserialized data.
+        /// \param json JSON object to deserialize.
+        /// \return Returns true if the JSON object could be deserialized to the provided object, returns false otherwise.
         template <typename TClass>
-        bool DeserializeJSON(TClass& object, const nlohmann::json& json){
+        bool DeserializeObjectFromJSON(TClass& object, const nlohmann::json& json);
 
-            JSONDeserializer<TClass>()(object, json);
-
-            return true;
-
-        }
-
-        template <typename TClass>
-        std::unique_ptr<TClass> DeserializeJSON(const nlohmann::json& json){
-
-            TClass* object;
-
-            JSONDeserializer<TClass>()(object, json);
-
-            return object;
-
-        }
-
-        template <typename TClass>
-        bool DeserializeJSON(TClass& object, const char* path) {
-
-            return DeserializeJSON(object, ParseJSON(path));
-            
-        }
-
-        template <typename TClass>
-        std::unique_ptr<TClass> DeserializeJSON(const char* path) {
-
-            return DeserializeJSON(ParseJSON(path));
-
-        }
-        
     }
 
 }
@@ -323,6 +283,17 @@ namespace syntropy {
             TProperty&(TClass::* setter_)();                   ///< \brief Setter method of the property.
 
         };
+
+        //////////////// METHODS ////////////////
+
+        template <typename TClass>
+        bool DeserializeObjectFromJSON(TClass& object, const nlohmann::json& json) {
+
+            static_assert(!std::is_const<std::remove_reference_t<TClass>>::value, "Cannot deserialize into a const object");
+
+            return JSONDeserializer<TClass>()(object, json);
+
+        }
 
     }
 
