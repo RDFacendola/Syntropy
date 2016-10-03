@@ -45,11 +45,6 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\serialization\json.h" />
-    <ClInclude Include="include\serialization\json\json_deserializer.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\syntropy.h">
       <SubType>
       </SubType>
@@ -61,7 +56,6 @@
     <ClInclude Include="include\type_traits.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\serialization\json.cpp" />
     <ClCompile Include="src\reflection\class.cpp">
       <SubType>
       </SubType>

@@ -31,12 +31,6 @@
     <ClInclude Include="include\reflection\type.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\serialization\json.h">
-      <Filter>serialization</Filter>
-    </ClInclude>
-    <ClInclude Include="include\serialization\json\json_deserializer.h">
-      <Filter>serialization</Filter>
-    </ClInclude>
     <ClInclude Include="include\syntropy.h" />
   </ItemGroup>
   <ItemGroup>
@@ -54,9 +48,6 @@
     </ClCompile>
     <ClCompile Include="src\reflection\property.cpp">
       <Filter>reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="include\serialization\json.cpp">
-      <Filter>serialization</Filter>
     </ClCompile>
     <ClCompile Include="src\syntropy.cpp" />
   </ItemGroup>

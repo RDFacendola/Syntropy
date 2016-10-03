@@ -2,8 +2,25 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="include\syntax.h" />
+    <ClInclude Include="include\serialization\json.h">
+      <Filter>serialization\json</Filter>
+    </ClInclude>
+    <ClInclude Include="include\serialization\json\json_deserializer.h">
+      <Filter>serialization\json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntax.cpp" />
+    <ClCompile Include="src\serialization\json\json.cpp">
+      <Filter>serialization\json</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="serialization">
+      <UniqueIdentifier>{773e99b3-6b86-4c0c-83ef-e3a2e4144415}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="serialization\json">
+      <UniqueIdentifier>{80cacc4e-ead7-4937-b9cd-3b7f34e549da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

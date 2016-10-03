@@ -262,7 +262,7 @@ public:
 
     void operator()(Class::Definition<Foo>& definition) const {
         
-        using syntropy::serialization::JsonDeserializable;
+        using syntropy::syntax::JsonDeserializable;
 
         definition.DefineBaseClass<Bar>();
 
@@ -781,7 +781,7 @@ public:
                                 {"const_value", 100.0f},
                                 {"Value", 800 } };
 
-        syntropy::serialization::DeserializeJSON(foo, json);
+        syntropy::syntax::DeserializeJSON(foo, json);
 
         TEST_TRUE(foo.value_ == 67.5f);
         TEST_TRUE(foo.value2_ == 42);
