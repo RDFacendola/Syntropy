@@ -32,6 +32,7 @@
       <Filter>reflection</Filter>
     </ClInclude>
     <ClInclude Include="include\syntropy.h" />
+    <ClInclude Include="include\reflection\stl_types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

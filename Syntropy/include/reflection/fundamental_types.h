@@ -84,26 +84,6 @@ namespace syntropy {
 
         };
 
-        //////////////// STD::NULLPTR ////////////////
-
-        template <>
-        struct ClassDeclaration<std::nullptr_t> {
-
-            constexpr const char* GetName() const noexcept {
-
-                return "std::nullptr_t";
-
-            }
-
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
-                definition.DefineNameAlias("nullptr_t");
-
-            }
-
-        };
-
         //////////////// BOOLEAN TYPES ////////////////
 
         template <>

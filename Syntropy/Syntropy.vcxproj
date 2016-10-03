@@ -45,6 +45,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\reflection\stl_types.h" />
     <ClInclude Include="include\syntropy.h">
       <SubType>
       </SubType>
