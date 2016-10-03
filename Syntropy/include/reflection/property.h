@@ -6,10 +6,8 @@
 
 #pragma once
 
-#include <functional>
 #include <unordered_map>
 #include <typeindex>
-#include <memory>
 
 #include "hashed_string.h"
 #include "type_traits.h"
