@@ -262,28 +262,28 @@ public:
 
     void operator()(Class::Definition<Foo>& definition) const {
         
-        using syntropy::syntax::JSONWrite;
+        using syntropy::syntax::JSONRead;
 
         definition.DefineBaseClass<Bar>();
 
-        definition.DefineProperty("float_value", &Foo::value_) << JSONWrite();
-        definition.DefineProperty("int_value", &Foo::value2_) << JSONWrite();
+        definition.DefineProperty("float_value", &Foo::value_) << JSONRead();
+        definition.DefineProperty("int_value", &Foo::value2_) << JSONRead();
         definition.DefineProperty("const_value", &Foo::const_value_);
-        definition.DefineProperty("pointer", &Foo::pointer_) << JSONWrite();
-        definition.DefineProperty("pointer_to_const", &Foo::pointer_to_const_) << JSONWrite();
+        definition.DefineProperty("pointer", &Foo::pointer_) << JSONRead();
+        definition.DefineProperty("pointer_to_const", &Foo::pointer_to_const_) << JSONRead();
         definition.DefineProperty("const_pointer", &Foo::const_pointer_);
-        definition.DefineProperty("boolean", &Foo::boolean_) << JSONWrite();
+        definition.DefineProperty("boolean", &Foo::boolean_) << JSONRead();
         
-        definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue) << JSONWrite();
+        definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue) << JSONRead();
         definition.DefineProperty("ConstValue", &Foo::GetConstValue);
-        definition.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer) << JSONWrite();
-        definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst) << JSONWrite();
+        definition.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer) << JSONRead();
+        definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst) << JSONRead();
         definition.DefineProperty("ConstPointer", &Foo::GetConstPointer);
-        definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob) << JSONWrite();
+        definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob) << JSONRead();
        
         definition.DefineProperty("Accessor",
                                   static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
-                                  static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor)) << JSONWrite();
+                                  static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor)) << JSONRead();
 
 
         //definition.DefineProperty("Toxic", &Blob::blob_);   // Declaring Blob stuffs inside Foo

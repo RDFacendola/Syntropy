@@ -85,7 +85,7 @@ namespace syntropy {
         
         /// \brief Functor object used to assign the interface JSONDeserializable to properties.
         /// \author Raffaele D. Facendola - September 2016
-        struct JSONWrite {
+        struct JSONRead {
  
             /// \brief Add a JSONDeserializable interface to the provided property.
             /// \param property Property to add the interface to.
@@ -285,7 +285,7 @@ namespace syntropy {
         //////////////// JSON WRITE ////////////////
 
         template <typename... TAccessors>
-        void JSONWrite::operator()(reflection::Property& property, TAccessors&&... accessors) const {
+        void JSONRead::operator()(reflection::Property& property, TAccessors&&... accessors) const {
 
             property.AddInterface<JSONDeserializable>(JSONDeserializable::property_tag(),
                                                       std::forward<TAccessors>(accessors)...);
