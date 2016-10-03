@@ -10,6 +10,8 @@
 
 #include "nlohmann/json/src/json.hpp"
 
+#include <string>
+
 namespace syntropy {
 
     namespace syntax {
@@ -89,8 +91,30 @@ namespace syntropy {
 
         };
 
+
+        /// \brief Functor used to deserialize a std::string from JSON.
+        /// \author Raffaele D. Facendola - October 2016
+        template <>
+        struct JSONDeserializer<std::string> {
+
+            /// \brief Deserialize a std::string from a JSON object property.
+            /// \return Returns true if the JSON object contains a string value, returns false otherwise.
+            bool operator()(std::string& object, const nlohmann::json& json) {
+
+                if (json.is_string()) {
+
+                    object = json.get<std::string>();
+
+                }
+
+                return false;
+
+            }
+
+        };
+
         /// \brief Functor used to deserialize a boolean variable from JSON.
-        /// \author Raffaele D. Facendola - September 2016
+        /// \author Raffaele D. Facendola - October 2016
         template <>
         struct JSONDeserializer<bool> {
 
@@ -123,7 +147,7 @@ namespace syntropy {
 
                 if (json.is_number()) {
 
-                    object = json.get<std::remove_const_t<TType>>();
+                    object = json.get<TType>();
 
                     return true;
 
