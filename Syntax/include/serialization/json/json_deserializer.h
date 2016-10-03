@@ -11,12 +11,15 @@
 #include "nlohmann/json/src/json.hpp"
 
 #include <string>
+#include <memory>
 
 namespace syntropy {
 
     namespace syntax {
 
         class JSONDeserializable;
+
+        //////////////// OBJECT DESERIALIZATION ////////////////
 
         /// \brief Functor used to deserialize JSON object into a concrete instance.
         /// This version uses the Syntropy reflection system to recursively deserialize object properties.
@@ -68,32 +71,81 @@ namespace syntropy {
 
         };
 
-        /// \brief Functor used to handle const objects.
-        /// Since const objects cannot be deserialized, this functor does nothing.
-        /// \author Raffaele D. Facendola - September 2016
-        template <typename TType>
-        struct JSONDeserializer<const TType> {
 
-            /// \brief Do nothing.
-            /// \return Returns false.
-            bool operator()(const TType&, const nlohmann::json&) {
 
-                return false;
-
-            }
-
-        };
+        //////////////// POINTERS DESERIALIZATION ////////////////
 
         template <typename TType>
         struct JSONDeserializer<TType*> {
 
-            bool operator()(TType*& /*object*/, const nlohmann::json& /*json*/) {
+            bool operator()(TType*& object, const nlohmann::json& json) {
+
+                static_assert(std::is_default_constructible<TType>::value, "TType must be default constructible");
+
+                // TODO: what happens to the previous value of "object"? If it is an owning pointer we can delete it, however we are not sure whether the pointer is initialized or not.
+                //       >> Since deserialization interprets pointers as owning pointers, we can delete it if not null. And require that the client provides pointers that are initialized.
+
+                if (object != nullptr) {
+
+                    delete object;
+
+                }
+
+                if (json.is_null()) {
+
+                    object = nullptr;
+
+                    return true;
+
+                }
+
+                object = new TType();
+
+                return JSONDeserializer<TType>()(*object, json);
+
+            }
+
+        };
+
+        template <typename TType>
+        struct JSONDeserializer<std::unique_ptr<TType>> {
+
+            bool operator()(std::unique_ptr<TType>& object, const nlohmann::json& json) {
+
+                if (json.is_null()) {
+
+                    object = nullptr;
+
+                    return true;
+
+                }
 
                 return false;
 
             }
 
         };
+
+        template <typename TType>
+        struct JSONDeserializer<std::shared_ptr<TType>> {
+
+            bool operator()(std::shared_ptr<TType>& object, const nlohmann::json& json) {
+
+                if (json.is_null()) {
+
+                    object = nullptr;
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        //////////////// STRINGS DESERIALIZATION ////////////////
 
         /// \brief Functor used to deserialize a std::wstring from JSON.
         /// \author Raffaele D. Facendola - October 2016
@@ -137,6 +189,8 @@ namespace syntropy {
 
         };
 
+        //////////////// FUNDAMENTAL TYPES DESERIALIZATION ////////////////
+
         /// \brief Functor used to deserialize a boolean variable from JSON.
         /// \author Raffaele D. Facendola - October 2016
         template <>
@@ -176,6 +230,24 @@ namespace syntropy {
                     return true;
 
                 }
+
+                return false;
+
+            }
+
+        };
+
+        //////////////// NON-DESERIALIZABLE ////////////////
+
+        /// \brief Functor used to handle const objects.
+        /// Since const objects cannot be deserialized, this functor does nothing.
+        /// \author Raffaele D. Facendola - September 2016
+        template <typename TType>
+        struct JSONDeserializer<const TType> {
+
+            /// \brief Do nothing.
+            /// \return Returns false.
+            bool operator()(const TType&, const nlohmann::json&) {
 
                 return false;
 

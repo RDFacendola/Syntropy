@@ -192,6 +192,10 @@ public:
     Foo* fooptr_;
 
     Blob blob_;
+
+    Blob* p_blob_;
+    std::unique_ptr<Blob> u_blob_;
+    std::shared_ptr<Blob> s_blob_;
     
 };
 
@@ -275,6 +279,10 @@ public:
         definition.DefineProperty("string_value", &Foo::string_) << JSONRead();
         definition.DefineProperty("wstring_value", &Foo::wstring_) << JSONRead();
 
+        definition.DefineProperty("p_blob", &Foo::p_blob_) << JSONRead();
+        //definition.DefineProperty("u_blob", &Foo::u_blob_) << JSONRead();
+        //definition.DefineProperty("s_blob", &Foo::s_blob_) << JSONRead();
+        
         definition.DefineProperty("float_value", &Foo::value_) << JSONRead();
         definition.DefineProperty("int_value", &Foo::value2_) << JSONRead();
         definition.DefineProperty("const_value", &Foo::const_value_) << JSONRead();
@@ -785,13 +793,20 @@ public:
 
         Foo foo;
 
+        foo.p_blob_ = nullptr;
+        foo.u_blob_ = nullptr;
+        foo.s_blob_ = nullptr;
+
         nlohmann::json json = { {"int_value", 42},
                                 {"float_value", 67.5f},
                                 {"const_value", 100.0f},
                                 {"boolean", true },
                                 {"string_value", "awesome!"},
                                 {"wstring_value", "wawesome?"},
-                                {"Blob", { {"blob", 47} } } };
+                                {"Blob", { {"blob", 47} } },
+                                {"p_blob", { {"blob", 1} } },
+                                {"u_blob", { { "blob", 2 } } },
+                                {"s_blob", { { "blob", 3 } } } };
 
         syntropy::syntax::DeserializeObjectFromJSON(foo, json);
 
