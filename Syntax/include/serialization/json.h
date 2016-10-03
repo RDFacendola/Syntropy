@@ -48,7 +48,7 @@ namespace syntropy {
             /// \param instance Instance declaring the property.
             /// \param json JSON object to deserialize.
             template <typename TInstance>
-            void operator()(TInstance&& instance, const nlohmann::json& json) const;
+            bool operator()(TInstance&& instance, const nlohmann::json& json) const;
 
         private:
 
@@ -67,7 +67,7 @@ namespace syntropy {
                 /// The method does nothing if the provided instance doesn't support the property.
                 /// \param instance Instance declaring the property.
                 /// \param json JSON object to deserialize.
-                virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const = 0;
+                virtual bool Deserialize(reflection::Instance instance, const nlohmann::json& json) const = 0;
 
                 /// \brief Clone the content to another instance.
                 virtual void Clone(storage_t& storage) const noexcept = 0;
@@ -106,6 +106,7 @@ namespace syntropy {
         /// (2) If TClass is not a pointer, the concrete type declared by the JSON object is ignored as well as all those properties that are not available in TClass.
         /// (3) The caller takes the *ownership* of all dynamically-allocated objects deserialized this way.
         /// (4) TClass must either be registered to the Syntropy reflection system or a template specialization of JSONDeserializer<TClass> must be provided, otherwise the program is ill-formed.
+        /// (5) If the same property is defined more than once, only one of those will be deserialized. Which one is unknown, though.
         ///
         /// \param object Reference to the object to fill with deserialized data.
         /// \param json JSON object to deserialize.
@@ -135,9 +136,9 @@ namespace syntropy {
         }
 
         template <typename TInstance>
-        void JSONDeserializable::operator()(TInstance&& instance, const nlohmann::json& json) const {
+        bool JSONDeserializable::operator()(TInstance&& instance, const nlohmann::json& json) const {
 
-            reinterpret_cast<const IContent*>(&content_)->Deserialize(reflection::MakeInstance(instance), json);
+            return reinterpret_cast<const IContent*>(&content_)->Deserialize(reflection::MakeInstance(instance), json);
 
         }
 
@@ -153,15 +154,17 @@ namespace syntropy {
             Content(TField TClass::* field)
                 : field_(field) {}
 
-            virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override {
+            virtual bool Deserialize(reflection::Instance instance, const nlohmann::json& json) const override {
 
                 auto concrete_instance = instance.As<TClass>();
 
                 if (concrete_instance) {
 
-                    JSONDeserializer<TField>()(concrete_instance->*field_, json);
+                    return JSONDeserializer<TField>()(concrete_instance->*field_, json);
 
                 }
+
+                return false;
 
             }
 
@@ -187,9 +190,10 @@ namespace syntropy {
 
             Content(TProperty(TClass::*)() const) {}
 
-            virtual void Deserialize(reflection::Instance, const nlohmann::json&) const override{
+            virtual bool Deserialize(reflection::Instance, const nlohmann::json&) const override{
 
                 // Read-only
+                return false;
 
             }
 
@@ -215,20 +219,28 @@ namespace syntropy {
             Content(TProperty(TClass::*)() const, TReturn(TClass::* setter)(TProperty))
                 : setter_(setter) {}
 
-            virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override{
+            virtual bool Deserialize(reflection::Instance instance, const nlohmann::json& json) const override{
 
                 auto concrete_instance = instance.As<TClass>();
 
                 if (concrete_instance){
 
                     // Deserialize the property on a temporary variable and assign that to the setter.
+
                     std::remove_cv_t<std::remove_reference_t<TProperty>> property;
 
-                    JSONDeserializer<TProperty>()(property, json);
+                    if (JSONDeserializer<TProperty>()(property, json)) {
 
-                    (concrete_instance->*setter_)(std::move(property));
+                        (concrete_instance->*setter_)(std::move(property));
+
+                        return true;
+
+                    }
+
 
                 }
+
+                return false;
 
             }
 
@@ -256,15 +268,17 @@ namespace syntropy {
             Content(const TProperty&(TClass::*)() const, TProperty&(TClass::* setter)())
                 : setter_(setter) {}
 
-            virtual void Deserialize(reflection::Instance instance, const nlohmann::json& json) const override{
+            virtual bool Deserialize(reflection::Instance instance, const nlohmann::json& json) const override{
 
                 auto concrete_instance = instance.As<TClass>();
 
                 if (concrete_instance){
 
-                    JSONDeserializer<TProperty>()((concrete_instance->*setter_)(), json);
+                    return JSONDeserializer<TProperty>()((concrete_instance->*setter_)(), json);
 
                 }
+
+                return false;
 
             }
 

@@ -89,7 +89,8 @@ public:
 
     Foo() noexcept
         : const_value_(666)
-        , const_pointer_(nullptr){}
+        , const_pointer_(nullptr)
+        , boolean_(false) {}
 
     Foo(const Foo& other)
         : value_(other.value_)
@@ -97,7 +98,8 @@ public:
         , pointer_(other.pointer_)
         , pointer_to_const_(other.pointer_to_const_)
         , const_pointer_(other.const_pointer_)
-        , blob_(other.blob_) {
+        , blob_(other.blob_)
+        , boolean_(other.boolean_) {
 
         std::cout << "Copy ctor!\n";
 
@@ -268,17 +270,17 @@ public:
 
         definition.DefineProperty("float_value", &Foo::value_) << JSONRead();
         definition.DefineProperty("int_value", &Foo::value2_) << JSONRead();
-        definition.DefineProperty("const_value", &Foo::const_value_);
+        definition.DefineProperty("const_value", &Foo::const_value_) << JSONRead();
         definition.DefineProperty("pointer", &Foo::pointer_) << JSONRead();
         definition.DefineProperty("pointer_to_const", &Foo::pointer_to_const_) << JSONRead();
-        definition.DefineProperty("const_pointer", &Foo::const_pointer_);
+        definition.DefineProperty("const_pointer", &Foo::const_pointer_) << JSONRead();
         definition.DefineProperty("boolean", &Foo::boolean_) << JSONRead();
         
         definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue) << JSONRead();
-        definition.DefineProperty("ConstValue", &Foo::GetConstValue);
+        definition.DefineProperty("ConstValue", &Foo::GetConstValue) << JSONRead();
         definition.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer) << JSONRead();
         definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst) << JSONRead();
-        definition.DefineProperty("ConstPointer", &Foo::GetConstPointer);
+        definition.DefineProperty("ConstPointer", &Foo::GetConstPointer) << JSONRead();
         definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob) << JSONRead();
        
         definition.DefineProperty("Accessor",
@@ -464,7 +466,7 @@ public:
         Foo foo;
             
 
-        foo.boolean_ = false;
+        //foo.boolean_ = false;
 
         TEST_TRUE(field_float_value_->Set(foo, 512) &&                                // From int to float.
                   foo.value_ == 512.0f);                        
@@ -779,12 +781,13 @@ public:
         nlohmann::json json = { {"int_value", 42},
                                 {"float_value", 67.5f},
                                 {"const_value", 100.0f},
-                                {"Value", 800 } };
+                                {"boolean", true } };
 
         syntropy::syntax::DeserializeObjectFromJSON(foo, json);
 
         TEST_TRUE(foo.value_ == 67.5f);
         TEST_TRUE(foo.value2_ == 42);
+        TEST_TRUE(foo.boolean_ == true);
         TEST_FALSE(foo.const_value_ == 100.0f)
 
     }

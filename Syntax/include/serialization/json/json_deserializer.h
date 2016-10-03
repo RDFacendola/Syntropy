@@ -16,30 +16,61 @@ namespace syntropy {
 
         class JSONDeserializable;
 
+        /// \brief Functor used to deserialize JSON object into a concrete instance.
+        /// This version uses the Syntropy reflection system to recursively deserialize object properties.
+        /// \author Raffaele D. Facendola - September 2016
         template <typename TType, typename = void>
         struct JSONDeserializer {
 
+            /// \brief Deserialize a JSON object inside a concrete object.
+            /// Properties that are not declared by the JSON object are ignored.
+            /// \param object Object to deserialize into.
+            /// \param json JSON object to deserialize.
+            /// \return Returns true if at least one property could be deserialized, returns false otherwise.
             bool operator()(TType& object, const nlohmann::json& json) {
+
+                bool success = false;
+
+                const reflection::Property* object_property;
+                const JSONDeserializable* deserializable;
 
                 auto& object_class = reflection::ClassOf(object);
 
+                // Cycle through JSON-defined properties
+
                 for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
 
-                    auto object_property = object_class.GetProperty(json_property.key());
+                    object_property = object_class.GetProperty(json_property.key());        // Matching object property
 
                     if (object_property) {
 
-                        auto deserializer = object_property->GetInterface<JSONDeserializable>();
+                        deserializable = object_property->GetInterface<JSONDeserializable>();
 
-                        if (deserializer) {
+                        if (deserializable) {
 
-                            (*deserializer)(object, json_property.value());
+                            success |= (*deserializable)(object, json_property.value());    // Recursive deserialization
 
                         }
 
                     }
 
                 }
+
+                return success;
+
+            }
+
+        };
+
+        /// \brief Functor used to handle const objects.
+        /// Since const objects cannot be deserialized, this functor does nothing.
+        /// \author Raffaele D. Facendola - September 2016
+        template <typename TType>
+        struct JSONDeserializer<const TType> {
+
+            /// \brief Do nothing.
+            /// \return Returns false.
+            bool operator()(const TType&, const nlohmann::json&) {
 
                 return false;
 
@@ -58,18 +89,53 @@ namespace syntropy {
 
         };
 
-        template <typename TType>
-        struct JSONDeserializer<TType, typename std::enable_if_t<std::is_arithmetic_v<TType>>> {
+        /// \brief Functor used to deserialize a boolean variable from JSON.
+        /// \author Raffaele D. Facendola - September 2016
+        template <>
+        struct JSONDeserializer<bool> {
 
-            bool operator()(TType& object, const nlohmann::json& json) {
+            /// \brief Deserialize a boolean variable from a JSON object property.
+            /// \return Returns true if the JSON object contains a boolean value, returns false otherwise.
+            bool operator()(bool& object, const nlohmann::json& json) {
 
-                conditional_assign(object, json.get<TType>());
+                if (json.is_boolean()) {
+
+                    object = json.get<bool>();
+
+                    return true;
+
+                }
 
                 return false;
 
             }
 
         };
+
+        /// \brief Functor used to deserialize a numeric-variable from JSON.
+        /// \author Raffaele D. Facendola - September 2016
+        template <typename TType>
+        struct JSONDeserializer<TType, typename std::enable_if_t<std::is_arithmetic_v<TType> && !std::is_const<TType>::value>> {
+            
+            /// \brief Deserialize a numeric variable from a JSON object property.
+            /// \return Returns true if the JSON object contains a numeric value, returns false otherwise.
+            bool operator()(TType& object, const nlohmann::json& json) {
+
+                if (json.is_number()) {
+
+                    object = json.get<std::remove_const_t<TType>>();
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+
 
     }
 

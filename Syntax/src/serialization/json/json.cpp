@@ -1,7 +1,5 @@
 #include "serialization/json.h"
 
-#include "reflection/reflection.h"
-
 #include <fstream>
 
 namespace syntropy {
