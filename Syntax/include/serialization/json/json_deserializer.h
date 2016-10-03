@@ -91,6 +91,26 @@ namespace syntropy {
 
         };
 
+        /// \brief Functor used to deserialize a std::wstring from JSON.
+        /// \author Raffaele D. Facendola - October 2016
+        template <>
+        struct JSONDeserializer<std::wstring> {
+
+            /// \brief Deserialize a std::wstring from a JSON object property.
+            /// \return Returns true if the JSON object contains a string value, returns false otherwise.
+            bool operator()(std::wstring& object, const nlohmann::json& json) {
+
+                if (json.is_string()) {
+
+                    object = to_wstring(json.get<std::string>());
+
+                }
+
+                return false;
+
+            }
+
+        };
 
         /// \brief Functor used to deserialize a std::string from JSON.
         /// \author Raffaele D. Facendola - October 2016

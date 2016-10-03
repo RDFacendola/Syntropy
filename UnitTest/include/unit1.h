@@ -187,6 +187,7 @@ public:
     float* const const_pointer_;
     bool boolean_;
     std::string string_;
+    std::wstring wstring_;
 
     Foo* fooptr_;
 
@@ -270,6 +271,7 @@ public:
         definition.DefineBaseClass<Bar>();
 
         definition.DefineProperty("string_value", &Foo::string_) << JSONRead();
+        definition.DefineProperty("wstring_value", &Foo::wstring_) << JSONRead();
 
         definition.DefineProperty("float_value", &Foo::value_) << JSONRead();
         definition.DefineProperty("int_value", &Foo::value2_) << JSONRead();
@@ -785,7 +787,8 @@ public:
                                 {"float_value", 67.5f},
                                 {"const_value", 100.0f},
                                 {"boolean", true },
-                                {"string_value", "awesome!"} };
+                                {"string_value", "awesome!"},
+                                {"wstring_value", "wawesome?"} };
 
         syntropy::syntax::DeserializeObjectFromJSON(foo, json);
 
@@ -793,6 +796,7 @@ public:
         TEST_TRUE(foo.value2_ == 42);
         TEST_TRUE(foo.boolean_ == true);
         TEST_TRUE(foo.string_ == "awesome!");
+        TEST_TRUE(foo.wstring_ == L"wawesome?");
         TEST_FALSE(foo.const_value_ == 100.0f)
 
     }
