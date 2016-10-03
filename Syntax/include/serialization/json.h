@@ -138,7 +138,7 @@ namespace syntropy {
         template <typename TInstance>
         bool JSONDeserializable::operator()(TInstance&& instance, const nlohmann::json& json) const {
 
-            return reinterpret_cast<const IContent*>(&content_)->Deserialize(reflection::MakeInstance(instance), json);
+            return reinterpret_cast<const IContent*>(&content_)->Deserialize(reflection::MakeInstance(std::forward<TInstance>(instance)), json);
 
         }
 
@@ -221,15 +221,17 @@ namespace syntropy {
 
             virtual bool Deserialize(reflection::Instance instance, const nlohmann::json& json) const override{
 
+                using property_t = std::remove_cv_t<std::remove_reference_t<TProperty>>;
+
                 auto concrete_instance = instance.As<TClass>();
 
                 if (concrete_instance){
 
                     // Deserialize the property on a temporary variable and assign that to the setter.
 
-                    std::remove_cv_t<std::remove_reference_t<TProperty>> property;
+                    property_t property;
 
-                    if (JSONDeserializer<TProperty>()(property, json)) {
+                    if (JSONDeserializer<property_t>()(property, json)) {
 
                         (concrete_instance->*setter_)(std::move(property));
 

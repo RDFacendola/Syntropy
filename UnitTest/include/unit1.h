@@ -801,7 +801,7 @@ public:
         TEST_TRUE(foo.string_ == "awesome!");
         TEST_TRUE(foo.wstring_ == L"wawesome?");
         TEST_TRUE(foo.GetBlob().blob_ == 47);
-        TEST_FALSE(foo.const_value_ == 100.0f)
+        TEST_FALSE(foo.const_value_ == 100.0f);
 
     }
 

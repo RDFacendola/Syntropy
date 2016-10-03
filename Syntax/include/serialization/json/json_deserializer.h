@@ -50,7 +50,7 @@ namespace syntropy {
 
                             if (deserializable) {
 
-                                (*deserializable)(object, json_property.value());    // Recursive deserialization
+                                (*deserializable)(object, json_property.value());               // Recursive deserialization
 
                             }
 
