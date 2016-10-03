@@ -234,7 +234,9 @@ public:
     template <typename TDefinition>
     void operator()(TDefinition& definition) const {
 
-        definition.DefineProperty("blob", &Blob::blob_);
+        using syntropy::syntax::JSONRead;
+
+        definition.DefineProperty("blob", &Blob::blob_) << JSONRead();
 
     }
 
@@ -788,7 +790,8 @@ public:
                                 {"const_value", 100.0f},
                                 {"boolean", true },
                                 {"string_value", "awesome!"},
-                                {"wstring_value", "wawesome?"} };
+                                {"wstring_value", "wawesome?"},
+                                {"Blob", { {"blob", 47} } } };
 
         syntropy::syntax::DeserializeObjectFromJSON(foo, json);
 
@@ -797,6 +800,7 @@ public:
         TEST_TRUE(foo.boolean_ == true);
         TEST_TRUE(foo.string_ == "awesome!");
         TEST_TRUE(foo.wstring_ == L"wawesome?");
+        TEST_TRUE(foo.GetBlob().blob_ == 47);
         TEST_FALSE(foo.const_value_ == 100.0f)
 
     }

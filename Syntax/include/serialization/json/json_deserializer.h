@@ -28,37 +28,41 @@ namespace syntropy {
             /// Properties that are not declared by the JSON object are ignored.
             /// \param object Object to deserialize into.
             /// \param json JSON object to deserialize.
-            /// \return Returns true if at least one property could be deserialized, returns false otherwise.
+            /// \return Returns true if the JSON object contains an object, returns false otherwise.
             bool operator()(TType& object, const nlohmann::json& json) {
 
-                bool success = false;
+                if (json.is_object()) {
 
-                const reflection::Property* object_property;
-                const JSONDeserializable* deserializable;
+                    const reflection::Property* object_property;
+                    const JSONDeserializable* deserializable;
 
-                auto& object_class = reflection::ClassOf(object);
+                    auto& object_class = reflection::ClassOf(object);
 
-                // Cycle through JSON-defined properties
+                    // Cycle through JSON-defined properties
 
-                for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
+                    for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
 
-                    object_property = object_class.GetProperty(json_property.key());        // Matching object property
+                        object_property = object_class.GetProperty(json_property.key());        // Matching object property
 
-                    if (object_property) {
+                        if (object_property) {
 
-                        deserializable = object_property->GetInterface<JSONDeserializable>();
+                            deserializable = object_property->GetInterface<JSONDeserializable>();
 
-                        if (deserializable) {
+                            if (deserializable) {
 
-                            success |= (*deserializable)(object, json_property.value());    // Recursive deserialization
+                                (*deserializable)(object, json_property.value());    // Recursive deserialization
+
+                            }
 
                         }
 
                     }
 
+                    return true;
+
                 }
 
-                return success;
+                return false;
 
             }
 
@@ -178,8 +182,6 @@ namespace syntropy {
             }
 
         };
-
-
 
     }
 
