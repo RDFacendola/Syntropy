@@ -238,7 +238,7 @@ public:
     template <typename TDefinition>
     void operator()(TDefinition& definition) const {
 
-        using syntropy::syntax::JSONRead;
+        using syntropy::syntax::serialization::JSONRead;
 
         definition.DefineProperty("blob", &Blob::blob_) << JSONRead();
 
@@ -272,7 +272,7 @@ public:
 
     void operator()(Class::Definition<Foo>& definition) const {
         
-        using syntropy::syntax::JSONRead;
+        using syntropy::syntax::serialization::JSONRead;
 
         definition.DefineBaseClass<Bar>();
 
@@ -808,7 +808,7 @@ public:
                                 {"u_blob", { { "blob", 2 } } },
                                 {"s_blob", { { "blob", 3 } } } };
 
-        syntropy::syntax::DeserializeObjectFromJSON(foo, json);
+        syntropy::syntax::serialization::DeserializeObjectFromJSON(foo, json);
 
         TEST_TRUE(foo.value_ == 67.5f);
         TEST_TRUE(foo.value2_ == 42);
