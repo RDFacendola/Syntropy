@@ -233,6 +233,15 @@ namespace syntropy {
         template <typename TClass>
         struct ClassDeclaration;
 
+        template <typename... TAccessors>
+        struct AdditionalPropertyDefinition{
+        
+            void operator()(Property::PropertyT<TAccessors...>& /*property*/, TAccessors... /*accessors*/) {
+
+            }
+
+        };
+
         /// \brief Stream insertion for Class.
         std::ostream& operator<<(std::ostream& out, const Class& class_instance);
 
@@ -315,6 +324,8 @@ namespace syntropy {
             auto property = new Property::PropertyT<TAccessors...>(property_name, accessors...);
 
             properties_.push_back(std::unique_ptr<Property>(property));
+
+            AdditionalPropertyDefinition<TAccessors...>()(*property, accessors...);        // Fill additional infos
 
             return *property;
 
