@@ -281,7 +281,7 @@ public:
 
         definition.DefineProperty("p_blob", &Foo::p_blob_) << JSONRead();
         //definition.DefineProperty("u_blob", &Foo::u_blob_) << JSONRead();
-        //definition.DefineProperty("s_blob", &Foo::s_blob_) << JSONRead();
+        definition.DefineProperty("s_blob", &Foo::s_blob_) /*<< JSONRead()*/;
         
         definition.DefineProperty("float_value", &Foo::value_) << JSONRead();
         definition.DefineProperty("int_value", &Foo::value2_) << JSONRead();
