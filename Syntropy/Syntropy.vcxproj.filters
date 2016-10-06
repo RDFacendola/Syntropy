@@ -33,6 +33,7 @@
     </ClInclude>
     <ClInclude Include="include\syntropy.h" />
     <ClInclude Include="include\reflection\stl_types.h" />
+    <ClInclude Include="include\reflection\template_types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
