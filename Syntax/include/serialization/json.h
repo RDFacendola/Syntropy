@@ -86,7 +86,7 @@ namespace syntropy {
 
             };
         
-            /// \brief Functor object used to assign the interface JSONDeserializable to properties.
+            /// \brief Functor object used to assign the interface JSONDeserializable to properties and classes.
             /// \author Raffaele D. Facendola - September 2016
             struct JSONRead {
  
@@ -150,6 +150,41 @@ namespace syntropy {
             }
 
             //////////////// JSON DESERIALIZABLE :: CONTENT ////////////////
+
+            /// \brief Template specialization of JSONDeserializable::Content for classes.
+            /// \author Raffaele D. Facendola - October 2016.
+            template <typename TClass>
+            struct JSONDeserializable::Content<TClass> : JSONDeserializable::IContent {
+
+            public:
+
+                Content(){}
+
+                virtual bool Deserialize(reflection::Instance instance, const nlohmann::json& json) const override {
+
+                    auto concrete_instance = instance.As<TClass>();
+
+                    if (concrete_instance) {
+
+                        return JSONDeserializer<TField>()(*concrete_instance, json);
+
+                    }
+
+                    return false;
+
+                }
+
+                virtual void Clone(storage_t& storage) const noexcept override {
+
+                    using this_t = std::remove_reference_t<decltype(*this)>;
+
+                    static_assert(sizeof(storage_t) >= sizeof(this_t), "Storage size is not enough for an instance of this class.");
+
+                    new (&storage) this_t();
+
+                }
+                
+            };
 
             /// \brief Template specialization of JSONDeserializable::Content for properties defined via their member variable pointer.
             /// \author Raffaele D. Facendola - September 2016.

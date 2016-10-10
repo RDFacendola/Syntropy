@@ -100,6 +100,12 @@ namespace syntropy {
             /// \return Returns a reference to the new instance if the class was instantiable, return an empty reference otherwise.
             virtual Instance Instantiate() const = 0;
 
+            /// \brief Query the class for an interface of type TInterface.
+            /// \return If an interface of type TInterface was added during class declaration, returns a pointer to that interface, otherwise returns nullptr.
+            /// \remarks This method doesn't account for polymorphism. If a class of type Foo derived from Bar is added to the class, GetInterface<Bar>() will return nullptr even if a conversion exists.
+            template <typename TInterface>
+            const TInterface* GetInterface() const;
+
         private:
             
             template <typename TClass>
@@ -107,6 +113,8 @@ namespace syntropy {
 
             /// \brief Default constructor.
             Class() = default;
+
+            std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the class.
 
         };
 
@@ -156,6 +164,17 @@ namespace syntropy {
             template <typename... TAccessors>
             Property::PropertyT<TAccessors...>& DefineProperty(const char* property_name, TAccessors... accessors);
 
+            /// \brief Add a new interface to the class.
+            /// The method creates an instance of TInstance using TArgs as construction parameters.
+            /// TInstance must be copy constructible.
+            /// Only one interface per type can be added.
+            /// \usage class.AddInterface<Foo>(bar, baz);            // Assign an instance Foo(bar, baz) to the property
+            ///        clazz.GetInterface<Foo>()->DoFoo();           // Query for the property for a specified interface.
+            /// \param arguments Arguments to pass to the constructor of TInterface.
+            /// \return Returns true if the method succeeds, return false if there was another interface of type TInterface.
+            template <typename TInterface, typename... TArgs>
+            bool DefineInterface(TArgs&&... arguments);
+
         private:
 
             template <typename... TAccessors>
@@ -166,6 +185,8 @@ namespace syntropy {
             std::vector<const Class*> base_classes_;                            ///< \brief List of all base classes.
 
             std::vector<std::unique_ptr<Property>> properties_;                 ///< \brief Reference to the class properties.
+
+            std::unordered_map<std::type_index, linb::any> interfaces_;         ///< \brief Set of interfaces assigned to the class.
 
         };
 
@@ -268,6 +289,21 @@ namespace syntropy {
 
         }
 
+
+        template <typename TClass>
+        template <typename TInterface>
+        const TInterface* Class::GetInterface() const {
+
+            auto interface_type = std::type_index(typeid(TInterface));
+
+            auto it = interfaces_.find(interface_type);
+
+            return it != interfaces_.end() ?
+                   linb::any_cast<TInterface>(&(it->second)) :
+                   nullptr;
+
+        }
+
         //////////////// CLASS :: DEFINITION ////////////////
 
         template <typename TClass>
@@ -332,6 +368,25 @@ namespace syntropy {
         }
 
         template <typename TClass>
+        template <typename TInterface, typename... TArgs>
+        bool Class::Definition<TClass>::DefineInterface(TArgs&&... arguments) {
+
+            auto interface_type = std::type_index(typeid(TInterface));
+
+            if (interfaces_.find(interface_type) == interfaces_.end()) {
+
+                interfaces_.insert(std::make_pair(interface_type,
+                                                  linb::any(TInterface(std::forward<TArgs>(arguments)...))));
+
+                return true;
+
+            }
+
+            return false;
+
+        }
+
+        template <typename TClass>
         template <typename... TAccessors>
         void Class::Definition<TClass>::CheckPropertyOrDie(const HashedString& property_name, TAccessors...) const {
 
@@ -363,7 +418,8 @@ namespace syntropy {
         Class::ClassT<TClass>::ClassT(Definition<TClass> definition)
             : names_(std::move(definition.names_))
             , base_classes_(std::move(definition.base_classes_))
-            , properties_(std::move(definition.properties_)){
+            , properties_(std::move(definition.properties_))
+            , interfaces_(std::move(definition.interfaces_)){
 
             RegenerateIndices();
 
@@ -430,7 +486,7 @@ namespace syntropy {
             return instantiate<TClass>()();
 
         }
-
+        
         template <typename TClass>
         inline void Class::ClassT<TClass>::RegenerateIndices() noexcept{
 
