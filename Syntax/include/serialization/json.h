@@ -27,11 +27,18 @@ namespace syntropy {
                 /// \brief Helper tag used to resolve conflicts among copy/move constructor and explicit initialization via property accessors.
                 struct property_tag {};
 
+                /// \brief Helper tag used to resolve conflicts among copy/move constructor and explicit initialization for classes.
+                template <typename TClass>
+                struct class_tag {};
+
                 /// \brief Create a new interface via direct accessors to the property.
                 /// \tparam TAccessors type of the accessors.
                 /// \param accessors Pointer to the actual property variable / getter-setter functions.
                 template <typename... TAccessors>
                 JSONDeserializable(property_tag, TAccessors&&... accessors);
+
+                template <typename TClass>
+                JSONDeserializable(class_tag<TClass>);
 
                 /// \brief Copy constructor.
                 JSONDeserializable(const JSONDeserializable& other) noexcept;
@@ -139,6 +146,13 @@ namespace syntropy {
                 static_assert(sizeof(storage_t) >= sizeof(content_t), "Storage size is not enough.");
         
                 new (&content_) content_t(std::forward<TAccessors>(accessors)...);
+
+            }
+
+            template <typename TClass>
+            JSONDeserializable::JSONDeserializable(class_tag<TClass>) {
+
+                new (&content_) Content<TClass>();
 
             }
 
@@ -340,7 +354,7 @@ namespace syntropy {
 
             };
 
-            //////////////// JSON WRITE ////////////////
+            //////////////// JSON READ ////////////////
 
             template <typename... TAccessors>
             void JSONRead::operator()(reflection::Property& property, TAccessors&&... accessors) const {
