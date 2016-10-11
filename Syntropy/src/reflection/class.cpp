@@ -8,6 +8,9 @@ namespace syntropy {
 
         //////////////// CLASS ////////////////
 
+        Class::Class(std::unordered_map<std::type_index, linb::any> interfaces)
+            : interfaces_(std::move(interfaces)) {}
+
         bool Class::operator ==(const Class& other) const noexcept {
 
             // The two classes are the same if they share the same address (since we are dealing with singleton)

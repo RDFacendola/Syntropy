@@ -106,13 +106,16 @@ namespace syntropy {
             template <typename TInterface>
             const TInterface* GetInterface() const;
 
+        protected:
+
         private:
             
             template <typename TClass>
             class ClassT;
 
-            /// \brief Default constructor.
-            Class() = default;
+            /// \brief Create a new class.
+            /// \param interfaces List of interfaces declared by the class.
+            Class(std::unordered_map<std::type_index, linb::any> interfaces);
 
             std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the class.
 
@@ -289,8 +292,6 @@ namespace syntropy {
 
         }
 
-
-        template <typename TClass>
         template <typename TInterface>
         const TInterface* Class::GetInterface() const {
 
@@ -416,10 +417,10 @@ namespace syntropy {
 
         template <typename TClass>
         Class::ClassT<TClass>::ClassT(Definition<TClass> definition)
-            : names_(std::move(definition.names_))
+            : Class(std::move(definition.interfaces_))
+            , names_(std::move(definition.names_))
             , base_classes_(std::move(definition.base_classes_))
-            , properties_(std::move(definition.properties_))
-            , interfaces_(std::move(definition.interfaces_)){
+            , properties_(std::move(definition.properties_)) {
 
             RegenerateIndices();
 
