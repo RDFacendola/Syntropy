@@ -83,7 +83,7 @@ namespace syntropy {
 
             const char* GetName() const noexcept {
 
-                static std::string name = TemplateClassName<TType>()("std::unique_ptr");
+                static const std::string name(TemplateClassName<TType>()("std::unique_ptr"));
 
                 return name.c_str();
 
@@ -92,7 +92,7 @@ namespace syntropy {
             template <typename TDefinition>
             void operator()(TDefinition& definition) const {
 
-                static std::string alias = TemplateClassName<TType>()("unique_ptr");
+                static const std::string alias(TemplateClassName<TType>()("unique_ptr"));
 
                 definition.DefineNameAlias(alias.c_str());
 
@@ -100,14 +100,14 @@ namespace syntropy {
 
         };
 
-        //////////////// STD::UNIQUE_PTR ////////////////
+        //////////////// STD::SHARED_PTR ////////////////
 
         template <typename TType>
         struct ClassDeclaration<std::shared_ptr<TType>> {
 
             const char* GetName() const noexcept {
 
-                static std::string name = TemplateClassName<TType>()("std::shared_ptr");
+                static const std::string name(TemplateClassName<TType>()("std::shared_ptr"));
 
                 return name.c_str();
 
@@ -116,7 +116,7 @@ namespace syntropy {
             template <typename TDefinition>
             void operator()(TDefinition& definition) const {
 
-                static std::string alias = TemplateClassName<TType>()("std::shared_ptr");
+                static const std::string alias(TemplateClassName<TType>()("std::shared_ptr"));
 
                 definition.DefineNameAlias(alias.c_str());
 

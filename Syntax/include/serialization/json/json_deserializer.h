@@ -41,9 +41,9 @@ namespace syntropy {
                         const reflection::Property* object_property;
                         const JSONDeserializable* deserializable;
 
-                        auto& object_class = reflection::ClassOf(object);
-
                         // Cycle through JSON-defined properties
+
+                        auto& object_class = reflection::ClassOf(object);
 
                         for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
 
@@ -73,7 +73,55 @@ namespace syntropy {
 
             };
 
+            /// \brief Functor used to deserialize JSON object into a reflection-instanced object.
+            /// This version uses the Syntropy reflection system to recursively deserialize object properties.
+            /// \author Raffaele D. Facendola - September 2016
+            template <>
+            struct JSONDeserializer<reflection::Instance> {
 
+                /// \brief Deserialize a JSON object inside a concrete object.
+                /// Properties that are not declared by the JSON object are ignored.
+                /// \param object Object to deserialize into.
+                /// \param json JSON object to deserialize.
+                /// \return Returns true if the JSON object contains an object, returns false otherwise.
+                bool operator()(reflection::Instance& object, const nlohmann::json& json) {
+
+                    if (json.is_object()) {
+
+                        const reflection::Property* object_property;
+                        const JSONDeserializable* deserializable;
+
+                        // Cycle through JSON-defined properties
+ 
+                        auto& object_class = object.GetType().GetClass();
+ 
+                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
+ 
+                            object_property = object_class.GetProperty(json_property.key());                // Matching object property
+ 
+                            if (object_property) {
+ 
+                                deserializable = object_property->GetInterface<JSONDeserializable>();
+ 
+                                if (deserializable) {
+
+                                    (*deserializable)(object, json_property.value());               // Recursive deserialization
+ 
+                                }
+ 
+                            }
+ 
+                        }
+ 
+                        return true;
+ 
+                    }
+
+                    return false;
+
+                }
+
+            };
 
             //////////////// POINTERS DESERIALIZATION ////////////////
 
@@ -112,9 +160,7 @@ namespace syntropy {
 
                     object = instance.As<TType>();
 
-                    assert(object != nullptr);
-
-                    return JSONDeserializer<TType>()(*object, json);    // [BUG] Should deserialize the concrete type of object!
+                    return JSONDeserializer<reflection::Instance>()(instance, json);
 
                 }
 

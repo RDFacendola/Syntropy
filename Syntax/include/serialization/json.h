@@ -92,7 +92,7 @@ namespace syntropy {
                 template <typename... TAccessors>
                 struct Content : IContent {};
             
-                storage_t content_;						///< \brief Used to dispatch the deserialization logic.
+                storage_t content_;                     ///< \brief Used to dispatch the deserialization logic.
 
             };
         
