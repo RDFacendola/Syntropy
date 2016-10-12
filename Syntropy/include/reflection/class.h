@@ -178,6 +178,12 @@ namespace syntropy {
             template <typename TInterface, typename... TArgs>
             bool DefineInterface(TArgs&&... arguments);
 
+            /// \brief Apply a functor to this class definition.
+            /// \usage: definition << Foo();          // Resolves to Foo()(class_definition)
+            /// \return Returns a reference to the definition.
+            template <typename TFunctor>
+            Class::Definition<TClass>& operator<<(TFunctor&& functor);
+
         private:
 
             template <typename... TAccessors>
@@ -384,6 +390,16 @@ namespace syntropy {
             }
 
             return false;
+
+        }
+
+        template <typename TClass>
+        template <typename TFunctor>
+        Class::Definition<TClass>& Class::Definition<TClass>::operator<<(TFunctor&& functor) {
+
+            functor(*this);
+
+            return *this;
 
         }
 

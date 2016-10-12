@@ -101,6 +101,10 @@ namespace syntropy {
 
                     }
 
+//                     auto ttype_class = ClassOf<TType>();
+// 
+//                     ttype_class->GetInterface<JSONDeserializable>()()
+
                     object = new TType();
 
                     return JSONDeserializer<TType>()(*object, json);

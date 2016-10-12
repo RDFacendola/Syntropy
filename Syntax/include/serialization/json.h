@@ -103,6 +103,11 @@ namespace syntropy {
                 template <typename... TAccessors>
                 void operator()(reflection::Property& property, TAccessors&&... accessors) const;
 
+                /// \brief Add a JSONDeserializable interface to the provided class.
+                /// \param class_definition Definition where the interface will be added to.
+                template <typename TClass>
+                void operator()(reflection::Class::Definition<TClass>& class_definition) const;
+
             };
 
             /// \brief Parse a JSON object from file.
@@ -180,7 +185,7 @@ namespace syntropy {
 
                     if (concrete_instance) {
 
-                        return JSONDeserializer<TField>()(*concrete_instance, json);
+                        return JSONDeserializer<TClass>()(*concrete_instance, json);
 
                     }
 
@@ -361,6 +366,13 @@ namespace syntropy {
 
                 property.AddInterface<JSONDeserializable>(JSONDeserializable::property_tag(),
                                                           std::forward<TAccessors>(accessors)...);
+
+            }
+
+            template <typename TClass>
+            void JSONRead::operator()(reflection::Class::Definition<TClass>& class_definition) const {
+
+                class_definition.DefineInterface<JSONDeserializable>(JSONDeserializable::class_tag<TClass>());
 
             }
 

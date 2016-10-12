@@ -240,6 +240,8 @@ public:
 
         using syntropy::syntax::serialization::JSONRead;
 
+        definition << JSONRead();
+
         definition.DefineProperty("blob", &Blob::blob_) << JSONRead();
 
     }
