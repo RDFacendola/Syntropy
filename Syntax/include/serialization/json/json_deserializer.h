@@ -82,32 +82,81 @@ namespace syntropy {
 
                 bool operator()(TType*& object, const nlohmann::json& json) {
 
+                    // DESIGN CHOICE: Pointers-to-pointers are not supported. It would make unclear who "owns" each level of indirectness and the concrete type of each of them. Additionally it would complicate the code below for no good reason.
+                    // IMPORTANT: *Dumb* pointers are considered as owning pointers. Any previous value is deleted.
+
                     static_assert(std::is_default_constructible<TType>::value, "TType must be default constructible");
-
-                    // TODO: what happens to the previous value of "object"? If it is an owning pointer we can delete it, however we are not sure whether the pointer is initialized or not.
-                    //       >> Since deserialization interprets pointers as owning pointers, we can delete it if not null. And require that the client provides pointers that are initialized.
-
+                    static_assert(!std::is_pointer_v<TType>, "Pointers-to-pointers cannot be deserialized");
+                    
                     if (object != nullptr) {
 
                         delete object;
 
                     }
+                    
+                    object = nullptr;       // Set to null in case the deserialization fails.
 
                     if (json.is_null()) {
-
-                        object = nullptr;
 
                         return true;
 
                     }
+                    
+                    reflection::Instance instance(InstantiateFromJSON<TType>(json));
 
-//                     auto ttype_class = ClassOf<TType>();
-// 
-//                     ttype_class->GetInterface<JSONDeserializable>()()
+                    if (!instance) {
 
-                    object = new TType();
+                        return false;
 
-                    return JSONDeserializer<TType>()(*object, json);
+                    }
+
+                    object = instance.As<TType>();
+
+                    assert(object != nullptr);
+
+                    return JSONDeserializer<TType>()(*object, json);    // [BUG] Should deserialize the concrete type of object!
+
+                }
+
+                template <typename TType>
+                reflection::Instance InstantiateFromJSON(const nlohmann::json& json) {
+
+                    auto& base_class = reflection::ClassOf<TType>();
+
+                    auto class_it = json.find(JSONDeserializable::kClassToken);
+
+                    if (class_it != json.end()) {
+
+                        // A concrete class type was defined
+
+                        if (!class_it->is_string()) {
+
+                            return reflection::Instance();          // Expected a class name.
+
+                        }
+
+                        auto concrete_class = reflection::GetClass(class_it->get<std::string>());    
+
+                        if (concrete_class == nullptr) {
+
+                            return reflection::Instance();          // No such class.
+
+                        }
+
+                        if (*concrete_class != base_class) {
+
+                            return reflection::Instance();          // The specified concrete class doesn't derive from the base class.
+
+                        }
+
+                        return concrete_class->Instantiate();       // Attempts to instantiate a concrete class
+
+                    }
+                    else {
+
+                        return base_class.Instantiate();            // Attempts to instantiate the base class
+
+                    }
 
                 }
 

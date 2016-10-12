@@ -57,6 +57,12 @@ struct StreamableBlob {
 
 };
 
+struct DerivedBlob : Blob {
+
+    int derived_blob_;
+
+};
+
 inline std::istream& operator >> (std::istream &in, Blob& blob) {
 
     in >> blob.blob_;
@@ -240,9 +246,32 @@ public:
 
         using syntropy::syntax::serialization::JSONRead;
 
-        definition << JSONRead();
-
         definition.DefineProperty("blob", &Blob::blob_) << JSONRead();
+
+    }
+
+};
+
+
+
+template <>
+struct syntropy::reflection::ClassDeclaration<DerivedBlob> {
+
+public:
+
+    constexpr const char* GetName() const noexcept {
+
+        return "DerivedBlob";
+
+    }
+
+    template <typename TDefinition>
+    void operator()(TDefinition& definition) const {
+
+        using syntropy::syntax::serialization::JSONRead;
+
+        definition.DefineBaseClass<Blob>();
+        definition.DefineProperty("derived_blob", &DerivedBlob::derived_blob_) << JSONRead();
 
     }
 
@@ -806,7 +835,7 @@ public:
                                 {"string_value", "awesome!"},
                                 {"wstring_value", "wawesome?"},
                                 {"Blob", { {"blob", 47} } },
-                                {"p_blob", { {"blob", 1} } },
+                                {"p_blob", { { "$class", "DerivedBlob" },  { "blob", 1 } } },
                                 {"u_blob", { { "blob", 2 } } },
                                 {"s_blob", { { "blob", 3 } } } };
 

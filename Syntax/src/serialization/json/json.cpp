@@ -10,6 +10,8 @@ namespace syntropy {
 
             //////////////// JSON DESERIALIZABLE ////////////////
 
+            const char* JSONDeserializable::kClassToken = "$class";
+
             JSONDeserializable::JSONDeserializable(const JSONDeserializable& other) noexcept {
 
                 reinterpret_cast<const IContent*>(&(other.content_))->Clone(content_);
