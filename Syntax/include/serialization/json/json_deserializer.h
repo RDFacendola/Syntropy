@@ -36,39 +36,9 @@ namespace syntropy {
                 /// \return Returns true if the JSON object contains an object, returns false otherwise.
                 bool operator()(TType& object, const nlohmann::json& json) {
 
-                    if (json.is_object()) {
-
-                        const reflection::Property* object_property;
-                        const JSONDeserializable* deserializable;
-
-                        // Cycle through JSON-defined properties
-
-                        auto& object_class = reflection::ClassOf(object);
-
-                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
-
-                            object_property = object_class.GetProperty(json_property.key());        // Matching object property
-
-                            if (object_property) {
-
-                                deserializable = object_property->GetInterface<JSONDeserializable>();
-
-                                if (deserializable) {
-
-                                    (*deserializable)(object, json_property.value());               // Recursive deserialization
-
-                                }
-
-                            }
-
-                        }
-
-                        return true;
-
-                    }
-
-                    return false;
-
+                    // Wraps the object inside an instance and use the reflection-based deserialization
+                    return JSONDeserializer<reflection::Instance>()(reflection::MakeInstance(object), json);
+                    
                 }
 
             };
@@ -84,42 +54,7 @@ namespace syntropy {
                 /// \param object Object to deserialize into.
                 /// \param json JSON object to deserialize.
                 /// \return Returns true if the JSON object contains an object, returns false otherwise.
-                bool operator()(reflection::Instance& object, const nlohmann::json& json) {
-
-                    if (json.is_object()) {
-
-                        const reflection::Property* object_property;
-                        const JSONDeserializable* deserializable;
-
-                        // Cycle through JSON-defined properties
- 
-                        auto& object_class = object.GetType().GetClass();
- 
-                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
- 
-                            object_property = object_class.GetProperty(json_property.key());                // Matching object property
- 
-                            if (object_property) {
- 
-                                deserializable = object_property->GetInterface<JSONDeserializable>();
- 
-                                if (deserializable) {
-
-                                    (*deserializable)(object, json_property.value());               // Recursive deserialization
- 
-                                }
- 
-                            }
- 
-                        }
- 
-                        return true;
- 
-                    }
-
-                    return false;
-
-                }
+                bool operator()(reflection::Instance object, const nlohmann::json& json);
 
             };
 
@@ -150,7 +85,9 @@ namespace syntropy {
 
                     }
                     
-                    reflection::Instance instance(InstantiateFromJSON<TType>(json));
+                    bool success;
+
+                    auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json, &success);
 
                     if (!instance) {
 
@@ -160,52 +97,10 @@ namespace syntropy {
 
                     object = instance.As<TType>();
 
-                    return JSONDeserializer<reflection::Instance>()(instance, json);
+                    return success;
 
                 }
-
-                template <typename TType>
-                reflection::Instance InstantiateFromJSON(const nlohmann::json& json) {
-
-                    auto& base_class = reflection::ClassOf<TType>();
-
-                    auto class_it = json.find(JSONDeserializable::kClassToken);
-
-                    if (class_it != json.end()) {
-
-                        // A concrete class type was defined
-
-                        if (!class_it->is_string()) {
-
-                            return reflection::Instance();          // Expected a class name.
-
-                        }
-
-                        auto concrete_class = reflection::GetClass(class_it->get<std::string>());    
-
-                        if (concrete_class == nullptr) {
-
-                            return reflection::Instance();          // No such class.
-
-                        }
-
-                        if (*concrete_class != base_class) {
-
-                            return reflection::Instance();          // The specified concrete class doesn't derive from the base class.
-
-                        }
-
-                        return concrete_class->Instantiate();       // Attempts to instantiate a concrete class
-
-                    }
-                    else {
-
-                        return base_class.Instantiate();            // Attempts to instantiate the base class
-
-                    }
-
-                }
-
+                
             };
 
             template <typename TType>

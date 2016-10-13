@@ -27,7 +27,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\serialization\json\json.cpp" />
+    <ClCompile Include="src\serialization\json.cpp" />
+    <ClCompile Include="src\serialization\json\json_deserializer.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\syntax.cpp">
       <SubType>
       </SubType>
