@@ -30,18 +30,11 @@ namespace syntropy {
                 /// \brief Helper tag used to resolve conflicts among copy/move constructor and explicit initialization via property accessors.
                 struct property_tag {};
 
-                /// \brief Helper tag used to resolve conflicts among copy/move constructor and explicit initialization for classes.
-                template <typename TClass>
-                struct class_tag {};
-
                 /// \brief Create a new interface via direct accessors to the property.
                 /// \tparam TAccessors type of the accessors.
                 /// \param accessors Pointer to the actual property variable / getter-setter functions.
                 template <typename... TAccessors>
                 JSONDeserializable(property_tag, TAccessors&&... accessors);
-
-                template <typename TClass>
-                JSONDeserializable(class_tag<TClass>);
 
                 /// \brief Copy constructor.
                 JSONDeserializable(const JSONDeserializable& other) noexcept;
@@ -96,7 +89,7 @@ namespace syntropy {
 
             };
         
-            /// \brief Functor object used to assign the interface JSONDeserializable to properties and classes.
+            /// \brief Functor object used to assign the interface JSONDeserializable to properties.
             /// \author Raffaele D. Facendola - September 2016
             struct JSONRead {
  
@@ -105,11 +98,6 @@ namespace syntropy {
                 /// \param accessors Concrete accessors to the property (such as pointer to member variables, getters and getter/setter pairs)
                 template <typename... TAccessors>
                 void operator()(reflection::Property& property, TAccessors&&... accessors) const;
-
-                /// \brief Add a JSONDeserializable interface to the provided class.
-                /// \param class_definition Definition where the interface will be added to.
-                template <typename TClass>
-                void operator()(reflection::Class::Definition<TClass>& class_definition) const;
 
             };
 
@@ -154,13 +142,6 @@ namespace syntropy {
                 static_assert(sizeof(storage_t) >= sizeof(content_t), "Storage size is not enough.");
         
                 new (&content_) content_t(std::forward<TAccessors>(accessors)...);
-
-            }
-
-            template <typename TClass>
-            JSONDeserializable::JSONDeserializable(class_tag<TClass>) {
-
-                new (&content_) Content<TClass>();
 
             }
 
@@ -369,13 +350,6 @@ namespace syntropy {
 
                 property.AddInterface<JSONDeserializable>(JSONDeserializable::property_tag(),
                                                           std::forward<TAccessors>(accessors)...);
-
-            }
-
-            template <typename TClass>
-            void JSONRead::operator()(reflection::Class::Definition<TClass>& class_definition) const {
-
-                class_definition.DefineInterface<JSONDeserializable>(JSONDeserializable::class_tag<TClass>());
 
             }
 
