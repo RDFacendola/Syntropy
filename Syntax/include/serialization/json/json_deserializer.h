@@ -71,13 +71,7 @@ namespace syntropy {
                     static_assert(std::is_default_constructible<TType>::value, "TType must be default constructible");
                     static_assert(!std::is_pointer_v<TType>, "Pointers-to-pointers cannot be deserialized");
                     
-                    if (object != nullptr) {
-
-                        delete object;
-
-                    }
-                    
-                    object = nullptr;       // Set to null in case the deserialization fails.
+                    SafeDelete(object);
 
                     if (json.is_null()) {
 
@@ -108,9 +102,12 @@ namespace syntropy {
 
                 bool operator()(std::unique_ptr<TType>& object, const nlohmann::json& json) {
 
-                    if (json.is_null()) {
+                    static_assert(std::is_default_constructible<TType>::value, "TType must be default constructible");
+                    static_assert(!std::is_pointer_v<TType>, "Pointers-to-pointers cannot be deserialized");
 
-                        object = nullptr;
+                    object.reset();             // Release the old object.
+
+                    if (json.is_null()) {
 
                         return true;
 
@@ -127,9 +124,12 @@ namespace syntropy {
 
                 bool operator()(std::shared_ptr<TType>& object, const nlohmann::json& json) {
 
-                    if (json.is_null()) {
+                    static_assert(std::is_default_constructible<TType>::value, "TType must be default constructible");
+                    static_assert(!std::is_pointer_v<TType>, "Pointers-to-pointers cannot be deserialized");
 
-                        object = nullptr;
+                    object.reset();             // Release the old object.
+
+                    if (json.is_null()) {
 
                         return true;
 

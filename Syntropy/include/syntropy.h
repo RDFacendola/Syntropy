@@ -35,6 +35,16 @@
 
 namespace syntropy {
     
+    //////////////// UTILITIES ////////////////
+
+    /// \brief Delete an object and set its pointer to nullptr. If the pointer is already nullptr, this method does nothing.
+    template <typename T>
+    void SafeDelete(T*& object);
+
+    /// \brief Delete an array and set its pointer to nullptr. If the pointer is already nullptr, this method does nothing.
+    template <typename T>
+    void SafeDeleteArray(T*& object);
+
     //////////////// STRING CONVERSION ////////////////
 
     /// \brief Convert a string to a wstring.
@@ -44,5 +54,37 @@ namespace syntropy {
     /// \brief Converts a wstring to a string.
     /// \param string String to convert.
     std::string to_string(const std::wstring& wstring);
+
+}
+
+namespace syntropy {
+
+    // Implementation
+
+    //////////////// UTILITIES ////////////////
+
+    template <typename T>
+    void SafeDelete(T*& object) {
+
+        if (object) {
+
+            delete object;
+            object = nullptr;
+
+        }
+
+    }
+
+    template <typename T>
+    void SafeDeleteArray(T*& object) {
+
+        if (object) {
+
+            delete[] object;
+            object = nullptr;
+
+        }
+
+    }
 
 }
