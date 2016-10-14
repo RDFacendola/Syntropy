@@ -36,44 +36,27 @@ namespace syntropy {
                 /// \return Returns true if the JSON object contains an object, returns false otherwise.
                 bool operator()(TType& object, const nlohmann::json& json) {
 
-                    if (json.is_object()) {
-
-                        const reflection::Property* object_property;
-                        const JSONDeserializable* deserializable;
-
-                        auto& object_class = reflection::ClassOf(object);
-
-                        // Cycle through JSON-defined properties
-
-                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
-
-                            object_property = object_class.GetProperty(json_property.key());        // Matching object property
-
-                            if (object_property) {
-
-                                deserializable = object_property->GetInterface<JSONDeserializable>();
-
-                                if (deserializable) {
-
-                                    (*deserializable)(object, json_property.value());               // Recursive deserialization
-
-                                }
-
-                            }
-
-                        }
-
-                        return true;
-
-                    }
-
-                    return false;
-
+                    // Wraps the object inside an instance and use the reflection-based deserialization
+                    return JSONDeserializer<reflection::Instance>()(reflection::MakeInstance(object), json);
+                    
                 }
 
             };
 
+            /// \brief Functor used to deserialize JSON object into a reflection-instanced object.
+            /// This version uses the Syntropy reflection system to recursively deserialize object properties.
+            /// \author Raffaele D. Facendola - September 2016
+            template <>
+            struct JSONDeserializer<reflection::Instance> {
 
+                /// \brief Deserialize a JSON object inside a concrete object.
+                /// Properties that are not declared by the JSON object are ignored.
+                /// \param object Object to deserialize into.
+                /// \param json JSON object to deserialize.
+                /// \return Returns true if the JSON object contains an object, returns false otherwise.
+                bool operator()(reflection::Instance object, const nlohmann::json& json);
+
+            };
 
             //////////////// POINTERS DESERIALIZATION ////////////////
 
@@ -102,7 +85,9 @@ namespace syntropy {
 
                     }
                     
-                    reflection::Instance instance(InstantiateFromJSON<TType>(json));
+                    bool success;
+
+                    auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json, &success);
 
                     if (!instance) {
 
@@ -112,54 +97,10 @@ namespace syntropy {
 
                     object = instance.As<TType>();
 
-                    assert(object != nullptr);
-
-                    return JSONDeserializer<TType>()(*object, json);    // [BUG] Should deserialize the concrete type of object!
+                    return success;
 
                 }
-
-                template <typename TType>
-                reflection::Instance InstantiateFromJSON(const nlohmann::json& json) {
-
-                    auto& base_class = reflection::ClassOf<TType>();
-
-                    auto class_it = json.find(JSONDeserializable::kClassToken);
-
-                    if (class_it != json.end()) {
-
-                        // A concrete class type was defined
-
-                        if (!class_it->is_string()) {
-
-                            return reflection::Instance();          // Expected a class name.
-
-                        }
-
-                        auto concrete_class = reflection::GetClass(class_it->get<std::string>());    
-
-                        if (concrete_class == nullptr) {
-
-                            return reflection::Instance();          // No such class.
-
-                        }
-
-                        if (*concrete_class != base_class) {
-
-                            return reflection::Instance();          // The specified concrete class doesn't derive from the base class.
-
-                        }
-
-                        return concrete_class->Instantiate();       // Attempts to instantiate a concrete class
-
-                    }
-                    else {
-
-                        return base_class.Instantiate();            // Attempts to instantiate the base class
-
-                    }
-
-                }
-
+                
             };
 
             template <typename TType>

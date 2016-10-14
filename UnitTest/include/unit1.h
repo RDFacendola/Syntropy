@@ -47,6 +47,8 @@ test();
 
 struct Blob{
 
+    virtual ~Blob() = default;
+
     int blob_;
 
 };
@@ -58,6 +60,8 @@ struct StreamableBlob {
 };
 
 struct DerivedBlob : Blob {
+
+    virtual ~DerivedBlob() = default;
 
     int derived_blob_;
 
@@ -312,7 +316,7 @@ public:
 
         definition.DefineProperty("p_blob", &Foo::p_blob_) << JSONRead();
         //definition.DefineProperty("u_blob", &Foo::u_blob_) << JSONRead();
-        definition.DefineProperty("s_blob", &Foo::s_blob_) /*<< JSONRead()*/;
+        definition.DefineProperty("s_blob", &Foo::s_blob_) << JSONRead();
         
         definition.DefineProperty("float_value", &Foo::value_) << JSONRead();
         definition.DefineProperty("int_value", &Foo::value2_) << JSONRead();
@@ -835,7 +839,7 @@ public:
                                 {"string_value", "awesome!"},
                                 {"wstring_value", "wawesome?"},
                                 {"Blob", { {"blob", 47} } },
-                                {"p_blob", { { "$class", "DerivedBlob" },  { "blob", 1 } } },
+                                {"p_blob", { { "$class", "DerivedBlob" },  { "blob", 1 }, {"derived_blob", 47} } },
                                 {"u_blob", { { "blob", 2 } } },
                                 {"s_blob", { { "blob", 3 } } } };
 
@@ -848,6 +852,7 @@ public:
         TEST_TRUE(foo.wstring_ == L"wawesome?");
         TEST_TRUE(foo.GetBlob().blob_ == 47);
         TEST_FALSE(foo.const_value_ == 100.0f);
+        TEST_TRUE(dynamic_cast<DerivedBlob*>(foo.p_blob_) != nullptr);
 
     }
 
@@ -883,11 +888,15 @@ public:
     }
 
     Tester() 
-        : foo_class_(syntropy::reflection::Class::GetClass<Foo>())
-        , foobar_class_(syntropy::reflection::Class::GetClass<FooBar>())
-        , bar_class_(syntropy::reflection::Class::GetClass<Bar>())
-        , abstract_class_(syntropy::reflection::Class::GetClass<AbstractFoo>()){
+        : foo_class_(syntropy::reflection::ClassOf<Foo>())
+        , foobar_class_(syntropy::reflection::ClassOf<FooBar>())
+        , bar_class_(syntropy::reflection::ClassOf<Bar>())
+        , abstract_class_(syntropy::reflection::ClassOf<AbstractFoo>()){
     
+        auto& derived_blob_class = syntropy::reflection::ClassOf<DerivedBlob>();
+
+        SYN_UNUSED(derived_blob_class);
+
         field_int_value_ = foo_class_.GetProperty("int_value");
         field_float_value_ = foo_class_.GetProperty("float_value");
         field_const_value_ = foo_class_.GetProperty("const_value");

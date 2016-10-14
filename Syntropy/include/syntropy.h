@@ -34,7 +34,7 @@
 #endif
 
 namespace syntropy {
-
+    
     //////////////// STRING CONVERSION ////////////////
 
     /// \brief Convert a string to a wstring.

@@ -85,7 +85,7 @@ namespace syntropy {
                 template <typename... TAccessors>
                 struct Content : IContent {};
             
-                storage_t content_;						///< \brief Used to dispatch the deserialization logic.
+                storage_t content_;                     ///< \brief Used to dispatch the deserialization logic.
 
             };
         
@@ -119,6 +119,15 @@ namespace syntropy {
             /// \return Returns true if the JSON object could be deserialized to the provided object, returns false otherwise.
             template <typename TClass>
             bool DeserializeObjectFromJSON(TClass& object, const nlohmann::json& json);
+
+            /// \brief Instantiate and deserialize a C++ object via JSON description.
+            /// The method will search the JSON object for a concrete class name and will instantiate a new object of that type.
+            /// The concrete class must derive from base_class. If the concrete class is not defined an object of base_class will be instantiated instead.
+            /// \param base_class Base class of the object being deserialized.
+            /// \param json JSON object defining the concrete type of the object to instantiate.
+            /// \param success Output. If the instance is correctly instanced and deserialized, this is set to "true", otherwise to "false".
+            /// \return If a valid concrete class could be found, returns a new instance of that class, otherwise returns an empty instance.
+            reflection::Instance InstantiateFromJSON(const reflection::Class& base_class, const nlohmann::json& json, bool* success = nullptr);
 
         }
 
@@ -358,7 +367,7 @@ namespace syntropy {
             template <typename TClass>
             bool DeserializeObjectFromJSON(TClass& object, const nlohmann::json& json) {
 
-                static_assert(!std::is_const<std::remove_reference_t<TClass>>::value, "Cannot deserialize into a const object");
+                static_assert(!std::is_const<std::remove_reference_t<TClass>>::value, "Cannot deserialize a const object");
 
                 return JSONDeserializer<TClass>()(object, json);
 
