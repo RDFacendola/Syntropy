@@ -59,14 +59,8 @@ namespace syntropy {
 
             }
 
-            reflection::Instance InstantiateFromJSON(const reflection::Class& base_class, const nlohmann::json& json, bool* success) {
+            reflection::Instance InstantiateFromJSON(const reflection::Class& base_class, const nlohmann::json& json) {
 
-                 if (success) {
-                     
-                     *success = false;
- 
-                 }
- 
                  reflection::Instance instance;
  
                  auto class_it = json.find(JSONDeserializable::kClassToken);
@@ -106,12 +100,8 @@ namespace syntropy {
  
                  // Instance deserialization
  
-                 if (JSONDeserializer<reflection::Instance>()(instance, json) && success) {
- 
-                     *success = true;
- 
-                 }
- 
+                 JSONDeserializer<reflection::Instance>()(instance, json);
+
                  return instance;
 
             }

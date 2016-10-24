@@ -125,9 +125,8 @@ namespace syntropy {
             /// The concrete class must derive from base_class. If the concrete class is not defined an object of base_class will be instantiated instead.
             /// \param base_class Base class of the object being deserialized.
             /// \param json JSON object defining the concrete type of the object to instantiate.
-            /// \param success Output. If the instance is correctly instanced and deserialized, this is set to "true", otherwise to "false".
             /// \return If a valid concrete class could be found, returns a new instance of that class, otherwise returns an empty instance.
-            reflection::Instance InstantiateFromJSON(const reflection::Class& base_class, const nlohmann::json& json, bool* success = nullptr);
+            reflection::Instance InstantiateFromJSON(const reflection::Class& base_class, const nlohmann::json& json);
 
         }
 

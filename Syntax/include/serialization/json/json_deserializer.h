@@ -79,9 +79,7 @@ namespace syntropy {
 
                     }
                     
-                    bool success;
-
-                    auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json, &success);
+                    auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json);
 
                     if (!instance) {
 
@@ -91,7 +89,7 @@ namespace syntropy {
 
                     object = instance.As<TType>();
 
-                    return success;
+                    return true;
 
                 }
                 
@@ -113,7 +111,17 @@ namespace syntropy {
 
                     }
 
-                    return false;
+                    auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json);      // TODO: perform the instantiation via std::make_unique<TConcrete>
+
+                    if (!instance) {
+
+                        return false;
+
+                    }
+
+                    object = std::move(*instance.As<std::unique_ptr<TType>>());
+
+                    return true;
 
                 }
 
@@ -135,7 +143,17 @@ namespace syntropy {
 
                     }
 
-                    return false;
+                    auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json);      // TODO: perform the instantiation via std::make_shared<TConcrete>
+
+                    if (!instance) {
+
+                        return false;
+
+                    }
+
+                    object = *instance.As<std::shared_ptr<TType>>();
+
+                    return true;
 
                 }
 
