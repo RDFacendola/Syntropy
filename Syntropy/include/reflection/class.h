@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <type_traits>
 #include <algorithm>
@@ -78,9 +79,12 @@ namespace syntropy {
             virtual const std::vector<const Class*>& GetBaseClasses() const noexcept = 0;
 
             /// \brief Get a class property by name.
+            /// If the property is defined multiple times, the property defined in this class has precedence.
+            /// If the search is ambiguous (the property is defined multiple times in different base classes), the method returns nullptr.
             /// \param property_name Name of the property to get.
-            /// \return Returns a pointer to the requested property, if any. Returns nullptr otherwise.
-            virtual const Property* GetProperty(const HashedString& property_name) const noexcept = 0;
+            /// \param include_base_classes Whether the property should be searched also in base classes.
+            /// \return Returns a pointer to the requested property, if the search was unambiguous. Returns nullptr otherwise.
+            virtual const Property* GetProperty(const HashedString& property_name, bool include_base_classes = true) const noexcept = 0;
 
             /// \brief Get the list of properties supported by this class.
             /// \return Returns the list of properties supported by this class.
@@ -216,7 +220,7 @@ namespace syntropy {
 
             virtual const std::vector<const Class*>& GetBaseClasses() const noexcept override;
 
-            virtual const Property* GetProperty(const HashedString& property_name) const noexcept override;
+            virtual const Property* GetProperty(const HashedString& property_name, bool include_base_classes = true) const noexcept override;
 
             virtual const std::vector<std::unique_ptr<Property>>& GetProperties() const noexcept override;
 
@@ -466,13 +470,60 @@ namespace syntropy {
         }
 
         template <typename TClass>
-        inline const Property* Class::ClassT<TClass>::GetProperty(const HashedString& property_name) const noexcept {
+        const Property* Class::ClassT<TClass>::GetProperty(const HashedString& property_name, bool include_base_classes) const noexcept {
 
             auto it = properties_index_.find(std::hash<HashedString>()(property_name));
+            
+            if (it != properties_index_.end()) {
 
-            return it != properties_index_.end() ?
-                   it->second :
-                   nullptr;
+                return it->second;          // Found in this class
+
+            }
+            else if (include_base_classes) {
+
+                std::vector<const Class*> open_set(base_classes_.begin(), base_classes_.end());     // Base classes to search
+                std::unordered_set<const Class*> closed_set;                                        // Base classes already searched
+                std::unordered_map<const Class*, const Property*> properties;                       // Found properties (with the class they were found into)
+
+                const Class* current_class;
+                const Property* current_property;
+
+                while (open_set.size() > 0) {
+
+                    // Pop the next element to search
+                    current_class = open_set.back();
+                    open_set.pop_back();
+
+                    if (closed_set.find(current_class) == closed_set.end()) {
+
+                        // Expand
+                        closed_set.insert(current_class);
+
+                        current_property = current_class->GetProperty(property_name, false);
+
+                        if (current_property) {
+
+                            properties.insert(std::make_pair(current_class, current_property));     // Property found in the current base class
+
+                        }
+
+                        std::copy(current_class->GetBaseClasses().begin(),
+                                  current_class->GetBaseClasses().end(),
+                                  std::back_inserter(open_set));
+
+                    }
+
+                }
+
+                if (properties.size() == 1) {
+
+                    return properties.begin()->second;                                              // Unambiguous property found
+
+                }
+
+            }
+
+            return nullptr;                 // Not found (or ambiguous)
 
         }
 
