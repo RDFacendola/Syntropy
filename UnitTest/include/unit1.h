@@ -839,9 +839,9 @@ public:
                                 {"string_value", "awesome!"},
                                 {"wstring_value", "wawesome?"},
                                 {"Blob", { {"blob", 47} } },
-                                {"p_blob", { { "$class", "DerivedBlob" },  { "blob", 1 }, {"derived_blob", 47} } },
+                                {"p_blob", { { "$class", "DerivedBlob" }, { "blob", 1 }, {"derived_blob", 47} } },
                                 {"u_blob", { { "blob", 2 } } },
-                                {"s_blob", { { "blob", 3 } } } };
+                                {"s_blob", { { "$class", "DerivedBlob" }, { "blob", 3 } } } };
 
         syntropy::syntax::serialization::DeserializeObjectFromJSON(foo, json);
 

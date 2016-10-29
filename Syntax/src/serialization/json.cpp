@@ -60,9 +60,9 @@ namespace syntropy {
             }
 
             reflection::Instance InstantiateFromJSON(const reflection::Class& base_class, const nlohmann::json& json) {
-
-                 reflection::Instance instance;
  
+                 const reflection::Class* instance_class = &base_class;
+
                  auto class_it = json.find(JSONDeserializable::kClassToken);
  
                  if (class_it != json.end()) {
@@ -85,20 +85,17 @@ namespace syntropy {
  
                      if (*concrete_class != base_class) {
  
-                         return reflection::Instance();              // The specified concrete class doesn't derive from the base class.
+                         return reflection::Instance();              // Wrong class hierarchy.
  
                      }
  
-                     instance = concrete_class->Instantiate();       // Attempts to instantiate a concrete class
- 
-                 }
-                 else {
- 
-                     instance = base_class.Instantiate();            // Attempts to instantiate the base class
- 
+                     instance_class = concrete_class;
+
                  }
  
-                 // Instance deserialization
+                 // Instantiation and deserialization
+
+                 auto instance = instance_class->Instantiate();
  
                  JSONDeserializer<reflection::Instance>()(instance, json);
 

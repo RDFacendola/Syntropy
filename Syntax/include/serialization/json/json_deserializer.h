@@ -60,17 +60,17 @@ namespace syntropy {
 
             //////////////// POINTERS DESERIALIZATION ////////////////
 
+            // Pointers-to-raw-pointers are not supported since it requires to make bold assumptions about ownership of each level of indirection.
+
             template <typename TType>
-            struct JSONDeserializer<TType*> {
+            struct JSONDeserializer<TType*, std::enable_if_t<!std::is_pointer<TType>::value>> {
 
                 bool operator()(TType*& object, const nlohmann::json& json) {
 
-                    // DESIGN CHOICE: Pointers-to-pointers are not supported. It would make unclear who "owns" each level of indirectness and the concrete type of each of them. Additionally it would complicate the code below for no good reason.
-                    // IMPORTANT: *Dumb* pointers are considered as owning pointers. Any previous value is deleted.
+                    // IMPORTANT: Raw pointers are considered *owning* pointers. 
+                    //            The client must ensure that the current pointer is initialized and the object is not referenced elsewhere.
+                    //            Consider using smart pointers instead.
 
-                    static_assert(std::is_default_constructible<TType>::value, "TType must be default constructible");
-                    static_assert(!std::is_pointer_v<TType>, "Pointers-to-pointers cannot be deserialized");
-                    
                     SafeDelete(object);
 
                     if (json.is_null()) {
@@ -87,7 +87,7 @@ namespace syntropy {
 
                     }
 
-                    object = instance.As<TType>();
+                    object = instance.As<TType>();          // Move instance ownership.
 
                     return true;
 
@@ -96,14 +96,11 @@ namespace syntropy {
             };
 
             template <typename TType>
-            struct JSONDeserializer<std::unique_ptr<TType>> {
+            struct JSONDeserializer<std::unique_ptr<TType>, std::enable_if_t<!std::is_pointer<TType>::value>> {
 
                 bool operator()(std::unique_ptr<TType>& object, const nlohmann::json& json) {
 
-                    static_assert(std::is_default_constructible<TType>::value, "TType must be default constructible");
-                    static_assert(!std::is_pointer_v<TType>, "Pointers-to-pointers cannot be deserialized");
-
-                    object.reset();             // Release the old object.
+                    object.reset();                         // Release the old object.
 
                     if (json.is_null()) {
 
@@ -111,7 +108,10 @@ namespace syntropy {
 
                     }
 
-                    auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json);      // TODO: perform the instantiation via std::make_unique<TConcrete>
+                    // Note: it won't use std::make_unique since we don't know the concrete type at compile time. This doesn't affect performances like std::make_shared though.
+                    // We could use a class interface but that would require us to add it to *every* class in the project.
+
+                    auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json);
 
                     if (!instance) {
 
@@ -119,7 +119,7 @@ namespace syntropy {
 
                     }
 
-                    object = std::move(*instance.As<std::unique_ptr<TType>>());
+                    object.reset(instance.As<TType>());     // Move instance ownership.
 
                     return true;
 
@@ -128,14 +128,11 @@ namespace syntropy {
             };
 
             template <typename TType>
-            struct JSONDeserializer<std::shared_ptr<TType>> {
+            struct JSONDeserializer<std::shared_ptr<TType>, std::enable_if_t<!std::is_pointer<TType>::value>> {
 
                 bool operator()(std::shared_ptr<TType>& object, const nlohmann::json& json) {
 
-                    static_assert(std::is_default_constructible<TType>::value, "TType must be default constructible");
-                    static_assert(!std::is_pointer_v<TType>, "Pointers-to-pointers cannot be deserialized");
-
-                    object.reset();             // Release the old object.
+                    object.reset();                         // Release the old object.
 
                     if (json.is_null()) {
 
@@ -143,7 +140,11 @@ namespace syntropy {
 
                     }
 
-                    auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json);      // TODO: perform the instantiation via std::make_shared<TConcrete>
+                    // Note: it won't use std::make_shared since we don't know the concrete type at compile time. This can affect peformances since the control block won't be allocated near the object.
+                    // We don't expect many shared_ptr being deserialized this way (if any at all) so the performance penalty should be negligible.
+                    // We could use a class interface but that would require us to add it to *every* class in the project.
+
+                    auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json);
 
                     if (!instance) {
 
@@ -151,7 +152,7 @@ namespace syntropy {
 
                     }
 
-                    object = *instance.As<std::shared_ptr<TType>>();
+                    object.reset(instance.As<TType>());     // Move instance ownership.
 
                     return true;
 
