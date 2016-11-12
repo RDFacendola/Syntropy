@@ -789,23 +789,23 @@ public:
 
     void AssignTest() {
 
-        auto instance = syntropy::reflection::GetClass("int")->Instantiate();
-
-        TEST_TRUE(instance.Assign(5) && *instance.As<int>() == 5);
-        TEST_TRUE(instance.Assign(47.0f) && *instance.As<int>() == 47);
-        
-        instance = syntropy::reflection::GetClass("Blob")->Instantiate();
-
-        Blob blob;
-
-        blob.blob_ = 9999;
-
-        TEST_TRUE(instance.Assign(blob));
-        TEST_FALSE(instance.Assign(5));
-
-        auto consti = syntropy::reflection::MakeConstInstance(instance);
-
-        TEST_TRUE(consti.Assign(blob));
+//         auto instance = syntropy::reflection::GetClass("int")->Instantiate();
+// 
+//         TEST_TRUE(instance.Assign(5) && *instance.As<int>() == 5);
+//         TEST_TRUE(instance.Assign(47.0f) && *instance.As<int>() == 47);
+//         
+//         instance = syntropy::reflection::GetClass("Blob")->Instantiate();
+// 
+//         Blob blob;
+// 
+//         blob.blob_ = 9999;
+// 
+//         TEST_TRUE(instance.Assign(blob));
+//         TEST_FALSE(instance.Assign(5));
+// 
+//         auto consti = syntropy::reflection::MakeConstInstance(instance);
+// 
+//         TEST_TRUE(consti.Assign(blob));
 
     }
     
@@ -840,7 +840,7 @@ public:
                                 {"wstring_value", "wawesome?"},
                                 {"Blob", { {"blob", 47} } },
                                 {"p_blob", { { "$class", "DerivedBlob" }, { "blob", 1 }, {"derived_blob", 47} } },
-                                {"u_blob", { { "blob", 2 } } },
+                                {"u_blob", { { "$class", "DerivedBlob" }, { "blob", 2 } } },
                                 {"s_blob", { { "$class", "DerivedBlob" }, { "blob", 3 } } } };
 
         syntropy::syntax::serialization::DeserializeObjectFromJSON(foo, json);

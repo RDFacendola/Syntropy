@@ -49,12 +49,6 @@ namespace syntropy {
             /// \brief Move assignment operator. Drops the current reference and stores a new one.
             Instance& operator=(Instance&& other) noexcept;
 
-            /// \brief Assign an unspecified value to the instance referenced by this object.
-            /// \param other Reference to the actual object to copy.
-            /// \return Returns true if the object to copy could be assigned to the instance referenced by this object, returns false otherwise.
-            template <typename TOther>
-            bool Assign(const TOther& other);
-
             /// \brief Check whether the instance contains a reference to an actual object or not.
             /// \return Returns true if the instance contains a reference to an actual object, returns false otherwise.
             operator bool() const noexcept;
@@ -86,9 +80,7 @@ namespace syntropy {
                 virtual ~IContent() = default;
 
                 virtual const Type& GetType() const noexcept = 0;
-
-                virtual bool Assign(Instance other) = 0;
-
+                
                 virtual std::unique_ptr<IContent> Clone() const noexcept = 0;
 
                 virtual std::unique_ptr<IContent> ConstClone() const noexcept = 0;
@@ -105,8 +97,6 @@ namespace syntropy {
                 Content(TContent& content);
 
                 virtual const Type& GetType() const noexcept override;
-
-                virtual bool Assign(Instance other) override;
 
                 virtual std::unique_ptr<IContent> Clone() const noexcept override;
 
@@ -193,14 +183,6 @@ namespace syntropy {
         Instance::Instance(TContent& content) noexcept
             : content_(std::make_unique<Content<TContent>>(content)) {}
 
-        template <typename TOther>
-        bool Instance::Assign(const TOther& other) {
-
-            return content_ &&
-                   content_->Assign(MakeConstInstance(other));
-
-        }
-        
         template <typename TContent>
         typename std::remove_reference_t<TContent>* Instance::As() const {
 
@@ -223,23 +205,6 @@ namespace syntropy {
 
         }
 
-        template <typename TContent>
-        bool Instance::Content<TContent>::Assign(Instance other) {
-
-            // TODO: determine the overload of the assignment operator or eventually some constructor to perform a copy-assignment.
-
-            auto other_value = other.As<const TContent>();
-
-            if (other_value) {
-                
-                assign<TContent, TContent>()(content_.get(), *other_value);
-
-            }
-
-            return !!other_value;
-
-        }
-        
         template <typename TContent>
         std::unique_ptr<Instance::IContent> Instance::Content<TContent>::Clone() const noexcept {
 
