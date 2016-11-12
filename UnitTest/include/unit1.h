@@ -540,16 +540,28 @@ public:
 
         Foo foo;
 
-        std::unique_ptr<Blob> up;
+        auto up = std::make_unique<Blob>();
 
-        TEST_FALSE(field_movable_->Set(foo, up));
-        TEST_FALSE(field_movable_->Get(foo, up));
+        up->blob_ = 600;
+        TEST_FALSE(field_movable_->Set(foo, up));                   // up is lvalue reference, moving must be performed explicitly
+        TEST_TRUE(field_movable_->Set(foo, std::move(up)));         // calls move assignment
+        TEST_FALSE(field_movable_->Get(foo, up));                   // can't move foo's value to up since the getter guarantees that foo is left untouched.
 
-        TEST_FALSE(property_movable_->Set(foo, up));
+        up = std::make_unique<Blob>();
+        up->blob_ = 500;
+        TEST_FALSE(property_movable_->Set(foo, up));                // up is lvalue reference, moving must be performed explicitly
+        TEST_TRUE(property_movable_->Set(foo, std::move(up)));      // calls move assignment
         TEST_FALSE(property_movable_->Get(foo, up));
 
-        TEST_FALSE(property_movable_accessor_->Set(foo, up));
+        up = std::make_unique<Blob>();
+        up->blob_ = 400;
+        TEST_FALSE(property_movable_accessor_->Set(foo, up));                   // up is lvalue reference, moving must be performed explicitly
+        TEST_TRUE(property_movable_accessor_->Set(foo, std::move(up)));         // calls move assignment
         TEST_FALSE(property_movable_accessor_->Get(foo, up));
+
+        Blob bb;
+        bb.blob_ = 1000;
+        TEST_TRUE(property_pod_->Set(foo, std::move(bb)));         // calls move assignment
 
     }
 

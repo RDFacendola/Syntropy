@@ -63,6 +63,19 @@ namespace syntropy {
             template <typename TInstance, typename TValue>
             bool Set(TInstance&& instance, const TValue& value) const;
 
+            /// \brief Set the value of the property for the specified instance.
+            /// The method fails if the instance doesn't define the specified property or the specified value cannot be written due to a wrong type.
+            /// \param instance Instance to set the property to.
+            /// \param value Value to move.
+            /// \return Returns true if the property could be written, returns false otherwise.
+            template <typename TInstance, typename TValue, typename = std::enable_if_t<!std::is_lvalue_reference<TValue>::value>>
+            bool Set(TInstance&& instance, TValue&& value) const {
+
+                return PropertyMoveSet(MakeInstance(std::forward<TInstance>(instance)),
+                                       MakeInstance(value));
+
+            }
+
             /// \brief Add a new interface to the property.
             /// The method creates an instance of TInstance using TArgs as construction parameters.
             /// TInstance must be copy constructible.
@@ -100,6 +113,12 @@ namespace syntropy {
             /// \return Return true if the property was legitimate for the provided instance and the value could be written, returns false otherwise.
             virtual bool PropertySet(Instance instance, Instance value) const = 0;
 
+            /// \brief Move the property value.
+            /// \param instance Instance the property refers to.
+            /// \param value Value to move.
+            /// \return Return true if the property was legitimate for the provided instance and the value could be moved, returns false otherwise.
+            virtual bool PropertyMoveSet(Instance instance, Instance value) const = 0;
+
             HashedString name_;                                             ///< \brief Property name.
 
             std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the property.
@@ -115,6 +134,8 @@ namespace syntropy{
     namespace reflection {
 
         // Utility methods for getting or setting a property value.
+
+        // Getter
 
         template <typename TGetter, bool is_member_field, typename = void>
         struct PropertyGetter {
@@ -178,6 +199,8 @@ namespace syntropy{
 
         }
 
+        // Setter
+
         template <typename TSetter, bool is_member_field, typename = void>
         struct PropertySetter {
 
@@ -234,7 +257,7 @@ namespace syntropy{
         };
 
         template <typename TClass, typename TProperty>
-        struct PropertySetter<TProperty&(TClass::*)(), false, std::enable_if_t<std::is_copy_constructible_v<TProperty>>> {
+        struct PropertySetter<TProperty&(TClass::*)(), false, std::enable_if_t<std::is_copy_assignable_v<TProperty>>> {
 
             bool operator()(Instance instance, Instance value, TProperty&(TClass::* setter)()) const {
 
@@ -243,7 +266,7 @@ namespace syntropy{
 
                 if (concrete_value && concrete_instance) {
 
-                    (concrete_instance->*setter)() = *concrete_value;
+                    (concrete_instance->*setter)() = *concrete_value;       // Copy assignment
 
                     return true;
 
@@ -259,6 +282,92 @@ namespace syntropy{
         bool SetPropertyValue(Instance instance, Instance value, TSetter setter) {
 
             return PropertySetter<TSetter, std::is_member_object_pointer_v<TSetter>>()(instance, value, setter);
+
+        }
+
+        // Move-setter
+
+        template <typename TSetter, bool is_member_field, typename = void>
+        struct PropertyMoveSetter {
+
+            bool operator()(...) const {
+
+                return false;
+
+            }
+
+        };
+
+        template <typename TClass, typename TField>
+        struct PropertyMoveSetter<TField(TClass::*), true, std::enable_if_t<std::is_move_assignable_v<TField>>> {
+
+            bool operator()(Instance instance, Instance value, TField(TClass::* field)) const {
+
+                auto concrete_instance = instance.As<TClass>();
+                auto concrete_value = value.As<TField>();
+
+                if (concrete_value && concrete_instance) {
+
+                    concrete_instance->*field = std::move(*concrete_value);        // Move assignment
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        template<typename TClass, typename TProperty, typename TAny>
+        struct PropertyMoveSetter<TAny(TClass::*)(TProperty), false, std::enable_if_t<std::is_move_constructible_v<TProperty>>> {
+
+            bool operator()(Instance instance, Instance value, TAny(TClass::* setter)(TProperty)) const {
+
+                auto concrete_instance = instance.As<TClass>();
+                auto concrete_value = value.As<std::remove_reference_t<TProperty>>();
+
+                if (concrete_value && concrete_instance) {
+
+                    (concrete_instance->*setter)(std::move(*concrete_value));      // Move constructor
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        template <typename TClass, typename TProperty>
+        struct PropertyMoveSetter<TProperty&(TClass::*)(), false, std::enable_if_t<std::is_move_assignable_v<TProperty>>> {
+
+            bool operator()(Instance instance, Instance value, TProperty&(TClass::* setter)()) const {
+
+                auto concrete_instance = instance.As<TClass>();
+                auto concrete_value = value.As<TProperty>();
+
+                if (concrete_value && concrete_instance) {
+
+                    (concrete_instance->*setter)() = std::move(*concrete_value);   // Move assignment
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        template <typename TSetter>
+        bool MoveSetPropertyValue(Instance instance, Instance value, TSetter setter) {
+
+            return PropertyMoveSetter<TSetter, std::is_member_object_pointer_v<TSetter>>()(instance, value, setter);
 
         }
 
@@ -308,6 +417,12 @@ namespace syntropy{
 
             }
 
+            virtual bool PropertyMoveSet(Instance instance, Instance value) const override {
+
+                return MoveSetPropertyValue(instance, value, field_);
+
+            }
+
             TField TClass::* field_;                ///< \brief Member field.
 
         };
@@ -351,6 +466,12 @@ namespace syntropy{
             }
 
             virtual bool PropertySet(Instance instance, Instance value) const override {
+
+                return false;
+
+            }
+
+            virtual bool PropertyMoveSet(Instance instance, Instance value) const override {
 
                 return false;
 
@@ -407,6 +528,12 @@ namespace syntropy{
 
             }
 
+            virtual bool PropertyMoveSet(Instance instance, Instance value) const override {
+
+                return MoveSetPropertyValue(instance, value, setter_);
+
+            }
+
             TPropertyGet(TClass::* getter_)() const;            ///< \brief Getter method of the property.
 
             TAny(TClass::* setter_)(TPropertySet);              ///< \brief Setter method of the property.
@@ -457,6 +584,12 @@ namespace syntropy{
             virtual bool PropertySet(Instance instance, Instance value) const override {
 
                 return SetPropertyValue(instance, value, setter_);
+
+            }
+
+            virtual bool PropertyMoveSet(Instance instance, Instance value) const override {
+
+                return MoveSetPropertyValue(instance, value, setter_);
 
             }
 
@@ -521,7 +654,7 @@ namespace syntropy{
                                MakeConstInstance(value));
 
         }
-
+        
     }
 
 }
