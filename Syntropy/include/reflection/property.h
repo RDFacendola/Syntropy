@@ -114,6 +114,154 @@ namespace syntropy{
 
     namespace reflection {
 
+        // Utility methods for getting or setting a property value.
+
+        template <typename TGetter, bool is_member_field, typename = void>
+        struct PropertyGetter {
+
+            bool operator()(...) const { 
+                
+                return false; 
+            
+            }
+
+        };
+
+        template <typename TClass, typename TField>
+        struct PropertyGetter<TField(TClass::*), true, std::enable_if_t<std::is_copy_assignable_v<std::decay_t<TField>>>> {
+
+            bool operator()(Instance instance, Instance value, TField (TClass::* field)) const {
+
+                auto concrete_instance = instance.As<const TClass>();
+                auto concrete_value = value.As<std::decay_t<TField>>();
+
+                if (concrete_value && concrete_instance) {
+
+                    *concrete_value = concrete_instance->*field;       // Copy assignment
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        template <typename TClass, typename TProperty>
+        struct PropertyGetter<TProperty(TClass::*)() const, false, std::enable_if_t<std::is_copy_assignable_v<std::decay_t<TProperty>>>> {
+ 
+             bool operator()(Instance instance, Instance value, TProperty(TClass::* getter)() const) const {
+ 
+                 auto concrete_instance = instance.As<const TClass>();
+                 auto concrete_value = value.As<std::decay_t<TProperty>>();
+ 
+                 if (concrete_value && concrete_instance) {
+ 
+                     *concrete_value = (concrete_instance->*getter)();
+ 
+                     return true;
+ 
+                 }
+ 
+                 return false;
+ 
+             }
+ 
+         };
+
+        template <typename TGetter>
+        bool GetPropertyValue(Instance instance, Instance value, TGetter getter){
+
+            return PropertyGetter<TGetter, std::is_member_object_pointer_v<TGetter>>()(instance, value, getter);
+
+        }
+
+        template <typename TSetter, bool is_member_field, typename = void>
+        struct PropertySetter {
+
+            bool operator()(...) const { 
+                
+                return false; 
+            
+            }
+
+        };
+
+        template <typename TClass, typename TField>
+        struct PropertySetter<TField(TClass::*), true, std::enable_if_t<std::is_copy_assignable_v<TField>>> {
+
+            bool operator()(Instance instance, Instance value, TField(TClass::* field)) const {
+
+                auto concrete_instance = instance.As<TClass>();
+                auto concrete_value = value.As<const TField>();
+
+                if (concrete_value && concrete_instance) {
+
+                    concrete_instance->*field = *concrete_value;        // Copy assignment
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        template<typename TClass, typename TProperty, typename TAny>
+        struct PropertySetter<TAny(TClass::*)(TProperty), false, std::enable_if_t<std::is_copy_constructible_v<TProperty>>> {
+
+            bool operator()(Instance instance, Instance value, TAny(TClass::* setter)(TProperty)) const {
+
+                auto concrete_instance = instance.As<TClass>();
+                auto concrete_value = value.As<const std::remove_reference_t<TProperty>>();
+
+                if (concrete_value && concrete_instance) {
+
+                    (concrete_instance->*setter)(*concrete_value);      // Copy constructor
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        template <typename TClass, typename TProperty>
+        struct PropertySetter<TProperty&(TClass::*)(), false, std::enable_if_t<std::is_copy_constructible_v<TProperty>>> {
+
+            bool operator()(Instance instance, Instance value, TProperty&(TClass::* setter)()) const {
+
+                auto concrete_instance = instance.As<TClass>();
+                auto concrete_value = value.As<const TProperty>();
+
+                if (concrete_value && concrete_instance) {
+
+                    (concrete_instance->*setter)() = *concrete_value;
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        template <typename TSetter>
+        bool SetPropertyValue(Instance instance, Instance value, TSetter setter) {
+
+            return PropertySetter<TSetter, std::is_member_object_pointer_v<TSetter>>()(instance, value, setter);
+
+        }
+
         //////////////// PROPERTY :: PROPERTY T ////////////////
         
         /// \brief Template specialization of PropertyT to handle member fields.
@@ -150,35 +298,13 @@ namespace syntropy{
 
             virtual bool PropertyGet(Instance instance, Instance value) const override{
 
-                auto concrete_instance = instance.As<const TClass>();
-                auto concrete_value = value.As<std::decay_t<TField>>();
-
-                if (concrete_value && concrete_instance) {
-
-                    *concrete_value = concrete_instance->*field_;
-
-                    return true;
-
-                }
-
-                return false;
+                return GetPropertyValue(instance, value, field_);
 
             }
 
             virtual bool PropertySet(Instance instance, Instance value) const override {
 
-                auto concrete_instance = instance.As<TClass>();
-                auto concrete_value = value.As<const TField>();
-
-                if (concrete_value && concrete_instance) {
-
-                    conditional_assign(concrete_instance->*field_, *concrete_value);
-
-                    return !std::is_const<TField>::value;
-
-                }
-
-                return false;
+                return SetPropertyValue(instance, value, field_);
 
             }
 
@@ -220,18 +346,7 @@ namespace syntropy{
 
             virtual bool PropertyGet(Instance instance, Instance value) const override {
 
-                auto concrete_instance = instance.As<const TClass>();
-                auto concrete_value = value.As<std::decay_t<TProperty>>();
-
-                if (concrete_value && concrete_instance) {
-
-                    *concrete_value = (concrete_instance->*getter_)();
-
-                    return true;
-
-                }
-
-                return false;
+                return GetPropertyValue(instance, value, getter_);
 
             }
 
@@ -249,19 +364,19 @@ namespace syntropy{
         /// The getter has the form of 'TProperty Getter() const'
         /// The setter has the form of '? Setter(TProperty)'
         /// \author Raffaele D. Facendola - 2016
-        template <typename TClass, typename TProperty, typename TReturn>
-        class Property::PropertyT<TProperty(TClass::*)() const, TReturn(TClass::*)(TProperty)> : public Property {
+        template <typename TClass, typename TPropertyGet, typename TPropertySet, typename TAny>
+        class Property::PropertyT<TPropertyGet(TClass::*)() const, TAny(TClass::*)(TPropertySet)> : public Property {
 
         public:
 
-            PropertyT(const char* name, TProperty(TClass::* getter)() const, TReturn(TClass::* setter)(TProperty))
+            PropertyT(const char* name, TPropertyGet(TClass::* getter)() const, TAny(TClass::* setter)(TPropertySet))
                 : Property(name)
                 , getter_(getter)
                 , setter_(setter){}
 
             virtual const Type& GetType() const noexcept override {
 
-                return TypeOf<std::remove_cv_t<std::remove_reference_t<TProperty>>>();
+                return TypeOf<std::remove_cv_t<std::remove_reference_t<TPropertyGet>>>();
 
             }
 
@@ -282,41 +397,19 @@ namespace syntropy{
 
             virtual bool PropertyGet(Instance instance, Instance value) const override {
 
-                auto concrete_instance = instance.As<const TClass>();
-                auto concrete_value = value.As<std::decay_t<TProperty>>();
-
-                if (concrete_value && concrete_instance) {
-
-                    *concrete_value = (concrete_instance->*getter_)();
-
-                    return true;
-
-                }
-
-                return false;
+                return GetPropertyValue(instance, value, getter_);
 
             }
 
             virtual bool PropertySet(Instance instance, Instance value) const override {
 
-                auto concrete_instance = instance.As<TClass>();
-                auto concrete_value = value.As<const std::remove_reference_t<TProperty>>();
-
-                if (concrete_value && concrete_instance) {
-
-                    (concrete_instance->*setter_)(*concrete_value);
-
-                    return true;
-
-                }
-
-                return false;
+                return SetPropertyValue(instance, value, setter_);
 
             }
 
-            TProperty(TClass::* getter_)() const;           ///< \brief Getter method of the property.
+            TPropertyGet(TClass::* getter_)() const;            ///< \brief Getter method of the property.
 
-            TReturn(TClass::* setter_)(TProperty);          ///< \brief Setter method of the property.
+            TAny(TClass::* setter_)(TPropertySet);              ///< \brief Setter method of the property.
 
         };
 
@@ -324,19 +417,19 @@ namespace syntropy{
         /// The getter has the form of 'const TProperty& Getter() const'
         /// The setter has the form of 'TProperty& Setter()'
         /// \author Raffaele D. Facendola - 2016
-        template <typename TClass, typename TProperty>
-        class Property::PropertyT<const TProperty&(TClass::*)() const, TProperty&(TClass::*)()> : public Property {
+        template <typename TClass, typename TPropertyGet, typename TPropertySet>
+        class Property::PropertyT<const TPropertyGet&(TClass::*)() const, TPropertySet&(TClass::*)()> : public Property {
 
         public:
 
-            PropertyT(const char* name, const TProperty&(TClass::* getter)() const, TProperty&(TClass::* setter)())
+            PropertyT(const char* name, const TPropertyGet&(TClass::* getter)() const, TPropertySet&(TClass::* setter)())
                 : Property(name)
                 , getter_(getter)
                 , setter_(setter) {}
 
             virtual const Type& GetType() const noexcept override {
 
-                return TypeOf<TProperty>();
+                return TypeOf<TPropertyGet>();
 
             }
 
@@ -357,41 +450,19 @@ namespace syntropy{
 
             virtual bool PropertyGet(Instance instance, Instance value) const override {
 
-                auto concrete_instance = instance.As<const TClass>();
-                auto concrete_value = value.As<std::decay_t<TProperty>>();
-
-                if (concrete_value && concrete_instance) {
-
-                    *concrete_value = (concrete_instance->*getter_)();
-
-                    return true;
-
-                }
-
-                return false;
+                return GetPropertyValue(instance, value, getter_);
 
             }
 
             virtual bool PropertySet(Instance instance, Instance value) const override {
 
-                auto concrete_instance = instance.As<TClass>();
-                auto concrete_value = value.As<const TProperty>();
-
-                if (concrete_value && concrete_instance) {
-
-                    (concrete_instance->*setter_)() = *concrete_value;
-
-                    return true;
-
-                }
-
-                return false;
+                return SetPropertyValue(instance, value, setter_);
 
             }
 
-            const TProperty&(TClass::* getter_)() const;       ///< \brief Getter method of the property.
+            const TPropertyGet&(TClass::* getter_)() const;         ///< \brief Getter method of the property.
 
-            TProperty&(TClass::* setter_)();                   ///< \brief Setter method of the property.
+            TPropertySet&(TClass::* setter_)();                     ///< \brief Setter method of the property.
 
         };
 

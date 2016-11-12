@@ -187,6 +187,26 @@ public:
 
     }
 
+    const std::unique_ptr<Blob>& GetUBlob() const
+    {
+        return u_blob_;
+    }
+
+    void SetUBlob(std::unique_ptr<Blob> blob)
+    {
+        u_blob_ = std::move(blob);
+    }
+
+    const std::unique_ptr<Blob>& GetUBlobAccessor() const
+    {
+        return u_blob_;
+    }
+
+    std::unique_ptr<Blob>& GetUBlobAccessor()
+    {
+        return u_blob_;
+    }
+
 public:
 
     float value_;
@@ -315,7 +335,7 @@ public:
         definition.DefineProperty("wstring_value", &Foo::wstring_) << JSONRead();
 
         definition.DefineProperty("p_blob", &Foo::p_blob_) << JSONRead();
-        //definition.DefineProperty("u_blob", &Foo::u_blob_) << JSONRead();
+        definition.DefineProperty("u_blob", &Foo::u_blob_) << JSONRead();
         definition.DefineProperty("s_blob", &Foo::s_blob_) << JSONRead();
         
         definition.DefineProperty("float_value", &Foo::value_) << JSONRead();
@@ -332,10 +352,15 @@ public:
         definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst) << JSONRead();
         definition.DefineProperty("ConstPointer", &Foo::GetConstPointer) << JSONRead();
         definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob) << JSONRead();
+        definition.DefineProperty("UBlob", &Foo::GetUBlob, &Foo::SetUBlob) /*<< JSONRead()*/;
        
         definition.DefineProperty("Accessor",
                                   static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
                                   static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor)) << JSONRead();
+
+        definition.DefineProperty("UBlobAccessor",
+                                  static_cast<const std::unique_ptr<Blob>&(Foo::*)() const>(&Foo::GetUBlobAccessor), 
+                                  static_cast<std::unique_ptr<Blob>&(Foo::*)()>(&Foo::GetUBlobAccessor)) << JSONRead();
 
 
         //definition.DefineProperty("Toxic", &Blob::blob_);   // Declaring Blob stuffs inside Foo
@@ -508,6 +533,23 @@ public:
 
         TEST_TRUE(property_accessor_->Set(foo, bb));
         TEST_TRUE(property_accessor_->Get(foo, bb));
+
+    }
+
+    void MoveTest() const {
+
+        Foo foo;
+
+        std::unique_ptr<Blob> up;
+
+        TEST_FALSE(field_movable_->Set(foo, up));
+        TEST_FALSE(field_movable_->Get(foo, up));
+
+        TEST_FALSE(property_movable_->Set(foo, up));
+        TEST_FALSE(property_movable_->Get(foo, up));
+
+        TEST_FALSE(property_movable_accessor_->Set(foo, up));
+        TEST_FALSE(property_movable_accessor_->Get(foo, up));
 
     }
 
@@ -784,7 +826,7 @@ public:
         TEST_TRUE(field_float_value_->Get(MakeConstInstance(foobar), x));
         TEST_TRUE(field_float_value_->Get(foobar, x));
         TEST_TRUE(field_float_value_->Get(MakeFooBar(), x));
-
+        
     }
 
     void AssignTest() {
@@ -877,6 +919,7 @@ public:
         std::cout << "\n\n";
 
         RUN_TEST(FieldTest);
+        RUN_TEST(MoveTest);
         RUN_TEST(PropertyTest);
         RUN_TEST(ConversionTest);
         RUN_TEST(PolymorphismTest);
@@ -904,6 +947,7 @@ public:
         field_pointer_to_const_ = foo_class_.GetProperty("pointer_to_const");
         field_const_pointer_ = foo_class_.GetProperty("const_pointer");
         field_boolean_ = foo_class_.GetProperty("boolean");
+        field_movable_ = foo_class_.GetProperty("u_blob");
 
         assert(field_int_value_);
         assert(field_float_value_);
@@ -912,6 +956,7 @@ public:
         assert(field_pointer_to_const_);
         assert(field_const_pointer_);
         assert(field_boolean_);
+        assert(field_movable_);
 
         property_value_ = foo_class_.GetProperty("Value");
         property_const_value_ = foo_class_.GetProperty("ConstValue");
@@ -920,6 +965,8 @@ public:
         property_const_pointer_ = foo_class_.GetProperty("ConstPointer");
         property_pod_ = foo_class_.GetProperty("Blob");
         property_accessor_ = foo_class_.GetProperty("Accessor");
+        property_movable_ = foo_class_.GetProperty("UBlob");
+        property_movable_accessor_ = foo_class_.GetProperty("UBlobAccessor");
         
         assert(property_value_);
         assert(property_const_value_);
@@ -928,6 +975,8 @@ public:
         assert(property_const_pointer_);
         assert(property_pod_);
         assert(property_accessor_);
+        assert(property_movable_);
+        assert(property_movable_accessor_);
 
     }
 
@@ -945,6 +994,7 @@ private:
     const syntropy::reflection::Property* field_pointer_to_const_;
     const syntropy::reflection::Property* field_const_pointer_;
     const syntropy::reflection::Property* field_boolean_;
+    const syntropy::reflection::Property* field_movable_;
 
     const syntropy::reflection::Property* property_value_;
     const syntropy::reflection::Property* property_const_value_;
@@ -953,5 +1003,9 @@ private:
     const syntropy::reflection::Property* property_const_pointer_;
     const syntropy::reflection::Property* property_pod_;
     const syntropy::reflection::Property* property_accessor_;
+    const syntropy::reflection::Property* property_movable_;
+    const syntropy::reflection::Property* property_movable_accessor_;
+
+
 
 };
