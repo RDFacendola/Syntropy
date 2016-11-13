@@ -55,6 +55,14 @@ namespace syntropy {
             template <typename TInstance, typename TValue>
             bool Get(const TInstance& instance, TValue&& value) const;
 
+            /// \brief Move the value of the property for the specified instance.
+            /// The method fails if the instance doesn't define the specified property or the specified value cannot contain the property value due to a wrong type.
+            /// \param instance Instance to move the property from.
+            /// \param value If the method succeeds contains the property value.
+            /// \return Returns true if the property could be moved, returns false otherwise.
+            template <typename TInstance, typename TValue>
+            bool Move(TInstance& instance, TValue&& value) const;
+
             /// \brief Set the value of the property for the specified instance.
             /// The method fails if the instance doesn't define the specified property or the specified value cannot be written due to a wrong type.
             /// \param instance Instance to set the property to.
@@ -106,6 +114,12 @@ namespace syntropy {
             /// \param value If the method succeeds, it contains the value read from the property.
             /// \return Return true if the property was legitimate for the provided instance and the value could be read, returns false otherwise.
             virtual bool PropertyGet(Instance instance, Instance value) const = 0;
+
+            /// \brief Move the property value.
+            /// \param instance Instance the property refers to.
+            /// \param value If the method succeeds, it contains the value moved from the property.
+            /// \return Return true if the property was legitimate for the provided instance and the value could be moved, returns false otherwise.
+            virtual bool PropertyMove(Instance instance, Instance value) const = 0;
 
             /// \brief Set the property value.
             /// \param instance Instance the property refers to.
@@ -199,6 +213,92 @@ namespace syntropy{
 
         }
 
+        // Mover
+
+        template <typename TMover, bool is_member_field, typename = void>
+        struct PropertyMover {
+
+            bool operator()(Instance instance, Instance value, TMover mover) const {
+
+                return GetPropertyValue(instance, value, mover);
+
+            }
+
+        };
+
+        template <typename TClass, typename TField>
+        struct PropertyMover<TField(TClass::*), true, std::enable_if_t<std::is_move_assignable_v<std::decay_t<TField>>>> {
+
+            bool operator()(Instance instance, Instance value, TField(TClass::* field)) const {
+
+                auto concrete_instance = instance.As<TClass>();
+                auto concrete_value = value.As<std::decay_t<TField>>();
+
+                if (concrete_value && concrete_instance) {
+
+                    *concrete_value = std::move(concrete_instance->*field);       // Move assignment
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        template <typename TClass, typename TProperty>
+        struct PropertyMover<TProperty(TClass::*)() const, false, std::enable_if_t<std::is_move_assignable_v<std::remove_reference_t<TProperty>>>> {
+
+            bool operator()(Instance instance, Instance value, TProperty(TClass::* mover)() const) const {
+
+                auto concrete_instance = instance.As<TClass>();
+                auto concrete_value = value.As<std::decay_t<TProperty>>();
+
+                if (concrete_value && concrete_instance) {
+
+                    *concrete_value = std::move((concrete_instance->*mover)());     // Move assignment
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        template <typename TClass, typename TProperty>
+        struct PropertyMover<TProperty&(TClass::*)(), false, std::enable_if_t<std::is_move_assignable_v<TProperty>>> {
+
+            bool operator()(Instance instance, Instance value, TProperty&(TClass::* mover)()) const {
+
+                auto concrete_instance = instance.As<TClass>();
+                auto concrete_value = value.As<std::decay_t<TProperty>>();
+
+                if (concrete_value && concrete_instance) {
+
+                    *concrete_value = std::move((concrete_instance->*mover)());     // Move assignment
+
+                    return true;
+
+                }
+
+                return false;
+
+            }
+
+        };
+
+        template <typename TMover>
+        bool MovePropertyValue(Instance instance, Instance value, TMover mover) {
+
+            return PropertyMover<TMover, std::is_member_object_pointer_v<TMover>>()(instance, value, mover);
+
+        }
+
         // Setter
 
         template <typename TSetter, bool is_member_field, typename = void>
@@ -284,7 +384,7 @@ namespace syntropy{
             return PropertySetter<TSetter, std::is_member_object_pointer_v<TSetter>>()(instance, value, setter);
 
         }
-
+        
         // Move-setter
 
         template <typename TSetter, bool is_member_field, typename = void>
@@ -411,6 +511,12 @@ namespace syntropy{
 
             }
 
+            virtual bool PropertyMove(Instance instance, Instance value) const override {
+
+                return MovePropertyValue(instance, value, field_);
+
+            }
+
             virtual bool PropertySet(Instance instance, Instance value) const override {
 
                 return SetPropertyValue(instance, value, field_);
@@ -422,7 +528,7 @@ namespace syntropy{
                 return MoveSetPropertyValue(instance, value, field_);
 
             }
-
+            
             TField TClass::* field_;                ///< \brief Member field.
 
         };
@@ -462,6 +568,12 @@ namespace syntropy{
             virtual bool PropertyGet(Instance instance, Instance value) const override {
 
                 return GetPropertyValue(instance, value, getter_);
+
+            }
+
+            virtual bool PropertyMove(Instance instance, Instance value) const override {
+
+                return MovePropertyValue(instance, value, getter_);
 
             }
 
@@ -522,6 +634,12 @@ namespace syntropy{
 
             }
 
+            virtual bool PropertyMove(Instance instance, Instance value) const override {
+
+                return MovePropertyValue(instance, value, getter_);
+
+            }
+
             virtual bool PropertySet(Instance instance, Instance value) const override {
 
                 return SetPropertyValue(instance, value, setter_);
@@ -578,6 +696,12 @@ namespace syntropy{
             virtual bool PropertyGet(Instance instance, Instance value) const override {
 
                 return GetPropertyValue(instance, value, getter_);
+
+            }
+
+            virtual bool PropertyMove(Instance instance, Instance value) const override {
+
+                return MovePropertyValue(instance, value, setter_);     // The getter is pure. Use the setter to access the property instead.
 
             }
 
@@ -644,6 +768,14 @@ namespace syntropy{
 
             return PropertyGet(MakeConstInstance(instance),
                                MakeInstance(std::forward<TValue>(value)));
+
+        }
+
+        template <typename TInstance, typename TValue>
+        bool Property::Move(TInstance& instance, TValue&& value) const {
+
+            return PropertyMove(MakeInstance(instance),
+                                MakeInstance(std::forward<TValue>(value)));
 
         }
 

@@ -187,24 +187,28 @@ public:
 
     }
 
-    const std::unique_ptr<Blob>& GetUBlob() const
-    {
+    const std::unique_ptr<Blob>& GetUBlob() const {
+
         return u_blob_;
+
     }
 
-    void SetUBlob(std::unique_ptr<Blob> blob)
-    {
+    void SetUBlob(std::unique_ptr<Blob> blob) {
+
         u_blob_ = std::move(blob);
+
     }
 
-    const std::unique_ptr<Blob>& GetUBlobAccessor() const
-    {
+    const std::unique_ptr<Blob>& GetUBlobAccessor() const {
+
         return u_blob_;
+
     }
 
-    std::unique_ptr<Blob>& GetUBlobAccessor()
-    {
+    std::unique_ptr<Blob>& GetUBlobAccessor() {
+
         return u_blob_;
+
     }
 
 public:
@@ -226,7 +230,7 @@ public:
     Blob* p_blob_;
     std::unique_ptr<Blob> u_blob_;
     std::shared_ptr<Blob> s_blob_;
-    
+
 };
 
 class FooBar : public Foo {
@@ -545,23 +549,29 @@ public:
         up->blob_ = 600;
         TEST_FALSE(field_movable_->Set(foo, up));                   // up is lvalue reference, moving must be performed explicitly
         TEST_TRUE(field_movable_->Set(foo, std::move(up)));         // calls move assignment
-        TEST_FALSE(field_movable_->Get(foo, up));                   // can't move foo's value to up since the getter guarantees that foo is left untouched.
+        TEST_FALSE(field_movable_->Get(foo, up));                   // getters cannot modify the internal state of the object
+        TEST_TRUE(field_movable_->Move(foo, up));                   // modify foo state
 
         up = std::make_unique<Blob>();
         up->blob_ = 500;
         TEST_FALSE(property_movable_->Set(foo, up));                // up is lvalue reference, moving must be performed explicitly
         TEST_TRUE(property_movable_->Set(foo, std::move(up)));      // calls move assignment
-        TEST_FALSE(property_movable_->Get(foo, up));
+        TEST_FALSE(property_movable_->Get(foo, up));                // getters cannot modify the internal state of the object
+        TEST_FALSE(property_movable_->Move(foo, up));               // cant modify foo state since the property only provides const access to the field
 
         up = std::make_unique<Blob>();
         up->blob_ = 400;
         TEST_FALSE(property_movable_accessor_->Set(foo, up));                   // up is lvalue reference, moving must be performed explicitly
         TEST_TRUE(property_movable_accessor_->Set(foo, std::move(up)));         // calls move assignment
-        TEST_FALSE(property_movable_accessor_->Get(foo, up));
+        TEST_FALSE(property_movable_accessor_->Get(foo, up));                   // Getters cannot modify the internal state of the object
+        TEST_TRUE(property_movable_accessor_->Move(foo, up));                   // modify foo state
 
         Blob bb;
         bb.blob_ = 1000;
-        TEST_TRUE(property_pod_->Set(foo, std::move(bb)));         // calls move assignment
+        TEST_TRUE(property_pod_->Set(foo, std::move(bb)));          // calls move assignment
+
+        bb.blob_ = 500;
+        TEST_TRUE(property_pod_->Move(foo, bb));                    // may affect foo state, fallback to "get" if needed
 
     }
 
