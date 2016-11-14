@@ -223,6 +223,9 @@ public:
     std::string string_;
     std::wstring wstring_;
 
+    std::vector<int> vector_int_;
+    std::map<int, float> map_;
+
     Foo* fooptr_;
 
     Blob blob_;
@@ -349,6 +352,8 @@ public:
         definition.DefineProperty("pointer_to_const", &Foo::pointer_to_const_) << JSONRead();
         definition.DefineProperty("const_pointer", &Foo::const_pointer_) << JSONRead();
         definition.DefineProperty("boolean", &Foo::boolean_) << JSONRead();
+        definition.DefineProperty("vector_int", &Foo::vector_int_) << JSONRead();
+        definition.DefineProperty("map", &Foo::map_) << JSONRead();
         
         definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue) << JSONRead();
         definition.DefineProperty("ConstValue", &Foo::GetConstValue) << JSONRead();
@@ -358,6 +363,7 @@ public:
         definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob) << JSONRead();
         definition.DefineProperty("UBlob", &Foo::GetUBlob, &Foo::SetUBlob) /*<< JSONRead()*/;
        
+
         definition.DefineProperty("Accessor",
                                   static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
                                   static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor)) << JSONRead();
@@ -903,6 +909,7 @@ public:
                                 {"string_value", "awesome!"},
                                 {"wstring_value", "wawesome?"},
                                 {"Blob", { {"blob", 47} } },
+                                {"vector_int", { 1, 2, 5, 5, 5 } },
                                 {"p_blob", { { "$class", "DerivedBlob" }, { "blob", 1 }, {"derived_blob", 47} } },
                                 {"u_blob", { { "$class", "DerivedBlob" }, { "blob", 2 } } },
                                 {"s_blob", { { "$class", "DerivedBlob" }, { "blob", 3 } } } };
