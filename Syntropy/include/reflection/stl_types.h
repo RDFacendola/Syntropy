@@ -157,6 +157,30 @@ namespace syntropy {
 
         };
 
+        //////////////// STD::PAIR ////////////////
+
+        template <typename TKey, typename TValue>
+        struct ClassDeclaration<std::pair<TKey, TValue>> {
+
+            const char* GetName() const noexcept {
+
+                static const std::string name(TemplateClassName<TKey, TValue>()("std::pair"));
+
+                return name.c_str();
+
+            }
+
+            template <typename TDefinition>
+            void operator()(TDefinition& definition) const {
+
+                static const std::string alias(TemplateClassName<TKey, TValue>()("pair"));
+
+                definition.DefineNameAlias(alias.c_str());
+
+            }
+
+        };
+
         //////////////// STD::MAP ////////////////
 
         template <typename TKey, typename TValue>
