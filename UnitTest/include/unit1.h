@@ -224,7 +224,7 @@ public:
     std::wstring wstring_;
 
     std::vector<int> vector_int_;
-    std::map<int, float> map_;
+    std::unordered_map<std::string, int> map_;
 
     Foo* fooptr_;
 
@@ -910,6 +910,7 @@ public:
                                 {"wstring_value", "wawesome?"},
                                 {"Blob", { {"blob", 47} } },
                                 {"vector_int", { 1, 2, 5, 5, 5 } },
+                                { "map",{ {"one", 1}, {"two", 2}, {"three", 3} } },
                                 {"p_blob", { { "$class", "DerivedBlob" }, { "blob", 1 }, {"derived_blob", 47} } },
                                 {"u_blob", { { "$class", "DerivedBlob" }, { "blob", 2 } } },
                                 {"s_blob", { { "$class", "DerivedBlob" }, { "blob", 3 } } } };
