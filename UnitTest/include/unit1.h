@@ -223,7 +223,7 @@ public:
     std::string string_;
     std::wstring wstring_;
 
-    std::vector<int> vector_int_;
+    std::set<int> vector_int_;
     std::unordered_map<std::string, int> map_;
 
     Foo* fooptr_;

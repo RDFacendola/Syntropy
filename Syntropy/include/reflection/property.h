@@ -139,6 +139,36 @@ namespace syntropy {
 
         };
 
+        /// \brief Get a property value via a pointer to a member method \ field.
+        /// \param instance Object where to get the value from.
+        /// \param value If the method succeeds contains the value read from the instance.
+        /// \param getter Getter method or field.
+        template <typename TGetter>
+        bool GetPropertyValue(Instance instance, Instance value, TGetter getter);
+
+        /// \brief Move a property value via a pointer to a member method \ field.
+        /// \param instance Object where to move the value from.
+        /// \param value If the method succeeds contains the value moved from the instance.
+        /// \param getter Mover method or field.
+        template <typename TMover>
+        bool MovePropertyValue(Instance instance, Instance value, TMover mover);
+
+        /// \brief Set a property value via a pointer to a member method \ field.
+        /// This method requires the setter method to be copy-constructible or the field to be copy-assignable.
+        /// \param instance Object where to write the value to.
+        /// \param value Value to copy.
+        /// \param setter Setter method or field.
+        template <typename TSetter>
+        bool SetPropertyValue(Instance instance, Instance value, TSetter setter);
+
+        /// \brief Set a property value via a pointer to a member method \ field.
+        /// This method requires the setter method to be move-constructible or the field to be move-assignable. Fallback to copy-construction or copy-assignment if no such capabilities are provided.
+        /// \param instance Object where to write the value to.
+        /// \param value Value to copy.
+        /// \param setter Setter method or field.
+        template <typename TSetter>
+        bool MoveSetPropertyValue(Instance instance, Instance value, TSetter setter);
+
     }
 
 }

@@ -200,105 +200,20 @@ namespace syntropy {
 
             //////////////// SETS DESERIALIZATION ////////////////
 
-            template <typename TType>
-            struct JSONDeserializer<std::set<TType>> {
+            template <typename TSet>
+            struct JSONDeserializer<TSet, std::enable_if_t<is_set<TSet>::value>> {
 
-                bool operator()(std::set<TType>& object, const nlohmann::json& json) {
+                bool operator()(TSet& object, const nlohmann::json& json) {
 
-                    if (json.is_array()) {
-
-                        TType item;
-
-                        for (unsigned int array_index = 0; array_index < json.size(); ++array_index) {
-
-                            if (JSONDeserializer<TType>()(item, json[array_index])) {
-
-                                object.insert(std::move(item));
-
-                            }
-
-                        }
-
-                        return true;
-
-                    }
-
-                    return false;
-
-                }
-
-            };
-
-            template <typename TType>
-            struct JSONDeserializer<std::unordered_set<TType>> {
-
-                bool operator()(std::unordered_set<TType>& object, const nlohmann::json& json) {
+                    using TSetItem = typename TSet::value_type;
 
                     if (json.is_array()) {
 
-                        TType item;
+                        TSetItem item;
 
                         for (unsigned int array_index = 0; array_index < json.size(); ++array_index) {
 
-                            if (JSONDeserializer<TType>()(item, json[array_index])) {
-
-                                object.insert(std::move(item));
-
-                            }
-
-                        }
-
-                        return true;
-
-                    }
-
-                    return false;
-
-                }
-
-            };
-
-            template <typename TType>
-            struct JSONDeserializer<std::multiset<TType>> {
-
-                bool operator()(std::multiset<TType>& object, const nlohmann::json& json) {
-
-                    if (json.is_array()) {
-
-                        TType item;
-
-                        for (unsigned int array_index = 0; array_index < json.size(); ++array_index) {
-
-                            if (JSONDeserializer<TType>()(item, json[array_index])) {
-
-                                object.insert(std::move(item));
-
-                            }
-
-                        }
-
-                        return true;
-
-                    }
-
-                    return false;
-
-                }
-
-            };
-
-            template <typename TType>
-            struct JSONDeserializer<std::unordered_multiset<TType>> {
-
-                bool operator()(std::unordered_multiset<TType>& object, const nlohmann::json& json) {
-
-                    if (json.is_array()) {
-
-                        TType item;
-
-                        for (unsigned int array_index = 0; array_index < json.size(); ++array_index) {
-
-                            if (JSONDeserializer<TType>()(item, json[array_index])) {
+                            if (JSONDeserializer<TSetItem>()(item, json[array_index])) {
 
                                 object.insert(std::move(item));
 
@@ -320,111 +235,20 @@ namespace syntropy {
 
             // JSON can only associate objects to strings (std::string, std::wstring or syntropy::HashedString
 
-            template <typename TKey, typename TValue>
-            struct JSONDeserializer<std::map<TKey, TValue>> {
+            template <typename TMap>
+            struct JSONDeserializer<TMap, std::enable_if_t<is_map<TMap>::value>> {
 
-                bool operator()(std::map<TKey, TValue>& object, const nlohmann::json& json) {
+                bool operator()(TMap& object, const nlohmann::json& json) {
 
-                    if (json.is_object()) {
-
-                        std::pair<TKey, TValue> item;
-
-                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
-
-                            if (JSONDeserializer<TValue>()(item.second, json_property.value())) {
-
-                                item.first = json_property.key();
-
-                                object.insert(std::move(item));
-
-                            }
-
-                        }
-
-                        return true;
-
-                    }
-
-                    return false;
-
-                }
-
-            };
-
-            template <typename TKey, typename TValue>
-            struct JSONDeserializer<std::unordered_map<TKey, TValue>> {
-
-                bool operator()(std::unordered_map<TKey, TValue>& object, const nlohmann::json& json) {
+                    using TMappedType = typename TMap::mapped_type;
 
                     if (json.is_object()) {
 
-                        std::pair<TKey, TValue> item;
+                        TMappedType item;
 
                         for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
 
-                            if (JSONDeserializer<TValue>()(item.second, json_property.value())) {
-
-                                item.first = json_property.key();
-
-                                object.insert(std::move(item));
-
-                            }
-
-                        }
-
-                        return true;
-
-                    }
-
-                    return false;
-
-                }
-
-            };
-
-            template <typename TKey, typename TValue>
-            struct JSONDeserializer<std::multimap<TKey, TValue>> {
-
-                bool operator()(std::multimap<TKey, TValue>& object, const nlohmann::json& json) {
-
-                    if (json.is_object()) {
-
-                        std::pair<TKey, TValue> item;
-
-                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
-
-                            if (JSONDeserializer<TValue>()(item.second, json_property.value())) {
-
-                                item.first = json_property.key();
-
-                                object.insert(std::move(item));
-
-                            }
-
-                        }
-
-                        return true;
-
-                    }
-
-                    return false;
-
-                }
-
-            };
-
-            template <typename TKey, typename TValue>
-            struct JSONDeserializer<std::unordered_multimap<TKey, TValue>> {
-
-                bool operator()(std::unordered_multimap<TKey, TValue>& object, const nlohmann::json& json) {
-
-                    if (json.is_object()) {
-
-                        std::pair<TKey, TValue> item;
-
-                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
-
-                            if (JSONDeserializer<TValue>()(item.second, json_property.value())) {
+                            if (JSONDeserializer<TMap::mapped_type>()(item.second, json_property.value())) {
 
                                 item.first = json_property.key();
 

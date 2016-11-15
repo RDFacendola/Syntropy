@@ -141,45 +141,6 @@ namespace syntropy {
     template <typename TAssignee, typename TValue>
     constexpr bool is_assignable_v = is_assignable<TAssignee, TValue>::value;
 
-    /// \brief Functor used to assign a value to any object.
-    /// This specialization is used if the assignment operator declval<TAssignee&>() = declval<TValue>() is not defined.
-    /// \author Raffaele D. Facendola - September 2016
-    template <typename TAssignee, typename TValue, typename = void>
-    struct assign {
-
-        TAssignee& operator()(TAssignee& assignee, const TValue& /*value*/) {
-
-            return assignee;
-
-        }
-
-    };
-    
-    /// \brief Functor used to assign a value to any object.
-    /// This specialization is used if the assignment operator declval<TAssignee&>() = declval<TValue>() is defined.
-    /// \author Raffaele D. Facendola - September 2016
-    template <typename TAssignee, typename TValue>
-    struct assign<TAssignee, TValue, typename std::enable_if_t<is_assignable_v<TAssignee, TValue>>> {
-
-        auto operator()(TAssignee& assignee, const TValue& value) {
-
-            return assignee = value;
-
-        }
-
-    };
-
-    /// \brief If value can be assigned to assignee the call is performed, otherwise this function does nothing.
-    /// \return Returns the new value of assigned if the call could be performed, returns the unchanged value otherwise.
-    /// \author Raffaele D. Facendola - September 2016
-    template <typename TAssignee, typename TValue>
-    auto conditional_assign(TAssignee&& assignee, TValue&& value) {
-
-        return assign<TAssignee, TValue>()(std::forward<TAssignee>(assignee), 
-                                           std::forward<TValue>(value));
-
-    }
-
     /// \brief If TCallable(TArgs...) is defined provides the members constant value equal to true, otherwise value is false.
     /// \author Raffaele D. Facendola - September 2016
     template <typename TCallable, typename... TArgs>
@@ -225,6 +186,38 @@ namespace syntropy {
         return caller()(callable, std::forward<TArgs>(args)...);
 
     }
+
+    //////////////// CONTAINERS ////////////////
+
+    template <typename TType>
+    struct is_set : std::false_type {};
+
+    template <typename TType>
+    struct is_set<std::set<TType>> : std::true_type {};
+
+    template <typename TType>
+    struct is_set<std::unordered_set<TType>> : std::true_type {};
+
+    template <typename TType>
+    struct is_set<std::multiset<TType>> : std::true_type {};
+
+    template <typename TType>
+    struct is_set<std::unordered_multiset<TType>> : std::true_type {};
+
+    template <typename TType>
+    struct is_map : std::false_type {};
+
+    template <typename TType>
+    struct is_map<std::map<TType>> : std::true_type {};
+
+    template <typename TType>
+    struct is_map<std::unordered_map<TType>> : std::true_type {};
+
+    template <typename TType>
+    struct is_map<std::multimap<TType>> : std::true_type {};
+
+    template <typename TType>
+    struct is_map<std::unordered_multimap<TType>> : std::true_type {};
 
     //////////////// CLASS ////////////////
 
