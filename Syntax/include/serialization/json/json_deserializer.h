@@ -6,8 +6,10 @@
 
 #pragma once
 
-#include "reflection/reflection.h"
+#include "syntropy.h"
+#include "hashed_string.h"
 
+#include "reflection/reflection.h"
 #include "nlohmann/json/src/json.hpp"
 
 #include <string>
@@ -230,11 +232,47 @@ namespace syntropy {
             };
 
             //////////////// MAPS DESERIALIZATION ////////////////
+            
+            template <typename TConvert>
+            struct json_map_key_converter : std::false_type {};
 
-            // JSON can only associate objects to strings (std::string, std::wstring or syntropy::HashedString
+            template <>
+            struct json_map_key_converter<std::string> : std::true_type {
+            
+                std::string operator()(const std::string& key) const {
+                    
+                    return key;
+
+                }
+
+            };
+
+            template <>
+            struct json_map_key_converter<std::wstring> : std::true_type {
+
+                std::wstring operator()(const std::string& key) const {
+
+                    return to_wstring(key);
+
+                }
+
+            };
+
+            template <>
+            struct json_map_key_converter<HashedString> : std::true_type {
+
+                HashedString operator()(const std::string& key) const {
+
+                    return key;
+
+                }
+
+            };
 
             template <typename TMap>
-            struct JSONDeserializer<TMap, std::enable_if_t<is_map_v<TMap>>> {
+            struct JSONDeserializer<TMap, std::enable_if_t<std::conditional_t<is_map_v<TMap>,
+                                                                              json_map_key_converter<typename TMap::key_type>,
+                                                                              std::false_type>::value>> {
 
                 bool operator()(TMap& object, const nlohmann::json& json) {
 
@@ -246,7 +284,7 @@ namespace syntropy {
 
                             if (JSONDeserializer<TMap::mapped_type>()(item, json_property.value())) {
                                 
-                                object.insert(std::make_pair(json_property.key(),
+                                object.insert(std::make_pair(json_map_key_converter<typename TMap::key_type>()(json_property.key()),
                                                              item));
 
                             }

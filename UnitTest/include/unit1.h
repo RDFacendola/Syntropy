@@ -224,7 +224,7 @@ public:
     std::wstring wstring_;
 
     std::set<int> vector_int_;
-    std::unordered_map<std::string, int> map_;
+    std::unordered_map<syntropy::HashedString, int> map_;
 
     Foo* fooptr_;
 
