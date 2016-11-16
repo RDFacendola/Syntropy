@@ -224,7 +224,7 @@ public:
     std::wstring wstring_;
 
     std::set<int> vector_int_;
-    std::unordered_map<syntropy::HashedString, int> map_;
+    std::map<syntropy::HashedString, int> map_;
 
     Foo* fooptr_;
 
@@ -910,7 +910,9 @@ public:
                                 {"wstring_value", "wawesome?"},
                                 {"Blob", { {"blob", 47} } },
                                 {"vector_int", { 1, 2, 5, 5, 5 } },
-                                { "map",{ {"one", 1}, {"two", 2}, {"three", 3} } },
+                                { "map",{ { {"id", "alpha"}, {"value", 1} },
+                                          { {"id", "beta"}, {"value", 2} },
+                                          { {"id", "gamma"}, {"value", 3} } } },
                                 {"p_blob", { { "$class", "DerivedBlob" }, { "blob", 1 }, {"derived_blob", 47} } },
                                 {"u_blob", { { "$class", "DerivedBlob" }, { "blob", 2 } } },
                                 {"s_blob", { { "$class", "DerivedBlob" }, { "blob", 3 } } } };
@@ -1035,7 +1037,5 @@ private:
     const syntropy::reflection::Property* property_accessor_;
     const syntropy::reflection::Property* property_movable_;
     const syntropy::reflection::Property* property_movable_accessor_;
-
-
 
 };

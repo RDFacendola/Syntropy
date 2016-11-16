@@ -232,66 +232,76 @@ namespace syntropy {
             };
 
             //////////////// MAPS DESERIALIZATION ////////////////
-            
-            template <typename TConvert>
-            struct json_map_key_converter : std::false_type {};
-
-            template <>
-            struct json_map_key_converter<std::string> : std::true_type {
-            
-                std::string operator()(const std::string& key) const {
-                    
-                    return key;
-
-                }
-
-            };
-
-            template <>
-            struct json_map_key_converter<std::wstring> : std::true_type {
-
-                std::wstring operator()(const std::string& key) const {
-
-                    return to_wstring(key);
-
-                }
-
-            };
-
-            template <>
-            struct json_map_key_converter<HashedString> : std::true_type {
-
-                HashedString operator()(const std::string& key) const {
-
-                    return key;
-
-                }
-
-            };
 
             template <typename TMap>
-            struct JSONDeserializer<TMap, std::enable_if_t<std::conditional_t<is_map_v<TMap>,
-                                                                              json_map_key_converter<typename TMap::key_type>,
-                                                                              std::false_type>::value>> {
+            struct JSONDeserializer<TMap, std::enable_if_t<is_map_v<TMap>>> {
 
                 bool operator()(TMap& object, const nlohmann::json& json) {
 
-                    if (json.is_object()) {
+                    if (json.is_array()) {
 
-                        TMap::mapped_type item;
+                        TMap::key_type key;
+                        TMap::mapped_type value;
 
-                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
+                        for (unsigned int array_index = 0; array_index < json.size(); ++array_index) {
 
-                            if (JSONDeserializer<TMap::mapped_type>()(item, json_property.value())) {
-                                
-                                object.insert(std::make_pair(json_map_key_converter<typename TMap::key_type>()(json_property.key()),
-                                                             item));
+                            auto& json_item = json[array_index];
+
+                            if (DeserializeKey(key, json_item) &&
+                                DeserializeValue(value, json_item)) {
+
+                                object.insert(std::make_pair(key, value));
 
                             }
 
                         }
 
                         return true;
+
+                    }
+
+                    return false;
+
+                }
+
+                bool DeserializeKey(typename TMap::key_type& key, const nlohmann::json& json) {
+
+                    if (json.is_object()){
+
+                        // Use a particular field as a key
+                        auto id_it = json.find(JSONDeserializable::kIdToken);
+
+                        return id_it != json.end() &&
+                               JSONDeserializer<typename TMap::key_type>()(key, *id_it);
+
+                    }
+
+                    return false;
+
+                }
+
+
+                bool DeserializeValue(typename TMap::mapped_type& value, const nlohmann::json& json) {
+
+                    if (JSONDeserializer<TMap::mapped_type>()(value, json)) {
+
+                        return true;
+
+                    }
+
+                    // Array whose elements have only two fields, can be interpreted as a key-value pair.
+                    // The field other than the key contains the value to be deserialized.
+                    if (std::distance(json.cbegin(), json.cend()) == 2) {
+
+                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
+
+                            if (json_property.key() != JSONDeserializable::kIdToken) {
+
+                                return JSONDeserializer<TMap::mapped_type>()(value, json_property.value());
+
+                            }
+
+                        }
 
                     }
 
@@ -336,6 +346,29 @@ namespace syntropy {
                     if (json.is_string()) {
 
                         object = json.get<std::string>();
+
+                    }
+
+                    return false;
+
+                }
+
+            };
+
+            /// \brief Functor used to deserialize a HashedString from JSON.
+            /// \author Raffaele D. Facendola - November 2016
+            template <>
+            struct JSONDeserializer<HashedString> {
+
+                /// \brief Deserialize a std::string from a JSON object property.
+                /// \return Returns true if the JSON object contains a string value, returns false otherwise.
+                bool operator()(HashedString& object, const nlohmann::json& json) {
+
+                    if (json.is_string()) {
+
+                        object = json.get<std::string>();
+
+                        return true;
 
                     }
 

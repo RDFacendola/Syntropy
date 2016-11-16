@@ -24,8 +24,11 @@ namespace syntropy {
 
             public:
 
-                /// \brief Key of the JSON property used to determine the class type of the object being deserialized.
+                /// \brief JSON property field used to determine the class type of the object being deserialized.
                 static const char* kClassToken;
+
+                /// \brief JSON property field used to determine the id of an object.
+                static const char* kIdToken;
 
                 /// \brief Helper tag used to resolve conflicts among copy/move constructor and explicit initialization via property accessors.
                 struct property_tag {};

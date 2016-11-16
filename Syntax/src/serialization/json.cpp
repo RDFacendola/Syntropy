@@ -11,6 +11,7 @@ namespace syntropy {
             //////////////// JSON DESERIALIZABLE ////////////////
 
             const char* JSONDeserializable::kClassToken = "$class";
+            const char* JSONDeserializable::kIdToken = "id";
 
             JSONDeserializable::JSONDeserializable(const JSONDeserializable& other) noexcept {
 
