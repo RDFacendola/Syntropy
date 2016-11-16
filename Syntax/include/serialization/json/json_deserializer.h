@@ -201,19 +201,17 @@ namespace syntropy {
             //////////////// SETS DESERIALIZATION ////////////////
 
             template <typename TSet>
-            struct JSONDeserializer<TSet, std::enable_if_t<is_set<TSet>::value>> {
+            struct JSONDeserializer<TSet, std::enable_if_t<is_set_v<TSet>>> {
 
                 bool operator()(TSet& object, const nlohmann::json& json) {
 
-                    using TSetItem = typename TSet::value_type;
-
                     if (json.is_array()) {
 
-                        TSetItem item;
+                        TSet::value_type item;
 
                         for (unsigned int array_index = 0; array_index < json.size(); ++array_index) {
 
-                            if (JSONDeserializer<TSetItem>()(item, json[array_index])) {
+                            if (JSONDeserializer<TSet::value_type>()(item, json[array_index])) {
 
                                 object.insert(std::move(item));
 
@@ -236,23 +234,20 @@ namespace syntropy {
             // JSON can only associate objects to strings (std::string, std::wstring or syntropy::HashedString
 
             template <typename TMap>
-            struct JSONDeserializer<TMap, std::enable_if_t<is_map<TMap>::value>> {
+            struct JSONDeserializer<TMap, std::enable_if_t<is_map_v<TMap>>> {
 
                 bool operator()(TMap& object, const nlohmann::json& json) {
 
-                    using TMappedType = typename TMap::mapped_type;
-
                     if (json.is_object()) {
 
-                        TMappedType item;
+                        TMap::mapped_type item;
 
                         for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
 
-                            if (JSONDeserializer<TMap::mapped_type>()(item.second, json_property.value())) {
-
-                                item.first = json_property.key();
-
-                                object.insert(std::move(item));
+                            if (JSONDeserializer<TMap::mapped_type>()(item, json_property.value())) {
+                                
+                                object.insert(std::make_pair(json_property.key(),
+                                                             item));
 
                             }
 

@@ -9,6 +9,11 @@
 #include <type_traits>
 #include <typeinfo>
 
+#include <set>
+#include <map>
+#include <unordered_set>
+#include <unordered_map>
+
 namespace syntropy {
 
     //////////////// META ////////////////
@@ -189,6 +194,8 @@ namespace syntropy {
 
     //////////////// CONTAINERS ////////////////
 
+    /// \brief If TType represents a set provides the members constant value equal to true, otherwise value is false.
+    /// \author Raffaele D. Facendola - November 2016
     template <typename TType>
     struct is_set : std::false_type {};
 
@@ -204,20 +211,30 @@ namespace syntropy {
     template <typename TType>
     struct is_set<std::unordered_multiset<TType>> : std::true_type {};
 
+    /// \brief Helper value for is_set<TType>.
+    template <typename TType>
+    constexpr bool is_set_v = is_set<TType>::value;
+
+    /// \brief If TType represents a map provides the members constant value equal to true, otherwise value is false.
+    /// \author Raffaele D. Facendola - November 2016
     template <typename TType>
     struct is_map : std::false_type {};
 
-    template <typename TType>
-    struct is_map<std::map<TType>> : std::true_type {};
+    template <typename TKey, typename TValue>
+    struct is_map<std::map<TKey, TValue>> : std::true_type {};
 
-    template <typename TType>
-    struct is_map<std::unordered_map<TType>> : std::true_type {};
+    template <typename TKey, typename TValue>
+    struct is_map<std::unordered_map<TKey, TValue>> : std::true_type {};
 
-    template <typename TType>
-    struct is_map<std::multimap<TType>> : std::true_type {};
+    template <typename TKey, typename TValue>
+    struct is_map<std::multimap<TKey, TValue>> : std::true_type {};
 
+    template <typename TKey, typename TValue>
+    struct is_map<std::unordered_multimap<TKey, TValue>> : std::true_type {};
+
+    /// \brief Helper value for is_map<TType>.
     template <typename TType>
-    struct is_map<std::unordered_multimap<TType>> : std::true_type {};
+    constexpr bool is_map_v = is_map<TType>::value;
 
     //////////////// CLASS ////////////////
 
