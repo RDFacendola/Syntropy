@@ -23,6 +23,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\reflection\core_types.h" />
     <ClInclude Include="include\reflection\fundamental_types.h">
       <SubType>
       </SubType>

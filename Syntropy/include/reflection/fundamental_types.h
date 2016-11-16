@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "class.h"
+
 namespace syntropy {
 
     namespace reflection {

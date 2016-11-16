@@ -15,6 +15,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#include "class.h"
 #include "template_types.h"
 
 namespace syntropy {
@@ -276,7 +277,7 @@ namespace syntropy {
         //////////////// STD::STRING ////////////////
 
         template <>
-        struct ClassDeclaration <std::string> {
+        struct ClassDeclaration<std::string> {
 
             constexpr const char* GetName() const noexcept {
 
@@ -296,7 +297,7 @@ namespace syntropy {
         //////////////// STD::WSTRING ////////////////
 
         template <>
-        struct ClassDeclaration <std::wstring> {
+        struct ClassDeclaration<std::wstring> {
 
             constexpr const char* GetName() const noexcept {
 

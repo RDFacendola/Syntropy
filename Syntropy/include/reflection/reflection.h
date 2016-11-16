@@ -17,6 +17,7 @@
 
 #include "reflection/fundamental_types.h"
 #include "reflection/stl_types.h"
+#include "reflection/core_types.h"
 
 namespace syntropy {
 
