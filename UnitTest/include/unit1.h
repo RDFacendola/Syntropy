@@ -902,20 +902,45 @@ public:
         foo.u_blob_ = nullptr;
         foo.s_blob_ = nullptr;
 
-        nlohmann::json json = { {"int_value", 42},
-                                {"float_value", 67.5f},
-                                {"const_value", 100.0f},
-                                {"boolean", true },
-                                {"string_value", "awesome!"},
-                                {"wstring_value", "wawesome?"},
-                                {"Blob", { {"blob", 47} } },
-                                {"vector_int", { 1, 2, 5, 5, 5 } },
-                                { "map",{ { {"id", "alpha"}, {"value", 1} },
-                                          { {"id", "beta"}, {"value", 2} },
-                                          { {"id", "gamma"}, {"value", 3} } } },
-                                {"p_blob", { { "$class", "DerivedBlob" }, { "blob", 1 }, {"derived_blob", 47} } },
-                                {"u_blob", { { "$class", "DerivedBlob" }, { "blob", 2 } } },
-                                {"s_blob", { { "$class", "DerivedBlob" }, { "blob", 3 } } } };
+        nlohmann::json json = R"({
+                                    "int_value": 42,
+                                    "float_value": 67.5,
+                                    "const_value": 100.0,
+                                    "boolean": true,
+                                    "string_value": "awesome!",
+                                    "wstring_value": "wawesome?",
+                                    "Blob": { 
+                                                "blob": 47 
+                                            },
+                                    "vector_int": [1, 2, 5, 5, 5],
+                                    "map": [{ 
+                                                "id": "alpha",
+                                                "value": 1 
+                                            },
+                                            {
+                                                "id": "beta",
+                                                "value": 2
+                                            },
+                                            {
+                                                "id": "gamma",
+                                                "value": 3
+                                            }],
+                                    "p_blob": {
+                                                "$class": "DerivedBlob",
+                                                "blob": 1,
+                                                "derived_blob": 47
+                                              },
+                                    "u_blob": {
+                                                "$class": "DerivedBlob",
+                                                "blob": 2,
+                                                "derived_blob": 48
+                                              },
+                                    "s_blob": {
+                                                "$class": "DerivedBlob",
+                                                "blob": 3,
+                                                "derived_blob": 49
+                                              }  
+                                 })"_json;
 
         syntropy::syntax::serialization::DeserializeObjectFromJSON(foo, json);
 
