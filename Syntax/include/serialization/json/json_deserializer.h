@@ -27,7 +27,7 @@ namespace syntropy {
         namespace serialization {
 
             class JSONDeserializable;
-
+            
             //////////////// OBJECT DESERIALIZATION ////////////////
 
             /// \brief Functor used to deserialize JSON object into a concrete instance.
@@ -233,22 +233,73 @@ namespace syntropy {
 
             //////////////// MAPS DESERIALIZATION ////////////////
 
+            
+
             template <typename TMap>
             struct JSONDeserializer<TMap, std::enable_if_t<is_map_v<TMap>>> {
+
+                using TKey = typename TMap::key_type;
+                using TValue = typename TMap::mapped_type;
 
                 bool operator()(TMap& object, const nlohmann::json& json) {
 
                     if (json.is_array()) {
 
-                        TMap::key_type key;
-                        TMap::mapped_type value;
+                        DeserializeFromArray(object, json);
+                        return true;
 
-                        for (unsigned int array_index = 0; array_index < json.size(); ++array_index) {
+                    }
+                    else if (json.is_object()) {
 
-                            auto& json_item = json[array_index];
+                        return KeyValuePairDeserializer<TKey>()(object, json);
 
-                            if (DeserializeKey(key, json_item) &&
-                                DeserializeValue(value, json_item)) {
+                    }
+
+                    return false;
+
+                }
+
+            private:
+
+                template <typename TTKey, typename = void>
+                struct KeyValuePairDeserializer {
+
+                    bool operator()(TMap&, const nlohmann::json&) const {
+
+                        return false;
+
+                    }
+
+                };
+// 
+//                 template <typename TTKey>
+//                 struct KeyValuePairDeserializer<TTKey, std::enable_if_t<is_convertible_v<bool, bool>>> {
+// 
+//                     bool operator()(TMap&, const nlohmann::json&) const {
+// 
+//                         return false;
+// 
+//                     }
+// 
+//                 };
+
+                /// \brief Deserialize from an array of objects: the elements are the mapped objects, while a field of those is used as a key.
+                void DeserializeFromArray(TMap& object, const nlohmann::json& json) {
+
+                    TKey key;
+                    TValue value;
+
+                    for (unsigned int array_index = 0; array_index < json.size(); ++array_index) {
+
+                        auto& json_item = json[array_index];
+
+                        if (json_item.is_object()) {
+
+                            auto it = json_item.find(JSONDeserializable::kIdToken);
+
+                            if (it != json_item.end() &&
+                                JSONDeserializer<TKey>()(key, *it) &&
+                                JSONDeserializer<TValue>()(value, json_item)) {
 
                                 object.insert(std::make_pair(key, value));
 
@@ -256,56 +307,7 @@ namespace syntropy {
 
                         }
 
-                        return true;
-
                     }
-
-                    return false;
-
-                }
-
-                bool DeserializeKey(typename TMap::key_type& key, const nlohmann::json& json) {
-
-                    if (json.is_object()){
-
-                        // Use a particular field as a key
-                        auto id_it = json.find(JSONDeserializable::kIdToken);
-
-                        return id_it != json.end() &&
-                               JSONDeserializer<typename TMap::key_type>()(key, *id_it);
-
-                    }
-
-                    return false;
-
-                }
-
-
-                bool DeserializeValue(typename TMap::mapped_type& value, const nlohmann::json& json) {
-
-                    if (JSONDeserializer<TMap::mapped_type>()(value, json)) {
-
-                        return true;
-
-                    }
-
-                    // Array whose elements have only two fields, can be interpreted as a key-value pair.
-                    // The field other than the key contains the value to be deserialized.
-                    if (std::distance(json.cbegin(), json.cend()) == 2) {
-
-                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
-
-                            if (json_property.key() != JSONDeserializable::kIdToken) {
-
-                                return JSONDeserializer<TMap::mapped_type>()(value, json_property.value());
-
-                            }
-
-                        }
-
-                    }
-
-                    return false;
 
                 }
 

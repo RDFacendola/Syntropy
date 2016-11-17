@@ -123,6 +123,30 @@ namespace syntropy {
 
     };
 
+    //////////////// CONVERTERS ////////////////
+
+    /// \brief If TFrom can be converted to a TTo provides a member constant value equal to true, otherwise value is false.
+    /// If the type is convertible provides an operator that can be used to perform the actual conversion from TFrom to TTo.
+    /// \author Raffaele D. Facendola - November 2016
+    template <typename TFrom, typename TTo, typename = void>
+    struct is_convertible : std::false_type {};
+
+    /// \brief Partial template specialization for trivially-convertible types.
+//     template <typename TFrom, typename TTo>
+//     struct is_convertible<TFrom, TTo, std::enable_if_t<std::is_constructible_v<TTo, TFrom>>> : std::true_type {
+// 
+//         TTo operator()(const TFrom& From) {
+// 
+//             return From;
+// 
+//         }
+// 
+//     };
+
+    /// \brief Helper value for is_convertible<TFrom, TTo>.
+    template <typename TFrom, typename TTo>
+    constexpr bool is_convertible_v = is_convertible<TFrom, TTo>::value;
+
     //////////////// OTHER CAPABILITIES ////////////////
 
     /// \brief If TAssignee = TValue is defined provides the members constant value equal to true, otherwise value is false.
@@ -163,7 +187,7 @@ namespace syntropy {
 
     };
 
-    /// \brief Helper value for is_callable_v<TCallable, TArgs...>.
+    /// \brief Helper value for is_callable<TCallable, TArgs...>.
     template <typename TCallable, typename... TArgs>
     constexpr bool is_callable_v = is_callable<TCallable, TArgs...>::value;
     
