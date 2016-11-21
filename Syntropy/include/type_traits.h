@@ -129,23 +129,23 @@ namespace syntropy {
     /// If the type is convertible provides an operator that can be used to perform the actual conversion from TFrom to TTo.
     /// \author Raffaele D. Facendola - November 2016
     template <typename TFrom, typename TTo, typename = void>
-    struct is_convertible : std::false_type {};
+    struct convert : std::false_type {};
 
     /// \brief Partial template specialization for trivially-convertible types.
-//     template <typename TFrom, typename TTo>
-//     struct is_convertible<TFrom, TTo, std::enable_if_t<std::is_constructible_v<TTo, TFrom>>> : std::true_type {
-// 
-//         TTo operator()(const TFrom& From) {
-// 
-//             return From;
-// 
-//         }
-// 
-//     };
+    template <typename TFrom, typename TTo>
+    struct convert<TFrom, TTo, std::enable_if_t<std::is_constructible_v<TTo, TFrom>>> : std::true_type {
+
+        TTo operator()(const TFrom& from) {
+
+            return from;
+
+        }
+
+    };
 
     /// \brief Helper value for is_convertible<TFrom, TTo>.
     template <typename TFrom, typename TTo>
-    constexpr bool is_convertible_v = is_convertible<TFrom, TTo>::value;
+    constexpr bool is_convertible_v = convert<TFrom, TTo>::value;
 
     //////////////// OTHER CAPABILITIES ////////////////
 

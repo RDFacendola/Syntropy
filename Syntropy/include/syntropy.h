@@ -13,6 +13,8 @@
 #include <locale>
 #include <codecvt>
 
+#include "type_traits.h"
+
 #define SYN_UNUSED(x) (x)
 
 #ifdef _MSC_VER
@@ -54,6 +56,30 @@ namespace syntropy {
     /// \brief Converts a wstring to a string.
     /// \param string String to convert.
     std::string to_string(const std::wstring& wstring);
+
+    /// \brief Template specialization for wstring -> string conversions.
+    template <>
+    struct convert<std::wstring, std::string> : std::true_type{
+
+        std::string operator()(const std::wstring& from) {
+
+            return to_string(from);
+
+        }
+
+    };
+
+    /// \brief Template specialization for string -> wstring conversions.
+    template <>
+    struct convert<std::string, std::wstring> : std::true_type{
+
+        std::wstring operator()(const std::string& from) {
+
+            return to_wstring(from);
+
+        }
+
+    };
 
 }
 

@@ -224,7 +224,9 @@ public:
     std::wstring wstring_;
 
     std::set<int> vector_int_;
-    std::map<syntropy::HashedString, int> map_;
+    //std::map<syntropy::HashedString, int> map_;
+    std::map<std::wstring, int> map_;
+    //std::map<syntropy::HashedString, int> map_;
 
     Foo* fooptr_;
 
@@ -913,18 +915,12 @@ public:
                                                 "blob": 47 
                                             },
                                     "vector_int": [1, 2, 5, 5, 5],
-                                    "map": [{ 
-                                                "id": "alpha",
-                                                "value": 1 
-                                            },
-                                            {
-                                                "id": "beta",
-                                                "value": 2
-                                            },
-                                            {
-                                                "id": "gamma",
-                                                "value": 3
-                                            }],
+                                    "map": { 
+                                                "alpha": 1, 
+                                                "beta": 2, 
+                                                "gamma": 3, 
+                                                "delta": 4 
+                                           },
                                     "p_blob": {
                                                 "$class": "DerivedBlob",
                                                 "blob": 1,

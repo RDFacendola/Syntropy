@@ -233,8 +233,6 @@ namespace syntropy {
 
             //////////////// MAPS DESERIALIZATION ////////////////
 
-            
-
             template <typename TMap>
             struct JSONDeserializer<TMap, std::enable_if_t<is_map_v<TMap>>> {
 
@@ -245,12 +243,14 @@ namespace syntropy {
 
                     if (json.is_array()) {
 
+                        // Array of objects
                         DeserializeFromArray(object, json);
                         return true;
 
                     }
                     else if (json.is_object()) {
 
+                        // Object whose fields are the actual key-value pairs of the map. TKey must be constructible from strings.
                         return KeyValuePairDeserializer<TKey>()(object, json);
 
                     }
@@ -271,17 +271,32 @@ namespace syntropy {
                     }
 
                 };
-// 
-//                 template <typename TTKey>
-//                 struct KeyValuePairDeserializer<TTKey, std::enable_if_t<is_convertible_v<bool, bool>>> {
-// 
-//                     bool operator()(TMap&, const nlohmann::json&) const {
-// 
-//                         return false;
-// 
-//                     }
-// 
-//                 };
+
+                template <typename TTKey>
+                struct KeyValuePairDeserializer<TTKey, std::enable_if_t<is_convertible_v<typename nlohmann::json::string_t, TKey>>> {
+
+                    bool operator()(TMap& object, const nlohmann::json& json) const {
+
+                        TKey key;
+                        TValue value;
+
+                        for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
+
+                            key = convert<typename nlohmann::json::string_t, TKey>()(json_property.key());      // Key from string
+
+                            if (JSONDeserializer<TValue>()(value, json_property.value())) {                     // Regular value parsing
+
+                                object.insert(std::make_pair(key, value));
+
+                            }
+
+                        }
+
+                        return true;
+
+                    }
+
+                };
 
                 /// \brief Deserialize from an array of objects: the elements are the mapped objects, while a field of those is used as a key.
                 void DeserializeFromArray(TMap& object, const nlohmann::json& json) {
