@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "type.h"
+
 namespace syntropy {
 
     namespace reflection {
@@ -46,15 +48,13 @@ namespace syntropy {
             /// \return Returns a comma separated list of names whose elements represent the default name of each template argument.
             std::string operator()() const noexcept {
 
-                std::string name_;
-                
-                name_.reserve(256);
+                std::stringstream name;
 
-                name_.append(ClassDeclaration<TType>().GetName())
-                     .append(", ")
-                     .append(TemplateClassArgumentName<TRestType...>()());
+                name << TypeOf<TType>()
+                     << ", "
+                     << TemplateClassArgumentName<TRestType...>()();
 
-                return name_;
+                return name.str();
 
             }
 
@@ -69,7 +69,11 @@ namespace syntropy {
             /// \return Returns the name of the provided template argument.
             std::string operator()() const noexcept {
 
-                return ClassDeclaration<TType>().GetName();
+                std::stringstream name;
+
+                name << TypeOf<TType>();
+
+                return name.str();
 
             }
 
