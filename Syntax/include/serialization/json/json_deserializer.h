@@ -343,6 +343,8 @@ namespace syntropy {
 
                         object = to_wstring(json.get<std::string>());
 
+                        return true;
+
                     }
 
                     return false;
@@ -363,6 +365,8 @@ namespace syntropy {
                     if (json.is_string()) {
 
                         object = json.get<std::string>();
+
+                        return true;
 
                     }
 
