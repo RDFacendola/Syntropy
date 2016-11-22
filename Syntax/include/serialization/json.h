@@ -104,17 +104,12 @@ namespace syntropy {
 
             };
 
-            /// \brief Parse a JSON object from file.
-            /// \param path Path of the file to parse.
-            /// \return Returns a JSON object containing the data stored inside the file.
-            nlohmann::json ParseJSONFile(const char* path);
-
             /// \brief Deserialize a JSON object inside a C++ object.
             ///
             /// (1) If TClass is a pointer, a new object is instantiated with concrete type equal to the type declared by the JSON object. If the method succeeds the object is guaranteed to have a type that can be statically casted to TClass otherwise the returned pointer is nullptr.
             /// (2) If TClass is not a pointer, the concrete type declared by the JSON object is ignored as well as all those properties that are not available in TClass.
             /// (3) The caller takes the *ownership* of all dynamically-allocated objects deserialized this way.
-            /// (4) TClass must either be registered to the Syntropy reflection system or a template specialization of JSONDeserializer<TClass> must be provided, otherwise the program is ill-formed.
+            /// (4) TClass must either be registered to the Syntropy Reflection System or a template specialization of JSONDeserializer<TClass> must be provided, otherwise the program is ill-formed.
             /// (5) If the same property is defined more than once, only one of those will be deserialized. Which one is unknown, though.
             ///
             /// \param object Reference to the object to fill with deserialized data.

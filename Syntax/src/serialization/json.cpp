@@ -44,22 +44,6 @@ namespace syntropy {
 
             //////////////// METHODS ////////////////
 
-            nlohmann::json ParseJSONFile(const char* path) {
-
-                std::fstream file_stream(path);
-
-                nlohmann::json json;
-
-                if (file_stream.good()) {
-
-                    file_stream >> json;
-
-                }
-
-                return json;
-
-            }
-
             reflection::Instance InstantiateFromJSON(const reflection::Class& base_class, const nlohmann::json& json) {
  
                  const reflection::Class* instance_class = &base_class;
