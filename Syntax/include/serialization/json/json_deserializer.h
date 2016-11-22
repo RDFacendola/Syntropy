@@ -45,7 +45,7 @@ namespace syntropy {
 
                     // Wraps the object inside an instance and use the reflection-based deserialization
                     return JSONDeserializer<reflection::Instance>()(reflection::MakeInstance(object), json);
-                    
+
                 }
 
             };
@@ -250,7 +250,8 @@ namespace syntropy {
                     }
                     else if (json.is_object()) {
 
-                        // Object whose fields are the actual key-value pairs of the map. TKey must be constructible from strings.
+                        // Object fields are the key-value pairs of the map. 
+                        // TKey must be constructible from strings.
                         return KeyValuePairDeserializer<TKey>()(object, json);
 
                     }
@@ -261,6 +262,29 @@ namespace syntropy {
 
             private:
 
+                /// \brief Deleter for deserialized values.
+                /// A map requires that both the key and the value are correctly deserialized. If one of the two fails, the other value must
+                /// be destroyed if it was deserialized by this object, otherwise it would leak.
+                template <typename TType>
+                struct Deleter {
+
+                    static void Delete(TType) {}
+
+                };
+
+                /// \brief Specialization for pointer types
+                template <typename TType>
+                struct Deleter<TType*> {
+
+                    static void Delete(TType*& pointer) {
+
+                        SafeDelete(pointer);
+
+                    }
+
+                };
+
+                /// \brief Key-value pair deserializer for keys that are not convertible from string. Does nothing.
                 template <typename TTKey, typename = void>
                 struct KeyValuePairDeserializer {
 
@@ -272,8 +296,9 @@ namespace syntropy {
 
                 };
 
+                /// \brief Key-value pair deserializer for keys that can be converted from strings.
                 template <typename TTKey>
-                struct KeyValuePairDeserializer<TTKey, std::enable_if_t<is_convertible_v<typename nlohmann::json::string_t, TKey>>> {
+                struct KeyValuePairDeserializer<TTKey, std::enable_if_t<is_convertible_v<nlohmann::json::string_t, TKey>>> {
 
                     bool operator()(TMap& object, const nlohmann::json& json) const {
 
@@ -282,11 +307,13 @@ namespace syntropy {
 
                         for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property) {
 
-                            key = convert<typename nlohmann::json::string_t, TKey>()(json_property.key());      // Key from string
+                            key = convert<nlohmann::json::string_t, TKey>()(json_property.key());               // Key from string
 
-                            if (JSONDeserializer<TValue>()(value, json_property.value())) {                     // Regular value parsing
+                            if (JSONDeserializer<TValue>()(value, json_property.value())) {                     // Value from anything
 
-                                object.insert(std::make_pair(key, value));
+                                // Update the map
+                                object.insert(std::make_pair(std::move(key), 
+                                                             std::move(value)));
 
                             }
 
@@ -298,7 +325,7 @@ namespace syntropy {
 
                 };
 
-                /// \brief Deserialize from an array of objects: the elements are the mapped objects, while a field of those is used as a key.
+                /// \brief Deserialize from an array of objects: the elements are the mapped objects, while one particular field is used as a key.
                 void DeserializeFromArray(TMap& object, const nlohmann::json& json) {
 
                     TKey key;
@@ -310,13 +337,25 @@ namespace syntropy {
 
                         if (json_item.is_object()) {
 
+                            key = TKey{};
+                            value = TValue{};
+
                             auto it = json_item.find(JSONDeserializable::kIdToken);
 
                             if (it != json_item.end() &&
-                                JSONDeserializer<TKey>()(key, *it) &&
-                                JSONDeserializer<TValue>()(value, json_item)) {
+                                JSONDeserializer<TKey>()(key, *it) &&                                           // Key
+                                JSONDeserializer<TValue>()(value, json_item)) {                                 // Value
 
-                                object.insert(std::make_pair(key, value));
+                                // Update the map
+                                object.insert(std::make_pair(std::move(key), 
+                                                             std::move(value)));
+
+                            }
+                            else {
+
+                                // One among the key and value failed to deserialize: destroy any allocated object.
+                                Deleter<TKey>::Delete(key);
+                                Deleter<TValue>::Delete(value);
 
                             }
 
