@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="include\fnv1.h">
-      <Filter>hash</Filter>
-    </ClInclude>
-    <ClInclude Include="include\hashed_string.h">
-      <Filter>hash</Filter>
-    </ClInclude>
     <ClInclude Include="include\type_traits.h">
       <Filter>type_traits</Filter>
     </ClInclude>
@@ -35,6 +29,12 @@
     <ClInclude Include="include\reflection\stl_types.h" />
     <ClInclude Include="include\reflection\template_types.h" />
     <ClInclude Include="include\reflection\core_types.h" />
+    <ClInclude Include="include\containers\hashed_string.h">
+      <Filter>hash</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\fnv1.h">
+      <Filter>hash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

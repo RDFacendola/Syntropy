@@ -6,16 +6,17 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <typeindex>
-
-#include "hashed_string.h"
 #include "type_traits.h"
+
+#include "containers/hashed_string.h"
 
 #include "reflection/type.h"
 #include "reflection/instance.h"
 
 #include "linb/any/any.hpp"
+
+#include <unordered_map>
+#include <typeindex>
 
 namespace syntropy {
 

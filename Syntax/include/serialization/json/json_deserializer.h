@@ -7,9 +7,11 @@
 #pragma once
 
 #include "syntropy.h"
-#include "hashed_string.h"
+
+#include "containers/hashed_string.h"
 
 #include "reflection/reflection.h"
+
 #include "nlohmann/json/src/json.hpp"
 
 #include <string>

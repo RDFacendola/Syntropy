@@ -28,8 +28,8 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\fnv1.h" />
-    <ClInclude Include="include\hashed_string.h" />
+    <ClInclude Include="include\math\fnv1.h" />
+    <ClInclude Include="include\containers\hashed_string.h" />
     <ClInclude Include="include\reflection\instance.h">
       <SubType>
       </SubType>

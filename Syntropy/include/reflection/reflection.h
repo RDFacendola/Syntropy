@@ -6,18 +6,17 @@
 
 #pragma once
 
-#include <unordered_map>
-
-#include "hashed_string.h"
-
 #include "reflection/type.h"
 #include "reflection/class.h"
 #include "reflection/property.h"
 #include "reflection/instance.h"
-
 #include "reflection/fundamental_types.h"
 #include "reflection/stl_types.h"
 #include "reflection/core_types.h"
+
+#include "containers/hashed_string.h"
+
+#include <unordered_map>
 
 namespace syntropy {
 

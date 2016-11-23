@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "hashed_string.h"
+#include "containers/hashed_string.h"
 
 namespace syntropy {
 

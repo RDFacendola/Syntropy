@@ -6,6 +6,14 @@
 
 #pragma once
 
+#include "type_traits.h"
+
+#include "containers/hashed_string.h"
+
+#include "reflection/instance.h"
+#include "reflection/property.h"
+#include "reflection/method.h"
+
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
@@ -16,13 +24,6 @@
 #include <stdexcept>
 #include <sstream>
 #include <ostream>
-
-#include "hashed_string.h"
-#include "type_traits.h"
-
-#include "reflection/instance.h"
-#include "reflection/property.h"
-#include "reflection/method.h"
 
 namespace syntropy {
 

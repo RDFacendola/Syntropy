@@ -11,8 +11,9 @@
 #include <functional>
 #include <type_traits>
 
+#include "math/fnv1.h"
+
 #include "syntropy.h"
-#include "fnv1.h"
 
 namespace syntropy {
 

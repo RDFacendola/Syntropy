@@ -8,13 +8,13 @@
 
 #include "class.h"
 
-#include "hashed_string.h"
+#include "containers/hashed_string.h"
 
 namespace syntropy {
 
     namespace reflection {
 
-        //////////////// SYNTROPY::HASHEDSTRING////////////////
+        //////////////// SYNTROPY::HASHEDSTRING ////////////////
 
         template <>
         struct ClassDeclaration<HashedString> {
