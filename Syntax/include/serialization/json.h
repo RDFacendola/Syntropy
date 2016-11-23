@@ -264,15 +264,15 @@ namespace syntropy {
             /// The getter has the form - Property GetProperty() const;
             /// THe setter has the form - * SetProperty(Property);
             /// \author Raffaele D. Facendola - September 2016.
-            template <typename TClass, typename TProperty, typename TReturn>
-            struct JSONDeserializable::Content<TProperty(TClass::*)() const, TReturn(TClass::*)(TProperty)> : JSONDeserializable::IContent {
+            template <typename TClass, typename TPropertyGet, typename TPropertySet, typename TAny>
+            struct JSONDeserializable::Content<TPropertyGet(TClass::*)() const, TAny(TClass::*)(TPropertySet)> : JSONDeserializable::IContent {
 
-                Content(TProperty(TClass::*)() const, TReturn(TClass::* setter)(TProperty))
+                Content(TPropertyGet(TClass::*)() const, TAny(TClass::* setter)(TPropertySet))
                     : setter_(setter) {}
 
                 virtual bool Deserialize(reflection::Instance instance, const nlohmann::json& json) const override{
 
-                    using property_t = std::remove_cv_t<std::remove_reference_t<TProperty>>;
+                    using property_t = std::remove_cv_t<std::remove_reference_t<TPropertySet>>;
 
                     auto concrete_instance = instance.As<TClass>();
 
@@ -307,7 +307,7 @@ namespace syntropy {
 
                 }
 
-                TReturn(TClass::* setter_)(TProperty);          ///< \brief Setter method of the property.
+                TAny(TClass::* setter_)(TPropertySet);          ///< \brief Setter method of the property.
 
             };
 
@@ -315,10 +315,10 @@ namespace syntropy {
             /// The getter has the form - const Property& GetProperty() const;
             /// THe setter has the form - Property& GetProperty();
             /// \author Raffaele D. Facendola - September 2016.
-            template <typename TClass, typename TProperty>
-            struct JSONDeserializable::Content<const TProperty&(TClass::*)() const, TProperty&(TClass::*)()> : JSONDeserializable::IContent {
+            template <typename TClass, typename TPropertyGet, typename TPropertySet>
+            struct JSONDeserializable::Content<const TPropertyGet&(TClass::*)() const, TPropertySet&(TClass::*)()> : JSONDeserializable::IContent {
 
-                Content(const TProperty&(TClass::*)() const, TProperty&(TClass::* setter)())
+                Content(const TPropertyGet&(TClass::*)() const, TPropertySet&(TClass::* setter)())
                     : setter_(setter) {}
 
                 virtual bool Deserialize(reflection::Instance instance, const nlohmann::json& json) const override{
@@ -327,7 +327,7 @@ namespace syntropy {
 
                     if (concrete_instance){
 
-                        return JSONDeserializer<TProperty>()((concrete_instance->*setter_)(), json);
+                        return JSONDeserializer<TPropertySet>()((concrete_instance->*setter_)(), json);
 
                     }
 
@@ -345,7 +345,7 @@ namespace syntropy {
 
                 }
 
-                TProperty&(TClass::* setter_)();                   ///< \brief Setter method of the property.
+                TPropertySet&(TClass::* setter_)();                   ///< \brief Setter method of the property.
 
             };
 

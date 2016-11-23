@@ -233,6 +233,11 @@ namespace syntropy {
 
             //////////////// MAPS DESERIALIZATION ////////////////
 
+            /// \brief Deserializer for maps.
+            /// Maps can either be deserialized from an array of object or from a single object.
+            /// In the first case one field of each object in the array is used as a key for the entry, the object itself is deserialized as the value.
+            /// In the second case the map expects to deserialize an object in which each field-value pair is interpreted as a key-value to add to the map.
+            /// In this case keys must be string-constructible since JSON fields are identified by strings. Deserializing an array of objects has no such limitation.
             template <typename TMap>
             struct JSONDeserializer<TMap, std::enable_if_t<is_map_v<TMap>>> {
 

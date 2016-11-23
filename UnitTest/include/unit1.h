@@ -363,7 +363,7 @@ public:
         definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst) << JSONRead();
         definition.DefineProperty("ConstPointer", &Foo::GetConstPointer) << JSONRead();
         definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob) << JSONRead();
-        definition.DefineProperty("UBlob", &Foo::GetUBlob, &Foo::SetUBlob) /*<< JSONRead()*/;
+        definition.DefineProperty("UBlob", &Foo::GetUBlob, &Foo::SetUBlob) << JSONRead();
        
 
         definition.DefineProperty("Accessor",
@@ -926,7 +926,7 @@ public:
                                                 "blob": 1,
                                                 "derived_blob": 47
                                               },
-                                    "u_blob": {
+                                    "UBlob": {
                                                 "$class": "DerivedBlob",
                                                 "blob": 2,
                                                 "derived_blob": 48
