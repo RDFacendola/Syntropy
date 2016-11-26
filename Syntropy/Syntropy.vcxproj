@@ -19,6 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\diagnostics\diagnostics.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\diagnostics\log.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\reflection\class.h">
       <SubType>
       </SubType>
@@ -62,6 +70,14 @@
     <ClInclude Include="include\type_traits.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\diagnostics\diagnostics.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="src\diagnostics\log.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\reflection\class.cpp">
       <SubType>
       </SubType>

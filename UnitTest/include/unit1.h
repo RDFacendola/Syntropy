@@ -991,7 +991,7 @@ public:
     
         auto& derived_blob_class = syntropy::reflection::ClassOf<DerivedBlob>();
 
-        SYN_UNUSED(derived_blob_class);
+        SYNTROPY_UNUSED(derived_blob_class);
 
         field_int_value_ = foo_class_.GetProperty("int_value");
         field_float_value_ = foo_class_.GetProperty("float_value");

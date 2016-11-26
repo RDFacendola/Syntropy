@@ -15,24 +15,18 @@
 
 #include "type_traits.h"
 
-#define SYN_UNUSED(x) (x)
+#define SYNTROPY_UNUSED(x) (x)
 
-#ifdef _MSC_VER
-#define SYN_NO_INLINE __declspec(noinline)
+#ifdef _DEBUG
+#define SYNTROPY_DEBUG_ONLY(x) x
 #else
-#define SYN_NO_INLINE 
+#define SYNTROPY_DEBUG_ONLY(x)
 #endif
 
 #ifdef _DEBUG
-#define SYN_DEBUG_ONLY(x) x
+#define SYNTROPY_RELEASE_ONLY(x) 
 #else
-#define SYN_DEBUG_ONLY(x)
-#endif
-
-#ifdef _DEBUG
-#define SYN_RELEASE_ONLY(x) 
-#else
-#define SYN_RELEASE_ONLY(x) x
+#define SYNTROPY_RELEASE_ONLY(x) x
 #endif
 
 namespace syntropy {
