@@ -5,82 +5,48 @@
 
 #pragma once
 
-#include <thread>
+
 #include <chrono>
 #include <mutex>
 #include <vector>
+#include <sstream>
 
+#include "macro.h"
 #include "diagnostics.h"
 
-#define SYNTROPY_LOG_MESSAGE(severity, context, message) \
-    syntropy::diagnostics::LogManager::GetInstance().LogMessage<severity>(context, message, SYNTROPY_SOURCECODE)
+#define SYNTROPY_LOG_MESSAGE(severity, contexts, ...) \
+     { \
+        syntropy::diagnostics::LogMessageBuilder message_builder; \
+        message_builder.Append(__VA_ARGS__); \
+        syntropy::diagnostics::LogManager::GetInstance().SendMessage<severity>({SYNTROPY_EXPAND contexts}, (*message_builder).str().c_str(), SYNTROPY_TRACE); \
+     }
 
-#define SYNTROPY_LOG(context, message) \
-    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::SeverityInformative, context, message)
+#define SYNTROPY_LOG(contexts, ...) \
+    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kInformative, contexts, __VA_ARGS__)
 
-#define SYNTROPY_WARNING(context, message) \
-    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::SeverityWarning, context, message)
+#define SYNTROPY_WARNING(contexts, ...) \
+    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kWarning, contexts, __VA_ARGS__)
 
-#define SYNTROPY_ERROR(context, message) \
-    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::SeverityError, context, message)
+#define SYNTROPY_ERROR(contexts, ...) \
+    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kError, contexts, __VA_ARGS__)
 
-#define SYNTROPY_CRITICAL(context, message) \
-    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::SeverityCritical, context, message)
+#define SYNTROPY_CRITICAL(contexts, ...) \
+    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kCritical, contexts, __VA_ARGS__)
 
-namespace syntropy {
+namespace syntropy 
+{
 
-    namespace diagnostics {
+    namespace diagnostics 
+    {
 
-        /// \brief Tag used for informative logs that have no effect on the application.
-        struct SeverityInformative {
+        /// \brief Single log message.
+        /// \author Raffaele D. Facendola - November 2016
+        struct LogMessage : Event 
+        {
+            /// \brief Create a new log message.
+            LogMessage(std::initializer_list<Context> contexts, const Callstack& callstack, Severity severity);
 
-        };
-
-        /// \brief Tag used for warning logs signaling conditions that may cause undesired, yet acceptable, behaviors.
-        struct SeverityWarning {
-        
-            static const bool kLogCallstack = true;         ///< \brief Whether to attach the callstack to the log.
-
-        };
-
-        /// \brief Tag used for error logs signaling conditions that will affect the application in a negative way. Causes the debugger to break.
-        struct SeverityError {
-
-            static const bool kLogCallstack = true;         ///< \brief Whether to attach the callstack to the log.
-
-            static const bool kBreakOnLog = true;           ///< \brief Whether to break after logging. Does nothing on release builds.
-
-        };
-
-        /// \brief Tag used for critical logs signaling conditions that will cause the application to crash almost certainly. Causes the debugger to break and the application to crash.
-        struct SeverityCritical {
-
-            static const bool kLogCallstack = true;         ///< \brief Whether to attach the callstack to the log.
-
-            static const bool kBreakOnLog = true;           ///< \brief Whether to break after logging. Does nothing on release builds.
-
-            static const bool kCrashOnLog = true;           ///< \brief Whether to crash after logging.
-
-        };
-
-        /// \brief Represents a single log entry.
-        struct LogEntry {
-
-            LogEntry(const SourceCodeLocation& where);
-
-            std::chrono::system_clock::time_point timestamp_;               ///< \brief System time.
-
-            // TODO: Severity!
-
-            std::vector<const char*> context_;                              ///< \brief Log context.
-
-            const char* message_;                                           ///< \brief Actual log message.
-
-            const SourceCodeLocation where_;                                ///< \brief Location where the log was issued.
-            
-            std::thread::id thread_id_;                                     ///< \brief Id of the thread that issued the log.
-
-            std::vector<SourceCodeLocation> callstack_;                     ///< \brief Callstack, starting from the current location.
+            const char* message_;                                           ///< \brief Log message.
 
         };
 
@@ -88,20 +54,28 @@ namespace syntropy {
 
         public:
 
-            void LogMessage(const LogEntry& log) {
+            void SendMessage(const LogMessage& log) {
                 (log);
             }
 
         };
 
-        class LogManager {
+        /// \brief Singleton used to issue log messages and events.
+        /// \author Raffaele D. Facendola - November 2016
+        class LogManager 
+        {
 
         public:
 
+            /// \brief Get the log manager instance.
             static LogManager& GetInstance();
 
-            template <typename TSeverity>
-            void LogMessage(std::initializer_list<const char*> context, const char* message, const SourceCodeLocation& where);
+            /// \brief Send a log message.
+            /// \tparam kSeverity Severity of the message.
+            /// \param context Log context used to categorize the log message.
+            /// \param callstack Callstack that caused the log.
+            template <Severity kSeverity>
+            void SendMessage(std::initializer_list<Context> contexts, const char* message, const Callstack& callstack);
 
         private:
 
@@ -111,6 +85,43 @@ namespace syntropy {
             std::mutex mutex_;                                              ///< \brief Used to synchronize various logging threads.
 
             std::vector<std::unique_ptr<LogAppender>> appenders_;           ///< \brief List of log appenders
+
+        };
+
+        /// \brief Utility class used build a log message via a stream.
+        /// This class is used to share a pool of streams without the need of creating a new one every single time.
+        /// \author Raffaele D. Facendola - November 2016
+        class LogMessageBuilder
+        {
+
+        public:
+
+            /// \brief Create a new builder. Recycle an existing stream if possible.
+            LogMessageBuilder();
+
+            /// \brief Default destructor. Send the current stream to the recycle pool.
+            ~LogMessageBuilder();
+
+            /// \brief Move constructor.
+            LogMessageBuilder(LogMessageBuilder&& other) = default;
+
+            std::ostringstream& operator*() const;
+
+            template <typename THead, typename... TRest>
+            void Append(THead head, TRest... rest);
+
+            template <typename THead>
+            void Append(THead head);
+
+        private:
+            
+            /// \brief Get the mutex used for synchronization purposes.
+            static std::mutex& GetMutex();
+
+            /// \brief Get the pool of recyclable streams.
+            static std::vector<std::unique_ptr<std::ostringstream>>& GetPool();
+            
+            std::unique_ptr<std::ostringstream> stream_;                    ///< \brief Stream associated to the builder.
 
         };
 
@@ -126,26 +137,37 @@ namespace syntropy {
 
         //////////////// LOG MANAGER ////////////////
 
-        template <typename TSeverity>
-        void LogManager::LogMessage(std::initializer_list<const char*> context, const char* message, const SourceCodeLocation& where) {
+        template <Severity kSeverity>
+        void LogManager::SendMessage(std::initializer_list<Context> contexts, const char* message, const Callstack& callstack) {
 
-            std::unique_lock<std::mutex> lock(mutex_);
+            std::unique_lock<std::mutex> lock(mutex_);      // Needed to guarantee the order of the log messages.
 
-            // Fill the log infos
-            LogEntry log(where);
+            LogMessage log_message(contexts, callstack, kSeverity);
 
-            log.timestamp_ = std::chrono::system_clock::now();
-            log.context_ = context;
-            log.message_ = message;
-            log.thread_id_ = std::this_thread::get_id();
+            log_message.message_ = message;
 
             // Send the log to the appenders
             for (auto&& appender : appenders_) {
 
-                appender->LogMessage(log);
+                appender->SendMessage(log_message);
 
             }
 
+        }
+
+        //////////////// LOG MESSAGE BUILDER ////////////////
+
+        template <typename THead, typename... TRest>
+        void LogMessageBuilder::Append(THead head, TRest... rest)
+        {
+            Append(head);
+            Append(rest...);
+        }
+
+        template <typename THead>
+        void LogMessageBuilder::Append(THead head)
+        {
+            (*stream_) << head;
         }
 
     }

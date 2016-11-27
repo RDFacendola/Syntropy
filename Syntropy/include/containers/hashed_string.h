@@ -24,6 +24,8 @@ namespace syntropy {
 
     public:
 
+        using hash_t = typename THash;
+
         /// \brief Create an empty hashed string.
         HashedStringT() noexcept;
 

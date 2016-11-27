@@ -37,6 +37,7 @@
     </ClInclude>
     <ClInclude Include="include\diagnostics\log.h" />
     <ClInclude Include="include\diagnostics\diagnostics.h" />
+    <ClInclude Include="include\macro.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
