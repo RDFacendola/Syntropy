@@ -18,6 +18,18 @@
 #define SYNTROPY_TRACE \
     syntropy::diagnostics::Trace(__FILE__, __FUNCTION__, __LINE__)
 
+#ifdef _MSC_VER
+
+/// \brief Cause a debugger break.
+#define SYNTROPY_BREAK \
+    DebugBreak();
+
+#else
+#error "Missing debug break macro!"
+#endif
+
+#define SYNTROPY_CRASH \
+
 namespace syntropy 
 {
     namespace diagnostics 

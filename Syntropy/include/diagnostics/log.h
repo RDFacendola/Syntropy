@@ -14,6 +14,9 @@
 #include "macro.h"
 #include "diagnostics.h"
 
+/// \brief Utility macro used to log a message using syntropy::diagnostics::LogManager.
+/// Message arguments are stitched together.
+/// \usage SYNTROPY_LOG_MESSAGE($Severity, ($Context1, $Context2, ...), $msg0, $msg1, $msg2, ...);
 #define SYNTROPY_LOG_MESSAGE(severity, contexts, ...) \
      { \
         syntropy::diagnostics::LogMessageBuilder message_builder; \
@@ -21,17 +24,30 @@
         syntropy::diagnostics::LogManager::GetInstance().SendMessage<severity>({SYNTROPY_EXPAND contexts}, (*message_builder).str().c_str(), SYNTROPY_TRACE); \
      }
 
+/// \brief Log an informative message.
+/// \usage SYNTROPY_LOG((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_LOG(contexts, ...) \
     SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kInformative, contexts, __VA_ARGS__)
 
+/// \brief Log a warning message.
+/// \usage SYNTROPY_WARNING((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_WARNING(contexts, ...) \
     SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kWarning, contexts, __VA_ARGS__)
 
+/// \brief Log an informative message.
+/// Causes the debugger to break.
+/// \usage SYNTROPY_ERROR((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_ERROR(contexts, ...) \
-    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kError, contexts, __VA_ARGS__)
+    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kError, contexts, __VA_ARGS__); \
+    SYNTROPY_BREAK
 
+/// \brief Log an informative message.
+/// Causes the debugger to break and the application to crash.
+/// \usage SYNTROPY_CRITICAL((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_CRITICAL(contexts, ...) \
-    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kCritical, contexts, __VA_ARGS__)
+    SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kCritical, contexts, __VA_ARGS__) \
+    SYNTROPY_BREAK; \
+    SYNTROPY_CRASH
 
 namespace syntropy 
 {
