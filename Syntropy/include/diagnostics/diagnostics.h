@@ -13,22 +13,7 @@
 #include <unordered_map>
 
 #include "containers/hashed_string.h"
-
-/// \brief Expands to an object representing the location of the current line of code.
-#define SYNTROPY_TRACE \
-    syntropy::diagnostics::Trace(__FILE__, __FUNCTION__, __LINE__)
-
-#ifdef _MSC_VER
-
-/// \brief Cause a debugger break.
-#define SYNTROPY_BREAK \
-    DebugBreak();
-
-#else
-#error "Missing debug break macro!"
-#endif
-
-#define SYNTROPY_CRASH \
+#include "platform/platform.h"
 
 namespace syntropy 
 {

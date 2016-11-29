@@ -47,7 +47,7 @@
 #define SYNTROPY_CRITICAL(contexts, ...) \
     SYNTROPY_LOG_MESSAGE(syntropy::diagnostics::Severity::kCritical, contexts, __VA_ARGS__) \
     SYNTROPY_BREAK; \
-    SYNTROPY_CRASH
+    SYNTROPY_HALT
 
 namespace syntropy 
 {

@@ -31,6 +31,8 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\platform\platform.h" />
+    <ClInclude Include="include\platform\windows_platform.h" />
     <ClInclude Include="include\reflection\class.h">
       <SubType>
       </SubType>
@@ -82,6 +84,7 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\platform\windows_platform.cpp" />
     <ClCompile Include="src\reflection\class.cpp">
       <SubType>
       </SubType>
