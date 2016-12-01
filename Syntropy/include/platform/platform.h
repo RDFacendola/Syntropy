@@ -6,14 +6,4 @@
 
 #pragma once
 
-#ifdef _WIN32
-    
 #include "windows_platform.h"
-
-#elif __unix__
-
-#elif __linux__
-
-#elif __APPLE__
-
-#endif

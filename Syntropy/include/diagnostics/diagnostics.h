@@ -12,8 +12,15 @@
 #include <vector>
 #include <unordered_map>
 
-#include "containers/hashed_string.h"
 #include "platform/platform.h"
+#include "containers/hashed_string.h"
+
+/// \brief Expands to an object representing the location of the current line of code.
+#define SYNTROPY_TRACE \
+    HAL_TRACE
+
+#define SYNTROPY_DEBUG_BREAK \
+    HAL_DEBUG_BREAK
 
 namespace syntropy 
 {
