@@ -17,10 +17,7 @@
 
 /// \brief Expands to an object representing the location of the current line of code.
 #define SYNTROPY_TRACE \
-    HAL_TRACE
-
-#define SYNTROPY_DEBUG_BREAK \
-    HAL_DEBUG_BREAK
+    syntropy::diagnostics::Trace(SYNTROPY_FILE, SYNTROPY_FUNCTION, SYNTROPY_LINE)
 
 namespace syntropy 
 {

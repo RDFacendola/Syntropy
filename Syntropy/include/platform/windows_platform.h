@@ -9,11 +9,16 @@
 
 #include <intrin.h>
 
-/// \brief Expands to an object representing the location of the current line of code.
-#define HAL_TRACE \
-    syntropy::diagnostics::Trace(__FILE__, __FUNCTION__, __LINE__)
+#define SYNTROPY_FILE \
+   __FILE__
 
-#define HAL_DEBUG_BREAK \
+#define SYNTROPY_FUNCTION \
+   __FUNCTION__
+
+#define SYNTROPY_LINE \
+   __LINE__
+
+#define SYNTROPY_BREAK \
     if(syntropy::platform::Platform::IsDebuggerAttached()) { __debugbreak(); }
 
 namespace syntropy

@@ -41,7 +41,7 @@
         syntropy::diagnostics::LogMessageBuilder message; \
         message.Append(__VA_ARGS__); \
         syntropy::diagnostics::LogManager::GetInstance().SendMessage<syntropy::diagnostics::Severity::kError>({ SYNTROPY_EXPAND contexts }, (*message).str().c_str(), SYNTROPY_TRACE); \
-        SYNTROPY_DEBUG_BREAK; \
+        SYNTROPY_BREAK; \
     }
 
 /// \brief Log an informative message.
@@ -52,7 +52,7 @@
         syntropy::diagnostics::LogMessageBuilder message; \
         message.Append(__VA_ARGS__); \
         syntropy::diagnostics::LogManager::GetInstance().SendMessage<syntropy::diagnostics::Severity::kCritical>({ SYNTROPY_EXPAND contexts }, (*message).str().c_str(), SYNTROPY_TRACE); \
-        SYNTROPY_DEBUG_BREAK; \
+        SYNTROPY_BREAK; \
     }
 
 namespace syntropy 
