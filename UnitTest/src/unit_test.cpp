@@ -44,7 +44,6 @@ void ConcurrentTest()
 int main()
 {
 
-    SYNTROPY_ERROR(("MyContext"), "Yis");
     ConcurrentTest();
 
     system("pause");

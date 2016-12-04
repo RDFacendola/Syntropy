@@ -20,9 +20,9 @@ namespace syntropy {
 
         }
 
-        //////////////// LOG MESSAGE BUILDER ////////////////
+        //////////////// LOG MANAGER :: MESSAGE BUILDER ////////////////
 
-        LogMessageBuilder::LogMessageBuilder()
+        void LogManager::MessageBuilder::AcquireStream()
         {
             auto& pool = GetPool();
 
@@ -41,28 +41,33 @@ namespace syntropy {
             }
         }
 
-        LogMessageBuilder::~LogMessageBuilder()
+        void LogManager::MessageBuilder::ReleaseStream()
         {
-            std::unique_lock<std::mutex> lock(GetMutex());
-
-            // Send the stream to the pool
             stream_->clear();
             stream_->str(std::string());
-            GetPool().push_back(std::move(stream_));
+
+            std::unique_lock<std::mutex> lock(GetMutex());
+
+            GetPool().push_back(std::move(stream_));        // Send the stream to the pool
         }
 
-        std::ostringstream& LogMessageBuilder::operator*() const
+        void LogManager::MessageBuilder::Append()
         {
-            return *stream_;
+            // Append nothing
         }
 
-        std::mutex& LogMessageBuilder::GetMutex()
+        LogManager::MessageBuilder::operator const char*() const
+        {
+            return message_.c_str();
+        }
+
+        std::mutex& LogManager::MessageBuilder::GetMutex()
         {
             static std::mutex mutex;
             return mutex;
         }
 
-        std::vector<std::unique_ptr<std::ostringstream>>& LogMessageBuilder::GetPool()
+        std::vector<std::unique_ptr<std::ostringstream>>& LogManager::MessageBuilder::GetPool()
         {
             static std::vector<std::unique_ptr<std::ostringstream>> pool;
             return pool;

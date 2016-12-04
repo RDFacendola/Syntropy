@@ -15,22 +15,22 @@
 #include "diagnostics.h"
 #include "platform/platform.h"
 
+/// \brief Utility macro for sending a message to the log manager.
+#define SYNTROPY_LOG_MESSAGE(severity, contexts, ...) \
+    syntropy::diagnostics::LogManager::GetInstance().SendMessage<syntropy::diagnostics::Severity::severity>(SYNTROPY_TRACE, { SYNTROPY_EXPAND contexts }, __VA_ARGS__);
+
 /// \brief Log an informative message.
 /// \usage SYNTROPY_LOG((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_LOG(contexts, ...) \
     { \
-        syntropy::diagnostics::LogMessageBuilder message; \
-        message.Append(__VA_ARGS__); \
-        syntropy::diagnostics::LogManager::GetInstance().SendMessage<syntropy::diagnostics::Severity::kInformative>({ SYNTROPY_EXPAND contexts }, (*message).str().c_str(), SYNTROPY_TRACE); \
+        SYNTROPY_LOG_MESSAGE(kInformative, contexts, __VA_ARGS__); \
     }
 
 /// \brief Log a warning message.
 /// \usage SYNTROPY_WARNING((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_WARNING(contexts, ...) \
     { \
-        syntropy::diagnostics::LogMessageBuilder message; \
-        message.Append(__VA_ARGS__); \
-        syntropy::diagnostics::LogManager::GetInstance().SendMessage<syntropy::diagnostics::Severity::kWarning>({ SYNTROPY_EXPAND contexts }, (*message).str().c_str(), SYNTROPY_TRACE); \
+        SYNTROPY_LOG_MESSAGE(kWarning, contexts, __VA_ARGS__); \
     }
 
 /// \brief Log an informative message.
@@ -38,10 +38,7 @@
 /// \usage SYNTROPY_ERROR((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_ERROR(contexts, ...) \
     { \
-        syntropy::diagnostics::LogMessageBuilder message; \
-        message.Append(__VA_ARGS__); \
-        syntropy::diagnostics::LogManager::GetInstance().SendMessage<syntropy::diagnostics::Severity::kError>({ SYNTROPY_EXPAND contexts }, (*message).str().c_str(), SYNTROPY_TRACE); \
-        SYNTROPY_BREAK; \
+        SYNTROPY_LOG_MESSAGE(kError, contexts, __VA_ARGS__); \
     }
 
 /// \brief Log an informative message.
@@ -49,10 +46,7 @@
 /// \usage SYNTROPY_CRITICAL((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_CRITICAL(contexts, ...) \
     { \
-        syntropy::diagnostics::LogMessageBuilder message; \
-        message.Append(__VA_ARGS__); \
-        syntropy::diagnostics::LogManager::GetInstance().SendMessage<syntropy::diagnostics::Severity::kCritical>({ SYNTROPY_EXPAND contexts }, (*message).str().c_str(), SYNTROPY_TRACE); \
-        SYNTROPY_BREAK; \
+        SYNTROPY_LOG_MESSAGE(kCritical, contexts, __VA_ARGS__); \
     }
 
 namespace syntropy 
@@ -94,12 +88,50 @@ namespace syntropy
 
             /// \brief Send a log message.
             /// \tparam kSeverity Severity of the message.
-            /// \param context Log context used to categorize the log message.
-            /// \param callstack Callstack that caused the log.
-            template <Severity kSeverity>
-            void SendMessage(std::initializer_list<Context> contexts, const char* message, const Callstack& callstack);
+            /// \param sender Callstack that caused the log.
+            /// \param context Log contexts used to categorize the log message.
+            template <Severity kSeverity, typename... TMessage>
+            void SendMessage(const Trace& sender, std::initializer_list<Context> contexts, TMessage&&... message);
 
         private:
+
+            /// \brief Utility class used to build a log message
+            /// This class is used to share a pool of streams without the need of creating a new one every single time.
+            /// \author Raffaele D. Facendola - November 2016
+            class MessageBuilder
+            {
+
+            public:
+
+                /// \brief Create a new builder. Recycle an existing stream if possible.
+                template <typename... TMessage>
+                MessageBuilder(TMessage&&... message);
+
+                /// \brief Get a pointer to the message.
+                operator const char*() const;
+
+            private:
+
+                template <typename THead, typename... TRest>
+                void Append(THead head, TRest... rest);
+
+                void Append();
+
+                /// \brief Get the mutex used for synchronization purposes.
+                static std::mutex& GetMutex();
+
+                /// \brief Get the pool of recyclable streams.
+                static std::vector<std::unique_ptr<std::ostringstream>>& GetPool();
+
+                void AcquireStream();
+
+                void ReleaseStream();
+
+                std::unique_ptr<std::ostringstream> stream_;                    ///< \brief Stream associated to the builder.
+
+                std::string message_;                                           ///< \brief Actual message.
+
+            };
 
             /// \brief Prevent direct instantiation.
             LogManager() = default;
@@ -110,63 +142,30 @@ namespace syntropy
 
         };
 
-        /// \brief Utility class used build a log message via a stream.
-        /// This class is used to share a pool of streams without the need of creating a new one every single time.
-        /// \author Raffaele D. Facendola - November 2016
-        class LogMessageBuilder
-        {
-
-        public:
-
-            /// \brief Create a new builder. Recycle an existing stream if possible.
-            LogMessageBuilder();
-
-            /// \brief Default destructor. Send the current stream to the recycle pool.
-            ~LogMessageBuilder();
-
-            /// \brief Move constructor.
-            LogMessageBuilder(LogMessageBuilder&& other) = default;
-
-            std::ostringstream& operator*() const;
-
-            template <typename THead, typename... TRest>
-            void Append(THead head, TRest... rest);
-
-            template <typename THead>
-            void Append(THead head);
-
-        private:
-            
-            /// \brief Get the mutex used for synchronization purposes.
-            static std::mutex& GetMutex();
-
-            /// \brief Get the pool of recyclable streams.
-            static std::vector<std::unique_ptr<std::ostringstream>>& GetPool();
-            
-            std::unique_ptr<std::ostringstream> stream_;                    ///< \brief Stream associated to the builder.
-
-        };
-
     }
     
 }
 
-namespace syntropy {
+namespace syntropy 
+{
 
-    namespace diagnostics {
+    namespace diagnostics 
+    {
 
         // Implementation
 
         //////////////// LOG MANAGER ////////////////
 
-        template <Severity kSeverity>
-        void LogManager::SendMessage(std::initializer_list<Context> contexts, const char* message, const Callstack& callstack) {
+        template <Severity kSeverity, typename... TMessage>
+        void LogManager::SendMessage(const Trace& sender, std::initializer_list<Context> contexts, TMessage&&... message) 
+        {
+            MessageBuilder message_builder(std::forward<TMessage>(message)...);     // Before the lock so the message can be built while another thread is writing to the log
 
-            std::unique_lock<std::mutex> lock(mutex_);      // Needed to guarantee the order of the log messages.
+            std::unique_lock<std::mutex> lock(mutex_);                              // Needed to guarantee the order of the log messages
 
-            LogMessage log_message(contexts, callstack, kSeverity);
+            LogMessage log_message(contexts, sender, kSeverity);
 
-            log_message.message_ = message;
+            log_message.message_ = message_builder;
 
             // Send the log to the appenders
             for (auto&& appender : appenders_) {
@@ -174,22 +173,26 @@ namespace syntropy {
                 appender->SendMessage(log_message);
 
             }
-
         }
 
-        //////////////// LOG MESSAGE BUILDER ////////////////
+        //////////////// LOG MANAGER :: MESSAGE BUILDER ////////////////
+
+        template <typename... TMessage>
+        LogManager::MessageBuilder::MessageBuilder(TMessage&&... message)
+        {
+            AcquireStream();
+
+            Append(std::forward<TMessage>(message)...);
+            message_ = stream_->str();
+
+            ReleaseStream();
+        }
 
         template <typename THead, typename... TRest>
-        void LogMessageBuilder::Append(THead head, TRest... rest)
-        {
-            Append(head);
-            Append(rest...);
-        }
-
-        template <typename THead>
-        void LogMessageBuilder::Append(THead head)
+        void LogManager::MessageBuilder::Append(THead head, TRest... rest)
         {
             (*stream_) << head;
+            Append(std::forward<TRest>(rest)...);
         }
 
     }
