@@ -13,7 +13,6 @@
 #include <vector>
 #include <memory>
 
-#include "platform/platform.h"
 #include "containers/hashed_string.h"
 
 /// \brief Expands to an object representing the location of the current line of code.

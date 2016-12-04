@@ -11,23 +11,17 @@ namespace syntropy
     namespace platform
     {
 
-        //////////////// PLATFORM ////////////////
+        //////////////// DEBUG ////////////////
         
-        bool Platform::IsDebuggerAttached()
+        bool Debug::IsDebuggerAttached()
         {
             return true;
         }
 
-        void Platform::Crash(const char* message)
+        diagnostics::StackTrace Debug::GetStackTrace()
         {
-            SYNTROPY_UNUSED(message);
+            return SYNTROPY_TRACE;
         }
-
-        //diagnostics::Callstack Platform::GenerateCallstack()
-        //{
-        //    return diagnostics::Callstack(SYNTROPY_TRACE);
-        //}
-
     }
 }
 

@@ -39,6 +39,7 @@
 #define SYNTROPY_ERROR(contexts, ...) \
     { \
         SYNTROPY_LOG_MESSAGE(kError, contexts, __VA_ARGS__); \
+        SYNTROPY_BREAK; \
     }
 
 /// \brief Log an informative message.
@@ -47,6 +48,7 @@
 #define SYNTROPY_CRITICAL(contexts, ...) \
     { \
         SYNTROPY_LOG_MESSAGE(kCritical, contexts, __VA_ARGS__); \
+        SYNTROPY_BREAK; \
     }
 
 namespace syntropy 
@@ -226,6 +228,8 @@ namespace syntropy
             std::unique_lock<std::mutex> lock(mutex_);                              // Needed to guarantee the order of the log messages
 
             LogMessage log_message(contexts, calltrace, kSeverity);
+
+            log_message.stacktrace_ = platform::Debug::GetStackTrace();
 
             log_message.message_ = message_builder;
 

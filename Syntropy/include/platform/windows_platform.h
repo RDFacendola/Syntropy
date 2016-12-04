@@ -9,8 +9,10 @@
 
 #include <intrin.h>
 
+#include "diagnostics/diagnostics.h"
+
 #define SYNTROPY_BREAK \
-    if(syntropy::platform::Platform::IsDebuggerAttached()) { __debugbreak(); }
+    if(syntropy::platform::Debug::IsDebuggerAttached()) { __debugbreak(); }
 
 namespace syntropy
 {
@@ -22,13 +24,11 @@ namespace syntropy
     namespace platform
     {
 
-        struct Platform
+        struct Debug
         {
             static bool IsDebuggerAttached();
 
-            static void Crash(const char* message);
-            
-            //static diagnostics::Callstack GenerateCallstack();
+            static diagnostics::StackTrace GetStackTrace();
         };
 
     }
