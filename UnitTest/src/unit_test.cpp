@@ -8,8 +8,9 @@
 
 #include "diagnostics/log.h"
 
-syntropy::diagnostics::Context Engine("Engine");
-syntropy::diagnostics::Context Graphics("Graphics");
+syntropy::diagnostics::Context Root;
+syntropy::diagnostics::Context Engine("Engine|CtxA");
+syntropy::diagnostics::Context Graphics("Engine|CtxB");
 
 void ConcurrentTest()
 {
@@ -51,7 +52,7 @@ int main()
 
     auto& log_manager = syntropy::diagnostics::LogManager::GetInstance();
 
-    auto appender = log_manager.AttachAppender<syntropy::diagnostics::StreamLogAppender>(log_file);
+    auto appender = log_manager.AttachAppender<syntropy::diagnostics::StreamLogAppender>(std::cout);
     
     ConcurrentTest();
 

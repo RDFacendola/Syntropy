@@ -25,7 +25,7 @@ namespace syntropy
 {
     namespace diagnostics 
     {
-        struct Callstack;
+        struct StackTrace;
     }
 
     namespace platform

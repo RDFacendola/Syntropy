@@ -8,7 +8,7 @@ namespace syntropy {
 
         //////////////// LOG MESSAGGE ////////////////
 
-        LogMessage::LogMessage(std::initializer_list<Context> contexts, const Callstack& callstack, Severity severity)
+        LogMessage::LogMessage(std::initializer_list<Context> contexts, const StackTrace& callstack, Severity severity)
             : Event(contexts, callstack, severity)
         {}
 

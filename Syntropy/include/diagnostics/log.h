@@ -60,7 +60,7 @@ namespace syntropy
         struct LogMessage : Event 
         {
             /// \brief Create a new log message.
-            LogMessage(std::initializer_list<Context> contexts, const Callstack& callstack, Severity severity);
+            LogMessage(std::initializer_list<Context> contexts, const StackTrace& callstack, Severity severity);
 
             const char* message_;                                           ///< \brief Log message.
 

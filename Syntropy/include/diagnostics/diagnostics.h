@@ -8,9 +8,9 @@
 
 #include <chrono>
 #include <thread>
-#include <mutex>
+
 #include <vector>
-#include <unordered_map>
+#include <memory>
 
 #include "platform/platform.h"
 #include "containers/hashed_string.h"
@@ -36,24 +36,26 @@ namespace syntropy
             int line_;                                                      ///< \brief Line inside the file where the log was defined.
         };
 
-        /// \brief Represents a callstack.
+        /// \brief Represents a stack trace.
         /// \author Raffaele D. Facendola - November 2016
-        struct Callstack
+        struct StackTrace
         {
             /// \brief Create a new callstack from a single code trace.
-            Callstack(const Trace& trace);
+            StackTrace(const Trace& trace);
 
             /// \brief Copy ctor.
-            Callstack(const Callstack& other) = default;
+            StackTrace(const StackTrace& other) = default;
+
+            ~StackTrace() = default;
 
             /// \brief Move ctor.
-            Callstack(Callstack&& other) noexcept;
+            StackTrace(StackTrace&& other) noexcept;
 
             /// \brief Unified assignment operator.
-            Callstack& operator=(Callstack other) noexcept;
+            StackTrace& operator=(StackTrace other) noexcept;
 
             /// \brief Swap the content of two callstack instances.
-            void Swap(Callstack& other) noexcept;
+            void Swap(StackTrace& other) noexcept;
 
             /// \brief Get the last function called by the stack.
             operator Trace&();
@@ -81,11 +83,11 @@ namespace syntropy
 
         public:
 
-            /// \brief Default copy ctor.
-            Context(const Context& other) = default;
+            /// \brief character used to separate two context levels.
+            static const char kSeparator = '|';
 
-            /// \brief Create a new context from a name.
-            Context(const char* name);
+            /// \brief Create a root context.
+            Context();
 
             /// \brief Create a new context from a name.
             Context(const HashedString& name);
@@ -93,23 +95,17 @@ namespace syntropy
             /// \brief Get the context name.
             const HashedString& GetName() const;
 
-            /// \brief Check whether two contexts are the same.
-            bool operator==(const Context& other) const;
-
-            /// \brief Check whether two contexts are different.
-            bool operator!=(const Context& other) const;
+            /// \brief Check whether this context is equal to another context or is a more general context than it.
+            /// \return Returns true if this context is equal to other or any of its ancestors, returns false otherwise.
+            bool Contains(const Context& other) const;
 
         private:
 
-            using id_t = typename HashedString::hash_t;
+            class Pool;
 
-            /// \brief Get the mutex used for synchronization purposes.
-            static std::mutex& GetMutex();
+            struct InnerContext;
 
-            /// \brief Get the registered contexts map.
-            static std::unordered_map<id_t, HashedString>& GetContexts();
-
-            id_t id_;                                                       ///< \brief Id of the context.
+            std::shared_ptr<InnerContext> context_;                ///< \brief Current context.
 
         };
 
@@ -118,13 +114,13 @@ namespace syntropy
         struct Event
         {
             /// \brief Create a new event.
-            Event(std::initializer_list<Context> contexts, const Callstack& callstack, Severity severity);
+            Event(std::initializer_list<Context> contexts, const StackTrace& callstack, Severity severity);
 
             std::chrono::high_resolution_clock::time_point timestamp_;      ///< \brief Point in time where the event was created.
             Severity severity_;                                             ///< \brief Severity of the event.
             std::thread::id thread_id_;                                     ///< \brief Id of the thread that issued the event.
             std::vector<Context> contexts_;                                 ///< \brief Contexts used to categorize the event.
-            Callstack callstack_;                                           ///< \brief Callstack that caused the event.
+            StackTrace callstack_;                                          ///< \brief Callstack that caused the event.
         };
 
         /// \brief Severity type traits.
@@ -178,7 +174,7 @@ namespace std
 {
 
     template <>
-    inline void swap(syntropy::diagnostics::Callstack& first, syntropy::diagnostics::Callstack& second)
+    inline void swap(syntropy::diagnostics::StackTrace& first, syntropy::diagnostics::StackTrace& second)
     {
         first.Swap(second);
     }
