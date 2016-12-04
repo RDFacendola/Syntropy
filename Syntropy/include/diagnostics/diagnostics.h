@@ -92,6 +92,10 @@ namespace syntropy
             /// \brief Create a new context from a name.
             Context(const HashedString& name);
 
+            bool operator==(const Context& other) const;
+
+            bool operator!=(const Context& other) const;
+
             /// \brief Get the context name.
             const HashedString& GetName() const;
 

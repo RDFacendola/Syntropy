@@ -71,7 +71,27 @@ namespace syntropy
 
         public:
 
-            virtual void SendMessage(const LogMessage& log) = 0;
+            BaseLogAppender();
+
+            void SendMessage(const LogMessage& log);
+
+            void SetVerbosity(Severity verbosity);
+
+            Severity GetVerbosity() const;
+
+            void ObserveContext(std::initializer_list<Context> contexts);
+
+            void IgnoreContext(const Context& context);
+
+        protected:
+
+            virtual void OnSendMessage(const LogMessage& log) = 0;
+
+        private:
+
+            std::vector<Context> contexts_;                 ///< \brief Contexts this appender listens to.
+
+            Severity verbosity_;                            ///< \brief Minimum severity needed to log a message.
 
         };
 
@@ -159,7 +179,9 @@ namespace syntropy
 
             }
 
-            virtual void SendMessage(const LogMessage& log) override
+        protected:
+
+            virtual void OnSendMessage(const LogMessage& log) override
             {
                 stream_ << "[" << log.thread_id_ << "]" << log.message_ << "\n";
             }

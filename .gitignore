@@ -32,3 +32,4 @@ build/
 *.opendb
 *.VC.db
 ipch/
+*.iobj

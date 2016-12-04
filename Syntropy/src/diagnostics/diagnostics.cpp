@@ -177,6 +177,16 @@ namespace syntropy
 
         }
 
+        bool Context::operator==(const Context& other) const
+        {
+            return context_ == other.context_;
+        }
+
+        bool Context::operator!=(const Context& other) const
+        {
+            return context_ != other.context_;
+        }
+
         const HashedString& Context::GetName() const
         {
             return context_->name_;

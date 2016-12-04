@@ -12,6 +12,58 @@ namespace syntropy {
             : Event(contexts, callstack, severity)
         {}
 
+        //////////////// BASE LOG APPENDER ////////////////
+
+        BaseLogAppender::BaseLogAppender()
+            : verbosity_(Severity::kInformative)
+        {
+
+        }
+
+        void BaseLogAppender::SendMessage(const LogMessage& log)
+        {
+            if (log.severity_ >= verbosity_ &&
+                std::any_of(log.contexts_.begin(), 
+                            log.contexts_.end(), 
+                            [this](const Context& message_context) 
+                            { 
+                                return std::any_of(contexts_.begin(), 
+                                                   contexts_.end(), 
+                                                   [message_context](const Context& appender_context)
+                                                   {
+                                                        return appender_context.Contains(message_context);
+                                                   });
+                            }))
+            {
+                OnSendMessage(log);
+            }
+        }
+
+        void BaseLogAppender::SetVerbosity(Severity verbosity)
+        {
+            verbosity_ = verbosity;
+        }
+
+        Severity BaseLogAppender::GetVerbosity() const
+        {
+            return verbosity_;
+        }
+
+        void BaseLogAppender::ObserveContext(std::initializer_list<Context> contexts)
+        {
+            contexts_.insert(contexts_.end(),
+                             contexts.begin(),
+                             contexts.end());
+        }
+
+        void BaseLogAppender::IgnoreContext(const Context& context)
+        {
+            contexts_.erase(std::remove(contexts_.begin(),
+                                        contexts_.end(),
+                                        context),
+                            contexts_.end());
+        }
+
         //////////////// LOG MANAGER ////////////////
 
         LogManager& LogManager::GetInstance() {

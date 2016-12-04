@@ -18,7 +18,7 @@ void ConcurrentTest()
         for (int i = 0; i < 10; ++i)
         {
             SYNTROPY_LOG((Engine, Graphics), "It ", "Works");
-            SYNTROPY_LOG((Engine), "This is the log #", 2);
+            SYNTROPY_ERROR((Engine), "This is the log #", 2);
         }
     };
 
@@ -54,6 +54,9 @@ int main()
 
     auto appender = log_manager.AttachAppender<syntropy::diagnostics::StreamLogAppender>(std::cout);
     
+    appender->ObserveContext({ Root });
+    appender->SetVerbosity(syntropy::diagnostics::Severity::kError);
+
     ConcurrentTest();
 
     log_file.close();
