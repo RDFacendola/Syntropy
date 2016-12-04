@@ -1,5 +1,7 @@
 #include "diagnostics/log.h"
 
+#include <algorithm>
+
 namespace syntropy {
 
     namespace diagnostics {
@@ -48,7 +50,29 @@ namespace syntropy {
 
             std::unique_lock<std::mutex> lock(GetMutex());
 
-            GetPool().push_back(std::move(stream_));        // Send the stream to the pool
+            GetPool().emplace_back(std::move(stream_));         // Send the stream to the pool
+        }
+
+        void LogManager::AttachAppender(std::shared_ptr<BaseLogAppender> appender)
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+
+            if (std::find(appenders_.begin(),
+                          appenders_.end(),
+                          appender) == appenders_.end())
+            {
+                appenders_.push_back(appender);                 // Avoids duplicated appenders
+            }
+        }
+
+        void LogManager::DetachAppender(std::shared_ptr<BaseLogAppender> appender)
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+
+            appenders_.erase(std::remove(appenders_.begin(),
+                                         appenders_.end(),
+                                         appender),
+                             appenders_.end());
         }
 
         void LogManager::MessageBuilder::Append()

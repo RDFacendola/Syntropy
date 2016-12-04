@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include <iostream>
+#include <fstream>
 
 #include "diagnostics/log.h"
 
@@ -13,7 +14,7 @@ syntropy::diagnostics::Context Graphics("Graphics");
 void ConcurrentTest()
 {
     auto race = []() {
-        for (int i = 0; i < 10000000; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             SYNTROPY_LOG((Engine, Graphics), "It ", "Works");
             SYNTROPY_LOG((Engine), "This is the log #", 2);
@@ -44,7 +45,17 @@ void ConcurrentTest()
 int main()
 {
 
+    std::ofstream log_file;
+
+    log_file.open("log.txt");
+
+    auto& log_manager = syntropy::diagnostics::LogManager::GetInstance();
+
+    auto appender = log_manager.AttachAppender<syntropy::diagnostics::StreamLogAppender>(log_file);
+    
     ConcurrentTest();
+
+    log_file.close();
 
     system("pause");
 

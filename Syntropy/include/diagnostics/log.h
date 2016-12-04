@@ -55,7 +55,7 @@ namespace syntropy
     namespace diagnostics 
     {
 
-        /// \brief Single log message.
+        /// \brief Represents a single log message.
         /// \author Raffaele D. Facendola - November 2016
         struct LogMessage : Event 
         {
@@ -66,13 +66,12 @@ namespace syntropy
 
         };
 
-        class LogAppender {
+        class BaseLogAppender 
+        {
 
         public:
 
-            void SendMessage(const LogMessage& log) {
-                (log);
-            }
+            virtual void SendMessage(const LogMessage& log) = 0;
 
         };
 
@@ -85,6 +84,13 @@ namespace syntropy
 
             /// \brief Get the log manager instance.
             static LogManager& GetInstance();
+
+            void AttachAppender(std::shared_ptr<BaseLogAppender> appender);
+
+            template <typename TLogAppender, typename... TArgs>
+            std::shared_ptr<TLogAppender> AttachAppender(TArgs&&... args);
+
+            void DetachAppender(std::shared_ptr<BaseLogAppender> appender);
 
             /// \brief Send a log message.
             /// \tparam kSeverity Severity of the message.
@@ -138,7 +144,29 @@ namespace syntropy
 
             std::mutex mutex_;                                              ///< \brief Used to synchronize various logging threads.
 
-            std::vector<std::unique_ptr<LogAppender>> appenders_;           ///< \brief List of log appenders
+            std::vector<std::shared_ptr<BaseLogAppender>> appenders_;       ///< \brief List of log appenders
+
+        };
+        
+        class StreamLogAppender : public BaseLogAppender
+        {
+
+        public:
+
+            StreamLogAppender(std::ostream& stream)
+                : stream_(stream)
+            {
+
+            }
+
+            virtual void SendMessage(const LogMessage& log) override
+            {
+                stream_ << "[" << log.thread_id_ << "]" << log.message_ << "\n";
+            }
+
+        private:
+
+            std::ostream& stream_;
 
         };
 
@@ -155,6 +183,18 @@ namespace syntropy
         // Implementation
 
         //////////////// LOG MANAGER ////////////////
+
+        template <typename TLogAppender, typename... TArgs>
+        std::shared_ptr<TLogAppender> LogManager::AttachAppender(TArgs&&... args)
+        {
+            auto appender = std::make_shared<TLogAppender>(std::forward<TArgs>(args)...);
+
+            std::unique_lock<std::mutex> lock(mutex_);
+
+            appenders_.emplace_back(appender);
+
+            return appender;
+        }
 
         template <Severity kSeverity, typename... TMessage>
         void LogManager::SendMessage(const Trace& sender, std::initializer_list<Context> contexts, TMessage&&... message) 
