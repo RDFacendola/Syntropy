@@ -33,3 +33,4 @@ build/
 *.VC.db
 ipch/
 *.iobj
+bin/UnitTest_Release.ipdb

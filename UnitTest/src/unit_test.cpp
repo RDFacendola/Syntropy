@@ -55,7 +55,7 @@ int main()
     auto appender = log_manager.AttachAppender<syntropy::diagnostics::StreamLogAppender>(std::cout);
     
     appender->ObserveContext({ Root });
-    appender->SetVerbosity(syntropy::diagnostics::Severity::kError);
+    appender->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
     ConcurrentTest();
 

@@ -8,6 +8,7 @@
 
 #include <chrono>
 #include <thread>
+#include <ostream>
 
 #include <vector>
 #include <memory>
@@ -17,7 +18,7 @@
 
 /// \brief Expands to an object representing the location of the current line of code.
 #define SYNTROPY_TRACE \
-    syntropy::diagnostics::Trace(SYNTROPY_FILE, SYNTROPY_FUNCTION, SYNTROPY_LINE)
+    syntropy::diagnostics::CallTrace(__FILE__, __func__, __LINE__)
 
 namespace syntropy 
 {
@@ -26,22 +27,24 @@ namespace syntropy
 
         /// \brief Represents the location of a line of code
         /// \author Raffaele D. Facendola - November 2016
-        struct Trace
+        struct CallTrace
         {
             /// \brief Create a new code trace.
-            Trace(const char* file, const char* function, int line);
+            CallTrace(const char* file, const char* function, int line);
 
             const char* file_;                                              ///< \brief Name of the file where the log was defined.
             const char* function_;                                          ///< \brief Name of the function where the log was defined.
             int line_;                                                      ///< \brief Line inside the file where the log was defined.
         };
 
+        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::CallTrace& calltrace);
+
         /// \brief Represents a stack trace.
         /// \author Raffaele D. Facendola - November 2016
         struct StackTrace
         {
             /// \brief Create a new callstack from a single code trace.
-            StackTrace(const Trace& trace);
+            StackTrace(const CallTrace& calltrace);
 
             /// \brief Copy ctor.
             StackTrace(const StackTrace& other) = default;
@@ -57,14 +60,10 @@ namespace syntropy
             /// \brief Swap the content of two callstack instances.
             void Swap(StackTrace& other) noexcept;
 
-            /// \brief Get the last function called by the stack.
-            operator Trace&();
-
-            /// \brief Get the last function called by the stack.
-            operator const Trace&() const;
-
-            std::vector<Trace> callstack_;                                  ///< \brief List of function calls, starting from the most recent one. Callstack must always contain at least one element.
+            std::vector<CallTrace> calls_;                                  ///< \brief List of function calls, starting from the most recent one. Callstack must always contain at least one element.
         };
+        
+        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::StackTrace& stacktrace);
 
         /// \brief Severity of an event.
         /// \author Raffaele D. Facendola - November 2016
@@ -118,13 +117,13 @@ namespace syntropy
         struct Event
         {
             /// \brief Create a new event.
-            Event(std::initializer_list<Context> contexts, const StackTrace& callstack, Severity severity);
+            Event(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity);
 
             std::chrono::high_resolution_clock::time_point timestamp_;      ///< \brief Point in time where the event was created.
             Severity severity_;                                             ///< \brief Severity of the event.
             std::thread::id thread_id_;                                     ///< \brief Id of the thread that issued the event.
             std::vector<Context> contexts_;                                 ///< \brief Contexts used to categorize the event.
-            StackTrace callstack_;                                          ///< \brief Callstack that caused the event.
+            StackTrace stacktrace_;                                         ///< \brief Stack trace.
         };
 
         /// \brief Severity type traits.
@@ -171,7 +170,6 @@ namespace syntropy
             }
         };
     }
-
 }
 
 namespace std 

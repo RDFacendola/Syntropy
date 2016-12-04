@@ -60,7 +60,7 @@ namespace syntropy
         struct LogMessage : Event 
         {
             /// \brief Create a new log message.
-            LogMessage(std::initializer_list<Context> contexts, const StackTrace& callstack, Severity severity);
+            LogMessage(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity);
 
             const char* message_;                                           ///< \brief Log message.
 
@@ -114,10 +114,10 @@ namespace syntropy
 
             /// \brief Send a log message.
             /// \tparam kSeverity Severity of the message.
-            /// \param sender Callstack that caused the log.
+            /// \param calltrace Caller.
             /// \param context Log contexts used to categorize the log message.
             template <Severity kSeverity, typename... TMessage>
-            void SendMessage(const Trace& sender, std::initializer_list<Context> contexts, TMessage&&... message);
+            void SendMessage(const CallTrace& calltrace, std::initializer_list<Context> contexts, TMessage&&... message);
 
         private:
 
@@ -183,7 +183,7 @@ namespace syntropy
 
             virtual void OnSendMessage(const LogMessage& log) override
             {
-                stream_ << "[" << log.thread_id_ << "]" << log.message_ << "\n";
+                stream_ << "[" << log.thread_id_ << "]" << log.stacktrace_ << " \"" << log.message_ << "\"\n";
             }
 
         private:
@@ -219,13 +219,13 @@ namespace syntropy
         }
 
         template <Severity kSeverity, typename... TMessage>
-        void LogManager::SendMessage(const Trace& sender, std::initializer_list<Context> contexts, TMessage&&... message) 
+        void LogManager::SendMessage(const CallTrace& calltrace, std::initializer_list<Context> contexts, TMessage&&... message)
         {
             MessageBuilder message_builder(std::forward<TMessage>(message)...);     // Before the lock so the message can be built while another thread is writing to the log
 
             std::unique_lock<std::mutex> lock(mutex_);                              // Needed to guarantee the order of the log messages
 
-            LogMessage log_message(contexts, sender, kSeverity);
+            LogMessage log_message(contexts, calltrace, kSeverity);
 
             log_message.message_ = message_builder;
 

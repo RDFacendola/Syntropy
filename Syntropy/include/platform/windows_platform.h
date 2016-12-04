@@ -9,15 +9,6 @@
 
 #include <intrin.h>
 
-#define SYNTROPY_FILE \
-   __FILE__
-
-#define SYNTROPY_FUNCTION \
-   __FUNCTION__
-
-#define SYNTROPY_LINE \
-   __LINE__
-
 #define SYNTROPY_BREAK \
     if(syntropy::platform::Platform::IsDebuggerAttached()) { __debugbreak(); }
 

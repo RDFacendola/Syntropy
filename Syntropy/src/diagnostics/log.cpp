@@ -8,8 +8,8 @@ namespace syntropy {
 
         //////////////// LOG MESSAGGE ////////////////
 
-        LogMessage::LogMessage(std::initializer_list<Context> contexts, const StackTrace& callstack, Severity severity)
-            : Event(contexts, callstack, severity)
+        LogMessage::LogMessage(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity)
+            : Event(contexts, stacktrace, severity)
         {}
 
         //////////////// BASE LOG APPENDER ////////////////

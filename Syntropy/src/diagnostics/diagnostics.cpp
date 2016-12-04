@@ -8,9 +8,9 @@ namespace syntropy
     namespace diagnostics 
     {
 
-        //////////////// TRACE ////////////////
+        //////////////// CALLTRACE ////////////////
 
-        Trace::Trace(const char* file, const char* function, int line)
+        CallTrace::CallTrace(const char* file, const char* function, int line)
             : file_(file)
             , function_(function)
             , line_(line) 
@@ -18,15 +18,21 @@ namespace syntropy
 
         }
 
-        //////////////// CALLSTACK ////////////////
-
-        StackTrace::StackTrace(const Trace& trace)
+        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::CallTrace& calltrace)
         {
-            callstack_.push_back(trace);
+            out << calltrace.function_ << "(" << calltrace.file_ << ":" << calltrace.line_ << ")";
+            return out;
+        }
+        
+        //////////////// STACKTRACE ////////////////
+
+        StackTrace::StackTrace(const CallTrace& calltrace)
+        {
+            calls_.push_back(calltrace);
         }
 
         StackTrace::StackTrace(StackTrace&& other) noexcept
-            : callstack_(std::move(other.callstack_))
+            : calls_(std::move(other.calls_))
         {
 
         }
@@ -39,17 +45,18 @@ namespace syntropy
 
         void StackTrace::Swap(StackTrace& other) noexcept
         {
-            std::swap(callstack_, other.callstack_);
+            std::swap(calls_, other.calls_);
         }
 
-        StackTrace::operator Trace&()
+        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::StackTrace& stacktrace)
         {
-            return callstack_[0];
-        }
+            for (size_t index = 0; index < stacktrace.calls_.size() - 1; ++index)
+            {
+                out << stacktrace.calls_[index] << "\n\t";
+            }
+            out << stacktrace.calls_.back();
 
-        StackTrace::operator const Trace&() const
-        {
-            return callstack_[0];
+            return out;
         }
 
         //////////////// CONTEXT :: INNER CONTEXT ////////////////
@@ -199,16 +206,15 @@ namespace syntropy
 
         //////////////// EVENT ////////////////
 
-        Event::Event(std::initializer_list<Context> contexts, const StackTrace& callstack, Severity severity)
+        Event::Event(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity)
             : timestamp_(std::chrono::high_resolution_clock::now())
             , severity_(severity)
             , thread_id_(std::this_thread::get_id())
             , contexts_(contexts)
-            , callstack_(callstack)
+            , stacktrace_(stacktrace)
         {
 
         }
-        
-    }
 
+    }
 }
