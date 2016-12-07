@@ -5,14 +5,17 @@
 
 #pragma once
 
-#ifdef _WIN32
+#ifdef _WIN64
 
 #include <intrin.h>
 
 #include "diagnostics/diagnostics.h"
 
 #define SYNTROPY_BREAK \
-    if(syntropy::platform::Debug::IsDebuggerAttached()) { __debugbreak(); }
+    if(syntropy::platform::GetDebug().IsDebuggerAttached()) { __debugbreak(); }
+
+#define SYNTROPY_TRACE \
+    syntropy::platform::GetDebug().GetStackTrace(SYNTROPY_HERE)
 
 namespace syntropy
 {
@@ -24,12 +27,29 @@ namespace syntropy
     namespace platform
     {
 
-        struct Debug
+        class Debug
         {
-            static bool IsDebuggerAttached();
+        public:
 
-            static diagnostics::StackTrace GetStackTrace();
+            static Debug& GetInstance();
+
+            ~Debug() = default;
+
+            bool IsDebuggerAttached();
+
+            diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller);
+
+        private:
+
+            struct Implementation;
+
+            Debug();
+
+            std::unique_ptr<Implementation> implementation_;        ///< \brief Actual implementation of the class. Prevents namespace pollution.
+
         };
+
+        Debug& GetDebug();
 
     }
 }

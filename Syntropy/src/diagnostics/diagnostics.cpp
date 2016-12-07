@@ -8,9 +8,9 @@ namespace syntropy
     namespace diagnostics 
     {
 
-        //////////////// CALLTRACE ////////////////
+        //////////////// STACK TRACE ELEMENT ////////////////
 
-        CallTrace::CallTrace(const char* file, const char* function, int line)
+        StackTraceElement::StackTraceElement(const char* file, const char* function, size_t line)
             : file_(file)
             , function_(function)
             , line_(line) 
@@ -18,21 +18,33 @@ namespace syntropy
 
         }
 
-        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::CallTrace& calltrace)
+        bool StackTraceElement::IsUnknown() const
         {
-            out << calltrace.function_ << "(" << calltrace.file_ << ":" << calltrace.line_ << ")";
+            return file_.size() == 0 && function_.size() == 0;
+        }
+
+        std::ostream& operator<< (std::ostream &out, const StackTraceElement& element)
+        {
+            static const char* kUnknownSymbol = "<unknown symbol>";
+            static const char* kUnknownFile = "<unknown file>";
+            
+            const char* function_name = element.function_.size() > 0 ? element.function_.c_str() : kUnknownSymbol;
+            const char* file_name = element.file_.size() > 0 ? element.file_.c_str() : kUnknownFile;
+
+            out << function_name << "(" << file_name << ":" << element.line_ << ")";
+
             return out;
         }
         
-        //////////////// STACKTRACE ////////////////
+        //////////////// STACK TRACE ////////////////
 
-        StackTrace::StackTrace(const CallTrace& calltrace)
+        StackTrace::StackTrace(const StackTraceElement& element)
         {
-            calls_.push_back(calltrace);
+            elements_.push_back(element);
         }
 
         StackTrace::StackTrace(StackTrace&& other) noexcept
-            : calls_(std::move(other.calls_))
+            : elements_(std::move(other.elements_))
         {
 
         }
@@ -45,17 +57,53 @@ namespace syntropy
 
         void StackTrace::Swap(StackTrace& other) noexcept
         {
-            std::swap(calls_, other.calls_);
+            std::swap(elements_, other.elements_);
         }
 
-        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::StackTrace& stacktrace)
+        std::ostream& operator<< (std::ostream &out, const StackTrace& stacktrace)
         {
-            for (size_t index = 0; index < stacktrace.calls_.size() - 1; ++index)
+            if (stacktrace.elements_.size() > 0)
             {
-                out << stacktrace.calls_[index] << "\n\t";
-            }
-            out << stacktrace.calls_.back();
+                out << stacktrace.elements_[0];             // The most recent element in the stack trace is always known
 
+                const StackTraceElement* unknown_element = nullptr;
+                const StackTraceElement* current_element;
+
+                size_t unknown_elements = 0;
+                
+                for (size_t index = 1; index < stacktrace.elements_.size(); ++index)
+                {
+                    current_element = &stacktrace.elements_[index];
+
+                    // Accumulate unknown elements
+                    if (current_element->IsUnknown())
+                    {
+                        unknown_element = current_element;
+                        ++unknown_elements;
+                    }
+                    
+                    // Output unknown elements if we reached the base of the stack or the current element is no longer unknown
+                    if (unknown_element != current_element || index == stacktrace.elements_.size() - 1)
+                    {
+                        if (unknown_elements > 1)
+                        {
+                            out << "\n   <" << unknown_elements << " unknown symbols>";
+                        }
+                        else if (unknown_elements > 0)
+                        {
+                            out << "\n   <unknown symbol>";
+                        }
+
+                        unknown_elements = 0;
+                    }
+                        
+                    // Output a known element
+                    if (!current_element->IsUnknown())
+                    {
+                        out << "\n   " << *current_element;
+                    }
+                }
+            }
             return out;
         }
 

@@ -9,41 +9,51 @@
 #include <chrono>
 #include <thread>
 #include <ostream>
-
+#include <string>
 #include <vector>
 #include <memory>
 
 #include "containers/hashed_string.h"
 
 /// \brief Expands to an object representing the location of the current line of code.
-#define SYNTROPY_TRACE \
-    syntropy::diagnostics::CallTrace(__FILE__, __func__, __LINE__)
+#define SYNTROPY_HERE \
+    syntropy::diagnostics::StackTraceElement(__FILE__, __func__, __LINE__)
 
 namespace syntropy 
 {
     namespace diagnostics 
     {
 
-        /// \brief Represents the location of a line of code
+        /// \brief Represents the location of a line of code within a source file.
         /// \author Raffaele D. Facendola - November 2016
-        struct CallTrace
+        struct StackTraceElement
         {
-            /// \brief Create a new code trace.
-            CallTrace(const char* file, const char* function, int line);
+            /// \brief Create a new empty element.
+            StackTraceElement() = default;
 
-            const char* file_;                                              ///< \brief Name of the file where the log was defined.
-            const char* function_;                                          ///< \brief Name of the function where the log was defined.
-            int line_;                                                      ///< \brief Line inside the file where the log was defined.
+            /// \brief Create a new element.
+            StackTraceElement(const char* file, const char* function, size_t line);
+
+            /// \brief Whether the symbol referenced by this element is unknown.
+            /// \return Returns true if the symbol referenced by this element is unknown, returns false otherwise.
+            bool IsUnknown() const;
+
+            std::string file_;                                              ///< \brief Name of the file.
+            std::string function_;                                          ///< \brief Name of the function.
+            size_t line_;                                                   ///< \brief Line inside the source file.
         };
 
-        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::CallTrace& calltrace);
+        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::StackTraceElement& element);
 
         /// \brief Represents a stack trace.
         /// \author Raffaele D. Facendola - November 2016
         struct StackTrace
         {
-            /// \brief Create a new callstack from a single code trace.
-            StackTrace(const CallTrace& calltrace);
+            /// \brief Create an empty stacktrace.
+            StackTrace() = default;
+
+            /// \brief Create a new callstack from a single element.
+            StackTrace(const StackTraceElement& element);
 
             /// \brief Copy ctor.
             StackTrace(const StackTrace& other) = default;
@@ -59,7 +69,7 @@ namespace syntropy
             /// \brief Swap the content of two callstack instances.
             void Swap(StackTrace& other) noexcept;
 
-            std::vector<CallTrace> calls_;                                  ///< \brief List of function calls, starting from the most recent one. Callstack must always contain at least one element.
+            std::vector<StackTraceElement> elements_;                       ///< \brief Elements inside the stack trace, from the most recent one.
         };
         
         std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::StackTrace& stacktrace);
@@ -123,6 +133,24 @@ namespace syntropy
             std::thread::id thread_id_;                                     ///< \brief Id of the thread that issued the event.
             std::vector<Context> contexts_;                                 ///< \brief Contexts used to categorize the event.
             StackTrace stacktrace_;                                         ///< \brief Stack trace.
+        };
+
+        /// \brief Used to format an event to a string.
+        /// \author Raffaele D. Facendola - December 2016
+        struct EventFormatter
+        {
+            //static const char* kSeverityToken = "$severity";
+            //static const char* kThreadIdtoken = "$threadid";
+            //static const char* kStackTraceToken = "$stacktrace";
+
+            //static const char* kDateToken = "$date";                        ///< \brief YYYY-MM-DD
+            //static const char* kTimeToken = "$time";                        ///< \brief hh:mm:ss
+            //static const char* kTimestampToken = "$timestamp";              ///< \brief hh:mm:ss.milliseconds
+            
+            EventFormatter(const char* /*format*/) {}
+
+            virtual std::string operator()(const Event& /*event*/) const { return ""; }
+
         };
 
         /// \brief Severity type traits.

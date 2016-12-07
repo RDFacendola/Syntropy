@@ -12,13 +12,21 @@ syntropy::diagnostics::Context Root;
 syntropy::diagnostics::Context Engine("Engine|CtxA");
 syntropy::diagnostics::Context Graphics("Engine|CtxB");
 
+namespace test
+{
+    void MyFunction()
+    {
+        SYNTROPY_ERROR((Engine), "This is the log #", 2);
+        SYNTROPY_LOG((Engine, Graphics), "It ", "Works");
+    }
+}
+
 void ConcurrentTest()
 {
     auto race = []() {
-        for (int i = 0; i < 10; ++i)
+        for (int i = 0; i < 1; ++i)
         {
-            SYNTROPY_LOG((Engine, Graphics), "It ", "Works");
-            SYNTROPY_ERROR((Engine), "This is the log #", 2);
+            test::MyFunction();
         }
     };
 

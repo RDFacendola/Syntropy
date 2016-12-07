@@ -16,38 +16,38 @@
 #include "platform/platform.h"
 
 /// \brief Utility macro for sending a message to the log manager.
-#define SYNTROPY_LOG_MESSAGE(severity, contexts, ...) \
-    syntropy::diagnostics::LogManager::GetInstance().SendMessage<syntropy::diagnostics::Severity::severity>(SYNTROPY_TRACE, { SYNTROPY_EXPAND contexts }, __VA_ARGS__);
+#define SYNTROPY_LOG_MESSAGE(trace, severity, contexts, ...) \
+    syntropy::diagnostics::LogManager::GetInstance().SendMessage<syntropy::diagnostics::Severity::severity>(trace, { SYNTROPY_EXPAND contexts }, __VA_ARGS__);
 
 /// \brief Log an informative message.
 /// \usage SYNTROPY_LOG((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_LOG(contexts, ...) \
     { \
-        SYNTROPY_LOG_MESSAGE(kInformative, contexts, __VA_ARGS__); \
+        SYNTROPY_LOG_MESSAGE(SYNTROPY_HERE, kInformative, contexts, __VA_ARGS__); \
     }
 
 /// \brief Log a warning message.
 /// \usage SYNTROPY_WARNING((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_WARNING(contexts, ...) \
     { \
-        SYNTROPY_LOG_MESSAGE(kWarning, contexts, __VA_ARGS__); \
+        SYNTROPY_LOG_MESSAGE(SYNTROPY_HERE, kWarning, contexts, __VA_ARGS__); \
     }
 
-/// \brief Log an informative message.
-/// Causes the debugger to break.
+/// \brief Log an error message with full stacktrace.
+/// Causes the debugger to break
 /// \usage SYNTROPY_ERROR((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_ERROR(contexts, ...) \
     { \
-        SYNTROPY_LOG_MESSAGE(kError, contexts, __VA_ARGS__); \
+        SYNTROPY_LOG_MESSAGE(SYNTROPY_TRACE, kError, contexts, __VA_ARGS__); \
         SYNTROPY_BREAK; \
     }
 
-/// \brief Log an informative message.
+/// \brief Log a critical error message with full stacktrace.
 /// Causes the debugger to break and the application to crash.
 /// \usage SYNTROPY_CRITICAL((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_CRITICAL(contexts, ...) \
     { \
-        SYNTROPY_LOG_MESSAGE(kCritical, contexts, __VA_ARGS__); \
+        SYNTROPY_LOG_MESSAGE(SYNTROPY_TRACE, kCritical, contexts, __VA_ARGS__); \
         SYNTROPY_BREAK; \
     }
 
@@ -65,6 +65,13 @@ namespace syntropy
             LogMessage(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity);
 
             const char* message_;                                           ///< \brief Log message.
+
+        };
+
+        /// \brief Used to format a log message event to a string.
+        /// \author Raffaele D. Facendola - December 2016
+        struct LogMessageFormatter : EventFormatter
+        {
 
         };
 
@@ -116,10 +123,10 @@ namespace syntropy
 
             /// \brief Send a log message.
             /// \tparam kSeverity Severity of the message.
-            /// \param calltrace Caller.
+            /// \param stacktrace Stacktrace that caused the log.
             /// \param context Log contexts used to categorize the log message.
             template <Severity kSeverity, typename... TMessage>
-            void SendMessage(const CallTrace& calltrace, std::initializer_list<Context> contexts, TMessage&&... message);
+            void SendMessage(const StackTrace& stacktrace, std::initializer_list<Context> contexts, TMessage&&... message);
 
         private:
 
@@ -166,7 +173,7 @@ namespace syntropy
 
             std::mutex mutex_;                                              ///< \brief Used to synchronize various logging threads.
 
-            std::vector<std::shared_ptr<BaseLogAppender>> appenders_;       ///< \brief List of log appenders
+            std::vector<std::shared_ptr<BaseLogAppender>> appenders_;       ///< \brief List of log appenders.
 
         };
         
@@ -185,13 +192,13 @@ namespace syntropy
 
             virtual void OnSendMessage(const LogMessage& log) override
             {
-                stream_ << "[" << log.thread_id_ << "]" << log.stacktrace_ << " \"" << log.message_ << "\"\n";
+                stream_ << "[" << log.thread_id_ << "] " << log.message_ << " \n" << log.stacktrace_ << "\n";
             }
 
         private:
 
             std::ostream& stream_;
-
+            
         };
 
     }
@@ -221,16 +228,14 @@ namespace syntropy
         }
 
         template <Severity kSeverity, typename... TMessage>
-        void LogManager::SendMessage(const CallTrace& calltrace, std::initializer_list<Context> contexts, TMessage&&... message)
+        void LogManager::SendMessage(const StackTrace& stacktrace, std::initializer_list<Context> contexts, TMessage&&... message)
         {
             MessageBuilder message_builder(std::forward<TMessage>(message)...);     // Before the lock so the message can be built while another thread is writing to the log
 
             std::unique_lock<std::mutex> lock(mutex_);                              // Needed to guarantee the order of the log messages
 
-            LogMessage log_message(contexts, calltrace, kSeverity);
-
-            log_message.stacktrace_ = platform::Debug::GetStackTrace();
-
+            LogMessage log_message(contexts, stacktrace, kSeverity);
+            
             log_message.message_ = message_builder;
 
             // Send the log to the appenders
