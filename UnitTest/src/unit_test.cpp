@@ -60,10 +60,10 @@ int main()
 
     auto& log_manager = syntropy::diagnostics::LogManager::GetInstance();
 
-    auto appender = log_manager.AttachAppender<syntropy::diagnostics::StreamLogAppender>(std::cout);
+    auto stream = log_manager.CreateStream<syntropy::diagnostics::StreamLogStream>(std::cout);
     
-    appender->ObserveContext({ Root });
-    appender->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
+    stream->BindContext({ Root });
+    stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
     ConcurrentTest();
 

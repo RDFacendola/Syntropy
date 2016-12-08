@@ -11,9 +11,15 @@
 
 #include "diagnostics/diagnostics.h"
 
+/// \brief Causes the debugger to break.
 #define SYNTROPY_BREAK \
     if(syntropy::platform::GetDebug().IsDebuggerAttached()) { __debugbreak(); }
 
+/// \brief Expands to an object representing the location of the current line of code.
+#define SYNTROPY_HERE \
+    syntropy::diagnostics::StackTraceElement(__FILE__, __FUNCTION__, __LINE__)
+
+/// \brief Expands to an object representing the current stack trace.
 #define SYNTROPY_TRACE \
     syntropy::platform::GetDebug().GetStackTrace(SYNTROPY_HERE)
 

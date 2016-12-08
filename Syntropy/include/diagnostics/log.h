@@ -75,12 +75,12 @@ namespace syntropy
 
         };
 
-        class BaseLogAppender 
+        class LogStream 
         {
 
         public:
 
-            BaseLogAppender();
+            LogStream();
 
             void SendMessage(const LogMessage& log);
 
@@ -88,9 +88,9 @@ namespace syntropy
 
             Severity GetVerbosity() const;
 
-            void ObserveContext(std::initializer_list<Context> contexts);
+            void BindContext(std::initializer_list<Context> contexts);
 
-            void IgnoreContext(const Context& context);
+            void UnbindContext(const Context& context);
 
         protected:
 
@@ -98,11 +98,13 @@ namespace syntropy
 
         private:
 
-            std::vector<Context> contexts_;                 ///< \brief Contexts this appender listens to.
+            std::vector<Context> contexts_;                 ///< \brief Contexts this stream is bound to.
 
             Severity verbosity_;                            ///< \brief Minimum severity needed to log a message.
 
         };
+
+        LogStream& operator<<(LogStream& log_stream, const LogMessage& log);
 
         /// \brief Singleton used to issue log messages and events.
         /// \author Raffaele D. Facendola - November 2016
@@ -114,12 +116,12 @@ namespace syntropy
             /// \brief Get the log manager instance.
             static LogManager& GetInstance();
 
-            void AttachAppender(std::shared_ptr<BaseLogAppender> appender);
+            void AttachStream(std::shared_ptr<LogStream> log_stream);
 
-            template <typename TLogAppender, typename... TArgs>
-            std::shared_ptr<TLogAppender> AttachAppender(TArgs&&... args);
+            template <typename TLogStream, typename... TArgs>
+            std::shared_ptr<TLogStream> CreateStream(TArgs&&... args);
 
-            void DetachAppender(std::shared_ptr<BaseLogAppender> appender);
+            void DetachStream(std::shared_ptr<LogStream> stream);
 
             /// \brief Send a log message.
             /// \tparam kSeverity Severity of the message.
@@ -143,7 +145,7 @@ namespace syntropy
                 MessageBuilder(TMessage&&... message);
 
                 /// \brief Get a pointer to the message.
-                operator const char*() const;
+                const char* GetMessage() const;
 
             private:
 
@@ -173,16 +175,16 @@ namespace syntropy
 
             std::mutex mutex_;                                              ///< \brief Used to synchronize various logging threads.
 
-            std::vector<std::shared_ptr<BaseLogAppender>> appenders_;       ///< \brief List of log appenders.
+            std::vector<std::shared_ptr<LogStream>> streams_;               ///< \brief List of log streams.
 
         };
         
-        class StreamLogAppender : public BaseLogAppender
+        class StreamLogStream : public LogStream
         {
 
         public:
 
-            StreamLogAppender(std::ostream& stream)
+            StreamLogStream(std::ostream& stream)
                 : stream_(stream)
             {
 
@@ -215,16 +217,14 @@ namespace syntropy
 
         //////////////// LOG MANAGER ////////////////
 
-        template <typename TLogAppender, typename... TArgs>
-        std::shared_ptr<TLogAppender> LogManager::AttachAppender(TArgs&&... args)
+        template <typename TLogStream, typename... TArgs>
+        std::shared_ptr<TLogStream> LogManager::CreateStream(TArgs&&... args)
         {
-            auto appender = std::make_shared<TLogAppender>(std::forward<TArgs>(args)...);
+            auto stream = std::make_shared<TLogStream>(std::forward<TArgs>(args)...);
+            
+            AttachStream(stream);
 
-            std::unique_lock<std::mutex> lock(mutex_);
-
-            appenders_.emplace_back(appender);
-
-            return appender;
+            return stream;
         }
 
         template <Severity kSeverity, typename... TMessage>
@@ -236,13 +236,12 @@ namespace syntropy
 
             LogMessage log_message(contexts, stacktrace, kSeverity);
             
-            log_message.message_ = message_builder;
+            log_message.message_ = message_builder.GetMessage();
 
-            // Send the log to the appenders
-            for (auto&& appender : appenders_) {
-
-                appender->SendMessage(log_message);
-
+            // Send the log to the streams
+            for (auto&& stream : streams_)
+            {
+                *stream << log_message;
             }
         }
 

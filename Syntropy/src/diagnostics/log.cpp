@@ -12,15 +12,15 @@ namespace syntropy {
             : Event(contexts, stacktrace, severity)
         {}
 
-        //////////////// BASE LOG APPENDER ////////////////
+        //////////////// LOG STREAM ////////////////
 
-        BaseLogAppender::BaseLogAppender()
+        LogStream::LogStream()
             : verbosity_(Severity::kInformative)
         {
 
         }
 
-        void BaseLogAppender::SendMessage(const LogMessage& log)
+        void LogStream::SendMessage(const LogMessage& log)
         {
             if (log.severity_ >= verbosity_ &&
                 std::any_of(log.contexts_.begin(), 
@@ -29,9 +29,9 @@ namespace syntropy {
                             { 
                                 return std::any_of(contexts_.begin(), 
                                                    contexts_.end(), 
-                                                   [message_context](const Context& appender_context)
+                                                   [message_context](const Context& stream_context)
                                                    {
-                                                        return appender_context.Contains(message_context);
+                                                        return stream_context.Contains(message_context);
                                                    });
                             }))
             {
@@ -39,29 +39,35 @@ namespace syntropy {
             }
         }
 
-        void BaseLogAppender::SetVerbosity(Severity verbosity)
+        void LogStream::SetVerbosity(Severity verbosity)
         {
             verbosity_ = verbosity;
         }
 
-        Severity BaseLogAppender::GetVerbosity() const
+        Severity LogStream::GetVerbosity() const
         {
             return verbosity_;
         }
 
-        void BaseLogAppender::ObserveContext(std::initializer_list<Context> contexts)
+        void LogStream::BindContext(std::initializer_list<Context> contexts)
         {
             contexts_.insert(contexts_.end(),
                              contexts.begin(),
                              contexts.end());
         }
 
-        void BaseLogAppender::IgnoreContext(const Context& context)
+        void LogStream::UnbindContext(const Context& context)
         {
             contexts_.erase(std::remove(contexts_.begin(),
                                         contexts_.end(),
                                         context),
                             contexts_.end());
+        }
+
+        LogStream& operator<<(LogStream& log_stream, const LogMessage& log)
+        {
+            log_stream.SendMessage(log);
+            return log_stream;
         }
 
         //////////////// LOG MANAGER ////////////////
@@ -105,26 +111,26 @@ namespace syntropy {
             GetPool().emplace_back(std::move(stream_));         // Send the stream to the pool
         }
 
-        void LogManager::AttachAppender(std::shared_ptr<BaseLogAppender> appender)
+        void LogManager::AttachStream(std::shared_ptr<LogStream> stream)
         {
             std::unique_lock<std::mutex> lock(mutex_);
 
-            if (std::find(appenders_.begin(),
-                          appenders_.end(),
-                          appender) == appenders_.end())
+            if (std::find(streams_.begin(),
+                          streams_.end(),
+                          stream) == streams_.end())
             {
-                appenders_.push_back(appender);                 // Avoids duplicated appenders
+                streams_.emplace_back(std::move(stream));       // Avoid duplicated streams
             }
         }
 
-        void LogManager::DetachAppender(std::shared_ptr<BaseLogAppender> appender)
+        void LogManager::DetachStream(std::shared_ptr<LogStream> stream)
         {
             std::unique_lock<std::mutex> lock(mutex_);
 
-            appenders_.erase(std::remove(appenders_.begin(),
-                                         appenders_.end(),
-                                         appender),
-                             appenders_.end());
+            streams_.erase(std::remove(streams_.begin(),
+                                       streams_.end(),
+                                       stream),
+                           streams_.end());
         }
 
         void LogManager::MessageBuilder::Append()
@@ -132,7 +138,7 @@ namespace syntropy {
             // Append nothing
         }
 
-        LogManager::MessageBuilder::operator const char*() const
+        const char* LogManager::MessageBuilder::GetMessage() const
         {
             return message_.c_str();
         }

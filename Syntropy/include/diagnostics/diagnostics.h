@@ -15,10 +15,6 @@
 
 #include "containers/hashed_string.h"
 
-/// \brief Expands to an object representing the location of the current line of code.
-#define SYNTROPY_HERE \
-    syntropy::diagnostics::StackTraceElement(__FILE__, __func__, __LINE__)
-
 namespace syntropy 
 {
     namespace diagnostics 
