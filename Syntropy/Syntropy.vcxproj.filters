@@ -38,8 +38,11 @@
     <ClInclude Include="include\diagnostics\log.h" />
     <ClInclude Include="include\diagnostics\diagnostics.h" />
     <ClInclude Include="include\macro.h" />
-    <ClInclude Include="include\platform\windows_platform.h" />
-    <ClInclude Include="include\platform\platform.h" />
+    <ClInclude Include="include\platform\compiler\msvc.h" />
+    <ClInclude Include="include\platform\os\windows_os.h" />
+    <ClInclude Include="include\platform\compiler.h" />
+    <ClInclude Include="include\platform\os.h" />
+    <ClInclude Include="include\diagnostics\debug.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -60,7 +63,8 @@
     <ClCompile Include="src\syntropy.cpp" />
     <ClCompile Include="src\diagnostics\log.cpp" />
     <ClCompile Include="src\diagnostics\diagnostics.cpp" />
-    <ClCompile Include="src\platform\windows_platform.cpp" />
+    <ClCompile Include="src\platform\os\windows_os.cpp" />
+    <ClCompile Include="src\diagnostics\debug.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

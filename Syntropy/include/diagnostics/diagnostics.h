@@ -14,61 +14,12 @@
 #include <memory>
 
 #include "containers/hashed_string.h"
+#include "debug.h"
 
 namespace syntropy 
 {
     namespace diagnostics 
     {
-
-        /// \brief Represents the location of a line of code within a source file.
-        /// \author Raffaele D. Facendola - November 2016
-        struct StackTraceElement
-        {
-            /// \brief Create a new empty element.
-            StackTraceElement() = default;
-
-            /// \brief Create a new element.
-            StackTraceElement(const char* file, const char* function, size_t line);
-
-            /// \brief Whether the symbol referenced by this element is unknown.
-            /// \return Returns true if the symbol referenced by this element is unknown, returns false otherwise.
-            bool IsUnknown() const;
-
-            std::string file_;                                              ///< \brief Name of the file.
-            std::string function_;                                          ///< \brief Name of the function.
-            size_t line_;                                                   ///< \brief Line inside the source file.
-        };
-
-        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::StackTraceElement& element);
-
-        /// \brief Represents a stack trace.
-        /// \author Raffaele D. Facendola - November 2016
-        struct StackTrace
-        {
-            /// \brief Create an empty stacktrace.
-            StackTrace() = default;
-
-            /// \brief Create a new callstack from a single element.
-            StackTrace(const StackTraceElement& element);
-
-            /// \brief Copy ctor.
-            StackTrace(const StackTrace& other) = default;
-
-            ~StackTrace() = default;
-
-            /// \brief Move ctor.
-            StackTrace(StackTrace&& other) noexcept;
-
-            /// \brief Unified assignment operator.
-            StackTrace& operator=(StackTrace other) noexcept;
-
-            /// \brief Swap the content of two callstack instances.
-            void Swap(StackTrace& other) noexcept;
-
-            std::vector<StackTraceElement> elements_;                       ///< \brief Elements inside the stack trace, from the most recent one.
-        };
-        
-        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::StackTrace& stacktrace);
 
         /// \brief Severity of an event.
         /// \author Raffaele D. Facendola - November 2016

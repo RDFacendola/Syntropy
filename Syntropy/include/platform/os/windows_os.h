@@ -1,0 +1,86 @@
+/// \file windows_platform.h
+/// \brief This header is part of the syntropy HAL (hardware abstraction layer) system. It contains Windows-specific functionalities.
+///
+/// Do not use this header directly!
+///
+/// \author Raffaele D. Facendola - 2016
+
+#pragma once
+
+#ifdef _WIN64
+
+#pragma warning(push)
+#pragma warning(disable:4091)
+
+#include <Windows.h>
+#include <DbgHelp.h>
+
+#pragma warning(pop)
+
+#include <mutex>
+
+#include "diagnostics/debug.h"
+
+namespace syntropy
+{
+    namespace platform
+    {
+
+        /// \brief Exposes Windows-specific debugging functionalities.
+        /// \author Raffaele D. Facendola - December 2016
+        class WindowsDebugger : public diagnostics::Debugger
+        {
+        public:
+
+            /// \brief Get the singleton instance.
+            /// \return Returns the singleton instance;
+            static diagnostics::Debugger& GetInstance();
+
+            /// \brief Destructor.
+            virtual ~WindowsDebugger();
+
+            virtual bool IsDebuggerAttached() const override;
+
+            virtual diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller) const override;
+
+        private:
+
+            /// \brief Maximum symbol length.
+            static const size_t kMaxSymbolLength = 1024;
+
+            /// \brief Contains a properly-sized SYMBOL_INFO structure that accounts for the actual maximum symbol length.
+            union SymbolInfo
+            {
+                char buffer[sizeof(SYMBOL_INFO) + kMaxSymbolLength * sizeof(TCHAR)];        ///< \brief Raw buffer.
+
+                SYMBOL_INFO symbol;                                                         ///< \brief Actual symbol info.
+            };
+
+            /// \brief Default constructor.
+            WindowsDebugger();
+
+            /// \brief Get the stackframe from context.
+            /// \param context Contains the current context.
+            /// \param stackframe Contains the current stackframe.
+            void GetStackFrame(const CONTEXT& context, STACKFRAME64& stackframe) const;
+
+            /// \brief Get a StackTraceElement from a stack frame.
+            /// \param stackframe Stackframe to convert.
+            /// \return Returns the StackTraceElement associated to the provided stackframe.
+            diagnostics::StackTraceElement GetStackTraceElement(const STACKFRAME64& stackframe) const;
+
+            mutable std::mutex mutex_;          ///< \brief Used for synchronization. Symbol loading and stack walking are not thread safe!
+
+            HANDLE process_;                    ///< \brief Current process handle.
+
+            bool has_symbols_;                  ///< \brief Whether the symbols for this process were loaded correctly.
+
+        };
+
+        ///< \brief Utility type definition so that the code can refer to "platform::Debugger" without having to know the actual concrete class.
+        using Debugger = WindowsDebugger;
+
+    }
+}
+
+#endif

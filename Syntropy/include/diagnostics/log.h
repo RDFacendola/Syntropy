@@ -1,10 +1,9 @@
 /// \file log.h
-/// \brief This header is part of the syntropy diagnostic system. It contains classes used to handle logs used for debug and diagnostics.
+/// \brief This header is part of the syntropy diagnostic system. It contains classes used to handle logs used for diagnostic purposes.
 ///
 /// \author Raffaele D. Facendola - 2016
 
 #pragma once
-
 
 #include <chrono>
 #include <mutex>
@@ -13,7 +12,7 @@
 
 #include "macro.h"
 #include "diagnostics.h"
-#include "platform/platform.h"
+#include "debug.h"
 
 /// \brief Utility macro for sending a message to the log manager.
 #define SYNTROPY_LOG_MESSAGE(trace, severity, contexts, ...) \
@@ -75,25 +74,42 @@ namespace syntropy
 
         };
 
+        /// \brief Log stream used to output log messages.
+        /// \author Raffaele D. Facendola - November 2016
         class LogStream 
         {
 
         public:
 
+            /// \brief Create a new log stream.
             LogStream();
 
+            /// \brief Send a message to the stream.
+            /// \param log Message to send.
             void SendMessage(const LogMessage& log);
 
+            /// \brief Set the verbosity level of the stream.
+            /// Messages with severity lower than the stream verbosity are ignored.
+            /// \param verbosity New level of verbosity to set.
             void SetVerbosity(Severity verbosity);
 
+            /// \brief Get the verbosity level of the stream.
+            /// \return Returns the verbosity level of the stream.
             Severity GetVerbosity() const;
 
+            /// \brief Bind the log stream to one or more contexts.
+            /// Messages whose contexts do not match with any of the ones bound to this stream are ignored.
+            /// \param context List of contexts to bound to this stream.
             void BindContext(std::initializer_list<Context> contexts);
 
+            /// \brief Unbind a context from the stream.
+            /// \param context Context to unbind.
             void UnbindContext(const Context& context);
 
         protected:
 
+            /// \brief Handle a message sent to the stream.
+            /// \param log Message to handle. The message is guaranteed to have severity equal or higher to the verbosity level and have at least one context matching at least one among the contexts bound to the stream. 
             virtual void OnSendMessage(const LogMessage& log) = 0;
 
         private:
@@ -101,7 +117,6 @@ namespace syntropy
             std::vector<Context> contexts_;                 ///< \brief Contexts this stream is bound to.
 
             Severity verbosity_;                            ///< \brief Minimum severity needed to log a message.
-
         };
 
         LogStream& operator<<(LogStream& log_stream, const LogMessage& log);
@@ -116,11 +131,20 @@ namespace syntropy
             /// \brief Get the log manager instance.
             static LogManager& GetInstance();
 
+            /// \brief Attach a log stream to the manager.
+            /// If the stream is already attached to the manager, this method does nothing.
+            /// \param log_stream Stream to attach.
             void AttachStream(std::shared_ptr<LogStream> log_stream);
 
+            /// \brief Create and attach a log stream to the manager.
+            /// \tparam TLogStream Type of the log stream to create. Must derive from LogStream.
+            /// \param args Arguments passed to TLogStream's constructor.
+            /// \return Returns a pointer to the new stream.
             template <typename TLogStream, typename... TArgs>
             std::shared_ptr<TLogStream> CreateStream(TArgs&&... args);
 
+            /// \brief Detach an existing stream from the manager.
+            /// \param stream Stream to detach.
             void DetachStream(std::shared_ptr<LogStream> stream);
 
             /// \brief Send a log message.

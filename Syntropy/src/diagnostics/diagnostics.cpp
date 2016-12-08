@@ -7,115 +7,24 @@ namespace syntropy
 {
     namespace diagnostics 
     {
-
-        //////////////// STACK TRACE ELEMENT ////////////////
-
-        StackTraceElement::StackTraceElement(const char* file, const char* function, size_t line)
-            : file_(file)
-            , function_(function)
-            , line_(line) 
-        {
-
-        }
-
-        bool StackTraceElement::IsUnknown() const
-        {
-            return file_.size() == 0 && function_.size() == 0;
-        }
-
-        std::ostream& operator<< (std::ostream &out, const StackTraceElement& element)
-        {
-            static const char* kUnknownSymbol = "<unknown symbol>";
-            static const char* kUnknownFile = "<unknown file>";
-            
-            const char* function_name = element.function_.size() > 0 ? element.function_.c_str() : kUnknownSymbol;
-            const char* file_name = element.file_.size() > 0 ? element.file_.c_str() : kUnknownFile;
-
-            out << function_name << "(" << file_name << ":" << element.line_ << ")";
-
-            return out;
-        }
-        
-        //////////////// STACK TRACE ////////////////
-
-        StackTrace::StackTrace(const StackTraceElement& element)
-        {
-            elements_.push_back(element);
-        }
-
-        StackTrace::StackTrace(StackTrace&& other) noexcept
-            : elements_(std::move(other.elements_))
-        {
-
-        }
-
-        StackTrace& StackTrace::operator=(StackTrace other) noexcept
-        {
-            other.Swap(*this);
-            return *this;
-        }
-
-        void StackTrace::Swap(StackTrace& other) noexcept
-        {
-            std::swap(elements_, other.elements_);
-        }
-
-        std::ostream& operator<< (std::ostream &out, const StackTrace& stacktrace)
-        {
-            if (stacktrace.elements_.size() > 0)
-            {
-                out << stacktrace.elements_[0];             // The most recent element in the stack trace is always known
-
-                const StackTraceElement* unknown_element = nullptr;
-                const StackTraceElement* current_element;
-
-                size_t unknown_elements = 0;
-                
-                for (size_t index = 1; index < stacktrace.elements_.size(); ++index)
-                {
-                    current_element = &stacktrace.elements_[index];
-
-                    // Accumulate unknown elements
-                    if (current_element->IsUnknown())
-                    {
-                        unknown_element = current_element;
-                        ++unknown_elements;
-                    }
-                    
-                    // Output unknown elements if we reached the base of the stack or the current element is no longer unknown
-                    if (unknown_element != current_element || index == stacktrace.elements_.size() - 1)
-                    {
-                        if (unknown_elements > 1)
-                        {
-                            out << "\n   <" << unknown_elements << " unknown symbols>";
-                        }
-                        else if (unknown_elements > 0)
-                        {
-                            out << "\n   <unknown symbol>";
-                        }
-
-                        unknown_elements = 0;
-                    }
-                        
-                    // Output a known element
-                    if (!current_element->IsUnknown())
-                    {
-                        out << "\n   " << *current_element;
-                    }
-                }
-            }
-            return out;
-        }
-
         //////////////// CONTEXT :: INNER CONTEXT ////////////////
 
+        /// \brief Represents the actual context.
+        /// \author Raffaele D. Facendola - December 2016
         struct Context::InnerContext
         {
 
+            /// \brief Create a root context.
             InnerContext() = default;
 
+            /// \brief Create a context by name.
+            /// \param Name of the context.
+            /// \param Parent context.
             InnerContext(const HashedString& name, std::shared_ptr<InnerContext> parent);
 
+            /// \brief Check whether this context contains another one.
+            /// \param other Context to check the inclusion of.
+            /// \return Returns true if other is contained inside this context, returns false otherwise.
             bool Contains(const InnerContext& other) const;
 
             HashedString name_;                                 ///< \brief Full name of the context.
@@ -149,19 +58,28 @@ namespace syntropy
 
         //////////////// CONTEXT :: POOL ////////////////
 
+        /// \brief Pool of contexts allocated so far.
+        /// \author Raffaele D. Facendola - December 2016
         class Context::Pool
         {
 
         public:
 
+            /// \brief Get the singleton instance.
+            /// \return Returns the singleton instance.
             static Pool& GetInstance();
 
+            /// \brief Get a context by name.
+            /// The method will create a new context if none is found.
             std::shared_ptr<InnerContext> GetContextByName(const HashedString& name);
 
+            /// \brief Get the root context.
+            /// The root is the context that contains every other one.
             std::shared_ptr<InnerContext> GetRootContext();
 
         private:
 
+            /// \brief Create a new pool of contexts.
             Pool();
 
             std::shared_ptr<Context::InnerContext> root_;                                                           ///< \brief Root context

@@ -16,7 +16,7 @@ namespace test
 {
     void MyFunction()
     {
-        SYNTROPY_ERROR((Engine), "This is the log #", 2);
+        SYNTROPY_WARNING((Engine), "This is the log #", 2);
         SYNTROPY_LOG((Engine, Graphics), "It ", "Works");
     }
 }
