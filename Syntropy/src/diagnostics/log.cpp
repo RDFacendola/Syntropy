@@ -8,7 +8,7 @@ namespace syntropy {
 
         //////////////// LOG MESSAGGE ////////////////
 
-        LogMessage::LogMessage(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity)
+        Log::Log(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity)
             : Event(contexts, stacktrace, severity)
         {}
 
@@ -20,7 +20,7 @@ namespace syntropy {
 
         }
 
-        void LogStream::SendMessage(const LogMessage& log)
+        void LogStream::SendMessage(const Log& log)
         {
             if (log.severity_ >= verbosity_ &&
                 std::any_of(log.contexts_.begin(), 
@@ -64,7 +64,7 @@ namespace syntropy {
                             contexts_.end());
         }
 
-        LogStream& operator<<(LogStream& log_stream, const LogMessage& log)
+        LogStream& operator<<(LogStream& log_stream, const Log& log)
         {
             log_stream.SendMessage(log);
             return log_stream;
@@ -153,6 +153,26 @@ namespace syntropy {
         {
             static std::vector<std::unique_ptr<std::ostringstream>> pool;
             return pool;
+        }
+
+        //////////////// STREAM LOGGER ////////////////
+
+        StreamLogger::StreamLogger(std::ostream& stream, const char* format, Severity flush_severity)
+            : stream_(stream)
+            , formatter_(format)
+            , flush_severity_(flush_severity)
+        {
+
+        }
+
+        void StreamLogger::OnSendMessage(const Log& log)
+        {
+            formatter_(stream_, log) << "\n";
+
+            if (log.severity_ >= flush_severity_)
+            {
+                stream_.flush();            // Ensures that no log is lost if the application crashed before the stream gets flushed.
+            }
         }
 
     }

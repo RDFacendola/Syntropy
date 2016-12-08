@@ -58,10 +58,10 @@ namespace syntropy
 
         /// \brief Represents a single log message.
         /// \author Raffaele D. Facendola - November 2016
-        struct LogMessage : Event 
+        struct Log : Event 
         {
             /// \brief Create a new log message.
-            LogMessage(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity);
+            Log(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity);
 
             const char* message_;                                           ///< \brief Log message.
 
@@ -69,8 +69,21 @@ namespace syntropy
 
         /// \brief Used to format a log message event to a string.
         /// \author Raffaele D. Facendola - December 2016
-        struct LogMessageFormatter : EventFormatter
+        template <typename TLog = Log>
+        class LogFormatter : public EventFormatter<TLog>
         {
+            static_assert(std::is_base_of_v<Log, TLog>, "TLog must derive from syntropy::diagnostics::Log");
+
+        public:
+
+            LogFormatter(const char* format);
+
+        protected:
+
+            struct MessageAppender : Appender
+            {
+                void Append(std::ostream& stream, const TLog& log) const override;
+            };
 
         };
 
@@ -86,7 +99,7 @@ namespace syntropy
 
             /// \brief Send a message to the stream.
             /// \param log Message to send.
-            void SendMessage(const LogMessage& log);
+            void SendMessage(const Log& log);
 
             /// \brief Set the verbosity level of the stream.
             /// Messages with severity lower than the stream verbosity are ignored.
@@ -110,7 +123,7 @@ namespace syntropy
 
             /// \brief Handle a message sent to the stream.
             /// \param log Message to handle. The message is guaranteed to have severity equal or higher to the verbosity level and have at least one context matching at least one among the contexts bound to the stream. 
-            virtual void OnSendMessage(const LogMessage& log) = 0;
+            virtual void OnSendMessage(const Log& log) = 0;
 
         private:
 
@@ -119,7 +132,7 @@ namespace syntropy
             Severity verbosity_;                            ///< \brief Minimum severity needed to log a message.
         };
 
-        LogStream& operator<<(LogStream& log_stream, const LogMessage& log);
+        LogStream& operator<<(LogStream& log_stream, const Log& log);
 
         /// \brief Singleton used to issue log messages and events.
         /// \author Raffaele D. Facendola - November 2016
@@ -194,7 +207,7 @@ namespace syntropy
 
             };
 
-            /// \brief Prevent direct instantiation.
+            /// \brief Prevents direct instantiation.
             LogManager() = default;
 
             std::mutex mutex_;                                              ///< \brief Used to synchronize various logging threads.
@@ -203,28 +216,30 @@ namespace syntropy
 
         };
         
-        class StreamLogStream : public LogStream
+        /// \brief Used to redirect a log output to an output stream.
+        /// \author Raffaele D. Facendola - December 2016
+        class StreamLogger : public LogStream
         {
 
         public:
 
-            StreamLogStream(std::ostream& stream)
-                : stream_(stream)
-            {
-
-            }
+            /// \brief Create a new stream logger.
+            /// \param stream Stream where the messages are appended to.
+            /// \param format Format of the log messages. See LogMessageFormatter.
+            /// \param flush_severity Minimum severity required in order to trigger a stream flush.
+            StreamLogger(std::ostream& stream, const char* format, Severity flush_severity = Severity::kCritical);
 
         protected:
 
-            virtual void OnSendMessage(const LogMessage& log) override
-            {
-                stream_ << "[" << log.thread_id_ << "] " << log.message_ << " \n" << log.stacktrace_ << "\n";
-            }
+            virtual void OnSendMessage(const Log& log) override;
 
         private:
 
-            std::ostream& stream_;
-            
+            std::ostream& stream_;                      ///< \brief Stream where the messages are appended to.
+
+            LogFormatter<> formatter_;                  ///< \brief Used to format the log messages.
+
+            Severity flush_severity_;                   ///< \brief Minimum severity required in order to trigger a stream flush.
         };
 
     }
@@ -258,14 +273,14 @@ namespace syntropy
 
             std::unique_lock<std::mutex> lock(mutex_);                              // Needed to guarantee the order of the log messages
 
-            LogMessage log_message(contexts, stacktrace, kSeverity);
+            Log log(contexts, stacktrace, kSeverity);
             
-            log_message.message_ = message_builder.GetMessage();
+            log.message_ = message_builder.GetMessage();
 
             // Send the log to the streams
             for (auto&& stream : streams_)
             {
-                *stream << log_message;
+                *stream << log;
             }
         }
 
@@ -287,6 +302,23 @@ namespace syntropy
         {
             (*stream_) << head;
             Append(std::forward<TRest>(rest)...);
+        }
+
+        //////////////// LOG FORMATTER ////////////////
+
+        template <typename TLog>
+        LogFormatter<TLog>::LogFormatter(const char* format)
+            : EventFormatter<TLog>(format)
+        {
+
+        }
+
+        //////////////// LOG FORMATTER :: APPENDERS ////////////////
+
+        template <typename TLog>
+        void LogFormatter<TLog>::MessageAppender::Append(std::ostream& stream, const TLog& log) const
+        {
+            stream << log.message_;
         }
 
     }

@@ -174,12 +174,36 @@ namespace syntropy
 
         Event::Event(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity)
             : timestamp_(std::chrono::high_resolution_clock::now())
+            , time_(std::chrono::system_clock::now())
             , severity_(severity)
             , thread_id_(std::this_thread::get_id())
             , contexts_(contexts)
             , stacktrace_(stacktrace)
         {
 
+        }
+
+        //////////////// MISC ////////////////
+
+        const char* ToString(Severity severity)
+        {
+            switch (severity)
+            {
+            case Severity::kInformative:
+                return SeverityTraits<Severity::kInformative>::ToString();
+
+            case Severity::kWarning:
+                return SeverityTraits<Severity::kWarning>::ToString();
+
+            case Severity::kError:
+                return SeverityTraits<Severity::kError>::ToString();
+
+            case Severity::kCritical:
+                return SeverityTraits<Severity::kCritical>::ToString();
+
+            default:
+                return "<Unknown>";
+            }
         }
 
     }

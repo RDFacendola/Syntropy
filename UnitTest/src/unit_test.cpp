@@ -60,7 +60,7 @@ int main()
 
     auto& log_manager = syntropy::diagnostics::LogManager::GetInstance();
 
-    auto stream = log_manager.CreateStream<syntropy::diagnostics::StreamLogStream>(std::cout);
+    auto stream = log_manager.CreateStream<syntropy::diagnostics::StreamLogger>(std::cout, "[%t] %m\n%st");
     
     stream->BindContext({ Root });
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);

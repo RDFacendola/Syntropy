@@ -12,7 +12,10 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <type_traits>
+#include <iomanip>
 
+#include "hinnant/date/date.h"
 #include "containers/hashed_string.h"
 #include "debug.h"
 
@@ -75,7 +78,8 @@ namespace syntropy
             /// \brief Create a new event.
             Event(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity);
 
-            std::chrono::high_resolution_clock::time_point timestamp_;      ///< \brief Point in time where the event was created.
+            std::chrono::system_clock::time_point time_;                    ///< \brief Point in time where this event was created on the system clock.
+            std::chrono::high_resolution_clock::time_point timestamp_;      ///< \brief Point in time where this event was created on the high resolution clock.
             Severity severity_;                                             ///< \brief Severity of the event.
             std::thread::id thread_id_;                                     ///< \brief Id of the thread that issued the event.
             std::vector<Context> contexts_;                                 ///< \brief Contexts used to categorize the event.
@@ -84,22 +88,74 @@ namespace syntropy
 
         /// \brief Used to format an event to a string.
         /// \author Raffaele D. Facendola - December 2016
-        struct EventFormatter
+        template <typename TEvent = Event>
+        class EventFormatter
         {
-            //static const char* kSeverityToken = "$severity";
-            //static const char* kThreadIdtoken = "$threadid";
-            //static const char* kStackTraceToken = "$stacktrace";
+            static_assert(std::is_base_of_v<Event, TEvent>, "TEvent must derive from syntropy::diagnostics::Event");
 
-            //static const char* kDateToken = "$date";                        ///< \brief YYYY-MM-DD
-            //static const char* kTimeToken = "$time";                        ///< \brief hh:mm:ss
-            //static const char* kTimestampToken = "$timestamp";              ///< \brief hh:mm:ss.milliseconds
-            
-            EventFormatter(const char* /*format*/) {}
+        public:
 
-            virtual std::string operator()(const Event& /*event*/) const { return ""; }
+            EventFormatter(const char* format);
+
+            std::ostream& operator()(std::ostream& out, const TEvent& event) const;
+
+        protected:
+
+            struct Appender
+            {
+                virtual void Append(std::ostream& out, const TEvent& event) const = 0;
+            };
+
+            struct ConstantAppender : Appender
+            {
+                ConstantAppender(const char* string);
+
+                void Append(std::ostream& stream, const TEvent&) const override;
+
+                std::string string_;
+            };
+
+            struct TimeAppender : Appender
+            {
+                void Append(std::ostream& stream, const TEvent& event) const override;
+            };
+
+            struct DateAppender : Appender
+            {
+                void Append(std::ostream& stream, const TEvent& event) const override;
+            };
+
+            struct SeverityAppender : Appender
+            {
+                void Append(std::ostream& stream, const TEvent& event) const override;
+            };
+
+            struct ThreadIdAppender : Appender
+            {
+                void Append(std::ostream& stream, const TEvent& event) const override;
+            };
+
+            struct ContextsAppender : Appender
+            {
+                void Append(std::ostream& stream, const TEvent& event) const override;
+            };
+
+            struct StackTraceAppender : Appender
+            {
+                void Append(std::ostream& stream, const TEvent& event) const override;
+            };
+
+            struct FunctionAppender : Appender
+            {
+                void Append(std::ostream& stream, const TEvent& event) const override;
+            };
+
+        private:
+
+            std::vector<std::unique_ptr<Appender>> appenders_;                  ///< \brief Used to append strings to the output stream.
 
         };
-
+        
         /// \brief Severity type traits.
         template <Severity kSeverity>
         struct SeverityTraits {};
@@ -108,7 +164,7 @@ namespace syntropy
         template <>
         struct SeverityTraits<Severity::kInformative>
         {
-            static std::string ToString()
+            static const char* ToString()
             {
                 return "Info";
             }
@@ -118,7 +174,7 @@ namespace syntropy
         template <>
         struct SeverityTraits<Severity::kWarning>
         {
-            static std::string ToString()
+            static const char* ToString()
             {
                 return "Warning";
             }
@@ -128,7 +184,7 @@ namespace syntropy
         template <>
         struct SeverityTraits<Severity::kError>
         {
-            static std::string ToString()
+            static const char* ToString()
             {
                 return "Error";
             }
@@ -138,11 +194,13 @@ namespace syntropy
         template <>
         struct SeverityTraits<Severity::kCritical>
         {
-            static std::string ToString()
+            static const char* ToString()
             {
                 return "Critical";
             }
         };
+
+        const char* ToString(Severity severity);
     }
 }
 
@@ -155,4 +213,96 @@ namespace std
         first.Swap(second);
     }
 
+}
+
+namespace syntropy
+{
+    namespace diagnostics
+    {
+
+        // Implementation
+
+        //////////////// EVENT FORMATTER ////////////////
+
+        template <typename TEvent>
+        EventFormatter<TEvent>::EventFormatter(const char* /*format*/)
+        {
+            appenders_.emplace_back(std::make_unique<DateAppender>());
+            appenders_.emplace_back(std::make_unique<ConstantAppender>(" "));
+            appenders_.emplace_back(std::make_unique<TimeAppender>());
+        }
+
+        template <typename TEvent>
+        std::ostream& EventFormatter<TEvent>::operator()(std::ostream& out, const TEvent& event) const
+        {
+            for (auto&& appender : appenders_)
+            {
+                appender->Append(out, event);
+            }
+            return out;
+        }
+
+        //////////////// EVENT FORMATTER :: APPENDERS ////////////////
+
+        template <typename TEvent>
+        EventFormatter<TEvent>::ConstantAppender::ConstantAppender(const char* string)
+            : string_(string)
+        {
+
+        }
+
+        template <typename TEvent>
+        void EventFormatter<TEvent>::ConstantAppender::Append(std::ostream& stream, const TEvent&) const
+        {
+            stream << string_;
+        }
+
+        template <typename TEvent>
+        void EventFormatter<TEvent>::TimeAppender::Append(std::ostream& stream, const TEvent& event) const
+        {
+            auto today = date::floor<date::days>(event.time_);
+            auto time = date::make_time(std::chrono::duration_cast<std::chrono::milliseconds>(event.time_ - today));
+
+            stream << time;
+        }
+
+        template <typename TEvent>
+        void EventFormatter<TEvent>::DateAppender::Append(std::ostream& stream, const TEvent& event) const
+        {
+            auto today = date::year_month_day{ date::floor<date::days>(event.time_) };
+
+            stream << today;
+        }
+
+        template <typename TEvent>
+        void EventFormatter<TEvent>::SeverityAppender::Append(std::ostream& stream, const TEvent& event) const
+        {
+            stream << ToString(event.severity_);
+        }
+
+        template <typename TEvent>
+        void EventFormatter<TEvent>::ThreadIdAppender::Append(std::ostream& stream, const TEvent& event) const
+        {
+            stream << event.thread_id_;
+        }
+
+        template <typename TEvent>
+        void EventFormatter<TEvent>::ContextsAppender::Append(std::ostream& /*stream*/, const TEvent& /*event*/) const
+        {
+
+        }
+
+        template <typename TEvent>
+        void EventFormatter<TEvent>::StackTraceAppender::Append(std::ostream& stream, const TEvent& event) const
+        {
+            stream << event.stacktrace_;
+        }
+
+        template <typename TEvent>
+        void EventFormatter<TEvent>::FunctionAppender::Append(std::ostream& stream, const TEvent& event) const
+        {
+            stream << event.stacktrace_.elements_[0];
+        }
+
+    }
 }
