@@ -71,6 +71,9 @@ namespace syntropy
 
         };
 
+        /// \brief Stream insertion for Context.
+        std::ostream& operator<<(std::ostream& out, const Context& context);
+        
         /// \brief Base struct for application events.
         /// \author Raffaele D. Facendola - November 2016
         struct Event
@@ -78,8 +81,7 @@ namespace syntropy
             /// \brief Create a new event.
             Event(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity);
 
-            std::chrono::system_clock::time_point time_;                    ///< \brief Point in time where this event was created on the system clock.
-            std::chrono::high_resolution_clock::time_point timestamp_;      ///< \brief Point in time where this event was created on the high resolution clock.
+            std::chrono::system_clock::time_point time_;                    ///< \brief Point in time where this event was created.
             Severity severity_;                                             ///< \brief Severity of the event.
             std::thread::id thread_id_;                                     ///< \brief Id of the thread that issued the event.
             std::vector<Context> contexts_;                                 ///< \brief Contexts used to categorize the event.
@@ -227,9 +229,10 @@ namespace syntropy
         template <typename TEvent>
         EventFormatter<TEvent>::EventFormatter(const char* /*format*/)
         {
-            appenders_.emplace_back(std::make_unique<DateAppender>());
-            appenders_.emplace_back(std::make_unique<ConstantAppender>(" "));
-            appenders_.emplace_back(std::make_unique<TimeAppender>());
+            appenders_.emplace_back(std::make_unique<ConstantAppender>("["));
+            appenders_.emplace_back(std::make_unique<ContextsAppender>());
+            appenders_.emplace_back(std::make_unique<ConstantAppender>("] "));
+            appenders_.emplace_back(std::make_unique<StackTraceAppender>());
         }
 
         template <typename TEvent>
@@ -287,9 +290,19 @@ namespace syntropy
         }
 
         template <typename TEvent>
-        void EventFormatter<TEvent>::ContextsAppender::Append(std::ostream& /*stream*/, const TEvent& /*event*/) const
+        void EventFormatter<TEvent>::ContextsAppender::Append(std::ostream& stream, const TEvent& event) const
         {
+            if (event.contexts_.size() > 0)
+            {
+                auto&& it = event.contexts_.begin();
 
+                stream << *it;                      // First context
+
+                for(++it; it != event.contexts_.end(); ++it)
+                {
+                    stream << ", " << *it;          // Remaining contexts
+                }
+            }
         }
 
         template <typename TEvent>

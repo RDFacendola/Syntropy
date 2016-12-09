@@ -170,11 +170,16 @@ namespace syntropy
             return context_->Contains(*other.context_);
         }
 
+        std::ostream& operator<<(std::ostream& out, const Context& context)
+        {
+            out << context.GetName();
+            return out;
+        }
+
         //////////////// EVENT ////////////////
 
         Event::Event(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity)
-            : timestamp_(std::chrono::high_resolution_clock::now())
-            , time_(std::chrono::system_clock::now())
+            : time_(std::chrono::system_clock::now())
             , severity_(severity)
             , thread_id_(std::this_thread::get_id())
             , contexts_(contexts)
