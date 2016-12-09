@@ -9,6 +9,8 @@
 #include <mutex>
 #include <vector>
 #include <sstream>
+#include <algorithm>
+#include <set>
 
 #include "macro.h"
 #include "diagnostics.h"
@@ -56,6 +58,8 @@ namespace syntropy
     namespace diagnostics 
     {
 
+        class StreamLogger;
+
         /// \brief Represents a single log message.
         /// \author Raffaele D. Facendola - November 2016
         struct Log : Event 
@@ -64,26 +68,6 @@ namespace syntropy
             Log(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity);
 
             const char* message_;                                           ///< \brief Log message.
-
-        };
-
-        /// \brief Used to format a log message event to a string.
-        /// \author Raffaele D. Facendola - December 2016
-        template <typename TLog = Log>
-        class LogFormatter : public EventFormatter<TLog>
-        {
-            static_assert(std::is_base_of_v<Log, TLog>, "TLog must derive from syntropy::diagnostics::Log");
-
-        public:
-
-            LogFormatter(const char* format);
-
-        protected:
-
-            struct MessageAppender : Appender
-            {
-                void Append(std::ostream& stream, const TLog& log) const override;
-            };
 
         };
 
@@ -119,6 +103,10 @@ namespace syntropy
             /// \param context Context to unbind.
             void UnbindContext(const Context& context);
 
+            /// \brief Get the set of contexts bound to this log stream.
+            /// \return Returns the list of contexts bound to this log stream.
+            const std::set<Context>& GetBoundContexts() const;
+
         protected:
 
             /// \brief Handle a message sent to the stream.
@@ -127,7 +115,7 @@ namespace syntropy
 
         private:
 
-            std::vector<Context> contexts_;                 ///< \brief Contexts this stream is bound to.
+            std::set<Context> contexts_;                    ///< \brief Contexts this stream is bound to.
 
             Severity verbosity_;                            ///< \brief Minimum severity needed to log a message.
         };
@@ -215,7 +203,36 @@ namespace syntropy
             std::vector<std::shared_ptr<LogStream>> streams_;               ///< \brief List of log streams.
 
         };
-        
+
+        /// \brief Used to format a log message event to a string.
+        /// \author Raffaele D. Facendola - December 2016
+        template <typename TLog = Log>
+        class LogFormatter : public EventFormatter<TLog>
+        {
+            static_assert(std::is_base_of_v<Log, TLog>, "TLog must derive from syntropy::diagnostics::Log");
+
+        public:
+
+            LogFormatter(LogStream& log_stream, const char* format);
+
+        protected:
+
+            struct MessageAppender : Appender
+            {
+                void operator()(std::ostream& stream, const TLog& log) const override;
+            };
+
+            struct ContextsIntersectionAppender : Appender
+            {
+                ContextsIntersectionAppender(LogStream& log_stream);
+
+                void operator()(std::ostream& stream, const TLog& log) const override;
+
+                LogStream& log_stream_;
+            };
+
+        };
+
         /// \brief Used to redirect a log output to an output stream.
         /// \author Raffaele D. Facendola - December 2016
         class StreamLogger : public LogStream
@@ -241,7 +258,7 @@ namespace syntropy
 
             Severity flush_severity_;                   ///< \brief Minimum severity required in order to trigger a stream flush.
         };
-
+        
     }
     
 }
@@ -307,18 +324,49 @@ namespace syntropy
         //////////////// LOG FORMATTER ////////////////
 
         template <typename TLog>
-        LogFormatter<TLog>::LogFormatter(const char* format)
+        LogFormatter<TLog>::LogFormatter(LogStream& log_stream, const char* format)
             : EventFormatter<TLog>(format)
         {
-
+            appenders_.emplace_back(std::make_unique<ConstantAppender>("["));
+            appenders_.emplace_back(std::make_unique<ContextsIntersectionAppender>(log_stream));
+            appenders_.emplace_back(std::make_unique<ConstantAppender>("] "));
+            appenders_.emplace_back(std::make_unique<MessageAppender>());
         }
 
         //////////////// LOG FORMATTER :: APPENDERS ////////////////
 
         template <typename TLog>
-        void LogFormatter<TLog>::MessageAppender::Append(std::ostream& stream, const TLog& log) const
+        void LogFormatter<TLog>::MessageAppender::operator()(std::ostream& stream, const TLog& log) const
         {
             stream << log.message_;
+        }
+
+        template <typename TLog>
+        LogFormatter<TLog>::ContextsIntersectionAppender::ContextsIntersectionAppender(LogStream& log_stream)
+            : log_stream_(log_stream)
+        {
+
+        }
+
+        template <typename TLog>
+        void LogFormatter<TLog>::ContextsIntersectionAppender::operator()(std::ostream& stream, const TLog& log) const
+        {
+            std::set<Context> contexts;
+
+            // Log the intersection between the log contexts and the stream log ones.
+            for (auto&& log_context : log.contexts_)
+            {
+                for (auto&& stream_context : log_stream_.GetBoundContexts())
+                {
+                    if (stream_context.Contains(log_context))
+                    {
+                        contexts.insert(log_context);
+                        break;
+                    }
+                }
+            }
+
+            stream << contexts;
         }
 
     }

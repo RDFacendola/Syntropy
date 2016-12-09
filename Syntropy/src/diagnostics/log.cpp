@@ -51,17 +51,17 @@ namespace syntropy {
 
         void LogStream::BindContext(std::initializer_list<Context> contexts)
         {
-            contexts_.insert(contexts_.end(),
-                             contexts.begin(),
-                             contexts.end());
+            contexts_.insert(contexts);
         }
 
         void LogStream::UnbindContext(const Context& context)
         {
-            contexts_.erase(std::remove(contexts_.begin(),
-                                        contexts_.end(),
-                                        context),
-                            contexts_.end());
+            contexts_.erase(context);
+        }
+
+        const std::set<Context>& LogStream::GetBoundContexts() const
+        {
+            return contexts_;
         }
 
         LogStream& operator<<(LogStream& log_stream, const Log& log)
@@ -159,7 +159,7 @@ namespace syntropy {
 
         StreamLogger::StreamLogger(std::ostream& stream, const char* format, Severity flush_severity)
             : stream_(stream)
-            , formatter_(format)
+            , formatter_(*this, format)
             , flush_severity_(flush_severity)
         {
 

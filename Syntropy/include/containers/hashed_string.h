@@ -100,6 +100,10 @@ namespace syntropy {
     template <typename THashFunction, typename THash>
     std::ostream& operator<<(std::ostream& out, const HashedStringT<THashFunction, THash>& hashed_string);
     
+    /// \brief Used to sort hashed strings.
+    template <typename THashFunction, typename THash>
+    bool operator<(const HashedStringT<THashFunction, THash>& first, const HashedStringT<THashFunction, THash>& second);
+
 }
 
 namespace std {
@@ -128,106 +132,109 @@ namespace syntropy{
 
     template <typename THashFunction, typename THash>
     inline HashedStringT<THashFunction, THash>::HashedStringT() noexcept
-        : hash_(THashFunction{}("")) {}
+        : hash_(THashFunction{}("")) 
+    {
+    
+    }
 
     template <typename THashFunction, typename THash>
     HashedStringT<THashFunction, THash>::HashedStringT(const HashedStringT<THashFunction, THash>& other) noexcept
         : string_(other.string_)
-        , hash_(other.hash_) {}
+        , hash_(other.hash_) 
+    {
+    
+    }
 
     template <typename THashFunction, typename THash>
     HashedStringT<THashFunction, THash>::HashedStringT(HashedStringT<THashFunction, THash>&& other) noexcept
         : string_(std::move(other.string_))
-        , hash_(other.hash_) {}
+        , hash_(other.hash_) 
+    {
+    
+    }
 
     template <typename THashFunction, typename THash>
     template <typename TString>
-    inline HashedStringT<THashFunction, THash>::HashedStringT(TString&& string, typename std::enable_if<!std::is_same<std::decay_t<TString>, HashedStringT<THashFunction, THash>>::value>::type*) noexcept
+    HashedStringT<THashFunction, THash>::HashedStringT(TString&& string, typename std::enable_if<!std::is_same<std::decay_t<TString>, HashedStringT<THashFunction, THash>>::value>::type*) noexcept
         : string_(std::forward<TString>(string))
-        , hash_(THashFunction{}(string_)) {}
+        , hash_(THashFunction{}(string_)) 
+    {
+    
+    }
     
     template <typename THashFunction, typename THash>
-    inline HashedStringT<THashFunction, THash>& HashedStringT<THashFunction, THash>::operator=(HashedStringT<THashFunction, THash> other) noexcept {
-
+    HashedStringT<THashFunction, THash>& HashedStringT<THashFunction, THash>::operator=(HashedStringT<THashFunction, THash> other) noexcept 
+    {
         return other.swap(*this);
-
     }
 
     template <typename THashFunction, typename THash>
-    inline THash HashedStringT<THashFunction, THash>::GetHash() const noexcept {
-
+    THash HashedStringT<THashFunction, THash>::GetHash() const noexcept 
+    {
         return hash_;
-
     }
    
     template <typename THashFunction, typename THash>
-    inline const std::string& HashedStringT<THashFunction, THash>::GetString() const noexcept {
-
+    const std::string& HashedStringT<THashFunction, THash>::GetString() const noexcept 
+    {
         return string_;
-
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator==(const HashedStringT<THashFunction, THash>& other) const noexcept {
-
+    bool HashedStringT<THashFunction, THash>::operator==(const HashedStringT<THashFunction, THash>& other) const noexcept 
+    {
         return hash_ == other.hash_;
-
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator!=(const HashedStringT<THashFunction, THash>& other) const noexcept {
-
+    bool HashedStringT<THashFunction, THash>::operator!=(const HashedStringT<THashFunction, THash>& other) const noexcept 
+    {
         return hash_ != other.hash_;
-
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator<=(const HashedStringT<THashFunction, THash>& other) const noexcept {
-
+    bool HashedStringT<THashFunction, THash>::operator<=(const HashedStringT<THashFunction, THash>& other) const noexcept 
+    {
         return hash_ <= other.hash_;
-
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator>=(const HashedStringT<THashFunction, THash>& other) const noexcept {
-
+    bool HashedStringT<THashFunction, THash>::operator>=(const HashedStringT<THashFunction, THash>& other) const noexcept 
+    {
         return hash_ >= other.hash_;
-
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator<(const HashedStringT<THashFunction, THash>& other) const noexcept {
-
+    bool HashedStringT<THashFunction, THash>::operator<(const HashedStringT<THashFunction, THash>& other) const noexcept 
+    {
         return hash_ < other.hash_;
-
     }
 
     template <typename THashFunction, typename THash>
-    inline bool HashedStringT<THashFunction, THash>::operator>(const HashedStringT<THashFunction, THash>& other) const noexcept {
-
+    bool HashedStringT<THashFunction, THash>::operator>(const HashedStringT<THashFunction, THash>& other) const noexcept 
+    {
         return hash_ > other.hash_;
-
     }
 
     template <typename THashFunction, typename THash>
-    inline HashedStringT<THashFunction, THash>& HashedStringT<THashFunction, THash>::swap(HashedStringT<THashFunction, THash>& other) noexcept {
-
+    HashedStringT<THashFunction, THash>& HashedStringT<THashFunction, THash>::swap(HashedStringT<THashFunction, THash>& other) noexcept 
+    {
         std::swap(other.string_, string_);
         std::swap(other.hash_, hash_);
-
         return *this;
-
     }
 
-    //////////////// STREAM INSERTION ////////////////
+    template <typename THashFunction, typename THash>
+    std::ostream& operator<<(std::ostream& out, const HashedStringT<THashFunction, THash>& hashed_string) 
+    {
+        out << hashed_string.GetString();
+        return out;
+    }
 
     template <typename THashFunction, typename THash>
-    inline std::ostream& operator<<(std::ostream& out, const HashedStringT<THashFunction, THash>& hashed_string) {
-
-        out << hashed_string.GetString();
-
-        return out;
-
+    bool operator<(const HashedStringT<THashFunction, THash>& first, const HashedStringT<THashFunction, THash>& second)
+    {
+        return first.GetHash() < second.GetHash();
     }
 
 }

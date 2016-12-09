@@ -62,7 +62,7 @@ int main()
 
     auto stream = log_manager.CreateStream<syntropy::diagnostics::StreamLogger>(std::cout, "[%t] %m\n%st");
     
-    stream->BindContext({ Root });
+    stream->BindContext({ Engine });
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
     ConcurrentTest();
