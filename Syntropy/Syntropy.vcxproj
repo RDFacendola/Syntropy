@@ -19,6 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\base_io.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\date.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\diagnostics\debug.h">
       <SubType>
       </SubType>
@@ -28,6 +36,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\diagnostics\log.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\algorithm.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -210,8 +222,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <DisableSpecificWarnings>
-      </DisableSpecificWarnings>
+      <DisableSpecificWarnings>4505</DisableSpecificWarnings>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
@@ -253,8 +264,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <DisableSpecificWarnings>
-      </DisableSpecificWarnings>
+      <DisableSpecificWarnings>4505</DisableSpecificWarnings>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>

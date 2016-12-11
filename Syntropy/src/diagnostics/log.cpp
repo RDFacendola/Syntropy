@@ -155,11 +155,20 @@ namespace syntropy {
             return pool;
         }
 
+        //////////////// LOG FORMATTER ////////////////
+
+        LogFormatter::LogFormatter(const std::string& format, StreamLogger& logger)
+            : Formatter<Log, LogTokenTranslator<Log>>(format, LogTokenTranslator<Log>(), '{', '}')
+            , logger_(logger)
+        {
+
+        }
+
         //////////////// STREAM LOGGER ////////////////
 
         StreamLogger::StreamLogger(std::ostream& stream, const char* format, Severity flush_severity)
             : stream_(stream)
-            , formatter_(*this, format)
+            , formatter_(format, *this)
             , flush_severity_(flush_severity)
         {
 
@@ -167,7 +176,8 @@ namespace syntropy {
 
         void StreamLogger::OnSendMessage(const Log& log)
         {
-            formatter_(stream_, log) << "\n";
+            formatter_(stream_, log);
+            stream_ << "\n";
 
             if (log.severity_ >= flush_severity_)
             {

@@ -7,6 +7,29 @@ namespace syntropy
 {
     namespace diagnostics 
     {
+        //////////////// SEVERITY ////////////////
+
+        static const std::unordered_map<Severity, const char*> severity_map = { { Severity::kInformative, "Info" },
+                                                                                { Severity::kWarning, "Warning" },
+                                                                                { Severity::kError, "Error" },
+                                                                                { Severity::kCritical, "Critical" } };
+
+        std::ostream& operator<<(std::ostream& out, Severity severity)
+        {
+            auto it = severity_map.find(severity);
+
+            if (it != severity_map.end())
+            {
+                out << it->second;
+            }
+            else
+            {
+                out << "<Unknown severity>";
+            }
+
+            return out;
+        }
+        
         //////////////// CONTEXT :: INNER CONTEXT ////////////////
 
         /// \brief Represents the actual context.
@@ -169,6 +192,11 @@ namespace syntropy
         {
             return context_->Contains(*other.context_);
         }
+        
+        bool operator<(const Context& first, const Context& second)
+        {
+            return first.GetName() < second.GetName();
+        }
 
         std::ostream& operator<<(std::ostream& out, const Context& context)
         {
@@ -192,11 +220,6 @@ namespace syntropy
             return out;
         }
 
-        bool operator<(const Context& first, const Context& second)
-        {
-            return first.GetName() < second.GetName();
-        }
-
         //////////////// EVENT ////////////////
 
         Event::Event(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity)
@@ -207,29 +230,6 @@ namespace syntropy
             , stacktrace_(stacktrace)
         {
 
-        }
-
-        //////////////// MISC ////////////////
-
-        const char* ToString(Severity severity)
-        {
-            switch (severity)
-            {
-            case Severity::kInformative:
-                return SeverityTraits<Severity::kInformative>::ToString();
-
-            case Severity::kWarning:
-                return SeverityTraits<Severity::kWarning>::ToString();
-
-            case Severity::kError:
-                return SeverityTraits<Severity::kError>::ToString();
-
-            case Severity::kCritical:
-                return SeverityTraits<Severity::kCritical>::ToString();
-
-            default:
-                return "<Unknown>";
-            }
         }
 
     }

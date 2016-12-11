@@ -114,8 +114,7 @@
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>
-      </DisableSpecificWarnings>
+      <DisableSpecificWarnings>4505</DisableSpecificWarnings>
       <ShowIncludes>false</ShowIncludes>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
@@ -154,8 +153,7 @@
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <DisableSpecificWarnings>
-      </DisableSpecificWarnings>
+      <DisableSpecificWarnings>4505</DisableSpecificWarnings>
       <ShowIncludes>false</ShowIncludes>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>

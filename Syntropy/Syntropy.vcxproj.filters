@@ -43,6 +43,9 @@
     <ClInclude Include="include\platform\compiler.h" />
     <ClInclude Include="include\platform\os.h" />
     <ClInclude Include="include\diagnostics\debug.h" />
+    <ClInclude Include="include\algorithm.h" />
+    <ClInclude Include="include\base_io.h" />
+    <ClInclude Include="include\date.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

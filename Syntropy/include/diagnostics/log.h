@@ -13,6 +13,7 @@
 #include <set>
 
 #include "macro.h"
+#include "base_io.h"
 #include "diagnostics.h"
 #include "debug.h"
 
@@ -204,32 +205,21 @@ namespace syntropy
 
         };
 
-        /// \brief Used to format a log message event to a string.
-        /// \author Raffaele D. Facendola - December 2016
-        template <typename TLog = Log>
-        class LogFormatter : public EventFormatter<TLog>
+        template <typename TLog>
+        struct LogTokenTranslator : EventTokenTranslator<TLog>
         {
-            static_assert(std::is_base_of_v<Log, TLog>, "TLog must derive from syntropy::diagnostics::Log");
+            virtual EventTokenTranslator<TLog>::TThunk operator()(const std::string& token) const override;
+        };
 
+        class LogFormatter : public Formatter<Log, LogTokenTranslator<Log>>
+        {
         public:
 
-            LogFormatter(LogStream& log_stream, const char* format);
+            LogFormatter(const std::string& format, StreamLogger& logger);
 
-        protected:
+        private:
 
-            struct MessageAppender : Appender
-            {
-                void operator()(std::ostream& stream, const TLog& log) const override;
-            };
-
-            struct ContextsIntersectionAppender : Appender
-            {
-                ContextsIntersectionAppender(LogStream& log_stream);
-
-                void operator()(std::ostream& stream, const TLog& log) const override;
-
-                LogStream& log_stream_;
-            };
+            StreamLogger& logger_;
 
         };
 
@@ -254,7 +244,7 @@ namespace syntropy
 
             std::ostream& stream_;                      ///< \brief Stream where the messages are appended to.
 
-            LogFormatter<> formatter_;                  ///< \brief Used to format the log messages.
+            LogFormatter formatter_;                    ///< \brief Used to format the log messages.
 
             Severity flush_severity_;                   ///< \brief Minimum severity required in order to trigger a stream flush.
         };
@@ -321,52 +311,20 @@ namespace syntropy
             Append(std::forward<TRest>(rest)...);
         }
 
-        //////////////// LOG FORMATTER ////////////////
+        //////////////// LOG TOKEN TRANSLATOR ////////////////
 
         template <typename TLog>
-        LogFormatter<TLog>::LogFormatter(LogStream& log_stream, const char* format)
-            : EventFormatter<TLog>(format)
+        typename EventTokenTranslator<TLog>::TThunk LogTokenTranslator<TLog>::operator()(const std::string& token) const
         {
-            appenders_.emplace_back(std::make_unique<ConstantAppender>("["));
-            appenders_.emplace_back(std::make_unique<ContextsIntersectionAppender>(log_stream));
-            appenders_.emplace_back(std::make_unique<ConstantAppender>("] "));
-            appenders_.emplace_back(std::make_unique<MessageAppender>());
-        }
-
-        //////////////// LOG FORMATTER :: APPENDERS ////////////////
-
-        template <typename TLog>
-        void LogFormatter<TLog>::MessageAppender::operator()(std::ostream& stream, const TLog& log) const
-        {
-            stream << log.message_;
-        }
-
-        template <typename TLog>
-        LogFormatter<TLog>::ContextsIntersectionAppender::ContextsIntersectionAppender(LogStream& log_stream)
-            : log_stream_(log_stream)
-        {
-
-        }
-
-        template <typename TLog>
-        void LogFormatter<TLog>::ContextsIntersectionAppender::operator()(std::ostream& stream, const TLog& log) const
-        {
-            std::set<Context> contexts;
-
-            // Log the intersection between the log contexts and the stream log ones.
-            for (auto&& log_context : log.contexts_)
+            if (token == "{message}")
             {
-                for (auto&& stream_context : log_stream_.GetBoundContexts())
-                {
-                    if (stream_context.Contains(log_context))
-                    {
-                        contexts.insert(log_context);
-                        break;
-                    }
-                }
+                return [](std::ostream& out, const Log& log) { out << log.message_; };
             }
+            else if (token == "{logcontexts}")
+            {
 
-            stream << contexts;
+            }
+            return EventTokenTranslator<TLog>::operator()(token);
         }
 
     }
