@@ -11,9 +11,10 @@
 #include <sstream>
 #include <algorithm>
 #include <set>
+#include <chrono>
+#include <thread>
 
 #include "macro.h"
-#include "base_io.h"
 #include "diagnostics.h"
 #include "debug.h"
 
@@ -59,17 +60,19 @@ namespace syntropy
     namespace diagnostics 
     {
 
-        class StreamLogger;
-
         /// \brief Represents a single log message.
         /// \author Raffaele D. Facendola - November 2016
-        struct Log : Event 
+        struct LogMessage 
         {
             /// \brief Create a new log message.
-            Log(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity);
+            LogMessage();
 
-            const char* message_;                                           ///< \brief Log message.
-
+            std::chrono::system_clock::time_point time_;                    ///< \brief Time point associated to the message creation.
+            Severity severity_;                                             ///< \brief Severity of the message.
+            std::thread::id thread_id_;                                     ///< \brief Id of the thread that issued the message.
+            std::set<Context> contexts_;                                    ///< \brief Contexts used to categorize the message.
+            StackTrace stacktrace_;                                         ///< \brief Stack trace.
+            std::string message_;                                           ///< \brief Log message.
         };
 
         /// \brief Log stream used to output log messages.
@@ -84,7 +87,7 @@ namespace syntropy
 
             /// \brief Send a message to the stream.
             /// \param log Message to send.
-            void SendMessage(const Log& log);
+            LogStream& operator<<(const LogMessage& log);
 
             /// \brief Set the verbosity level of the stream.
             /// Messages with severity lower than the stream verbosity are ignored.
@@ -112,7 +115,7 @@ namespace syntropy
 
             /// \brief Handle a message sent to the stream.
             /// \param log Message to handle. The message is guaranteed to have severity equal or higher to the verbosity level and have at least one context matching at least one among the contexts bound to the stream. 
-            virtual void OnSendMessage(const Log& log) = 0;
+            virtual void OnSendMessage(const LogMessage& log) = 0;
 
         private:
 
@@ -120,8 +123,6 @@ namespace syntropy
 
             Severity verbosity_;                            ///< \brief Minimum severity needed to log a message.
         };
-
-        LogStream& operator<<(LogStream& log_stream, const Log& log);
 
         /// \brief Singleton used to issue log messages and events.
         /// \author Raffaele D. Facendola - November 2016
@@ -171,7 +172,7 @@ namespace syntropy
                 MessageBuilder(TMessage&&... message);
 
                 /// \brief Get a pointer to the message.
-                const char* GetMessage() const;
+                const std::string& GetMessage() const;
 
             private:
 
@@ -205,24 +206,6 @@ namespace syntropy
 
         };
 
-        template <typename TLog>
-        struct LogTokenTranslator : EventTokenTranslator<TLog>
-        {
-            virtual EventTokenTranslator<TLog>::TThunk operator()(const std::string& token) const override;
-        };
-
-        class LogFormatter : public Formatter<Log, LogTokenTranslator<Log>>
-        {
-        public:
-
-            LogFormatter(const std::string& format, StreamLogger& logger);
-
-        private:
-
-            StreamLogger& logger_;
-
-        };
-
         /// \brief Used to redirect a log output to an output stream.
         /// \author Raffaele D. Facendola - December 2016
         class StreamLogger : public LogStream
@@ -234,17 +217,19 @@ namespace syntropy
             /// \param stream Stream where the messages are appended to.
             /// \param format Format of the log messages. See LogMessageFormatter.
             /// \param flush_severity Minimum severity required in order to trigger a stream flush.
-            StreamLogger(std::ostream& stream, const char* format, Severity flush_severity = Severity::kCritical);
+            StreamLogger(std::ostream& stream, std::string format, Severity flush_severity = Severity::kCritical);
 
         protected:
 
-            virtual void OnSendMessage(const Log& log) override;
+            virtual void OnSendMessage(const LogMessage& log) override;
 
         private:
 
+            void OutputByToken(const std::string& token, const LogMessage& log);
+
             std::ostream& stream_;                      ///< \brief Stream where the messages are appended to.
 
-            LogFormatter formatter_;                    ///< \brief Used to format the log messages.
+            std::string format_;                        ///< \brief String used to format log messages.
 
             Severity flush_severity_;                   ///< \brief Minimum severity required in order to trigger a stream flush.
         };
@@ -280,8 +265,11 @@ namespace syntropy
 
             std::unique_lock<std::mutex> lock(mutex_);                              // Needed to guarantee the order of the log messages
 
-            Log log(contexts, stacktrace, kSeverity);
+            LogMessage log;
             
+            log.severity_ = kSeverity;
+            log.stacktrace_ = stacktrace;
+            log.contexts_ = contexts;
             log.message_ = message_builder.GetMessage();
 
             // Send the log to the streams
@@ -309,22 +297,6 @@ namespace syntropy
         {
             (*stream_) << head;
             Append(std::forward<TRest>(rest)...);
-        }
-
-        //////////////// LOG TOKEN TRANSLATOR ////////////////
-
-        template <typename TLog>
-        typename EventTokenTranslator<TLog>::TThunk LogTokenTranslator<TLog>::operator()(const std::string& token) const
-        {
-            if (token == "{message}")
-            {
-                return [](std::ostream& out, const Log& log) { out << log.message_; };
-            }
-            else if (token == "{logcontexts}")
-            {
-
-            }
-            return EventTokenTranslator<TLog>::operator()(token);
         }
 
     }

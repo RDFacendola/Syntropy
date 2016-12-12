@@ -77,6 +77,9 @@ namespace syntropy
             std::vector<StackTraceElement> elements_;                       ///< \brief Elements inside the stack trace, from the most recent one.
         };
 
+        /// \brief Swaps two stacktraces.
+        void swap(syntropy::diagnostics::StackTrace& first, syntropy::diagnostics::StackTrace& second);
+
         /// \brief Output a stack trace inside a stream.
         std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::StackTrace& stacktrace);
 

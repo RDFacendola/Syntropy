@@ -44,7 +44,6 @@
     <ClInclude Include="include\platform\os.h" />
     <ClInclude Include="include\diagnostics\debug.h" />
     <ClInclude Include="include\algorithm.h" />
-    <ClInclude Include="include\base_io.h" />
     <ClInclude Include="include\date.h" />
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +67,7 @@
     <ClCompile Include="src\diagnostics\diagnostics.cpp" />
     <ClCompile Include="src\platform\os\windows_os.cpp" />
     <ClCompile Include="src\diagnostics\debug.cpp" />
+    <ClCompile Include="src\date.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

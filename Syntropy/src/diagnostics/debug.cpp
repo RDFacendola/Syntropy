@@ -67,6 +67,11 @@ namespace syntropy
             std::swap(elements_, other.elements_);
         }
 
+        void swap(syntropy::diagnostics::StackTrace& first, syntropy::diagnostics::StackTrace& second)
+        {
+            first.Swap(second);
+        }
+
         std::ostream& operator<< (std::ostream &out, const StackTrace& stacktrace)
         {
             if (stacktrace.elements_.size() > 0)

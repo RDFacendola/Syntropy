@@ -220,17 +220,5 @@ namespace syntropy
             return out;
         }
 
-        //////////////// EVENT ////////////////
-
-        Event::Event(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity)
-            : time_(std::chrono::system_clock::now())
-            , severity_(severity)
-            , thread_id_(std::this_thread::get_id())
-            , contexts_(contexts)
-            , stacktrace_(stacktrace)
-        {
-
-        }
-
     }
 }

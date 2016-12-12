@@ -19,10 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\base_io.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\date.h">
       <SubType>
       </SubType>
@@ -97,6 +93,10 @@
     <ClInclude Include="include\type_traits.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\date.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\diagnostics\debug.cpp">
       <SubType>
       </SubType>

@@ -1,17 +1,20 @@
 #include "diagnostics/log.h"
 
 #include <algorithm>
+#include "algorithm.h"
+#include "date.h"
 
 namespace syntropy {
 
     namespace diagnostics {
 
-        //////////////// LOG MESSAGGE ////////////////
+        //////////////// LOG MESSAGE ////////////////
 
-        Log::Log(std::initializer_list<Context> contexts, const StackTrace& stacktrace, Severity severity)
-            : Event(contexts, stacktrace, severity)
+        LogMessage::LogMessage()
+            : time_(std::chrono::system_clock::now())
+            , thread_id_(std::this_thread::get_id())
         {}
-
+        
         //////////////// LOG STREAM ////////////////
 
         LogStream::LogStream()
@@ -20,7 +23,7 @@ namespace syntropy {
 
         }
 
-        void LogStream::SendMessage(const Log& log)
+        LogStream& LogStream::operator<<(const LogMessage& log)
         {
             if (log.severity_ >= verbosity_ &&
                 std::any_of(log.contexts_.begin(), 
@@ -37,6 +40,8 @@ namespace syntropy {
             {
                 OnSendMessage(log);
             }
+
+            return *this;
         }
 
         void LogStream::SetVerbosity(Severity verbosity)
@@ -62,12 +67,6 @@ namespace syntropy {
         const std::set<Context>& LogStream::GetBoundContexts() const
         {
             return contexts_;
-        }
-
-        LogStream& operator<<(LogStream& log_stream, const Log& log)
-        {
-            log_stream.SendMessage(log);
-            return log_stream;
         }
 
         //////////////// LOG MANAGER ////////////////
@@ -138,9 +137,9 @@ namespace syntropy {
             // Append nothing
         }
 
-        const char* LogManager::MessageBuilder::GetMessage() const
+        const std::string& LogManager::MessageBuilder::GetMessage() const
         {
-            return message_.c_str();
+            return message_;
         }
 
         std::mutex& LogManager::MessageBuilder::GetMutex()
@@ -155,33 +154,85 @@ namespace syntropy {
             return pool;
         }
 
-        //////////////// LOG FORMATTER ////////////////
-
-        LogFormatter::LogFormatter(const std::string& format, StreamLogger& logger)
-            : Formatter<Log, LogTokenTranslator<Log>>(format, LogTokenTranslator<Log>(), '{', '}')
-            , logger_(logger)
-        {
-
-        }
-
         //////////////// STREAM LOGGER ////////////////
 
-        StreamLogger::StreamLogger(std::ostream& stream, const char* format, Severity flush_severity)
+        StreamLogger::StreamLogger(std::ostream& stream, std::string format, Severity flush_severity)
             : stream_(stream)
-            , formatter_(format, *this)
+            , format_(std::move(format))
             , flush_severity_(flush_severity)
         {
 
         }
 
-        void StreamLogger::OnSendMessage(const Log& log)
+        void StreamLogger::OnSendMessage(const LogMessage& log)
         {
-            formatter_(stream_, log);
+            auto it = format_.begin();
+
+            while (it != format_.end())
+            {
+                auto token = GetToken(it, format_.end(), '{', '}');
+
+                // Add a constant string
+                while (it != token.first)
+                {
+                    stream_ << *it++;
+                }
+
+                // Translate via token
+                if (token.first != token.second)
+                {
+                    OutputByToken(std::string(token.first, token.second), log);
+                }
+
+                // Next
+                it = token.second;
+            }
+
             stream_ << "\n";
 
             if (log.severity_ >= flush_severity_)
             {
                 stream_.flush();            // Ensures that no log is lost if the application crashed before the stream gets flushed.
+            }
+        }
+
+        void StreamLogger::OutputByToken(const std::string& token, const LogMessage& log)
+        {
+            if (token == "{time}")
+            {
+                stream_ << GetTimeOfDay(log.time_);
+            }
+            else if (token == "{date}")
+            {
+                stream_ << GetDate(log.time_);
+            }
+            else if (token == "{severity}")
+            {
+                stream_ << log.severity_;
+            }
+            else if (token == "{threadid}")
+            {
+                stream_ << log.thread_id_;
+            }
+            else if (token == "{contexts}")
+            {
+                stream_ << log.contexts_;
+            }
+            else if (token == "{stacktrace}")
+            {
+                stream_ << log.stacktrace_;
+            }
+            else if (token == "{function}")
+            {
+                stream_ << log.stacktrace_.elements_[0];
+            }
+            else if (token == "{message}")
+            {
+                stream_ << log.message_;
+            }
+            else
+            {
+                stream_ << token;
             }
         }
 
