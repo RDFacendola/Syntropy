@@ -25,18 +25,7 @@ namespace syntropy {
 
         LogStream& LogStream::operator<<(const LogMessage& log)
         {
-            if (log.severity_ >= verbosity_ &&
-                std::any_of(log.contexts_.begin(), 
-                            log.contexts_.end(), 
-                            [this](const Context& message_context) 
-                            { 
-                                return std::any_of(contexts_.begin(), 
-                                                   contexts_.end(), 
-                                                   [message_context](const Context& stream_context)
-                                                   {
-                                                        return stream_context.Contains(message_context);
-                                                   });
-                            }))
+            if (Match(log))
             {
                 OnSendMessage(log);
             }
@@ -64,9 +53,43 @@ namespace syntropy {
             contexts_.erase(context);
         }
 
+        std::set<Context> LogStream::GetHitContexts(const LogMessage& log) const
+        {
+            std::set<Context> contexts;
+
+            for (auto&& log_context : log.contexts_)
+            {
+                for (auto&& context : GetBoundContexts())
+                {
+                    if (context.Contains(log_context))
+                    {
+                        contexts.emplace(log_context);
+                    }
+                }
+            }
+
+            return contexts;
+        }
+
         const std::set<Context>& LogStream::GetBoundContexts() const
         {
             return contexts_;
+        }
+
+        bool LogStream::Match(const LogMessage& log) const
+        {
+            return log.severity_ >= verbosity_ &&
+                   std::any_of(std::begin(log.contexts_),
+                               std::end(log.contexts_),
+                               [this](const Context& log_context)
+                               {
+                                   return std::any_of(std::begin(contexts_),
+                                                      std::end(contexts_),
+                                                      [&log_context](const Context& context)
+                                                      {
+                                                           return context.Contains(log_context);
+                                                      });
+                               });
         }
 
         //////////////// LOG MANAGER ////////////////
@@ -156,86 +179,107 @@ namespace syntropy {
 
         //////////////// STREAM LOGGER ////////////////
 
-        StreamLogger::StreamLogger(std::ostream& stream, std::string format, Severity flush_severity)
+        const std::string StreamLogger::kTimeToken("{time}");
+        const std::string StreamLogger::kDateToken("{date}");
+        const std::string StreamLogger::kSeverityToken("{severity}");
+        const std::string StreamLogger::kThreadToken("{thread}");
+        const std::string StreamLogger::kContextsToken("{context}");
+        const std::string StreamLogger::kStackTraceToken("{trace}");
+        const std::string StreamLogger::kFunctionToken("{function}");
+        const std::string StreamLogger::kMessageToken("{message}");
+
+        const char StreamLogger::kTokenStart = '{';
+        const char StreamLogger::kTokenEnd = '}';
+
+        StreamLogger::StreamLogger(std::ostream& stream, const std::string& format, Severity flush_severity)
             : stream_(stream)
-            , format_(std::move(format))
             , flush_severity_(flush_severity)
         {
-
+            UpdateThunks(format);
         }
 
-        void StreamLogger::OnSendMessage(const LogMessage& log)
+        void StreamLogger::UpdateThunks(const std::string& format)
         {
-            auto it = format_.begin();
+            thunks_.clear();
 
-            while (it != format_.end())
+            std::pair<std::string::const_iterator, std::string::const_iterator> token;
+
+            for (auto it = format.cbegin(); it != format.cend(); it = token.second)
             {
-                auto token = GetToken(it, format_.end(), '{', '}');
+                token = GetToken(it, format.cend(), kTokenStart, kTokenEnd);
 
                 // Add a constant string
-                while (it != token.first)
+                if (it != token.first)
                 {
-                    stream_ << *it++;
+                    std::string message(it, token.first);
+                    thunks_.emplace_back([message](std::ostream& out, const LogMessage&) { out << message; });
                 }
 
                 // Translate via token
                 if (token.first != token.second)
                 {
-                    OutputByToken(std::string(token.first, token.second), log);
+                    thunks_.emplace_back(GetTokenThunk(std::string(token.first, token.second)));
                 }
-
-                // Next
-                it = token.second;
-            }
-
-            stream_ << "\n";
-
-            if (log.severity_ >= flush_severity_)
-            {
-                stream_.flush();            // Ensures that no log is lost if the application crashed before the stream gets flushed.
             }
         }
 
-        void StreamLogger::OutputByToken(const std::string& token, const LogMessage& log)
+        void StreamLogger::OnSendMessage(const LogMessage& log)
         {
-            if (token == "{time}")
+            for (auto&& thunk : thunks_)
             {
-                stream_ << GetTimeOfDay(log.time_);
+                thunk(stream_, log);
             }
-            else if (token == "{date}")
+
+            if (thunks_.size() > 0)
             {
-                stream_ << GetDate(log.time_);
+                stream_ << "\n";
+
+                // Ensures that no log is lost if the application crashed before the stream gets flushed.
+                if (log.severity_ >= flush_severity_)
+                {
+                    stream_.flush();
+                }
             }
-            else if (token == "{severity}")
+        }
+
+        StreamLogger::Thunk StreamLogger::GetTokenThunk(const std::string& token)
+        {
+            // Match each token with the proper thunk
+            if (token == kTimeToken)
             {
-                stream_ << log.severity_;
+                return [](std::ostream& out, const LogMessage& log) { out << GetTimeOfDay(log.time_); };
             }
-            else if (token == "{threadid}")
+            else if (token == kDateToken)
             {
-                stream_ << log.thread_id_;
+                return [](std::ostream& out, const LogMessage& log) { out << GetDate(log.time_); };
             }
-            else if (token == "{contexts}")
+            else if (token == kSeverityToken)
             {
-                stream_ << log.contexts_;
+                return [](std::ostream& out, const LogMessage& log) { out << log.severity_; };
             }
-            else if (token == "{stacktrace}")
+            else if (token == kThreadToken)
             {
-                stream_ << log.stacktrace_;
+                return [](std::ostream& out, const LogMessage& log) { out << log.thread_id_; };
             }
-            else if (token == "{function}")
+            else if (token == kContextsToken)
             {
-                stream_ << log.stacktrace_.elements_[0];
+                return [this](std::ostream& out, const LogMessage& log) { out << GetHitContexts(log); };
             }
-            else if (token == "{message}")
+            else if (token == kStackTraceToken)
             {
-                stream_ << log.message_;
+                return [](std::ostream& out, const LogMessage& log) { out << log.stacktrace_; };
             }
-            else
+            else if (token == kFunctionToken)
             {
-                stream_ << token;
+                return [](std::ostream& out, const LogMessage& log) { out << log.stacktrace_.elements_[0]; };
             }
+            else if (token == kMessageToken)
+            {
+                return [](std::ostream& out, const LogMessage& log) { out << log.message_;  };
+            }
+            
+            return [token](std::ostream& out, const LogMessage&) { out << token; };
         }
 
     }
-    
 }

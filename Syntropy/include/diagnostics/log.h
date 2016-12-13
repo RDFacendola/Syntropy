@@ -115,9 +115,17 @@ namespace syntropy
 
             /// \brief Handle a message sent to the stream.
             /// \param log Message to handle. The message is guaranteed to have severity equal or higher to the verbosity level and have at least one context matching at least one among the contexts bound to the stream. 
+
             virtual void OnSendMessage(const LogMessage& log) = 0;
 
+            /// \brief Get the contexts defined in a log message that are contained in at least one context bound to this log stream.
+            std::set<Context> GetHitContexts(const LogMessage& log) const;
+
         private:
+
+            /// \brief Check whether a log message matches the log stream requirements.
+            /// \return Returns true if log severity and contexts match against the log stream's ones, returns false otherwise.
+            bool Match(const LogMessage& log) const;
 
             std::set<Context> contexts_;                    ///< \brief Contexts this stream is bound to.
 
@@ -213,11 +221,28 @@ namespace syntropy
 
         public:
 
+            // Valid tokens for the format string
+
+            static const std::string kTimeToken;                ///< \brief {time} Output the time of the day of the log message in the format hh:mm:ss.ms
+            static const std::string kDateToken;                ///< \brief {date} Output the date of the log message in the format YYYY-MM-DD
+            static const std::string kSeverityToken;            ///< \brief {severity} Output the severity of the log message.
+            static const std::string kThreadToken;              ///< \brief {thread} Output the thread that caused the log message.
+            static const std::string kContextsToken;            ///< \brief {context} Output the list of contexts of the log message that were bound to the stream in the format Context1, ..., ContextN
+            static const std::string kStackTraceToken;          ///< \brief {trace} Output the stack trace that caused the log message if available, output to the function name otherwise.
+            static const std::string kFunctionToken;            ///< \brief {function} Output the function that caused the log message.
+            static const std::string kMessageToken;             ///< \brief {message} Output the actual log message text.
+
+            static const char kTokenStart;                      ///< \brief Character delimiting the begin of a token. '{'.
+            static const char kTokenEnd;                        ///< \brief Character delimiting the end of a token. '}'.
+
             /// \brief Create a new stream logger.
+            /// The format string is used to determine the format of the message log sent to the message stream.
+            /// An example of a valid format string is "{date} {time} [{context}]: {message}.
+            /// Unrecognized tokens in the format string are considered regular strings.
             /// \param stream Stream where the messages are appended to.
             /// \param format Format of the log messages. See LogMessageFormatter.
             /// \param flush_severity Minimum severity required in order to trigger a stream flush.
-            StreamLogger(std::ostream& stream, std::string format, Severity flush_severity = Severity::kCritical);
+            StreamLogger(std::ostream& stream, const std::string& format, Severity flush_severity = Severity::kCritical);
 
         protected:
 
@@ -225,17 +250,22 @@ namespace syntropy
 
         private:
 
-            void OutputByToken(const std::string& token, const LogMessage& log);
+            using Thunk = std::function<void(std::ostream&, const LogMessage&)>;
+
+            /// \brief Update the thunk list according to the provided format string.
+            void UpdateThunks(const std::string& format);
+
+            /// \brief Get a thunk wrapping the function call associated to a token.
+            Thunk GetTokenThunk(const std::string& token);
 
             std::ostream& stream_;                      ///< \brief Stream where the messages are appended to.
 
-            std::string format_;                        ///< \brief String used to format log messages.
+            std::vector<Thunk> thunks_;                 ///< \brief List of functions used to output a formatted log message to the stream.
 
             Severity flush_severity_;                   ///< \brief Minimum severity required in order to trigger a stream flush.
         };
-        
+
     }
-    
 }
 
 namespace syntropy 

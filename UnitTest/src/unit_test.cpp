@@ -17,14 +17,14 @@ namespace test
     void MyFunction()
     {
         SYNTROPY_WARNING((Engine), "This is the log #", 2);
-        SYNTROPY_LOG((Engine, Graphics), "It ", "Works");
+        SYNTROPY_LOG((Graphics, Engine), "It ", "Works");
     }
 }
 
 void ConcurrentTest()
 {
     auto race = []() {
-        for (int i = 0; i < 10; ++i)
+        for (int i = 0; i < 100; ++i)
         {
             test::MyFunction();
         }
@@ -60,9 +60,12 @@ int main()
 
     auto& log_manager = syntropy::diagnostics::LogManager::GetInstance();
 
-    auto stream = log_manager.CreateStream<syntropy::diagnostics::StreamLogger>(std::cout, "{date} {time} [thread: {threadid}][{contexts}][{severity}]: {message}");
+    //auto format = "{date} {time} [thread: {thread}][{context}][{severity}]: {message}\nAt {trace}";
+    auto format = "[{context}]: {message}";
+
+    auto stream = log_manager.CreateStream<syntropy::diagnostics::StreamLogger>(std::cout , format);
     
-    stream->BindContext({ Engine });
+    stream->BindContext({ Graphics });
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
     ConcurrentTest();
