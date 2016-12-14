@@ -102,37 +102,6 @@ namespace syntropy {
 
         }
 
-        //////////////// LOG MANAGER :: MESSAGE BUILDER ////////////////
-
-        void LogManager::MessageBuilder::AcquireStream()
-        {
-            auto& pool = GetPool();
-
-            std::unique_lock<std::mutex> lock(GetMutex());
-
-            if (pool.size() > 0)
-            {
-                // Recycle an existing stream from the pool
-                stream_ = std::move(pool[pool.size() - 1]);
-                pool.pop_back();
-            }
-            else
-            {
-                // Create a new stream
-                stream_ = std::make_unique<std::ostringstream>();
-            }
-        }
-
-        void LogManager::MessageBuilder::ReleaseStream()
-        {
-            stream_->clear();
-            stream_->str(std::string());
-
-            std::unique_lock<std::mutex> lock(GetMutex());
-
-            GetPool().emplace_back(std::move(stream_));         // Send the stream to the pool
-        }
-
         void LogManager::AttachStream(std::shared_ptr<LogStream> stream)
         {
             std::unique_lock<std::mutex> lock(mutex_);
@@ -153,28 +122,6 @@ namespace syntropy {
                                        streams_.end(),
                                        stream),
                            streams_.end());
-        }
-
-        void LogManager::MessageBuilder::Append()
-        {
-            // Append nothing
-        }
-
-        const std::string& LogManager::MessageBuilder::GetMessage() const
-        {
-            return message_;
-        }
-
-        std::mutex& LogManager::MessageBuilder::GetMutex()
-        {
-            static std::mutex mutex;
-            return mutex;
-        }
-
-        std::vector<std::unique_ptr<std::ostringstream>>& LogManager::MessageBuilder::GetPool()
-        {
-            static std::vector<std::unique_ptr<std::ostringstream>> pool;
-            return pool;
         }
 
         //////////////// STREAM LOGGER ////////////////

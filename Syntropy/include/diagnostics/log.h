@@ -167,48 +167,18 @@ namespace syntropy
 
         private:
 
-            /// \brief Utility class used to build a log message
-            /// This class is used to share a pool of streams without the need of creating a new one every single time.
-            /// \author Raffaele D. Facendola - November 2016
-            class MessageBuilder
-            {
+            template <typename THead, typename... TRest>
+            void Append(std::ostringstream& stream, THead&& head, TRest&&... rest) const;
 
-            public:
-
-                /// \brief Create a new builder. Recycle an existing stream if possible.
-                template <typename... TMessage>
-                MessageBuilder(TMessage&&... message);
-
-                /// \brief Get a pointer to the message.
-                const std::string& GetMessage() const;
-
-            private:
-
-                template <typename THead, typename... TRest>
-                void Append(THead head, TRest... rest);
-
-                void Append();
-
-                /// \brief Get the mutex used for synchronization purposes.
-                static std::mutex& GetMutex();
-
-                /// \brief Get the pool of recyclable streams.
-                static std::vector<std::unique_ptr<std::ostringstream>>& GetPool();
-
-                void AcquireStream();
-
-                void ReleaseStream();
-
-                std::unique_ptr<std::ostringstream> stream_;                    ///< \brief Stream associated to the builder.
-
-                std::string message_;                                           ///< \brief Actual message.
-
-            };
+            template <typename THead>
+            void Append(std::ostringstream& stream, THead&& head) const;
 
             /// \brief Prevents direct instantiation.
             LogManager() = default;
 
             std::mutex mutex_;                                              ///< \brief Used to synchronize various logging threads.
+
+            std::ostringstream message_builder_;                            ///< \brief Stream used to build log messages.
 
             std::vector<std::shared_ptr<LogStream>> streams_;               ///< \brief List of log streams.
 
@@ -291,42 +261,39 @@ namespace syntropy
         template <Severity kSeverity, typename... TMessage>
         void LogManager::SendMessage(const StackTrace& stacktrace, std::initializer_list<Context> contexts, TMessage&&... message)
         {
-            MessageBuilder message_builder(std::forward<TMessage>(message)...);     // Before the lock so the message can be built while another thread is writing to the log
+            std::unique_lock<std::mutex> lock(mutex_);
 
-            std::unique_lock<std::mutex> lock(mutex_);                              // Needed to guarantee the order of the log messages
+            Append(message_builder_, message...);
 
             LogMessage log;
             
             log.severity_ = kSeverity;
             log.stacktrace_ = stacktrace;
             log.contexts_ = contexts;
-            log.message_ = message_builder.GetMessage();
+            log.message_ = message_builder_.str();
 
             // Send the log to the streams
             for (auto&& stream : streams_)
             {
                 *stream << log;
             }
-        }
 
-        //////////////// LOG MANAGER :: MESSAGE BUILDER ////////////////
-
-        template <typename... TMessage>
-        LogManager::MessageBuilder::MessageBuilder(TMessage&&... message)
-        {
-            AcquireStream();
-
-            Append(std::forward<TMessage>(message)...);
-            message_ = stream_->str();
-
-            ReleaseStream();
+            // Clear the message builder
+            message_builder_.clear();
+            message_builder_.str("");
         }
 
         template <typename THead, typename... TRest>
-        void LogManager::MessageBuilder::Append(THead head, TRest... rest)
+        void LogManager::Append(std::ostringstream& stream, THead&& head, TRest&&... rest) const
         {
-            (*stream_) << head;
-            Append(std::forward<TRest>(rest)...);
+            Append(stream, head);
+            Append(stream, rest...);
+        }
+
+        template <typename THead>
+        void LogManager::Append(std::ostringstream& stream, THead&& head) const
+        {
+            stream << head;
         }
 
     }
