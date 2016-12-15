@@ -60,10 +60,10 @@ int main()
 
     auto& log_manager = syntropy::diagnostics::LogManager::GetInstance();
 
-    //auto format = "{date} {time} [thread: {thread}][{context}][{severity}]: {message}\nAt {trace}";
-    auto format = "[{context}]: {message}";
+    auto format = "[{date} {time}] [{severity}] [thread: {thread}] [{context}]: {message}\n   At {trace}";
+    //auto format = "[{context}]: {message}";
 
-    auto stream = log_manager.CreateStream<syntropy::diagnostics::StreamLogger>(std::cout , format);
+    auto stream = log_manager.CreateStream<syntropy::diagnostics::StreamLog>(log_file, format);
     
     stream->BindContext({ Graphics });
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);

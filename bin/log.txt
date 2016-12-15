@@ -1,0 +1,800 @@
+[2016-12-15 20:11:38.071] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.071] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.071] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.071] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.072] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.072] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.072] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.072] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.073] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.073] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.073] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.073] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.074] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.074] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.074] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.074] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.075] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.075] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.075] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.075] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.076] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.076] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.076] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.077] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.077] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.078] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.078] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.078] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.079] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.079] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.079] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.079] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.080] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.080] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.080] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.080] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.081] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.081] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.081] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.081] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.082] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.082] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.082] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.082] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.083] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.083] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.083] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.083] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.084] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.084] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.084] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.085] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.085] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.085] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.085] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.086] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.086] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.086] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.087] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.087] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.087] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.088] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.088] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.088] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.088] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.089] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.089] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.089] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.090] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.090] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.090] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.090] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.091] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.091] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.091] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.091] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.092] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.092] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.092] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.092] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.093] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.093] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.093] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.093] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.094] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.094] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.094] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.094] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.095] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.095] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.095] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.096] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.096] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.096] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.096] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.097] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.097] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.097] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.097] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.098] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.098] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.098] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.099] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.099] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.099] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.099] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.100] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.100] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.100] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.100] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.101] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.101] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.101] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.102] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.102] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.102] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.102] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.103] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.103] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.103] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.104] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.104] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.104] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.104] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.105] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.105] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.105] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.106] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.106] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.107] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.107] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.107] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.108] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.108] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.108] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.108] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.109] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.109] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.109] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.109] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.110] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.110] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.110] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.110] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.111] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.111] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.111] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.112] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.112] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.112] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.113] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.113] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.113] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.114] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.114] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.114] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.114] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.115] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.115] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.115] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.115] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.115] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.116] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.116] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.116] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.116] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.117] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.117] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.117] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.117] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.118] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.118] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.118] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.118] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.119] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.119] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.119] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.119] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.119] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.120] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.120] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.120] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.120] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.121] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.121] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.121] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.121] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.122] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.122] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.122] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.123] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.123] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.123] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.124] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.124] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.124] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.125] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.125] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.125] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.126] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.126] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.126] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.127] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.127] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.127] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.128] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.128] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.128] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.129] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.129] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.129] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.129] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.130] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.130] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.130] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.130] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.131] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.131] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.131] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.132] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.132] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.132] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.133] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.133] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.133] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.134] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.134] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.134] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.134] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.135] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.135] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.135] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.136] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.136] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.136] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.136] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.137] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.137] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.137] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.138] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.138] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.138] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.139] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.139] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.140] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.140] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.140] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.140] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.141] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.141] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.141] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.142] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.142] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.142] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.143] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.143] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.144] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.144] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.144] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.144] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.145] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.145] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.145] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.145] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.146] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.146] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.146] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.146] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.147] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.147] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.147] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.147] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.148] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.148] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.148] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.148] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.149] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.149] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.149] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.149] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.150] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.150] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.150] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.150] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.151] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.151] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.151] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.151] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.152] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.152] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.152] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.152] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.153] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.153] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.153] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.153] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.154] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.154] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.154] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.154] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.155] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.155] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.155] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.155] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.156] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.156] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.156] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.157] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.157] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.157] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.158] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.158] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.158] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.158] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.159] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.159] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.159] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.160] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.160] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.160] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.160] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.161] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.161] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.161] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.161] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.162] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.162] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.162] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.162] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.163] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.163] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.163] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.163] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.164] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.164] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.164] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.164] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.165] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.165] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.165] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.165] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.166] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.166] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.166] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.166] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.167] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.167] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.167] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.168] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.168] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.168] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.168] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.169] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.169] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.169] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.169] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.170] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.170] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.170] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.170] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.171] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.171] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.171] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.171] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.172] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.172] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.172] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.172] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.173] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.173] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.173] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.173] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.174] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.174] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.174] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.174] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.175] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.175] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.175] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.175] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.176] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.176] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.176] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.176] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.177] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.177] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.177] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.178] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.178] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.178] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.179] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.179] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.179] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.180] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.180] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.180] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.180] [Info] [thread: 4636] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.181] [Info] [thread: 1208] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.181] [Info] [thread: 4180] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)
+[2016-12-15 20:11:38.182] [Info] [thread: 3972] [Engine|CtxB]: It Works
+   At test::MyFunction (c:\users\raffa\desktop\syntropy\unittest\src\unit_test.cpp:20)

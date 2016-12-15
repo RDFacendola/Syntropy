@@ -7,16 +7,15 @@
 
 #include <chrono>
 #include <mutex>
-#include <vector>
 #include <sstream>
 #include <algorithm>
 #include <set>
-#include <chrono>
 #include <thread>
 
 #include "macro.h"
 #include "diagnostics.h"
 #include "debug.h"
+#include "algorithm.h"
 
 /// \brief Utility macro for sending a message to the log manager.
 #define SYNTROPY_LOG_MESSAGE(trace, severity, contexts, ...) \
@@ -77,17 +76,17 @@ namespace syntropy
 
         /// \brief Log stream used to output log messages.
         /// \author Raffaele D. Facendola - November 2016
-        class LogStream 
+        class BaseLogStream 
         {
 
         public:
 
             /// \brief Create a new log stream.
-            LogStream();
+            BaseLogStream();
 
             /// \brief Send a message to the stream.
             /// \param log Message to send.
-            LogStream& operator<<(const LogMessage& log);
+            BaseLogStream& operator<<(const LogMessage& log);
 
             /// \brief Set the verbosity level of the stream.
             /// Messages with severity lower than the stream verbosity are ignored.
@@ -145,7 +144,7 @@ namespace syntropy
             /// \brief Attach a log stream to the manager.
             /// If the stream is already attached to the manager, this method does nothing.
             /// \param log_stream Stream to attach.
-            void AttachStream(std::shared_ptr<LogStream> log_stream);
+            void AttachStream(std::shared_ptr<BaseLogStream> log_stream);
 
             /// \brief Create and attach a log stream to the manager.
             /// \tparam TLogStream Type of the log stream to create. Must derive from LogStream.
@@ -156,7 +155,7 @@ namespace syntropy
 
             /// \brief Detach an existing stream from the manager.
             /// \param stream Stream to detach.
-            void DetachStream(std::shared_ptr<LogStream> stream);
+            void DetachStream(std::shared_ptr<BaseLogStream> stream);
 
             /// \brief Send a log message.
             /// \tparam kSeverity Severity of the message.
@@ -167,12 +166,6 @@ namespace syntropy
 
         private:
 
-            template <typename THead, typename... TRest>
-            void Append(std::ostringstream& stream, THead&& head, TRest&&... rest) const;
-
-            template <typename THead>
-            void Append(std::ostringstream& stream, THead&& head) const;
-
             /// \brief Prevents direct instantiation.
             LogManager() = default;
 
@@ -180,13 +173,13 @@ namespace syntropy
 
             std::ostringstream message_builder_;                            ///< \brief Stream used to build log messages.
 
-            std::vector<std::shared_ptr<LogStream>> streams_;               ///< \brief List of log streams.
+            std::set<std::shared_ptr<BaseLogStream>> streams_;                  ///< \brief List of log streams.
 
         };
 
         /// \brief Used to redirect a log output to an output stream.
         /// \author Raffaele D. Facendola - December 2016
-        class StreamLogger : public LogStream
+        class StreamLog : public BaseLogStream
         {
 
         public:
@@ -212,7 +205,7 @@ namespace syntropy
             /// \param stream Stream where the messages are appended to.
             /// \param format Format of the log messages. See LogMessageFormatter.
             /// \param flush_severity Minimum severity required in order to trigger a stream flush.
-            StreamLogger(std::ostream& stream, const std::string& format, Severity flush_severity = Severity::kCritical);
+            StreamLog(std::ostream& stream, const std::string& format, Severity flush_severity = Severity::kCritical);
 
         protected:
 
@@ -263,7 +256,7 @@ namespace syntropy
         {
             std::unique_lock<std::mutex> lock(mutex_);
 
-            Append(message_builder_, message...);
+            Insert(message_builder_, std::forward<TMessage>(message)...);
 
             LogMessage log;
             
@@ -281,19 +274,6 @@ namespace syntropy
             // Clear the message builder
             message_builder_.clear();
             message_builder_.str("");
-        }
-
-        template <typename THead, typename... TRest>
-        void LogManager::Append(std::ostringstream& stream, THead&& head, TRest&&... rest) const
-        {
-            Append(stream, head);
-            Append(stream, rest...);
-        }
-
-        template <typename THead>
-        void LogManager::Append(std::ostringstream& stream, THead&& head) const
-        {
-            stream << head;
         }
 
     }

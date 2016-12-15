@@ -17,13 +17,13 @@ namespace syntropy {
         
         //////////////// LOG STREAM ////////////////
 
-        LogStream::LogStream()
+        BaseLogStream::BaseLogStream()
             : verbosity_(Severity::kInformative)
         {
 
         }
 
-        LogStream& LogStream::operator<<(const LogMessage& log)
+        BaseLogStream& BaseLogStream::operator<<(const LogMessage& log)
         {
             if (Match(log))
             {
@@ -33,27 +33,27 @@ namespace syntropy {
             return *this;
         }
 
-        void LogStream::SetVerbosity(Severity verbosity)
+        void BaseLogStream::SetVerbosity(Severity verbosity)
         {
             verbosity_ = verbosity;
         }
 
-        Severity LogStream::GetVerbosity() const
+        Severity BaseLogStream::GetVerbosity() const
         {
             return verbosity_;
         }
 
-        void LogStream::BindContext(std::initializer_list<Context> contexts)
+        void BaseLogStream::BindContext(std::initializer_list<Context> contexts)
         {
             contexts_.insert(contexts);
         }
 
-        void LogStream::UnbindContext(const Context& context)
+        void BaseLogStream::UnbindContext(const Context& context)
         {
             contexts_.erase(context);
         }
 
-        std::set<Context> LogStream::GetHitContexts(const LogMessage& log) const
+        std::set<Context> BaseLogStream::GetHitContexts(const LogMessage& log) const
         {
             std::set<Context> contexts;
 
@@ -71,12 +71,12 @@ namespace syntropy {
             return contexts;
         }
 
-        const std::set<Context>& LogStream::GetBoundContexts() const
+        const std::set<Context>& BaseLogStream::GetBoundContexts() const
         {
             return contexts_;
         }
 
-        bool LogStream::Match(const LogMessage& log) const
+        bool BaseLogStream::Match(const LogMessage& log) const
         {
             return log.severity_ >= verbosity_ &&
                    std::any_of(std::begin(log.contexts_),
@@ -102,50 +102,42 @@ namespace syntropy {
 
         }
 
-        void LogManager::AttachStream(std::shared_ptr<LogStream> stream)
+        void LogManager::AttachStream(std::shared_ptr<BaseLogStream> stream)
         {
             std::unique_lock<std::mutex> lock(mutex_);
 
-            if (std::find(streams_.begin(),
-                          streams_.end(),
-                          stream) == streams_.end())
-            {
-                streams_.emplace_back(std::move(stream));       // Avoid duplicated streams
-            }
+            streams_.emplace(std::move(stream));
         }
 
-        void LogManager::DetachStream(std::shared_ptr<LogStream> stream)
+        void LogManager::DetachStream(std::shared_ptr<BaseLogStream> stream)
         {
             std::unique_lock<std::mutex> lock(mutex_);
 
-            streams_.erase(std::remove(streams_.begin(),
-                                       streams_.end(),
-                                       stream),
-                           streams_.end());
+            streams_.erase(stream);
         }
 
         //////////////// STREAM LOGGER ////////////////
 
-        const std::string StreamLogger::kTimeToken("{time}");
-        const std::string StreamLogger::kDateToken("{date}");
-        const std::string StreamLogger::kSeverityToken("{severity}");
-        const std::string StreamLogger::kThreadToken("{thread}");
-        const std::string StreamLogger::kContextsToken("{context}");
-        const std::string StreamLogger::kStackTraceToken("{trace}");
-        const std::string StreamLogger::kFunctionToken("{function}");
-        const std::string StreamLogger::kMessageToken("{message}");
+        const std::string StreamLog::kTimeToken("{time}");
+        const std::string StreamLog::kDateToken("{date}");
+        const std::string StreamLog::kSeverityToken("{severity}");
+        const std::string StreamLog::kThreadToken("{thread}");
+        const std::string StreamLog::kContextsToken("{context}");
+        const std::string StreamLog::kStackTraceToken("{trace}");
+        const std::string StreamLog::kFunctionToken("{function}");
+        const std::string StreamLog::kMessageToken("{message}");
 
-        const char StreamLogger::kTokenStart = '{';
-        const char StreamLogger::kTokenEnd = '}';
+        const char StreamLog::kTokenStart = '{';
+        const char StreamLog::kTokenEnd = '}';
 
-        StreamLogger::StreamLogger(std::ostream& stream, const std::string& format, Severity flush_severity)
+        StreamLog::StreamLog(std::ostream& stream, const std::string& format, Severity flush_severity)
             : stream_(stream)
             , flush_severity_(flush_severity)
         {
             UpdateThunks(format);
         }
 
-        void StreamLogger::UpdateThunks(const std::string& format)
+        void StreamLog::UpdateThunks(const std::string& format)
         {
             thunks_.clear();
 
@@ -170,7 +162,7 @@ namespace syntropy {
             }
         }
 
-        void StreamLogger::OnSendMessage(const LogMessage& log)
+        void StreamLog::OnSendMessage(const LogMessage& log)
         {
             for (auto&& thunk : thunks_)
             {
@@ -189,7 +181,7 @@ namespace syntropy {
             }
         }
 
-        StreamLogger::Thunk StreamLogger::GetTokenThunk(const std::string& token)
+        StreamLog::Thunk StreamLog::GetTokenThunk(const std::string& token)
         {
             // Match each token with the proper thunk
             if (token == kTimeToken)
