@@ -4,25 +4,70 @@
 
 #pragma comment(lib, "DbgHelp.lib")
 
+#pragma warning(push)
+#pragma warning(disable:4091)
+
+#include <Windows.h>
+#include <DbgHelp.h>
+
+#pragma warning(pop)
+
 #include <string>
+#include <mutex>
+#include <thread>
 
 #include "syntropy.h"
-#include "scope_guard.h"
 
 namespace syntropy
 {
     namespace platform
     {
 
-        //////////////// WINDOWS DEBUGGER ////////////////
+        //////////////// WINDOWS DEBUGGER :: IMPLEMENTATION ////////////////
 
-        diagnostics::Debugger& WindowsDebugger::GetInstance()
+        /// \brief Implementation details.
+        /// The pimpl paradigm helps avoiding polluting everything with Windows macros... eww
+        struct WindowsDebugger::Implementation
         {
-            static WindowsDebugger instance;
-            return instance;
-        }
+            /// \brief Maximum symbol length.
+            static const size_t kMaxSymbolLength = 1024;
 
-        WindowsDebugger::WindowsDebugger()
+            /// \brief Contains a properly-sized SYMBOL_INFO structure that accounts for the actual maximum symbol length.
+            union SymbolInfo
+            {
+                char buffer[sizeof(SYMBOL_INFO) + kMaxSymbolLength * sizeof(TCHAR)];        ///< \brief Raw buffer.
+
+                SYMBOL_INFO symbol;                                                         ///< \brief Actual symbol info.
+            };
+
+            /// \brief Default constructor.
+            Implementation();
+
+            /// \brief Default destructor.
+            ~Implementation();
+
+            /// \brief Get the current stacktrace.
+            /// \param caller Code that issued the call to this method.
+            diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller, CONTEXT context) const;
+
+            /// \brief Get the stackframe from context.
+            /// \param context Contains the current context.
+            /// \param stackframe Contains the current stackframe.
+            void GetStackFrame(const CONTEXT& context, STACKFRAME64& stackframe) const;
+
+            /// \brief Get a StackTraceElement from a stack frame.
+            /// \param stackframe Stackframe to convert.
+            /// \return Returns the StackTraceElement associated to the provided stackframe.
+            diagnostics::StackTraceElement GetStackTraceElement(const STACKFRAME64& stackframe) const;
+            
+            mutable std::mutex mutex_;              ///< \brief Used for synchronization. Symbol loading and stack walking are not thread safe!
+
+            HANDLE process_;                        ///< \brief Current process handle.
+
+            bool has_symbols_;                      ///< \brief Whether the symbols for this process were loaded correctly.
+        };
+
+        WindowsDebugger::Implementation::Implementation()
             : process_(GetCurrentProcess())
         {
             has_symbols_ = SymInitialize(process_, nullptr, true) != 0;
@@ -33,7 +78,7 @@ namespace syntropy
             }
         }
 
-        WindowsDebugger::~WindowsDebugger()
+        WindowsDebugger::Implementation::~Implementation()
         {
             if (has_symbols_)
             {
@@ -41,44 +86,23 @@ namespace syntropy
             }
         }
 
-        bool WindowsDebugger::IsDebuggerAttached() const
-        {
-            return IsDebuggerPresent() != 0;
-        }
-
-        diagnostics::StackTrace WindowsDebugger::GetStackTrace(diagnostics::StackTraceElement caller) const
-        {
-            auto stacktrace = GetStackTrace(1, true);                   // Discard this stack frame and trace everything else
-
-            // Ensures that the most recent element in the stack trace is always present, even if the symbols are not loaded.
-            stacktrace.elements_.front() = std::move(caller);
-
-            return stacktrace;
-        }
-
-        diagnostics::StackTrace WindowsDebugger::GetCallTrace(size_t count) const
-        {
-            return GetStackTrace(count + 1, false);                                 // Discard this function call as well
-        }
-
-        diagnostics::StackTrace WindowsDebugger::GetStackTrace(size_t discard_count, bool trace_all) const
+        diagnostics::StackTrace WindowsDebugger::Implementation::GetStackTrace(diagnostics::StackTraceElement caller, CONTEXT context) const
         {
             std::unique_lock<std::mutex> lock(mutex_);                  // Stackwalking is not thread-safe
 
-            ++discard_count;                                            // Discard this stack frame as well
-
             diagnostics::StackTrace stacktrace;
+
+            STACKFRAME64 stackframe;
 
             stacktrace.elements_.reserve(64);                           // An educated guess of the stack trace depth
 
-            CONTEXT context;
-            STACKFRAME64 stackframe;
-
-            RtlCaptureContext(&context);                                // Initialize the current stack frame and the context
             GetStackFrame(context, stackframe);
 
             // Stack walking
             bool keep_walking;
+            int frames_to_discard = 1;
+
+            diagnostics::StackTraceElement current_element;
 
             do
             {
@@ -92,23 +116,23 @@ namespace syntropy
                                            SymGetModuleBase64,
                                            nullptr) != 0;
 
-                if (discard_count == 0)
+                if (frames_to_discard == 0)
                 {
-                    stacktrace.elements_.emplace_back(GetStackTraceElement(stackframe));
-
-                    keep_walking &= trace_all;                          // Exit on the first non-discarded element if trace_all is false
+                    stacktrace.elements_.emplace_back(std::move(GetStackTraceElement(stackframe)));
                 }
                 else
                 {
-                    --discard_count;
+                    --frames_to_discard;
                 }
-
             } while (keep_walking);
+
+            // Preserve the caller symbol in case PDB are not available.
+            stacktrace.elements_.front() = std::move(caller);
 
             return stacktrace;
         }
 
-        void WindowsDebugger::GetStackFrame(const CONTEXT& context, STACKFRAME64& stackframe) const
+        void WindowsDebugger::Implementation::GetStackFrame(const CONTEXT& context, STACKFRAME64& stackframe) const
         {
             memset(&stackframe, 0, sizeof(stackframe));
 
@@ -121,15 +145,15 @@ namespace syntropy
             stackframe.AddrFrame.Mode = AddrModeFlat;
         }
 
-        diagnostics::StackTraceElement WindowsDebugger::GetStackTraceElement(const STACKFRAME64& stackframe) const
+        diagnostics::StackTraceElement WindowsDebugger::Implementation::GetStackTraceElement(const STACKFRAME64& stackframe) const
         {
-            diagnostics::StackTraceElement element;
+            syntropy::diagnostics::StackTraceElement element;
 
             IMAGEHLP_LINE64 line_info;
             SymbolInfo symbol_info;
 
             DWORD displacement;
-            
+
             line_info.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
 
             symbol_info.symbol.SizeOfStruct = sizeof(SYMBOL_INFO);
@@ -153,6 +177,34 @@ namespace syntropy
             }
 
             return element;
+        }
+
+        //////////////// WINDOWS DEBUGGER ////////////////
+
+        diagnostics::Debugger& WindowsDebugger::GetInstance()
+        {
+            static WindowsDebugger instance;
+            return instance;
+        }
+
+        WindowsDebugger::WindowsDebugger()
+            : implementation_(std::make_unique<Implementation>())
+        {
+
+        }
+        
+        bool WindowsDebugger::IsDebuggerAttached() const
+        {
+            return IsDebuggerPresent() != 0;
+        }
+
+        diagnostics::StackTrace WindowsDebugger::GetStackTrace(diagnostics::StackTraceElement caller) const
+        {
+            CONTEXT context;
+
+            RtlCaptureContext(&context);
+
+            return implementation_->GetStackTrace(std::move(caller), context);
         }
 
         //////////////// WINDOWS SYSTEM ////////////////

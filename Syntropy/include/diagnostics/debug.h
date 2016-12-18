@@ -23,10 +23,6 @@
 #define SYNTROPY_STACKTRACE \
     syntropy::diagnostics::GetDebugger().GetStackTrace(SYNTROPY_HERE)
 
-/// \brief Get the count-th most recent function call on the stack.
-#define SYNTROPY_CALLTRACE(count) \
-    syntropy::diagnostics::GetDebugger().GetCallTrace(count)
-
 namespace syntropy
 {
     namespace diagnostics
@@ -108,11 +104,6 @@ namespace syntropy
             /// \param caller Stack trace element representing the code that called this method.
             /// \return Returns the stack trace whose head is caller.
             virtual diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller) const = 0;
-
-            /// \brief Get the trace of a single function call in the stack relative to the current thread.
-            /// \param count Index of the call to get, starting from the most recent one.
-            /// \return Returns the stack trace whose head is the count-th call starting from this one.
-            virtual diagnostics::StackTrace GetCallTrace(size_t count) const = 0;
 
         protected:
 
