@@ -4,6 +4,8 @@
 
 #pragma comment(lib, "DbgHelp.lib")
 
+#include "scope_guard.h"
+
 namespace syntropy
 {
     namespace platform
@@ -43,23 +45,37 @@ namespace syntropy
 
         diagnostics::StackTrace WindowsDebugger::GetStackTrace(diagnostics::StackTraceElement caller) const
         {
-            static const size_t kFramesToDiscard = 1;           // Ignore this function call
+            auto stacktrace = GetStackTrace(1, true);                   // Discard this stack frame and trace everything else
 
-            std::unique_lock<std::mutex> lock(mutex_);          // Stackwalking is not thread-safe
+            // Ensures that the most recent element in the stack trace is always present, even if the symbols are not loaded.
+            stacktrace.elements_.front() = std::move(caller);
+
+            return stacktrace;
+        }
+
+        diagnostics::StackTrace WindowsDebugger::GetCallTrace(size_t count) const
+        {
+            return GetStackTrace(count + 1, false);                                 // Discard this function call as well
+        }
+
+        diagnostics::StackTrace WindowsDebugger::GetStackTrace(size_t discard_count, bool trace_all) const
+        {
+            std::unique_lock<std::mutex> lock(mutex_);                  // Stackwalking is not thread-safe
+
+            ++discard_count;                                            // Discard this stack frame as well
 
             diagnostics::StackTrace stacktrace;
 
-            stacktrace.elements_.reserve(64);                   // An educated guess of the stack trace depth
+            stacktrace.elements_.reserve(64);                           // An educated guess of the stack trace depth
 
             CONTEXT context;
             STACKFRAME64 stackframe;
 
-            RtlCaptureContext(&context);                        // Initialize the current stack frame and the context
+            RtlCaptureContext(&context);                                // Initialize the current stack frame and the context
             GetStackFrame(context, stackframe);
-            
+
             // Stack walking
             bool keep_walking;
-            size_t frames = 0;
 
             do
             {
@@ -72,22 +88,20 @@ namespace syntropy
                                            SymFunctionTableAccess64,
                                            SymGetModuleBase64,
                                            nullptr) != 0;
-                frames++;
 
-                if (frames > kFramesToDiscard + 1)
+                if (discard_count == 0)
                 {
                     stacktrace.elements_.emplace_back(GetStackTraceElement(stackframe));
+
+                    keep_walking &= trace_all;                          // Exit on the first non-discarded element if trace_all is false
                 }
-                else if (frames == kFramesToDiscard + 1)
+                else
                 {
-                    // We must ensure that the most recent element in the stack trace is always present, even if the symbols are not loaded.
-                    // Replace the first element with the one that was generated at compile-time.
-                    stacktrace.elements_.emplace_back(std::move(caller));
+                    --discard_count;
                 }
 
-            } 
-            while (keep_walking);
-            
+            } while (keep_walking);
+
             return stacktrace;
         }
 

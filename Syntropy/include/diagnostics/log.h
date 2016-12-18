@@ -169,11 +169,11 @@ namespace syntropy
             /// \brief Prevents direct instantiation.
             LogManager() = default;
 
-            std::mutex mutex_;                                              ///< \brief Used to synchronize various logging threads.
+            std::recursive_mutex mutex_;                                    ///< \brief Used to synchronize various logging threads.
 
             std::ostringstream message_builder_;                            ///< \brief Stream used to build log messages.
 
-            std::set<std::shared_ptr<BaseLogStream>> streams_;                  ///< \brief List of log streams.
+            std::set<std::shared_ptr<BaseLogStream>> streams_;              ///< \brief List of log streams.
 
         };
 
@@ -254,26 +254,30 @@ namespace syntropy
         template <Severity kSeverity, typename... TMessage>
         void LogManager::SendMessage(const StackTrace& stacktrace, std::initializer_list<Context> contexts, TMessage&&... message)
         {
-            std::unique_lock<std::mutex> lock(mutex_);
+            std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-            Insert(message_builder_, std::forward<TMessage>(message)...);
-
-            LogMessage log;
-            
-            log.severity_ = kSeverity;
-            log.stacktrace_ = stacktrace;
-            log.contexts_ = contexts;
-            log.message_ = message_builder_.str();
-
-            // Send the log to the streams
-            for (auto&& stream : streams_)
+            if (streams_.size() > 0)
             {
-                *stream << log;
+                Insert(message_builder_, std::forward<TMessage>(message)...);
+
+                LogMessage log;
+            
+                log.severity_ = kSeverity;
+                log.stacktrace_ = stacktrace;
+                log.contexts_ = contexts;
+                log.message_ = message_builder_.str();
+
+                // Send the log to the streams
+                for (auto&& stream : streams_)
+                {
+                    *stream << log;
+                }
+
+                // Clear the message builder
+                message_builder_.clear();
+                message_builder_.str("");
             }
 
-            // Clear the message builder
-            message_builder_.clear();
-            message_builder_.str("");
         }
 
     }

@@ -104,14 +104,14 @@ namespace syntropy {
 
         void LogManager::AttachStream(std::shared_ptr<BaseLogStream> stream)
         {
-            std::unique_lock<std::mutex> lock(mutex_);
+            std::unique_lock<std::recursive_mutex> lock(mutex_);
 
             streams_.emplace(std::move(stream));
         }
 
         void LogManager::DetachStream(std::shared_ptr<BaseLogStream> stream)
         {
-            std::unique_lock<std::mutex> lock(mutex_);
+            std::unique_lock<std::recursive_mutex> lock(mutex_);
 
             streams_.erase(stream);
         }

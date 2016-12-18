@@ -18,6 +18,7 @@
 #pragma warning(pop)
 
 #include <mutex>
+#include <thread>
 
 #include "diagnostics/debug.h"
 
@@ -40,8 +41,10 @@ namespace syntropy
             virtual ~WindowsDebugger();
 
             virtual bool IsDebuggerAttached() const override;
-
+            
             virtual diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller) const override;
+
+            virtual diagnostics::StackTrace GetCallTrace(size_t count) const override;
 
         private:
 
@@ -59,6 +62,12 @@ namespace syntropy
             /// \brief Default constructor.
             WindowsDebugger();
 
+            /// \brief Get the limited stacktrace.
+            /// \param discard_count Number of stack frames to discard, starting from the most recent one.
+            /// \param trace_all Whether to perform a full stack walk (true) or not. If false returns a single function call.
+            /// \return Returns the stack trace whose head is the discard_count-th stack frame starting from this call (excluded) and with a maximum depth of trace_count.
+            diagnostics::StackTrace GetStackTrace(size_t discard_count, bool trace_all) const;
+
             /// \brief Get the stackframe from context.
             /// \param context Contains the current context.
             /// \param stackframe Contains the current stackframe.
@@ -69,11 +78,11 @@ namespace syntropy
             /// \return Returns the StackTraceElement associated to the provided stackframe.
             diagnostics::StackTraceElement GetStackTraceElement(const STACKFRAME64& stackframe) const;
 
-            mutable std::mutex mutex_;          ///< \brief Used for synchronization. Symbol loading and stack walking are not thread safe!
+            mutable std::mutex mutex_;                      ///< \brief Used for synchronization. Symbol loading and stack walking are not thread safe!
 
-            HANDLE process_;                    ///< \brief Current process handle.
+            HANDLE process_;                                ///< \brief Current process handle.
 
-            bool has_symbols_;                  ///< \brief Whether the symbols for this process were loaded correctly.
+            bool has_symbols_;                              ///< \brief Whether the symbols for this process were loaded correctly.
 
         };
 
