@@ -116,7 +116,7 @@ namespace syntropy
 
         Debugger& Debugger::GetInstance()
         {
-            return platform::Debugger::GetInstance();
+            return platform::PlatformDebugger::GetInstance();
         }
 
         Debugger& GetDebugger()

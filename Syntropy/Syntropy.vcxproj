@@ -50,6 +50,10 @@
     <ClInclude Include="include\platform\compiler.h" />
     <ClInclude Include="include\platform\os.h" />
     <ClInclude Include="include\platform\os\windows_os.h" />
+    <ClInclude Include="include\platform\system.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\reflection\class.h">
       <SubType>
       </SubType>
@@ -114,6 +118,10 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="src\platform\os\windows_os.cpp" />
+    <ClCompile Include="src\platform\system.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\reflection\class.cpp">
       <SubType>
       </SubType>

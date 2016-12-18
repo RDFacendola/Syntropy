@@ -21,13 +21,14 @@
 #include <thread>
 
 #include "diagnostics/debug.h"
+#include "platform/system.h"
 
 namespace syntropy
 {
     namespace platform
     {
 
-        /// \brief Exposes Windows-specific debugging functionalities.
+        /// \brief Exposes Windows-specific debugging functionalities under Windows OS.
         /// \author Raffaele D. Facendola - December 2016
         class WindowsDebugger : public diagnostics::Debugger
         {
@@ -86,8 +87,32 @@ namespace syntropy
 
         };
 
-        ///< \brief Utility type definition so that the code can refer to "platform::Debugger" without having to know the actual concrete class.
-        using Debugger = WindowsDebugger;
+        ///< \brief Utility type definition so that the code can refer to "platform::PlatformDebugger" without having to know the actual concrete class.
+        using PlatformDebugger = WindowsDebugger;
+
+        /// \brief Exposes methods to query system's capabilities under Windows OS.
+        /// \author Raffaele D. Facendola 
+        class WindowsSystem : public System
+        {
+        public:
+
+            /// \brief Get the singleton instance.
+            /// \return Returns the singleton instance;
+            static System& GetInstance();
+
+            virtual CPUInfo GetCPUInfo() const override;
+
+            virtual StorageInfo GetStorageInfo() const override;
+
+            virtual MemoryInfo GetMemoryInfo() const override;
+
+            virtual DisplayInfo GetDisplayInfo() const override;
+
+            virtual PlatformInfo GetPlatformInfo() const override;
+        };
+
+        ///< \brief Utility type definition so that the code can refer to "platform::PlatformSystem" without having to know the actual concrete class.
+        using PlatformSystem = WindowsSystem;
 
     }
 }
