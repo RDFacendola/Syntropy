@@ -14,12 +14,23 @@ namespace syntropy
     namespace platform
     {
 
+        /// \brief CPU architectures.
+        /// \author Raffaele D. Facendola
+        enum class CPUArchitecture
+        {
+            kx86,                       ///< \brief x86 architecture.
+            kx64,                       ///< \brief x64 architecture.
+            kARM,                       ///< \brief ARM architecture.
+            kUnknown,                   ///< \brief Unknown architecture.
+        };
+
         /// \brief Describes the CPU's capabilities.
         /// \author Raffaele D. Facendola
         struct CPUInfo
         {
-            uint32_t cores_;            ///< \brief Number of logical cores.
-            uint64_t frequency_;        ///< \brief Frequency of each core in Hz.
+            uint64_t frequency_;                ///< \brief Frequency of each core in Hz.
+            uint32_t cores_;                    ///< \brief Number of logical cores.
+            CPUArchitecture architecture_;      ///< \brief CPU architecture.
         };
 
         /// \brief Describes a particular drive.
@@ -42,6 +53,11 @@ namespace syntropy
         /// \author Raffaele D. Facendola
         struct MemoryInfo
         {
+            uint64_t page_size_;                    ///< \brief Size of each memory page, in bytes.
+            uint64_t allocation_granularity_;       ///< \brief Granularity for virtual memory allocation, in bytes.
+            uint64_t lowest_memory_address_;        ///< \brief Lowest virtual memory address accessible by the application.
+            uint64_t highest_memory_address_;       ///< \brief Highest virtual memory address accessible by the application.
+
             uint64_t total_physical_memory_;        ///< \brief Total physical memory, in bytes.
             uint64_t total_virtual_memory_;         ///< \brief Total virtual address space for the current process, in bytes.
             uint64_t total_page_memory_;            ///< \brief Total page memory, in bytes.
@@ -80,7 +96,7 @@ namespace syntropy
         /// \author Raffaele D. Facendola - December 2016
         struct PlatformInfo
         {
-            OperatingSystem operating_system_;      ///< \brief Current operating system.
+            OperatingSystem operating_system_;          ///< \brief Current operating system.
         };
 
         /// \brief Exposes methods to query system's capabilities.

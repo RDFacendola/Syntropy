@@ -176,6 +176,30 @@ namespace syntropy
             cpu_info.cores_ = static_cast<uint32_t>(system_info.dwNumberOfProcessors);
             cpu_info.frequency_ = static_cast<uint64_t>(frequency.QuadPart) * 1000;
 
+            switch (system_info.wProcessorArchitecture)
+            {
+                case PROCESSOR_ARCHITECTURE_AMD64:
+                {
+                    cpu_info.architecture_ = CPUArchitecture::kx64;
+                    break;
+                }
+                case PROCESSOR_ARCHITECTURE_INTEL:
+                {
+                    cpu_info.architecture_ = CPUArchitecture::kx86;
+                    break;
+                }
+                case PROCESSOR_ARCHITECTURE_ARM:
+                {
+                    cpu_info.architecture_ = CPUArchitecture::kARM;
+                    break;
+                }
+                default:
+                {
+                    cpu_info.architecture_ = CPUArchitecture::kUnknown;
+                    break;
+                }
+            }
+
             return cpu_info;
         }
 
@@ -216,10 +240,17 @@ namespace syntropy
             MemoryInfo memory_info;
 
             MEMORYSTATUSEX memory_status;
+            SYSTEM_INFO system_info;
 
             memory_status.dwLength = sizeof(MEMORYSTATUSEX);
 
+            GetSystemInfo(&system_info);
             GlobalMemoryStatusEx(&memory_status);
+
+            memory_info.page_size_ = system_info.dwPageSize;
+            memory_info.allocation_granularity_ = system_info.dwAllocationGranularity;
+            memory_info.lowest_memory_address_ = reinterpret_cast<uint64_t>(system_info.lpMinimumApplicationAddress);
+            memory_info.highest_memory_address_ = reinterpret_cast<uint64_t>(system_info.lpMaximumApplicationAddress);
 
             memory_info.total_physical_memory_ = static_cast<uint64_t>(memory_status.ullTotalPhys);
             memory_info.total_virtual_memory_ = static_cast<uint64_t>(memory_status.ullTotalVirtual);
