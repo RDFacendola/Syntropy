@@ -1,6 +1,6 @@
 
 /// \file scope_guard.h
-/// \brief TODO: Add brief description here
+/// \brief Contains definition for classes used for systematic error handling via RAII paradigms.
 ///
 /// \author Raffaele D. Facendola - 2016
 
