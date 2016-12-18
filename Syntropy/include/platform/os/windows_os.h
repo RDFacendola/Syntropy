@@ -76,6 +76,36 @@ namespace syntropy
         ///< \brief Utility type definition so that the code can refer to "platform::PlatformSystem" without having to know the actual concrete class.
         using PlatformSystem = WindowsSystem;
 
+        class WindowsMemory : public Memory
+        {
+        public:
+
+            /// \brief Get the singleton instance.
+            /// \return Returns the singleton instance;
+            static Memory& GetInstance();
+
+            virtual VirtualMemoryRange ReserveVirtualRange(size_t count) override;
+
+            virtual bool ReleaseVirtualRange(const VirtualMemoryRange& range) override;
+
+            virtual MemoryBlock AllocMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size) override;
+
+            virtual bool FreeMemoryBlock(const MemoryBlock& block) override;
+
+        private:
+
+            /// \brief Default constructor.
+            WindowsMemory();
+
+            size_t page_size_;                              ///< \brief Size of each memory page, in bytes.
+
+            size_t allocation_granularity_;                 ///< \brief Granularity for virtual memory allocation, in bytes.
+
+        };
+
+        ///< \brief Utility type definition so that the code can refer to "platform::PlatformMemory" without having to know the actual concrete class.
+        using PlatformMemory = WindowsMemory;
+
     }
 }
 

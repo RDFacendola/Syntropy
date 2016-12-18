@@ -365,6 +365,60 @@ namespace syntropy
             return platform_info;
         }
 
+        //////////////// WINDOWS MEMORY ////////////////
+
+        Memory& WindowsMemory::GetInstance()
+        {
+            static WindowsMemory instance;
+            return instance;
+        }
+
+        WindowsMemory::WindowsMemory()
+        {
+            auto memory_info = WindowsSystem::GetInstance().GetMemoryInfo();
+
+            page_size_ = memory_info.page_size_;
+            allocation_granularity_ = memory_info.allocation_granularity_;
+        }
+
+        VirtualMemoryRange WindowsMemory::ReserveVirtualRange(size_t count)
+        {
+            // Round up to the nearest multiple of the allocation granularity
+            count = ((count + allocation_granularity_ - 1) / allocation_granularity_) * allocation_granularity_;
+
+            auto base_address = reinterpret_cast<int8_t*>(VirtualAlloc(0, count, MEM_RESERVE, PAGE_READWRITE));
+
+            return VirtualMemoryRange(base_address, count);
+        }
+
+        bool WindowsMemory::ReleaseVirtualRange(const VirtualMemoryRange& range)
+        {
+            return VirtualFree(range.GetBaseAddress(), 0, MEM_RELEASE) != 0;
+        }
+
+        MemoryBlock WindowsMemory::AllocMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size)
+        {
+            if (offset + size >= range.GetCount())
+            {
+                return MemoryBlock(nullptr, 0);
+            }
+
+            // Round up to the nearest multiple of the page size
+            size = ((size + page_size_ - 1) / page_size_) * page_size_;
+
+            // Round down to the nearest multiple of the page size
+            offset = (offset / page_size_) * page_size_;
+
+            auto address = reinterpret_cast<int8_t*>(VirtualAlloc(range.GetBaseAddress() + offset, size, MEM_COMMIT, PAGE_READWRITE));
+
+            return MemoryBlock(address, size);
+        }
+
+        bool WindowsMemory::FreeMemoryBlock(const MemoryBlock& block)
+        {
+            // Assumes the memory block has not been tampered with
+            return VirtualFree(block.GetBaseAddress(), block.GetCount(), MEM_DECOMMIT) != 0;
+        }
     }
 }
 

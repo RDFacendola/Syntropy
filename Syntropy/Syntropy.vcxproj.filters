@@ -45,6 +45,7 @@
     <ClInclude Include="include\diagnostics\debug.h" />
     <ClInclude Include="include\algorithm.h" />
     <ClInclude Include="include\date.h" />
+    <ClInclude Include="include\memory\memory.h" />
     <ClInclude Include="include\scope_guard.h" />
     <ClInclude Include="include\platform\system.h" />
   </ItemGroup>
@@ -70,6 +71,7 @@
     <ClCompile Include="src\platform\os\windows_os.cpp" />
     <ClCompile Include="src\diagnostics\debug.cpp" />
     <ClCompile Include="src\date.cpp" />
+    <ClCompile Include="src\memory\memory.cpp" />
     <ClCompile Include="src\platform\system.cpp" />
   </ItemGroup>
   <ItemGroup>

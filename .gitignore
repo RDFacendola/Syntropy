@@ -34,3 +34,4 @@ build/
 ipch/
 *.iobj
 bin/UnitTest_Release.ipdb
+bin/log.txt
