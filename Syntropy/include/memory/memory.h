@@ -21,14 +21,19 @@ namespace syntropy
         /// \brief Create a new memory range.
         /// \param base_address Base address of the range.
         /// \param count Number of addresses inside the range.
-        MemoryRange(int8_t* base_address, size_t count);
+        MemoryRange(void* base_address, size_t count);
 
         /// \brief Get the amount of memory addresses stored inside this range.
         size_t GetCount() const;
 
         /// \brief Get the base address of the range.
         /// \return Returns the base address of the range.
-        int8_t* GetBaseAddress() const;
+        void* GetBaseAddress() const;
+
+        /// \brief Get a typed pointer inside the memory block.
+        /// \param offset Offset, in sizeof(TPtr) bytes.
+        template <typename TPtr>
+        TPtr* GetPointer(size_t offset = 0) const;
 
         /// \brief Check whether this range is valid.
         /// \return Returns true if the range is valid, returns false otherwise.
@@ -36,7 +41,7 @@ namespace syntropy
 
     private:
 
-        int8_t* base_address_;          ///< \brief Pointer to the first address of the range. If the range is valid, this value is non-zero.
+        void* base_address_;            ///< \brief Pointer to the first address of the range. If the range is valid, this value is non-zero.
 
         size_t count_;                  ///< \brief Number of addresses in the range.
     };
@@ -54,6 +59,33 @@ namespace syntropy
     /// \brief Utility type for memory blocks.
     /// A memory block represents a group of contiguous memory pages that can be allocated or freed.
     using MemoryBlock = MemoryRange<MemoryBlockTag>;
+
+    /// \brief A stack of memory addresses.
+    /// The stack reserves a range of virtual memory address but allocates only when needed.
+    /// The stack is guaranteed to never reallocate.
+    /// \author Raffaele D. Facendola - December 2016
+    class MemoryAddressStack
+    {
+    public:
+
+        /// \brief Create a new address stack.
+        /// \param count Maximum number of addresses to memorize.
+        /// \param factor Size of the pages
+        MemoryAddressStack(size_t count);
+
+        void Push(void* address);
+
+        void* Pop();
+
+        bool IsEmpty() const;
+
+    private:
+
+        VirtualMemoryRange memory_range_;           ///< \brief Memory range reserved for this stack.
+
+        size_t size_;                               ///< \brief Current size of the stack.
+
+    };
 
     /// \brief Wraps the low-level calls used to handle virtual memory allocation.
     /// \author Raffaele D. Facendola - December 2016
@@ -107,7 +139,7 @@ namespace syntropy
     //////////////// MEMORY RANGE ////////////////
 
     template <typename TTag>
-    MemoryRange<TTag>::MemoryRange(int8_t* base_address, size_t count)
+    MemoryRange<TTag>::MemoryRange(void* base_address, size_t count)
         : base_address_(base_address)
         , count_(count)
     {
@@ -121,9 +153,16 @@ namespace syntropy
     }
 
     template <typename TTag>
-    int8_t* MemoryRange<TTag>::GetBaseAddress() const
+    void* MemoryRange<TTag>::GetBaseAddress() const
     {
         return base_address_;
+    }
+
+    template <typename TTag>
+    template <typename TPtr>
+    TPtr* MemoryRange<TTag>::GetPointer(size_t offset) const
+    {
+        return reinterpret_cast<TPtr*>(base_address_) + offset;
     }
 
     template <typename TTag>

@@ -386,7 +386,7 @@ namespace syntropy
             // Round up to the nearest multiple of the allocation granularity
             count = ((count + allocation_granularity_ - 1) / allocation_granularity_) * allocation_granularity_;
 
-            auto base_address = reinterpret_cast<int8_t*>(VirtualAlloc(0, count, MEM_RESERVE, PAGE_READWRITE));
+            auto base_address = VirtualAlloc(0, count, MEM_RESERVE, PAGE_READWRITE);
 
             return VirtualMemoryRange(base_address, count);
         }
@@ -398,7 +398,7 @@ namespace syntropy
 
         MemoryBlock WindowsMemory::AllocMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size)
         {
-            if (offset + size >= range.GetCount())
+            if (offset + size > range.GetCount())
             {
                 return MemoryBlock(nullptr, 0);
             }
@@ -409,7 +409,7 @@ namespace syntropy
             // Round down to the nearest multiple of the page size
             offset = (offset / page_size_) * page_size_;
 
-            auto address = reinterpret_cast<int8_t*>(VirtualAlloc(range.GetBaseAddress() + offset, size, MEM_COMMIT, PAGE_READWRITE));
+            auto address = VirtualAlloc(range.GetPointer<int8_t>(offset), size, MEM_COMMIT, PAGE_READWRITE);
 
             return MemoryBlock(address, size);
         }

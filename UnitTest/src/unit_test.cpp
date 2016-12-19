@@ -8,7 +8,9 @@
 
 #include "platform/system.h"
 #include "memory/memory.h"
+#include "memory/allocation.h"
 #include "diagnostics/log.h"
+
 
 syntropy::diagnostics::Context Root;
 
@@ -45,25 +47,19 @@ int main()
 
     //
 
-    auto mp = syntropy::platform::GetSystem().GetMemoryInfo();
+    int a = 100;
+    int b = 10;
 
-    SYNTROPY_UNUSED(mp);
+    int* p;
 
-    auto& memory = syntropy::GetMemory();
+    syntropy::MemoryAddressStack mas(0x1000);
 
-    auto chunk = memory.ReserveVirtualRange(0xEC00000000);
+    mas.Push(&a);
+    mas.Push(&b);
 
-    auto block = memory.AllocMemoryBlock(chunk, 0, 0x100000000);
-    block = memory.AllocMemoryBlock(chunk, 0, 0x5000);                  // Memory stomp, yay!
-
-    for (auto i = 0; i < block.GetCount(); i += 4096)
-    {
-        *(block.GetBaseAddress() + i) = 47;
-    }
-
-    std::cout << memory.FreeMemoryBlock(block);
-
-    std::cout << memory.ReleaseVirtualRange(chunk);
+    p = reinterpret_cast<int*>(mas.Pop());
+    p = reinterpret_cast<int*>(mas.Pop());
+    p = reinterpret_cast<int*>(mas.Pop());
 
     //
 
