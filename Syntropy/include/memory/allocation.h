@@ -45,7 +45,7 @@ namespace syntropy
 
         VirtualMemoryRange memory_range_;           ///< \brief Memory range reserved by this allocator.
 
-        MemoryAddressStack free_addresses_;
+        MemoryAddressPool free_addresses_;          ///< \brief Pool of free addresses.
 
         MemoryBlock head_;                          ///< \brief First free memory page. Each free page contains a 64-bit pointer to the next free page. 0 means that the free list is empty
 

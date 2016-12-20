@@ -23,17 +23,16 @@ namespace syntropy
         /// \param count Number of addresses inside the range.
         MemoryRange(void* base_address, size_t count);
 
+        /// \brief Get the base address of the memory range.
+        /// \return Returns the base address of the memory range.
+        void* GetBaseAddress() const;
+
         /// \brief Get the amount of memory addresses stored inside this range.
         size_t GetCount() const;
 
-        /// \brief Get the base address of the range.
-        /// \return Returns the base address of the range.
-        void* GetBaseAddress() const;
-
-        /// \brief Get a typed pointer inside the memory block.
-        /// \param offset Offset, in sizeof(TPtr) bytes.
-        template <typename TPtr>
-        TPtr* GetPointer(size_t offset = 0) const;
+        /// \brief Get an address within the range.
+        /// \param offset Offset from the base address, in bytes.
+        void* GetAddress(size_t offset = 0) const;
 
         /// \brief Check whether this range is valid.
         /// \return Returns true if the range is valid, returns false otherwise.
@@ -60,23 +59,30 @@ namespace syntropy
     /// A memory block represents a group of contiguous memory pages that can be allocated or freed.
     using MemoryBlock = MemoryRange<MemoryBlockTag>;
 
-    /// \brief A stack of memory addresses.
-    /// The stack reserves a range of virtual memory address but allocates only when needed.
-    /// The stack is guaranteed to never reallocate.
+    /// \brief A pool of memory addresses.
+    /// The pool reserves a range of virtual memory address but allocates only when needed.
+    /// This class is not thread-safe!
     /// \author Raffaele D. Facendola - December 2016
-    class MemoryAddressStack
+    class MemoryAddressPool
     {
     public:
 
-        /// \brief Create a new address stack.
+        /// \brief Create a new address pool.
         /// \param count Maximum number of addresses to memorize.
-        /// \param factor Size of the pages
-        MemoryAddressStack(size_t count);
+        MemoryAddressPool(size_t count);
 
+        /// \brief Insert an element inside the pool.
+        /// The element can be extracted at any time via Extract().
+        /// \param address Address to acquire.
         void Push(void* address);
 
+        /// \brief Extract an element from the pool.
+        /// Do not call this method if IsEmpty() is true.
+        /// \return Returns any extracted element from the pool.
         void* Pop();
 
+        /// \brief Check whether the pool is empty.
+        /// \return Returns true if the pool is empty, returns false otherwise.
         bool IsEmpty() const;
 
     private:
@@ -84,7 +90,6 @@ namespace syntropy
         VirtualMemoryRange memory_range_;           ///< \brief Memory range reserved for this stack.
 
         size_t size_;                               ///< \brief Current size of the stack.
-
     };
 
     /// \brief Wraps the low-level calls used to handle virtual memory allocation.
@@ -130,6 +135,10 @@ namespace syntropy
     /// \brief Returns the current system instance.
     Memory& GetMemory();
 
+    /// \brief Get the size of a pointer in bytes.
+    /// \return Returns the size of a pointer in bytes.
+    constexpr size_t GetPointerSize();
+
 }
 
 namespace syntropy
@@ -145,6 +154,12 @@ namespace syntropy
     {
 
     }
+    
+    template <typename TTag>
+    void* MemoryRange<TTag>::GetBaseAddress() const
+    {
+        return base_address_;
+    }
 
     template <typename TTag>
     size_t MemoryRange<TTag>::GetCount() const
@@ -153,16 +168,9 @@ namespace syntropy
     }
 
     template <typename TTag>
-    void* MemoryRange<TTag>::GetBaseAddress() const
+    void* MemoryRange<TTag>::GetAddress(size_t offset) const
     {
-        return base_address_;
-    }
-
-    template <typename TTag>
-    template <typename TPtr>
-    TPtr* MemoryRange<TTag>::GetPointer(size_t offset) const
-    {
-        return reinterpret_cast<TPtr*>(base_address_) + offset;
+        return reinterpret_cast<int8_t*>(base_address_) + offset;
     }
 
     template <typename TTag>

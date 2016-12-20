@@ -409,7 +409,7 @@ namespace syntropy
             // Round down to the nearest multiple of the page size
             offset = (offset / page_size_) * page_size_;
 
-            auto address = VirtualAlloc(range.GetPointer<int8_t>(offset), size, MEM_COMMIT, PAGE_READWRITE);
+            auto address = VirtualAlloc(range.GetAddress(offset), size, MEM_COMMIT, PAGE_READWRITE);
 
             return MemoryBlock(address, size);
         }

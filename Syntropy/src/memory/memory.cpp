@@ -1,6 +1,7 @@
 #include "memory/memory.h"
 
 #include <cstdlib>
+#include <cstring>
 
 #include "platform/os.h"
 
@@ -19,28 +20,36 @@ void operator delete(void* pointer) noexcept
 namespace syntropy
 {
 
-    //////////////// MEMORY ADDRESS STACK ////////////////
+    //////////////// MEMORY ADDRESS POOL ////////////////
 
-    MemoryAddressStack::MemoryAddressStack(size_t count)
-        : memory_range_(GetMemory().ReserveVirtualRange(count))
+    MemoryAddressPool::MemoryAddressPool(size_t count)
+        : memory_range_(GetMemory().ReserveVirtualRange(count * GetPointerSize()))
         , size_(0)
     {
-        auto block = GetMemory().AllocMemoryBlock(memory_range_, 0, memory_range_.GetCount());
-        SYNTROPY_UNUSED(block);
+        GetMemory().AllocMemoryBlock(memory_range_, 0, memory_range_.GetCount());
     }
 
-    void MemoryAddressStack::Push(void* address)
+    void MemoryAddressPool::Push(void* address)
     {
-        *memory_range_.GetPointer<uint64_t>(size_) = reinterpret_cast<uint64_t>(address);
+        std::memcpy(memory_range_.GetAddress(size_ * GetPointerSize()),
+                    &address,
+                    GetPointerSize());
+
         ++size_;
     }
 
-    void* MemoryAddressStack::Pop()
+    void* MemoryAddressPool::Pop()
     {
-        return reinterpret_cast<void*>(*memory_range_.GetPointer<uint64_t>(--size_));
+        void* address;
+        
+        std::memcpy(&address, 
+                    memory_range_.GetAddress(--size_ * GetPointerSize()),
+                    GetPointerSize());
+
+        return address;
     }
 
-    bool MemoryAddressStack::IsEmpty() const
+    bool MemoryAddressPool::IsEmpty() const
     {
         return size_ == 0;
     }
@@ -57,5 +66,9 @@ namespace syntropy
         return Memory::GetInstance();
     }
 
+    constexpr size_t GetPointerSize()
+    {
+        return sizeof(void*);
+    }
 
 }

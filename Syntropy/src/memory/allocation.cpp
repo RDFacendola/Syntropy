@@ -25,7 +25,7 @@ namespace syntropy
 
     void PageAllocator::FreePage(const MemoryBlock& page)
     {
-        *page.GetPointer<uint64_t>() = reinterpret_cast<uint64_t>(head_.GetBaseAddress());
+        //*page.GetPointer<uint64_t>() = reinterpret_cast<uint64_t>(head_.GetBaseAddress());
         head_ = page;
     }
 

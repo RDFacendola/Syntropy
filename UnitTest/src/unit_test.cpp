@@ -52,14 +52,14 @@ int main()
 
     int* p;
 
-    syntropy::MemoryAddressStack mas(0x1000);
+    syntropy::MemoryAddressPool pool(0x1000);
 
-    mas.Push(&a);
-    mas.Push(&b);
+    pool.Push(&a);
+    pool.Push(&b);
 
-    p = reinterpret_cast<int*>(mas.Pop());
-    p = reinterpret_cast<int*>(mas.Pop());
-    p = reinterpret_cast<int*>(mas.Pop());
+    p = reinterpret_cast<int*>(pool.Pop());
+    p = reinterpret_cast<int*>(pool.Pop());
+    p = reinterpret_cast<int*>(pool.Pop());
 
     //
 
