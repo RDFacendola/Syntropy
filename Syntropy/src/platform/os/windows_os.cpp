@@ -17,6 +17,7 @@
 #include <thread>
 
 #include "syntropy.h"
+#include "platform/system.h"
 
 namespace syntropy
 {
@@ -291,8 +292,8 @@ namespace syntropy
         {
             MemoryInfo memory_info;
 
-            MEMORYSTATUSEX memory_status;
             SYSTEM_INFO system_info;
+            MEMORYSTATUSEX memory_status;
 
             memory_status.dwLength = sizeof(MEMORYSTATUSEX);
 
@@ -301,8 +302,8 @@ namespace syntropy
 
             memory_info.page_size_ = system_info.dwPageSize;
             memory_info.allocation_granularity_ = system_info.dwAllocationGranularity;
-            memory_info.lowest_memory_address_ = reinterpret_cast<uint64_t>(system_info.lpMinimumApplicationAddress);
-            memory_info.highest_memory_address_ = reinterpret_cast<uint64_t>(system_info.lpMaximumApplicationAddress);
+            memory_info.lowest_memory_address_ = system_info.lpMinimumApplicationAddress;
+            memory_info.highest_memory_address_ = system_info.lpMaximumApplicationAddress;
 
             memory_info.total_physical_memory_ = static_cast<uint64_t>(memory_status.ullTotalPhys);
             memory_info.total_virtual_memory_ = static_cast<uint64_t>(memory_status.ullTotalVirtual);
@@ -375,10 +376,20 @@ namespace syntropy
 
         WindowsMemory::WindowsMemory()
         {
-            auto memory_info = WindowsSystem::GetInstance().GetMemoryInfo();
+            auto info = platform::GetSystem().GetMemoryInfo();
 
-            page_size_ = memory_info.page_size_;
-            allocation_granularity_ = memory_info.allocation_granularity_;
+            page_size_ = info.page_size_;
+            allocation_granularity_ = info.allocation_granularity_;
+        }
+
+        size_t WindowsMemory::GetPageSize() const
+        {
+            return page_size_;
+        }
+
+        size_t WindowsMemory::GetAllocationGranularity() const
+        {
+            return allocation_granularity_;
         }
 
         VirtualMemoryRange WindowsMemory::ReserveVirtualRange(size_t count)
@@ -412,6 +423,29 @@ namespace syntropy
             auto address = VirtualAlloc(range.GetAddress(offset), size, MEM_COMMIT, PAGE_READWRITE);
 
             return MemoryBlock(address, size);
+        }
+
+        MemoryBlock WindowsMemory::FreeMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size)
+        {
+            if (offset + size > range.GetCount())
+            {
+                return MemoryBlock(nullptr, 0);
+            }
+
+            // Round down to the nearest multiple of the page size
+            size = (size / page_size_) * page_size_;
+
+            // Round up to the nearest multiple of the page size
+            offset = ((offset + page_size_ - 1) / page_size_) * page_size_;
+
+            if (VirtualFree(range.GetAddress(offset), size, MEM_DECOMMIT) != 0)
+            {
+                return MemoryBlock(range.GetAddress(offset), size);
+            }
+            else
+            {
+                return MemoryBlock(nullptr, 0);
+            }
         }
 
         bool WindowsMemory::FreeMemoryBlock(const MemoryBlock& block)

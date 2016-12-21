@@ -55,8 +55,8 @@ namespace syntropy
         {
             uint64_t page_size_;                    ///< \brief Size of each memory page, in bytes.
             uint64_t allocation_granularity_;       ///< \brief Granularity for virtual memory allocation, in bytes.
-            uint64_t lowest_memory_address_;        ///< \brief Lowest virtual memory address accessible by the application.
-            uint64_t highest_memory_address_;       ///< \brief Highest virtual memory address accessible by the application.
+            void* lowest_memory_address_;           ///< \brief Lowest virtual memory address accessible by the application.
+            void* highest_memory_address_;          ///< \brief Highest virtual memory address accessible by the application.
 
             uint64_t total_physical_memory_;        ///< \brief Total physical memory, in bytes.
             uint64_t total_virtual_memory_;         ///< \brief Total virtual address space for the current process, in bytes.

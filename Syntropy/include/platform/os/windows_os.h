@@ -84,11 +84,17 @@ namespace syntropy
             /// \return Returns the singleton instance;
             static Memory& GetInstance();
 
+            virtual size_t GetPageSize() const override;
+
+            virtual size_t GetAllocationGranularity() const override;
+
             virtual VirtualMemoryRange ReserveVirtualRange(size_t count) override;
 
             virtual bool ReleaseVirtualRange(const VirtualMemoryRange& range) override;
 
             virtual MemoryBlock AllocMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size) override;
+
+            virtual MemoryBlock FreeMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size) override;
 
             virtual bool FreeMemoryBlock(const MemoryBlock& block) override;
 
@@ -97,9 +103,11 @@ namespace syntropy
             /// \brief Default constructor.
             WindowsMemory();
 
-            size_t page_size_;                              ///< \brief Size of each memory page, in bytes.
+            VirtualMemoryInfo virtual_memory_info_;         ///< \brief Virtual memory info.
 
-            size_t allocation_granularity_;                 ///< \brief Granularity for virtual memory allocation, in bytes.
+            size_t page_size_;                              ///< \brief Memory page size, in bytes.
+
+            size_t allocation_granularity_;                 ///< \brief Memory allocation granularity, in bytes.
 
         };
 

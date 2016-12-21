@@ -11,6 +11,8 @@
 namespace syntropy
 {
 
+    class Memory;
+
     /// \brief Represents a range of memory addresses.
     /// \author Raffaele D. Facendola - December 2016
     template <typename TTag>
@@ -87,9 +89,25 @@ namespace syntropy
 
     private:
 
+        /// \brief Convert an address count to a memory size.
+        size_t ToMemorySize(size_t count) const;
+
+        /// \brief Convert a memory size to an address count.
+        size_t ToAddressCount(size_t size) const;
+
         VirtualMemoryRange memory_range_;           ///< \brief Memory range reserved for this stack.
 
-        size_t size_;                               ///< \brief Current size of the stack.
+        size_t size_;                               ///< \brief Current size of the pool.
+
+        size_t capacity_;                           ///< \brief Current allocated capacity of the pool.
+
+    };
+
+    /// \brief Describes the system virtual memory.
+    /// \author Raffaele D. Facendola
+    struct VirtualMemoryInfo
+    {
+
     };
 
     /// \brief Wraps the low-level calls used to handle virtual memory allocation.
@@ -101,6 +119,15 @@ namespace syntropy
         /// \brief Get the singleton instance.
         /// \return Returns the singleton instance;
         static Memory& GetInstance();
+
+        /// \brief Get the size of each memory page, in bytes.
+        /// Virtual memory can only be allocated to multiple of this amount.
+        /// \return Returns the size of each memory page, in bytes.
+        virtual size_t GetPageSize() const = 0;
+
+        /// \brief Get the minimum amount of memory that can be reserved.
+        /// \return Returns the size of each memory page, in bytes.
+        virtual size_t GetAllocationGranularity() const = 0;
 
         /// \brief Reserve a range of virtual memory addresses.
         /// The reserved address range is guaranteed to be contiguous. The base address is rounded down to the nearest multiple of the allocation granularity.
@@ -119,9 +146,18 @@ namespace syntropy
         /// This method causes physical memory to be allocated. Any address within the returned memory block can be accessed for read or write.
         /// \param range Range within which the allocation is performed.
         /// \param offset Offset of the block from the base address of the range, in bytes. This number is rounded down to the nearest multiple of the memory page size.
-        /// \param size Size of the memory block. This number is rounded up to the nearest multiple of the memory page size.
+        /// \param size Size of the memory block, in bytes. This number is rounded up to the nearest multiple of the memory page size.
         /// \return If the method succeeds returns a non-empty memory block whose size is at least equal to size, otherwise returns an empty range.
         virtual MemoryBlock AllocMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size) = 0;
+
+        /// \brief Free a memory block within a virtual address range.
+        /// This method causes physical memory to be deallocated.
+        /// \param range Range within which the deallocation is performed.
+        /// \param offset Offset of the block from the base address of the range, in bytes. This number is rounded up to the nearest multiple of the memory page size.
+        /// \param size Size of the memory block, in bytes. This number is rounded down to the nearest multiple of the memory page size.
+        /// \return Returns the memory block that was deallocated.
+        /// \remarks Accessing an address within the block after this method results in an access violation exception.
+        virtual MemoryBlock FreeMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size) = 0;
 
         /// \brief Free a memory block.
         /// \param block Memory block to free.

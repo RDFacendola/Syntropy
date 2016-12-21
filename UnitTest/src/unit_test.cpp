@@ -48,18 +48,26 @@ int main()
     //
 
     int a = 100;
-    int b = 10;
+    //int b = 10;
 
     int* p;
 
-    syntropy::MemoryAddressPool pool(0x1000);
+    syntropy::MemoryAddressPool pool(0x1000000);
 
-    pool.Push(&a);
-    pool.Push(&b);
+    for (auto i = 0; i < 200000; ++i)
+    {
+        pool.Push(&a);
+    }
 
-    p = reinterpret_cast<int*>(pool.Pop());
-    p = reinterpret_cast<int*>(pool.Pop());
-    p = reinterpret_cast<int*>(pool.Pop());
+    for (auto i = 0; i < 200000; ++i)
+    {
+        p = reinterpret_cast<int*>(pool.Pop());
+        if (p != &a)
+        {
+            SYNTROPY_BREAK;
+        }
+        p = nullptr;
+    }
 
     //
 
