@@ -15,9 +15,12 @@
 #include <string>
 #include <mutex>
 #include <thread>
+#include <algorithm>
 
 #include "syntropy.h"
 #include "platform/system.h"
+
+#undef max
 
 namespace syntropy
 {
@@ -292,18 +295,11 @@ namespace syntropy
         {
             MemoryInfo memory_info;
 
-            SYSTEM_INFO system_info;
             MEMORYSTATUSEX memory_status;
 
             memory_status.dwLength = sizeof(MEMORYSTATUSEX);
 
-            GetSystemInfo(&system_info);
             GlobalMemoryStatusEx(&memory_status);
-
-            memory_info.page_size_ = system_info.dwPageSize;
-            memory_info.allocation_granularity_ = system_info.dwAllocationGranularity;
-            memory_info.lowest_memory_address_ = system_info.lpMinimumApplicationAddress;
-            memory_info.highest_memory_address_ = system_info.lpMaximumApplicationAddress;
 
             memory_info.total_physical_memory_ = static_cast<uint64_t>(memory_status.ullTotalPhys);
             memory_info.total_virtual_memory_ = static_cast<uint64_t>(memory_status.ullTotalVirtual);
@@ -376,83 +372,53 @@ namespace syntropy
 
         WindowsMemory::WindowsMemory()
         {
-            auto info = platform::GetSystem().GetMemoryInfo();
+            SYSTEM_INFO system_info;
+            GetSystemInfo(&system_info);
 
-            page_size_ = info.page_size_;
-            allocation_granularity_ = info.allocation_granularity_;
+            allocation_granularity_ = std::max(system_info.dwPageSize, system_info.dwAllocationGranularity);
         }
-
-        size_t WindowsMemory::GetPageSize() const
-        {
-            return page_size_;
-        }
-
+        
         size_t WindowsMemory::GetAllocationGranularity() const
         {
             return allocation_granularity_;
         }
 
-        VirtualMemoryRange WindowsMemory::ReserveVirtualRange(size_t count)
+        void* WindowsMemory::Reserve(size_t size)
         {
-            // Round up to the nearest multiple of the allocation granularity
-            count = ((count + allocation_granularity_ - 1) / allocation_granularity_) * allocation_granularity_;
-
-            auto base_address = VirtualAlloc(0, count, MEM_RESERVE, PAGE_READWRITE);
-
-            return VirtualMemoryRange(base_address, count);
+            return IsAligned(size) ?
+                   VirtualAlloc(0, size, MEM_RESERVE, PAGE_READWRITE) :
+                   nullptr;
         }
 
-        bool WindowsMemory::ReleaseVirtualRange(const VirtualMemoryRange& range)
+        bool WindowsMemory::Free(void* address)
         {
-            return VirtualFree(range.GetBaseAddress(), 0, MEM_RELEASE) != 0;
+            return VirtualFree(address, 0, MEM_RELEASE) != 0;
         }
 
-        MemoryBlock WindowsMemory::AllocMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size)
+        bool WindowsMemory::Allocate(void* address, size_t size)
         {
-            if (offset + size > range.GetCount())
-            {
-                return MemoryBlock(nullptr, 0);
-            }
-
-            // Round up to the nearest multiple of the page size
-            size = ((size + page_size_ - 1) / page_size_) * page_size_;
-
-            // Round down to the nearest multiple of the page size
-            offset = (offset / page_size_) * page_size_;
-
-            auto address = VirtualAlloc(range.GetAddress(offset), size, MEM_COMMIT, PAGE_READWRITE);
-
-            return MemoryBlock(address, size);
+            return IsAligned(address) &&
+                   IsAligned(size) &&
+                   VirtualAlloc(address, size, MEM_COMMIT, PAGE_READWRITE) != 0;
         }
 
-        MemoryBlock WindowsMemory::FreeMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size)
+        bool WindowsMemory::Deallocate(void* address, size_t size)
         {
-            if (offset + size > range.GetCount())
-            {
-                return MemoryBlock(nullptr, 0);
-            }
-
-            // Round down to the nearest multiple of the page size
-            size = (size / page_size_) * page_size_;
-
-            // Round up to the nearest multiple of the page size
-            offset = ((offset + page_size_ - 1) / page_size_) * page_size_;
-
-            if (VirtualFree(range.GetAddress(offset), size, MEM_DECOMMIT) != 0)
-            {
-                return MemoryBlock(range.GetAddress(offset), size);
-            }
-            else
-            {
-                return MemoryBlock(nullptr, 0);
-            }
+            return IsAligned(address) && 
+                   IsAligned(size) &&
+                   VirtualFree(address, size, MEM_DECOMMIT) != 0;
         }
 
-        bool WindowsMemory::FreeMemoryBlock(const MemoryBlock& block)
+        bool WindowsMemory::IsAligned(void* address) const
         {
-            // Assumes the memory block has not been tampered with
-            return VirtualFree(block.GetBaseAddress(), block.GetCount(), MEM_DECOMMIT) != 0;
+            return reinterpret_cast<size_t>(address) % allocation_granularity_ == 0;
         }
+
+        bool WindowsMemory::IsAligned(size_t size) const
+        {
+            return size % allocation_granularity_ == 0;
+        }
+
     }
 }
 

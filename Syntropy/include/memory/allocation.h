@@ -19,35 +19,31 @@ namespace syntropy
     {
     public:
 
-        /// \brief Create a new page allocator.
-        /// \param range_size Size of the virtual memory reserved by the allocator. The size is rounded up to the nearest multiple of the system allocation granularity.
-        /// \param page_size Size of each allocated page. The size is rounded up the nearest multiple of the system page size.
-        PageAllocator(size_t range_size, size_t page_size);
+        ///// \brief Create a new page allocator.
+        ///// \param range_size Size of the virtual memory reserved by the allocator. The size is rounded up to the nearest multiple of the system allocation granularity.
+        ///// \param page_size Size of each allocated page. The size is rounded up the nearest multiple of the system page size.
+        //PageAllocator(size_t range_size, size_t page_size);
 
-        /// \brief No copy-ctor.
-        PageAllocator(const PageAllocator&) = delete;
+        ///// \brief No copy-ctor.
+        //PageAllocator(const PageAllocator&) = delete;
 
-        /// \brief No assignment operator.
-        PageAllocator& operator=(const PageAllocator&) = delete;
+        ///// \brief No assignment operator.
+        //PageAllocator& operator=(const PageAllocator&) = delete;
 
-        /// \brief Default destructor.
-        ~PageAllocator();
+        ///// \brief Default destructor.
+        //~PageAllocator();
 
-        /// \brief Allocate a memory page.
-        /// \return Returns a memory block within the reserved memory range. If the allocation could not performed, the returned memory block is not valid.
-        MemoryBlock AllocPage();
+        ///// \brief Allocate a memory page.
+        ///// \return Returns a memory block within the reserved memory range. If the allocation could not performed, the returned memory block is not valid.
+        //MemoryBlock AllocPage();
 
-        /// \brief Free an allocated page.
-        /// \param page Page to deallocate.
-        void FreePage(const MemoryBlock& page);
+        ///// \brief Free an allocated page.
+        ///// \param page Page to deallocate.
+        //void FreePage(const MemoryBlock& page);
 
     private:
 
-        VirtualMemoryRange memory_range_;           ///< \brief Memory range reserved by this allocator.
-
         MemoryAddressPool free_addresses_;          ///< \brief Pool of free addresses.
-
-        MemoryBlock head_;                          ///< \brief First free memory page. Each free page contains a 64-bit pointer to the next free page. 0 means that the free list is empty
 
     };
 

@@ -84,28 +84,30 @@ namespace syntropy
             /// \return Returns the singleton instance;
             static Memory& GetInstance();
 
-            virtual size_t GetPageSize() const override;
-
             virtual size_t GetAllocationGranularity() const override;
 
-            virtual VirtualMemoryRange ReserveVirtualRange(size_t count) override;
+            virtual void* Reserve(size_t size) override;
 
-            virtual bool ReleaseVirtualRange(const VirtualMemoryRange& range) override;
+            virtual bool Free(void* address) override;
 
-            virtual MemoryBlock AllocMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size) override;
+            virtual bool Allocate(void* address, size_t size) override;
 
-            virtual MemoryBlock FreeMemoryBlock(const VirtualMemoryRange& range, size_t offset, size_t size) override;
-
-            virtual bool FreeMemoryBlock(const MemoryBlock& block) override;
+            virtual bool Deallocate(void* address, size_t size) override;
 
         private:
 
             /// \brief Default constructor.
             WindowsMemory();
 
-            VirtualMemoryInfo virtual_memory_info_;         ///< \brief Virtual memory info.
+            /// \brief Check whether an address is aligned to the allocation granularity boundary.
+            /// \param address Address to check.
+            /// \return Returns true if the address is aligned to the allocation granularity boundary, returns false otherwise.
+            bool IsAligned(void* address) const;
 
-            size_t page_size_;                              ///< \brief Memory page size, in bytes.
+            /// \brief Check whether a size is a multiple of the allocation granularity.
+            /// \param size Size to check, in bytes.
+            /// \return Returns true if the size is a multiple of the allocation granularity, returns false otherwise.
+            bool IsAligned(size_t size) const;
 
             size_t allocation_granularity_;                 ///< \brief Memory allocation granularity, in bytes.
 

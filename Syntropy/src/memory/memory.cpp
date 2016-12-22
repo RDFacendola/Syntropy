@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <algorithm>
 
 #include "platform/os.h"
 
@@ -23,12 +24,13 @@ namespace syntropy
     //////////////// MEMORY ADDRESS POOL ////////////////
 
     MemoryAddressPool::MemoryAddressPool(size_t count)
-        : memory_range_(GetMemory().ReserveVirtualRange(ToMemorySize(count)))
+        : storage_(GetMemory().Reserve(ToMemorySize(count)))
         , size_(0)
-        , capacity_(ToAddressCount(GetMemory().GetPageSize()))
+        , capacity_(ToAddressCount(GetMemory().GetAllocationGranularity()))
     {
         // Allocate the first memory block
-        GetMemory().AllocMemoryBlock(memory_range_, 0, ToMemorySize(capacity_));
+        GetMemory().Allocate(StorageOffset(0), 
+                             ToMemorySize(capacity_));
     }
 
     void MemoryAddressPool::Push(void* address)
@@ -36,14 +38,13 @@ namespace syntropy
         if (++size_ > capacity_)
         {
             // Double the capacity
-            auto block = GetMemory().AllocMemoryBlock(memory_range_, 
-                                                      ToMemorySize(capacity_), 
-                                                      ToMemorySize(capacity_));
+            GetMemory().Allocate(StorageOffset(capacity_), 
+                                 ToMemorySize(capacity_));
 
-            capacity_ += ToAddressCount(block.GetCount());
+            capacity_ *= 2;
         }
 
-        std::memcpy(memory_range_.GetAddress(ToMemorySize(size_ - 1)),
+        std::memcpy(StorageOffset(size_ - 1),
                     &address,
                     GetPointerSize());
     }
@@ -53,18 +54,17 @@ namespace syntropy
         void* address;
         
         std::memcpy(&address, 
-                    memory_range_.GetAddress(ToMemorySize(--size_)),
+                    StorageOffset(--size_),
                     GetPointerSize());
 
         if (size_ <= capacity_ / 4 &&
-            capacity_ > ToAddressCount(GetMemory().GetPageSize()))
+            capacity_ > ToAddressCount(GetMemory().GetAllocationGranularity()))
         {
             // Halve the capacity
-            auto block = GetMemory().FreeMemoryBlock(memory_range_,
-                                                     ToMemorySize(capacity_) / 2,
-                                                     ToMemorySize(capacity_) / 2);
-            
-            capacity_ -= ToAddressCount(block.GetCount());
+            capacity_ /= 2;
+
+            GetMemory().Deallocate(StorageOffset(capacity_),
+                                   ToMemorySize(capacity_));
         }
 
         return address;
@@ -83,6 +83,11 @@ namespace syntropy
     size_t MemoryAddressPool::ToAddressCount(size_t size) const
     {
         return size / GetPointerSize();
+    }
+
+    void* MemoryAddressPool::StorageOffset(size_t offset) const
+    {
+        return reinterpret_cast<int8_t*>(storage_) + ToMemorySize(offset);
     }
 
     //////////////// MEMORY ////////////////
