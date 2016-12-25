@@ -84,11 +84,13 @@ namespace syntropy
             /// \return Returns the singleton instance;
             static Memory& GetInstance();
 
+            virtual size_t GetReservationGranularity() const override;
+
             virtual size_t GetAllocationGranularity() const override;
 
             virtual void* Reserve(size_t size) override;
 
-            virtual bool Free(void* address) override;
+            virtual bool Release(void* address) override;
 
             virtual bool Allocate(void* address, size_t size) override;
 
@@ -99,15 +101,7 @@ namespace syntropy
             /// \brief Default constructor.
             WindowsMemory();
 
-            /// \brief Check whether an address is aligned to the allocation granularity boundary.
-            /// \param address Address to check.
-            /// \return Returns true if the address is aligned to the allocation granularity boundary, returns false otherwise.
-            bool IsAligned(void* address) const;
-
-            /// \brief Check whether a size is a multiple of the allocation granularity.
-            /// \param size Size to check, in bytes.
-            /// \return Returns true if the size is a multiple of the allocation granularity, returns false otherwise.
-            bool IsAligned(size_t size) const;
+            size_t reservation_granularity_;                ///< \brief Memory reservation granularity, in bytes.
 
             size_t allocation_granularity_;                 ///< \brief Memory allocation granularity, in bytes.
 

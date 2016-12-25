@@ -43,7 +43,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\allocation.h">
+    <ClInclude Include="include\memory\page_allocator.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -125,7 +125,7 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="src\memory\allocation.cpp">
+    <ClCompile Include="src\memory\page_allocator.cpp">
       <SubType>
       </SubType>
     </ClCompile>

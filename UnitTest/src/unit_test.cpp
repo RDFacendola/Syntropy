@@ -8,7 +8,7 @@
 
 #include "platform/system.h"
 #include "memory/memory.h"
-#include "memory/allocation.h"
+#include "memory/page_allocator.h"
 #include "diagnostics/log.h"
 
 
@@ -46,28 +46,23 @@ int main()
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
     //
+    syntropy::PageAllocator palloc(0x200000000,         // 8GB reserved
+                                   0x10000);            // 64KB pages
 
-    int a = 100;
-    //int b = 10;
+    int* p = reinterpret_cast<int*>(palloc.AllocatePage());
+    int* q = reinterpret_cast<int*>(palloc.AllocatePage());
 
-    int* p;
+    *p = 1000;
+    *q = 500;
 
-    syntropy::MemoryAddressPool pool(0x1000000);
+    palloc.DeallocatePage(p);
+    palloc.DeallocatePage(q);
 
-    for (auto i = 0; i < 200000; ++i)
-    {
-        pool.Push(&a);
-    }
+    p = reinterpret_cast<int*>(palloc.AllocatePage());
+    q = reinterpret_cast<int*>(palloc.AllocatePage());
 
-    for (auto i = 0; i < 200000; ++i)
-    {
-        p = reinterpret_cast<int*>(pool.Pop());
-        if (p != &a)
-        {
-            SYNTROPY_BREAK;
-        }
-        p = nullptr;
-    }
+    palloc.DeallocatePage(p);
+    palloc.DeallocatePage(q);
 
     //
 

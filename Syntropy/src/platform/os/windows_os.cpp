@@ -375,9 +375,15 @@ namespace syntropy
             SYSTEM_INFO system_info;
             GetSystemInfo(&system_info);
 
-            allocation_granularity_ = std::max(system_info.dwPageSize, system_info.dwAllocationGranularity);
+            reservation_granularity_ = system_info.dwAllocationGranularity;
+            allocation_granularity_ = system_info.dwPageSize;
         }
         
+        size_t WindowsMemory::GetReservationGranularity() const
+        {
+            return reservation_granularity_;
+        }
+
         size_t WindowsMemory::GetAllocationGranularity() const
         {
             return allocation_granularity_;
@@ -385,38 +391,22 @@ namespace syntropy
 
         void* WindowsMemory::Reserve(size_t size)
         {
-            return IsAligned(size) ?
-                   VirtualAlloc(0, size, MEM_RESERVE, PAGE_READWRITE) :
-                   nullptr;
+            return VirtualAlloc(0, size, MEM_RESERVE, PAGE_READWRITE);
         }
 
-        bool WindowsMemory::Free(void* address)
+        bool WindowsMemory::Release(void* address)
         {
             return VirtualFree(address, 0, MEM_RELEASE) != 0;
         }
 
         bool WindowsMemory::Allocate(void* address, size_t size)
         {
-            return IsAligned(address) &&
-                   IsAligned(size) &&
-                   VirtualAlloc(address, size, MEM_COMMIT, PAGE_READWRITE) != 0;
+            return VirtualAlloc(address, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
         }
 
         bool WindowsMemory::Deallocate(void* address, size_t size)
         {
-            return IsAligned(address) && 
-                   IsAligned(size) &&
-                   VirtualFree(address, size, MEM_DECOMMIT) != 0;
-        }
-
-        bool WindowsMemory::IsAligned(void* address) const
-        {
-            return reinterpret_cast<size_t>(address) % allocation_granularity_ == 0;
-        }
-
-        bool WindowsMemory::IsAligned(size_t size) const
-        {
-            return size % allocation_granularity_ == 0;
+            return VirtualFree(address, size, MEM_DECOMMIT) != 0;
         }
 
     }
