@@ -46,6 +46,7 @@ namespace syntropy
         static constexpr size_t GetElementCount(size_t size);
 
         /// \brief Get the virtual memory reservation granularity.
+        /// This value is always a multiple of the allocation granularity.
         /// \return Returns the virtual memory reservation granularity, in bytes.
         virtual size_t GetReservationGranularity() const = 0;
 
@@ -54,8 +55,9 @@ namespace syntropy
         virtual size_t GetAllocationGranularity() const = 0;
 
         /// \brief Round up a memory size to the next page boundary.
+        /// Call GetAllocationGranularity() to get the size of each memory page.
         /// \return Returns the memory size rounded to the next page boundary.
-        size_t Ceil(size_t size) const;
+        size_t CeilToPageBoundary(size_t size) const;
 
         /// \brief Reserve a block of virtual memory without allocating it.
         /// \param size Size of the block of memory to reserve, in bytes.

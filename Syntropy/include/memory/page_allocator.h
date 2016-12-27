@@ -13,6 +13,51 @@
 namespace syntropy
 {
 
+    /// Used to store and recycle free page indexes.
+    /// \author Raffaele D. Facendola - December 2016
+    class PagePool
+    {
+    public:
+
+        /// \brief Create a new page pool.
+        /// \param max_pages Maximum number of pages that can be stored inside the pool.
+        PagePool(size_t max_pages);
+
+        /// \brief No copy constructor.
+        PagePool(const PagePool&) = delete;
+
+        /// \brief No assignment operator.
+        PagePool& operator=(const PagePool&) = delete;
+
+        /// \brief Destructor.
+        ~PagePool();
+
+        /// \brief Acquire a free page index.
+        /// \param page_index Index of the free page to acquire.
+        void Push(size_t page_index);
+
+        /// \brief Get a free page index.
+        /// If no index could be recycled, a new index is generated.
+        /// \return Returns a free page index.
+        size_t Pop();
+
+        /// \brief Get the number of non-free page indexes.
+        /// \return Returns the number of page indexes that were popped but not yet reacquired.
+        size_t GetAllocatedPages() const;
+
+    private:
+
+        Memory& memory_;                        ///< \brief Memory instance.
+
+        size_t* storage_;                       ///< \brief Storage for free page indexes.
+
+        size_t size_;                           ///< \brief Free page indexes count.
+
+        size_t capacity_;                       ///< \brief Storage capacity. Represents the actual amount of elements that have been allocated on the storage.
+
+        size_t head_;                           ///< \brief Highest page index generated so far.
+    };
+
     /// \brief Class used to allocate pages on a continuous memory range.
     /// The allocator reserves a range of virtual memory addresses and allocates pages of custom sizes when needed.
     /// Pages can be allocated or returned to the allocator and marked as free.
@@ -51,11 +96,9 @@ namespace syntropy
 
         Memory& memory_;                        ///< \brief Memory instance.
 
-        std::vector<size_t> free_list_;         ///< \brief List of free pages. TODO: use a better structure
+        PagePool page_pool_;                    ///< \brief Pool of free page indexes.
 
         size_t page_size_;                      ///< \brief Page size, in bytes.
-
-        size_t head_;                           ///< \brief Head of the storage.
 
         int8_t* storage_;                       ///< \brief Base of the storage.
 
