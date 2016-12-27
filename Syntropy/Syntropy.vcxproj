@@ -51,6 +51,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\platform\builtin.h" />
     <ClInclude Include="include\platform\compiler\msvc.h">
       <SubType>
       </SubType>
@@ -130,6 +131,14 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="src\memory\memory.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="src\platform\builtin.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="src\platform\compiler\msvc.cpp">
       <SubType>
       </SubType>
     </ClCompile>

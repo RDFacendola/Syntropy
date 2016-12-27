@@ -27,7 +27,7 @@ namespace syntropy
         public:
 
             /// \brief Get the singleton instance.
-            /// \return Returns the singleton instance;
+            /// \return Returns the singleton instance.
             static diagnostics::Debugger& GetInstance();
 
             /// \brief Destructor.
