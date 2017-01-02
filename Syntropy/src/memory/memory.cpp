@@ -28,12 +28,6 @@ namespace syntropy
         return platform::PlatformMemory::GetInstance();
     }
 
-    size_t Memory::CeilToPageBoundary(size_t size) const
-    {
-        auto granularity = GetAllocationGranularity();
-        return ((size + granularity - 1) / granularity) * granularity;
-    }
-
     Memory& GetMemory()
     {
         return Memory::GetInstance();

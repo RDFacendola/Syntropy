@@ -46,23 +46,39 @@ int main()
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
     //
-    syntropy::PageAllocator palloc(0x200000000,         // 8GB reserved
-                                   0x10000);            // 64KB pages
+    syntropy::SegregatedAllocator allocator(0x20000000,         /// 512MB capacity
+                                            0x4000);            /// 16KB pages
 
-    int* p = reinterpret_cast<int*>(palloc.AllocatePage());
-    int* q = reinterpret_cast<int*>(palloc.AllocatePage());
+    auto t0 = std::chrono::high_resolution_clock::now();
 
-    *p = 1000;
-    *q = 500;
+    struct Foo
+    {
+        int64_t a;          // 8
+        char padding[248];
+    };
 
-    palloc.DeallocatePage(p);
-    palloc.DeallocatePage(q);
+    for (size_t i = 0; i < 0x10000; ++i)
+    {
+        auto b = reinterpret_cast<Foo*>(allocator.Allocate(sizeof(Foo), 0));
+         b->a = i;
+    }
 
-    p = reinterpret_cast<int*>(palloc.AllocatePage());
-    q = reinterpret_cast<int*>(palloc.AllocatePage());
+    auto t1 = std::chrono::high_resolution_clock::now();
 
-    palloc.DeallocatePage(p);
-    palloc.DeallocatePage(q);
+    for (size_t i = 0; i < 0x10000; ++i)
+    {
+        auto b = new Foo;
+         b->a = i;
+    }
+
+    auto t2 = std::chrono::high_resolution_clock::now();
+
+    auto t10 = std::chrono::duration_cast<std::chrono::duration<double>>(t1 - t0);
+    auto t21 = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+
+    std::cout << "Syntropy took: " << t10.count() * 1000.0 << " ms\n";
+    std::cout << "New took: " << t21.count() * 1000.0 << " ms\n";
+    std::cout << "Speedup: " << t21.count() / t10.count() << "\n";
 
     //
 

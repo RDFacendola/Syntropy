@@ -54,11 +54,6 @@ namespace syntropy
         /// \return Returns the virtual memory allocation granularity, in bytes.
         virtual size_t GetAllocationGranularity() const = 0;
 
-        /// \brief Round up a memory size to the next page boundary.
-        /// Call GetAllocationGranularity() to get the size of each memory page.
-        /// \return Returns the memory size rounded to the next page boundary.
-        size_t CeilToPageBoundary(size_t size) const;
-
         /// \brief Reserve a block of virtual memory without allocating it.
         /// \param size Size of the block of memory to reserve, in bytes.
         /// \return Returns a pointer to the reserved memory block. If the reservation couldn't be fulfilled, returns nullptr.
