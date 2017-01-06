@@ -40,7 +40,7 @@
 /// \usage SYNTROPY_ERROR((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_ERROR(contexts, ...) \
     { \
-        SYNTROPY_LOG_MESSAGE(SYNTROPY_TRACE, kError, contexts, __VA_ARGS__); \
+        SYNTROPY_LOG_MESSAGE(SYNTROPY_STACKTRACE, kError, contexts, __VA_ARGS__); \
         SYNTROPY_BREAK; \
     }
 
@@ -49,7 +49,7 @@
 /// \usage SYNTROPY_CRITICAL((Context1, Context2, ...), "This is the number: ", 2, "!");
 #define SYNTROPY_CRITICAL(contexts, ...) \
     { \
-        SYNTROPY_LOG_MESSAGE(SYNTROPY_TRACE, kCritical, contexts, __VA_ARGS__); \
+        SYNTROPY_LOG_MESSAGE(SYNTROPY_STACKTRACE, kCritical, contexts, __VA_ARGS__); \
         SYNTROPY_BREAK; \
     }
 

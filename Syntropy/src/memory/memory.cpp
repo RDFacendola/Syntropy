@@ -21,8 +21,10 @@ void operator delete(void* pointer) noexcept
 namespace syntropy
 {
 
+    const diagnostics::Context MemoryCtx("Memory");
+
     //////////////// MEMORY ////////////////
-    
+
     Memory& Memory::GetInstance()
     {
         return platform::PlatformMemory::GetInstance();

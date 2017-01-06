@@ -23,6 +23,10 @@
 #define SYNTROPY_STACKTRACE \
     syntropy::diagnostics::GetDebugger().GetStackTrace(SYNTROPY_HERE)
 
+/// \brief If the condition is not verified causes the debugger to break or the application to crash.
+#define SYNTROPY_ASSERT(condition) \
+    if(!(condition)) { SYNTROPY_TRAP; }
+
 namespace syntropy
 {
     namespace diagnostics
