@@ -47,11 +47,11 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\page_allocator.h">
+    <ClInclude Include="include\memory\memory.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\memory.h">
+    <ClInclude Include="include\memory\segregated_allocator.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -134,11 +134,11 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="src\memory\page_allocator.cpp">
+    <ClCompile Include="src\memory\memory.cpp">
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="src\memory\memory.cpp">
+    <ClCompile Include="src\memory\segregated_allocator.cpp">
       <SubType>
       </SubType>
     </ClCompile>

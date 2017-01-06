@@ -26,29 +26,12 @@ namespace syntropy
         /// \return Returns the singleton instance;
         static Memory& GetInstance();
 
-        /// \brief Get the size of a pointer in bytes.
-        /// \return Returns the size of a pointer in bytes.
-        static constexpr size_t GetPointerSize();
-
-        /// \brief Check whether an address is aligned to a given boundary.
-        /// \param address Address to check the alignment of.
-        /// \param alignment Size of the alignment.
-        /// \return Returns true if the address is aligned to alignment, returns false otherwise.
-        static constexpr bool IsAlignedTo(void* address, size_t alignment);
-
-        /// \brief Get the memory footprint of a number of elements.
-        /// \tparam Type of the elements.
-        /// \param count Number of elements.
-        /// \return Returns the memory footprint of count elements of type T, in bytes.
+        /// \brief Offset an address.
+        /// \param address Address to perform the offset from.
+        /// \param offset Offset with respect the address, in bytes.
+        /// \return Returns the address offset'd by the specified offset amount.
         template <typename T>
-        static constexpr size_t GetElementSize(size_t count);
-
-        /// \brief Get the number of elements that can be stored in a given amount of memory.
-        /// \tparam Type of the elements.
-        /// \param size Memory size.
-        /// \return Returns the number of elements of type T that can be stored in a memory block of size size.
-        template <typename T>
-        static constexpr size_t GetElementCount(size_t size);
+        static constexpr T* Offset(T* address, int64_t offset);
 
         /// \brief Get the virtual memory reservation granularity.
         /// This value is always a multiple of the allocation granularity.
@@ -100,26 +83,10 @@ namespace syntropy
 
     //////////////// MEMORY ////////////////
 
-    inline constexpr size_t Memory::GetPointerSize()
-    {
-        return sizeof(void*);
-    }
-
-    inline constexpr bool Memory::IsAlignedTo(void* address, size_t alignment)
-    {
-        return reinterpret_cast<size_t>(address) % alignment == 0;
-    }
-
     template <typename T>
-    inline constexpr size_t Memory::GetElementSize(size_t count)
+    static constexpr T* Memory::Offset(T* address, int64_t offset)
     {
-        return sizeof(T) * count;
-    }
-
-    template <typename T>
-    inline constexpr size_t Memory::GetElementCount(size_t size)
-    {
-        return size / sizeof(T);
+        return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) + offset);
     }
 
 }
