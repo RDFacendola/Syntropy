@@ -87,7 +87,7 @@ namespace syntropy
 
         std::fill(&allocators_[0], &allocators_[count], nullptr);           // Each sub-allocator starts with no page to allocate memory blocks. Pages are allocated on demand.
     }
-    
+
     void* SegregatedPoolAllocator::Allocate(size_t size)
     {
         SYNTROPY_ASSERT(size <= maximum_block_size_);
