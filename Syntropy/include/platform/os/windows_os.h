@@ -88,13 +88,15 @@ namespace syntropy
 
             virtual size_t GetAllocationGranularity() const override;
 
+            virtual void* Allocate(size_t size) override;
+
+            virtual bool Free(void* address) override;
+
             virtual void* Reserve(size_t size) override;
 
-            virtual bool Release(void* address) override;
+            virtual bool Commit(void* address, size_t size) override;
 
-            virtual bool Allocate(void* address, size_t size) override;
-
-            virtual bool Deallocate(void* address, size_t size) override;
+            virtual bool Decommit(void* address, size_t size) override;
 
         private:
 

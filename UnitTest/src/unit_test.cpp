@@ -78,13 +78,12 @@ int main()
         {
             if (choice)
             {
-                v.push_back(reinterpret_cast<Foo*>(allocator.Allocate(sizeof(Foo))));
+                v.push_back(reinterpret_cast<Foo*>(allocator.Allocate(sizeof(Foo), 64)));
                 v.back()->a = v.size();
             }
             else if (v.size() > 0)
             {
-                //i = rand() % v.size();
-                i = v.size() - 1;
+                i = rand() % v.size();
 
                 allocator.Free(v[i]);
                 v.erase(v.begin() + i);
@@ -109,8 +108,7 @@ int main()
             }
             else if (v.size() > 0)
             {
-                //i = rand() % v.size();
-                i = v.size() - 1;
+                i = rand() % v.size();
 
                 delete v[i];
                 v.erase(v.begin() + i);

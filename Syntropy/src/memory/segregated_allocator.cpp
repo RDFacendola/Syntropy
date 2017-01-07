@@ -26,7 +26,7 @@ namespace syntropy
 
     PageAllocator::~PageAllocator()
     {
-        memory_.Release(base_);
+        memory_.Free(base_);
     }
 
     void* PageAllocator::Allocate()
@@ -65,7 +65,7 @@ namespace syntropy
     void* PageAllocator::AllocatePage()
     {
         auto page = head_;
-        memory_.Allocate(page, page_size_);
+        memory_.Commit(page, page_size_);
         head_ = Memory::Offset(head_, page_size_);      // Move the head forward
         return page;
     }
@@ -83,8 +83,7 @@ namespace syntropy
 
         auto size = count * sizeof(Page*);                                  // Size needed to store the head of each sub-allocator
 
-        allocators_ = reinterpret_cast<Page**>(memory.Reserve(size));       // Allocate the memory needed to store sub-allocator infos
-        memory.Allocate(allocators_, size);
+        allocators_ = reinterpret_cast<Page**>(memory.Allocate(size));      // Allocate the memory needed to store sub-allocator infos
 
         std::fill(&allocators_[0], &allocators_[count], nullptr);           // Each sub-allocator starts with no page to allocate memory blocks. Pages are allocated on demand.
     }

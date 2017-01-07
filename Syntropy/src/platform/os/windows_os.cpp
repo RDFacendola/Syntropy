@@ -389,22 +389,27 @@ namespace syntropy
             return allocation_granularity_;
         }
 
+        void* WindowsMemory::Allocate(size_t size)
+        {
+            return VirtualAlloc(0, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+        }
+
+        bool WindowsMemory::Free(void* address)
+        {
+            return VirtualFree(address, 0, MEM_RELEASE) != 0;
+        }
+
         void* WindowsMemory::Reserve(size_t size)
         {
             return VirtualAlloc(0, size, MEM_RESERVE, PAGE_READWRITE);
         }
 
-        bool WindowsMemory::Release(void* address)
-        {
-            return VirtualFree(address, 0, MEM_RELEASE) != 0;
-        }
-
-        bool WindowsMemory::Allocate(void* address, size_t size)
+        bool WindowsMemory::Commit(void* address, size_t size)
         {
             return VirtualAlloc(address, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
         }
 
-        bool WindowsMemory::Deallocate(void* address, size_t size)
+        bool WindowsMemory::Decommit(void* address, size_t size)
         {
             return VirtualFree(address, size, MEM_DECOMMIT) != 0;
         }

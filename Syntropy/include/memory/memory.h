@@ -42,32 +42,39 @@ namespace syntropy
         /// \return Returns the virtual memory allocation granularity, in bytes.
         virtual size_t GetAllocationGranularity() const = 0;
 
+        /// \brief Reserve and allocate a block of virtual memory.
+        /// This method has the same effect as a Reserve() followed by a Commit().
+        /// \param size Size of the block of memory to allocate, in bytes.
+        /// \return Returns a pointer to the allocated memory block. If the allocation couldn't be fulfilled, returns nullptr.
+        /// \remarks The returned pointer is guaranteed to be aligned to the reservation granularity and span a region which is at least as big as requested.
+        virtual void* Allocate(size_t size) = 0;
+
+        /// \brief Free a virtual memory block.
+        /// \param address Address of the memory block to release.
+        /// \return Returns true if the block could be released, returns false otherwise.
+        /// \remarks The provided address must match the address returned by Reserve(), otherwise the behaviour is undefined.
+        virtual bool Free(void* address) = 0;
+
         /// \brief Reserve a block of virtual memory without allocating it.
+        /// Use Commit() in order to access a reserved memory block.
         /// \param size Size of the block of memory to reserve, in bytes.
         /// \return Returns a pointer to the reserved memory block. If the reservation couldn't be fulfilled, returns nullptr.
         /// \remarks The returned pointer is guaranteed to be aligned to the reservation granularity and span a region which is at least as big as requested.
         virtual void* Reserve(size_t size) = 0;
 
-        /// \brief Release a previously reserved  block of virtual memory.
-        /// The content of the reserved block is deallocated first.
-        /// \param address Address of the memory block to free.
-        /// \return Returns true if the block could be freed, returns false otherwise.
-        /// \remarks The provided address must match the address returned by Reserve(), otherwise the behaviour is undefined.
-        virtual bool Release(void* address) = 0;
-
-        /// \brief Allocate a memory block.
-        /// This method allocates all the pages containing at least one byte in the range [address, address + size].
-        /// \param address Base address of the memory block to allocate.
-        /// \param size Size of the block to allocate, in bytes.
-        /// \return Returns true if the allocation could be performed, returns false otherwise.
+        /// \brief Commit a reserved memory block.
+        /// This method allocates all the pages containing at least one byte in the range [address, address + size] and makes them accessible by the application.
+        /// \param address Base address of the memory block to commit.
+        /// \param size Size of the block to commit, in bytes.
+        /// \return Returns true if the memory could be committed, returns false otherwise.
         /// \remarks address and size must refer to a memory region that was previously reserved via Reserve().
-        virtual bool Allocate(void* address, size_t size) = 0;
+        virtual bool Commit(void* address, size_t size) = 0;
 
-        /// \brief Deallocate a memory block.
-        /// This method deallocates all the pages containing at least one byte in the range [address, address + size].
-        /// \param address Base address of the memory block to deallocate. Rounded down to the nearest multiple of the allocation granularity.
-        /// \param size Size of the block to deallocate, in bytes. Rounded up to the nearest multiple the allocation granularity.
-        virtual bool Deallocate(void* address, size_t size) = 0;
+        /// \brief Decommit a memory block.
+        /// This method decommits all the pages containing at least one byte in the range [address, address + size].
+        /// \param address Base address of the memory block to decommit.
+        /// \param size Size of the block to decommit, in bytes.
+        virtual bool Decommit(void* address, size_t size) = 0;
 
     };
 

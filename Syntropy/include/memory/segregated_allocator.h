@@ -2,7 +2,7 @@
 /// \file segregated_allocator.h
 /// \brief This header is part of the syntropy memory management system. It contains allocators based on segregated free list algorithms.
 ///
-/// \author Raffaele D. Facendola - 2017
+/// \author Raffaele D. Facendola - 2016
 
 #pragma once
 
