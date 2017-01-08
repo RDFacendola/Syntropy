@@ -52,6 +52,7 @@
     <ClInclude Include="include\math\math.h" />
     <ClInclude Include="include\memory\segregated_allocator.h" />
     <ClInclude Include="include\memory\linear_allocator.h" />
+    <ClInclude Include="include\memory\block_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -82,6 +83,7 @@
     <ClCompile Include="src\math\math.cpp" />
     <ClCompile Include="src\memory\segregated_allocator.cpp" />
     <ClCompile Include="src\memory\linear_allocator.cpp" />
+    <ClCompile Include="src\memory\block_allocator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

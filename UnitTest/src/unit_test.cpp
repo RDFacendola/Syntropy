@@ -12,7 +12,6 @@
 #include "memory/linear_allocator.h"
 #include "diagnostics/log.h"
 
-
 syntropy::diagnostics::Context Root;
 
 struct FooStruct
@@ -47,39 +46,36 @@ int main()
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
     //
-    syntropy::DoubleBufferedAllocator allocator(0x20000000);
-
-    auto x = reinterpret_cast<size_t*>(allocator.Allocate(sizeof(size_t)));
-
-    *x = 47;
-
-    allocator.Flip();
-
-    x = reinterpret_cast<size_t*>(allocator.Allocate(sizeof(size_t)));
-
-    *x = 48;
-
-    allocator.Flip();
-
-    x = reinterpret_cast<size_t*>(allocator.Allocate(sizeof(size_t)));
-
-    *x = 49;
-
-    auto s = allocator.GetSize();
-
-    s = 10;
-
-    //size_t count = 0x100000;
 
     struct Foo
     {
         int64_t a;          // 8
-        char padding[248];
+        char padding[1];
     };
 
     auto t0 = std::chrono::high_resolution_clock::now();
 
     {
+        size_t c = 0x1000000;
+
+        std::vector<Foo*> v;
+        v.reserve(0x10000);
+
+        syntropy::SegregatedPoolAllocator pall(0x20000000, 0x4000);
+
+        while (c-- > 0)
+        {
+            if (rand() % 2 == 0 || v.size() == 0)
+            {
+                v.push_back(reinterpret_cast<Foo*>(pall.Allocate(sizeof(Foo))));
+            }
+            else
+            {
+                auto i = rand() % v.size();
+                pall.Free(v[i]);
+                v.erase(v.begin() + i);
+            }
+        }
 
     }
 

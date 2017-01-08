@@ -7,74 +7,13 @@
 #pragma once
 
 #include "memory.h"
+#include "memory/block_allocator.h"
 
 namespace syntropy
 {
 
-    /// \brief Used to allocate memory pages of a fixed size on a continuous address range.
-    /// To avoid kernel calls the allocator uses a no-deallocation policy when a page is freed.
-    /// \author Raffaele D. Facendola - January 2017
-    class PageAllocator
-    {
-    public:
-
-        /// \brief Create a new page allocator.
-        /// \param capacity Maximum amount of memory used by the allocator, in bytes. This value is rounded up to the next page size.
-        /// \param page_size Size of each memory page. This value is rounded up to the next memory allocation granularity.
-        PageAllocator(size_t capacity, size_t page_size);
-
-        /// \brief Default destructor.
-        ~PageAllocator();
-
-        /// \brief Allocate a new page.
-        /// Pages are aligned to their own size.
-        /// \return Returns a pointer to a new page.
-        void* Allocate();
-
-        /// \brief Free a page.
-        /// \param page Address of the page to free. Must match the return value of Allocate().
-        void Free(void* page);
-
-        /// \brief Get the size of each page.
-        /// \return Returns the size of each page in bytes.
-        size_t GetPageSize() const;
-
-        /// \brief Get the effective memory footprint of this allocator.
-        /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
-        size_t GetSize() const;
-
-    private:
-
-        /// \brief Utility structure for free pages that have been mapped to the system memory at least once.
-        struct Page {
-
-            Page* next_;                            ///< \brief Address of the next free page.
-
-        };
-
-        /// \brief Pop a page from the free page list.
-        /// \return Returns a pointer to a page in the free page list. That page is no longer considered free.
-        void* PopFreePage();
-
-        /// \brief Allocate a new page.
-        /// \return Returns a pointer to a new page.
-        void* AllocatePage();
-
-        Memory& memory_;                            ///< \brief Handles virtual memory.
-
-        size_t page_size_;                          ///< \brief Size of each page in bytes.
-
-        void* base_;                                ///< \brief Base pointer to the memory chunk reserved for this allocator.
-
-        Page* head_;                                ///< \brief Pointer to the first unmapped page.
-
-        Page* free_;                                ///< \brief First free page.
-
-    };
-
-    /// \brief The allocator uses a segregated storage algorithm to allocate memory blocks of small size up to a maximum.
-    /// The allocator is designed to minimize memory fragmentation while keeping high performances.
-    /// Both allocation and deallocation are O(1).
+    /// \brief High-performances allocator that packs many pool allocators for objects up to a maximum size.
+    /// The allocator is designed to minimize external fragmentation while keeping high performances.
     /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls. See PageAllocator.
     /// \author Raffaele D. Facendola - December 2016
     class SegregatedPoolAllocator
@@ -159,12 +98,14 @@ namespace syntropy
         /// \return Returns the address of the memory page containing the provided address.
         void* GetPageAddress(void* address) const;
 
-        PageAllocator page_allocator_;              ///< \brief Provides memory pages in a continuous address range.
+        MonotonicBlockAllocator page_allocator_;    ///< \brief Provides memory pages in a continuous address range.
 
         Page** allocators_;                         ///< \brief Array of allocators. The n-th allocator handles memory blocks up to (1+n) * minimum_allocation_size bytes.
 
         size_t maximum_block_size_;                 ///< \brief Maximum block size for this allocator.
 
     };
+
+
 
 }

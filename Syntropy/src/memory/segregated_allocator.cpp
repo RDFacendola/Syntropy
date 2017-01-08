@@ -6,69 +6,10 @@
 
 #include "memory/memory.h"
 #include "diagnostics/debug.h"
-#include "diagnostics/log.h"
 #include "math/math.h"
 
 namespace syntropy 
 {
-
-    //////////////// PAGE ALLOCATOR ////////////////
-
-    PageAllocator::PageAllocator(size_t capacity, size_t page_size)
-        : memory_(GetMemory())                                                                          // Get a reference to the memory handler
-        , page_size_(Math::NextMultipleOf(page_size, memory_.GetAllocationGranularity()))               // Ceil the specified page size to the actual system page boundary
-        , base_(memory_.Reserve(Math::NextMultipleOf(capacity, page_size_)))                            // Reserve the contiguous address range for the storage upfront
-        , head_(reinterpret_cast<Page*>(base_))                                                         // No mapped page
-        , free_(nullptr)                                                                                // No free page
-    {
-
-    }
-
-    PageAllocator::~PageAllocator()
-    {
-        memory_.Free(base_);
-    }
-
-    void* PageAllocator::Allocate()
-    {
-        return free_ ?
-               PopFreePage() :
-               AllocatePage();
-    }
-    
-    void PageAllocator::Free(void* page)
-    {
-        // Push the page on top of the free pages stack
-        auto free_page = reinterpret_cast<Page*>(page);
-
-        free_page->next_ = free_;
-        free_ = free_page;
-    }
-
-    size_t PageAllocator::GetPageSize() const
-    {
-        return page_size_;
-    }
-
-    size_t PageAllocator::GetSize() const
-    {
-        return std::distance(reinterpret_cast<int8_t*>(base_), reinterpret_cast<int8_t*>(head_));
-    }
-
-    void* PageAllocator::PopFreePage()
-    {
-        auto page = free_;
-        free_ = page->next_;                            // Consume the free page
-        return page;
-    }
-
-    void* PageAllocator::AllocatePage()
-    {
-        auto page = head_;
-        memory_.Commit(page, page_size_);
-        head_ = Memory::Offset(head_, page_size_);      // Move the head forward
-        return page;
-    }
 
     //////////////// SEGREGATED POOL ALLOCATOR ////////////////
 
@@ -77,6 +18,7 @@ namespace syntropy
         , maximum_block_size_(Math::NextMultipleOf(maximum_allocation_size, kMinimumAllocationSize))                    // Rounds to the next minimum allocation boundary
     {
         // TODO: This memory is not tracked and may cause negligible fragmentation. It would be nice to have this memory allocated just before the page allocator storage.
+        // TODO: Move to bookkeeping!!!
         auto& memory = GetMemory();
 
         auto count = maximum_block_size_ / kMinimumAllocationSize;          // Sub-allocators count
@@ -164,7 +106,7 @@ namespace syntropy
 
         auto header_size = Math::NextMultipleOf(page_address + sizeof(Page), block_size) - page_address;    // The header is padded such that blocks in the page are aligned to their own size
         auto head = reinterpret_cast<Block*>(Memory::Offset(page, header_size));                            // The first available block is just after the page header
-        auto count = (page_allocator_.GetPageSize() - header_size) / block_size;                            // Amount of free block in the page
+        auto count = (page_allocator_.GetBlockSize() - header_size) / block_size;                            // Amount of free block in the page
 
         SYNTROPY_ASSERT(reinterpret_cast<size_t>(head) % block_size == 0);                                  // Blocks must be aligned to their size
 
@@ -233,7 +175,7 @@ namespace syntropy
 
     void* SegregatedPoolAllocator::GetPageAddress(void* address) const
     {
-        return reinterpret_cast<void*>(Math::PreviousMultipleOf(reinterpret_cast<size_t>(address), page_allocator_.GetPageSize()));
+        return reinterpret_cast<void*>(Math::PreviousMultipleOf(reinterpret_cast<size_t>(address), page_allocator_.GetBlockSize()));
     }
 
 }
