@@ -85,6 +85,31 @@ namespace syntropy
         return capacity_;
     }
 
+    //////////////// SCOPE ALLOCATOR ////////////////
+
+    void ScopeAllocator::Finalizer::operator()() const
+    {
+        destructor_(object_);
+    }
+
+    ScopeAllocator::ScopeAllocator(LinearAllocator& allocator)
+        : allocator_(allocator)
+        , finalizer_list_(nullptr)
+    {
+        allocator.SaveStatus();         // Save the current status of the allocator
+    }
+
+    ScopeAllocator::~ScopeAllocator()
+    {
+        while (finalizer_list_)
+        {
+            (*finalizer_list_)();                           // Destroy each allocated object in reverse order
+            finalizer_list_ = finalizer_list_->next_;       // Move to the next finalizer
+        }
+
+        allocator_.RestoreStatus();                         // Restore the old status of the allocator
+    }
+
     //////////////// DOUBLE BUFFERED ALLOCATOR ////////////////
 
     DoubleBufferedAllocator::DoubleBufferedAllocator(size_t capacity)
@@ -113,6 +138,11 @@ namespace syntropy
     {
         current_ = allocators_ + (std::distance(allocators_, current_) + 1) % 2;
         Free();
+    }
+
+    LinearAllocator& DoubleBufferedAllocator::GetCurrentAllocator()
+    {
+        return *current_;
     }
 
     void DoubleBufferedAllocator::SaveStatus()
