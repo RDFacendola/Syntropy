@@ -31,6 +31,11 @@ namespace syntropy
         /// \return Returns a pointer to the allocated memory block.
         void* Allocate();
 
+        /// \brief Allocate a memory block of a specific size.
+        /// \param size Size of the block to allocate, in bytes. Must be equal or smaller than the block size. This value is rounded up to the next memory page boundary.
+        /// \return Returns a pointer to the allocated memory block.
+        void* Allocate(size_t size);
+
         /// \brief Free a memory block.
         /// \param block Address of the block to free.
         void Free(void* block);

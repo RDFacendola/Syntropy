@@ -33,6 +33,13 @@ namespace syntropy
 
     void* BlockAllocator::Allocate()
     {
+        return Allocate(block_size_);
+    }
+
+    void* BlockAllocator::Allocate(size_t size)
+    {
+        SYNTROPY_ASSERT(size <= block_size_);
+
         void* block;
 
         if (free_base_ == free_head_)                           // No free block?
@@ -48,7 +55,7 @@ namespace syntropy
             block = reinterpret_cast<void*>(*free_head_);       // Address of the free block.
         }
 
-        memory_.Commit(block, block_size_);                     // Commit the new memory block.
+        memory_.Commit(block, size);                            // Commit the requested memory size. Rounded up to the next memory page boundary.
         return block;
     }
 
