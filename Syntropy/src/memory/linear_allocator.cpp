@@ -14,7 +14,7 @@ namespace syntropy
     LinearAllocator::LinearAllocator(size_t capacity)
         : base_(reinterpret_cast<int8_t*>(GetMemory().Allocate(capacity)))
         , head_(base_)
-        , status_(reinterpret_cast<size_t*>(base_ + capacity) - 1)
+        , status_(nullptr)
         , capacity_(capacity)
     {
 
@@ -33,7 +33,7 @@ namespace syntropy
 
         head_ += size;
 
-        SYNTROPY_ASSERT(reinterpret_cast<size_t>(head_) <= reinterpret_cast<size_t>(status_));
+        SYNTROPY_ASSERT(GetSize() <= GetCapacity());
 
         return block;
     }
@@ -56,24 +56,23 @@ namespace syntropy
 
     void LinearAllocator::SaveStatus()
     {
-        // The allocator status is stored in a stack-like fashion, starting from the top of the reserved memory range and growing backward
-        *status_ = reinterpret_cast<size_t>(head_);
-        status_--;
+        // Push the current status pointer on the stack
 
-        SYNTROPY_ASSERT(reinterpret_cast<size_t>(status_) >= reinterpret_cast<size_t>(head_));
+        *reinterpret_cast<size_t*>(head_) = reinterpret_cast<size_t>(status_);
+        
+        status_ = head_;
+        head_ += sizeof(size_t);
+
+        SYNTROPY_ASSERT(GetSize() <= GetCapacity());
     }
 
-    bool LinearAllocator::RestoreStatus()
+    void LinearAllocator::RestoreStatus()
     {
-        if (status_ < reinterpret_cast<size_t*>(base_ + capacity_) - 1)
-        {
-            // Pop the oldest status and move the status pointer upwards to the next status.
-            status_++;
-            head_ = reinterpret_cast<int8_t*>(*status_);
-            return true;
-        }
-            
-        return false;
+        // Restore the last status
+        SYNTROPY_ASSERT(status_);
+
+        head_ = status_;
+        status_ = reinterpret_cast<int8_t*>(*reinterpret_cast<size_t*>(head_));
     }
 
     size_t LinearAllocator::GetSize() const
@@ -121,9 +120,9 @@ namespace syntropy
         current_->SaveStatus();
     }
 
-    bool DoubleBufferedAllocator::RestoreStatus()
+    void DoubleBufferedAllocator::RestoreStatus()
     {
-        return current_->RestoreStatus();
+        current_->RestoreStatus();
     }
 
     size_t DoubleBufferedAllocator::GetSize() const

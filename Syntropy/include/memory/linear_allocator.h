@@ -46,8 +46,7 @@ namespace syntropy
 
         /// \brief Restore the last saved status.
         /// Calling this method multiple times causes older status to be restored.
-        /// \return Returns true if a saved status was restored, returns false otherwise.
-        bool RestoreStatus();
+        void RestoreStatus();
 
         /// \brief Get the total amount of memory that was allocated on this allocator.
         /// \return Returns the total amount of memory that was allocated on this allocator, in bytes.
@@ -63,7 +62,7 @@ namespace syntropy
 
         int8_t* head_;                              ///< \brief Pointer to the first unallocated memory block.
 
-        size_t* status_;                            ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
+        int8_t* status_;                            ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
 
         size_t capacity_;                           ///< \brief Maximum capacity of the allocator.
 
@@ -103,8 +102,7 @@ namespace syntropy
 
         /// \brief Restore the last saved status of the current allocator.
         /// Calling this method multiple times causes older status to be restored as well.
-        /// \return Returns true if a saved status was restored, returns false otherwise.
-        bool RestoreStatus();
+        void RestoreStatus();
 
         /// \brief Get the total amount of memory that was allocated on this allocator.
         /// \return Returns the total amount of memory that was allocated on this allocator, in bytes.

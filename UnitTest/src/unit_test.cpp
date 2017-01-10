@@ -53,6 +53,10 @@ int main()
         char padding[1];
     };
 
+    syntropy::LinearAllocator stoca(0x2000);
+
+
+
     auto t0 = std::chrono::high_resolution_clock::now();
 
     {
