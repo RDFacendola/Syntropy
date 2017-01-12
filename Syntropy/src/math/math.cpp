@@ -1,18 +1,21 @@
 #include "math/math.h"
 
+#include "platform/builtin.h"
+
 namespace syntropy
 {
 
     //////////////// MATH ////////////////
 
-    size_t Math::NextMultipleOf(size_t number, size_t multiple)
+    size_t Math::CeilLog2(size_t number)
     {
-        return PreviousMultipleOf(number + multiple - 1, multiple);
-    }
+        if (number > 0)
+        {
+            auto msb = platform::GetBuiltIn().GetMostSignificantBit(number);
+            return msb + ((number & (number - 1)) >> msb);        // Ceiling required for non-power of 2.
+        }
 
-    size_t Math::PreviousMultipleOf(size_t number, size_t multiple)
-    {
-        return (number / multiple) * multiple;
+        return 0;
     }
 
 }

@@ -52,6 +52,11 @@ namespace syntropy
         /// \return Returns the total capacity of this allocator, in bytes.
         size_t GetCapacity() const;
 
+        /// \brief Check whether an address belongs to this allocator.
+        /// \param address Address to check.
+        /// \return Returns true if address belongs to this allocator, returns false otherwise.
+        bool ContainsAddress(void* address) const;
+
     private:
 
         Memory& memory_;                ///< \brief Handles virtual memory.
@@ -103,6 +108,11 @@ namespace syntropy
         /// \brief Get total capacity of this allocator.
         /// \return Returns the total capacity of this allocator, in bytes.
         size_t GetCapacity() const;
+
+        /// \brief Check whether an address belongs to this allocator.
+        /// \param address Address to check.
+        /// \return Returns true if address belongs to this allocator, returns false otherwise.
+        bool ContainsAddress(void* address) const;
 
     private:
 

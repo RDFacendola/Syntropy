@@ -16,8 +16,10 @@ namespace syntropy
         , base_(memory_.Reserve(capacity))                                                              // Reserve the entire virtual memory range without allocating
         , head_(base_)
     {
-        // TODO: This memory needs to grow and shrink dynamically. For a single allocator the amount of wasted memory is little, but it may grow with lots of them.
+        SYNTROPY_ASSERT(base_);
+
         // TODO: Move to bookkeeping!!!
+        // TODO: This allocation here stinks! It can waste a ton of space when using multiple block allocators.
         auto total_memory = platform::GetSystem().GetMemoryInfo().total_physical_memory_;               // Maximum amount of memory that can be allocated at any given time
         auto maximum_blocks = total_memory / block_size_;                                               // Maximum amount of blocks that can be allocated using this allocator, also upper bound for the free list
         auto bookkeeping_size = maximum_blocks * sizeof(size_t*);                                       // Size of the internal stack
@@ -42,6 +44,7 @@ namespace syntropy
 
         void* block;
 
+        // TODO: Split to Reserve\Allocate (to support streaming)
         if (free_base_ == free_head_)                           // No free block?
         {
             block = head_;                                      // Allocate a new memory block on the allocator's head.
@@ -61,10 +64,9 @@ namespace syntropy
 
     void BlockAllocator::Free(void* block)
     {
-        SYNTROPY_ASSERT(std::distance(reinterpret_cast<int8_t*>(base_), reinterpret_cast<int8_t*>(block)) >= 0 &&                   // Be sure to free something that was allocated by this allocator.
-                        std::distance(reinterpret_cast<int8_t*>(block), reinterpret_cast<int8_t*>(head_)) > 0);
+        SYNTROPY_ASSERT(ContainsAddress(block));
 
-        SYNTROPY_ASSERT(std::distance(reinterpret_cast<int8_t*>(base_), reinterpret_cast<int8_t*>(block)) % block_size_ == 0);      // Be sure to free starting from the base of a block.
+        block = reinterpret_cast<void*>(Math::PreviousMultipleOf(reinterpret_cast<size_t>(block), block_size_));    // Round down to the base address of the block.
 
         *free_head_ = reinterpret_cast<size_t>(block);          // Save the address of the free block.
         ++free_head_;                                           // Move the head forward.
@@ -81,12 +83,18 @@ namespace syntropy
         auto maximum_size = std::distance(reinterpret_cast<int8_t*>(base_), reinterpret_cast<int8_t*>(head_));              // Maximum amount of blocks allocated
         auto free_size = std::distance(free_base_, free_head_) * block_size_;                                               // Amount of freed memory
         
-        return maximum_size - free_size;
+        return maximum_size - free_size;        // TODO: This is actually the maximum size, the committed memory may be lower.
     }
 
     size_t BlockAllocator::GetCapacity() const
     {
         return capacity_;
+    }
+
+    bool BlockAllocator::ContainsAddress(void* address) const
+    {
+        return std::distance(reinterpret_cast<int8_t*>(base_), reinterpret_cast<int8_t*>(address)) >= 0 &&
+               std::distance(reinterpret_cast<int8_t*>(address), reinterpret_cast<int8_t*>(head_)) > 0;
     }
 
     //////////////// MONOTONIC BLOCK ALLOCATOR ////////////////
@@ -99,7 +107,7 @@ namespace syntropy
         , head_(base_)
         , free_(nullptr)
     {
-
+        SYNTROPY_ASSERT(base_);
     }
 
     MonotonicBlockAllocator::~MonotonicBlockAllocator()
@@ -129,10 +137,9 @@ namespace syntropy
 
     void MonotonicBlockAllocator::Free(void* block)
     {
-        SYNTROPY_ASSERT(std::distance(reinterpret_cast<int8_t*>(base_), reinterpret_cast<int8_t*>(block)) >= 0 &&                   // Be sure to free something that was allocated by this allocator.
-                        std::distance(reinterpret_cast<int8_t*>(block), reinterpret_cast<int8_t*>(head_)) > 0);
+        SYNTROPY_ASSERT(ContainsAddress(block));
 
-        SYNTROPY_ASSERT(std::distance(reinterpret_cast<int8_t*>(base_), reinterpret_cast<int8_t*>(block)) % block_size_ == 0);      // Be sure to free starting from the base of a block
+        block = reinterpret_cast<void*>(Math::PreviousMultipleOf(reinterpret_cast<size_t>(block), block_size_));    // Round down to the base address of the block.
 
         auto free = reinterpret_cast<Block*>(block);
 
@@ -153,6 +160,12 @@ namespace syntropy
     size_t MonotonicBlockAllocator::GetCapacity() const
     {
         return capacity_;
+    }
+
+    bool MonotonicBlockAllocator::ContainsAddress(void* address) const
+    {
+        return std::distance(reinterpret_cast<int8_t*>(base_), reinterpret_cast<int8_t*>(address)) >= 0 &&
+               std::distance(reinterpret_cast<int8_t*>(address), reinterpret_cast<int8_t*>(head_)) > 0;
     }
 
 }

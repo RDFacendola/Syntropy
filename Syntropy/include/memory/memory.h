@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "diagnostics/diagnostics.h"
+#include "math/math.h"
 
 namespace syntropy
 {
@@ -32,6 +33,14 @@ namespace syntropy
         /// \return Returns the address offset'd by the specified offset amount.
         template <typename T>
         static constexpr T* Offset(T* address, int64_t offset);
+
+        /// \brief Align an address.
+        /// \param address Address to align
+        /// \param alignment Alignment.
+        /// \return Returns the address aligned to the given alignment boundary.
+        /// \remarks This method aligns by adding a padding value to the base address.
+        template <typename T>
+        static constexpr T* Align(T* address, size_t alignment);
 
         /// \brief Get the virtual memory reservation granularity.
         /// This value is always a multiple of the allocation granularity.
@@ -94,6 +103,12 @@ namespace syntropy
     static constexpr T* Memory::Offset(T* address, int64_t offset)
     {
         return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) + offset);
+    }
+
+    template <typename T>
+    static constexpr T* Memory::Align(T* address, size_t alignment)
+    {
+        return reinterpret_cast<T*>(Math::NextMultipleOf(reinterpret_cast<size_t>(address), alignment));
     }
 
 }

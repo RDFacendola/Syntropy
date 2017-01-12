@@ -17,8 +17,8 @@ namespace syntropy
         : page_allocator_(capacity, page_size)
         , maximum_block_size_(Math::NextMultipleOf(maximum_allocation_size, kMinimumAllocationSize))                    // Rounds to the next minimum allocation boundary
     {
-        // TODO: This memory is not tracked and may cause negligible fragmentation. It would be nice to have this memory allocated just before the page allocator storage.
         // TODO: Move to bookkeeping!!!
+
         auto& memory = GetMemory();
 
         auto count = maximum_block_size_ / kMinimumAllocationSize;          // Sub-allocators count
@@ -176,6 +176,75 @@ namespace syntropy
     void* SegregatedPoolAllocator::GetPageAddress(void* address) const
     {
         return reinterpret_cast<void*>(Math::PreviousMultipleOf(reinterpret_cast<size_t>(address), page_allocator_.GetBlockSize()));
+    }
+
+    //////////////// CLUSTERED POOL ALLOCATOR ////////////////
+
+    ClusteredPoolAllocator::ClusteredPoolAllocator(size_t capacity, size_t minimum_allocation_size, size_t order)
+        : order_(order)
+        , base_allocation_size_(Math::NextMultipleOf(minimum_allocation_size, GetMemory().GetAllocationGranularity()))      // Round to the next memory page boundary
+    {
+        SYNTROPY_ASSERT(order >= 1);
+
+        // TODO: Move to bookkeeping!!!
+
+        auto maximum_allocation_size = base_allocation_size_ * (static_cast<size_t>(1) << (order - 1));         // Allocation size of the last cluster
+
+        auto cluster_capacity = Math::PreviousMultipleOf(capacity / order, maximum_allocation_size);            // Each allocator must have the same capacity which is also a multiple of the maximum allocation possible.
+
+        auto& memory = GetMemory();
+
+        auto size = order * sizeof(BlockAllocator);                                                             // Size of the storage for cluster allocators.
+
+        allocators_ = reinterpret_cast<BlockAllocator*>(memory.Allocate(size));                                 // 
+
+        while (order-- != 0)
+        {
+            new (allocators_ + order) BlockAllocator(cluster_capacity, maximum_allocation_size);                // Initialize each cluster allocator
+            maximum_allocation_size >>= 1;
+        } 
+
+    }
+
+    void* ClusteredPoolAllocator::Allocate(size_t size)
+    {
+        auto index = Math::CeilLog2((size + base_allocation_size_ - 1) / base_allocation_size_);
+
+        return allocators_[index].Allocate(size);
+    }
+
+    void* ClusteredPoolAllocator::Allocate(size_t size, size_t alignment)
+    {
+        auto index = Math::CeilLog2((size + alignment + base_allocation_size_ - 1) / base_allocation_size_);    // Blocks are not aligned, just reserve enough space for both the block and maximum padding due to its alignment
+        
+        auto block = Memory::Align(allocators_[index].Allocate(size + alignment), alignment);                   // Allocate the actual padded memory block
+
+        SYNTROPY_ASSERT(reinterpret_cast<size_t>(block) % alignment == 0);
+
+        return block;
+    }
+
+    void ClusteredPoolAllocator::Free(void* address)
+    {
+        for (auto index = order_ - 1; index >= 0; --index)
+        {
+            if (allocators_[index].ContainsAddress(address))
+            {
+                allocators_[index].Free(address);
+                return;
+            }
+        }
+    }
+
+    size_t ClusteredPoolAllocator::GetSize() const
+    {
+        return std::accumulate(&allocators_[0],
+                               &allocators_[order_],
+                               static_cast<size_t>(0),
+                               [](size_t accumulator, const BlockAllocator& allocator)
+                               {
+                                    return accumulator + allocator.GetSize();
+                               });
     }
 
 }

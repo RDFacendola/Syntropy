@@ -22,10 +22,9 @@ namespace syntropy
             /// \return Returns the singleton instance;
             static BuiltIn& GetInstance();
 
-            /// \brief Get the number of leading zeroes in a 64 bit unsigned number.
-            /// \param number Number to count the leading zeroes of.
-            /// \return Returns the number of leading zeroes in the provided number.
-            virtual size_t GetLeadingZeroes(uint64_t number) const = 0;
+            /// \brief Get the index of the most significant bit set.
+            /// \return Returns the index of the most significant bit set. Undefined behavior if 0.
+            virtual size_t GetMostSignificantBit(uint64_t number) const = 0;
 
         };
 

@@ -106,6 +106,45 @@ namespace syntropy
 
     };
 
+    /// \brief Low-fragmentation, low-waste allocator to handle allocation of large objects.
+    /// The allocator is designed to minimize external fragmentation while keeping a low amount of wasted space.
+    /// The allocator allocates and deallocates pages on demand.
+    /// \author Raffaele D. Facendola - January 2017
+    class ClusteredPoolAllocator
+    {
+    public:
+
+        ClusteredPoolAllocator(size_t capacity, size_t minimum_allocation_size, size_t order);
+
+        /// \brief Allocate a new memory block.
+        /// \param size Size of the memory block to allocate, in bytes.
+        /// \return Returns a pointer to the allocated memory block.
+        void* Allocate(size_t size);
+
+        /// \brief Allocate a new aligned memory block.
+        /// \param size Size of the memory block to allocate, in bytes.
+        /// \param alignment Alignment of the allocated block. Must be a multiple of the minimum allocation size.
+        /// \return Returns a pointer to the allocated memory block.
+        void* Allocate(size_t size, size_t alignment);
+
+        /// \brief Free a memory block.
+        /// \param address Address of the block to free.
+        void Free(void* address);
+
+        /// \brief Get the effective memory footprint of this allocator.
+        /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
+        size_t GetSize() const;
+
+    private:
+
+        BlockAllocator* allocators_;                ///< \brief Array of cluster allocators. One allocator per order.
+
+        size_t order_;                              ///< \brief Order of the allocator. Maximum allocation size is base_allocation_size_ * 2 ^ order_.
+
+        size_t base_allocation_size_;               ///< \brief Allocation size for the first-order allocator.
+
+    };
+
 
 
 }
