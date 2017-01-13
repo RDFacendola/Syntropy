@@ -23,8 +23,8 @@ namespace syntropy
             static BuiltIn& GetInstance();
 
             /// \brief Get the index of the most significant bit set.
-            /// \return Returns the index of the most significant bit set. Undefined behavior if 0.
-            virtual size_t GetMostSignificantBit(uint64_t number) const = 0;
+            /// \return Returns the index of the most significant bit set. Undefined behavior if number is 0.
+            virtual uint64_t GetMostSignificantBit(uint64_t number) const = 0;
 
         };
 

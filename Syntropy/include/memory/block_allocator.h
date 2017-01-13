@@ -55,6 +55,7 @@ namespace syntropy
         /// \brief Check whether an address belongs to this allocator.
         /// \param address Address to check.
         /// \return Returns true if address belongs to this allocator, returns false otherwise.
+        /// \remarks The address doesn't have to be physically allocated or reserved.
         bool ContainsAddress(void* address) const;
 
     private:
@@ -65,13 +66,13 @@ namespace syntropy
 
         size_t capacity_;               ///< \brief Capacity of the allocator.
 
-        void* base_;                    ///< \brief Base pointer to the memory chunk reserved for this allocator.
+        int8_t* base_;                  ///< \brief Base pointer to the memory chunk reserved for this allocator.
 
-        void* head_;                    ///< \brief Pointer to the first unmapped block.
+        int8_t* head_;                  ///< \brief Pointer to the first unmapped block.
 
-        size_t* free_base_;             ///< \brief Base of the free list.
+        uintptr_t* free_base_;          ///< \brief Base of the free list.
 
-        size_t* free_head_;             ///< \brief Points past the last free index.
+        uintptr_t* free_head_;          ///< \brief Points past the last free index.
 
     };
 
@@ -128,9 +129,9 @@ namespace syntropy
 
         size_t capacity_;               ///< \brief Capacity of the allocator.
 
-        void* base_;                    ///< \brief Base pointer to the memory chunk reserved for this allocator.
+        int8_t* base_;                  ///< \brief Base pointer to the memory chunk reserved for this allocator.
 
-        void* head_;                    ///< \brief Pointer to the first unmapped block.
+        int8_t* head_;                  ///< \brief Pointer to the first unmapped block.
 
         Block* free_;                   ///< \brief First free block.
 

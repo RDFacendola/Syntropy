@@ -84,8 +84,6 @@ namespace syntropy
             /// \return Returns the singleton instance;
             static Memory& GetInstance();
 
-            virtual size_t GetReservationGranularity() const override;
-
             virtual size_t GetAllocationGranularity() const override;
 
             virtual void* Allocate(size_t size) override;
@@ -102,8 +100,6 @@ namespace syntropy
 
             /// \brief Default constructor.
             WindowsMemory();
-
-            size_t reservation_granularity_;                ///< \brief Memory reservation granularity, in bytes.
 
             size_t allocation_granularity_;                 ///< \brief Memory allocation granularity, in bytes.
 

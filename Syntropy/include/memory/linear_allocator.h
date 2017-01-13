@@ -59,13 +59,13 @@ namespace syntropy
 
     private:
 
-        int8_t* base_;                              ///< \brief Base pointer to the memory chunk reserved for this allocator.
+        int8_t* base_;                           ///< \brief Base pointer to the memory chunk reserved for this allocator.
 
-        int8_t* head_;                              ///< \brief Pointer to the first unallocated memory block.
+        int8_t* head_;                           ///< \brief Pointer to the first unallocated memory block.
 
-        int8_t* status_;                            ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
+        int8_t* status_;                         ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
 
-        size_t capacity_;                           ///< \brief Maximum capacity of the allocator.
+        size_t capacity_;                       ///< \brief Maximum capacity of the allocator.
 
     };
 
@@ -212,9 +212,11 @@ namespace syntropy
     {
         auto storage = allocator_.Allocate(sizeof(T));                              // Storage for the instance
 
-        AllocateFinalizer(reinterpret_cast<T*>(storage));                           // Either allocates a finalizer or does nothing if T doesn't require a destructor.
+        auto instance = new (storage) T(std::forward<TArgs>(arguments)...);         // Create the new instance
 
-        return new (storage) T(std::forward<TArgs>(arguments)...);                  // ctor
+        AllocateFinalizer(instance);                                                // Either allocates a finalizer or does nothing if T doesn't require a destructor.
+
+        return instance;
     }
 
     template <typename T, typename... TArgs>
@@ -222,9 +224,11 @@ namespace syntropy
     {
         auto storage = allocator_.Allocate(sizeof(T), alignment);                   // Aligned storage for the instance
 
-        AllocateFinalizer(reinterpret_cast<T*>(storage));                           // Either allocates a finalizer or does nothing if T doesn't require a destructor.
+        auto instance = new (storage) T(std::forward<TArgs>(arguments)...);         // Create the new instance
 
-        return new (storage) T(std::forward<TArgs>(arguments)...);                  // ctor
+        AllocateFinalizer(instance);                                                // Either allocates a finalizer or does nothing if T doesn't require a destructor.
+
+        return instance;
     }
 
     template <typename T>

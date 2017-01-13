@@ -15,7 +15,7 @@ namespace syntropy
 
     SegregatedPoolAllocator::SegregatedPoolAllocator(size_t capacity, size_t page_size, size_t maximum_allocation_size)
         : page_allocator_(capacity, page_size)
-        , maximum_block_size_(Math::NextMultipleOf(maximum_allocation_size, kMinimumAllocationSize))                    // Rounds to the next minimum allocation boundary
+        , maximum_block_size_(Math::Ceil(maximum_allocation_size, kMinimumAllocationSize))      // Rounds to the next minimum allocation boundary
     {
         // TODO: Move to bookkeeping!!!
 
@@ -35,7 +35,7 @@ namespace syntropy
         SYNTROPY_ASSERT(size <= maximum_block_size_);
         SYNTROPY_ASSERT(size > 0);
 
-        auto& allocator = GetAllocator(Math::NextMultipleOf(size, kMinimumAllocationSize));
+        auto& allocator = GetAllocator(Math::Ceil(size, kMinimumAllocationSize));
         
         // Get a block from the free block list
         auto block = allocator->free_;
@@ -52,10 +52,11 @@ namespace syntropy
 
     void* SegregatedPoolAllocator::Allocate(size_t size, size_t alignment)
     {
+        // TODO: Are block actually aligned to their own size?
         // Since blocks are aligned to their own size, we are looking for a block large enough that is also a multiple of the requested alignment
-        auto block = Allocate(Math::NextMultipleOf(size, alignment));
+        auto block = Allocate(Math::Ceil(size, alignment));
 
-        SYNTROPY_ASSERT(reinterpret_cast<size_t>(block) % alignment == 0);
+        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, alignment));
 
         return block;
     }
@@ -64,7 +65,7 @@ namespace syntropy
     {
         auto block = reinterpret_cast<Block*>(address);
 
-        auto page = reinterpret_cast<Page*>(GetPageAddress(block));
+        auto page = reinterpret_cast<Page*>(Memory::AlignDown(address, page_allocator_.GetBlockSize()));
 
         // Add the block to free block list
         --page->allocated_blocks_;
@@ -100,15 +101,15 @@ namespace syntropy
 
     SegregatedPoolAllocator::Page* SegregatedPoolAllocator::AllocatePage(size_t block_size)
     {
-        auto page = reinterpret_cast<Page*>(page_allocator_.Allocate());                                    // Get a new page
+        auto page = reinterpret_cast<Page*>(page_allocator_.Allocate());                                // Get a new page
         
         auto page_address = reinterpret_cast<size_t>(page);
 
-        auto header_size = Math::NextMultipleOf(page_address + sizeof(Page), block_size) - page_address;    // The header is padded such that blocks in the page are aligned to their own size
-        auto head = reinterpret_cast<Block*>(Memory::Offset(page, header_size));                            // The first available block is just after the page header
-        auto count = (page_allocator_.GetBlockSize() - header_size) / block_size;                            // Amount of free block in the page
+        auto header_size = Math::Ceil(page_address + sizeof(Page), block_size) - page_address;          // The header is padded such that blocks in the page are aligned to their own size
+        auto head = reinterpret_cast<Block*>(Memory::Offset(page, header_size));                        // The first available block is just after the page header
+        auto count = (page_allocator_.GetBlockSize() - header_size) / block_size;                       // Amount of free block in the page
 
-        SYNTROPY_ASSERT(reinterpret_cast<size_t>(head) % block_size == 0);                                  // Blocks must be aligned to their size
+        SYNTROPY_ASSERT(Memory::IsAlignedTo(head, block_size));                                         // Blocks must be aligned to their size
 
         page->next_ = nullptr;
         page->previous_ = nullptr;
@@ -173,16 +174,11 @@ namespace syntropy
         head = page;
     }
 
-    void* SegregatedPoolAllocator::GetPageAddress(void* address) const
-    {
-        return reinterpret_cast<void*>(Math::PreviousMultipleOf(reinterpret_cast<size_t>(address), page_allocator_.GetBlockSize()));
-    }
-
     //////////////// CLUSTERED POOL ALLOCATOR ////////////////
 
     ClusteredPoolAllocator::ClusteredPoolAllocator(size_t capacity, size_t minimum_allocation_size, size_t order)
         : order_(order)
-        , base_allocation_size_(Math::NextMultipleOf(minimum_allocation_size, GetMemory().GetAllocationGranularity()))      // Round to the next memory page boundary
+        , base_allocation_size_(Math::Ceil(minimum_allocation_size, GetMemory().GetAllocationGranularity()))      // Round to the next memory page boundary
     {
         SYNTROPY_ASSERT(order >= 1);
 
@@ -190,7 +186,7 @@ namespace syntropy
 
         auto maximum_allocation_size = base_allocation_size_ * (static_cast<size_t>(1) << (order - 1));         // Allocation size of the last cluster
 
-        auto cluster_capacity = Math::PreviousMultipleOf(capacity / order, maximum_allocation_size);            // Each allocator must have the same capacity which is also a multiple of the maximum allocation possible.
+        auto cluster_capacity = Math::Floor(capacity / order, maximum_allocation_size);                         // Each allocator must have the same capacity which is also a multiple of the maximum allocation possible.
 
         auto& memory = GetMemory();
 

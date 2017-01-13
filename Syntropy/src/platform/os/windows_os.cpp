@@ -375,15 +375,9 @@ namespace syntropy
             SYSTEM_INFO system_info;
             GetSystemInfo(&system_info);
 
-            reservation_granularity_ = system_info.dwAllocationGranularity;
             allocation_granularity_ = system_info.dwPageSize;
         }
         
-        size_t WindowsMemory::GetReservationGranularity() const
-        {
-            return reservation_granularity_;
-        }
-
         size_t WindowsMemory::GetAllocationGranularity() const
         {
             return allocation_granularity_;

@@ -7,7 +7,9 @@
 #pragma once
 
 #include <cstdint>
+#include <type_traits>
 
+#include "platform/builtin.h"
 
 namespace syntropy
 {
@@ -16,33 +18,39 @@ namespace syntropy
     {
     public:
 
-        // TODO: Generalize me
-        static constexpr size_t NextMultipleOf(size_t number, size_t multiple);
+        /// \brief Ceil a number to a multiple.
+        /// This overload does participate for overload resolution only for unsigned values.
+        /// \return Returns the first number equal or greater than number which is multiple of multiple.
+        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned_v<Unsigned>>>
+        static constexpr Unsigned Ceil(Unsigned number, Unsigned multiple)
+        {
+            return Floor(number + multiple - 1, multiple);
+        }
 
-        // TODO: Generalize me
-        static constexpr size_t PreviousMultipleOf(size_t number, size_t multiple);
+        /// \brief Floor a number to a multiple.
+        /// This overload does participate for overload resolution only for unsigned values.
+        /// \return Returns the first number equal or lesser than number which is multiple of multiple.
+        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned_v<Unsigned>>>
+        static constexpr Unsigned Floor(Unsigned number, Unsigned multiple)
+        {
+            return (number / multiple) * multiple;
+        }
 
-        // TODO: Ceil(log2(number)). If number is 0 result is 0.
-        static size_t CeilLog2(size_t number);
+        /// \brief Get the base 2 logarithm of a number and ceil the result to the next integer value.
+        /// This overload does participate for overload resolution only for unsigned values.
+        /// \return Returns the base 2 logarithm of the provided number rounded up to the next integer value. If the provided number is 0 the result is also 0.
+        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned_v<Unsigned>>>
+        static Unsigned CeilLog2(Unsigned number)
+        {
+            if (number > 0)
+            {
+                auto msb = platform::GetBuiltIn().GetMostSignificantBit(static_cast<uint64_t>(number));
+                return msb + ((number & (number - 1)) >> msb);        // Ceiling required for non-power of 2.
+            }
+
+            return 0;
+        }
 
     };
-
-}
-
-namespace syntropy
-{
-    // Implementation
-
-    //////////////// MATH ////////////////
-
-    inline constexpr size_t Math::NextMultipleOf(size_t number, size_t multiple)
-    {
-        return PreviousMultipleOf(number + multiple - 1, multiple);
-    }
-
-    inline constexpr size_t Math::PreviousMultipleOf(size_t number, size_t multiple)
-    {
-        return (number / multiple) * multiple;
-    }
 
 }

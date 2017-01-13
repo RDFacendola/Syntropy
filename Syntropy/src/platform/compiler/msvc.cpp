@@ -13,11 +13,11 @@ namespace syntropy
             return instance;
         }
 
-        size_t MSVCBuiltIn::GetMostSignificantBit(uint64_t number) const
+        uint64_t MSVCBuiltIn::GetMostSignificantBit(uint64_t number) const
         {
             unsigned long index;
             _BitScanReverse64(&index, number);
-            return index;
+            return static_cast<uint64_t>(index);
         }
 
     }

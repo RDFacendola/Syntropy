@@ -93,11 +93,6 @@ namespace syntropy
         /// \param page Page to restore.
         void RestorePage(Page* page);
 
-        /// \brief Get the address of the page containing an address.
-        /// \param address Address to check.
-        /// \return Returns the address of the memory page containing the provided address.
-        void* GetPageAddress(void* address) const;
-
         MonotonicBlockAllocator page_allocator_;    ///< \brief Provides memory pages in a continuous address range.
 
         Page** allocators_;                         ///< \brief Array of allocators. The n-th allocator handles memory blocks up to (1+n) * minimum_allocation_size bytes.

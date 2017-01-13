@@ -36,7 +36,7 @@ namespace syntropy
             /// \return Returns the singleton instance.
             static platform::BuiltIn& GetInstance();
 
-            virtual size_t GetMostSignificantBit(uint64_t number) const override;
+            virtual uint64_t GetMostSignificantBit(uint64_t number) const override;
 
         private:
 

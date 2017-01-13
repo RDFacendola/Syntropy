@@ -31,7 +31,7 @@ namespace syntropy
 
         auto block = head_;
 
-        head_ += size;
+        head_ = Memory::Offset(head_, size);
 
         SYNTROPY_ASSERT(GetSize() <= GetCapacity());
 
@@ -40,11 +40,11 @@ namespace syntropy
 
     void* LinearAllocator::Allocate(size_t size, size_t alignment)
     {
-        head_ = reinterpret_cast<int8_t*>(Math::NextMultipleOf(reinterpret_cast<size_t>(head_), alignment));        // Align the head to the requested amount
+        head_ = Memory::Align(head_, alignment);        // Add a padding so that the allocated block is aligned
 
         auto block = Allocate(size);
 
-        SYNTROPY_ASSERT(reinterpret_cast<size_t>(block) % alignment == 0);
+        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, alignment));
 
         return block;
     }
@@ -56,23 +56,17 @@ namespace syntropy
 
     void LinearAllocator::SaveStatus()
     {
-        // Push the current status pointer on the stack
-
-        *reinterpret_cast<size_t*>(head_) = reinterpret_cast<size_t>(status_);
-        
         status_ = head_;
-        head_ += sizeof(size_t);
 
-        SYNTROPY_ASSERT(GetSize() <= GetCapacity());
+        *reinterpret_cast<uintptr_t*>(Allocate(sizeof(uintptr_t))) = reinterpret_cast<uintptr_t>(status_);    // Push the current status pointer on the stack
     }
 
     void LinearAllocator::RestoreStatus()
     {
-        // Restore the last status
         SYNTROPY_ASSERT(status_);
 
-        head_ = status_;
-        status_ = reinterpret_cast<int8_t*>(*reinterpret_cast<size_t*>(head_));
+        head_ = status_;                                                                // Restore the last status
+        status_ = reinterpret_cast<int8_t*>(*reinterpret_cast<uintptr_t*>(head_));      // Move to the next status
     }
 
     size_t LinearAllocator::GetSize() const

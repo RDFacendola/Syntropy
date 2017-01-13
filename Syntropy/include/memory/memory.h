@@ -30,7 +30,7 @@ namespace syntropy
         /// \brief Offset an address.
         /// \param address Address to perform the offset from.
         /// \param offset Offset with respect the address, in bytes.
-        /// \return Returns the address offset'd by the specified offset amount.
+        /// \return Returns the address offsetted by the specified amount.
         template <typename T>
         static constexpr T* Offset(T* address, int64_t offset);
 
@@ -42,10 +42,19 @@ namespace syntropy
         template <typename T>
         static constexpr T* Align(T* address, size_t alignment);
 
-        /// \brief Get the virtual memory reservation granularity.
-        /// This value is always a multiple of the allocation granularity.
-        /// \return Returns the virtual memory reservation granularity, in bytes.
-        virtual size_t GetReservationGranularity() const = 0;
+        /// \brief Align an address.
+        /// \param address Address to align
+        /// \param alignment Alignment.
+        /// \return Returns the address aligned down to the given alignment boundary.
+        /// \remarks This method aligns by subtracting a padding value to the base address.
+        template <typename T>
+        static constexpr T* AlignDown(T* address, size_t alignment);
+
+        /// \brief Check whether an address is aligned to a particular size.
+        /// \param address Address to check.
+        /// \param alignment Alignment to test against.
+        /// \return Returns true if address is aligned to the provided alignment, returns false otherwise.
+        static constexpr bool IsAlignedTo(void* address, size_t alignment);
 
         /// \brief Get the virtual memory allocation granularity.
         /// \return Returns the virtual memory allocation granularity, in bytes.
@@ -100,15 +109,26 @@ namespace syntropy
     //////////////// MEMORY ////////////////
 
     template <typename T>
-    static constexpr T* Memory::Offset(T* address, int64_t offset)
+    constexpr T* Memory::Offset(T* address, int64_t offset)
     {
         return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) + offset);
     }
 
     template <typename T>
-    static constexpr T* Memory::Align(T* address, size_t alignment)
+    constexpr T* Memory::Align(T* address, size_t alignment)
     {
-        return reinterpret_cast<T*>(Math::NextMultipleOf(reinterpret_cast<size_t>(address), alignment));
+        return reinterpret_cast<T*>(Math::Ceil(reinterpret_cast<uintptr_t>(address), alignment));
+    }
+
+    template <typename T>
+    static constexpr T* Memory::AlignDown(T* address, size_t alignment)
+    {
+        return reinterpret_cast<T*>(Math::Floor(reinterpret_cast<uintptr_t>(address), alignment));
+    }
+
+    constexpr bool Memory::IsAlignedTo(void* address, size_t alignment)
+    {
+        return reinterpret_cast<uintptr_t>(address) % alignment == 0;
     }
 
 }
