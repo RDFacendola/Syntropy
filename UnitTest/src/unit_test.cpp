@@ -65,6 +65,10 @@ int main()
                                               0x10000,          // 64 KB pages
                                               10);              // 10th order: up to 32 MB allocations
 
+
+        //syntropy::SegregatedPoolAllocator pall(0x200000000,         // 512 MB capacity
+        //                                       0x4000);              // 16 KB pages
+
         while (c-- > 0)
         {
             if (rand() % 2 == 0 || v.size() == 0)

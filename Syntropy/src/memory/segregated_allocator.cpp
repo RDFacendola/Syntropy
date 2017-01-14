@@ -52,7 +52,6 @@ namespace syntropy
 
     void* SegregatedPoolAllocator::Allocate(size_t size, size_t alignment)
     {
-        // TODO: Are block actually aligned to their own size?
         // Since blocks are aligned to their own size, we are looking for a block large enough that is also a multiple of the requested alignment
         auto block = Allocate(Math::Ceil(size, alignment));
 
@@ -178,7 +177,7 @@ namespace syntropy
 
     ClusteredPoolAllocator::ClusteredPoolAllocator(size_t capacity, size_t minimum_allocation_size, size_t order)
         : order_(order)
-        , base_allocation_size_(Math::Ceil(minimum_allocation_size, GetMemory().GetAllocationGranularity()))      // Round to the next memory page boundary
+        , base_allocation_size_(Math::Ceil(minimum_allocation_size, GetMemory().GetAllocationGranularity()))    // Round to the next memory page boundary
     {
         SYNTROPY_ASSERT(order >= 1);
 

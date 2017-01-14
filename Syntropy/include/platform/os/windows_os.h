@@ -90,7 +90,7 @@ namespace syntropy
 
             virtual bool Free(void* address) override;
 
-            virtual void* Reserve(size_t size) override;
+            virtual VirtualMemoryRange Reserve(size_t size, size_t alignment) override;
 
             virtual bool Commit(void* address, size_t size) override;
 

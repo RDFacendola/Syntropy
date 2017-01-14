@@ -1,8 +1,7 @@
 #include "memory/block_allocator.h"
 
 #include "platform/system.h"
-
-#include "diagnostics/log.h"
+#include "diagnostics/diagnostics.h"
 
 namespace syntropy
 {
@@ -10,27 +9,23 @@ namespace syntropy
     //////////////// BLOCK ALLOCATOR ////////////////
 
     BlockAllocator::BlockAllocator(size_t capacity, size_t block_size)
-        : memory_(GetMemory())                                                              // Get a reference to the memory handler.
-        , block_size_(Math::Ceil(block_size, memory_.GetAllocationGranularity()))           // Round up to the next system allocation granularity.
-        , capacity_(Math::Ceil(capacity, block_size_))                                      // Round up to the next block size.
-        , base_(reinterpret_cast<int8_t*>(memory_.Reserve(capacity)))                       // Reserve the entire virtual memory range without allocating
-        , head_(base_)
+        : block_size_(Memory::CeilToAllocationGranularity(block_size))                          // Round up to the next system allocation granularity.
+        , memory_(GetMemory().Reserve(Math::Ceil(capacity, block_size_), block_size_))          // Reserve the virtual memory range upfront without allocating.
+        , head_(*memory_)
     {
-        SYNTROPY_ASSERT(base_);
-
         // TODO: Move to bookkeeping!!!
         // TODO: This allocation here stinks! It can waste a ton of space when using multiple block allocators.
-        auto total_memory = platform::GetSystem().GetMemoryInfo().total_physical_memory_;               // Maximum amount of memory that can be allocated at any given time
-        auto maximum_blocks = total_memory / block_size_;                                               // Maximum amount of blocks that can be allocated using this allocator, also upper bound for the free list
-        auto bookkeeping_size = maximum_blocks * sizeof(size_t*);                                       // Size of the internal stack
+        auto total_memory = platform::GetSystem().GetMemoryInfo().total_physical_memory_;       // Maximum amount of memory that can be allocated at any given time
+        auto maximum_blocks = total_memory / block_size_;                                       // Maximum amount of blocks that can be allocated using this allocator, also upper bound for the free list
+        auto bookkeeping_size = maximum_blocks * sizeof(size_t*);                               // Size of the internal stack
 
-        free_base_ = reinterpret_cast<uintptr_t*>(memory_.Allocate(bookkeeping_size));
+        free_base_ = reinterpret_cast<uintptr_t*>(GetMemory().Allocate(bookkeeping_size));
         free_head_ = free_base_;
     }
 
     BlockAllocator::~BlockAllocator()
     {
-        memory_.Free(base_);
+        memory_.Free();         // Free everything
     }
 
     void* BlockAllocator::Allocate()
@@ -44,13 +39,11 @@ namespace syntropy
 
         void* block;
 
-        // TODO: Split to Reserve\Allocate (to support streaming)
+        // TODO: Split to Reserve\Allocate (for streaming)
         if (free_base_ == free_head_)                           // No free block?
         {
             block = head_;                                      // Allocate a new memory block on the allocator's head.
             head_ = Memory::Offset(head_, block_size_);         // Move the head forward.
-
-            SYNTROPY_ASSERT(GetSize() <= capacity_);
         }
         else
         {
@@ -58,19 +51,17 @@ namespace syntropy
             block = reinterpret_cast<void*>(*free_head_);       // Address of the free block.
         }
 
-        memory_.Commit(block, size);                            // Commit the requested memory size. Rounded up to the next memory page boundary.
+        memory_.Allocate(block, size);                          // Allocate the requested memory size. Rounded up to the next memory page boundary.
         return block;
     }
 
     void BlockAllocator::Free(void* block)
     {
-        SYNTROPY_ASSERT(ContainsAddress(block));
-
         block = Memory::AlignDown(block, block_size_);          // Get the base address of the block to free.
 
         *free_head_ = reinterpret_cast<uintptr_t>(block);       // Save the address of the free block.
         ++free_head_;                                           // Move the head forward.
-        memory_.Decommit(block, block_size_);                   // Unmap the block from the system memory.
+        memory_.Free(block, block_size_);                       // Unmap the block from the system memory.
     }
 
     size_t BlockAllocator::GetBlockSize() const
@@ -80,40 +71,35 @@ namespace syntropy
 
     size_t BlockAllocator::GetSize() const
     {
-        auto maximum_size = std::distance(base_, head_);                            // Maximum amount of blocks allocated
-        auto free_size = std::distance(free_base_, free_head_) * block_size_;       // Amount of freed memory
-
         // TODO: This is actually the maximum size, the committed memory may be lower.
-        return maximum_size - free_size;
+        return Memory::GetRangeSize(*memory_, head_) -          // Maximum amount of memory for the allocations performed so far
+               (free_head_ - free_base_) * block_size_;         // Amount of freed memory
     }
 
     size_t BlockAllocator::GetCapacity() const
     {
-        return capacity_;
+        return memory_.GetCapacity();
     }
 
     bool BlockAllocator::ContainsAddress(void* address) const
     {
-        return std::distance(base_, reinterpret_cast<int8_t*>(address)) >= 0 &&
-               std::distance(reinterpret_cast<int8_t*>(address), head_) > 0;
+        return Memory::IsContained(*memory_, head_, address);
     }
 
     //////////////// MONOTONIC BLOCK ALLOCATOR ////////////////
 
     MonotonicBlockAllocator::MonotonicBlockAllocator(size_t capacity, size_t block_size)
-        : memory_(GetMemory())                                                              // Get a reference to the memory handler.
-        , block_size_(Math::Ceil(block_size, memory_.GetAllocationGranularity()))           // Round up to the next system allocation granularity.
-        , capacity_(Math::Ceil(capacity, block_size_))                                      // Round up to the next block size.
-        , base_(reinterpret_cast<int8_t*>(memory_.Reserve(capacity)))                       // Reserve the entire virtual memory range without allocating
-        , head_(base_)
+        : block_size_(Memory::CeilToAllocationGranularity(block_size))                          // Round up to the next system allocation granularity.
+        , memory_(GetMemory().Reserve(Math::Ceil(capacity, block_size_), block_size_))          // Reserve the virtual memory range upfront without allocating.
+        , head_(*memory_)
         , free_(nullptr)
     {
-        SYNTROPY_ASSERT(base_);
+
     }
 
     MonotonicBlockAllocator::~MonotonicBlockAllocator()
     {
-        memory_.Free(base_);
+        memory_.Free();
     }
 
     void* MonotonicBlockAllocator::Allocate()
@@ -127,10 +113,8 @@ namespace syntropy
         else
         {
             block = reinterpret_cast<Block*>(head_);            // Allocate a new memory block on the allocator's head
-            memory_.Commit(block, block_size_);                 // Commit the new memory block
+            memory_.Allocate(block, block_size_);               // Allocate the new memory block
             head_ = Memory::Offset(head_, block_size_);         // Move the head forward
-
-            SYNTROPY_ASSERT(GetSize() <= capacity_);
         }
 
         return block;
@@ -138,9 +122,9 @@ namespace syntropy
 
     void MonotonicBlockAllocator::Free(void* block)
     {
-        SYNTROPY_ASSERT(ContainsAddress(block));
-
         block = Memory::AlignDown(block, block_size_);          // Get the base address of the block to free.
+
+        SYNTROPY_ASSERT(ContainsAddress(block));
 
         auto free = reinterpret_cast<Block*>(block);
 
@@ -155,18 +139,17 @@ namespace syntropy
 
     size_t MonotonicBlockAllocator::GetSize() const
     {
-        return std::distance(base_, head_);
+        return Memory::GetRangeSize(*memory_, head_);
     }
 
     size_t MonotonicBlockAllocator::GetCapacity() const
     {
-        return capacity_;
+        return memory_.GetCapacity();
     }
 
     bool MonotonicBlockAllocator::ContainsAddress(void* address) const
     {
-        return std::distance(base_, reinterpret_cast<int8_t*>(address)) >= 0 &&
-               std::distance(reinterpret_cast<int8_t*>(address), head_) > 0;
+        return Memory::IsContained(*memory_, head_, address);
     }
 
 }

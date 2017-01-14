@@ -393,9 +393,15 @@ namespace syntropy
             return VirtualFree(address, 0, MEM_RELEASE) != 0;
         }
 
-        void* WindowsMemory::Reserve(size_t size)
+        VirtualMemoryRange WindowsMemory::Reserve(size_t size, size_t alignment)
         {
-            return VirtualAlloc(0, size, MEM_RESERVE, PAGE_READWRITE);
+            auto base_address = Memory::Align(VirtualAlloc(0, size + alignment, MEM_RESERVE, PAGE_READWRITE),       // Reserve more memory for the alignment padding
+                                              alignment);
+
+            SYNTROPY_ASSERT(Memory::IsAlignedTo(base_address, alignment));                                          // Redundant check, just in case
+
+            return VirtualMemoryRange(base_address, 
+                                      Memory::Offset(base_address, size));
         }
 
         bool WindowsMemory::Commit(void* address, size_t size)

@@ -21,7 +21,7 @@ namespace syntropy
         /// \brief Ceil a number to a multiple.
         /// This overload does participate for overload resolution only for unsigned values.
         /// \return Returns the first number equal or greater than number which is multiple of multiple.
-        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned_v<Unsigned>>>
+        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned<Unsigned>::value>>
         static constexpr Unsigned Ceil(Unsigned number, Unsigned multiple)
         {
             return Floor(number + multiple - 1, multiple);
@@ -30,7 +30,7 @@ namespace syntropy
         /// \brief Floor a number to a multiple.
         /// This overload does participate for overload resolution only for unsigned values.
         /// \return Returns the first number equal or lesser than number which is multiple of multiple.
-        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned_v<Unsigned>>>
+        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned<Unsigned>::value>>
         static constexpr Unsigned Floor(Unsigned number, Unsigned multiple)
         {
             return (number / multiple) * multiple;
@@ -39,7 +39,7 @@ namespace syntropy
         /// \brief Get the base 2 logarithm of a number and ceil the result to the next integer value.
         /// This overload does participate for overload resolution only for unsigned values.
         /// \return Returns the base 2 logarithm of the provided number rounded up to the next integer value. If the provided number is 0 the result is also 0.
-        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned_v<Unsigned>>>
+        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned<Unsigned>::value>>
         static Unsigned CeilLog2(Unsigned number)
         {
             if (number > 0)

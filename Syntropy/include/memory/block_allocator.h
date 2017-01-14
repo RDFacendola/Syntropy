@@ -60,13 +60,9 @@ namespace syntropy
 
     private:
 
-        Memory& memory_;                ///< \brief Handles virtual memory.
-
         size_t block_size_;             ///< \brief Size of each block in bytes.
 
-        size_t capacity_;               ///< \brief Capacity of the allocator.
-
-        int8_t* base_;                  ///< \brief Base pointer to the memory chunk reserved for this allocator.
+        VirtualMemoryRange memory_;    ///< \brief Reserved virtual memory range.
 
         int8_t* head_;                  ///< \brief Pointer to the first unmapped block.
 
@@ -123,13 +119,9 @@ namespace syntropy
             Block* next_;               ///< \brief Pointer to the next free block.
         };
 
-        Memory& memory_;                ///< \brief Handles virtual memory.
-
         size_t block_size_;             ///< \brief Size of each block in bytes.
 
-        size_t capacity_;               ///< \brief Capacity of the allocator.
-
-        int8_t* base_;                  ///< \brief Base pointer to the memory chunk reserved for this allocator.
+        VirtualMemoryRange memory_;     ///< \brief Reserved virtual memory range.
 
         int8_t* head_;                  ///< \brief Pointer to the first unmapped block.
 
