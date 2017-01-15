@@ -76,6 +76,8 @@ namespace syntropy
         /// \return Returns true if address is aligned to the provided alignment, returns false otherwise.
         static constexpr bool IsAlignedTo(void* address, size_t alignment);
 
+        // Virtual memory
+
         /// \brief Get the virtual memory page size.
         /// \return Returns the virtual memory page size, in bytes.
         static size_t GetPageSize();
@@ -86,11 +88,11 @@ namespace syntropy
         /// \return Returns a pointer to the allocated memory block. If the allocation couldn't be fulfilled, returns nullptr.
         static void* Allocate(size_t size);
 
-        /// \brief Free a virtual memory block.
+        /// \brief Release a reserved virtual memory block.
         /// \param address Address of the memory block to release.
         /// \return Returns true if the block could be released, returns false otherwise.
         /// \remarks The provided address must match the address returned by Reserve(), otherwise the behaviour is undefined.
-        static bool Free(void* address);
+        static bool Release(void* address);
 
         /// \brief Reserve an aligned block of virtual memory without allocating it.
         /// Use Commit() in order to access a reserved memory block.

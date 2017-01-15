@@ -82,8 +82,8 @@ namespace syntropy
             /// \brief See Memory::Allocate
             static void* Allocate(size_t size);
 
-            /// \brief See Memory::Free
-            static bool Free(void* address);
+            /// \brief See Memory::Release
+            static bool Release(void* address);
 
             /// \brief See Memory::Reserve
             static void* Reserve(size_t size);

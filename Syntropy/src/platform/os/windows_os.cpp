@@ -397,7 +397,7 @@ namespace syntropy
             return VirtualAlloc(0, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
         }
 
-        bool WindowsMemory::Free(void* address)
+        bool WindowsMemory::Release(void* address)
         {
             return VirtualFree(address, 0, MEM_RELEASE) != 0;
         }

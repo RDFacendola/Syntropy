@@ -22,7 +22,7 @@ namespace syntropy
 
     LinearAllocator::~LinearAllocator()
     {
-        Memory::Free(base_);
+        Memory::Release(base_);
     }
 
     void* LinearAllocator::Allocate(size_t size)

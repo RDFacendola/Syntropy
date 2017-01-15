@@ -7,6 +7,7 @@
 #pragma once
 
 #include "memory.h"
+#include "linear_allocator.h"
 #include "diagnostics/debug.h"
 #include "math/math.h"
 
@@ -38,9 +39,15 @@ namespace syntropy
         void* Allocate();
 
         /// \brief Allocate a memory block of a specific size.
-        /// \param size Size of the block to allocate, in bytes. Must be equal or smaller than the block size. This value is rounded up to the next memory page boundary.
+        /// \param size Size of the block to allocate, in bytes. Must be equal or smaller than the block size.
         /// \return Returns a pointer to the allocated memory block.
         void* Allocate(size_t size);
+
+        /// \brief Reserve a memory block of a specific size.
+        /// The reserved block doesn't get physically allocated.
+        /// \param size Size of the block to reserve, in bytes. Must be equal or smaller than the block size.
+        /// \return Returns a pointer to the reserved memory block.
+        void* Reserve(size_t size);
 
         /// \brief Free a memory block.
         /// \param block Address of the block to free.
@@ -66,15 +73,13 @@ namespace syntropy
 
     private:
 
-        size_t block_size_;             ///< \brief Size of each block in bytes.
+        size_t block_size_;                         ///< \brief Size of each block in bytes.
 
-        MemoryRange memory_;    ///< \brief Reserved virtual memory range.
+        MemoryRange memory_;                        ///< \brief Reserved virtual memory range.
 
-        int8_t* head_;                  ///< \brief Pointer to the first unmapped block.
+        int8_t* head_;                              ///< \brief Pointer to the first unmapped block.
 
-        uintptr_t* free_base_;          ///< \brief Base of the free list.
-
-        uintptr_t* free_head_;          ///< \brief Points past the last free index.
+        VectorAllocator<uintptr_t> free_list_;      ///< \brief Stack of free blocks.
 
     };
 

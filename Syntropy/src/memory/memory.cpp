@@ -41,7 +41,7 @@ namespace syntropy
         return platform::PlatformMemory::Allocate(size);
     }
 
-    bool Memory::Free(void* address)
+    bool Memory::Release(void* address)
     {
         auto page_size = GetPageSize();
 
@@ -49,7 +49,7 @@ namespace syntropy
 
         SYNTROPY_ASSERT(address == reserved_block->block_address_);                             // The provided address must be a block address returned by Reserve()
 
-        auto result = platform::PlatformMemory::Free(reserved_block->base_address_);
+        auto result = platform::PlatformMemory::Release(reserved_block->base_address_);
 
         SYNTROPY_ASSERT(result);
 

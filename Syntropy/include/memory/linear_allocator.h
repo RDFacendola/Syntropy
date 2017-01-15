@@ -9,6 +9,9 @@
 #include <cstdint>
 #include <cstddef>
 #include <type_traits>
+#include <memory>
+
+#include "memory/memory.h"
 
 namespace syntropy
 {
@@ -59,13 +62,112 @@ namespace syntropy
 
     private:
 
-        int8_t* base_;                           ///< \brief Base pointer to the memory chunk reserved for this allocator.
+        int8_t* base_;                          ///< \brief Base pointer to the memory chunk reserved for this allocator.
 
-        int8_t* head_;                           ///< \brief Pointer to the first unallocated memory block.
+        int8_t* head_;                          ///< \brief Pointer to the first unallocated memory block.
 
-        int8_t* status_;                         ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
+        int8_t* status_;                        ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
 
         size_t capacity_;                       ///< \brief Maximum capacity of the allocator.
+
+    };
+
+    /// \brief Allocator that behaves like a std::vector but grows and shrinks over the virtual memory to avoid reallocations.
+    /// Use this allocator to store an unknown number of objects when only the upper bound is known and no memory waste is allowed.
+    /// \author Raffaele D. Facendola - January 2017
+    template <typename T>
+    class VectorAllocator
+    {
+    public:
+        
+        /// \brief Create a new vector allocator.
+        /// \param max_count Maximum amount of elements that can be stored.
+        VectorAllocator(size_t max_count);
+
+        /// \brief No copy constructor.
+        VectorAllocator(const VectorAllocator&) = delete;
+
+        /// \brief No assignment operator.
+        VectorAllocator& operator=(const VectorAllocator&) = delete;
+
+        /// \brief Destructor.
+        ~VectorAllocator();
+
+        /// \brief Get an iterator pointing to the first element in the allocator.
+        /// \return Returns an iterator pointing to the first element in the allocator.
+        T* begin();
+
+        /// \brief Get an iterator pointing to the past-the-end element in the allocator.
+        /// \return Returns an iterator pointing to the past-the-end element in the allocator.
+        T* end();
+
+        /// \brief Access an element on the allocator.
+        /// \param index Index of the element to access.
+        /// \return Returns the index-th element on the allocator.
+        T& operator[](size_t index);
+
+        /// \brief Access the first element.
+        /// \return Returns a reference to the first element.
+        T& Front();
+
+        /// \brief Access the last element.
+        /// \return Returns a reference to the last element.
+        T& Back();
+
+        /// \brief Insert a new element at the end of the allocator, after its current last element.
+        /// The value is copied to the new element.
+        /// \param element Element to copy.
+        void PushBack(const T& element);
+
+        /// \brief Insert a new element at the end of the allocator, after its current last element.
+        /// The value is moved to the new element.
+        /// \param element Element to move.
+        void PushBack(T&& element);
+
+        /// \brief Insert a new element at the end of the allocator, after its current last element.
+        /// \param args Arguments used to construct the element in place.
+        template <class... TArgs>
+        void EmplaceBack(TArgs&&... args);
+
+        /// \brief Remove the last element in the allocator.
+        /// The removed element is destroyed.
+        void PopBack();
+
+        /// \brief Get the number of elements stored inside the allocator.
+        /// \return Returns the number of elements stored inside the allocator.
+        size_t GetCount() const;
+
+        /// \brief Check whether the allocator is empty.
+        /// \return Returns true if the allocator is empty, returns false otherwise.
+        bool IsEmpty() const;
+
+        /// \brief Get the maximum number of elements that can be store inside the allocator.
+        /// \return Returns the maximum number of elements that can be store inside the allocator.
+        size_t GetMaxCount() const;
+
+        /// \brief Get the total amount of memory that was allocated on this allocator.
+        /// \return Returns the total amount of memory that was allocated on this allocator, in bytes.
+        size_t GetSize() const;
+
+        /// \brief Get the effective memory footprint of this allocator.
+        /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
+        size_t GetCapacity() const;
+
+    private:
+
+        /// \brief Increase the size of the vector.
+        void IncreaseSize();
+
+        /// \brief Decrease the size of the vector.
+        void DecreaseSize();
+
+        size_t count_;                          ///< \brief Number of elements in the allocator.
+
+        size_t max_count_;                      ///< \brief Maximum amount of elements in the allocator.
+
+        MemoryRange memory_;                    ///< \brief Reserved virtual memory range.
+
+        T* head_;                               ///< \brief Points to the first unmapped memory page.
 
     };
 
@@ -253,4 +355,143 @@ namespace syntropy
     {
 
     }
+
+    //////////////// VECTOR ALLOCATOR ////////////////
+
+    template <typename T>
+    VectorAllocator<T>::VectorAllocator(size_t max_count)
+        : count_(0)
+        , max_count_(max_count)
+        , memory_(Memory::Reserve(GetCapacity(), alignof(T)), GetCapacity())
+        , head_(reinterpret_cast<T*>(*memory_))
+    {
+
+    }
+
+    template <typename T>
+    VectorAllocator<T>::~VectorAllocator()
+    {
+        Memory::Release(*memory_);
+    }
+
+    template <typename T>
+    T* VectorAllocator<T>::begin()
+    {
+        return reinterpret_cast<T*>(*memory_);
+    }
+
+    template <typename T>
+    T* VectorAllocator<T>::end()
+    {
+        return begin() + count_;
+    }
+
+    template <typename T>
+    T& VectorAllocator<T>::operator[](size_t index)
+    {
+        SYNTROPY_ASSERT(index < count_);
+        return *(begin() + index);
+    }
+
+    template <typename T>
+    T& VectorAllocator<T>::Front()
+    {
+        return *begin();
+    }
+
+    template <typename T>
+    T& VectorAllocator<T>::Back()
+    {
+        return *(begin() + count_ - 1);
+    }
+
+    template <typename T>
+    void VectorAllocator<T>::PushBack(const T& element)
+    {
+        SYNTROPY_ASSERT(count_ < max_count_);
+
+        IncreaseSize();
+
+        Back() = element;
+    }
+
+    template <typename T>
+    void VectorAllocator<T>::PushBack(T&& element)
+    {
+        SYNTROPY_ASSERT(count_ < max_count_);
+
+        IncreaseSize();
+
+        Back() = std::move(element);
+    }
+
+    template <typename T>
+    template <class... TArgs>
+    void VectorAllocator<T>::EmplaceBack(TArgs&&... args)
+    {
+        SYNTROPY_ASSERT(count_ < max_count_);
+
+        IncreaseSize();
+
+        new (std::addressof(Back())) T(std::forward<TArgs>(args)...);
+    }
+
+    template <typename T>
+    void VectorAllocator<T>::PopBack()
+    {
+        SYNTROPY_ASSERT(!IsEmpty());
+
+        std::addressof(Back())->~T();       // Destroy the element.
+
+        DecreaseSize();
+    }
+
+    template <typename T>
+    size_t VectorAllocator<T>::GetCount() const
+    {
+        return count_;
+    }
+
+    template <typename T>
+    bool VectorAllocator<T>::IsEmpty() const
+    {
+        return count_ == 0;
+    }
+
+    template <typename T>
+    size_t VectorAllocator<T>::GetMaxCount() const
+    {
+        return max_count_;
+    }
+
+    template <typename T>
+    size_t VectorAllocator<T>::GetSize() const
+    {
+        return Memory::GetSize(*memory_, head_);
+    }
+
+    template <typename T>
+    size_t VectorAllocator<T>::GetCapacity() const
+    {
+        return sizeof(T) * max_count_;
+    }
+
+    template <typename T>
+    void VectorAllocator<T>::IncreaseSize()
+    {
+        ++count_;
+
+        // TODO: Double the mapped memory if the current size exceeded the head
+
+    }
+
+    template <typename T>
+    void VectorAllocator<T>::DecreaseSize()
+    {
+        --count_;
+
+        // TODO: Halve the mapped memory if the current size dropped below 1/4th of the head
+
+    }
+
 }
