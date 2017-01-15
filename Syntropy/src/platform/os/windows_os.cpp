@@ -364,23 +364,32 @@ namespace syntropy
 
         //////////////// WINDOWS MEMORY ////////////////
 
-        Memory& WindowsMemory::GetInstance()
+        /// \brief Utility class used to store Windows Memory infos.
+        struct WindowsMemorySingleton
         {
-            static WindowsMemory instance;
-            return instance;
-        }
+            static WindowsMemorySingleton& GetInstance()
+            {
+                static WindowsMemorySingleton instance;
+                return instance;
+            }
 
-        WindowsMemory::WindowsMemory()
-        {
-            SYSTEM_INFO system_info;
-            GetSystemInfo(&system_info);
+            WindowsMemorySingleton()
+            {
+                SYSTEM_INFO system_info;
+                GetSystemInfo(&system_info);
 
-            allocation_granularity_ = system_info.dwPageSize;
-        }
+                allocation_granularity_ = system_info.dwAllocationGranularity;
+                page_size_ = system_info.dwPageSize;
+            }
+
+            size_t allocation_granularity_;     ///< \brief Memory allocation granularity, in bytes.
+
+            size_t page_size_;                  ///< \brief Memory page size, in bytes.
+        };
         
-        size_t WindowsMemory::GetAllocationGranularity() const
+        size_t WindowsMemory::GetPageSize()
         {
-            return allocation_granularity_;
+            return WindowsMemorySingleton::GetInstance().page_size_;
         }
 
         void* WindowsMemory::Allocate(size_t size)
@@ -393,15 +402,9 @@ namespace syntropy
             return VirtualFree(address, 0, MEM_RELEASE) != 0;
         }
 
-        VirtualMemoryRange WindowsMemory::Reserve(size_t size, size_t alignment)
+        void* WindowsMemory::Reserve(size_t size)
         {
-            auto base_address = Memory::Align(VirtualAlloc(0, size + alignment, MEM_RESERVE, PAGE_READWRITE),       // Reserve more memory for the alignment padding
-                                              alignment);
-
-            SYNTROPY_ASSERT(Memory::IsAlignedTo(base_address, alignment));                                          // Redundant check, just in case
-
-            return VirtualMemoryRange(base_address, 
-                                      Memory::Offset(base_address, size));
+            return VirtualAlloc(0, size, MEM_RESERVE, PAGE_READWRITE);
         }
 
         bool WindowsMemory::Commit(void* address, size_t size)

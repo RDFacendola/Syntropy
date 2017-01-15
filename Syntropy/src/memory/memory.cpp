@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "platform/os.h"
+#include "diagnostics/log.h"
 
 #include "syntropy.h"
 
@@ -25,63 +26,118 @@ namespace syntropy
 
     //////////////// MEMORY ////////////////
 
-    VirtualMemoryRange::VirtualMemoryRange(void* base, void* end)
-        : base_(reinterpret_cast<int8_t*>(base))
-        , end_(reinterpret_cast<int8_t*>(end))
+    size_t Memory::CeilToPageSize(size_t size)
     {
-        SYNTROPY_ASSERT(base_);                                                                     // Non-null memory range
-        SYNTROPY_ASSERT(end_);
-        SYNTROPY_ASSERT(reinterpret_cast<uintptr_t>(base_) <= reinterpret_cast<uintptr_t>(end_));   // End address past the base address.
+        return Math::Ceil(size, GetPageSize());
     }
 
-    int8_t* VirtualMemoryRange::operator*() const
+    size_t Memory::GetPageSize()
+    {
+        return platform::PlatformMemory::GetPageSize();
+    }
+
+    void* Memory::Allocate(size_t size)
+    {
+        return platform::PlatformMemory::Allocate(size);
+    }
+
+    bool Memory::Free(void* address)
+    {
+        auto page_size = GetPageSize();
+
+        auto reserved_block = GetReservedBlockHeader(address, page_size);
+
+        SYNTROPY_ASSERT(address == reserved_block->block_address_);                             // The provided address must be a block address returned by Reserve()
+
+        auto result = platform::PlatformMemory::Free(reserved_block->base_address_);
+
+        SYNTROPY_ASSERT(result);
+
+        return result;
+    }
+
+    void* Memory::Reserve(size_t size, size_t alignment)
+    {
+        auto page_size = GetPageSize();
+
+        auto extended_size = size + alignment + page_size;                                      // [PADDING|RESERVED BLOCK HEADER||PAGE PADDING|RESERVED BLOCK]
+
+        auto base_address = platform::PlatformMemory::Reserve(extended_size);
+
+        // The header must be allocated in a different page to prevent client code from accidentally deallocating it while working with the memory block
+
+        auto block_address = Memory::Align(Memory::Offset(base_address, page_size),             // Requires some space before the reserved block for the header
+                                           alignment);                                          // The resulting block must be aligned
+
+        // Fill the block header
+
+        auto reserved_block = GetReservedBlockHeader(block_address, page_size);
+
+        Memory::Commit(reserved_block, page_size);
+
+        reserved_block->base_address_ = base_address;
+        reserved_block->block_address_ = block_address;
+        reserved_block->size_ = size;
+        reserved_block->extended_size_ = extended_size;
+        reserved_block->alignment_ = alignment;
+
+        return block_address;
+    }
+
+    bool Memory::Commit(void* address, size_t size)
+    {
+        return platform::PlatformMemory::Commit(address, size);
+    }
+
+    bool Memory::Decommit(void* address, size_t size)
+    {
+        return platform::PlatformMemory::Decommit(address, size);
+    }
+
+    Memory::ReservedBlockHeader* Memory::GetReservedBlockHeader(void* address, size_t page_size)
+    {
+        address = Memory::AlignDown(address, page_size);                                                                // Page containing the base address of the block to free.
+
+        return reinterpret_cast<ReservedBlockHeader*>(Memory::Offset(address, -static_cast<int64_t>(page_size)));       // The previous page contains the infos of the reserved region. This page is always committed.
+    }
+
+    //////////////// MEMORY RANGE ////////////////
+
+    MemoryRange::MemoryRange(void* base, size_t capacity)
+        : base_(reinterpret_cast<int8_t*>(base))
+        , capacity_(capacity)
+    {
+        SYNTROPY_ASSERT(base_);
+    }
+
+    int8_t* MemoryRange::operator*() const
     {
         return base_;
     }
 
-    size_t VirtualMemoryRange::GetCapacity() const
+    size_t MemoryRange::GetCapacity() const
     {
-        return Memory::GetRangeSize(base_, end_);
+        return capacity_;
     }
 
-    bool VirtualMemoryRange::Allocate(void* address, size_t size)
+    bool MemoryRange::Contains(void* address, size_t size) const
     {
-        SYNTROPY_ASSERT(reinterpret_cast<uintptr_t>(address) >= reinterpret_cast<uintptr_t>(base_));                            // Allocation out of bounds
-        SYNTROPY_ASSERT(reinterpret_cast<uintptr_t>(Memory::Offset(address, size)) <= reinterpret_cast<uintptr_t>(end_));
-
-        return GetMemory().Commit(address, size);
+        return reinterpret_cast<uintptr_t>(base_) <= reinterpret_cast<uintptr_t>(address) &&
+               (Memory::GetSize(base_, address) + size) <= capacity_;
     }
 
-    bool VirtualMemoryRange::Free(void* address, size_t size)
+    bool MemoryRange::Allocate(void* address, size_t size)
     {
-        SYNTROPY_ASSERT(reinterpret_cast<uintptr_t>(address) >= reinterpret_cast<uintptr_t>(base_));                            // Allocation out of bounds
-        SYNTROPY_ASSERT(reinterpret_cast<uintptr_t>(Memory::Offset(address, size)) <= reinterpret_cast<uintptr_t>(end_));
+        SYNTROPY_ASSERT(Contains(address, size));
 
-        return GetMemory().Decommit(address, size);
+        return Memory::Commit(address, size);
     }
 
-    void VirtualMemoryRange::Free()
+    bool MemoryRange::Free(void* address, size_t size)
     {
-        auto result = GetMemory().Decommit(base_, GetCapacity());
+        SYNTROPY_ASSERT(Contains(address, size));
 
-        SYNTROPY_ASSERT(result);    // Was the memory freed?
-    }
-
-    //////////////// MEMORY ////////////////
-
-    Memory& Memory::GetInstance()
-    {
-        return platform::PlatformMemory::GetInstance();
-    }
-
-    Memory& GetMemory()
-    {
-        return Memory::GetInstance();
-    }
-
-    size_t Memory::CeilToAllocationGranularity(size_t size)
-    {
-        return Math::Ceil(size, GetMemory().GetAllocationGranularity());
+        return Memory::Decommit(address, size);
     }
 
 }

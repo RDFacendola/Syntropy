@@ -12,7 +12,7 @@ namespace syntropy
     //////////////// LINEAR ALLOCATOR ////////////////
 
     LinearAllocator::LinearAllocator(size_t capacity)
-        : base_(reinterpret_cast<int8_t*>(GetMemory().Allocate(capacity)))
+        : base_(reinterpret_cast<int8_t*>(Memory::Allocate(capacity)))
         , head_(base_)
         , status_(nullptr)
         , capacity_(capacity)
@@ -22,7 +22,7 @@ namespace syntropy
 
     LinearAllocator::~LinearAllocator()
     {
-        GetMemory().Free(base_);
+        Memory::Free(base_);
     }
 
     void* LinearAllocator::Allocate(size_t size)

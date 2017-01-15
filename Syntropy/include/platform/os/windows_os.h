@@ -49,9 +49,6 @@ namespace syntropy
 
         };
 
-        ///< \brief Utility type definition so that the code can refer to "platform::PlatformDebugger" without having to know the actual concrete class.
-        using PlatformDebugger = WindowsDebugger;
-
         /// \brief Exposes methods to query system's capabilities under Windows OS.
         /// \author Raffaele D. Facendola 
         class WindowsSystem : public System
@@ -73,37 +70,37 @@ namespace syntropy
             virtual PlatformInfo GetPlatformInfo() const override;
         };
 
-        ///< \brief Utility type definition so that the code can refer to "platform::PlatformSystem" without having to know the actual concrete class.
-        using PlatformSystem = WindowsSystem;
-
-        class WindowsMemory : public Memory
+        /// \brief Wraps the low-level calls used to handle virtual memory allocation under Windows OS.
+        /// \author Raffaele D. Facendola - December 2016
+        class WindowsMemory
         {
         public:
 
-            /// \brief Get the singleton instance.
-            /// \return Returns the singleton instance;
-            static Memory& GetInstance();
+            /// \brief See Memory::GetPageSize
+            static size_t GetPageSize();
 
-            virtual size_t GetAllocationGranularity() const override;
+            /// \brief See Memory::Allocate
+            static void* Allocate(size_t size);
 
-            virtual void* Allocate(size_t size) override;
+            /// \brief See Memory::Free
+            static bool Free(void* address);
 
-            virtual bool Free(void* address) override;
+            /// \brief See Memory::Reserve
+            static void* Reserve(size_t size);
 
-            virtual VirtualMemoryRange Reserve(size_t size, size_t alignment) override;
+            /// \brief See Memory::Commit
+            static bool Commit(void* address, size_t size);
 
-            virtual bool Commit(void* address, size_t size) override;
-
-            virtual bool Decommit(void* address, size_t size) override;
-
-        private:
-
-            /// \brief Default constructor.
-            WindowsMemory();
-
-            size_t allocation_granularity_;                 ///< \brief Memory allocation granularity, in bytes.
+            /// \brief See Memory::Decommit
+            static bool Decommit(void* address, size_t size);
 
         };
+
+        ///< \brief Utility type definition so that the code can refer to "platform::PlatformDebugger" without having to know the actual concrete class.
+        using PlatformDebugger = WindowsDebugger;
+
+        ///< \brief Utility type definition so that the code can refer to "platform::PlatformSystem" without having to know the actual concrete class.
+        using PlatformSystem = WindowsSystem;
 
         ///< \brief Utility type definition so that the code can refer to "platform::PlatformMemory" without having to know the actual concrete class.
         using PlatformMemory = WindowsMemory;

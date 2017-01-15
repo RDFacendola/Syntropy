@@ -25,9 +25,18 @@ namespace syntropy
 
         /// \brief Create a new allocator.
         /// \param capacity Maximum amount of memory allocated by the allocator.
-        /// \param page_size Size of each memory page, in bytes. This value is rounded up to the next allocation granularity.
+        /// \param page_size Size of each memory page, in bytes. This value is rounded up to system memory page size.
         /// \param maximum_allocation_size Maximum size for a single allocation that can be performed on this allocator.
         SegregatedPoolAllocator(size_t capacity, size_t page_size, size_t maximum_allocation_size = 256);
+
+        /// \brief No copy constructor.
+        SegregatedPoolAllocator(const SegregatedPoolAllocator&) = delete;
+
+        /// \brief No assignment operator.
+        SegregatedPoolAllocator& operator=(const SegregatedPoolAllocator&) = delete;
+
+        /// \brief Default destructor.
+        ~SegregatedPoolAllocator() = default;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate, in bytes.
@@ -110,6 +119,15 @@ namespace syntropy
     public:
 
         ClusteredPoolAllocator(size_t capacity, size_t minimum_allocation_size, size_t order);
+
+        /// \brief No copy constructor.
+        ClusteredPoolAllocator(const ClusteredPoolAllocator&) = delete;
+
+        /// \brief No assignment operator.
+        ClusteredPoolAllocator& operator=(const ClusteredPoolAllocator&) = delete;
+
+        /// \brief Default destructor.
+        ~ClusteredPoolAllocator() = default;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate, in bytes.

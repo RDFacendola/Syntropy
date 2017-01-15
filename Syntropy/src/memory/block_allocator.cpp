@@ -9,23 +9,24 @@ namespace syntropy
     //////////////// BLOCK ALLOCATOR ////////////////
 
     BlockAllocator::BlockAllocator(size_t capacity, size_t block_size)
-        : block_size_(Memory::CeilToAllocationGranularity(block_size))                          // Round up to the next system allocation granularity.
-        , memory_(GetMemory().Reserve(Math::Ceil(capacity, block_size_), block_size_))          // Reserve the virtual memory range upfront without allocating.
+        : block_size_(Memory::CeilToPageSize(block_size))                   // Round up to the next system page size.
+        , memory_(Memory::Reserve(capacity, block_size_), capacity)         // Reserve the virtual memory range upfront without allocating.
         , head_(*memory_)
     {
+
         // TODO: Move to bookkeeping!!!
         // TODO: This allocation here stinks! It can waste a ton of space when using multiple block allocators.
         auto total_memory = platform::GetSystem().GetMemoryInfo().total_physical_memory_;       // Maximum amount of memory that can be allocated at any given time
         auto maximum_blocks = total_memory / block_size_;                                       // Maximum amount of blocks that can be allocated using this allocator, also upper bound for the free list
         auto bookkeeping_size = maximum_blocks * sizeof(size_t*);                               // Size of the internal stack
 
-        free_base_ = reinterpret_cast<uintptr_t*>(GetMemory().Allocate(bookkeeping_size));
+        free_base_ = reinterpret_cast<uintptr_t*>(Memory::Allocate(bookkeeping_size));
         free_head_ = free_base_;
     }
 
     BlockAllocator::~BlockAllocator()
     {
-        memory_.Free();         // Free everything
+        Memory::Free(*memory_);
     }
 
     void* BlockAllocator::Allocate()
@@ -40,18 +41,20 @@ namespace syntropy
         void* block;
 
         // TODO: Split to Reserve\Allocate (for streaming)
-        if (free_base_ == free_head_)                           // No free block?
+        if (free_base_ == free_head_)                               // No free block?
         {
-            block = head_;                                      // Allocate a new memory block on the allocator's head.
-            head_ = Memory::Offset(head_, block_size_);         // Move the head forward.
+            block = head_;                                          // Allocate a new memory block on the allocator's head.
+            head_ = Memory::Offset(head_, block_size_);             // Move the head forward.
         }
         else
         {
-            --free_head_;                                       // Pop a free block address.
-            block = reinterpret_cast<void*>(*free_head_);       // Address of the free block.
+            --free_head_;                                           // Pop a free block address.
+            block = reinterpret_cast<void*>(*free_head_);           // Address of the free block.
         }
 
-        memory_.Allocate(block, size);                          // Allocate the requested memory size. Rounded up to the next memory page boundary.
+        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, block_size_));   // Check block alignment.
+
+        memory_.Allocate(block, size);                              // Allocate the requested memory size. Rounded up to the next memory page boundary.
         return block;
     }
 
@@ -72,7 +75,7 @@ namespace syntropy
     size_t BlockAllocator::GetSize() const
     {
         // TODO: This is actually the maximum size, the committed memory may be lower.
-        return Memory::GetRangeSize(*memory_, head_) -          // Maximum amount of memory for the allocations performed so far
+        return Memory::GetSize(*memory_, head_) -               // Maximum amount of memory for the allocations performed so far
                (free_head_ - free_base_) * block_size_;         // Amount of freed memory
     }
 
@@ -89,8 +92,8 @@ namespace syntropy
     //////////////// MONOTONIC BLOCK ALLOCATOR ////////////////
 
     MonotonicBlockAllocator::MonotonicBlockAllocator(size_t capacity, size_t block_size)
-        : block_size_(Memory::CeilToAllocationGranularity(block_size))                          // Round up to the next system allocation granularity.
-        , memory_(GetMemory().Reserve(Math::Ceil(capacity, block_size_), block_size_))          // Reserve the virtual memory range upfront without allocating.
+        : block_size_(Memory::CeilToPageSize(block_size))                                   // Round up to the next system allocation granularity.
+        , memory_(Memory::Reserve(capacity, block_size_), capacity)                         // Reserve the virtual memory range upfront without allocating.
         , head_(*memory_)
         , free_(nullptr)
     {
@@ -99,7 +102,7 @@ namespace syntropy
 
     MonotonicBlockAllocator::~MonotonicBlockAllocator()
     {
-        memory_.Free();
+        Memory::Free(*memory_);
     }
 
     void* MonotonicBlockAllocator::Allocate()
@@ -108,21 +111,23 @@ namespace syntropy
 
         if (block)
         {
-            free_ = block->next_;                               // Move to the next free block.
+            free_ = block->next_;                                   // Move to the next free block.
         } 
         else
         {
-            block = reinterpret_cast<Block*>(head_);            // Allocate a new memory block on the allocator's head
-            memory_.Allocate(block, block_size_);               // Allocate the new memory block
-            head_ = Memory::Offset(head_, block_size_);         // Move the head forward
+            block = reinterpret_cast<Block*>(head_);                // Allocate a new memory block on the allocator's head
+            memory_.Allocate(block, block_size_);                   // Allocate the new memory block
+            head_ = Memory::Offset(head_, block_size_);             // Move the head forward
         }
+
+        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, block_size_));   // Check block alignment.
 
         return block;
     }
 
     void MonotonicBlockAllocator::Free(void* block)
     {
-        block = Memory::AlignDown(block, block_size_);          // Get the base address of the block to free.
+        block = Memory::AlignDown(block, block_size_);              // Get the base address of the block to free.
 
         SYNTROPY_ASSERT(ContainsAddress(block));
 
@@ -139,7 +144,7 @@ namespace syntropy
 
     size_t MonotonicBlockAllocator::GetSize() const
     {
-        return Memory::GetRangeSize(*memory_, head_);
+        return Memory::GetSize(*memory_, head_);
     }
 
     size_t MonotonicBlockAllocator::GetCapacity() const

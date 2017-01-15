@@ -24,7 +24,13 @@ namespace syntropy
         /// \brief Initialize the block allocator.
         BlockAllocator(size_t capacity, size_t block_size);
 
-        /// \brief Default destructor
+        /// \brief No copy constructor.
+        BlockAllocator(const BlockAllocator&) = delete;
+
+        /// \brief No assignment operator.
+        BlockAllocator& operator=(const BlockAllocator&) = delete;
+
+        /// \brief Destructor.
         ~BlockAllocator();
 
         /// \brief Allocate a memory block.
@@ -62,7 +68,7 @@ namespace syntropy
 
         size_t block_size_;             ///< \brief Size of each block in bytes.
 
-        VirtualMemoryRange memory_;    ///< \brief Reserved virtual memory range.
+        MemoryRange memory_;    ///< \brief Reserved virtual memory range.
 
         int8_t* head_;                  ///< \brief Pointer to the first unmapped block.
 
@@ -83,7 +89,13 @@ namespace syntropy
         /// \brief Initialize the block allocator.
         MonotonicBlockAllocator(size_t capacity, size_t block_size);
 
-        /// \brief Default destructor
+        /// \brief No copy constructor.
+        MonotonicBlockAllocator(const MonotonicBlockAllocator&) = delete;
+
+        /// \brief No assignment operator.
+        MonotonicBlockAllocator& operator=(const MonotonicBlockAllocator&) = delete;
+
+        /// \brief Destructor.
         ~MonotonicBlockAllocator();
 
         /// \brief Allocate a memory block.
@@ -121,7 +133,7 @@ namespace syntropy
 
         size_t block_size_;             ///< \brief Size of each block in bytes.
 
-        VirtualMemoryRange memory_;     ///< \brief Reserved virtual memory range.
+        MemoryRange memory_;     ///< \brief Reserved virtual memory range.
 
         int8_t* head_;                  ///< \brief Pointer to the first unmapped block.
 

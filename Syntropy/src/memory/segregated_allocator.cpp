@@ -19,13 +19,11 @@ namespace syntropy
     {
         // TODO: Move to bookkeeping!!!
 
-        auto& memory = GetMemory();
-
         auto count = maximum_block_size_ / kMinimumAllocationSize;          // Sub-allocators count
 
         auto size = count * sizeof(Page*);                                  // Size needed to store the head of each sub-allocator
 
-        allocators_ = reinterpret_cast<Page**>(memory.Allocate(size));      // Allocate the memory needed to store sub-allocator infos
+        allocators_ = reinterpret_cast<Page**>(Memory::Allocate(size));     // Allocate the memory needed to store sub-allocator infos
 
         std::fill(&allocators_[0], &allocators_[count], nullptr);           // Each sub-allocator starts with no page to allocate memory blocks. Pages are allocated on demand.
     }
@@ -177,7 +175,7 @@ namespace syntropy
 
     ClusteredPoolAllocator::ClusteredPoolAllocator(size_t capacity, size_t minimum_allocation_size, size_t order)
         : order_(order)
-        , base_allocation_size_(Math::Ceil(minimum_allocation_size, GetMemory().GetAllocationGranularity()))    // Round to the next memory page boundary
+        , base_allocation_size_(Memory::CeilToPageSize(minimum_allocation_size))                                // Round to the next memory page boundary
     {
         SYNTROPY_ASSERT(order >= 1);
 
@@ -186,12 +184,10 @@ namespace syntropy
         auto maximum_allocation_size = base_allocation_size_ * (static_cast<size_t>(1) << (order - 1));         // Allocation size of the last cluster
 
         auto cluster_capacity = Math::Floor(capacity / order, maximum_allocation_size);                         // Each allocator must have the same capacity which is also a multiple of the maximum allocation possible.
-
-        auto& memory = GetMemory();
-
+        
         auto size = order * sizeof(BlockAllocator);                                                             // Size of the storage for cluster allocators.
 
-        allocators_ = reinterpret_cast<BlockAllocator*>(memory.Allocate(size));                                 // 
+        allocators_ = reinterpret_cast<BlockAllocator*>(Memory::Allocate(size));                                // 
 
         while (order-- != 0)
         {
