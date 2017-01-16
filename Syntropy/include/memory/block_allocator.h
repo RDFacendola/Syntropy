@@ -138,7 +138,7 @@ namespace syntropy
 
         size_t block_size_;             ///< \brief Size of each block in bytes.
 
-        MemoryRange memory_;     ///< \brief Reserved virtual memory range.
+        MemoryRange memory_;            ///< \brief Reserved virtual memory range.
 
         int8_t* head_;                  ///< \brief Pointer to the first unmapped block.
 

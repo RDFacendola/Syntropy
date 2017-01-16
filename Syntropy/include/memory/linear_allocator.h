@@ -18,8 +18,57 @@
 namespace syntropy
 {
 
+    /// \brief Base allocator used to allocate sequential memory blocks over a contiguous range of virtual memory addresses.
+    /// Memory is committed and decommited on demand. Allocations are always rounded to the next memory page boundary.
+    /// \author Raffaele D. Facendola - January 2017
+    class SequentialAllocator
+    {
+    public:
+
+        /// \brief Create a new sequential allocator.
+        /// \param capacity Amount of memory reserved by the allocator.
+        /// \param alignment Memory alignment.
+        SequentialAllocator(size_t capacity, size_t alignment);
+
+        /// \brief No copy constructor.
+        SequentialAllocator(const SequentialAllocator&) = delete;
+
+        /// \brief Default destructor.
+        ~SequentialAllocator();
+
+        /// \brief No assignment operator.
+        SequentialAllocator& operator=(const SequentialAllocator&) = delete;
+
+        /// \brief Allocate a new memory block on the allocator's head.
+        /// \param size Size of the memory block to allocate, in bytes.
+        /// \return Returns a pointer to the allocated memory block.
+        void* Allocate(size_t size);
+
+        /// \brief Free a memory block from the allocator's head.
+        void Free(size_t size);
+
+        /// \brief Get the total amount of memory that was allocated on this allocator.
+        /// \return Returns the total amount of memory that was allocated on this allocator, in bytes.
+        size_t GetSize() const;
+
+        /// \brief Get the effective memory footprint of this allocator.
+        /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
+        size_t GetCapacity() const;
+
+        /// \brief Get the base pointer of this allocator.
+        /// \return Returns the base pointer of this allocator.
+        int8_t* GetBasePointer();
+
+    private:
+
+        MemoryRange memory_;        ///< \brief Reserved virtual memory range.
+
+        int8_t* head_;              ///< \brief Points to the first unmapped memory page.
+
+    };
+
     /// \brief Used to allocate memory on a pre-allocated contiguous memory block.
-    /// Use this allocator to group together allocations having the same lifespan and when high performances are needed and no particular deallocation handling is required.
+    /// Use this allocator to group together allocations having the same lifespan and when high performances are needed.
     /// Memory is allocated upfront to avoid kernel calls while allocating. Pointer-level deallocation is not supported.
     /// \author Raffaele D. Facendola - January 2017
     class LinearAllocator
@@ -28,10 +77,17 @@ namespace syntropy
 
         /// \brief Create a new allocator.
         /// \param capacity Amount of memory reserved by the allocator.
-        LinearAllocator(size_t capacity);
+        /// \param alignment Memory alignment.
+        LinearAllocator(size_t capacity, size_t alignment);
+
+        /// \brief No copy constructor.
+        LinearAllocator(const LinearAllocator&) = delete;
 
         /// \brief Default destructor.
         ~LinearAllocator();
+
+        /// \brief No assignment operator.
+        LinearAllocator& operator=(const LinearAllocator&) = delete;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate, in bytes.
@@ -62,15 +118,17 @@ namespace syntropy
         /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
         size_t GetCapacity() const;
 
+        /// \brief Get the base pointer of this allocator.
+        /// \return Returns the base pointer of this allocator.
+        int8_t* GetBasePointer();
+
     private:
 
-        int8_t* base_;                          ///< \brief Base pointer to the memory chunk reserved for this allocator.
+        MemoryRange memory_;            ///< \brief Reserved virtual memory range.
 
-        int8_t* head_;                          ///< \brief Pointer to the first unallocated memory block.
+        int8_t* head_;                  ///< \brief Pointer to the first unallocated memory block.
 
-        int8_t* status_;                        ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
-
-        size_t capacity_;                       ///< \brief Maximum capacity of the allocator.
+        int8_t* status_;                ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
 
     };
 
@@ -93,11 +151,11 @@ namespace syntropy
         /// \brief No copy constructor.
         VectorAllocator(const VectorAllocator&) = delete;
 
+        /// \brief Destructor.
+        ~VectorAllocator() = default;
+
         /// \brief No assignment operator.
         VectorAllocator& operator=(const VectorAllocator&) = delete;
-
-        /// \brief Destructor.
-        ~VectorAllocator();
 
         /// \brief Get an iterator pointing to the first element in the allocator.
         /// \return Returns an iterator pointing to the first element in the allocator.
@@ -161,23 +219,21 @@ namespace syntropy
 
     private:
 
-        /// \brief Get the memory capacity needed to store an amount of elements.
-        /// \return Returns the amount of memory needed to store an amount of elements, in bytes. This value is rounded to the next page size.
-        size_t GetCapacity(size_t count) const;
-
         /// \brief Increase the size of the vector by one.
         void IncreaseSize();
 
         /// \brief Decrease the size of the vector by one.
         void DecreaseSize();
 
+        /// \brief Get the minimum size allowed for this allocator.
+        /// \return Returns the minimum size allowed for this allocator, in bytes.
+        size_t GetMinSize() const;
+
         size_t count_;                          ///< \brief Number of elements in the allocator.
 
         size_t max_count_;                      ///< \brief Maximum amount of elements in the allocator.
 
-        MemoryRange memory_;                    ///< \brief Reserved virtual memory range.
-
-        int8_t* head_;                          ///< \brief Points to the first unmapped memory page.
+        SequentialAllocator allocator_;         ///< \brief Actual underlying allocator.
 
     };
 
@@ -264,7 +320,8 @@ namespace syntropy
 
         /// \brief Create a new allocator.
         /// \param capacity Amount of memory reserved by each allocator.
-        DoubleBufferedAllocator(size_t capacity);
+        /// \param alignment Memory alignment.
+        DoubleBufferedAllocator(size_t capacity, size_t alignment);
 
         /// \brief Allocate a new memory block on the current allocator.
         /// \param size Size of the memory block to allocate, in bytes.
@@ -372,28 +429,16 @@ namespace syntropy
     VectorAllocator<T>::VectorAllocator(size_t max_count)
         : count_(0)
         , max_count_(max_count)
-        , memory_(Memory::Reserve(GetCapacity(max_count), alignof(T)), GetCapacity(max_count))
-        , head_(*memory_)
+        , allocator_(Memory::CeilToPageSize(sizeof(T) * max_count_), alignof(T))
     {
-        // Allocate the initial storage
-
-        auto size = Memory::CeilToPageSize(sizeof(T) * kInitialCapacity);   // Initial storage, in bytes.
-
-        memory_.Allocate(head_, size);
-
-        head_ = Memory::Offset(head_, size);                                // Move the head forward.
-    }
-
-    template <typename T>
-    VectorAllocator<T>::~VectorAllocator()
-    {
-        Memory::Release(*memory_);
+        // Allocate the initial slack
+        allocator_.Allocate(GetMinSize());
     }
 
     template <typename T>
     T* VectorAllocator<T>::begin()
     {
-        return reinterpret_cast<T*>(*memory_);
+        return reinterpret_cast<T*>(allocator_.GetBasePointer());
     }
 
     template <typename T>
@@ -483,19 +528,13 @@ namespace syntropy
     template <typename T>
     size_t VectorAllocator<T>::GetSize() const
     {
-        return Memory::GetSize(*memory_, head_);
+        return allocator_.GetSize();
     }
 
     template <typename T>
     size_t VectorAllocator<T>::GetCapacity() const
     {
-        return memory_.GetCapacity();
-    }
-
-    template <typename T>
-    size_t VectorAllocator<T>::GetCapacity(size_t count) const
-    {
-        return Memory::CeilToPageSize(sizeof(T) * count);
+        return allocator_.GetCapacity();
     }
 
     template <typename T>
@@ -503,19 +542,17 @@ namespace syntropy
     {
         ++count_;
 
-        auto size = Memory::GetSize(*memory_, head_);                           // Allocated space, in bytes. Always a multiple of the page size.
+        auto size = GetSize();                                      // Allocated space, in bytes. Always a multiple of the page size.
 
-        auto capacity = size / sizeof(T);                                       // Elements that can fit within the current allocated space.
+        auto capacity = size / sizeof(T);                           // Elements that can fit within the current allocated space.
 
         if (count_ > capacity)
         {
             // Double the allocation size.
 
-            size = std::min(size, memory_.GetCapacity() - size);                // Prevents the new allocation from exceeding the total capacity.
+            size = std::min(size, GetCapacity() - size);            // Prevents the new allocation from exceeding the total capacity.
 
-            memory_.Allocate(head_, size);                                      // Allocate the extra space. Kernel call.
-
-            head_ = Memory::Offset(head_, size);                                // Move the head forward.
+            allocator_.Allocate(size);                              // Kernel call.
         }
     }
 
@@ -524,9 +561,9 @@ namespace syntropy
     {
         --count_;
 
-        auto size = Memory::GetSize(*memory_, head_);                           // Allocated space, in bytes. Always a multiple of the page size.
+        auto size = GetSize();                                                  // Allocated space, in bytes. Always a multiple of the page size.
 
-        auto min_size = Memory::CeilToPageSize(sizeof(T) * kInitialCapacity);   // Minimum allocated size for this allocator.
+        auto min_size = GetMinSize();
 
         SYNTROPY_ASSERT(size >= min_size);
 
@@ -534,15 +571,19 @@ namespace syntropy
 
         if (size > min_size && count_ < capacity / 4)
         {
-            // Halve the allocation size keeping the remaining capacity twice as bigger as the allocated elements.
-            
+            // Halve the allocation size.
+            // At the end of this call the slack size is at least equal to count (hence the 4 above). This prevents memory page trashing.
+
             size -= std::max(Memory::CeilToPageSize(size / 2), min_size);       // Extra space to free.
 
-            head_ = Memory::Offset(head_, -static_cast<int64_t>(size));         // Move the head backward.
-
-            memory_.Free(head_, size);                                          // Free the extra space. Kernel call.
-
+            allocator_.Free(size);                                              // Kernel call.
         }
+    }
+
+    template <typename T>
+    size_t VectorAllocator<T>::GetMinSize() const
+    {
+        return Memory::CeilToPageSize(sizeof(T) * kInitialCapacity);
     }
 
 }

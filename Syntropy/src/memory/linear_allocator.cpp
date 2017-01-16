@@ -9,20 +9,74 @@
 namespace syntropy
 {
 
-    //////////////// LINEAR ALLOCATOR ////////////////
+    //////////////// SEQUENTIAL ALLOCATOR ////////////////
 
-    LinearAllocator::LinearAllocator(size_t capacity)
-        : base_(reinterpret_cast<int8_t*>(Memory::Allocate(capacity)))
-        , head_(base_)
-        , status_(nullptr)
-        , capacity_(capacity)
+    SequentialAllocator::SequentialAllocator(size_t capacity, size_t alignment)
+        : memory_(MemoryRange(Memory::Reserve(capacity, alignment), capacity))
+        , head_(*memory_)
     {
 
     }
 
+    SequentialAllocator::~SequentialAllocator()
+    {
+        Memory::Release(*memory_);
+    }
+
+    void* SequentialAllocator::Allocate(size_t size)
+    {
+        SYNTROPY_ASSERT(size > 0);
+
+        size = Memory::CeilToPageSize(size);
+
+        auto block = head_;
+
+        memory_.Allocate(head_, size);
+
+        head_ = Memory::Offset(head_, size);
+
+        return block;
+    }
+
+    void SequentialAllocator::Free(size_t size)
+    {
+        SYNTROPY_ASSERT(size > 0);
+
+        size = Memory::CeilToPageSize(size);
+
+        head_ = Memory::Offset(head_, -static_cast<int64_t>(size));
+
+        memory_.Free(head_, size);
+    }
+
+    size_t SequentialAllocator::GetSize() const
+    {
+        return Memory::GetSize(*memory_, head_);
+    }
+
+    size_t SequentialAllocator::GetCapacity() const
+    {
+        return memory_.GetCapacity();
+    }
+
+    int8_t* SequentialAllocator::GetBasePointer()
+    {
+        return *memory_;
+    }
+
+    //////////////// LINEAR ALLOCATOR ////////////////
+
+    LinearAllocator::LinearAllocator(size_t capacity, size_t alignment)
+        : memory_(MemoryRange(Memory::Reserve(capacity, alignment), capacity))
+        , head_(*memory_)
+        , status_(nullptr)
+    {
+        memory_.Allocate(*memory_, memory_.GetCapacity());      // Allocate everything upfront.
+    }
+
     LinearAllocator::~LinearAllocator()
     {
-        Memory::Release(base_);
+        Memory::Release(*memory_);
     }
 
     void* LinearAllocator::Allocate(size_t size)
@@ -51,7 +105,7 @@ namespace syntropy
 
     void LinearAllocator::Free()
     {
-        head_ = base_;
+        head_ = *memory_;
     }
 
     void LinearAllocator::SaveStatus()
@@ -71,12 +125,17 @@ namespace syntropy
 
     size_t LinearAllocator::GetSize() const
     {
-        return std::distance(base_, head_);
+        return Memory::GetSize(*memory_, head_);
     }
 
     size_t LinearAllocator::GetCapacity() const
     {
-        return capacity_;
+        return memory_.GetCapacity();
+    }
+
+    int8_t* LinearAllocator::GetBasePointer()
+    {
+        return *memory_;
     }
 
     //////////////// SCOPE ALLOCATOR ////////////////
@@ -106,8 +165,8 @@ namespace syntropy
 
     //////////////// DOUBLE BUFFERED ALLOCATOR ////////////////
 
-    DoubleBufferedAllocator::DoubleBufferedAllocator(size_t capacity)
-        : allocators_{ {capacity}, {capacity} }
+    DoubleBufferedAllocator::DoubleBufferedAllocator(size_t capacity, size_t alignment)
+        : allocators_{ {capacity, alignment}, {capacity, alignment} }
         , current_(allocators_)
     {
 
