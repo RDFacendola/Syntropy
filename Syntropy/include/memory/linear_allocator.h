@@ -10,6 +10,8 @@
 #include <cstddef>
 #include <type_traits>
 #include <memory>
+#include <iterator>
+#include <algorithm>
 
 #include "memory/memory.h"
 
@@ -72,14 +74,18 @@ namespace syntropy
 
     };
 
-    /// \brief Allocator that behaves like a std::vector but grows and shrinks over the virtual memory to avoid reallocations.
+    /// \brief Allocator that behaves like a vector that grows and shrinks over the virtual memory to avoid reallocations.
     /// Use this allocator to store an unknown number of objects when only the upper bound is known and no memory waste is allowed.
+    /// Generally used as a sub-allocator for dynamic allocations of another allocator.
     /// \author Raffaele D. Facendola - January 2017
     template <typename T>
     class VectorAllocator
     {
     public:
-        
+
+        /// \brief Initial element capacity.
+        static const size_t kInitialCapacity = 16;
+
         /// \brief Create a new vector allocator.
         /// \param max_count Maximum amount of elements that can be stored.
         VectorAllocator(size_t max_count);
@@ -155,10 +161,14 @@ namespace syntropy
 
     private:
 
-        /// \brief Increase the size of the vector.
+        /// \brief Get the memory capacity needed to store an amount of elements.
+        /// \return Returns the amount of memory needed to store an amount of elements, in bytes. This value is rounded to the next page size.
+        size_t GetCapacity(size_t count) const;
+
+        /// \brief Increase the size of the vector by one.
         void IncreaseSize();
 
-        /// \brief Decrease the size of the vector.
+        /// \brief Decrease the size of the vector by one.
         void DecreaseSize();
 
         size_t count_;                          ///< \brief Number of elements in the allocator.
@@ -167,7 +177,7 @@ namespace syntropy
 
         MemoryRange memory_;                    ///< \brief Reserved virtual memory range.
 
-        T* head_;                               ///< \brief Points to the first unmapped memory page.
+        int8_t* head_;                          ///< \brief Points to the first unmapped memory page.
 
     };
 
@@ -362,10 +372,16 @@ namespace syntropy
     VectorAllocator<T>::VectorAllocator(size_t max_count)
         : count_(0)
         , max_count_(max_count)
-        , memory_(Memory::Reserve(GetCapacity(), alignof(T)), GetCapacity())
-        , head_(reinterpret_cast<T*>(*memory_))
+        , memory_(Memory::Reserve(GetCapacity(max_count), alignof(T)), GetCapacity(max_count))
+        , head_(*memory_)
     {
+        // Allocate the initial storage
 
+        auto size = Memory::CeilToPageSize(sizeof(T) * kInitialCapacity);   // Initial storage, in bytes.
+
+        memory_.Allocate(head_, size);
+
+        head_ = Memory::Offset(head_, size);                                // Move the head forward.
     }
 
     template <typename T>
@@ -473,7 +489,13 @@ namespace syntropy
     template <typename T>
     size_t VectorAllocator<T>::GetCapacity() const
     {
-        return sizeof(T) * max_count_;
+        return memory_.GetCapacity();
+    }
+
+    template <typename T>
+    size_t VectorAllocator<T>::GetCapacity(size_t count) const
+    {
+        return Memory::CeilToPageSize(sizeof(T) * count);
     }
 
     template <typename T>
@@ -481,8 +503,20 @@ namespace syntropy
     {
         ++count_;
 
-        // TODO: Double the mapped memory if the current size exceeded the head
+        auto size = Memory::GetSize(*memory_, head_);                           // Allocated space, in bytes. Always a multiple of the page size.
 
+        auto capacity = size / sizeof(T);                                       // Elements that can fit within the current allocated space.
+
+        if (count_ > capacity)
+        {
+            // Double the allocation size.
+
+            size = std::min(size, memory_.GetCapacity() - size);                // Prevents the new allocation from exceeding the total capacity.
+
+            memory_.Allocate(head_, size);                                      // Allocate the extra space. Kernel call.
+
+            head_ = Memory::Offset(head_, size);                                // Move the head forward.
+        }
     }
 
     template <typename T>
@@ -490,8 +524,25 @@ namespace syntropy
     {
         --count_;
 
-        // TODO: Halve the mapped memory if the current size dropped below 1/4th of the head
+        auto size = Memory::GetSize(*memory_, head_);                           // Allocated space, in bytes. Always a multiple of the page size.
 
+        auto min_size = Memory::CeilToPageSize(sizeof(T) * kInitialCapacity);   // Minimum allocated size for this allocator.
+
+        SYNTROPY_ASSERT(size >= min_size);
+
+        auto capacity = size / sizeof(T);                                       // Elements that can fit within the current allocated space.
+
+        if (size > min_size && count_ < capacity / 4)
+        {
+            // Halve the allocation size keeping the remaining capacity twice as bigger as the allocated elements.
+            
+            size -= std::max(Memory::CeilToPageSize(size / 2), min_size);       // Extra space to free.
+
+            head_ = Memory::Offset(head_, -static_cast<int64_t>(size));         // Move the head backward.
+
+            memory_.Free(head_, size);                                          // Free the extra space. Kernel call.
+
+        }
     }
 
 }

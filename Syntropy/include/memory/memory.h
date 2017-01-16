@@ -166,14 +166,12 @@ namespace syntropy
         /// This method allocates all the memory pages containing at least one byte in the range [address, address + size].
         /// \param address Address of the memory block to allocate.
         /// \param size Size of the block to allocate, in bytes.
-        /// \return Returns true if the memory could be committed, returns false otherwise.
-        bool Allocate(void* address, size_t size);
+        void Allocate(void* address, size_t size);
 
         /// \brief Free a memory block.
         /// This method free all the pages containing at least one byte in the range [address, address + size].
         /// \param address Base address of the memory block to free.
-        /// \param size Size of the block to free, in bytes.
-        bool Free(void* address, size_t size);
+        void Free(void* address, size_t size);
 
     private:
 

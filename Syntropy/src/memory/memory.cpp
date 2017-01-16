@@ -126,18 +126,22 @@ namespace syntropy
                (Memory::GetSize(base_, address) + size) <= capacity_;
     }
 
-    bool MemoryRange::Allocate(void* address, size_t size)
+    void MemoryRange::Allocate(void* address, size_t size)
     {
         SYNTROPY_ASSERT(Contains(address, size));
 
-        return Memory::Commit(address, size);
+        auto result = Memory::Commit(address, size);
+
+        SYNTROPY_ASSERT(result);
     }
 
-    bool MemoryRange::Free(void* address, size_t size)
+    void MemoryRange::Free(void* address, size_t size)
     {
         SYNTROPY_ASSERT(Contains(address, size));
 
-        return Memory::Decommit(address, size);
+        auto result = Memory::Decommit(address, size);
+
+        SYNTROPY_ASSERT(result);
     }
 
 }
