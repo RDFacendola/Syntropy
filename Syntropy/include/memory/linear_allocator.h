@@ -54,7 +54,7 @@ namespace syntropy
         /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
         /// This value is always equal or greater than the allocated size.
         /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetCommitSize() const;
+        size_t GetEffectiveSize() const;
 
         /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
         /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
@@ -117,12 +117,17 @@ namespace syntropy
         /// Calling this method multiple times causes older status to be restored.
         void RestoreStatus();
 
-        /// \brief Get the total amount of memory that was allocated on this allocator.
-        /// \return Returns the total amount of memory that was allocated on this allocator, in bytes.
+        /// \brief Get the current allocation size, in bytes.
+        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
         size_t GetSize() const;
 
-        /// \brief Get the effective memory footprint of this allocator.
-        /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
+        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
+        /// This value is always equal or greater than the allocated size.
+        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
+        size_t GetEffectiveSize() const;
+
+        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
+        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
         size_t GetCapacity() const;
 
         /// \brief Get the base pointer of this allocator.
@@ -216,12 +221,17 @@ namespace syntropy
         /// \return Returns the maximum number of elements that can be store inside the allocator.
         size_t GetMaxCount() const;
 
-        /// \brief Get the total amount of memory that was allocated on this allocator.
-        /// \return Returns the total amount of memory that was allocated on this allocator, in bytes.
+        /// \brief Get the current allocation size, in bytes.
+        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
         size_t GetSize() const;
 
-        /// \brief Get the effective memory footprint of this allocator.
-        /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
+        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
+        /// This value is always equal or greater than the allocated size.
+        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
+        size_t GetEffectiveSize() const;
+
+        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
+        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
         size_t GetCapacity() const;
 
     private:
@@ -359,12 +369,17 @@ namespace syntropy
         /// Calling this method multiple times causes older status to be restored as well.
         void RestoreStatus();
 
-        /// \brief Get the total amount of memory that was allocated on this allocator.
-        /// \return Returns the total amount of memory that was allocated on this allocator, in bytes.
+        /// \brief Get the current allocation size, in bytes.
+        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
         size_t GetSize() const;
 
-        /// \brief Get the effective memory footprint of this allocator.
-        /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
+        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
+        /// This value is always equal or greater than the allocated size.
+        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
+        size_t GetEffectiveSize() const;
+
+        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
+        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
         size_t GetCapacity() const;
 
     private:
@@ -536,6 +551,12 @@ namespace syntropy
     size_t VectorAllocator<T>::GetSize() const
     {
         return allocator_.GetSize();
+    }
+
+    template <typename T>
+    size_t VectorAllocator<T>::GetEffectiveSize() const
+    {
+        return allocator_.GetEffectiveSize();
     }
 
     template <typename T>

@@ -72,7 +72,7 @@ namespace syntropy
         return Memory::GetSize(*memory_, head_);
     }
 
-    size_t SequentialAllocator::GetCommitSize() const
+    size_t SequentialAllocator::GetEffectiveSize() const
     {
         return Memory::GetSize(*memory_, page_head_);
     }
@@ -149,6 +149,11 @@ namespace syntropy
     size_t LinearAllocator::GetSize() const
     {
         return Memory::GetSize(*memory_, head_);
+    }
+
+    size_t LinearAllocator::GetEffectiveSize() const
+    {
+        return memory_.GetCapacity();       // Memory is allocated upfront.
     }
 
     size_t LinearAllocator::GetCapacity() const
@@ -234,6 +239,11 @@ namespace syntropy
     size_t DoubleBufferedAllocator::GetSize() const
     {
         return allocators_[0].GetSize() + allocators_[1].GetSize();
+    }
+
+    size_t DoubleBufferedAllocator::GetEffectiveSize() const
+    {
+        return allocators_[0].GetEffectiveSize() + allocators_[1].GetEffectiveSize();
     }
 
     size_t DoubleBufferedAllocator::GetCapacity() const
