@@ -19,7 +19,7 @@ namespace syntropy
 {
 
     /// \brief Base allocator used to allocate sequential memory blocks over a contiguous range of virtual memory addresses.
-    /// Memory is committed and decommited on demand. Allocations are always rounded to the next memory page boundary.
+    /// Memory is committed and decommited on demand: the allocator allocates the minimum amount of system memory pages.
     /// \author Raffaele D. Facendola - January 2017
     class SequentialAllocator
     {
@@ -47,12 +47,17 @@ namespace syntropy
         /// \brief Free a memory block from the allocator's head.
         void Free(size_t size);
 
-        /// \brief Get the total amount of memory that was allocated on this allocator.
-        /// \return Returns the total amount of memory that was allocated on this allocator, in bytes.
+        /// \brief Get the current allocation size, in bytes.
+        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
         size_t GetSize() const;
 
-        /// \brief Get the effective memory footprint of this allocator.
-        /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
+        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
+        /// This value is always equal or greater than the allocated size.
+        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
+        size_t GetCommitSize() const;
+
+        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
+        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
         size_t GetCapacity() const;
 
         /// \brief Get the base pointer of this allocator.
@@ -63,7 +68,9 @@ namespace syntropy
 
         MemoryRange memory_;        ///< \brief Reserved virtual memory range.
 
-        int8_t* head_;              ///< \brief Points to the first unmapped memory page.
+        int8_t* head_;              ///< \brief Points to the first unallocated memory address.
+
+        int8_t* page_head_;         ///< \brief Points to the first unallocated memory page.
 
     };
 
