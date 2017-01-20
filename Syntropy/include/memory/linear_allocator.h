@@ -64,6 +64,11 @@ namespace syntropy
         /// \return Returns the base pointer of this allocator.
         int8_t* GetBasePointer();
 
+        /// \brief Check whether an address belongs to this allocator.
+        /// \param address Address to check.
+        /// \return Returns true if address belongs to this allocator, returns false otherwise.
+        bool ContainsAddress(void* address) const;
+
     private:
 
         MemoryRange memory_;        ///< \brief Reserved virtual memory range.
@@ -133,6 +138,11 @@ namespace syntropy
         /// \brief Get the base pointer of this allocator.
         /// \return Returns the base pointer of this allocator.
         int8_t* GetBasePointer();
+
+        /// \brief Check whether an address belongs to this allocator.
+        /// \param address Address to check.
+        /// \return Returns true if address belongs to this allocator, returns false otherwise.
+        bool ContainsAddress(void* address) const;
 
     private:
 

@@ -17,7 +17,7 @@ namespace syntropy
     /// \brief Block allocator used to allocate fixed-size memory blocks on a contiguous address range.
     /// Both allocations and deallocations are performed on demand: when a memory block is needed it gets mapped to the system memory; when no longer needed the memory is returned to the system.
     /// This allocator ensures that only the memory being currently used is allocated but may suffer from kernel calls overhead. If a smaller, more performance-aware, allocator is needed check MonotonicBlockAllocator.
-    /// \author Raffaele D. Facendola - 2017
+    /// \author Raffaele D. Facendola - January 2017
     class BlockAllocator
     {
     public:
@@ -28,11 +28,11 @@ namespace syntropy
         /// \brief No copy constructor.
         BlockAllocator(const BlockAllocator&) = delete;
 
-        /// \brief No assignment operator.
-        BlockAllocator& operator=(const BlockAllocator&) = delete;
-
         /// \brief Destructor.
         ~BlockAllocator();
+
+        /// \brief No assignment operator.
+        BlockAllocator& operator=(const BlockAllocator&) = delete;
 
         /// \brief Allocate a memory block.
         /// \return Returns a pointer to the allocated memory block.
@@ -57,12 +57,17 @@ namespace syntropy
         /// \return Returns the size of each block in bytes.
         size_t GetBlockSize() const;
 
-        /// \brief Get the effective size of the allocator.
-        /// \return Returns the effective size of the allocator, in bytes.
+        /// \brief Get the current allocation size, in bytes.
+        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
         size_t GetSize() const;
 
-        /// \brief Get total capacity of this allocator.
-        /// \return Returns the total capacity of this allocator, in bytes.
+        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
+        /// This value is always equal or greater than the allocated size.
+        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
+        size_t GetEffectiveSize() const;
+
+        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
+        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
         size_t GetCapacity() const;
 
         /// \brief Check whether an address belongs to this allocator.
@@ -86,7 +91,7 @@ namespace syntropy
     /// \brief Block allocator used to allocate fixed-size memory blocks on a contiguous address range.
     /// This allocator uses a no-deallocation policy to avoid kernel calls: free blocks are kept allocated and recycled when possible.
     /// Allocations are performed on demand.
-    /// \author Raffaele D. Facendola - 2017
+    /// \author Raffaele D. Facendola - January 2017
     class MonotonicBlockAllocator
     {
     public:
@@ -97,11 +102,11 @@ namespace syntropy
         /// \brief No copy constructor.
         MonotonicBlockAllocator(const MonotonicBlockAllocator&) = delete;
 
+        /// \brief Destructor.
+        ~MonotonicBlockAllocator() = default;
+
         /// \brief No assignment operator.
         MonotonicBlockAllocator& operator=(const MonotonicBlockAllocator&) = delete;
-
-        /// \brief Destructor.
-        ~MonotonicBlockAllocator();
 
         /// \brief Allocate a memory block.
         /// \return Returns a pointer to the allocated memory block.
@@ -115,12 +120,17 @@ namespace syntropy
         /// \return Returns the size of each block in bytes.
         size_t GetBlockSize() const;
 
-        /// \brief Get the effective size of the allocator.
-        /// \return Returns the effective size of the allocator, in bytes.
+        /// \brief Get the current allocation size, in bytes.
+        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
         size_t GetSize() const;
 
-        /// \brief Get total capacity of this allocator.
-        /// \return Returns the total capacity of this allocator, in bytes.
+        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
+        /// This value is always equal or greater than the allocated size.
+        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
+        size_t GetEffectiveSize() const;
+
+        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
+        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
         size_t GetCapacity() const;
 
         /// \brief Check whether an address belongs to this allocator.
@@ -138,9 +148,7 @@ namespace syntropy
 
         size_t block_size_;             ///< \brief Size of each block in bytes.
 
-        MemoryRange memory_;            ///< \brief Reserved virtual memory range.
-
-        int8_t* head_;                  ///< \brief Pointer to the first unmapped block.
+        SequentialAllocator allocator_; ///< \brief Underlying sequential allocator.
 
         Block* free_;                   ///< \brief First free block.
 

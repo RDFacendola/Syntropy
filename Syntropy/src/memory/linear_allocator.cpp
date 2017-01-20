@@ -63,7 +63,6 @@ namespace syntropy
             page_head_ = next_page;
 
             memory_.Free(page_head_, free_size);                                // Free the extra amount of memory.
-
         }
     }
 
@@ -85,6 +84,11 @@ namespace syntropy
     int8_t* SequentialAllocator::GetBasePointer()
     {
         return *memory_;
+    }
+
+    bool SequentialAllocator::ContainsAddress(void* address) const
+    {
+        return Memory::IsContained(*memory_, head_, address);
     }
 
     //////////////// LINEAR ALLOCATOR ////////////////
@@ -164,6 +168,11 @@ namespace syntropy
     int8_t* LinearAllocator::GetBasePointer()
     {
         return *memory_;
+    }
+
+    bool LinearAllocator::ContainsAddress(void* address) const
+    {
+        return Memory::IsContained(*memory_, head_, address);
     }
 
     //////////////// SCOPE ALLOCATOR ////////////////
