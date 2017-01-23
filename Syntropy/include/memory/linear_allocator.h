@@ -64,6 +64,10 @@ namespace syntropy
         /// \return Returns the base pointer of this allocator.
         int8_t* GetBasePointer();
 
+        /// \brief Get the base pointer of this allocator.
+        /// \return Returns the base pointer of this allocator.
+        const int8_t* GetBasePointer() const;
+
         /// \brief Check whether an address belongs to this allocator.
         /// \param address Address to check.
         /// \return Returns true if address belongs to this allocator, returns false otherwise.
@@ -187,6 +191,14 @@ namespace syntropy
         /// \return Returns an iterator pointing to the past-the-end element in the allocator.
         T* end();
 
+        /// \brief Get an iterator pointing to the first element in the allocator.
+        /// \return Returns an iterator pointing to the first element in the allocator.
+        const T* begin() const;
+
+        /// \brief Get an iterator pointing to the past-the-end element in the allocator.
+        /// \return Returns an iterator pointing to the past-the-end element in the allocator.
+        const T* end() const;
+
         /// \brief Access an element on the allocator.
         /// \param index Index of the element to access.
         /// \return Returns the index-th element on the allocator.
@@ -246,11 +258,11 @@ namespace syntropy
 
     private:
 
-        /// \brief Increase the size of the vector by one.
-        void IncreaseSize();
+        /// \brief Increase the size of the vector.
+        void IncreaseSize(size_t amount = 1);
 
-        /// \brief Decrease the size of the vector by one.
-        void DecreaseSize();
+        /// \brief Decrease the size of the vector.
+        void DecreaseSize(size_t amount = 1);
 
         /// \brief Get the minimum size allowed for this allocator.
         /// \return Returns the minimum size allowed for this allocator, in bytes.
@@ -480,6 +492,18 @@ namespace syntropy
     }
 
     template <typename T>
+    const T* VectorAllocator<T>::begin() const
+    {
+        return reinterpret_cast<const T*>(allocator_.GetBasePointer());
+    }
+
+    template <typename T>
+    const T* VectorAllocator<T>::end() const
+    {
+        return begin() + count_;
+    }
+
+    template <typename T>
     T& VectorAllocator<T>::operator[](size_t index)
     {
         SYNTROPY_ASSERT(index < count_);
@@ -576,38 +600,39 @@ namespace syntropy
     }
 
     template <typename T>
-    void VectorAllocator<T>::IncreaseSize()
+    void VectorAllocator<T>::IncreaseSize(size_t amount)
     {
-        ++count_;
+        count_ += amount;
 
-        auto size = GetSize();                                      // Allocated space, in bytes. Always a multiple of the page size.
+        auto size = GetSize();                              // Allocated space, in bytes. Always a multiple of the page size.
+        auto capacity = size / sizeof(T);                   // Elements that can fit within the current allocated space.
 
-        auto capacity = size / sizeof(T);                           // Elements that can fit within the current allocated space.
-
-        if (count_ > capacity)
+        while (count_ > capacity)
         {
             // Double the allocation size.
 
-            size = std::min(size, GetCapacity() - size);            // Prevents the new allocation from exceeding the total capacity.
+            size = std::min(size, GetCapacity() - size);        // Prevents the new allocation from exceeding the total capacity.
 
-            allocator_.Allocate(size);                              // Kernel call.
+            allocator_.Allocate(size);                          // Kernel call.
+
+            // Refresh the current capacity.
+
+            size = GetSize();
+            capacity = size / sizeof(T);
         }
+
     }
 
     template <typename T>
-    void VectorAllocator<T>::DecreaseSize()
+    void VectorAllocator<T>::DecreaseSize(size_t amount)
     {
-        --count_;
-
-        auto size = GetSize();                                                  // Allocated space, in bytes. Always a multiple of the page size.
+        count_ -= amount;
 
         auto min_size = GetMinSize();
+        auto size = GetSize();                                          // Allocated space, in bytes. Always a multiple of the page size.
+        auto capacity = size / sizeof(T);                               // Elements that can fit within the current allocated space.
 
-        SYNTROPY_ASSERT(size >= min_size);
-
-        auto capacity = size / sizeof(T);                                       // Elements that can fit within the current allocated space.
-
-        if (size > min_size && count_ < capacity / 4)
+        while (size > min_size && count_ < capacity / 4)
         {
             // Halve the allocation size.
             // At the end of this call the slack size is at least equal to count (hence the 4 above). This prevents memory page trashing.
@@ -615,6 +640,11 @@ namespace syntropy
             size -= std::max(Memory::CeilToPageSize(size / 2), min_size);       // Extra space to free.
 
             allocator_.Free(size);                                              // Kernel call.
+
+            // Refresh the current capacity.
+
+            size = GetSize();
+            capacity = size / sizeof(T);
         }
     }
 

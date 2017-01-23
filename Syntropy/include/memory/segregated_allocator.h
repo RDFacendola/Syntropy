@@ -12,9 +12,9 @@
 namespace syntropy
 {
 
-    /// \brief High-performances allocator that packs many pool allocators for objects up to a maximum size.
-    /// The allocator is designed to minimize external fragmentation while keeping high performances.
-    /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls. See PageAllocator.
+    /// \brief High-performance allocator that uses segregated best-fit policy for allocations up to a certain size.
+    /// The allocator is designed to minimize external fragmentation while keeping constant response time.
+    /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls. See MonotonicBlockAllocator for more.
     /// \author Raffaele D. Facendola - December 2016
     class SegregatedPoolAllocator
     {
@@ -53,9 +53,18 @@ namespace syntropy
         /// \param address Address of the block to free.
         void Free(void* address);
 
-        /// \brief Get the effective memory footprint of this allocator.
-        /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
+        /// \brief Get the current allocation size, in bytes.
+        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
         size_t GetSize() const;
+
+        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
+        /// This value is always equal or greater than the allocated size.
+        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
+        size_t GetEffectiveSize() const;
+
+        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
+        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
+        size_t GetCapacity() const;
 
     private:
 
@@ -79,10 +88,6 @@ namespace syntropy
             size_t allocated_blocks_;               ///< \brief Amount of allocated blocks in this page.
         };
 
-        /// \brief Get an allocator page able to fit a given block size. 
-        /// The returned page is guaranteed to be the head of the proper allocator.
-        Page*& GetAllocator(size_t block_size);
-
         /// \brief Allocate a new page.
         /// \param block_size Size of the blocks in the page, in bytes.
         /// \return Returns the address to the allocated page.
@@ -102,11 +107,18 @@ namespace syntropy
         /// \param page Page to restore.
         void RestorePage(Page* page);
 
-        MonotonicBlockAllocator page_allocator_;    ///< \brief Provides memory pages in a continuous address range.
+        /// \brief Get the total amount of blocks that can be allocated inside a page.
+        /// \param page Page to work with.
+        /// \param block_size Size of each block, in bytes.
+        /// \param head Output. Contains a pointer to the first block after the page header.
+        /// \return Returns the amount of blocks of size block_size that can be stored inside the page.
+        size_t GetBlockCount(Page* page, size_t block_size, Block*& head) const;
 
-        Page** allocators_;                         ///< \brief Array of allocators. The n-th allocator handles memory blocks up to (1+n) * minimum_allocation_size bytes.
+        MonotonicBlockAllocator allocator_;         ///< \brief Underlying block allocator for page allocations.
 
         size_t maximum_block_size_;                 ///< \brief Maximum block size for this allocator.
+
+        VectorAllocator<Page*> free_pages_;         ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
 
     };
 

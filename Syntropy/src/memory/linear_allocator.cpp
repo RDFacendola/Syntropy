@@ -86,6 +86,11 @@ namespace syntropy
         return *memory_;
     }
 
+    const int8_t* SequentialAllocator::GetBasePointer() const
+    {
+        return *memory_;
+    }
+
     bool SequentialAllocator::ContainsAddress(void* address) const
     {
         return Memory::IsContained(*memory_, head_, address);

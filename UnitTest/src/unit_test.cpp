@@ -50,40 +50,47 @@ int main()
     struct Foo
     {
         //int64_t a;          // 8
-        char padding[240];
+        char padding[121];
     };
 
     auto t0 = std::chrono::high_resolution_clock::now();
 
     {
-        size_t c = 100000;
+        size_t c = 1300;
 
         std::vector<Foo*> v;
         v.reserve(0x10000);
 
-        syntropy::ClusteredPoolAllocator pall(0x2800000000,     // 160 GB capacity
-                                              0x10000,          // 64 KB pages
-                                              10);              // 10th order: up to 32 MB allocations
+        //syntropy::ClusteredPoolAllocator pall(0x2800000000,     // 160 GB capacity
+        //                                      0x10000,          // 64 KB pages
+        //                                      10);              // 10th order: up to 32 MB allocations
 
 
-        //syntropy::SegregatedPoolAllocator pall(0x200000000,         // 512 MB capacity
-        //                                       0x4000);              // 16 KB pages
+        syntropy::SegregatedPoolAllocator pall(0x200000000,         // 512 MB capacity
+                                                0x4000);            // 16 KB pages
 
-        while (c-- > 0)
+        while (true)
         {
-            if (rand() % 2 == 0 || v.size() == 0)
+            c = rand() % 200000;
+
+            while (c-- > 0)
             {
                 v.push_back(reinterpret_cast<Foo*>(pall.Allocate(sizeof(Foo), 24)));
+                v.back()->padding[5] = '!';
             }
-            else
+
+            std::cout << "Elements: " << v.size() << " (" << pall.GetSize() << " bytes)\n";
+
+            while (v.size() > 0)
             {
                 auto i = rand() % v.size();
                 pall.Free(v[i]);
                 v.erase(v.begin() + i);
             }
+
+            std::cout << "Elements: " << v.size() << " (" << pall.GetSize() << " bytes)\n";
         }
 
-        std::cout << "Elements: " << v.size() << " (" << pall.GetSize() << " bytes)\n";
     }
 
     auto t1 = std::chrono::high_resolution_clock::now();
