@@ -50,7 +50,7 @@ int main()
     struct Foo
     {
         //int64_t a;          // 8
-        char padding[121];
+        char padding[65536];
     };
 
     auto t0 = std::chrono::high_resolution_clock::now();
@@ -61,13 +61,13 @@ int main()
         std::vector<Foo*> v;
         v.reserve(0x10000);
 
-        //syntropy::ClusteredPoolAllocator pall(0x2800000000,     // 160 GB capacity
-        //                                      0x10000,          // 64 KB pages
-        //                                      10);              // 10th order: up to 32 MB allocations
+        syntropy::ClusteredPoolAllocator pall(0x2800000000,     // 160 GB capacity
+                                              0x10000,          // 64 KB pages
+                                              10);              // 10th order: up to 32 MB allocations
 
 
-        syntropy::SegregatedPoolAllocator pall(0x200000000,         // 512 MB capacity
-                                                0x4000);            // 16 KB pages
+        //syntropy::SegregatedPoolAllocator pall(0x200000000,         // 512 MB capacity
+        //                                        0x4000);            // 16 KB pages
 
         while (true)
         {
@@ -75,7 +75,7 @@ int main()
 
             while (c-- > 0)
             {
-                v.push_back(reinterpret_cast<Foo*>(pall.Allocate(sizeof(Foo), 24)));
+                v.push_back(reinterpret_cast<Foo*>(pall.Allocate(sizeof(Foo))));
                 v.back()->padding[5] = '!';
             }
 

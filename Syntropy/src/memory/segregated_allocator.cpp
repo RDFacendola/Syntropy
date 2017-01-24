@@ -203,42 +203,52 @@ namespace syntropy
 
     //////////////// CLUSTERED POOL ALLOCATOR ////////////////
 
-    ClusteredPoolAllocator::ClusteredPoolAllocator(size_t capacity, size_t minimum_allocation_size, size_t order)
-        : order_(order)
-        , base_allocation_size_(Memory::CeilToPageSize(minimum_allocation_size))                                // Round to the next memory page boundary
+    ClusteredPoolAllocator::ClusteredPoolAllocator(size_t capacity, size_t base_allocation_size, size_t order)
+        : clusters_(order)
+        , order_(order)
+        , base_allocation_size_(Memory::CeilToPageSize(base_allocation_size))               // Round to the next memory page boundary
     {
         SYNTROPY_ASSERT(order >= 1);
 
-        // TODO: Move to bookkeeping!!!
+        auto cluster_capacity = capacity / order;                                           // Distribute the capacity evenly among the different clusters
 
-        auto maximum_allocation_size = base_allocation_size_ * (static_cast<size_t>(1) << (order - 1));         // Allocation size of the last cluster
+        auto cluster_size = base_allocation_size_;
 
-        auto cluster_capacity = Math::Floor(capacity / order, maximum_allocation_size);                         // Each allocator must have the same capacity which is also a multiple of the maximum allocation possible.
-        
-        auto size = order * sizeof(BlockAllocator);                                                             // Size of the storage for cluster allocators.
-
-        allocators_ = reinterpret_cast<BlockAllocator*>(Memory::Allocate(size));                                // 
-
-        while (order-- != 0)
+        while (order-- > 0)
         {
-            new (allocators_ + order) BlockAllocator(cluster_capacity, maximum_allocation_size);                // Initialize each cluster allocator
-            maximum_allocation_size >>= 1;
-        } 
-
+            clusters_.EmplaceBack(cluster_capacity, cluster_size);                          // Create each cluster allocator.
+            cluster_size <<= 1;                                                             // Double the allocation size for the next cluster.
+        }
     }
 
     void* ClusteredPoolAllocator::Allocate(size_t size)
     {
-        auto index = Math::CeilLog2((size + base_allocation_size_ - 1) / base_allocation_size_);
-
-        return allocators_[index].Allocate(size);
+        return GetClusterBySize(size).Allocate(size);
     }
 
     void* ClusteredPoolAllocator::Allocate(size_t size, size_t alignment)
     {
-        auto index = Math::CeilLog2((size + alignment + base_allocation_size_ - 1) / base_allocation_size_);    // Blocks are not aligned, just reserve enough space for both the block and maximum padding due to its alignment
+        // Allocate enough space for both the block and the maximum padding due to the requested alignment
+        size += alignment - 1;
+
+        auto block = Memory::Align(GetClusterBySize(size).Allocate(size), alignment);
         
-        auto block = Memory::Align(allocators_[index].Allocate(size + alignment), alignment);                   // Allocate the actual padded memory block
+        SYNTROPY_ASSERT(reinterpret_cast<size_t>(block) % alignment == 0);
+
+        return block;
+    }
+
+    void* ClusteredPoolAllocator::Reserve(size_t size)
+    {
+        return GetClusterBySize(size).Reserve(size);
+    }
+
+    void* ClusteredPoolAllocator::Reserve(size_t size, size_t alignment)
+    {
+        // Allocate enough space for both the block and the maximum padding due to the requested alignment
+        size += alignment - 1;
+
+        auto block = Memory::Align(GetClusterBySize(size).Reserve(size), alignment);
 
         SYNTROPY_ASSERT(reinterpret_cast<size_t>(block) % alignment == 0);
 
@@ -247,25 +257,56 @@ namespace syntropy
 
     void ClusteredPoolAllocator::Free(void* address)
     {
-        for (auto index = order_ - 1; index >= 0; --index)
-        {
-            if (allocators_[index].ContainsAddress(address))
-            {
-                allocators_[index].Free(address);
-                return;
-            }
-        }
+        auto it = std::find_if(clusters_.begin(),
+                               clusters_.end(),
+                               [address](const BlockAllocator& allocator)
+                               {
+                                    return allocator.ContainsAddress(address);
+                               });
+
+        SYNTROPY_ASSERT(it != clusters_.end());
+
+        it->Free(address);
     }
 
     size_t ClusteredPoolAllocator::GetSize() const
     {
-        return std::accumulate(&allocators_[0],
-                               &allocators_[order_],
+        return std::accumulate(clusters_.begin(),
+                               clusters_.end(),
                                static_cast<size_t>(0),
                                [](size_t accumulator, const BlockAllocator& allocator)
                                {
                                     return accumulator + allocator.GetSize();
                                });
+    }
+
+    size_t ClusteredPoolAllocator::GetEffectiveSize() const
+    {
+        return std::accumulate(clusters_.begin(),
+                               clusters_.end(),
+                               static_cast<size_t>(0),
+                               [](size_t accumulator, const BlockAllocator& allocator)
+                               {
+                                    return accumulator + allocator.GetEffectiveSize();
+                               });
+    }
+
+    size_t ClusteredPoolAllocator::GetCapacity() const
+    {
+        return std::accumulate(clusters_.begin(),
+                               clusters_.end(),
+                               static_cast<size_t>(0),
+                               [](size_t accumulator, const BlockAllocator& allocator)
+                               {
+                                    return accumulator + allocator.GetCapacity();
+                               });
+    }
+
+    BlockAllocator& ClusteredPoolAllocator::GetClusterBySize(size_t block_size)
+    {
+        auto index = Math::CeilLog2((block_size + base_allocation_size_ - 1) / base_allocation_size_);
+
+        return clusters_[index];
     }
 
 }

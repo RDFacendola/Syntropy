@@ -123,14 +123,18 @@ namespace syntropy
     };
 
     /// \brief Low-fragmentation, low-waste allocator to handle allocation of large objects.
-    /// The allocator is designed to minimize external fragmentation while keeping a low amount of wasted space.
-    /// The allocator allocates and deallocates pages on demand.
+    /// The allocator is designed to minimize external fragmentation while keeping a low amount of wasted space. Pages are allocated and deallocated on demand.
+    /// The allocator has many allocators that handle the allocations of a particular size. Each class size is referred to as "cluster". Each cluster handles allocations double in size with respect to the previous one.
     /// \author Raffaele D. Facendola - January 2017
     class ClusteredPoolAllocator
     {
     public:
 
-        ClusteredPoolAllocator(size_t capacity, size_t minimum_allocation_size, size_t order);
+        /// \brief Create a new allocator.
+        /// \param capacity Total capacity of the allocator. The capacity is split evenly among the clusters.
+        /// \param base_allocation_size Maximum allocation size for the first cluster.
+        /// \param order Number of clusters in the allocator. Each cluster handles allocations that are double in size than the previous cluster.
+        ClusteredPoolAllocator(size_t capacity, size_t base_allocation_size, size_t order);
 
         /// \brief No copy constructor.
         ClusteredPoolAllocator(const ClusteredPoolAllocator&) = delete;
@@ -152,24 +156,47 @@ namespace syntropy
         /// \return Returns a pointer to the allocated memory block.
         void* Allocate(size_t size, size_t alignment);
 
+        /// \brief Reserve a new memory block.
+        /// \param size Size of the memory block to reserve, in bytes.
+        /// \return Returns a pointer to the reserved memory block.
+        void* Reserve(size_t size);
+
+        /// \brief Reserve a new aligned memory block.
+        /// \param size Size of the memory block to reserve, in bytes.
+        /// \param alignment Alignment of the reserved block. Must be a multiple of the minimum allocation size.
+        /// \return Returns a pointer to the reserved memory block.
+        void* Reserve(size_t size, size_t alignment);
+
         /// \brief Free a memory block.
         /// \param address Address of the block to free.
         void Free(void* address);
 
-        /// \brief Get the effective memory footprint of this allocator.
-        /// \return Returns the amount of memory effectively allocated by this allocator, in bytes.
+        /// \brief Get the current allocation size, in bytes.
+        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
         size_t GetSize() const;
+
+        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
+        /// This value is always equal or greater than the allocated size.
+        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
+        size_t GetEffectiveSize() const;
+
+        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
+        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
+        size_t GetCapacity() const;
 
     private:
 
-        BlockAllocator* allocators_;                ///< \brief Array of cluster allocators. One allocator per order.
+        /// \brief Get a reference to a cluster allocator by block size.
+        /// \param block_size Size of the block to allocate or reserve.
+        /// \return Returns a reference to the smallest allocator that can handle the given allocation size.
+        BlockAllocator& GetClusterBySize(size_t block_size);
 
-        size_t order_;                              ///< \brief Order of the allocator. Maximum allocation size is base_allocation_size_ * 2 ^ order_.
+        VectorAllocator<BlockAllocator> clusters_;      ///< \brief Array of allocators. One per cluster.
 
-        size_t base_allocation_size_;               ///< \brief Allocation size for the first-order allocator.
+        size_t order_;                                  ///< \brief Order of the allocator. Maximum allocation size is base_allocation_size_ * 2 ^ order_.
+
+        size_t base_allocation_size_;                   ///< \brief Allocation size for the first cluster.
 
     };
-
-
 
 }
