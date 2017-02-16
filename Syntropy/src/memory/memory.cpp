@@ -144,4 +144,30 @@ namespace syntropy
         SYNTROPY_ASSERT(result);
     }
 
+    //////////////// MEMORY BUFFER ////////////////
+
+    MemoryBuffer::MemoryBuffer(void* base, size_t size)
+        : base_(reinterpret_cast<int8_t*>(base))
+        , size_(size)
+    {
+        SYNTROPY_ASSERT(base_);
+    }
+
+    int8_t* MemoryBuffer::operator[](size_t offset) const
+    {
+        SYNTROPY_ASSERT(Contains(base_ + offset, 1));
+        return base_ + offset;
+    }
+
+    size_t MemoryBuffer::GetSize() const
+    {
+        return size_;
+    }
+
+    bool MemoryBuffer::Contains(void* address, size_t size) const
+    {
+        return reinterpret_cast<uintptr_t>(base_) <= reinterpret_cast<uintptr_t>(address) &&
+               (Memory::GetSize(base_, address) + size) <= size_;
+    }
+
 }

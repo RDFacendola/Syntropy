@@ -8,6 +8,8 @@
     <ClInclude Include="include\serialization\json\json_deserializer.h">
       <Filter>serialization\json</Filter>
     </ClInclude>
+    <ClInclude Include="include\vm\virtual_machine.h" />
+    <ClInclude Include="include\vm\intrinsics.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntax.cpp" />
@@ -15,6 +17,8 @@
       <Filter>serialization\json</Filter>
     </ClCompile>
     <ClCompile Include="src\serialization\json\json_deserializer.cpp" />
+    <ClCompile Include="src\vm\virtual_machine.cpp" />
+    <ClCompile Include="src\vm\instrinsics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="serialization">

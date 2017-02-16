@@ -25,6 +25,11 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\vm\virtual_machine.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\vm\intrinsics.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\serialization\json.cpp" />
@@ -33,6 +38,14 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="src\syntax.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="src\vm\instrinsics.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="src\vm\virtual_machine.cpp">
       <SubType>
       </SubType>
     </ClCompile>
@@ -129,8 +142,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <DisableSpecificWarnings>
-      </DisableSpecificWarnings>
+      <DisableSpecificWarnings>4505</DisableSpecificWarnings>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
@@ -174,8 +186,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <DisableSpecificWarnings>
-      </DisableSpecificWarnings>
+      <DisableSpecificWarnings>4505</DisableSpecificWarnings>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>
     <Link>
