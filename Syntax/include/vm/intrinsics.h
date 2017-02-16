@@ -62,11 +62,11 @@ namespace syntropy
         struct EnterInstruction : VMBaseInstruction<EnterInstruction>
         {
 
-            EnterInstruction(int32_t local_storage_size);
+            EnterInstruction(storage_t local_storage_size);
 
             virtual void Execute(VMExecutionContext& context) const override;
 
-            int32_t local_storage_size_;            ///< \brief Memory to reserve for local variables, in bytes.
+            storage_t local_storage_size_;          ///< \brief Memory to reserve for local variables, in bytes.
             int32_t padding_;
 
         };
@@ -89,11 +89,11 @@ namespace syntropy
         struct ReturnInstruction : VMBaseInstruction<ReturnInstruction>
         {
 
-            ReturnInstruction(int32_t input_storage_size);
+            ReturnInstruction(storage_t input_storage_size);
 
             virtual void Execute(VMExecutionContext& context) const override;
 
-            int32_t input_storage_size_;            ///< \brief Memory reserved for input variables, in bytes.
+            storage_t input_storage_size_;          ///< \brief Memory reserved for input variables, in bytes.
             int32_t padding_;
 
         };
@@ -130,11 +130,8 @@ namespace syntropy
 
         // MOVE
 
-        // MoveImmediate        --> Copy immediate value
-        // Move                 --> Move the content of a location to another location
-        // MoveIndirect         --> Move the content of a location to the location pointed by another location
-
         /// \brief Move an immediate word-sized value to a given location.
+        /// \example i(x, 10)       x = 10
         /// \author Raffaele D. Facendola - February 2017
         struct MoveWordImmediateInstruction : VMBaseInstruction<MoveWordImmediateInstruction>
         {
@@ -151,6 +148,7 @@ namespace syntropy
         };
         
         /// \brief Move a word-sized value from a register to another register.
+        /// \example i(x, y)       x = y
         /// \author Raffaele D. Facendola - February 2017
         struct MoveWordInstruction : VMBaseInstruction<MoveWordInstruction>
         {
@@ -165,6 +163,7 @@ namespace syntropy
         };
 
         /// \brief Move a word-sized value from a register to the location pointed by another register.
+        /// \example i(x, y)       *x = y
         /// \author Raffaele D. Facendola - February 2017
         struct MoveWordIndirectInstruction : VMBaseInstruction<MoveWordIndirectInstruction>
         {
@@ -179,6 +178,7 @@ namespace syntropy
         };
 
         /// \brief Move the effective address of a register to another register.
+        /// \example i(x, y)       x = &y
         /// \author Raffaele D. Facendola - February 2017
         struct MoveAddressInstruction : VMBaseInstruction<MoveWordIndirectInstruction>
         {
@@ -192,23 +192,61 @@ namespace syntropy
 
         };
 
+        // MoveImmediate        --> Copy immediate value
 
-        // Math
-
-        /// \brief Perform the integer addition of two values.
+        /// \brief Move a value from a register to another register.
+        /// \example i(x, y)       x = y
         /// \author Raffaele D. Facendola - February 2017
-        struct AddInt64Instruction : VMBaseInstruction<AddInt64Instruction>
+        struct MoveInstruction : VMBaseInstruction<MoveWordInstruction>
         {
 
-            AddInt64Instruction(int32_t result, int32_t op1, int32_t op2);
+            MoveInstruction(register_t destination, register_t source, storage_t size);
 
             virtual void Execute(VMExecutionContext& context) const override;
 
-            int32_t result_;            ///< \brief Offset of the variable containing the result of the sum
-            int32_t op1_;               ///< \brief First element to add.
+            register_t destination_;        ///< \brief Destination of the assignment.
+            register_t source_;             ///< \brief Source of the assignment.
 
-            int32_t op2_;               ///< \brief Second element to add.
-            int32_t padding_;           ///< \brief Not used.
+            storage_t size_;                ///< \brief Size of the value to move, in bytes.
+            int32_t padding_;
+
+        };
+
+        /// \brief Move a value from a register to the location pointed by another register.
+        /// \example i(x, y)       *x = y
+        /// \author Raffaele D. Facendola - February 2017
+        struct MoveIndirectInstruction : VMBaseInstruction<MoveWordIndirectInstruction>
+        {
+
+            MoveIndirectInstruction(register_t destination, register_t source, storage_t size);
+
+            virtual void Execute(VMExecutionContext& context) const override;
+
+            register_t destination_;        ///< \brief Points to the destination of the assignment.
+            register_t source_;             ///< \brief Source of the assignment.
+
+            storage_t size_;                ///< \brief Size of the value to move, in bytes.
+            int32_t padding_;
+
+        };
+
+        // Math
+
+        /// \brief Perform the sum of two integer numbers.
+        /// \example i(r, f, s)     r = f + s
+        /// \author Raffaele D. Facendola - February 2017
+        struct AddIntegerInstruction : VMBaseInstruction<AddIntegerInstruction>
+        {
+
+            AddIntegerInstruction(register_t result, register_t first, register_t second);
+
+            virtual void Execute(VMExecutionContext& context) const override;
+
+            register_t result_;         ///< \brief Contains the sum of the two other arguments.
+            int32_t padding_;
+
+            register_t first_;          ///< \brief First element to add.
+            register_t second_;         ///< \brief Second element to add.
 
         };
 

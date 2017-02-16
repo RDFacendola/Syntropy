@@ -44,8 +44,9 @@ namespace syntropy
             // F1
             auto f1 = VMPushInstruction<EnterInstruction>(code, 8);
 
-            VMPushInstruction<AddInt64Instruction>(code, 0, -32, -40);          // Loc0 = Arg1 + Arg2
-            VMPushInstruction<MoveIndirect64Instruction>(code, -24, 0);         // *Arg0 = Loc0
+            VMPushInstruction<MoveWordImmediateInstruction>(code, 0, 888);      // Loc0 = 888
+            VMPushInstruction<AddIntegerInstruction>(code, 0, -32, -40);        // Loc0 = Arg1 + Arg2
+            VMPushInstruction<MoveWordIndirectInstruction>(code, -48, 0);       // *Arg0 = Loc0
 
             VMPushInstruction<ReturnInstruction>(code, 24);
 
@@ -53,9 +54,9 @@ namespace syntropy
             // MAIN
             auto main = VMPushInstruction<EnterInstruction>(code, 24);
 
-            VMPushInstruction<MoveImmediate64Instruction>(code, 0, 0);          // Loc0 = 0
-            VMPushInstruction<MoveImmediate64Instruction>(code, 8, 10);         // Loc1 = 10
-            VMPushInstruction<MoveImmediate64Instruction>(code, 16, 25);        // Loc2 = 25
+            VMPushInstruction<MoveWordImmediateInstruction>(code, 0, 0);        // Loc0 = 0
+            VMPushInstruction<MoveWordImmediateInstruction>(code, 8, 10);       // Loc1 = 10
+            VMPushInstruction<MoveWordImmediateInstruction>(code, 16, 25);      // Loc2 = 25
 
             VMPushInstruction<PushDirectInstruction>(code, 16, 8);              // Push(Loc2)
             VMPushInstruction<PushDirectInstruction>(code, 8, 8);               // Push(Loc1)

@@ -19,10 +19,16 @@ namespace syntropy
 
         /// \brief Type alias for a variable representing a "register" of a syntropy virtual machine.
         /// Since the virtual machine doesn't have real register, this is just an offset relative to the current base pointer.
+        /// Equivalent of uintptr_t
         using register_t = int32_t;
 
         /// \brief Type alias for a word of a virtual machine.
+        /// Equivalent of int
         using word_t = int64_t;
+
+        /// \brief Type alias for a size type for a virtual machine.
+        /// Equivalent of size_t
+        using storage_t = int32_t;
 
         struct VMInstruction;
 

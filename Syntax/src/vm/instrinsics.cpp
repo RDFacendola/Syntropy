@@ -1,5 +1,7 @@
 #include "vm/intrinsics.h"
 
+#include <string.h>
+
 namespace syntropy
 {
     namespace syntax
@@ -44,7 +46,7 @@ namespace syntropy
         /* ENTER INSTRUCTION                                                    */
         /************************************************************************/
 
-        EnterInstruction::EnterInstruction(int32_t local_storage_size)
+        EnterInstruction::EnterInstruction(storage_t local_storage_size)
             : local_storage_size_(local_storage_size)
         {
 
@@ -74,7 +76,7 @@ namespace syntropy
         /* RETURN INSTRUCTION                                                   */
         /************************************************************************/
 
-        ReturnInstruction::ReturnInstruction(int32_t input_storage_size)
+        ReturnInstruction::ReturnInstruction(storage_t input_storage_size)
             : input_storage_size_(input_storage_size)
         {
 
@@ -96,7 +98,7 @@ namespace syntropy
 
         void PushDirectInstruction::Execute(VMExecutionContext& context) const
         {
-            context.Push(context.Get<void>(offset_), size_);
+            context.Push(context.GetRegister<void>(offset_), size_);
         }
 
         //////////////// POP DIRECT INSTRUCTION ////////////////
@@ -110,7 +112,7 @@ namespace syntropy
 
         void PopDirectInstruction::Execute(VMExecutionContext& context) const
         {
-            context.Pop(context.Get<void>(offset_), size_);
+            context.Pop(context.GetRegister<void>(offset_), size_);
         }
 
         // MOVE
@@ -190,25 +192,67 @@ namespace syntropy
             *destination = reinterpret_cast<word_t>(source);
         }
 
-        // MATH
+        /************************************************************************/
+        /* MOVE INSTRUCTION                                                     */
+        /************************************************************************/
 
-        //////////////// ADD INT64 INSTRUCTION ////////////////
-
-        AddInt64Instruction::AddInt64Instruction(int32_t result, int32_t op1, int32_t op2)
-            : result_(result)
-            , op1_(op1)
-            , op2_(op2)
+        MoveInstruction::MoveInstruction(register_t destination, register_t source, storage_t size)
+            : destination_(destination)
+            , source_(source)
+            , size_(size)
         {
 
         }
 
-        void AddInt64Instruction::Execute(VMExecutionContext& context) const
+        void MoveInstruction::Execute(VMExecutionContext& context) const
         {
-            auto result = context.Get<int64_t>(result_);
-            auto op1 = context.Get<int64_t>(op1_);
-            auto op2 = context.Get<int64_t>(op2_);
+            auto source = context.GetRegister<void>(source_);
+            auto destination = context.GetRegister<void>(destination_);
 
-            *result = *op1 + *op2;
+            memmove_s(destination, size_, source, size_);
+        }
+
+        /************************************************************************/
+        /* MOVE INDIRECT INSTRUCTION                                            */
+        /************************************************************************/
+
+        MoveIndirectInstruction::MoveIndirectInstruction(register_t destination, register_t source, storage_t size)
+            : destination_(destination)
+            , source_(source)
+            , size_(size)
+        {
+
+        }
+
+        void MoveIndirectInstruction::Execute(VMExecutionContext& context) const
+        {
+            auto source = context.GetRegister<void>(source_);
+            auto destination = context.GetRegister<void*>(destination_);
+
+            memmove_s(*destination, size_, source, size_);
+        }
+
+        // MATH
+
+        /************************************************************************/
+        /* ADD INTEGER INSTRUCTION                                              */
+        /************************************************************************/
+
+        AddIntegerInstruction::AddIntegerInstruction(register_t result, register_t first, register_t second)
+            : result_(result)
+            , first_(first)
+            , second_(second)
+        {
+
+        }
+
+        void AddIntegerInstruction::Execute(VMExecutionContext& context) const
+        {
+            auto result = context.GetRegister<word_t>(result_);
+            auto first = context.GetRegister<word_t>(first_);
+            auto second = context.GetRegister<word_t>(second_);
+
+            *result = *first + *second;
         }
 
     }
