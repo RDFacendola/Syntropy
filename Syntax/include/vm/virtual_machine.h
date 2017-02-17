@@ -18,7 +18,7 @@ namespace syntropy
         class VirtualMachine;
 
         /// \brief Type alias for a variable representing a "register" of a syntropy virtual machine.
-        /// Since the virtual machine doesn't have real register, this is just an offset relative to the current base pointer.
+        /// Since the virtual machine doesn't have real registers, this is just an offset relative to the current base pointer.
         /// Equivalent of uintptr_t
         using register_t = int32_t;
 

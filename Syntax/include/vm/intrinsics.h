@@ -100,38 +100,52 @@ namespace syntropy
 
         // STACK MANAGEMENT
 
-        /// \brief Push a local variable value on top of the stack.
+        /// \brief Push of word-sized value on top of the stack.
         /// \author Raffaele D. Facendola - February 2017
-        struct PushDirectInstruction : VMBaseInstruction<PushDirectInstruction>
+        struct PushWordInstruction : VMBaseInstruction<PushWordInstruction>
         {
 
-            PushDirectInstruction(int32_t offset, uint32_t size);
+            PushWordInstruction(register_t source);
 
             virtual void Execute(VMExecutionContext& context) const override;
 
-            int32_t offset_;            ///< \brief Offset of the memory to push on top of the stack, relative to the base pointer.
-            uint32_t size_;             ///< \brief Size of the memory block to push on top of the stack.
+            register_t source_;         ///< \brief Contains the value to push on top of the stack.
+            int32_t padding_;
 
         };
 
-        /// \brief Pop a value from the top of the stack and store the result in a local variable.
+        /// \brief Push an address on top of the stack.
         /// \author Raffaele D. Facendola - February 2017
-        struct PopDirectInstruction : VMBaseInstruction<PopDirectInstruction>
+        struct PushAddressInstruction : VMBaseInstruction<PushAddressInstruction>
         {
 
-            PopDirectInstruction(int32_t offset, uint32_t size);
+            PushAddressInstruction(register_t source);
 
             virtual void Execute(VMExecutionContext& context) const override;
 
-            int32_t offset_;            ///< \brief Offset of the memory where the popped value will be stored at
-            uint32_t size_;             ///< \brief Size of the memory block to pop.
+            register_t source_;         ///< \brief Location whose effective address should be pushed on top of the stack.
+            int32_t padding_;
 
         };
 
-        // MOVE
+        /// \brief Pop a word-sized value from the top of ht estack.
+        /// \author Raffaele D. Facendola - February 2017
+        struct PopWordInstruction : VMBaseInstruction<PopWordInstruction>
+        {
 
-        /// \brief Move an immediate word-sized value to a given location.
-        /// \example i(x, 10)       x = 10
+            PopWordInstruction(register_t destination);
+
+            virtual void Execute(VMExecutionContext& context) const override;
+
+            register_t destination_;    ///< \brief Destination where the value on top of the stack will be assigned to.
+            int32_t padding_;
+
+        };
+
+        // ASSIGNMENT
+
+        /// \brief Move an immediate word-sized value to a destination register.
+        /// DST = [value]
         /// \author Raffaele D. Facendola - February 2017
         struct MoveWordImmediateInstruction : VMBaseInstruction<MoveWordImmediateInstruction>
         {
@@ -147,8 +161,8 @@ namespace syntropy
 
         };
         
-        /// \brief Move a word-sized value from a register to another register.
-        /// \example i(x, y)       x = y
+        /// \brief Move a word-sized value from a source register to a destination register.
+        /// DST = SRC
         /// \author Raffaele D. Facendola - February 2017
         struct MoveWordInstruction : VMBaseInstruction<MoveWordInstruction>
         {
@@ -162,13 +176,13 @@ namespace syntropy
 
         };
 
-        /// \brief Move a word-sized value from a register to the location pointed by another register.
-        /// \example i(x, y)       *x = y
+        /// \brief Move a word-sized value from a source register to a location pointed by a destination register.
+        /// *DST = SRC
         /// \author Raffaele D. Facendola - February 2017
-        struct MoveWordIndirectInstruction : VMBaseInstruction<MoveWordIndirectInstruction>
+        struct MoveWordDstIndirectInstruction : VMBaseInstruction<MoveWordDstIndirectInstruction>
         {
 
-            MoveWordIndirectInstruction(register_t destination, register_t source);
+            MoveWordDstIndirectInstruction(register_t destination, register_t source);
 
             virtual void Execute(VMExecutionContext& context) const override;
 
@@ -177,10 +191,40 @@ namespace syntropy
 
         };
 
-        /// \brief Move the effective address of a register to another register.
-        /// \example i(x, y)       x = &y
+        /// \brief Move a word-sized value pointed by a source register to a destination register.
+        /// DST = *SRC
         /// \author Raffaele D. Facendola - February 2017
-        struct MoveAddressInstruction : VMBaseInstruction<MoveWordIndirectInstruction>
+        struct MoveWordSrcIndirectInstruction : VMBaseInstruction<MoveWordSrcIndirectInstruction>
+        {
+
+            MoveWordSrcIndirectInstruction(register_t destination, register_t source);
+
+            virtual void Execute(VMExecutionContext& context) const override;
+
+            register_t destination_;        ///< \brief Destination of the assignment.
+            register_t source_;             ///< \brief Points to the source of the assignment.
+
+        };
+
+        /// \brief Move a word-sized value pointed by a source register to a location pointed by a destination register.
+        /// *DST = *SRC
+        /// \author Raffaele D. Facendola - February 2017
+        struct MoveWordSrcDstIndirectInstruction : VMBaseInstruction<MoveWordSrcDstIndirectInstruction>
+        {
+
+            MoveWordSrcDstIndirectInstruction(register_t destination, register_t source);
+
+            virtual void Execute(VMExecutionContext& context) const override;
+
+            register_t destination_;        ///< \brief Points to the destination of the assignment.
+            register_t source_;             ///< \brief Points to the source of the assignment.
+
+        };
+
+        /// \brief Move the effective address of a source register to a destination register.
+        /// DST = &SRC
+        /// \author Raffaele D. Facendola - February 2017
+        struct MoveAddressInstruction : VMBaseInstruction<MoveAddressInstruction>
         {
 
             MoveAddressInstruction(register_t destination, register_t source);
@@ -215,7 +259,7 @@ namespace syntropy
         /// \brief Move a value from a register to the location pointed by another register.
         /// \example i(x, y)       *x = y
         /// \author Raffaele D. Facendola - February 2017
-        struct MoveIndirectInstruction : VMBaseInstruction<MoveWordIndirectInstruction>
+        struct MoveIndirectInstruction : VMBaseInstruction<MoveIndirectInstruction>
         {
 
             MoveIndirectInstruction(register_t destination, register_t source, storage_t size);

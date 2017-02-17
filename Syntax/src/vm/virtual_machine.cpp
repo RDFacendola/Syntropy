@@ -45,8 +45,12 @@ namespace syntropy
             auto f1 = VMPushInstruction<EnterInstruction>(code, 8);
 
             VMPushInstruction<MoveWordImmediateInstruction>(code, 0, 888);      // Loc0 = 888
-            VMPushInstruction<AddIntegerInstruction>(code, 0, -32, -40);        // Loc0 = Arg1 + Arg2
-            VMPushInstruction<MoveWordIndirectInstruction>(code, -48, 0);       // *Arg0 = Loc0
+            VMPushInstruction<MoveWordSrcIndirectInstruction>(code, 0, -24);    // Loc0 = *Arg0
+
+            VMPushInstruction<AddIntegerInstruction>(code, 0, 0, -32);          // Loc0 = Loc0 + Arg1
+            VMPushInstruction<AddIntegerInstruction>(code, 0, 0, -40);          // Loc0 = Loc0 + Arg2
+
+            VMPushInstruction<MoveWordDstIndirectInstruction>(code, -24, 0);    // *Arg0 = Loc0
 
             VMPushInstruction<ReturnInstruction>(code, 24);
 
@@ -54,13 +58,13 @@ namespace syntropy
             // MAIN
             auto main = VMPushInstruction<EnterInstruction>(code, 24);
 
-            VMPushInstruction<MoveWordImmediateInstruction>(code, 0, 0);        // Loc0 = 0
+            VMPushInstruction<MoveWordImmediateInstruction>(code, 0, 47);       // Loc0 = 47
             VMPushInstruction<MoveWordImmediateInstruction>(code, 8, 10);       // Loc1 = 10
             VMPushInstruction<MoveWordImmediateInstruction>(code, 16, 25);      // Loc2 = 25
 
-            VMPushInstruction<PushDirectInstruction>(code, 16, 8);              // Push(Loc2)
-            VMPushInstruction<PushDirectInstruction>(code, 8, 8);               // Push(Loc1)
-            VMPushInstruction<PushDirectInstruction>(code, 0, 8);               // Push(&Loc0) PUSH_ADDRESS(Loc0)
+            VMPushInstruction<PushWordInstruction>(code, 16);                   // Push(Loc2)
+            VMPushInstruction<PushWordInstruction>(code, 8);                    // Push(Loc1)
+            VMPushInstruction<PushAddressInstruction>(code, 0);                 // Push(&Loc0) PUSH_ADDRESS(Loc0)
 
             VMPushInstruction<CallInstruction>(code, f1);                       // F1(&Loc0, Loc1, Loc2);
             

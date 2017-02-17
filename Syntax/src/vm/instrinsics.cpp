@@ -7,7 +7,7 @@ namespace syntropy
     namespace syntax
     {
 
-        // INSTRINSICS
+        // BASICS
 
         /************************************************************************/
         /* NOP INSTRUCTION                                                      */
@@ -21,6 +21,8 @@ namespace syntropy
         /************************************************************************/
         /* HALT INSTRUCTION                                                     */
         /************************************************************************/
+
+        // CONTROL FLOW
 
         void HaltInstruction::Execute(VMExecutionContext& context) const
         {
@@ -42,15 +44,17 @@ namespace syntropy
             context.Jump(offset_);
         }
 
+        // FUNCTION CALL
+
         /************************************************************************/
         /* ENTER INSTRUCTION                                                    */
         /************************************************************************/
 
-        EnterInstruction::EnterInstruction(storage_t local_storage_size)
-            : local_storage_size_(local_storage_size)
-        {
-
-        }
+         EnterInstruction::EnterInstruction(storage_t local_storage_size)
+             : local_storage_size_(local_storage_size)
+         {
+ 
+         }
 
         void EnterInstruction::Execute(VMExecutionContext& context) const
         {
@@ -87,35 +91,61 @@ namespace syntropy
             context.Return(input_storage_size_);
         }
 
-        //////////////// PUSH DIRECT INSTRUCTION ////////////////
+        // STACK MANAGEMENT
 
-        PushDirectInstruction::PushDirectInstruction(int32_t offset, uint32_t size)
-            : offset_(offset)
-            , size_(size)
+        /************************************************************************/
+        /* PUSH WORD INSTRUCTION                                                */
+        /************************************************************************/
+
+        PushWordInstruction::PushWordInstruction(register_t source)
+            : source_(source)
         {
 
         }
 
-        void PushDirectInstruction::Execute(VMExecutionContext& context) const
+        void PushWordInstruction::Execute(VMExecutionContext& context) const
         {
-            context.Push(context.GetRegister<void>(offset_), size_);
+            auto source = context.GetRegister<word_t>(source_);
+
+            context.Push(source, sizeof(word_t));       // Push the value pointed by source.
         }
 
-        //////////////// POP DIRECT INSTRUCTION ////////////////
+        /************************************************************************/
+        /* PUSH ADDRESS INSTRUCTION                                             */
+        /************************************************************************/
 
-        PopDirectInstruction::PopDirectInstruction(int32_t offset, uint32_t size)
-            : offset_(offset)
-            , size_(size)
+        PushAddressInstruction::PushAddressInstruction(register_t source)
+            : source_(source)
         {
 
         }
 
-        void PopDirectInstruction::Execute(VMExecutionContext& context) const
+        void PushAddressInstruction::Execute(VMExecutionContext& context) const
         {
-            context.Pop(context.GetRegister<void>(offset_), size_);
+            auto source = context.GetRegister<word_t>(source_);
+
+            context.Push(&source, sizeof(source));      // Push the address in source.
         }
 
-        // MOVE
+        /************************************************************************/
+        /* POP WORD INSTRUCTION                                                */
+        /************************************************************************/
+
+        PopWordInstruction::PopWordInstruction(register_t destination)
+            : destination_(destination)
+        {
+
+        }
+
+        void PopWordInstruction::Execute(VMExecutionContext& context) const
+        {
+            auto destination = context.GetRegister<word_t>(destination_);
+
+            context.Pop(destination, sizeof(word_t));   // Pop a word inside destination.
+
+        }
+
+        // ASSIGNMENT
 
         /************************************************************************/
         /* MOVE WORD IMMEDIATE INSTRUCTION                                      */
@@ -155,22 +185,60 @@ namespace syntropy
         }
 
         /************************************************************************/
-        /* MOVE WORD INDIRECT INSTRUCTION                                       */
+        /* MOVE WORD DST INDIRECT INSTRUCTION                                   */
         /************************************************************************/
 
-        MoveWordIndirectInstruction::MoveWordIndirectInstruction(register_t destination, register_t source)
+        MoveWordDstIndirectInstruction::MoveWordDstIndirectInstruction(register_t destination, register_t source)
             : destination_(destination)
             , source_(source)
         {
 
         }
 
-        void MoveWordIndirectInstruction::Execute(VMExecutionContext& context) const
+        void MoveWordDstIndirectInstruction::Execute(VMExecutionContext& context) const
         {
             auto source = context.GetRegister<word_t>(source_);
             auto destination = context.GetRegister<word_t*>(destination_);
 
             **destination = *source;
+        }
+
+        /************************************************************************/
+        /* MOVE WORD SRC INDIRECT INSTRUCTION                                   */
+        /************************************************************************/
+
+        MoveWordSrcIndirectInstruction::MoveWordSrcIndirectInstruction(register_t destination, register_t source)
+            : destination_(destination)
+            , source_(source)
+        {
+
+        }
+
+        void MoveWordSrcIndirectInstruction::Execute(VMExecutionContext& context) const
+        {
+            auto source = context.GetRegister<word_t*>(source_);
+            auto destination = context.GetRegister<word_t>(destination_);
+
+            *destination = **source;
+        }
+
+        /************************************************************************/
+        /* MOVE WORD SRC DST INDIRECT INSTRUCTION                               */
+        /************************************************************************/
+
+        MoveWordSrcDstIndirectInstruction::MoveWordSrcDstIndirectInstruction(register_t destination, register_t source)
+            : destination_(destination)
+            , source_(source)
+        {
+
+        }
+
+        void MoveWordSrcDstIndirectInstruction::Execute(VMExecutionContext& context) const
+        {
+            auto source = context.GetRegister<word_t*>(source_);
+            auto destination = context.GetRegister<word_t*>(destination_);
+
+            **destination = **source;
         }
 
         /************************************************************************/
