@@ -16,6 +16,7 @@ namespace syntropy
     {
 
         class VirtualMachine;
+        class VMExecutionContext;
 
         /// \brief Type alias for a variable representing a "register" of a syntropy virtual machine.
         /// Since the virtual machine doesn't have real registers, this is just an offset relative to the current base pointer.
@@ -30,7 +31,9 @@ namespace syntropy
         /// Equivalent of size_t
         using storage_t = int32_t;
 
-        struct VMInstruction;
+        /// \brief Type alias for instructions that can be executed by a virtual machine.
+        using instruction_t = void(*)(VMExecutionContext&);
+
 
         /// \brief Execution context for a virtual machine. Used to change the status of the virtual machine from within the code being executed.
         /// \author Raffaele D. Facendola - February 2017
@@ -39,6 +42,17 @@ namespace syntropy
         public:
 
             VMExecutionContext(VirtualMachine& virtual_machine);
+
+            /// \brief Get the next argument for the current instruction and advances the instruction pointer.
+            /// \return Returns the next argument for the current instruction.
+            template <typename TArgument>
+            const TArgument& GetNextArgument();
+
+            /// \brief Get a pointer to a register.
+            /// Negative offsets refers to input variables, while positive offset refers to local variables.
+            /// \param Offset of the variable relative to the current base pointer, in bytes.
+            template <typename TRegister>
+            TRegister* GetRegister(register_t reg);
 
             // Instrinsics
 
@@ -73,12 +87,6 @@ namespace syntropy
             /// \param destination Address where the value on top of the stack will be popped to.
             /// \param size Size of the block to pop.
             void Pop(void* destination, size_t size);
-
-            /// \brief Get a pointer to a register.
-            /// Negative offsets refers to input variables, while positive offset refers to local variables.
-            /// \param Offset of the variable relative to the current base pointer, in bytes.
-            template <typename TRegister>
-            TRegister* GetRegister(register_t reg);
 
         private:
 
@@ -120,32 +128,15 @@ namespace syntropy
 
             // Status
 
-            bool running_;                                      ///< \brief Whether the virtual machine is running some code or not.
-
             VMExecutionContext execution_context_;              ///< \brief Execution context passed to the instructions.
 
             // Registers
 
-            VMInstruction* instruction_pointer_;                ///< \brief Pointer to the current instruction to execute.
+            instruction_t* instruction_pointer_;                ///< \brief Pointer to the current instruction to execute.
 
-            uintptr_t* base_pointer_;                           ///< \brief Pointer to the base address of the current function frame.
+            word_t* base_pointer_;                              ///< \brief Pointer to the base address of the current function frame.
 
-            uintptr_t* stack_pointer_;                          ///< \brief Pointer to the first free element in the stack.
-
-        };
-
-        /// \brief Base class for instruction that can be executed by a virtual machine
-        /// \author Raffaele D. Facendola - February 2017
-        struct VMInstruction
-        {
-
-            /// \brief Execute the instruction in the given context.
-            /// \param context Execution context used to access the status of the virtual machine.
-            virtual void Execute(VMExecutionContext& context) const = 0;
-
-            /// \brief Get the size of the instruction, in bytes. 
-            /// \return Returns the size of the instruction, in bytes.
-            virtual size_t GetSize() const = 0;
+            word_t* stack_pointer_;                             ///< \brief Pointer to the first free element in the stack.
 
         };
 
@@ -159,6 +150,16 @@ namespace syntropy
         /************************************************************************/
         /* VM EXECUTION CONTEXT                                                 */
         /************************************************************************/
+
+        template <typename TArgument>
+        const TArgument& VMExecutionContext::GetNextArgument()
+        {
+            TArgument* argument = reinterpret_cast<TArgument*>(virtual_machine_.instruction_pointer_);
+
+            virtual_machine_.instruction_pointer_ = reinterpret_cast<instruction_t*>(argument + 1);     // Advances the instruction pointer to the next instruction/argument
+
+            return *argument;
+        }
 
         template <typename TRegister>
         TRegister* VMExecutionContext::GetRegister(register_t reg)

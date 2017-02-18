@@ -9,16 +9,33 @@ namespace syntropy
     namespace syntax
     {
         // !!!!TEST!!!!
-        template <typename TInstruction, typename... TArgs>
-        void* VMPushInstruction(void*& buffer, TArgs&&... arguments)
+        template <typename THead, typename... TRest>
+        void __VMArgs(void*& buffer, const THead& head, TRest&&... rest)
+        {
+            *reinterpret_cast<THead*>(buffer) = head;           // Write the next argument
+
+            buffer = Memory::Offset(buffer, sizeof(THead));     // Advance
+
+            __VMArgs(buffer, std::forward<TRest>(rest)...);     // Write the rest
+        }
+
+        void __VMArgs(void*& /*buffer*/)
+        {
+            // Do nothing
+        }
+
+        template <typename... TArgs>
+        instruction_t* __VM(void*& buffer, instruction_t instruction, TArgs&&... arguments)
         {
             auto r = buffer;
 
-            new (buffer) TInstruction(std::forward<TArgs>(arguments)...);
+            *reinterpret_cast<instruction_t*>(buffer) = instruction;    // Write the instruction
 
-            buffer = Memory::Offset(buffer, sizeof(TInstruction));
+            buffer = Memory::Offset(buffer, sizeof(instruction));       // Advance
 
-            return r;
+            __VMArgs(buffer, std::forward<TArgs>(arguments)...);                // Write the arguments
+            
+            return reinterpret_cast<instruction_t*>(r);
         }
 
         //////////////// VIRTUAL MACHINE ////////////////
@@ -26,51 +43,49 @@ namespace syntropy
         VirtualMachine::VirtualMachine(size_t code_size, size_t stack_size)
             : code_buffer_(new char[code_size], code_size)
             , stack_buffer_(new char[stack_size], stack_size)
-            , running_(false)
             , execution_context_(*this)
             , instruction_pointer_(nullptr)
             , base_pointer_(nullptr)
             , stack_pointer_(nullptr)
         {
             // !!!!TEST!!!!
-            running_ = true;
             
-            instruction_pointer_ = reinterpret_cast<VMInstruction*>(code_buffer_[0]);
-            base_pointer_ = reinterpret_cast<uint64_t*>(stack_buffer_[0]);
+            instruction_pointer_ = reinterpret_cast<instruction_t*>(code_buffer_[0]);
+            base_pointer_ = reinterpret_cast<word_t*>(stack_buffer_[0]);
             stack_pointer_ = base_pointer_;
 
             void* code = instruction_pointer_;
 
             // F1
-            auto f1 = VMPushInstruction<EnterInstruction>(code, 8);
+            auto f1 = __VM(code, &VirtualMachineIntrinsics::Enter, (storage_t)8);
 
-            VMPushInstruction<MoveWordImmediateInstruction>(code, 0, 888);      // Loc0 = 888
-            VMPushInstruction<MoveWordSrcIndirectInstruction>(code, 0, -24);    // Loc0 = *Arg0
+            __VM(code, &VirtualMachineIntrinsics::MoveImmediate, (register_t)0, (word_t)888);                       // Loc0 = 888
+            __VM(code, &VirtualMachineIntrinsics::MoveSrcIndirect, (register_t)0, (register_t)-24);                 // Loc0 = *Arg0
 
-            VMPushInstruction<AddIntegerInstruction>(code, 0, 0, -32);          // Loc0 = Loc0 + Arg1
-            VMPushInstruction<AddIntegerInstruction>(code, 0, 0, -40);          // Loc0 = Loc0 + Arg2
+            __VM(code, &VirtualMachineMath::AddInteger, (register_t)0, (register_t)0, (register_t)-32);             // Loc0 = Loc0 + Arg1
+            __VM(code, &VirtualMachineMath::AddInteger, (register_t)0, (register_t)0, (register_t)-40);             // Loc0 = Loc0 + Arg2
 
-            VMPushInstruction<MoveWordDstIndirectInstruction>(code, -24, 0);    // *Arg0 = Loc0
+            __VM(code, &VirtualMachineIntrinsics::MoveDstIndirect, (register_t)-24, (register_t)0);                 // *Arg0 = Loc0
 
-            VMPushInstruction<ReturnInstruction>(code, 24);
+            __VM(code, &VirtualMachineIntrinsics::Return, (storage_t)24);
 
 
             // MAIN
-            auto main = VMPushInstruction<EnterInstruction>(code, 24);
+            auto main = __VM(code, &VirtualMachineIntrinsics::Enter, (storage_t)24);
 
-            VMPushInstruction<MoveWordImmediateInstruction>(code, 0, 47);       // Loc0 = 47
-            VMPushInstruction<MoveWordImmediateInstruction>(code, 8, 10);       // Loc1 = 10
-            VMPushInstruction<MoveWordImmediateInstruction>(code, 16, 25);      // Loc2 = 25
+            __VM(code, &VirtualMachineIntrinsics::MoveImmediate, (register_t)0, (word_t)47);                        // Loc0 = 47
+            __VM(code, &VirtualMachineIntrinsics::MoveImmediate, (register_t)8, (word_t)10);                        // Loc1 = 10
+            __VM(code, &VirtualMachineIntrinsics::MoveImmediate, (register_t)16, (word_t)25);                       // Loc2 = 25
 
-            VMPushInstruction<PushWordInstruction>(code, 16);                   // Push(Loc2)
-            VMPushInstruction<PushWordInstruction>(code, 8);                    // Push(Loc1)
-            VMPushInstruction<PushAddressInstruction>(code, 0);                 // Push(&Loc0) PUSH_ADDRESS(Loc0)
+            __VM(code, &VirtualMachineIntrinsics::PushWord, (register_t)16);                                        // Push(Loc2)
+            __VM(code, &VirtualMachineIntrinsics::PushWord, (register_t)8);                                         // Push(Loc1)
+            __VM(code, &VirtualMachineIntrinsics::PushAddress, (register_t)0);                                      // Push(&Loc0) PUSH_ADDRESS(Loc0)
 
-            VMPushInstruction<CallInstruction>(code, f1);                       // F1(&Loc0, Loc1, Loc2);
+            __VM(code, &VirtualMachineIntrinsics::Call, f1);                                                        // F1(&Loc0, Loc1, Loc2);
             
-            VMPushInstruction<HaltInstruction>(code);
+            __VM(code, &VirtualMachineIntrinsics::Halt);
 
-            instruction_pointer_ = reinterpret_cast<VMInstruction*>(main);
+            instruction_pointer_ = main;
 
         }
 
@@ -82,19 +97,12 @@ namespace syntropy
 
         void VirtualMachine::ExecuteNext()
         {
-            // Since executing the current instruction may change the value of the instruction pointer (jump or call)
-            // the instruction pointer is incremented *before* executing the instruction, so it can override the result without side effects.
-            auto current_instruction = instruction_pointer_;
-
-            instruction_pointer_ = Memory::Offset(current_instruction, current_instruction->GetSize());
-
-            // Execute the current instruction
-            current_instruction->Execute(execution_context_);
+            (*(instruction_pointer_++))(execution_context_);
         }
 
         bool VirtualMachine::IsRunning() const
         {
-            return running_;
+            return !!instruction_pointer_;
         }
 
         //////////////// VM EXECUTION CONTEXT ////////////////
@@ -107,7 +115,7 @@ namespace syntropy
 
         void VMExecutionContext::Halt()
         {
-            virtual_machine_.running_ = false;
+            virtual_machine_.instruction_pointer_ = nullptr;
         }
 
         void VMExecutionContext::Jump(int64_t offset)
@@ -141,13 +149,13 @@ namespace syntropy
             ++virtual_machine_.stack_pointer_;
 
             // Returns the control to the callee.
-            virtual_machine_.instruction_pointer_ = reinterpret_cast<VMInstruction*>(function_pointer_);
+            virtual_machine_.instruction_pointer_ = reinterpret_cast<instruction_t*>(function_pointer_);
         }
 
         void VMExecutionContext::Enter(size_t local_storage_size)
         {
             // Save the caller base pointer.
-            *virtual_machine_.stack_pointer_ = reinterpret_cast<uintptr_t>(virtual_machine_.base_pointer_);
+            *virtual_machine_.stack_pointer_ = reinterpret_cast<word_t>(virtual_machine_.base_pointer_);
 
             ++virtual_machine_.stack_pointer_;
 
@@ -166,12 +174,12 @@ namespace syntropy
             // Restore the previous base pointer.
             --virtual_machine_.stack_pointer_;
 
-            virtual_machine_.base_pointer_ = reinterpret_cast<uintptr_t*>(*virtual_machine_.stack_pointer_);
+            virtual_machine_.base_pointer_ = reinterpret_cast<word_t*>(*virtual_machine_.stack_pointer_);
 
             // Restore the previous instruction pointer and returns the control to the caller.
             --virtual_machine_.stack_pointer_;
 
-            virtual_machine_.instruction_pointer_ = reinterpret_cast<VMInstruction*>(*virtual_machine_.stack_pointer_);
+            virtual_machine_.instruction_pointer_ = reinterpret_cast<instruction_t*>(*virtual_machine_.stack_pointer_);
 
             // Tear down input arguments storage.
             virtual_machine_.stack_pointer_ = Memory::Offset(virtual_machine_.stack_pointer_, -static_cast<int64_t>(input_arguments_size));

@@ -7,318 +7,153 @@ namespace syntropy
     namespace syntax
     {
 
-        // BASICS
-
         /************************************************************************/
-        /* NOP INSTRUCTION                                                      */
+        /* VIRTUAL MACHINE INTRINSICS                                           */
         /************************************************************************/
 
-        void NopInstruction::Execute(VMExecutionContext& /*context*/) const
+        void VirtualMachineIntrinsics::Nop(VMExecutionContext& /*context*/)
         {
-            // Do nothing
+
         }
 
-        /************************************************************************/
-        /* HALT INSTRUCTION                                                     */
-        /************************************************************************/
-
-        // CONTROL FLOW
-
-        void HaltInstruction::Execute(VMExecutionContext& context) const
+        void VirtualMachineIntrinsics::Halt(VMExecutionContext& context)
         {
             context.Halt();
         }
 
-        /************************************************************************/
-        /* JUMP INSTRUCTION                                                     */
-        /************************************************************************/
-
-        JumpInstruction::JumpInstruction(int64_t offset)
-            : offset_(offset)
+        void VirtualMachineIntrinsics::Jump(VMExecutionContext& context)
         {
+            auto offset = context.GetNextArgument<word_t>();
 
+            context.Jump(offset);
         }
 
-        void JumpInstruction::Execute(VMExecutionContext& context) const
+        void VirtualMachineIntrinsics::Enter(VMExecutionContext& context)
         {
-            context.Jump(offset_);
+            auto local_storage = context.GetNextArgument<storage_t>();
+
+            context.Enter(local_storage);
         }
 
-        // FUNCTION CALL
-
-        /************************************************************************/
-        /* ENTER INSTRUCTION                                                    */
-        /************************************************************************/
-
-         EnterInstruction::EnterInstruction(storage_t local_storage_size)
-             : local_storage_size_(local_storage_size)
-         {
- 
-         }
-
-        void EnterInstruction::Execute(VMExecutionContext& context) const
+        void VirtualMachineIntrinsics::Call(VMExecutionContext& context)
         {
-            context.Enter(local_storage_size_);
+            auto function = context.GetNextArgument<void*>();
+
+            context.Call(function);
         }
 
-        /************************************************************************/
-        /* CALL INSTRUCTION                                                     */
-        /************************************************************************/
-
-        CallInstruction::CallInstruction(void* function)
-            : function_(function)
+        void VirtualMachineIntrinsics::Return(VMExecutionContext& context)
         {
+            auto input_storage = context.GetNextArgument<storage_t>();
 
+            context.Return(input_storage);
         }
 
-        void CallInstruction::Execute(VMExecutionContext& context) const
+        void VirtualMachineIntrinsics::PushWord(VMExecutionContext& context)
         {
-            context.Call(function_);
+            auto source_register = context.GetNextArgument<register_t>();
+            
+            auto source = context.GetRegister<word_t>(source_register);
+
+            context.Push(source, sizeof(word_t));
         }
 
-        /************************************************************************/
-        /* RETURN INSTRUCTION                                                   */
-        /************************************************************************/
-
-        ReturnInstruction::ReturnInstruction(storage_t input_storage_size)
-            : input_storage_size_(input_storage_size)
+        void VirtualMachineIntrinsics::PushAddress(VMExecutionContext& context)
         {
+            auto source_register = context.GetNextArgument<register_t>();
 
+            auto source = context.GetRegister<word_t>(source_register);
+
+            context.Push(&source, sizeof(source));
         }
 
-        void ReturnInstruction::Execute(VMExecutionContext& context) const
+        void VirtualMachineIntrinsics::PopWord(VMExecutionContext& context)
         {
-            context.Return(input_storage_size_);
+            auto destination_register = context.GetNextArgument<register_t>();
+
+            auto destination = context.GetRegister<word_t>(destination_register);
+
+            context.Pop(destination, sizeof(word_t));
         }
 
-        // STACK MANAGEMENT
-
-        /************************************************************************/
-        /* PUSH WORD INSTRUCTION                                                */
-        /************************************************************************/
-
-        PushWordInstruction::PushWordInstruction(register_t source)
-            : source_(source)
+        void VirtualMachineIntrinsics::MoveImmediate(VMExecutionContext& context)
         {
+            auto destination_register = context.GetNextArgument<register_t>();
+            auto value = context.GetNextArgument<word_t>();
+            
+            auto destination = context.GetRegister<word_t>(destination_register);
 
+            *destination = value;
         }
 
-        void PushWordInstruction::Execute(VMExecutionContext& context) const
+        void VirtualMachineIntrinsics::Move(VMExecutionContext& context)
         {
-            auto source = context.GetRegister<word_t>(source_);
+            auto destination_register = context.GetNextArgument<register_t>();
+            auto source_register = context.GetNextArgument<register_t>();
 
-            context.Push(source, sizeof(word_t));       // Push the value pointed by source.
-        }
-
-        /************************************************************************/
-        /* PUSH ADDRESS INSTRUCTION                                             */
-        /************************************************************************/
-
-        PushAddressInstruction::PushAddressInstruction(register_t source)
-            : source_(source)
-        {
-
-        }
-
-        void PushAddressInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto source = context.GetRegister<word_t>(source_);
-
-            context.Push(&source, sizeof(source));      // Push the address in source.
-        }
-
-        /************************************************************************/
-        /* POP WORD INSTRUCTION                                                */
-        /************************************************************************/
-
-        PopWordInstruction::PopWordInstruction(register_t destination)
-            : destination_(destination)
-        {
-
-        }
-
-        void PopWordInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto destination = context.GetRegister<word_t>(destination_);
-
-            context.Pop(destination, sizeof(word_t));   // Pop a word inside destination.
-
-        }
-
-        // ASSIGNMENT
-
-        /************************************************************************/
-        /* MOVE WORD IMMEDIATE INSTRUCTION                                      */
-        /************************************************************************/
-
-        MoveWordImmediateInstruction::MoveWordImmediateInstruction(register_t destination, word_t value)
-            : destination_(destination)
-            , value_(value)
-        {
-
-        }
-
-        void MoveWordImmediateInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto destination = context.GetRegister<word_t>(destination_);
-
-            *destination = value_;
-        }
-
-        /************************************************************************/
-        /* MOVE WORD INSTRUCTION                                                */
-        /************************************************************************/
-
-        MoveWordInstruction::MoveWordInstruction(register_t destination, register_t source)
-            : destination_(destination)
-            , source_(source)
-        {
-
-        }
-
-        void MoveWordInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto source = context.GetRegister<word_t>(source_);
-            auto destination = context.GetRegister<word_t>(destination_);
+            auto destination = context.GetRegister<word_t>(destination_register);
+            auto source = context.GetRegister<word_t>(source_register);
 
             *destination = *source;
         }
 
-        /************************************************************************/
-        /* MOVE WORD DST INDIRECT INSTRUCTION                                   */
-        /************************************************************************/
-
-        MoveWordDstIndirectInstruction::MoveWordDstIndirectInstruction(register_t destination, register_t source)
-            : destination_(destination)
-            , source_(source)
+        void VirtualMachineIntrinsics::MoveDstIndirect(VMExecutionContext& context)
         {
+            auto destination_register = context.GetNextArgument<register_t>();
+            auto source_register = context.GetNextArgument<register_t>();
 
-        }
-
-        void MoveWordDstIndirectInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto source = context.GetRegister<word_t>(source_);
-            auto destination = context.GetRegister<word_t*>(destination_);
+            auto destination = context.GetRegister<word_t*>(destination_register);
+            auto source = context.GetRegister<word_t>(source_register);
 
             **destination = *source;
         }
 
-        /************************************************************************/
-        /* MOVE WORD SRC INDIRECT INSTRUCTION                                   */
-        /************************************************************************/
-
-        MoveWordSrcIndirectInstruction::MoveWordSrcIndirectInstruction(register_t destination, register_t source)
-            : destination_(destination)
-            , source_(source)
+        void VirtualMachineIntrinsics::MoveSrcIndirect(VMExecutionContext& context)
         {
+            auto destination_register = context.GetNextArgument<register_t>();
+            auto source_register = context.GetNextArgument<register_t>();
 
-        }
-
-        void MoveWordSrcIndirectInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto source = context.GetRegister<word_t*>(source_);
-            auto destination = context.GetRegister<word_t>(destination_);
+            auto destination = context.GetRegister<word_t>(destination_register);
+            auto source = context.GetRegister<word_t*>(source_register);
 
             *destination = **source;
         }
 
-        /************************************************************************/
-        /* MOVE WORD SRC DST INDIRECT INSTRUCTION                               */
-        /************************************************************************/
-
-        MoveWordSrcDstIndirectInstruction::MoveWordSrcDstIndirectInstruction(register_t destination, register_t source)
-            : destination_(destination)
-            , source_(source)
+        void VirtualMachineIntrinsics::MoveSrcDstIndirect(VMExecutionContext& context)
         {
+            auto destination_register = context.GetNextArgument<register_t>();
+            auto source_register = context.GetNextArgument<register_t>();
 
-        }
-
-        void MoveWordSrcDstIndirectInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto source = context.GetRegister<word_t*>(source_);
-            auto destination = context.GetRegister<word_t*>(destination_);
+            auto destination = context.GetRegister<word_t*>(destination_register);
+            auto source = context.GetRegister<word_t*>(source_register);
 
             **destination = **source;
         }
 
-        /************************************************************************/
-        /* MOVE ADDRESS INSTRUCTION                                             */
-        /************************************************************************/
-
-        MoveAddressInstruction::MoveAddressInstruction(register_t destination, register_t source)
-            : destination_(destination)
-            , source_(source)
+        void VirtualMachineIntrinsics::MoveAddress(VMExecutionContext& context)
         {
+            auto destination_register = context.GetNextArgument<register_t>();
+            auto source_register = context.GetNextArgument<register_t>();
 
-        }
-
-        void MoveAddressInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto source = context.GetRegister<word_t>(source_);
-            auto destination = context.GetRegister<word_t>(destination_);
+            auto destination = context.GetRegister<word_t>(destination_register);
+            auto source = context.GetRegister<word_t>(source_register);
 
             *destination = reinterpret_cast<word_t>(source);
         }
 
         /************************************************************************/
-        /* MOVE INSTRUCTION                                                     */
+        /* VIRTUAL MACHINE MATH                                                 */
         /************************************************************************/
 
-        MoveInstruction::MoveInstruction(register_t destination, register_t source, storage_t size)
-            : destination_(destination)
-            , source_(source)
-            , size_(size)
+        void VirtualMachineMath::AddInteger(VMExecutionContext& context)
         {
+            auto result_register = context.GetNextArgument<register_t>();
+            auto first_register = context.GetNextArgument<register_t>();
+            auto second_register = context.GetNextArgument<register_t>();
 
-        }
-
-        void MoveInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto source = context.GetRegister<void>(source_);
-            auto destination = context.GetRegister<void>(destination_);
-
-            memmove_s(destination, size_, source, size_);
-        }
-
-        /************************************************************************/
-        /* MOVE INDIRECT INSTRUCTION                                            */
-        /************************************************************************/
-
-        MoveIndirectInstruction::MoveIndirectInstruction(register_t destination, register_t source, storage_t size)
-            : destination_(destination)
-            , source_(source)
-            , size_(size)
-        {
-
-        }
-
-        void MoveIndirectInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto source = context.GetRegister<void>(source_);
-            auto destination = context.GetRegister<void*>(destination_);
-
-            memmove_s(*destination, size_, source, size_);
-        }
-
-        // MATH
-
-        /************************************************************************/
-        /* ADD INTEGER INSTRUCTION                                              */
-        /************************************************************************/
-
-        AddIntegerInstruction::AddIntegerInstruction(register_t result, register_t first, register_t second)
-            : result_(result)
-            , first_(first)
-            , second_(second)
-        {
-
-        }
-
-        void AddIntegerInstruction::Execute(VMExecutionContext& context) const
-        {
-            auto result = context.GetRegister<word_t>(result_);
-            auto first = context.GetRegister<word_t>(first_);
-            auto second = context.GetRegister<word_t>(second_);
+            auto result = context.GetRegister<word_t>(result_register);
+            auto first = context.GetRegister<word_t>(first_register);
+            auto second = context.GetRegister<word_t>(second_register);
 
             *result = *first + *second;
         }
