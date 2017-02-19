@@ -57,6 +57,11 @@ namespace syntropy
             template <typename TRegister>
             TRegister* GetRegister(register_t reg);
 
+            /// \brief Interprets the next argument for the current instruction as a register and return it.
+            /// \return Returns the address of the register stored as a next argument for the current instruction.
+            template <typename TRegister>
+            TRegister* GetNextRegister();
+
         private:
 
             VirtualMachine& virtual_machine_;       ///< \brief Virtual machine this execution context refers to.
@@ -133,7 +138,7 @@ namespace syntropy
         }
 
         template <typename TArgument>
-        const TArgument& VMExecutionContext::GetNextArgument()
+        inline const TArgument& VMExecutionContext::GetNextArgument()
         {
             TArgument* argument = reinterpret_cast<TArgument*>(virtual_machine_.instruction_pointer_);
 
@@ -143,9 +148,16 @@ namespace syntropy
         }
 
         template <typename TRegister>
-        TRegister* VMExecutionContext::GetRegister(register_t reg)
+        inline TRegister* VMExecutionContext::GetRegister(register_t reg)
         {
             return reinterpret_cast<TRegister*>(Memory::Offset(virtual_machine_.base_pointer_, reg));
+        }
+
+        template <typename TRegister>
+        inline TRegister* VMExecutionContext::GetNextRegister()
+        {
+            auto argument = GetNextArgument<register_t>();
+            return GetRegister<TRegister>(argument);
         }
 
     }
