@@ -24,6 +24,7 @@ namespace syntropy
         using register_t = int32_t;
 
         /// \brief Type alias for a word of a virtual machine.
+        /// Must fit a pointer for the current architecture. (ie: int32_t is not valid under x64 architecture)
         /// Equivalent of int
         using word_t = int64_t;
 
@@ -51,13 +52,7 @@ namespace syntropy
             template <typename TArgument>
             const TArgument& GetNextArgument();
 
-            /// \brief Get a pointer to a register.
-            /// Negative offsets refers to input variables, while positive offset refers to local variables.
-            /// \param Offset of the variable relative to the current base pointer, in bytes.
-            template <typename TRegister>
-            TRegister* GetRegister(register_t reg);
-
-            /// \brief Interprets the next argument for the current instruction as a register and return it.
+            /// \brief Interpret the next argument for the current instruction as a register and return a pointer to it.
             /// \return Returns the address of the register stored as a next argument for the current instruction.
             template <typename TRegister>
             TRegister* GetNextRegister();
@@ -142,22 +137,16 @@ namespace syntropy
         {
             TArgument* argument = reinterpret_cast<TArgument*>(virtual_machine_.instruction_pointer_);
 
-            virtual_machine_.instruction_pointer_ = reinterpret_cast<instruction_t*>(argument + 1);     // Advances the instruction pointer to the next instruction/argument
+            virtual_machine_.instruction_pointer_ = reinterpret_cast<instruction_t*>(argument + 1);         // Advances the instruction pointer to the next instruction/argument
 
             return *argument;
         }
 
         template <typename TRegister>
-        inline TRegister* VMExecutionContext::GetRegister(register_t reg)
-        {
-            return reinterpret_cast<TRegister*>(Memory::Offset(virtual_machine_.base_pointer_, reg));
-        }
-
-        template <typename TRegister>
         inline TRegister* VMExecutionContext::GetNextRegister()
         {
-            auto argument = GetNextArgument<register_t>();
-            return GetRegister<TRegister>(argument);
+            auto register_offset = GetNextArgument<register_t>();                                                               // Offset of the register, relative to the current base pointer.
+            return reinterpret_cast<TRegister*>(Memory::Offset(virtual_machine_.base_pointer_, register_offset));
         }
 
     }
