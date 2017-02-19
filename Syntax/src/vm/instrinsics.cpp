@@ -18,35 +18,57 @@ namespace syntropy
 
         void VirtualMachineIntrinsics::Halt(VMExecutionContext& context)
         {
-            context.Halt();
+            auto& vm = context.GetVirtualMachine();
+
+            vm.instruction_pointer_ = nullptr;                                                  // nullptr means that the VM has no other instructions to execute.
         }
 
         void VirtualMachineIntrinsics::Jump(VMExecutionContext& context)
         {
             auto offset = context.GetNextArgument<word_t>();
 
-            context.Jump(offset);
+            auto& vm = context.GetVirtualMachine();
+
+            vm.instruction_pointer_ = Memory::Offset(vm.instruction_pointer_, offset);          // Jump forward or backward depending on the provided offset.
         }
 
         void VirtualMachineIntrinsics::Enter(VMExecutionContext& context)
         {
             auto local_storage = context.GetNextArgument<storage_t>();
 
-            context.Enter(local_storage);
+            auto& vm = context.GetVirtualMachine();
+
+            *(vm.stack_pointer_++) = reinterpret_cast<word_t>(vm.base_pointer_);                // Save the caller's base pointer.
+
+            vm.base_pointer_ = vm.stack_pointer_;                                               // Setup a new base pointer for the current frame.
+            
+            vm.stack_pointer_ = Memory::Offset(vm.stack_pointer_, local_storage);               // Reserve space for local storage.
         }
 
         void VirtualMachineIntrinsics::Call(VMExecutionContext& context)
         {
-            auto function = context.GetNextArgument<void*>();
+            auto function_pointer = context.GetNextArgument<void*>();
 
-            context.Call(function);
+            auto& vm = context.GetVirtualMachine();
+
+            *(vm.stack_pointer_++) = reinterpret_cast<uintptr_t>(vm.instruction_pointer_);      // Save the caller's instruction pointer. This actually points to the next instruction after "Call".
+
+            vm.instruction_pointer_ = reinterpret_cast<instruction_t*>(function_pointer);       // Grant control to the callee.
         }
 
         void VirtualMachineIntrinsics::Return(VMExecutionContext& context)
         {
             auto input_storage = context.GetNextArgument<storage_t>();
 
-            context.Return(input_storage);
+            auto& vm = context.GetVirtualMachine();
+
+            vm.stack_pointer_ = vm.base_pointer_;                                                           // Tear down the local storage by unwinding the stack pointer.
+
+            vm.base_pointer_ = reinterpret_cast<word_t*>(*(--vm.stack_pointer_));                           // Restore the previous base pointer.
+
+            vm.instruction_pointer_ = reinterpret_cast<instruction_t*>(*(--vm.stack_pointer_));             // Restore the previous instruction pointer and return the control to the caller.
+
+            vm.stack_pointer_ = Memory::Offset(vm.stack_pointer_, -static_cast<int64_t>(input_storage));    // Tear down input arguments storage.
         }
 
         void VirtualMachineIntrinsics::PushWord(VMExecutionContext& context)
@@ -55,7 +77,9 @@ namespace syntropy
             
             auto source = context.GetRegister<word_t>(source_register);
 
-            context.Push(source, sizeof(word_t));
+            auto& vm = context.GetVirtualMachine();
+
+            *(vm.stack_pointer_++) = *source;                               // Push a word on the stack.
         }
 
         void VirtualMachineIntrinsics::PushAddress(VMExecutionContext& context)
@@ -64,7 +88,9 @@ namespace syntropy
 
             auto source = context.GetRegister<word_t>(source_register);
 
-            context.Push(&source, sizeof(source));
+            auto& vm = context.GetVirtualMachine();
+
+            *(vm.stack_pointer_++) = reinterpret_cast<word_t>(source);      // Push an address on the stack (as word).
         }
 
         void VirtualMachineIntrinsics::PopWord(VMExecutionContext& context)
@@ -73,7 +99,9 @@ namespace syntropy
 
             auto destination = context.GetRegister<word_t>(destination_register);
 
-            context.Pop(destination, sizeof(word_t));
+            auto& vm = context.GetVirtualMachine();
+
+            *destination = *(--vm.stack_pointer_);                          // Pop a word from the stack.
         }
 
         void VirtualMachineIntrinsics::MoveImmediate(VMExecutionContext& context)

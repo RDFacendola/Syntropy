@@ -34,7 +34,6 @@ namespace syntropy
         /// \brief Type alias for instructions that can be executed by a virtual machine.
         using instruction_t = void(*)(VMExecutionContext&);
 
-
         /// \brief Execution context for a virtual machine. Used to change the status of the virtual machine from within the code being executed.
         /// \author Raffaele D. Facendola - February 2017
         class VMExecutionContext
@@ -42,6 +41,10 @@ namespace syntropy
         public:
 
             VMExecutionContext(VirtualMachine& virtual_machine);
+
+            /// \brief Get the virtual machine this execution context refers to.
+            /// \return Returns the virtual machine this execution context refers to.
+            VirtualMachine& GetVirtualMachine();
 
             /// \brief Get the next argument for the current instruction and advances the instruction pointer.
             /// \return Returns the next argument for the current instruction.
@@ -53,40 +56,6 @@ namespace syntropy
             /// \param Offset of the variable relative to the current base pointer, in bytes.
             template <typename TRegister>
             TRegister* GetRegister(register_t reg);
-
-            // Instrinsics
-
-            /// \brief Causes the current program being executed to terminate.
-            /// Calling this method, causes the status of the virtual machine to become invalid.
-            void Halt();
-
-            /// \brief Jump to another instruction.
-            /// \param offset Offset of the jump with respect to the current instruction pointer, in bytes.
-            void Jump(int64_t offset);
-
-            /// \brief Call a function.
-            /// This method causes the instruction pointer of the virtual machine to jump to a new address.
-            /// \param function_pointer_ Pointer to the function to call.
-            void Call(void* function_pointer_);
-
-            /// \brief Setup a frame for a function call.
-            /// \param local_storage_size Storage for local variables of the function.
-            void Enter(size_t local_storage_size);
-
-            /// \brief Tear down a function frame and return to the caller.
-            /// This function deallocate the memory reserved for the input arguments.
-            /// \param input_arguments_size Storage for the input arguments.
-            void Return(size_t input_arguments_size);
-
-            /// \brief Push a memory block on top of the stack.
-            /// \param source Base address of the block to push.
-            /// \param size Size of the block to push.
-            void Push(void* source, size_t size);
-
-            /// \brief Pop a value from the top of the virtual machine stack.
-            /// \param destination Address where the value on top of the stack will be popped to.
-            /// \param size Size of the block to pop.
-            void Pop(void* destination, size_t size);
 
         private:
 
@@ -100,6 +69,7 @@ namespace syntropy
         {
 
             friend class VMExecutionContext;
+            friend class VirtualMachineIntrinsics;
 
         public:
 
@@ -108,8 +78,14 @@ namespace syntropy
             /// \param stack_size Size of the memory buffer containing the stack, in bytes.
             VirtualMachine(size_t code_size, size_t stack_size);
 
+            /// \brief No copy constructor.
+            VirtualMachine(const VirtualMachine&) = delete;
+
             /// \brief Virtual destructor.
             virtual ~VirtualMachine();
+
+            /// \brief No assignment operator.
+            VirtualMachine& operator=(const VirtualMachine&) = delete;
 
             /// \brief Execute the next instruction.
             void ExecuteNext();
@@ -150,6 +126,11 @@ namespace syntropy
         /************************************************************************/
         /* VM EXECUTION CONTEXT                                                 */
         /************************************************************************/
+
+        inline VirtualMachine& VMExecutionContext::GetVirtualMachine()
+        {
+            return virtual_machine_;
+        }
 
         template <typename TArgument>
         const TArgument& VMExecutionContext::GetNextArgument()

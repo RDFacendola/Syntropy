@@ -14,8 +14,13 @@ namespace syntropy
     {
 
         /// \brief Static class containing virtual machine's intrinsic instructions.
+        /// Intrinsic functions may change deeply the status of the virtual machine or provide basics functionalities.
+        /// \author Raffaele D. Facendola - February 2017
         class VirtualMachineIntrinsics
         {
+
+            static_assert(sizeof(word_t) >= sizeof(uintptr_t), "Intrinsic functions expect that the size of a VM word is at least as big as the size of a pointer in the current architecture");
+
         public:
 
             // Basics
