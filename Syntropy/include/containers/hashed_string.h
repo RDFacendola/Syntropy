@@ -10,6 +10,8 @@
 #include <utility>
 #include <functional>
 #include <type_traits>
+#include <unordered_map>
+#include <memory>
 
 #include "math/fnv1.h"
 
@@ -32,18 +34,13 @@ namespace syntropy {
         /// \brief Copy constructor.
         HashedStringT(const HashedStringT<THashFunction, THash>& other) noexcept;
 
-        /// \brief Move constructor.
-        HashedStringT(HashedStringT<THashFunction, THash>&& other) noexcept;
-
-        /// \brief Create a new hashed string from any type that can be used to initialize a string.
-        /// \param string The string used to create the tag.
-        /// \remarks The SFINAE trick here is used because whenever this overload is preferred over the more correct copy constructor,
-        ///          a compilation error occurs.
-        template <typename TString>
-        HashedStringT(TString&& string, 
-                      typename std::enable_if<!std::is_same<std::decay_t<TString>,
-                                                            HashedStringT<THashFunction, THash>>::value>::type* = nullptr) noexcept;
+        /// \brief Create a new hashed string from hash.
+        HashedStringT(hash_t hash);
         
+        /// \brief Create a new hashed string from anything that can initialize a std::string.
+        template <typename TString>
+        HashedStringT(TString&& string, typename std::enable_if<!std::is_same<std::decay_t<TString>, HashedStringT<THashFunction, THash>>::value>::type* = nullptr);
+
         /// \brief Unified assignment operator.
         /// \param other Other instance to copy.
         /// \return Returns a reference to this.
@@ -87,15 +84,48 @@ namespace syntropy {
 
     private:
 
-        std::string string_;	        ///< \brief Plain string.
+        mutable const std::string* string_;	        ///< \brief Pointer to the actual string. Initialized lazily.
 
-        THash hash_;                    ///< \brief Hash of the string.
+        THash hash_;                                ///< \brief Hash of the string.
+
+    };
+
+    /// \brief Singleton containing the hashed strings registered so far.
+    /// \author Raffaele D. Facendola - February 2017.
+    template <typename THashFunction, typename THash>
+    class HashedStringPoolT
+    {
+
+    public:
+
+        /// \brief Get the singleton instance.
+        static HashedStringPoolT& GetInstance();
+
+        /// \brief Get a string from hash.
+        /// \param hash Hash of the string to get.
+        /// \return Returns a pointer to the string matching the given hash. If no such string exists, returns nullptr.
+        const std::string* GetStringFromHash(THash hash) const;
+
+        /// \brief Store a string in the pool.
+        /// \param string String to store.
+        /// \return Returns a pair containing the hash of the provided string and a pointer to the string itself.
+        template <typename TString>
+        std::pair<THash, const std::string*> StoreString(TString&& string);
         
+    private:
+
+        using TStringMap = std::unordered_map<THash, std::unique_ptr<std::string>>;
+
+        TStringMap string_map_;             ///< \brief Maps the hash of the strings with the string themselves.
+        
+        /// \brief Default private constructor.
+        HashedStringPoolT() = default;
+
     };
 
     /// \brief Default hashed string type.
     using HashedString = HashedStringT<FNV1a, uint64_t>;
-    
+
     /// \brief Stream insertion for HashedString.
     template <typename THashFunction, typename THash>
     std::ostream& operator<<(std::ostream& out, const HashedStringT<THashFunction, THash>& hashed_string);
@@ -132,7 +162,7 @@ namespace syntropy{
 
     template <typename THashFunction, typename THash>
     inline HashedStringT<THashFunction, THash>::HashedStringT() noexcept
-        : hash_(THashFunction{}("")) 
+        : HashedStringT("")
     {
     
     }
@@ -146,22 +176,23 @@ namespace syntropy{
     }
 
     template <typename THashFunction, typename THash>
-    HashedStringT<THashFunction, THash>::HashedStringT(HashedStringT<THashFunction, THash>&& other) noexcept
-        : string_(std::move(other.string_))
-        , hash_(other.hash_) 
+    HashedStringT<THashFunction, THash>::HashedStringT(hash_t hash)
+        : string_(nullptr)
+        , hash_(hash)
     {
-    
+
     }
 
     template <typename THashFunction, typename THash>
     template <typename TString>
-    HashedStringT<THashFunction, THash>::HashedStringT(TString&& string, typename std::enable_if<!std::is_same<std::decay_t<TString>, HashedStringT<THashFunction, THash>>::value>::type*) noexcept
-        : string_(std::forward<TString>(string))
-        , hash_(THashFunction{}(string_)) 
+    HashedStringT<THashFunction, THash>::HashedStringT(TString&& string, typename std::enable_if<!std::is_same<std::decay_t<TString>, HashedStringT<THashFunction, THash>>::value>::type*)
     {
-    
+        auto result = HashedStringPoolT<THashFunction, THash>::GetInstance().StoreString(std::forward<TString>(string));
+
+        hash_ = result.first;
+        string_ = result.second;
     }
-    
+
     template <typename THashFunction, typename THash>
     HashedStringT<THashFunction, THash>& HashedStringT<THashFunction, THash>::operator=(HashedStringT<THashFunction, THash> other) noexcept 
     {
@@ -177,7 +208,14 @@ namespace syntropy{
     template <typename THashFunction, typename THash>
     const std::string& HashedStringT<THashFunction, THash>::GetString() const noexcept 
     {
-        return string_;
+        static std::string kUnknown;
+
+        if (!string_)
+        {
+            string_ = HashedStringPoolT<THashFunction, THash>::GetInstance().GetStringFromHash(hash_);          // Resolve the string value.
+        }
+
+        return string_ ? *string_ : kUnknown;
     }
 
     template <typename THashFunction, typename THash>
@@ -235,6 +273,47 @@ namespace syntropy{
     bool operator<(const HashedStringT<THashFunction, THash>& first, const HashedStringT<THashFunction, THash>& second)
     {
         return first.GetHash() < second.GetHash();
+    }
+
+    /************************************************************************/
+    /* HASHED STRING POOL T                                                 */
+    /************************************************************************/
+
+    template <typename THashFunction, typename THash>
+    HashedStringPoolT<THashFunction, THash>& HashedStringPoolT<THashFunction, THash>::GetInstance()
+    {
+        static HashedStringPoolT<THashFunction, THash> instance;
+
+        return instance;
+    }
+
+    template <typename THashFunction, typename THash>
+    const std::string* HashedStringPoolT<THashFunction, THash>::GetStringFromHash(THash hash) const
+    {
+        auto it = string_map_.find(hash);
+
+        return it != string_map_.end() ?
+               it->second.get() :
+               nullptr;
+    }
+
+    template <typename THashFunction, typename THash>
+    template <typename TString>
+    std::pair<THash, const std::string*> HashedStringPoolT<THashFunction, THash>::StoreString(TString&& string)
+    {
+        std::pair<THash, const std::string*> result;
+
+        result.first = THashFunction{}(string);
+        result.second = GetStringFromHash(result.first);
+
+        if (!result.second)
+        {
+            // Add a new string to the map
+            auto emplace_result = string_map_.emplace(result.first, std::make_unique<std::string>(std::forward<TString>(string)));      // std::pair<bool, iterator>
+            result.second = emplace_result.first->second.get();                                                                         // std::pair<hash, std::unique_ptr<std::string>>
+        }
+        
+        return result;
     }
 
 }
