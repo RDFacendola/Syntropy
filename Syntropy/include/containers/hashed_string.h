@@ -116,7 +116,7 @@ namespace syntropy {
 
         using TStringMap = std::unordered_map<THash, std::unique_ptr<std::string>>;
 
-        TStringMap string_map_;             ///< \brief Maps the hash of the strings with the string themselves.
+        TStringMap string_map_;             ///< \brief Maps the hash of the strings with the strings themselves.
         
         /// \brief Default private constructor.
         HashedStringPoolT() = default;

@@ -5,26 +5,17 @@
 #include <algorithm>
 
 #include "platform/os.h"
-#include "diagnostics/log.h"
 
 #include "syntropy.h"
-
-void* operator new(std::size_t size)
-{
-    return std::malloc(size);
-}
-
-void operator delete(void* pointer) noexcept 
-{
-    std::free(pointer);
-}
 
 namespace syntropy
 {
 
     const diagnostics::Context MemoryCtx("Memory");
 
-    //////////////// MEMORY ////////////////
+    /************************************************************************/
+    /* MEMORY                                                               */
+    /************************************************************************/
 
     size_t Memory::CeilToPageSize(size_t size)
     {
@@ -67,9 +58,9 @@ namespace syntropy
         // The header must be allocated in a different page to prevent client code from accidentally deallocating it while working with the memory block
 
         auto block_address = Memory::Align(Memory::Offset(base_address, page_size),             // Requires some space before the reserved block for the header
-                                           alignment);                                          // The resulting block must be aligned
+            alignment);                                          // The resulting block must be aligned
 
-        // Fill the block header
+// Fill the block header
 
         auto reserved_block = GetReservedBlockHeader(block_address, page_size);
 
@@ -101,7 +92,9 @@ namespace syntropy
         return reinterpret_cast<ReservedBlockHeader*>(Memory::Offset(address, -static_cast<int64_t>(page_size)));       // The previous page contains the infos of the reserved region. This page is always committed.
     }
 
-    //////////////// MEMORY RANGE ////////////////
+    /************************************************************************/
+    /* MEMORY RANGE                                                         */
+    /************************************************************************/
 
     MemoryRange::MemoryRange(void* base, size_t capacity)
         : base_(reinterpret_cast<int8_t*>(base))
@@ -113,6 +106,12 @@ namespace syntropy
     int8_t* MemoryRange::operator*() const
     {
         return base_;
+    }
+
+    int8_t* MemoryRange::operator[](size_t offset) const
+    {
+        SYNTROPY_ASSERT(Contains(base_ + offset, 1));
+        return Memory::Offset(base_, offset);
     }
 
     size_t MemoryRange::GetCapacity() const
@@ -142,32 +141,6 @@ namespace syntropy
         auto result = Memory::Decommit(address, size);
 
         SYNTROPY_ASSERT(result);
-    }
-
-    //////////////// MEMORY BUFFER ////////////////
-
-    MemoryBuffer::MemoryBuffer(void* base, size_t size)
-        : base_(reinterpret_cast<int8_t*>(base))
-        , size_(size)
-    {
-        SYNTROPY_ASSERT(base_);
-    }
-
-    int8_t* MemoryBuffer::operator[](size_t offset) const
-    {
-        SYNTROPY_ASSERT(Contains(base_ + offset, 1));
-        return base_ + offset;
-    }
-
-    size_t MemoryBuffer::GetSize() const
-    {
-        return size_;
-    }
-
-    bool MemoryBuffer::Contains(void* address, size_t size) const
-    {
-        return reinterpret_cast<uintptr_t>(base_) <= reinterpret_cast<uintptr_t>(address) &&
-               (Memory::GetSize(base_, address) + size) <= size_;
     }
 
 }

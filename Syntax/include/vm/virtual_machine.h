@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "memory/memory.h"
+#include "memory/allocation.h"
 
 namespace syntropy
 {
@@ -20,16 +21,16 @@ namespace syntropy
 
         /// \brief Type alias for a variable representing a "register" of a syntropy virtual machine.
         /// Since the virtual machine doesn't have real registers, this is just an offset relative to the current base pointer.
-        /// Equivalent of uintptr_t
+        /// Equivalent of uintptr_t.
         using register_t = int32_t;
 
         /// \brief Type alias for a word of a virtual machine.
         /// Must fit a pointer for the current architecture. (ie: int32_t is not valid under x64 architecture)
-        /// Equivalent of int
+        /// Equivalent of int.
         using word_t = int64_t;
 
         /// \brief Type alias for a size type for a virtual machine.
-        /// Equivalent of size_t
+        /// Equivalent of size_t.
         using storage_t = int32_t;
 
         /// \brief Type alias for instructions that can be executed by a virtual machine.
@@ -74,9 +75,8 @@ namespace syntropy
         public:
 
             /// \brief Create a new virtual machine.
-            /// \param code_size Size of the memory buffer containing the code, in bytes.
             /// \param stack_size Size of the memory buffer containing the stack, in bytes.
-            VirtualMachine(size_t code_size, size_t stack_size);
+            VirtualMachine(size_t stack_size, Allocator& allocator);
 
             /// \brief No copy constructor.
             VirtualMachine(const VirtualMachine&) = delete;
@@ -98,9 +98,7 @@ namespace syntropy
 
             // Memory
 
-            MemoryBuffer code_buffer_;                          ///< \brief Buffer containing the code.
-
-            MemoryBuffer stack_buffer_;                         ///< \brief Buffer containing the stack.
+            MemoryBuffer stack_segment_;                        ///< \brief Buffer containing the stack segment.
 
             // Status
 

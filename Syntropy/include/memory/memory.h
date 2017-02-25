@@ -17,8 +17,6 @@ namespace syntropy
     /// \brief Log context for the syntropy memory system.
     extern const diagnostics::Context MemoryCtx;
 
-    class MemoryRange;
-
     /// \brief Wraps the low-level calls used to handle virtual memory allocation.
     /// \author Raffaele D. Facendola - December 2016
     class Memory
@@ -152,6 +150,11 @@ namespace syntropy
         /// \return Returns the base address of the range.
         int8_t* operator*() const;
 
+        /// \brief Access an element in the range.
+        /// \param offset Offset with respect to the first element of the range.
+        /// \return Returns a pointer to offset-bytes after the base of the range.
+        int8_t* operator[](size_t offset) const;
+
         /// \brief Get the total capacity of the memory range, in bytes.
         /// \return Returns the total capacity of the memory range, in bytes.
         size_t GetCapacity() const;
@@ -181,50 +184,13 @@ namespace syntropy
 
     };
 
-    /// \brief Represents a memory buffer.
-    /// \author Raffaele D. Facendola - February 2017
-    class MemoryBuffer
-    {
-    public:
-
-        /// \brief Create a new buffer.
-        /// \param base Base address of the buffer.
-        /// \param size Size of the buffer, in bytes.
-        MemoryBuffer(void* base, size_t size);
-
-        /// \brief No assignment operator.
-        MemoryBuffer& operator=(const MemoryBuffer&) = delete;
-
-        /// \brief Access an element in the buffer.
-        /// \param offset Offset with respect to the first element of the buffer.
-        /// \return Returns a pointer to the element (buffer+offset).
-        int8_t* operator[](size_t offset) const;
-
-        /// \brief Check whether a memory block belongs entirely to this buffer.
-        /// \param address Base address of the block to check.
-        /// \param size Size of the block, in bytes.
-        /// \return Returns true if the block [address, address+size) is contained inside this buffer, return false otherwise.
-        bool Contains(void* address, size_t size) const;
-
-        /// \brief Get the size of the buffer, in bytes.
-        /// \return Returns the size of the buffer, in bytes.
-        size_t GetSize() const;
-
-    private:
-
-        int8_t* base_;          ///< \brief Pointer to the first element in the buffer.
-
-        size_t size_;           ///< \brief Capacity of the range, in bytes.
-
-    };
-
 }
 
 namespace syntropy
 {
-    // Implementation
-
-    //////////////// MEMORY ////////////////
+    /************************************************************************/
+    /* MEMORY                                                               */
+    /************************************************************************/
 
     template <typename T>
     constexpr T* Memory::Offset(T* address, int64_t offset)
