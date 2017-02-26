@@ -244,16 +244,18 @@ namespace syntropy
 
 void* operator new (std::size_t size, syntropy::Allocator& allocator, const syntropy::diagnostics::StackTrace& stack_trace)
 {
-    SYNTROPY_LOG((allocator), "Allocating ", size, " bytes. (", stack_trace, ")");
+    auto ptr = allocator.Allocate(size);
 
-    return allocator.Allocate(size);
+    SYNTROPY_LOG((allocator), "Allocating ", size, " bytes. Address: ", ptr, ". Caller: ", stack_trace);
+
+    return ptr;
 }
 
 void operator delete (void* ptr, syntropy::Allocator& allocator, const syntropy::diagnostics::StackTrace& stack_trace)
 {
-    SYNTROPY_LOG((allocator), "Deallocating. (", stack_trace, ")");
-
     allocator.Free(ptr);
+
+    SYNTROPY_LOG((allocator), "Deallocating memory. Address: ", ptr, ". Caller: ", stack_trace);
 }
 
 namespace std
