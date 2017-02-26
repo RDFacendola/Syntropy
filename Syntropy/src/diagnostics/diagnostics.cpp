@@ -1,13 +1,16 @@
 #include "diagnostics/diagnostics.h"
 
 #include <mutex>
+#include <memory>
 #include <unordered_map>
 
 namespace syntropy 
 {
     namespace diagnostics 
     {
-        //////////////// SEVERITY ////////////////
+        /************************************************************************/
+        /* SEVERITY                                                             */
+        /************************************************************************/
 
         static const std::unordered_map<Severity, const char*> severity_map = { { Severity::kInformative, "Info" },
                                                                                 { Severity::kWarning, "Warning" },
@@ -30,9 +33,17 @@ namespace syntropy
             return out;
         }
         
-        //////////////// CONTEXT :: INNER CONTEXT ////////////////
+        /************************************************************************/
+        /* CONTEXT :: INNER CONTEXT                                             */
+        /************************************************************************/
 
-        /// \brief Represents the actual context.
+        /// \brief Flyweight used to wrap a chain of contexts.
+        /// An inner context contains the full name of the context and a pointer to its parent.
+        ///
+        /// FullName |CtxA|CtxB|CtxC    Parent |CtxA|CtxB
+        /// FullName |CtxA|CtxB|        Parent |CtxA
+        /// FullName |CtxA              Parent %root
+        ///
         /// \author Raffaele D. Facendola - December 2016
         struct Context::InnerContext
         {
@@ -41,22 +52,22 @@ namespace syntropy
             InnerContext() = default;
 
             /// \brief Create a context by name.
-            /// \param Name of the context.
+            /// \param Full name of the context.
             /// \param Parent context.
-            InnerContext(const HashedString& name, std::shared_ptr<InnerContext> parent);
+            InnerContext(const HashedString& name, const InnerContext* parent);
 
             /// \brief Check whether this context contains another one.
             /// \param other Context to check the inclusion of.
             /// \return Returns true if other is contained inside this context, returns false otherwise.
             bool Contains(const InnerContext& other) const;
 
-            HashedString name_;                                 ///< \brief Full name of the context.
+            HashedString name_;                         ///< \brief Full name of the context.
 
-            std::shared_ptr<InnerContext> parent_;              ///< \brief Parent context. Nullptr if root context.
+            const InnerContext* parent_;                ///< \brief Parent context. nullptr if root context. Non-owning pointer.
 
         };
 
-        Context::InnerContext::InnerContext(const HashedString& name, std::shared_ptr<InnerContext> parent)
+        Context::InnerContext::InnerContext(const HashedString& name, const InnerContext* parent)
             : name_(name)
             , parent_(parent)
         {
@@ -67,21 +78,21 @@ namespace syntropy
         {
             auto other_context = &other;
 
-            while (other_context)
+            // Consume the inner contexts of "other" until the resulting context is empty or equal to this context.
+
+            while (other_context && name_ != other_context->name_)
             {
-                if (name_ == other_context->name_)
-                {
-                    return true;
-                }
-                other_context = other_context->parent_.get();       // Walk up the hierarchy
+                other_context = other_context->parent_;
             }
 
-            return false;
+            return !!other_context;
         }
 
-        //////////////// CONTEXT :: POOL ////////////////
+        /************************************************************************/
+        /* CONTEXT :: POOL                                                      */
+        /************************************************************************/
 
-        /// \brief Pool of contexts allocated so far.
+        /// \brief Pool of contexts flyweight allocated so far.
         /// \author Raffaele D. Facendola - December 2016
         class Context::Pool
         {
@@ -94,29 +105,34 @@ namespace syntropy
 
             /// \brief Get a context by name.
             /// The method will create a new context if none is found.
-            std::shared_ptr<InnerContext> GetContextByName(const HashedString& name);
+            const InnerContext& GetContextByName(const HashedString& name) const;
 
             /// \brief Get the root context.
             /// The root is the context that contains every other one.
-            std::shared_ptr<InnerContext> GetRootContext();
+            const InnerContext& GetRootContext() const;
 
         private:
+
+            using TContextMap = std::unordered_map<HashedString, std::unique_ptr<InnerContext>>;
 
             /// \brief Create a new pool of contexts.
             Pool();
 
-            std::shared_ptr<Context::InnerContext> root_;                                                           ///< \brief Root context
+            mutable std::recursive_mutex mutex_;        ///< \brief Used for synchronization
 
-            std::recursive_mutex mutex_;                                                                            ///< \brief Used for synchronization
-
-            std::unordered_map<HashedString::hash_t, std::shared_ptr<InnerContext>> contexts_;                      ///< \brief List of contexts registered so far
+            InnerContext* root_;                        /// \brief Root context. Non-owning pointer.
+            
+            mutable TContextMap contexts_;              ///< \brief List of contexts registered so far.
 
         };
 
         Context::Pool::Pool()
-            : root_(std::make_shared<Context::InnerContext>())
         {
-            contexts_.insert(std::make_pair(root_->name_.GetHash(), root_));        // Add the root to the context list
+            auto root = std::make_unique<InnerContext>();
+
+            root_ = root.get();
+
+            contexts_.emplace(std::make_pair(root_->name_, std::move(root)));      // Add the root to the context list.
         }
 
         Context::Pool& Context::Pool::GetInstance()
@@ -125,16 +141,15 @@ namespace syntropy
             return instance;
         }
 
-        std::shared_ptr<Context::InnerContext> Context::Pool::GetContextByName(const HashedString& name)
+        const Context::InnerContext& Context::Pool::GetContextByName(const HashedString& name) const
         {
-
             std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-            auto it = contexts_.find(name.GetHash());
+            auto it = contexts_.find(name);
 
             if (it != contexts_.end())
             {
-                return it->second;      // Found
+                return *(it->second);      // Found
             }
 
             // Create a new context
@@ -145,42 +160,45 @@ namespace syntropy
                                       name.GetString().substr(0, index) :
                                       "";
 
-            auto context = std::make_shared<Context::InnerContext>(name, 
-                                                                   GetContextByName(parent_name));      // Get the parent context (recursive)
+            auto context = std::make_unique<Context::InnerContext>(name, std::addressof(GetContextByName(parent_name)));        // Parent contexts are added recursively if needed.
 
-            contexts_.insert(std::make_pair(name.GetHash(),
-                                            context));
-
-            return context;
+            return *contexts_.emplace(std::make_pair(name, std::move(context))).first->second;
         }
 
-        std::shared_ptr<Context::InnerContext> Context::Pool::GetRootContext()
+        const Context::InnerContext& Context::Pool::GetRootContext() const
         {
-            return root_;
+            return *root_;
         }
 
-        //////////////// CONTEXT ////////////////
+        /************************************************************************/
+        /* CONTEXT                                                              */
+        /************************************************************************/
 
         Context::Context()
-            : context_(Pool::GetInstance().GetRootContext())
+            : context_(std::addressof(Pool::GetInstance().GetRootContext()))
         {
 
         }
 
         Context::Context(const HashedString& name)
-            : context_(Pool::GetInstance().GetContextByName(name))
+            : context_(std::addressof(Pool::GetInstance().GetContextByName(name)))
         {
 
         }
 
         bool Context::operator==(const Context& other) const
         {
-            return context_ == other.context_;
+            return context_ == other.context_;      // Flyweight, check by address.
         }
 
         bool Context::operator!=(const Context& other) const
         {
-            return context_ != other.context_;
+            return context_ != other.context_;      // Flyweight, check by address.
+        }
+
+        Context Context::operator |(const HashedString& subcontext) const
+        {
+            return context_->name_.GetString() + kSeparator + subcontext.GetString();
         }
 
         const HashedString& Context::GetName() const

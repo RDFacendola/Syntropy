@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 #include <vector>
-#include <memory>
 #include <type_traits>
 #include <iomanip>
 #include <set>
@@ -52,9 +51,20 @@ namespace syntropy
             /// \brief Create a new context from a name.
             Context(const HashedString& name);
 
+            /// \brief Check whether two contexts are the same.
+            /// \param other Other context to  check against.
+            /// \return Returns true if the two contexts are the same, returns false otherwise.
             bool operator==(const Context& other) const;
 
+            /// \brief Check whether two contexts are not the same.
+            /// \param other Other context to  check against.
+            /// \return Returns true if the two contexts are not the same, returns false otherwise.
             bool operator!=(const Context& other) const;
+
+            /// \brief Append a subcontext to this one.
+            /// \param subcontext Name of the subcontext to append. May contain sub-subcontexts.
+            /// \return Returns a context associated with the provided subcontext whose parent is this context.
+            Context operator |(const HashedString& subcontext) const;
 
             /// \brief Get the context name.
             const HashedString& GetName() const;
@@ -69,8 +79,7 @@ namespace syntropy
 
             struct InnerContext;
 
-            std::shared_ptr<InnerContext> context_;                ///< \brief Current context.
-
+            const InnerContext* context_;               ///< \brief Pointer to the actual context flyweight. Non-owning pointer.
         };
 
         /// \brief Used to sort contexts.

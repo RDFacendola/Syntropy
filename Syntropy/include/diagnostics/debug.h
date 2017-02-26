@@ -40,7 +40,7 @@ namespace syntropy
             StackTraceElement() = default;
 
             /// \brief Create a new element.
-            StackTraceElement(const char* file, const char* function, size_t line);
+            constexpr StackTraceElement(const char* file, const char* function, size_t line);
 
             /// \brief Whether the symbol referenced by this element is unknown.
             /// \return Returns true if the symbol referenced by this element is unknown, returns false otherwise.
@@ -119,6 +119,26 @@ namespace syntropy
         /// \brief Get the current debugger instance.
         /// \brief Returns the current debugger instance.
         Debugger& GetDebugger();
+
+    }
+}
+
+namespace syntropy
+{
+    namespace diagnostics
+    {
+
+        /************************************************************************/
+        /* STACK TRACE ELEMENT                                                  */
+        /************************************************************************/
+
+        inline constexpr StackTraceElement::StackTraceElement(const char* file, const char* function, size_t line)
+            : file_(file)
+            , function_(function)
+            , line_(line)
+        {
+
+        }
 
     }
 }

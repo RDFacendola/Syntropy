@@ -7,15 +7,9 @@ namespace syntropy
     namespace diagnostics
     {
 
-        //////////////// STACK TRACE ELEMENT ////////////////
-
-        StackTraceElement::StackTraceElement(const char* file, const char* function, size_t line)
-            : file_(file)
-            , function_(function)
-            , line_(line) 
-        {
-
-        }
+        /************************************************************************/
+        /* STACK TRACE ELEMENT                                                  */
+        /************************************************************************/
 
         bool StackTraceElement::IsUnknown() const
         {
@@ -43,7 +37,9 @@ namespace syntropy
             return out;
         }
         
-        //////////////// STACK TRACE ////////////////
+        /************************************************************************/
+        /* STACK TRACE                                                          */
+        /************************************************************************/
 
         StackTrace::StackTrace(const StackTraceElement& element)
         {
@@ -112,7 +108,9 @@ namespace syntropy
             return out;
         }
 
-        //////////////// DEBUGGER ////////////////
+        /************************************************************************/
+        /* DEBUGGE                                                             */
+        /************************************************************************/
 
         Debugger& Debugger::GetInstance()
         {
