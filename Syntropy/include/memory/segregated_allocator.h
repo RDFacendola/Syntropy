@@ -12,11 +12,22 @@
 namespace syntropy
 {
 
-    /// \brief High-performance allocator that uses segregated best-fit policy for allocations up to a certain size.
+    /// \brief High-performance allocator that uses segregated best-fit policy for small allocations up to a certain size.
     /// The allocator is designed to minimize external fragmentation while keeping constant response time.
-    /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls. See MonotonicBlockAllocator for more.
+    /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls. See MonotonicBlockAllocator.
+    /// The segregated free list classes are distributed linearly in the range [1, maximum_allocation_size]. Each class is 8 bytes large.
+    /// The amount of classes handled by the allocator is said "order" of the allocator.
+    ///
+    /// Example for a 6th-order allocator
+    /// Class 0 [1; 8]
+    /// Class 1 [9; 16]
+    /// Class 2 [17, 24]
+    /// Class 3 [25, 32]
+    /// Class 4 [33, 40]
+    /// Class 5 [41, 48]
+    /// 
     /// \author Raffaele D. Facendola - December 2016
-    class SegregatedPoolAllocator
+    class TinySegregatedFitAllocator : public Allocator
     {
     public:
 
@@ -24,34 +35,26 @@ namespace syntropy
         static const size_t kMinimumAllocationSize = 8;
 
         /// \brief Create a new allocator.
+        /// \param name Name of the allocator.
         /// \param capacity Maximum amount of memory allocated by the allocator.
-        /// \param page_size Size of each memory page, in bytes. This value is rounded up to system memory page size.
-        /// \param maximum_allocation_size Maximum size for a single allocation that can be performed on this allocator.
-        SegregatedPoolAllocator(size_t capacity, size_t page_size, size_t maximum_allocation_size = 256);
+        /// \param page_size Size of each memory page, in bytes. This value is rounded up to the next system memory page size.
+        /// \param order Number of classes in the allocator.
+        TinySegregatedFitAllocator(const HashedString& name, size_t capacity, size_t page_size, size_t order = 32);
 
         /// \brief No copy constructor.
-        SegregatedPoolAllocator(const SegregatedPoolAllocator&) = delete;
+        TinySegregatedFitAllocator(const TinySegregatedFitAllocator&) = delete;
 
         /// \brief No assignment operator.
-        SegregatedPoolAllocator& operator=(const SegregatedPoolAllocator&) = delete;
+        TinySegregatedFitAllocator& operator=(const TinySegregatedFitAllocator&) = delete;
 
         /// \brief Default destructor.
-        ~SegregatedPoolAllocator() = default;
+        ~TinySegregatedFitAllocator() = default;
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate, in bytes.
-        /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size);
+        virtual void* Allocate(size_t size) override;
 
-        /// \brief Allocate a new aligned memory block.
-        /// \param size Size of the memory block to allocate, in bytes.
-        /// \param alignment Alignment of the allocated block. Must be a multiple of the minimum allocation size.
-        /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size, size_t alignment);
+        virtual void* Allocate(size_t size, size_t alignment) override;
 
-        /// \brief Free a memory block.
-        /// \param address Address of the block to free.
-        void Free(void* address);
+        virtual void Free(void* address) override;
 
         /// \brief Get the current allocation size, in bytes.
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
@@ -123,38 +126,43 @@ namespace syntropy
     };
 
     /// \brief Low-fragmentation, low-waste allocator to handle allocation of large objects.
-    /// The allocator is designed to minimize external fragmentation while keeping a low amount of wasted space. Pages are allocated and deallocated on demand.
-    /// The allocator has many allocators that handle the allocations of a particular size. Each class size is referred to as "cluster". Each cluster handles allocations double in size with respect to the previous one.
+    /// The allocator is designed to minimize external fragmentation while keeping a low amount of wasted space. 
+    /// Pages are allocated and deallocated on demand. Memory can be reserved at once and committed at a later time.
+    /// The segregated free list classes are distributed exponentially: each class may handle allocation up to double the size of the previous class.
+    /// The amount of classes handled by the allocator is said "order" of the allocator.
+    ///
+    /// Example for a 4th-order allocator with base_allocation_size of 4096 bytes.
+    /// Class 0 [1; 4096]
+    /// Class 1 [4097; 8192]
+    /// Class 2 [8193, 16384]
+    /// Class 3 [16385, 32768]
+    ///
     /// \author Raffaele D. Facendola - January 2017
-    class ClusteredPoolAllocator
+    class ExponentialSegregatedFitAllocator : public Allocator
     {
     public:
 
         /// \brief Create a new allocator.
-        /// \param capacity Total capacity of the allocator. The capacity is split evenly among the clusters.
-        /// \param base_allocation_size Maximum allocation size for the first cluster.
-        /// \param order Number of clusters in the allocator. Each cluster handles allocations that are double in size than the previous cluster.
-        ClusteredPoolAllocator(size_t capacity, size_t base_allocation_size, size_t order);
+        /// \param name Name of the allocator.
+        /// \param capacity Total capacity of the allocator. The capacity is split evenly among each allocation class.
+        /// \param base_allocation_size Largest block the 1st-class allocator can handle. Rounded up to the next page size.
+        /// \param order Number of classes in the allocator.
+        ExponentialSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t base_allocation_size, size_t order);
 
         /// \brief No copy constructor.
-        ClusteredPoolAllocator(const ClusteredPoolAllocator&) = delete;
+        ExponentialSegregatedFitAllocator(const ExponentialSegregatedFitAllocator&) = delete;
 
         /// \brief No assignment operator.
-        ClusteredPoolAllocator& operator=(const ClusteredPoolAllocator&) = delete;
+        ExponentialSegregatedFitAllocator& operator=(const ExponentialSegregatedFitAllocator&) = delete;
 
         /// \brief Default destructor.
-        ~ClusteredPoolAllocator() = default;
+        ~ExponentialSegregatedFitAllocator() = default;
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate, in bytes.
-        /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size);
+        virtual void* Allocate(size_t size) override;
 
-        /// \brief Allocate a new aligned memory block.
-        /// \param size Size of the memory block to allocate, in bytes.
-        /// \param alignment Alignment of the allocated block. Must be a multiple of the minimum allocation size.
-        /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size, size_t alignment);
+        virtual void* Allocate(size_t size, size_t alignment) override;
+
+        virtual void Free(void* address) override;
 
         /// \brief Reserve a new memory block.
         /// \param size Size of the memory block to reserve, in bytes.
@@ -167,18 +175,9 @@ namespace syntropy
         /// \return Returns a pointer to the reserved memory block.
         void* Reserve(size_t size, size_t alignment);
 
-        /// \brief Free a memory block.
-        /// \param address Address of the block to free.
-        void Free(void* address);
-
-        /// \brief Get the current allocation size, in bytes.
-        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetSize() const;
-
-        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
-        /// This value is always equal or greater than the allocated size.
-        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetEffectiveSize() const;
+        /// \brief Get an upper bound for the memory being used by the allocator.
+        /// \return Returns an upper bound for the effective memory footprint of the allocator on the system memory, in bytes.
+        size_t GetUpperBoundSize() const;
 
         /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
         /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
@@ -186,16 +185,14 @@ namespace syntropy
 
     private:
 
-        /// \brief Get a reference to a cluster allocator by block size.
+        /// \brief Get a reference to an allocator by block size.
         /// \param block_size Size of the block to allocate or reserve.
         /// \return Returns a reference to the smallest allocator that can handle the given allocation size.
-        BlockAllocator& GetClusterBySize(size_t block_size);
+        BlockAllocator& GetAllocatorBySize(size_t block_size);
 
-        VectorAllocator<BlockAllocator> clusters_;      ///< \brief Array of allocators. One per cluster.
+        VectorAllocator<BlockAllocator> allocators_;    ///< \brief Actual allocators. One for each class.
 
-        size_t order_;                                  ///< \brief Order of the allocator. Maximum allocation size is base_allocation_size_ * 2 ^ order_.
-
-        size_t base_allocation_size_;                   ///< \brief Allocation size for the first cluster.
+        size_t base_allocation_size_;                   ///< \brief Allocation size for the first class.
 
     };
 

@@ -57,14 +57,9 @@ namespace syntropy
         /// \return Returns the size of each block in bytes.
         size_t GetBlockSize() const;
 
-        /// \brief Get the current allocation size, in bytes.
-        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetSize() const;
-
-        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
-        /// This value is always equal or greater than the allocated size.
-        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetEffectiveSize() const;
+        /// \brief Get an upper bound for the memory being used by the allocator.
+        /// \return Returns an upper bound for the effective memory footprint of the allocator on the system memory, in bytes.
+        size_t GetUpperBoundSize() const;
 
         /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
         /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.

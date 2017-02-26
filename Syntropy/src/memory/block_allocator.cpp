@@ -26,7 +26,7 @@ namespace syntropy
     {
         auto block = Reserve(size);
 
-        memory_.Commit(block, size);                              // Allocate the requested memory size. Rounded up to the next memory page boundary.
+        memory_.Commit(block, size);                                // Allocate the requested memory size. Rounded up to the next memory page boundary.
 
         return block;
     }
@@ -57,7 +57,7 @@ namespace syntropy
 
         free_list_.PushBack(reinterpret_cast<uintptr_t>(block));    // Push the address of the free block.
 
-        memory_.Decommit(block, block_size_);                           // Unmap the block from the system memory.
+        memory_.Decommit(block, block_size_);                       // Unmap the block from the system memory.
     }
 
     size_t BlockAllocator::GetBlockSize() const
@@ -65,18 +65,13 @@ namespace syntropy
         return block_size_;
     }
 
-    size_t BlockAllocator::GetSize() const
+    size_t BlockAllocator::GetUpperBoundSize() const
     {
-        // See GetEffectiveSize() for some remarks.
-        return GetEffectiveSize();
-    }
+        // Reserved memory can be committed at any time, this means that the exact amount of committed memory is unknown by this allocator.
+        // Currently the exact amount of memory allocated by each allocation is not stored.
 
-    size_t BlockAllocator::GetEffectiveSize() const
-    {
-        // IMPORTANT: This is an upper bound! 
-        // It doesn't account for memory that was reserved but not yet allocated or memory pages that are not mapped when allocations are way smaller than the block size.
-        return Memory::GetSize(*memory_, head_) -               // Maximum amount of memory for the allocations performed so far
-               free_list_.GetCount() * block_size_;             // Amount of freed memory
+        return Memory::GetSize(*memory_, head_) -               // Maximum amount of memory for the allocations performed so far.
+               free_list_.GetCount() * block_size_;             // Amount of freed memory.
     }
 
     size_t BlockAllocator::GetCapacity() const
