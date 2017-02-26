@@ -178,7 +178,7 @@ namespace syntropy
     }
 
     MemoryBuffer::MemoryBuffer(size_t size, Allocator& allocator)
-        : buffer_(allocator.Allocate(size))
+        : buffer_(SYNTROPY_ALLOC(allocator, size))
         , size_(size)
         , allocator_(std::addressof(allocator))
     {
@@ -204,7 +204,7 @@ namespace syntropy
     {
         if (buffer_)
         {
-            allocator_->Free(buffer_);
+            SYNTROPY_FREE(*allocator_, buffer_);
         }
     }
 

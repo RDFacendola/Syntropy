@@ -9,36 +9,11 @@
 #include "vm/virtual_machine.h"
 #include "vm/intrinsics.h"
 
+#include "memory/std_allocator.h"
+
 #include "diagnostics/log.h"
 
 syntropy::diagnostics::Context Root;
-
-class TestAllocator : public syntropy::Allocator
-{
-public:
-
-    TestAllocator()
-        : syntropy::Allocator("TestAllocator")
-    {
-
-    }
-
-    virtual void* Allocate(size_t size) override
-    {
-        return std::malloc(size);
-    }
-
-    virtual void* Allocate(size_t size, size_t alignment) override
-    {
-        return std::malloc(size + alignment);
-    }
-
-    virtual void Free(void* block) override
-    {
-        std::free(block);
-    }
-
-};
 
 int main()
 {
@@ -57,14 +32,18 @@ int main()
     stream->BindContext({ Root });
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
+    auto p = SYNTROPY_NEW(syntropy::g_std_allocator) int64_t;
+
+    SYNTROPY_DELETE(syntropy::g_std_allocator, p);
+
     //
-    TestAllocator ta;
-
-    syntropy::syntax::VirtualMachine vm(4096, ta);
-
-    while (vm.IsRunning())
     {
-        vm.ExecuteNext();
+        syntropy::syntax::VirtualMachine vm(4096, syntropy::g_std_allocator);
+
+        while (vm.IsRunning())
+        {
+            vm.ExecuteNext();
+        }
     }
 
     //

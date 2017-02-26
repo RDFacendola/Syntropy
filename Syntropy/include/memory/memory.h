@@ -18,8 +18,8 @@
 #include "containers/hashed_string.h"
 #include "math/math.h"
 
-/// \brief Allocate a new object via custom allocator.
-/// \usage SYNTROPY_NEW(allocator) Foo();
+/// \brief Instantiate a new object via custom allocator.
+/// \usage auto foo = SYNTROPY_NEW(allocator) Foo();
 #define SYNTROPY_NEW(allocator) \
     new (allocator, SYNTROPY_HERE)
 
@@ -27,6 +27,16 @@
 /// \usage SYNTROPY_DELETE(allocator, pointer);
 #define SYNTROPY_DELETE(allocator, ptr) \
     syntropy::Allocator::Delete(ptr, allocator, SYNTROPY_HERE);
+
+/// \brief Allocate a new buffer via custom allocator.
+/// \usage void* buffer = SYNTROPY_ALLOC(allocator, size);
+#define SYNTROPY_ALLOC(allocator, size) \
+    operator new(size, allocator, SYNTROPY_HERE)
+
+/// \brief Free a buffer allocated via custom allocator.
+/// \usage SYNTROPY_FREE(allocator, buffer);
+#define SYNTROPY_FREE(allocator, ptr) \
+    operator delete(ptr, allocator, SYNTROPY_HERE)
 
 namespace syntropy
 {
@@ -246,7 +256,6 @@ namespace syntropy
         size_t capacity_;       ///< \brief Capacity of the range, in bytes.
 
     };
-
 
     /// \brief Represents a raw memory buffer.
     /// \author Raffaele D. Facendola - February 2017
