@@ -110,6 +110,20 @@ namespace syntropy
             return !!instruction_pointer_;
         }
 
+        void* VirtualMachine::GetFunctionAddress(const HashedString& function_name)
+        {
+            auto it = function_address_table_.find(function_name);
+
+            return it != function_address_table_.end() ?
+                   it->second :
+                   nullptr;
+        }
+
+        void VirtualMachine::RegisterFunctionAddress(const HashedString& function_name, void* function_address)
+        {
+            function_address_table_.emplace(function_name, function_address);
+        }
+
         //////////////// VM EXECUTION CONTEXT ////////////////
 
         VMExecutionContext::VMExecutionContext(VirtualMachine& virtual_machine)

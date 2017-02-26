@@ -25,7 +25,7 @@ namespace syntropy
 
         void VirtualMachineIntrinsics::Jump(VMExecutionContext& context)
         {
-            auto offset = context.GetNextArgument<word_t>();
+            auto offset = context.GetNextImmediate<word_t>();
 
             auto& vm = context.GetVirtualMachine();
 
@@ -34,7 +34,7 @@ namespace syntropy
 
         void VirtualMachineIntrinsics::Enter(VMExecutionContext& context)
         {
-            auto local_storage = context.GetNextArgument<storage_t>();
+            auto local_storage = context.GetNextImmediate<storage_t>();
 
             auto& vm = context.GetVirtualMachine();
 
@@ -47,9 +47,11 @@ namespace syntropy
 
         void VirtualMachineIntrinsics::Call(VMExecutionContext& context)
         {
-            auto function_pointer = context.GetNextArgument<void*>();
+            auto function_name_hash = context.GetNextImmediate<uint64_t>();
 
             auto& vm = context.GetVirtualMachine();
+
+            auto function_pointer = vm.GetFunctionAddress(function_name_hash);                  // Resolve function name.
 
             *(vm.stack_pointer_++) = reinterpret_cast<uintptr_t>(vm.instruction_pointer_);      // Save the caller's instruction pointer. This actually points to the next instruction after "Call".
 
@@ -58,7 +60,7 @@ namespace syntropy
 
         void VirtualMachineIntrinsics::Return(VMExecutionContext& context)
         {
-            auto input_storage = context.GetNextArgument<storage_t>();
+            auto input_storage = context.GetNextImmediate<storage_t>();
 
             auto& vm = context.GetVirtualMachine();
 
@@ -73,7 +75,7 @@ namespace syntropy
 
         void VirtualMachineIntrinsics::PushWord(VMExecutionContext& context)
         {
-            auto source = context.GetNextRegister<word_t>();
+            auto source = context.GetNextArgument<word_t>();
 
             auto& vm = context.GetVirtualMachine();
 
@@ -82,7 +84,7 @@ namespace syntropy
 
         void VirtualMachineIntrinsics::PushAddress(VMExecutionContext& context)
         {
-            auto source = context.GetNextRegister<word_t>();
+            auto source = context.GetNextArgument<word_t>();
 
             auto& vm = context.GetVirtualMachine();
 
@@ -91,7 +93,7 @@ namespace syntropy
 
         void VirtualMachineIntrinsics::PopWord(VMExecutionContext& context)
         {
-            auto destination = context.GetNextRegister<word_t>();
+            auto destination = context.GetNextArgument<word_t>();
 
             auto& vm = context.GetVirtualMachine();
 
@@ -100,48 +102,48 @@ namespace syntropy
 
         void VirtualMachineIntrinsics::MoveImmediate(VMExecutionContext& context)
         {
-            auto destination = context.GetNextRegister<word_t>();
-            auto value = context.GetNextArgument<word_t>();
+            auto destination = context.GetNextArgument<word_t>();
+            auto value = context.GetNextImmediate<word_t>();
 
             *destination = value;
         }
 
         void VirtualMachineIntrinsics::Move(VMExecutionContext& context)
         {
-            auto destination = context.GetNextRegister<word_t>();
-            auto source = context.GetNextRegister<word_t>();
+            auto destination = context.GetNextArgument<word_t>();
+            auto source = context.GetNextArgument<word_t>();
 
             *destination = *source;
         }
 
         void VirtualMachineIntrinsics::MoveDstIndirect(VMExecutionContext& context)
         {
-            auto destination = context.GetNextRegister<word_t*>();
-            auto source = context.GetNextRegister<word_t>();
+            auto destination = context.GetNextArgument<word_t*>();
+            auto source = context.GetNextArgument<word_t>();
 
             **destination = *source;
         }
 
         void VirtualMachineIntrinsics::MoveSrcIndirect(VMExecutionContext& context)
         {
-            auto destination = context.GetNextRegister<word_t>();
-            auto source = context.GetNextRegister<word_t*>();
+            auto destination = context.GetNextArgument<word_t>();
+            auto source = context.GetNextArgument<word_t*>();
 
             *destination = **source;
         }
 
         void VirtualMachineIntrinsics::MoveSrcDstIndirect(VMExecutionContext& context)
         {
-            auto destination = context.GetNextRegister<word_t*>();
-            auto source = context.GetNextRegister<word_t*>();
+            auto destination = context.GetNextArgument<word_t*>();
+            auto source = context.GetNextArgument<word_t*>();
 
             **destination = **source;
         }
 
         void VirtualMachineIntrinsics::MoveAddress(VMExecutionContext& context)
         {
-            auto destination = context.GetNextRegister<word_t>();
-            auto source = context.GetNextRegister<word_t>();
+            auto destination = context.GetNextArgument<word_t>();
+            auto source = context.GetNextArgument<word_t>();
 
             *destination = reinterpret_cast<word_t>(source);
         }
@@ -152,9 +154,9 @@ namespace syntropy
 
         void VirtualMachineMath::AddInteger(VMExecutionContext& context)
         {
-            auto result = context.GetNextRegister<word_t>();
-            auto first = context.GetNextRegister<word_t>();
-            auto second = context.GetNextRegister<word_t>();
+            auto result = context.GetNextArgument<word_t>();
+            auto first = context.GetNextArgument<word_t>();
+            auto second = context.GetNextArgument<word_t>();
 
             *result = *first + *second;
         }

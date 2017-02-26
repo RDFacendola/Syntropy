@@ -7,9 +7,11 @@
 #pragma once
 
 #include <cstdint>
+#include <unordered_map>
 
 #include "memory/memory.h"
-#include "memory/allocation.h"
+
+#include "containers/hashed_string.h"
 
 namespace syntropy
 {
@@ -48,15 +50,15 @@ namespace syntropy
             /// \return Returns the virtual machine this execution context refers to.
             VirtualMachine& GetVirtualMachine();
 
-            /// \brief Get the next argument for the current instruction and advances the instruction pointer.
+            /// \brief Get the next immediate value for the current instruction and advances the instruction pointer.
             /// \return Returns the next argument for the current instruction.
             template <typename TArgument>
-            const TArgument& GetNextArgument();
+            const TArgument& GetNextImmediate();
 
-            /// \brief Interpret the next argument for the current instruction as a register and return a pointer to it.
+            /// \brief Interpret the next argument for the current instruction as a function argument and return a pointer to its value.
             /// \return Returns the address of the register stored as a next argument for the current instruction.
-            template <typename TRegister>
-            TRegister* GetNextRegister();
+            template <typename TArgument>
+            TArgument* GetNextArgument();
 
         private:
 
@@ -94,6 +96,18 @@ namespace syntropy
             /// \return Returns true if the machine has instructions to execute, returns false otherwise.
             bool IsRunning() const;
 
+        protected:
+
+            /// \brief Get the address of a function by name.
+            /// \param function_name Name of the function.
+            /// \return Returns a pointer to the requested function. Returns nullptr if no such function could be found.
+            void* GetFunctionAddress(const HashedString& function_name);
+
+            /// \brief Register an address for a symbolic function name.
+            /// \param function_name Symbolic function name.
+            /// \param function_address Actual address of the function.
+            void RegisterFunctionAddress(const HashedString& function_name, void* function_address);
+
         private:
 
             // Memory
@@ -103,6 +117,8 @@ namespace syntropy
             // Status
 
             VMExecutionContext execution_context_;              ///< \brief Execution context passed to the instructions.
+
+            std::unordered_map<HashedString, void*> function_address_table_;        ///< \brief Maps each function name with its actual pointer in memory.
 
             // Registers
 
@@ -131,7 +147,7 @@ namespace syntropy
         }
 
         template <typename TArgument>
-        inline const TArgument& VMExecutionContext::GetNextArgument()
+        inline const TArgument& VMExecutionContext::GetNextImmediate()
         {
             TArgument* argument = reinterpret_cast<TArgument*>(virtual_machine_.instruction_pointer_);
 
@@ -140,11 +156,11 @@ namespace syntropy
             return *argument;
         }
 
-        template <typename TRegister>
-        inline TRegister* VMExecutionContext::GetNextRegister()
+        template <typename TArgument>
+        inline TArgument* VMExecutionContext::GetNextArgument()
         {
-            auto register_offset = GetNextArgument<register_t>();                                                               // Offset of the register, relative to the current base pointer.
-            return reinterpret_cast<TRegister*>(Memory::Offset(virtual_machine_.base_pointer_, register_offset));
+            auto register_offset = GetNextImmediate<register_t>();                                          // Offset of the register, relative to the current base pointer.
+            return reinterpret_cast<TArgument*>(Memory::Offset(virtual_machine_.base_pointer_, register_offset));
         }
 
     }

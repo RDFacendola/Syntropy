@@ -43,8 +43,8 @@ namespace syntropy
             /// Enter(storage_t local_storage_in_bytes)
             static void Enter(VMExecutionContext& context);
 
-            /// \brief Jump to another function.
-            /// Call(void* pointer_to_callee)
+            /// \brief Jump to another function by name.
+            /// Call(word_t function_name)
             static void Call(VMExecutionContext& context);
 
             /// \brief Tear down the current frame, local storage and input arguments storage and return to the caller.
