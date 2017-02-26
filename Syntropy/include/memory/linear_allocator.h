@@ -20,6 +20,7 @@ namespace syntropy
 
     /// \brief Base allocator used to allocate sequential memory blocks over a contiguous range of virtual memory addresses.
     /// Memory is committed and decommited on demand: the allocator allocates the minimum amount of system memory pages.
+    /// Memory is committed and decommited on the head of the allocator.
     /// \author Raffaele D. Facendola - January 2017
     class SequentialAllocator
     {
@@ -34,7 +35,7 @@ namespace syntropy
         SequentialAllocator(const SequentialAllocator&) = delete;
 
         /// \brief Default destructor.
-        ~SequentialAllocator();
+        ~SequentialAllocator() = default;
 
         /// \brief No assignment operator.
         SequentialAllocator& operator=(const SequentialAllocator&) = delete;
@@ -62,11 +63,11 @@ namespace syntropy
 
         /// \brief Get the base pointer of this allocator.
         /// \return Returns the base pointer of this allocator.
-        int8_t* GetBasePointer();
+        void* GetBasePointer();
 
         /// \brief Get the base pointer of this allocator.
         /// \return Returns the base pointer of this allocator.
-        const int8_t* GetBasePointer() const;
+        const void* GetBasePointer() const;
 
         /// \brief Check whether an address belongs to this allocator.
         /// \param address Address to check.
@@ -77,9 +78,9 @@ namespace syntropy
 
         MemoryRange memory_;        ///< \brief Reserved virtual memory range.
 
-        int8_t* head_;              ///< \brief Points to the first unallocated memory address.
+        void* head_;                ///< \brief Points to the first unallocated memory address.
 
-        int8_t* page_head_;         ///< \brief Points to the first unallocated memory page.
+        void* page_head_;           ///< \brief Points to the first unallocated memory page.
 
     };
 
@@ -100,7 +101,7 @@ namespace syntropy
         LinearAllocator(const LinearAllocator&) = delete;
 
         /// \brief Default destructor.
-        ~LinearAllocator();
+        ~LinearAllocator() = default;
 
         /// \brief No assignment operator.
         LinearAllocator& operator=(const LinearAllocator&) = delete;
@@ -141,7 +142,7 @@ namespace syntropy
 
         /// \brief Get the base pointer of this allocator.
         /// \return Returns the base pointer of this allocator.
-        int8_t* GetBasePointer();
+        void* GetBasePointer();
 
         /// \brief Check whether an address belongs to this allocator.
         /// \param address Address to check.
@@ -152,9 +153,9 @@ namespace syntropy
 
         MemoryRange memory_;            ///< \brief Reserved virtual memory range.
 
-        int8_t* head_;                  ///< \brief Pointer to the first unallocated memory block.
+        void* head_;                    ///< \brief Pointer to the first unallocated memory block.
 
-        int8_t* status_;                ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
+        void* status_;                  ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
 
     };
 

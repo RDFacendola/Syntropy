@@ -206,27 +206,41 @@ namespace syntropy
     };
 
     /// \brief Represents a range of contiguous virtual memory addresses.
+    /// The range must be manually committed\decommitted before performing any access.
     /// \author Raffaele D. Facendola - December 2016
     class MemoryRange
     {
     public:
 
         /// \brief Create a new virtual memory range.
-        /// \param base Base address of the range.
         /// \param capacity Capacity of the range, in bytes.
-        MemoryRange(void* base, size_t capacity);
+        MemoryRange(size_t capacity);
+
+        /// \brief Create a new aligned virtual memory range.
+        /// \param capacity Capacity of the range, in bytes.
+        /// \param alignment Alignment of the range.
+        MemoryRange(size_t capacity, size_t alignment);
+
+        /// \brief No copy ctor.
+        MemoryRange(const MemoryRange&) = delete;
+
+        /// \brief Move ctor.
+        MemoryRange(MemoryRange&& other);
 
         /// \brief No assignment operator.
         MemoryRange& operator=(const MemoryRange&) = delete;
 
+        /// \brief Default destructor.
+        ~MemoryRange();
+
         /// \brief Dereferencing operator. Access the base address of the range.
         /// \return Returns the base address of the range.
-        int8_t* operator*() const;
+        void* operator*() const;
 
         /// \brief Access an element in the range.
         /// \param offset Offset with respect to the first element of the range.
         /// \return Returns a pointer to offset-bytes after the base of the range.
-        int8_t* operator[](size_t offset) const;
+        void* operator[](size_t offset) const;
 
         /// \brief Get the total capacity of the memory range, in bytes.
         /// \return Returns the total capacity of the memory range, in bytes.
@@ -238,20 +252,20 @@ namespace syntropy
         /// \return Returns true if the sub-range [address, address+size) is contained inside this memory range, return false otherwise.
         bool Contains(void* address, size_t size) const;
 
-        /// \brief Allocate a memory block within this memory range.
+        /// \brief Commit a memory block within this memory range.
         /// This method allocates all the memory pages containing at least one byte in the range [address, address + size].
         /// \param address Address of the memory block to allocate.
         /// \param size Size of the block to allocate, in bytes.
-        void Allocate(void* address, size_t size);
+        void Commit(void* address, size_t size);
 
-        /// \brief Free a memory block.
+        /// \brief Decommit a memory block.
         /// This method free all the pages containing at least one byte in the range [address, address + size].
         /// \param address Base address of the memory block to free.
-        void Free(void* address, size_t size);
+        void Decommit(void* address, size_t size);
 
     private:
 
-        int8_t* base_;          ///< \brief First address in the memory range. Owning pointer.
+        void* base_;            ///< \brief First address in the memory range. Owning pointer.
 
         size_t capacity_;       ///< \brief Capacity of the range, in bytes.
 

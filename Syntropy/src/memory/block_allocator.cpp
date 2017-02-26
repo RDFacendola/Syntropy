@@ -10,16 +10,11 @@ namespace syntropy
 
     BlockAllocator::BlockAllocator(size_t capacity, size_t block_size)
         : block_size_(Memory::CeilToPageSize(block_size))                   // Round up to the next system page size.
-        , memory_(Memory::Reserve(capacity, block_size_), capacity)         // Reserve the virtual memory range upfront without allocating.
+        , memory_(capacity, block_size_)                                    // Reserve the virtual memory range upfront without allocating.
         , head_(*memory_)
         , free_list_(capacity / block_size_)                                // Worst case: the entire capacity was reserved and then freed.
     {
 
-    }
-
-    BlockAllocator::~BlockAllocator()
-    {
-        Memory::Release(*memory_);
     }
 
     void* BlockAllocator::Allocate()
@@ -31,7 +26,7 @@ namespace syntropy
     {
         auto block = Reserve(size);
 
-        memory_.Allocate(block, size);                              // Allocate the requested memory size. Rounded up to the next memory page boundary.
+        memory_.Commit(block, size);                              // Allocate the requested memory size. Rounded up to the next memory page boundary.
 
         return block;
     }
@@ -62,7 +57,7 @@ namespace syntropy
 
         free_list_.PushBack(reinterpret_cast<uintptr_t>(block));    // Push the address of the free block.
 
-        memory_.Free(block, block_size_);                           // Unmap the block from the system memory.
+        memory_.Decommit(block, block_size_);                           // Unmap the block from the system memory.
     }
 
     size_t BlockAllocator::GetBlockSize() const

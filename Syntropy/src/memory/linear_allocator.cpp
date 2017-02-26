@@ -12,16 +12,11 @@ namespace syntropy
     //////////////// SEQUENTIAL ALLOCATOR ////////////////
 
     SequentialAllocator::SequentialAllocator(size_t capacity, size_t alignment)
-        : memory_(MemoryRange(Memory::Reserve(capacity, alignment), capacity))
+        : memory_(capacity, alignment)
         , head_(*memory_)
         , page_head_(*memory_)
     {
 
-    }
-
-    SequentialAllocator::~SequentialAllocator()
-    {
-        Memory::Release(*memory_);
     }
 
     void* SequentialAllocator::Allocate(size_t size)
@@ -32,14 +27,14 @@ namespace syntropy
 
         head_ = Memory::Offset(head_, size);
 
-        // Allocate each memory page between the old page head and the new one
-        if (std::distance(page_head_, head_) > 0)
+        // Commit each memory page between the old page head and the new one
+        auto next_page = Memory::Align(head_, Memory::GetPageSize());           // Ceil to next memory page boundary.
+
+        auto allocation_size = Memory::GetSize(page_head_, next_page);
+
+        if (allocation_size > 0)
         {
-            auto next_page = Memory::Align(head_, Memory::GetPageSize());       // Ceil to next memory page boundary.
-
-            auto allocation_size = Memory::GetSize(page_head_, next_page);
-
-            memory_.Allocate(page_head_, allocation_size);                      // Allocate the missing memory pages.
+            memory_.Commit(page_head_, allocation_size);                        // Commit the missing memory pages.
 
             page_head_ = next_page;
         }
@@ -53,16 +48,16 @@ namespace syntropy
 
         head_ = Memory::Offset(head_, -static_cast<int64_t>(size));
 
-        // Free each memory page between the old page head and the new one
-        if (static_cast<size_t>(std::distance(head_, page_head_)) >= Memory::GetPageSize())
+        // Decommit each memory page between the old page head and the new one
+        auto next_page = Memory::Align(head_, Memory::GetPageSize());           // Ceil to previous memory page boundary.
+
+        auto free_size = Memory::GetSize(next_page, page_head_);
+
+        if(free_size > 0)
         {
-            auto next_page = Memory::AlignDown(head_, Memory::GetPageSize());   // Ceil to previous memory page boundary.
-
-            auto free_size = Memory::GetSize(next_page, page_head_);
-
             page_head_ = next_page;
 
-            memory_.Free(page_head_, free_size);                                // Free the extra amount of memory.
+            memory_.Decommit(page_head_, free_size);                            // Free the extra amount of memory.
         }
     }
 
@@ -81,12 +76,12 @@ namespace syntropy
         return memory_.GetCapacity();
     }
 
-    int8_t* SequentialAllocator::GetBasePointer()
+    void* SequentialAllocator::GetBasePointer()
     {
         return *memory_;
     }
 
-    const int8_t* SequentialAllocator::GetBasePointer() const
+    const void* SequentialAllocator::GetBasePointer() const
     {
         return *memory_;
     }
@@ -99,16 +94,11 @@ namespace syntropy
     //////////////// LINEAR ALLOCATOR ////////////////
 
     LinearAllocator::LinearAllocator(size_t capacity, size_t alignment)
-        : memory_(MemoryRange(Memory::Reserve(capacity, alignment), capacity))
+        : memory_(capacity, alignment)
         , head_(*memory_)
         , status_(nullptr)
     {
-        memory_.Allocate(*memory_, memory_.GetCapacity());      // Allocate everything upfront.
-    }
-
-    LinearAllocator::~LinearAllocator()
-    {
-        Memory::Release(*memory_);
+        memory_.Commit(*memory_, memory_.GetCapacity());      // Allocate everything upfront.
     }
 
     void* LinearAllocator::Allocate(size_t size)
@@ -170,7 +160,7 @@ namespace syntropy
         return memory_.GetCapacity();
     }
 
-    int8_t* LinearAllocator::GetBasePointer()
+    void* LinearAllocator::GetBasePointer()
     {
         return *memory_;
     }

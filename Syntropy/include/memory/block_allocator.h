@@ -29,7 +29,7 @@ namespace syntropy
         BlockAllocator(const BlockAllocator&) = delete;
 
         /// \brief Destructor.
-        ~BlockAllocator();
+        ~BlockAllocator() = default;
 
         /// \brief No assignment operator.
         BlockAllocator& operator=(const BlockAllocator&) = delete;
@@ -82,7 +82,7 @@ namespace syntropy
 
         MemoryRange memory_;                        ///< \brief Reserved virtual memory range.
 
-        int8_t* head_;                              ///< \brief Pointer to the first unmapped block.
+        void* head_;                                ///< \brief Pointer to the first unmapped block.
 
         VectorAllocator<uintptr_t> free_list_;      ///< \brief Stack of free blocks.
 
