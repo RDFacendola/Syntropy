@@ -47,10 +47,6 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\allocation.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\memory\block_allocator.h">
       <SubType>
       </SubType>
@@ -143,10 +139,6 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="src\math\math.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="src\memory\allocation.cpp">
       <SubType>
       </SubType>
     </ClCompile>

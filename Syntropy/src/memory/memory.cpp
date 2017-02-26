@@ -5,13 +5,14 @@
 #include <algorithm>
 
 #include "platform/os.h"
+#include "diagnostics/log.h"
 
 #include "syntropy.h"
 
 namespace syntropy
 {
 
-    const diagnostics::Context MemoryCtx("Memory");
+    const diagnostics::Context MemoryCtx("SyntropyMemory");
 
     /************************************************************************/
     /* MEMORY                                                               */
@@ -58,9 +59,9 @@ namespace syntropy
         // The header must be allocated in a different page to prevent client code from accidentally deallocating it while working with the memory block
 
         auto block_address = Memory::Align(Memory::Offset(base_address, page_size),             // Requires some space before the reserved block for the header
-            alignment);                                          // The resulting block must be aligned
+                                           alignment);                                          // The resulting block must be aligned
 
-// Fill the block header
+        // Fill the block header
 
         auto reserved_block = GetReservedBlockHeader(block_address, page_size);
 
@@ -90,6 +91,27 @@ namespace syntropy
         address = Memory::AlignDown(address, page_size);                                                                // Page containing the base address of the block to free.
 
         return reinterpret_cast<ReservedBlockHeader*>(Memory::Offset(address, -static_cast<int64_t>(page_size)));       // The previous page contains the infos of the reserved region. This page is always committed.
+    }
+
+    /************************************************************************/
+    /* ALLOCATOR                                                            */
+    /************************************************************************/
+
+    Allocator::Allocator(const HashedString& name)
+        : name_(name)
+        , context_(MemoryCtx | name_)
+    {
+
+    }
+
+    const HashedString& Allocator::GetName() const
+    {
+        return name_;
+    }
+
+    Allocator::operator diagnostics::Context() const
+    {
+        return context_;
     }
 
     /************************************************************************/
@@ -143,4 +165,102 @@ namespace syntropy
         SYNTROPY_ASSERT(result);
     }
 
+    /************************************************************************/
+    /* MEMORY BUFFER                                                        */
+    /************************************************************************/
+
+    MemoryBuffer::MemoryBuffer()
+        : buffer_(nullptr)
+        , size_(0)
+        , allocator_(nullptr)
+    {
+
+    }
+
+    MemoryBuffer::MemoryBuffer(size_t size, Allocator& allocator)
+        : buffer_(allocator.Allocate(size))
+        , size_(size)
+        , allocator_(std::addressof(allocator))
+    {
+
+    }
+
+    MemoryBuffer::MemoryBuffer(const MemoryBuffer& other)
+        : MemoryBuffer(other.size_, *other.allocator_)
+    {
+        std::memmove(buffer_, other.buffer_, other.size_);      // Copy the buffer's content.
+    }
+
+    MemoryBuffer::MemoryBuffer(MemoryBuffer&& other)
+        : buffer_(other.buffer_)
+        , size_(other.size_)
+        , allocator_(other.allocator_)
+    {
+        other.buffer_ = nullptr;
+        other.size_ = 0;
+    }
+
+    MemoryBuffer::~MemoryBuffer()
+    {
+        if (buffer_)
+        {
+            allocator_->Free(buffer_);
+        }
+    }
+
+    MemoryBuffer& MemoryBuffer::operator=(MemoryBuffer other)
+    {
+        Swap(other);
+        return *this;
+    }
+
+    void* MemoryBuffer::operator*() const
+    {
+        return buffer_;
+    }
+
+    void* MemoryBuffer::operator[](size_t offset) const
+    {
+        return Memory::Offset(buffer_, offset);
+    }
+
+    size_t MemoryBuffer::GetSize() const
+    {
+        return size_;
+    }
+
+    void MemoryBuffer::Swap(MemoryBuffer& other) noexcept
+    {
+        std::swap(buffer_, other.buffer_);
+        std::swap(size_, other.size_);
+        std::swap(allocator_, other.allocator_);
+    }
+
+}
+
+/************************************************************************/
+/* NEW \ DELETE                                                         */
+/************************************************************************/
+
+void* operator new (std::size_t size, syntropy::Allocator& allocator, const syntropy::diagnostics::StackTrace& stack_trace)
+{
+    SYNTROPY_LOG((allocator), "Allocating ", size, " bytes. (", stack_trace, ")");
+
+    return allocator.Allocate(size);
+}
+
+void operator delete (void* ptr, syntropy::Allocator& allocator, const syntropy::diagnostics::StackTrace& stack_trace)
+{
+    SYNTROPY_LOG((allocator), "Deallocating. (", stack_trace, ")");
+
+    allocator.Free(ptr);
+}
+
+namespace std
+{
+    template<>
+    void swap(syntropy::MemoryBuffer& first, syntropy::MemoryBuffer& second)
+    {
+        first.Swap(second);
+    }
 }
