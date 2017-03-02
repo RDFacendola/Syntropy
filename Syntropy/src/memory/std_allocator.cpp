@@ -1,5 +1,7 @@
 #include "memory/std_allocator.h"
 
+#include <limits>
+
 namespace syntropy
 {
 
@@ -30,6 +32,16 @@ namespace syntropy
     void STDAllocator::Free(void* block)
     {
         ::operator delete(block);
+    }
+
+    bool STDAllocator::Belongs(void*) const
+    {
+        return true;
+    }
+
+    size_t STDAllocator::GetMaxAllocationSize() const
+    {
+        return std::numeric_limits<size_t>::max();
     }
 
 }

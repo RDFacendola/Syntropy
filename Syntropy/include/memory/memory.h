@@ -187,8 +187,17 @@ namespace syntropy
         virtual void* Allocate(size_t size, size_t alignment) = 0;
 
         /// \brief Free a memory block.
+        /// The caller must ensure that the block belongs to the allocator otherwise the behaviour is undefined.
         /// \param block Pointer to the block to free.
         virtual void Free(void* block) = 0;
+
+        /// \brief Check whether the allocator owns the provided block.
+        /// \param block Address to check.
+        ///\ return Returns true if block was belongs to this allocator, returns false otherwise.
+        virtual bool Belongs(void* block) const = 0;
+
+        /// \brief Get the biggest allocation that can be performed by this allocator.
+        virtual size_t GetMaxAllocationSize() const = 0;
 
         /// \brief Get a symbolic name for the allocator.
         /// \return Returns a symbolic name for the allocator.

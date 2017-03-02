@@ -80,7 +80,7 @@ namespace syntropy
 
         void* head_;                ///< \brief Points to the first unallocated memory address.
 
-        void* page_head_;           ///< \brief Points to the first unallocated memory page.
+        void* page_head_;           ///< \brief Points to the first unmapped memory page.
 
     };
 

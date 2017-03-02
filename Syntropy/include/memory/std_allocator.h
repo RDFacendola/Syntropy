@@ -8,10 +8,27 @@
 
 #include "memory.h"
 
+/// \brief Instantiate a new object via the standard allocator wrapper.
+#define SYNTROPY_STD_NEW \
+    SYNTROPY_NEW(g_std_allocator)
+
+/// \brief Delete an object created via the standard allocator wrapper.
+#define SYNTROPY_STD_DELETE(ptr) \
+    SYNTROPY_DELETE(g_std_allocator, ptr)
+
+/// \brief Allocate a new buffer via the standard allocator wrapper.
+#define SYNTROPY_STD_ALLOC(size) \
+    SYNTROPY_ALLOC(g_std_allocator)
+
+/// \brief Free a buffer allocated via the standard allocator wrapper.
+#define SYNTROPY_STD_FREE(ptr) \
+    SYNTROPY_FREE(g_std_allocator, ptr)
+
 namespace syntropy
 {
 
-    /// \brief Allocator that wraps the standard new \ delete operators.
+    /// \brief Simple allocator that wraps the standard new \ delete operators.
+    /// Be careful mixing the usage of this allocator with others.
     /// \author Raffaele D. Facendola - February 2017
     class STDAllocator : public Allocator
     {
@@ -28,6 +45,10 @@ namespace syntropy
         virtual void* Allocate(size_t size, size_t alignment) override;
 
         virtual void Free(void* block) override;
+
+        virtual bool Belongs(void* block) const;
+
+        virtual size_t GetMaxAllocationSize() const;
 
     };
 

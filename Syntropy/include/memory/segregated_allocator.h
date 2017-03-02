@@ -54,7 +54,11 @@ namespace syntropy
 
         virtual void* Allocate(size_t size, size_t alignment) override;
 
-        virtual void Free(void* address) override;
+        virtual void Free(void* block) override;
+
+        virtual bool Belongs(void* block) const override;
+
+        virtual size_t GetMaxAllocationSize() const override;
 
         /// \brief Get the current allocation size, in bytes.
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
@@ -125,6 +129,100 @@ namespace syntropy
 
     };
 
+    /// \brief High-performances, low-fragmentation allocator to handle allocation of medium-sized objects.
+    /// The allocator is designed to minimize external fragmentation while keeping constant response time. 
+    /// Pages are allocated and deallocated on demand. Memory can be reserved at once and committed at a later time.
+    /// The segregated free list classes are distributed linearly: each class may handle allocation up to a multiple of the base allocation size.
+    /// The amount of classes handled by the allocator is said "order" of the allocator.
+    ///
+    /// Example for a 4th-order allocator with base_allocation_size of 1024 bytes.
+    /// Class 0 [1; 1024]
+    /// Class 1 [1025; 2048]
+    /// Class 2 [2049, 3072]
+    /// Class 3 [3073, 4096]
+    ///
+    /// \author Raffaele D. Facendola - January 2017
+    class LinearSegregatedFitAllocator : public Allocator
+    {
+    public:
+
+        LinearSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t base_allocation_size, size_t order);
+
+        virtual void* Allocate(size_t size) override;
+
+        virtual void* Allocate(size_t size, size_t alignment) override;
+
+        virtual void Free(void* block) override;
+
+        virtual bool Belongs(void* block) const override;
+
+        virtual size_t GetMaxAllocationSize() const override;
+
+    private:
+
+        /// \brief Header for an allocated block.
+        struct BlockHeader
+        {
+            static const size_t kBusyBlockFlag = 0x2;
+
+            static const size_t kLastBlockFlag = 0x1;
+
+            static const size_t kSizeMask = kBusyBlockFlag | kLastBlockFlag;
+
+            size_t size_;                       ///< \brief Size of the block. 
+                                                /// The last two bit (F and T) are used to store the block status. F tells whether the block is busy or free, T tells whether the block is the last one in the pool.
+
+            BlockHeader* previous_;             ///< \brief Pointer to the previous physical block.
+
+            void* operator*();
+
+            size_t GetSize() const;
+
+            void SetSize(size_t size);
+
+            bool IsBusy() const;
+
+            void SetBusy(bool is_busy);
+
+            bool IsLast() const;
+
+            void SetLast(bool is_last);
+        };
+
+        /// \brief Extended header for a free block.
+        struct FreeBlockHeader : BlockHeader
+        {
+            FreeBlockHeader* next_free_;        ///< \brief Next free block in the segregated list.
+
+            FreeBlockHeader* previous_free_;    ///< \brief Previous free block in the segregated list.
+        };
+
+        /// \brief Get a pointer to a free block which can contain an allocation of a given size.
+        /// \param block_size Size of the block.
+        /// \return Returns a pointer to the smallest free block which can handle an allocation for the given size.
+        BlockHeader* GetFreeBlockBySize(size_t size);
+
+        BlockHeader* PopBlock(size_t index);
+
+        void PushBlock(BlockHeader* block);
+
+        void SplitBlock(BlockHeader* block, size_t size);
+
+        // Remove a block from its current free list.
+        void RemoveBlock(FreeBlockHeader* block);
+
+        void InsertBlock(FreeBlockHeader* block);
+
+        SequentialAllocator pool_;                          ///< \brief Memory pool used by this allocator.
+
+        BlockHeader* last_block_;                           ///< \brief Pointer to the block currently on the head of the pool.
+
+        VectorAllocator<FreeBlockHeader*> free_lists_;      ///< \brief Pointer to the free lists. Each list handles allocations for a particular class of sizes.
+
+        size_t base_allocation_size_;                       ///< \brief Size of each allocation class, in bytes.
+
+    };
+
     /// \brief Low-fragmentation, low-waste allocator to handle allocation of large objects.
     /// The allocator is designed to minimize external fragmentation while keeping a low amount of wasted space. 
     /// Pages are allocated and deallocated on demand. Memory can be reserved at once and committed at a later time.
@@ -162,7 +260,11 @@ namespace syntropy
 
         virtual void* Allocate(size_t size, size_t alignment) override;
 
-        virtual void Free(void* address) override;
+        virtual void Free(void* block) override;
+
+        virtual bool Belongs(void* block) const override;
+
+        virtual size_t GetMaxAllocationSize() const override;
 
         /// \brief Reserve a new memory block.
         /// \param size Size of the memory block to reserve, in bytes.

@@ -89,6 +89,16 @@ namespace syntropy
         }
     }
 
+    bool TinySegregatedFitAllocator::Belongs(void* block) const
+    {
+        return allocator_.ContainsAddress(block);
+    }
+
+    size_t TinySegregatedFitAllocator::GetMaxAllocationSize() const
+    {
+        return maximum_block_size_;
+    }
+
     size_t TinySegregatedFitAllocator::GetSize() const
     {
         Block* head;
@@ -203,6 +213,272 @@ namespace syntropy
     }
 
     /************************************************************************/
+    /* LINEAR SEGREGATED FIT ALLOCATOR :: BLOCK HEADER                      */
+    /************************************************************************/
+
+    void* LinearSegregatedFitAllocator::BlockHeader::operator*()
+    {
+        return Memory::Offset(this, sizeof(BlockHeader));
+    }
+
+    size_t LinearSegregatedFitAllocator::BlockHeader::GetSize() const
+    {
+        return size_ & ~kSizeMask;
+    }
+
+    void LinearSegregatedFitAllocator::BlockHeader::SetSize(size_t size)
+    {
+        size_ = (size & ~kSizeMask) | (size_ & kSizeMask);          // Preserve the status of the two flags at the end.
+    }
+
+    bool LinearSegregatedFitAllocator::BlockHeader::IsBusy() const
+    {
+        return (size_ & kBusyBlockFlag) != 0;
+    }
+
+    void LinearSegregatedFitAllocator::BlockHeader::SetBusy(bool is_busy)
+    {
+        if (is_busy)
+        {
+            size_ |= kBusyBlockFlag;
+        }
+        else
+        {
+            size_ &= ~kBusyBlockFlag;
+        }
+    }
+
+    bool LinearSegregatedFitAllocator::BlockHeader::IsLast() const
+    {
+        return (size_ & kLastBlockFlag) != 0;
+    }
+
+    void LinearSegregatedFitAllocator::BlockHeader::SetLast(bool is_last)
+    {
+        if (is_last)
+        {
+            size_ |= kLastBlockFlag;
+        }
+        else
+        {
+            size_ &= ~kLastBlockFlag;
+        }
+    }
+
+    /************************************************************************/
+    /* LINEAR SEGREGATED FIT ALLOCATOR                                      */
+    /************************************************************************/
+    
+    LinearSegregatedFitAllocator::LinearSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t base_allocation_size, size_t order)
+        : Allocator(name)
+        , pool_(capacity, 1)
+        , free_lists_(order)
+        , last_block_(nullptr)
+        , base_allocation_size_(base_allocation_size)
+    {
+
+        // Initialize the free lists.
+        while (order-- > 0)
+        {
+            free_lists_.PushBack(nullptr);
+        }
+    }
+
+    void* LinearSegregatedFitAllocator::Allocate(size_t size)
+    {
+        return **GetFreeBlockBySize(size);
+    }
+
+    void* LinearSegregatedFitAllocator::Allocate(size_t size, size_t alignment)
+    {
+        return **GetFreeBlockBySize(size + alignment);
+    }
+
+    void LinearSegregatedFitAllocator::Free(void* block)
+    {
+        auto free_block = reinterpret_cast<BlockHeader*>(Memory::Offset(block, -static_cast<int64_t>(sizeof(BlockHeader))));
+
+        PushBlock(free_block);
+    }
+
+    bool LinearSegregatedFitAllocator::Belongs(void* block) const
+    {
+        return pool_.ContainsAddress(block);
+    }
+
+    size_t LinearSegregatedFitAllocator::GetMaxAllocationSize() const
+    {
+        return base_allocation_size_ * free_lists_.GetMaxCount();
+    }
+
+    LinearSegregatedFitAllocator::BlockHeader* LinearSegregatedFitAllocator::GetFreeBlockBySize(size_t size)
+    {
+        size += sizeof(BlockHeader);                            // Reserve more space for the header
+
+        auto index = (size - 1) / base_allocation_size_;
+
+        size = Math::Ceil(size, base_allocation_size_);         // Round up the allocation size
+
+        // Search a free block big enough to handle the allocation
+        while (index < free_lists_.GetMaxCount() && !free_lists_[index])
+        {
+            ++index;
+        }
+
+        if (index < free_lists_.GetMaxCount())
+        {
+            auto block = PopBlock(index);           // Pop a free block from the given segregated free list.
+
+            SplitBlock(block, size);                // Split the block (if needed).
+
+            return block;
+        }
+
+        // Get a new block from the pool
+        auto block = reinterpret_cast<BlockHeader*>(pool_.Allocate(size));
+
+        block->SetSize(size);
+        block->SetBusy(true);
+        block->SetLast(true);
+        block->previous_ = last_block_;
+
+        if (last_block_)
+        {
+            last_block_->SetLast(false);            // The last block is no longer the last
+        }
+
+        last_block_ = block;
+
+        return block;
+    }
+
+    LinearSegregatedFitAllocator::BlockHeader* LinearSegregatedFitAllocator::PopBlock(size_t index)
+    {
+        auto block = free_lists_[index];
+
+        if (block)
+        {
+            SYNTROPY_ASSERT(!block->IsBusy());
+
+            // Promote the next free block as head of the list
+            auto next_free = block->next_free_;
+
+            free_lists_[index] = next_free;
+
+            if (next_free)
+            {
+                next_free->previous_free_ = nullptr;
+            }
+
+            // Mark the popped block as "busy"
+            block->SetBusy(true);
+        }
+
+        return reinterpret_cast<BlockHeader*>(block);
+    }
+
+    void LinearSegregatedFitAllocator::PushBlock(BlockHeader* block)
+    {
+        auto merged_block = reinterpret_cast<FreeBlockHeader*>(block);
+
+        auto previous_block = reinterpret_cast<FreeBlockHeader*>(block->previous_);
+        auto next_block = reinterpret_cast<FreeBlockHeader*>(Memory::Offset(block, block->GetSize()));
+
+        // Merge the block with the previous physical block
+
+        if (previous_block && !previous_block->IsBusy())
+        {
+            RemoveBlock(previous_block);                                                // Remove the previous block from its segregated list.
+
+            previous_block->SetSize(previous_block->GetSize() + block->GetSize());      // Grow the block size.
+            previous_block->SetLast(block->IsLast());                                   // Merging with the 'last' block yields another 'last' block.
+
+            merged_block = previous_block;                                              // The previous block and the original one are now merged
+        }
+
+        // Merge the block with the next physical block
+
+        if (!block->IsLast() && !next_block->IsBusy())
+        {
+            RemoveBlock(next_block);                                                    // Remove the next block from its segregated list.
+
+            block->SetSize(block->GetSize() + next_block->GetSize());                   // Grow the block size.
+            block->SetLast(next_block->IsLast());                                       // Merging with the 'last' block yields another 'last' block.
+        }
+
+        if (merged_block->IsLast())
+        {
+            last_block_ = merged_block;                                                 // Update the pointer to last block.
+        }
+        else
+        {
+            next_block = Memory::Offset(merged_block, merged_block->GetSize());
+            next_block->previous_ = merged_block;                                       // The pointer to the previous physical block of the next block is no longer valid since that block may have been merged.
+        }
+
+        // Insert the merged block in the proper free list
+
+        merged_block->SetBusy(false);                                                   // The block is no longer busy
+
+        InsertBlock(merged_block);
+    }
+
+    void LinearSegregatedFitAllocator::SplitBlock(BlockHeader* block, size_t size)
+    {
+        SYNTROPY_ASSERT(block->IsBusy());
+
+        if (block->GetSize() > size)
+        {
+            auto remaining_block = reinterpret_cast<BlockHeader*>(Memory::Offset(block, size));
+
+            // Setup the new block
+            remaining_block->previous_ = block;                         // Previous physical block
+            remaining_block->SetBusy(false);                            // This block is free
+            remaining_block->SetLast(block->IsLast());                  // This block is the last only if the original one was the last
+            remaining_block->SetSize(block->GetSize() - size);          // Remaining size
+
+            // Update the block info
+            block->SetSize(size);                                       // Shrink the size
+            block->SetLast(false);                                      // It can't be the last block anymore
+
+            SYNTROPY_ASSERT(block->IsBusy());                           // Make sure the original block is busy, otherwise PushBlock will merge again block and remaining_block!
+
+            PushBlock(remaining_block);
+        }
+    }
+
+    void LinearSegregatedFitAllocator::RemoveBlock(FreeBlockHeader* block)
+    {
+        // Fix-up the double linked list
+
+        if (block->previous_free_)
+        {
+            block->previous_free_->next_free_ = block->next_free_;
+        }
+        else
+        {
+            // The block has no previous block: fix the head of the free list
+            auto index = (block->GetSize() - 1) / base_allocation_size_;
+            free_lists_[index] = block->next_free_;
+        }
+
+        if (block->next_free_)
+        {
+            block->next_free_->previous_free_ = block->previous_free_;
+        }
+    }
+
+    void LinearSegregatedFitAllocator::InsertBlock(FreeBlockHeader* block)
+    {
+        // Push on the head of the proper segregated list
+        auto index = (block->GetSize() - 1) / base_allocation_size_;
+
+        block->previous_free_ = nullptr;
+        block->next_free_ = free_lists_[index];
+        free_lists_[index] = block;
+    }
+
+    /************************************************************************/
     /* EXPONENTIAL SEGREGATED FIT ALLOCATOR                                 */
     /************************************************************************/
 
@@ -255,6 +531,22 @@ namespace syntropy
         it->Free(address);
     }
 
+    bool ExponentialSegregatedFitAllocator::Belongs(void* block) const
+    {
+        return std::any_of(
+            allocators_.begin(), 
+            allocators_.end(),
+            [block](const BlockAllocator& allocator)
+            {
+                return allocator.ContainsAddress(block);
+            });
+    }
+
+    size_t ExponentialSegregatedFitAllocator::GetMaxAllocationSize() const
+    {
+        return base_allocation_size_ * (1ull << (allocators_.GetSize() - 1ull));      // base * 2^(order-1)
+    }
+
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size)
     {
         return GetAllocatorBySize(size).Reserve(size);
@@ -297,6 +589,8 @@ namespace syntropy
     BlockAllocator& ExponentialSegregatedFitAllocator::GetAllocatorBySize(size_t block_size)
     {
         auto index = Math::CeilLog2((block_size + base_allocation_size_ - 1) / base_allocation_size_);
+
+        SYNTROPY_ASSERT(index < allocators_.GetSize());
 
         return allocators_[index];
     }
