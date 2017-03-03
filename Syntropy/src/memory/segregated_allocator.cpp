@@ -213,30 +213,30 @@ namespace syntropy
     }
 
     /************************************************************************/
-    /* LINEAR SEGREGATED FIT ALLOCATOR :: BLOCK HEADER                      */
+    /* TWO LEVEL SEGREGATED FIT ALLOCATOR :: BLOCK HEADER                   */
     /************************************************************************/
 
-    void* LinearSegregatedFitAllocator::BlockHeader::operator*()
+    void* TwoLevelSegregatedFitAllocator::BlockHeader::operator*()
     {
         return Memory::Offset(this, sizeof(BlockHeader));
     }
 
-    size_t LinearSegregatedFitAllocator::BlockHeader::GetSize() const
+    size_t TwoLevelSegregatedFitAllocator::BlockHeader::GetSize() const
     {
         return size_ & ~kSizeMask;
     }
 
-    void LinearSegregatedFitAllocator::BlockHeader::SetSize(size_t size)
+    void TwoLevelSegregatedFitAllocator::BlockHeader::SetSize(size_t size)
     {
         size_ = (size & ~kSizeMask) | (size_ & kSizeMask);          // Preserve the status of the two flags at the end.
     }
 
-    bool LinearSegregatedFitAllocator::BlockHeader::IsBusy() const
+    bool TwoLevelSegregatedFitAllocator::BlockHeader::IsBusy() const
     {
         return (size_ & kBusyBlockFlag) != 0;
     }
 
-    void LinearSegregatedFitAllocator::BlockHeader::SetBusy(bool is_busy)
+    void TwoLevelSegregatedFitAllocator::BlockHeader::SetBusy(bool is_busy)
     {
         if (is_busy)
         {
@@ -248,12 +248,12 @@ namespace syntropy
         }
     }
 
-    bool LinearSegregatedFitAllocator::BlockHeader::IsLast() const
+    bool TwoLevelSegregatedFitAllocator::BlockHeader::IsLast() const
     {
         return (size_ & kLastBlockFlag) != 0;
     }
 
-    void LinearSegregatedFitAllocator::BlockHeader::SetLast(bool is_last)
+    void TwoLevelSegregatedFitAllocator::BlockHeader::SetLast(bool is_last)
     {
         if (is_last)
         {
@@ -266,58 +266,60 @@ namespace syntropy
     }
 
     /************************************************************************/
-    /* LINEAR SEGREGATED FIT ALLOCATOR                                      */
+    /* TWO LEVEL SEGREGATED FIT ALLOCATOR                                   */
     /************************************************************************/
     
-    LinearSegregatedFitAllocator::LinearSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t base_allocation_size, size_t order)
+    TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t second_level_index)
         : Allocator(name)
         , pool_(capacity, 1)
-        , free_lists_(order)
         , last_block_(nullptr)
-        , base_allocation_size_(base_allocation_size)
+        , second_level_index_(second_level_index)
+        , free_lists_((Math::FloorLog2(capacity) + 1ull) * (1ull << second_level_index_))
     {
 
         // Initialize the free lists.
-        while (order-- > 0)
+        auto count = free_lists_.GetMaxCount();
+
+        while (count-- > 0)
         {
             free_lists_.PushBack(nullptr);
         }
     }
 
-    void* LinearSegregatedFitAllocator::Allocate(size_t size)
+    void* TwoLevelSegregatedFitAllocator::Allocate(size_t size)
     {
         return **GetFreeBlockBySize(size);
     }
 
-    void* LinearSegregatedFitAllocator::Allocate(size_t size, size_t alignment)
+    void* TwoLevelSegregatedFitAllocator::Allocate(size_t size, size_t alignment)
     {
         return **GetFreeBlockBySize(size + alignment);
     }
 
-    void LinearSegregatedFitAllocator::Free(void* block)
+    void TwoLevelSegregatedFitAllocator::Free(void* block)
     {
         auto free_block = reinterpret_cast<BlockHeader*>(Memory::Offset(block, -static_cast<int64_t>(sizeof(BlockHeader))));
 
         PushBlock(free_block);
     }
 
-    bool LinearSegregatedFitAllocator::Belongs(void* block) const
+    bool TwoLevelSegregatedFitAllocator::Belongs(void* block) const
     {
         return pool_.ContainsAddress(block);
     }
 
-    size_t LinearSegregatedFitAllocator::GetMaxAllocationSize() const
+    size_t TwoLevelSegregatedFitAllocator::GetMaxAllocationSize() const
     {
-        return base_allocation_size_ * free_lists_.GetMaxCount();
+        return pool_.GetCapacity();
     }
 
-    LinearSegregatedFitAllocator::BlockHeader* LinearSegregatedFitAllocator::GetFreeBlockBySize(size_t size)
+    TwoLevelSegregatedFitAllocator::BlockHeader* TwoLevelSegregatedFitAllocator::GetFreeBlockBySize(size_t size)
     {
-        size += sizeof(BlockHeader);                            // Reserve more space for the header
+        size += sizeof(BlockHeader);                // Reserve more space for the header
 
-        auto index = (size - 1) / base_allocation_size_;
+        size = std::max(size, sizeof(FreeBlockHeader));
 
-        size = Math::Ceil(size, base_allocation_size_);         // Round up the allocation size
+        auto index = GetFreeListIndexBySize(size);
 
         // Search a free block big enough to handle the allocation
         while (index < free_lists_.GetMaxCount() && !free_lists_[index])
@@ -352,7 +354,7 @@ namespace syntropy
         return block;
     }
 
-    LinearSegregatedFitAllocator::BlockHeader* LinearSegregatedFitAllocator::PopBlock(size_t index)
+    TwoLevelSegregatedFitAllocator::BlockHeader* TwoLevelSegregatedFitAllocator::PopBlock(size_t index)
     {
         auto block = free_lists_[index];
 
@@ -377,7 +379,7 @@ namespace syntropy
         return reinterpret_cast<BlockHeader*>(block);
     }
 
-    void LinearSegregatedFitAllocator::PushBlock(BlockHeader* block)
+    void TwoLevelSegregatedFitAllocator::PushBlock(BlockHeader* block)
     {
         auto merged_block = reinterpret_cast<FreeBlockHeader*>(block);
 
@@ -423,13 +425,13 @@ namespace syntropy
         InsertBlock(merged_block);
     }
 
-    void LinearSegregatedFitAllocator::SplitBlock(BlockHeader* block, size_t size)
+    void TwoLevelSegregatedFitAllocator::SplitBlock(BlockHeader* block, size_t size)
     {
         SYNTROPY_ASSERT(block->IsBusy());
 
-        if (block->GetSize() > size)
+        if (block->GetSize() > size + sizeof(FreeBlockHeader))          // Do not split if the remaining block wouldn't be able to contain at least a FreeBlockHeader.
         {
-            auto remaining_block = reinterpret_cast<BlockHeader*>(Memory::Offset(block, size));
+            auto remaining_block = Memory::Offset(block, size);
 
             // Setup the new block
             remaining_block->previous_ = block;                         // Previous physical block
@@ -447,7 +449,7 @@ namespace syntropy
         }
     }
 
-    void LinearSegregatedFitAllocator::RemoveBlock(FreeBlockHeader* block)
+    void TwoLevelSegregatedFitAllocator::RemoveBlock(FreeBlockHeader* block)
     {
         // Fix-up the double linked list
 
@@ -458,7 +460,8 @@ namespace syntropy
         else
         {
             // The block has no previous block: fix the head of the free list
-            auto index = (block->GetSize() - 1) / base_allocation_size_;
+            auto index = GetFreeListIndexBySize(block->GetSize());
+
             free_lists_[index] = block->next_free_;
         }
 
@@ -468,14 +471,25 @@ namespace syntropy
         }
     }
 
-    void LinearSegregatedFitAllocator::InsertBlock(FreeBlockHeader* block)
+    void TwoLevelSegregatedFitAllocator::InsertBlock(FreeBlockHeader* block)
     {
         // Push on the head of the proper segregated list
-        auto index = (block->GetSize() - 1) / base_allocation_size_;
+        auto index = GetFreeListIndexBySize(block->GetSize());
 
         block->previous_free_ = nullptr;
         block->next_free_ = free_lists_[index];
         free_lists_[index] = block;
+    }
+
+    size_t TwoLevelSegregatedFitAllocator::GetFreeListIndexBySize(size_t size) const
+    {
+        auto first_level = Math::FloorLog2(size);
+
+        auto second_level = (size ^ (1ull << first_level)) >> (first_level - second_level_index_);
+
+        SYNTROPY_ASSERT(second_level < (1ull << second_level_index_));
+
+        return first_level * (1ull << second_level_index_) + second_level;          // Flatten the index.
     }
 
     /************************************************************************/

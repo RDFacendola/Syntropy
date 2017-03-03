@@ -51,6 +51,17 @@ namespace syntropy
             return 0;
         }
 
+        /// \brief Get the base 2 logarithm of a number and floor the result to the previous integer value.
+        /// This overload does participate for overload resolution only for unsigned values.
+        /// \return Returns the base 2 logarithm of the provided number rounded down to the previous integer value. If the provided number is 0 the result is also 0.
+        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned<Unsigned>::value>>
+        static Unsigned FloorLog2(Unsigned number)
+        {
+            return number > 0 ?
+                   platform::GetBuiltIn().GetMostSignificantBit(static_cast<uint64_t>(number)) :
+                   0;
+        }
+
     };
 
 }

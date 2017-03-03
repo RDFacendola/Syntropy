@@ -50,27 +50,27 @@ int main()
 
     //
     {
-        syntropy::LinearSegregatedFitAllocator lsfa("linear", 0x100000, 256, 10);
+        syntropy::TwoLevelSegregatedFitAllocator tlsfa("linear", 0x800000, 2);
 
-        auto p = SYNTROPY_NEW(lsfa) FooSmall();
-        auto q = SYNTROPY_NEW(lsfa) FooMedium();
-        auto r = SYNTROPY_NEW(lsfa) FooLarge();
+        auto p = SYNTROPY_NEW(tlsfa) FooSmall();
+        auto q = SYNTROPY_NEW(tlsfa) FooMedium();
+        auto r = SYNTROPY_NEW(tlsfa) FooLarge();
 
-        SYNTROPY_DELETE(lsfa, p);
+        SYNTROPY_DELETE(tlsfa, p);
 
-        p = SYNTROPY_NEW(lsfa) FooSmall();
+        p = SYNTROPY_NEW(tlsfa) FooSmall();
 
-        SYNTROPY_DELETE(lsfa, p);
-        SYNTROPY_DELETE(lsfa, q);
+        SYNTROPY_DELETE(tlsfa, p);
+        SYNTROPY_DELETE(tlsfa, q);
 
-        q = SYNTROPY_NEW(lsfa) FooMedium();
+        q = SYNTROPY_NEW(tlsfa) FooMedium();
 
-        SYNTROPY_DELETE(lsfa, q);
-        SYNTROPY_DELETE(lsfa, r);
+        SYNTROPY_DELETE(tlsfa, q);
+        SYNTROPY_DELETE(tlsfa, r);
 
-        r = SYNTROPY_NEW(lsfa) FooLarge();
+        r = SYNTROPY_NEW(tlsfa) FooLarge();
 
-        SYNTROPY_DELETE(lsfa, r);
+        SYNTROPY_DELETE(tlsfa, r);
 
     }
 

@@ -142,11 +142,11 @@ namespace syntropy
     /// Class 3 [3073, 4096]
     ///
     /// \author Raffaele D. Facendola - January 2017
-    class LinearSegregatedFitAllocator : public Allocator
+    class TwoLevelSegregatedFitAllocator : public Allocator
     {
     public:
 
-        LinearSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t base_allocation_size, size_t order);
+        TwoLevelSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t second_level_index);
 
         virtual void* Allocate(size_t size) override;
 
@@ -213,13 +213,18 @@ namespace syntropy
 
         void InsertBlock(FreeBlockHeader* block);
 
+        size_t GetFreeListIndexBySize(size_t size) const;
+
         SequentialAllocator pool_;                          ///< \brief Memory pool used by this allocator.
 
         BlockHeader* last_block_;                           ///< \brief Pointer to the block currently on the head of the pool.
 
-        VectorAllocator<FreeBlockHeader*> free_lists_;      ///< \brief Pointer to the free lists. Each list handles allocations for a particular class of sizes.
+        size_t second_level_index_;                         ///< \brief Number of classes for each first-level class.
+                                                            ///         First-level array divide free blocks in classes that are a power of two apart.
+                                                            ///         Second-level array subdivide each class linearly.
 
-        size_t base_allocation_size_;                       ///< \brief Size of each allocation class, in bytes.
+        VectorAllocator<FreeBlockHeader*> free_lists_;      ///< \brief Pointer to the free lists. Each list handles allocations for a particular class of sizes.
+                                                            ///< \brief Segregated free lists are flattened.
 
     };
 
