@@ -216,11 +216,6 @@ namespace syntropy
     /* TWO LEVEL SEGREGATED FIT ALLOCATOR :: BLOCK HEADER                   */
     /************************************************************************/
 
-    void* TwoLevelSegregatedFitAllocator::BlockHeader::operator*()
-    {
-        return Memory::Offset(this, sizeof(BlockHeader));
-    }
-
     size_t TwoLevelSegregatedFitAllocator::BlockHeader::GetSize() const
     {
         return size_ & ~kSizeMask;
@@ -228,7 +223,9 @@ namespace syntropy
 
     void TwoLevelSegregatedFitAllocator::BlockHeader::SetSize(size_t size)
     {
-        size_ = (size & ~kSizeMask) | (size_ & kSizeMask);          // Preserve the status of the two flags at the end.
+        SYNTROPY_ASSERT((size & kSizeMask) == 0)        // The new size must not interfere with the status bits at the end!.
+
+        size_ = size | (size_ & kSizeMask);             // Preserve the status of the two flags at the end.
     }
 
     bool TwoLevelSegregatedFitAllocator::BlockHeader::IsBusy() const
@@ -265,6 +262,30 @@ namespace syntropy
         }
     }
 
+    void* TwoLevelSegregatedFitAllocator::BlockHeader::begin()
+    {
+        return Memory::Offset(this, sizeof(BlockHeader));
+    }
+
+    void* TwoLevelSegregatedFitAllocator::BlockHeader::end()
+    {
+        return Memory::Offset(this, GetSize());
+    }
+
+    /************************************************************************/
+    /* TWO LEVEL SEGREGATED FIT ALLOCATOR :: FREE BLOCK HEADER              */
+    /************************************************************************/
+
+    void* TwoLevelSegregatedFitAllocator::FreeBlockHeader::begin()
+    {
+        return Memory::Offset(this, sizeof(FreeBlockHeader));
+    }
+
+    void* TwoLevelSegregatedFitAllocator::FreeBlockHeader::end()
+    {
+        return Memory::Offset(this, GetSize());
+    }
+
     /************************************************************************/
     /* TWO LEVEL SEGREGATED FIT ALLOCATOR                                   */
     /************************************************************************/
@@ -288,12 +309,12 @@ namespace syntropy
 
     void* TwoLevelSegregatedFitAllocator::Allocate(size_t size)
     {
-        return **GetFreeBlockBySize(size);
+        return GetFreeBlockBySize(size)->begin();
     }
 
     void* TwoLevelSegregatedFitAllocator::Allocate(size_t size, size_t alignment)
     {
-        return **GetFreeBlockBySize(size + alignment);
+        return GetFreeBlockBySize(size + alignment)->begin();
     }
 
     void TwoLevelSegregatedFitAllocator::Free(void* block)
@@ -315,9 +336,9 @@ namespace syntropy
 
     TwoLevelSegregatedFitAllocator::BlockHeader* TwoLevelSegregatedFitAllocator::GetFreeBlockBySize(size_t size)
     {
-        size += sizeof(BlockHeader);                // Reserve more space for the header
-
-        size = std::max(size, sizeof(FreeBlockHeader));
+        size += sizeof(BlockHeader);                            // Reserve more space for the header.
+        size = std::max(size, kMinimumBlockSize);               // The size must be at least as big as the minimum size allowed.
+        size = Math::Ceil(size, BlockHeader::kSizeMask + 1);    // The size must not interfere with the status bits of the block.
 
         auto index = GetFreeListIndexBySize(size);
 
@@ -327,29 +348,41 @@ namespace syntropy
             ++index;
         }
 
+        BlockHeader* block;
+
         if (index < free_lists_.GetMaxCount())
         {
-            auto block = PopBlock(index);           // Pop a free block from the given segregated free list.
+            // Pop a free block from the given segregated free list.
+            block = PopBlock(index);
 
             SplitBlock(block, size);                // Split the block (if needed).
-
-            return block;
         }
-
-        // Get a new block from the pool
-        auto block = reinterpret_cast<BlockHeader*>(pool_.Allocate(size));
-
-        block->SetSize(size);
-        block->SetBusy(true);
-        block->SetLast(true);
-        block->previous_ = last_block_;
-
-        if (last_block_)
+        else
         {
-            last_block_->SetLast(false);            // The last block is no longer the last
+            // Get a new block from the pool
+            block = reinterpret_cast<BlockHeader*>(pool_.Allocate(size));
+
+            block->SetSize(size);
+            block->SetBusy(true);
+            block->SetLast(true);
+            block->previous_ = last_block_;
+
+            if (last_block_)
+            {
+                last_block_->SetLast(false);            // The last block is no longer the last
+            }
+
+            last_block_ = block;
         }
 
-        last_block_ = block;
+        // Fill the payload with some recognizable pattern (uninitialized memory).
+        SYNTROPY_DEBUG_ONLY
+        (
+            std::fill(
+                reinterpret_cast<int8_t*>(block->begin()),
+                reinterpret_cast<int8_t*>(block->end()),
+                kUninitializedMemoryPattern);
+        );
 
         return block;
     }
@@ -384,7 +417,7 @@ namespace syntropy
         auto merged_block = reinterpret_cast<FreeBlockHeader*>(block);
 
         auto previous_block = reinterpret_cast<FreeBlockHeader*>(block->previous_);
-        auto next_block = reinterpret_cast<FreeBlockHeader*>(Memory::Offset(block, block->GetSize()));
+        auto next_block = reinterpret_cast<FreeBlockHeader*>(block->end());
 
         // Merge the block with the previous physical block
 
@@ -414,7 +447,7 @@ namespace syntropy
         }
         else
         {
-            next_block = Memory::Offset(merged_block, merged_block->GetSize());
+            next_block = reinterpret_cast<FreeBlockHeader*>(merged_block->end());
             next_block->previous_ = merged_block;                                       // The pointer to the previous physical block of the next block is no longer valid since that block may have been merged.
         }
 
@@ -422,14 +455,21 @@ namespace syntropy
 
         merged_block->SetBusy(false);                                                   // The block is no longer busy
 
+        // Fill the payload with some recognizable pattern (free memory)
+        SYNTROPY_DEBUG_ONLY
+        (
+            std::fill(
+                reinterpret_cast<int8_t*>(merged_block->begin()),
+                reinterpret_cast<int8_t*>(merged_block->end()),
+                kFreeMemoryPattern);
+        );
+
         InsertBlock(merged_block);
     }
 
     void TwoLevelSegregatedFitAllocator::SplitBlock(BlockHeader* block, size_t size)
     {
-        SYNTROPY_ASSERT(block->IsBusy());
-
-        if (block->GetSize() > size + sizeof(FreeBlockHeader))          // Do not split if the remaining block wouldn't be able to contain at least a FreeBlockHeader.
+        if (block->GetSize() > size + kMinimumBlockSize)                // Do not split if the remaining block size would fall below the minimum size allowed.
         {
             auto remaining_block = Memory::Offset(block, size);
 

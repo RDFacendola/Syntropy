@@ -366,13 +366,13 @@ namespace syntropy
         return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) + offset);
     }
 
-    inline constexpr bool Memory::IsContained(void* base, void* top, void* address)
+    constexpr bool Memory::IsContained(void* base, void* top, void* address)
     {
         return reinterpret_cast<uintptr_t>(base) <= reinterpret_cast<uintptr_t>(address) &&
                reinterpret_cast<uintptr_t>(address) < reinterpret_cast<uintptr_t>(top);
     }
     
-    inline constexpr size_t Memory::GetSize(void* base, void* top)
+    constexpr size_t Memory::GetSize(void* base, void* top)
     {
         return reinterpret_cast<uintptr_t>(top) - reinterpret_cast<uintptr_t>(base);
     }
@@ -384,7 +384,7 @@ namespace syntropy
     }
 
     template <typename T>
-    static constexpr T* Memory::AlignDown(T* address, size_t alignment)
+    constexpr T* Memory::AlignDown(T* address, size_t alignment)
     {
         return reinterpret_cast<T*>(Math::Floor(reinterpret_cast<uintptr_t>(address), alignment));
     }

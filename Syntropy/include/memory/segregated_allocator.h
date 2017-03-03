@@ -160,6 +160,12 @@ namespace syntropy
 
     private:
 
+        static const size_t kMinimumBlockSize = 32;
+
+        static const int8_t kUninitializedMemoryPattern = 0x5C;
+
+        static const int8_t kFreeMemoryPattern = 0x5F;
+
         /// \brief Header for an allocated block.
         struct BlockHeader
         {
@@ -169,12 +175,7 @@ namespace syntropy
 
             static const size_t kSizeMask = kBusyBlockFlag | kLastBlockFlag;
 
-            size_t size_;                       ///< \brief Size of the block. 
-                                                /// The last two bit (F and T) are used to store the block status. F tells whether the block is busy or free, T tells whether the block is the last one in the pool.
-
             BlockHeader* previous_;             ///< \brief Pointer to the previous physical block.
-
-            void* operator*();
 
             size_t GetSize() const;
 
@@ -187,6 +188,16 @@ namespace syntropy
             bool IsLast() const;
 
             void SetLast(bool is_last);
+
+            void* begin();
+
+            void* end();
+
+        private:
+
+            size_t size_;                       ///< \brief Size of the block. 
+                                                /// The last two bit (F and T) are used to store the block status. F tells whether the block is busy or free, T tells whether the block is the last one in the pool.
+
         };
 
         /// \brief Extended header for a free block.
@@ -195,6 +206,10 @@ namespace syntropy
             FreeBlockHeader* next_free_;        ///< \brief Next free block in the segregated list.
 
             FreeBlockHeader* previous_free_;    ///< \brief Previous free block in the segregated list.
+
+            void* begin();
+
+            void* end();
         };
 
         /// \brief Get a pointer to a free block which can contain an allocation of a given size.
