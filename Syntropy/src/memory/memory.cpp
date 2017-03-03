@@ -60,8 +60,9 @@ namespace syntropy
 
         // The header must be allocated in a different page to prevent client code from accidentally deallocating it while working with the memory block
 
-        auto block_address = Memory::Align(Memory::Offset(base_address, page_size),             // Requires some space before the reserved block for the header
-                                           alignment);                                          // The resulting block must be aligned
+        auto block_address = Memory::Align(
+            Memory::AddOffset(base_address, page_size),                                         // Requires some space before the reserved block for the header
+            alignment);                                                                         // The resulting block must be aligned
 
         SYNTROPY_ASSERT(block_address);
 
@@ -92,9 +93,9 @@ namespace syntropy
 
     Memory::ReservedBlockHeader* Memory::GetReservedBlockHeader(void* address, size_t page_size)
     {
-        address = Memory::AlignDown(address, page_size);                                                                // Page containing the base address of the block to free.
+        address = Memory::AlignDown(address, page_size);                                                // Page containing the base address of the block to free.
 
-        return reinterpret_cast<ReservedBlockHeader*>(Memory::Offset(address, -static_cast<int64_t>(page_size)));       // The previous page contains the infos of the reserved region. This page is always committed.
+        return reinterpret_cast<ReservedBlockHeader*>(Memory::SubOffset(address, page_size));           // The previous page contains the infos of the reserved region. This page is always committed.
     }
 
     /************************************************************************/
@@ -159,7 +160,7 @@ namespace syntropy
 
     void* MemoryRange::operator[](size_t offset) const
     {
-        auto ptr = Memory::Offset(base_, offset);
+        auto ptr = Memory::AddOffset(base_, offset);
 
         SYNTROPY_ASSERT(Contains(ptr, 1));
 
@@ -251,7 +252,7 @@ namespace syntropy
 
     void* MemoryBuffer::operator[](size_t offset) const
     {
-        return Memory::Offset(buffer_, offset);
+        return Memory::AddOffset(buffer_, offset);
     }
 
     size_t MemoryBuffer::GetSize() const

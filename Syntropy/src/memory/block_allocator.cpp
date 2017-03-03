@@ -40,7 +40,7 @@ namespace syntropy
         if (free_list_.IsEmpty())                                   // No free block?
         {
             block = head_;                                          // Reserve a new memory block on the allocator's head.
-            head_ = Memory::Offset(head_, block_size_);             // Move the head forward.
+            head_ = Memory::AddOffset(head_, block_size_);          // Move the head forward.
         }
         else
         {

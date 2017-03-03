@@ -14,7 +14,7 @@ namespace syntropy
         {
             *reinterpret_cast<THead*>(buffer) = head;           // Write the next argument
 
-            buffer = Memory::Offset(buffer, sizeof(THead));     // Advance
+            buffer = Memory::AddOffset(buffer, sizeof(THead));  // Advance
 
             __VMArgs(buffer, std::forward<TRest>(rest)...);     // Write the rest
         }
@@ -31,9 +31,9 @@ namespace syntropy
 
             *reinterpret_cast<instruction_t*>(buffer) = instruction;    // Write the instruction
 
-            buffer = Memory::Offset(buffer, sizeof(instruction));       // Advance
+            buffer = Memory::AddOffset(buffer, sizeof(instruction));    // Advance
 
-            __VMArgs(buffer, std::forward<TArgs>(arguments)...);                // Write the arguments
+            __VMArgs(buffer, std::forward<TArgs>(arguments)...);        // Write the arguments
             
             return reinterpret_cast<instruction_t*>(r);
         }

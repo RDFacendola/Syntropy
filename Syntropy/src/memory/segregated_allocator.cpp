@@ -148,7 +148,7 @@ namespace syntropy
         // Fill the free-block list
         while (count-- > 1)
         {
-            head->next_ = Memory::Offset(head, block_size);
+            head->next_ = Memory::AddOffset(head, block_size);
             head = head->next_;
         }
 
@@ -208,7 +208,7 @@ namespace syntropy
         auto page_address = reinterpret_cast<size_t>(page);
 
         auto header_size = Math::Ceil(page_address + sizeof(Page), block_size) - page_address;      // The header is padded such that blocks in the page are aligned to their own size
-        head = reinterpret_cast<Block*>(Memory::Offset(page, header_size));                         // The first available block is just after the page header
+        head = reinterpret_cast<Block*>(Memory::AddOffset(page, header_size));                      // The first available block is just after the page header
         return (allocator_.GetBlockSize() - header_size) / block_size;                              // Amount of available blocks in the page
     }
 
@@ -264,12 +264,12 @@ namespace syntropy
 
     void* TwoLevelSegregatedFitAllocator::BlockHeader::begin()
     {
-        return Memory::Offset(this, sizeof(BlockHeader));
+        return Memory::AddOffset(this, sizeof(BlockHeader));
     }
 
     void* TwoLevelSegregatedFitAllocator::BlockHeader::end()
     {
-        return Memory::Offset(this, GetSize());
+        return Memory::AddOffset(this, GetSize());
     }
 
     /************************************************************************/
@@ -278,12 +278,12 @@ namespace syntropy
 
     void* TwoLevelSegregatedFitAllocator::FreeBlockHeader::begin()
     {
-        return Memory::Offset(this, sizeof(FreeBlockHeader));
+        return Memory::AddOffset(this, sizeof(FreeBlockHeader));
     }
 
     void* TwoLevelSegregatedFitAllocator::FreeBlockHeader::end()
     {
-        return Memory::Offset(this, GetSize());
+        return Memory::AddOffset(this, GetSize());
     }
 
     /************************************************************************/
@@ -319,7 +319,7 @@ namespace syntropy
 
     void TwoLevelSegregatedFitAllocator::Free(void* block)
     {
-        auto free_block = reinterpret_cast<BlockHeader*>(Memory::Offset(block, -static_cast<int64_t>(sizeof(BlockHeader))));
+        auto free_block = reinterpret_cast<BlockHeader*>(Memory::SubOffset(block, sizeof(BlockHeader)));
 
         PushBlock(free_block);
     }
@@ -471,7 +471,7 @@ namespace syntropy
     {
         if (block->GetSize() > size + kMinimumBlockSize)                // Do not split if the remaining block size would fall below the minimum size allowed.
         {
-            auto remaining_block = Memory::Offset(block, size);
+            auto remaining_block = Memory::AddOffset(block, size);
 
             // Setup the new block
             remaining_block->previous_ = block;                         // Previous physical block

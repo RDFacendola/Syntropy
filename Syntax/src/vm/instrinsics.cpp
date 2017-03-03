@@ -29,7 +29,7 @@ namespace syntropy
 
             auto& vm = context.GetVirtualMachine();
 
-            vm.instruction_pointer_ = Memory::Offset(vm.instruction_pointer_, offset);          // Jump forward or backward depending on the provided offset.
+            vm.instruction_pointer_ = Memory::AddOffset(vm.instruction_pointer_, offset);       // Jump forward or backward depending on the provided offset.
         }
 
         void VirtualMachineIntrinsics::Enter(VMExecutionContext& context)
@@ -42,7 +42,7 @@ namespace syntropy
 
             vm.base_pointer_ = vm.stack_pointer_;                                               // Setup a new base pointer for the current frame.
             
-            vm.stack_pointer_ = Memory::Offset(vm.stack_pointer_, local_storage);               // Reserve space for local storage.
+            vm.stack_pointer_ = Memory::AddOffset(vm.stack_pointer_, local_storage);            // Reserve space for local storage.
         }
 
         void VirtualMachineIntrinsics::Call(VMExecutionContext& context)
@@ -64,13 +64,13 @@ namespace syntropy
 
             auto& vm = context.GetVirtualMachine();
 
-            vm.stack_pointer_ = vm.base_pointer_;                                                           // Tear down the local storage by unwinding the stack pointer.
+            vm.stack_pointer_ = vm.base_pointer_;                                                       // Tear down the local storage by unwinding the stack pointer.
 
-            vm.base_pointer_ = reinterpret_cast<word_t*>(*(--vm.stack_pointer_));                           // Restore the previous base pointer.
+            vm.base_pointer_ = reinterpret_cast<word_t*>(*(--vm.stack_pointer_));                       // Restore the previous base pointer.
 
-            vm.instruction_pointer_ = reinterpret_cast<instruction_t*>(*(--vm.stack_pointer_));             // Restore the previous instruction pointer and return the control to the caller.
+            vm.instruction_pointer_ = reinterpret_cast<instruction_t*>(*(--vm.stack_pointer_));         // Restore the previous instruction pointer and return the control to the caller.
 
-            vm.stack_pointer_ = Memory::Offset(vm.stack_pointer_, -static_cast<int64_t>(input_storage));    // Tear down input arguments storage.
+            vm.stack_pointer_ = Memory::SubOffset(vm.stack_pointer_, input_storage);                    // Tear down input arguments storage.
         }
 
         void VirtualMachineIntrinsics::PushWord(VMExecutionContext& context)

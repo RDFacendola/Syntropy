@@ -25,7 +25,7 @@ namespace syntropy
 
         auto block = head_;
 
-        head_ = Memory::Offset(head_, size);
+        head_ = Memory::AddOffset(head_, size);
 
         // Commit each memory page between the old page head and the new one
         auto next_page = Memory::Align(head_, Memory::GetPageSize());           // Ceil to next memory page boundary.
@@ -46,7 +46,7 @@ namespace syntropy
     {
         SYNTROPY_ASSERT(size > 0);
 
-        head_ = Memory::Offset(head_, -static_cast<int64_t>(size));
+        head_ = Memory::SubOffset(head_, size);
 
         // Decommit each memory page between the old page head and the new one
         auto next_page = Memory::Align(head_, Memory::GetPageSize());           // Ceil to previous memory page boundary.
@@ -107,7 +107,7 @@ namespace syntropy
 
         auto block = head_;
 
-        head_ = Memory::Offset(head_, size);
+        head_ = Memory::AddOffset(head_, size);
 
         SYNTROPY_ASSERT(GetSize() <= GetCapacity());
 

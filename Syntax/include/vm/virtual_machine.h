@@ -23,7 +23,7 @@ namespace syntropy
 
         /// \brief Type alias for a variable representing a "register" of a syntropy virtual machine.
         /// Since the virtual machine doesn't have real registers, this is just an offset relative to the current base pointer.
-        /// Equivalent of uintptr_t.
+        /// Equivalent of intptr_t.
         using register_t = int32_t;
 
         /// \brief Type alias for a word of a virtual machine.
@@ -33,7 +33,7 @@ namespace syntropy
 
         /// \brief Type alias for a size type for a virtual machine.
         /// Equivalent of size_t.
-        using storage_t = int32_t;
+        using storage_t = uint32_t;
 
         /// \brief Type alias for instructions that can be executed by a virtual machine.
         using instruction_t = void(*)(VMExecutionContext&);
@@ -160,7 +160,10 @@ namespace syntropy
         inline TArgument* VMExecutionContext::GetNextArgument()
         {
             auto register_offset = GetNextImmediate<register_t>();                                          // Offset of the register, relative to the current base pointer.
-            return reinterpret_cast<TArgument*>(Memory::Offset(virtual_machine_.base_pointer_, register_offset));
+
+            auto base_pointer = reinterpret_cast<TArgument*>(virtual_machine_.base_pointer_);
+
+            return Memory::AddOffset(base_pointer, register_offset);
         }
 
     }

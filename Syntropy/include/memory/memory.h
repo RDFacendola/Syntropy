@@ -52,12 +52,19 @@ namespace syntropy
 
         // Memory manipulation
 
-        /// \brief Offset an address.
-        /// \param address Address to perform the offset from.
-        /// \param offset Offset with respect the address, in bytes.
-        /// \return Returns the address offsetted by the specified amount.
+        /// \brief Add an offset to an address.
+        /// \param address Address to offset.
+        /// \param offset Offset to add, in bytes.
+        /// \return Returns the address moved forward by the specified amount of bytes.
         template <typename T>
-        static constexpr T* Offset(T* address, int64_t offset);
+        static constexpr T* AddOffset(T* address, size_t offset);
+
+        /// \brief Subtract and offset from an address.
+        /// \param address Address to offset.
+        /// \param offset Offset to subtract, in bytes.
+        /// \return Returns the address moved backward by the specified amount of bytes.
+        template <typename T>
+        static constexpr T* SubOffset(T* address, size_t offset);
 
         /// \brief Check whether an address is contained in a memory range.
         /// \param base Base address of the range.
@@ -361,9 +368,15 @@ namespace syntropy
     /************************************************************************/
 
     template <typename T>
-    constexpr T* Memory::Offset(T* address, int64_t offset)
+    constexpr T* Memory::AddOffset(T* address, size_t offset)
     {
         return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) + offset);
+    }
+
+    template <typename T>
+    constexpr T* Memory::SubOffset(T* address, size_t offset)
+    {
+        return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) - offset);
     }
 
     constexpr bool Memory::IsContained(void* base, void* top, void* address)
