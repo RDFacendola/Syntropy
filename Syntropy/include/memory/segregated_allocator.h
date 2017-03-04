@@ -130,73 +130,96 @@ namespace syntropy
     };
 
     /// \brief High-performances, low-fragmentation allocator to handle allocation of medium-sized objects.
-    /// The allocator is designed to minimize external fragmentation while keeping constant response time. 
-    /// Pages are allocated and deallocated on demand. Memory can be reserved at once and committed at a later time.
-    /// The segregated free list classes are distributed linearly: each class may handle allocation up to a multiple of the base allocation size.
-    /// The amount of classes handled by the allocator is said "order" of the allocator.
-    ///
-    /// Example for a 4th-order allocator with base_allocation_size of 1024 bytes.
-    /// Class 0 [1; 1024]
-    /// Class 1 [1025; 2048]
-    /// Class 2 [2049, 3072]
-    /// Class 3 [3073, 4096]
+    /// Based on: http://www.gii.upv.es/tlsf/files/jrts2008.pdf
     ///
     /// \author Raffaele D. Facendola - January 2017
     class TwoLevelSegregatedFitAllocator : public Allocator
     {
     public:
 
+        /// \brief Create a new allocator.
+        /// \param name Name of the allocator.
+        /// \param capacity Maximum capacity of the allocator, in bytes.
+        /// \param second_level_index Number of classes for each first level index. The actual number of classes is 2^second_level_index.
         TwoLevelSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t second_level_index);
 
+        /// \brief Allocate a new memory block.
+        /// \param size Size of the block to allocate, in bytes.
+        /// \return Return a pointer to the allocated block.
         virtual void* Allocate(size_t size) override;
 
+        /// \brief Allocate a new aligned memory block.
+        /// \param size Size of the block to allocate, in bytes.
+        /// \param alignment Alignment of the block.
+        /// \return Return a pointer to the allocated block.
         virtual void* Allocate(size_t size, size_t alignment) override;
 
+        /// \brief Free an allocated memory block.
+        /// \param block Block to free.
         virtual void Free(void* block) override;
 
+        /// \brief Check whether a given memory block belongs to this allocator.
+        /// \param block Block to check.
+        ///\ return Returns true if block is allocated or can be allocated by the allocator, returns false otherwise.
         virtual bool Belongs(void* block) const override;
 
+        /// \brief Get the largest amount of memory that can be allocated in a single allocation.
+        /// \return Returns the size of the largest memory block that can be theoretically allocated on this allocator.
         virtual size_t GetMaxAllocationSize() const override;
 
     private:
 
+        /// \brief Minimum size for each memory block.
         static const size_t kMinimumBlockSize = 32;
 
-        static const int8_t kUninitializedMemoryPattern = 0x5C;
-
-        static const int8_t kFreeMemoryPattern = 0x5F;
-
-        /// \brief Header for an allocated block.
+        /// \brief Header for an allocated block (either free or busy).
         struct BlockHeader
         {
+            /// \brief Flag declaring that the block is being used (allocated).
             static const size_t kBusyBlockFlag = 0x2;
 
+            /// \brief Flag declaring that the block has the highest address among all the allocated or free blocks.
             static const size_t kLastBlockFlag = 0x1;
 
+            /// \brief Mask used
             static const size_t kSizeMask = kBusyBlockFlag | kLastBlockFlag;
 
             BlockHeader* previous_;             ///< \brief Pointer to the previous physical block.
 
+            /// \brief Get the size of the block, in bytes. This size accounts for the size of the header, the payload and any padding.
             size_t GetSize() const;
 
+            /// \brief Set the size of the block.
+            /// \param size New size of the block. This size should account for the size of the header, the payload and any padding.
             void SetSize(size_t size);
 
+            /// \brief Check whether this block is being used.
+            /// \return Returns true if this block refers to an allocated block, returns false otherwise.
             bool IsBusy() const;
 
+            /// \brief Mark this block as being in use or free.
+            /// \param is_busy Whether the block should be considered busy after this call or not.
             void SetBusy(bool is_busy);
 
+            /// \brief Check whether this block has the highest address among every other block inside the allocator.
+            /// \return Returns true if this block is the last, returns false otherwise.
             bool IsLast() const;
 
+            /// \brief mark this block as being the last or not.
+            /// \param is_last Whether the block should be considered the last after this call or not.
             void SetLast(bool is_last);
 
+            /// \brief Get a pointer to the payload.
+            /// \return Returns a pointer to the first address of the payload.
             void* begin();
 
+            /// \brief Get a pointer past the end of the payload.
+            /// \return Returns a pointer to the first address after the payload.
             void* end();
 
         private:
 
-            size_t size_;                       ///< \brief Size of the block. 
-                                                /// The last two bit (F and T) are used to store the block status. F tells whether the block is busy or free, T tells whether the block is the last one in the pool.
+            size_t size_;           ///< \brief Size of the block. The last two bits (Busy and Last) are used to store the block status.
 
         };
 
@@ -207,25 +230,41 @@ namespace syntropy
 
             FreeBlockHeader* previous_free_;    ///< \brief Previous free block in the segregated list.
 
+            /// \brief Get a pointer to the payload.
+            /// \return Returns a pointer to the first address of the payload.
             void* begin();
 
+            /// \brief Get a pointer past the end of the payload.
+            /// \return Returns a pointer to the first address after the payload.
             void* end();
         };
 
-        /// \brief Get a pointer to a free block which can contain an allocation of a given size.
-        /// \param block_size Size of the block.
-        /// \return Returns a pointer to the smallest free block which can handle an allocation for the given size.
+        /// \brief Get a pointer to the smallest free block that can fit an allocation of a given size.
+        /// \param block_size Size of the block to fit.
+        /// \return Returns a pointer to the smallest free block that can fit an allocation of size size.
         BlockHeader* GetFreeBlockBySize(size_t size);
 
+        /// \brief Get the first free block in a particular segregated free list.
+        /// \param index Index of the segregated free list where the block will be taken from.
+        /// \return Returns a pointer to the first block in the specified segregated free list, if any. Returns nullptr if no block could be found.
         BlockHeader* PopBlock(size_t index);
 
+        /// \brief Add a free block to the proper segregated free list.
+        /// This method causes free blocks coalescing: if the provided block is adjacent to other free blocks, those blocks are merged and inserted inside the proper list.
+        /// \param block Block to add. After this call the block is no longer considered 'busy'.
         void PushBlock(BlockHeader* block);
 
+        /// \brief Split a block in two more blocks a stores the second inside the proper segregated free list. The second block is considered not busy.
+        /// \param block Block to split.
+        /// \param size Size of block after the split, in bytes. The remaining block after the split (if any) is stored as an additional free block.
         void SplitBlock(BlockHeader* block, size_t size);
 
-        // Remove a block from its current free list.
+        /// \param Remove a block from its current segregated free list.
+        /// \param block Block to remove.
         void RemoveBlock(FreeBlockHeader* block);
 
+        /// \brief Insert a block inside the proper segregated free list.
+        /// \param block Block to add. After this call the block is no longer considered 'busy'.
         void InsertBlock(FreeBlockHeader* block);
 
         size_t GetFreeListIndexBySize(size_t size) const;

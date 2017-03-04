@@ -213,6 +213,14 @@ namespace syntropy
         /// \brief Get the context associated to this allocator instance.
         operator diagnostics::Context() const;
 
+    protected:
+
+        /// \brief Pattern used to identify an uninitialized memory block (ie: allocated but not yet written).
+        static const int8_t kUninitializedMemoryPattern = 0x5C;
+
+        /// \brief Pattern used to identify a free memory block (ie: a block that has not been yet allocated).
+        static const int8_t kFreeMemoryPattern = 0x5F;
+
     private:
 
         HashedString name_;                 ///< \brief Name of the allocator.

@@ -355,7 +355,7 @@ namespace syntropy
             // Pop a free block from the given segregated free list.
             block = PopBlock(index);
 
-            SplitBlock(block, size);                // Split the block (if needed).
+            SplitBlock(block, size);                    // Split the block (if needed).
         }
         else
         {
