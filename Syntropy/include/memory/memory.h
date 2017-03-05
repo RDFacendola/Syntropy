@@ -166,6 +166,34 @@ namespace syntropy
 
     };
 
+    /// \brief Incapsulates memory debug functionalities.
+    /// \author Raffaele D. Facendola - March 2017
+    class MemoryDebug
+    {
+    public:
+
+        /// \brief Mark a memory region as uninitialized.
+        /// This method does nothing on release.
+        /// \param begin First address in the range.
+        /// \param end One past the last address in the range.
+        static void MarkUninitialized(void* begin, void* end);
+
+        /// \brief Mark a memory region as free.
+        /// This method does nothing on release.
+        /// \param begin First address in the range.
+        /// \param end One past the last address in the range.
+        static void MarkFree(void* begin, void* end);
+
+    private:
+
+        /// \brief Pattern used to identify an uninitialized memory block (ie: allocated but not yet written).
+        static const int8_t kUninitializedMemoryPattern = 0x5C;
+
+        /// \brief Pattern used to identify a free memory block (ie: a block that has not been yet allocated).
+        static const int8_t kFreeMemoryPattern = 0x5F;
+
+    };
+
     /// \brief Base interface for allocators.
     /// \author Raffaele D. Facendola - February 2017
     class Allocator
@@ -212,14 +240,6 @@ namespace syntropy
 
         /// \brief Get the context associated to this allocator instance.
         operator diagnostics::Context() const;
-
-    protected:
-
-        /// \brief Pattern used to identify an uninitialized memory block (ie: allocated but not yet written).
-        static const int8_t kUninitializedMemoryPattern = 0x5C;
-
-        /// \brief Pattern used to identify a free memory block (ie: a block that has not been yet allocated).
-        static const int8_t kFreeMemoryPattern = 0x5F;
 
     private:
 
@@ -275,6 +295,11 @@ namespace syntropy
         /// \param size Size of the sub-range, in bytes.
         /// \return Returns true if the sub-range [address, address+size) is contained inside this memory range, return false otherwise.
         bool Contains(void* address, size_t size) const;
+
+        /// \brief Check whether an address belongs to this memory range.
+        /// \param address Address to check.
+        /// \return Returns true if address is contained inside this memory range, returns false otherwise.
+        bool Contains(void* address) const;
 
         /// \brief Commit a memory block within this memory range.
         /// This method allocates all the memory pages containing at least one byte in the range [address, address + size].

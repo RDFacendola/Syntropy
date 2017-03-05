@@ -99,6 +99,30 @@ namespace syntropy
     }
 
     /************************************************************************/
+    /* MEMORY DEBUG                                                         */
+    /************************************************************************/
+
+    void MemoryDebug::MarkUninitialized(void* begin, void* end)
+    {
+        SYNTROPY_DEBUG_ONLY(
+            std::fill(
+                reinterpret_cast<int8_t*>(begin),
+                reinterpret_cast<int8_t*>(end),
+                kUninitializedMemoryPattern);
+        );
+    }
+
+    void MemoryDebug::MarkFree(void* begin, void* end)
+    {
+        SYNTROPY_DEBUG_ONLY(
+            std::fill(
+                reinterpret_cast<int8_t*>(begin),
+                reinterpret_cast<int8_t*>(end),
+                kFreeMemoryPattern);
+        );
+    }
+
+    /************************************************************************/
     /* ALLOCATOR                                                            */
     /************************************************************************/
 
@@ -175,25 +199,27 @@ namespace syntropy
     bool MemoryRange::Contains(void* address, size_t size) const
     {
         return reinterpret_cast<uintptr_t>(base_) <= reinterpret_cast<uintptr_t>(address) &&
-               (Memory::GetSize(base_, address) + size) <= capacity_;
+            reinterpret_cast<uintptr_t>(Memory::AddOffset(base_, capacity_)) >= reinterpret_cast<uintptr_t>(Memory::AddOffset(address, size));
+    }
+
+    bool MemoryRange::Contains(void* address) const
+    {
+        return reinterpret_cast<uintptr_t>(base_) <= reinterpret_cast<uintptr_t>(address) &&
+            reinterpret_cast<uintptr_t>(Memory::AddOffset(base_, capacity_)) > reinterpret_cast<uintptr_t>(address);
     }
 
     void MemoryRange::Commit(void* address, size_t size)
     {
         SYNTROPY_ASSERT(Contains(address, size));
 
-        auto result = Memory::Commit(address, size);
-
-        SYNTROPY_ASSERT(result);
+        Memory::Commit(address, size);
     }
 
     void MemoryRange::Decommit(void* address, size_t size)
     {
         SYNTROPY_ASSERT(Contains(address, size));
 
-        auto result = Memory::Decommit(address, size);
-
-        SYNTROPY_ASSERT(result);
+        Memory::Decommit(address, size);
     }
 
     /************************************************************************/

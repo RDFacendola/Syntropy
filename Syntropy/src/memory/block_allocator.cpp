@@ -28,6 +28,8 @@ namespace syntropy
 
         memory_.Commit(block, size);                                // Allocate the requested memory size. Rounded up to the next memory page boundary.
 
+        MemoryDebug::MarkUninitialized(block, Memory::AddOffset(block, Memory::CeilToPageSize(size)));
+
         return block;
     }
 

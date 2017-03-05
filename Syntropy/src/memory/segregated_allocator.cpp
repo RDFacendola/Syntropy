@@ -375,14 +375,7 @@ namespace syntropy
             last_block_ = block;
         }
 
-        // Fill the payload with some recognizable pattern (uninitialized memory).
-        SYNTROPY_DEBUG_ONLY
-        (
-            std::fill(
-                reinterpret_cast<int8_t*>(block->begin()),
-                reinterpret_cast<int8_t*>(block->end()),
-                kUninitializedMemoryPattern);
-        );
+        MemoryDebug::MarkUninitialized(block->begin(), block->end());
 
         return block;
     }
@@ -455,14 +448,7 @@ namespace syntropy
 
         merged_block->SetBusy(false);                                                   // The block is no longer busy
 
-        // Fill the payload with some recognizable pattern (free memory)
-        SYNTROPY_DEBUG_ONLY
-        (
-            std::fill(
-                reinterpret_cast<int8_t*>(merged_block->begin()),
-                reinterpret_cast<int8_t*>(merged_block->end()),
-                kFreeMemoryPattern);
-        );
+        MemoryDebug::MarkFree(merged_block->begin(), merged_block->end());
 
         InsertBlock(merged_block);
     }
