@@ -11,6 +11,7 @@
 
 #include "memory/std_allocator.h"
 #include "memory/segregated_allocator.h"
+#include "memory/stack_allocator.h"
 
 #include "diagnostics/log.h"
 
@@ -49,8 +50,28 @@ int main()
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
     //
+    syntropy::MemoryPool pool(0x800000, 1);
+
     {
-        syntropy::MemoryPool pool(0x800000, 1);
+        syntropy::StackAllocator stack(pool);
+
+        {
+
+            syntropy::ScopeAllocator scalloc(stack);
+
+            auto p = scalloc.New<FooSmall>();
+            auto q = scalloc.New<FooMedium>();
+            auto r = scalloc.New<FooLarge>();
+
+            SYNTROPY_UNUSED(p);
+            SYNTROPY_UNUSED(q);
+            SYNTROPY_UNUSED(r);
+
+        }
+
+    }
+
+    {
 
         syntropy::TinySegregatedFitAllocator tlsfa("tiny", pool, 16384);
         //syntropy::TwoLevelSegregatedFitAllocator tlsfa("linear", pool, 2);

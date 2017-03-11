@@ -123,7 +123,7 @@ namespace syntropy
 
     void MonotonicBlockAllocator::Free(void* block)
     {
-        SYNTROPY_ASSERT(ContainsAddress(block));
+        SYNTROPY_ASSERT(GetRange().Contains(block));
 
         auto free_block = reinterpret_cast<Block*>(Memory::AlignDown(block, block_size_));      // Get the base address of the block to free.
 
@@ -136,7 +136,7 @@ namespace syntropy
         return block_size_;
     }
 
-    size_t MonotonicBlockAllocator::GetSize() const
+    size_t MonotonicBlockAllocator::GetAllocationSize() const
     {
         size_t free_count = 0;
         
@@ -145,22 +145,17 @@ namespace syntropy
             ++free_count;
         }
 
-        return allocator_.GetSize() - free_count * block_size_;
+        return allocator_.GetRange().GetSize() - free_count * block_size_;
     }
 
-    size_t MonotonicBlockAllocator::GetEffectiveSize() const
+    size_t MonotonicBlockAllocator::GetCommitSize() const
     {
-        return allocator_.GetEffectiveSize();
+        return allocator_.GetCommitSize();
     }
 
-    size_t MonotonicBlockAllocator::GetCapacity() const
+    const MemoryRange& MonotonicBlockAllocator::GetRange() const
     {
-        return allocator_.GetCapacity();
-    }
-
-    bool MonotonicBlockAllocator::ContainsAddress(void* address) const
-    {
-        return allocator_.ContainsAddress(address);
+        return allocator_.GetRange();
     }
 
 }

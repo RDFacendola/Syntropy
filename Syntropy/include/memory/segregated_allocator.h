@@ -76,16 +76,16 @@ namespace syntropy
 
         /// \brief Get the current allocation size, in bytes.
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetSize() const;
+        size_t GetAllocationSize() const;
 
-        /// \brief Get the committed memory amount, in bytes.
-        /// \The returned value accounts for both the actual requested memory and any overhead required by the allocator.
-        /// \return Returns the committed memory amount, in bytes.
+        /// \brief Get the amount of system memory committed by the allocator, in bytes.
+        /// Note that the stack allocator allocates all the memory it needs upfront.
+        /// \return Returns the amount of system memory committed by the allocator, in bytes.
         size_t GetCommitSize() const;
 
-        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
-        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
-        size_t GetCapacity() const;
+        /// \brief Get the memory range managed by this allocator.
+        /// \return Returns the memory range managed by this allocator.
+        const MemoryRange& GetRange() const;
 
     private:
 
@@ -294,7 +294,7 @@ namespace syntropy
 
         size_t GetFreeListIndexBySize(size_t size) const;
 
-        SequentialAllocator pool_;                          ///< \brief Memory pool used by this allocator.
+        LinearAllocator pool_;                              ///< \brief Memory pool used by this allocator.
 
         BlockHeader* last_block_;                           ///< \brief Pointer to the block currently on the head of the pool.
 
@@ -365,18 +365,17 @@ namespace syntropy
         void* Reserve(size_t size, size_t alignment);
 
         /// \brief Get the current allocation size, in bytes.
-        /// This method will consider reserved memory as committed.
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetSize() const;
+        size_t GetAllocationSize() const;
 
-        /// \brief Get the committed memory amount, in bytes.
-        /// \The returned value accounts for both the actual requested memory and any overhead required by the allocator.
-        /// \return Returns the committed memory amount, in bytes.
+        /// \brief Get the amount of system memory committed by the allocator, in bytes.
+        /// Note that the stack allocator allocates all the memory it needs upfront.
+        /// \return Returns the amount of system memory committed by the allocator, in bytes.
         size_t GetCommitSize() const;
 
-        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
-        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
-        size_t GetCapacity() const;
+        /// \brief Get the memory range managed by this allocator.
+        /// \return Returns the memory range managed by this allocator.
+        const MemoryRange& GetRange() const;
 
     private:
 

@@ -131,21 +131,16 @@ namespace syntropy
 
         /// \brief Get the current allocation size, in bytes.
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetSize() const;
+        size_t GetAllocationSize() const;
 
-        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
-        /// This value is always equal or greater than the allocated size.
-        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetEffectiveSize() const;
+        /// \brief Get the amount of system memory committed by the allocator, in bytes.
+        /// Note that the stack allocator allocates all the memory it needs upfront.
+        /// \return Returns the amount of system memory committed by the allocator, in bytes.
+        size_t GetCommitSize() const;
 
-        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
-        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
-        size_t GetCapacity() const;
-
-        /// \brief Check whether an address belongs to this allocator.
-        /// \param address Address to check.
-        /// \return Returns true if address belongs to this allocator, returns false otherwise.
-        bool ContainsAddress(void* address) const;
+        /// \brief Get the memory range managed by this allocator.
+        /// \return Returns the memory range managed by this allocator.
+        const MemoryRange& GetRange() const;
 
     private:
 
@@ -157,7 +152,7 @@ namespace syntropy
 
         size_t block_size_;             ///< \brief Size of each block in bytes.
 
-        SequentialAllocator allocator_; ///< \brief Underlying sequential allocator.
+        LinearAllocator allocator_;     ///< \brief Underlying linear allocator.
 
         Block* free_;                   ///< \brief First free block.
 

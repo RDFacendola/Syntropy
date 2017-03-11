@@ -1,111 +1,32 @@
 
 /// \file frame_allocator.h
-/// \brief This header is part of the syntropy memory management system. It contains linear, frame and stack-based allocators.
+/// \brief This header is part of the syntropy memory management system. It contains sequential and linear allocators.
 ///
 /// \author Raffaele D. Facendola - 2017
 
 #pragma once
 
-#include <cstdint>
-#include <cstddef>
-#include <type_traits>
-#include <memory>
-#include <iterator>
-#include <algorithm>
-
 #include "memory/memory.h"
+
+#include <algorithm>
 
 namespace syntropy
 {
 
     /// \brief Base allocator used to allocate sequential memory blocks over a contiguous range of virtual memory addresses.
     /// Memory is committed and decommited on demand: the allocator allocates the minimum amount of system memory pages.
-    /// Memory is committed and decommited on the head of the allocator.
-    /// \author Raffaele D. Facendola - January 2017
-    class SequentialAllocator
-    {
-    public:
-
-        /// \brief Create a new sequential allocator.
-        /// \param capacity Amount of memory reserved by the allocator.
-        /// \param alignment Memory alignment.
-        SequentialAllocator(size_t capacity, size_t alignment);
-
-        /// \brief Create a new sequential allocator.
-        /// \param memory_range Memory range used by the allocator.
-        /// \param alignment Memory alignment.
-        /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        SequentialAllocator(const MemoryRange& memory_range, size_t alignment);
-
-        /// \brief No copy constructor.
-        SequentialAllocator(const SequentialAllocator&) = delete;
-
-        /// \brief Default destructor.
-        ~SequentialAllocator() = default;
-
-        /// \brief No assignment operator.
-        SequentialAllocator& operator=(const SequentialAllocator&) = delete;
-
-        /// \brief Allocate a new memory block on the allocator's head.
-        /// \param size Size of the memory block to allocate, in bytes.
-        /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size);
-
-        /// \brief Free a memory block from the allocator's head.
-        void Free(size_t size);
-
-        /// \brief Get the current allocation size, in bytes.
-        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetSize() const;
-
-        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
-        /// This value is always equal or greater than the allocated size.
-        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetEffectiveSize() const;
-
-        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
-        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
-        size_t GetCapacity() const;
-
-        /// \brief Get the base pointer of this allocator.
-        /// \return Returns the base pointer of this allocator.
-        void* GetBasePointer();
-
-        /// \brief Get the base pointer of this allocator.
-        /// \return Returns the base pointer of this allocator.
-        const void* GetBasePointer() const;
-
-        /// \brief Check whether an address belongs to this allocator.
-        /// \param address Address to check.
-        /// \return Returns true if address belongs to this allocator, returns false otherwise.
-        bool ContainsAddress(void* address) const;
-
-    private:
-
-        MemoryPool memory_pool_;        ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
-
-        MemoryRange memory_range_;      ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
-
-        void* head_;                    ///< \brief Points to the first unallocated memory address.
-
-        void* page_head_;               ///< \brief Points to the first unmapped memory page.
-
-    };
-
-    /// \brief Used to allocate memory on a pre-allocated contiguous memory block.
-    /// Use this allocator to group together allocations having the same lifespan and when high performances are needed.
-    /// Memory is allocated upfront to avoid kernel calls while allocating. Pointer-level deallocation is not supported.
+    /// Memory is allocated and freed on the allocator's head.
     /// \author Raffaele D. Facendola - January 2017
     class LinearAllocator
     {
     public:
 
-        /// \brief Create a new linear allocator.
+        /// \brief Create a new allocator.
         /// \param capacity Amount of memory reserved by the allocator.
         /// \param alignment Memory alignment.
         LinearAllocator(size_t capacity, size_t alignment);
 
-        /// \brief Create a new linear allocator.
+        /// \brief Create a new allocator.
         /// \param memory_range Memory range used by the allocator.
         /// \param alignment Memory alignment.
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
@@ -120,48 +41,27 @@ namespace syntropy
         /// \brief No assignment operator.
         LinearAllocator& operator=(const LinearAllocator&) = delete;
 
-        /// \brief Allocate a new memory block.
+        /// \brief Allocate a new memory block on the allocator's head.
         /// \param size Size of the memory block to allocate, in bytes.
         /// \return Returns a pointer to the allocated memory block.
         void* Allocate(size_t size);
 
-        /// \brief Allocate a new aligned memory block.
-        /// \param size Size of the memory block to allocate, in bytes.
-        /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size, size_t alignment);
-
-        /// \brief Free all the memory blocks allocated so far.
-        void Free();
-
-        /// \brief Save the status of the allocator.
-        /// To restore it use RestoreStatus().
-        void SaveStatus();
-
-        /// \brief Restore the last saved status.
-        /// Calling this method multiple times causes older status to be restored.
-        void RestoreStatus();
+        /// \brief Free a memory block on the allocator's head.
+        /// \param size Size of the memory block to free, in bytes.
+        void Free(size_t size);
 
         /// \brief Get the current allocation size, in bytes.
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetSize() const;
+        size_t GetAllocationSize() const;
 
-        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
-        /// This value is always equal or greater than the allocated size.
-        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetEffectiveSize() const;
+        /// \brief Get the amount of system memory committed by the allocator, in bytes.
+        /// Note that the stack allocator allocates all the memory it needs upfront.
+        /// \return Returns the amount of system memory committed by the allocator, in bytes.
+        size_t GetCommitSize() const;
 
-        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
-        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
-        size_t GetCapacity() const;
-
-        /// \brief Get the base pointer of this allocator.
-        /// \return Returns the base pointer of this allocator.
-        void* GetBasePointer();
-
-        /// \brief Check whether an address belongs to this allocator.
-        /// \param address Address to check.
-        /// \return Returns true if address belongs to this allocator, returns false otherwise.
-        bool ContainsAddress(void* address) const;
+        /// \brief Get the memory range managed by this allocator.
+        /// \return Returns the memory range managed by this allocator.
+        const MemoryRange& GetRange() const;
 
     private:
 
@@ -169,9 +69,9 @@ namespace syntropy
 
         MemoryRange memory_range_;      ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
 
-        void* head_;                    ///< \brief Pointer to the first unallocated memory block.
+        void* head_;                    ///< \brief Points to the first unallocated memory address.
 
-        void* status_;                  ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
+        void* page_head_;               ///< \brief Points to the first unmapped memory page.
 
     };
 
@@ -262,16 +162,16 @@ namespace syntropy
 
         /// \brief Get the current allocation size, in bytes.
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetSize() const;
+        size_t GetAllocationSize() const;
 
-        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
-        /// This value is always equal or greater than the allocated size.
-        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetEffectiveSize() const;
+        /// \brief Get the amount of system memory committed by the allocator, in bytes.
+        /// Note that the stack allocator allocates all the memory it needs upfront.
+        /// \return Returns the amount of system memory committed by the allocator, in bytes.
+        size_t GetCommitSize() const;
 
-        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
-        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
-        size_t GetCapacity() const;
+        /// \brief Get the memory range managed by this allocator.
+        /// \return Returns the memory range managed by this allocator.
+        const MemoryRange& GetRange() const;
 
     private:
 
@@ -289,143 +189,7 @@ namespace syntropy
 
         size_t max_count_;                      ///< \brief Maximum amount of elements in the allocator.
 
-        SequentialAllocator allocator_;         ///< \brief Actual underlying allocator.
-
-    };
-
-    /// \brief Utility allocator that sits on top of a linear allocator and handles concrete object construction and destruction via RAII.
-    ///
-    /// \usage ScopeAllocator scope(linear_allocator);
-    ///        auto foo = scope.New<Foo>(arg0, arg1);
-    ///        (foo gets destroyed when scope goes out of... scope)
-    ///
-    /// \author Raffaele D. Facendola - January 2017
-    /// \see Based on http://www.frostbite.com/wp-content/uploads/2013/05/scopestacks_public.pdf
-    /// \remarks Be careful while mixing allocation made by ScopeAllocators and the underlying LinearAllocator since these allocation are not tracked.
-    class ScopeAllocator
-    {
-    public:
-
-        /// \brief Create a new scope allocator.
-        /// \param allocator Actual linear allocator to use.
-        ScopeAllocator(LinearAllocator& allocator);
-
-        /// \brief Default destructor.
-        /// Destroys all the objects that were allocated from this allocator and rewinds the allocator status.
-        ~ScopeAllocator();
-
-        /// \brief Create a new object.
-        /// \tparam T Type of the object to create.
-        /// \param arguments Arguments to pass to T's constructor.
-        /// \return Returns a pointer to a new instance of T.
-        template <typename T, typename... TArgs>
-        T* New(TArgs&&... arguments);
-
-        /// \brief Create a new aligned object.
-        /// \tparam T Type of the object to create.
-        /// \param alignment Alignment of the object, in bytes.
-        /// \param arguments Arguments to pass to T's constructor.
-        /// \return Returns a pointer to a new instance of T.
-        template <typename T, typename... TArgs>
-        T* AlignedNew(size_t alignment, TArgs&&... arguments);
-
-    private:
-
-        /// \brief Handles explicit destruction of objects.
-        /// \param instance Pointer to the instance to destroy. Must be of type T.
-        template <typename T>
-        static void Destructor(void* instance);
-
-        /// \brief Allocate a finalizer object on the linear allocator.
-        /// This overload does not participate in overload resolution if T is trivially destructible. In that case no finalizer object is required.
-        /// \param instance Instance the finalizer refers to.
-        template <typename T, typename = std::enable_if_t<!std::is_trivially_destructible<T>::value>>
-        void AllocateFinalizer(T* instance);
-
-        /// \brief Overload used for trivially destructible object. This method does nothing.
-        /// The ellipsis conversion sequence here makes this overload the worst one (so we can't accidentally call this method when the other overload is also eligible).
-        void AllocateFinalizer(...);
-
-        /// \brief Finalizer object used to destroy allocated objects.
-        /// Finalizers are allocated just after the object they are supposed to destroy.
-        struct Finalizer
-        {
-
-            /// \brief Destroy the object.
-            void operator()() const;
-
-            void(*destructor_)(void* instance);         ///< \brief Pointer to the destruction function. std::function uses more than 8 bytes of memory.
-
-            Finalizer* next_;                           ///< \brief Next finalizer.
-
-            void* object_;                              ///< \brief Object to finalize. The pointer is needed since there's no guarantee that aligned objects and their finalizers are contiguous in memory.
-        };
-
-        LinearAllocator& allocator_;                    ///< \brief Actual allocator.
-
-        Finalizer* finalizer_list_;                     ///< \brief First finalizer functor.
-
-    };
-
-    /// \brief Packs a pair of LinearAllocator together such that allocations performed during a frame are available to the next frame as well.
-    /// All the actions are performed only of the currently active allocator. After a flip the inactive allocators become active and vice-versa.
-    /// \author Raffaele D. Facendola - January 2017
-    class DoubleBufferedAllocator
-    {
-    public:
-
-        /// \brief Create a new allocator.
-        /// \param capacity Amount of memory reserved by each allocator.
-        /// \param alignment Memory alignment.
-        DoubleBufferedAllocator(size_t capacity, size_t alignment);
-
-        /// \brief Allocate a new memory block on the current allocator.
-        /// \param size Size of the memory block to allocate, in bytes.
-        /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size);
-
-        /// \brief Allocate a new aligned memory block on the current allocator.
-        /// \param size Size of the memory block to allocate, in bytes.
-        /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size, size_t alignment);
-
-        /// \brief Free all the memory blocks allocated so far in the current allocator.
-        void Free();
-
-        /// \brief Flips the linear allocators, activating the next one.
-        /// This method causes the inactive allocator to become active and vice-versa. The new active allocator is freed.
-        void Flip();
-
-        /// \brief Get the current linear allocator.
-        /// \return Returns the current linear allocator.
-        LinearAllocator& GetCurrentAllocator();
-
-        /// \brief Save the status of the current allocator.
-        /// To restore the status use RestoreStatus().
-        void SaveStatus();
-
-        /// \brief Restore the last saved status of the current allocator.
-        /// Calling this method multiple times causes older status to be restored as well.
-        void RestoreStatus();
-
-        /// \brief Get the current allocation size, in bytes.
-        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetSize() const;
-
-        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
-        /// This value is always equal or greater than the allocated size.
-        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetEffectiveSize() const;
-
-        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
-        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
-        size_t GetCapacity() const;
-
-    private:
-
-        LinearAllocator allocators_[2];             ///< \brief Linear allocators pair.
-
-        LinearAllocator* current_;                  ///< \brief Current allocator.
+        LinearAllocator allocator_;             ///< \brief Actual underlying allocator.
 
     };
 
@@ -434,55 +198,6 @@ namespace syntropy
 namespace syntropy
 {
     // Implementation
-
-    //////////////// SCOPE ALLOCATOR ////////////////
-
-    template <typename T, typename... TArgs>
-    T* ScopeAllocator::New(TArgs&&... arguments)
-    {
-        auto storage = allocator_.Allocate(sizeof(T));                              // Storage for the instance
-
-        auto instance = new (storage) T(std::forward<TArgs>(arguments)...);         // Create the new instance
-
-        AllocateFinalizer(instance);                                                // Either allocates a finalizer or does nothing if T doesn't require a destructor.
-
-        return instance;
-    }
-
-    template <typename T, typename... TArgs>
-    T* ScopeAllocator::AlignedNew(size_t alignment, TArgs&&... arguments)
-    {
-        auto storage = allocator_.Allocate(sizeof(T), alignment);                   // Aligned storage for the instance
-
-        auto instance = new (storage) T(std::forward<TArgs>(arguments)...);         // Create the new instance
-
-        AllocateFinalizer(instance);                                                // Either allocates a finalizer or does nothing if T doesn't require a destructor.
-
-        return instance;
-    }
-
-    template <typename T>
-    void ScopeAllocator::Destructor(void* instance)
-    {
-        static_cast<T*>(instance)->~T();
-    }
-
-    template <typename T, typename>
-    void ScopeAllocator::AllocateFinalizer(T* instance)
-    {
-        auto finalizer = reinterpret_cast<Finalizer*>(allocator_.Allocate(sizeof(Finalizer)));
-
-        finalizer->next_ = finalizer_list_;
-        finalizer->destructor_ = &Destructor<T>;
-        finalizer->object_ = instance;
-
-        finalizer_list_ = finalizer;
-    }
-
-    inline void ScopeAllocator::AllocateFinalizer(...)
-    {
-
-    }
 
     //////////////// VECTOR ALLOCATOR ////////////////
 
@@ -499,7 +214,7 @@ namespace syntropy
     template <typename T>
     T* VectorAllocator<T>::begin()
     {
-        return reinterpret_cast<T*>(allocator_.GetBasePointer());
+        return reinterpret_cast<T*>(*allocator_.GetRange());
     }
 
     template <typename T>
@@ -511,7 +226,7 @@ namespace syntropy
     template <typename T>
     const T* VectorAllocator<T>::begin() const
     {
-        return reinterpret_cast<const T*>(allocator_.GetBasePointer());
+        return reinterpret_cast<const T*>(allocator_.GetRange().GetTop());
     }
 
     template <typename T>
@@ -599,21 +314,21 @@ namespace syntropy
     }
 
     template <typename T>
-    size_t VectorAllocator<T>::GetSize() const
+    size_t VectorAllocator<T>::GetAllocationSize() const
     {
-        return allocator_.GetSize();
+        return allocator_.GetAllocationSize();
     }
 
     template <typename T>
-    size_t VectorAllocator<T>::GetEffectiveSize() const
+    size_t VectorAllocator<T>::GetCommitSize() const
     {
-        return allocator_.GetEffectiveSize();
+        return allocator_.GetCommitSize();
     }
 
     template <typename T>
-    size_t VectorAllocator<T>::GetCapacity() const
+    const MemoryRange& VectorAllocator<T>::GetRange() const
     {
-        return allocator_.GetCapacity();
+        return allocator_.GetRange();
     }
 
     template <typename T>
@@ -621,20 +336,20 @@ namespace syntropy
     {
         count_ += amount;
 
-        auto size = GetSize();                              // Allocated space, in bytes. Always a multiple of the page size.
-        auto capacity = size / sizeof(T);                   // Elements that can fit within the current allocated space.
+        auto size = GetAllocationSize();                            // Allocated space, in bytes. Always a multiple of the page size.
+        auto capacity = size / sizeof(T);                           // Elements that can fit within the current allocated space.
 
         while (count_ > capacity)
         {
             // Double the allocation size.
 
-            size = std::min(size, GetCapacity() - size);        // Prevents the new allocation from exceeding the total capacity.
+            size = std::min(size, GetRange().GetSize() - size);     // Prevents the new allocation from exceeding the total capacity.
 
-            allocator_.Allocate(size);                          // Kernel call.
+            allocator_.Allocate(size);                              // Kernel call.
 
             // Refresh the current capacity.
 
-            size = GetSize();
+            size = GetAllocationSize();
             capacity = size / sizeof(T);
         }
 
@@ -646,7 +361,7 @@ namespace syntropy
         count_ -= amount;
 
         auto min_size = GetMinSize();
-        auto size = GetSize();                                          // Allocated space, in bytes. Always a multiple of the page size.
+        auto size = GetAllocationSize();                                // Allocated space, in bytes. Always a multiple of the page size.
         auto capacity = size / sizeof(T);                               // Elements that can fit within the current allocated space.
 
         while (size > min_size && count_ < capacity / 4)
@@ -660,7 +375,7 @@ namespace syntropy
 
             // Refresh the current capacity.
 
-            size = GetSize();
+            size = GetAllocationSize();
             capacity = size / sizeof(T);
         }
     }

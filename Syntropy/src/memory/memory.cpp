@@ -150,6 +150,11 @@ namespace syntropy
         return ptr;
     }
 
+    void* MemoryRange::GetTop() const
+    {
+        return top_;
+    }
+
     size_t MemoryRange::GetSize() const
     {
         return static_cast<size_t>(Memory::GetDistance(base_, top_));

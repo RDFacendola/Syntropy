@@ -107,7 +107,7 @@ namespace syntropy
 
     bool TinySegregatedFitAllocator::Belongs(void* block) const
     {
-        return allocator_.ContainsAddress(block);
+        return allocator_.GetRange().Contains(block);
     }
 
     size_t TinySegregatedFitAllocator::GetMaxAllocationSize() const
@@ -115,19 +115,19 @@ namespace syntropy
         return kMaximumAllocationSize;
     }
 
-    size_t TinySegregatedFitAllocator::GetSize() const
+    size_t TinySegregatedFitAllocator::GetAllocationSize() const
     {
         return allocation_size_;
     }
 
     size_t TinySegregatedFitAllocator::GetCommitSize() const
     {
-        return allocator_.GetEffectiveSize();
+        return allocator_.GetCommitSize();
     }
 
-    size_t TinySegregatedFitAllocator::GetCapacity() const
+    const MemoryRange& TinySegregatedFitAllocator::GetRange() const
     {
-        return allocator_.GetCapacity();
+        return allocator_.GetRange();
     }
 
     TinySegregatedFitAllocator::Page* TinySegregatedFitAllocator::AllocatePage(size_t block_size)
@@ -295,7 +295,7 @@ namespace syntropy
         , pool_(capacity, 1)
         , last_block_(nullptr)
         , second_level_index_(second_level_index)
-        , free_lists_((Math::FloorLog2(pool_.GetCapacity()) + 1ull) * (1ull << second_level_index_))
+        , free_lists_((Math::FloorLog2(pool_.GetRange().GetSize()) + 1ull) * (1ull << second_level_index_))
     {
 
         // Initialize the free lists.
@@ -312,7 +312,7 @@ namespace syntropy
         , pool_(memory_range, 1)
         , last_block_(nullptr)
         , second_level_index_(second_level_index)
-        , free_lists_((Math::FloorLog2(pool_.GetCapacity()) + 1ull) * (1ull << second_level_index_))
+        , free_lists_((Math::FloorLog2(pool_.GetRange().GetSize()) + 1ull) * (1ull << second_level_index_))
     {
 
         // Initialize the free lists.
@@ -343,12 +343,12 @@ namespace syntropy
 
     bool TwoLevelSegregatedFitAllocator::Belongs(void* block) const
     {
-        return pool_.ContainsAddress(block);
+        return pool_.GetRange().Contains(block);
     }
 
     size_t TwoLevelSegregatedFitAllocator::GetMaxAllocationSize() const
     {
-        return pool_.GetCapacity();
+        return pool_.GetRange().GetSize();
     }
 
     TwoLevelSegregatedFitAllocator::BlockHeader* TwoLevelSegregatedFitAllocator::GetFreeBlockBySize(size_t size)
@@ -595,7 +595,7 @@ namespace syntropy
 
     size_t ExponentialSegregatedFitAllocator::GetMaxAllocationSize() const
     {
-        return base_allocation_size_ * (1ull << (allocators_.GetSize() - 1ull));        // base * 2^(order-1)
+        return base_allocation_size_ * (1ull << (allocators_.GetCount() - 1ull));        // base * 2^(order-1)
     }
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size)
@@ -609,26 +609,26 @@ namespace syntropy
         return Memory::Align(Reserve(size + alignment - 1), alignment);
     }
 
-    size_t ExponentialSegregatedFitAllocator::GetSize() const
+    size_t ExponentialSegregatedFitAllocator::GetAllocationSize() const
     {
-        return 0;       // TODO
+        return 0;       // Not yet implemented.
     }
 
     size_t ExponentialSegregatedFitAllocator::GetCommitSize() const
     {
-        return 0;       // TODO
+        return 0;       // Not yet implemented.
     }
 
-    size_t ExponentialSegregatedFitAllocator::GetCapacity() const
+    const MemoryRange& ExponentialSegregatedFitAllocator::GetRange() const
     {
-        return memory_range_.GetSize();
+        return memory_range_;
     }
 
     BlockAllocator& ExponentialSegregatedFitAllocator::GetAllocatorBySize(size_t block_size)
     {
         auto index = Math::CeilLog2((block_size + base_allocation_size_ - 1) / base_allocation_size_);
 
-        SYNTROPY_ASSERT(index < allocators_.GetSize());
+        SYNTROPY_ASSERT(index < allocators_.GetCount());
 
         return allocators_[index];
     }

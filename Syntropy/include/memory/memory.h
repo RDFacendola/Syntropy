@@ -259,6 +259,10 @@ namespace syntropy
         /// \return Returns a pointer to offset-bytes after the base of the range.
         void* operator[](size_t offset) const;
 
+        /// \brief Get the address past the end of this range,
+        /// \return Returns the address past the end of this range.
+        void* GetTop() const;
+
         /// \brief Get the size of the range, in bytes.
         /// \return Returns the total capacity of the memory range, in bytes.
         size_t GetSize() const;
