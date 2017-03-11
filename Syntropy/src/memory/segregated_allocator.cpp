@@ -15,27 +15,39 @@ namespace syntropy
     /* TINY SEGREGATED FIT ALLOCATOR                                        */
     /************************************************************************/
 
-    TinySegregatedFitAllocator::TinySegregatedFitAllocator(const HashedString& name, size_t capacity, size_t page_size, size_t order)
+    TinySegregatedFitAllocator::TinySegregatedFitAllocator(const HashedString& name, size_t capacity, size_t page_size)
         : Allocator(name)
-        , allocator_(capacity, page_size)                               // Allocator for the pages.
-        , maximum_block_size_(kMinimumAllocationSize * order)           // Round to the next minimum allocation boundary.
-        , free_pages_(order)                                            // Total amount of segregated lists.
+        , allocator_(capacity, page_size)                       // Allocator for the pages.
+        , allocation_size_(0u)
     {
-        while (order-- > 0)
-        {
-            free_pages_.PushBack(nullptr);
-        }
+
+        std::fill(free_pages_.begin(),
+            free_pages_.end(),
+            nullptr);
+
+    }
+
+    TinySegregatedFitAllocator::TinySegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t page_size)
+        : Allocator(name)
+        , allocator_(memory_range, page_size)                   // Allocator for the pages.
+        , allocation_size_(0u)
+    {
+
+        std::fill(free_pages_.begin(),
+            free_pages_.end(),
+            nullptr);
+
     }
 
     void* TinySegregatedFitAllocator::Allocate(size_t size)
     {
-        SYNTROPY_ASSERT(size <= maximum_block_size_);
+        SYNTROPY_ASSERT(size <= kMaximumAllocationSize);
         SYNTROPY_ASSERT(size > 0);
 
         // Get a page from the list whose size is at least as big as the requested allocation size.
-        auto block_size = Math::Ceil(size, kMinimumAllocationSize);
+        auto block_size = Math::Ceil(size, kAllocationGranularity);
 
-        auto& page = free_pages_[(block_size - 1) / kMinimumAllocationSize];
+        auto& page = free_pages_[(block_size - 1) / kAllocationGranularity];
 
         if (!page)
         {
@@ -53,12 +65,14 @@ namespace syntropy
             DiscardPage(page);              // Discard the current page from the allocator and move to the next one.
         }
 
+        allocation_size_ += block_size;     // Update the allocation size.
+
         return block;
     }
 
     void* TinySegregatedFitAllocator::Allocate(size_t size, size_t alignment)
     {
-        SYNTROPY_ASSERT(alignment % kMinimumAllocationSize == 0);       // Must be a multiple of the minimum allocation size
+        SYNTROPY_ASSERT(alignment % kAllocationGranularity == 0);       // Must be a multiple of the allocation granularity.
 
         // Since blocks are aligned to their own size, we are looking for a block large enough that is also a multiple of the requested alignment
         auto block = Allocate(Math::Ceil(size, alignment));
@@ -83,10 +97,12 @@ namespace syntropy
         {
             FreePage(page);                     // Return the page to the allocator so it can be recycled by any segregated list.
         }
-        else if (!page->free_->next_)           // The page was full and now has exactly one free block.
+        else if (!block->next_)                 // The page was full and now has exactly one free block.
         {
             RestorePage(page);                  // Return the page to the segregated free list so new allocations can be performed inside it.
         }
+
+        allocation_size_ -= page->block_size_;  // Update the allocation size.
     }
 
     bool TinySegregatedFitAllocator::Belongs(void* block) const
@@ -96,31 +112,15 @@ namespace syntropy
 
     size_t TinySegregatedFitAllocator::GetMaxAllocationSize() const
     {
-        return maximum_block_size_;
+        return kMaximumAllocationSize;
     }
 
     size_t TinySegregatedFitAllocator::GetSize() const
     {
-        Block* head;
-        size_t count;
-
-        auto size = allocator_.GetSize();
-
-        // Remove the memory of free blocks inside each segregated free list
-        for (auto free_page : free_pages_)
-        {
-            while (free_page)
-            {
-                count = GetBlockCount(free_page, free_page->block_size_, head);
-                size -= free_page->block_size_ * (count - free_page->allocated_blocks_);
-                free_page = free_page->next_;
-            }
-        }
-
-        return size;
+        return allocation_size_;
     }
 
-    size_t TinySegregatedFitAllocator::GetEffectiveSize() const
+    size_t TinySegregatedFitAllocator::GetCommitSize() const
     {
         return allocator_.GetEffectiveSize();
     }
@@ -166,7 +166,7 @@ namespace syntropy
         }
         else
         {
-            free_pages_[(page->block_size_ - 1) / kMinimumAllocationSize] = page->next_;    // The page is the head of the segregated list.
+            free_pages_[(page->block_size_ - 1) / kAllocationGranularity] = page->next_;    // The page is the head of the segregated list.
         }
 
         if (page->next_)
@@ -191,7 +191,7 @@ namespace syntropy
     void TinySegregatedFitAllocator::RestorePage(Page* page)
     {
         // The page becomes the head of the segregated list
-        auto& head = free_pages_[(page->block_size_ - 1) / kMinimumAllocationSize];
+        auto& head = free_pages_[(page->block_size_ - 1) / kAllocationGranularity];
 
         page->next_ = head;
 
@@ -295,7 +295,24 @@ namespace syntropy
         , pool_(capacity, 1)
         , last_block_(nullptr)
         , second_level_index_(second_level_index)
-        , free_lists_((Math::FloorLog2(capacity) + 1ull) * (1ull << second_level_index_))
+        , free_lists_((Math::FloorLog2(pool_.GetCapacity()) + 1ull) * (1ull << second_level_index_))
+    {
+
+        // Initialize the free lists.
+        auto count = free_lists_.GetMaxCount();
+
+        while (count-- > 0)
+        {
+            free_lists_.PushBack(nullptr);
+        }
+    }
+
+    TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t second_level_index)
+        : Allocator(name)
+        , pool_(memory_range, 1)
+        , last_block_(nullptr)
+        , second_level_index_(second_level_index)
+        , free_lists_((Math::FloorLog2(pool_.GetCapacity()) + 1ull) * (1ull << second_level_index_))
     {
 
         // Initialize the free lists.
@@ -342,7 +359,8 @@ namespace syntropy
 
         auto index = GetFreeListIndexBySize(size);
 
-        // Search a free block big enough to handle the allocation
+        // Search a free block big enough to handle the allocation.
+        // TODO: Remove this loop, use bitmaps instead.
         while (index < free_lists_.GetMaxCount() && !free_lists_[index])
         {
             ++index;
@@ -524,11 +542,14 @@ namespace syntropy
 
     ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t base_allocation_size, size_t order)
         : Allocator(name)
-        , allocators_(order)
         , base_allocation_size_(Memory::CeilToPageSize(base_allocation_size))           // Round to the next memory page boundary.
+        , memory_pool_(capacity, base_allocation_size)                                  // Allocate a new virtual address range.
+        , memory_range_(memory_pool_)                                                   // Get the full range out of the memory pool.
+        , order_(order)
+        , allocators_(order_)
     {
         SYNTROPY_ASSERT(order >= 1);
-        
+
         capacity /= order;                                                              // Distribute the capacity evenly among the different classes.
 
         auto class_size = base_allocation_size_;
@@ -548,17 +569,13 @@ namespace syntropy
     void* ExponentialSegregatedFitAllocator::Allocate(size_t size, size_t alignment)
     {
         // Allocate enough space for both the block and the maximum padding due to the requested alignment
-        size += alignment - 1;
-
-        auto block = Memory::Align(GetAllocatorBySize(size).Allocate(size), alignment);
-        
-        SYNTROPY_ASSERT(reinterpret_cast<size_t>(block) % alignment == 0);
-
-        return block;
+        return Memory::Align(Allocate(size + alignment - 1), alignment);
     }
 
     void ExponentialSegregatedFitAllocator::Free(void* address)
     {
+        // TODO: Use a single contiguous address range and find the proper allocator in O(1)
+
         auto it = std::find_if(allocators_.begin(),
                                allocators_.end(),
                                [address](const BlockAllocator& allocator)
@@ -573,18 +590,12 @@ namespace syntropy
 
     bool ExponentialSegregatedFitAllocator::Belongs(void* block) const
     {
-        return std::any_of(
-            allocators_.begin(), 
-            allocators_.end(),
-            [block](const BlockAllocator& allocator)
-            {
-                return allocator.ContainsAddress(block);
-            });
+        return memory_range_.Contains(block);
     }
 
     size_t ExponentialSegregatedFitAllocator::GetMaxAllocationSize() const
     {
-        return base_allocation_size_ * (1ull << (allocators_.GetSize() - 1ull));      // base * 2^(order-1)
+        return base_allocation_size_ * (1ull << (allocators_.GetSize() - 1ull));        // base * 2^(order-1)
     }
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size)
@@ -594,36 +605,23 @@ namespace syntropy
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size, size_t alignment)
     {
-        // Allocate enough space for both the block and the maximum padding due to the requested alignment
-        size += alignment - 1;
-
-        auto block = Memory::Align(GetAllocatorBySize(size).Reserve(size), alignment);
-
-        SYNTROPY_ASSERT(reinterpret_cast<size_t>(block) % alignment == 0);
-
-        return block;
+        // Reserve enough space for both the block and the maximum padding due to the requested alignment
+        return Memory::Align(Reserve(size + alignment - 1), alignment);
     }
 
-    size_t ExponentialSegregatedFitAllocator::GetUpperBoundSize() const
+    size_t ExponentialSegregatedFitAllocator::GetSize() const
     {
-        return std::accumulate(allocators_.begin(),
-                               allocators_.end(),
-                               static_cast<size_t>(0),
-                               [](size_t accumulator, const BlockAllocator& allocator)
-                               {
-                                    return accumulator + allocator.GetUpperBoundSize();
-                               });
+        return 0;       // TODO
+    }
+
+    size_t ExponentialSegregatedFitAllocator::GetCommitSize() const
+    {
+        return 0;       // TODO
     }
 
     size_t ExponentialSegregatedFitAllocator::GetCapacity() const
     {
-        return std::accumulate(allocators_.begin(),
-                               allocators_.end(),
-                               static_cast<size_t>(0),
-                               [](size_t accumulator, const BlockAllocator& allocator)
-                               {
-                                    return accumulator + allocator.GetCapacity();
-                               });
+        return memory_range_.GetSize();
     }
 
     BlockAllocator& ExponentialSegregatedFitAllocator::GetAllocatorBySize(size_t block_size)

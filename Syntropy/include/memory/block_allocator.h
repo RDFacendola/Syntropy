@@ -22,8 +22,16 @@ namespace syntropy
     {
     public:
 
-        /// \brief Initialize the block allocator.
+        /// \brief Create a new block allocator.
+        /// \param capacity Amount of memory reserved by the allocator.
+        /// \param block_size Size of each block, in bytes.
         BlockAllocator(size_t capacity, size_t block_size);
+
+        /// \brief Create a new block allocator.
+        /// \param memory_range Memory range used by the allocator.
+        /// \param block_size Size of each block, in bytes.
+        /// \remarks The allocator doesn't take ownership of the memory range provided as input.
+        BlockAllocator(const MemoryRange& memory_range, size_t block_size);
 
         /// \brief No copy constructor.
         BlockAllocator(const BlockAllocator&) = delete;
@@ -57,10 +65,6 @@ namespace syntropy
         /// \return Returns the size of each block in bytes.
         size_t GetBlockSize() const;
 
-        /// \brief Get an upper bound for the memory being used by the allocator.
-        /// \return Returns an upper bound for the effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetUpperBoundSize() const;
-
         /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
         /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
         size_t GetCapacity() const;
@@ -75,7 +79,9 @@ namespace syntropy
 
         size_t block_size_;                         ///< \brief Size of each block in bytes.
 
-        MemoryRange memory_;                        ///< \brief Reserved virtual memory range.
+        MemoryPool memory_pool_;                    ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
+
+        MemoryRange memory_range_;                  ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
 
         void* head_;                                ///< \brief Pointer to the first unmapped block.
 
@@ -91,8 +97,16 @@ namespace syntropy
     {
     public:
 
-        /// \brief Initialize the block allocator.
+        /// \brief Create a new monotonic block allocator.
+        /// \param capacity Amount of memory reserved by the allocator.
+        /// \param block_size Size of each block, in bytes.
         MonotonicBlockAllocator(size_t capacity, size_t block_size);
+
+        /// \brief Create a new monotonic block allocator.
+        /// \param memory_range Memory range used by the allocator.
+        /// \param block_size Size of each block, in bytes.
+        /// \remarks The allocator doesn't take ownership of the memory range provided as input.
+        MonotonicBlockAllocator(const MemoryRange& memory_range, size_t block_size);
 
         /// \brief No copy constructor.
         MonotonicBlockAllocator(const MonotonicBlockAllocator&) = delete;

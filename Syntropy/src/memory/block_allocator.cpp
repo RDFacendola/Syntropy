@@ -9,10 +9,20 @@ namespace syntropy
     //////////////// BLOCK ALLOCATOR ////////////////
 
     BlockAllocator::BlockAllocator(size_t capacity, size_t block_size)
-        : block_size_(Memory::CeilToPageSize(block_size))                   // Round up to the next system page size.
-        , memory_(capacity, block_size_)                                    // Reserve the virtual memory range upfront without allocating.
-        , head_(*memory_)
-        , free_list_(capacity / block_size_)                                // Worst case: the entire capacity was reserved and then freed.
+        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
+        , memory_pool_(capacity, block_size_)                       // Reserve the virtual memory range upfront without allocating.
+        , memory_range_(memory_pool_)                               // Get the full range out of the memory pool.
+        , head_(*memory_range_)
+        , free_list_(capacity / block_size_)                        // Worst case: the entire capacity was reserved and then freed.
+    {
+
+    }
+
+    BlockAllocator::BlockAllocator(const MemoryRange& memory_range, size_t block_size)
+        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
+        , memory_range_(memory_range, block_size_)
+        , head_(*memory_range_)
+        , free_list_(memory_range_.GetSize() / block_size_)         // Worst case: the entire capacity was reserved and then freed.
     {
 
     }
@@ -26,7 +36,7 @@ namespace syntropy
     {
         auto block = Reserve(size);
 
-        memory_.Commit(block, size);                                // Allocate the requested memory size. Rounded up to the next memory page boundary.
+        Memory::Commit(block, size);        // Allocate the requested memory size. Rounded up to the next memory page boundary.
 
         MemoryDebug::MarkUninitialized(block, Memory::AddOffset(block, Memory::CeilToPageSize(size)));
 
@@ -59,7 +69,7 @@ namespace syntropy
 
         free_list_.PushBack(reinterpret_cast<uintptr_t>(block));    // Push the address of the free block.
 
-        memory_.Decommit(block, block_size_);                       // Unmap the block from the system memory.
+        Memory::Decommit(block, block_size_);                       // Unmap the block from the system memory.
     }
 
     size_t BlockAllocator::GetBlockSize() const
@@ -67,23 +77,14 @@ namespace syntropy
         return block_size_;
     }
 
-    size_t BlockAllocator::GetUpperBoundSize() const
-    {
-        // Reserved memory can be committed at any time, this means that the exact amount of committed memory is unknown by this allocator.
-        // Currently the exact amount of memory allocated by each allocation is not stored.
-
-        return Memory::GetSize(*memory_, head_) -               // Maximum amount of memory for the allocations performed so far.
-               free_list_.GetCount() * block_size_;             // Amount of freed memory.
-    }
-
     size_t BlockAllocator::GetCapacity() const
     {
-        return memory_.GetCapacity();
+        return memory_range_.GetSize();
     }
 
     bool BlockAllocator::ContainsAddress(void* address) const
     {
-        return Memory::IsContained(*memory_, head_, address);
+        return MemoryRange(*memory_range_, head_).Contains(address);
     }
 
     //////////////// MONOTONIC BLOCK ALLOCATOR ////////////////
@@ -91,6 +92,14 @@ namespace syntropy
     MonotonicBlockAllocator::MonotonicBlockAllocator(size_t capacity, size_t block_size)
         : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system allocation granularity.
         , allocator_(capacity, block_size_)                         // Reserve a contiguous virtual memory range.
+        , free_(nullptr)
+    {
+
+    }
+
+    MonotonicBlockAllocator::MonotonicBlockAllocator(const MemoryRange& memory_range, size_t block_size)
+        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system allocation granularity.
+        , allocator_(memory_range, block_size_)
         , free_(nullptr)
     {
 

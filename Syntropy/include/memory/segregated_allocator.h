@@ -9,14 +9,16 @@
 #include "memory.h"
 #include "memory/block_allocator.h"
 
+#include <array>
+
 namespace syntropy
 {
 
-    /// \brief High-performance allocator that uses segregated best-fit policy for small allocations up to a certain size.
+    /// \brief High-performance allocator that uses segregated best-fit policy for small allocations up to 1KB size.
     /// The allocator is designed to minimize external fragmentation while keeping constant response time.
     /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls. See MonotonicBlockAllocator.
-    /// The segregated free list classes are distributed linearly in the range [1, maximum_allocation_size]. Each class is 8 bytes large.
-    /// The amount of classes handled by the allocator is said "order" of the allocator.
+    /// The segregated free list classes are distributed linearly. Each class is 8 bytes wide.
+    /// The total amount of classes is the order of the allocator.
     ///
     /// Example for a 6th-order allocator
     /// Class 0 [1; 8]
@@ -26,20 +28,32 @@ namespace syntropy
     /// Class 4 [33, 40]
     /// Class 5 [41, 48]
     /// 
+    /// Based on "Building a low-fragmentation memory system for 64-bit games" by Aaron MacDougall - GDC16
+    ///
     /// \author Raffaele D. Facendola - December 2016
     class TinySegregatedFitAllocator : public Allocator
     {
     public:
 
-        /// \brief Minimum allocation size in bytes.
-        static const size_t kMinimumAllocationSize = 8;
+        /// \brief Allocation granularity, in bytes. Each allocated block is a multiple of this value.
+        static const size_t kAllocationGranularity = 8;
+
+        /// \brief Maximum allocation size, in bytes.
+        static const size_t kMaximumAllocationSize = 1024;
 
         /// \brief Create a new allocator.
         /// \param name Name of the allocator.
         /// \param capacity Maximum amount of memory allocated by the allocator.
         /// \param page_size Size of each memory page, in bytes. This value is rounded up to the next system memory page size.
-        /// \param order Number of classes in the allocator.
-        TinySegregatedFitAllocator(const HashedString& name, size_t capacity, size_t page_size, size_t order = 32);
+        TinySegregatedFitAllocator(const HashedString& name, size_t capacity, size_t page_size);
+
+        /// \brief Create a new allocator.
+        /// \param name Name of the allocator.
+        /// \param memory_range Memory range used by the allocator.
+        /// \param page_size Size of each memory page, in bytes. This value is rounded up to the next system memory page size.
+        /// \remarks The allocator doesn't take ownership of the memory range provided as input.
+        TinySegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t page_size);
+
 
         /// \brief No copy constructor.
         TinySegregatedFitAllocator(const TinySegregatedFitAllocator&) = delete;
@@ -64,10 +78,10 @@ namespace syntropy
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
         size_t GetSize() const;
 
-        /// \brief Get the current effective memory footprint of the allocator on the system memory, in bytes.
-        /// This value is always equal or greater than the allocated size.
-        /// \return Returns the current effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetEffectiveSize() const;
+        /// \brief Get the committed memory amount, in bytes.
+        /// \The returned value accounts for both the actual requested memory and any overhead required by the allocator.
+        /// \return Returns the committed memory amount, in bytes.
+        size_t GetCommitSize() const;
 
         /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
         /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
@@ -75,13 +89,16 @@ namespace syntropy
 
     private:
 
-        ///< \brief Utility structure for free memory blocks within a page.
+        /// \brief Number of segregated free lists.
+        static const size_t kOrder = kMaximumAllocationSize / kAllocationGranularity;
+
+        /// \brief Utility structure for free memory blocks within a page.
         struct Block
         {
             Block* next_;                           ///< \brief Address of the next free memory block within this page.
         };
 
-        ///< \brief Memory page header.
+        /// \brief Memory page header.
         struct Page
         {
             Page* next_;                            ///< \brief Address of the next page in the allocator.
@@ -121,15 +138,17 @@ namespace syntropy
         /// \return Returns the amount of blocks of size block_size that can be stored inside the page.
         size_t GetBlockCount(Page* page, size_t block_size, Block*& head) const;
 
-        MonotonicBlockAllocator allocator_;         ///< \brief Underlying block allocator for page allocations.
+        MonotonicBlockAllocator allocator_;                 ///< \brief Underlying block allocator for page allocations.
 
-        size_t maximum_block_size_;                 ///< \brief Maximum block size for this allocator.
+        std::array<Page*, kOrder> free_pages_;              ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
 
-        VectorAllocator<Page*> free_pages_;         ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
+        size_t allocation_size_;                            ///< \brief Number of bytes allocated by this allocator. Doesn't account for any allocation overhead.
 
     };
 
     /// \brief High-performances, low-fragmentation allocator to handle allocation of medium-sized objects.
+    /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls.
+    ///
     /// Based on: http://www.gii.upv.es/tlsf/files/jrts2008.pdf
     ///
     /// \author Raffaele D. Facendola - January 2017
@@ -142,6 +161,12 @@ namespace syntropy
         /// \param capacity Maximum capacity of the allocator, in bytes.
         /// \param second_level_index Number of classes for each first level index. The actual number of classes is 2^second_level_index.
         TwoLevelSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t second_level_index);
+
+        /// \brief Create a new allocator.
+        /// \param name Name of the allocator.
+        /// \param memory_range Memory range used by the allocator.
+        /// \param second_level_index Number of classes for each first level index. The actual number of classes is 2^second_level_index.
+        TwoLevelSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t second_level_index);
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the block to allocate, in bytes.
@@ -294,6 +319,9 @@ namespace syntropy
     /// Class 2 [8193, 16384]
     /// Class 3 [16385, 32768]
     ///
+    /// 
+    /// Based on "Building a low-fragmentation memory system for 64-bit games" by Aaron MacDougall - GDC16
+    ///
     /// \author Raffaele D. Facendola - January 2017
     class ExponentialSegregatedFitAllocator : public Allocator
     {
@@ -336,9 +364,15 @@ namespace syntropy
         /// \return Returns a pointer to the reserved memory block.
         void* Reserve(size_t size, size_t alignment);
 
-        /// \brief Get an upper bound for the memory being used by the allocator.
-        /// \return Returns an upper bound for the effective memory footprint of the allocator on the system memory, in bytes.
-        size_t GetUpperBoundSize() const;
+        /// \brief Get the current allocation size, in bytes.
+        /// This method will consider reserved memory as committed.
+        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
+        size_t GetSize() const;
+
+        /// \brief Get the committed memory amount, in bytes.
+        /// \The returned value accounts for both the actual requested memory and any overhead required by the allocator.
+        /// \return Returns the committed memory amount, in bytes.
+        size_t GetCommitSize() const;
 
         /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
         /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
@@ -346,15 +380,23 @@ namespace syntropy
 
     private:
 
+        /// \brief Maximum order for this allocator.
+        static const size_t kMaxOrder = 16;
+
         /// \brief Get a reference to an allocator by block size.
         /// \param block_size Size of the block to allocate or reserve.
         /// \return Returns a reference to the smallest allocator that can handle the given allocation size.
         BlockAllocator& GetAllocatorBySize(size_t block_size);
 
-        VectorAllocator<BlockAllocator> allocators_;    ///< \brief Actual allocators. One for each class.
+        size_t base_allocation_size_;                           ///< \brief Allocation size for the first class.
 
-        size_t base_allocation_size_;                   ///< \brief Allocation size for the first class.
+        MemoryPool memory_pool_;                                ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
 
+        MemoryRange memory_range_;                              ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
+
+        size_t order_;                                          ///< \brief Number of classes in this allocator.
+
+        VectorAllocator<BlockAllocator> allocators_;            ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
     };
 
 }

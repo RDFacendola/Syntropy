@@ -50,8 +50,12 @@ int main()
 
     //
     {
-        syntropy::TwoLevelSegregatedFitAllocator tlsfa("linear", 0x800000, 2);
+        syntropy::MemoryPool pool(0x800000, 1);
 
+        syntropy::TinySegregatedFitAllocator tlsfa("tiny", pool, 16384);
+        //syntropy::TwoLevelSegregatedFitAllocator tlsfa("linear", pool, 2);
+        //syntropy::ExponentialSegregatedFitAllocator tlsfa("exponential", 0x800000, 16384, 5);
+            
         auto p = SYNTROPY_NEW(tlsfa) FooSmall();
         auto q = SYNTROPY_NEW(tlsfa) FooMedium();
         auto r = SYNTROPY_NEW(tlsfa) FooLarge();

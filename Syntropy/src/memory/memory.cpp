@@ -28,6 +28,15 @@ namespace syntropy
         return platform::PlatformMemory::GetPageSize();
     }
 
+    void* Memory::Reserve(size_t size)
+    {
+        auto address = platform::PlatformMemory::Reserve(size);
+
+        SYNTROPY_ASSERT(IsAlignedTo(address, GetPageSize()));
+
+        return address;
+    }
+
     void* Memory::Allocate(size_t size)
     {
         return platform::PlatformMemory::Allocate(size);
@@ -35,50 +44,11 @@ namespace syntropy
 
     bool Memory::Release(void* address)
     {
-        auto page_size = GetPageSize();
+        auto success = platform::PlatformMemory::Release(address);
 
-        auto reserved_block = GetReservedBlockHeader(address, page_size);
+        SYNTROPY_ASSERT(success);
 
-        SYNTROPY_ASSERT(address == reserved_block->block_address_);                             // The provided address must be a block address returned by Reserve()
-
-        auto result = platform::PlatformMemory::Release(reserved_block->base_address_);
-
-        SYNTROPY_ASSERT(result);
-
-        return result;
-    }
-
-    void* Memory::Reserve(size_t size, size_t alignment)
-    {
-        auto page_size = GetPageSize();
-
-        auto extended_size = size + alignment + page_size - 1;                                  // [PADDING|RESERVED BLOCK HEADER||PAGE PADDING|RESERVED BLOCK]
-
-        auto base_address = platform::PlatformMemory::Reserve(extended_size);
-
-        SYNTROPY_ASSERT(base_address);
-
-        // The header must be allocated in a different page to prevent client code from accidentally deallocating it while working with the memory block
-
-        auto block_address = Memory::Align(
-            Memory::AddOffset(base_address, page_size),                                         // Requires some space before the reserved block for the header
-            alignment);                                                                         // The resulting block must be aligned
-
-        SYNTROPY_ASSERT(block_address);
-
-        // Fill the block header
-
-        auto reserved_block = GetReservedBlockHeader(block_address, page_size);
-
-        Memory::Commit(reserved_block, page_size);
-
-        reserved_block->base_address_ = base_address;
-        reserved_block->block_address_ = block_address;
-        reserved_block->size_ = size;
-        reserved_block->extended_size_ = extended_size;
-        reserved_block->alignment_ = alignment;
-
-        return block_address;
+        return success;
     }
 
     bool Memory::Commit(void* address, size_t size)
@@ -90,14 +60,7 @@ namespace syntropy
     {
         return platform::PlatformMemory::Decommit(address, size);
     }
-
-    Memory::ReservedBlockHeader* Memory::GetReservedBlockHeader(void* address, size_t page_size)
-    {
-        address = Memory::AlignDown(address, page_size);                                                // Page containing the base address of the block to free.
-
-        return reinterpret_cast<ReservedBlockHeader*>(Memory::SubOffset(address, page_size));           // The previous page contains the infos of the reserved region. This page is always committed.
-    }
-
+    
     /************************************************************************/
     /* MEMORY DEBUG                                                         */
     /************************************************************************/
@@ -147,34 +110,30 @@ namespace syntropy
     /* MEMORY RANGE                                                         */
     /************************************************************************/
 
-    MemoryRange::MemoryRange(size_t capacity)
-        : base_(Memory::Reserve(capacity, 1))
-        , capacity_(capacity)
+    MemoryRange::MemoryRange()
+        : base_(nullptr)
+        , top_(nullptr)
     {
 
     }
 
-    MemoryRange::MemoryRange(size_t capacity, size_t alignment)
-        : base_(Memory::Reserve(capacity, alignment))
-        , capacity_(capacity)
+    MemoryRange::MemoryRange(void* base, void* top)
+        : base_(base)
+        , top_(top)
+    {
+        SYNTROPY_ASSERT(reinterpret_cast<uintptr_t>(base) <= reinterpret_cast<uintptr_t>(top));
+    }
+
+    MemoryRange::MemoryRange(void* base, size_t size)
+        : MemoryRange(base, Memory::AddOffset(base, size))
     {
 
     }
 
-    MemoryRange::MemoryRange(MemoryRange&& other)
-        : base_(other.base_)
-        , capacity_(other.capacity_)
+    MemoryRange::MemoryRange(const MemoryRange& other, size_t alignment)
+        : MemoryRange(Memory::Align(other.base_, alignment), other.top_)
     {
-        other.base_ = nullptr;
-        other.capacity_ = 0;
-    }
-
-    MemoryRange::~MemoryRange()
-    {
-        if (base_)
-        {
-            Memory::Release(base_);
-        }
+        SYNTROPY_ASSERT(other.Contains(*this));
     }
 
     void* MemoryRange::operator*() const
@@ -186,40 +145,86 @@ namespace syntropy
     {
         auto ptr = Memory::AddOffset(base_, offset);
 
-        SYNTROPY_ASSERT(Contains(ptr, 1));
+        SYNTROPY_ASSERT(Contains(ptr));
 
         return ptr;
     }
 
-    size_t MemoryRange::GetCapacity() const
+    size_t MemoryRange::GetSize() const
     {
-        return capacity_;
+        return static_cast<size_t>(Memory::GetDistance(base_, top_));
     }
 
-    bool MemoryRange::Contains(void* address, size_t size) const
+    bool MemoryRange::Contains(const MemoryRange& memory_range) const
     {
-        return reinterpret_cast<uintptr_t>(base_) <= reinterpret_cast<uintptr_t>(address) &&
-            reinterpret_cast<uintptr_t>(Memory::AddOffset(base_, capacity_)) >= reinterpret_cast<uintptr_t>(Memory::AddOffset(address, size));
+        return Memory::GetDistance(base_, memory_range.base_) >= 0 &&
+            Memory::GetDistance(top_, memory_range.top_) <= 0;
     }
 
     bool MemoryRange::Contains(void* address) const
     {
-        return reinterpret_cast<uintptr_t>(base_) <= reinterpret_cast<uintptr_t>(address) &&
-            reinterpret_cast<uintptr_t>(Memory::AddOffset(base_, capacity_)) > reinterpret_cast<uintptr_t>(address);
+        return Memory::GetDistance(base_, address) >= 0 &&
+            Memory::GetDistance(top_, address) < 0;
     }
 
-    void MemoryRange::Commit(void* address, size_t size)
-    {
-        SYNTROPY_ASSERT(Contains(address, size));
+    /************************************************************************/
+    /* MEMORY POOL                                                          */
+    /************************************************************************/
 
-        Memory::Commit(address, size);
+    MemoryPool::MemoryPool()
+        : pool_(nullptr)
+    {
+
     }
 
-    void MemoryRange::Decommit(void* address, size_t size)
+    MemoryPool::MemoryPool(size_t size)
+        : pool_(Memory::Reserve(size))
+        , range_(pool_, size)
     {
-        SYNTROPY_ASSERT(Contains(address, size));
 
-        Memory::Decommit(address, size);
+    }
+
+    MemoryPool::MemoryPool(size_t size, size_t alignment)
+        : pool_(Memory::Reserve(size + alignment - 1))
+        , range_(Memory::Align(pool_, alignment), size)       // Align the buffer to the required boundary
+    {
+
+    }
+
+    MemoryPool::MemoryPool(MemoryPool&& other)
+        : pool_(other.pool_)
+        , range_(other.range_)
+    {
+        other.pool_ = nullptr;
+        other.range_ = MemoryRange();
+    }
+
+    MemoryPool::~MemoryPool()
+    {
+        if (pool_)
+        {
+            Memory::Release(pool_);
+        }
+    }
+
+    void* MemoryPool::operator*() const
+    {
+        return *range_;
+    }
+
+    void* MemoryPool::operator[](size_t offset) const
+    {
+        return range_[offset];
+    }
+
+    size_t MemoryPool::GetSize() const
+    {
+        return range_.GetSize();
+    }
+
+    MemoryPool::operator MemoryRange() const
+    {
+        return range_;
     }
 
     /************************************************************************/
@@ -227,41 +232,37 @@ namespace syntropy
     /************************************************************************/
 
     MemoryBuffer::MemoryBuffer()
-        : buffer_(nullptr)
-        , size_(0)
-        , allocator_(nullptr)
+        : allocator_(nullptr)
     {
 
     }
 
     MemoryBuffer::MemoryBuffer(size_t size, Allocator& allocator)
-        : buffer_(SYNTROPY_ALLOC(allocator, size))
-        , size_(size)
+        : range_(SYNTROPY_ALLOC(allocator, size), size)
         , allocator_(std::addressof(allocator))
     {
 
     }
 
     MemoryBuffer::MemoryBuffer(const MemoryBuffer& other)
-        : MemoryBuffer(other.size_, *other.allocator_)
+        : MemoryBuffer(other.GetSize(), *other.allocator_)
     {
-        std::memmove(buffer_, other.buffer_, other.size_);      // Copy the buffer's content.
+        std::memmove(*range_, *other.range_, other.GetSize());      // Copy the buffer's content.
     }
 
     MemoryBuffer::MemoryBuffer(MemoryBuffer&& other)
-        : buffer_(other.buffer_)
-        , size_(other.size_)
+        : range_(other.range_)
         , allocator_(other.allocator_)
     {
-        other.buffer_ = nullptr;
-        other.size_ = 0;
+        other.range_ = MemoryRange();
+        other.allocator_ = nullptr;
     }
 
     MemoryBuffer::~MemoryBuffer()
     {
-        if (buffer_)
+        if (*range_)
         {
-            SYNTROPY_FREE(*allocator_, buffer_);
+            SYNTROPY_FREE(*allocator_, *range_);
         }
     }
 
@@ -273,23 +274,27 @@ namespace syntropy
 
     void* MemoryBuffer::operator*() const
     {
-        return buffer_;
+        return *range_;
     }
 
     void* MemoryBuffer::operator[](size_t offset) const
     {
-        return Memory::AddOffset(buffer_, offset);
+        return range_[offset];
     }
 
     size_t MemoryBuffer::GetSize() const
     {
-        return size_;
+        return range_.GetSize();
+    }
+
+    MemoryBuffer::operator MemoryRange() const
+    {
+        return range_;
     }
 
     void MemoryBuffer::Swap(MemoryBuffer& other) noexcept
     {
-        std::swap(buffer_, other.buffer_);
-        std::swap(size_, other.size_);
+        std::swap(range_, other.range_);
         std::swap(allocator_, other.allocator_);
     }
 

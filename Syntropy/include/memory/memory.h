@@ -66,23 +66,16 @@ namespace syntropy
         template <typename T>
         static constexpr T* SubOffset(T* address, size_t offset);
 
-        /// \brief Check whether an address is contained in a memory range.
-        /// \param base Base address of the range.
-        /// \param top First address not in the range.
-        /// \param address Address to check.
-        /// \return Returns true if the address is contained in the range [base; top), returns false otherwise.
-        static constexpr bool IsContained(void* base, void* top, void* address);
-
-        /// \brief Get the size of a memory range.
-        /// \param base Base address of the range.
-        /// \param top First address not in the range.
-        /// \return Returns the size of the range [base; top), in bytes.
-        static constexpr size_t GetSize(void* base, void* top);
-
         /// \brief Round an allocation size up to the next page size.
         /// \param size Size to round up.
         /// \return Returns the size extended such that is a multiple of the page size.
         static size_t CeilToPageSize(size_t size);
+
+        /// \brief Get the distance of two addresses, in bytes.
+        /// \param first First address.
+        /// \param second Second address.
+        /// \return Returns the signed distance among first and second, in bytes. The result is negative if second is less than first, positive otherwise.
+        static constexpr ptrdiff_t GetDistance(void* first, void* second);
 
         // Memory alignment
 
@@ -114,24 +107,24 @@ namespace syntropy
         /// \return Returns the virtual memory page size, in bytes.
         static size_t GetPageSize();
 
-        /// \brief Reserve and allocate a block of virtual memory.
+        /// \brief Reserve a range of virtual memory addresses.
+        /// Reserved memory pages must be committed via Commit() before accessing them.
+        /// \param size Size of the range to reserve, in bytes.
+        /// \return Returns the first address in the reserved range. If the method fails, returns nullptr.
+        /// \remark The reserved memory is guaranteed to be aligned to virtual memory page boundary.
+        static void* Reserve(size_t size);
+
+        /// \brief Allocate a range of virtual memory addresses.
         /// This method has the same effect as a Reserve() followed by a Commit().
-        /// \param size Size of the block of memory to allocate, in bytes.
-        /// \return Returns a pointer to the allocated memory block. If the allocation couldn't be fulfilled, returns nullptr.
+        /// \param size Size of the range to reserve, in bytes.
+        /// \return Returns the first address in the allocated range. If the method fails, returns nullptr.
+        /// \remark The allocated memory is guaranteed to be aligned to virtual memory page boundary.
         static void* Allocate(size_t size);
 
-        /// \brief Release a reserved virtual memory block.
-        /// \param address Address of the memory block to release.
-        /// \return Returns true if the block could be released, returns false otherwise.
-        /// \remarks The provided address must match the address returned by Reserve(), otherwise the behaviour is undefined.
+        /// \brief Release a range of virtual memory addresses.
+        /// \param address First address of the range to release. Must match any return value of a previous Reserve() / Allocate(), otherwise the behaviour is unspecified.
+        /// \return Returns true if the range could be released, returns false otherwise.
         static bool Release(void* address);
-
-        /// \brief Reserve an aligned block of virtual memory without allocating it.
-        /// Use Commit() in order to access a reserved memory block.
-        /// \param size Size of the block of memory to reserve, in bytes.
-        /// \param alignment Alignment of the block of memory to reserve, in bytes.
-        /// \return Returns the base address of the reserved virtual memory range.
-        static void* Reserve(size_t size, size_t alignment);
 
         /// \brief Commit a reserved virtual memory block.
         /// This method allocates all the pages containing at least one byte in the range [address, address + size] and makes them accessible by the application.
@@ -146,23 +139,6 @@ namespace syntropy
         /// \param address Base address of the memory block to decommit.
         /// \param size Size of the block to decommit, in bytes.
         static bool Decommit(void* address, size_t size);
-
-    private:
-
-        /// \brief Header for a single reserved block.
-        struct ReservedBlockHeader
-        {
-            void* base_address_;        ///< \brief Base address of the reserved block.
-            void* block_address_;       ///< \brief Actual aligned address of the block.
-            size_t size_;               ///< \brief Size of the memory block, in bytes.
-            size_t extended_size_;      ///< \brief Size of the entire reserved memory block, in bytes. Includes both the block, the header and eventual padding.
-            size_t alignment_;          ///< \brief Alignment of the memory block.
-        };
-
-        /// \brief Get a reserved block header starting from a block address.
-        /// \param address Block address.
-        /// \param page_size System page size.
-        static ReservedBlockHeader* GetReservedBlockHeader(void* address, size_t page_size);
 
     };
 
@@ -249,33 +225,30 @@ namespace syntropy
 
     };
 
-    /// \brief Represents a range of contiguous virtual memory addresses.
-    /// The range must be manually committed\decommitted before performing any access.
+    /// \brief Represents a range of contiguous memory addresses.
     /// \author Raffaele D. Facendola - December 2016
     class MemoryRange
     {
     public:
 
-        /// \brief Create a new virtual memory range.
-        /// \param capacity Capacity of the range, in bytes.
-        MemoryRange(size_t capacity);
+        /// \brief Create an empty memory range.
+        MemoryRange();
 
-        /// \brief Create a new aligned virtual memory range.
-        /// \param capacity Capacity of the range, in bytes.
-        /// \param alignment Alignment of the range.
-        MemoryRange(size_t capacity, size_t alignment);
+        /// \brief Create a memory range.
+        /// \param base First address in the range.
+        /// \param top One past the last address in the range.
+        MemoryRange(void* base, void* top);
 
-        /// \brief No copy ctor.
-        MemoryRange(const MemoryRange&) = delete;
+        /// \brief Create a memory range.
+        /// \param base First address in the range.
+        /// \param size Size of the range.
+        MemoryRange(void* base, size_t size);
 
-        /// \brief Move ctor.
-        MemoryRange(MemoryRange&& other);
-
-        /// \brief No assignment operator.
-        MemoryRange& operator=(const MemoryRange&) = delete;
-
-        /// \brief Default destructor.
-        ~MemoryRange();
+        /// \brief Create a memory range which is the aligned version of another range.
+        /// This range is guaranteed to be contained inside the original range.
+        /// \param other Range to copy.
+        /// \param alignment Alignment of this range.
+        MemoryRange(const MemoryRange& other, size_t alignment);
 
         /// \brief Dereferencing operator. Access the base address of the range.
         /// \return Returns the base address of the range.
@@ -286,37 +259,80 @@ namespace syntropy
         /// \return Returns a pointer to offset-bytes after the base of the range.
         void* operator[](size_t offset) const;
 
-        /// \brief Get the total capacity of the memory range, in bytes.
+        /// \brief Get the size of the range, in bytes.
         /// \return Returns the total capacity of the memory range, in bytes.
-        size_t GetCapacity() const;
+        size_t GetSize() const;
 
-        /// \brief Check whether a memory sub-range belongs entirely to this memory range.
-        /// \param address Base address of the sub-range to check.
-        /// \param size Size of the sub-range, in bytes.
-        /// \return Returns true if the sub-range [address, address+size) is contained inside this memory range, return false otherwise.
-        bool Contains(void* address, size_t size) const;
+        /// \brief Check whether a memory range is contained entirely inside this range.
+        /// \param memory_range Memory range to check.
+        /// \return Returns true if memory_range is contained inside this memory range, returns false otherwise.
+        bool Contains(const MemoryRange& memory_range) const;
 
-        /// \brief Check whether an address belongs to this memory range.
+        /// \brief Check whether an address falls within this memory range.
         /// \param address Address to check.
         /// \return Returns true if address is contained inside this memory range, returns false otherwise.
         bool Contains(void* address) const;
 
-        /// \brief Commit a memory block within this memory range.
-        /// This method allocates all the memory pages containing at least one byte in the range [address, address + size].
-        /// \param address Address of the memory block to allocate.
-        /// \param size Size of the block to allocate, in bytes.
-        void Commit(void* address, size_t size);
+    private:
 
-        /// \brief Decommit a memory block.
-        /// This method free all the pages containing at least one byte in the range [address, address + size].
-        /// \param address Base address of the memory block to free.
-        void Decommit(void* address, size_t size);
+        void* base_;            ///< \brief First address in the memory range.
+
+        void* top_;             ///< \brief One past the last address in the memory range.
+
+    };
+
+    /// \brief Represents a pool of contiguous virtual addresses.
+    /// The pool reserves a range of virtual memory. Actual allocation\deallocation must be performed manually.
+    /// \author Raffaele D. Facendola - March 2017
+    class MemoryPool
+    {
+    public:
+
+        /// \brief Create a new empty pool.
+        MemoryPool();
+
+        /// \brief Create a new pool.
+        /// \param size Size of the pool, in bytes.
+        MemoryPool(size_t size);
+
+        /// \brief Create a new aligned pool
+        /// \param size Size of the pool, in bytes.
+        /// \param alignment Alignment of the pool, in bytes.
+        MemoryPool(size_t size, size_t alignment);
+
+        /// \brief No copy ctor.
+        MemoryPool(const MemoryPool&) = delete;
+
+        /// \brief Move ctor.
+        MemoryPool(MemoryPool&& other);
+
+        /// \brief Default destructor.
+        ~MemoryPool();
+
+        /// \brief No assignment operator.
+        MemoryPool& operator=(const MemoryPool&) = delete;
+
+        /// \brief Dereferencing operator. Access the base address of the pool.
+        /// \return Returns the base address of the pool.
+        void* operator*() const;
+
+        /// \brief Access an element in the pool.
+        /// \param offset Offset with respect to the first element of the pool.
+        /// \return Returns a pointer to the element (base+offset).
+        void* operator[](size_t offset) const;
+
+        /// \brief Get the size of the pool, in bytes.
+        /// \return Returns the size of the pool, in bytes.
+        size_t GetSize() const;
+
+        /// \brief Get the pool's memory range.
+        operator MemoryRange() const;
 
     private:
 
-        void* base_;            ///< \brief First address in the memory range. Owning pointer.
+        void* pool_;                ///< \brief Pointer to the virtual memory buffer.
 
-        size_t capacity_;       ///< \brief Capacity of the range, in bytes.
+        MemoryRange range_;         ///< \brief Memory range. Accounts for any required alignment.
 
     };
 
@@ -330,7 +346,6 @@ namespace syntropy
         MemoryBuffer();
 
         /// \brief Create a new buffer.
-        /// \param base Base address of the buffer.
         /// \param size Size of the buffer, in bytes.
         /// \param allocator Allocator used to allocate the memory.
         MemoryBuffer(size_t size, Allocator& allocator);
@@ -364,17 +379,17 @@ namespace syntropy
         /// \return Returns the size of the buffer, in bytes.
         size_t GetSize() const;
 
+        /// \brief Get the buffer memory range.
+        operator MemoryRange() const;
+
         /// \brief Swap the content of this buffer with another one.
         void Swap(MemoryBuffer& other) noexcept;
 
     private:
 
-        void* buffer_;          ///< \brief First address in the buffer. Owning pointer.
-
-        size_t size_;           ///< \brief Size of the buffer, in bytes.
+        MemoryRange range_;     ///< \brief Buffer memory range.
 
         Allocator* allocator_;  ///< \brief Allocator used to allocate\deallocate memory. Non-owning pointer.
-
     };
 
 }
@@ -412,15 +427,9 @@ namespace syntropy
         return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) - offset);
     }
 
-    constexpr bool Memory::IsContained(void* base, void* top, void* address)
+    constexpr ptrdiff_t Memory::GetDistance(void* first, void* second)
     {
-        return reinterpret_cast<uintptr_t>(base) <= reinterpret_cast<uintptr_t>(address) &&
-               reinterpret_cast<uintptr_t>(address) < reinterpret_cast<uintptr_t>(top);
-    }
-    
-    constexpr size_t Memory::GetSize(void* base, void* top)
-    {
-        return reinterpret_cast<uintptr_t>(top) - reinterpret_cast<uintptr_t>(base);
+        return reinterpret_cast<intptr_t>(second) - reinterpret_cast<intptr_t>(first);
     }
 
     template <typename T>

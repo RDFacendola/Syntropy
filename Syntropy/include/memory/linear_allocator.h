@@ -31,6 +31,12 @@ namespace syntropy
         /// \param alignment Memory alignment.
         SequentialAllocator(size_t capacity, size_t alignment);
 
+        /// \brief Create a new sequential allocator.
+        /// \param memory_range Memory range used by the allocator.
+        /// \param alignment Memory alignment.
+        /// \remarks The allocator doesn't take ownership of the memory range provided as input.
+        SequentialAllocator(const MemoryRange& memory_range, size_t alignment);
+
         /// \brief No copy constructor.
         SequentialAllocator(const SequentialAllocator&) = delete;
 
@@ -76,11 +82,13 @@ namespace syntropy
 
     private:
 
-        MemoryRange memory_;        ///< \brief Reserved virtual memory range.
+        MemoryPool memory_pool_;        ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
 
-        void* head_;                ///< \brief Points to the first unallocated memory address.
+        MemoryRange memory_range_;      ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
 
-        void* page_head_;           ///< \brief Points to the first unmapped memory page.
+        void* head_;                    ///< \brief Points to the first unallocated memory address.
+
+        void* page_head_;               ///< \brief Points to the first unmapped memory page.
 
     };
 
@@ -92,10 +100,16 @@ namespace syntropy
     {
     public:
 
-        /// \brief Create a new allocator.
+        /// \brief Create a new linear allocator.
         /// \param capacity Amount of memory reserved by the allocator.
         /// \param alignment Memory alignment.
         LinearAllocator(size_t capacity, size_t alignment);
+
+        /// \brief Create a new linear allocator.
+        /// \param memory_range Memory range used by the allocator.
+        /// \param alignment Memory alignment.
+        /// \remarks The allocator doesn't take ownership of the memory range provided as input.
+        LinearAllocator(const MemoryRange& memory_range, size_t alignment);
 
         /// \brief No copy constructor.
         LinearAllocator(const LinearAllocator&) = delete;
@@ -151,7 +165,9 @@ namespace syntropy
 
     private:
 
-        MemoryRange memory_;            ///< \brief Reserved virtual memory range.
+        MemoryPool memory_pool_;        ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
+
+        MemoryRange memory_range_;      ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
 
         void* head_;                    ///< \brief Pointer to the first unallocated memory block.
 
