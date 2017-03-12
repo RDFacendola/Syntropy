@@ -2,6 +2,7 @@
 
 #include "platform/system.h"
 #include "diagnostics/diagnostics.h"
+#include "diagnostics/debug.h"
 
 namespace syntropy
 {
@@ -48,73 +49,62 @@ namespace syntropy
 
     BlockAllocator::BlockAllocator(size_t capacity, size_t block_size)
         : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
-        , memory_pool_(capacity, block_size_)                       // Reserve the virtual memory range upfront without allocating.
-        , memory_range_(memory_pool_)                               // Get the full range out of the memory pool.
+        , allocator_(capacity, block_size_)                         // Reserve the virtual memory range upfront without allocating.
         , free_list_(nullptr)
-        , head_(*memory_range_)
     {
 
     }
 
     BlockAllocator::BlockAllocator(const MemoryRange& memory_range, size_t block_size)
         : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
-        , memory_range_(memory_range, block_size_)                  // Get the memory range without taking ownership.
+        , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
         , free_list_(nullptr)
-        , head_(*memory_range_)
     {
 
     }
 
-    void* BlockAllocator::Allocate()
+    void* BlockAllocator::Allocate(size_t commit_size)
     {
-        return Allocate(block_size_);
-    }
-
-    void* BlockAllocator::Allocate(size_t size)
-    {
-        SYNTROPY_ASSERT(size <= block_size_);
+        commit_size = Memory::CeilToPageSize(std::min(commit_size, block_size_));
 
         auto block = Reserve();
 
-        Memory::Commit(block, size);
+        if (commit_size > 0)
+        {
+            Memory::Commit(block, commit_size);
 
-        MemoryDebug::MarkUninitialized(block, Memory::AddOffset(block, Memory::CeilToPageSize(size)));
+            MemoryDebug::MarkUninitialized(block, Memory::AddOffset(block, commit_size));
+        }
 
         return block;
     }
 
     void* BlockAllocator::Reserve()
     {
-        void* block;
-
         if (!free_list_)
         {
             // No free block
-            block = head_;                                          // Reserve a new memory block on the allocator's head.
-            head_ = Memory::AddOffset(head_, block_size_);          // Move the head forward.
-
-            SYNTROPY_ASSERT(Memory::GetDistance(memory_range_.GetTop(), head_) <= 0);       // Check for out-of-memory.
-
+            return allocator_.Reserve(block_size_, block_size_);    // Reserve a new block aligned to its own size.
         }
         else if(free_list_->IsEmpty())
         {
             // No free block referenced by the current chunk
-            block = free_list_;                                     // Repurpose the chunk itself.
+            auto block = free_list_;                                // Reuse the chunk itself.
             free_list_ = free_list_->next_;                         // Move to the next free list block. The block is already committed.
+
+            return block;
         }
         else
         {
             // Restore a deallocated memory block.
-            block = free_list_->PopBlock();                         // Pop a free block address.
+            return free_list_->PopBlock();                          // Pop a free block address.
         }
-
-        return block;
     }
 
     void BlockAllocator::Free(void* block)
     {
-        SYNTROPY_ASSERT(MemoryRange(*memory_range_, head_).Contains(block));    // Check whether the block belongs to this allocator.
-        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, block_size_));               // Check whether the block is properly aligned (guaranteed by Allocate()\Reserve())
+        SYNTROPY_ASSERT(allocator_.GetRange().Contains(block));     // Check whether the block belongs to this allocator.
+        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, block_size_));   // Check whether the block is properly aligned (guaranteed by Allocate()\Reserve())
 
         if (!free_list_ || free_list_->IsFull())
         {
@@ -144,7 +134,7 @@ namespace syntropy
 
     const MemoryRange& BlockAllocator::GetRange() const
     {
-        return memory_range_;
+        return allocator_.GetRange();
     }
 
     /************************************************************************/
@@ -152,66 +142,54 @@ namespace syntropy
     /************************************************************************/
 
     MonotonicBlockAllocator::MonotonicBlockAllocator(size_t capacity, size_t block_size)
-        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system allocation granularity.
-        , allocator_(capacity, block_size_)                         // Reserve a contiguous virtual memory range.
-        , free_(nullptr)
-        , allocation_size_(0u)
+        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
+        , allocator_(capacity, block_size_)                         // Reserve the virtual memory range upfront without allocating.
+        , free_list_(nullptr)
     {
 
     }
 
     MonotonicBlockAllocator::MonotonicBlockAllocator(const MemoryRange& memory_range, size_t block_size)
-        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system allocation granularity.
-        , allocator_(memory_range, block_size_)
-        , free_(nullptr)
-        , allocation_size_(0u)
+        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
+        , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
+        , free_list_(nullptr)
     {
 
     }
 
     void* MonotonicBlockAllocator::Allocate()
     {
-        allocation_size_ += block_size_;
-
-        // Recycle an unused memory block.
-        if (free_)
+        if (free_list_)
         {
-            auto block = free_;
-            
-            free_ = block->next_;                                   // Move to the next free block.
+            auto block = free_list_;                                // Recycle the first unused memory block.
+            free_list_ = block->next_;                              // Move to the next free block.
+
+            MemoryDebug::MarkUninitialized(block, Memory::AddOffset(block, block_size_));
 
             return block;
         }
-
-        // Allocate a new block.
-        return allocator_.Allocate(block_size_);
+        else
+        {
+            return allocator_.Allocate(block_size_, block_size_);   // Allocate a new block aligned to its own size.
+        }
     }
 
     void MonotonicBlockAllocator::Free(void* block)
     {
-        SYNTROPY_ASSERT(GetRange().Contains(block));
+        SYNTROPY_ASSERT(allocator_.GetRange().Contains(block));     // Check whether the block belongs to this allocator.
+        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, block_size_));   // Check whether the block is properly aligned (guaranteed by Allocate())
 
-        allocation_size_ -= block_size_;
+        MemoryDebug::MarkFree(block, Memory::AddOffset(block, block_size_));
 
-        auto free_block = reinterpret_cast<Block*>(Memory::AlignDown(block, block_size_));      // Get the base address of the block to free.
+        auto free_block = reinterpret_cast<Block*>(block);
 
-        free_block->next_ = free_;
-        free_ = free_block;
+        free_block->next_ = free_list_;
+        free_list_ = free_block;
     }
 
     size_t MonotonicBlockAllocator::GetBlockSize() const
     {
         return block_size_;
-    }
-
-    size_t MonotonicBlockAllocator::GetAllocationSize() const
-    {
-        return allocation_size_;
-    }
-
-    size_t MonotonicBlockAllocator::GetCommitSize() const
-    {
-        return allocator_.GetCommitSize();
     }
 
     const MemoryRange& MonotonicBlockAllocator::GetRange() const

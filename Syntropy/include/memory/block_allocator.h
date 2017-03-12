@@ -8,15 +8,15 @@
 
 #include "memory.h"
 #include "linear_allocator.h"
-#include "diagnostics/debug.h"
-#include "math/math.h"
+
+#include <limits>
 
 namespace syntropy
 {
 
     /// \brief Block allocator used to allocate fixed-size memory blocks on a contiguous address range.
     /// Both allocations and deallocations are performed on demand: when a memory block is needed it gets mapped to the system memory; when no longer needed the memory is returned to the system.
-    /// This allocator ensures that only the memory being currently used is allocated but may suffer from kernel calls overhead. If a smaller, more performance-aware, allocator is needed check MonotonicBlockAllocator.
+    /// This allocator ensures that only the memory being currently used is committed but it may suffer from kernel calls overhead.
     /// \author Raffaele D. Facendola - January 2017
     class BlockAllocator
     {
@@ -43,15 +43,12 @@ namespace syntropy
         BlockAllocator& operator=(const BlockAllocator&) = delete;
 
         /// \brief Allocate a memory block.
+        /// \param commit_size Amount of memory to commit inside the block. This value is rounded up to the next page size and capped to the block size.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate();
-
-        /// \brief Allocate a memory block of a specific size.
-        /// \param size Size of the block to allocate, in bytes. Must be equal or smaller than the block size.
-        /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size);
+        void* Allocate(size_t commit_size = std::numeric_limits<size_t>::max());
 
         /// \brief Reserve a memory block.
+        /// The block must be committed to the system memory via Memory::Commit(...).
         /// \return Returns a pointer to the reserved memory block.
         void* Reserve();
 
@@ -70,7 +67,6 @@ namespace syntropy
     private:
 
         /// \brief Header for a block whose purpose is to track other free blocks.
-        /// If the head and the base pointer both points to the same location, this block can be repurposed for an allocation.
         struct FreeBlock
         {
             /// \brief Create a new free block.
@@ -78,13 +74,13 @@ namespace syntropy
             /// \param capacity Maximum amount of free blocks that can be referenced by this block.
             FreeBlock(FreeBlock* next, size_t capacity);
 
-            FreeBlock* next_;           ///< \brief Pointer to next free block.
+            FreeBlock* next_;           ///< \brief Pointer to next chunk.
 
-            size_t count_;              ///< \brief Current amount of free block referenced by this block.
+            size_t count_;              ///< \brief Current amount of free blocks referenced by this block.
 
             size_t capacity_;           ///< \brief Maximum amount of free blocks that can be referenced by this block.
 
-            uintptr_t base_;            ///< \brief Base of the free block stack. Note: this is actually the first element in the stack, other elements are contiguous to this one.
+            uintptr_t base_;            ///< \brief First element in the chunk, other elements are contiguous to this one.
 
             /// \brief Pop a free block referenced by this block.
             /// Do not call this method if the block is empty.
@@ -106,13 +102,9 @@ namespace syntropy
 
         size_t block_size_;             ///< \brief Size of each block in bytes.
 
-        MemoryPool memory_pool_;        ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
+        LinearAllocator allocator_;     ///< \brief Underlying linear allocator.
 
-        MemoryRange memory_range_;      ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
-
-        FreeBlock* free_list_;          ///< \brief Pointer to the stack of free block addresses. The stack is split into chunks stored inside the memory range.
-
-        void* head_;                    ///< \brief Pointer to the first unmapped block.
+        FreeBlock* free_list_;          ///< \brief List of free block addresses. Linked-list of chunks. Each chunk contains many free addresses.
 
     };
 
@@ -145,6 +137,7 @@ namespace syntropy
         MonotonicBlockAllocator& operator=(const MonotonicBlockAllocator&) = delete;
 
         /// \brief Allocate a memory block.
+        /// Allocated memory blocks are guaranteed to be aligned to the allocator's block size.
         /// \return Returns a pointer to the allocated memory block.
         void* Allocate();
         
@@ -155,15 +148,6 @@ namespace syntropy
         /// \brief Get the size of each block.
         /// \return Returns the size of each block in bytes.
         size_t GetBlockSize() const;
-
-        /// \brief Get the current allocation size, in bytes.
-        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetAllocationSize() const;
-
-        /// \brief Get the amount of system memory committed by the allocator, in bytes.
-        /// Note that the stack allocator allocates all the memory it needs upfront.
-        /// \return Returns the amount of system memory committed by the allocator, in bytes.
-        size_t GetCommitSize() const;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -181,9 +165,7 @@ namespace syntropy
 
         LinearAllocator allocator_;     ///< \brief Underlying linear allocator.
 
-        Block* free_;                   ///< \brief First free block.
-
-        size_t allocation_size_;        ///< \brief Amount of memory allocated so far.
+        Block* free_list_;              ///< \brief List of free blocks. Linked list.
 
     };
 

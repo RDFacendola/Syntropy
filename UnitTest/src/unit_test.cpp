@@ -53,7 +53,7 @@ int main()
     syntropy::MemoryPool pool(0x4000000, 1);
 
     {
-        syntropy::BlockAllocator block(pool, 4096);
+        syntropy::MonotonicBlockAllocator block(pool, 4096);
 
         std::vector<void*> blocks;
 

@@ -24,17 +24,18 @@ namespace syntropy
 
     }
 
-    void* LinearAllocator::Allocate(size_t size)
+    void* LinearAllocator::Allocate(size_t size, size_t alignment)
     {
         SYNTROPY_ASSERT(size > 0);
 
-        auto block = head_;
+        auto block = Memory::Align(head_, alignment);
 
         head_ = Memory::AddOffset(head_, size);
 
         SYNTROPY_ASSERT(Memory::GetDistance(memory_range_.GetTop(), head_) <= 0);   // Out-of-memory check.
 
         // Commit each memory page between the old page head and the new one
+
         auto next_page = Memory::Align(head_, Memory::GetPageSize());               // Ceil to next memory page boundary.
 
         auto allocation_size = Memory::GetDistance(page_head_, next_page);
@@ -43,7 +44,7 @@ namespace syntropy
         {
             Memory::Commit(page_head_, static_cast<size_t>(allocation_size));       // Commit the missing memory pages.
 
-            page_head_ = next_page;
+            page_head_ = next_page;                                                 // Update the page head.
         }
 
         MemoryDebug::MarkUninitialized(block, head_);
@@ -51,38 +52,31 @@ namespace syntropy
         return block;
     }
 
-    void LinearAllocator::Free(size_t size)
+    void* LinearAllocator::Reserve(size_t size, size_t alignment)
     {
         SYNTROPY_ASSERT(size > 0);
 
-        head_ = Memory::SubOffset(head_, size);
+        auto block = Memory::Align(head_, Memory::GetPageSize());                   // Reserve at page boundary, we don't want to share memory pages with other allocations.
+        
+        block = Memory::Align(block, alignment);                                    // Align the block to the requested value.
 
-        SYNTROPY_ASSERT(Memory::GetDistance(*memory_range_, head_) >= 0);           // Can't free more memory than it was allocated.
+        head_ = Memory::AddOffset(block, size);                                     // Reserve the requested size.
 
-        // Decommit each memory page between the old page head and the new one
-        auto next_page = Memory::Align(head_, Memory::GetPageSize());               // Ceil to previous memory page boundary.
+        head_ = Memory::Align(head_, Memory::GetPageSize());                        // Move the head to the next memory page so that following allocations won't share any memory page with this one.
 
-        auto free_size = Memory::GetDistance(next_page, page_head_);
+        SYNTROPY_ASSERT(Memory::GetDistance(memory_range_.GetTop(), head_) <= 0);   // Out-of-memory check.
 
-        if(free_size > 0)
-        {
-            page_head_ = next_page;
+        page_head_ = head_;                                                         // Update the page head.
 
-            Memory::Decommit(page_head_, static_cast<size_t>(free_size));           // Free the extra amount of memory.
-        }
-
-        MemoryDebug::MarkFree(head_, page_head_);                                   // Marks up to the first unallocated memory page. Accessing other addresses will cause the application to crash anyway.
-
+        return block;
     }
 
-    size_t LinearAllocator::GetAllocationSize() const
+    void LinearAllocator::Free()
     {
-        return static_cast<size_t>(Memory::GetDistance(*memory_range_, head_));
-    }
+        Memory::Decommit(*memory_range_, MemoryRange(*memory_range_, page_head_).GetSize());        // Decommit everything.
 
-    size_t LinearAllocator::GetCommitSize() const
-    {
-        return static_cast<size_t>(Memory::GetDistance(*memory_range_, page_head_));
+        head_ = *memory_range_;
+        page_head_ = head_;
     }
 
     const MemoryRange& LinearAllocator::GetRange() const

@@ -18,7 +18,6 @@ namespace syntropy
     TinySegregatedFitAllocator::TinySegregatedFitAllocator(const HashedString& name, size_t capacity, size_t page_size)
         : Allocator(name)
         , allocator_(capacity, page_size)                       // Allocator for the pages.
-        , allocation_size_(0u)
     {
 
         std::fill(free_pages_.begin(),
@@ -30,7 +29,6 @@ namespace syntropy
     TinySegregatedFitAllocator::TinySegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t page_size)
         : Allocator(name)
         , allocator_(memory_range, page_size)                   // Allocator for the pages.
-        , allocation_size_(0u)
     {
 
         std::fill(free_pages_.begin(),
@@ -64,8 +62,6 @@ namespace syntropy
         {
             DiscardPage(page);              // Discard the current page from the allocator and move to the next one.
         }
-
-        allocation_size_ += block_size;     // Update the allocation size.
 
         return block;
     }
@@ -102,7 +98,6 @@ namespace syntropy
             RestorePage(page);                  // Return the page to the segregated free list so new allocations can be performed inside it.
         }
 
-        allocation_size_ -= page->block_size_;  // Update the allocation size.
     }
 
     bool TinySegregatedFitAllocator::Belongs(void* block) const
@@ -117,12 +112,12 @@ namespace syntropy
 
     size_t TinySegregatedFitAllocator::GetAllocationSize() const
     {
-        return allocation_size_;
+        return 0u;
     }
 
     size_t TinySegregatedFitAllocator::GetCommitSize() const
     {
-        return allocator_.GetCommitSize();
+        return 0u;
     }
 
     const MemoryRange& TinySegregatedFitAllocator::GetRange() const
@@ -132,7 +127,7 @@ namespace syntropy
 
     TinySegregatedFitAllocator::Page* TinySegregatedFitAllocator::AllocatePage(size_t block_size)
     {
-        auto page = reinterpret_cast<Page*>(allocator_.Allocate());             // Get a new page
+        auto page = reinterpret_cast<Page*>(allocator_.Allocate());   // Get a new page
 
         Block* head;
         auto count = GetBlockCount(page, block_size, head);

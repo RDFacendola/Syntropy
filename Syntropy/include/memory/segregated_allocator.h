@@ -142,8 +142,6 @@ namespace syntropy
 
         std::array<Page*, kOrder> free_pages_;              ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
 
-        size_t allocation_size_;                            ///< \brief Number of bytes allocated by this allocator. Doesn't account for any allocation overhead.
-
     };
 
     /// \brief High-performances, low-fragmentation allocator to handle allocation of medium-sized objects.

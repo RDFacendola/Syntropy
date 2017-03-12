@@ -13,9 +13,8 @@
 namespace syntropy
 {
 
-    /// \brief Base allocator used to allocate sequential memory blocks over a contiguous range of virtual memory addresses.
-    /// Memory is committed and decommited on demand: the allocator allocates the minimum amount of system memory pages.
-    /// Memory is allocated and freed on the allocator's head.
+    /// \brief Allocator used to allocate memory blocks over a contiguous range of virtual memory addresses. Blocks are allocated sequentially.
+    /// Memory is committed and decommited on demand. Memory is always allocated on the head. Pointer-level deallocations are not supported.
     /// \author Raffaele D. Facendola - January 2017
     class LinearAllocator
     {
@@ -43,21 +42,18 @@ namespace syntropy
 
         /// \brief Allocate a new memory block on the allocator's head.
         /// \param size Size of the memory block to allocate, in bytes.
+        /// \param alignment Alignment of the block.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size);
+        void* Allocate(size_t size, size_t alignment = 1);
 
-        /// \brief Free a memory block on the allocator's head.
-        /// \param size Size of the memory block to free, in bytes.
-        void Free(size_t size);
+        /// \brief Reserve a new memory block on the allocator's head.
+        /// \param size Size of the memory block to reserve, in bytes.
+        /// \param alignment Alignment of the block.
+        /// \return Returns a pointer to the reserved memory block.
+        void* Reserve(size_t size, size_t alignment = 1);
 
-        /// \brief Get the current allocation size, in bytes.
-        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetAllocationSize() const;
-
-        /// \brief Get the amount of system memory committed by the allocator, in bytes.
-        /// Note that the stack allocator allocates all the memory it needs upfront.
-        /// \return Returns the amount of system memory committed by the allocator, in bytes.
-        size_t GetCommitSize() const;
+        /// \brief Free all the allocations performed so far.
+        void Free();
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -316,7 +312,7 @@ namespace syntropy
     template <typename T>
     size_t VectorAllocator<T>::GetAllocationSize() const
     {
-        return allocator_.GetAllocationSize();
+        return 0;
     }
 
     template <typename T>
