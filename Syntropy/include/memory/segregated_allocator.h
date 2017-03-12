@@ -10,6 +10,7 @@
 #include "memory/block_allocator.h"
 
 #include <array>
+#include <vector>
 
 namespace syntropy
 {
@@ -300,7 +301,7 @@ namespace syntropy
                                                             ///         First-level array divide free blocks in classes that are a power of two apart.
                                                             ///         Second-level array subdivide each class linearly.
 
-        VectorAllocator<FreeBlockHeader*> free_lists_;      ///< \brief Pointer to the free lists. Each list handles allocations for a particular class of sizes.
+        std::vector<FreeBlockHeader*> free_lists_;          ///< \brief Pointer to the free lists. Each list handles allocations for a particular class of sizes.
                                                             ///< \brief Segregated free lists are flattened.
 
     };
@@ -393,7 +394,7 @@ namespace syntropy
 
         size_t order_;                                          ///< \brief Number of classes in this allocator.
 
-        VectorAllocator<BlockAllocator> allocators_;            ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
+        std::vector<BlockAllocator> allocators_;                ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
     };
 
 }

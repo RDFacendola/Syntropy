@@ -47,6 +47,13 @@ namespace syntropy
     /* BLOCK ALLOCATOR                                                      */
     /************************************************************************/
 
+    BlockAllocator::BlockAllocator()
+        : block_size_(0u)
+        , free_list_(nullptr)
+    {
+
+    }
+
     BlockAllocator::BlockAllocator(size_t capacity, size_t block_size)
         : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
         , allocator_(capacity, block_size_)                         // Reserve the virtual memory range upfront without allocating.
@@ -59,6 +66,14 @@ namespace syntropy
         : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
         , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
         , free_list_(nullptr)
+    {
+
+    }
+
+    BlockAllocator::BlockAllocator(BlockAllocator&& other)
+        : block_size_(other.block_size_)
+        , allocator_(std::move(other.allocator_))
+        , free_list_(other.free_list_)
     {
 
     }
@@ -140,6 +155,13 @@ namespace syntropy
     /************************************************************************/
     /* MONOTONIC BLOCK ALLOCATOR                                            */
     /************************************************************************/
+
+    MonotonicBlockAllocator::MonotonicBlockAllocator()
+        : block_size_(0u)
+        , free_list_(nullptr)
+    {
+
+    }
 
     MonotonicBlockAllocator::MonotonicBlockAllocator(size_t capacity, size_t block_size)
         : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.

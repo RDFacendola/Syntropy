@@ -290,16 +290,8 @@ namespace syntropy
         , pool_(capacity, 1)
         , last_block_(nullptr)
         , second_level_index_(second_level_index)
-        , free_lists_((Math::FloorLog2(pool_.GetRange().GetSize()) + 1ull) * (1ull << second_level_index_))
     {
-
-        // Initialize the free lists.
-        auto count = free_lists_.GetMaxCount();
-
-        while (count-- > 0)
-        {
-            free_lists_.PushBack(nullptr);
-        }
+        free_lists_.resize((Math::FloorLog2(pool_.GetRange().GetSize()) + 1u) * (1ull << second_level_index_));
     }
 
     TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t second_level_index)
@@ -307,16 +299,8 @@ namespace syntropy
         , pool_(memory_range, 1)
         , last_block_(nullptr)
         , second_level_index_(second_level_index)
-        , free_lists_((Math::FloorLog2(pool_.GetRange().GetSize()) + 1ull) * (1ull << second_level_index_))
     {
-
-        // Initialize the free lists.
-        auto count = free_lists_.GetMaxCount();
-
-        while (count-- > 0)
-        {
-            free_lists_.PushBack(nullptr);
-        }
+        free_lists_.resize((Math::FloorLog2(pool_.GetRange().GetSize()) + 1u) * (1ull << second_level_index_));
     }
 
     void* TwoLevelSegregatedFitAllocator::Allocate(size_t size)
@@ -356,14 +340,14 @@ namespace syntropy
 
         // Search a free block big enough to handle the allocation.
         // TODO: Remove this loop, use bitmaps instead.
-        while (index < free_lists_.GetMaxCount() && !free_lists_[index])
+        while (index < free_lists_.size() && !free_lists_[index])
         {
             ++index;
         }
 
         BlockHeader* block;
 
-        if (index < free_lists_.GetMaxCount())
+        if (index < free_lists_.size())
         {
             // Pop a free block from the given segregated free list.
             block = PopBlock(index);
@@ -541,9 +525,10 @@ namespace syntropy
         , memory_pool_(capacity, base_allocation_size)                                  // Allocate a new virtual address range.
         , memory_range_(memory_pool_)                                                   // Get the full range out of the memory pool.
         , order_(order)
-        , allocators_(order_)
     {
         SYNTROPY_ASSERT(order >= 1);
+
+        allocators_.reserve(order);
 
         capacity /= order;                                                              // Distribute the capacity evenly among the different classes.
 
@@ -551,7 +536,7 @@ namespace syntropy
 
         while (order-- > 0)
         {
-            allocators_.EmplaceBack(capacity, class_size);
+            allocators_.emplace_back(capacity, class_size);
             class_size <<= 1;                                                           // Double the allocation size for the next class.
         }
     }
@@ -590,7 +575,7 @@ namespace syntropy
 
     size_t ExponentialSegregatedFitAllocator::GetMaxAllocationSize() const
     {
-        return base_allocation_size_ * (1ull << (allocators_.GetCount() - 1ull));        // base * 2^(order-1)
+        return base_allocation_size_ * (1ull << (allocators_.size() - 1u));        // base * 2^(order-1)
     }
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size)
@@ -623,7 +608,7 @@ namespace syntropy
     {
         auto index = Math::CeilLog2((block_size + base_allocation_size_ - 1) / base_allocation_size_);
 
-        SYNTROPY_ASSERT(index < allocators_.GetCount());
+        SYNTROPY_ASSERT(index < allocators_.size());
 
         return allocators_[index];
     }

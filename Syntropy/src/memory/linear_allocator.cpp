@@ -7,6 +7,13 @@ namespace syntropy
     /* LINEAR ALLOCATOR                                                     */
     /************************************************************************/
 
+    LinearAllocator::LinearAllocator()
+        : head_(nullptr)
+        , page_head_(nullptr)
+    {
+
+    }
+
     LinearAllocator::LinearAllocator(size_t capacity, size_t alignment)
         : memory_pool_(capacity, alignment)             // Allocate a new virtual address range.
         , memory_range_(memory_pool_)                   // Get the full range out of the memory pool.
@@ -20,6 +27,15 @@ namespace syntropy
         : memory_range_(memory_range, alignment)        // Copy the memory range without taking ownership.
         , head_(*memory_range_)
         , page_head_(*memory_range_)
+    {
+
+    }
+
+    LinearAllocator::LinearAllocator(LinearAllocator&& other)
+        : memory_pool_(std::move(other.memory_pool_))
+        , memory_range_(other.memory_range_)
+        , head_(other.head_)
+        , page_head_(other.page_head_)
     {
 
     }

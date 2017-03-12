@@ -53,40 +53,10 @@ int main()
     syntropy::MemoryPool pool(0x4000000, 1);
 
     {
-        syntropy::MonotonicBlockAllocator block(pool, 4096);
 
-        std::vector<void*> blocks;
-
-        for (int i = 0; i < 8192; ++i)
-        {
-            blocks.push_back(block.Allocate());
-        }
-
-        for (int i = 0; i < 4096; ++i)
-        {
-            block.Free(blocks.back());
-            blocks.pop_back();
-        }
-
-        for (int i = 0; i < 4096; ++i)
-        {
-            blocks.push_back(block.Allocate());
-        }
-
-        for (int i = 0; i < 8192; ++i)
-        {
-            block.Free(blocks.back());
-            blocks.pop_back();
-        }
-
-
-    }
-
-    {
-
-        syntropy::TinySegregatedFitAllocator tlsfa("tiny", pool, 16384);
+        //syntropy::TinySegregatedFitAllocator tlsfa("tiny", pool, 16384);
         //syntropy::TwoLevelSegregatedFitAllocator tlsfa("linear", pool, 2);
-        //syntropy::ExponentialSegregatedFitAllocator tlsfa("exponential", 0x800000, 16384, 5);
+        syntropy::ExponentialSegregatedFitAllocator tlsfa("exponential", 0x800000, 16384, 5);
             
         auto p = SYNTROPY_NEW(tlsfa) FooSmall();
         auto q = SYNTROPY_NEW(tlsfa) FooMedium();

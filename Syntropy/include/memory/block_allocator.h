@@ -22,6 +22,9 @@ namespace syntropy
     {
     public:
 
+        /// \brief Default constructor.
+        BlockAllocator();
+
         /// \brief Create a new block allocator.
         /// \param capacity Amount of memory reserved by the allocator.
         /// \param block_size Size of each block, in bytes.
@@ -35,6 +38,9 @@ namespace syntropy
 
         /// \brief No copy constructor.
         BlockAllocator(const BlockAllocator&) = delete;
+
+        /// \brief Move constructor.
+        BlockAllocator(BlockAllocator&& other);
 
         /// \brief Destructor.
         ~BlockAllocator() = default;
@@ -115,6 +121,9 @@ namespace syntropy
     class MonotonicBlockAllocator
     {
     public:
+
+        /// \brief Default constructor.
+        MonotonicBlockAllocator();
 
         /// \brief Create a new monotonic block allocator.
         /// \param capacity Amount of memory reserved by the allocator.
