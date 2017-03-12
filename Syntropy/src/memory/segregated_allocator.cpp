@@ -580,7 +580,7 @@ namespace syntropy
                                allocators_.end(),
                                [address](const BlockAllocator& allocator)
                                {
-                                    return allocator.ContainsAddress(address);
+                                    return allocator.GetRange().Contains(address);
                                });
 
         SYNTROPY_ASSERT(it != allocators_.end());
@@ -600,7 +600,7 @@ namespace syntropy
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size)
     {
-        return GetAllocatorBySize(size).Reserve(size);
+        return GetAllocatorBySize(size).Reserve();
     }
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size, size_t alignment)

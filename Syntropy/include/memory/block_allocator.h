@@ -51,11 +51,9 @@ namespace syntropy
         /// \return Returns a pointer to the allocated memory block.
         void* Allocate(size_t size);
 
-        /// \brief Reserve a memory block of a specific size.
-        /// The reserved block doesn't get physically allocated.
-        /// \param size Size of the block to reserve, in bytes. Must be equal or smaller than the block size.
+        /// \brief Reserve a memory block.
         /// \return Returns a pointer to the reserved memory block.
-        void* Reserve(size_t size);
+        void* Reserve();
 
         /// \brief Free a memory block.
         /// \param block Address of the block to free.
@@ -65,27 +63,56 @@ namespace syntropy
         /// \return Returns the size of each block in bytes.
         size_t GetBlockSize() const;
 
-        /// \brief Get the maximum amount of memory that can be allocated by this allocator, in bytes.
-        /// \return Returns the maximum amount of memory that can be allocated by this allocator, in bytes.
-        size_t GetCapacity() const;
-
-        /// \brief Check whether an address belongs to this allocator.
-        /// \param address Address to check.
-        /// \return Returns true if address belongs to this allocator, returns false otherwise.
-        /// \remarks The address doesn't have to be physically allocated or reserved.
-        bool ContainsAddress(void* address) const;
+        /// \brief Get the memory range managed by this allocator.
+        /// \return Returns the memory range managed by this allocator.
+        const MemoryRange& GetRange() const;
 
     private:
 
-        size_t block_size_;                         ///< \brief Size of each block in bytes.
+        /// \brief Header for a block whose purpose is to track other free blocks.
+        /// If the head and the base pointer both points to the same location, this block can be repurposed for an allocation.
+        struct FreeBlock
+        {
+            /// \brief Create a new free block.
+            /// \param next Pointer to the next free block.
+            /// \param capacity Maximum amount of free blocks that can be referenced by this block.
+            FreeBlock(FreeBlock* next, size_t capacity);
 
-        MemoryPool memory_pool_;                    ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
+            FreeBlock* next_;           ///< \brief Pointer to next free block.
 
-        MemoryRange memory_range_;                  ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
+            size_t count_;              ///< \brief Current amount of free block referenced by this block.
 
-        void* head_;                                ///< \brief Pointer to the first unmapped block.
+            size_t capacity_;           ///< \brief Maximum amount of free blocks that can be referenced by this block.
 
-        VectorAllocator<uintptr_t> free_list_;      ///< \brief Stack of free blocks.
+            uintptr_t base_;            ///< \brief Base of the free block stack. Note: this is actually the first element in the stack, other elements are contiguous to this one.
+
+            /// \brief Pop a free block referenced by this block.
+            /// Do not call this method if the block is empty.
+            /// \return Returns the address of a free block.
+            void* PopBlock();
+
+            /// \brief Push a free block inside this block.
+            /// Do not call this method if the block is full.
+            /// \param block Address of the free block.
+            void PushBlock(void* block);
+            
+            /// \brief Check whether this block is empty.
+            bool IsEmpty() const;
+
+            /// \brief Check whether this block is full and cannot reference any other free block.
+            bool IsFull() const;
+
+        };
+
+        size_t block_size_;             ///< \brief Size of each block in bytes.
+
+        MemoryPool memory_pool_;        ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
+
+        MemoryRange memory_range_;      ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
+
+        FreeBlock* free_list_;          ///< \brief Pointer to the stack of free block addresses. The stack is split into chunks stored inside the memory range.
+
+        void* head_;                    ///< \brief Pointer to the first unmapped block.
 
     };
 
@@ -155,6 +182,8 @@ namespace syntropy
         LinearAllocator allocator_;     ///< \brief Underlying linear allocator.
 
         Block* free_;                   ///< \brief First free block.
+
+        size_t allocation_size_;        ///< \brief Amount of memory allocated so far.
 
     };
 

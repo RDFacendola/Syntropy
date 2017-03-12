@@ -75,7 +75,7 @@ namespace syntropy
         /// \param first First address.
         /// \param second Second address.
         /// \return Returns the signed distance among first and second, in bytes. The result is negative if second is less than first, positive otherwise.
-        static constexpr ptrdiff_t GetDistance(void* first, void* second);
+        static constexpr ptrdiff_t GetDistance(const void* first, const void* second);
 
         // Memory alignment
 
@@ -431,7 +431,7 @@ namespace syntropy
         return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) - offset);
     }
 
-    constexpr ptrdiff_t Memory::GetDistance(void* first, void* second)
+    constexpr ptrdiff_t Memory::GetDistance(const void* first, const void* second)
     {
         return reinterpret_cast<intptr_t>(second) - reinterpret_cast<intptr_t>(first);
     }

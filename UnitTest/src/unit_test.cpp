@@ -50,24 +50,35 @@ int main()
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
     //
-    syntropy::MemoryPool pool(0x800000, 1);
+    syntropy::MemoryPool pool(0x4000000, 1);
 
     {
-        syntropy::StackAllocator stack(pool);
+        syntropy::BlockAllocator block(pool, 4096);
 
+        std::vector<void*> blocks;
+
+        for (int i = 0; i < 8192; ++i)
         {
-
-            syntropy::ScopeAllocator scalloc(stack);
-
-            auto p = scalloc.New<FooSmall>();
-            auto q = scalloc.New<FooMedium>();
-            auto r = scalloc.New<FooLarge>();
-
-            SYNTROPY_UNUSED(p);
-            SYNTROPY_UNUSED(q);
-            SYNTROPY_UNUSED(r);
-
+            blocks.push_back(block.Allocate());
         }
+
+        for (int i = 0; i < 4096; ++i)
+        {
+            block.Free(blocks.back());
+            blocks.pop_back();
+        }
+
+        for (int i = 0; i < 4096; ++i)
+        {
+            blocks.push_back(block.Allocate());
+        }
+
+        for (int i = 0; i < 8192; ++i)
+        {
+            block.Free(blocks.back());
+            blocks.pop_back();
+        }
+
 
     }
 
