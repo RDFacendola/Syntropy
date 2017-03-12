@@ -153,17 +153,17 @@ namespace syntropy
     }
 
     /************************************************************************/
-    /* MONOTONIC BLOCK ALLOCATOR                                            */
+    /* STATIC BLOCK ALLOCATOR                                               */
     /************************************************************************/
 
-    MonotonicBlockAllocator::MonotonicBlockAllocator()
+    StaticBlockAllocator::StaticBlockAllocator()
         : block_size_(0u)
         , free_list_(nullptr)
     {
 
     }
 
-    MonotonicBlockAllocator::MonotonicBlockAllocator(size_t capacity, size_t block_size)
+    StaticBlockAllocator::StaticBlockAllocator(size_t capacity, size_t block_size)
         : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
         , allocator_(capacity, block_size_)                         // Reserve the virtual memory range upfront without allocating.
         , free_list_(nullptr)
@@ -171,7 +171,7 @@ namespace syntropy
 
     }
 
-    MonotonicBlockAllocator::MonotonicBlockAllocator(const MemoryRange& memory_range, size_t block_size)
+    StaticBlockAllocator::StaticBlockAllocator(const MemoryRange& memory_range, size_t block_size)
         : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
         , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
         , free_list_(nullptr)
@@ -179,7 +179,7 @@ namespace syntropy
 
     }
 
-    void* MonotonicBlockAllocator::Allocate()
+    void* StaticBlockAllocator::Allocate()
     {
         if (free_list_)
         {
@@ -196,7 +196,7 @@ namespace syntropy
         }
     }
 
-    void MonotonicBlockAllocator::Free(void* block)
+    void StaticBlockAllocator::Free(void* block)
     {
         SYNTROPY_ASSERT(allocator_.GetRange().Contains(block));     // Check whether the block belongs to this allocator.
         SYNTROPY_ASSERT(Memory::IsAlignedTo(block, block_size_));   // Check whether the block is properly aligned (guaranteed by Allocate())
@@ -209,12 +209,12 @@ namespace syntropy
         free_list_ = free_block;
     }
 
-    size_t MonotonicBlockAllocator::GetBlockSize() const
+    size_t StaticBlockAllocator::GetBlockSize() const
     {
         return block_size_;
     }
 
-    const MemoryRange& MonotonicBlockAllocator::GetRange() const
+    const MemoryRange& StaticBlockAllocator::GetRange() const
     {
         return allocator_.GetRange();
     }

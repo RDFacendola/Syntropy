@@ -49,11 +49,13 @@ namespace syntropy
         BlockAllocator& operator=(const BlockAllocator&) = delete;
 
         /// \brief Allocate a memory block.
+        /// Allocated memory blocks are guaranteed to be aligned to the allocator's block size.
         /// \param commit_size Amount of memory to commit inside the block. This value is rounded up to the next page size and capped to the block size.
         /// \return Returns a pointer to the allocated memory block.
         void* Allocate(size_t commit_size = std::numeric_limits<size_t>::max());
 
         /// \brief Reserve a memory block.
+        /// Reserved memory blocks are guaranteed to be aligned to the allocator's block size.
         /// The block must be committed to the system memory via Memory::Commit(...).
         /// \return Returns a pointer to the reserved memory block.
         void* Reserve();
@@ -118,32 +120,32 @@ namespace syntropy
     /// This allocator uses a no-deallocation policy to avoid kernel calls: free blocks are kept allocated and recycled when possible.
     /// Allocations are performed on demand.
     /// \author Raffaele D. Facendola - January 2017
-    class MonotonicBlockAllocator
+    class StaticBlockAllocator
     {
     public:
 
         /// \brief Default constructor.
-        MonotonicBlockAllocator();
+        StaticBlockAllocator();
 
         /// \brief Create a new monotonic block allocator.
         /// \param capacity Amount of memory reserved by the allocator.
         /// \param block_size Size of each block, in bytes.
-        MonotonicBlockAllocator(size_t capacity, size_t block_size);
+        StaticBlockAllocator(size_t capacity, size_t block_size);
 
         /// \brief Create a new monotonic block allocator.
         /// \param memory_range Memory range used by the allocator.
         /// \param block_size Size of each block, in bytes.
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        MonotonicBlockAllocator(const MemoryRange& memory_range, size_t block_size);
+        StaticBlockAllocator(const MemoryRange& memory_range, size_t block_size);
 
         /// \brief No copy constructor.
-        MonotonicBlockAllocator(const MonotonicBlockAllocator&) = delete;
+        StaticBlockAllocator(const StaticBlockAllocator&) = delete;
 
         /// \brief Destructor.
-        ~MonotonicBlockAllocator() = default;
+        ~StaticBlockAllocator() = default;
 
         /// \brief No assignment operator.
-        MonotonicBlockAllocator& operator=(const MonotonicBlockAllocator&) = delete;
+        StaticBlockAllocator& operator=(const StaticBlockAllocator&) = delete;
 
         /// \brief Allocate a memory block.
         /// Allocated memory blocks are guaranteed to be aligned to the allocator's block size.

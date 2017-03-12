@@ -17,7 +17,7 @@ namespace syntropy
 
     /// \brief High-performance allocator that uses segregated best-fit policy for small allocations up to 1KB size.
     /// The allocator is designed to minimize external fragmentation while keeping constant response time.
-    /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls. See MonotonicBlockAllocator.
+    /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls. See StaticBlockAllocator.
     /// The segregated free list classes are distributed linearly. Each class is 8 bytes wide.
     /// The total amount of classes is the order of the allocator.
     ///
@@ -139,9 +139,9 @@ namespace syntropy
         /// \return Returns the amount of blocks of size block_size that can be stored inside the page.
         size_t GetBlockCount(Page* page, size_t block_size, Block*& head) const;
 
-        MonotonicBlockAllocator allocator_;                 ///< \brief Underlying block allocator for page allocations.
+        StaticBlockAllocator allocator_;            ///< \brief Underlying block allocator for page allocations.
 
-        std::array<Page*, kOrder> free_pages_;              ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
+        std::array<Page*, kOrder> free_pages_;      ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
 
     };
 
