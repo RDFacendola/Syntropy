@@ -25,7 +25,11 @@ namespace syntropy
 
     size_t Memory::GetPageSize()
     {
-        return platform::PlatformMemory::GetPageSize();
+        auto page_size = platform::PlatformMemory::GetPageSize();
+
+        SYNTROPY_ASSERT(Math::IsPow2(page_size));
+
+        return page_size;
     }
 
     void* Memory::Reserve(size_t size)

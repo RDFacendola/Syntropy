@@ -18,6 +18,14 @@ namespace syntropy
     {
     public:
 
+        /// \brief Check whether a number is a power of 2.
+        /// \return Returns true if number is a power of 2, returns false otherwise.
+        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned<Unsigned>::value>>
+        static constexpr bool IsPow2(Unsigned number)
+        {
+            return (number & (number - 1u)) == 0u;
+        }
+
         /// \brief Ceil a number to a multiple.
         /// This overload does participate for overload resolution only for unsigned values.
         /// \return Returns the first number equal or greater than number which is multiple of multiple.

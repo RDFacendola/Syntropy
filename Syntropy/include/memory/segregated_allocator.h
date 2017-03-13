@@ -15,13 +15,12 @@
 namespace syntropy
 {
 
-    /// \brief High-performance allocator that uses segregated best-fit policy for small allocations up to 1KB size.
+    /// \brief High-performance, low-fragmentation allocator best suited to handle allocation of small objects.
     /// The allocator is designed to minimize external fragmentation while keeping constant response time.
-    /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls. See StaticBlockAllocator.
-    /// The segregated free list classes are distributed linearly. Each class is 8 bytes wide.
-    /// The total amount of classes is the order of the allocator.
+    /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls.
+    /// The segregated free list classes are distributed linearly.
     ///
-    /// Example for a 6th-order allocator
+    /// Example for a 6th-order allocator whose allocation classes are 8 bytes wide:
     /// Class 0 [1; 8]
     /// Class 1 [9; 16]
     /// Class 2 [17, 24]
@@ -32,38 +31,38 @@ namespace syntropy
     /// Based on "Building a low-fragmentation memory system for 64-bit games" by Aaron MacDougall - GDC16
     ///
     /// \author Raffaele D. Facendola - December 2016
-    class TinySegregatedFitAllocator : public Allocator
+    class LinearSegregatedFitAllocator : public Allocator
     {
     public:
 
-        /// \brief Allocation granularity, in bytes. Each allocated block is a multiple of this value.
-        static const size_t kAllocationGranularity = 8;
-
-        /// \brief Maximum allocation size, in bytes.
-        static const size_t kMaximumAllocationSize = 1024;
-
+        /// \brief Minimum allocation size, in bytes.
+        static const size_t kMinimumAllocationSize = sizeof(uintptr_t);
+        
         /// \brief Create a new allocator.
         /// \param name Name of the allocator.
         /// \param capacity Maximum amount of memory allocated by the allocator.
+        /// \param class_size Size of each allocation class, in bytes.
+        /// \param order Number of allocation classes handled by the allocator.
         /// \param page_size Size of each memory page, in bytes. This value is rounded up to the next system memory page size.
-        TinySegregatedFitAllocator(const HashedString& name, size_t capacity, size_t page_size);
+        LinearSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t class_size, size_t order, size_t page_size);
 
         /// \brief Create a new allocator.
         /// \param name Name of the allocator.
-        /// \param memory_range Memory range used by the allocator.
+        /// \param memory_range Memory range used by the allocator. Determines the capacity of the allocator.
+        /// \param class_size Size of each allocation class, in bytes.
+        /// \param order Number of allocation classes handled by the allocator.
         /// \param page_size Size of each memory page, in bytes. This value is rounded up to the next system memory page size.
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        TinySegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t page_size);
-
+        LinearSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t class_size, size_t order, size_t page_size);
 
         /// \brief No copy constructor.
-        TinySegregatedFitAllocator(const TinySegregatedFitAllocator&) = delete;
+        LinearSegregatedFitAllocator(const LinearSegregatedFitAllocator&) = delete;
 
         /// \brief No assignment operator.
-        TinySegregatedFitAllocator& operator=(const TinySegregatedFitAllocator&) = delete;
+        LinearSegregatedFitAllocator& operator=(const LinearSegregatedFitAllocator&) = delete;
 
         /// \brief Default destructor.
-        ~TinySegregatedFitAllocator() = default;
+        ~LinearSegregatedFitAllocator() = default;
 
         virtual void* Allocate(size_t size) override;
 
@@ -74,6 +73,159 @@ namespace syntropy
         virtual bool Belongs(void* block) const override;
 
         virtual size_t GetMaxAllocationSize() const override;
+
+        /// \brief Get the order of this allocator.
+        /// \return Returns the number of allocation classes handled by the allocator.
+        size_t GetOrder() const;
+
+        /// \brief Get the size of each page.
+        /// \return Returns the size of each page, in bytes.
+        size_t GetPageSize() const;
+
+        /// \brief Get the memory range managed by this allocator.
+        /// \return Returns the memory range managed by this allocator.
+        const MemoryRange& GetRange() const;
+
+    private:
+
+        /// \brief Utility structure for free memory blocks within a page.
+        struct Block
+        {
+            Block* next_;                           ///< \brief Address of the next free memory block within this page.
+        };
+
+        /// \brief Memory page header.
+        struct Page
+        {
+
+            Page(size_t block_size, size_t page_size);
+
+            Page* next_;                            ///< \brief Address of the next page in the allocator.
+
+            Page* previous_;                        ///< \brief Address of the previous page in the allocator.
+
+            size_t block_size_;                     ///< \brief Size of each memory block in this page in bytes.
+
+            size_t allocated_blocks_;               ///< \brief Amount of allocated blocks in this page.
+
+            Block* free_;                           ///< \brief Address of the first free block in this page. If the page is full this pointer is nullptr.
+
+            /// \brief Allocate a new block.
+            /// \return Returns the address of a free block.
+            void* AllocateBlock();
+
+            /// \brief Free a block.
+            /// \param block Address of the free block.
+            void FreeBlock(void* block);
+
+            /// \brief Check whether the page is full and cannot fill any other allocations.
+            /// \return Returns true if the page is full, returns false otherwise.
+            bool IsFull() const;
+
+            /// \brief Check whether the page has no currently allocated block.
+            /// \return Returns true if the page is empty, returns false otherwise.
+            bool IsEmpty() const;
+
+            /// \brief Get a pointer to the first block in the page.
+            /// \return Returns a pointer to the first block in the page.
+            Block* GetFirstBlock();
+
+            /// \brief Get a pointer to the last block in the page.
+            /// \return Returns a pointer to the last block in the page.
+            Block* GetLastBlock(size_t page_size);
+
+        };
+
+        /// \brief Get the index of the smallest free list that can contain an allocation of a given size.
+        /// \param size Size of the allocation.
+        size_t GetListIndexBySize(size_t size) const;
+
+        /// \brief Allocate a new page.
+        /// \param block_size Size of the blocks in the page, in bytes.
+        /// \return Returns the address to the allocated page.
+        Page* AllocatePage(size_t block_size);
+
+        /// \brief Discard the first page in a free list and move forward.
+        /// \param list_index Index of the free list whose head should be discarded.
+        void DiscardPage(size_t list_index);
+
+        /// \brief Free a page.
+        /// The page can be recycled by other allocators when needed
+        /// \param page Page to free.
+        void FreePage(Page* page);
+
+        /// \brief Restore a discarded page.
+        /// The page is added to its allocator list and can accept new allocations.
+        /// \param page Page to restore.
+        void RestorePage(Page* page);
+
+        /// \brief Check whether the preconditions for this allocator are met.
+        void CheckPreconditions() const;
+
+        StaticBlockAllocator allocator_;            ///< \brief Underlying block allocator for page allocations.
+
+        std::vector<Page*> free_lists_;             ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
+
+        size_t class_size_;                         ///< \brief Size of each allocation class, in bytes.
+
+    };
+
+    /// \brief Low-fragmentation, low-waste allocator best suited to handle allocation of large objects.
+    /// The allocator is designed to minimize external fragmentation while keeping a low amount of wasted space. 
+    /// Pages are allocated and deallocated on demand. Memory can be reserved at once and committed at a later time.
+    /// The segregated free list classes are distributed exponentially: each class may handle allocation up to double the size of the previous class.
+    /// The amount of classes handled by the allocator is said "order" of the allocator.
+    ///
+    /// Example for a 4th-order allocator with base_allocation_size of 4096 bytes.
+    /// Class 0 [1; 4096]
+    /// Class 1 [4097; 8192]
+    /// Class 2 [8193, 16384]
+    /// Class 3 [16385, 32768]
+    ///
+    /// 
+    /// Based on "Building a low-fragmentation memory system for 64-bit games" by Aaron MacDougall - GDC16
+    ///
+    /// \author Raffaele D. Facendola - January 2017
+    class ExponentialSegregatedFitAllocator : public Allocator
+    {
+    public:
+
+        /// \brief Create a new allocator.
+        /// \param name Name of the allocator.
+        /// \param capacity Total capacity of the allocator. The capacity is split evenly among each allocation class.
+        /// \param base_allocation_size Largest block the 1st-class allocator can handle. Rounded up to the next page size.
+        /// \param order Number of classes in the allocator.
+        ExponentialSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t base_allocation_size, size_t order);
+
+        /// \brief No copy constructor.
+        ExponentialSegregatedFitAllocator(const ExponentialSegregatedFitAllocator&) = delete;
+
+        /// \brief No assignment operator.
+        ExponentialSegregatedFitAllocator& operator=(const ExponentialSegregatedFitAllocator&) = delete;
+
+        /// \brief Default destructor.
+        ~ExponentialSegregatedFitAllocator() = default;
+
+        virtual void* Allocate(size_t size) override;
+
+        virtual void* Allocate(size_t size, size_t alignment) override;
+
+        virtual void Free(void* block) override;
+
+        virtual bool Belongs(void* block) const override;
+
+        virtual size_t GetMaxAllocationSize() const override;
+
+        /// \brief Reserve a new memory block.
+        /// \param size Size of the memory block to reserve, in bytes.
+        /// \return Returns a pointer to the reserved memory block.
+        void* Reserve(size_t size);
+
+        /// \brief Reserve a new aligned memory block.
+        /// \param size Size of the memory block to reserve, in bytes.
+        /// \param alignment Alignment of the reserved block. Must be a multiple of the minimum allocation size.
+        /// \return Returns a pointer to the reserved memory block.
+        void* Reserve(size_t size, size_t alignment);
 
         /// \brief Get the current allocation size, in bytes.
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
@@ -90,59 +242,23 @@ namespace syntropy
 
     private:
 
-        /// \brief Number of segregated free lists.
-        static const size_t kOrder = kMaximumAllocationSize / kAllocationGranularity;
+        /// \brief Maximum order for this allocator.
+        static const size_t kMaxOrder = 16;
 
-        /// \brief Utility structure for free memory blocks within a page.
-        struct Block
-        {
-            Block* next_;                           ///< \brief Address of the next free memory block within this page.
-        };
+        /// \brief Get a reference to an allocator by block size.
+        /// \param block_size Size of the block to allocate or reserve.
+        /// \return Returns a reference to the smallest allocator that can handle the given allocation size.
+        BlockAllocator& GetAllocatorBySize(size_t block_size);
 
-        /// \brief Memory page header.
-        struct Page
-        {
-            Page* next_;                            ///< \brief Address of the next page in the allocator.
+        size_t base_allocation_size_;                           ///< \brief Allocation size for the first class.
 
-            Page* previous_;                        ///< \brief Address of the previous page in the allocator.
+        MemoryPool memory_pool_;                                ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
 
-            Block* free_;                           ///< \brief Address of the first free block in this page. If the page is full this pointer is nullptr.
+        MemoryRange memory_range_;                              ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
 
-            size_t block_size_;                     ///< \brief Size of each memory block in this page in bytes.
+        size_t order_;                                          ///< \brief Number of classes in this allocator.
 
-            size_t allocated_blocks_;               ///< \brief Amount of allocated blocks in this page.
-        };
-
-        /// \brief Allocate a new page.
-        /// \param block_size Size of the blocks in the page, in bytes.
-        /// \return Returns the address to the allocated page.
-        Page* AllocatePage(size_t block_size);
-
-        /// \brief Free a page.
-        /// The page can be recycled by other allocators when needed
-        /// \param page Page to free.
-        void FreePage(Page* page);
-
-        /// \brief Remove a page from its allocator list.
-        /// \param page Page to discard. 
-        void DiscardPage(Page*& page);
-
-        /// \brief Restore a discarded page.
-        /// The page is added to its allocator list and can accept new allocations.
-        /// \param page Page to restore.
-        void RestorePage(Page* page);
-
-        /// \brief Get the total amount of blocks that can be allocated inside a page.
-        /// \param page Page to work with.
-        /// \param block_size Size of each block, in bytes.
-        /// \param head Output. Contains a pointer to the first block after the page header.
-        /// \return Returns the amount of blocks of size block_size that can be stored inside the page.
-        size_t GetBlockCount(Page* page, size_t block_size, Block*& head) const;
-
-        StaticBlockAllocator allocator_;            ///< \brief Underlying block allocator for page allocations.
-
-        std::array<Page*, kOrder> free_pages_;      ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
-
+        std::vector<BlockAllocator> allocators_;                ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
     };
 
     /// \brief High-performances, low-fragmentation allocator to handle allocation of medium-sized objects.
@@ -304,97 +420,6 @@ namespace syntropy
         std::vector<FreeBlockHeader*> free_lists_;          ///< \brief Pointer to the free lists. Each list handles allocations for a particular class of sizes.
                                                             ///< \brief Segregated free lists are flattened.
 
-    };
-
-    /// \brief Low-fragmentation, low-waste allocator to handle allocation of large objects.
-    /// The allocator is designed to minimize external fragmentation while keeping a low amount of wasted space. 
-    /// Pages are allocated and deallocated on demand. Memory can be reserved at once and committed at a later time.
-    /// The segregated free list classes are distributed exponentially: each class may handle allocation up to double the size of the previous class.
-    /// The amount of classes handled by the allocator is said "order" of the allocator.
-    ///
-    /// Example for a 4th-order allocator with base_allocation_size of 4096 bytes.
-    /// Class 0 [1; 4096]
-    /// Class 1 [4097; 8192]
-    /// Class 2 [8193, 16384]
-    /// Class 3 [16385, 32768]
-    ///
-    /// 
-    /// Based on "Building a low-fragmentation memory system for 64-bit games" by Aaron MacDougall - GDC16
-    ///
-    /// \author Raffaele D. Facendola - January 2017
-    class ExponentialSegregatedFitAllocator : public Allocator
-    {
-    public:
-
-        /// \brief Create a new allocator.
-        /// \param name Name of the allocator.
-        /// \param capacity Total capacity of the allocator. The capacity is split evenly among each allocation class.
-        /// \param base_allocation_size Largest block the 1st-class allocator can handle. Rounded up to the next page size.
-        /// \param order Number of classes in the allocator.
-        ExponentialSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t base_allocation_size, size_t order);
-
-        /// \brief No copy constructor.
-        ExponentialSegregatedFitAllocator(const ExponentialSegregatedFitAllocator&) = delete;
-
-        /// \brief No assignment operator.
-        ExponentialSegregatedFitAllocator& operator=(const ExponentialSegregatedFitAllocator&) = delete;
-
-        /// \brief Default destructor.
-        ~ExponentialSegregatedFitAllocator() = default;
-
-        virtual void* Allocate(size_t size) override;
-
-        virtual void* Allocate(size_t size, size_t alignment) override;
-
-        virtual void Free(void* block) override;
-
-        virtual bool Belongs(void* block) const override;
-
-        virtual size_t GetMaxAllocationSize() const override;
-
-        /// \brief Reserve a new memory block.
-        /// \param size Size of the memory block to reserve, in bytes.
-        /// \return Returns a pointer to the reserved memory block.
-        void* Reserve(size_t size);
-
-        /// \brief Reserve a new aligned memory block.
-        /// \param size Size of the memory block to reserve, in bytes.
-        /// \param alignment Alignment of the reserved block. Must be a multiple of the minimum allocation size.
-        /// \return Returns a pointer to the reserved memory block.
-        void* Reserve(size_t size, size_t alignment);
-
-        /// \brief Get the current allocation size, in bytes.
-        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetAllocationSize() const;
-
-        /// \brief Get the amount of system memory committed by the allocator, in bytes.
-        /// Note that the stack allocator allocates all the memory it needs upfront.
-        /// \return Returns the amount of system memory committed by the allocator, in bytes.
-        size_t GetCommitSize() const;
-
-        /// \brief Get the memory range managed by this allocator.
-        /// \return Returns the memory range managed by this allocator.
-        const MemoryRange& GetRange() const;
-
-    private:
-
-        /// \brief Maximum order for this allocator.
-        static const size_t kMaxOrder = 16;
-
-        /// \brief Get a reference to an allocator by block size.
-        /// \param block_size Size of the block to allocate or reserve.
-        /// \return Returns a reference to the smallest allocator that can handle the given allocation size.
-        BlockAllocator& GetAllocatorBySize(size_t block_size);
-
-        size_t base_allocation_size_;                           ///< \brief Allocation size for the first class.
-
-        MemoryPool memory_pool_;                                ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
-
-        MemoryRange memory_range_;                              ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
-
-        size_t order_;                                          ///< \brief Number of classes in this allocator.
-
-        std::vector<BlockAllocator> allocators_;                ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
     };
 
 }
