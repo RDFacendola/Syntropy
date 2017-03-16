@@ -19,17 +19,17 @@ syntropy::diagnostics::Context Root;
 
 struct FooSmall
 {
-    char buffer[24];
+    char buffer[3214];
 };
 
 struct FooMedium
 {
-    char buffer[20];
+    char buffer[4096];
 };
 
 struct FooLarge
 {
-    char buffer[35];
+    char buffer[6845];
 };
 
 int main()
@@ -54,9 +54,9 @@ int main()
 
     {
 
-        syntropy::LinearSegregatedFitAllocator tlsfa("tiny", pool, 8, 64, 16384);
+        //syntropy::LinearSegregatedFitAllocator tlsfa("tiny", pool, 8, 64, 16384);
         //syntropy::TwoLevelSegregatedFitAllocator tlsfa("linear", pool, 2);
-        //syntropy::ExponentialSegregatedFitAllocator tlsfa("exponential", 0x800000, 16384, 5);
+        syntropy::ExponentialSegregatedFitAllocator tlsfa("exponential", pool, 4096, 5);
             
         auto p = SYNTROPY_NEW(tlsfa) FooSmall();
         auto q = SYNTROPY_NEW(tlsfa) FooMedium();

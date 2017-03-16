@@ -272,26 +272,19 @@ namespace syntropy
     /* EXPONENTIAL SEGREGATED FIT ALLOCATOR                                 */
     /************************************************************************/
 
-    ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t base_allocation_size, size_t order)
+    ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t class_size, size_t order)
         : Allocator(name)
-        , base_allocation_size_(Memory::CeilToPageSize(base_allocation_size))           // Round to the next memory page boundary.
-        , memory_pool_(capacity, base_allocation_size)                                  // Allocate a new virtual address range.
-        , memory_range_(memory_pool_)                                                   // Get the full range out of the memory pool.
-        , order_(order)
+        , memory_pool_(capacity, Memory::CeilToPageSize(class_size))        // Allocate a new virtual address range.
+        , memory_range_(memory_pool_)                                       // Get the full range out of the memory pool.
     {
-        SYNTROPY_ASSERT(order >= 1);
+        InitializeAllocators(order, Memory::CeilToPageSize(class_size));
+    }
 
-        allocators_.reserve(order);
-
-        capacity /= order;                                                              // Distribute the capacity evenly among the different classes.
-
-        auto class_size = base_allocation_size_;
-
-        while (order-- > 0)
-        {
-            allocators_.emplace_back(capacity, class_size);
-            class_size <<= 1;                                                           // Double the allocation size for the next class.
-        }
+    ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t class_size, size_t order)
+        : Allocator(name)
+        , memory_range_(memory_range, Memory::CeilToPageSize(class_size))   // Align the input memory range. Doesn't take ownership.
+    {
+        InitializeAllocators(order, Memory::CeilToPageSize(class_size));
     }
 
     void* ExponentialSegregatedFitAllocator::Allocate(size_t size)
@@ -301,24 +294,26 @@ namespace syntropy
 
     void* ExponentialSegregatedFitAllocator::Allocate(size_t size, size_t alignment)
     {
-        // Allocate enough space for both the block and the maximum padding due to the requested alignment
-        return Memory::Align(Allocate(size + alignment - 1), alignment);
+        SYNTROPY_PRECONDITION(Math::IsPow2(alignment));
+
+        auto block = Allocate(size);        // A memory page is always aligned to some power of 2 which is almost always bigger than any requested alignment.
+
+        SYNTROPY_POSTCONDITION(Memory::IsAlignedTo(block, alignment));
+
+        return block;
     }
 
     void ExponentialSegregatedFitAllocator::Free(void* address)
     {
-        // TODO: Use a single contiguous address range and find the proper allocator in O(1)
+        SYNTROPY_PRECONDITION(memory_range_.Contains(address));
 
-        auto it = std::find_if(allocators_.begin(),
-            allocators_.end(),
-            [address](const BlockAllocator& allocator)
-        {
-            return allocator.GetRange().Contains(address);
-        });
+        // The entire memory range is divided evenly among all the allocators
 
-        SYNTROPY_ASSERT(it != allocators_.end());
+        auto distance = Memory::GetDistance(*memory_range_, address);
 
-        it->Free(address);
+        auto index = distance / GetAllocatorCapacity();
+
+        allocators_[index].Free(address);
     }
 
     bool ExponentialSegregatedFitAllocator::Belongs(void* block) const
@@ -328,7 +323,7 @@ namespace syntropy
 
     size_t ExponentialSegregatedFitAllocator::GetMaxAllocationSize() const
     {
-        return base_allocation_size_ * (1ull << (allocators_.size() - 1u));        // base * 2^(order-1)
+        return allocators_.back().GetBlockSize();       // Size of the last allocation class (which is also the biggest).
     }
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size)
@@ -338,18 +333,18 @@ namespace syntropy
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size, size_t alignment)
     {
-        // Reserve enough space for both the block and the maximum padding due to the requested alignment
-        return Memory::Align(Reserve(size + alignment - 1), alignment);
+        SYNTROPY_PRECONDITION(Math::IsPow2(alignment));
+
+        auto block = Reserve(size);         // A memory page is always aligned to some power of 2 which is almost always bigger than any requested alignment.
+
+        SYNTROPY_POSTCONDITION(Memory::IsAlignedTo(block, alignment));
+
+        return block;
     }
 
-    size_t ExponentialSegregatedFitAllocator::GetAllocationSize() const
+    size_t ExponentialSegregatedFitAllocator::GetOrder() const
     {
-        return 0;       // Not yet implemented.
-    }
-
-    size_t ExponentialSegregatedFitAllocator::GetCommitSize() const
-    {
-        return 0;       // Not yet implemented.
+        return allocators_.size();
     }
 
     const MemoryRange& ExponentialSegregatedFitAllocator::GetRange() const
@@ -357,13 +352,44 @@ namespace syntropy
         return memory_range_;
     }
 
+    void ExponentialSegregatedFitAllocator::InitializeAllocators(size_t order, size_t class_size)
+    {
+        SYNTROPY_ASSERT(allocators_.empty());           // Check for multiple initializations.
+        SYNTROPY_ASSERT(Math::IsPow2(class_size));      // Allocations classes must be a power of 2 (for alignment requirements and because memory pages size is always a power of 2).
+        SYNTROPY_ASSERT(order >= 1);                    // At least one allocator is needed.
+
+        allocators_.reserve(order);
+
+        auto capacity = memory_range_.GetSize() / order;        // The entire memory range is divided evenly among the classes.
+
+        for(size_t index = 0; index < order; ++index)
+        {
+            allocators_.emplace_back(
+                MemoryRange(Memory::AddOffset(*memory_range_, index * capacity), capacity),         // Split the range into sub ranges.
+                class_size << index);                                                               // Class size is doubled at each iteration.
+
+            SYNTROPY_CHECK(memory_range_.Contains(allocators_.back().GetRange()));
+        }
+
+    }
+
     BlockAllocator& ExponentialSegregatedFitAllocator::GetAllocatorBySize(size_t block_size)
     {
-        auto index = Math::CeilLog2((block_size + base_allocation_size_ - 1) / base_allocation_size_);
+        SYNTROPY_ASSERT(block_size <= GetMaxAllocationSize());
+        SYNTROPY_ASSERT(block_size >= 0u);
 
-        SYNTROPY_ASSERT(index < allocators_.size());
+        auto offset = Math::FloorLog2(allocators_.front().GetBlockSize());
 
-        return allocators_[index];
+        auto index = Math::CeilLog2(block_size);
+
+        return index >= offset ?
+            allocators_[index - offset] :
+            allocators_.front();                // Allocations smaller than the smallest allocation class are handled by that allocator.
+    }
+
+    size_t ExponentialSegregatedFitAllocator::GetAllocatorCapacity() const
+    {
+        return memory_range_.GetSize() / allocators_.size();
     }
 
     /************************************************************************/

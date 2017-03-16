@@ -192,10 +192,18 @@ namespace syntropy
 
         /// \brief Create a new allocator.
         /// \param name Name of the allocator.
-        /// \param capacity Total capacity of the allocator. The capacity is split evenly among each allocation class.
-        /// \param base_allocation_size Largest block the 1st-class allocator can handle. Rounded up to the next page size.
-        /// \param order Number of classes in the allocator.
-        ExponentialSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t base_allocation_size, size_t order);
+        /// \param capacity Maximum amount of memory allocated by the allocator.
+        /// \param class_size Size of the first allocation class, in bytes. Rounded up to memory page size.
+        /// \param order Number of allocation classes handled by the allocator.
+        ExponentialSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t class_size, size_t order);
+
+        /// \brief Create a new allocator.
+        /// \param name Name of the allocator.
+        /// \param memory_range Memory range used by the allocator. Determines the capacity of the allocator.
+        /// \param class_size Size of the first allocation class, in bytes. Rounded up to memory page size.
+        /// \param order Number of allocation classes handled by the allocator.
+        /// \remarks The allocator doesn't take ownership of the memory range provided as input.
+        ExponentialSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t class_size, size_t order);
 
         /// \brief No copy constructor.
         ExponentialSegregatedFitAllocator(const ExponentialSegregatedFitAllocator&) = delete;
@@ -216,25 +224,24 @@ namespace syntropy
 
         virtual size_t GetMaxAllocationSize() const override;
 
-        /// \brief Reserve a new memory block.
+        /// \brief Reserve a memory block.
+        /// A reserved block must be committed before it can be accessed.
         /// \param size Size of the memory block to reserve, in bytes.
-        /// \return Returns a pointer to the reserved memory block.
+        /// \return Returns a pointer to the reserved memory block. 
+        /// \remarks The block is guaranteed not to share any memory page with any other allocation.
         void* Reserve(size_t size);
 
-        /// \brief Reserve a new aligned memory block.
+        /// \brief Reserve an aligned memory block.
+        /// A reserved block must be committed before it can be accessed.
         /// \param size Size of the memory block to reserve, in bytes.
-        /// \param alignment Alignment of the reserved block. Must be a multiple of the minimum allocation size.
+        /// \param alignment Alignment of the reserved block.
         /// \return Returns a pointer to the reserved memory block.
+        /// \remarks The block is guaranteed not to share any memory page with any other allocation.
         void* Reserve(size_t size, size_t alignment);
 
-        /// \brief Get the current allocation size, in bytes.
-        /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetAllocationSize() const;
-
-        /// \brief Get the amount of system memory committed by the allocator, in bytes.
-        /// Note that the stack allocator allocates all the memory it needs upfront.
-        /// \return Returns the amount of system memory committed by the allocator, in bytes.
-        size_t GetCommitSize() const;
+        /// \brief Get the order of this allocator.
+        /// \return Returns the number of allocation classes handled by the allocator.
+        size_t GetOrder() const;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -242,23 +249,25 @@ namespace syntropy
 
     private:
 
-        /// \brief Maximum order for this allocator.
-        static const size_t kMaxOrder = 16;
+        /// \brief Initialize the allocators for each allocation class.
+        /// \param order Number of allocators to initialize.
+        /// \param class_size Size of the first allocation class in bytes.
+        void InitializeAllocators(size_t order, size_t class_size);
 
         /// \brief Get a reference to an allocator by block size.
         /// \param block_size Size of the block to allocate or reserve.
         /// \return Returns a reference to the smallest allocator that can handle the given allocation size.
         BlockAllocator& GetAllocatorBySize(size_t block_size);
 
-        size_t base_allocation_size_;                           ///< \brief Allocation size for the first class.
+        /// \brief Get the capacity of each allocator.
+        /// \return Returns the capacity of each allocator, in bytes.
+        size_t GetAllocatorCapacity() const;
 
-        MemoryPool memory_pool_;                                ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
+        MemoryPool memory_pool_;                            ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
 
-        MemoryRange memory_range_;                              ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
+        MemoryRange memory_range_;                          ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
 
-        size_t order_;                                          ///< \brief Number of classes in this allocator.
-
-        std::vector<BlockAllocator> allocators_;                ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
+        std::vector<BlockAllocator> allocators_;            ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
     };
 
     /// \brief High-performances, low-fragmentation allocator to handle allocation of medium-sized objects.

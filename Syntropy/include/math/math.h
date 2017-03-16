@@ -70,6 +70,17 @@ namespace syntropy
                    0;
         }
 
+        /// \brief Round the argument up to the next power of 2.
+        /// This overload does participate for overload resolution only for unsigned values.
+        /// \return Returns the smallest power of 2 greater than or equal to number.
+        template <typename Unsigned, typename = std::enable_if_t<std::is_unsigned<Unsigned>::value>>
+        static Unsigned NextPow2(Unsigned number)
+        {
+            return IsPow2(number) ?
+                number :
+                2 << platform::GetBuiltIn().GetMostSignificantBit(static_cast<uint64_t>(number));
+        }
+
     };
 
 }

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "syntropy.h"
 #include "platform/compiler.h"
 
 /// \brief Causes the debugger to break. If no debugger is present, does nothing.
@@ -26,6 +27,18 @@
 /// \brief If the condition is not verified causes the debugger to break or the application to crash.
 #define SYNTROPY_ASSERT(condition) \
     if(!(condition)) { SYNTROPY_TRAP; }
+
+/// \brief If the condition is not verified causes the debugger to break or the application to crash. This check is stripped away on release builds.
+#define SYNTROPY_CHECK(condition) \
+    SYNTROPY_DEBUG_ONLY( SYNTROPY_ASSERT(condition); )
+
+/// \brief Identical to SYNTROPY_CHECK, this macro is intended to check preconditions on a function.
+#define SYNTROPY_PRECONDITION(condition) \
+    SYNTROPY_CHECK(condition)
+
+/// \brief Identical to SYNTROPY_CHECK, this macro is intended to check postconditions on a function.
+#define SYNTROPY_POSTCONDITION(condition) \
+    SYNTROPY_CHECK(condition)
 
 namespace syntropy
 {
