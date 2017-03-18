@@ -20,5 +20,12 @@ namespace syntropy
             return static_cast<uint64_t>(index);
         }
 
+        uint64_t MSVCBuiltIn::GetLeastSignificantBit(uint64_t number) const
+        {
+            unsigned long index;
+            _BitScanForward64(&index, number);
+            return static_cast<uint64_t>(index);
+        }
+
     }
 }

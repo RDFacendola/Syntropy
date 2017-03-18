@@ -172,17 +172,15 @@ namespace syntropy
 
     /// \brief Low-fragmentation, low-waste allocator best suited to handle allocation of large objects.
     /// The allocator is designed to minimize external fragmentation while keeping a low amount of wasted space. 
-    /// Pages are allocated and deallocated on demand. Memory can be reserved at once and committed at a later time.
+    /// Pages are allocated and deallocated on demand. Memory can be reserved and committed at a later time.
     /// The segregated free list classes are distributed exponentially: each class may handle allocation up to double the size of the previous class.
-    /// The amount of classes handled by the allocator is said "order" of the allocator.
     ///
-    /// Example for a 4th-order allocator with base_allocation_size of 4096 bytes.
+    /// Example for a 4th-order allocator with class_size equal to 4096 bytes.
     /// Class 0 [1; 4096]
     /// Class 1 [4097; 8192]
     /// Class 2 [8193, 16384]
     /// Class 3 [16385, 32768]
     ///
-    /// 
     /// Based on "Building a low-fragmentation memory system for 64-bit games" by Aaron MacDougall - GDC16
     ///
     /// \author Raffaele D. Facendola - January 2017
@@ -270,7 +268,7 @@ namespace syntropy
         std::vector<BlockAllocator> allocators_;            ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
     };
 
-    /// \brief High-performances, low-fragmentation allocator to handle allocation of medium-sized objects.
+    /// \brief High-performances, low-fragmentation allocator to handle allocation of any size.
     /// The allocator allocates pages on demand but uses a no-deallocation policy to avoid kernel calls.
     ///
     /// Based on: http://www.gii.upv.es/tlsf/files/jrts2008.pdf
@@ -292,29 +290,19 @@ namespace syntropy
         /// \param second_level_index Number of classes for each first level index. The actual number of classes is 2^second_level_index.
         TwoLevelSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t second_level_index);
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the block to allocate, in bytes.
-        /// \return Return a pointer to the allocated block.
         virtual void* Allocate(size_t size) override;
 
-        /// \brief Allocate a new aligned memory block.
-        /// \param size Size of the block to allocate, in bytes.
-        /// \param alignment Alignment of the block.
-        /// \return Return a pointer to the allocated block.
         virtual void* Allocate(size_t size, size_t alignment) override;
 
-        /// \brief Free an allocated memory block.
-        /// \param block Block to free.
         virtual void Free(void* block) override;
 
-        /// \brief Check whether a given memory block belongs to this allocator.
-        /// \param block Block to check.
-        ///\ return Returns true if block is allocated or can be allocated by the allocator, returns false otherwise.
         virtual bool Belongs(void* block) const override;
 
-        /// \brief Get the largest amount of memory that can be allocated in a single allocation.
-        /// \return Returns the size of the largest memory block that can be theoretically allocated on this allocator.
         virtual size_t GetMaxAllocationSize() const override;
+
+        /// \brief Get the memory range managed by this allocator.
+        /// \return Returns the memory range managed by this allocator.
+        const MemoryRange& GetRange() const;
 
     private:
 
@@ -388,10 +376,19 @@ namespace syntropy
             void* end();
         };
 
+        /// \brief Initialize the allocator.
+        void Initialize(size_t second_level_count);
+
         /// \brief Get a pointer to the smallest free block that can fit an allocation of a given size.
         /// \param block_size Size of the block to fit.
         /// \return Returns a pointer to the smallest free block that can fit an allocation of size size.
         BlockHeader* GetFreeBlockBySize(size_t size);
+
+        /// \brief Mark the bit relative to a free list as "set".
+        void SetBitmap(size_t first_level_index, size_t second_level_index);
+
+        /// \brief Mark the bit relative to a free list as "not set".
+        void ResetBitmap(size_t first_level_index, size_t second_level_index);
 
         /// \brief Get the first free block in a particular segregated free list.
         /// \param index Index of the segregated free list where the block will be taken from.
@@ -402,6 +399,11 @@ namespace syntropy
         /// This method causes free blocks coalescing: if the provided block is adjacent to other free blocks, those blocks are merged and inserted inside the proper list.
         /// \param block Block to add. After this call the block is no longer considered 'busy'.
         void PushBlock(BlockHeader* block);
+
+        /// \brief Allocate a new block from the pool. This method doesn't recycle any existing free blocks.
+        /// \param size Size of the block to allocate.
+        /// \return Returns a pointer to the allocated block.
+        BlockHeader* AllocateBlock(size_t size);
 
         /// \brief Split a block in two more blocks a stores the second inside the proper segregated free list. The second block is considered not busy.
         /// \param block Block to split.
@@ -416,18 +418,31 @@ namespace syntropy
         /// \param block Block to add. After this call the block is no longer considered 'busy'.
         void InsertBlock(FreeBlockHeader* block);
 
-        size_t GetFreeListIndexBySize(size_t size) const;
+        /// \brief Get the first and the second level index of a free list for a given allocation size.
+        /// \param size Size of the block.
+        /// \param first_level_index Index of the first-level class. Output.
+        /// \param second_level_index Index of the second-level class. Output.
+        void GetFreeListIndex(size_t size, size_t& first_level_index, size_t& second_level_index) const;
 
-        LinearAllocator pool_;                              ///< \brief Memory pool used by this allocator.
+        /// \brief Get the index of a free list inside the flat free list array given its first-level and second-level indexes.
+        /// \param first_level_index First level index.
+        /// \param second_level_index Second level index.
+        /// \return Returns the index of the free list associated with the given first-level and second-level index.
+        size_t GetFreeListIndex(size_t first_level_index, size_t second_level_index) const;
+        
+        LinearAllocator allocator_;                         ///< \brief Underlying allocator used by this one.
 
         BlockHeader* last_block_;                           ///< \brief Pointer to the block currently on the head of the pool.
 
-        size_t second_level_index_;                         ///< \brief Number of classes for each first-level class.
-                                                            ///         First-level array divide free blocks in classes that are a power of two apart.
-                                                            ///         Second-level array subdivide each class linearly.
+        size_t first_level_count_;                          ///< \brief Number of first-level classes.
 
-        std::vector<FreeBlockHeader*> free_lists_;          ///< \brief Pointer to the free lists. Each list handles allocations for a particular class of sizes.
-                                                            ///< \brief Segregated free lists are flattened.
+        size_t second_level_count_;                         ///< \brief Number of classes for each first-level class. Stored as log2(number_of_classes)
+
+        size_t first_level_bitmap_;                         ///< \brief Bitmap used to determine which first-level class contains at least one free block.
+
+        std::vector<size_t> second_level_bitmap_;           ///< \brief Bitmap used to determine which second-level class contains at least one free block. Each element refers to a first-level class.
+
+        std::vector<FreeBlockHeader*> free_lists_;          ///< \brief Pointer to the free lists. Flattened to a mono-dimensional array.
 
     };
 

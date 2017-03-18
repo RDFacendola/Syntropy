@@ -7,6 +7,7 @@
 #include "memory/memory.h"
 #include "diagnostics/debug.h"
 #include "math/math.h"
+#include "platform/builtin.h"
 
 namespace syntropy 
 {
@@ -294,18 +295,18 @@ namespace syntropy
 
     void* ExponentialSegregatedFitAllocator::Allocate(size_t size, size_t alignment)
     {
-        SYNTROPY_PRECONDITION(Math::IsPow2(alignment));
+        SYNTROPY_ASSERT(Math::IsPow2(alignment));
 
         auto block = Allocate(size);        // A memory page is always aligned to some power of 2 which is almost always bigger than any requested alignment.
 
-        SYNTROPY_POSTCONDITION(Memory::IsAlignedTo(block, alignment));
+        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, alignment));
 
         return block;
     }
 
     void ExponentialSegregatedFitAllocator::Free(void* address)
     {
-        SYNTROPY_PRECONDITION(memory_range_.Contains(address));
+        SYNTROPY_ASSERT(memory_range_.Contains(address));
 
         // The entire memory range is divided evenly among all the allocators
 
@@ -333,11 +334,11 @@ namespace syntropy
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size, size_t alignment)
     {
-        SYNTROPY_PRECONDITION(Math::IsPow2(alignment));
+        SYNTROPY_ASSERT(Math::IsPow2(alignment));
 
         auto block = Reserve(size);         // A memory page is always aligned to some power of 2 which is almost always bigger than any requested alignment.
 
-        SYNTROPY_POSTCONDITION(Memory::IsAlignedTo(block, alignment));
+        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, alignment));
 
         return block;
     }
@@ -368,7 +369,7 @@ namespace syntropy
                 MemoryRange(Memory::AddOffset(*memory_range_, index * capacity), capacity),         // Split the range into sub ranges.
                 class_size << index);                                                               // Class size is doubled at each iteration.
 
-            SYNTROPY_CHECK(memory_range_.Contains(allocators_.back().GetRange()));
+            SYNTROPY_ASSERT(memory_range_.Contains(allocators_.back().GetRange()));
         }
 
     }
@@ -472,20 +473,16 @@ namespace syntropy
     
     TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t second_level_index)
         : Allocator(name)
-        , pool_(capacity, 1)
-        , last_block_(nullptr)
-        , second_level_index_(second_level_index)
+        , allocator_(capacity, Memory::GetPageSize())
     {
-        free_lists_.resize((Math::FloorLog2(pool_.GetRange().GetSize()) + 1u) * (1ull << second_level_index_));
+        Initialize(second_level_index);
     }
 
     TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t second_level_index)
         : Allocator(name)
-        , pool_(memory_range, 1)
-        , last_block_(nullptr)
-        , second_level_index_(second_level_index)
+        , allocator_(memory_range, Memory::GetPageSize())
     {
-        free_lists_.resize((Math::FloorLog2(pool_.GetRange().GetSize()) + 1u) * (1ull << second_level_index_));
+        Initialize(second_level_index);
     }
 
     void* TwoLevelSegregatedFitAllocator::Allocate(size_t size)
@@ -495,6 +492,8 @@ namespace syntropy
 
     void* TwoLevelSegregatedFitAllocator::Allocate(size_t size, size_t alignment)
     {
+        SYNTROPY_ASSERT(false);     // Not yet implemented
+
         return GetFreeBlockBySize(size + alignment)->begin();
     }
 
@@ -507,59 +506,121 @@ namespace syntropy
 
     bool TwoLevelSegregatedFitAllocator::Belongs(void* block) const
     {
-        return pool_.GetRange().Contains(block);
+        return GetRange().Contains(block);
     }
 
     size_t TwoLevelSegregatedFitAllocator::GetMaxAllocationSize() const
     {
-        return pool_.GetRange().GetSize();
+        return GetRange().GetSize();
+    }
+
+    const MemoryRange& TwoLevelSegregatedFitAllocator::GetRange() const
+    {
+        return allocator_.GetRange();
+    }
+
+    void TwoLevelSegregatedFitAllocator::Initialize(size_t second_level_count)
+    {
+        last_block_ = nullptr;
+
+        first_level_count_ = Math::FloorLog2(allocator_.GetRange().GetSize()) + 1u;
+        second_level_count_ = second_level_count;
+
+        free_lists_.resize(first_level_count_ * (static_cast<size_t>(1u) << second_level_count_));
+
+        // sizeof(...) * 8u => size in bits
+        SYNTROPY_ASSERT(sizeof(first_level_bitmap_) * 8u >= first_level_count_);
+        SYNTROPY_ASSERT(sizeof(decltype(second_level_bitmap_)::value_type) * 8u >= (static_cast<size_t>(1u) << second_level_count_));
+
+        // Bitmaps are zero initialized
+        first_level_bitmap_ = 0;
+        second_level_bitmap_.resize(first_level_count_);
     }
 
     TwoLevelSegregatedFitAllocator::BlockHeader* TwoLevelSegregatedFitAllocator::GetFreeBlockBySize(size_t size)
     {
-        size += sizeof(BlockHeader);                            // Reserve more space for the header.
+        SYNTROPY_ASSERT(size >= 0);
+
+        size += sizeof(BlockHeader);                            // Reserve space for the header.
         size = std::max(size, kMinimumBlockSize);               // The size must be at least as big as the minimum size allowed.
         size = Math::Ceil(size, BlockHeader::kSizeMask + 1);    // The size must not interfere with the status bits of the block.
 
-        auto index = GetFreeListIndexBySize(size);
+        size_t first_level_index;
+        size_t second_level_index;
 
-        // Search a free block big enough to handle the allocation.
-        // TODO: Remove this loop, use bitmaps instead.
-        while (index < free_lists_.size() && !free_lists_[index])
+        GetFreeListIndex(size, first_level_index, second_level_index);
+
+        auto index = GetFreeListIndex(first_level_index, second_level_index);
+
+        if (!free_lists_[index])
         {
-            ++index;
+            // Check whether there's a bigger free block in the same first-level
+            auto filtered_bitmap = second_level_bitmap_[first_level_index] & ~((static_cast<uint64_t>(1u) << second_level_index) - 1u);        // Mask out all the second-level classes smaller than the requested size.
+
+            if (filtered_bitmap != 0)
+            {
+                second_level_index = platform::GetBuiltIn().GetLeastSignificantBit(static_cast<uint64_t>(filtered_bitmap));
+
+                index = GetFreeListIndex(first_level_index, second_level_index);
+            }
+            else
+            {
+                // Check the subsequent first-level classes.
+                filtered_bitmap = first_level_bitmap_ & ~((static_cast<uint64_t>(2u) << first_level_index) - 1u);                               // Mask out all the first-level classes smaller than the requested size.
+
+                if (filtered_bitmap != 0)
+                {
+                    first_level_index = platform::GetBuiltIn().GetLeastSignificantBit(static_cast<uint64_t>(filtered_bitmap));
+                    second_level_index = platform::GetBuiltIn().GetLeastSignificantBit(static_cast<uint64_t>(second_level_bitmap_[first_level_index]));
+
+                    index = GetFreeListIndex(first_level_index, second_level_index);
+                }
+                else
+                {
+                    // No free list found
+                    index = free_lists_.size();
+                }
+            }
         }
 
         BlockHeader* block;
 
         if (index < free_lists_.size())
         {
+            SYNTROPY_ASSERT(!!free_lists_[index]);
+
             // Pop a free block from the given segregated free list.
             block = PopBlock(index);
 
-            SplitBlock(block, size);                    // Split the block (if needed).
+            // Split the block (if needed).
+            SplitBlock(block, size);
         }
         else
         {
             // Get a new block from the pool
-            block = reinterpret_cast<BlockHeader*>(pool_.Allocate(size));
-
-            block->SetSize(size);
-            block->SetBusy(true);
-            block->SetLast(true);
-            block->previous_ = last_block_;
-
-            if (last_block_)
-            {
-                last_block_->SetLast(false);            // The last block is no longer the last
-            }
-
-            last_block_ = block;
+            block = AllocateBlock(size);
         }
 
         MemoryDebug::MarkUninitialized(block->begin(), block->end());
 
         return block;
+    }
+
+    void TwoLevelSegregatedFitAllocator::SetBitmap(size_t first_level_index, size_t second_level_index)
+    {
+        first_level_bitmap_ |= (static_cast<size_t>(1u) << first_level_index);
+        second_level_bitmap_[first_level_index] |= (static_cast<size_t>(1u) << second_level_index);
+    }
+
+    void TwoLevelSegregatedFitAllocator::ResetBitmap(size_t first_level_index, size_t second_level_index)
+    {
+        second_level_bitmap_[first_level_index] &= ~(static_cast<size_t>(1u) << second_level_index);
+
+        // If all the second-level classes in the current first-level class are empty, the first-level is marked as 'empty' as well.
+        if (second_level_bitmap_[first_level_index] == 0)
+        {
+            first_level_bitmap_ &= ~(static_cast<size_t>(1u) << first_level_index);
+        }
     }
 
     TwoLevelSegregatedFitAllocator::BlockHeader* TwoLevelSegregatedFitAllocator::PopBlock(size_t index)
@@ -578,6 +639,15 @@ namespace syntropy
             if (next_free)
             {
                 next_free->previous_free_ = nullptr;
+            }
+
+            // Fix-up the bitmaps
+            if (!free_lists_[index])
+            {
+                auto first_level_index = index / (static_cast<size_t>(1u) << second_level_count_);
+                auto second_level_index = index % (static_cast<size_t>(1u) << second_level_count_);
+
+                ResetBitmap(first_level_index, second_level_index);
             }
 
             // Mark the popped block as "busy"
@@ -608,17 +678,17 @@ namespace syntropy
 
         // Merge the block with the next physical block
 
-        if (!block->IsLast() && !next_block->IsBusy())
+        if (!merged_block->IsLast() && !next_block->IsBusy())
         {
             RemoveBlock(next_block);                                                    // Remove the next block from its segregated list.
 
-            block->SetSize(block->GetSize() + next_block->GetSize());                   // Grow the block size.
-            block->SetLast(next_block->IsLast());                                       // Merging with the 'last' block yields another 'last' block.
+            merged_block->SetSize(merged_block->GetSize() + next_block->GetSize());     // Grow the block size.
+            merged_block->SetLast(merged_block->IsLast());                              // Merging with the 'last' block yields another 'last' block.
         }
 
         if (merged_block->IsLast())
         {
-            last_block_ = merged_block;                                                 // Update the pointer to last block.
+            last_block_ = merged_block;                                                 // Update the pointer to last block (The previous last block was merged into the new block).
         }
         else
         {
@@ -626,18 +696,47 @@ namespace syntropy
             next_block->previous_ = merged_block;                                       // The pointer to the previous physical block of the next block is no longer valid since that block may have been merged.
         }
 
+        // Ensures that the block cannot be merged any further
+
+        SYNTROPY_ASSERT(!merged_block->previous_ || merged_block->previous_->IsBusy());
+        SYNTROPY_ASSERT(merged_block->IsLast() || reinterpret_cast<BlockHeader*>(merged_block->end())->IsBusy());
+
         // Insert the merged block in the proper free list
 
         merged_block->SetBusy(false);                                                   // The block is no longer busy
+
+        // TODO: If the merged block is the last one, returns it to the allocator.
 
         MemoryDebug::MarkFree(merged_block->begin(), merged_block->end());
 
         InsertBlock(merged_block);
     }
 
+    TwoLevelSegregatedFitAllocator::BlockHeader* TwoLevelSegregatedFitAllocator::AllocateBlock(size_t size)
+    {
+        auto block = reinterpret_cast<BlockHeader*>(allocator_.Allocate(size));
+
+        block->SetSize(size);
+        block->SetBusy(true);
+        block->SetLast(true);
+
+        block->previous_ = last_block_;
+
+        if (last_block_)
+        {
+            last_block_->SetLast(false);            // The last block is no longer the last
+        }
+
+        last_block_ = block;
+
+        return block;
+    }
+
     void TwoLevelSegregatedFitAllocator::SplitBlock(BlockHeader* block, size_t size)
     {
-        if (block->GetSize() > size + kMinimumBlockSize)                // Do not split if the remaining block size would fall below the minimum size allowed.
+        SYNTROPY_ASSERT(block->IsBusy());                               // Make sure the original block is busy, otherwise PushBlock will merge again block and remaining_block!
+
+        if (block->GetSize() - size >= kMinimumBlockSize)               // Do not split if the remaining block size would fall below the minimum size allowed.
         {
             auto remaining_block = Memory::AddOffset(block, size);
 
@@ -651,15 +750,18 @@ namespace syntropy
             block->SetSize(size);                                       // Shrink the size
             block->SetLast(false);                                      // It can't be the last block anymore
 
-            SYNTROPY_ASSERT(block->IsBusy());                           // Make sure the original block is busy, otherwise PushBlock will merge again block and remaining_block!
-
-            PushBlock(remaining_block);
+            PushBlock(remaining_block);                                 // Store the remaining block for further allocations
         }
     }
 
     void TwoLevelSegregatedFitAllocator::RemoveBlock(FreeBlockHeader* block)
     {
         // Fix-up the double linked list
+
+        if (block->next_free_)
+        {
+            block->next_free_->previous_free_ = block->previous_free_;
+        }
 
         if (block->previous_free_)
         {
@@ -668,36 +770,57 @@ namespace syntropy
         else
         {
             // The block has no previous block: fix the head of the free list
-            auto index = GetFreeListIndexBySize(block->GetSize());
+            size_t first_level_index;
+            size_t second_level_index;
+
+            GetFreeListIndex(block->GetSize(), first_level_index, second_level_index);
+
+            auto index = GetFreeListIndex(first_level_index, second_level_index);
 
             free_lists_[index] = block->next_free_;
-        }
 
-        if (block->next_free_)
-        {
-            block->next_free_->previous_free_ = block->previous_free_;
+            if (!free_lists_[index])
+            {
+                ResetBitmap(first_level_index, second_level_index);
+            }
         }
     }
 
     void TwoLevelSegregatedFitAllocator::InsertBlock(FreeBlockHeader* block)
     {
         // Push on the head of the proper segregated list
-        auto index = GetFreeListIndexBySize(block->GetSize());
+        size_t first_level_index;
+        size_t second_level_index;
+
+        GetFreeListIndex(block->GetSize(), first_level_index, second_level_index);
+
+        SetBitmap(first_level_index, second_level_index);
+
+        auto index = GetFreeListIndex(first_level_index, second_level_index);
 
         block->previous_free_ = nullptr;
         block->next_free_ = free_lists_[index];
+
+        if (block->next_free_)
+        {
+            block->next_free_->previous_free_ = block;
+        }
+
         free_lists_[index] = block;
     }
 
-    size_t TwoLevelSegregatedFitAllocator::GetFreeListIndexBySize(size_t size) const
+    void TwoLevelSegregatedFitAllocator::GetFreeListIndex(size_t size, size_t& first_level_index, size_t& second_level_index) const
     {
-        auto first_level = Math::FloorLog2(size);
+        first_level_index = Math::FloorLog2(size);
 
-        auto second_level = (size ^ (1ull << first_level)) >> (first_level - second_level_index_);
+        second_level_index = (size ^ (static_cast<size_t>(1u) << first_level_index)) >> (first_level_index - second_level_count_);
 
-        SYNTROPY_ASSERT(second_level < (1ull << second_level_index_));
+        SYNTROPY_ASSERT(second_level_index < (static_cast<size_t>(1u) << second_level_count_));
+    }
 
-        return first_level * (1ull << second_level_index_) + second_level;          // Flatten the index.
+    size_t TwoLevelSegregatedFitAllocator::GetFreeListIndex(size_t first_level_index, size_t second_level_index) const
+    {
+        return first_level_index * (static_cast<size_t>(1u) << second_level_count_) + second_level_index;
     }
 
 }

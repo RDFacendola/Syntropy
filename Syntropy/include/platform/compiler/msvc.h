@@ -38,6 +38,8 @@ namespace syntropy
 
             virtual uint64_t GetMostSignificantBit(uint64_t number) const override;
 
+            virtual uint64_t GetLeastSignificantBit(uint64_t number) const override;
+
         private:
 
             /// \brief Default constructor.
