@@ -69,7 +69,8 @@ int main()
         SYNTROPY_DELETE(tlsfa, p);
         SYNTROPY_DELETE(tlsfa, q);
 
-        q = SYNTROPY_NEW(tlsfa) FooMedium();
+        //q = SYNTROPY_NEW(tlsfa) FooMedium();
+        q = new (tlsfa.Allocate(sizeof(FooMedium), 32)) FooMedium();
 
         SYNTROPY_DELETE(tlsfa, q);
         SYNTROPY_DELETE(tlsfa, r);

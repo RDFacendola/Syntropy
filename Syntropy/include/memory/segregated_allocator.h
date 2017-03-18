@@ -318,7 +318,7 @@ namespace syntropy
             /// \brief Flag declaring that the block has the highest address among all the allocated or free blocks.
             static const size_t kLastBlockFlag = 0x1;
 
-            /// \brief Mask used
+            /// \brief Used to mask away status flags from the block size.
             static const size_t kSizeMask = kBusyBlockFlag | kLastBlockFlag;
 
             BlockHeader* previous_;             ///< \brief Pointer to the previous physical block.

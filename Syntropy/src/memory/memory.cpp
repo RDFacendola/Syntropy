@@ -71,6 +71,9 @@ namespace syntropy
 
     void MemoryDebug::MarkUninitialized(void* begin, void* end)
     {
+        SYNTROPY_UNUSED(begin);
+        SYNTROPY_UNUSED(end);
+
         SYNTROPY_DEBUG_ONLY(
             std::fill(
                 reinterpret_cast<int8_t*>(begin),
@@ -81,6 +84,9 @@ namespace syntropy
 
     void MemoryDebug::MarkFree(void* begin, void* end)
     {
+        SYNTROPY_UNUSED(begin);
+        SYNTROPY_UNUSED(end);
+
         SYNTROPY_DEBUG_ONLY(
             std::fill(
                 reinterpret_cast<int8_t*>(begin),
