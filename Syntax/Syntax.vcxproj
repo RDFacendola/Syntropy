@@ -19,8 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\serialization\json.h" />
-    <ClInclude Include="include\serialization\json\json_deserializer.h" />
     <ClInclude Include="include\syntax.h">
       <SubType>
       </SubType>
@@ -32,11 +30,6 @@
     <ClInclude Include="include\vm\intrinsics.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\serialization\json.cpp" />
-    <ClCompile Include="src\serialization\json\json_deserializer.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
     <ClCompile Include="src\syntax.cpp">
       <SubType>
       </SubType>
