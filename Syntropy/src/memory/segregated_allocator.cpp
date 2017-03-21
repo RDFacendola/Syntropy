@@ -266,7 +266,7 @@ namespace syntropy
         SYNTROPY_ASSERT(Math::IsPow2(class_size_));
 
         // Each page must be large enough to contain the header and at least one block as big as the maximum allocation, aligned to its own size.
-        SYNTROPY_ASSERT(GetPageSize() <= sizeof(Page) + GetMaxAllocationSize() + GetMaxAllocationSize() - 1);
+        SYNTROPY_ASSERT(GetPageSize() >= sizeof(Page) + GetMaxAllocationSize() + GetMaxAllocationSize() - 1);
     }
 
     /************************************************************************/
@@ -564,11 +564,12 @@ namespace syntropy
         size_t first_level_index;
         size_t second_level_index;
 
-        GetFreeListIndex(size, first_level_index, second_level_index);
+        // Start searching from the next class (the current free list may have blocks that are smaller than the requested size)
+        GetFreeListIndex(size, first_level_index, second_level_index, true);
 
         auto index = GetFreeListIndex(first_level_index, second_level_index);
 
-        if (!free_lists_[index])
+        if (index < free_lists_.size() && !free_lists_[index])
         {
             // Search a free list with a block which is larger than the requested size.
 
@@ -614,6 +615,8 @@ namespace syntropy
             // Get a new block from the pool
             block = AllocateBlock(size);
         }
+
+        SYNTROPY_ASSERT(block->GetSize() >= size);
 
         MemoryDebug::MarkUninitialized(block->begin(), block->end());
 
@@ -717,8 +720,6 @@ namespace syntropy
 
         merged_block->SetBusy(false);                                                   // The block is no longer busy
 
-        // TODO: If the merged block is the last one, returns it to the allocator.
-
         MemoryDebug::MarkFree(merged_block->begin(), merged_block->end());
 
         InsertBlock(merged_block);
@@ -748,7 +749,7 @@ namespace syntropy
     {
         SYNTROPY_ASSERT(block->IsBusy());                               // Make sure the original block is busy, otherwise PushBlock will merge again block and remaining_block!
 
-        if (block->GetSize() - size >= kMinimumBlockSize)               // Do not split if the remaining block size would fall below the minimum size allowed.
+        if (block->GetSize() >= kMinimumBlockSize + size)               // Do not split if the remaining block size would fall below the minimum size allowed.
         {
             auto remaining_block = Memory::AddOffset(block, size);
 
@@ -821,8 +822,14 @@ namespace syntropy
         free_lists_[index] = block;
     }
 
-    void TwoLevelSegregatedFitAllocator::GetFreeListIndex(size_t size, size_t& first_level_index, size_t& second_level_index) const
+    void TwoLevelSegregatedFitAllocator::GetFreeListIndex(size_t size, size_t& first_level_index, size_t& second_level_index, bool roundup) const
     {
+        if (roundup)
+        {
+            // Round up to the next class size.
+            size += ((static_cast<size_t>(1u) << (Math::FloorLog2(size) - second_level_count_)) - 1u);
+        }
+
         first_level_index = Math::FloorLog2(size);
 
         second_level_index = (size ^ (static_cast<size_t>(1u) << first_level_index)) >> (first_level_index - second_level_count_);

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "memory.h"
-#include "memory/block_allocator.h"
+#include "block_allocator.h"
 
 #include <array>
 #include <vector>
@@ -57,6 +57,8 @@ namespace syntropy
 
         /// \brief No copy constructor.
         LinearSegregatedFitAllocator(const LinearSegregatedFitAllocator&) = delete;
+
+
 
         /// \brief No assignment operator.
         LinearSegregatedFitAllocator& operator=(const LinearSegregatedFitAllocator&) = delete;
@@ -422,7 +424,8 @@ namespace syntropy
         /// \param size Size of the block.
         /// \param first_level_index Index of the first-level class. Output.
         /// \param second_level_index Index of the second-level class. Output.
-        void GetFreeListIndex(size_t size, size_t& first_level_index, size_t& second_level_index) const;
+        /// \param roundup Whether to round up the size to the next class.
+        void GetFreeListIndex(size_t size, size_t& first_level_index, size_t& second_level_index, bool roundup = false) const;
 
         /// \brief Get the index of a free list inside the flat free list array given its first-level and second-level indexes.
         /// \param first_level_index First level index.
