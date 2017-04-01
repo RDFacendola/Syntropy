@@ -182,9 +182,19 @@ namespace syntropy
         template <typename T>
         static void Delete(T* ptr, Allocator& allocator, const syntropy::diagnostics::StackTrace& stack_trace);
 
-        /// \brief Default constructor.
-        /// \param name Name of the allocator.
+        /// \brief Get an allocator by name.
+        /// \return Returns the allocator with a matching name, if any. If no such allocator could be found returns nullptr.
+        static Allocator* GetAllocatorByName(const HashedString& name);
+
+        /// Create a new anonymous allocator.
+        Allocator();
+
+        /// \brief Create a new named allocator.
+        /// \param name Name of the allocator. This name should be unique.
         Allocator(const HashedString& name);
+
+        /// \brief Virtual destructor.
+        virtual ~Allocator();
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate, in bytes.
@@ -219,10 +229,11 @@ namespace syntropy
 
     private:
 
-        HashedString name_;                 ///< \brief Name of the allocator.
+        HashedString name_;                             ///< \brief Name of the allocator.
 
-        diagnostics::Context context_;      ///< \brief Context associated to the allocator.
+        diagnostics::Context context_;                  ///< \brief Context associated to the allocator.
 
+        static std::vector<Allocator*> allocators_;     ///< \brief List of registered allocators.
     };
 
     /// \brief Represents a range of contiguous memory addresses.

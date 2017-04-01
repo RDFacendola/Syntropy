@@ -99,11 +99,53 @@ namespace syntropy
     /* ALLOCATOR                                                            */
     /************************************************************************/
 
+    std::vector<Allocator*> Allocator::allocators_;
+
+    Allocator* Allocator::GetAllocatorByName(const HashedString& name)
+    {
+        auto it = std::find_if
+        (
+            std::begin(allocators_),
+            std::end(allocators_),
+            [&name](const Allocator* allocator)
+            {
+                return allocator->GetName() == name;
+            }
+        );
+
+        return it != std::end(allocators_) ?
+            *it :
+            nullptr;
+    }
+
+    Allocator::Allocator()
+        : context_(MemoryCtx)
+    {
+
+    }
+
     Allocator::Allocator(const HashedString& name)
         : name_(name)
         , context_(MemoryCtx | name_)
     {
+        SYNTROPY_ASSERT(GetAllocatorByName(name) == nullptr);       // Ensures the uniqueness of the allocator name.
 
+        allocators_.push_back(this);
+    }
+
+    Allocator::~Allocator()
+    {
+        // Remove the allocator from the allocator list.
+        allocators_.erase
+        (
+            std::remove
+            (
+                std::begin(allocators_),
+                std::end(allocators_),
+                this
+            ),
+            std::end(allocators_)
+        );
     }
 
     const HashedString& Allocator::GetName() const

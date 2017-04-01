@@ -39,7 +39,7 @@ namespace syntropy
         static const size_t kMinimumAllocationSize = sizeof(uintptr_t);
         
         /// \brief Create a new allocator.
-        /// \param name Name of the allocator.
+        /// \param name Name of the allocator. Must be unique.
         /// \param capacity Maximum amount of memory allocated by the allocator.
         /// \param class_size Size of each allocation class, in bytes.
         /// \param order Number of allocation classes handled by the allocator.
@@ -47,7 +47,7 @@ namespace syntropy
         LinearSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t class_size, size_t order, size_t page_size);
 
         /// \brief Create a new allocator.
-        /// \param name Name of the allocator.
+        /// \param name Name of the allocator. Must be unique.
         /// \param memory_range Memory range used by the allocator. Determines the capacity of the allocator.
         /// \param class_size Size of each allocation class, in bytes.
         /// \param order Number of allocation classes handled by the allocator.
@@ -55,10 +55,23 @@ namespace syntropy
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
         LinearSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t class_size, size_t order, size_t page_size);
 
+        /// \brief Create a new anonymous allocator.
+        /// \param capacity Maximum amount of memory allocated by the allocator.
+        /// \param class_size Size of each allocation class, in bytes.
+        /// \param order Number of allocation classes handled by the allocator.
+        /// \param page_size Size of each memory page, in bytes. This value is rounded up to the next system memory page size.
+        LinearSegregatedFitAllocator(size_t capacity, size_t class_size, size_t order, size_t page_size);
+
+        /// \brief Create a new anonymous allocator.
+        /// \param memory_range Memory range used by the allocator. Determines the capacity of the allocator.
+        /// \param class_size Size of each allocation class, in bytes.
+        /// \param order Number of allocation classes handled by the allocator.
+        /// \param page_size Size of each memory page, in bytes. This value is rounded up to the next system memory page size.
+        /// \remarks The allocator doesn't take ownership of the memory range provided as input.
+        LinearSegregatedFitAllocator(const MemoryRange& memory_range, size_t class_size, size_t order, size_t page_size);
+
         /// \brief No copy constructor.
         LinearSegregatedFitAllocator(const LinearSegregatedFitAllocator&) = delete;
-
-
 
         /// \brief No assignment operator.
         LinearSegregatedFitAllocator& operator=(const LinearSegregatedFitAllocator&) = delete;
@@ -205,6 +218,19 @@ namespace syntropy
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
         ExponentialSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t class_size, size_t order);
 
+        /// \brief Create a new anonymous allocator.
+        /// \param capacity Maximum amount of memory allocated by the allocator.
+        /// \param class_size Size of the first allocation class, in bytes. Rounded up to memory page size.
+        /// \param order Number of allocation classes handled by the allocator.
+        ExponentialSegregatedFitAllocator(size_t capacity, size_t class_size, size_t order);
+
+        /// \brief Create a new anonymous allocator.
+        /// \param memory_range Memory range used by the allocator. Determines the capacity of the allocator.
+        /// \param class_size Size of the first allocation class, in bytes. Rounded up to memory page size.
+        /// \param order Number of allocation classes handled by the allocator.
+        /// \remarks The allocator doesn't take ownership of the memory range provided as input.
+        ExponentialSegregatedFitAllocator(const MemoryRange& memory_range, size_t class_size, size_t order);
+
         /// \brief No copy constructor.
         ExponentialSegregatedFitAllocator(const ExponentialSegregatedFitAllocator&) = delete;
 
@@ -242,6 +268,10 @@ namespace syntropy
         /// \brief Get the order of this allocator.
         /// \return Returns the number of allocation classes handled by the allocator.
         size_t GetOrder() const;
+
+        /// \brief Get the size of the smallest allocation class.
+        /// \brief Returns the size of the smallest allocation class, in bytes.
+        size_t GetClassSize() const;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -291,6 +321,19 @@ namespace syntropy
         /// \param memory_range Memory range used by the allocator.
         /// \param second_level_index Number of classes for each first level index. The actual number of classes is 2^second_level_index.
         TwoLevelSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t second_level_index);
+
+        /// \brief Create a new allocator.
+        /// \param capacity Maximum capacity of the allocator, in bytes.
+        /// \param second_level_index Number of classes for each first level index. The actual number of classes is 2^second_level_index.
+        TwoLevelSegregatedFitAllocator(size_t capacity, size_t second_level_index);
+
+        /// \brief Create a new allocator.
+        /// \param memory_range Memory range used by the allocator.
+        /// \param second_level_index Number of classes for each first level index. The actual number of classes is 2^second_level_index.
+        TwoLevelSegregatedFitAllocator(const MemoryRange& memory_range, size_t second_level_index);
+
+        /// \brief Virtual destructor.
+        virtual ~TwoLevelSegregatedFitAllocator() = default;
 
         virtual void* Allocate(size_t size) override;
 

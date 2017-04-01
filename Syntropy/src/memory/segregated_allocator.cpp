@@ -103,6 +103,22 @@ namespace syntropy
         CheckPreconditions();
     }
 
+    LinearSegregatedFitAllocator::LinearSegregatedFitAllocator(size_t capacity, size_t class_size, size_t order, size_t page_size)
+        : allocator_(capacity, page_size)
+        , free_lists_(order)
+        , class_size_(class_size)
+    {
+        CheckPreconditions();
+    }
+
+    LinearSegregatedFitAllocator::LinearSegregatedFitAllocator(const MemoryRange& memory_range, size_t class_size, size_t order, size_t page_size)
+        : allocator_(memory_range, page_size)
+        , free_lists_(order)
+        , class_size_(class_size)
+    {
+        CheckPreconditions();
+    }
+
     void* LinearSegregatedFitAllocator::Allocate(size_t size)
     {
         SYNTROPY_ASSERT(size > 0);
@@ -288,6 +304,19 @@ namespace syntropy
         InitializeAllocators(order, Memory::CeilToPageSize(class_size));
     }
 
+    ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(size_t capacity, size_t class_size, size_t order)
+        : memory_pool_(capacity, Memory::CeilToPageSize(class_size))        // Allocate a new virtual address range.
+        , memory_range_(memory_pool_)                                       // Get the full range out of the memory pool.
+    {
+        InitializeAllocators(order, Memory::CeilToPageSize(class_size));
+    }
+
+    ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const MemoryRange& memory_range, size_t class_size, size_t order)
+        : memory_range_(memory_range, Memory::CeilToPageSize(class_size))   // Align the input memory range. Doesn't take ownership.
+    {
+        InitializeAllocators(order, Memory::CeilToPageSize(class_size));
+    }
+
     void* ExponentialSegregatedFitAllocator::Allocate(size_t size)
     {
         return GetAllocatorBySize(size).Allocate(size);
@@ -346,6 +375,11 @@ namespace syntropy
     size_t ExponentialSegregatedFitAllocator::GetOrder() const
     {
         return allocators_.size();
+    }
+
+    size_t ExponentialSegregatedFitAllocator::GetClassSize() const
+    {
+        return allocators_[0].GetBlockSize();
     }
 
     const MemoryRange& ExponentialSegregatedFitAllocator::GetRange() const
@@ -481,6 +515,18 @@ namespace syntropy
     TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t second_level_index)
         : Allocator(name)
         , allocator_(memory_range, Memory::GetPageSize())
+    {
+        Initialize(second_level_index);
+    }
+
+    TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(size_t capacity, size_t second_level_index)
+        : allocator_(capacity, Memory::GetPageSize())
+    {
+        Initialize(second_level_index);
+    }
+
+    TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(const MemoryRange& memory_range, size_t second_level_index)
+        : allocator_(memory_range, Memory::GetPageSize())
     {
         Initialize(second_level_index);
     }
