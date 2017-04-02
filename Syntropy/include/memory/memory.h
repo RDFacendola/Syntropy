@@ -163,10 +163,10 @@ namespace syntropy
     private:
 
         /// \brief Pattern used to identify an uninitialized memory block (ie: allocated but not yet written).
-        static const int8_t kUninitializedMemoryPattern = 0x5C;
+        static constexpr int8_t kUninitializedMemoryPattern = 0x5C;
 
         /// \brief Pattern used to identify a free memory block (ie: a block that has not been yet allocated).
-        static const int8_t kFreeMemoryPattern = 0x5F;
+        static constexpr int8_t kFreeMemoryPattern = 0x5F;
 
     };
 
@@ -409,6 +409,8 @@ namespace syntropy
 
 }
 
+// Allocation
+
 /// \brief New operator overload for custom allocators.
 void* operator new (std::size_t size, syntropy::Allocator& allocator, const syntropy::diagnostics::StackTrace& stack_trace);
 
@@ -422,6 +424,8 @@ namespace std
     template<>
     void swap(syntropy::MemoryBuffer& first, syntropy::MemoryBuffer& second);
 }
+
+// Implementation
 
 namespace syntropy
 {
@@ -476,3 +480,4 @@ namespace syntropy
     }
 
 }
+

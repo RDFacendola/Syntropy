@@ -1,3 +1,4 @@
+
 // ProtoDW.cpp : Defines the entry point for the console application.
 //
 
@@ -5,13 +6,18 @@
 
 #include <iostream>
 #include <fstream>
+#include <random>
 
 #include "vm/virtual_machine.h"
 #include "vm/intrinsics.h"
 
+#include "memory/memory.h"
+#include "memory/memory_units.h"
+
 #include "memory/std_allocator.h"
 #include "memory/segregated_allocator.h"
 #include "memory/stack_allocator.h"
+#include "memory/master_allocator.h"
 
 #include "diagnostics/log.h"
 
@@ -50,35 +56,17 @@ int main()
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
     //
-    syntropy::MemoryPool pool(0x4000000, 1);
 
     {
+        
+        syntropy::LinearSegregatedFitAllocator small("small", 512_MiBytes, 8_Bytes, 32, 16_KiBytes);
+        syntropy::ExponentialSegregatedFitAllocator large("large", 160_GiBytes, 64_KiBytes, 10);
+        syntropy::MasterAllocator::Configuration cfg{ 256_Bytes, 64_KiBytes, 32_MiBytes, small, large, 8_GiBytes, 5 };
 
-        //syntropy::LinearSegregatedFitAllocator tlsfa("tiny", pool, 8, 64, 16384);
-        syntropy::TwoLevelSegregatedFitAllocator tlsfa("tlsf", pool, 2);
-        //syntropy::ExponentialSegregatedFitAllocator tlsfa("exponential", pool, 4096, 5);
-            
-        auto p = SYNTROPY_NEW(tlsfa) FooSmall();
-        auto q = SYNTROPY_NEW(tlsfa) FooMedium();
-        auto r = SYNTROPY_NEW(tlsfa) FooLarge();
+        syntropy::MasterAllocator master1("master1", cfg);
+        syntropy::MasterAllocator master2("master2", cfg);
 
-        SYNTROPY_DELETE(tlsfa, p);
-
-        p = SYNTROPY_NEW(tlsfa) FooSmall();
-
-        SYNTROPY_DELETE(tlsfa, p);
-        SYNTROPY_DELETE(tlsfa, q);
-
-        //q = SYNTROPY_NEW(tlsfa) FooMedium();
-        q = new (tlsfa.Allocate(sizeof(FooMedium), 32)) FooMedium();
-
-        SYNTROPY_DELETE(tlsfa, q);
-        SYNTROPY_DELETE(tlsfa, r);
-
-        r = SYNTROPY_NEW(tlsfa) FooLarge();
-
-        SYNTROPY_DELETE(tlsfa, r);
-
+        // allocate stuffs
     }
 
     //
