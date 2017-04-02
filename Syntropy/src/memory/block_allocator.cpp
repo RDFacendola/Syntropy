@@ -55,7 +55,7 @@ namespace syntropy
     }
 
     BlockAllocator::BlockAllocator(size_t capacity, size_t block_size)
-        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
+        : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
         , allocator_(capacity, block_size_)                         // Reserve the virtual memory range upfront without allocating.
         , free_list_(nullptr)
     {
@@ -63,7 +63,7 @@ namespace syntropy
     }
 
     BlockAllocator::BlockAllocator(const MemoryRange& memory_range, size_t block_size)
-        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
+        : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
         , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
         , free_list_(nullptr)
     {
@@ -80,13 +80,13 @@ namespace syntropy
 
     void* BlockAllocator::Allocate(size_t commit_size)
     {
-        commit_size = Memory::CeilToPageSize(std::min(commit_size, block_size_));
+        commit_size = VirtualMemory::CeilToPageSize(std::min(commit_size, block_size_));
 
         auto block = Reserve();
 
         if (commit_size > 0)
         {
-            Memory::Commit(block, commit_size);
+            VirtualMemory::Commit(block, commit_size);
 
             MemoryDebug::MarkUninitialized(block, Memory::AddOffset(block, commit_size));
         }
@@ -127,7 +127,7 @@ namespace syntropy
 
             auto capacity = (block_size_ - sizeof(FreeBlock)) / sizeof(uintptr_t) + 1;
 
-            Memory::Commit(block, block_size_);                     // Make sure the block is mapped to the system memory.
+            VirtualMemory::Commit(block, block_size_);              // Make sure the block is mapped to the system memory.
 
             free_list_ = new (block) FreeBlock(free_list_, capacity);
         }
@@ -137,7 +137,7 @@ namespace syntropy
 
             free_list_->PushBlock(block);                           // Push the address of the free block.
 
-            Memory::Decommit(block, block_size_);                   // Unmap the block from the system memory.
+            VirtualMemory::Decommit(block, block_size_);            // Unmap the block from the system memory.
         }
 
     }
@@ -164,7 +164,7 @@ namespace syntropy
     }
 
     StaticBlockAllocator::StaticBlockAllocator(size_t capacity, size_t block_size)
-        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
+        : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
         , allocator_(capacity, block_size_)                         // Reserve the virtual memory range upfront without allocating.
         , free_list_(nullptr)
     {
@@ -172,7 +172,7 @@ namespace syntropy
     }
 
     StaticBlockAllocator::StaticBlockAllocator(const MemoryRange& memory_range, size_t block_size)
-        : block_size_(Memory::CeilToPageSize(block_size))           // Round up to the next system page size.
+        : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
         , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
         , free_list_(nullptr)
     {

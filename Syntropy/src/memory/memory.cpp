@@ -4,7 +4,6 @@
 #include <cstring>
 #include <algorithm>
 
-#include "platform/os.h"
 #include "diagnostics/log.h"
 
 #include "syntropy.h"
@@ -14,57 +13,6 @@ namespace syntropy
 
     const diagnostics::Context MemoryCtx("SyntropyMemory");
 
-    /************************************************************************/
-    /* MEMORY                                                               */
-    /************************************************************************/
-
-    size_t Memory::CeilToPageSize(size_t size)
-    {
-        return Math::Ceil(size, GetPageSize());
-    }
-
-    size_t Memory::GetPageSize()
-    {
-        auto page_size = platform::PlatformMemory::GetPageSize();
-
-        SYNTROPY_ASSERT(Math::IsPow2(page_size));
-
-        return page_size;
-    }
-
-    void* Memory::Reserve(size_t size)
-    {
-        auto address = platform::PlatformMemory::Reserve(size);
-
-        SYNTROPY_ASSERT(IsAlignedTo(address, GetPageSize()));
-
-        return address;
-    }
-
-    void* Memory::Allocate(size_t size)
-    {
-        return platform::PlatformMemory::Allocate(size);
-    }
-
-    bool Memory::Release(void* address)
-    {
-        auto success = platform::PlatformMemory::Release(address);
-
-        SYNTROPY_ASSERT(success);
-
-        return success;
-    }
-
-    bool Memory::Commit(void* address, size_t size)
-    {
-        return platform::PlatformMemory::Commit(address, size);
-    }
-
-    bool Memory::Decommit(void* address, size_t size)
-    {
-        return platform::PlatformMemory::Decommit(address, size);
-    }
-    
     /************************************************************************/
     /* MEMORY DEBUG                                                         */
     /************************************************************************/
@@ -222,66 +170,6 @@ namespace syntropy
     {
         return Memory::GetDistance(base_, address) >= 0 &&
             Memory::GetDistance(top_, address) < 0;
-    }
-
-    /************************************************************************/
-    /* MEMORY POOL                                                          */
-    /************************************************************************/
-
-    MemoryPool::MemoryPool()
-        : pool_(nullptr)
-    {
-
-    }
-
-    MemoryPool::MemoryPool(size_t size)
-        : pool_(Memory::Reserve(size))
-        , range_(pool_, size)
-    {
-
-    }
-
-    MemoryPool::MemoryPool(size_t size, size_t alignment)
-        : pool_(Memory::Reserve(size + alignment - 1))
-        , range_(Memory::Align(pool_, alignment), size)       // Align the buffer to the required boundary
-    {
-
-    }
-
-    MemoryPool::MemoryPool(MemoryPool&& other)
-        : pool_(other.pool_)
-        , range_(other.range_)
-    {
-        other.pool_ = nullptr;
-        other.range_ = MemoryRange();
-    }
-
-    MemoryPool::~MemoryPool()
-    {
-        if (pool_)
-        {
-            Memory::Release(pool_);
-        }
-    }
-
-    void* MemoryPool::operator*() const
-    {
-        return *range_;
-    }
-
-    void* MemoryPool::operator[](size_t offset) const
-    {
-        return range_[offset];
-    }
-
-    size_t MemoryPool::GetSize() const
-    {
-        return range_.GetSize();
-    }
-
-    MemoryPool::operator MemoryRange() const
-    {
-        return range_;
     }
 
     /************************************************************************/

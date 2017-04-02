@@ -66,11 +66,6 @@ namespace syntropy
         template <typename T>
         static constexpr T* SubOffset(T* address, size_t offset);
 
-        /// \brief Round an allocation size up to the next page size.
-        /// \param size Size to round up.
-        /// \return Returns the size extended such that is a multiple of the page size.
-        static size_t CeilToPageSize(size_t size);
-
         /// \brief Get the distance of two addresses, in bytes.
         /// \param first First address.
         /// \param second Second address.
@@ -100,45 +95,6 @@ namespace syntropy
         /// \param alignment Alignment to test against.
         /// \return Returns true if address is aligned to the provided alignment, returns false otherwise.
         static constexpr bool IsAlignedTo(void* address, size_t alignment);
-
-        // Virtual memory
-
-        /// \brief Get the virtual memory page size.
-        /// \return Returns the virtual memory page size, in bytes.
-        static size_t GetPageSize();
-
-        /// \brief Reserve a range of virtual memory addresses.
-        /// Reserved memory pages must be committed via Commit() before accessing them.
-        /// \param size Size of the range to reserve, in bytes.
-        /// \return Returns the first address in the reserved range. If the method fails, returns nullptr.
-        /// \remark The reserved memory is guaranteed to be aligned to virtual memory page boundary.
-        static void* Reserve(size_t size);
-
-        /// \brief Allocate a range of virtual memory addresses.
-        /// This method has the same effect as a Reserve() followed by a Commit().
-        /// \param size Size of the range to reserve, in bytes.
-        /// \return Returns the first address in the allocated range. If the method fails, returns nullptr.
-        /// \remark The allocated memory is guaranteed to be aligned to virtual memory page boundary.
-        static void* Allocate(size_t size);
-
-        /// \brief Release a range of virtual memory addresses.
-        /// \param address First address of the range to release. Must match any return value of a previous Reserve() / Allocate(), otherwise the behaviour is unspecified.
-        /// \return Returns true if the range could be released, returns false otherwise.
-        static bool Release(void* address);
-
-        /// \brief Commit a reserved virtual memory block.
-        /// This method allocates all the pages containing at least one byte in the range [address, address + size] and makes them accessible by the application.
-        /// \param address Base address of the memory block to commit.
-        /// \param size Size of the block to commit, in bytes.
-        /// \return Returns true if the memory could be committed, returns false otherwise.
-        /// \remarks address and size must refer to a memory region that was previously reserved via Reserve().
-        static bool Commit(void* address, size_t size);
-
-        /// \brief Decommit a virtual memory block.
-        /// This method decommits all the pages containing at least one byte in the range [address, address + size].
-        /// \param address Base address of the memory block to decommit.
-        /// \param size Size of the block to decommit, in bytes.
-        static bool Decommit(void* address, size_t size);
 
     };
 
@@ -293,61 +249,6 @@ namespace syntropy
         void* base_;            ///< \brief First address in the memory range.
 
         void* top_;             ///< \brief One past the last address in the memory range.
-
-    };
-
-    /// \brief Represents a pool of contiguous virtual addresses.
-    /// The pool reserves a range of virtual memory. Actual allocation\deallocation must be performed manually.
-    /// \author Raffaele D. Facendola - March 2017
-    class MemoryPool
-    {
-    public:
-
-        /// \brief Create a new empty pool.
-        MemoryPool();
-
-        /// \brief Create a new pool.
-        /// \param size Size of the pool, in bytes.
-        MemoryPool(size_t size);
-
-        /// \brief Create a new aligned pool
-        /// \param size Size of the pool, in bytes.
-        /// \param alignment Alignment of the pool, in bytes.
-        MemoryPool(size_t size, size_t alignment);
-
-        /// \brief No copy ctor.
-        MemoryPool(const MemoryPool&) = delete;
-
-        /// \brief Move ctor.
-        MemoryPool(MemoryPool&& other);
-
-        /// \brief Default destructor.
-        ~MemoryPool();
-
-        /// \brief No assignment operator.
-        MemoryPool& operator=(const MemoryPool&) = delete;
-
-        /// \brief Dereferencing operator. Access the base address of the pool.
-        /// \return Returns the base address of the pool.
-        void* operator*() const;
-
-        /// \brief Access an element in the pool.
-        /// \param offset Offset with respect to the first element of the pool.
-        /// \return Returns a pointer to the element (base+offset).
-        void* operator[](size_t offset) const;
-
-        /// \brief Get the size of the pool, in bytes.
-        /// \return Returns the size of the pool, in bytes.
-        size_t GetSize() const;
-
-        /// \brief Get the pool's memory range.
-        operator MemoryRange() const;
-
-    private:
-
-        void* pool_;                ///< \brief Pointer to the virtual memory buffer.
-
-        MemoryRange range_;         ///< \brief Memory range. Accounts for any required alignment.
 
     };
 

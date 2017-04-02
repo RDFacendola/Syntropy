@@ -7,6 +7,7 @@
 #pragma once
 
 #include "memory/memory.h"
+#include "memory/virtual_memory.h"
 
 #include <algorithm>
 

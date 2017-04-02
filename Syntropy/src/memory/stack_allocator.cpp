@@ -14,7 +14,7 @@ namespace syntropy
         , status_(nullptr)
     {
         // Allocate everything upfront.
-        Memory::Commit(*memory_range_, memory_range_.GetSize());
+        VirtualMemory::Commit(*memory_range_, memory_range_.GetSize());
     }
 
     StackAllocator::StackAllocator(const MemoryRange& memory_range, size_t alignment)
@@ -23,7 +23,7 @@ namespace syntropy
         , status_(nullptr)
     {
         // Allocate everything upfront.
-        Memory::Commit(*memory_range_, memory_range_.GetSize());
+        VirtualMemory::Commit(*memory_range_, memory_range_.GetSize());
     }
 
     void* StackAllocator::Allocate(size_t size)
