@@ -1,15 +1,15 @@
 
 /// \file block_allocator.h
-/// \brief This header is part of the syntropy memory management system. It contains allocators for large chunks of memory that can be used as a base for more specialized ones.
+/// \brief This header is part of the syntropy memory management system. It contains allocators for large chunks of memory that can be used as a base for more specialized allocators.
 ///
 /// \author Raffaele D. Facendola - 2017
 
 #pragma once
 
+#include <limits>
+
 #include "memory.h"
 #include "linear_allocator.h"
-
-#include <limits>
 
 namespace syntropy
 {

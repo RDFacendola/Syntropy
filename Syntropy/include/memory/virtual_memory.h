@@ -1,12 +1,12 @@
 
 /// \file virtual_memory.h
-/// \brief This header is part of the syntropy memory management system. It contains classes used to manage virtual memory.
+/// \brief This header is part of the syntropy memory management system. It contains functionalities used to manage virtual memory.
 ///
 /// \author Raffaele D. Facendola - 2017
 
 #pragma once
 
-#include "memory/memory.h"
+#include "memory.h"
 
 namespace syntropy
 {

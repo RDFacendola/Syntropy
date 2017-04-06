@@ -6,12 +6,12 @@
 
 #pragma once
 
+#include <array>
+#include <vector>
+
 #include "memory.h"
 #include "allocator.h"
 #include "block_allocator.h"
-
-#include <array>
-#include <vector>
 
 namespace syntropy
 {

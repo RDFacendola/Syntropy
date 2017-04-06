@@ -1,6 +1,6 @@
 
 /// \file allocator.h
-/// \brief TODO: Add brief description here
+/// \brief This header is part of the syntropy memory management system. It contains definition of allocator interfaces and global allocation functionalities.
 ///
 /// IMPORTANT: Array allocation\deallocation is not supported. 
 /// Placement delete for arrays cannot work with the standard syntax new[] since there's no way of interpreting bookkeeping data (or *where* it is stored)
@@ -12,7 +12,8 @@
 
 #pragma once
 
-#include "memory/memory.h"
+#include "memory.h"
+
 #include "containers/hashed_string.h"
 
 #include "diagnostics/diagnostics.h"

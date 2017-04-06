@@ -1,6 +1,6 @@
 
 /// \file memory.h
-/// \brief TODO: Add brief description here
+/// \brief This header is part of the syntropy memory management system. It contains common classes and functionalities for memory management.
 ///
 /// \author Raffaele D. Facendola - 2016
 
@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "diagnostics/diagnostics.h"
+
 #include "math/math.h"
 
 namespace syntropy
@@ -71,7 +72,7 @@ namespace syntropy
 
     };
 
-    /// \brief Incapsulates memory debug functionalities.
+    /// \brief Exposes memory-related debug functionalities.
     /// \author Raffaele D. Facendola - March 2017
     class MemoryDebug
     {
@@ -100,6 +101,7 @@ namespace syntropy
     };
 
     /// \brief Represents a range of contiguous memory addresses.
+    /// The range is of the form [base; top)
     /// \author Raffaele D. Facendola - December 2016
     class MemoryRange
     {

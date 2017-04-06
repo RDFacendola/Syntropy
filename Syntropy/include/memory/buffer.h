@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "memory/memory.h"
-#include "memory/allocator.h"
+#include "memory.h"
+#include "allocator.h"
 
 namespace syntropy
 {
