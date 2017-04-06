@@ -1,6 +1,7 @@
 
 /// \file master_allocator.h
-/// \brief TODO: Add brief description here
+/// \brief This header is part of the syntropy memory management system. It contains global allocators meant to be used directly by the application.
+/// The allocators defined in this file aggregate different sub-allocators: allocation request a rerouted to the most effective one among them.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -16,6 +17,7 @@ namespace syntropy
 
     /// \brief Master allocator used to handle allocation of any size.
     /// Aggregates multiple allocators, using the most efficient one when an allocation is requested to reduce fragmentation and increase performance.
+    /// Small and large allocators can be shared by multiple instances to save on virtual memory addresses or to keep similar-sized allocations together and prevent fragmentation.
     /// \author Raffaele D. Facendola - March 2017
     class MasterAllocator : public Allocator
     {

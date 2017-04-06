@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "memory.h"
+#include "memory/allocator.h"
 
 /// \brief Instantiate a new object via the standard allocator wrapper.
 #define SYNTROPY_STD_NEW \

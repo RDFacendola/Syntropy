@@ -10,6 +10,8 @@
 #include <unordered_map>
 
 #include "memory/memory.h"
+#include "memory/buffer.h"
+#include "memory/allocator.h"
 
 #include "containers/hashed_string.h"
 

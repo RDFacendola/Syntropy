@@ -7,6 +7,7 @@
 #pragma once
 
 #include "memory.h"
+#include "allocator.h"
 #include "block_allocator.h"
 
 #include <array>

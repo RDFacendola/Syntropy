@@ -47,7 +47,15 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\memory\allocator.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\memory\block_allocator.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\memory\buffer.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -164,7 +172,15 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\memory\allocator.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\memory\block_allocator.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="src\memory\buffer.cpp">
       <SubType>
       </SubType>
     </ClCompile>

@@ -60,6 +60,8 @@
     <ClInclude Include="include\memory\master_allocator.h" />
     <ClInclude Include="include\memory\memory_units.h" />
     <ClInclude Include="include\memory\virtual_memory.h" />
+    <ClInclude Include="include\memory\allocator.h" />
+    <ClInclude Include="include\memory\buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -97,6 +99,8 @@
     <ClCompile Include="src\serialization\json.cpp" />
     <ClCompile Include="src\memory\master_allocator.cpp" />
     <ClCompile Include="src\memory\virtual_memory.cpp" />
+    <ClCompile Include="src\memory\allocator.cpp" />
+    <ClCompile Include="src\memory\buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">
