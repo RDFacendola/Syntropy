@@ -9,57 +9,56 @@ namespace syntropy
     /* MASTER ALLOCATOR                                                     */
     /************************************************************************/
 
-    MasterAllocator::MasterAllocator(const HashedString& name, const Configuration& configuration)
+    MasterAllocator::MasterAllocator(const HashedString& name, size_t capacity, LinearSegregatedFitAllocator& small_allocator, ExponentialSegregatedFitAllocator& large_allocator)
         : Allocator(name)
-        , configuration_(configuration)
-        , medium_allocator_(configuration_.medium_allocator_capacity_, configuration_.medium_sli_)
+        , max_small_size_(small_allocator.GetMaxAllocationSize())
+        , max_medium_size_(large_allocator.GetClassSize() >> 1)
+        , max_large_size_(large_allocator.GetMaxAllocationSize())
+        , small_allocator_(small_allocator)
+        , medium_allocator_(name, capacity, kDefaultSecondLevelIndex)
+        , large_allocator_(large_allocator)
     {
 
     }
 
     void* MasterAllocator::Allocate(size_t size)
     {
-        if (size <= configuration_.max_small_size_)
+        if (size <= max_small_size_)
         {
-            // Small allocation.
-            return configuration_.small_allocator_.Allocate(size);
+            return small_allocator_.Allocate(size);     
         }
-        else if (size <= configuration_.max_medium_size_)
+        else if (size <= max_medium_size_)
         {
-            // Medium allocation.
             return medium_allocator_.Allocate(size);
         }
-        else if (size <= configuration_.max_large_size_)
+        else if (size <= max_large_size_)
         {
-            // Large allocation.
-            return configuration_.large_allocator_.Allocate(size);
+            return large_allocator_.Allocate(size);
         } 
+        else
+        {
+            SYNTROPY_ERROR((MemoryCtx | GetName()), "Cannot allocate ", size, " bytes.");
 
-        SYNTROPY_ERROR((MemoryCtx | GetName()), "Cannot allocate ", size, " bytes.");
-
-        throw std::bad_alloc();
+            throw std::bad_alloc();
+        }
     }
 
     void* MasterAllocator::Allocate(size_t size, size_t alignment)
     {
-        if (size <= configuration_.max_small_size_)
+        if (size <= max_small_size_)
         {
-            // Small aligned allocation.
-            return configuration_.small_allocator_.Allocate(size, alignment);
+            return small_allocator_.Allocate(size, alignment);
         }
-        else if (size <= configuration_.max_medium_size_)
+        else if (size <= max_medium_size_)
         {
-            // Medium aligned allocation.
             return medium_allocator_.Allocate(size, alignment);
         }
-        else if (size <= configuration_.max_large_size_)
+        else if (size <= max_large_size_)
         {
-            // Large aligned allocation.
-            return configuration_.large_allocator_.Allocate(size, alignment);
+            return large_allocator_.Allocate(size, alignment);
         }
         else
         {
-
             SYNTROPY_ERROR((MemoryCtx | GetName()), "Cannot allocate ", size, " bytes.");
 
             throw std::bad_alloc();
@@ -68,37 +67,34 @@ namespace syntropy
 
     void MasterAllocator::Free(void* block)
     {
-        if (configuration_.small_allocator_.Belongs(block))
+        if (small_allocator_.Owns(block))
         {
-            // Small free.
-            configuration_.small_allocator_.Free(block);
+            small_allocator_.Free(block);
         }
-        else if (medium_allocator_.Belongs(block))
+        else if (medium_allocator_.Owns(block))
         {
-            // Medium free.
             medium_allocator_.Free(block);
         }
-        else if (configuration_.large_allocator_.Belongs(block))
+        else if (large_allocator_.Owns(block))
         {
-            // Large free.
-            configuration_.large_allocator_.Free(block);
+            large_allocator_.Free(block);
         }
         else
         {
-            SYNTROPY_ERROR((MemoryCtx | GetName()), "The block ", block, " doesn't belong to the allocator");
+            SYNTROPY_ERROR((MemoryCtx | GetName()), "Can't free the block ", block, " as it's not owned by this allocator.");
         }
     }
 
-    bool MasterAllocator::Belongs(void* block) const
+    bool MasterAllocator::Owns(void* block) const
     {
-        return configuration_.small_allocator_.Belongs(block) ||
-            medium_allocator_.Belongs(block) ||
-            configuration_.large_allocator_.Belongs(block);
+        return small_allocator_.Owns(block) ||
+            medium_allocator_.Owns(block) ||
+            large_allocator_.Owns(block);
     }
 
     size_t MasterAllocator::GetMaxAllocationSize() const
     {
-        return configuration_.large_allocator_.GetMaxAllocationSize();
+        return large_allocator_.GetMaxAllocationSize();
     }
 
 }

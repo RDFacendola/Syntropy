@@ -53,19 +53,12 @@ namespace syntropy
         template <typename T>
         static void Delete(T* ptr, Allocator& allocator, const syntropy::diagnostics::StackTrace& stack_trace);
 
-        /// \brief Get an allocator by name.
-        /// \return Returns the allocator with a matching name, if any. If no such allocator could be found returns nullptr.
-        static Allocator* GetAllocatorByName(const HashedString& name);
-
-        /// Create a new anonymous allocator.
-        Allocator();
-
         /// \brief Create a new named allocator.
-        /// \param name Name of the allocator. This name should be unique.
+        /// \param name Name of the allocator.
         Allocator(const HashedString& name);
 
         /// \brief Virtual destructor.
-        virtual ~Allocator();
+        virtual ~Allocator() = default;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate, in bytes.
@@ -84,9 +77,10 @@ namespace syntropy
         virtual void Free(void* block) = 0;
 
         /// \brief Check whether the allocator owns the provided block.
-        /// \param block Address to check.
-        ///\ return Returns true if block was belongs to this allocator, returns false otherwise.
-        virtual bool Belongs(void* block) const = 0;
+        /// \param block Address of the block to check.
+        /// \return Returns true if address belongs to this allocator, return false otherwise.
+        /// \remarks Addresses owned by an allocator may not be actually allocated, but they can in future.
+        virtual bool Owns(void* block) const = 0;
 
         /// \brief Get the biggest allocation that can be performed by this allocator.
         virtual size_t GetMaxAllocationSize() const = 0;
@@ -104,7 +98,6 @@ namespace syntropy
 
         diagnostics::Context context_;                  ///< \brief Context associated to the allocator.
 
-        static std::vector<Allocator*> allocators_;     ///< \brief List of registered allocators.
     };
 
 }

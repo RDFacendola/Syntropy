@@ -22,29 +22,12 @@ namespace syntropy
     {
     public:
 
-        /// \brief Configuration for a master allocator.
-        /// Different master allocators may share part of their state (such as sub-allocators and other stuffs)
-        struct Configuration
-        {
-            size_t max_small_size_;                                 /// \brief Maximum size for a small allocation, in bytes.
-
-            size_t max_medium_size_;                                /// \brief Maximum size for a medium allocation, in bytes.
-
-            size_t max_large_size_;                                 /// \brief Maximum size for a large allocation, in bytes.
-
-            LinearSegregatedFitAllocator& small_allocator_;         /// \brief Allocator used to handle small allocations.
-
-            ExponentialSegregatedFitAllocator& large_allocator_;    /// \brief Allocator used to handle large allocations.
-
-            size_t medium_allocator_capacity_;                      /// \brief Maximum capacity for the medium allocator, in bytes.
-
-            size_t medium_sli_;                                     /// \brief Maximum second level index of the medium allocator, as log2(SLI).
-         };
-
         /// \brief Create a new master allocator.
         /// \param name Name of the allocator.
-        /// \param configuration Configuration of the allocator.
-        MasterAllocator(const HashedString& name, const Configuration& configuration);
+        /// \param capacity Maximum capacity of the allocator. This capacity doesn't account for the capacity of both the small and the large allocator.
+        /// \param small_allocator Allocator used to handle small allocations.
+        /// \param large_allocator Allocator used to handle large allocations.
+        MasterAllocator(const HashedString& name, size_t capacity, LinearSegregatedFitAllocator& small_allocator, ExponentialSegregatedFitAllocator& large_allocator);
 
         /// \brief No copy constructor.
         MasterAllocator(const MasterAllocator&) = delete;
@@ -61,15 +44,25 @@ namespace syntropy
 
         virtual void Free(void* block) override;
 
-        virtual bool Belongs(void* block) const override;
+        virtual bool Owns(void* block) const override;
 
         virtual size_t GetMaxAllocationSize() const override;
 
     private:
 
-        Configuration configuration_;                               /// \brief Allocator configuration.
+        static constexpr size_t kDefaultSecondLevelIndex = 5;       ///< \brief Default SLI value for the medium allocator.
 
-        TwoLevelSegregatedFitAllocator medium_allocator_;           /// \brief Handles allocation of medium objects.
+        size_t max_small_size_;                                     ///< \brief Maximum size for a small allocation, in bytes.
+
+        size_t max_medium_size_;                                    ///< \brief Maximum size for a medium allocation, in bytes.
+
+        size_t max_large_size_;                                     ///< \brief Maximum size for a large allocation, in bytes.
+
+        LinearSegregatedFitAllocator& small_allocator_;             ///< \brief Allocator used to handle small allocations.
+
+        TwoLevelSegregatedFitAllocator medium_allocator_;           ///< \brief Handles allocation of medium objects.
+
+        ExponentialSegregatedFitAllocator& large_allocator_;        ///< \brief Allocator used to handle large allocations.
 
     };
 

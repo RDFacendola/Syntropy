@@ -34,7 +34,7 @@ namespace syntropy
         ::operator delete(block);
     }
 
-    bool STDAllocator::Belongs(void*) const
+    bool STDAllocator::Owns(void*) const
     {
         return true;
     }

@@ -61,12 +61,18 @@ int main()
         
         syntropy::LinearSegregatedFitAllocator small("small", 512_MiBytes, 8_Bytes, 32, 16_KiBytes);
         syntropy::ExponentialSegregatedFitAllocator large("large", 160_GiBytes, 64_KiBytes, 10);
-        syntropy::MasterAllocator::Configuration cfg{ 256_Bytes, 64_KiBytes, 32_MiBytes, small, large, 8_GiBytes, 5 };
 
-        syntropy::MasterAllocator master1("master1", cfg);
-        syntropy::MasterAllocator master2("master2", cfg);
+        syntropy::MasterAllocator master1("master1", 8_GiBytes, small, large);
+        syntropy::MasterAllocator master2("master2", 8_GiBytes, small, large);
 
-        // allocate stuffs
+        auto p = SYNTROPY_ALLOC(master1, 23_Bytes);
+        auto q = SYNTROPY_ALLOC(master1, 24_KiBytes);
+        auto r = SYNTROPY_ALLOC(master1, 2_MiBytes);
+
+        SYNTROPY_FREE(master1, p);
+        SYNTROPY_FREE(master1, q);
+        SYNTROPY_FREE(master1, r);
+
     }
 
     //

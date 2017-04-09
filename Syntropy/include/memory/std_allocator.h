@@ -46,7 +46,7 @@ namespace syntropy
 
         virtual void Free(void* block) override;
 
-        virtual bool Belongs(void* block) const;
+        virtual bool Owns(void* block) const;
 
         virtual size_t GetMaxAllocationSize() const;
 

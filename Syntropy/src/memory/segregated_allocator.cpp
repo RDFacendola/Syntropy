@@ -105,22 +105,6 @@ namespace syntropy
         CheckPreconditions();
     }
 
-    LinearSegregatedFitAllocator::LinearSegregatedFitAllocator(size_t capacity, size_t class_size, size_t order, size_t page_size)
-        : allocator_(capacity, page_size)
-        , free_lists_(order)
-        , class_size_(class_size)
-    {
-        CheckPreconditions();
-    }
-
-    LinearSegregatedFitAllocator::LinearSegregatedFitAllocator(const MemoryRange& memory_range, size_t class_size, size_t order, size_t page_size)
-        : allocator_(memory_range, page_size)
-        , free_lists_(order)
-        , class_size_(class_size)
-    {
-        CheckPreconditions();
-    }
-
     void* LinearSegregatedFitAllocator::Allocate(size_t size)
     {
         SYNTROPY_ASSERT(size > 0);
@@ -175,7 +159,7 @@ namespace syntropy
         }
     }
 
-    bool LinearSegregatedFitAllocator::Belongs(void* block) const
+    bool LinearSegregatedFitAllocator::Owns(void* block) const
     {
         return allocator_.GetRange().Contains(block);
     }
@@ -306,19 +290,6 @@ namespace syntropy
         InitializeAllocators(order, VirtualMemory::CeilToPageSize(class_size));
     }
 
-    ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(size_t capacity, size_t class_size, size_t order)
-        : memory_pool_(capacity, VirtualMemory::CeilToPageSize(class_size))         // Allocate a new virtual address range.
-        , memory_range_(memory_pool_)                                               // Get the full range out of the memory pool.
-    {
-        InitializeAllocators(order, VirtualMemory::CeilToPageSize(class_size));
-    }
-
-    ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const MemoryRange& memory_range, size_t class_size, size_t order)
-        : memory_range_(memory_range, VirtualMemory::CeilToPageSize(class_size))    // Align the input memory range. Doesn't take ownership.
-    {
-        InitializeAllocators(order, VirtualMemory::CeilToPageSize(class_size));
-    }
-
     void* ExponentialSegregatedFitAllocator::Allocate(size_t size)
     {
         return GetAllocatorBySize(size).Allocate(size);
@@ -348,7 +319,7 @@ namespace syntropy
         allocators_[index].Free(address);
     }
 
-    bool ExponentialSegregatedFitAllocator::Belongs(void* block) const
+    bool ExponentialSegregatedFitAllocator::Owns(void* block) const
     {
         return memory_range_.Contains(block);
     }
@@ -521,18 +492,6 @@ namespace syntropy
         Initialize(second_level_index);
     }
 
-    TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(size_t capacity, size_t second_level_index)
-        : allocator_(capacity, VirtualMemory::GetPageSize())
-    {
-        Initialize(second_level_index);
-    }
-
-    TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(const MemoryRange& memory_range, size_t second_level_index)
-        : allocator_(memory_range, VirtualMemory::GetPageSize())
-    {
-        Initialize(second_level_index);
-    }
-
     void* TwoLevelSegregatedFitAllocator::Allocate(size_t size)
     {
         // Structure of the block:
@@ -568,7 +527,7 @@ namespace syntropy
         PushBlock(*base_pointer);
     }
 
-    bool TwoLevelSegregatedFitAllocator::Belongs(void* block) const
+    bool TwoLevelSegregatedFitAllocator::Owns(void* block) const
     {
         return GetRange().Contains(block);
     }
