@@ -18,6 +18,7 @@
 #include "memory/segregated_allocator.h"
 #include "memory/stack_allocator.h"
 #include "memory/master_allocator.h"
+#include "memory/memory_manager.h"
 
 #include "diagnostics/log.h"
 
@@ -55,24 +56,39 @@ int main()
     stream->BindContext({ Root });
     stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
 
+    auto& mm = syntropy::MemoryManager::GetInstance();
+
+    auto small_allocator = std::make_unique<syntropy::LinearSegregatedFitAllocator>("small", 512_MiBytes, 8_Bytes, 32, 16_KiBytes);
+    auto large_allocator = std::make_unique<syntropy::ExponentialSegregatedFitAllocator>("large", 160_GiBytes, 64_KiBytes, 10);
+    auto master_allocator1 = std::make_unique<syntropy::MasterAllocator>("master1", 8_GiBytes, *small_allocator, *large_allocator);
+    auto master_allocator2 = std::make_unique<syntropy::MasterAllocator>("master2", 8_GiBytes, *small_allocator, *large_allocator);
+
+    mm.AddAllocator(std::move(master_allocator1));
+    mm.AddAllocator(std::move(master_allocator2));
+    mm.AddAllocator(std::move(small_allocator));
+    mm.AddAllocator(std::move(large_allocator));
+
     //
 
+    void* p;
+    void* q;
+    void* r;
+
     {
-        
-        syntropy::LinearSegregatedFitAllocator small("small", 512_MiBytes, 8_Bytes, 32, 16_KiBytes);
-        syntropy::ExponentialSegregatedFitAllocator large("large", 160_GiBytes, 64_KiBytes, 10);
+        syntropy::MemoryContext ctx1("master2");
 
-        syntropy::MasterAllocator master1("master1", 8_GiBytes, small, large);
-        syntropy::MasterAllocator master2("master2", 8_GiBytes, small, large);
+        p = SYNTROPY_MM_ALLOC(23_Bytes);
 
-        auto p = SYNTROPY_ALLOC(master1, 23_Bytes);
-        auto q = SYNTROPY_ALLOC(master1, 24_KiBytes);
-        auto r = SYNTROPY_ALLOC(master1, 2_MiBytes);
+        {
+            syntropy::MemoryContext ctx2("master1");
 
-        SYNTROPY_FREE(master1, p);
-        SYNTROPY_FREE(master1, q);
-        SYNTROPY_FREE(master1, r);
+            q = SYNTROPY_MM_ALLOC(24_KiBytes);
+            r = SYNTROPY_MM_ALLOC(2_MiBytes);
+        }
 
+        SYNTROPY_MM_FREE(p);        // TODO: quirk! p was allocated by "small", the actual allocator who handled the call was "master2". Incidentally also "master1" references "small", so it will take care of its deallocation. (that's correct but a little bit obscure)
+        SYNTROPY_MM_FREE(q);
+        SYNTROPY_MM_FREE(r);
     }
 
     //
