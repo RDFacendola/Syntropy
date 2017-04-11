@@ -46,13 +46,27 @@ namespace syntropy
         allocator_stack_.pop_back();
     }
 
-    Allocator& MemoryManager::AddAllocator(std::unique_ptr<Allocator> allocator)
+    bool MemoryManager::SetDefaultAllocator(const HashedString& allocator_name)
     {
-        SYNTROPY_ASSERT(!GetAllocator(allocator->GetName()));       // Make sure there's no other allocator with the same name.
+        auto it = std::find_if
+        (
+            allocators_.begin(),
+            allocators_.end(),
+            [&allocator_name](const std::unique_ptr<Allocator>& allocator)
+            {
+                return allocator->GetName() == allocator_name;
+            }
+        );
 
-        allocators_.push_back(std::move(allocator));                // Acquire allocator's ownership.
-
-        return *allocator;
+        if (it != allocators_.end())
+        {
+            std::iter_swap(allocators_.begin(), it);        // Swap the allocator with the element on the head (which is the position for the default allocator).
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     Allocator& MemoryManager::GetDefaultAllocator()

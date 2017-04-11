@@ -20,7 +20,7 @@
     SYNTROPY_NEW(syntropy::MemoryManager::GetInstance().GetAllocator())
 
 /// \brief Delete an object that was allocated via an allocator registered to syntropy::MemoryManager.
-/// Searches for the allocator who made the allocation, regardless of the current active allocator.
+/// Searches for any allocator owned by MemoryManager that can delete the object, regardless of the current active allocator and the allocator who made the allocation.
 /// \usage SYNTROPY_MM_DELETE(pointer);
 #define SYNTROPY_MM_DELETE(ptr) \
     SYNTROPY_DELETE(*syntropy::MemoryManager::GetInstance().GetAllocator(ptr), ptr)
@@ -31,7 +31,7 @@
     SYNTROPY_ALLOC(syntropy::MemoryManager::GetInstance().GetAllocator(), size)
 
 /// \brief Free a buffer that was allocated via an allocator registered to syntropy::MemoryManager.
-/// Searches for the allocator who made the allocation, regardless of the current active allocator.
+/// Searches for any allocator owned by the MemoryManager who may deallocate the given block, regardless of the current active allocator and the allocator who made the allocation.
 /// \usage SYNTROPY_MM_FREE(buffer);
 #define SYNTROPY_MM_FREE(ptr) \
     SYNTROPY_FREE(*syntropy::MemoryManager::GetInstance().GetAllocator(ptr), ptr)
@@ -42,10 +42,10 @@ namespace syntropy
     /// \brief Class used to manage application allocators and allocation contexts.
     /// This singleton is meant to handle allocators that exist for application's entire duration.
     /// Allocators can be added to the manager at any given time, however, once created, they lasts until the application is closed.
-    /// The first allocator added to the manager becomes its default allocator.
     /// Each thread has its own stack of allocators: whenever a new dynamic allocation request is performed (see SYNTROPY_MM_NEW \ SYNTROPY_MM_ALLOC),
     /// the request is forwarded to the allocator on top of the stack. If the stack is empty, the request is handled by the default allocator.
     /// Use syntropy::MemoryContext to push new allocators.
+    /// Use ::SetDefaultAllocator to set a new default allocator. If no default allocator is specified, the first allocator added to the manager becomes the default allocator.
     /// 
     /// \author Raffaele D. Facendola - March 2017
     class MemoryManager
@@ -65,11 +65,18 @@ namespace syntropy
         /// \brief Default destructor.
         ~MemoryManager() = default;
 
-        /// \brief Add a new named allocator to the manager, taking its ownership.
-        /// The name of the allocator must be unique among the allocators already added to the manager.
-        /// The first allocator added to the manager becomes its default allocator.
-        /// \param allocator Allocator to add.
-        Allocator& AddAllocator(std::unique_ptr<Allocator> allocator);
+        /// \brief Create a new allocator on the memory manager.
+        /// The allocator name must be unique within the memory manager.
+        /// \return Returns a reference to the new allocator.
+        template <typename TAllocator, typename... TArguments>
+        TAllocator& CreateAllocator(TArguments&&... arguments);
+
+        /// \brief Set the default allocator.
+        /// The default allocator is the allocator that is used when the allocator stack is empty.
+        /// \param allocator_name Name of the new default allocator.
+        /// \return Returns true if the default allocator was set successfully, returns false otherwise.
+        /// \remarks The default allocator must have been created via CreateAllocator method.
+        bool SetDefaultAllocator(const HashedString& allocator_name);
 
         /// \brief Get the default allocator.
         /// \return Returns the default allocator.
@@ -104,7 +111,7 @@ namespace syntropy
         /// \brief Private constructor.
         MemoryManager();
 
-        std::vector<std::unique_ptr<Allocator>> allocators_;                ///< \brief List of allocators in this manager.
+        std::vector<std::unique_ptr<Allocator>> allocators_;                ///< \brief List of allocators in this manager. The first element is the default allocator.
 
         static thread_local std::vector<Allocator*> allocator_stack_;       ///< \brief Current stack of allocators.
 
@@ -141,5 +148,28 @@ namespace syntropy
         ~MemoryContext();
 
     };
+
+}
+
+// Implementation
+
+namespace syntropy
+{
+
+    /************************************************************************/
+    /* MEMORY MANAGER                                                       */
+    /************************************************************************/
+
+    template <typename TAllocator, typename... TArguments>
+    TAllocator& MemoryManager::CreateAllocator(TArguments&&... arguments)
+    {
+        auto allocator = std::make_unique<TAllocator>(std::forward<TArguments>(arguments)...);
+
+        SYNTROPY_ASSERT(!GetAllocator(allocator->GetName()));       // Make sure there's no other allocator with the same name.
+
+        allocators_.push_back(std::move(allocator));                // Acquire allocator's ownership.
+
+        return *static_cast<TAllocator*>(allocators_.back().get());
+    }
 
 }
