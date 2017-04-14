@@ -60,10 +60,10 @@ int main()
     
     // Initialization of the memory manager
 
-    auto& small_allocator = mm.CreateAllocator<syntropy::LinearSegregatedFitAllocator>("small", 512_MiBytes, 8_Bytes, 32, 16_KiBytes);
-    auto& large_allocator = mm.CreateAllocator<syntropy::ExponentialSegregatedFitAllocator>("large", 160_GiBytes, 64_KiBytes, 10);
-    mm.CreateAllocator<syntropy::MasterAllocator>("master1", 8_GiBytes, small_allocator, large_allocator);
-    mm.CreateAllocator<syntropy::MasterAllocator>("master2", 8_GiBytes, small_allocator, large_allocator);
+    auto& small_allocator = mm.AddAllocator(std::make_unique<syntropy::LinearSegregatedFitAllocator>("small", 512_MiBytes, 8_Bytes, 32, 16_KiBytes));
+    auto& large_allocator = mm.AddAllocator(std::make_unique<syntropy::ExponentialSegregatedFitAllocator>("large", 160_GiBytes, 64_KiBytes, 10));
+    mm.AddAllocator(std::make_unique<syntropy::MasterAllocator>("master1", 8_GiBytes, small_allocator, large_allocator));
+    mm.AddAllocator(std::make_unique<syntropy::MasterAllocator>("master2", 8_GiBytes, small_allocator, large_allocator));
 
     mm.SetDefaultAllocator("master1");
 

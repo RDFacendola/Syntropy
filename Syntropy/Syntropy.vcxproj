@@ -145,6 +145,10 @@
     </ClInclude>
     <ClInclude Include="include\serialization\json.h" />
     <ClInclude Include="include\serialization\json\json_deserializer.h" />
+    <ClInclude Include="include\serialization\serialization.h">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="include\syntropy.h">
       <SubType>
       </SubType>
@@ -255,6 +259,10 @@
     </ClCompile>
     <ClCompile Include="src\serialization\json.cpp" />
     <ClCompile Include="src\serialization\json\json_deserializer.cpp" />
+    <ClCompile Include="src\serialization\serialization.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="src\syntropy.cpp">
       <SubType>
       </SubType>

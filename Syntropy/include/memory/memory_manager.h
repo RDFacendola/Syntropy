@@ -31,7 +31,7 @@
     SYNTROPY_ALLOC(syntropy::MemoryManager::GetInstance().GetAllocator(), size)
 
 /// \brief Free a buffer that was allocated via an allocator registered to syntropy::MemoryManager.
-/// Searches for any allocator owned by the MemoryManager who may deallocate the given block, regardless of the current active allocator and the allocator who made the allocation.
+/// Searches for any allocator owned by MemoryManager that can deallocate the object, regardless of the current active allocator and the allocator who made the allocation.
 /// \usage SYNTROPY_MM_FREE(buffer);
 #define SYNTROPY_MM_FREE(ptr) \
     SYNTROPY_FREE(*syntropy::MemoryManager::GetInstance().GetAllocator(ptr), ptr)
@@ -65,11 +65,11 @@ namespace syntropy
         /// \brief Default destructor.
         ~MemoryManager() = default;
 
-        /// \brief Create a new allocator on the memory manager.
+        /// \brief Add a new allocator to the memory manager.
         /// The allocator name must be unique within the memory manager.
-        /// \return Returns a reference to the new allocator.
-        template <typename TAllocator, typename... TArguments>
-        TAllocator& CreateAllocator(TArguments&&... arguments);
+        /// \return Returns a reference to the allocator.
+        template <typename TAllocator>
+        TAllocator& AddAllocator(std::unique_ptr<TAllocator> allocator);
 
         /// \brief Set the default allocator.
         /// The default allocator is the allocator that is used when the allocator stack is empty.
@@ -160,14 +160,14 @@ namespace syntropy
     /* MEMORY MANAGER                                                       */
     /************************************************************************/
 
-    template <typename TAllocator, typename... TArguments>
-    TAllocator& MemoryManager::CreateAllocator(TArguments&&... arguments)
+    template <typename TAllocator>
+    TAllocator& MemoryManager::AddAllocator(std::unique_ptr<TAllocator> allocator)
     {
-        auto allocator = std::make_unique<TAllocator>(std::forward<TArguments>(arguments)...);
+        static_assert(std::is_base_of_v<Allocator, TAllocator>, "TAllocator must derive from syntropy::Allocator");
 
-        SYNTROPY_ASSERT(!GetAllocator(allocator->GetName()));       // Make sure there's no other allocator with the same name.
+        SYNTROPY_ASSERT(!GetAllocator(allocator->GetName()));           // Make sure there's no other allocator with the same name.
 
-        allocators_.push_back(std::move(allocator));                // Acquire allocator's ownership.
+        allocators_.push_back(std::move(allocator));                    // Acquire allocator's ownership.
 
         return *static_cast<TAllocator*>(allocators_.back().get());
     }

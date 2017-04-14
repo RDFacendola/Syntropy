@@ -8,6 +8,7 @@
 
 #include <type_traits>
 
+#include "serialization/serialization.h"
 #include "serialization/json/json_deserializer.h"
 
 namespace syntropy 

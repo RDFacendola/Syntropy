@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#include "diagnostics/log.h"
+
 namespace syntropy 
 {
     namespace serialization 
@@ -52,12 +54,16 @@ namespace syntropy
 
             auto class_it = json.find(JSONDeserializable::kClassToken);
  
+            // Search for the concrete class to instantiate
+
             if (class_it != json.end())
             {
                  // A concrete class type was defined
  
                 if (!class_it->is_string())
                 {
+                    SYNTROPY_WARNING((SerializationCtx), "Expected a string value for the property ", JSONDeserializable::kClassToken, ".");
+
                     return reflection::Instance();              // Expected a class name.
                 }
  
@@ -65,11 +71,15 @@ namespace syntropy
  
                 if (concrete_class == nullptr)
                 {
+                    SYNTROPY_WARNING((SerializationCtx), "Unnrecognized class ", class_it->get<std::string>(), ".");
+
                     return reflection::Instance();              // No such class.
                 }
  
                 if (*concrete_class != base_class)
                 {
+                    SYNTROPY_WARNING((SerializationCtx), "Cannot deserialize an object of type ", base_class, " from type ", class_it->get<std::string>(), ".");
+
                     return reflection::Instance();              // Wrong class hierarchy.
                 }
  
