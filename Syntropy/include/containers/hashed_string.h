@@ -92,6 +92,12 @@ namespace syntropy {
 
     };
 
+    template <typename THashFunction, typename THash>
+    void swap(HashedStringT<THashFunction, THash>& first, HashedStringT<THashFunction, THash>& second) noexcept
+    {
+        first.swap(second);
+    }
+
     /// \brief Singleton containing the hashed strings registered so far.
     /// \author Raffaele D. Facendola - February 2017.
     template <typename THashFunction, typename THash>
