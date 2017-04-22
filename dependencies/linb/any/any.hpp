@@ -242,6 +242,7 @@ private: // Storage and Virtual Method Table
 
         static void destroy(storage_union& storage) noexcept
         {
+            (storage);      // [Syntropy Mod]: Workaround for C4100 false positive on MSVC++ 14
             reinterpret_cast<T*>(&storage.stack)->~T();
         }
 
