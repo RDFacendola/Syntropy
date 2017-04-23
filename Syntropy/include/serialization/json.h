@@ -93,6 +93,21 @@ namespace syntropy
             storage_t content_;                     ///< \brief Used to dispatch the deserialization logic.
 
         };
+
+        /// \brief Class interface used to grant JSON construction capabilities.
+        /// A class defining this interface can be directly constructed via JSON object.
+        /// \author Raffaele D. Facendola - September 2016
+        struct JSONConstructible
+        {
+            /// \brief Create a new interface.
+            template <typename TClass>
+            JSONConstructible(std::identity<TClass>);
+
+            /// \brief Construct a new instance via JSON object.
+            /// \param json JSON object the object will be constructed form.
+            /// \return Returns an instance of an object constructed via a JSON object. If the object could not be constructed with the provided JSON object, returns an empty instance.
+            reflection::Instance operator()(const nlohmann::json& json) const;
+        };
         
         /// \brief Functor object used to assign the interface JSONDeserializable to properties.
         /// \author Raffaele D. Facendola - September 2016
@@ -103,8 +118,16 @@ namespace syntropy
             /// \param property Property to add the interface to.
             /// \param accessors Concrete accessors to the property (such as pointer to member variables, getters and getter/setter pairs)
             template <typename... TAccessors>
-            void operator()(reflection::Property& property, TAccessors&&... accessors) const;
+            void operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TAccessors... accessors) const;
 
+        };
+
+        struct JSONConstruct
+        {
+            /// \brief Add a JSONConstructible interface to the provided class.
+            /// \param class_definition Definition of the class the interface will be added to.
+            template <typename TClass>
+            void operator()(reflection::ClassDefinitionT<TClass>& class_definition) const;
         };
 
         /// \brief Deserialize a JSON object inside a C++ object.
@@ -112,8 +135,8 @@ namespace syntropy
         /// (1) If TClass is a pointer, a new object is instantiated with concrete type equal to the type declared by the JSON object. If the method succeeds the object is guaranteed to have a type that can be statically casted to TClass otherwise the returned pointer is nullptr.
         /// (2) If TClass is not a pointer, the concrete type declared by the JSON object is ignored as well as all those properties that are not available in TClass.
         /// (3) The caller takes the *ownership* of all dynamically-allocated objects deserialized this way.
-        /// (4) TClass must either be registered to the Syntropy Reflection System or a template specialization of JSONDeserializer<TClass> must be provided, otherwise the program is ill-formed.
-        /// (5) If the same property is defined more than once, only one of those will be deserialized. Which one is unknown, though.
+        /// (4) TClass must either be registered to the Syntropy Reflection System or a template specialization of a custom JSONConstructible must be provided, otherwise the program is ill-formed.
+        /// (5) If the same property is defined more than once, the behavior is undefined.
         ///
         /// \param object Reference to the object to fill with deserialized data.
         /// \param json JSON object to deserialize.
@@ -355,14 +378,37 @@ namespace syntropy {
         };
 
         /************************************************************************/
+        /* JSON CONSTRUCTIBLE                                                   */
+        /************************************************************************/
+
+        template <typename TClass>
+        JSONConstructible::JSONConstructible(std::identity<TClass>)
+        {
+
+        }
+
+        /************************************************************************/
         /* JSON READ                                                            */
         /************************************************************************/
 
         template <typename... TAccessors>
-        void JSONRead::operator()(reflection::Property& property, TAccessors&&... accessors) const
+        void JSONRead::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TAccessors... accessors) const
         {
-            property.AddInterface<JSONDeserializable>(JSONDeserializable::property_tag(),
-                std::forward<TAccessors>(accessors)...);
+            property.AddInterface<JSONDeserializable>
+            (
+                JSONDeserializable::property_tag(),
+                accessors...
+            );
+        }
+
+        /************************************************************************/
+        /* JSON CONSTRUCT                                                       */
+        /************************************************************************/
+
+        template <typename TClass>
+        void JSONConstruct::operator()(reflection::ClassDefinitionT<TClass>& class_definition) const
+        {
+            class_definition.AddInterface<JSONConstructible>(std::identity<TClass>{});
         }
 
         /************************************************************************/

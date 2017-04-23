@@ -19,17 +19,15 @@ namespace syntropy {
         template <>
         struct ClassDeclaration<HashedString> {
 
-            constexpr const char* GetName() const noexcept {
-
+            static constexpr const char* GetName() noexcept
+            {
                 return "syntropy::HashedString";
-
             }
 
             template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
+            void operator()(TDefinition definition) const
+            {
                 definition.DefineNameAlias("HashedString");
-
             }
 
         };

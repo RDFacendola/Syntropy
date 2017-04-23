@@ -8,6 +8,8 @@
 #include <fstream>
 #include <random>
 
+#include "unit1.h"
+
 #include "vm/virtual_machine.h"
 #include "vm/intrinsics.h"
 
@@ -58,6 +60,9 @@ int main()
 
     auto& mm = syntropy::MemoryManager::GetInstance();
     
+    Tester t;
+    t.Do();
+
     // Initialization of the memory manager
 
     auto& small_allocator = mm.AddAllocator(std::make_unique<syntropy::LinearSegregatedFitAllocator>("small", 512_MiBytes, 8_Bytes, 32, 16_KiBytes));

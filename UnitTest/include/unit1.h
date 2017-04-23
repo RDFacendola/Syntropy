@@ -9,6 +9,12 @@
 #include "syntropy.h"
 
 #include "reflection/reflection.h"
+#include "reflection/class_interfaces.h"
+
+#include "reflection/fundamental_types.h"
+#include "reflection/core_types.h"
+#include "reflection/stl_types.h"
+
 #include "serialization/json.h"
 
 #include "nlohmann/json/src/json.hpp"
@@ -93,7 +99,7 @@ public:
 
 class Foo : public Bar {
 
-    friend class syntropy::reflection::Class::Definition<Foo>;
+    friend class syntropy::reflection::ClassDefinitionT<Foo>;
 
 public:
 
@@ -255,7 +261,7 @@ struct syntropy::reflection::ClassDeclaration<AbstractFoo> {
 
 public:
 
-    constexpr const char* GetName() const noexcept {
+    static constexpr const char* GetName() noexcept {
 
         return "AbstractFoo";
 
@@ -268,7 +274,7 @@ struct syntropy::reflection::ClassDeclaration<Blob> {
 
 public:
 
-    constexpr const char* GetName() const noexcept {
+    static constexpr const char* GetName() noexcept {
 
         return "Blob";
 
@@ -278,9 +284,11 @@ public:
     void operator()(TDefinition& definition) const {
 
         using syntropy::serialization::JSONRead;
+        using syntropy::reflection::DefaultConstruct;
+
+        definition << DefaultConstruct();
 
         definition.DefineProperty("blob", &Blob::blob_) << JSONRead();
-
     }
 
 };
@@ -292,7 +300,7 @@ struct syntropy::reflection::ClassDeclaration<DerivedBlob> {
 
 public:
 
-    constexpr const char* GetName() const noexcept {
+    static constexpr const char* GetName() noexcept {
 
         return "DerivedBlob";
 
@@ -302,6 +310,9 @@ public:
     void operator()(TDefinition& definition) const {
 
         using syntropy::serialization::JSONRead;
+        using syntropy::reflection::DefaultConstruct;
+
+        definition << DefaultConstruct();
 
         definition.DefineBaseClass<Blob>();
         definition.DefineProperty("derived_blob", &DerivedBlob::derived_blob_) << JSONRead();
@@ -315,9 +326,15 @@ struct syntropy::reflection::ClassDeclaration<Bar>  {
 
 public:
 
-    constexpr const char* GetName() const noexcept {
+    static constexpr const char* GetName() noexcept {
 
         return "Bar";
+
+    }
+
+    void operator()(ClassDefinitionT<Bar>& definition) const {
+
+        definition << syntropy::reflection::DefaultConstruct();
 
     }
 
@@ -328,14 +345,16 @@ struct syntropy::reflection::ClassDeclaration<Foo> {
 
 public:
 
-    constexpr const char* GetName() const noexcept {
+    static constexpr const char* GetName() noexcept {
 
         return "Foo";
 
     }
 
-    void operator()(Class::Definition<Foo>& definition) const {
+    void operator()(ClassDefinitionT<Foo>& definition) const {
         
+        definition << syntropy::reflection::DefaultConstruct();
+
         using syntropy::serialization::JSONRead;
 
         definition.DefineBaseClass<Bar>();
@@ -386,7 +405,7 @@ struct syntropy::reflection::ClassDeclaration<FooBar> {
 
 public:
 
-    constexpr const char* GetName() const noexcept {
+    static constexpr const char* GetName() noexcept {
 
         return "FooBar";
 
@@ -394,6 +413,8 @@ public:
 
     template <typename TDefinition>
     void operator()(TDefinition& definition) const {
+
+        definition << syntropy::reflection::DefaultConstruct();
 
         definition.DefineBaseClass<Foo>();
 
@@ -478,11 +499,9 @@ public:
 
         std::cout << "Class '" << foo_class_ << "' is " << (foo_class_.IsAbstract() ? "" : "not ") << "abstract\n";
 
-        std::cout << "Class '" << foo_class_ << "' is " << (foo_class_.IsInstantiable() ? "" : "not ") << "instantiable\n";
-
         for (const auto& property : foo_class_.GetProperties()) {
 
-            std::cout << "Property " << property->GetName() << " : " << property->GetType() << "\n";
+            std::cout << "Property " << property.GetName() << " : " << property.GetType() << "\n";
 
         }
 
@@ -725,18 +744,23 @@ public:
 
     void InstancingTest() {
 
-        auto bar = bar_class_.Instantiate();
-        auto foobar = foobar_class_.Instantiate();
-        auto abstractfoo = abstract_class_.Instantiate();
+        using syntropy::reflection::Constructible;
+
+        auto bar_ctor = bar_class_.GetInterface<Constructible<>>();
+        auto foobar_ctor = foobar_class_.GetInterface<Constructible<>>();
+
+        if (!bar_ctor || !foobar_ctor)
+        {
+            return;
+        }
+
+        auto bar = (*bar_ctor)();
+        auto foobar = (*foobar_ctor)();
 
         FooBar bee;
         FooBar* beep = &bee;
 
         auto foobarp = syntropy::reflection::MakeInstance(beep);
-
-        TEST_TRUE(bar);
-        TEST_TRUE(foobar);
-        TEST_FALSE(abstractfoo);
 
         TEST_TRUE(bar.As<Bar>() != nullptr);
         TEST_FALSE(bar.As<Foo>() != nullptr);
@@ -836,6 +860,8 @@ public:
 
     void ForwardingTest() {
 
+        using syntropy::reflection::Constructible;
+
         float x = 0;
 
         FooBar foobar;
@@ -845,14 +871,14 @@ public:
 
         TEST_TRUE(field_float_value_->Set(foobar_instance, 100.0f) && foobar.value_ == 100.0f);
         TEST_FALSE(field_float_value_->Set(const_foobar_instance, 200.0f) || foobar.value_ == 200.0f);                  // Const instance
-        TEST_TRUE(field_float_value_->Set(foobar_class_.Instantiate(), 300.0f));                                        // Also, leak :D
+        //TEST_TRUE(field_float_value_->Set((*foobar_class_.GetInterface<Constructible<>>())(), 300.0f));                 // Also, leak :D
         TEST_FALSE(field_float_value_->Set(MakeConstInstance(foobar), 400.0f) || foobar.value_ == 400.0f);              // Const instance
         TEST_TRUE(field_float_value_->Set(foobar, 500.0f) && foobar.value_ == 500.0f);
         //TEST_TRUE(field_float_value_->Set(MakeFooBar(), 999.0f));                                                     // r-value reference
 
         TEST_TRUE(field_float_value_->Get(foobar_instance, x));
         TEST_TRUE(field_float_value_->Get(const_foobar_instance, x));
-        TEST_TRUE(field_float_value_->Get(foobar_class_.Instantiate(), x));                                             // Also, leak :D
+        //TEST_TRUE(field_float_value_->Get((*foobar_class_.GetInterface<Constructible<>>())(), x));                      // Also, leak :D
         TEST_TRUE(field_float_value_->Get(MakeConstInstance(foobar), x));
         TEST_TRUE(field_float_value_->Get(foobar, x));
         TEST_TRUE(field_float_value_->Get(MakeFooBar(), x));
@@ -886,9 +912,13 @@ public:
 
         std::cout << std::setw(30) << type_name << ": ";
 
-        for (auto&& name_alias : syntropy::reflection::ClassOf<TType>().GetNames()) {
+        auto& class_instance = syntropy::reflection::ClassOf<TType>();
 
-            std::cout << name_alias << ", ";
+        std::cout << class_instance.GetDefaultName();
+
+        for (auto&& name_alias : class_instance.GetNameAliases()) {
+
+            std::cout << ", " << name_alias;
 
         }
 

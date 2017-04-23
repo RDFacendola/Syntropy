@@ -10,35 +10,34 @@
 
 #include "containers/hashed_string.h"
 
+#include "reflection/reflection.h"
 #include "reflection/instance.h"
 #include "reflection/property.h"
 #include "reflection/method.h"
 
+#include "diagnostics/log.h"
+
 #include <memory>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
-#include <type_traits>
 #include <algorithm>
-#include <iterator>
-#include <stdexcept>
-#include <sstream>
-#include <ostream>
 
-namespace syntropy {
+namespace syntropy
+{
+    namespace reflection
+    {
 
-    namespace reflection {
-        
         /// \brief Describes a class.
-        /// A class can be used to access fields, properties and methods or eventually instantiate new objects.
+        /// A class can be used to access fields, properties and methods.
         /// \remarks This class is a singleton.
         /// \author Raffaele D. Facendola - 2016
-        class Class {
-
-        public:
+        class Class
+        {
 
             template <typename TClass>
-            class Definition;
+            friend class ClassDefinitionT;
+
+        public:
 
             /// \brief Get the class associated to TClass.
             /// \return Returns a reference to the singleton describing the class TClass.
@@ -67,184 +66,55 @@ namespace syntropy {
 
             /// \brief Get the default class name.
             /// \return Returns the default class name.
-            virtual const HashedString& GetName() const noexcept = 0;
+            const HashedString& GetDefaultName() const noexcept;
 
-            /// \brief Get all the class name aliases.
-            /// Certain types have different name aliases (like signed short int, short, short int which refers to the same type).
-            /// The first element in the list is guaranteed to be the default class name.
+            /// \brief Get all the class name aliases except for the default class name.
+            /// Certain types have different name aliases (like signed short int, short, short int which refer to the same type).
             /// \brief Returns a list containing the class names.
-            virtual const std::vector<HashedString>& GetNames() const noexcept = 0;
+            const std::vector<HashedString>& GetNameAliases() const noexcept;
 
             /// \brief Get the list of the base classes of this class.
             /// \return Returns the list of classes that are extended by this class.
-            virtual const std::vector<const Class*>& GetBaseClasses() const noexcept = 0;
+            const std::vector<const Class*>& GetBaseClasses() const noexcept;
 
             /// \brief Get a class property by name.
-            /// If the property is defined multiple times, the property defined in this class has precedence.
-            /// If the search is ambiguous (the property is defined multiple times in different base classes), the method returns nullptr.
-            /// \param property_name Name of the property to get.
-            /// \param include_base_classes Whether the property should be searched also in base classes.
-            /// \return Returns a pointer to the requested property, if the search was unambiguous. Returns nullptr otherwise.
-            virtual const Property* GetProperty(const HashedString& property_name, bool include_base_classes = true) const noexcept = 0;
+            /// Only properties defined in this class are checked.
+            /// \return Returns a pointer to the requested property. If no such property could be found returns nullptr.
+            const Property* GetProperty(const HashedString& property_name) const noexcept;
 
             /// \brief Get the list of properties supported by this class.
             /// \return Returns the list of properties supported by this class.
-            virtual const std::vector<std::unique_ptr<Property>>& GetProperties() const noexcept = 0;
+            const std::vector<Property>& GetProperties() const noexcept;
 
             /// \brief Check whether this class is abstract or not.
             /// \return Returns true if the class is abstract, returns false otherwise.
-            virtual bool IsAbstract() const noexcept = 0;
-
-            /// \brief Check whether the class is instantiable via reflection.
-            /// A class is instantiable if it is non-abstract and is default-constructible.
-            /// \return Returns true if the class is instantiable, returns false otherwise.
-            virtual bool IsInstantiable() const noexcept = 0;
-
-            /// \brief Create a new instance.
-            /// The method requires that IsInstantiable() is true, that is the class is both default-constructible and concrete.
-            /// \return Returns a reference to the new instance if the class was instantiable, return an empty reference otherwise.
-            virtual Instance Instantiate() const = 0;
+            bool IsAbstract() const noexcept;
 
             /// \brief Query the class for an interface of type TInterface.
+            /// Only interfaces defined in this class are checked.
             /// \return If an interface of type TInterface was added during class declaration, returns a pointer to that interface, otherwise returns nullptr.
             /// \remarks This method doesn't account for polymorphism. If a class of type Foo derived from Bar is added to the class, GetInterface<Bar>() will return nullptr even if a conversion exists.
             template <typename TInterface>
             const TInterface* GetInterface() const;
 
-        protected:
-
         private:
-            
-            template <typename TClass>
-            class ClassT;
 
             /// \brief Create a new class.
-            /// \param interfaces List of interfaces declared by the class.
-            Class(std::unordered_map<std::type_index, linb::any> interfaces);
+            /// \param definition Definition of the class.
+            template <typename TClass>
+            Class(std::identity<TClass>);
 
-            std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the class.
+            HashedString default_name_;                                         ///< \brief Default class name.
 
-        };
-
-        /// \brief Concrete class definition.
-        /// This class is used to define class names, properties and methods.
-        /// \author Raffaele D. Facendola - 2016
-        template <typename TClass>
-        class Class::Definition {
-
-            friend class Class::ClassT<TClass>;
-
-        public:
-
-            /// \brief Create a new class definition.
-            /// \param default_name Default class name.
-            Definition(std::string default_name);
-
-            /// \brief No copy constructor.
-            Definition(const Definition& other) = delete;
-
-            /// \brief Move constructor.
-            /// \param other Instance to move.
-            Definition(Definition&& other);
-
-            /// \brief No assignment operator
-            Definition& operator=(const Definition& other) = delete;
-
-            /// \brief Default destructor.
-            ~Definition() = default;
-
-            /// \brief Define a name alias for the class.
-            /// If the name was already defined this method does nothing.
-            /// \param name Name alias.
-            void DefineNameAlias(HashedString name) noexcept;
-
-            /// \brief Define a base class.
-            /// If the base class was already defined this method does nothing.
-            /// \tparam TBaseClass Type of the base class.
-            template <typename TBaseClass>
-            void DefineBaseClass() noexcept;
-
-            /// \brief Define a class property.
-            /// \param name Unique name of the class property.
-            /// \param accessors Member field or methods used to access the property being defined.
-            /// \return Returns the defined property.
-            /// \remarks Throws if the property name was already taken.
-            template <typename... TAccessors>
-            Property::PropertyT<TAccessors...>& DefineProperty(const char* property_name, TAccessors... accessors);
-
-            /// \brief Add a new interface to the class.
-            /// The method creates an instance of TInstance using TArgs as construction parameters.
-            /// TInstance must be copy constructible.
-            /// Only one interface per type can be added.
-            /// \usage class.AddInterface<Foo>(bar, baz);            // Assign an instance Foo(bar, baz) to the property
-            ///        clazz.GetInterface<Foo>()->DoFoo();           // Query for the property for a specified interface.
-            /// \param arguments Arguments to pass to the constructor of TInterface.
-            /// \return Returns true if the method succeeds, return false if there was another interface of type TInterface.
-            template <typename TInterface, typename... TArgs>
-            bool DefineInterface(TArgs&&... arguments);
-
-            /// \brief Apply a functor to this class definition.
-            /// \usage: definition << Foo();          // Resolves to Foo()(class_definition)
-            /// \return Returns a reference to the definition.
-            template <typename TFunctor>
-            Class::Definition<TClass>& operator<<(TFunctor&& functor);
-
-        private:
-
-            template <typename... TAccessors>
-            void CheckPropertyOrDie(const HashedString& property_name, TAccessors... accessors) const;
-
-            std::vector<HashedString> names_;                                   ///< \brief Class names.
+            std::vector<HashedString> name_aliases_;                            ///< \brief Class name aliases.
 
             std::vector<const Class*> base_classes_;                            ///< \brief List of all base classes.
 
-            std::vector<std::unique_ptr<Property>> properties_;                 ///< \brief Reference to the class properties.
+            std::vector<Property> properties_;                                  ///< \brief Class properties.
 
-            std::unordered_map<std::type_index, linb::any> interfaces_;         ///< \brief Set of interfaces assigned to the class.
+            std::unordered_map<std::type_index, linb::any> interfaces_;         ///< \brief Set of interfaces supported by this class.
 
-        };
-
-        /// \brief Describes an actual class.
-        /// Used to perform type erasure.
-        /// \author Raffaele D. Facendola - August 2016
-        template <typename TClass>
-        class Class::ClassT : public Class {
-
-        public:
-
-            /// \brief Create a new class description via class definition.
-            ClassT(Definition<TClass> definition);
-
-            virtual const HashedString& GetName() const noexcept override;
-
-            virtual const std::vector<HashedString>& GetNames() const noexcept override;
-
-            virtual const std::vector<const Class*>& GetBaseClasses() const noexcept override;
-
-            virtual const Property* GetProperty(const HashedString& property_name, bool include_base_classes = true) const noexcept override;
-
-            virtual const std::vector<std::unique_ptr<Property>>& GetProperties() const noexcept override;
-
-            virtual bool IsAbstract() const noexcept override;
-
-            virtual bool IsInstantiable() const noexcept override;
-
-            virtual Instance Instantiate() const override;
-
-        private:
-
-            using TPropertyHash = std::hash<HashedString>::result_type;
-
-            /// \brief Regenerates the indices used to access properties and methods by name.
-            void RegenerateIndices() noexcept;
-
-            std::vector<HashedString> names_;                                       ///< \brief Class names.
-            
-            std::vector<const Class*> base_classes_;                                ///< \brief List of base classes.
-
-            std::vector<std::unique_ptr<Property>> properties_;                     ///< \brief List of class properties.
-            
-            std::unordered_map<TPropertyHash, const Property*> properties_index_;   ///< \brief Index over the class properties used to access properties by name.
+            bool is_abstract_;                                                  ///< \brief Whether the class is abstract or not.
 
         };
 
@@ -258,354 +128,252 @@ namespace syntropy {
         template <typename TType>
         const Class& ClassOf(TType&&);
 
-        /// \brief Utility method used to get a class definition by type.
-        /// \return Returns the concrete definition of the class TClass.
+        /// \brief Stream insertion for Class.
+        std::ostream& operator<<(std::ostream& out, const Class& class_instance);
+
+        /// \brief Concrete class definition.
+        /// This class is used to define class names, properties and methods.
+        /// \author Raffaele D. Facendola - 2016
         template <typename TClass>
-        Class::Definition<TClass> DefinitionOf();
+        class ClassDefinitionT
+        {
+            static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
+
+        public:
+
+            /// \brief Create a new class definition.
+            /// \param subject Class this definition refers to.
+            ClassDefinitionT(Class& subject);
+
+            /// \brief No copy constructor.
+            ClassDefinitionT(const ClassDefinitionT&) = delete;
+
+            /// \brief No assignment operator.
+            ClassDefinitionT& operator=(const ClassDefinitionT&) = delete;
+
+            /// \brief Default destructor.
+            ~ClassDefinitionT() = default;
+
+            /// \brief Define a name alias for the class.
+            /// If the name was already defined this method does nothing.
+            /// \param name Name alias.
+            ClassDefinitionT& DefineNameAlias(const HashedString& name_alias) noexcept;
+
+            /// \brief Define a base class.
+            /// If the base class was already defined this method does nothing.
+            /// \tparam TBaseClass Type of the base class.
+            template <typename TBaseClass>
+            ClassDefinitionT& DefineBaseClass() noexcept;
+
+            /// \brief Define a class property.
+            /// \param name Unique name of the class property.
+            /// \param accessors Member field or methods used to access the property being defined.
+            /// \return Returns the property definition.
+            template <typename... TAccessors>
+            PropertyDefinitionT<TAccessors...> DefineProperty(const HashedString& property_name, TAccessors... accessors);
+
+            /// \brief Add a new interface to the class.
+            /// The method creates an instance of TInstance using TArgs as construction parameters. Only one interface of type TInstance can be added per class.
+            /// TInstance must be copy constructible.
+            /// \param arguments Arguments to pass to the constructor of TInterface.
+            template <typename TInterface, typename... TArgs>
+            ClassDefinitionT& AddInterface(TArgs&&... arguments);
+
+            /// \brief Apply a functor to this class definition.
+            template <typename TFunctor>
+            ClassDefinitionT& operator<<(TFunctor&& functor);
+
+        private:
+
+            Class& subject_;            ///< \brief Class this definition refers to.
+
+        };
 
         /// \brief Functor used to fill a class definition.
         /// Specialize this functor for each class requiring reflection.
         template <typename TClass>
-        struct ClassDeclaration;
+        struct ClassDeclaration
+        {
+            // static constexpr const char* GetName();
 
-        template <typename... TAccessors>
-        struct AdditionalPropertyDefinition{
-        
-            void operator()(Property::PropertyT<TAccessors...>& /*property*/, TAccessors... /*accessors*/) {
-
-            }
-
+            // void operator()(TDefinition& definition) const;
         };
-
-        /// \brief Stream insertion for Class.
-        std::ostream& operator<<(std::ostream& out, const Class& class_instance);
 
     }
 
 }
 
-namespace syntropy {
+// Implementation
 
-    namespace reflection {
+namespace syntropy 
+{
+    namespace reflection 
+    {
 
-        // Implementation
-
-        //////////////// CLASS ////////////////
+        /************************************************************************/
+        /* CLASS                                                                */
+        /************************************************************************/
 
         template <typename TClass>
-        inline static const Class& Class::GetClass() {
-
+        static const Class& Class::GetClass()
+        {
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
 
-            static ClassT<TClass> instance(DefinitionOf<TClass>());
+            static Class instance(std::identity<TClass>{});
 
             return instance;
+        }
 
+        template <typename TClass>
+        Class::Class(std::identity<TClass>)
+            : default_name_(ClassDeclaration<TClass>::GetName())
+            , is_abstract_(std::is_abstract<TClass>::value)
+        {
+            static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
+
+            // Fill base classes, properties, methods and name aliases via an explicit class declaration. Optional.
+            ClassDefinitionT<TClass> definition(*this);
+
+            conditional_call(ClassDeclaration<TClass>{}, definition);
+
+            Reflection::GetInstance().Register(*this);
         }
 
         template <typename TInterface>
-        const TInterface* Class::GetInterface() const {
-
+        const TInterface* Class::GetInterface() const
+        {
             auto interface_type = std::type_index(typeid(TInterface));
 
             auto it = interfaces_.find(interface_type);
 
             return it != interfaces_.end() ?
-                   linb::any_cast<TInterface>(&(it->second)) :
-                   nullptr;
+                linb::any_cast<TInterface>(&(it->second)) :
+                nullptr;
+        }
+
+        template <typename TType>
+        const Class& ClassOf()
+        {
+            return Class::GetClass<class_name_t<TType>>();
+        }
+
+        template <typename TType>
+        const Class& ClassOf(TType&&)
+        {
+            return Class::GetClass<class_name_t<TType&&>>();
+        }
+
+        /************************************************************************/
+        /* CLASS DEFINITION T <TCLASS>                                          */
+        /************************************************************************/
+
+        template <typename TClass>
+        ClassDefinitionT<TClass>::ClassDefinitionT(Class& subject)
+            : subject_(subject)
+        {
 
         }
 
-        //////////////// CLASS :: DEFINITION ////////////////
-
         template <typename TClass>
-        inline Class::Definition<TClass>::Definition(std::string default_name) {
+        ClassDefinitionT<TClass>& ClassDefinitionT<TClass>::DefineNameAlias(const HashedString& name) noexcept
+        {
+            auto it = std::find
+            (
+                subject_.name_aliases_.begin(),
+                subject_.name_aliases_.end(),
+                name
+            );
 
-            names_.push_back(std::move(default_name));
-
-        }
-
-        template <typename TClass>
-        inline Class::Definition<TClass>::Definition(Definition<TClass>&& other)
-            : names_(std::move(other.names_))
-            , base_classes_(std::move(other.base_classes_))
-            , properties_(std::move(other.properties_)) {}
-
-        template <typename TClass>
-        inline void Class::Definition<TClass>::DefineNameAlias(HashedString name) noexcept {
-
-            auto it = std::find_if(names_.begin(), names_.end(), [&name](const HashedString& class_name) { return class_name == name; });
-
-            if (it == names_.end()) {
-            
-                names_.push_back(name);
-
+            if (it == subject_.name_aliases_.end())
+            {
+                subject_.name_aliases_.push_back(name);
             }
-            
+
+            return *this;
         }
 
         template <typename TClass>
         template <typename TBaseClass>
-        inline void Class::Definition<TClass>::DefineBaseClass() noexcept {
+        ClassDefinitionT<TClass>& ClassDefinitionT<TClass>::DefineBaseClass() noexcept
+        {
+            static_assert(std::is_base_of_v<TBaseClass, TClass>, "TClass must derive from TBaseClass");
+            static_assert(!std::is_same<TBaseClass, TClass>::value, "TClass cannot derive from itself");
 
-            static_assert(std::is_base_of_v<TBaseClass, TClass>, "The class being defined does not derive from TBaseClass");
-            static_assert(!std::is_same<TBaseClass, TClass>::value, "A class cannot derive from itself");
+            auto base_class = std::addressof(ClassOf<TBaseClass>());
 
-            auto base_class = &ClassOf<TBaseClass>();
+            auto it = std::find
+            (
+                subject_.base_classes_.begin(),
+                subject_.base_classes_.end(),
+                base_class
+            );
 
-            auto it = std::find(base_classes_.begin(), base_classes_.end(), base_class);
-
-            if (it == base_classes_.end()) {
-
-                base_classes_.push_back(base_class);
-
+            if (it == subject_.base_classes_.end())
+            {
+                subject_.base_classes_.push_back(base_class);
             }
-            
+
+            return *this;
         }
 
         template <typename TClass>
         template <typename... TAccessors>
-        Property::PropertyT<TAccessors...>& Class::Definition<TClass>::DefineProperty(const char* property_name, TAccessors... accessors) {
+        PropertyDefinitionT<TAccessors...> ClassDefinitionT<TClass>::DefineProperty(const HashedString& property_name, TAccessors... accessors)
+        {
+            auto it = std::find_if
+            (
+                subject_.properties_.begin(),
+                subject_.properties_.end(),
+                [&property_name](const Property& property)
+                {
+                    return property.GetName() == property_name;
+                }
+            );
 
-            CheckPropertyOrDie(property_name, accessors...);
+            if (it != subject_.properties_.end())
+            {
+                SYNTROPY_ERROR((ReflectionCtx), "A property named '", property_name, "' was already defined in the class '", subject_.default_name_, "'.");
+            }
 
-            auto property = new Property::PropertyT<TAccessors...>(property_name, accessors...);
+            auto property_definition = Property::MakeProperty(property_name, accessors...);
 
-            properties_.push_back(std::unique_ptr<Property>(property));
+            subject_.properties_.push_back(std::move(property_definition.property_));       // Store the property.
 
-            AdditionalPropertyDefinition<TAccessors...>()(*property, accessors...);        // Fill additional infos
-
-            return *property;
-
+            return property_definition.definition_;                                         // Return the definition so that the caller can extend the property.
         }
 
         template <typename TClass>
         template <typename TInterface, typename... TArgs>
-        bool Class::Definition<TClass>::DefineInterface(TArgs&&... arguments) {
-
+        ClassDefinitionT<TClass>& ClassDefinitionT<TClass>::AddInterface(TArgs&&... arguments)
+        {
             auto interface_type = std::type_index(typeid(TInterface));
 
-            if (interfaces_.find(interface_type) == interfaces_.end()) {
-
-                interfaces_.insert(std::make_pair(interface_type,
-                                                  linb::any(TInterface(std::forward<TArgs>(arguments)...))));
-
-                return true;
-
+            if (subject_.interfaces_.find(interface_type) == subject_.interfaces_.end())
+            {
+                subject_.interfaces_.insert
+                (
+                    std::make_pair
+                    (
+                        interface_type,
+                        linb::any(TInterface(std::forward<TArgs>(arguments)...))
+                    )
+                );
+            }
+            else
+            {
+                SYNTROPY_ERROR((ReflectionCtx), "An interface '", interface_type.name(), "' was already added to the class '", subject_.default_name_, "'. The new interface has been ignored.");
             }
 
-            return false;
-
+            return *this;
         }
 
         template <typename TClass>
         template <typename TFunctor>
-        Class::Definition<TClass>& Class::Definition<TClass>::operator<<(TFunctor&& functor) {
-
+        ClassDefinitionT<TClass>& ClassDefinitionT<TClass>::operator<<(TFunctor&& functor)
+        {
             functor(*this);
-
             return *this;
-
-        }
-
-        template <typename TClass>
-        template <typename... TAccessors>
-        void Class::Definition<TClass>::CheckPropertyOrDie(const HashedString& property_name, TAccessors...) const {
-
-            //static_assert(std::is_same<property_traits_class_t<TAccessors...>, TClass>::value, "You may only define properties for the class being defined.");
-
-            auto it = std::find_if(properties_.begin(), 
-                                   properties_.end(), 
-                                   [&property_name](const std::unique_ptr<Property>& property) { 
-
-                                       return property->GetName() == property_name; 
-
-                                   });
-
-            if (it != properties_.end()) {
-
-                std::stringstream ss;
-
-                ss << "A property named '" << property_name << "' already exists.";
-
-                throw std::invalid_argument(ss.str());
-
-            }
-
-        }
-
-        //////////////// CLASS :: CLASS T ////////////////
-
-        template <typename TClass>
-        Class::ClassT<TClass>::ClassT(Definition<TClass> definition)
-            : Class(std::move(definition.interfaces_))
-            , names_(std::move(definition.names_))
-            , base_classes_(std::move(definition.base_classes_))
-            , properties_(std::move(definition.properties_)) {
-
-            RegenerateIndices();
-
-            Reflection::GetInstance().Register(*this);
-
-        }
-
-        template <typename TClass>
-        inline const HashedString& Class::ClassT<TClass>::GetName() const noexcept {
-
-            return names_[0];
-
-        }
-
-        template <typename TClass>
-        inline const std::vector<HashedString>& Class::ClassT<TClass>::GetNames() const noexcept {
-
-            return names_;
-
-        }
-
-        template <typename TClass>
-        inline const std::vector<const Class*>& Class::ClassT<TClass>::GetBaseClasses() const noexcept {
-
-            return base_classes_;
-
-        }
-
-        template <typename TClass>
-        const Property* Class::ClassT<TClass>::GetProperty(const HashedString& property_name, bool include_base_classes) const noexcept {
-
-            auto it = properties_index_.find(std::hash<HashedString>()(property_name));
-            
-            if (it != properties_index_.end()) {
-
-                return it->second;          // Found in this class
-
-            }
-            else if (include_base_classes) {
-
-                std::vector<const Class*> open_set(base_classes_.begin(), base_classes_.end());     // Base classes to search
-                std::unordered_set<const Class*> closed_set;                                        // Base classes already searched
-                std::unordered_map<const Class*, const Property*> properties;                       // Found properties (with the class they were found into)
-
-                const Class* current_class;
-                const Property* current_property;
-
-                while (open_set.size() > 0) {
-
-                    // Pop the next element to search
-                    current_class = open_set.back();
-                    open_set.pop_back();
-
-                    if (closed_set.find(current_class) == closed_set.end()) {
-
-                        // Expand
-                        closed_set.insert(current_class);
-
-                        current_property = current_class->GetProperty(property_name, false);
-
-                        if (current_property) {
-
-                            properties.insert(std::make_pair(current_class, current_property));     // Property found in the current base class
-
-                        }
-
-                        std::copy(current_class->GetBaseClasses().begin(),
-                                  current_class->GetBaseClasses().end(),
-                                  std::back_inserter(open_set));
-
-                    }
-
-                }
-
-                if (properties.size() == 1) {
-
-                    return properties.begin()->second;                                              // Unambiguous property found
-
-                }
-
-            }
-
-            return nullptr;                 // Not found (or ambiguous)
-
-        }
-
-        template <typename TClass>
-        inline const std::vector<std::unique_ptr<Property>>& Class::ClassT<TClass>::GetProperties() const noexcept {
-
-            return properties_;
-
-        }
-
-        template <typename TClass>
-        inline bool Class::ClassT<TClass>::IsAbstract() const noexcept {
-
-            return std::is_abstract_v<TClass>;
-
-        }
-
-        template <typename TClass>
-        inline bool Class::ClassT<TClass>::IsInstantiable() const noexcept {
-
-            return std::is_default_constructible_v<TClass>;
-
-        }
-
-        template <typename TClass>
-        inline Instance Class::ClassT<TClass>::Instantiate() const {
-
-            return instantiate<TClass>()();
-
-        }
-        
-        template <typename TClass>
-        inline void Class::ClassT<TClass>::RegenerateIndices() noexcept{
-
-            properties_index_.clear();
-            properties_index_.reserve(properties_.size());
-
-            std::transform(properties_.begin(), properties_.end(),
-                           std::inserter(properties_index_, properties_index_.begin()),
-                           [](const std::unique_ptr<Property>& property) {
-
-                                return std::make_pair(std::hash<HashedString>()(property->GetName()),
-                                                      property.get());
-
-                           });
-
-        }
-
-        //////////////// CLASS OF ////////////////
-
-        template <typename TType>
-        const Class& ClassOf() {
-
-            return Class::GetClass<class_name_t<TType>>();
-
-        }
-
-        template <typename TType>
-        const Class& ClassOf(TType&&) {
-
-            return Class::GetClass<class_name_t<TType&&>>();
-
-        }
-
-        //////////////// DEFINITION OF ////////////////
-
-        template <typename TClass>
-        Class::Definition<TClass> DefinitionOf() {
-
-            static_assert(is_class_name_v<TClass>, "TClass must be a plain class name.");
-
-            ClassDeclaration<TClass> declaration;
-
-            Class::Definition<TClass> definition(declaration.GetName());
-
-            conditional_call(declaration, definition);   // Filling the definition is optional.
-
-            return definition;
-
         }
 
     }
-
 }

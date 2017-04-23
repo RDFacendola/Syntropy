@@ -2,40 +2,90 @@
 
 #include "reflection/reflection.h"
 
-namespace syntropy {
+#include <algorithm>
 
-    namespace reflection {
+namespace syntropy
+{
 
-        //////////////// CLASS ////////////////
+    namespace reflection 
+    {
 
-        Class::Class(std::unordered_map<std::type_index, linb::any> interfaces)
-            : interfaces_(std::move(interfaces)) {}
+        /************************************************************************/
+        /* CLASS                                                                */
+        /************************************************************************/
 
-        bool Class::operator ==(const Class& other) const noexcept {
+        bool Class::operator ==(const Class& other) const noexcept
+        {
+            if (this == std::addressof(other))
+            {
+                return true;        // The two classes point to the same singleton instance.
+            }
 
-            // The two classes are the same if they share the same address (since we are dealing with singleton)
-            // or any ancestor does.
-    
-            return (this == &other) ||
-                   std::any_of(GetBaseClasses().begin(), GetBaseClasses().end(), [&other](const Class* base_class) { return *base_class == other; });
-    
+            // Check whether any base classes of this class is the same as the other.
+            return std::any_of
+            (
+                base_classes_.begin(),
+                base_classes_.end(),
+                [&other](const Class* base_class)
+                {
+                    return *base_class == other;
+                }
+            );
+
         }
 
-        bool Class::operator !=(const Class& other) const noexcept {
-
-            return (this != &other) &&
-                   std::all_of(GetBaseClasses().begin(), GetBaseClasses().end(), [&other](const Class* base_class) { return *base_class != other; });
-
+        bool Class::operator !=(const Class& other) const noexcept
+        {
+            return !(*this == other);
         }
 
-        //////////////// STREAM INSERTION ////////////////
+        const HashedString& Class::GetDefaultName() const noexcept
+        {
+            return default_name_;
+        }
 
-        std::ostream& operator<<(std::ostream& out, const Class& class_instance) {
+        const std::vector<HashedString>& Class::GetNameAliases() const noexcept
+        {
+            return name_aliases_;
+        }
 
-            out << class_instance.GetName();
+        const std::vector<const Class*>& Class::GetBaseClasses() const noexcept
+        {
+            return base_classes_;
+        }
+
+        const Property* Class::GetProperty(const HashedString& property_name) const noexcept
+        {
+            auto it = std::find_if
+            (
+                properties_.begin(),
+                properties_.end(),
+                [&property_name](const Property& property)
+                {
+                    return property.GetName() == property_name;
+                }
+            );
+
+            return it != properties_.end() ?
+                std::addressof(*it) :
+                nullptr;
+        }
+
+        const std::vector<Property>& Class::GetProperties() const noexcept
+        {
+            return properties_;
+        }
+
+        bool Class::IsAbstract() const noexcept
+        {
+            return is_abstract_;
+        }
+
+        std::ostream& operator<<(std::ostream& out, const Class& class_instance)
+        {
+            out << class_instance.GetDefaultName();
 
             return out;
-
         }
 
     }

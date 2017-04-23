@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#include "reflection/class_interfaces.h"
+
 #include "diagnostics/log.h"
 
 namespace syntropy 
@@ -42,6 +44,15 @@ namespace syntropy
         JSONDeserializable::~JSONDeserializable()
         {
             reinterpret_cast<IContent*>(&(content_))->~IContent();
+        }
+
+        /************************************************************************/
+        /* JSON CONSTRUCTIBLE                                                   */
+        /************************************************************************/
+
+        reflection::Instance JSONConstructible::operator()(const nlohmann::json& /*json*/) const
+        {
+            return reflection::Instance();
         }
 
         /************************************************************************/
@@ -88,11 +99,32 @@ namespace syntropy
  
             // Instantiation and deserialization
 
-            auto instance = instance_class->Instantiate();
- 
-            JSONDeserializer<reflection::Instance>()(instance, json);
+            auto json_constructible = instance_class->GetInterface<JSONConstructible>();
 
-            return instance;
+            if (json_constructible)
+            {
+                // Construct via custom JSON-constructor.
+                return (*json_constructible)(json);
+            }
+
+            auto default_constructible = instance_class->GetInterface<reflection::Constructible<>>();
+
+            if (default_constructible)
+            {
+                // Default-construct a new instance and deserialize each property.
+                auto instance = (*default_constructible)();
+
+                if (instance)
+                {
+                    JSONDeserializer<reflection::Instance>()(instance, json);
+                }
+
+                return instance;
+            }
+
+            // Unable to deserialize the object.
+            return reflection::Instance();
+
         }
 
     }

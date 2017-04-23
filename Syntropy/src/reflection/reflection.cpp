@@ -1,53 +1,91 @@
 #include "reflection/reflection.h"
 
-using namespace syntropy;
-using namespace syntropy::reflection;
+#include "reflection/class.h"
 
-//////////////// REFLECTION ////////////////
+namespace syntropy
+{
+    namespace reflection
+    {
+        const diagnostics::Context ReflectionCtx("SyntropyReflection");
 
-Reflection::Reflection() {
+        /************************************************************************/
+        /* REFLECTION                                                           */
+        /************************************************************************/
 
-    classes_.reserve(2048);
+        Reflection& Reflection::GetInstance() noexcept
+        {
+            static Reflection instance;
 
-}
+            return instance;
+        }
 
-const Class* Reflection::GetClass(const HashedString& class_name) const noexcept {
+        Reflection::Reflection()
+        {
+            default_classes_.reserve(1024);
+            class_aliases_.reserve(1024);
+        }
 
-    auto it = classes_.find(std::hash<HashedString>()(class_name));
+        const Class* Reflection::GetClass(const HashedString& class_name) const noexcept
+        {
+            auto it = default_classes_.find(class_name);
 
-    return (it != classes_.end())
-           ? it->second
-           : nullptr;
+            if (it != default_classes_.end())
+            {
+                return it->second;
+            }
+            else
+            {
+                it = class_aliases_.find(class_name);
 
-}
+                return (it != class_aliases_.end())
+                    ? it->second
+                    : nullptr;
+            }
+        }
 
-void Reflection::Register(Class& class_instance) {
+        void Reflection::Register(Class& class_instance)
+        {
+            // Register the default class name
 
-    std::hash<HashedString>::result_type name_hash;
+            auto it = default_classes_.find(class_instance.GetDefaultName());
 
-    auto it = classes_.begin();
+            if (it == default_classes_.end())
+            {
+                default_classes_.emplace(std::make_pair(class_instance.GetDefaultName(), &class_instance));
+            }
+            else
+            {
+                SYNTROPY_ERROR((ReflectionCtx), "A class with default name '", it->first, "' already exists. The new instance has been ignored.");
+            }
 
-    // Register each alias as a different entry
+            // Register each alias as a different entry
 
-    for (auto&& name_alias : class_instance.GetNames()) {
+            for (auto&& name_alias : class_instance.GetNameAliases())
+            {
+                it = class_aliases_.find(name_alias);
 
-        name_hash = std::hash<HashedString>()(name_alias);
-
-        it = classes_.find(name_hash);
-
-        if (it == classes_.end()) {
-
-            classes_.emplace(std::make_pair(name_hash, &class_instance));
+                if (it == class_aliases_.end())
+                {
+                    class_aliases_.emplace(std::make_pair(name_alias, &class_instance));
+                }
+                else
+                {
+                    SYNTROPY_WARNING((ReflectionCtx), "A class with name alias '", it->first, "' already exists. The name alias has been invalidated.");
+                    it->second = nullptr;
+                }
+            }
 
         }
-        else {
 
-            // In order to prevent declaration order-dependent behaviors when a name clash occurs, the existing registration is invalidated and the new one is ignored.
+        /************************************************************************/
+        /* METHODS                                                              */
+        /************************************************************************/
 
-            it->second = nullptr;
-
+        const Class* GetClass(const HashedString& class_name) noexcept
+        {
+            return Reflection::GetInstance().GetClass(class_name);
         }
 
     }
-
 }
+

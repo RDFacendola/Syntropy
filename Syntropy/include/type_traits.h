@@ -31,6 +31,14 @@ namespace syntropy {
 
     };
 
+    /// \brief Template version of "don't care".
+    /// \author Raffaele D. Facendola - April 2017
+    template <typename TType>
+    struct tag : _
+    {
+
+    };
+
     //////////////// STREAM CAPABILITIES ////////////////
 
     /// \brief If TStream& << TType is defined provides the members constant value equal to true, otherwise value is false.
@@ -196,7 +204,7 @@ namespace syntropy {
     struct call {
 
         template <typename TCallable, typename... TArgs>
-        void operator()(TCallable& callable, TArgs&&... args) {
+        void operator()(TCallable&& callable, TArgs&&... args) {
 
             return callable(std::forward<TArgs>(args)...);
 
@@ -208,9 +216,9 @@ namespace syntropy {
     /// \return Returns the return value if the call could be performed, returns nothing otherwise.
     /// \author Raffaele D. Facendola - September 2016
     template <typename TCallable, typename... TArgs>
-    auto conditional_call(TCallable& callable, TArgs&&... args) {
+    auto conditional_call(TCallable&& callable, TArgs&&... args) {
 
-        using caller = std::conditional_t<is_callable_v<TCallable, TArgs...>, call, _>;
+        using caller = std::conditional_t<is_callable_v<TCallable&&, TArgs...>, call, _>;
 
         return caller()(callable, std::forward<TArgs>(args)...);
 

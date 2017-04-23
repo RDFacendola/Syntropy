@@ -11,6 +11,8 @@
 #include "containers/hashed_string.h"
 
 #include "reflection/reflection.h"
+#include "reflection/instance.h"
+#include "reflection/class.h"
 
 #include "nlohmann/json/src/json.hpp"
 
