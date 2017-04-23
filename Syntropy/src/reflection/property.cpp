@@ -8,41 +8,22 @@ namespace syntropy {
         /* PROPERTY                                                             */
         /************************************************************************/
 
-        Property::Property(std::unique_ptr<BaseProperty> property)
-            : property_(std::move(property))
-        {
-
-        }
-
         Property::Property(Property&& other)
-            : property_(std::move(other.property_))
+            : name_(std::move(other.name_))
+            , interfaces_(std::move(other.interfaces_))
+            , property_(std::move(other.property_))
         {
 
         }
 
         const HashedString& Property::GetName() const noexcept
         {
-            return property_->GetName();
+            return name_;
         }
 
         const Type& Property::GetType() const noexcept
         {
             return property_->GetType();
-        }
-
-        /************************************************************************/
-        /* BASE PROPERTY                                                        */
-        /************************************************************************/
-
-        BaseProperty::BaseProperty(const HashedString& name)
-            : name_(name)
-        {
-
-        }
-
-        const HashedString& BaseProperty::GetName() const noexcept
-        {
-            return name_;
         }
 
     }

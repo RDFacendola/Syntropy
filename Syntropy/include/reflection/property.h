@@ -29,38 +29,24 @@ namespace syntropy
     namespace reflection
     {
 
-        class Property;
         class BaseProperty;
 
         template <typename... TAccessors>
         class PropertyDefinitionT;
-
-        /// \brief Contains a property along with its concrete definition.
-        template <typename... TAccessors>
-        struct PropertyDefinitionPair
-        {
-            Property property_;                                 ///< \brief Type-erased property.
-
-            PropertyDefinitionT<TAccessors...> definition_;     ///< \brief Concrete property definition.
-        };
 
         /// \brief Describes a class property.
         /// A property can either be a member field, a getter method (for read-only properties) or a getter\setter method pairs.
         /// \author Raffaele D. Facendola - 2016
         class Property
         {
-        public:
-
-            /// \brief Create a new named property along with a definition that can be used to expand the property definition.
-            /// \param name Name of the property.
-            /// \param accessors List of accessors used to get and set the property value.
-            /// \return Returns a structure containing both the new property and its definition.
             template <typename... TAccessors>
-            static PropertyDefinitionPair<TAccessors...> MakeProperty(const HashedString& name, TAccessors... accessors);
+            friend class PropertyDefinitionT;
+
+        public:
 
             /// \brief Create a new named property.
             /// \param name Name of the property.
-            /// \param accessors List of accessors used to get and set the property value.
+            /// \param accessors Property accessors.
             template <typename... TAccessors>
             Property(const HashedString& name, TAccessors... accessors);
 
@@ -122,10 +108,11 @@ namespace syntropy
 
         private:
 
-            /// \brief Create a property via an explicit pointer to a base property.
-            Property(std::unique_ptr<BaseProperty> property);
+            HashedString name_;                                             ///< \brief Property name.
 
-            std::unique_ptr<BaseProperty> property_;            ///< \brief Concrete property.
+            std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the property.
+
+            std::unique_ptr<BaseProperty> property_;                        ///< \brief Concrete property.
 
         };
 
@@ -133,13 +120,10 @@ namespace syntropy
         /// \author Raffaele D. Facendola - April 2017
         class BaseProperty
         {
-            template <typename... TAccessors>
-            friend class PropertyDefinitionT;
-
         public:
 
-            /// \brief Create a new named property.
-            BaseProperty(const HashedString& name);
+            /// \brief Create a new property.
+            BaseProperty() = default;
 
             /// \brief No copy constructor.
             BaseProperty(const BaseProperty&) = delete;
@@ -149,16 +133,6 @@ namespace syntropy
 
             /// \brief Virtual destructor.
             virtual ~BaseProperty() = default;
-
-            /// \brief Get the property name.
-            /// \return Returns the property name.
-            const HashedString& GetName() const noexcept;
-
-            /// \brief Query the property for an interface of type TInterface.
-            /// \return If an interface of type TInterface was previously added via AddInterface(.), returns a pointer to that interface, otherwise returns nullptr.
-            /// \remarks This method doesn't account for polymorphism. If a class of type Foo derived from Bar is added to the property, GetInterface<Bar>() will return nullptr even if a conversion exists.
-            template <typename TInterface>
-            const TInterface* GetInterface() const;
 
             /// \brief Get the property type.
             /// \brief Returns the property type.
@@ -188,12 +162,6 @@ namespace syntropy
             /// \return Return true if the property was legitimate for the provided instance and the value could be moved, returns false otherwise.
             virtual bool MoveSet(Instance instance, Instance value) const = 0;
 
-        private:
-
-            HashedString name_;                                             ///< \brief Property name.
-
-            std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the property.
-
         };
 
         /// \brief Concrete property type.
@@ -209,9 +177,8 @@ namespace syntropy
         public:
 
             /// \brief Create a new property definition.
-            /// \param subject Property this definition refers to.
-            /// \param accessor Concrete accessors to the property.
-            PropertyDefinitionT(BaseProperty& subject, TAccessors... accessors);
+            /// \param accessor Accessors to the property.
+            PropertyDefinitionT(Property& subject, TAccessors... accessors);
 
             /// \brief Add a new interface to the property.
             /// The method creates an instance of TInstance using TArgs as construction parameters. Only one interface of type TInstance can be added per property.
@@ -230,15 +197,11 @@ namespace syntropy
             template <typename TFunctor, size_t... ns>
             void ApplyFunctor(TFunctor&& functor, sequence<ns...>);
 
+            Property& subject_;                         ///< \brief Property this definition refers to.
+
             std::tuple<TAccessors...> accessors_;       ///< \brief Property accessors.
 
-            BaseProperty& subject_;                     ///< \brief Property this definition refers to.
-
         };
-
-        /// \brief Helper function used to create a property definition.
-        template <typename... TAccessors>
-        PropertyDefinitionT<TAccessors...> MakePropertyDefinition(BaseProperty& subject, TAccessors... accessors);
 
         /// \brief Get a property value via a pointer to a member method \ field.
         /// \param instance Object where to get the value from.
@@ -609,22 +572,9 @@ namespace syntropy
         /************************************************************************/
 
         template <typename... TAccessors>
-        PropertyDefinitionPair<TAccessors...> Property::MakeProperty(const HashedString& name, TAccessors... accessors)
-        {
-            auto property = std::make_unique<PropertyT<TAccessors...>>(name, std::forward<TAccessors>(accessors)...);
-
-            BaseProperty& base_property = *property;
-
-            return PropertyDefinitionPair<TAccessors...>
-            { 
-                Property(std::move(property)), 
-                MakePropertyDefinition(base_property, accessors...) 
-            };
-        }
-
-        template <typename... TAccessors>
         Property::Property(const HashedString& name, TAccessors... accessors)
-            : property_(std::make_unique<PropertyT<TAccessors...>>(name, std::forward<TAccessors>(accessors)...))
+            : name_(name)
+            , property_(std::make_unique<PropertyT<TAccessors...>>(std::forward<TAccessors>(accessors)...))
         {
 
         }
@@ -632,7 +582,13 @@ namespace syntropy
         template <typename TInterface>
         const TInterface* Property::GetInterface() const
         {
-            return property_->GetInterface<TInterface>();
+            auto interface_type = std::type_index(typeid(TInterface));
+
+            auto it = interfaces_.find(interface_type);
+
+            return it != interfaces_.end() ?
+                linb::any_cast<TInterface>(&(it->second)) :
+                nullptr;
         }
 
         template <typename TInstance, typename TValue>
@@ -657,22 +613,6 @@ namespace syntropy
         }
 
         /************************************************************************/
-        /* BASE PROPERTY                                                        */
-        /************************************************************************/
-
-        template <typename TInterface>
-        const TInterface* BaseProperty::GetInterface() const
-        {
-            auto interface_type = std::type_index(typeid(TInterface));
-
-            auto it = interfaces_.find(interface_type);
-
-            return it != interfaces_.end() ?
-                linb::any_cast<TInterface>(&(it->second)) :
-                nullptr;
-        }
-
-        /************************************************************************/
         /* PROPERTY T <TACCESSORS..>                                            */
         /************************************************************************/
 
@@ -683,9 +623,8 @@ namespace syntropy
 
         public:
 
-            PropertyT(const HashedString& name, TField(TClass::* field))
-                : BaseProperty(name)
-                , field_(field) {}
+            PropertyT(TField(TClass::* field))
+                : field_(field) {}
 
             virtual const Type& GetType() const noexcept override {
 
@@ -730,9 +669,8 @@ namespace syntropy
 
         public:
 
-            PropertyT(const HashedString& name, TProperty(TClass::* getter)() const)
-                : BaseProperty(name)
-                , getter_(getter) {}
+            PropertyT(TProperty(TClass::* getter)() const)
+                : getter_(getter) {}
 
             virtual const Type& GetType() const noexcept override {
 
@@ -779,9 +717,8 @@ namespace syntropy
 
         public:
 
-            PropertyT(const HashedString& name, TPropertyGet(TClass::* getter)() const, TAny(TClass::* setter)(TPropertySet))
-                : BaseProperty(name)
-                , getter_(getter)
+            PropertyT(TPropertyGet(TClass::* getter)() const, TAny(TClass::* setter)(TPropertySet))
+                : getter_(getter)
                 , setter_(setter) {}
 
             virtual const Type& GetType() const noexcept override {
@@ -831,9 +768,8 @@ namespace syntropy
 
         public:
 
-            PropertyT(const HashedString& name, const TPropertyGet&(TClass::* getter)() const, TPropertySet&(TClass::* setter)())
-                : BaseProperty(name)
-                , getter_(getter)
+            PropertyT(const TPropertyGet&(TClass::* getter)() const, TPropertySet&(TClass::* setter)())
+                : getter_(getter)
                 , setter_(setter) {}
 
             virtual const Type& GetType() const noexcept override {
@@ -879,13 +815,7 @@ namespace syntropy
         /************************************************************************/
 
         template <typename... TAccessors>
-        PropertyDefinitionT<TAccessors...> MakePropertyDefinition(BaseProperty& subject, TAccessors... accessors)
-        {
-            return PropertyDefinitionT<TAccessors...>(subject, accessors...);
-        }
-
-        template <typename... TAccessors>
-        PropertyDefinitionT<TAccessors...>::PropertyDefinitionT(BaseProperty& subject, TAccessors... accessors)
+        PropertyDefinitionT<TAccessors...>::PropertyDefinitionT(Property& subject, TAccessors... accessors)
             : subject_(subject)
             , accessors_(std::forward<TAccessors>(accessors)...)
         {

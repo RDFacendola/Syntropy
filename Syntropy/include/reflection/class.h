@@ -335,11 +335,9 @@ namespace syntropy
                 SYNTROPY_ERROR((ReflectionCtx), "A property named '", property_name, "' was already defined in the class '", subject_.default_name_, "'.");
             }
 
-            auto property_definition = Property::MakeProperty(property_name, accessors...);
+            subject_.properties_.emplace_back(property_name, accessors...);                             // Create a new property.
 
-            subject_.properties_.push_back(std::move(property_definition.property_));       // Store the property.
-
-            return property_definition.definition_;                                         // Return the definition so that the caller can extend the property.
+            return PropertyDefinitionT<TAccessors...>(subject_.properties_.back(), accessors...);       // Return a definition to allow property extensibility.
         }
 
         template <typename TClass>
