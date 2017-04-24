@@ -44,11 +44,31 @@ namespace syntropy
 
         public:
 
-            /// \brief Create a new named property.
+            /// \brief Create a new property from member field.
             /// \param name Name of the property.
-            /// \param accessors Property accessors.
-            template <typename... TAccessors>
-            Property(const HashedString& name, TAccessors... accessors);
+            /// \param field Pointer to a member field.
+            template <typename TClass, typename TField>
+            Property(const HashedString& name, TField(TClass::* field));
+
+            /// \brief Create a new property from a read-only getter.
+            /// \param name Name of the property.
+            /// \param getter Pointer to the member function used as property getter.
+            template <typename TClass, typename TProperty>
+            Property(const HashedString& name, TProperty(TClass::* getter)() const);
+
+            /// \brief Create a new property from a getter\setter pair.
+            /// \param name Name of the property.
+            /// \param getter Pointer to the member function used as property getter.
+            /// \param getter Pointer to the member function used as property setter.
+            template <typename TClass, typename TPropertyGetter, typename TPropertySetter>
+            Property(const HashedString& name, TPropertyGetter(TClass::* getter)() const, void (TClass::* setter)(TPropertySetter));
+
+            /// \brief Create a new property from a getter\setter pair.
+            /// \param name Name of the property.
+            /// \param getter Pointer to the member function used as const accessor to the property.
+            /// \param getter Pointer to the member function used as non-const accessor to the property.
+            template <typename TClass, typename TProperty>
+            Property(const HashedString& name, const TProperty&(TClass::* getter)() const, TProperty& (TClass::* setter)());
 
             /// \brief Move constructor.
             Property(Property&& other);
@@ -110,6 +130,8 @@ namespace syntropy
 
             HashedString name_;                                             ///< \brief Property name.
 
+            const Type& type_;                                              ///< \brief Underlying property type.
+
             std::unordered_map<std::type_index, linb::any> interfaces_;     ///< \brief Set of interfaces assigned to the property.
 
             std::unique_ptr<BaseProperty> property_;                        ///< \brief Concrete property.
@@ -133,10 +155,6 @@ namespace syntropy
 
             /// \brief Virtual destructor.
             virtual ~BaseProperty() = default;
-
-            /// \brief Get the property type.
-            /// \brief Returns the property type.
-            virtual const Type& GetType() const noexcept = 0;
 
             /// \brief Get the property value.
             /// \param instance Instance the property refers to.
@@ -197,9 +215,9 @@ namespace syntropy
             template <typename TFunctor, size_t... ns>
             void ApplyFunctor(TFunctor&& functor, sequence<ns...>);
 
-            Property& subject_;                         ///< \brief Property this definition refers to.
+            Property& subject_;                                         ///< \brief Property this definition refers to.
 
-            std::tuple<TAccessors...> accessors_;       ///< \brief Property accessors.
+            std::tuple<TAccessors...> accessors_;                       ///< \brief Property accessors.
 
         };
 
@@ -571,10 +589,46 @@ namespace syntropy
         /* PROPERTY                                                             */
         /************************************************************************/
 
+        // TODO: Remove this function!
         template <typename... TAccessors>
-        Property::Property(const HashedString& name, TAccessors... accessors)
+        std::unique_ptr<PropertyT<TAccessors...>> MakePropertyT(TAccessors... accessors)
+        {
+            return std::make_unique<PropertyT<TAccessors...>>(std::forward<TAccessors>(accessors)...);
+        }
+
+        template <typename TClass, typename TField>
+        Property::Property(const HashedString& name, TField(TClass::* field))
             : name_(name)
-            , property_(std::make_unique<PropertyT<TAccessors...>>(std::forward<TAccessors>(accessors)...))
+            , type_(TypeOf<TField>())
+            , property_(MakePropertyT(field))
+        {
+
+        }
+
+        template <typename TClass, typename TProperty>
+        Property::Property(const HashedString& name, TProperty(TClass::* getter)() const)
+            : name_(name)
+            , type_(TypeOf<remove_reference_cv_t<TProperty>>())
+            , property_(MakePropertyT(getter))
+        {
+
+        }
+
+        template <typename TClass, typename TPropertyGetter, typename TPropertySetter>
+        Property::Property(const HashedString& name, TPropertyGetter(TClass::* getter)() const, void (TClass::* setter)(TPropertySetter))
+            : name_(name)
+            , type_(TypeOf<remove_reference_cv_t<TPropertyGetter>>())
+            , property_(MakePropertyT(getter, setter))
+        {
+            static_assert(std::is_same_v<remove_reference_cv_t<TPropertyGetter>, remove_reference_cv_t<TPropertySetter>>, 
+                          "TPropertyGetter and TPropertySetter must refer to the same underlying type (regardless of reference and qualifiers)");
+        }
+
+        template <typename TClass, typename TProperty>
+        Property::Property(const HashedString& name, const TProperty&(TClass::* getter)() const, TProperty& (TClass::* setter)())
+            : name_(name)
+            , type_(TypeOf<TProperty>())
+            , property_(MakePropertyT(getter, setter))
         {
 
         }
@@ -626,12 +680,6 @@ namespace syntropy
             PropertyT(TField(TClass::* field))
                 : field_(field) {}
 
-            virtual const Type& GetType() const noexcept override {
-
-                return TypeOf<TField>();
-
-            }
-
         private:
 
             virtual bool Get(Instance instance, Instance value) const override {
@@ -671,12 +719,6 @@ namespace syntropy
 
             PropertyT(TProperty(TClass::* getter)() const)
                 : getter_(getter) {}
-
-            virtual const Type& GetType() const noexcept override {
-
-                return TypeOf<std::remove_reference_t<TProperty>>();
-
-            }
 
         private:
 
@@ -720,12 +762,6 @@ namespace syntropy
             PropertyT(TPropertyGet(TClass::* getter)() const, TAny(TClass::* setter)(TPropertySet))
                 : getter_(getter)
                 , setter_(setter) {}
-
-            virtual const Type& GetType() const noexcept override {
-
-                return TypeOf<std::remove_cv_t<std::remove_reference_t<TPropertyGet>>>();
-
-            }
 
         private:
 
@@ -771,12 +807,6 @@ namespace syntropy
             PropertyT(const TPropertyGet&(TClass::* getter)() const, TPropertySet&(TClass::* setter)())
                 : getter_(getter)
                 , setter_(setter) {}
-
-            virtual const Type& GetType() const noexcept override {
-
-                return TypeOf<TPropertyGet>();
-
-            }
 
         private:
 

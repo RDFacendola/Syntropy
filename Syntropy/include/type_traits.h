@@ -386,4 +386,12 @@ namespace syntropy {
     template <typename TType, typename TReplace>
     using replace_class_name_t = typename replace_class_name<TType, TReplace>::type;
     
+    /************************************************************************/
+    /* UTILITIES                                                            */
+    /************************************************************************/
+
+    /// \brief Type equal to TType without references and qualifiers.
+    template <typename TType>
+    using remove_reference_cv_t = std::remove_cv_t<std::remove_reference_t<TType>>;
+
 }
