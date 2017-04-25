@@ -66,6 +66,8 @@
     <ClInclude Include="include\serialization\serialization.h" />
     <ClInclude Include="include\containers\range.h" />
     <ClInclude Include="include\reflection\class_interfaces.h" />
+    <ClInclude Include="include\reflection\property_interfaces.h" />
+    <ClInclude Include="include\containers\interface_container.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

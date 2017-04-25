@@ -9,6 +9,7 @@
 #include "type_traits.h"
 
 #include "containers/hashed_string.h"
+#include "containers/interface_container.h"
 
 #include "reflection/reflection.h"
 #include "reflection/instance.h"
@@ -17,8 +18,6 @@
 
 #include "diagnostics/log.h"
 
-#include <memory>
-#include <unordered_map>
 #include <vector>
 #include <algorithm>
 
@@ -104,17 +103,17 @@ namespace syntropy
             template <typename TClass>
             Class(std::identity<TClass>);
 
-            HashedString default_name_;                                         ///< \brief Default class name.
+            HashedString default_name_;                     ///< \brief Default class name.
 
-            std::vector<HashedString> name_aliases_;                            ///< \brief Class name aliases.
+            std::vector<HashedString> name_aliases_;        ///< \brief Class name aliases.
 
-            std::vector<const Class*> base_classes_;                            ///< \brief List of all base classes.
+            std::vector<const Class*> base_classes_;        ///< \brief List of all base classes.
 
-            std::vector<Property> properties_;                                  ///< \brief Class properties.
+            std::vector<Property> properties_;              ///< \brief Class properties.
 
-            std::unordered_map<std::type_index, linb::any> interfaces_;         ///< \brief Set of interfaces supported by this class.
+            InterfaceContainer<> interfaces_;               ///< \brief Interfaces assigned to this class.
 
-            bool is_abstract_;                                                  ///< \brief Whether the class is abstract or not.
+            bool is_abstract_;                              ///< \brief Whether the class is abstract or not.
 
         };
 
@@ -173,10 +172,10 @@ namespace syntropy
             PropertyDefinitionT<TAccessors...> DefineProperty(const HashedString& property_name, TAccessors... accessors);
 
             /// \brief Add a new interface to the class.
-            /// The method creates an instance of TInstance using TArgs as construction parameters. Only one interface of type TInstance can be added per class.
-            /// TInstance must be copy constructible.
+            /// The method creates an instance of TConcrete using TArgs as construction parameters. Only one interface of type TInterface can be added per class.
+            /// TConcrete must be equal to or derive from TInterface.
             /// \param arguments Arguments to pass to the constructor of TInterface.
-            template <typename TInterface, typename... TArgs>
+            template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
             ClassDefinitionT& AddInterface(TArgs&&... arguments);
 
             /// \brief Apply a functor to this class definition.
@@ -242,13 +241,7 @@ namespace syntropy
         template <typename TInterface>
         const TInterface* Class::GetInterface() const
         {
-            auto interface_type = std::type_index(typeid(TInterface));
-
-            auto it = interfaces_.find(interface_type);
-
-            return it != interfaces_.end() ?
-                linb::any_cast<TInterface>(&(it->second)) :
-                nullptr;
+            return interfaces_.GetInterface<TInterface>();
         }
 
         template <typename TType>
@@ -341,25 +334,12 @@ namespace syntropy
         }
 
         template <typename TClass>
-        template <typename TInterface, typename... TArgs>
+        template <typename TInterface, typename TConcrete, typename... TArgs>
         ClassDefinitionT<TClass>& ClassDefinitionT<TClass>::AddInterface(TArgs&&... arguments)
         {
-            auto interface_type = std::type_index(typeid(TInterface));
-
-            if (subject_.interfaces_.find(interface_type) == subject_.interfaces_.end())
+            if (subject_.interfaces_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...) == nullptr)
             {
-                subject_.interfaces_.insert
-                (
-                    std::make_pair
-                    (
-                        interface_type,
-                        linb::any(TInterface(std::forward<TArgs>(arguments)...))
-                    )
-                );
-            }
-            else
-            {
-                SYNTROPY_ERROR((ReflectionCtx), "An interface '", interface_type.name(), "' was already added to the class '", subject_.default_name_, "'. The new interface has been ignored.");
+                SYNTROPY_ERROR((ReflectionCtx), "An interface '", typeid(TInterface).name(), "' was already added to the class '", subject_.default_name_, "'. The new interface has been ignored.");
             }
 
             return *this;
