@@ -101,7 +101,7 @@ namespace syntropy
             /// \brief Create a new class.
             /// \param definition Definition of the class.
             template <typename TClass>
-            Class(std::identity<TClass>);
+            Class(tag_t<TClass>);
 
             HashedString default_name_;                     ///< \brief Default class name.
 
@@ -218,13 +218,13 @@ namespace syntropy
         {
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
 
-            static Class instance(std::identity<TClass>{});
+            static Class instance(tag_t<TClass>{});
 
             return instance;
         }
 
         template <typename TClass>
-        Class::Class(std::identity<TClass>)
+        Class::Class(tag_t<TClass>)
             : default_name_(ClassDeclaration<TClass>::GetName())
             , is_abstract_(std::is_abstract<TClass>::value)
         {

@@ -14,7 +14,8 @@
 #include <unordered_set>
 #include <unordered_map>
 
-namespace syntropy {
+namespace syntropy
+{
 
     //////////////// META ////////////////
 
@@ -31,13 +32,15 @@ namespace syntropy {
 
     };
 
-    /// \brief Template version of "don't care".
-    /// \author Raffaele D. Facendola - April 2017
+    /// \brief Tag type used to declare a type when automatic type deduction cannot be used.
     template <typename TType>
-    struct tag : _
+    struct tag_t
     {
-
+        explicit tag_t() = default;
     };
+
+    template <typename TType>
+    constexpr tag_t<TType> tag{};
 
     //////////////// STREAM CAPABILITIES ////////////////
 
