@@ -10,6 +10,7 @@
 
 #include "reflection/reflection.h"
 #include "reflection/class_interfaces.h"
+#include "reflection/property_interfaces.h"
 
 #include "reflection/fundamental_types.h"
 #include "reflection/core_types.h"
@@ -52,6 +53,43 @@ test();
 //std::cout << "\n";
 
 struct Blob{
+
+
+    Blob()
+        : blob_(0)
+    {
+        //std::cout << "Blob - Default constructor.\n";
+    }
+
+    Blob(const Blob& other)
+        : blob_(other.blob_)
+    {
+        //std::cout << "Blob - Copy constructor.\n";
+    }
+
+    Blob(Blob&& other)
+        : blob_(std::move(other.blob_))
+    {
+        //std::cout << "Blob - Move constructor.\n";
+    }
+
+    Blob& operator=(const Blob& other)
+    {
+        Blob(other).Swap(*this);
+        return *this;
+    }
+
+    Blob& operator=(Blob&& other)
+    {
+        Swap(other);
+        //Blob(std::move(other)).Swap(*this);
+        return *this;
+    }
+
+    void Swap(Blob& other) noexcept
+    {
+        std::swap(blob_, other.blob_);
+    }
 
     virtual ~Blob() = default;
 
@@ -108,18 +146,17 @@ public:
         , const_pointer_(nullptr)
         , boolean_(false) {}
 
-    Foo(const Foo& other)
-        : value_(other.value_)
-        , const_value_(other.const_value_)
-        , pointer_(other.pointer_)
-        , pointer_to_const_(other.pointer_to_const_)
-        , const_pointer_(other.const_pointer_)
-        , blob_(other.blob_)
-        , boolean_(other.boolean_) {
-
-        std::cout << "Copy ctor!\n";
-
-    }
+    Foo(const Foo& other) = delete;
+    //    : value_(other.value_)
+    //    , const_value_(other.const_value_)
+    //    , pointer_(other.pointer_)
+    //    , pointer_to_const_(other.pointer_to_const_)
+    //    , const_pointer_(other.const_pointer_)
+    //    , blob_(other.blob_)
+    //    , boolean_(other.boolean_)
+    //{
+    //    std::cout << "Copy ctor!\n";
+    //}
 
     float GetValue() const {
 
@@ -251,8 +288,8 @@ public:
     FooBar() noexcept
         : Foo() {}
 
-    FooBar(const FooBar& other)
-        : Foo(other) {}
+    //FooBar(const FooBar& other)
+    //    : Foo(other) {}
 
 };
 
@@ -284,9 +321,6 @@ public:
     void operator()(TDefinition& definition) const {
 
         using syntropy::serialization::JSONRead;
-        using syntropy::reflection::DefaultConstruct;
-
-        definition << DefaultConstruct();
 
         definition.DefineProperty("blob", &Blob::blob_) << JSONRead();
     }
@@ -310,9 +344,6 @@ public:
     void operator()(TDefinition& definition) const {
 
         using syntropy::serialization::JSONRead;
-        using syntropy::reflection::DefaultConstruct;
-
-        definition << DefaultConstruct();
 
         definition.DefineBaseClass<Blob>();
         definition.DefineProperty("derived_blob", &DerivedBlob::derived_blob_) << JSONRead();
@@ -332,12 +363,6 @@ public:
 
     }
 
-    void operator()(ClassDefinitionT<Bar>& definition) const {
-
-        definition << syntropy::reflection::DefaultConstruct();
-
-    }
-
 };
 
 template <>
@@ -353,8 +378,6 @@ public:
 
     void operator()(ClassDefinitionT<Foo>& definition) const {
         
-        definition << syntropy::reflection::DefaultConstruct();
-
         using syntropy::serialization::JSONRead;
 
         definition.DefineBaseClass<Bar>();
@@ -367,6 +390,7 @@ public:
         definition.DefineProperty("s_blob", &Foo::s_blob_) << JSONRead();
         
         definition.DefineProperty("float_value", &Foo::value_) << JSONRead();
+
         definition.DefineProperty("int_value", &Foo::value2_) << JSONRead();
         definition.DefineProperty("const_value", &Foo::const_value_) << JSONRead();
         definition.DefineProperty("pointer", &Foo::pointer_) << JSONRead();
@@ -375,6 +399,8 @@ public:
         definition.DefineProperty("boolean", &Foo::boolean_) << JSONRead();
         definition.DefineProperty("vector_int", &Foo::vector_int_) << JSONRead();
         definition.DefineProperty("map", &Foo::map_) << JSONRead();
+
+        definition.DefineProperty("blob_value", &Foo::blob_);
         
         definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue) << JSONRead();
         definition.DefineProperty("ConstValue", &Foo::GetConstValue) << JSONRead();
@@ -413,8 +439,6 @@ public:
 
     template <typename TDefinition>
     void operator()(TDefinition& definition) const {
-
-        definition << syntropy::reflection::DefaultConstruct();
 
         definition.DefineBaseClass<Foo>();
 
@@ -509,96 +533,122 @@ public:
 
     void FieldTest() const {
 
+        using syntropy::reflection::Readable;
+        using syntropy::reflection::Writeable;
+
         Foo foo;
+        Foo foo2;
 
-        float x = 0;
-        float* p = &x;
-        const float* q = &x;
+        {
+            auto property = foo_class_.GetProperty("blob_value");
 
-        TEST_TRUE(field_float_value_->Set(foo, 40.2f));
-        TEST_TRUE(field_float_value_->Get(foo, x));
+            auto& writer = *property->GetInterface<Writeable>();
+            auto& reader = *property->GetInterface<Readable>();
 
-        TEST_FALSE(field_const_value_->Set(foo, x));
-        TEST_TRUE(field_const_value_->Get(foo, x));
+            //auto FooAny = syntropy::reflection::MakeAny<Foo*>(&foo);
 
-        TEST_TRUE(field_pointer_->Set(foo, p));
-        TEST_TRUE(field_pointer_->Get(foo, p));
+            // 1. Copy property values from one object to another (done)
+            // 1.1 What about movable-only values?
+            // 2. Drill down an object (aka take an object, enumerate properties recursively)
+            // 3. Display property values. (StreamExtractable?)
 
-        TEST_TRUE(field_pointer_to_const_->Set(foo, q));
-        TEST_TRUE(field_pointer_to_const_->Get(foo, q));
+            foo.blob_.blob_ = 10;
+            foo2.blob_.blob_ = 20;
 
-        TEST_FALSE(field_const_pointer_->Set(foo, p));
-        TEST_TRUE(field_const_pointer_->Get(foo, p));
+            writer(foo2, reader(foo));  // Copy a property from "foo" to "foo2" via reflection.
+
+            TEST_TRUE(foo.blob_.blob_ == foo2.blob_.blob_);
+
+        }
+
+        {
+            auto property = foo_class_.GetProperty("float_value");
+
+            auto& writer = *property->GetInterface<Writeable>();
+
+            foo.value_ = 10.0f;
+
+            writer(foo, 5.0f);
+
+            TEST_TRUE(foo.value_ == 5.0f);
+        }
+
+        {
+            auto property = foo_class_.GetProperty("const_value");
+
+            auto writer = property->GetInterface<Writeable>();
+
+            TEST_TRUE(writer == nullptr);
+        }
 
     }
 
     void PropertyTest() const  {
 
+        using syntropy::reflection::Readable;
+        using syntropy::reflection::Writeable;
+
         Foo foo;
+        Foo foo2;
 
-        Blob bb;
+        {
+            auto property = foo_class_.GetProperty("Value");
 
-        float x = 100;
-        float* p = &x;
-        const float* q = &x;
+            auto& writer = *property->GetInterface<Writeable>();
+            auto& reader = *property->GetInterface<Readable>();
 
-        const float y(10);
+            foo.SetValue(666.0f);
+            foo2.SetValue(800.0f);
 
-        TEST_TRUE(property_value_->Set(foo, y));
-        TEST_TRUE(property_value_->Get(foo, x));
+            writer(foo2, reader(foo));  // Copy a property from "foo" to "foo2" via reflection.
 
-        TEST_FALSE(property_const_value_->Set(foo, y));
-        TEST_TRUE(property_const_value_->Get(foo, x));
+            TEST_TRUE(foo.GetValue() == foo2.GetValue());
 
-        TEST_TRUE(property_pointer_->Set(foo, p));
-        TEST_TRUE(property_pointer_->Get(foo, p));
+            writer(foo2, 100.0f);
 
-        TEST_TRUE(property_pointer_to_const_->Set(foo, q));
-        TEST_TRUE(property_pointer_to_const_->Get(foo, q));
+            TEST_TRUE(foo2.GetValue() == 100.0f);
 
-        TEST_FALSE(property_const_pointer_->Set(foo, p));
-        TEST_TRUE(property_const_pointer_->Get(foo, p));
+            float x = 200.0f;
 
-        TEST_TRUE(property_pod_->Set(foo, bb));
-        TEST_TRUE(property_pod_->Get(foo, bb));
+            writer(foo2, x);
 
-        TEST_TRUE(property_accessor_->Set(foo, bb));
-        TEST_TRUE(property_accessor_->Get(foo, bb));
+            TEST_TRUE(foo2.GetValue() == x);
+        }
 
     }
 
     void MoveTest() const {
 
-        Foo foo;
+        //Foo foo;
 
-        auto up = std::make_unique<Blob>();
+        //auto up = std::make_unique<Blob>();
 
-        up->blob_ = 600;
-        TEST_FALSE(field_movable_->Set(foo, up));                   // up is lvalue reference, moving must be performed explicitly
-        TEST_TRUE(field_movable_->Set(foo, std::move(up)));         // calls move assignment
-        TEST_FALSE(field_movable_->Get(foo, up));                   // getters cannot modify the internal state of the object
-        TEST_TRUE(field_movable_->Move(foo, up));                   // modify foo state
+        //up->blob_ = 600;
+        //TEST_FALSE(field_movable_->Set(foo, up));                   // up is lvalue reference, moving must be performed explicitly
+        //TEST_TRUE(field_movable_->Set(foo, std::move(up)));         // calls move assignment
+        //TEST_FALSE(field_movable_->Get(foo, up));                   // getters cannot modify the internal state of the object
+        //TEST_TRUE(field_movable_->Move(foo, up));                   // modify foo state
 
-        up = std::make_unique<Blob>();
-        up->blob_ = 500;
-        TEST_FALSE(property_movable_->Set(foo, up));                // up is lvalue reference, moving must be performed explicitly
-        TEST_TRUE(property_movable_->Set(foo, std::move(up)));      // calls move assignment
-        TEST_FALSE(property_movable_->Get(foo, up));                // getters cannot modify the internal state of the object
-        TEST_FALSE(property_movable_->Move(foo, up));               // cant modify foo state since the property only provides const access to the field
+        //up = std::make_unique<Blob>();
+        //up->blob_ = 500;
+        //TEST_FALSE(property_movable_->Set(foo, up));                // up is lvalue reference, moving must be performed explicitly
+        //TEST_TRUE(property_movable_->Set(foo, std::move(up)));      // calls move assignment
+        //TEST_FALSE(property_movable_->Get(foo, up));                // getters cannot modify the internal state of the object
+        //TEST_FALSE(property_movable_->Move(foo, up));               // cant modify foo state since the property only provides const access to the field
 
-        up = std::make_unique<Blob>();
-        up->blob_ = 400;
-        TEST_FALSE(property_movable_accessor_->Set(foo, up));                   // up is lvalue reference, moving must be performed explicitly
-        TEST_TRUE(property_movable_accessor_->Set(foo, std::move(up)));         // calls move assignment
-        TEST_FALSE(property_movable_accessor_->Get(foo, up));                   // Getters cannot modify the internal state of the object
-        TEST_TRUE(property_movable_accessor_->Move(foo, up));                   // modify foo state
+        //up = std::make_unique<Blob>();
+        //up->blob_ = 400;
+        //TEST_FALSE(property_movable_accessor_->Set(foo, up));                   // up is lvalue reference, moving must be performed explicitly
+        //TEST_TRUE(property_movable_accessor_->Set(foo, std::move(up)));         // calls move assignment
+        //TEST_FALSE(property_movable_accessor_->Get(foo, up));                   // Getters cannot modify the internal state of the object
+        //TEST_TRUE(property_movable_accessor_->Move(foo, up));                   // modify foo state
 
-        Blob bb;
-        bb.blob_ = 1000;
-        TEST_TRUE(property_pod_->Set(foo, std::move(bb)));          // calls move assignment
+        //Blob bb;
+        //bb.blob_ = 1000;
+        //TEST_TRUE(property_pod_->Set(foo, std::move(bb)));          // calls move assignment
 
-        bb.blob_ = 500;
-        TEST_TRUE(property_pod_->Move(foo, bb));                    // may affect foo state, fallback to "get" if needed
+        //bb.blob_ = 500;
+        //TEST_TRUE(property_pod_->Move(foo, bb));                    // may affect foo state, fallback to "get" if needed
 
     }
 
@@ -609,11 +659,11 @@ public:
 
         //foo.boolean_ = false;
 
-        TEST_TRUE(field_float_value_->Set(foo, 512) &&                                // From int to float.
-                  foo.value_ == 512.0f);                        
+        //TEST_TRUE(field_float_value_->Set(foo, 512) &&                                // From int to float.
+        //          foo.value_ == 512.0f);                        
 
-        TEST_TRUE(field_int_value_->Set(foo, 1024.5632f) &&                           // From float to int.
-                  foo.value2_ == 1024);
+        //TEST_TRUE(field_int_value_->Set(foo, 1024.5632f) &&                           // From float to int.
+        //          foo.value2_ == 1024);
 
 //         int int_val;
 //
@@ -659,86 +709,86 @@ public:
 
     void PolymorphismTest() const {
 
-        FooBar foobar;
-        Bar bar;
-                
-        float x = 0;
-        float* p = &x;
-        const float* q = &x;
-        const float y(10);
-        Blob bb;
+        //FooBar foobar;
+        //Bar bar;
+        //        
+        //float x = 0;
+        //float* p = &x;
+        //const float* q = &x;
+        //const float y(10);
+        //Blob bb;
 
-        // Applying to a derived class
+        //// Applying to a derived class
 
-        TEST_TRUE(field_float_value_->Set(foobar, 40.2f));
-        TEST_TRUE(field_float_value_->Get(foobar, x));
+        //TEST_TRUE(field_float_value_->Set(foobar, 40.2f));
+        //TEST_TRUE(field_float_value_->Get(foobar, x));
 
-        TEST_FALSE(field_const_value_->Set(foobar, x));
-        TEST_TRUE(field_const_value_->Get(foobar, x));
+        //TEST_FALSE(field_const_value_->Set(foobar, x));
+        //TEST_TRUE(field_const_value_->Get(foobar, x));
 
-        TEST_TRUE(field_pointer_->Set(foobar, p));
-        TEST_TRUE(field_pointer_->Get(foobar, p));
+        //TEST_TRUE(field_pointer_->Set(foobar, p));
+        //TEST_TRUE(field_pointer_->Get(foobar, p));
 
-        TEST_TRUE(field_pointer_to_const_->Set(foobar, q));
-        TEST_TRUE(field_pointer_to_const_->Get(foobar, q));
+        //TEST_TRUE(field_pointer_to_const_->Set(foobar, q));
+        //TEST_TRUE(field_pointer_to_const_->Get(foobar, q));
 
-        TEST_FALSE(field_const_pointer_->Set(foobar, p));
-        TEST_TRUE(field_const_pointer_->Get(foobar, p));
+        //TEST_FALSE(field_const_pointer_->Set(foobar, p));
+        //TEST_TRUE(field_const_pointer_->Get(foobar, p));
 
-        TEST_TRUE(property_value_->Set(foobar, y));
-        TEST_TRUE(property_value_->Get(foobar, x));
+        //TEST_TRUE(property_value_->Set(foobar, y));
+        //TEST_TRUE(property_value_->Get(foobar, x));
 
-        TEST_FALSE(property_const_value_->Set(foobar, y));
-        TEST_TRUE(property_const_value_->Get(foobar, x));
+        //TEST_FALSE(property_const_value_->Set(foobar, y));
+        //TEST_TRUE(property_const_value_->Get(foobar, x));
 
-        TEST_TRUE(property_pointer_->Set(foobar, p));
-        TEST_TRUE(property_pointer_->Get(foobar, p));
+        //TEST_TRUE(property_pointer_->Set(foobar, p));
+        //TEST_TRUE(property_pointer_->Get(foobar, p));
 
-        TEST_TRUE(property_pointer_to_const_->Set(foobar, q));
-        TEST_TRUE(property_pointer_to_const_->Get(foobar, q));
+        //TEST_TRUE(property_pointer_to_const_->Set(foobar, q));
+        //TEST_TRUE(property_pointer_to_const_->Get(foobar, q));
 
-        TEST_FALSE(property_const_pointer_->Set(foobar, p));
-        TEST_TRUE(property_const_pointer_->Get(foobar, p));
+        //TEST_FALSE(property_const_pointer_->Set(foobar, p));
+        //TEST_TRUE(property_const_pointer_->Get(foobar, p));
 
-        TEST_TRUE(property_pod_->Set(foobar, bb));
-        TEST_TRUE(property_pod_->Get(foobar, bb));
+        //TEST_TRUE(property_pod_->Set(foobar, bb));
+        //TEST_TRUE(property_pod_->Get(foobar, bb));
 
-        TEST_TRUE(property_accessor_->Set(foobar, bb));
-        TEST_TRUE(property_accessor_->Get(foobar, bb));
+        //TEST_TRUE(property_accessor_->Set(foobar, bb));
+        //TEST_TRUE(property_accessor_->Get(foobar, bb));
 
-        // Applying to the base class
+        //// Applying to the base class
 
-        TEST_FALSE(field_float_value_->Set(bar, 40.2f));
-        TEST_FALSE(field_float_value_->Get(bar, x));
+        //TEST_FALSE(field_float_value_->Set(bar, 40.2f));
+        //TEST_FALSE(field_float_value_->Get(bar, x));
 
-        TEST_FALSE(field_const_value_->Get(bar, x));
+        //TEST_FALSE(field_const_value_->Get(bar, x));
 
-        TEST_FALSE(field_pointer_->Set(bar, p));
-        TEST_FALSE(field_pointer_->Get(bar, p));
+        //TEST_FALSE(field_pointer_->Set(bar, p));
+        //TEST_FALSE(field_pointer_->Get(bar, p));
 
-        TEST_FALSE(field_pointer_to_const_->Set(bar, q));
-        TEST_FALSE(field_pointer_to_const_->Get(bar, q));
+        //TEST_FALSE(field_pointer_to_const_->Set(bar, q));
+        //TEST_FALSE(field_pointer_to_const_->Get(bar, q));
 
-        TEST_FALSE(field_const_pointer_->Get(bar, p));
+        //TEST_FALSE(field_const_pointer_->Get(bar, p));
 
-        TEST_FALSE(property_value_->Set(bar, y));
-        TEST_FALSE(property_value_->Get(bar, x));
+        //TEST_FALSE(property_value_->Set(bar, y));
+        //TEST_FALSE(property_value_->Get(bar, x));
 
-        TEST_FALSE(property_const_value_->Get(bar, x));
+        //TEST_FALSE(property_const_value_->Get(bar, x));
 
-        TEST_FALSE(property_pointer_->Set(bar, p));
-        TEST_FALSE(property_pointer_->Get(bar, p));
+        //TEST_FALSE(property_pointer_->Set(bar, p));
+        //TEST_FALSE(property_pointer_->Get(bar, p));
 
-        TEST_FALSE(property_pointer_to_const_->Set(bar, q));
-        TEST_FALSE(property_pointer_to_const_->Get(bar, q));
+        //TEST_FALSE(property_pointer_to_const_->Set(bar, q));
+        //TEST_FALSE(property_pointer_to_const_->Get(bar, q));
 
-        TEST_FALSE(property_const_pointer_->Get(bar, p));
+        //TEST_FALSE(property_const_pointer_->Get(bar, p));
 
-        TEST_FALSE(property_pod_->Set(bar, bb));
-        TEST_FALSE(property_pod_->Get(bar, bb));
+        //TEST_FALSE(property_pod_->Set(bar, bb));
+        //TEST_FALSE(property_pod_->Get(bar, bb));
 
-        TEST_FALSE(property_accessor_->Set(bar, bb));
-        TEST_FALSE(property_accessor_->Get(bar, bb));
+        //TEST_FALSE(property_accessor_->Set(bar, bb));
+        //TEST_FALSE(property_accessor_->Get(bar, bb));
 
     }
 
@@ -757,131 +807,41 @@ public:
         auto bar = (*bar_ctor)();
         auto foobar = (*foobar_ctor)();
 
-        FooBar bee;
-        FooBar* beep = &bee;
+        //FooBar bee;
+        //FooBar* beep = &bee;
 
-        auto foobarp = syntropy::reflection::MakeInstance(beep);
+        //auto foobarp = syntropy::reflection::MakeInstance(beep);
 
         TEST_TRUE(bar.As<Bar>() != nullptr);
         TEST_FALSE(bar.As<Foo>() != nullptr);
         TEST_FALSE(bar.As<FooBar>() != nullptr);
 
-        TEST_TRUE(foobar.As<Bar>() != nullptr);
-        TEST_TRUE(foobar.As<Foo>() != nullptr);
-        TEST_TRUE(foobar.As<FooBar>() != nullptr);
-
-        TEST_TRUE(foobar.As<FooBar**>() == nullptr);
-        TEST_TRUE(foobar.As<FooBar**>() == nullptr);
-        //TEST_TRUE(foobar.As<FooBar[1][2]>() == nullptr);
-                
-        TEST_TRUE(foobarp.As<FooBar>() == nullptr);
-        TEST_TRUE(foobarp.As<FooBar*>() != nullptr);
-        TEST_TRUE(foobarp.As<FooBar**>() == nullptr);      
-
-        float x = 0;
-        float* p = &x;
-        const float* q = &x;
-        const float y(10);
-        Blob bb;
-        
-        // Applying to a derived class
-
-        TEST_TRUE(field_float_value_->Set(foobar, 40.2f));
-        TEST_TRUE(field_float_value_->Get(foobar, x));
-
-        TEST_FALSE(field_const_value_->Set(foobar, x));
-        TEST_TRUE(field_const_value_->Get(foobar, x));
-
-        TEST_TRUE(field_pointer_->Set(foobar, p));
-        TEST_TRUE(field_pointer_->Get(foobar, p));
-
-        TEST_TRUE(field_pointer_to_const_->Set(foobar, q));
-        TEST_TRUE(field_pointer_to_const_->Get(foobar, q));
-
-        TEST_FALSE(field_const_pointer_->Set(foobar, p));
-        TEST_TRUE(field_const_pointer_->Get(foobar, p));
-
-        TEST_TRUE(property_value_->Set(foobar, y));
-        TEST_TRUE(property_value_->Get(foobar, x));
-
-        TEST_FALSE(property_const_value_->Set(foobar, y));
-        TEST_TRUE(property_const_value_->Get(foobar, x));
-
-        TEST_TRUE(property_pointer_->Set(foobar, p));
-        TEST_TRUE(property_pointer_->Get(foobar, p));
-
-        TEST_TRUE(property_pointer_to_const_->Set(foobar, q));
-        TEST_TRUE(property_pointer_to_const_->Get(foobar, q));
-
-        TEST_FALSE(property_const_pointer_->Set(foobar, p));
-        TEST_TRUE(property_const_pointer_->Get(foobar, p));
-
-        TEST_TRUE(property_pod_->Set(foobar, bb));
-        TEST_TRUE(property_pod_->Get(foobar, bb));
-
-        TEST_TRUE(property_accessor_->Set(foobar, bb));
-        TEST_TRUE(property_accessor_->Get(foobar, bb));
-
-        // Applying to the base class
-
-        TEST_FALSE(field_float_value_->Set(bar, 40.2f));
-        TEST_FALSE(field_float_value_->Get(bar, x));
-
-        TEST_FALSE(field_const_value_->Get(bar, x));
-
-        TEST_FALSE(field_pointer_->Set(bar, p));
-        TEST_FALSE(field_pointer_->Get(bar, p));
-
-        TEST_FALSE(field_pointer_to_const_->Set(bar, q));
-        TEST_FALSE(field_pointer_to_const_->Get(bar, q));
-
-        TEST_FALSE(field_const_pointer_->Get(bar, p));
-
-        TEST_FALSE(property_value_->Set(bar, y));
-        TEST_FALSE(property_value_->Get(bar, x));
-
-        TEST_FALSE(property_const_value_->Get(bar, x));
-
-        TEST_FALSE(property_pointer_->Set(bar, p));
-        TEST_FALSE(property_pointer_->Get(bar, p));
-
-        TEST_FALSE(property_pointer_to_const_->Set(bar, q));
-        TEST_FALSE(property_pointer_to_const_->Get(bar, q));
-
-        TEST_FALSE(property_const_pointer_->Get(bar, p));
-
-        TEST_FALSE(property_pod_->Set(bar, bb));
-        TEST_FALSE(property_pod_->Get(bar, bb));
-
-        TEST_FALSE(property_accessor_->Set(bar, bb));
-        TEST_FALSE(property_accessor_->Get(bar, bb));
-
     }
 
     void ForwardingTest() {
 
-        using syntropy::reflection::Constructible;
+        //using syntropy::reflection::Constructible;
 
-        float x = 0;
+        //float x = 0;
 
-        FooBar foobar;
+        //FooBar foobar;
 
-        auto foobar_instance = syntropy::reflection::MakeInstance(foobar);
-        auto const_foobar_instance = syntropy::reflection::MakeConstInstance(foobar_instance);
+        //auto foobar_instance = syntropy::reflection::MakeInstance(foobar);
+        //auto const_foobar_instance = syntropy::reflection::MakeConstInstance(foobar_instance);
 
-        TEST_TRUE(field_float_value_->Set(foobar_instance, 100.0f) && foobar.value_ == 100.0f);
-        TEST_FALSE(field_float_value_->Set(const_foobar_instance, 200.0f) || foobar.value_ == 200.0f);                  // Const instance
-        //TEST_TRUE(field_float_value_->Set((*foobar_class_.GetInterface<Constructible<>>())(), 300.0f));                 // Also, leak :D
-        TEST_FALSE(field_float_value_->Set(MakeConstInstance(foobar), 400.0f) || foobar.value_ == 400.0f);              // Const instance
-        TEST_TRUE(field_float_value_->Set(foobar, 500.0f) && foobar.value_ == 500.0f);
-        //TEST_TRUE(field_float_value_->Set(MakeFooBar(), 999.0f));                                                     // r-value reference
+        //TEST_TRUE(field_float_value_->Set(foobar_instance, 100.0f) && foobar.value_ == 100.0f);
+        //TEST_FALSE(field_float_value_->Set(const_foobar_instance, 200.0f) || foobar.value_ == 200.0f);                  // Const instance
+        ////TEST_TRUE(field_float_value_->Set((*foobar_class_.GetInterface<Constructible<>>())(), 300.0f));                 // Also, leak :D
+        //TEST_FALSE(field_float_value_->Set(MakeConstInstance(foobar), 400.0f) || foobar.value_ == 400.0f);              // Const instance
+        //TEST_TRUE(field_float_value_->Set(foobar, 500.0f) && foobar.value_ == 500.0f);
+        ////TEST_TRUE(field_float_value_->Set(MakeFooBar(), 999.0f));                                                     // r-value reference
 
-        TEST_TRUE(field_float_value_->Get(foobar_instance, x));
-        TEST_TRUE(field_float_value_->Get(const_foobar_instance, x));
-        //TEST_TRUE(field_float_value_->Get((*foobar_class_.GetInterface<Constructible<>>())(), x));                      // Also, leak :D
-        TEST_TRUE(field_float_value_->Get(MakeConstInstance(foobar), x));
-        TEST_TRUE(field_float_value_->Get(foobar, x));
-        TEST_TRUE(field_float_value_->Get(MakeFooBar(), x));
+        //TEST_TRUE(field_float_value_->Get(foobar_instance, x));
+        //TEST_TRUE(field_float_value_->Get(const_foobar_instance, x));
+        ////TEST_TRUE(field_float_value_->Get((*foobar_class_.GetInterface<Constructible<>>())(), x));                      // Also, leak :D
+        //TEST_TRUE(field_float_value_->Get(MakeConstInstance(foobar), x));
+        //TEST_TRUE(field_float_value_->Get(foobar, x));
+        //TEST_TRUE(field_float_value_->Get(MakeFooBar(), x));
         
     }
 
@@ -978,18 +938,6 @@ public:
         TEST_TRUE(foo.GetBlob().blob_ == 47);
         TEST_FALSE(foo.const_value_ == 100.0f);
         //TEST_TRUE(dynamic_cast<DerivedBlob*>(foo.p_blob_) != nullptr);
-
-    }
-
-    FooBar MakeFooBar() {
-
-        return FooBar();
-
-    }
-
-    syntropy::reflection::Instance MakeConstInstance(const FooBar& foobar) {
-
-        return syntropy::reflection::MakeConstInstance(foobar);
 
     }
 

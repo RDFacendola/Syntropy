@@ -12,7 +12,6 @@ namespace syntropy {
             : name_(std::move(other.name_))
             , type_(other.type_)
             , interfaces_(std::move(other.interfaces_))
-            , property_(std::move(other.property_))
         {
 
         }
