@@ -209,7 +209,7 @@ namespace syntropy
 
             static_assert(std::is_constructible<TValue, const U&>::value, "TValue must be constructible by const reference.");
 
-            SYNTROPY_ASSERT(operand.GetType() == TypeOf<TValue>());
+            SYNTROPY_ASSERT(TypeOf<TValue>() == operand.GetType());
 
             return static_cast<TValue>(*AnyCast<U>(&operand));
         }
@@ -221,7 +221,7 @@ namespace syntropy
 
             static_assert(std::is_constructible<TValue, U&>::value, "TValue must be constructible by reference.");
 
-            SYNTROPY_ASSERT(operand.GetType() == TypeOf<TValue>());
+            SYNTROPY_ASSERT(TypeOf<TValue>() == operand.GetType());
 
             return static_cast<TValue>(*AnyCast<U>(&operand));
         }
@@ -231,9 +231,9 @@ namespace syntropy
         {
             using U = std::remove_cv_t<std::remove_reference_t<TValue>>;
 
-            static_assert(std::is_constructible<TValue, U>::value, "TValue must be constructible from vale.");
+            static_assert(std::is_constructible<TValue, U>::value, "TValue must be constructible from value.");
 
-            SYNTROPY_ASSERT(operand.GetType() == TypeOf<TValue>());
+            SYNTROPY_ASSERT(TypeOf<TValue>() == operand.GetType());
 
             return static_cast<TValue>(std::move(*AnyCast<U>(&operand)));
         }
@@ -241,14 +241,14 @@ namespace syntropy
         template<class TValue>
         const TValue* AnyCast(const Any* operand) noexcept
         {
-            return operand && operand->GetType() == TypeOf<TValue>() ?
-                std::addressof(static_cast<Any::HolderT<TValue>*>(operand->holder_)->value_) :
-                nullptr;
+            return AnyCast<TValue>(const_cast<Any*>(operand));
         }
 
         template<class TValue>
         TValue* AnyCast(Any* operand) noexcept
         {
+            static_assert(std::is_copy_constructible<std::decay_t<TValue>>::value, "std::decay<TValue> must be copy-constructible.");
+
             return operand && operand->GetType() == TypeOf<TValue>() ?
                 std::addressof(static_cast<Any::HolderT<TValue>*>(operand->holder_)->value_) :
                 nullptr;
