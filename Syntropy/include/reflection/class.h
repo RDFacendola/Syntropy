@@ -15,6 +15,7 @@
 #include "reflection/instance.h"
 #include "reflection/property.h"
 #include "reflection/method.h"
+#include "reflection/class_interfaces.h"
 
 #include "diagnostics/log.h"
 
@@ -230,11 +231,15 @@ namespace syntropy
         {
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
 
+            // Add common interfaces
+            ConditionalAddInterface<std::is_default_constructible<TClass>::value, Constructible<>>(interfaces_, tag_t<TClass>{});
+
             // Fill base classes, properties, methods and name aliases via an explicit class declaration. Optional.
             ClassDefinitionT<TClass> definition(*this);
 
             conditional_call(ClassDeclaration<TClass>{}, definition);
 
+            // Register the class to the reflection system.
             Reflection::GetInstance().Register(*this);
         }
 

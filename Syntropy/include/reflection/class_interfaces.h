@@ -9,6 +9,8 @@
 #include <functional>
 #include <type_traits>
 
+#include "type_traits.h"
+
 #include "reflection/instance.h"
 #include "reflection/class.h"
 
@@ -27,7 +29,7 @@ namespace syntropy
 
             /// \brief Create a new interface.
             template <typename TClass>
-            Constructible(std::identity<TClass>);
+            Constructible(tag_t<TClass>);
 
             /// \brief Instantiate a new object.
             /// \param arguments Arguments to pass to the constructor.
@@ -42,18 +44,6 @@ namespace syntropy
             static Instance Instantiate(TConstructorArguments... arguments);
 
             Instance(*instancer_)(TConstructorArguments...);                    /// \brief Functor used to instantiate the class.
-
-        };
-
-        /// \brief Functor object used to assign the interface Constructible<> to classes.
-        /// \author Raffaele D. Facendola - April 2017
-        struct DefaultConstruct
-        {
-
-            /// \brief Add a DefaultConstructible interface to the provided class.
-            /// \param class_definition Definition of the class the interface will be added to.
-            template <typename TClass>
-            void operator()(ClassDefinitionT<TClass>& class_definition) const;
 
         };
 
@@ -73,7 +63,7 @@ namespace syntropy
 
         template <typename... TConstructorArguments>
         template <typename TClass>
-        Constructible<TConstructorArguments...>::Constructible(std::identity<TClass>)
+        Constructible<TConstructorArguments...>::Constructible(tag_t<TClass>)
             : instancer_(&Instantiate<TClass>)
         {
             static_assert(std::is_constructible<TClass, TConstructorArguments...>::value, "TClass is not constructible with arguments TConstructorArguments.");
@@ -92,16 +82,6 @@ namespace syntropy
          {
              return *(new TClass(std::forward<TConstructorArguments>(arguments)...));
          }
-
-        /************************************************************************/
-        /* DEFAULT CONSTRUCT                                                    */
-        /************************************************************************/
-
-        template <typename TClass>
-        void DefaultConstruct::operator()(ClassDefinitionT<TClass>& class_definition) const
-        {
-            class_definition.AddInterface<Constructible<>>(std::identity<TClass>{});
-        }
 
     }
 }
