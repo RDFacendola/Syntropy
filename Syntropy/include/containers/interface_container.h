@@ -6,11 +6,12 @@
 
 #pragma once
 
-#include <type_traits>
 #include <vector>
 #include <typeindex>
 #include <algorithm>
 #include <memory>
+
+#include "type_traits.h"
 
 namespace syntropy
 {
@@ -71,7 +72,7 @@ namespace syntropy
             /// \tparam TConcrete Actual interface to instantiate.
             /// \param arguments Arguments used to construct the interface.
             template <typename TInterface, typename TConcrete = TInterface, typename... TArguments>
-            AnyInterface(std::identity<TInterface>, std::identity<TConcrete>, TArguments&&... arguments);
+            AnyInterface(tag_t<TInterface>, tag_t<TConcrete>, TArguments&&... arguments);
 
             /// \brief Move constructor.
             AnyInterface(AnyInterface&& other);
@@ -217,7 +218,7 @@ namespace syntropy
 
     template <typename TAllocator>
     template <typename TInterface, typename TConcrete, typename... TArguments>
-    InterfaceContainer<TAllocator>::AnyInterface::AnyInterface(std::identity<TInterface>, std::identity<TConcrete>, TArguments&&... arguments)
+    InterfaceContainer<TAllocator>::AnyInterface::AnyInterface(tag_t<TInterface>, tag_t<TConcrete>, TArguments&&... arguments)
         : holder_(std::make_unique<HolderT<TConcrete>>(std::forward<TArguments>(arguments)...))
         , type_(typeid(TInterface))
     {
@@ -271,8 +272,8 @@ namespace syntropy
         {
             interfaces_.emplace_back
             (
-                std::identity<TInterface>{}, 
-                std::identity<TConcrete>{}, 
+				tag_t<TInterface>{},
+				tag_t<TConcrete>{},
                 std::forward<TArguments>(arguments)...
             );
 
