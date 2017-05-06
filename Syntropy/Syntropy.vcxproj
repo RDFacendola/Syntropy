@@ -182,6 +182,7 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\type_traits.h" />
+    <ClInclude Include="include\utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\date.cpp">

@@ -6,8 +6,12 @@
 
 #pragma once
 
+#include <vector>
+#include <algorithm>
+
 #include "cpp17.h"
 #include "type_traits.h"
+#include "utility.h"
 
 #include "containers/hashed_string.h"
 #include "containers/interface_container.h"
@@ -19,9 +23,6 @@
 #include "reflection/class_interfaces.h"
 
 #include "diagnostics/log.h"
-
-#include <vector>
-#include <algorithm>
 
 namespace syntropy
 {

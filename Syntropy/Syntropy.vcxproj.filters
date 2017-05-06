@@ -70,6 +70,7 @@
     <ClInclude Include="include\containers\interface_container.h" />
     <ClInclude Include="include\reflection\any.h" />
     <ClInclude Include="include\cpp17.h" />
+    <ClInclude Include="include\utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

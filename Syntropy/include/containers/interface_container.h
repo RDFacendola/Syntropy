@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "type_traits.h"
+#include "utility.h"
 
 namespace syntropy
 {
