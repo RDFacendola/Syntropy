@@ -14,6 +14,14 @@ namespace syntropy
         /* CLASS                                                                */
         /************************************************************************/
 
+		Class::Class(tag_t<void>)
+			: default_name_("void")
+			, is_abstract_(true)
+		{
+			// Register the class to the reflection system.
+			Reflection::GetInstance().Register(*this);
+		}
+
         bool Class::operator ==(const Class& other) const noexcept
         {
             if (this == std::addressof(other))

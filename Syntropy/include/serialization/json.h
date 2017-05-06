@@ -6,7 +6,7 @@
 #pragma once
 
 
-#include <type_traits>
+#include "type_traits.h"
 
 #include "serialization/serialization.h"
 #include "serialization/json/json_deserializer.h"
@@ -101,7 +101,7 @@ namespace syntropy
         {
             /// \brief Create a new interface.
             template <typename TClass>
-            JSONConstructible(std::identity<TClass>);
+            JSONConstructible(tag_t<TClass>);
 
             /// \brief Construct a new instance via JSON object.
             /// \param json JSON object the object will be constructed form.
@@ -382,7 +382,7 @@ namespace syntropy {
         /************************************************************************/
 
         template <typename TClass>
-        JSONConstructible::JSONConstructible(std::identity<TClass>)
+        JSONConstructible::JSONConstructible(tag_t<TClass>)
         {
 
         }
@@ -408,7 +408,7 @@ namespace syntropy {
         template <typename TClass>
         void JSONConstruct::operator()(reflection::ClassDefinitionT<TClass>& class_definition) const
         {
-            class_definition.AddInterface<JSONConstructible>(std::identity<TClass>{});
+            class_definition.AddInterface<JSONConstructible>(tag_t<TClass>{});
         }
 
         /************************************************************************/

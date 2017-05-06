@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "cpp17.h"
 #include "type_traits.h"
 
 #include "containers/hashed_string.h"
@@ -100,9 +101,11 @@ namespace syntropy
         private:
 
             /// \brief Create a new class.
-            /// \param definition Definition of the class.
             template <typename TClass>
             Class(tag_t<TClass>);
+
+			/// \brief Create a new class for the void type.
+			Class(tag_t<void>);
 
             HashedString default_name_;                     ///< \brief Default class name.
 

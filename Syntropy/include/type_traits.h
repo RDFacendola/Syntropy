@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "cpp17.h"
+
 #include <type_traits>
 #include <typeinfo>
 
@@ -181,51 +183,35 @@ namespace syntropy
     template <typename TAssignee, typename TValue>
     constexpr bool is_assignable_v = is_assignable<TAssignee, TValue>::value;
 
-    /// \brief If TCallable(TArgs...) is defined provides the members constant value equal to true, otherwise value is false.
-    /// \author Raffaele D. Facendola - September 2016
-    template <typename TCallable, typename... TArgs>
-    class is_callable {
-
-        template<typename C, typename... A>
-        static auto test(int) -> decltype(std::declval<C&>()(std::declval<A>()...), std::true_type());
-
-        template<typename, typename...>
-        static auto test(...)->std::false_type;
-
-    public:
-
-        static const bool value = decltype(test<TCallable, TArgs...>(0))::value;
-
-    };
-
-    /// \brief Helper value for is_callable<TCallable, TArgs...>.
-    template <typename TCallable, typename... TArgs>
-    constexpr bool is_callable_v = is_callable<TCallable, TArgs...>::value;
-    
     /// \brief Functor used to call a callable object with any parameters.
     /// \author Raffaele D. Facendola - September 2016
-    struct call {
-
+    struct call 
+	{
         template <typename TCallable, typename... TArgs>
-        void operator()(TCallable&& callable, TArgs&&... args) {
-
+        void operator()(TCallable&& callable, TArgs&&... args)
+		{
             return callable(std::forward<TArgs>(args)...);
-
         }
-
-    };
+	};
 
     /// \brief If TCallable can be called with the parameters TArgs..., the call is performed, otherwise this function does nothing.
     /// \return Returns the return value if the call could be performed, returns nothing otherwise.
     /// \author Raffaele D. Facendola - September 2016
     template <typename TCallable, typename... TArgs>
-    auto conditional_call(TCallable&& callable, TArgs&&... args) {
+	auto conditional_call(TCallable&& callable, TArgs&&... args)
+	{
+		using caller = std::conditional_t<std::is_invocable_v<TCallable, TArgs...>, call, _>;
 
-        using caller = std::conditional_t<is_callable_v<TCallable&&, TArgs...>, call, _>;
+		return caller()(std::forward<TCallable>(callable), std::forward<TArgs>(args)...);
+	}
 
-        return caller()(callable, std::forward<TArgs>(args)...);
+	/// \brief If T is a specialization of std::in_place_type_t provides a member constant value equal to true, otherwise value is false.
+	template <typename T>
+	struct is_in_place_type : std::false_type {};
 
-    }
+	/// \brief Template specialization for is_in_place_type when T is a specialization of in_place_type_t.
+	template <typename T>
+	struct is_in_place_type<std::in_place_type_t<T>> : std::true_type {};
 
     //////////////// CONTAINERS ////////////////
 

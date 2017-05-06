@@ -59,17 +59,6 @@ namespace syntropy {
             if (std::is_same<TClass, uintptr_t>::value)            definition.DefineNameAlias("uintptr_t");
         }
 
-        //////////////// VOID TYPE ////////////////
-
-        template <>
-        struct ClassDeclaration<void>
-        {
-            static constexpr const char* GetName() noexcept
-            {
-                return "void";
-            }
-        };
-
         //////////////// BOOLEAN TYPES ////////////////
 
         template <>

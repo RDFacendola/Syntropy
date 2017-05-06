@@ -147,8 +147,8 @@ namespace syntropy
         template <bool>
         struct ConditionalAddInterfaceFunctor 
         {
-            template <typename TInterface, typename... TAny>
-            static TInterface* AddInterface(...)
+			template <typename TInterface, typename TConcrete, typename TAllocator, typename... TArguments>
+            static TInterface* AddInterface(InterfaceContainer<TAllocator>&, TArguments&&...)
             {
                 return nullptr;
             }

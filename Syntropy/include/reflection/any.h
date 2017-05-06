@@ -6,7 +6,6 @@
 #pragma once
 
 #include <initializer_list>
-#include <type_traits>
 #include <typeinfo>
 
 #include "cpp17.h"
@@ -46,7 +45,7 @@ namespace syntropy
             /// Constructs an object with initial content an object of type std::decay_t<TValue>, direct-initialized from std::forward<TValue>(value). 
             /// If std::is_copy_constructible<std::decay_t<TValue>>::value is false, the program is ill-formed. 
             /// This overload only participates in overload resolution if std::decay_t<TValue> is not the same type as any nor a specialization of std::in_place_type_t.
-            template <typename TValue, typename = std::enable_if_t<!std::is_same<std::decay_t<TValue>, Any>::value && !std::is_in_place_type<std::decay_t<TValue>>::value>>
+            template <typename TValue, typename = std::enable_if_t<!std::is_same<std::decay_t<TValue>, Any>::value && !is_in_place_type<std::decay_t<TValue>>::value>>
             Any(TValue&& value)
                 : holder_(new HolderT<std::decay_t<TValue>>(std::forward<TValue>(value)))
             {
