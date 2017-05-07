@@ -112,8 +112,6 @@ namespace syntropy
 
     };
 
-
-
     //////////////// OTHER CAPABILITIES ////////////////
 
     /// \brief If TAssignee = TValue is defined provides the members constant value equal to true, otherwise value is false.

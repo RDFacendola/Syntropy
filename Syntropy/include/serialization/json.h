@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <functional>
 
 #include "type_traits.h"
 
@@ -15,80 +16,42 @@
 
 namespace syntropy 
 {
-
     namespace serialization
     {
 
-        /// \brief Property interface used to grant JSON deserialization capabilities.
-        /// A property defining this interface can be directly read from a JSON object.
+        /// \brief Property interface used to deserialize properties from JSON object.
         /// \author Raffaele D. Facendola - September 2016
         class JSONDeserializable
         {
 
         public:
 
-            /// \brief Helper tag used to resolve conflicts among copy/move constructor and explicit initialization via property accessors.
-            struct property_tag {};
+            /// \brief Create a new interface from a member field.
+            /// The field must be copy-assignable.
+            template <typename TClass, typename TProperty, typename = std::enable_if_t<std::is_member_object_pointer<TProperty(TClass::*)>::value>>
+            JSONDeserializable(TProperty(TClass::* field));
 
-            /// \brief Create a new interface via direct accessors to the property.
-            /// \tparam TAccessors type of the accessors.
-            /// \param accessors Pointer to the actual property variable / getter-setter functions.
-            template <typename... TAccessors>
-            JSONDeserializable(property_tag, TAccessors&&... accessors);
+            /// \brief Create a new interface from a setter method.
+            template <typename TClass, typename TProperty>
+            JSONDeserializable(void(TClass::* setter)(TProperty));
 
-            /// \brief Copy constructor.
-            JSONDeserializable(const JSONDeserializable& other) noexcept;
+            /// \brief Create a new interface from a non-const accessor.
+            template <typename TClass, typename TProperty>
+            JSONDeserializable(TProperty&(TClass::* setter)());
 
-            /// \brief Move constructor.
-            JSONDeserializable(JSONDeserializable&& other) noexcept;
-
-            /// \brief Default destructor.
-            JSONDeserializable::~JSONDeserializable();
-
-            /// \brief Assignment operator.
-            JSONDeserializable& operator=(JSONDeserializable other) noexcept;
-
-            /// \brief Deserialize the property of the specified instance from a JSON object.
-            /// The method attempts to deserialize the property implementing this interface via the provided JSON object.
-            /// If the provided instance doesn't support the property this method does nothing.
-            /// \param instance Instance declaring the property.
-            /// \param json JSON object to deserialize.
-            template <typename TInstance, typename = std::enable_if_t<!std::is_same<std::decay<TInstance>::type, reflection::Any>::value>>
-            bool operator()(TInstance&& instance, const nlohmann::json& json) const;
-
+            /// \brief Deserialize the property value.
+            /// \param instance Object to deserialize the property of. Expects pointer to the actual object instance.
+            /// \return Returns true if the property could be deserialized, returns false otherwise.
             bool operator()(reflection::Any& instance, const nlohmann::json& json) const;
+
+            /// \brief Deserialize the property value.
+            /// \param instance Object to deserialize the property of. Expects a pointer to the actual object instance.
+            /// \return Returns true if the property could be deserialized, returns false otherwise.
+            bool operator()(reflection::Any&& instance, const nlohmann::json& json) const;
 
         private:
 
-            /// \brief Swaps the content of this property interface with the content of the provided one.
-            void Swap(JSONDeserializable& other) noexcept;
-
-            /// Type used to avoid a dynamic allocation of the concrete class of Content.
-            /// 1 pointer for the single vtable, 2 pointers for both the setter and the getter.
-            using storage_t = typename std::aligned_storage_t<3 * sizeof(void*), std::alignment_of<void*>::value>;
-
-            /// \brief Interface to the actual implementation of the deserialization logic.
-            /// This interface is used to erase the concrete type of the property.
-            struct IContent
-            {
-
-                /// \brief Attempts to deserialize the property of the specified instance via the provided JSON object.
-                /// The method does nothing if the provided instance doesn't support the property.
-                /// \param object Object instance declaring the property.
-                /// \param json JSON object to deserialize.
-                virtual bool Deserialize(reflection::Any& object, const nlohmann::json& json) const = 0;
-
-                /// \brief Clone the content to another instance.
-                virtual void Clone(storage_t& storage) const noexcept = 0;
-
-            };
-
-            /// \brief Concrete class implementing the deserialization logic, according to the property type (field, getter or getter/setter pair).
-            /// \see Template specialization below.
-            template <typename... TAccessors>
-            struct Content : IContent {};
-            
-            storage_t content_;                     ///< \brief Used to dispatch the deserialization logic.
+            std::function<bool(reflection::Any& instance, const nlohmann::json& json)> deserializer_;       ///< \brief Functor used to deserialize the property.
 
         };
 
@@ -114,9 +77,23 @@ namespace syntropy
  
             /// \brief Add a JSONDeserializable interface to the provided property.
             /// \param property Property to add the interface to.
-            /// \param accessors Concrete accessors to the property (such as pointer to member variables, getters and getter/setter pairs)
-            template <typename... TAccessors>
-            void operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TAccessors... accessors) const;
+            /// \param field Property field.
+            template <typename TClass, typename TField, typename... TAccessors>
+            void operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TField(TClass::* field));
+
+            /// \brief Add a JSONDeserializable interface to the provided property.
+            /// \param property Property to add the interface to.
+            /// \param getter Property getter.
+            /// \param setter Property setter.
+            template <typename TClass, typename TPropertyGetter, typename TPropertySetter, typename... TAccessors>
+            void operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TPropertyGetter(TClass::* getter)() const, void (TClass::* setter)(TPropertySetter));
+
+            /// \brief Add a JSONDeserializable interface to the provided property.
+            /// \param property Property to add the interface to.
+            /// \param getter Property const accessor.
+            /// \param setter Property non-const accessor.
+            template <typename TClass, typename TProperty, typename... TAccessors>
+            void operator()(reflection::PropertyDefinitionT<TAccessors...>& property, const TProperty&(TClass::* getter)() const, TProperty& (TClass::* setter)());
 
         };
 
@@ -132,8 +109,8 @@ namespace syntropy
 
 }
 
-namespace syntropy {
-
+namespace syntropy
+{
     namespace serialization 
     {
 
@@ -141,165 +118,59 @@ namespace syntropy {
         /* JSON DESERIALIZABLE                                                  */
         /************************************************************************/
 
-        template <typename... TAccessors>
-        JSONDeserializable::JSONDeserializable(property_tag, TAccessors&&... accessors)
+        template <typename TClass, typename TProperty, typename>
+        JSONDeserializable::JSONDeserializable(TProperty(TClass::* field))
         {
-            using content_t = Content<std::remove_reference_t<TAccessors>...>;
+            static_assert(std::is_move_assignable_v<TProperty>, "TProperty must be move-assignable");
 
-            static_assert(sizeof(storage_t) >= sizeof(content_t), "Storage size is not enough.");
-
-            new (&content_) content_t(std::forward<TAccessors>(accessors)...);
-        }
-
-        template <typename TInstance, typename>
-        bool JSONDeserializable::operator()(TInstance&& instance, const nlohmann::json& json) const
-        {
-            return reinterpret_cast<const IContent*>(&content_)->Deserialize(&instance, json);
-        }
-
-        inline bool JSONDeserializable::operator()(reflection::Any& instance, const nlohmann::json& json) const
-        {
-            return reinterpret_cast<const IContent*>(&content_)->Deserialize(instance, json);
-        }
-
-        /************************************************************************/
-        /* JSON DESERIALIZABLE :: CONTENT                                       */
-        /************************************************************************/
-
-        /// \brief Template specialization of JSONDeserializable::Content for properties defined via their member variable pointer.
-        /// \author Raffaele D. Facendola - September 2016.
-        template <typename TClass, typename TField>
-        struct JSONDeserializable::Content<TField TClass::*> : JSONDeserializable::IContent
-        {
-
-        public:
-
-            Content(TField TClass::* field)
-                : field_(field)
+            deserializer_ = [field](reflection::Any& object, const nlohmann::json& json)
             {
+                auto value = JSONDeserializer<TProperty>(json);
 
-            }
-
-            virtual bool Deserialize(reflection::Any& object, const nlohmann::json& json) const override
-            {
-                auto concrete_instance = reflection::AnyCast<TClass*>(&object);
-
-                if (concrete_instance)
+                if (value)
                 {
-                    auto value = JSONDeserializer<TField>(json);
-
-                    if (value)
-                    {
-                        (*concrete_instance)->*field_ = *std::move(value);
-                        return true;
-                    }
+                    reflection::AnyCast<TClass*>(object)->*field = *std::move(value);
                 }
 
-                return false;
-            }
+                return value.has_value();
+            };
+        }
 
-            virtual void Clone(storage_t& storage) const noexcept override
-            {
-                using this_t = std::remove_reference_t<decltype(*this)>;
-
-                static_assert(sizeof(storage_t) >= sizeof(this_t), "Storage size is not enough for an instance of this class.");
-
-                new (&storage) this_t(field_);
-            }
-
-            TField TClass::* field_;                ///< \brief Member field.
-        };
-
-        /// \brief Template specialization of JSONDeserializable::Content for properties defined via a getter/setter member function pointer pair.
-        /// The getter has the form - Property GetProperty() const;
-        /// THe setter has the form - * SetProperty(Property);
-        /// \author Raffaele D. Facendola - September 2016.
-        template <typename TClass, typename TPropertyGet, typename TPropertySet, typename TAny>
-        struct JSONDeserializable::Content<TPropertyGet(TClass::*)() const, TAny(TClass::*)(TPropertySet)> : JSONDeserializable::IContent
+        template <typename TClass, typename TProperty>
+        JSONDeserializable::JSONDeserializable(void(TClass::* setter)(TProperty))
         {
+            static_assert(std::is_move_constructible_v<remove_reference_cv_t<TProperty>>, "remove_reference_cv_t<TProperty> must be move-constructible");
 
-            Content(TPropertyGet(TClass::*)() const, TAny(TClass::* setter)(TPropertySet))
-                : setter_(setter) 
+            deserializer_ = [setter](reflection::Any& object, const nlohmann::json& json)
             {
+                auto value = JSONDeserializer<remove_reference_cv_t<TProperty>>(json);
 
-            }
-
-            virtual bool Deserialize(reflection::Any& object, const nlohmann::json& json) const override
-            {
-                using property_t = remove_reference_cv_t<TPropertySet>;
-
-                auto concrete_instance = reflection::AnyCast<TClass*>(&object);
-
-                if (concrete_instance)
+                if (value)
                 {
-                    auto value = JSONDeserializer<property_t>(json);
-
-                    if (value)
-                    {
-                        ((*concrete_instance)->*setter_)(*std::move(value));
-                        return true;
-                    }
+                    (reflection::AnyCast<TClass*>(object)->*setter)(*std::move(value));
                 }
 
-                return false;
-            }
+                return value.has_value();
+            };
+        }
 
-            virtual void Clone(storage_t& storage) const noexcept override
-            {
-                using this_t = std::remove_reference_t<decltype(*this)>;
-
-                static_assert(sizeof(storage_t) >= sizeof(this_t), "Storage size is not enough for an instance of this class.");
-
-                new (&storage) this_t(nullptr, setter_);
-            }
-
-            TAny(TClass::* setter_)(TPropertySet);          ///< \brief Setter method of the property.
-
-        };
-
-        /// \brief Template specialization of JSONDeserializable::Content for properties defined via a getter/setter member function pointer pair.
-        /// The getter has the form - const Property& GetProperty() const;
-        /// THe setter has the form - Property& GetProperty();
-        /// \author Raffaele D. Facendola - September 2016.
-        template <typename TClass, typename TPropertyGet, typename TPropertySet>
-        struct JSONDeserializable::Content<const TPropertyGet&(TClass::*)() const, TPropertySet&(TClass::*)()> : JSONDeserializable::IContent
+        template <typename TClass, typename TProperty>
+        JSONDeserializable::JSONDeserializable(TProperty&(TClass::* setter)())
         {
+            static_assert(std::is_move_assignable_v<TProperty>, "TProperty must be copy-assignable");
 
-            Content(const TPropertyGet&(TClass::*)() const, TPropertySet&(TClass::* setter)())
-                : setter_(setter)
+            deserializer_ = [setter](reflection::Any& object, const nlohmann::json& json)
             {
+                auto value = JSONDeserializer<TProperty>(json);
 
-            }
-
-            virtual bool Deserialize(reflection::Any& object, const nlohmann::json& json) const override
-            {
-                auto concrete_instance = reflection::AnyCast<TClass*>(&object);
-
-                if (concrete_instance)
+                if (value)
                 {
-                    auto value = JSONDeserializer<TPropertySet>(json);
-
-                    if (value)
-                    {
-                        ((*concrete_instance)->*setter_)() = *std::move(value);
-                    }
+                    (reflection::AnyCast<TClass*>(object)->*setter)() = *std::move(value);
                 }
 
-                return false;
-            }
-
-            virtual void Clone(storage_t& storage) const noexcept override
-            {
-                using this_t = std::remove_reference_t<decltype(*this)>;
-
-                static_assert(sizeof(storage_t) >= sizeof(this_t), "Storage size is not enough for an instance of this class.");
-
-                new (&storage) this_t(nullptr, setter_);
-            }
-
-            TPropertySet&(TClass::* setter_)();                   ///< \brief Setter method of the property.
-
-        };
+                return value.has_value();
+            };
+        }
 
         /************************************************************************/
         /* JSON CONSTRUCTIBLE                                                   */
@@ -315,14 +186,22 @@ namespace syntropy {
         /* JSON READ                                                            */
         /************************************************************************/
 
-        template <typename... TAccessors>
-        void JSONRead::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TAccessors... accessors) const
+        template <typename TClass, typename TField, typename... TAccessors>
+        void JSONRead::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TField(TClass::* field))
         {
-            property.AddInterface<JSONDeserializable>
-            (
-                JSONDeserializable::property_tag(),
-                accessors...
-            );
+            property.AddInterface<JSONDeserializable>(field);
+        }
+
+        template <typename TClass, typename TPropertyGetter, typename TPropertySetter, typename... TAccessors>
+        void JSONRead::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TPropertyGetter(TClass::*)() const, void (TClass::* setter)(TPropertySetter))
+        {
+            property.AddInterface<JSONDeserializable>(setter);
+        }
+
+        template <typename TClass, typename TProperty, typename... TAccessors>
+        void JSONRead::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, const TProperty&(TClass::*)() const, TProperty& (TClass::* setter)())
+        {
+            property.AddInterface<JSONDeserializable>(setter);
         }
 
         /************************************************************************/

@@ -15,32 +15,14 @@ namespace syntropy
         /* JSON DESERIALIZABLE                                                  */
         /************************************************************************/
 
-        JSONDeserializable::JSONDeserializable(const JSONDeserializable& other) noexcept
+        bool JSONDeserializable::operator()(reflection::Any& instance, const nlohmann::json& json) const
         {
-            reinterpret_cast<const IContent*>(&(other.content_))->Clone(content_);
+            return deserializer_(instance, json);
         }
 
-        JSONDeserializable::JSONDeserializable(JSONDeserializable&& other) noexcept
-            : content_(std::move(other.content_))
+        bool JSONDeserializable::operator()(reflection::Any&& instance, const nlohmann::json& json) const
         {
-
-        }
-
-        JSONDeserializable& JSONDeserializable::operator=(JSONDeserializable other) noexcept
-        {
-            JSONDeserializable(other).Swap(*this);
-
-            return *this;
-        }
-
-        void JSONDeserializable::Swap(JSONDeserializable& other) noexcept
-        {
-            std::swap(content_, other.content_);
-        }
-
-        JSONDeserializable::~JSONDeserializable()
-        {
-            reinterpret_cast<IContent*>(&(content_))->~IContent();
+            return deserializer_(instance, json);
         }
 
         /************************************************************************/
