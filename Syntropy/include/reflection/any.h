@@ -208,7 +208,7 @@ namespace syntropy
 
             static_assert(std::is_constructible<TValue, const U&>::value, "TValue must be constructible by const reference.");
 
-            SYNTROPY_ASSERT(TypeOf<TValue>() == operand.GetType());
+            SYNTROPY_ASSERT(operand.GetType() == TypeOf<TValue>());
 
             return static_cast<TValue>(*AnyCast<U>(&operand));
         }
@@ -220,7 +220,7 @@ namespace syntropy
 
             static_assert(std::is_constructible<TValue, U&>::value, "TValue must be constructible by reference.");
 
-            SYNTROPY_ASSERT(TypeOf<TValue>() == operand.GetType());
+            SYNTROPY_ASSERT(operand.GetType() == TypeOf<TValue>());
 
             return static_cast<TValue>(*AnyCast<U>(&operand));
         }
@@ -232,7 +232,7 @@ namespace syntropy
 
             static_assert(std::is_constructible<TValue, U>::value, "TValue must be constructible from value.");
 
-            SYNTROPY_ASSERT(TypeOf<TValue>() == operand.GetType());
+            SYNTROPY_ASSERT(operand.GetType() == TypeOf<TValue>());
 
             return static_cast<TValue>(std::move(*AnyCast<U>(&operand)));
         }
