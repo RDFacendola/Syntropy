@@ -116,13 +116,11 @@ namespace syntropy
 
         private:
 
-            /// \brief Helper method used to apply a functor to this property definition.
-            template <typename TFunctor, size_t... ns>
-            void ApplyFunctor(TFunctor&& functor, sequence<ns...>);
-
             Property& subject_;                                         ///< \brief Property this definition refers to.
 
-            std::tuple<TAccessors...> accessors_;                       ///< \brief Property accessors.
+            using TArguments = std::tuple<PropertyDefinitionT<TAccessors...>&, TAccessors...>;
+
+            TArguments arguments_;                                      ///< \brief Arguments passed to the functors (a reference to this object and any property accessor).
 
         };
 
@@ -201,7 +199,7 @@ namespace syntropy
         template <typename... TAccessors>
         PropertyDefinitionT<TAccessors...>::PropertyDefinitionT(Property& subject, TAccessors... accessors)
             : subject_(subject)
-            , accessors_(std::forward<TAccessors>(accessors)...)
+            , arguments_(*this, std::forward<TAccessors>(accessors)...)
         {
 
         }
@@ -222,16 +220,8 @@ namespace syntropy
         template <typename TFunctor>
         PropertyDefinitionT<TAccessors...>& PropertyDefinitionT<TAccessors...>::operator<<(TFunctor&& functor)
         {
-
-            ApplyFunctor(std::forward<TFunctor>(functor), sequence_generator<sizeof...(TAccessors)>::type{});
+            std::apply(std::forward<TFunctor>(functor), arguments_);
             return *this;
-        }
-
-        template <typename... TAccessors>
-        template <typename TFunctor, size_t... ns>
-        void PropertyDefinitionT<TAccessors...>::ApplyFunctor(TFunctor&& functor, sequence<ns...>)
-        {
-            functor(*this, std::get<ns>(accessors_)...);        // Expands the accessor tuple as arguments for the function call.
         }
 
     }

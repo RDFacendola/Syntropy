@@ -32,27 +32,6 @@ namespace syntropy
     template <typename THead>
     std::ostream& Insert(std::ostream& stream, THead&& head);
 
-    /// \brief Sequence of numbers.
-    template <size_t... ns>
-    struct sequence
-    {
-    
-    };
-
-    /// \brief Provides a member typedef sequence<0, 1, 2, 3, 4, ..., n-1>
-    template <size_t n, size_t... ns>
-    struct sequence_generator : sequence_generator<n - 1, n - 1, ns...> 
-    {
-    
-    };
-
-    /// \brief Specialization used to end a generator sequence.
-    template <size_t... ns>
-    struct sequence_generator<0, ns...>
-    {
-        using type = sequence<ns...>;
-    };
-
 }
 
 namespace syntropy
