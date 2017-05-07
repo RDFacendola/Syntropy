@@ -85,20 +85,18 @@ namespace syntropy {
 
         }
 
-        bool Type::operator ==(const Type& other) const noexcept {
+        bool Type::operator ==(const Type& other) const noexcept
+        {
+            // TODO: This routine is BUGGED! Foo* == const Foo* will yield FALSE even if it should be TRUE
 
             return GetCommonTypeInfo() == other.GetCommonTypeInfo() &&
                    (!IsConst() || other.IsConst()) &&                           // Const check is required because typeid ignores top-level cv qualifiers
                    GetClass() == other.GetClass();
-
         }
 
-        bool Type::operator!=(const Type& other) const noexcept {
-
-            return GetCommonTypeInfo() != other.GetCommonTypeInfo() ||
-                   (IsConst() && !other.IsConst()) ||                           // Const check is required because typeid ignores top-level cv qualifiers
-                   GetClass() != other.GetClass();
-
+        bool Type::operator!=(const Type& other) const noexcept
+        {
+            return !(*this == other);
         }
 
         std::ostream& operator<<(std::ostream& out, const Type& type) {
