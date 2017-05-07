@@ -222,6 +222,7 @@ namespace syntropy
         template <typename TFunctor>
         PropertyDefinitionT<TAccessors...>& PropertyDefinitionT<TAccessors...>::operator<<(TFunctor&& functor)
         {
+
             ApplyFunctor(std::forward<TFunctor>(functor), sequence_generator<sizeof...(TAccessors)>::type{});
             return *this;
         }

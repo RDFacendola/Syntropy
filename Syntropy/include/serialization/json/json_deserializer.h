@@ -6,16 +6,6 @@
 
 #pragma once
 
-#include "syntropy.h"
-
-#include "containers/hashed_string.h"
-
-#include "reflection/reflection.h"
-#include "reflection/instance.h"
-#include "reflection/class.h"
-
-#include "nlohmann/json/src/json.hpp"
-
 #include <string>
 #include <memory>
 #include <vector>
@@ -23,177 +13,232 @@
 #include <map>
 #include <unordered_set>
 #include <unordered_map>
+#include <optional>
+
+#include "syntropy.h"
+
+#include "containers/hashed_string.h"
+
+#include "reflection/reflection.h"
+#include "reflection/class.h"
+#include "reflection/any.h"
+
+#include "diagnostics/log.h"
+
+#include "nlohmann/json/src/json.hpp"
 
 namespace syntropy
 {
     namespace serialization
     {
 
-        class JSONDeserializable;
+        /// \brief Deserialize an object properties from JSON.
+        /// This method enumerates the properties defined by the JSON and attempts to deserialize the corresponding object properties directly.
+        /// Properties that are not defined either by the JSON or by the object are ignored and any existing state is preserved.
+        /// \param object Object to deserialize. It must contain a pointer to the concrete type to deserialize.
+        /// \param json Source JSON object to parse.
+        void DeserializeObjectFromJSON(reflection::Any& object, const nlohmann::json& json);
+
+        /// \brief Deserialize an object properties from JSON.
+        /// This method enumerates the properties defined by the JSON and attempts to deserialize the corresponding object properties directly.
+        /// Properties that are not defined either by the JSON or by the object are ignored and any existing state is preserved.
+        /// \param object Object to deserialize. It must contain a pointer to the concrete type to deserialize.
+        /// \param json Source JSON object to parse.
+        void DeserializeObjectFromJSON(reflection::Any&& object, const nlohmann::json& json);
 
         /************************************************************************/
         /* OBJECT DESERIALIZATION                                               */
         /************************************************************************/
 
-        /// \brief Functor used to deserialize JSON object into a concrete instance.
-        /// This version uses the Syntropy reflection system to recursively deserialize object properties.
+        /// \brief Functor used to deserialize an object from JSON.
         /// \author Raffaele D. Facendola - September 2016
         template <typename TType, typename = void>
-        struct JSONDeserializer
+        struct JSONDeserializerT
         {
-
-            /// \brief Deserialize a JSON object inside a concrete object.
-            /// Properties that are not declared by the JSON object are ignored.
-            /// \param object Object to deserialize into.
-            /// \param json JSON object to deserialize.
-            /// \return Returns true if the JSON object contains an object, returns false otherwise.
-            bool operator()(TType& object, const nlohmann::json& json)
+            std::optional<TType> operator()(const nlohmann::json& json) const
             {
-                // Wraps the object inside an instance and use the reflection-based deserialization
-                return JSONDeserializer<reflection::Instance>()(reflection::MakeInstance(object), json);
+                if (json.is_object())
+                {
+                    auto object = std::make_optional<TType>();
+
+                    DeserializeObjectFromJSON(&(object.value()), json);
+
+                    return object;
+                }
+
+                return std::nullopt;
             }
-
         };
 
-        /// \brief Functor used to deserialize JSON object into a reflection-instanced object.
-        /// This version uses the Syntropy reflection system to recursively deserialize object properties.
-        /// \author Raffaele D. Facendola - September 2016
-        template <>
-        struct JSONDeserializer<reflection::Instance>
-        {
-
-            /// \brief Deserialize a JSON object inside a concrete object.
-            /// Properties that are not declared by the JSON object are ignored.
-            /// \param object Object to deserialize into.
-            /// \param json JSON object to deserialize.
-            /// \return Returns true if the JSON object contains an object, returns false otherwise.
-            bool operator()(reflection::Instance object, const nlohmann::json& json);
-
-        };
+        /// \brief Utility object for JSONDeserializerT.
+        /// Usage: JSONDeserializer<TType>(json) instead of JSONDeserializerT<TType>{}(json)
+        /// \author Raffaele D. Facendola - May 2017
+        template <typename TType>
+        constexpr JSONDeserializerT<TType> JSONDeserializer{};
 
         /************************************************************************/
         /* POINTERS DESERIALIZATION                                             */
         /************************************************************************/
 
-        // Pointers-to-raw-pointers are not supported since it requires to make bold assumptions about ownership of each level of indirection.
-
+        /// \brief Functor used to deserialize a pointer to an object from JSON.
+        /// The actual concrete object instantiated by this functor depends on the class defined by the JSON itself.
+        /// \author Raffaele D. Facendola - September 2016
         template <typename TType>
-        struct JSONDeserializer<TType*, std::enable_if_t<!std::is_pointer<TType>::value>>
+        struct JSONDeserializerT<TType*, std::enable_if_t<!std::is_pointer<TType>::value>>
         {
+            /// \brief JSON property field used to determine the class type of the object being deserialized.
+            static constexpr char* kClassToken = "$class";
 
-            bool operator()(TType*& object, const nlohmann::json& json)
+            std::optional<TType*> operator()(const nlohmann::json& json) const
             {
-                // IMPORTANT: Raw pointers are considered *owning* pointers. 
-                //            The client must ensure that the current pointer is initialized and the object is not referenced elsewhere.
-                //            Consider using smart pointers instead.
+                auto concrete_class = GetClassFromJSON(json);
 
-                SafeDelete(object);
-
-                if (json.is_null())
+                if (!concrete_class)
                 {
-                    return true;
+                    return std::nullopt;        // The class was invalid.
                 }
 
-                auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json);
+                // Attempts a direct construction of the object via JSON (if the construction fails fall back to recursive property deserialization)
 
-                if (!instance)
+                auto json_constructible = concrete_class->GetInterface<JSONConstructible>();
+
+                if (json_constructible)
                 {
-                    return false;
+                    auto instance = (*json_constructible)(json);
+
+                    if (instance.HasValue())
+                    {
+                        return reflection::AnyCast<TType*>(instance);
+                    }
                 }
 
-                object = instance.As<TType>();          // Move instance ownership.
+                // Attempts to default-construct the object and deserialize each of its properties recursively.
 
-                return true;
+                auto default_constructible = concrete_class->GetInterface<reflection::Constructible<>>();
+
+                if (default_constructible)
+                {
+                    auto instance = (*default_constructible)();
+
+                    DeserializeObjectFromJSON(instance, json);
+
+                    return reflection::AnyCast<TType*>(instance);
+                }
+
+                // The object is neither default-constructible nor JSON-constructible.
+                return std::nullopt;
+            }
+
+        private:
+
+            /// \brief Get the class associated to the provided JSON object.
+            /// \return Returns the class associated to the provided JSON object. If the class is not compatible or non-existent, returns nullptr.
+            const reflection::Class* GetClassFromJSON(const nlohmann::json& json) const
+            {
+                auto& base_class = reflection::ClassOf<TType>();
+
+                auto it = json.find(kClassToken);
+
+                if (it == json.end())
+                {
+                    return &base_class;         // No class was specified: use TType.
+                }
+
+                if (!it->is_string())
+                {
+                    SYNTROPY_WARNING((SerializationCtx), "Expected a string value for the property '", kClassToken, "'.");
+                    return nullptr;
+                }
+
+                auto concrete_class = reflection::GetClass(it->get<std::string>());
+
+                if (concrete_class == nullptr)
+                {
+                    SYNTROPY_WARNING((SerializationCtx), "Unnrecognized class '", it->get<std::string>(), "'.");
+                    return nullptr;
+                }
+
+                if (*concrete_class != base_class)
+                {
+                    SYNTROPY_WARNING((SerializationCtx), "Cannot deserialize an object of type '", base_class, "' from type ", it->get<std::string>(), ".");
+                    return nullptr;
+                }
+
+                return concrete_class;          // Use a derived class.
             }
 
         };
 
+        /// \brief Functor used to deserialize an unique pointer to an object from JSON.
+        /// The actual concrete object instantiated by this functor depends on the class defined by the JSON itself.
+        /// \author Raffaele D. Facendola - September 2016
         template <typename TType>
-        struct JSONDeserializer<std::unique_ptr<TType>, std::enable_if_t<!std::is_pointer<TType>::value>> {
-
-            bool operator()(std::unique_ptr<TType>& object, const nlohmann::json& json)
+        struct JSONDeserializerT<std::unique_ptr<TType>, std::enable_if_t<!std::is_pointer<TType>::value>>
+        {
+            std::optional<std::unique_ptr<TType>> operator()(const nlohmann::json& json) const
             {
-                object.reset();         // Release the old object.
+                auto ptr = JSONDeserializer<TType*>(json);      // Deserialize as raw pointer
 
-                if (json.is_null())
+                if (ptr)
                 {
-                    return true;
+                    return std::unique_ptr<TType>(*ptr);        // Wrap inside an unique_ptr.
                 }
 
-                // Note: it won't use std::make_unique since we don't know the concrete type at compile time. This doesn't affect performances like std::make_shared though.
-                // We could use a class interface but that would require us to add it to *every* class in the project.
-
-                auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json);
-
-                if (!instance)
-                {
-                    return false;
-                }
-
-                object.reset(instance.As<TType>());     // Move instance ownership.
-
-                return true;
+                return std::nullopt;
             }
 
         };
 
+        /// \brief Functor used to deserialize a shared pointer to an object from JSON.
+        /// The actual concrete object instantiated by this functor depends on the class defined by the JSON itself.
+        /// \author Raffaele D. Facendola - September 2016
         template <typename TType>
-        struct JSONDeserializer<std::shared_ptr<TType>, std::enable_if_t<!std::is_pointer<TType>::value>> {
-
-            bool operator()(std::shared_ptr<TType>& object, const nlohmann::json& json)
+        struct JSONDeserializerT<std::shared_ptr<TType>, std::enable_if_t<!std::is_pointer<TType>::value>>
+        {
+            std::optional<std::shared_ptr<TType>> operator()(const nlohmann::json& json) const
             {
-                object.reset();                         // Release the old object.
+                auto ptr = JSONDeserializer<TType*>(json);      // Deserialize as raw pointer
 
-                if (json.is_null())
+                if (ptr)
                 {
-                    return true;
+                    return std::shared_ptr<TType>(*ptr);        // Wrap inside a shared_ptr. Note: the control block won't be allocated near the object (we don't know the concrete type at compile time).
                 }
 
-                // Note: it won't use std::make_shared since we don't know the concrete type at compile time. This can affect peformances since the control block won't be allocated near the object.
-                // We don't expect many shared_ptr being deserialized this way (if any at all) so the performance penalty should be negligible.
-                // We could use a class interface but that would require us to add it to *every* class in the project.
-
-                auto instance = InstantiateFromJSON(reflection::ClassOf<TType>(), json);
-
-                if (!instance)
-                {
-                    return false;
-                }
-
-                object.reset(instance.As<TType>());     // Move instance ownership.
-
-                return true;
+                return std::nullopt;
             }
-
         };
 
         /************************************************************************/
         /* VECTOR DESERIALIZATION                                               */
         /************************************************************************/
 
+        /// \brief Functor used to deserialize a vector of objects from JSON.
+        /// \author Raffaele D. Facendola - October 2016
         template <typename TType>
-        struct JSONDeserializer<std::vector<TType>>
+        struct JSONDeserializerT<std::vector<TType>>
         {
-            bool operator()(std::vector<TType>& object, const nlohmann::json& json)
+            std::optional<std::vector<TType>> operator()(const nlohmann::json& json) const
             {
                 if (json.is_array())
                 {
-                    TType item;
+                    auto vector = std::make_optional<std::vector<TType>>();
 
-                    object.reserve(json.size());
+                    vector->reserve(json.size());
 
                     for (unsigned int array_index = 0; array_index < json.size(); ++array_index)
                     {
-                        if (JSONDeserializer<TType>()(item, json[array_index]))
+                        auto item = JSONDeserializer<TType>(json[array_index]);
+
+                        if (item)
                         {
-                            object.push_back(std::move(item));
+                            vector->push_back(*std::move(item));
                         }
                     }
 
-                    return true;
+                    return vector;
                 }
 
-                return false;
+                return std::nullopt;
             }
         };
 
@@ -201,82 +246,87 @@ namespace syntropy
         /* SET DESERIALIZATION                                                  */
         /************************************************************************/
 
+        /// \brief Functor used to deserialize a set of objects from JSON.
+        /// \author Raffaele D. Facendola - October 2016
         template <typename TSet>
-        struct JSONDeserializer<TSet, std::enable_if_t<is_set_v<TSet>>>
+        struct JSONDeserializerT<TSet, std::enable_if_t<is_set_v<TSet>>>
         {
-            bool operator()(TSet& object, const nlohmann::json& json)
+            std::optional<TSet> operator()(const nlohmann::json& json) const
             {
                 if (json.is_array())
                 {
-                    TSet::value_type item;
+                    auto set = std::make_optional<TSet>();
 
+                    // Each array element is deserialized as a set item.
                     for (unsigned int array_index = 0; array_index < json.size(); ++array_index)
                     {
-                        if (JSONDeserializer<TSet::value_type>()(item, json[array_index]))
+                        auto item = JSONDeserializer<TSet::value_type>(json[array_index]);
+
+                        if (item)
                         {
-                            object.insert(std::move(item));
+                            set->emplace(*std::move(item));
                         }
                     }
 
-                    return true;
+                    return set;
                 }
 
-                return false;
+                return std::nullopt;
             }
-
         };
 
         /************************************************************************/
         /* MAP DESERIALIZATION                                                  */
         /************************************************************************/
 
-        /// \brief Deserializer for maps.
-        /// Maps can either be deserialized from an array of object or from a single object.
-        /// In the first case one field of each object in the array is used as a key for the entry, the object itself is deserialized as the value.
-        /// In the second case the map expects to deserialize an object in which each field-value pair is interpreted as a key-value to add to the map.
-        /// In this case keys must be string-constructible since JSON fields are identified by strings. Deserializing an array of objects has no such limitation.
+        /// \brief Functor used to deserialize a map of objects from JSON.
+        /// This functor supports deserialization from either an array or an object:
+        /// In the first case, each element is deserialized as a map entry. One of its field (kIdToken) is used as a key.
+        /// In the second case, each object property is interpreted as a key-value pair, where the key is the property name and the value is the deserialized object value.
+        /// \author Raffaele D. Facendola - October 2016
         template <typename TMap>
-        struct JSONDeserializer<TMap, std::enable_if_t<is_map_v<TMap>>>
+        struct JSONDeserializerT<TMap, std::enable_if_t<is_map_v<TMap>>>
         {
-            using TKey = typename TMap::key_type;
-            using TValue = typename TMap::mapped_type;
+            /// \brief JSON property field used to determine the id of an object.
+            static constexpr char* kIdToken = "id";
 
-            bool operator()(TMap& object, const nlohmann::json& json)
+            std::optional<TMap> operator()(const nlohmann::json& json) const
             {
                 if (json.is_array())
                 {
-                    // Array of objects
-                    DeserializeFromArray(object, json);
-                    return true;
+                    return DeserializeFromArray(json);
                 }
                 else if (json.is_object())
                 {
-                    // Object fields are the key-value pairs of the map. 
-                    // TKey must be constructible from strings.
-                    return KeyValuePairDeserializer<TKey>()(object, json);
+                    return DeserializeFromObject(json);
                 }
 
-                return false;
+                return std::nullopt;
             }
 
         private:
 
+            using TKey = typename TMap::key_type;
+            using TValue = typename TMap::mapped_type;
+
             /// \brief Deleter for deserialized values.
-            /// A map requires that both the key and the value are correctly deserialized. If one of the two fails, the other value must
-            /// be destroyed if it was deserialized by this object, otherwise it would leak.
+            /// A map requires that both the key and the value are correctly deserialized. If one of the two fails, both must be destroyed to prevent a memory leak.
             template <typename TType>
             struct Deleter
             {
-                static void Delete(TType) {}
+                static void Delete(std::optional<TType>&) {}
             };
 
             /// \brief Specialization for pointer types
             template <typename TType>
             struct Deleter<TType*>
             {
-                static void Delete(TType*& pointer)
+                static void Delete(std::optional<TType*>& pointer)
                 {
-                    SafeDelete(pointer);
+                    if (pointer)
+                    {
+                        delete *pointer;
+                    }
                 }
             };
 
@@ -284,42 +334,38 @@ namespace syntropy
             template <typename TTKey, typename = void>
             struct KeyValuePairDeserializer
             {
-                bool operator()(TMap&, const nlohmann::json&) const
+                std::optional<TMap> operator()(const nlohmann::json&) const
                 {
-                    return false;
+                    return std::nullopt;
                 }
             };
 
             /// \brief Key-value pair deserializer for keys that can be converted from strings.
             template <typename TTKey>
-            struct KeyValuePairDeserializer<TTKey, std::enable_if_t<is_convertible_v<nlohmann::json::string_t, TKey>>>
+            struct KeyValuePairDeserializer<TTKey, std::enable_if_t<std::is_constructible_v<TKey, nlohmann::json::string_t>>>
             {
-                bool operator()(TMap& object, const nlohmann::json& json) const
+                std::optional<TMap> operator()(const nlohmann::json& json) const
                 {
-                    TKey key;
-                    TValue value;
+                    auto map = std::make_optional<TMap>();
 
                     for (auto json_property = json.cbegin(); json_property != json.cend(); ++json_property)
                     {
-                        key = convert<nlohmann::json::string_t, TKey>()(json_property.key());       // Key from string
+                        auto value = JSONDeserializer<TValue>(json_property.value());
 
-                        if (JSONDeserializer<TValue>()(value, json_property.value()))               // Value from string
+                        if (value)
                         {
-                            // Update the map
-                            object.insert(std::make_pair(std::move(key), 
-                                                            std::move(value)));
+                            map->insert(std::make_pair(json_property.key(), *std::move(value)));
                         }
                     }
 
-                    return true;
+                    return map;
                 }
             };
 
             /// \brief Deserialize from an array of objects: the elements are the mapped objects, while one particular field is used as a key.
-            void DeserializeFromArray(TMap& object, const nlohmann::json& json)
+            std::optional<TMap> DeserializeFromArray(const nlohmann::json& json) const
             {
-                TKey key;
-                TValue value;
+                auto map = std::make_optional<TMap>();
 
                 for (unsigned int array_index = 0; array_index < json.size(); ++array_index)
                 {
@@ -327,28 +373,34 @@ namespace syntropy
 
                     if (json_item.is_object())
                     {
-                        key = TKey{};
-                        value = TValue{};
+                        auto key_it = json_item.find(kIdToken);
 
-                        auto it = json_item.find(JSONDeserializable::kIdToken);
+                        if (key_it != json_item.cend())
+                        {
+                            auto key = JSONDeserializer<TKey>(*key_it);
+                            auto value = JSONDeserializer<TValue>(json_item);
 
-                        if (it != json_item.end() &&
-                            JSONDeserializer<TKey>()(key, *it) &&                           // Key
-                            JSONDeserializer<TValue>()(value, json_item))                   // Value
-                        {
-                            // Update the map
-                            object.insert(std::make_pair(std::move(key), 
-                                                            std::move(value)));
-                        }
-                        else
-                        {
-                            // One among the key and value failed to deserialize: destroy any allocated object.
-                            Deleter<TKey>::Delete(key);
-                            Deleter<TValue>::Delete(value);
+                            if (key && value)
+                            {
+                                map->insert(std::make_pair(*std::move(key), *std::move(value)));
+                            }
+                            else
+                            {
+                                Deleter<TKey>::Delete(key);
+                                Deleter<TValue>::Delete(value);
+                            }
                         }
                     }
                 }
 
+                return map;
+            }
+
+            /// \brief Deserialize from an object: each property is interpreted as a key-value pair, where the key is the property name and the value the property value.
+            /// TKey must be constructible from string.
+            std::optional<TMap> DeserializeFromObject(const nlohmann::json& json) const
+            {
+                return KeyValuePairDeserializer<TKey>()(json);
             }
 
         };
@@ -360,65 +412,46 @@ namespace syntropy
         /// \brief Functor used to deserialize a std::wstring from JSON.
         /// \author Raffaele D. Facendola - October 2016
         template <>
-        struct JSONDeserializer<std::wstring>
+        struct JSONDeserializerT<std::wstring>
         {
-
-            /// \brief Deserialize a std::wstring from a JSON object property.
-            /// \return Returns true if the JSON object contains a string value, returns false otherwise.
-            bool operator()(std::wstring& object, const nlohmann::json& json)
+            std::optional<std::wstring> operator()(const nlohmann::json& json) const
             {
                 if (json.is_string())
                 {
-                    object = to_wstring(json.get<std::string>());
-
-                    return true;
+                    return to_wstring(json.get<std::string>());
                 }
-
-                return false;
+                return std::nullopt;
             }
-
         };
 
         /// \brief Functor used to deserialize a std::string from JSON.
         /// \author Raffaele D. Facendola - October 2016
         template <>
-        struct JSONDeserializer<std::string>
+        struct JSONDeserializerT<std::string>
         {
-            /// \brief Deserialize a std::string from a JSON object property.
-            /// \return Returns true if the JSON object contains a string value, returns false otherwise.
-            bool operator()(std::string& object, const nlohmann::json& json)
+            std::optional<std::string> operator()(const nlohmann::json& json) const
             {
                 if (json.is_string())
                 {
-                    object = json.get<std::string>();
-
-                    return true;
+                    return json.get<std::string>();
                 }
-
-                return false;
+                return std::nullopt;
             }
-
         };
 
         /// \brief Functor used to deserialize a HashedString from JSON.
         /// \author Raffaele D. Facendola - November 2016
         template <>
-        struct JSONDeserializer<HashedString>
+        struct JSONDeserializerT<HashedString>
         {
-            /// \brief Deserialize a std::string from a JSON object property.
-            /// \return Returns true if the JSON object contains a string value, returns false otherwise.
-            bool operator()(HashedString& object, const nlohmann::json& json)
+            std::optional<HashedString> operator()(const nlohmann::json& json) const
             {
                 if (json.is_string())
                 {
-                    object = json.get<std::string>();
-
-                    return true;
+                   return HashedString(json.get<std::string>());
                 }
-
-                return false;
+                return std::nullopt;
             }
-
         };
 
         /************************************************************************/
@@ -428,62 +461,31 @@ namespace syntropy
         /// \brief Functor used to deserialize a boolean variable from JSON.
         /// \author Raffaele D. Facendola - October 2016
         template <>
-        struct JSONDeserializer<bool>
+        struct JSONDeserializerT<bool>
         {
-            /// \brief Deserialize a boolean variable from a JSON object property.
-            /// \return Returns true if the JSON object contains a boolean value, returns false otherwise.
-            bool operator()(bool& object, const nlohmann::json& json)
+            std::optional<bool> operator()(const nlohmann::json& json) const
             {
                 if (json.is_boolean())
                 {
-                    object = json.get<bool>();
-
-                    return true;
+                    return json.get<bool>();
                 }
-
-                return false;
+                return std::nullopt;
             }
-
         };
 
-        /// \brief Functor used to deserialize a numeric-variable from JSON.
+        /// \brief Functor used to deserialize a numeric variable from JSON.
         /// \author Raffaele D. Facendola - September 2016
         template <typename TType>
-        struct JSONDeserializer<TType, typename std::enable_if_t<std::is_arithmetic_v<TType> && !std::is_const<TType>::value>>
+        struct JSONDeserializerT<TType, typename std::enable_if_t<std::is_arithmetic_v<TType>>>
         {
-            /// \brief Deserialize a numeric variable from a JSON object property.
-            /// \return Returns true if the JSON object contains a numeric value, returns false otherwise.
-            bool operator()(TType& object, const nlohmann::json& json)
+            std::optional<TType> operator()(const nlohmann::json& json) const
             {
                 if (json.is_number())
                 {
-                    object = json.get<TType>();
-
-                    return true;
+                    return json.get<TType>();
                 }
-
-                return false;
+                return std::nullopt;
             }
-
-        };
-
-        /************************************************************************/
-        /* CONST VALUE DESERIALIZATION                                          */
-        /************************************************************************/
-
-        /// \brief Functor used to handle const objects.
-        /// Since const objects cannot be deserialized, this functor does nothing.
-        /// \author Raffaele D. Facendola - September 2016
-        template <typename TType>
-        struct JSONDeserializer<const TType>
-        {
-            /// \brief Do nothing.
-            /// \return Returns false.
-            bool operator()(const TType&, const nlohmann::json&)
-            {
-                return false;
-            }
-
         };
 
     }

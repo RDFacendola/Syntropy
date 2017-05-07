@@ -17,7 +17,6 @@
 #include "containers/interface_container.h"
 
 #include "reflection/reflection.h"
-#include "reflection/instance.h"
 #include "reflection/property.h"
 #include "reflection/method.h"
 #include "reflection/class_interfaces.h"

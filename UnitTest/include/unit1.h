@@ -392,10 +392,10 @@ public:
         definition.DefineProperty("float_value", &Foo::value_) << JSONRead();
 
         definition.DefineProperty("int_value", &Foo::value2_) << JSONRead();
-        definition.DefineProperty("const_value", &Foo::const_value_) << JSONRead();
+        definition.DefineProperty("const_value", &Foo::const_value_) /*<< JSONRead()*/;
         definition.DefineProperty("pointer", &Foo::pointer_) << JSONRead();
         definition.DefineProperty("pointer_to_const", &Foo::pointer_to_const_) << JSONRead();
-        definition.DefineProperty("const_pointer", &Foo::const_pointer_) << JSONRead();
+        definition.DefineProperty("const_pointer", &Foo::const_pointer_) /*<< JSONRead()*/;
         definition.DefineProperty("boolean", &Foo::boolean_) << JSONRead();
         definition.DefineProperty("vector_int", &Foo::vector_int_) << JSONRead();
         definition.DefineProperty("map", &Foo::map_) << JSONRead();
@@ -403,10 +403,10 @@ public:
         definition.DefineProperty("blob_value", &Foo::blob_);
         
         definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue) << JSONRead();
-        definition.DefineProperty("ConstValue", &Foo::GetConstValue) << JSONRead();
+        definition.DefineProperty("ConstValue", &Foo::GetConstValue) /*<< JSONRead()*/;
         definition.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer) << JSONRead();
         definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst) << JSONRead();
-        definition.DefineProperty("ConstPointer", &Foo::GetConstPointer) << JSONRead();
+        definition.DefineProperty("ConstPointer", &Foo::GetConstPointer) /*<< JSONRead()*/;
         definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob) << JSONRead();
         definition.DefineProperty("UBlob", &Foo::GetUBlob, &Foo::SetUBlob) << JSONRead();
        
@@ -812,9 +812,9 @@ public:
 
         //auto foobarp = syntropy::reflection::MakeInstance(beep);
 
-        TEST_TRUE(bar.As<Bar>() != nullptr);
-        TEST_FALSE(bar.As<Foo>() != nullptr);
-        TEST_FALSE(bar.As<FooBar>() != nullptr);
+        TEST_TRUE(syntropy::reflection::AnyCast<Bar*>(&bar) != nullptr);
+		TEST_FALSE(syntropy::reflection::AnyCast<Foo*>(&bar) != nullptr);
+		TEST_FALSE(syntropy::reflection::AnyCast<FooBar*>(&bar) != nullptr);
 
     }
 
@@ -928,7 +928,7 @@ public:
                                               }  
                                  })"_json;
 
-        syntropy::serialization::DeserializeObjectFromJSON(foo, json);
+        syntropy::serialization::DeserializeObjectFromJSON(&foo, json);
 
         TEST_TRUE(foo.value_ == 67.5f);
         TEST_TRUE(foo.value2_ == 42);

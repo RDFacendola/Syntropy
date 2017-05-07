@@ -138,10 +138,6 @@
     </ClInclude>
     <ClInclude Include="include\math\fnv1.h" />
     <ClInclude Include="include\containers\hashed_string.h" />
-    <ClInclude Include="include\reflection\instance.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\reflection\method.h">
       <SubType>
       </SubType>
@@ -267,10 +263,6 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="src\reflection\class.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="src\reflection\instance.cpp">
       <SubType>
       </SubType>
     </ClCompile>

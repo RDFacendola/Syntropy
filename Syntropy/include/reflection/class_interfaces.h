@@ -6,13 +6,10 @@
 
 #pragma once
 
-#include <functional>
-#include <type_traits>
-
 #include "type_traits.h"
 
-#include "reflection/instance.h"
 #include "reflection/class.h"
+#include "reflection/any.h"
 
 namespace syntropy
 {
@@ -34,16 +31,16 @@ namespace syntropy
             /// \brief Instantiate a new object.
             /// \param arguments Arguments to pass to the constructor.
             template <typename... TArguments>
-            Instance operator()(TArguments&&... arguments) const;
+            Any operator()(TArguments&&... arguments) const;
 
         private:
 
             /// \brief Instantiate a new object.
             /// \param arguments Arguments to pass to the constructor.
             template <typename TClass>
-            static Instance Instantiate(TConstructorArguments... arguments);
+            static Any Instantiate(TConstructorArguments... arguments);
 
-            Instance(*instancer_)(TConstructorArguments...);                    /// \brief Functor used to instantiate the class.
+			Any(*instancer_)(TConstructorArguments...);						/// \brief Functor used to instantiate the class.
 
         };
 
@@ -71,16 +68,17 @@ namespace syntropy
 
         template <typename... TConstructorArguments>
         template <typename... TArguments>
-        Instance Constructible<TConstructorArguments...>::operator()(TArguments&&... arguments) const
+		Any Constructible<TConstructorArguments...>::operator()(TArguments&&... arguments) const
         {
             return (*instancer_)(std::forward<TArguments>(arguments)...);
         }
 
          template <typename... TConstructorArguments>
          template <typename TClass>
-         Instance Constructible<TConstructorArguments...>::Instantiate(TConstructorArguments... arguments)
+		 Any Constructible<TConstructorArguments...>::Instantiate(TConstructorArguments... arguments)
          {
-             return *(new TClass(std::forward<TConstructorArguments>(arguments)...));
+			 // TODO: if the caller doesn't take owneship of this object it will leak. Use std::unique_ptr<T> instead...
+             return new TClass(std::forward<TConstructorArguments>(arguments)...);
          }
 
     }

@@ -10,9 +10,6 @@
     <ClInclude Include="include\reflection\fundamental_types.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\reflection\instance.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
     <ClInclude Include="include\reflection\method.h">
       <Filter>reflection</Filter>
     </ClInclude>
@@ -80,9 +77,6 @@
       <Filter>reflection</Filter>
     </ClCompile>
     <ClCompile Include="src\reflection\type.cpp">
-      <Filter>reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\reflection\instance.cpp">
       <Filter>reflection</Filter>
     </ClCompile>
     <ClCompile Include="src\reflection\property.cpp">
