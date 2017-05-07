@@ -40,7 +40,7 @@ namespace syntropy
             template <typename TClass>
             static Any Instantiate(TConstructorArguments... arguments);
 
-			Any(*instancer_)(TConstructorArguments...);						/// \brief Functor used to instantiate the class.
+            Any(*instancer_)(TConstructorArguments...);                     /// \brief Functor used to instantiate the class.
 
         };
 
@@ -68,16 +68,16 @@ namespace syntropy
 
         template <typename... TConstructorArguments>
         template <typename... TArguments>
-		Any Constructible<TConstructorArguments...>::operator()(TArguments&&... arguments) const
+        Any Constructible<TConstructorArguments...>::operator()(TArguments&&... arguments) const
         {
             return (*instancer_)(std::forward<TArguments>(arguments)...);
         }
 
          template <typename... TConstructorArguments>
          template <typename TClass>
-		 Any Constructible<TConstructorArguments...>::Instantiate(TConstructorArguments... arguments)
+        Any Constructible<TConstructorArguments...>::Instantiate(TConstructorArguments... arguments)
          {
-			 // TODO: if the caller doesn't take owneship of this object it will leak. Use std::unique_ptr<T> instead...
+             // TODO: if the caller doesn't take owneship of this object it will leak. Use std::unique_ptr<T> instead...
              return new TClass(std::forward<TConstructorArguments>(arguments)...);
          }
 

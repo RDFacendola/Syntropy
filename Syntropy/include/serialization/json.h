@@ -57,6 +57,17 @@ namespace syntropy
 
         };
 
+        /// \brief Functor used to instantiate an object from JSON.
+        /// \author Raffaele D. Facendola - May 2017
+        template <typename TClass>
+        struct JSONConstructorT 
+        {
+            //reflection::Any operator()(const nlohmann::json& json) const;
+        };
+
+        template <typename TClass>
+        constexpr JSONConstructorT<TClass> JSONConstructor{};
+
         /// \brief Class interface used to grant JSON construction capabilities.
         /// A class defining this interface can be directly constructed via JSON object.
         /// \author Raffaele D. Facendola - September 2016
@@ -70,6 +81,16 @@ namespace syntropy
             /// \param json JSON object the object will be constructed form.
             /// \return Returns an instance of an object constructed via a JSON object. If the object could not be constructed with the provided JSON object, returns an empty instance.
             reflection::Any operator()(const nlohmann::json& json) const;
+
+        private:
+
+            /// \brief Instantiate a new object.
+            /// \param json JSON object the object will be constructed form.
+            template <typename TClass>
+            static reflection::Any Instantiate(const nlohmann::json& json);
+
+            reflection::Any(*instancer_)(const nlohmann::json&);                    /// \brief Functor used to instantiate the class.
+
         };
         
         /// \brief Functor object used to assign the interface JSONDeserializable to properties.
@@ -186,8 +207,15 @@ namespace syntropy
 
         template <typename TClass>
         JSONConstructible::JSONConstructible(tag_t<TClass>)
+            : instancer_(&Instantiate<TClass>)
         {
 
+        }
+
+        template <typename TClass>
+        reflection::Any JSONConstructible::Instantiate(const nlohmann::json& json)
+        {
+            return JSONConstructor<TClass>(json);
         }
 
         /************************************************************************/

@@ -87,6 +87,7 @@ namespace syntropy
 
         /// \brief Functor used to deserialize a pointer to an object from JSON.
         /// The actual concrete object instantiated by this functor depends on the class defined by the JSON itself.
+        /// IMPORTANT: Providing a custom template specialization for this functor is not advised! It must take into account polymorphism.
         /// \author Raffaele D. Facendola - September 2016
         template <typename TType>
         struct JSONDeserializerT<TType*, std::enable_if_t<!std::is_pointer<TType>::value>>

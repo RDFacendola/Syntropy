@@ -135,6 +135,39 @@ public:
 
 };
 
+class NonDefaultFoo
+{
+public:
+
+    NonDefaultFoo(int a, int b)
+        : a_(a)
+        , b_(b)
+    {
+
+    }
+
+private:
+
+    int a_;
+
+    int b_;
+
+};
+
+// Custom JSON constructor
+template <>
+struct syntropy::serialization::JSONConstructorT<NonDefaultFoo>
+{
+    syntropy::reflection::Any operator()(const nlohmann::json& json) const
+    {
+        if (json.is_number())
+        {
+            return new NonDefaultFoo(json.get<int>(), 666);
+        }
+        return nullptr;
+    }
+};
+
 class Foo : public Bar {
 
     friend class syntropy::reflection::ClassDefinitionT<Foo>;
@@ -271,6 +304,8 @@ public:
     std::map<std::string, Blob*> map_;
     //std::map<syntropy::HashedString, int> map_;
 
+    NonDefaultFoo* nondefault_;
+
     Foo* fooptr_;
 
     Blob blob_;
@@ -327,8 +362,6 @@ public:
 
 };
 
-
-
 template <>
 struct syntropy::reflection::ClassDeclaration<DerivedBlob> {
 
@@ -361,6 +394,23 @@ public:
 
         return "Bar";
 
+    }
+
+};
+
+template <>
+struct syntropy::reflection::ClassDeclaration<NonDefaultFoo> {
+
+public:
+
+    static constexpr const char* GetName() noexcept
+    {
+        return "NonDefaultFoo";
+    }
+
+    void operator()(ClassDefinitionT<NonDefaultFoo>& definition) const
+    {
+        definition << syntropy::serialization::JSONConstruct();
     }
 
 };
@@ -399,6 +449,8 @@ public:
         definition.DefineProperty("boolean", &Foo::boolean_) << JSONRead();
         definition.DefineProperty("vector_int", &Foo::vector_int_) << JSONRead();
         definition.DefineProperty("map", &Foo::map_) << JSONRead();
+
+        definition.DefineProperty("nondefault", &Foo::nondefault_) << JSONRead();
 
         definition.DefineProperty("blob_value", &Foo::blob_);
         
@@ -928,7 +980,8 @@ public:
                                                 "$class": "DerivedBlob",
                                                 "blob": 3,
                                                 "derived_blob": 49
-                                              }  
+                                              },
+                                    "nondefault": 100
                                  })"_json;
 
         syntropy::serialization::DeserializeObjectFromJSON(foo, json);

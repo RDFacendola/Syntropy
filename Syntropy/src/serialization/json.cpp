@@ -24,9 +24,9 @@ namespace syntropy
         /* JSON CONSTRUCTIBLE                                                   */
         /************************************************************************/
 
-        reflection::Any JSONConstructible::operator()(const nlohmann::json& /*json*/) const
+        reflection::Any JSONConstructible::operator()(const nlohmann::json& json) const
         {
-            return reflection::Any();
+            return instancer_(json);
         }
 
     }
