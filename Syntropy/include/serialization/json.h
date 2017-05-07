@@ -42,16 +42,18 @@ namespace syntropy
             /// \brief Deserialize the property value.
             /// \param instance Object to deserialize the property of. Expects pointer to the actual object instance.
             /// \return Returns true if the property could be deserialized, returns false otherwise.
-            bool operator()(reflection::Any& instance, const nlohmann::json& json) const;
+            bool operator()(const reflection::Any& instance, const nlohmann::json& json) const;
 
             /// \brief Deserialize the property value.
-            /// \param instance Object to deserialize the property of. Expects a pointer to the actual object instance.
+            /// This overload only participates in overload resolution if TInstance is not reflection::Any.
+            /// \param instance Object to deserialize the property of.
             /// \return Returns true if the property could be deserialized, returns false otherwise.
-            bool operator()(reflection::Any&& instance, const nlohmann::json& json) const;
+            template <typename TInstance, typename = std::enable_if_t<!std::is_same_v<std::decay_t<TInstance>, reflection::Any>>>
+            bool operator()(TInstance& instance, const nlohmann::json& json) const;
 
         private:
 
-            std::function<bool(reflection::Any& instance, const nlohmann::json& json)> deserializer_;       ///< \brief Functor used to deserialize the property.
+            std::function<bool(const reflection::Any& instance, const nlohmann::json& json)> deserializer_;         ///< \brief Functor used to deserialize the property.
 
         };
 
@@ -123,7 +125,7 @@ namespace syntropy
         {
             static_assert(std::is_move_assignable_v<TProperty>, "TProperty must be move-assignable");
 
-            deserializer_ = [field](reflection::Any& object, const nlohmann::json& json)
+            deserializer_ = [field](const reflection::Any& object, const nlohmann::json& json)
             {
                 auto value = JSONDeserializer<TProperty>(json);
 
@@ -141,7 +143,7 @@ namespace syntropy
         {
             static_assert(std::is_move_constructible_v<remove_reference_cv_t<TProperty>>, "remove_reference_cv_t<TProperty> must be move-constructible");
 
-            deserializer_ = [setter](reflection::Any& object, const nlohmann::json& json)
+            deserializer_ = [setter](const reflection::Any& object, const nlohmann::json& json)
             {
                 auto value = JSONDeserializer<remove_reference_cv_t<TProperty>>(json);
 
@@ -159,7 +161,7 @@ namespace syntropy
         {
             static_assert(std::is_move_assignable_v<TProperty>, "TProperty must be copy-assignable");
 
-            deserializer_ = [setter](reflection::Any& object, const nlohmann::json& json)
+            deserializer_ = [setter](const reflection::Any& object, const nlohmann::json& json)
             {
                 auto value = JSONDeserializer<TProperty>(json);
 
@@ -170,6 +172,12 @@ namespace syntropy
 
                 return value.has_value();
             };
+        }
+
+        template <typename TInstance, typename>
+        bool JSONDeserializable::operator()(TInstance& instance, const nlohmann::json& json) const
+        {
+            return (*this)(std::addressof(object), json);
         }
 
         /************************************************************************/

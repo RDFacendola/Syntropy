@@ -13,7 +13,7 @@ namespace syntropy
         /* DESERIALIZE OBJECT FROM JSON                                         */
         /************************************************************************/
 
-        void DeserializeObjectFromJSON(reflection::Any& object, const nlohmann::json& json)
+        void DeserializeObjectFromJSON(const reflection::Any& object, const nlohmann::json& json)
         {
             SYNTROPY_ASSERT(object.HasValue());
 
@@ -36,11 +36,6 @@ namespace syntropy
                     }
                 }
             }
-        }
-
-        void DeserializeObjectFromJSON(reflection::Any&& object, const nlohmann::json& json)
-        {
-            DeserializeObjectFromJSON(object, json);
         }
 
     }

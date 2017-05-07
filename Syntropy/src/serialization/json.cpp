@@ -15,12 +15,7 @@ namespace syntropy
         /* JSON DESERIALIZABLE                                                  */
         /************************************************************************/
 
-        bool JSONDeserializable::operator()(reflection::Any& instance, const nlohmann::json& json) const
-        {
-            return deserializer_(instance, json);
-        }
-
-        bool JSONDeserializable::operator()(reflection::Any&& instance, const nlohmann::json& json) const
+        bool JSONDeserializable::operator()(const reflection::Any& instance, const nlohmann::json& json) const
         {
             return deserializer_(instance, json);
         }

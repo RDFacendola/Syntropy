@@ -539,6 +539,8 @@ public:
         Foo foo;
         Foo foo2;
 
+        syntropy::reflection::Any anyfoo(&foo);
+
         {
             auto property = foo_class_.GetProperty("blob_value");
 
@@ -555,7 +557,8 @@ public:
             foo.blob_.blob_ = 10;
             foo2.blob_.blob_ = 20;
 
-            writer(foo2, reader(foo));  // Copy a property from "foo" to "foo2" via reflection.
+            //writer(foo2, reader(anyfoo));     // BUG! Foo* == const Foo* yields FALSE (instead of true)
+            writer(foo2, reader(foo));          // Copy a property from "foo" to "foo2" via reflection.
 
             TEST_TRUE(foo.blob_.blob_ == foo2.blob_.blob_);
 
@@ -568,7 +571,7 @@ public:
 
             foo.value_ = 10.0f;
 
-            writer(foo, 5.0f);
+            writer(anyfoo, 5.0f);
 
             TEST_TRUE(foo.value_ == 5.0f);
         }
@@ -928,7 +931,7 @@ public:
                                               }  
                                  })"_json;
 
-        syntropy::serialization::DeserializeObjectFromJSON(&foo, json);
+        syntropy::serialization::DeserializeObjectFromJSON(foo, json);
 
         TEST_TRUE(foo.value_ == 67.5f);
         TEST_TRUE(foo.value2_ == 42);

@@ -33,16 +33,23 @@ namespace syntropy
             Readable(TProperty(TClass::* getter)() const);
 
             /// \brief Read the property value.
+            /// \param instance Object to write the property of. Expects pointer to the actual object instance.
+            /// \return Returns an object containing a copy of the property value.
+            Any operator()(const Any& instance) const;
+
+            /// \brief Read the property value.
+            /// This overload only participates in overload resolution if TInstance is not reflection::Any.
             /// \param instance Object to read the property of.
             /// \return Returns an object containing a copy of the property value.
-            template <typename TInstance>
+            template <typename TInstance, typename = std::enable_if_t<!std::is_same_v<std::decay_t<TInstance>, reflection::Any>>>
             Any operator()(const TInstance& instance) const;
 
             /// \brief Read the property value.
+            /// This overload only participates in overload resolution if TInstance is not reflection::Any.
             /// This method is used only if the target object is a rvalue reference to avoid unnecessary copies.
             /// \param instance Object to read the property of.
             /// \return Returns an object containing the moved property value.
-            template <typename TInstance, typename = std::enable_if_t<!std::is_lvalue_reference<TInstance>::value>>
+            template <typename TInstance, typename = std::enable_if_t<!std::is_lvalue_reference<TInstance>::value && !std::is_same_v<std::decay_t<TInstance>, reflection::Any>>>
             Any operator()(TInstance&& instance) const;
 
         private:
@@ -73,16 +80,23 @@ namespace syntropy
             Writeable(TProperty&(TClass::* setter)());
 
             /// \brief Write the property value.
-            /// \param instance Object to write the property of.
+            /// \param instance Object to write the property of. Expects pointer to the actual object instance.
             /// \param value Value to write. Must match the property value.
-            template <typename TInstance, typename TValue>
-            void operator()(TInstance& instance, const TValue& value) const;
+            template <typename TValue>
+            void operator()(const Any& instance, const TValue& value) const;
 
             /// \brief Write the property value.
             /// This method is used only if the value to write is a rvalue reference to avoid unnecessary copies.
-            /// \param instance Object to write the property of.
+            /// \param instance Object to write the property of. Expects pointer to the actual object instance.
             /// \param value Value to write. Must match the property value.
-            template <typename TInstance, typename TValue, typename = std::enable_if_t<!std::is_lvalue_reference<TValue>::value>>
+            template <typename TValue, typename = std::enable_if_t<!std::is_lvalue_reference<TValue>::value>>
+            void operator()(const Any& instance, TValue&& value) const;
+
+            /// \brief Write the property value.
+            /// This overload only participates in overload resolution if TInstance is not reflection::Any.
+            /// \param instance Object to write the property of. Expects pointer to the actual object instance.
+            /// \param value Value to write. Must match the property value.
+            template <typename TInstance, typename TValue, typename = std::enable_if_t<!std::is_same_v<std::decay_t<TInstance>, reflection::Any>>>
             void operator()(TInstance& instance, TValue&& value) const;
 
         private:
@@ -139,7 +153,12 @@ namespace syntropy
             };
         }
 
-        template <typename TInstance>
+        inline Any Readable::operator()(const Any& instance) const
+        {
+            return reader_(instance);
+        }
+
+        template <typename TInstance, typename>
         Any Readable::operator()(const TInstance& instance) const
         {
             return reader_(&instance);
@@ -203,16 +222,22 @@ namespace syntropy
             };
         }
 
-        template <typename TInstance, typename TValue>
-        void Writeable::operator()(TInstance& instance, const TValue& value) const
+        template <typename TValue>
+        void Writeable::operator()(const Any& instance, const TValue& value) const
         {
-            writer_(&instance, value);
+            writer_(instance, value);
+        }
+
+        template <typename TValue, typename>
+        void Writeable::operator()(const Any& instance, TValue&& value) const
+        {
+            mover_(instance, std::forward<TValue>(value));
         }
 
         template <typename TInstance, typename TValue, typename>
         void Writeable::operator()(TInstance& instance, TValue&& value) const
         {
-            mover_(&instance, std::forward<TValue>(value));
+            (*this)(std::addressof(instance), std::forward<TValue>(value));
         }
 
     }

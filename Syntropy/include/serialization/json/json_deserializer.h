@@ -37,14 +37,19 @@ namespace syntropy
         /// Properties that are not defined either by the JSON or by the object are ignored and any existing state is preserved.
         /// \param object Object to deserialize. It must contain a pointer to the concrete type to deserialize.
         /// \param json Source JSON object to parse.
-        void DeserializeObjectFromJSON(reflection::Any& object, const nlohmann::json& json);
+        void DeserializeObjectFromJSON(const reflection::Any& object, const nlohmann::json& json);
 
         /// \brief Deserialize an object properties from JSON.
+        /// This overload only participates in overload resolution if TInstance is not reflection::Any.
         /// This method enumerates the properties defined by the JSON and attempts to deserialize the corresponding object properties directly.
         /// Properties that are not defined either by the JSON or by the object are ignored and any existing state is preserved.
-        /// \param object Object to deserialize. It must contain a pointer to the concrete type to deserialize.
+        /// \param object Object to deserialize.
         /// \param json Source JSON object to parse.
-        void DeserializeObjectFromJSON(reflection::Any&& object, const nlohmann::json& json);
+        template <typename TInstance, typename = std::enable_if_t<!std::is_same_v<std::decay_t<TInstance>, reflection::Any>>>
+        void DeserializeObjectFromJSON(TInstance& object, const nlohmann::json& json)
+        {
+            return DeserializeObjectFromJSON(std::addressof(object), json);
+        }
 
         /************************************************************************/
         /* OBJECT DESERIALIZATION                                               */
