@@ -29,19 +29,12 @@
 #define SYNTROPY_RELEASE_ONLY(x) x
 #endif
 
-namespace syntropy {
-    
-    //////////////// UTILITIES ////////////////
+namespace syntropy 
+{
 
-    /// \brief Delete an object and set its pointer to nullptr. If the pointer is already nullptr, this method does nothing.
-    template <typename T>
-    void SafeDelete(T*& object);
-
-    /// \brief Delete an array and set its pointer to nullptr. If the pointer is already nullptr, this method does nothing.
-    template <typename T>
-    void SafeDeleteArray(T*& object);
-
-    //////////////// STRING CONVERSION ////////////////
+    /************************************************************************/
+    /* STRING CONVERSION                                                    */
+    /************************************************************************/
 
     /// \brief Convert a string to a wstring.
     /// \param string String to convert.
@@ -50,61 +43,5 @@ namespace syntropy {
     /// \brief Converts a wstring to a string.
     /// \param string String to convert.
     std::string to_string(const std::wstring& wstring);
-
-    /// \brief Template specialization for wstring -> string conversions.
-    template <>
-    struct convert<std::wstring, std::string> : std::true_type{
-
-        std::string operator()(const std::wstring& from) {
-
-            return to_string(from);
-
-        }
-
-    };
-
-    /// \brief Template specialization for string -> wstring conversions.
-    template <>
-    struct convert<std::string, std::wstring> : std::true_type{
-
-        std::wstring operator()(const std::string& from) {
-
-            return to_wstring(from);
-
-        }
-
-    };
-
-}
-
-namespace syntropy {
-
-    // Implementation
-
-    //////////////// UTILITIES ////////////////
-
-    template <typename T>
-    void SafeDelete(T*& object) {
-
-        if (object) {
-
-            delete object;
-            object = nullptr;
-
-        }
-
-    }
-
-    template <typename T>
-    void SafeDeleteArray(T*& object) {
-
-        if (object) {
-
-            delete[] object;
-            object = nullptr;
-
-        }
-
-    }
 
 }
