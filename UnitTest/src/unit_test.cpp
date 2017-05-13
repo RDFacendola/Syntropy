@@ -23,6 +23,7 @@
 #include "memory/memory_manager.h"
 
 #include "diagnostics/log.h"
+#include "diagnostics/log_channels.h"
 
 syntropy::diagnostics::Context Root;
 

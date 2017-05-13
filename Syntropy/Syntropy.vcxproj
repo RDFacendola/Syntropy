@@ -51,6 +51,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\diagnostics\log_channels.h" />
     <ClInclude Include="include\macro.h">
       <SubType>
       </SubType>
@@ -197,6 +198,7 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\diagnostics\log_channels.cpp" />
     <ClCompile Include="src\math\math.cpp">
       <SubType>
       </SubType>

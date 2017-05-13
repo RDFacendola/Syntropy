@@ -7,6 +7,7 @@
 #pragma once
 
 #include <utility>
+#include "algorithm.h"
 
 namespace syntropy
 {
