@@ -222,21 +222,5 @@ namespace syntropy
             return out;
         }
 
-        std::ostream& operator<<(std::ostream& out, const std::set<Context>& contexts)
-        {
-            if (contexts.size() > 0)
-            {
-                auto&& it = contexts.begin();
-
-                out << *it;                      // First context
-
-                for (++it; it != contexts.end(); ++it)
-                {
-                    out << ", " << *it;          // Remaining contexts
-                }
-            }
-            return out;
-        }
-
     }
 }

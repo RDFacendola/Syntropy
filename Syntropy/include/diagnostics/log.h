@@ -9,7 +9,7 @@
 #include <mutex>
 #include <sstream>
 #include <algorithm>
-#include <set>
+#include <vector>
 #include <thread>
 
 #include "macro.h"
@@ -55,7 +55,6 @@
 
 namespace syntropy 
 {
-
     namespace diagnostics 
     {
 
@@ -69,66 +68,50 @@ namespace syntropy
             std::chrono::system_clock::time_point time_;                    ///< \brief Time point associated to the message creation.
             Severity severity_;                                             ///< \brief Severity of the message.
             std::thread::id thread_id_;                                     ///< \brief Id of the thread that issued the message.
-            std::set<Context> contexts_;                                    ///< \brief Contexts used to categorize the message.
+            std::vector<Context> contexts_;                                 ///< \brief Contexts used to categorize the message.
             StackTrace stacktrace_;                                         ///< \brief Stack trace.
             std::string message_;                                           ///< \brief Log message.
         };
 
-        /// \brief Log stream used to output log messages.
+        /// \brief Channel used to collect incoming log messages.
         /// \author Raffaele D. Facendola - November 2016
-        class BaseLogStream 
+        class LogChannel 
         {
 
         public:
 
-            /// \brief Create a new log stream.
-            BaseLogStream();
+            /// \brief Create a new channel.
+            /// \param context Contexts bound to this channel. Used to filter log messages by context.
+            /// \param verbosity Minimum required severity for which a message is processed.
+            LogChannel(std::vector<Context> contexts, Severity verbosity = Severity::kInformative);
 
-            /// \brief Send a message to the stream.
+            /// \brief Send a message to the channel.
+            /// If the message context or verbosity do not match any of the ones specified by this channel, the message is ignored.
             /// \param log Message to send.
-            BaseLogStream& operator<<(const LogMessage& log);
+            LogChannel& operator<<(const LogMessage& log);
 
-            /// \brief Set the verbosity level of the stream.
-            /// Messages with severity lower than the stream verbosity are ignored.
-            /// \param verbosity New level of verbosity to set.
-            void SetVerbosity(Severity verbosity);
-
-            /// \brief Get the verbosity level of the stream.
-            /// \return Returns the verbosity level of the stream.
+            /// \brief Get the verbosity level of the channel.
+            /// This represents the minimum required severity for which a message is processed.
+            /// \return Returns the verbosity level of the channel.
             Severity GetVerbosity() const;
 
-            /// \brief Bind the log stream to one or more contexts.
-            /// Messages whose contexts do not match with any of the ones bound to this stream are ignored.
-            /// \param context List of contexts to bound to this stream.
-            void BindContext(std::initializer_list<Context> contexts);
-
-            /// \brief Unbind a context from the stream.
-            /// \param context Context to unbind.
-            void UnbindContext(const Context& context);
-
-            /// \brief Get the set of contexts bound to this log stream.
-            /// \return Returns the list of contexts bound to this log stream.
-            const std::set<Context>& GetBoundContexts() const;
+            /// \brief Get the contexts this channel reacts to.
+            /// Log messages must specifiy at least one of these contexts in order to be processed. Note that contexts are hierarchical.
+            /// \return Returns the list of contexts this channel reacts to.
+            const std::vector<Context>& GetContexts() const;
 
         protected:
 
-            /// \brief Handle a message sent to the stream.
+            /// \brief Handle a message.
             /// \param log Message to handle. The message is guaranteed to have severity equal or higher to the verbosity level and have at least one context matching at least one among the contexts bound to the stream. 
-
-            virtual void OnSendMessage(const LogMessage& log) = 0;
-
-            /// \brief Get the contexts defined in a log message that are contained in at least one context bound to this log stream.
-            std::set<Context> GetHitContexts(const LogMessage& log) const;
+            /// \param contexts List of contexts specified by the log message that match any of the channel contexts.
+            virtual void OnSendMessage(const LogMessage& log, const std::vector<Context>& contexts) = 0;
 
         private:
 
-            /// \brief Check whether a log message matches the log stream requirements.
-            /// \return Returns true if log severity and contexts match against the log stream's ones, returns false otherwise.
-            bool Match(const LogMessage& log) const;
+            std::vector<Context> contexts_;                 ///< \brief Contexts this channel reacts to.
 
-            std::set<Context> contexts_;                    ///< \brief Contexts this stream is bound to.
-
-            Severity verbosity_;                            ///< \brief Minimum severity needed to log a message.
+            Severity verbosity_;                            ///< \brief Minimum severity needed to process a message.
         };
 
         /// \brief Singleton used to issue log messages and events.
@@ -141,28 +124,19 @@ namespace syntropy
             /// \brief Get the log manager instance.
             static LogManager& GetInstance();
 
-            /// \brief Attach a log stream to the manager.
-            /// If the stream is already attached to the manager, this method does nothing.
-            /// \param log_stream Stream to attach.
-            void AttachStream(std::shared_ptr<BaseLogStream> log_stream);
-
-            /// \brief Create and attach a log stream to the manager.
-            /// \tparam TLogStream Type of the log stream to create. Must derive from LogStream.
-            /// \param args Arguments passed to TLogStream's constructor.
-            /// \return Returns a pointer to the new stream.
-            template <typename TLogStream, typename... TArgs>
-            std::shared_ptr<TLogStream> CreateStream(TArgs&&... args);
-
-            /// \brief Detach an existing stream from the manager.
-            /// \param stream Stream to detach.
-            void DetachStream(std::shared_ptr<BaseLogStream> stream);
+            /// \brief Create new log channel.
+            /// \tparam TLogChannel Type of channel to create. Must derive from LogChannel.
+            /// \param args Arguments passed to the channel's constructor.
+            /// \return Returns a reference to the new channel.
+            template <typename TLogChannel, typename... TArgs>
+            const TLogChannel& CreateChannel(TArgs&&... args);
 
             /// \brief Send a log message.
             /// \tparam kSeverity Severity of the message.
             /// \param stacktrace Stacktrace that caused the log.
             /// \param context Log contexts used to categorize the log message.
             template <Severity kSeverity, typename... TMessage>
-            void SendMessage(const StackTrace& stacktrace, std::initializer_list<Context> contexts, TMessage&&... message);
+            void SendMessage(const StackTrace& stacktrace, std::vector<Context> contexts, TMessage&&... message);
 
         private:
 
@@ -173,47 +147,57 @@ namespace syntropy
 
             std::ostringstream message_builder_;                            ///< \brief Stream used to build log messages.
 
-            std::set<std::shared_ptr<BaseLogStream>> streams_;              ///< \brief List of log streams.
-
+            std::vector<std::unique_ptr<LogChannel>> channels_;             /// \brief List of log channels.
         };
 
-        /// \brief Used to redirect a log output to an output stream.
+        /// \brief Channel used to redirect formatted log messages to an output stream.
         /// \author Raffaele D. Facendola - December 2016
-        class StreamLog : public BaseLogStream
+        class StreamLogChannel : public LogChannel
         {
 
         public:
 
-            // Valid tokens for the format string
+            // Tokens for the format string
 
             static const std::string kTimeToken;                ///< \brief {time} Output the time of the day of the log message in the format hh:mm:ss.ms
             static const std::string kDateToken;                ///< \brief {date} Output the date of the log message in the format YYYY-MM-DD
             static const std::string kSeverityToken;            ///< \brief {severity} Output the severity of the log message.
             static const std::string kThreadToken;              ///< \brief {thread} Output the thread that caused the log message.
-            static const std::string kContextsToken;            ///< \brief {context} Output the list of contexts of the log message that were bound to the stream in the format Context1, ..., ContextN
-            static const std::string kStackTraceToken;          ///< \brief {trace} Output the stack trace that caused the log message if available, output to the function name otherwise.
+            static const std::string kContextsToken;            ///< \brief {context} Output the list of contexts the channel reacted to in the format Context1, ..., ContextN
+            static const std::string kStackTraceToken;          ///< \brief {trace} Output the stack trace that caused the log message if available, output the last function name otherwise.
             static const std::string kFunctionToken;            ///< \brief {function} Output the function that caused the log message.
             static const std::string kMessageToken;             ///< \brief {message} Output the actual log message text.
 
             static const char kTokenStart;                      ///< \brief Character delimiting the begin of a token. '{'.
             static const char kTokenEnd;                        ///< \brief Character delimiting the end of a token. '}'.
 
-            /// \brief Create a new stream logger.
-            /// The format string is used to determine the format of the message log sent to the message stream.
-            /// An example of a valid format string is "{date} {time} [{context}]: {message}.
-            /// Unrecognized tokens in the format string are considered regular strings.
-            /// \param stream Stream where the messages are appended to.
-            /// \param format Format of the log messages. See LogMessageFormatter.
-            /// \param flush_severity Minimum severity required in order to trigger a stream flush.
-            StreamLog(std::ostream& stream, const std::string& format, Severity flush_severity = Severity::kCritical);
+            /// \brief Configuration for a StreamLogChannel.
+            struct Configuration
+            {
+                std::ostream& stream_;              ///< \brief Stream where the messages will be redirected to.
+                std::string format_;                ///< \brief Format of the messages. Example of a valid format string: "{date} {time} [{context}]: {message}". Unrecognized tokens are considered plain strings.
+                std::vector<Context> contexts_;     ///< \brief Contexts the channel should react to.
+                Severity verbosity_;                ///< \brief Minimum required severity for which a message is processed.
+                Severity flush_severity_;           ///< \brief Minimum severity required for a stream flush. Used to prevent log message loss after an application crash.
+            };
 
-        protected:
-
-            virtual void OnSendMessage(const LogMessage& log) override;
+            /// \brief Create a new stream log channel.
+            /// \param configuration Configuration for this stream.
+            StreamLogChannel(const Configuration& configuration);
 
         private:
 
-            using Thunk = std::function<void(std::ostream&, const LogMessage&)>;
+            virtual void OnSendMessage(const LogMessage& log, const std::vector<Context>& contexts) override;
+
+            /// \brief Arguments passed to the format thunk.
+            struct ThunkArgs
+            {
+                std::ostream& out_;
+                const LogMessage& log_;
+                const std::vector<Context>& contexts_;
+            };
+
+            using Thunk = std::function<void(ThunkArgs)>;
 
             /// \brief Update the thunk list according to the provided format string.
             void UpdateThunks(const std::string& format);
@@ -233,53 +217,50 @@ namespace syntropy
 
 namespace syntropy 
 {
-
     namespace diagnostics 
     {
 
-        // Implementation
-
-        //////////////// LOG MANAGER ////////////////
+        /************************************************************************/
+        /* LOG MANAGER                                                          */
+        /************************************************************************/
 
         template <typename TLogStream, typename... TArgs>
-        std::shared_ptr<TLogStream> LogManager::CreateStream(TArgs&&... args)
-        {
-            auto stream = std::make_shared<TLogStream>(std::forward<TArgs>(args)...);
-            
-            AttachStream(stream);
-
-            return stream;
-        }
-
-        template <Severity kSeverity, typename... TMessage>
-        void LogManager::SendMessage(const StackTrace& stacktrace, std::initializer_list<Context> contexts, TMessage&&... message)
+        const TLogStream& LogManager::CreateChannel(TArgs&&... args)
         {
             std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-            if (streams_.size() > 0)
+            channels_.emplace_back(std::make_unique<TLogStream>(std::forward<TArgs>(args)...));
+
+            return *static_cast<TLogStream*>(channels_.back().get());
+        }
+
+        template <Severity kSeverity, typename... TMessage>
+        void LogManager::SendMessage(const StackTrace& stacktrace, std::vector<Context> contexts, TMessage&&... message)
+        {
+            std::unique_lock<std::recursive_mutex> lock(mutex_);
+
+            if (channels_.size() > 0)
             {
                 Insert(message_builder_, std::forward<TMessage>(message)...);
 
                 LogMessage log;
-            
+
                 log.severity_ = kSeverity;
                 log.stacktrace_ = stacktrace;
-                log.contexts_ = contexts;
+                log.contexts_ = std::move(contexts);
                 log.message_ = message_builder_.str();
 
-                // Send the log to the streams
-                for (auto&& stream : streams_)
+                // Send the log to all the channels
+                for (auto&& channel : channels_)
                 {
-                    *stream << log;
+                    *channel << log;
                 }
 
                 // Clear the message builder
                 message_builder_.clear();
                 message_builder_.str("");
             }
-
         }
 
     }
-
 }

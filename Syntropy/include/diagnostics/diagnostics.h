@@ -88,8 +88,5 @@ namespace syntropy
         /// \brief Stream insertion for Context.
         std::ostream& operator<<(std::ostream& out, const Context& context);
 
-        /// \brief Stream insertion for set of Contexts.
-        std::ostream& operator<<(std::ostream& out, const std::set<Context>& contexts);
-
     }
 }

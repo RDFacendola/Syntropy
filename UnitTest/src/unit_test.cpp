@@ -44,24 +44,31 @@ struct FooLarge
 int main()
 {
 
+    using syntropy::diagnostics::LogManager;
+    using syntropy::diagnostics::Severity;
+    using syntropy::diagnostics::StreamLogChannel;
+
     // Initialize log
 
     std::ofstream log_file;
 
     log_file.open("log.txt");
 
-    auto& log_manager = syntropy::diagnostics::LogManager::GetInstance();
+    auto& log_manager = LogManager::GetInstance();
 
-    auto format = "[{date} {time}] [{severity}] [thread: {thread}] [{context}]: {message}";
-    auto stream = log_manager.CreateStream<syntropy::diagnostics::StreamLog>(log_file, format);
+    log_manager.CreateChannel<StreamLogChannel>(StreamLogChannel::Configuration
+    { 
+          log_file
+        , "[{date} {time}] [{severity}] [thread: {thread}] [{context}]: {message}"
+        , { Root }
+        , Severity::kInformative
+        , Severity::kCritical 
+    });
     
-    stream->BindContext({ Root });
-    stream->SetVerbosity(syntropy::diagnostics::Severity::kInformative);
-
     auto& mm = syntropy::MemoryManager::GetInstance();
     
-    Tester t;
-    t.Do();
+    //Tester t;
+    //t.Do();
 
     // Initialization of the memory manager
 

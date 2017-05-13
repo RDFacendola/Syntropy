@@ -33,11 +33,11 @@ namespace syntropy
 
         /// \brief Begin of the range.
         /// \return Returns an iterator pointing to the begin of the range.
-        iterator begin();
+        iterator begin() const;
 
         /// \brief End of the range.
         /// \return Returns an iterator pointing past the end of the range.
-        iterator end();
+        iterator end() const;
 
         /// \brief Reference to the element pointed by head.
         reference operator*();
@@ -65,6 +65,14 @@ namespace syntropy
 
     };
 
+    /// \brief Create a new range from a pair of iterators.
+    template <typename TIterator>
+    Range<TIterator> MakeRange(TIterator begin, TIterator end);
+
+    /// \brief Stream insertion for a range of elements.
+    template <typename TIterator>
+    std::ostream& operator<<(std::ostream& out, const Range<TIterator>& range);
+
 }
 
 // Implementation
@@ -85,13 +93,13 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    typename Range<TIterator>::iterator Range<TIterator>::begin()
+    typename Range<TIterator>::iterator Range<TIterator>::begin() const
     {
         return begin_;
     }
 
     template <typename TIterator>
-    typename Range<TIterator>::iterator Range<TIterator>::end()
+    typename Range<TIterator>::iterator Range<TIterator>::end() const
     {
         return end_;
     }
@@ -130,6 +138,30 @@ namespace syntropy
     bool Range<TIterator>::IsEmpty() const
     {
         return begin_ == end_;
+    }
+
+    template <typename TIterator>
+    Range<TIterator> MakeRange(TIterator begin, TIterator end)
+    {
+        return Range<TIterator>(begin, end);
+    }
+
+    template <typename TIterator>
+    std::ostream& operator<<(std::ostream& out, const Range<TIterator>& range)
+    {
+        if (!range.IsEmpty())
+        {
+            auto&& it = range.begin();
+
+            out << *it;                      // First element
+
+            for (++it; it != range.end(); ++it)
+            {
+                out << ", " << *it;          // Remaining elements.
+            }
+        }
+
+        return out;
     }
 
 }
