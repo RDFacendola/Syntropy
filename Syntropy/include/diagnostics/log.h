@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <vector>
 #include <thread>
+#include <fstream>
 
 #include "macro.h"
 #include "diagnostics.h"
@@ -85,6 +86,9 @@ namespace syntropy
             /// \param verbosity Minimum required severity for which a message is processed.
             LogChannel(std::vector<Context> contexts, Severity verbosity = Severity::kInformative);
 
+            /// \brief Virtual destructor.
+            virtual ~LogChannel() = default;
+
             /// \brief Send a message to the channel.
             /// If the message context or verbosity do not match any of the ones specified by this channel, the message is ignored.
             /// \param log Message to send.
@@ -154,7 +158,6 @@ namespace syntropy
         /// \author Raffaele D. Facendola - December 2016
         class StreamLogChannel : public LogChannel
         {
-
         public:
 
             // Tokens for the format string
@@ -182,8 +185,11 @@ namespace syntropy
             };
 
             /// \brief Create a new stream log channel.
-            /// \param configuration Configuration for this stream.
+            /// \param configuration Configuration for this channel.
             StreamLogChannel(const Configuration& configuration);
+
+            /// \brief Virtual destructor.
+            virtual ~StreamLogChannel() = default;
 
         private:
 
@@ -212,6 +218,34 @@ namespace syntropy
             Severity flush_severity_;                   ///< \brief Minimum severity required in order to trigger a stream flush.
         };
 
+        /// \brief Channel used to redirect formatted log messages to a file.
+        /// \author Raffaele D. Facendola - May 2017
+        class FileLogChannel : public StreamLogChannel
+        {
+        public:
+
+            /// \brief Configuration for a StreamLogChannel.
+            struct Configuration
+            {
+                std::string file_;                  ///< \brief Name of the file the output will be redirected to.
+                std::string format_;                ///< \brief Format of the messages. Example of a valid format string: "{date} {time} [{context}]: {message}". Unrecognized tokens are considered plain strings.
+                std::vector<Context> contexts_;     ///< \brief Contexts the channel should react to.
+                Severity verbosity_;                ///< \brief Minimum required severity for which a message is processed.
+                Severity flush_severity_;           ///< \brief Minimum severity required for a stream flush. Used to prevent log message loss after an application crash.
+            };
+
+            /// \brief Create a new file log channel.
+            /// \param configuration Configuration for this channel.
+            FileLogChannel(const Configuration& configuration);
+
+            /// \brief Virtual destructor.
+            virtual ~FileLogChannel();
+
+        private:
+
+            std::ofstream file_stream_;             ///< \brief Stream associated to the file stream.
+
+        };
     }
 }
 

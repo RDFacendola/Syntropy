@@ -46,27 +46,23 @@ int main()
 
     using syntropy::diagnostics::LogManager;
     using syntropy::diagnostics::Severity;
-    using syntropy::diagnostics::StreamLogChannel;
+    using syntropy::diagnostics::FileLogChannel;
 
     // Initialize log
 
-    std::ofstream log_file;
-
-    log_file.open("log.txt");
-
     auto& log_manager = LogManager::GetInstance();
 
-    log_manager.CreateChannel<StreamLogChannel>(StreamLogChannel::Configuration
+    log_manager.CreateChannel<FileLogChannel>(FileLogChannel::Configuration
     { 
-          log_file
+          "log.txt"
         , "[{date} {time}] [{severity}] [thread: {thread}] [{context}]: {message}"
         , { Root }
         , Severity::kInformative
         , Severity::kCritical 
     });
-    
+
     auto& mm = syntropy::MemoryManager::GetInstance();
-    
+
     //Tester t;
     //t.Do();
 
@@ -103,8 +99,6 @@ int main()
     }
 
     //
-
-    log_file.close();
 
     system("pause");
 

@@ -84,7 +84,9 @@ namespace syntropy
             return instance;
         }
 
-        //////////////// STREAM LOGGER ////////////////
+        /************************************************************************/
+        /* STREAM LOG CHANNEL                                                   */
+        /************************************************************************/
 
         const std::string StreamLogChannel::kTimeToken("{time}");
         const std::string StreamLogChannel::kDateToken("{date}");
@@ -190,5 +192,26 @@ namespace syntropy
             return [token](const ThunkArgs& args) { args.out_ << token; };
         }
 
+        /************************************************************************/
+        /* FILE LOG CHANNEL                                                     */
+        /************************************************************************/
+
+        FileLogChannel::FileLogChannel(const Configuration& configuration)
+            : StreamLogChannel(StreamLogChannel::Configuration
+            {
+                  file_stream_
+                , configuration.format_
+                , configuration.contexts_
+                , configuration.verbosity_
+                , configuration.flush_severity_
+            })
+        {
+            file_stream_.open(configuration.file_);
+        }
+
+        FileLogChannel::~FileLogChannel()
+        {
+            file_stream_.close();
+        }
     }
 }
