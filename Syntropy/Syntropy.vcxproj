@@ -281,7 +281,6 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="src\serialization\json.cpp" />
-    <ClCompile Include="src\serialization\json\json_deserializer.cpp" />
     <ClCompile Include="src\serialization\serialization.cpp">
       <SubType>
       </SubType>

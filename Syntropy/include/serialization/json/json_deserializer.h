@@ -19,161 +19,16 @@
 
 #include "containers/hashed_string.h"
 
-#include "reflection/reflection.h"
-#include "reflection/class.h"
-#include "reflection/any.h"
-
-#include "diagnostics/log.h"
-
-#include "nlohmann/json/src/json.hpp"
+#include "serialization/json.h"
 
 namespace syntropy
 {
     namespace serialization
     {
 
-        /// \brief Deserialize an object properties from JSON.
-        /// This method enumerates the properties defined by the JSON and attempts to deserialize the corresponding object properties directly.
-        /// Properties that are not defined either by the JSON or by the object are ignored and any existing state is preserved.
-        /// \param object Object to deserialize. It must contain a pointer to the concrete type to deserialize.
-        /// \param json Source JSON object to parse.
-        void DeserializeObjectFromJSON(const reflection::Any& object, const nlohmann::json& json);
-
-        /// \brief Deserialize an object properties from JSON.
-        /// This overload only participates in overload resolution if TInstance is not reflection::Any.
-        /// This method enumerates the properties defined by the JSON and attempts to deserialize the corresponding object properties directly.
-        /// Properties that are not defined either by the JSON or by the object are ignored and any existing state is preserved.
-        /// \param object Object to deserialize.
-        /// \param json Source JSON object to parse.
-        template <typename TInstance, typename = std::enable_if_t<!std::is_same_v<std::decay_t<TInstance>, reflection::Any>>>
-        void DeserializeObjectFromJSON(TInstance& object, const nlohmann::json& json)
-        {
-            return DeserializeObjectFromJSON(std::addressof(object), json);
-        }
-
-        /************************************************************************/
-        /* OBJECT DESERIALIZATION                                               */
-        /************************************************************************/
-
-        /// \brief Functor used to deserialize an object from JSON.
-        /// \author Raffaele D. Facendola - September 2016
-        template <typename TType, typename = void>
-        struct JSONDeserializerT
-        {
-            std::optional<TType> operator()(const nlohmann::json& json) const
-            {
-                if (json.is_object())
-                {
-                    auto object = std::make_optional<TType>();
-
-                    DeserializeObjectFromJSON(&(object.value()), json);
-
-                    return object;
-                }
-
-                return std::nullopt;
-            }
-        };
-
-        /// \brief Utility object for JSONDeserializerT.
-        /// Usage: JSONDeserializer<TType>(json) instead of JSONDeserializerT<TType>{}(json)
-        /// \author Raffaele D. Facendola - May 2017
-        template <typename TType>
-        constexpr JSONDeserializerT<TType> JSONDeserializer{};
-
         /************************************************************************/
         /* POINTERS DESERIALIZATION                                             */
         /************************************************************************/
-
-        /// \brief Functor used to deserialize a pointer to an object from JSON.
-        /// The actual concrete object instantiated by this functor depends on the class defined by the JSON itself.
-        /// IMPORTANT: Providing a custom template specialization for this functor is not advised! It must take into account polymorphism.
-        /// \author Raffaele D. Facendola - September 2016
-        template <typename TType>
-        struct JSONDeserializerT<TType*, std::enable_if_t<!std::is_pointer<TType>::value>>
-        {
-            /// \brief JSON property field used to determine the class type of the object being deserialized.
-            static constexpr char* kClassToken = "$class";
-
-            std::optional<TType*> operator()(const nlohmann::json& json) const
-            {
-                auto concrete_class = GetClassFromJSON(json);
-
-                if (!concrete_class)
-                {
-                    return std::nullopt;        // The class was invalid.
-                }
-
-                // Attempts a direct construction of the object via JSON (if the construction fails fall back to recursive property deserialization)
-
-                auto json_constructible = concrete_class->GetInterface<JSONConstructible>();
-
-                if (json_constructible)
-                {
-                    auto instance = (*json_constructible)(json);
-
-                    if (instance.HasValue())
-                    {
-                        return reflection::AnyCast<TType*>(instance);
-                    }
-                }
-
-                // Attempts to default-construct the object and deserialize each of its properties recursively.
-
-                auto default_constructible = concrete_class->GetInterface<reflection::Constructible<>>();
-
-                if (default_constructible)
-                {
-                    auto instance = (*default_constructible)();
-
-                    DeserializeObjectFromJSON(instance, json);
-
-                    return reflection::AnyCast<TType*>(instance);
-                }
-
-                // The object is neither default-constructible nor JSON-constructible.
-                return std::nullopt;
-            }
-
-        private:
-
-            /// \brief Get the class associated to the provided JSON object.
-            /// \return Returns the class associated to the provided JSON object. If the class is not compatible or non-existent, returns nullptr.
-            const reflection::Class* GetClassFromJSON(const nlohmann::json& json) const
-            {
-                auto& base_class = reflection::ClassOf<TType>();
-
-                auto it = json.find(kClassToken);
-
-                if (it == json.end())
-                {
-                    return &base_class;         // No class was specified: use TType.
-                }
-
-                if (!it->is_string())
-                {
-                    SYNTROPY_WARNING((SerializationCtx), "Expected a string value for the property '", kClassToken, "'.");
-                    return nullptr;
-                }
-
-                auto concrete_class = reflection::GetClass(it->get<std::string>());
-
-                if (concrete_class == nullptr)
-                {
-                    SYNTROPY_WARNING((SerializationCtx), "Unnrecognized class '", it->get<std::string>(), "'.");
-                    return nullptr;
-                }
-
-                if (*concrete_class != base_class)
-                {
-                    SYNTROPY_WARNING((SerializationCtx), "Cannot deserialize an object of type '", base_class, "' from type ", it->get<std::string>(), ".");
-                    return nullptr;
-                }
-
-                return concrete_class;          // Use a derived class.
-            }
-
-        };
 
         /// \brief Functor used to deserialize an unique pointer to an object from JSON.
         /// The actual concrete object instantiated by this functor depends on the class defined by the JSON itself.

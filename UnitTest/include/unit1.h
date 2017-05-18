@@ -17,6 +17,7 @@
 #include "reflection/stl_types.h"
 
 #include "serialization/json.h"
+#include "serialization/json/json_deserializer.h"
 
 #include "nlohmann/json/src/json.hpp"
 
@@ -156,15 +157,15 @@ private:
 
 // Custom JSON constructor
 template <>
-struct syntropy::serialization::JSONConstructorT<NonDefaultFoo>
+struct syntropy::serialization::JSONDeserializerT<NonDefaultFoo>
 {
-    syntropy::reflection::Any operator()(const nlohmann::json& json) const
+    std::optional<NonDefaultFoo> operator()(const nlohmann::json& json) const
     {
         if (json.is_number())
         {
-            return new NonDefaultFoo(json.get<int>(), 666);
+            return NonDefaultFoo(json.get<int>(), 666);
         }
-        return nullptr;
+        return std::nullopt;
     }
 };
 
@@ -180,16 +181,18 @@ public:
         , boolean_(false) {}
 
     Foo(const Foo& other) = delete;
-    //    : value_(other.value_)
-    //    , const_value_(other.const_value_)
-    //    , pointer_(other.pointer_)
-    //    , pointer_to_const_(other.pointer_to_const_)
-    //    , const_pointer_(other.const_pointer_)
-    //    , blob_(other.blob_)
-    //    , boolean_(other.boolean_)
+    //  : value_(other.value_)
+    //  , const_value_(other.const_value_)
+    //  , pointer_(other.pointer_)
+    //  , pointer_to_const_(other.pointer_to_const_)
+    //  , const_pointer_(other.const_pointer_)
+    //  , blob_(other.blob_)
+    //  , boolean_(other.boolean_)
     //{
     //    std::cout << "Copy ctor!\n";
     //}
+
+    Foo(Foo&& other) = default;
 
     float GetValue() const {
 
@@ -943,12 +946,6 @@ public:
 
     void DeserializeTest() {
 
-        Foo foo;
-
-        foo.p_blob_ = nullptr;
-        foo.u_blob_ = nullptr;
-        foo.s_blob_ = nullptr;
-
         nlohmann::json json = R"({
                                     "int_value": 42,
                                     "float_value": 67.5,
@@ -984,15 +981,15 @@ public:
                                     "nondefault": 100
                                  })"_json;
 
-        syntropy::serialization::DeserializeObjectFromJSON(foo, json);
+        auto foo = syntropy::serialization::DeserializeObjectFromJSON<Foo>(json);
 
-        TEST_TRUE(foo.value_ == 67.5f);
-        TEST_TRUE(foo.value2_ == 42);
-        TEST_TRUE(foo.boolean_ == true);
-        TEST_TRUE(foo.string_ == "awesome!");
-        TEST_TRUE(foo.wstring_ == L"wawesome?");
-        TEST_TRUE(foo.GetBlob().blob_ == 47);
-        TEST_FALSE(foo.const_value_ == 100.0f);
+        TEST_TRUE(foo->value_ == 67.5f);
+        TEST_TRUE(foo->value2_ == 42);
+        TEST_TRUE(foo->boolean_ == true);
+        TEST_TRUE(foo->string_ == "awesome!");
+        TEST_TRUE(foo->wstring_ == L"wawesome?");
+        TEST_TRUE(foo->GetBlob().blob_ == 47);
+        TEST_FALSE(foo->const_value_ == 100.0f);
         //TEST_TRUE(dynamic_cast<DerivedBlob*>(foo.p_blob_) != nullptr);
 
     }

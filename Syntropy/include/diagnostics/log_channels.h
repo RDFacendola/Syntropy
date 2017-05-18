@@ -63,9 +63,9 @@ namespace syntropy
             /// \brief Arguments passed to the format thunk.
             struct ThunkArgs
             {
-                std::ostream& out_;
-                const LogMessage& log_;
-                const std::vector<Context>& contexts_;
+                std::ostream& out_;                         ///< \brief Output stream.
+                const LogMessage& log_;                     ///< \brief Log message to append.
+                const std::vector<Context>& contexts_;      ///< \brief Filtered log message contexts (intersection between the channel contexts and the log message contexts).
             };
 
             using Thunk = std::function<void(ThunkArgs)>;

@@ -104,8 +104,8 @@ namespace syntropy
             template <typename TClass>
             Class(tag_t<TClass>);
 
-			/// \brief Create a new class for the void type.
-			Class(tag_t<void>);
+            /// \brief Create a new class for the void type.
+            Class(tag_t<void>);
 
             HashedString default_name_;                     ///< \brief Default class name.
 

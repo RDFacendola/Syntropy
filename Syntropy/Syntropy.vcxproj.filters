@@ -99,7 +99,6 @@
     <ClCompile Include="src\memory\block_allocator.cpp" />
     <ClCompile Include="src\memory\std_allocator.cpp" />
     <ClCompile Include="src\memory\stack_allocator.cpp" />
-    <ClCompile Include="src\serialization\json\json_deserializer.cpp" />
     <ClCompile Include="src\serialization\json.cpp" />
     <ClCompile Include="src\memory\master_allocator.cpp" />
     <ClCompile Include="src\memory\virtual_memory.cpp" />
