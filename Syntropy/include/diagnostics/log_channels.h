@@ -11,8 +11,8 @@
 #include <vector>
 #include <functional>
 
-#include "diagnostics.h"
-#include "log.h"
+#include "diagnostics/diagnostics.h"
+#include "diagnostics/log_manager.h"
 
 namespace syntropy
 {

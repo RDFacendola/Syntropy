@@ -2,6 +2,8 @@
 
 #include "reflection/class.h"
 
+#include "diagnostics/log.h"
+
 namespace syntropy
 {
     namespace reflection

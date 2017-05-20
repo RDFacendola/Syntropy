@@ -88,5 +88,8 @@ namespace syntropy
         /// \brief Stream insertion for Context.
         std::ostream& operator<<(std::ostream& out, const Context& context);
 
+        /// \brief Log context for the syntropy diagnostic system.
+        extern const Context DiagnosticsCtx;
+
     }
 }

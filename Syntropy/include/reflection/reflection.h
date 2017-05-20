@@ -6,11 +6,9 @@
 
 #pragma once
 
-#include "diagnostics/log.h"
-
 #include "containers/hashed_string.h"
 
-#include "diagnostics/log.h"
+#include "diagnostics/diagnostics.h"
 
 #include <unordered_map>
 

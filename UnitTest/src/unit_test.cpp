@@ -53,19 +53,21 @@ int main()
 
     auto& log_manager = LogManager::GetInstance();
 
+    log_manager.ImportConfiguration("log.cfg");
+
     log_manager.CreateChannel<FileLogChannel>(FileLogChannel::Configuration
-    { 
+    {
           "log.txt"
         , "[{date} {time}] [{severity}] [thread: {thread}] [{context}]: {message}"
         , { Root }
         , Severity::kInformative
-        , Severity::kCritical 
+        , Severity::kCritical
     });
 
     auto& mm = syntropy::MemoryManager::GetInstance();
 
-    //Tester t;
-    //t.Do();
+    Tester t;
+    t.Do();
 
     // Initialization of the memory manager
 
