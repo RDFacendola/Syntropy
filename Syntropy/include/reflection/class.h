@@ -16,7 +16,6 @@
 #include "containers/hashed_string.h"
 #include "containers/interface_container.h"
 
-#include "reflection/reflection.h"
 #include "reflection/property.h"
 #include "reflection/method.h"
 #include "reflection/class_interfaces.h"

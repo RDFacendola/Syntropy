@@ -27,8 +27,6 @@ namespace syntropy
 
         StreamLogChannel::StreamLogChannel(const Configuration& configuration)
             : LogChannel(configuration.contexts_, configuration.verbosity_)
-            , stream_(configuration.stream_)
-            , flush_severity_(configuration.flush_severity_)
         {
             UpdateThunks(configuration.format_);
         }
@@ -62,20 +60,22 @@ namespace syntropy
         {
             if (thunks_.size() > 0)
             {
-                ThunkArgs args{ stream_, log, contexts };
+                auto& stream = GetStream();
+
+                ThunkArgs args{ stream, log, contexts };
 
                 for (auto&& thunk : thunks_)
                 {
                     thunk(args);
                 }
 
-                stream_ << "\n";
-
-                if (log.severity_ >= flush_severity_)
-                {
-                    stream_.flush();                        // Ensures that no log is lost if the application is about to crash after this call.
-                }
+                stream << "\n";
             }
+        }
+
+        void StreamLogChannel::Flush()
+        {
+            GetStream().flush();
         }
 
         StreamLogChannel::Thunk StreamLogChannel::GetTokenThunk(const std::string& token)
@@ -123,13 +123,11 @@ namespace syntropy
 
         FileLogChannel::FileLogChannel(const Configuration& configuration)
             : StreamLogChannel(StreamLogChannel::Configuration
-        {
-            file_stream_
-            , configuration.format_
+            {
+                  configuration.format_
                 , configuration.contexts_
                 , configuration.verbosity_
-                , configuration.flush_severity_
-        })
+            })
         {
             file_stream_.open(configuration.file_);
         }
@@ -139,5 +137,16 @@ namespace syntropy
             file_stream_.close();
         }
 
+        std::ostream& FileLogChannel::GetStream()
+        {
+            return file_stream_;
+        }
+
+    }
+
+    namespace reflection
+    {
+        const Class& ClassOf_StreamLogChannel(ClassOf<diagnostics::StreamLogChannel>());
+        const Class& ClassOf_FileLogChannel(ClassOf<diagnostics::FileLogChannel>());
     }
 }

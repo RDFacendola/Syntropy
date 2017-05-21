@@ -13,9 +13,11 @@
 #include <iomanip>
 #include <set>
 
-#include "containers/hashed_string.h"
-#include "debug.h"
 #include "date.h"
+
+#include "diagnostics/debug.h"
+
+#include "containers/hashed_string.h"
 
 namespace syntropy 
 {
@@ -92,4 +94,5 @@ namespace syntropy
         extern const Context DiagnosticsCtx;
 
     }
+
 }

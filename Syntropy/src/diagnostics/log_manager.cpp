@@ -1,5 +1,16 @@
 #include "diagnostics/log_manager.h"
 
+#include <fstream>
+
+#include "nlohmann/json/src/json.hpp"
+
+#include "diagnostics/log.h"
+
+#include "serialization/json.h"
+#include "serialization/json/json_deserializer.h"
+
+#include "reflection/stl_types.h"
+
 namespace syntropy
 {
     namespace diagnostics
@@ -85,22 +96,22 @@ namespace syntropy
             return instance;
         }
 
-        void LogManager::ImportConfiguration(const std::string& /*path*/)
+        void LogManager::ImportConfiguration(const std::string& path)
         {
             // Read the file inside the JSON object.
 
-            //std::ifstream file(path);
+            std::ifstream file(path);
 
-            //nlohmann::json json;
+            nlohmann::json json;
 
-            //file >> json;
+            file >> json;
 
-            // Deserialize the channel list.
+            //Deserialize the channel list.
 
-            //if (!serialization::DeserializeObjectFromJSON(channels_, json))
-            //{
-            //    SYNTROPY_ERROR((DiagnosticsCtx), "Unable to import log configuration from file '", path, "'.");
-            //}
+            if (!serialization::DeserializeObjectFromJSON(channels_, json))
+            {
+                SYNTROPY_WARNING((DiagnosticsCtx), "Unable to import log configuration from file '", path, "'.");
+            }
 
         }
 
@@ -112,7 +123,28 @@ namespace syntropy
             {
                 *channel << log_message;
             }
+
+            // Errors and more severe logs usually anticipate an application crash:
+            // flushing the channels ensures that no log message is lost.
+            if (log_message.severity_ >= Severity::kError)
+            {
+                Flush();
+            }
+        }
+
+        void LogManager::Flush()
+        {
+            for (auto&& channel : channels_)
+            {
+                channel->Flush();
+            }
         }
 
     }
+
+    namespace reflection
+    {
+        const Class& ClassOf_LogChannel(ClassOf<diagnostics::LogChannel>());
+    }
+
 }

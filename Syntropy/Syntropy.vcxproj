@@ -43,6 +43,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\diagnostics\diagnostics_meta.h" />
     <ClInclude Include="include\diagnostics\log.h">
       <SubType>
       </SubType>
@@ -195,6 +196,7 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\diagnostics\diagnostics_meta.cpp" />
     <ClCompile Include="src\diagnostics\log.cpp">
       <SubType>
       </SubType>

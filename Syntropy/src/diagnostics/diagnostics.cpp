@@ -146,6 +146,11 @@ namespace syntropy
 
         const Context::InnerContext& Context::Pool::GetContextByName(const HashedString& name) const
         {
+            if (!name)
+            {
+                return GetRootContext();
+            }
+
             std::unique_lock<std::recursive_mutex> lock(mutex_);
 
             auto it = contexts_.find(name);
@@ -226,4 +231,5 @@ namespace syntropy
         }
 
     }
+
 }

@@ -14,6 +14,8 @@
 
 #include "diagnostics/diagnostics.h"
 
+#include "reflection/class.h"
+
 namespace syntropy
 {
     namespace diagnostics
@@ -68,6 +70,9 @@ namespace syntropy
             /// \return Returns the list of contexts this channel reacts to.
             const std::vector<Context>& GetContexts() const;
 
+            /// \brief Flush any cached state.
+            virtual void Flush() = 0;
+
         protected:
 
             /// \brief Handle a message.
@@ -109,6 +114,9 @@ namespace syntropy
 
         private:
 
+            /// \brief Flush any cached state.
+            void Flush();
+
             /// \brief Prevents direct instantiation.
             LogManager() = default;
 
@@ -118,6 +126,24 @@ namespace syntropy
         };
 
     }
+
+    namespace reflection
+    {
+
+        extern const Class& ClassOf_LogChannel;
+
+        // Reflection specialization for LogChannel.
+        template <>
+        struct ClassDeclaration<diagnostics::LogChannel>
+        {
+            static constexpr const char* GetName() noexcept
+            {
+                return "diagnostics::LogChannel";
+            }
+        };
+
+    }
+
 }
 
 namespace syntropy

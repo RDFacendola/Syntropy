@@ -44,6 +44,14 @@ struct FooLarge
 
 int main()
 {
+    {
+        std::ofstream a("awesome.txt");
+        std::ofstream b("awesome.txt");
+
+        a << "hey";
+        b << "ohi";
+    }
+
 
     using syntropy::diagnostics::LogManager;
     using syntropy::diagnostics::Severity;
@@ -51,18 +59,11 @@ int main()
 
     // Initialize log
 
+    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<FileLogChannel>());
+
     auto& log_manager = LogManager::GetInstance();
 
     log_manager.ImportConfiguration("log.cfg");
-
-    log_manager.CreateChannel<FileLogChannel>(FileLogChannel::Configuration
-    {
-          "log.txt"
-        , "[{date} {time}] [{severity}] [thread: {thread}] [{context}]: {message}"
-        , { Root }
-        , Severity::kInformative
-        , Severity::kCritical
-    });
 
     auto& mm = syntropy::MemoryManager::GetInstance();
 
