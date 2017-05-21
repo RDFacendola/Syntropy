@@ -1,2 +1,8 @@
 .vs/
 build/
+libs/
+.vcxproj.user
+bin/log.txt
+bin/UnitTest_Debug.exe
+bin/UnitTest_Debug.ilk
+bin/UnitTest_Debug.pdb
