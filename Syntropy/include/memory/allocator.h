@@ -16,7 +16,7 @@
 
 #include "containers/hashed_string.h"
 
-#include "diagnostics/diagnostics.h"
+#include "diagnostics/debug.h"
 
 /// \brief Instantiate a new object via custom allocator.
 /// \usage auto foo = SYNTROPY_NEW(allocator) Foo();

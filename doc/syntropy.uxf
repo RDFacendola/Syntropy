@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>12</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1080</x>
+      <y>252</y>
+      <w>336</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>*StackTraceElement*
+// A specific code location
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1080</x>
+      <y>384</y>
+      <w>336</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>*StackTrace*
+// A call stack
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1236</x>
+      <y>288</y>
+      <w>36</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1548</x>
+      <y>384</y>
+      <w>336</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>*Debugger*
+// Debugging functionalities such as:
+// &gt;&gt;&gt; checking if the debugger is attached
+// &gt;&gt;&gt; generating a stack trace
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1404</x>
+      <y>396</y>
+      <w>168</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1056</x>
+      <y>204</y>
+      <w>852</w>
+      <h>264</h>
+    </coordinates>
+    <panel_attributes>lt=.
+*DEBUG.H*
+layer=-1</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

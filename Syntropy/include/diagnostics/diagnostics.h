@@ -7,15 +7,6 @@
 #pragma once
 
 #include <ostream>
-#include <string>
-#include <vector>
-#include <type_traits>
-#include <iomanip>
-#include <set>
-
-#include "date.h"
-
-#include "diagnostics/debug.h"
 
 #include "containers/hashed_string.h"
 

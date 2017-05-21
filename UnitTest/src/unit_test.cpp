@@ -25,6 +25,8 @@
 #include "diagnostics/log.h"
 #include "diagnostics/log_channels.h"
 
+#include "platform/system.h"
+
 syntropy::diagnostics::Context Root;
 
 struct FooSmall

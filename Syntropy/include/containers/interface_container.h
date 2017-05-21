@@ -14,6 +14,8 @@
 #include "type_traits.h"
 #include "utility.h"
 
+#include "diagnostics/debug.h"
+
 namespace syntropy
 {
 

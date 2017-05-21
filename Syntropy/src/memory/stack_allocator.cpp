@@ -1,5 +1,7 @@
 #include "memory/stack_allocator.h"
 
+#include "diagnostics/debug.h"
+
 namespace syntropy
 {
 

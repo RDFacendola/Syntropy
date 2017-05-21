@@ -1,5 +1,7 @@
 #include "memory/linear_allocator.h"
 
+#include "diagnostics/debug.h"
+
 namespace syntropy
 {
 
