@@ -54,6 +54,10 @@ namespace syntropy {
         /// \brief Returns the string associated to this instance.
         const std::string& GetString() const noexcept;
 
+        /// \brief Check whether the string is empty or not.
+        /// \return Returns true if the string is empty, returns false otherwise.
+        operator bool() const noexcept;
+
         /// \brief Equality operator.
         /// \return Returns true if the two hashed strings are identical, returns false otherwise.
         bool operator==(const HashedStringT<THashFunction, THash>& other) const noexcept;
@@ -226,6 +230,12 @@ namespace syntropy{
         }
 
         return string_ ? *string_ : kUnknown;
+    }
+
+    template <typename THashFunction, typename THash>
+    HashedStringT<THashFunction, THash>:: operator bool() const noexcept
+    {
+        return (*this) != HashedStringT();      // Compare against the empty string.
     }
 
     template <typename THashFunction, typename THash>
