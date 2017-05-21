@@ -62,7 +62,7 @@ namespace syntropy
 
                 // Stack walking
                 bool keep_walking;
-                int frames_to_discard = 0;
+                int frames_to_discard = 3;                                  // Discards this call, PlatformDebugger::GetStackTrace and diagnostics::Debugger::GetStackTrace: we don't really want those frames to show up in the callstack.
 
                 diagnostics::StackTraceElement current_element;
 
@@ -169,10 +169,6 @@ namespace syntropy
                 }
                 else
                 {
-                    auto error = GetLastError();
-
-                    SYNTROPY_UNUSED(error);
-
                     element.line_ = 0;
                 }
 
