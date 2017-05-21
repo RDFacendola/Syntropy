@@ -22,36 +22,18 @@ namespace syntropy
 
         /// \brief Exposes Windows-specific debugging functionalities under Windows OS.
         /// \author Raffaele D. Facendola - December 2016
-        class WindowsDebugger : public diagnostics::Debugger
+        class PlatformDebugger : public diagnostics::Debugger
         {
         public:
 
-            /// \brief Get the singleton instance.
-            /// \return Returns the singleton instance.
-            static diagnostics::Debugger& GetInstance();
-
-            /// \brief Destructor.
-            virtual ~WindowsDebugger() = default;
-
-            virtual bool IsDebuggerAttached() const override;
+            static bool IsDebuggerAttached();
             
-            virtual diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller) const override;
-
-        private:
-
-            /// \brief Implementation details.
-            struct Implementation;
-
-            /// \brief Default constructor.
-            WindowsDebugger();
-
-            std::unique_ptr<Implementation> implementation_;    ///< \brief Opaque pointer to the implementation details
-
+            static diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller);
         };
 
         /// \brief Exposes methods to query system's capabilities under Windows OS.
         /// \author Raffaele D. Facendola 
-        class WindowsSystem : public System
+        class PlatformSystem : public System
         {
         public:
 
@@ -72,7 +54,7 @@ namespace syntropy
 
         /// \brief Wraps the low-level calls used to handle virtual memory allocation under Windows OS.
         /// \author Raffaele D. Facendola - December 2016
-        class WindowsMemory
+        class PlatformMemory
         {
         public:
 
@@ -95,15 +77,6 @@ namespace syntropy
             static bool Decommit(void* address, size_t size);
 
         };
-
-        ///< \brief Utility type definition so that the code can refer to "platform::PlatformDebugger" without having to know the actual concrete class.
-        using PlatformDebugger = WindowsDebugger;
-
-        ///< \brief Utility type definition so that the code can refer to "platform::PlatformSystem" without having to know the actual concrete class.
-        using PlatformSystem = WindowsSystem;
-
-        ///< \brief Utility type definition so that the code can refer to "platform::PlatformMemory" without having to know the actual concrete class.
-        using PlatformMemory = WindowsMemory;
 
     }
 }

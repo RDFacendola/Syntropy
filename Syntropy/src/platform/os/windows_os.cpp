@@ -27,12 +27,75 @@ namespace syntropy
     namespace platform
     {
 
-        //////////////// WINDOWS DEBUGGER :: IMPLEMENTATION ////////////////
+        /************************************************************************/
+        /* WINDOWS DEBUGGER                                                     */
+        /************************************************************************/
 
-        /// \brief Implementation details.
-        /// The pimpl paradigm helps avoiding polluting everything with Windows macros... eww
-        struct WindowsDebugger::Implementation
+        /// \brief Stateful details for the Windows debugger.
+        class WindowsDebugger
         {
+        public:
+
+            /// \brief Get the singleton instance.
+            static WindowsDebugger& GetInstance()
+            {
+                static WindowsDebugger instance;
+                return instance;
+            }
+
+            /// \brief Get the current stacktrace.
+            /// \param caller Code that issued the call to this method.
+            diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller) const
+            {
+                std::unique_lock<std::mutex> lock(mutex_);                  // Stackwalking is not thread-safe
+
+                CONTEXT context;
+                STACKFRAME64 stackframe;
+
+                diagnostics::StackTrace stacktrace;
+
+                RtlCaptureContext(&context);
+
+                stacktrace.elements_.reserve(64);                           // An educated guess of the stack trace depth
+
+                GetStackFrame(context, stackframe);
+
+                // Stack walking
+                bool keep_walking;
+                int frames_to_discard = 0;
+
+                diagnostics::StackTraceElement current_element;
+
+                do
+                {
+                    keep_walking = StackWalk64(IMAGE_FILE_MACHINE_AMD64,
+                        process_,
+                        GetCurrentThread(),
+                        &stackframe,
+                        &context,
+                        nullptr,
+                        SymFunctionTableAccess64,
+                        SymGetModuleBase64,
+                        nullptr) != 0;
+
+                    if (frames_to_discard == 0)
+                    {
+                        stacktrace.elements_.emplace_back(std::move(GetStackTraceElement(stackframe)));
+                    }
+                    else
+                    {
+                        --frames_to_discard;
+                    }
+                } while (keep_walking);
+
+                // Preserve the caller symbols in case PDB were not available.
+                stacktrace.elements_.front() = std::move(caller);
+
+                return stacktrace;
+            }
+
+        private:
+
             /// \brief Maximum symbol length.
             static const size_t kMaxSymbolLength = 1024;
 
@@ -45,24 +108,82 @@ namespace syntropy
             };
 
             /// \brief Default constructor.
-            Implementation();
+            WindowsDebugger()
+                : process_(GetCurrentProcess())
+            {
+                has_symbols_ = (SymInitialize(process_, nullptr, true) != 0);
+
+                if (has_symbols_)
+                {
+                    SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
+                }
+            }
 
             /// \brief Default destructor.
-            ~Implementation();
-
-            /// \brief Get the current stacktrace.
-            /// \param caller Code that issued the call to this method.
-            diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller, CONTEXT context) const;
+            ~WindowsDebugger()
+            {
+                if (has_symbols_)
+                {
+                    SymCleanup(process_);
+                }
+            }
 
             /// \brief Get the stackframe from context.
             /// \param context Contains the current context.
             /// \param stackframe Contains the current stackframe.
-            void GetStackFrame(const CONTEXT& context, STACKFRAME64& stackframe) const;
+            void GetStackFrame(const CONTEXT& context, STACKFRAME64& stackframe) const
+            {
+                memset(&stackframe, 0, sizeof(stackframe));
+
+                // https://msdn.microsoft.com/it-it/library/windows/desktop/ms680646(v=vs.85).aspx
+                stackframe.AddrPC.Offset = context.Rip;
+                stackframe.AddrPC.Mode = AddrModeFlat;
+                stackframe.AddrStack.Offset = context.Rsp;
+                stackframe.AddrStack.Mode = AddrModeFlat;
+                stackframe.AddrFrame.Offset = context.Rbp;
+                stackframe.AddrFrame.Mode = AddrModeFlat;
+            }
 
             /// \brief Get a StackTraceElement from a stack frame.
             /// \param stackframe Stackframe to convert.
             /// \return Returns the StackTraceElement associated to the provided stackframe.
-            diagnostics::StackTraceElement GetStackTraceElement(const STACKFRAME64& stackframe) const;
+            diagnostics::StackTraceElement GetStackTraceElement(const STACKFRAME64& stackframe) const
+            {
+                syntropy::diagnostics::StackTraceElement element;
+
+                IMAGEHLP_LINE64 line_info;
+                SymbolInfo symbol_info;
+
+                DWORD displacement;
+
+                line_info.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
+
+                symbol_info.symbol.SizeOfStruct = sizeof(SYMBOL_INFO);
+                symbol_info.symbol.MaxNameLen = kMaxSymbolLength;
+
+                // File and line
+                if (SymGetLineFromAddr64(process_, stackframe.AddrPC.Offset, &displacement, &line_info))
+                {
+                    element.file_ = line_info.FileName;
+                    element.line_ = line_info.LineNumber;
+                }
+                else
+                {
+                    auto error = GetLastError();
+
+                    SYNTROPY_UNUSED(error);
+
+                    element.line_ = 0;
+                }
+
+                // Symbol name
+                if (SymFromAddr(process_, stackframe.AddrPC.Offset, nullptr, &symbol_info.symbol))
+                {
+                    element.function_ = symbol_info.symbol.Name;
+                }
+
+                return element;
+            }
             
             mutable std::mutex mutex_;              ///< \brief Used for synchronization. Symbol loading and stack walking are not thread safe!
 
@@ -71,155 +192,31 @@ namespace syntropy
             bool has_symbols_;                      ///< \brief Whether the symbols for this process were loaded correctly.
         };
 
-        WindowsDebugger::Implementation::Implementation()
-            : process_(GetCurrentProcess())
-        {
-            has_symbols_ = SymInitialize(process_, nullptr, true) != 0;
-
-            if (has_symbols_)
-            {
-                SymSetOptions(SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
-            }
-        }
-
-        WindowsDebugger::Implementation::~Implementation()
-        {
-            if (has_symbols_)
-            {
-                SymCleanup(process_);
-            }
-        }
-
-        diagnostics::StackTrace WindowsDebugger::Implementation::GetStackTrace(diagnostics::StackTraceElement caller, CONTEXT context) const
-        {
-            std::unique_lock<std::mutex> lock(mutex_);                  // Stackwalking is not thread-safe
-
-            diagnostics::StackTrace stacktrace;
-
-            STACKFRAME64 stackframe;
-
-            stacktrace.elements_.reserve(64);                           // An educated guess of the stack trace depth
-
-            GetStackFrame(context, stackframe);
-
-            // Stack walking
-            bool keep_walking;
-            int frames_to_discard = 1;
-
-            diagnostics::StackTraceElement current_element;
-
-            do
-            {
-                keep_walking = StackWalk64(IMAGE_FILE_MACHINE_AMD64,
-                                           process_,
-                                           GetCurrentThread(),
-                                           &stackframe,
-                                           &context,
-                                           nullptr,
-                                           SymFunctionTableAccess64,
-                                           SymGetModuleBase64,
-                                           nullptr) != 0;
-
-                if (frames_to_discard == 0)
-                {
-                    stacktrace.elements_.emplace_back(std::move(GetStackTraceElement(stackframe)));
-                }
-                else
-                {
-                    --frames_to_discard;
-                }
-            } while (keep_walking);
-
-            // Preserve the caller symbol in case PDB are not available.
-            stacktrace.elements_.front() = std::move(caller);
-
-            return stacktrace;
-        }
-
-        void WindowsDebugger::Implementation::GetStackFrame(const CONTEXT& context, STACKFRAME64& stackframe) const
-        {
-            memset(&stackframe, 0, sizeof(stackframe));
-
-            // https://msdn.microsoft.com/it-it/library/windows/desktop/ms680646(v=vs.85).aspx
-            stackframe.AddrPC.Offset = context.Rip;
-            stackframe.AddrPC.Mode = AddrModeFlat;
-            stackframe.AddrStack.Offset = context.Rsp;
-            stackframe.AddrStack.Mode = AddrModeFlat;
-            stackframe.AddrFrame.Offset = context.Rbp;
-            stackframe.AddrFrame.Mode = AddrModeFlat;
-        }
-
-        diagnostics::StackTraceElement WindowsDebugger::Implementation::GetStackTraceElement(const STACKFRAME64& stackframe) const
-        {
-            syntropy::diagnostics::StackTraceElement element;
-
-            IMAGEHLP_LINE64 line_info;
-            SymbolInfo symbol_info;
-
-            DWORD displacement;
-
-            line_info.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
-
-            symbol_info.symbol.SizeOfStruct = sizeof(SYMBOL_INFO);
-            symbol_info.symbol.MaxNameLen = kMaxSymbolLength;
-
-            // File and line
-            if (SymGetLineFromAddr64(process_, stackframe.AddrPC.Offset, &displacement, &line_info))
-            {
-                element.file_ = line_info.FileName;
-                element.line_ = line_info.LineNumber;
-            }
-            else
-            {
-                element.line_ = 0;
-            }
-
-            // Symbol name
-            if (SymFromAddr(process_, stackframe.AddrPC.Offset, nullptr, &symbol_info.symbol))
-            {
-                element.function_ = symbol_info.symbol.Name;
-            }
-
-            return element;
-        }
-
-        //////////////// WINDOWS DEBUGGER ////////////////
-
-        diagnostics::Debugger& WindowsDebugger::GetInstance()
-        {
-            static WindowsDebugger instance;
-            return instance;
-        }
-
-        WindowsDebugger::WindowsDebugger()
-            : implementation_(std::make_unique<Implementation>())
-        {
-
-        }
+        /************************************************************************/
+        /* PLATFORM DEBUGGER                                                    */
+        /************************************************************************/
         
-        bool WindowsDebugger::IsDebuggerAttached() const
+        bool PlatformDebugger::IsDebuggerAttached()
         {
             return IsDebuggerPresent() != 0;
         }
 
-        diagnostics::StackTrace WindowsDebugger::GetStackTrace(diagnostics::StackTraceElement caller) const
+        diagnostics::StackTrace PlatformDebugger::GetStackTrace(diagnostics::StackTraceElement caller)
         {
-            CONTEXT context;
-
-            RtlCaptureContext(&context);
-
-            return implementation_->GetStackTrace(std::move(caller), context);
+            return WindowsDebugger::GetInstance().GetStackTrace(std::move(caller));
         }
 
-        //////////////// WINDOWS SYSTEM ////////////////
+        /************************************************************************/
+        /* PLATFORM SYSTEM                                                      */
+        /************************************************************************/
 
-        System& WindowsSystem::GetInstance()
+        System& PlatformSystem::GetInstance()
         {
-            static WindowsSystem instance;
+            static PlatformSystem instance;
             return instance;
         }
 
-        CPUInfo WindowsSystem::GetCPUInfo() const
+        CPUInfo PlatformSystem::GetCPUInfo() const
         {
             CPUInfo cpu_info;
 
@@ -259,7 +256,7 @@ namespace syntropy
             return cpu_info;
         }
 
-        StorageInfo WindowsSystem::GetStorageInfo() const
+        StorageInfo PlatformSystem::GetStorageInfo() const
         {
             StorageInfo storage_info;
 
@@ -291,7 +288,7 @@ namespace syntropy
             return storage_info;
         }
 
-        MemoryInfo WindowsSystem::GetMemoryInfo() const
+        MemoryInfo PlatformSystem::GetMemoryInfo() const
         {
             MemoryInfo memory_info;
 
@@ -311,7 +308,7 @@ namespace syntropy
             return memory_info;
         }
 
-        DisplayInfo WindowsSystem::GetDisplayInfo() const
+        DisplayInfo PlatformSystem::GetDisplayInfo() const
         {
             DWORD display_index = 0;
             DISPLAY_DEVICE adapter_device;
@@ -353,7 +350,7 @@ namespace syntropy
             return display_info;
         }
 
-        PlatformInfo WindowsSystem::GetPlatformInfo() const
+        PlatformInfo PlatformSystem::GetPlatformInfo() const
         {
             PlatformInfo platform_info;
 
@@ -362,7 +359,9 @@ namespace syntropy
             return platform_info;
         }
 
-        //////////////// WINDOWS MEMORY ////////////////
+        /************************************************************************/
+        /* PLATFORM MEMORY                                                      */
+        /************************************************************************/
 
         /// \brief Utility class used to store Windows Memory infos.
         struct WindowsMemorySingleton
@@ -387,32 +386,32 @@ namespace syntropy
             size_t page_size_;                  ///< \brief Memory page size, in bytes.
         };
         
-        size_t WindowsMemory::GetPageSize()
+        size_t PlatformMemory::GetPageSize()
         {
             return WindowsMemorySingleton::GetInstance().page_size_;
         }
 
-        void* WindowsMemory::Allocate(size_t size)
+        void* PlatformMemory::Allocate(size_t size)
         {
             return VirtualAlloc(0, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
         }
 
-        bool WindowsMemory::Release(void* address)
+        bool PlatformMemory::Release(void* address)
         {
             return VirtualFree(address, 0, MEM_RELEASE) != 0;
         }
 
-        void* WindowsMemory::Reserve(size_t size)
+        void* PlatformMemory::Reserve(size_t size)
         {
             return VirtualAlloc(0, size, MEM_RESERVE, PAGE_READWRITE);
         }
 
-        bool WindowsMemory::Commit(void* address, size_t size)
+        bool PlatformMemory::Commit(void* address, size_t size)
         {
             return VirtualAlloc(address, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
         }
 
-        bool WindowsMemory::Decommit(void* address, size_t size)
+        bool PlatformMemory::Decommit(void* address, size_t size)
         {
             return VirtualFree(address, size, MEM_DECOMMIT) != 0;
         }

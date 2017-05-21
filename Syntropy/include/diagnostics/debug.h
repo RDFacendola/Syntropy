@@ -9,12 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "syntropy.h"
 #include "platform/compiler.h"
 
 /// \brief Causes the debugger to break. If no debugger is present, does nothing.
 #define SYNTROPY_BREAK \
-    if(syntropy::diagnostics::GetDebugger().IsDebuggerAttached()) { SYNTROPY_TRAP; }
+    if(syntropy::diagnostics::Debugger::IsDebuggerAttached()) { SYNTROPY_TRAP; }
 
 /// \brief Expands to an object representing the location of the current line of code.
 #define SYNTROPY_HERE \
@@ -22,7 +21,7 @@
 
 /// \brief Expands to an object representing the current stack trace.
 #define SYNTROPY_STACKTRACE \
-    syntropy::diagnostics::GetDebugger().GetStackTrace(SYNTROPY_HERE)
+    syntropy::diagnostics::Debugger::GetStackTrace(SYNTROPY_HERE)
 
 /// \brief If the condition is not verified causes the debugger to break or the application to crash.
 #define SYNTROPY_ASSERT(condition) \
@@ -52,9 +51,6 @@ namespace syntropy
             size_t line_;                                                   ///< \brief Line inside the source file.
         };
 
-        /// \brief Output a stack trace element inside a stream.
-        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::StackTraceElement& element);
-
         /// \brief Represents a stack trace.
         /// \author Raffaele D. Facendola - November 2016
         struct StackTrace
@@ -82,45 +78,32 @@ namespace syntropy
             std::vector<StackTraceElement> elements_;                       ///< \brief Elements inside the stack trace, from the most recent one.
         };
 
-        /// \brief Swaps two stacktraces.
-        void swap(syntropy::diagnostics::StackTrace& first, syntropy::diagnostics::StackTrace& second);
-
-        /// \brief Output a stack trace inside a stream.
-        std::ostream& operator<< (std::ostream &out, const syntropy::diagnostics::StackTrace& stacktrace);
-
         /// \brief Exposes platform-specific debugging functionalities.
         /// \author Raffaele D. Facendola - December 2016
         class Debugger
         {
         public:
 
-            /// \brief Get the singleton instance.
-            /// \return Returns the singleton instance;
-            static Debugger& GetInstance();
-
-            /// \brief Default virtual destructor.
-            virtual ~Debugger() = default;
-
             /// \brief Check whether the debugger is attached.
             /// \return Returns true if a debugger is attached to the application, returns false otherwise.
-            virtual bool IsDebuggerAttached() const = 0;
+            static bool IsDebuggerAttached();
 
             /// \brief Get the stack trace of the current thread.
             /// \param caller Stack trace element representing the code that called this method.
             /// \return Returns the stack trace whose head is caller.
-            virtual diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller) const = 0;
-
-        protected:
-
-            /// \brief Default constructor.
-            Debugger() = default;
+            static StackTrace GetStackTrace(StackTraceElement caller);
 
         };
 
-        /// \brief Get the current debugger instance.
-        /// \brief Returns the current debugger instance.
-        Debugger& GetDebugger();
+        /// \brief Output a stack trace element inside a stream.
+        std::ostream& operator<< (std::ostream &out, const StackTraceElement& element);
 
+        /// \brief Swaps two stacktraces.
+        void swap(StackTrace& first, StackTrace& second);
+
+        /// \brief Output a stack trace inside a stream.
+        std::ostream& operator<< (std::ostream &out, const StackTrace& stacktrace);
+        
     }
 }
 
@@ -133,7 +116,7 @@ namespace syntropy
         /* STACK TRACE ELEMENT                                                  */
         /************************************************************************/
 
-        inline constexpr StackTraceElement::StackTraceElement(const char* file, const char* function, size_t line)
+        constexpr StackTraceElement::StackTraceElement(const char* file, const char* function, size_t line)
             : file_(file)
             , function_(function)
             , line_(line)

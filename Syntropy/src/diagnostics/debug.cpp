@@ -63,7 +63,7 @@ namespace syntropy
             std::swap(elements_, other.elements_);
         }
 
-        void swap(syntropy::diagnostics::StackTrace& first, syntropy::diagnostics::StackTrace& second)
+        void swap(StackTrace& first, StackTrace& second)
         {
             first.Swap(second);
         }
@@ -109,17 +109,17 @@ namespace syntropy
         }
 
         /************************************************************************/
-        /* DEBUGGE                                                             */
+        /* DEBUGGER                                                             */
         /************************************************************************/
 
-        Debugger& Debugger::GetInstance()
+        bool Debugger::IsDebuggerAttached()
         {
-            return platform::PlatformDebugger::GetInstance();
+            return platform::PlatformDebugger::IsDebuggerAttached();
         }
 
-        Debugger& GetDebugger()
+        StackTrace Debugger::GetStackTrace(StackTraceElement caller)
         {
-            return Debugger::GetInstance();
+            return platform::PlatformDebugger::GetStackTrace(caller);
         }
 
     }

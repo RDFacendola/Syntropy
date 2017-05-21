@@ -44,14 +44,6 @@ struct FooLarge
 
 int main()
 {
-    {
-        std::ofstream a("awesome.txt");
-        std::ofstream b("awesome.txt");
-
-        a << "hey";
-        b << "ohi";
-    }
-
 
     using syntropy::diagnostics::LogManager;
     using syntropy::diagnostics::Severity;
