@@ -18,22 +18,15 @@ namespace syntropy
         {
         public:
 
-            /// \brief Get the singleton instance.
-            /// \return Returns the singleton instance;
-            static BuiltIn& GetInstance();
-
             /// \brief Get the index of the most significant bit set.
             /// \return Returns the index of the most significant bit set. Undefined behavior if number is 0.
-            virtual uint64_t GetMostSignificantBit(uint64_t number) const = 0;
+            static uint64_t GetMostSignificantBit(uint64_t number);
 
             /// \brief Get the index of the least significant bit set.
             /// \return Returns the index of the least significant bit set. Undefined behavior if number is 0.
-            virtual uint64_t GetLeastSignificantBit(uint64_t number) const = 0;
+            static uint64_t GetLeastSignificantBit(uint64_t number);
 
         };
 
-        /// \brief Get the current system instance.
-        /// \brief Returns the current system instance.
-        BuiltIn& GetBuiltIn();
     }
 }

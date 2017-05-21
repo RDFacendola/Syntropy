@@ -13,8 +13,6 @@
 
 #ifdef _WIN64
 
-#include <memory>
-
 #include "diagnostics/debug.h"
 #include "platform/system.h"
 #include "memory/memory.h"
@@ -26,7 +24,7 @@ namespace syntropy
 
         /// \brief Exposes Windows-specific debugging functionalities under Windows OS.
         /// \author Raffaele D. Facendola - December 2016
-        class PlatformDebugger : public diagnostics::Debugger
+        class PlatformDebugger
         {
         public:
 
@@ -42,7 +40,7 @@ namespace syntropy
 
         /// \brief Exposes methods to query system's capabilities under Windows OS.
         /// \author Raffaele D. Facendola 
-        class PlatformSystem : public System
+        class PlatformSystem
         {
         public:
 

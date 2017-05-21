@@ -14,17 +14,15 @@
 #include <Windows.h>
 #include <DbgHelp.h>
 
+#undef max
+
 #pragma warning(pop)
 
 #include <string>
 #include <mutex>
 #include <thread>
 #include <algorithm>
-
-#include "syntropy.h"
-#include "platform/system.h"
-
-#undef max
+#include <memory>
 
 namespace syntropy
 {

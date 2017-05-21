@@ -9,7 +9,34 @@
 #include <string>
 #include <vector>
 
-#include "platform/compiler.h"
+#ifdef _MSC_VER
+
+#include <intrin.h>
+
+/// \brief Expands to the current file name.
+#define SYNTROPY_FILE \
+    __FILE__
+
+/// \brief Expands to the current line number.
+#define SYNTROPY_LINE \
+    __LINE__
+
+/// \brief Expands to the current function name.
+#define SYNTROPY_FUNCTION \
+    __FUNCTION__
+
+/// \brief Causes the debugger to break.
+#define SYNTROPY_TRAP \
+    __debugbreak()
+
+#else
+
+#error "Add SYNTROPY_FILE macro definition for the current compiler."
+#error "Add SYNTROPY_LINE macro definition for the current compiler."
+#error "Add SYNTROPY_FUNCTION macro definition for the current compiler."
+#error "Add SYNTROPY_TRAP macro definition for the current compiler."
+
+#endif
 
 /// \brief Causes the debugger to break. If no debugger is present, does nothing.
 #define SYNTROPY_BREAK \

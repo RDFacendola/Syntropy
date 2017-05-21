@@ -1,21 +1,23 @@
 #include "platform/builtin.h"
 
-#include "platform/compiler.h"
+#include "platform/compiler/compiler.h"
 
 namespace syntropy
 {
     namespace platform
     {
-        //////////////// BUILTIN ////////////////
+        /************************************************************************/
+        /* PLATFORM BUILTIN                                                     */
+        /************************************************************************/
 
-        BuiltIn& BuiltIn::GetInstance()
+        uint64_t BuiltIn::GetMostSignificantBit(uint64_t number)
         {
-            return platform::PlatformBuiltIn::GetInstance();
+            return platform::PlatformBuiltIn::GetMostSignificantBit(number);
         }
 
-        BuiltIn& GetBuiltIn()
+        uint64_t BuiltIn::GetLeastSignificantBit(uint64_t number)
         {
-            return BuiltIn::GetInstance();
+            return platform::PlatformBuiltIn::GetLeastSignificantBit(number);
         }
     }
 }

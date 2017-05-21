@@ -52,7 +52,7 @@ namespace syntropy
         {
             if (number > 0)
             {
-                auto msb = platform::GetBuiltIn().GetMostSignificantBit(static_cast<uint64_t>(number));
+                auto msb = platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(number));
                 return msb + ((number & (number - 1)) >> msb);        // Ceiling required for non-power of 2.
             }
 
@@ -66,8 +66,8 @@ namespace syntropy
         static Unsigned FloorLog2(Unsigned number)
         {
             return number > 0 ?
-                   platform::GetBuiltIn().GetMostSignificantBit(static_cast<uint64_t>(number)) :
-                   0;
+                platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(number)) :
+                0;
         }
 
         /// \brief Round the argument up to the next power of 2.
@@ -78,7 +78,7 @@ namespace syntropy
         {
             return IsPow2(number) ?
                 number :
-                2 << platform::GetBuiltIn().GetMostSignificantBit(static_cast<uint64_t>(number));
+                2 << platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(number));
         }
 
     };

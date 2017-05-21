@@ -1,26 +1,30 @@
+#define SYNTROPY_COMPILER_INCLUDE_GUARD
+
 #include "platform/compiler/msvc.h"
+
+#undef SYNTROPY_COMPILER_INCLUDE_GUARD
+
+#ifdef _MSC_VER
+
+#include <intrin.h>
 
 namespace syntropy
 {
     namespace platform
     {
 
-        //////////////// MSVC BUILTIN ////////////////
+        /************************************************************************/
+        /* PLATFORM BUILTIN                                                     */
+        /************************************************************************/
 
-        platform::BuiltIn& MSVCBuiltIn::GetInstance()
-        {
-            static MSVCBuiltIn instance;
-            return instance;
-        }
-
-        uint64_t MSVCBuiltIn::GetMostSignificantBit(uint64_t number) const
+        uint64_t PlatformBuiltIn::GetMostSignificantBit(uint64_t number)
         {
             unsigned long index;
             _BitScanReverse64(&index, number);
             return static_cast<uint64_t>(index);
         }
 
-        uint64_t MSVCBuiltIn::GetLeastSignificantBit(uint64_t number) const
+        uint64_t PlatformBuiltIn::GetLeastSignificantBit(uint64_t number)
         {
             unsigned long index;
             _BitScanForward64(&index, number);
@@ -29,3 +33,5 @@ namespace syntropy
 
     }
 }
+
+#endif

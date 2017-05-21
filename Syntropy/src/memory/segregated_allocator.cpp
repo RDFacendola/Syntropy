@@ -586,15 +586,15 @@ namespace syntropy
             if (second_level_bitmap != 0)
             {
                 // Search in the current first-level (there are larger second-level lists that are not empty).
-                second_level_index = platform::GetBuiltIn().GetLeastSignificantBit(static_cast<uint64_t>(second_level_bitmap));
+                second_level_index = platform::BuiltIn::GetLeastSignificantBit(static_cast<uint64_t>(second_level_bitmap));
 
                 index = GetFreeListIndex(first_level_index, second_level_index);
             }
             else if (first_level_bitmap != 0)
             {
                 // Search in a larger first-level class.
-                first_level_index = platform::GetBuiltIn().GetLeastSignificantBit(static_cast<uint64_t>(first_level_bitmap));
-                second_level_index = platform::GetBuiltIn().GetLeastSignificantBit(static_cast<uint64_t>(second_level_bitmap_[first_level_index]));
+                first_level_index = platform::BuiltIn::GetLeastSignificantBit(static_cast<uint64_t>(first_level_bitmap));
+                second_level_index = platform::BuiltIn::GetLeastSignificantBit(static_cast<uint64_t>(second_level_bitmap_[first_level_index]));
 
                 index = GetFreeListIndex(first_level_index, second_level_index);
             }

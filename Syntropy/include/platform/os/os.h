@@ -7,6 +7,8 @@
 
 #pragma once
 
+// List of supported OSs
+
 #define SYNTROPY_OS_INCLUDE_GUARD
 
 #ifdef _WIN64
