@@ -189,6 +189,42 @@ namespace syntropy
         };
 
         /************************************************************************/
+        /* WINDOWS MEMORY                                                       */
+        /************************************************************************/
+
+        /// \brief Stateful details for the Windows memory.
+        class WindowsMemory
+        {
+        public:
+
+            static WindowsMemory& GetInstance()
+            {
+                static WindowsMemory instance;
+                return instance;
+            }
+
+            size_t GetPageSize() const
+            {
+                return page_size_;
+            }
+
+        private:
+
+            WindowsMemory()
+            {
+                SYSTEM_INFO system_info;
+                GetSystemInfo(&system_info);
+
+                allocation_granularity_ = system_info.dwAllocationGranularity;
+                page_size_ = system_info.dwPageSize;
+            }
+
+            size_t allocation_granularity_;     ///< \brief Memory allocation granularity, in bytes.
+
+            size_t page_size_;                  ///< \brief Memory page size, in bytes.
+        };
+
+        /************************************************************************/
         /* PLATFORM DEBUGGER                                                    */
         /************************************************************************/
         
@@ -206,13 +242,7 @@ namespace syntropy
         /* PLATFORM SYSTEM                                                      */
         /************************************************************************/
 
-        System& PlatformSystem::GetInstance()
-        {
-            static PlatformSystem instance;
-            return instance;
-        }
-
-        CPUInfo PlatformSystem::GetCPUInfo() const
+        CPUInfo PlatformSystem::GetCPUInfo()
         {
             CPUInfo cpu_info;
 
@@ -252,7 +282,7 @@ namespace syntropy
             return cpu_info;
         }
 
-        StorageInfo PlatformSystem::GetStorageInfo() const
+        StorageInfo PlatformSystem::GetStorageInfo()
         {
             StorageInfo storage_info;
 
@@ -284,7 +314,7 @@ namespace syntropy
             return storage_info;
         }
 
-        MemoryInfo PlatformSystem::GetMemoryInfo() const
+        MemoryInfo PlatformSystem::GetMemoryInfo()
         {
             MemoryInfo memory_info;
 
@@ -304,7 +334,7 @@ namespace syntropy
             return memory_info;
         }
 
-        DisplayInfo PlatformSystem::GetDisplayInfo() const
+        DisplayInfo PlatformSystem::GetDisplayInfo()
         {
             DWORD display_index = 0;
             DISPLAY_DEVICE adapter_device;
@@ -346,7 +376,7 @@ namespace syntropy
             return display_info;
         }
 
-        PlatformInfo PlatformSystem::GetPlatformInfo() const
+        PlatformInfo PlatformSystem::GetPlatformInfo()
         {
             PlatformInfo platform_info;
 
@@ -359,32 +389,9 @@ namespace syntropy
         /* PLATFORM MEMORY                                                      */
         /************************************************************************/
 
-        /// \brief Utility class used to store Windows Memory infos.
-        struct WindowsMemorySingleton
-        {
-            static WindowsMemorySingleton& GetInstance()
-            {
-                static WindowsMemorySingleton instance;
-                return instance;
-            }
-
-            WindowsMemorySingleton()
-            {
-                SYSTEM_INFO system_info;
-                GetSystemInfo(&system_info);
-
-                allocation_granularity_ = system_info.dwAllocationGranularity;
-                page_size_ = system_info.dwPageSize;
-            }
-
-            size_t allocation_granularity_;     ///< \brief Memory allocation granularity, in bytes.
-
-            size_t page_size_;                  ///< \brief Memory page size, in bytes.
-        };
-        
         size_t PlatformMemory::GetPageSize()
         {
-            return WindowsMemorySingleton::GetInstance().page_size_;
+            return WindowsMemory::GetInstance().GetPageSize();
         }
 
         void* PlatformMemory::Allocate(size_t size)

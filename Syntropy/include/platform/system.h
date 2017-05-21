@@ -75,7 +75,7 @@ namespace syntropy
 
         /// \brief Describes the desktop.
         /// \author Raffaele D. Facendola
-        struct DisplayInfo 
+        struct DisplayInfo
         {
             std::vector<MonitorInfo> monitors_;     ///< \brief List of available monitors.
         };
@@ -99,36 +99,28 @@ namespace syntropy
         class System
         {
         public:
-            
-            /// \brief Get the singleton instance.
-            /// \return Returns the singleton instance;
-            static System& GetInstance();
 
             /// \brief Get the current CPU infos.
             /// \return Returns the current CPU infos.
-            virtual CPUInfo GetCPUInfo() const = 0;
+            static CPUInfo GetCPUInfo();
 
             /// \brief Get the current storage infos.
             /// \return Returns the current storage infos.
-            virtual StorageInfo GetStorageInfo() const = 0;
+            static StorageInfo GetStorageInfo();
 
             /// \brief Get the current memory infos.
             /// \return Returns the current memory infos.
-            virtual MemoryInfo GetMemoryInfo() const = 0;
+            static MemoryInfo GetMemoryInfo();
 
             /// \brief Get the current desktop infos.
             /// \return Returns the current desktop infos.
-            virtual DisplayInfo GetDisplayInfo() const = 0;
+            static DisplayInfo GetDisplayInfo();
 
             /// \brief Get the current platform infos.
             /// \return Returns the current platform infos.
-            virtual PlatformInfo GetPlatformInfo() const = 0;
+            static PlatformInfo GetPlatformInfo();
 
         };
-
-        /// \brief Get the current system instance.
-        /// \brief Returns the current system instance.
-        System& GetSystem();
 
     }
 }

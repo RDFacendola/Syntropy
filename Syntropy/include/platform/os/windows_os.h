@@ -26,8 +26,13 @@ namespace syntropy
         {
         public:
 
+            /// \brief Check whether the debugger is attached.
+            /// \return Returns true if a debugger is attached to the application, returns false otherwise.
             static bool IsDebuggerAttached();
-            
+
+            /// \brief Get the stack trace of the current thread.
+            /// \param caller Stack trace element representing the code that called this method.
+            /// \return Returns the stack trace whose head is caller.
             static diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller);
         };
 
@@ -37,19 +42,25 @@ namespace syntropy
         {
         public:
 
-            /// \brief Get the singleton instance.
-            /// \return Returns the singleton instance;
-            static System& GetInstance();
+            /// \brief Get the current CPU infos.
+            /// \return Returns the current CPU infos.
+            static CPUInfo GetCPUInfo();
 
-            virtual CPUInfo GetCPUInfo() const override;
+            /// \brief Get the current storage infos.
+            /// \return Returns the current storage infos.
+            static StorageInfo GetStorageInfo();
 
-            virtual StorageInfo GetStorageInfo() const override;
+            /// \brief Get the current memory infos.
+            /// \return Returns the current memory infos.
+            static MemoryInfo GetMemoryInfo();
 
-            virtual MemoryInfo GetMemoryInfo() const override;
+            /// \brief Get the current desktop infos.
+            /// \return Returns the current desktop infos.
+            static DisplayInfo GetDisplayInfo();
 
-            virtual DisplayInfo GetDisplayInfo() const override;
-
-            virtual PlatformInfo GetPlatformInfo() const override;
+            /// \brief Get the current platform infos.
+            /// \return Returns the current platform infos.
+            static PlatformInfo GetPlatformInfo();
         };
 
         /// \brief Wraps the low-level calls used to handle virtual memory allocation under Windows OS.

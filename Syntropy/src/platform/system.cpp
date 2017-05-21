@@ -7,16 +7,33 @@ namespace syntropy
     namespace platform
     {
 
-        //////////////// SYSTEM ////////////////
+        /************************************************************************/
+        /* SYSTEM                                                               */
+        /************************************************************************/
 
-        System& System::GetInstance()
+        CPUInfo System::GetCPUInfo()
         {
-            return platform::PlatformSystem::GetInstance();
+            return PlatformSystem::GetCPUInfo();
         }
 
-        System& GetSystem()
+        StorageInfo System::GetStorageInfo()
         {
-            return System::GetInstance();
+            return PlatformSystem::GetStorageInfo();
+        }
+
+        MemoryInfo System::GetMemoryInfo()
+        {
+            return PlatformSystem::GetMemoryInfo();
+        }
+
+        DisplayInfo System::GetDisplayInfo()
+        {
+            return PlatformSystem::GetDisplayInfo();
+        }
+
+        PlatformInfo System::GetPlatformInfo()
+        {
+            return PlatformSystem::GetPlatformInfo();
         }
 
     }
