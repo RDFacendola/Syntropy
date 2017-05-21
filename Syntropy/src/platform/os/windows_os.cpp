@@ -1,4 +1,8 @@
+#define SYNTROPY_OS_INCLUDE_GUARD
+
 #include "platform/os/windows_os.h"
+
+#undef SYNTROPY_OS_INCLUDE_GUARD
 
 #ifdef _WIN64
 

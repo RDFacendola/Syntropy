@@ -1,6 +1,6 @@
 #include "platform/system.h"
 
-#include "platform/os.h"
+#include "platform/os/os.h"
 
 namespace syntropy
 {

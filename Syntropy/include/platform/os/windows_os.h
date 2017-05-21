@@ -1,11 +1,15 @@
 /// \file windows_platform.h
 /// \brief This header is part of the syntropy HAL (hardware abstraction layer) system. It contains Windows-specific functionalities.
 ///
-/// Do not use this header directly!
+/// Do not include this header directly. Use os.h instead.
 ///
 /// \author Raffaele D. Facendola - 2016
 
 #pragma once
+
+#ifndef SYNTROPY_OS_INCLUDE_GUARD
+#error "You may not include this header directly. Use os.h instead."
+#endif
 
 #ifdef _WIN64
 

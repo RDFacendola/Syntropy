@@ -116,7 +116,7 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\platform\compiler.h" />
-    <ClInclude Include="include\platform\os.h" />
+    <ClInclude Include="include\platform\os\os.h" />
     <ClInclude Include="include\platform\os\windows_os.h" />
     <ClInclude Include="include\platform\system.h">
       <SubType>

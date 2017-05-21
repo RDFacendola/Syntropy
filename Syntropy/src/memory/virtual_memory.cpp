@@ -1,6 +1,6 @@
 #include "memory/virtual_memory.h"
 
-#include "platform/os.h"
+#include "platform/os/os.h"
 
 #include "math/math.h"
 #include "diagnostics/debug.h"

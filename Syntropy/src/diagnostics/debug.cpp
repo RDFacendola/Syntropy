@@ -1,6 +1,6 @@
 #include "diagnostics/debug.h"
 
-#include "platform/os.h"
+#include "platform/os/os.h"
 
 namespace syntropy
 {
