@@ -14,6 +14,8 @@
 #include "memory.h"
 #include "allocator.h"
 
+#include "diagnostics/assert.h"
+
 /// \brief Instantiate a new object on the active syntropy::MemoryManager allocator.
 /// \usage auto foo = SYNTROPY_MM_NEW Foo();
 #define SYNTROPY_MM_NEW \

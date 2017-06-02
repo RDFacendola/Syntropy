@@ -13,8 +13,10 @@
 
 #ifdef _WIN64
 
-#include "diagnostics/debug.h"
+#include "diagnostics/diagnostics.h"
+
 #include "platform/system.h"
+
 #include "memory/memory.h"
 
 namespace syntropy
