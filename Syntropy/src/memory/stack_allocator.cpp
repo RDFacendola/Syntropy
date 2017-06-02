@@ -1,6 +1,6 @@
 #include "memory/stack_allocator.h"
 
-#include "diagnostics/debug.h"
+#include "diagnostics/assert.h"
 
 namespace syntropy
 {

@@ -9,12 +9,12 @@
 #include "syntropy.h"
 
 #include "reflection/reflection.h"
-#include "reflection/class_interfaces.h"
-#include "reflection/property_interfaces.h"
+#include "reflection/interfaces/class_interfaces.h"
+#include "reflection/interfaces/property_interfaces.h"
 
-#include "reflection/fundamental_types.h"
-#include "reflection/core_types.h"
-#include "reflection/stl_types.h"
+#include "reflection/types/fundamental_types.h"
+#include "reflection/types/core_types.h"
+#include "reflection/types/stl_types.h"
 
 #include "serialization/json.h"
 #include "serialization/json/json_deserializer.h"
@@ -869,6 +869,17 @@ public:
         //FooBar* beep = &bee;
 
         //auto foobarp = syntropy::reflection::MakeInstance(beep);
+        //int x;
+        //int& xr = x;
+
+        //int y = static_cast<int>(xr);
+
+        //int* const * xpp2 = nullptr;
+
+        //auto isc = std::is_const_v<std::remove_pointer_t<decltype(xpp2)>>;
+
+        ////SYNTROPY_UNUSED(isp);
+        //SYNTROPY_UNUSED(isc);
 
         TEST_TRUE(syntropy::reflection::AnyCast<Bar*>(&bar) != nullptr);
 		TEST_FALSE(syntropy::reflection::AnyCast<Foo*>(&bar) != nullptr);
@@ -994,10 +1005,10 @@ public:
 
     }
 
-    void Do() {
+    void Do() 
+    {
 
         //RUN_TEST(TypeTest);
-
         RUN_TEST(SynopsisTest);
 
         std::cout << "\n\n";

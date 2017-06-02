@@ -35,10 +35,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\diagnostics\debug.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
+    <ClInclude Include="include\diagnostics\assert.h" />
     <ClInclude Include="include\diagnostics\diagnostics.h">
       <SubType>
       </SubType>
@@ -53,7 +50,6 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\diagnostics\log_channels.h" />
-    <ClInclude Include="include\diagnostics\log_manager.h" />
     <ClInclude Include="include\macro.h">
       <SubType>
       </SubType>
@@ -111,6 +107,7 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\platform\builtin.h" />
+    <ClInclude Include="include\platform\macros.h" />
     <ClInclude Include="include\platform\compiler\msvc.h">
       <SubType>
       </SubType>
@@ -130,26 +127,22 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\reflection\class_interfaces.h">
+    <ClInclude Include="include\reflection\interfaces\class_interfaces.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\reflection\core_types.h" />
-    <ClInclude Include="include\reflection\fundamental_types.h">
+    <ClInclude Include="include\reflection\types\core_types.h" />
+    <ClInclude Include="include\reflection\types\fundamental_types.h">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="include\math\fnv1.h" />
     <ClInclude Include="include\containers\hashed_string.h" />
-    <ClInclude Include="include\reflection\method.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\reflection\property.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\reflection\property_interfaces.h">
+    <ClInclude Include="include\reflection\interfaces\property_interfaces.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -157,11 +150,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\reflection\stl_types.h" />
-    <ClInclude Include="include\reflection\template_types.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
+    <ClInclude Include="include\reflection\types\stl_types.h" />
     <ClInclude Include="include\scope_guard.h">
       <SubType>
       </SubType>
@@ -188,10 +177,6 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="src\diagnostics\debug.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
     <ClCompile Include="src\diagnostics\diagnostics.cpp">
       <SubType>
       </SubType>
@@ -202,7 +187,6 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="src\diagnostics\log_channels.cpp" />
-    <ClCompile Include="src\diagnostics\log_manager.cpp" />
     <ClCompile Include="src\math\math.cpp">
       <SubType>
       </SubType>

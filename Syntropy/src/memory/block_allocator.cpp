@@ -1,8 +1,7 @@
 #include "memory/block_allocator.h"
 
 #include "platform/system.h"
-#include "diagnostics/diagnostics.h"
-#include "diagnostics/debug.h"
+#include "diagnostics/assert.h"
 
 namespace syntropy
 {

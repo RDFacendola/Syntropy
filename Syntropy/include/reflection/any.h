@@ -11,7 +11,7 @@
 #include "cpp17.h"
 #include "type_traits.h"
 
-#include "diagnostics/debug.h"
+#include "diagnostics/assert.h"
 
 #include "reflection/type.h"
 
@@ -208,8 +208,6 @@ namespace syntropy
 
             static_assert(std::is_constructible<TValue, const U&>::value, "TValue must be constructible by const reference.");
 
-            SYNTROPY_ASSERT(operand.GetType() == TypeOf<TValue>());
-
             return static_cast<TValue>(*AnyCast<U>(&operand));
         }
 
@@ -219,8 +217,6 @@ namespace syntropy
             using U = std::remove_cv_t<std::remove_reference_t<TValue>>;
 
             static_assert(std::is_constructible<TValue, U&>::value, "TValue must be constructible by reference.");
-
-            SYNTROPY_ASSERT(operand.GetType() == TypeOf<TValue>());
 
             return static_cast<TValue>(*AnyCast<U>(&operand));
         }
@@ -232,15 +228,17 @@ namespace syntropy
 
             static_assert(std::is_constructible<TValue, U>::value, "TValue must be constructible from value.");
 
-            SYNTROPY_ASSERT(operand.GetType() == TypeOf<TValue>());
-
             return static_cast<TValue>(std::move(*AnyCast<U>(&operand)));
         }
 
         template<class TValue>
         const TValue* AnyCast(const Any* operand) noexcept
         {
-            return AnyCast<TValue>(const_cast<Any*>(operand));
+            static_assert(std::is_copy_constructible<std::decay_t<TValue>>::value, "std::decay<TValue> must be copy-constructible.");
+
+            return operand && operand->GetType().IsConvertibleTo(TypeOf<const TValue>()) ?
+                std::addressof(static_cast<Any::HolderT<const TValue>*>(operand->holder_)->value_) :
+                nullptr;
         }
 
         template<class TValue>
@@ -248,7 +246,7 @@ namespace syntropy
         {
             static_assert(std::is_copy_constructible<std::decay_t<TValue>>::value, "std::decay<TValue> must be copy-constructible.");
 
-            return operand && operand->GetType() == TypeOf<TValue>() ?
+            return operand && operand->GetType().IsConvertibleTo(TypeOf<TValue>()) ?
                 std::addressof(static_cast<Any::HolderT<TValue>*>(operand->holder_)->value_) :
                 nullptr;
         }

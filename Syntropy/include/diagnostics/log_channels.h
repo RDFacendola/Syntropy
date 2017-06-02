@@ -1,7 +1,7 @@
 /// \file log_channels.h
 /// \brief This header is part of the syntropy diagnostic system. It contains the definition of some basic log channels.
 ///
-/// \author Raffaele D. Facendola - 2016
+/// \author Raffaele D. Facendola - 2017
 
 #pragma once
 
@@ -11,14 +11,8 @@
 #include <vector>
 #include <functional>
 
+#include "diagnostics/log.h"
 #include "diagnostics/diagnostics.h"
-#include "diagnostics/diagnostics_meta.h"
-#include "diagnostics/log_manager.h"
-
-#include "reflection/class.h"
-#include "reflection/stl_types.h"
-
-#include "serialization/json.h"
 
 namespace syntropy
 {
@@ -45,17 +39,11 @@ namespace syntropy
             static const char kTokenStart;                      ///< \brief Character delimiting the begin of a token. '{'.
             static const char kTokenEnd;                        ///< \brief Character delimiting the end of a token. '}'.
 
-            /// \brief Configuration for a StreamLogChannel.
-            struct Configuration
-            {
-                std::string format_;                ///< \brief Format of the messages. Example of a valid format string: "{date} {time} [{context}]: {message}". Unrecognized tokens are considered plain strings.
-                std::vector<Context> contexts_;     ///< \brief Contexts the channel should react to.
-                Severity verbosity_;                ///< \brief Minimum required severity for which a message is processed.
-            };
-
             /// \brief Create a new stream log channel.
-            /// \param configuration Configuration for this channel.
-            StreamLogChannel(const Configuration& configuration);
+            /// \param format Format of the messages. Example of a valid format string: "{date} {time} [{context}]: {message}". Unrecognized tokens are considered plain strings.
+            /// \param contexts Contexts the channel should react to.
+            /// \param verbosity Minimum required severity for which a message is processed.
+            StreamLogChannel(const std::string& format, std::vector<Context> contexts, Severity verbosity);
 
             /// \brief Virtual destructor.
             virtual ~StreamLogChannel() = default;
@@ -97,18 +85,12 @@ namespace syntropy
         {
         public:
 
-            /// \brief Configuration for a StreamLogChannel.
-            struct Configuration
-            {
-                std::string file_;                  ///< \brief Name of the file the output will be redirected to.
-                std::string format_;                ///< \brief Format of the messages. Example of a valid format string: "{date} {time} [{context}]: {message}". Unrecognized tokens are considered plain strings.
-                std::vector<Context> contexts_;     ///< \brief Contexts the channel should react to.
-                Severity verbosity_;                ///< \brief Minimum required severity for which a message is processed.
-            };
-
             /// \brief Create a new file log channel.
-            /// \param configuration Configuration for this channel.
-            FileLogChannel(const Configuration& configuration);
+            /// \param file Name of the file the output will be redirected to.
+            /// \param format Format of the messages. Example of a valid format string: "{date} {time} [{context}]: {message}". Unrecognized tokens are considered plain strings.
+            /// \param contexts Contexts the channel should react to.
+            /// \param verbosity Minimum required severity for which a message is processed.
+            FileLogChannel(const std::string& file, const std::string& format, std::vector<Context> contexts, Severity verbosity);
 
             /// \brief Default move constructor.
             FileLogChannel(FileLogChannel&&) = default;
@@ -125,90 +107,4 @@ namespace syntropy
         };
 
     }
-
-    namespace reflection
-    {
-        extern const Class& ClassOf_StreamLogChannel;
-        extern const Class& ClassOf_FileLogChannel;
-
-        // Reflection specialization for StreamLogChannel.
-        template <>
-        struct ClassDeclaration<diagnostics::StreamLogChannel>
-        {
-            static constexpr const char* GetName() noexcept
-            {
-                return "syntropy::diagnostics::StreamLogChannel";
-            }
-
-            void operator()(ClassDefinitionT<diagnostics::StreamLogChannel>& definition) const
-            {
-                definition.DefineNameAlias("StreamLogChannel");
-
-                definition.DefineBaseClass<diagnostics::LogChannel>();
-            }
-        };
-
-        // Reflection specialization for FileLogChannel.
-        template <>
-        struct ClassDeclaration<diagnostics::FileLogChannel>
-        {
-            static constexpr const char* GetName() noexcept
-            {
-                return "syntropy::diagnostics::FileLogChannel";
-            }
-
-            void operator()(ClassDefinitionT<diagnostics::FileLogChannel>& definition) const
-            {
-                definition << serialization::JSONConstruct();
-
-                definition.DefineNameAlias("FileLogChannel");
-
-                definition.DefineBaseClass<diagnostics::StreamLogChannel>();
-            }
-        };
-
-        // Reflection specialization for FileLogChannel::Configuration
-        template<>
-        struct ClassDeclaration<diagnostics::FileLogChannel::Configuration>
-        {
-            static constexpr const char* GetName() noexcept
-            {
-                return "syntropy::diagnostics::FileLogChannel::Configuration";
-            }
-
-            void operator()(ClassDefinitionT<diagnostics::FileLogChannel::Configuration>& definition) const
-            {
-                definition << serialization::JSONConstruct();
-
-                definition.DefineNameAlias("FileLogChannel::Configuration");
-
-                definition.DefineProperty("file", &diagnostics::FileLogChannel::Configuration::file_) << serialization::JSONRead();
-                definition.DefineProperty("format", &diagnostics::FileLogChannel::Configuration::format_) << serialization::JSONRead();
-                definition.DefineProperty("contexts", &diagnostics::FileLogChannel::Configuration::contexts_) << serialization::JSONRead();
-                definition.DefineProperty("verbosity", &diagnostics::FileLogChannel::Configuration::verbosity_) << serialization::JSONRead();
-            }
-        };
-
-    }
-
-    namespace serialization
-    {
-        // Used to deserialize a FileLogChannel from a JSON object.
-        template <>
-        struct JSONDeserializerT<diagnostics::FileLogChannel>
-        {
-            std::optional<diagnostics::FileLogChannel> operator()(const nlohmann::json& json) const
-            {
-                auto configuration = serialization::DeserializeObjectFromJSON<diagnostics::FileLogChannel::Configuration>(json);
-
-                if (configuration)
-                {
-                    return std::make_optional<diagnostics::FileLogChannel>(std::move(*configuration));
-                }
-
-                return std::nullopt;
-            }
-        };
-    }
-
 }

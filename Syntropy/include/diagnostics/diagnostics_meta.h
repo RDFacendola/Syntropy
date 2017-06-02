@@ -7,9 +7,10 @@
 #pragma once
 
 #include "diagnostics/diagnostics.h"
+#include "diagnostics/log_channels.h"
 
 #include "reflection/class.h"
-#include "reflection/core_types.h"
+#include "reflection/types/core_types.h"
 
 #include "serialization/json.h"
 #include "serialization/json/json_deserializer.h"
@@ -48,6 +49,84 @@ namespace syntropy
             void operator()(ClassDefinitionT<diagnostics::Context>& definition) const
             {
                 definition << serialization::JSONConstruct();
+            }
+        };
+
+        extern const Class& ClassOf_LogChannel;
+
+        // Reflection specialization for LogChannel.
+        template <>
+        struct ClassDeclaration<diagnostics::LogChannel>
+        {
+            static constexpr const char* GetName() noexcept
+            {
+                return "diagnostics::LogChannel";
+            }
+        };
+    }
+
+    namespace reflection
+    {
+        extern const Class& ClassOf_StreamLogChannel;
+        extern const Class& ClassOf_FileLogChannel;
+
+        // Reflection specialization for StreamLogChannel.
+        template <>
+        struct ClassDeclaration<diagnostics::StreamLogChannel>
+        {
+            static constexpr const char* GetName() noexcept
+            {
+                return "syntropy::diagnostics::StreamLogChannel";
+            }
+
+            void operator()(ClassDefinitionT<diagnostics::StreamLogChannel>& definition) const
+            {
+                definition.DefineNameAlias("StreamLogChannel");
+
+                definition.DefineBaseClass<diagnostics::LogChannel>();
+            }
+        };
+
+        // Reflection specialization for FileLogChannel.
+        template <>
+        struct ClassDeclaration<diagnostics::FileLogChannel>
+        {
+            static constexpr const char* GetName() noexcept
+            {
+                return "syntropy::diagnostics::FileLogChannel";
+            }
+
+            void operator()(ClassDefinitionT<diagnostics::FileLogChannel>& definition) const
+            {
+                definition << serialization::JSONConstruct();
+
+                definition.DefineNameAlias("FileLogChannel");
+
+                definition.DefineBaseClass<diagnostics::StreamLogChannel>();
+            }
+        };
+
+    }
+
+    namespace serialization
+    {
+        // Used to deserialize a FileLogChannel from a JSON object.
+        template <>
+        struct JSONDeserializerT<diagnostics::FileLogChannel>
+        {
+            std::optional<diagnostics::FileLogChannel> operator()(const nlohmann::json& json) const
+            {
+                if (json.is_object())
+                {
+                    std::string file;
+                    std::string format;
+                    std::vector<diagnostics::Context> contexts;
+                    diagnostics::Severity verbosity;
+
+                    return std::make_optional<diagnostics::FileLogChannel>(std::move(file), std::move(format), std::move(contexts), verbosity);
+                }
+
+                return std::nullopt;
             }
         };
     }

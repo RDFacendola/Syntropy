@@ -1,9 +1,5 @@
 #include "serialization/json.h"
 
-#include <fstream>
-
-#include "reflection/class_interfaces.h"
-
 #include "diagnostics/log.h"
 
 namespace syntropy 
@@ -58,7 +54,7 @@ namespace syntropy
                 return nullptr;
             }
 
-            if (*concrete_class != *base_class)
+            if(!concrete_class->IsA(*base_class))
             {
                 SYNTROPY_WARNING((SerializationCtx), "Cannot deserialize an object of type '", base_class, "' from type ", it->get<std::string>(), ".");
                 return nullptr;

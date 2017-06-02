@@ -3,7 +3,8 @@
 #include "platform/os/os.h"
 
 #include "math/math.h"
-#include "diagnostics/debug.h"
+
+#include "diagnostics/diagnostics.h"
 
 namespace syntropy
 {

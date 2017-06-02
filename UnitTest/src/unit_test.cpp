@@ -53,7 +53,7 @@ int main()
 
     // Initialize log
 
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<FileLogChannel>());
+    //SYNTROPY_UNUSED(syntropy::reflection::ClassOf<FileLogChannel>());
 
     auto& log_manager = LogManager::GetInstance();
 

@@ -7,8 +7,10 @@
 #include "memory/memory.h"
 #include "memory/virtual_memory.h"
 
-#include "diagnostics/debug.h"
+#include "diagnostics/assert.h"
+
 #include "math/math.h"
+
 #include "platform/builtin.h"
 
 namespace syntropy 

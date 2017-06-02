@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "diagnostics/log.h"
+#include "diagnostics/assert.h"
 
 #include "syntropy.h"
 

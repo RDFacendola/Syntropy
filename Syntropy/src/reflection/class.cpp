@@ -24,27 +24,27 @@ namespace syntropy
 
         bool Class::operator ==(const Class& other) const noexcept
         {
-            if (this == std::addressof(other))
-            {
-                return true;        // The two classes point to the same singleton instance.
-            }
-
-            // Check whether any base classes of this class is the same as the other.
-            return std::any_of
-            (
-                base_classes_.begin(),
-                base_classes_.end(),
-                [&other](const Class* base_class)
-                {
-                    return *base_class == other;
-                }
-            );
-
+            return this == std::addressof(other);
         }
 
         bool Class::operator !=(const Class& other) const noexcept
         {
-            return !(*this == other);
+
+            return this != std::addressof(other);
+        }
+
+        bool Class::IsA(const Class& other) const noexcept
+        {
+            return (*this == other) ||
+                std::any_of
+                (
+                    base_classes_.begin(),
+                    base_classes_.end(),
+                    [&other](const Class* base_class)
+                    {
+                        return *base_class == other;
+                    }
+                );
         }
 
         const HashedString& Class::GetDefaultName() const noexcept

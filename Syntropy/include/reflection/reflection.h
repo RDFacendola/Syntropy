@@ -6,11 +6,14 @@
 
 #pragma once
 
+#include <unordered_map>
+
 #include "containers/hashed_string.h"
 
 #include "diagnostics/diagnostics.h"
 
-#include <unordered_map>
+#include "reflection/class.h"
+#include "reflection/types/fundamental_types.h"
 
 namespace syntropy
 {
@@ -21,12 +24,12 @@ namespace syntropy
         /// \brief Log context for the syntropy reflection system.
         extern const diagnostics::Context ReflectionCtx;
 
-        class Class;
-
         /// \brief Contains the list of all classes registered so far.
         /// \author Raffaele D. Facendola - 2016
         class Reflection
         {
+
+            friend class Class;
 
         public:
 
@@ -46,14 +49,14 @@ namespace syntropy
             /// \return Returns a pointer to the class whose name is the specified one, if any. Returns nullptr otherwise.
             const Class* GetClass(const HashedString& class_name) const noexcept;
 
-            /// \brief Register a new class to the registry.
-            /// \param class_instance Class to register.
-            void Register(Class& class_instance);
-
         private:
 
             /// \brief Private constructor to prevent instantiation and inheritance.
             Reflection();
+
+            /// \brief Register a new class to the registry.
+            /// \param class_instance Class to register.
+            void Register(Class& class_instance);
 
             std::unordered_map<HashedString, Class*> default_classes_;          ///< \brief List of classes registered so far. Default class names only.
 

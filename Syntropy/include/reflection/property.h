@@ -16,7 +16,7 @@
 
 #include "reflection/type.h"
 #include "reflection/any.h"
-#include "reflection/property_interfaces.h"
+#include "reflection/interfaces/property_interfaces.h"
 
 #include "diagnostics/log.h"
 
@@ -125,7 +125,6 @@ namespace syntropy
         };
 
     }
-
 }
 
 namespace syntropy

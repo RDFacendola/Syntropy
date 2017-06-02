@@ -16,9 +16,9 @@
 #include "containers/hashed_string.h"
 #include "containers/interface_container.h"
 
+#include "reflection/type.h"
 #include "reflection/property.h"
-#include "reflection/method.h"
-#include "reflection/class_interfaces.h"
+#include "reflection/interfaces/class_interfaces.h"
 
 #include "diagnostics/log.h"
 
@@ -54,15 +54,18 @@ namespace syntropy
             virtual ~Class() = default;
 
             /// \brief Equality comparison.
-            /// Check whether this class is or derives from the specified one.
-            /// \return Returns true if this class is or derives from the specified class, return false otherwise.
-            /// \remarks This method accounts for inheritance by not for implicit conversion. For example Class(float) == Class(int) is false even if such conversion exists.
+            /// Check whether this class is exactly the same as another class.
+            /// \brief Returns true if this class is the same as the other class, returns false otherwise.
             bool operator==(const Class& other) const noexcept;
 
             /// \brief Inequality comparison.
-            /// Check whether the class described by this instance doesn't derive from the specified class.
-            /// \return Returns true if this class doesn't derive from the specified one, returns false otherwise.
+            /// Check whether this class is not the same as another class.
+            /// \brief Returns true if this class is not the same as the other class, returns false otherwise.
             bool operator!=(const Class& other) const noexcept;
+
+            /// \brief Check whether this class is equal to or derives from another class.
+            /// \return Returns true if this class is equal to or derives from other, returns false otherwise.
+            bool IsA(const Class& other) const noexcept;
 
             /// \brief Get the default class name.
             /// \return Returns the default class name.
@@ -201,6 +204,19 @@ namespace syntropy
             // void operator()(TDefinition& definition) const;
         };
 
+        /// \brief Functor used to generate a complete class name.
+        /// \tparam TArgument Template argument types (if any).
+        /// \author Raffaele D. Facendola - May 2017
+        template <typename... TArguments>
+        struct GenerateClassNameT
+        {
+            std::string operator()(const char* class_name) const;
+        };
+
+        /// Utility object for GenerateClassNameT.
+        template <typename... TArguments>
+        constexpr GenerateClassNameT<TArguments...> GenerateClassName{};
+
     }
 
 }
@@ -221,7 +237,7 @@ namespace syntropy
         {
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
 
-            static Class instance(tag_t<TClass>{});
+            static Class instance(tag<TClass>);
 
             return instance;
         }
@@ -360,5 +376,50 @@ namespace syntropy
             return *this;
         }
 
+        /************************************************************************/
+        /* GENERATE CLASS NAME                                                  */
+        /************************************************************************/
+
+        /// \brief Functor used to generate a template parameter list name.
+        /// \author Raffaele D. Facendola - May 2017
+        template <typename THead, typename... TRest>
+        struct TemplateArgumentListT
+        {
+            void Append(std::ostream& stream) const
+            {
+                stream << TypeOf<THead>() << ", " << TemplateArgumentList<TRest...>;
+            }
+        };
+
+        /// \brief Specialization for a single template argument.
+        template <typename THead>
+        struct TemplateArgumentListT<THead>
+        {
+            void Append(std::ostream& stream) const
+            {
+                stream << TypeOf<THead>();
+            }
+        };
+
+        /// Utility object for TemplateArgumentListT.
+        template <typename... TArguments>
+        constexpr TemplateArgumentListT<TArguments...> TemplateArgumentList{};
+
+        template <typename... TArguments>
+        std::ostream& operator<<(std::ostream& stream, const TemplateArgumentListT<TArguments...>& argument_list)
+        {
+            argument_list.Append(stream);
+            return stream;
+        }
+
+        template <typename... TArguments>
+        std::string GenerateClassNameT<TArguments...>::operator()(const char* class_name) const
+        {
+            std::stringstream name;
+
+            name << class_name << "<" << TemplateArgumentList<TArguments...> << ">";
+
+            return name.str();
+        }
     }
 }

@@ -1,6 +1,6 @@
 
 /// \file fundamental_types.h
-/// \brief This header is part of the syntropy reflection system. It contains the definition of all the fundamental types supported by the C++ standard.
+/// \brief This header is part of the syntropy reflection system. It exposes all the fundamental types supported by the C++ standard to the syntropy reflection system.
 ///
 /// \author Raffaele D. Facendola - 2016
 
@@ -10,17 +10,16 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "class.h"
+#include "reflection/class.h"
 
-namespace syntropy {
-
-    namespace reflection {
-
-        //////////////// FIXED WIDTH INTEGER TYPES ////////////////
+namespace syntropy
+{
+    namespace reflection
+    {
 
         /// \brief Append additional name aliases for fixed width integer types.
-        template <typename TClass, typename TDefinition>
-        void AddFixedWidthIntegerTypeDefinition(TDefinition& definition)
+        template <typename TClass>
+        void AddFixedWidthIntegerTypeDefinition(ClassDefinitionT<TClass>& definition)
         {
             if (std::is_same<TClass, int8_t>::value)               definition.DefineNameAlias("int8_t");
             if (std::is_same<TClass, int16_t>::value)              definition.DefineNameAlias("int16_t");
@@ -59,7 +58,9 @@ namespace syntropy {
             if (std::is_same<TClass, uintptr_t>::value)            definition.DefineNameAlias("uintptr_t");
         }
 
-        //////////////// BOOLEAN TYPES ////////////////
+        /************************************************************************/
+        /* BOOLEAN TYPES                                                        */
+        /************************************************************************/
 
         template <>
         struct ClassDeclaration<bool>
@@ -68,304 +69,264 @@ namespace syntropy {
             {
                 return "bool";
             }
-
         };
 
-        //////////////// CHARACTER TYPES ////////////////
+        /************************************************************************/
+        /* CHARACTER TYPES                                                      */
+        /************************************************************************/
         
         template <>
-        struct ClassDeclaration<signed char> {
-
+        struct ClassDeclaration<signed char>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "signed char";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
-                AddFixedWidthIntegerTypeDefinition<signed char>(definition);
-
+            void operator()(ClassDefinitionT<signed char>& definition) const
+            {
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<unsigned char> {
-
+        struct ClassDeclaration<unsigned char>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "unsigned char";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
-                AddFixedWidthIntegerTypeDefinition<unsigned char>(definition);
-
+            void operator()(ClassDefinitionT<unsigned char>& definition) const
+            {
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<char> {
-
+        struct ClassDeclaration<char>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "char";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
-                AddFixedWidthIntegerTypeDefinition<char>(definition);
-
+            void operator()(ClassDefinitionT<char>& definition) const
+            {
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<wchar_t> {
-
+        struct ClassDeclaration<wchar_t>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "wchar_t";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
-                AddFixedWidthIntegerTypeDefinition<wchar_t>(definition);
-
+            void operator()(ClassDefinitionT<wchar_t>& definition) const
+            {
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<char16_t> {
-
+        struct ClassDeclaration<char16_t>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "char16_t";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
-                AddFixedWidthIntegerTypeDefinition<char16_t>(definition);
-
+            void operator()(ClassDefinitionT<char16_t>& definition) const
+            {
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<char32_t> {
-
+        struct ClassDeclaration<char32_t>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "char32_t";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
-                AddFixedWidthIntegerTypeDefinition<char32_t>(definition);
-
+            void operator()(ClassDefinitionT<char32_t>& definition) const
+            {
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
-        //////////////// INTEGER TYPES ////////////////
+        /************************************************************************/
+        /* INTEGER TYPES                                                        */
+        /************************************************************************/
 
         template <>
-        struct ClassDeclaration<short int> {
-
+        struct ClassDeclaration<short int>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "short int";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
+            void operator()(ClassDefinitionT<short int>& definition) const
+            {
                 definition.DefineNameAlias("short");
                 definition.DefineNameAlias("signed short");
                 definition.DefineNameAlias("signed short int");
 
-                AddFixedWidthIntegerTypeDefinition<short int>(definition);
-
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<unsigned short int> {
-
+        struct ClassDeclaration<unsigned short int>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "unsigned short int";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
+            void operator()(ClassDefinitionT<unsigned short int>& definition) const
+            {
                 definition.DefineNameAlias("unsigned short int");
                 
-                AddFixedWidthIntegerTypeDefinition<unsigned short int>(definition);
-
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<int> {
-
+        struct ClassDeclaration<int>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "int";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
+            void operator()(ClassDefinitionT<int>& definition) const
+            {
                 definition.DefineNameAlias("signed");
                 definition.DefineNameAlias("signed int");
 
-                AddFixedWidthIntegerTypeDefinition<int>(definition);
-
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<unsigned int> {
-
+        struct ClassDeclaration<unsigned int>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "unsigned int";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
+            void operator()(ClassDefinitionT<unsigned int>& definition) const
+            {
                 definition.DefineNameAlias("unsigned");
 
-                AddFixedWidthIntegerTypeDefinition<unsigned int>(definition);
-
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<long int> {
-
+        struct ClassDeclaration<long int>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "long int";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-                                
+            void operator()(ClassDefinitionT<long int>& definition) const
+            {
                 definition.DefineNameAlias("long");
                 definition.DefineNameAlias("signed long");
                 definition.DefineNameAlias("signed long int");
 
-                AddFixedWidthIntegerTypeDefinition<long int>(definition);
-
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<unsigned long int> {
-
+        struct ClassDeclaration<unsigned long int>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "unsigned long int";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
+            void operator()(ClassDefinitionT<unsigned long int>& definition) const
+            {
                 definition.DefineNameAlias("unsigned long");
 
-                AddFixedWidthIntegerTypeDefinition<unsigned long int>(definition);
-
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<long long int> {
-
+        struct ClassDeclaration<long long int>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "long long int";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
+            void operator()(ClassDefinitionT<long long int>& definition) const
+            {
                 definition.DefineNameAlias("long long");
                 definition.DefineNameAlias("signed long long");
                 definition.DefineNameAlias("signed long long int");
 
-                AddFixedWidthIntegerTypeDefinition<long long int>(definition);
-
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
 
         template <>
-        struct ClassDeclaration<unsigned long long int> {
-
+        struct ClassDeclaration<unsigned long long int>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "unsigned long long int";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition& definition) const {
-
+            void operator()(ClassDefinitionT<unsigned long long int>& definition) const
+            {
                 definition.DefineNameAlias("unsigned long long");
 
-                AddFixedWidthIntegerTypeDefinition<unsigned long long int>(definition);
-
+                AddFixedWidthIntegerTypeDefinition(definition);
             }
-
         };
         
-        //////////////// FLOATING POINT TYPES ////////////////
+        /************************************************************************/
+        /* FLOATING POINT TYPES                                                 */
+        /************************************************************************/
 
         template <>
-        struct ClassDeclaration<float> {
-
+        struct ClassDeclaration<float>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "float";
             }
-
         };
 
         template <>
-        struct ClassDeclaration<double> {
-
+        struct ClassDeclaration<double>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "double";
             }
-
         };
 
         template <>
-        struct ClassDeclaration<long double> {
-
+        struct ClassDeclaration<long double>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "long double";
             }
-
         };
 
     }

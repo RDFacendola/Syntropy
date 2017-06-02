@@ -8,12 +8,15 @@
 
 #include <typeinfo>
 #include <ostream>
+#include <array>
 
+#include "utility.h"
 #include "type_traits.h"
 
-namespace syntropy {
-
-    namespace reflection {
+namespace syntropy
+{
+    namespace reflection
+    {
 
         class Class;
 
@@ -26,7 +29,10 @@ namespace syntropy {
         /// The class supports multiple level of (qualified) indirections.
         /// \remarks This class is a singleton.
         /// \author Raffaele D. Facendola - August 2016
-        class Type {
+        class Type
+        {
+
+            friend std::ostream& operator<<(std::ostream& out, const Type& type);
 
         public:
 
@@ -42,129 +48,85 @@ namespace syntropy {
             /// \brief Get the type associated to TType.
             /// \return Returns a reference to the singleton describing TType.
             template <typename TType>
-            static const Type& GetType();
+            static constexpr const Type& GetType();
 
             /// \brief Equality comparison.
-            /// Check whether the type described by this instance *is* the same as the one described by the other one.
-            /// \return Returns true if this type is exactly the same or derives from the other one, returns false otherwise.
-            /// \remarks This method accounts for inheritance but not for implicit conversion. Type(Derived) == Type(Base) yields true, while Type(int) == Type(float) yields false.
+            /// Check whether this type is exactly the same as another type.
+            /// \brief Returns true if this type is the same as the other type, returns false otherwise.
             bool operator==(const Type& other) const noexcept;
 
             /// \brief Inequality comparison.
-            /// Check whether the type described by this instance is not the same as the one described by the other one.
-            /// \return Returns true if this type *is not* the other one, return false otherwise.
-            /// \remarks This method accounts for inheritance: Type(Derived) != Type(Base) yields false, while Type(Base) != Type(Derived) yields true.
+            /// Check whether this type is not the same as another type.
+            /// \brief Returns true if this type is not the same as the other type, returns false otherwise.
             bool operator!=(const Type& other) const noexcept;
+
+            /// \brief Check whether a variable of this type can be converted to another type.
+            /// The check doesn't account for implicit type conversion but will account for polymorphism.
+            /// This method will check for level of indirections and cv qualifiers.
+            /// Example: TypeOf<int*>().IsConvertibleTo(TypeOf<float*>()) yields false whereas TypeOf<Cat*>().IsConvertibleTo(TypeOf<const Animal*>()) yields true.
+            /// \return Returns true if a variable of this type can be statically assigned to a variable of type other, returns false otherwise.
+            bool IsConvertibleTo(const Type& other) const noexcept;
 
             /// \brief Get the class associated to the type.
             /// \return Returns a reference to the type class.
             /// \remarks Pointer, qualifiers, references and extents are not accounted for. For instance Type(float*) and Type(float) have the same class.
-            virtual const Class& GetClass() const = 0;
-
-            /// \brief Get the typeid associated to the type.
-            /// \return Returns the type if associated to the type.
-            virtual const std::type_info& GetTypeInfo() const noexcept = 0;
+            const Class& GetClass() const;
 
             /// \brief Check whether this type refers to a pointer.
             /// \return Returns true if the type is a pointer, returns false otherwise.
-            virtual bool IsPointer() const noexcept = 0;
+            bool IsPointer() const noexcept;
 
             /// \brief Check whether this type is const-qualified.
             /// \return Returns true if the type is const-qualified, returns false otherwise.
-            virtual bool IsConst() const noexcept = 0;
+            bool IsConst() const noexcept;
 
             /// \brief Check whether this type is volatile-qualified.
             /// \return Returns true if the type is volatile-qualified, returns false otherwise.
-            virtual bool IsVolatile() const noexcept = 0;
+            bool IsVolatile() const noexcept;
 
-            /// \brief Check whether this type describes an L-value reference.
-            /// \return Returns true if the type describes an L-value reference, returns false otherwise.
-            virtual bool IsLValueReference() const noexcept = 0;
-            
-            /// \brief Check whether this type describes an R-value reference.
-            /// \return Returns true if the type describes an R-value reference, returns false otherwise.
-            virtual bool IsRValueReference() const noexcept = 0;
-            
-            /// \brief Check whether this type describes an array.
-            /// \return Returns true if the type describes an array, returns false otherwise.
-            /// \remarks Arrays get the same qualifiers as the type they are referring to, while references do not. For instance, "const float[]" is constant, while "const float&" is not.
-            virtual bool IsArray() const noexcept = 0;
+            /// \brief Check whether this type describes a l-value reference.
+            /// \return Returns true if the type describes a l-value reference, returns false otherwise.
+            bool IsLValueReference() const noexcept;
 
-            /// \brief Get the array rank (aka number of dimensions).
-            /// \return If the type described by this instance is an array, this method returns the rank of that array, otherwise it returns 0.
-            virtual size_t GetArrayRank() const noexcept = 0;
+            /// \brief Check whether this type describes a r-value reference.
+            /// \return Returns true if the type describes a r-value reference, returns false otherwise.
+            bool IsRValueReference() const noexcept;
 
-            /// \brief Get the number of elements along a particular dimension of the array.
-            /// \param dimension Dimension.
-            /// \return Returns the elements along the dimension-th array dimension. If the type is not an array or the size of the array is not specified returns 0.
-            virtual size_t GetArraySize(size_t dimension = 0) const noexcept = 0;
+            /// \brief Get the array rank.
+            /// \return Get the number of dimensions of the array. Returns 0 if the type is not an array.
+            size_t GetArrayRank() const noexcept;
 
-            /// \brief Strip a level of indirection, reference or extents and get the resulting type.
-            /// If the described type is an array, all its extents are removed at once.
-            /// \return Returns a pointer to the type resulting from stripping a level of indirection, references or extents from the current type. If the current type contains the qualified class name only, returns nullptr.
-            /// \remarks The type "(((const float) * const)[])", yields the following type sequence: "(?)[]" -> "(?) * const" -> "const float" -> nullptr.
-            virtual const Type* GetNext() const noexcept = 0;
-
-        protected:
-
-            /// \brief Get the type info associated to a known common type with the same form as this type one's.
-            /// The common type info is used to simplify type checks while still being able to detect correct inheritance.
-            /// For instance even if typeid(Derived**) and typeid(Base**) are not the same, the check Type(Derived**) == Type(Base**) should yield true.
-            /// To solve the issue we can replace the class name with something else to check the form first and perform inheritance check using the underlying class then.
-            /// In the example above we replace each class name with "int", then we check typeid(int**) against typeid(int**) which yields true.
-            /// At this point we may check whether Class(Derived) == Class(Base), which is indeed true.
-            /// \return Returns the type info associated to a type which is the same as the one described by this type, except that the class name is replaced with a known common type.
-            virtual const std::type_info& GetCommonTypeInfo() const noexcept = 0;
+            /// \brief Get the number of elements inside a particular dimension of the array.
+            /// \param dimension Dimension to query. Must be less than GetArrayRank().
+            /// \return Get the number of elements inside a particular dimension of the array.
+            size_t GetArraySize(size_t dimension = 0) const noexcept;
 
         private:
 
+            /// \brief Create a new type.
             template <typename TType>
-            class TypeT;
+            constexpr Type(tag_t<TType>);
 
-            Type() = default;
-                        
-        };
+            const Class& class_;                        ///< \brief Class this type refers to.
 
-        /// \brief Describes an actual type.
-        /// Used to perform type-erasure.
-        /// \author Raffaele D. Facendola - August 2016
-        template <typename TType>
-        class Type::TypeT: public Type{
+            std::vector<size_t> array_size_;            ///< \brief Array size along each dimension.
 
-        public:
+            uint8_t indirection_levels_;                ///< \brief Levels of indirection.
 
-            virtual const Class& GetClass() const override;
+            int8_t const_mask_;                         ///< \brief Bitmask containing the "const-ness" of each indirection level, starting from the innermost type.
 
-            virtual const std::type_info& GetTypeInfo() const noexcept override;
+            int8_t volatile_mask_;                      ///< \brief Bitmask containing the "volatile-ness" of each indirection level, starting from the innermost type.
 
-            virtual bool IsPointer() const noexcept override;
+            bool is_lvalue_reference_ : 1;              ///< \brief Whether the type is a l-value reference.
 
-            virtual bool IsConst() const noexcept override;
-
-            virtual bool IsVolatile() const noexcept override;
-
-            virtual bool IsLValueReference() const noexcept override;
-
-            virtual bool IsRValueReference() const noexcept override;
-
-            virtual bool IsArray() const noexcept override;
-
-            virtual size_t GetArrayRank() const noexcept override;
-
-            virtual size_t GetArraySize(size_t dimension = 0) const noexcept override;
-
-            virtual const Type* GetNext() const noexcept override;
-
-        protected:
-
-            virtual const std::type_info& GetCommonTypeInfo() const noexcept override;
+            bool is_rvalue_reference_ : 1;              ///< \brief Whether the type is a r-value reference.
 
         };
 
         /// \brief Get the type associated to TType.
         /// \return Returns a reference to the type associated to TType.
         template <typename TType>
-        const Type& TypeOf();
+        constexpr const Type& TypeOf();
 
         /// \brief Stream insertion for Type.
         std::ostream& operator<<(std::ostream& out, const Type& type);
@@ -173,124 +135,42 @@ namespace syntropy {
 
 }
 
-namespace syntropy {
+// Implementation
 
-    namespace reflection {
+namespace syntropy
+{
+    namespace reflection
+    {
 
-        // Implementation
-
-        //////////////// TYPE ////////////////
+        /************************************************************************/
+        /* TYPE                                                                 */
+        /************************************************************************/
 
         template <typename TType>
-        inline const Type& Type::GetType() {
-
-            static TypeT<TType> type;
-
+        static constexpr const Type& Type::GetType()
+        {
+            static Type type(tag<TType>);
             return type;
-
-        }
-
-        //////////////// TYPE :: TYPE T ////////////////
-
-        template <typename TType>
-        inline const Class& Type::TypeT<TType>::GetClass() const {
-
-            return ClassOf<TType>();
-
         }
 
         template <typename TType>
-        const std::type_info& Type::TypeT<TType>::GetTypeInfo() const noexcept {
-
-            return typeid(TType);
-
+        constexpr Type::Type(tag_t<TType>)
+            : class_(ClassOf<TType>())
+            , array_size_(std::begin(array_extents<TType>::value), std::end(array_extents<TType>::value))
+            , indirection_levels_(static_cast<int8_t>(indirection_levels_v<TType>))
+            , const_mask_(static_cast<int8_t>(predicate_mask_v<std::is_const, TType>))
+            , volatile_mask_(static_cast<int8_t>(predicate_mask_v<std::is_volatile, TType>))
+            , is_lvalue_reference_(std::is_lvalue_reference_v<TType>)
+            , is_rvalue_reference_(std::is_rvalue_reference_v<TType>)
+        {
+            static_assert(indirection_levels_v<TType> < 8 * sizeof(const_mask_), "Too many levels of indirection.");
+            static_assert(indirection_levels_v<TType> < 8 * sizeof(volatile_mask_), "Too many levels of indirection.");
         }
 
         template <typename TType>
-        inline bool Type::TypeT<TType>::IsPointer() const noexcept {
-
-            return std::is_pointer<TType>::value;
-
-        }
-
-        template <typename TType>
-        inline bool Type::TypeT<TType>::IsConst() const noexcept {
-
-            return std::is_const<TType>::value;
-
-        }
-
-        template <typename TType>
-        inline bool Type::TypeT<TType>::IsVolatile() const noexcept {
-
-            return std::is_volatile<TType>::value;
-
-        }
-
-        template <typename TType>
-        inline bool Type::TypeT<TType>::IsLValueReference() const noexcept {
-
-            return std::is_lvalue_reference<TType>::value;
-
-        }
-
-        template <typename TType>
-        inline bool Type::TypeT<TType>::IsRValueReference() const noexcept {
-
-            return std::is_rvalue_reference<TType>::value;
-
-        }
-
-        template <typename TType>
-        inline bool Type::TypeT<TType>::IsArray() const noexcept {
-
-            return std::is_array<TType>::value;
-
-        }
-
-        template <typename TType>
-        inline size_t Type::TypeT<TType>::GetArrayRank() const noexcept {
-
-            return std::rank<TType>::value;
-
-        }
-
-        template <typename TType>
-        inline size_t Type::TypeT<TType>::GetArraySize(size_t /*dimension*/) const noexcept{
-
-            return std::extent<TType, 0>::value;
-
-        }
-
-        template <typename TType>
-        inline const Type* Type::TypeT<TType>::GetNext() const noexcept {
-
-            using TSubType = std::conditional_t<std::is_array<TType>::value || std::is_reference<TType>::value,
-                                                std::remove_all_extents_t<std::remove_reference_t<TType>>,          // Remove references and extents from the outermost level (mutually exclusive)
-                                                std::conditional_t<std::is_pointer<TType>::value,
-                                                                   std::remove_pointer_t<TType>,                    // Remove a pointer level (removes qualifiers as well)
-                                                                   std::remove_cv_t<TType>>>;                       // Remove const and volatile qualifiers from the innermost level
-
-            return is_class_name_v<TSubType> ?
-                   nullptr :
-                   std::addressof(TypeOf<TSubType>());
-
-        }
-
-        template <typename TType>
-        inline const std::type_info& Type::TypeT<TType>::GetCommonTypeInfo() const noexcept {
-
-            return typeid(replace_class_name_t<TType, int>);   
-
-        }
-        
-        //////////////// TYPE OF ////////////////
-
-        template <typename TType>
-        const Type& TypeOf() {
-
+        constexpr const Type& TypeOf()
+        {
             return Type::GetType<TType>();
-
         }
 
     }

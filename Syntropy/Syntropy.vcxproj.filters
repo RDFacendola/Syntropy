@@ -7,12 +7,6 @@
     <ClInclude Include="include\reflection\class.h">
       <Filter>reflection</Filter>
     </ClInclude>
-    <ClInclude Include="include\reflection\fundamental_types.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="include\reflection\method.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
     <ClInclude Include="include\reflection\property.h">
       <Filter>reflection</Filter>
     </ClInclude>
@@ -23,9 +17,6 @@
       <Filter>reflection</Filter>
     </ClInclude>
     <ClInclude Include="include\syntropy.h" />
-    <ClInclude Include="include\reflection\stl_types.h" />
-    <ClInclude Include="include\reflection\template_types.h" />
-    <ClInclude Include="include\reflection\core_types.h" />
     <ClInclude Include="include\containers\hashed_string.h">
       <Filter>hash</Filter>
     </ClInclude>
@@ -37,7 +28,6 @@
     <ClInclude Include="include\macro.h" />
     <ClInclude Include="include\platform\compiler\msvc.h" />
     <ClInclude Include="include\platform\os\windows_os.h" />
-    <ClInclude Include="include\diagnostics\debug.h" />
     <ClInclude Include="include\algorithm.h" />
     <ClInclude Include="include\date.h" />
     <ClInclude Include="include\memory\memory.h" />
@@ -60,17 +50,23 @@
     <ClInclude Include="include\memory\memory_manager.h" />
     <ClInclude Include="include\serialization\serialization.h" />
     <ClInclude Include="include\containers\range.h" />
-    <ClInclude Include="include\reflection\class_interfaces.h" />
-    <ClInclude Include="include\reflection\property_interfaces.h" />
     <ClInclude Include="include\containers\interface_container.h" />
     <ClInclude Include="include\reflection\any.h" />
     <ClInclude Include="include\cpp17.h" />
     <ClInclude Include="include\utility.h" />
     <ClInclude Include="include\diagnostics\log_channels.h" />
-    <ClInclude Include="include\diagnostics\log_manager.h" />
     <ClInclude Include="include\diagnostics\diagnostics_meta.h" />
     <ClInclude Include="include\platform\os\os.h" />
     <ClInclude Include="include\platform\compiler\compiler.h" />
+    <ClInclude Include="include\reflection\types\core_types.h" />
+    <ClInclude Include="include\reflection\types\stl_types.h" />
+    <ClInclude Include="include\reflection\types\fundamental_types.h">
+      <Filter>reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="include\reflection\interfaces\property_interfaces.h" />
+    <ClInclude Include="include\reflection\interfaces\class_interfaces.h" />
+    <ClInclude Include="include\platform\macros.h" />
+    <ClInclude Include="include\diagnostics\assert.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -89,7 +85,6 @@
     <ClCompile Include="src\diagnostics\log.cpp" />
     <ClCompile Include="src\diagnostics\diagnostics.cpp" />
     <ClCompile Include="src\platform\os\windows_os.cpp" />
-    <ClCompile Include="src\diagnostics\debug.cpp" />
     <ClCompile Include="src\date.cpp" />
     <ClCompile Include="src\memory\memory.cpp" />
     <ClCompile Include="src\platform\system.cpp" />
@@ -110,7 +105,6 @@
     <ClCompile Include="src\serialization\serialization.cpp" />
     <ClCompile Include="src\reflection\any.cpp" />
     <ClCompile Include="src\diagnostics\log_channels.cpp" />
-    <ClCompile Include="src\diagnostics\log_manager.cpp" />
     <ClCompile Include="src\diagnostics\diagnostics_meta.cpp" />
   </ItemGroup>
   <ItemGroup>

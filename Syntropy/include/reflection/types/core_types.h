@@ -6,30 +6,32 @@
 
 #pragma once
 
-#include "class.h"
-
 #include "containers/hashed_string.h"
 
-namespace syntropy {
+#include "reflection/class.h"
 
-    namespace reflection {
+namespace syntropy
+{
 
-        //////////////// SYNTROPY::HASHEDSTRING ////////////////
+    namespace reflection
+    {
+
+        /************************************************************************/
+        /* HASHED STRING                                                        */
+        /************************************************************************/
 
         template <>
-        struct ClassDeclaration<HashedString> {
-
+        struct ClassDeclaration<HashedString>
+        {
             static constexpr const char* GetName() noexcept
             {
                 return "syntropy::HashedString";
             }
 
-            template <typename TDefinition>
-            void operator()(TDefinition definition) const
+            void operator()(ClassDefinitionT<HashedString> definition) const
             {
                 definition.DefineNameAlias("HashedString");
             }
-
         };
 
     }

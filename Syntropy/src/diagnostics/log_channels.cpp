@@ -26,10 +26,10 @@ namespace syntropy
         const char StreamLogChannel::kTokenStart = '{';
         const char StreamLogChannel::kTokenEnd = '}';
 
-        StreamLogChannel::StreamLogChannel(const Configuration& configuration)
-            : LogChannel(configuration.contexts_, configuration.verbosity_)
+        StreamLogChannel::StreamLogChannel(const std::string& format, std::vector<Context> contexts, Severity verbosity)
+            : LogChannel(std::move(contexts), verbosity)
         {
-            UpdateThunks(configuration.format_);
+            UpdateThunks(format);
         }
 
         void StreamLogChannel::UpdateThunks(const std::string& format)
@@ -122,15 +122,10 @@ namespace syntropy
         /* FILE LOG CHANNEL                                                     */
         /************************************************************************/
 
-        FileLogChannel::FileLogChannel(const Configuration& configuration)
-            : StreamLogChannel(StreamLogChannel::Configuration
-            {
-                  configuration.format_
-                , configuration.contexts_
-                , configuration.verbosity_
-            })
+        FileLogChannel::FileLogChannel(const std::string& file, const std::string& format, std::vector<Context> contexts, Severity verbosity)
+            : StreamLogChannel(format, std::move(contexts), verbosity)
         {
-            file_stream_.open(configuration.file_);
+            file_stream_.open(file);
         }
 
         FileLogChannel::~FileLogChannel()
@@ -143,11 +138,5 @@ namespace syntropy
             return file_stream_;
         }
 
-    }
-
-    namespace reflection
-    {
-        const Class& ClassOf_StreamLogChannel(ClassOf<diagnostics::StreamLogChannel>());
-        const Class& ClassOf_FileLogChannel(ClassOf<diagnostics::FileLogChannel>());
     }
 }
