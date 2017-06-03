@@ -16,8 +16,9 @@
 #include "reflection/types/core_types.h"
 #include "reflection/types/stl_types.h"
 
-#include "serialization/json.h"
-#include "serialization/json/json_deserializer.h"
+#include "serialization/json/json.h"
+#include "serialization/json/deserializers/stl_deserializers.h"
+#include "serialization/json/deserializers/core_deserializers.h"
 
 #include "nlohmann/json/src/json.hpp"
 
@@ -358,9 +359,9 @@ public:
     template <typename TDefinition>
     void operator()(TDefinition& definition) const {
 
-        using syntropy::serialization::JSONRead;
+        using syntropy::serialization::JSONProperty;
 
-        definition.DefineProperty("blob", &Blob::blob_) << JSONRead();
+        definition.DefineProperty("blob", &Blob::blob_) << JSONProperty();
     }
 
 };
@@ -379,10 +380,10 @@ public:
     template <typename TDefinition>
     void operator()(TDefinition& definition) const {
 
-        using syntropy::serialization::JSONRead;
+        using syntropy::serialization::JSONProperty;
 
         definition.DefineBaseClass<Blob>();
-        definition.DefineProperty("derived_blob", &DerivedBlob::derived_blob_) << JSONRead();
+        definition.DefineProperty("derived_blob", &DerivedBlob::derived_blob_) << JSONProperty();
 
     }
 
@@ -413,7 +414,7 @@ public:
 
     void operator()(ClassDefinitionT<NonDefaultFoo>& definition) const
     {
-        definition << syntropy::serialization::JSONConstruct();
+        definition << syntropy::serialization::JSONClass();
     }
 
 };
@@ -431,48 +432,48 @@ public:
 
     void operator()(ClassDefinitionT<Foo>& definition) const {
         
-        using syntropy::serialization::JSONRead;
+        using syntropy::serialization::JSONProperty;
 
         definition.DefineBaseClass<Bar>();
 
-        definition.DefineProperty("string_value", &Foo::string_) << JSONRead();
-        definition.DefineProperty("wstring_value", &Foo::wstring_) << JSONRead();
+        definition.DefineProperty("string_value", &Foo::string_) << JSONProperty();
+        definition.DefineProperty("wstring_value", &Foo::wstring_) << JSONProperty();
 
-        definition.DefineProperty("p_blob", &Foo::p_blob_) << JSONRead();
-        definition.DefineProperty("u_blob", &Foo::u_blob_) << JSONRead();
-        definition.DefineProperty("s_blob", &Foo::s_blob_) << JSONRead();
+        definition.DefineProperty("p_blob", &Foo::p_blob_) << JSONProperty();
+        definition.DefineProperty("u_blob", &Foo::u_blob_) << JSONProperty();
+        definition.DefineProperty("s_blob", &Foo::s_blob_) << JSONProperty();
         
-        definition.DefineProperty("float_value", &Foo::value_) << JSONRead();
+        definition.DefineProperty("float_value", &Foo::value_) << JSONProperty();
 
-        definition.DefineProperty("int_value", &Foo::value2_) << JSONRead();
+        definition.DefineProperty("int_value", &Foo::value2_) << JSONProperty();
         definition.DefineProperty("const_value", &Foo::const_value_) /*<< JSONRead()*/;
-        definition.DefineProperty("pointer", &Foo::pointer_) << JSONRead();
-        definition.DefineProperty("pointer_to_const", &Foo::pointer_to_const_) << JSONRead();
+        definition.DefineProperty("pointer", &Foo::pointer_) << JSONProperty();
+        definition.DefineProperty("pointer_to_const", &Foo::pointer_to_const_) << JSONProperty();
         definition.DefineProperty("const_pointer", &Foo::const_pointer_) /*<< JSONRead()*/;
-        definition.DefineProperty("boolean", &Foo::boolean_) << JSONRead();
-        definition.DefineProperty("vector_int", &Foo::vector_int_) << JSONRead();
-        definition.DefineProperty("map", &Foo::map_) << JSONRead();
+        definition.DefineProperty("boolean", &Foo::boolean_) << JSONProperty();
+        definition.DefineProperty("vector_int", &Foo::vector_int_) << JSONProperty();
+        definition.DefineProperty("map", &Foo::map_) << JSONProperty();
 
-        definition.DefineProperty("nondefault", &Foo::nondefault_) << JSONRead();
+        definition.DefineProperty("nondefault", &Foo::nondefault_) << JSONProperty();
 
         definition.DefineProperty("blob_value", &Foo::blob_);
         
-        definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue) << JSONRead();
+        definition.DefineProperty("Value", &Foo::GetValue, &Foo::SetValue) << JSONProperty();
         definition.DefineProperty("ConstValue", &Foo::GetConstValue) /*<< JSONRead()*/;
-        definition.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer) << JSONRead();
-        definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst) << JSONRead();
+        definition.DefineProperty("Pointer", &Foo::GetPointer, &Foo::SetPointer) << JSONProperty();
+        definition.DefineProperty("PointerToConst", &Foo::GetPointerToConst, &Foo::SetPointerToConst) << JSONProperty();
         definition.DefineProperty("ConstPointer", &Foo::GetConstPointer) /*<< JSONRead()*/;
-        definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob) << JSONRead();
-        definition.DefineProperty("UBlob", &Foo::GetUBlob, &Foo::SetUBlob) << JSONRead();
+        definition.DefineProperty("Blob", &Foo::GetBlob, &Foo::SetBlob) << JSONProperty();
+        definition.DefineProperty("UBlob", &Foo::GetUBlob, &Foo::SetUBlob) << JSONProperty();
        
 
         definition.DefineProperty("Accessor",
                                   static_cast<const Blob&(Foo::*)() const>(&Foo::GetAccessor), 
-                                  static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor)) << JSONRead();
+                                  static_cast<Blob&(Foo::*)()>(&Foo::GetAccessor)) << JSONProperty();
 
         definition.DefineProperty("UBlobAccessor",
                                   static_cast<const std::unique_ptr<Blob>&(Foo::*)() const>(&Foo::GetUBlobAccessor), 
-                                  static_cast<std::unique_ptr<Blob>&(Foo::*)()>(&Foo::GetUBlobAccessor)) << JSONRead();
+                                  static_cast<std::unique_ptr<Blob>&(Foo::*)()>(&Foo::GetUBlobAccessor)) << JSONProperty();
 
 
         //definition.DefineProperty("Toxic", &Blob::blob_);   // Declaring Blob stuffs inside Foo

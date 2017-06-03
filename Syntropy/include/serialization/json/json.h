@@ -10,14 +10,11 @@
 
 #include "type_traits.h"
 
-#include "memory/memory_manager.h"
-
 #include "serialization/serialization.h"
 
 #include "diagnostics/log.h"
 
 #include "reflection/reflection.h"
-#include "reflection/class.h"
 #include "reflection/any.h"
 
 #include "nlohmann/json/src/json.hpp"
@@ -34,25 +31,18 @@ namespace syntropy
         const reflection::Class* GetClassFromJSON(const nlohmann::json& json, const reflection::Class* base_class = nullptr);
 
         /// \brief Deserialize an object from JSON.
-        /// Correct polymorphic behaviour is guaranteed only if TType is a pointer type.
+        /// If TType is a pointer, this method guarantees polymorphism.
         /// \return Returns a deserialized object from JSON. If such object could not be deserialized, returns an empty object.
         template <typename TType>
         std::optional<TType> DeserializeObjectFromJSON(const nlohmann::json& json);
 
-        /// \brief Deserialize an object from JSON.
-        /// If the object could not be deserialized, the provided object is left untouched.
-        /// Correct polymorphic behaviour is guaranteed only if TType is a pointer type.
-        /// \param object Object to deserialize onto.
-        /// \return Returns true if the object could be deserialized, returns false otherwise.
-        template <typename TType>
-        bool DeserializeObjectFromJSON(TType& object, const nlohmann::json& json);
-
         /// \brief Deserialize an object properties from JSON.
+        /// This method enumerates JSON properties and attempts to deserialize the corresponding object properties.
         /// \param object Object to deserialize the properties of.
         /// \param json JSON object to read.
-        /// \return Returns true if at least one property was deserialized by this method, returns false otherwise.
+        /// \return Returns the number of successfully deserialized properties.
         template <typename TType>
-        bool DeserializeObjectPropertiesFromJSON(TType& object, const nlohmann::json& json);
+        size_t DeserializeObjectFromJSON(TType& object, const nlohmann::json& json);
 
         /// \brief Property interface used to deserialize properties from a JSON object.
         /// \author Raffaele D. Facendola - September 2016
@@ -117,9 +107,9 @@ namespace syntropy
 
         };
 
-        /// \brief Functor object used to assign the interface JSONDeserializable to properties.
+        /// \brief Functor object used to give JSON capabilities to properties.
         /// \author Raffaele D. Facendola - September 2016
-        struct JSONRead 
+        struct JSONProperty 
         {
  
             /// \brief Add a JSONDeserializable interface to the provided property.
@@ -144,9 +134,9 @@ namespace syntropy
 
         };
 
-        /// \brief Functor object used to assign the interface JSONConstructible to classes.
+        /// \brief Functor object used to give JSON capabilities to classes.
         /// \author Raffaele D. Facendola - May 2017
-        struct JSONConstruct
+        struct JSONClass
         {
             /// \brief Add a JSONConstructible interface to the provided class.
             /// \param class_definition Definition of the class the interface will be added to.
@@ -155,7 +145,7 @@ namespace syntropy
         };
 
         /// \brief Functor used to deserialize an object from JSON.
-        /// Can be specialized for any object requiring JSON deserialization capabilities.
+        /// Can be specialized for any object requiring particular JSON deserialization capabilities.
         /// \author Raffaele D. Facendola - September 2016
         template <typename TType, typename = void>
         struct JSONDeserializerT
@@ -169,7 +159,7 @@ namespace syntropy
                 {
                     auto object = std::make_optional<TType>();
 
-                    if (DeserializeObjectPropertiesFromJSON(*object, json))
+                    if (DeserializeObjectFromJSON(*object, json) > 0)
                     {
                         return object;
                     }
@@ -185,11 +175,23 @@ namespace syntropy
         template <typename TType>
         constexpr JSONDeserializerT<TType> JSONDeserializer{};
 
-        /// \brief Functor used to deserialize a pointer to an object from JSON.
-        /// The actual concrete object instantiated by this functor depends on the class defined by the JSON itself.
-        /// \author Raffaele D. Facendola - September 2016
+    }
+
+}
+
+// Deserializers for fundamental types
+
+namespace syntropy
+{
+    namespace serialization
+    {
+
+        /************************************************************************/
+        /* POINTERS                                                             */
+        /************************************************************************/
+
         template <typename TType>
-        struct JSONDeserializerT<TType*, std::enable_if_t<!std::is_pointer<TType>::value>>
+        struct JSONDeserializerT<TType*, std::enable_if_t<!std::is_pointer<TType>::value> >
         {
             std::optional<TType*> operator()(const nlohmann::json& json) const
             {
@@ -199,7 +201,7 @@ namespace syntropy
 
                 if (concrete_class)
                 {
-                    // Use double dispatch to ensure that the concrete type is deserialized.
+                    // Use double dispatch to ensure that the concrete type is instantiated and deserialized.
 
                     auto json_constructible = concrete_class->GetInterface<JSONConstructible>();
 
@@ -214,14 +216,48 @@ namespace syntropy
                     }
                 }
 
-                // The object couldn't be deserialized.
+                return std::nullopt;
+            }
+        };
+
+        /************************************************************************/
+        /* BOOLEAN TYPES                                                        */
+        /************************************************************************/
+
+        template <>
+        struct JSONDeserializerT<bool>
+        {
+            std::optional<bool> operator()(const nlohmann::json& json) const
+            {
+                if (json.is_boolean())
+                {
+                    return json.get<bool>();
+                }
+                return std::nullopt;
+            }
+        };
+
+        /************************************************************************/
+        /* ARITHMETIC TYPES                                                     */
+        /************************************************************************/
+
+        template <typename TType>
+        struct JSONDeserializerT<TType, typename std::enable_if_t<std::is_arithmetic_v<TType> > >
+        {
+            std::optional<TType> operator()(const nlohmann::json& json) const
+            {
+                if (json.is_number())
+                {
+                    return json.get<TType>();
+                }
                 return std::nullopt;
             }
         };
 
     }
-
 }
+
+// Implementation
 
 namespace syntropy
 {
@@ -240,21 +276,7 @@ namespace syntropy
         }
 
         template <typename TType>
-        bool DeserializeObjectFromJSON(TType& object, const nlohmann::json& json)
-        {
-            auto deserialized_object = DeserializeObjectFromJSON<TType>(json);
-
-            if (deserialized_object)
-            {
-                object = std::move(*deserialized_object);
-                return true;
-            }
-
-            return false;
-        }
-
-        template <typename TType>
-        bool DeserializeObjectPropertiesFromJSON(TType& object, const nlohmann::json& json)
+        size_t DeserializeObjectFromJSON(TType& object, const nlohmann::json& json)
         {
             size_t deserialized_properties = 0;
 
@@ -273,7 +295,7 @@ namespace syntropy
                 }
             }
 
-            return deserialized_properties > 0;
+            return deserialized_properties;
         }
 
         /************************************************************************/
@@ -371,33 +393,33 @@ namespace syntropy
         }
 
         /************************************************************************/
-        /* JSON READ                                                            */
+        /* JSON PROPERTY                                                        */
         /************************************************************************/
 
         template <typename TClass, typename TField, typename... TAccessors>
-        void JSONRead::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TField(TClass::* field))
+        void JSONProperty::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TField(TClass::* field))
         {
             property.AddInterface<JSONDeserializable>(field);
         }
 
         template <typename TClass, typename TPropertyGetter, typename TPropertySetter, typename... TAccessors>
-        void JSONRead::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TPropertyGetter(TClass::*)() const, void (TClass::* setter)(TPropertySetter))
+        void JSONProperty::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TPropertyGetter(TClass::*)() const, void (TClass::* setter)(TPropertySetter))
         {
             property.AddInterface<JSONDeserializable>(setter);
         }
 
         template <typename TClass, typename TProperty, typename... TAccessors>
-        void JSONRead::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, const TProperty&(TClass::*)() const, TProperty& (TClass::* setter)())
+        void JSONProperty::operator()(reflection::PropertyDefinitionT<TAccessors...>& property, const TProperty&(TClass::*)() const, TProperty& (TClass::* setter)())
         {
             property.AddInterface<JSONDeserializable>(setter);
         }
 
         /************************************************************************/
-        /* JSON CONSTRUCT                                                       */
+        /* JSON CLASS                                                           */
         /************************************************************************/
 
         template <typename TClass>
-        void JSONConstruct::operator()(reflection::ClassDefinitionT<TClass>& class_definition) const
+        void JSONClass::operator()(reflection::ClassDefinitionT<TClass>& class_definition) const
         {
             class_definition.AddInterface<JSONConstructible>(tag_t<TClass>{});
         }

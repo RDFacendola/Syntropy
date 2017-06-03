@@ -1,6 +1,6 @@
 
 /// \file stl_types.h
-/// \brief This header is part of the syntropy reflection system. It contains the definition of all the SLT types.
+/// \brief This header is part of the syntropy reflection system. It exposes all the types supported by STL to the syntropy reflection system.
 ///
 /// \author Raffaele D. Facendola - 2016
 
@@ -27,6 +27,7 @@ namespace syntropy
         /************************************************************************/
         /* NULLPTR                                                              */
         /************************************************************************/
+
         template <>
         struct ClassDeclaration<std::nullptr_t>
         {

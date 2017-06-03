@@ -1,6 +1,6 @@
 
-/// \file deserializers.h
-/// \brief Contains functors used to deserialize JSON objects.
+/// \file stl_deserializers.h
+/// \brief This header is part of the syntropy serialization system. It contains deserializers for STL types.
 ///
 /// \author Raffaele D. Facendola - 2016
 
@@ -16,10 +16,9 @@
 #include <optional>
 
 #include "syntropy.h"
+#include "type_traits.h"
 
-#include "containers/hashed_string.h"
-
-#include "serialization/json.h"
+#include "serialization/json/json.h"
 
 namespace syntropy
 {
@@ -27,54 +26,9 @@ namespace syntropy
     {
 
         /************************************************************************/
-        /* POINTERS DESERIALIZATION                                             */
+        /* VECTOR                                                               */
         /************************************************************************/
 
-        /// \brief Functor used to deserialize an unique pointer to an object from JSON.
-        /// The actual concrete object instantiated by this functor depends on the class defined by the JSON itself.
-        /// \author Raffaele D. Facendola - September 2016
-        template <typename TType>
-        struct JSONDeserializerT<std::unique_ptr<TType>, std::enable_if_t<!std::is_pointer<TType>::value>>
-        {
-            std::optional<std::unique_ptr<TType>> operator()(const nlohmann::json& json) const
-            {
-                auto ptr = JSONDeserializer<TType*>(json);      // Deserialize as raw pointer
-
-                if (ptr)
-                {
-                    return std::unique_ptr<TType>(*ptr);        // Wrap inside an unique_ptr.
-                }
-
-                return std::nullopt;
-            }
-
-        };
-
-        /// \brief Functor used to deserialize a shared pointer to an object from JSON.
-        /// The actual concrete object instantiated by this functor depends on the class defined by the JSON itself.
-        /// \author Raffaele D. Facendola - September 2016
-        template <typename TType>
-        struct JSONDeserializerT<std::shared_ptr<TType>, std::enable_if_t<!std::is_pointer<TType>::value>>
-        {
-            std::optional<std::shared_ptr<TType>> operator()(const nlohmann::json& json) const
-            {
-                auto ptr = JSONDeserializer<TType*>(json);      // Deserialize as raw pointer
-
-                if (ptr)
-                {
-                    return std::shared_ptr<TType>(*ptr);        // Wrap inside a shared_ptr. Note: the control block won't be allocated near the object (we don't know the concrete type at compile time).
-                }
-
-                return std::nullopt;
-            }
-        };
-
-        /************************************************************************/
-        /* VECTOR DESERIALIZATION                                               */
-        /************************************************************************/
-
-        /// \brief Functor used to deserialize a vector of objects from JSON.
-        /// \author Raffaele D. Facendola - October 2016
         template <typename TType>
         struct JSONDeserializerT<std::vector<TType>>
         {
@@ -104,11 +58,15 @@ namespace syntropy
         };
 
         /************************************************************************/
-        /* SET DESERIALIZATION                                                  */
+        /* PAIR                                                                 */
         /************************************************************************/
 
-        /// \brief Functor used to deserialize a set of objects from JSON.
-        /// \author Raffaele D. Facendola - October 2016
+        /// ?
+
+        /************************************************************************/
+        /* SETS                                                                 */
+        /************************************************************************/
+
         template <typename TSet>
         struct JSONDeserializerT<TSet, std::enable_if_t<is_set_v<TSet>>>
         {
@@ -137,7 +95,7 @@ namespace syntropy
         };
 
         /************************************************************************/
-        /* MAP DESERIALIZATION                                                  */
+        /* MAPS                                                                 */
         /************************************************************************/
 
         /// \brief Functor used to deserialize a map of objects from JSON.
@@ -267,11 +225,9 @@ namespace syntropy
         };
 
         /************************************************************************/
-        /* STRING DESERIALIZATION                                               */
+        /* STRING                                                               */
         /************************************************************************/
 
-        /// \brief Functor used to deserialize a std::wstring from JSON.
-        /// \author Raffaele D. Facendola - October 2016
         template <>
         struct JSONDeserializerT<std::wstring>
         {
@@ -285,8 +241,6 @@ namespace syntropy
             }
         };
 
-        /// \brief Functor used to deserialize a std::string from JSON.
-        /// \author Raffaele D. Facendola - October 2016
         template <>
         struct JSONDeserializerT<std::string>
         {
@@ -300,51 +254,39 @@ namespace syntropy
             }
         };
 
-        /// \brief Functor used to deserialize a HashedString from JSON.
-        /// \author Raffaele D. Facendola - November 2016
-        template <>
-        struct JSONDeserializerT<HashedString>
-        {
-            std::optional<HashedString> operator()(const nlohmann::json& json) const
-            {
-                if (json.is_string())
-                {
-                   return HashedString(json.get<std::string>());
-                }
-                return std::nullopt;
-            }
-        };
-
         /************************************************************************/
-        /* FUNDAMENTAL TYPES DESERIALIZATION                                    */
+        /* SMART POINTERS                                                       */
         /************************************************************************/
 
-        /// \brief Functor used to deserialize a boolean variable from JSON.
-        /// \author Raffaele D. Facendola - October 2016
-        template <>
-        struct JSONDeserializerT<bool>
-        {
-            std::optional<bool> operator()(const nlohmann::json& json) const
-            {
-                if (json.is_boolean())
-                {
-                    return json.get<bool>();
-                }
-                return std::nullopt;
-            }
-        };
-
-        /// \brief Functor used to deserialize a numeric variable from JSON.
-        /// \author Raffaele D. Facendola - September 2016
         template <typename TType>
-        struct JSONDeserializerT<TType, typename std::enable_if_t<std::is_arithmetic_v<TType>>>
+        struct JSONDeserializerT<std::unique_ptr<TType> >
         {
-            std::optional<TType> operator()(const nlohmann::json& json) const
+            std::optional<std::unique_ptr<TType>> operator()(const nlohmann::json& json) const
             {
-                if (json.is_number())
+                auto ptr = JSONDeserializer<TType*>(json);      // Deserialize as raw pointer
+
+                if (ptr)
                 {
-                    return json.get<TType>();
+                    return std::unique_ptr<TType>(*ptr);        // Wrap inside an unique_ptr.
                 }
+
+                return std::nullopt;
+            }
+
+        };
+
+        template <typename TType>
+        struct JSONDeserializerT<std::shared_ptr<TType> >
+        {
+            std::optional<std::shared_ptr<TType>> operator()(const nlohmann::json& json) const
+            {
+                auto ptr = JSONDeserializer<TType*>(json);      // Deserialize as raw pointer
+
+                if (ptr)
+                {
+                    return std::shared_ptr<TType>(*ptr);        // Wrap inside a shared_ptr. Note: the control block won't be allocated near the object (we don't know the concrete type at compile time).
+                }
+
                 return std::nullopt;
             }
         };

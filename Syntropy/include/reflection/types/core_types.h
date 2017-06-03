@@ -1,6 +1,6 @@
 
 /// \file core_types.h
-/// \brief This header is part of the syntropy reflection system. It contains the definition of all the core types of syntropy.
+/// \brief This header is part of the syntropy reflection system. It exposes all the types supported by syntropy to the syntropy reflection system.
 ///
 /// \author Raffaele D. Facendola - 2016
 

@@ -12,8 +12,8 @@
 #include "reflection/class.h"
 #include "reflection/types/core_types.h"
 
-#include "serialization/json.h"
-#include "serialization/json/json_deserializer.h"
+#include "serialization/json/json.h"
+#include "serialization/json/deserializers/stl_deserializers.h"
 
 namespace syntropy
 {
@@ -33,7 +33,7 @@ namespace syntropy
 
             void operator()(ClassDefinitionT<diagnostics::Context>& definition) const
             {
-                definition << serialization::JSONConstruct();
+                definition << serialization::JSONClass();
             }
         };
 
@@ -48,7 +48,7 @@ namespace syntropy
 
             void operator()(ClassDefinitionT<diagnostics::Context>& definition) const
             {
-                definition << serialization::JSONConstruct();
+                definition << serialization::JSONClass();
             }
         };
 
@@ -98,7 +98,7 @@ namespace syntropy
 
             void operator()(ClassDefinitionT<diagnostics::FileLogChannel>& definition) const
             {
-                definition << serialization::JSONConstruct();
+                definition << serialization::JSONClass();
 
                 definition.DefineNameAlias("FileLogChannel");
 
