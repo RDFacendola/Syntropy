@@ -6,10 +6,6 @@
 
 #pragma once
 
-#ifdef _MSC_VER
-
-#include <intrin.h>
-
 /// \brief Expands to the current file name.
 #define SYNTROPY_FILE \
     __FILE__
@@ -17,6 +13,12 @@
 /// \brief Expands to the current line number.
 #define SYNTROPY_LINE \
     __LINE__
+
+// MSVC-specific macros
+
+#ifdef _MSC_VER
+
+#include <intrin.h>
 
 /// \brief Expands to the current function name.
 #define SYNTROPY_FUNCTION \

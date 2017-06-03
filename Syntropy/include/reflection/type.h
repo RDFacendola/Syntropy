@@ -26,7 +26,7 @@ namespace syntropy
         /// \brief Describes a type.
         /// A 'type' is made out of class names, pointers, qualifiers, references and\or extents.
         /// A type has exactly one class name and it may describe a reference, an array or a value, but not both at the same time.
-        /// The class supports multiple level of (qualified) indirections.
+        /// The class supports multiple levels of (qualified) indirection.
         /// \remarks This class is a singleton.
         /// \author Raffaele D. Facendola - August 2016
         class Type
@@ -62,7 +62,7 @@ namespace syntropy
 
             /// \brief Check whether a variable of this type can be converted to another type.
             /// The check doesn't account for implicit type conversion but will account for polymorphism.
-            /// This method will check for level of indirections and cv qualifiers.
+            /// This method will check for levels of indirection and cv qualifiers.
             /// Example: TypeOf<int*>().IsConvertibleTo(TypeOf<float*>()) yields false whereas TypeOf<Cat*>().IsConvertibleTo(TypeOf<const Animal*>()) yields true.
             /// \return Returns true if a variable of this type can be statically assigned to a variable of type other, returns false otherwise.
             bool IsConvertibleTo(const Type& other) const noexcept;

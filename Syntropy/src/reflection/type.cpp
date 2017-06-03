@@ -25,9 +25,9 @@ namespace syntropy
         {
             return GetClass().IsA(other.GetClass()) &&                                  // The class must be the same or a base class.
                 array_size_ == other.array_size_ &&                                     // Rank and array size must be the same in each dimension.
-                indirection_levels_ == other.indirection_levels_ &&                     // Both types must have the same level of indirection.
-                (const_mask_ & ~other.const_mask_) == 0 &&                              // Const qualifiers must be preserved (a const cannot become non-const).
-                (volatile_mask_ & ~other.volatile_mask_) == 0;                          // Volatile qualifiers must be preserved (a volatile cannot become non-volatile).
+                indirection_levels_ == other.indirection_levels_ &&                     // Both types must have the same levels of indirection.
+                (const_mask_ & ~other.const_mask_) == 0 &&                              // Const qualifiers must be preserved (const cannot become non-const).
+                (volatile_mask_ & ~other.volatile_mask_) == 0;                          // Volatile qualifiers must be preserved (volatile cannot become non-volatile).
         }
 
         const Class& Type::GetClass() const
