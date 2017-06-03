@@ -46,7 +46,7 @@ namespace syntropy
 
                         if (item)
                         {
-                            vector->push_back(*std::move(item));
+                            vector->push_back(std::move(*item));
                         }
                     }
 
@@ -56,12 +56,6 @@ namespace syntropy
                 return std::nullopt;
             }
         };
-
-        /************************************************************************/
-        /* PAIR                                                                 */
-        /************************************************************************/
-
-        /// ?
 
         /************************************************************************/
         /* SETS                                                                 */
@@ -83,7 +77,7 @@ namespace syntropy
 
                         if (item)
                         {
-                            set->emplace(*std::move(item));
+                            set->emplace(std::move(*item));
                         }
                     }
 
@@ -98,11 +92,6 @@ namespace syntropy
         /* MAPS                                                                 */
         /************************************************************************/
 
-        /// \brief Functor used to deserialize a map of objects from JSON.
-        /// This functor supports deserialization from either an array or an object:
-        /// In the first case, each element is deserialized as a map entry. One of its field (kIdToken) is used as a key.
-        /// In the second case, each object property is interpreted as a key-value pair, where the key is the property name and the value is the deserialized object value.
-        /// \author Raffaele D. Facendola - October 2016
         template <typename TMap>
         struct JSONDeserializerT<TMap, std::enable_if_t<is_map_v<TMap>>>
         {
@@ -113,11 +102,11 @@ namespace syntropy
             {
                 if (json.is_array())
                 {
-                    return DeserializeFromArray(json);
+                    return DeserializeFromArray(json);      // Store each element as a map entry. One field is used as key (kIdToken).
                 }
                 else if (json.is_object())
                 {
-                    return DeserializeFromObject(json);
+                    return DeserializeFromObject(json);     // Store each property as a map entry. The key is the property name, the value is the deserialized property value.
                 }
 
                 return std::nullopt;
@@ -136,7 +125,7 @@ namespace syntropy
                 static void Delete(std::optional<TType>&) {}
             };
 
-            /// \brief Specialization for pointer types
+            /// \brief Specialization for pointer types.
             template <typename TType>
             struct Deleter<TType*>
             {
@@ -149,7 +138,7 @@ namespace syntropy
                 }
             };
 
-            /// \brief Key-value pair deserializer for keys that are not convertible from string. Does nothing.
+            /// \brief Key-value pair deserializer for keys that are not constructible from string. Does nothing.
             template <typename TTKey, typename = void>
             struct KeyValuePairDeserializer
             {
@@ -161,7 +150,7 @@ namespace syntropy
 
             /// \brief Key-value pair deserializer for keys that can be converted from strings.
             template <typename TTKey>
-            struct KeyValuePairDeserializer<TTKey, std::enable_if_t<std::is_constructible_v<TKey, nlohmann::json::string_t>>>
+            struct KeyValuePairDeserializer<TTKey, std::enable_if_t<std::is_constructible_v<TKey, nlohmann::json::object_t::key_type>>>
             {
                 std::optional<TMap> operator()(const nlohmann::json& json) const
                 {
@@ -173,7 +162,7 @@ namespace syntropy
 
                         if (value)
                         {
-                            map->insert(std::make_pair(json_property.key(), *std::move(value)));
+                            map->insert(std::make_pair(json_property.key(), std::move(*value)));
                         }
                     }
 
@@ -201,10 +190,11 @@ namespace syntropy
 
                             if (key && value)
                             {
-                                map->insert(std::make_pair(*std::move(key), *std::move(value)));
+                                map->insert(std::make_pair(std::move(*key), std::move(*value)));
                             }
                             else
                             {
+                                // If either the key or the value couldn't be deserialized, the entire pair is discarded and deleted.
                                 Deleter<TKey>::Delete(key);
                                 Deleter<TValue>::Delete(value);
                             }
