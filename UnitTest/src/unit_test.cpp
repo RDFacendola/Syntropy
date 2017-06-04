@@ -56,10 +56,9 @@ int main()
 
     SYNTROPY_UNUSED(syntropy::reflection::ClassOf<FileLogChannel>());
 
-    LogManager::GetInstance().ImportConfiguration("log.cfg");
+    syntropy::diagnostics::ImportLogConfigurationFromJSON("log.cfg");
 
     auto& mm = syntropy::MemoryManager::GetInstance();
-
 
     Tester t;
     t.Do();

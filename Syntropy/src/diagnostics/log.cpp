@@ -76,29 +76,6 @@ namespace syntropy
             return instance;
         }
 
-        bool LogManager::ImportConfiguration(const std::string& path)
-        {
-            // Read the file inside the JSON object.
-
-            std::ifstream file(path);
-
-            nlohmann::json json;
-
-            file >> json;
-
-            //Deserialize the channel list.
-
-            auto channels = serialization::DeserializeObjectFromJSON<decltype(channels_)>(json);
-
-            if (channels && !channels->empty())
-            {
-                channels_ = std::move(*channels);
-                return true;
-            }
-
-            return false;
-        }
-
         void LogManager::Send(const LogMessage& log_message)
         {
             std::unique_lock<std::recursive_mutex> lock(mutex_);
@@ -129,5 +106,29 @@ namespace syntropy
             return LogManager::GetInstance();
         }
 
+        bool ImportLogConfigurationFromJSON(const std::string& path)
+        {
+            // Read the file inside the JSON object.
+
+            std::ifstream file(path);
+
+            nlohmann::json json;
+
+            file >> json;
+
+            //Deserialize the channel list.
+
+            auto channels = serialization::DeserializeObjectFromJSON<std::vector<std::unique_ptr<LogChannel> > >(json);
+
+            if (channels)
+            {
+                for (auto&& channel : *channels)
+                {
+                    GetLogManager().AddChannel<>(std::move(channel));
+                }
+            }
+
+            return channels && !channels->empty();
+        }
     }
 }

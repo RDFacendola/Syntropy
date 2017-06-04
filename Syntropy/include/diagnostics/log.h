@@ -146,17 +146,20 @@ namespace syntropy
             /// \brief Get the log manager instance.
             static LogManager& GetInstance();
 
-            /// \brief Import a new configuration for the log manager.
-            /// \param path Path of the file containing the configuration.
-            /// \return Returns true if the configuration could be imported successfully, returns false otherwise.
-            bool ImportConfiguration(const std::string& path);
-
             /// \brief Create new log channel.
             /// \tparam TLogChannel Type of channel to create. Must derive from LogChannel.
             /// \param args Arguments passed to the channel's constructor.
             /// \return Returns a reference to the new channel.
             template <typename TLogChannel, typename... TArgs>
             const TLogChannel& CreateChannel(TArgs&&... args);
+
+            /// \brief Add a log channel to the manager.
+            /// The manager takes ownership of the channel as a result of this method.
+            /// \tparam TLogChannel Type of channel to create. Must derive from LogChannel.
+            /// \param channel Channel to add to the manager.
+            /// \return Returns a reference to the added channel.
+            template <typename TLogChannel = LogChannel>
+            const TLogChannel& AddChannel(std::unique_ptr<TLogChannel> channel);
 
             /// \brief Send a log message.
             /// \param log_message Log message to send.
@@ -177,6 +180,12 @@ namespace syntropy
 
         /// \brief Get a reference to the LogManager singleton.
         LogManager& GetLogManager();
+
+        /// \brief Import a log manager configuration from a JSON file.
+        /// Existing log channels are preserved: avoid importing the same file more than once.
+        /// \param Path of the file containing the configuration.
+        /// \return Returns true if the configuration could be imported successfully, returns false otherwise.
+        bool ImportLogConfigurationFromJSON(const std::string& path);
 
     }
 }
@@ -209,14 +218,28 @@ namespace syntropy
         /* LOG MANAGER                                                          */
         /************************************************************************/
 
-        template <typename TLogStream, typename... TArgs>
-        const TLogStream& LogManager::CreateChannel(TArgs&&... args)
+        template <typename TLogChannel, typename... TArgs>
+        const TLogChannel& LogManager::CreateChannel(TArgs&&... args)
         {
+            static_assert(std::is_base_of_v<LogChannel, TLogChannel>, "TLogChannel must derive from LogChannel");
+
             std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-            channels_.emplace_back(std::make_unique<TLogStream>(std::forward<TArgs>(args)...));
+            channels_.emplace_back(std::make_unique<TLogChannel>(std::forward<TArgs>(args)...));
 
-            return *static_cast<TLogStream*>(channels_.back().get());
+            return *static_cast<TLogChannel*>(channels_.back().get());
+        }
+
+        template <typename TLogChannel>
+        const TLogChannel& LogManager::AddChannel(std::unique_ptr<TLogChannel> channel)
+        {
+            static_assert(std::is_base_of_v<LogChannel, TLogChannel>, "TLogChannel must derive from LogChannel");
+
+            std::unique_lock<std::recursive_mutex> lock(mutex_);
+
+            channels_.emplace_back(std::move(channel));
+
+            return *static_cast<TLogChannel*>(channels_.back().get());
         }
 
     }
