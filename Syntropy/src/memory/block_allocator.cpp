@@ -1,4 +1,4 @@
-#include "memory/block_allocator.h"
+#include "memory/allocators/block_allocator.h"
 
 #include "platform/system.h"
 #include "diagnostics/assert.h"
@@ -174,6 +174,14 @@ namespace syntropy
         : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
         , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
         , free_list_(nullptr)
+    {
+
+    }
+
+    StaticBlockAllocator::StaticBlockAllocator(StaticBlockAllocator&& other)
+        : block_size_(other.block_size_)
+        , allocator_(std::move(other.allocator_))
+        , free_list_(other.free_list_)
     {
 
     }

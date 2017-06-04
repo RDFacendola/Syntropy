@@ -8,8 +8,9 @@
 
 #include <memory>
 
-#include "memory.h"
-#include "segregated_allocator.h"
+#include "memory/memory.h"
+
+#include "memory/allocators/segregated_allocator.h"
 
 namespace syntropy
 {

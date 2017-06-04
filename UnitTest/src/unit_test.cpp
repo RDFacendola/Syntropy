@@ -15,16 +15,20 @@
 
 #include "memory/memory.h"
 #include "memory/memory_units.h"
-
-#include "memory/std_allocator.h"
-#include "memory/segregated_allocator.h"
-#include "memory/stack_allocator.h"
-#include "memory/master_allocator.h"
 #include "memory/memory_manager.h"
+
+#include "memory/allocators/std_allocator.h"
+#include "memory/allocators/segregated_allocator.h"
+#include "memory/allocators/stack_allocator.h"
+#include "memory/allocators/master_allocator.h"
+
+#include "memory/memory_meta.h"
 
 #include "diagnostics/log.h"
 #include "diagnostics/log_channels.h"
 #include "diagnostics/diagnostics_meta.h"
+
+#include "serialization/json/json.h"
 
 #include "platform/system.h"
 
@@ -64,6 +68,20 @@ int main()
     t.Do();
 
     // Initialization of the memory manager
+
+    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::LinearSegregatedFitAllocator>());
+    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::ExponentialSegregatedFitAllocator>());
+    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::TwoLevelSegregatedFitAllocator>());
+
+    std::ifstream file("memory.cfg");
+
+    nlohmann::json json;
+
+    file >> json;
+
+    auto allocators = syntropy::serialization::DeserializeObjectFromJSON<std::vector<std::unique_ptr<syntropy::Allocator>>>(json);
+
+    SYNTROPY_UNUSED(allocators);
 
     auto& small_allocator = mm.AddAllocator(std::make_unique<syntropy::LinearSegregatedFitAllocator>("small", 512_MiBytes, 8_Bytes, 32, 16_KiBytes));
     auto& large_allocator = mm.AddAllocator(std::make_unique<syntropy::ExponentialSegregatedFitAllocator>("large", 160_GiBytes, 64_KiBytes, 10));

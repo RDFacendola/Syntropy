@@ -1,4 +1,4 @@
-#include "memory/segregated_allocator.h"
+#include "memory/allocators/segregated_allocator.h"
 
 #include <iterator>
 #include <algorithm>
@@ -105,6 +105,15 @@ namespace syntropy
         , class_size_(class_size)
     {
         CheckPreconditions();
+    }
+
+    LinearSegregatedFitAllocator::LinearSegregatedFitAllocator(LinearSegregatedFitAllocator&& other)
+        : Allocator(std::move(other))
+        , allocator_(std::move(other.allocator_))
+        , free_lists_(std::move(other.free_lists_))
+        , class_size_(other.class_size_)
+    {
+
     }
 
     void* LinearSegregatedFitAllocator::Allocate(size_t size)
@@ -290,6 +299,15 @@ namespace syntropy
         , memory_range_(memory_range, VirtualMemory::CeilToPageSize(class_size))    // Align the input memory range. Doesn't take ownership.
     {
         InitializeAllocators(order, VirtualMemory::CeilToPageSize(class_size));
+    }
+
+    ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(ExponentialSegregatedFitAllocator&& other)
+        : Allocator(std::move(other))
+        , memory_pool_(std::move(other.memory_pool_))
+        , memory_range_(std::move(other.memory_range_))
+        , allocators_(std::move(other.allocators_))
+    {
+
     }
 
     void* ExponentialSegregatedFitAllocator::Allocate(size_t size)
@@ -492,6 +510,19 @@ namespace syntropy
         , allocator_(memory_range, VirtualMemory::GetPageSize())
     {
         Initialize(second_level_index);
+    }
+
+    TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(TwoLevelSegregatedFitAllocator&& other)
+        : Allocator(std::move(other))
+        , allocator_(std::move(other.allocator_))
+        , last_block_(std::move(other.last_block_))
+        , first_level_count_(other.first_level_count_)
+        , second_level_count_(other.second_level_count_)
+        , first_level_bitmap_(other.first_level_bitmap_)
+        , second_level_bitmap_(std::move(other.second_level_count_))
+        , free_lists_(std::move(other.free_lists_))
+    {
+
     }
 
     void* TwoLevelSegregatedFitAllocator::Allocate(size_t size)

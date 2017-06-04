@@ -1,4 +1,4 @@
-#include "memory/master_allocator.h"
+#include "memory/allocators/master_allocator.h"
 
 #include "diagnostics/log.h"
 

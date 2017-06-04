@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "memory.h"
+#include "memory/memory.h"
 
 namespace syntropy
 {

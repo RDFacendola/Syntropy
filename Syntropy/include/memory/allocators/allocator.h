@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "memory.h"
+#include "memory/memory.h"
 
 #include "containers/hashed_string.h"
 
@@ -56,6 +56,12 @@ namespace syntropy
         /// \brief Create a new named allocator.
         /// \param name Name of the allocator.
         Allocator(const HashedString& name);
+
+        /// \brief Copy constructor
+        Allocator(const Allocator& other) = default;
+
+        /// \brief Move constructor
+        Allocator(Allocator&& other) = default;
 
         /// \brief Virtual destructor.
         virtual ~Allocator() = default;

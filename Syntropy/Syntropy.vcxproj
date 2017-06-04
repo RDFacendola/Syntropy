@@ -58,11 +58,11 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\allocator.h">
+    <ClInclude Include="include\memory\allocators\allocator.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\block_allocator.h">
+    <ClInclude Include="include\memory\allocators\block_allocator.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -70,11 +70,11 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\linear_allocator.h">
+    <ClInclude Include="include\memory\allocators\linear_allocator.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\master_allocator.h">
+    <ClInclude Include="include\memory\allocators\master_allocator.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -86,19 +86,20 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\memory\memory_meta.h" />
     <ClInclude Include="include\memory\memory_units.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\segregated_allocator.h">
+    <ClInclude Include="include\memory\allocators\segregated_allocator.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\stack_allocator.h">
+    <ClInclude Include="include\memory\allocators\stack_allocator.h">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\std_allocator.h">
+    <ClInclude Include="include\memory\allocators\std_allocator.h">
       <SubType>
       </SubType>
     </ClInclude>

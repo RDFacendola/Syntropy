@@ -9,9 +9,10 @@
 #include <array>
 #include <vector>
 
-#include "memory.h"
-#include "allocator.h"
-#include "block_allocator.h"
+#include "memory/memory.h"
+
+#include "memory/allocators/allocator.h"
+#include "memory/allocators/block_allocator.h"
 
 namespace syntropy
 {
@@ -58,6 +59,9 @@ namespace syntropy
 
         /// \brief No copy constructor.
         LinearSegregatedFitAllocator(const LinearSegregatedFitAllocator&) = delete;
+
+        /// \brief Move constructor.
+        LinearSegregatedFitAllocator(LinearSegregatedFitAllocator&& other);
 
         /// \brief No assignment operator.
         LinearSegregatedFitAllocator& operator=(const LinearSegregatedFitAllocator&) = delete;
@@ -207,6 +211,9 @@ namespace syntropy
         /// \brief No copy constructor.
         ExponentialSegregatedFitAllocator(const ExponentialSegregatedFitAllocator&) = delete;
 
+        /// \brief Move constructor.
+        ExponentialSegregatedFitAllocator(ExponentialSegregatedFitAllocator&& other);
+
         /// \brief No assignment operator.
         ExponentialSegregatedFitAllocator& operator=(const ExponentialSegregatedFitAllocator&) = delete;
 
@@ -294,6 +301,15 @@ namespace syntropy
         /// \param memory_range Memory range used by the allocator.
         /// \param second_level_index Number of classes for each first level index. The actual number of classes is 2^second_level_index.
         TwoLevelSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t second_level_index);
+
+        /// \brief No copy constructor.
+        TwoLevelSegregatedFitAllocator(const TwoLevelSegregatedFitAllocator&) = delete;
+
+        /// \brief Move constructor.
+        TwoLevelSegregatedFitAllocator(TwoLevelSegregatedFitAllocator&& other);
+
+        /// \brief No assignment operator.
+        TwoLevelSegregatedFitAllocator& operator=(const TwoLevelSegregatedFitAllocator&) = delete;
 
         /// \brief Virtual destructor.
         virtual ~TwoLevelSegregatedFitAllocator() = default;

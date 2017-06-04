@@ -1,8 +1,11 @@
 #include "memory/memory_manager.h"
 
+#include <algorithm>
+#include <fstream>
+
 #include "diagnostics/log.h"
 
-#include <algorithm>
+#include "memory/memory_meta.h"
 
 namespace syntropy
 {
@@ -113,6 +116,33 @@ namespace syntropy
         return it != allocators_.end() ?
             it->get() :
             nullptr;
+    }
+
+    bool ImportMemoryConfigurationFromJSON(const std::string& path)
+    {
+        // Read the file inside the JSON object.
+
+        std::ifstream file(path);
+
+        nlohmann::json json;
+
+        file >> json;
+
+        return false;
+
+        ////Deserialize the channel list.
+
+        //auto channels = serialization::DeserializeObjectFromJSON<std::vector<std::unique_ptr<LogChannel> > >(json);
+
+        //if (channels)
+        //{
+        //    for (auto&& channel : *channels)
+        //    {
+        //        GetLogManager().AddChannel<>(std::move(channel));
+        //    }
+        //}
+
+        //return channels && !channels->empty();
     }
 
     /************************************************************************/

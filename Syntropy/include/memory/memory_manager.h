@@ -11,8 +11,9 @@
 #include <memory>
 #include <type_traits>
 
-#include "memory.h"
-#include "allocator.h"
+#include "memory/memory.h"
+
+#include "memory/allocators/allocator.h"
 
 #include "diagnostics/assert.h"
 
@@ -118,6 +119,12 @@ namespace syntropy
         static thread_local std::vector<Allocator*> allocator_stack_;       ///< \brief Current stack of allocators.
 
     };
+
+    /// \brief Import a memory manager configuration from JSON file.
+    /// Existing allocators are preserved, default allocator may change.
+    /// \param Path of the file containing the configuration.
+    /// \return Returns true if the configuration could be imported successfully, returns false otherwise.
+    bool ImportMemoryConfigurationFromJSON(const std::string& path);
 
     /// \brief Class used to push and pop a memory context via RAII paradigm.
     ///

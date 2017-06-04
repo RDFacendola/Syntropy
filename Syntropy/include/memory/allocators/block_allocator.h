@@ -8,8 +8,9 @@
 
 #include <limits>
 
-#include "memory.h"
-#include "linear_allocator.h"
+#include "memory/memory.h"
+
+#include "memory/allocators/linear_allocator.h"
 
 namespace syntropy
 {
@@ -140,6 +141,9 @@ namespace syntropy
 
         /// \brief No copy constructor.
         StaticBlockAllocator(const StaticBlockAllocator&) = delete;
+
+        /// \brief Move constructor.
+        StaticBlockAllocator(StaticBlockAllocator&& other);
 
         /// \brief Destructor.
         ~StaticBlockAllocator() = default;

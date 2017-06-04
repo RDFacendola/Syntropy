@@ -1,4 +1,4 @@
-#include "memory/stack_allocator.h"
+#include "memory/allocators/stack_allocator.h"
 
 #include "diagnostics/assert.h"
 

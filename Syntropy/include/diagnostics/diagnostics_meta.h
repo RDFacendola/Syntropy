@@ -1,5 +1,5 @@
 
-/// \file diagnostics.h
+/// \file diagnostics_meta.h
 /// \brief This header is part of the syntropy diagnostic system. It contains reflection and serialization definitions for the syntropy diagnostic system.
 /// Definitions are provided in a separate file to avoid circular dependencies among syntropy diagnostic, reflection and serialization systems.
 ///
