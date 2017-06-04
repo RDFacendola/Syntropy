@@ -256,6 +256,7 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\reflection\interfaces\class_interfaces.cpp" />
     <ClCompile Include="src\reflection\property.cpp">
       <SubType>
       </SubType>

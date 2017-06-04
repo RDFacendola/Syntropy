@@ -106,6 +106,7 @@
     <ClCompile Include="src\serialization\serialization.cpp" />
     <ClCompile Include="src\reflection\any.cpp" />
     <ClCompile Include="src\diagnostics\log_channels.cpp" />
+    <ClCompile Include="src\reflection\interfaces\class_interfaces.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

@@ -37,7 +37,17 @@ namespace syntropy
 
             void operator()(ClassDefinitionT<diagnostics::Severity>& definition) const
             {
+                using diagnostics::Severity;
+
                 definition << serialization::JSONClass();
+
+                definition << reflection::EnumerationClass<Severity>(
+                {
+                    {"Informative", Severity::kInformative},
+                    {"Warning", Severity::kWarning},
+                    {"Error", Severity::kError},
+                    {"Critical", Severity::kCritical}
+                });
             }
         };
 
@@ -118,28 +128,6 @@ namespace syntropy
         /************************************************************************/
         /* DIAGNOSTICS.H                                                        */
         /************************************************************************/
-
-        // Template specialization for Severity
-        template <>
-        struct JSONDeserializerT<diagnostics::Severity>
-        {
-            std::optional<diagnostics::Severity> operator()(const nlohmann::json& json) const
-            {
-                if (json.is_string())
-                {
-                    auto str = json.get<std::string>();
-
-                    // TODO: Add better support to enumerations
-
-                    if (str == "Informative")       return diagnostics::Severity::kInformative;
-                    if (str == "Warning")           return diagnostics::Severity::kWarning;
-                    if (str == "Error")             return diagnostics::Severity::kError;
-                    if (str == "Critical")          return diagnostics::Severity::kCritical;
-
-                }
-                return std::nullopt;
-            }
-        };
 
         // Template specialization for Context
         template <>

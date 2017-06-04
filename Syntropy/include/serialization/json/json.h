@@ -257,6 +257,27 @@ namespace syntropy
             }
         };
 
+        /************************************************************************/
+        /* ENUMERATION TYPES                                                    */
+        /************************************************************************/
+
+        template <typename TType>
+        struct JSONDeserializerT<TType, typename std::enable_if_t<std::is_enum_v<TType> > >
+        {
+            std::optional<TType> operator()(const nlohmann::json& json) const
+            {
+                if (json.is_string())
+                {
+                    auto enum_interface = reflection::ClassOf<TType>().GetInterface<reflection::Enumeration>();
+
+                    if (enum_interface)
+                    {
+                        return enum_interface->GetValueByName<TType>(json.get<std::string>());
+                    }
+                }
+                return std::nullopt;
+            }
+        };
     }
 }
 
@@ -281,19 +302,28 @@ namespace syntropy
                 // Deserialize a JSON object property
                 auto property_it = json.find(property_name);
 
-                return property_it != json.end() ?
-                    JSONDeserializer<TType>(*property_it) :
-                    std::move(default_value);
+                if (property_it != json.end())
+                {
+                    auto object = JSONDeserializer<TType>(*property_it);
+
+                    if (object)
+                    {
+                        return std::move(object);
+                    }
+                }
             }
             else
             {
                 // Deserialize the entire JSON object.
-                auto object = JSONDeserializer<TType>(json);
+                auto object = std::move(JSONDeserializer<TType>(json));
 
-                return object ?
-                    std::move(object) :
-                    std::move(default_value);
+                if (object)
+                {
+                    return std::move(object);
+                }
             }
+
+            return std::move(default_value);
         }
 
         template <typename TType>
