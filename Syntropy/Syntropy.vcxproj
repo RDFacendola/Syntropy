@@ -182,7 +182,6 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="src\diagnostics\diagnostics_meta.cpp" />
     <ClCompile Include="src\diagnostics\log.cpp">
       <SubType>
       </SubType>

@@ -24,6 +24,7 @@
 
 #include "diagnostics/log.h"
 #include "diagnostics/log_channels.h"
+#include "diagnostics/diagnostics_meta.h"
 
 #include "platform/system.h"
 
@@ -53,13 +54,12 @@ int main()
 
     // Initialize log
 
-    //SYNTROPY_UNUSED(syntropy::reflection::ClassOf<FileLogChannel>());
+    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<FileLogChannel>());
 
-    auto& log_manager = LogManager::GetInstance();
-
-    log_manager.ImportConfiguration("log.cfg");
+    LogManager::GetInstance().ImportConfiguration("log.cfg");
 
     auto& mm = syntropy::MemoryManager::GetInstance();
+
 
     Tester t;
     t.Do();

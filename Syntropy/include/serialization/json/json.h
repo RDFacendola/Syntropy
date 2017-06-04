@@ -31,10 +31,13 @@ namespace syntropy
         const reflection::Class* GetClassFromJSON(const nlohmann::json& json, const reflection::Class* base_class = nullptr);
 
         /// \brief Deserialize an object from JSON.
-        /// If TType is a pointer, this method guarantees polymorphism.
-        /// \return Returns a deserialized object from JSON. If such object could not be deserialized, returns an empty object.
+        /// If TType is a pointer this method guarantees polymorphism (only if the base and the concrete classes were exposed to the syntropy reflection system).
+        /// \param json JSON object to deserialize.
+        /// \param default_value Default value to return if the deserialization process failed.
+        /// \param property_name Name of the JSON property to deserialize. If nullptr is specified, the entire object is deserialized.
+        /// \return If property_name was not specified returns the deserialized version of json, otherwise returns the deserialized version of the specified json property. If the object could not be deserialized returns default_value.
         template <typename TType>
-        std::optional<TType> DeserializeObjectFromJSON(const nlohmann::json& json);
+        std::optional<TType> DeserializeObjectFromJSON(const nlohmann::json& json, std::optional<TType> default_value = std::nullopt, const char* property_name = nullptr);
 
         /// \brief Deserialize an object properties from JSON.
         /// This method enumerates JSON properties and attempts to deserialize the corresponding object properties.
@@ -269,10 +272,28 @@ namespace syntropy
         /************************************************************************/
 
         template <typename TType>
-        std::optional<TType> DeserializeObjectFromJSON(const nlohmann::json& json)
+        std::optional<TType> DeserializeObjectFromJSON(const nlohmann::json& json, std::optional<TType> default_value, const char* property_name)
         {
             static_assert(std::is_move_constructible_v<TType> || std::is_copy_constructible_v<TType>, "TType must either be copy-constructible or move-constructible.");
-            return JSONDeserializer<TType>(json);
+
+            if (property_name != nullptr)
+            {
+                // Deserialize a JSON object property
+                auto property_it = json.find(property_name);
+
+                return property_it != json.end() ?
+                    JSONDeserializer<TType>(*property_it) :
+                    std::move(default_value);
+            }
+            else
+            {
+                // Deserialize the entire JSON object.
+                auto object = JSONDeserializer<TType>(json);
+
+                return object ?
+                    std::move(object) :
+                    std::move(default_value);
+            }
         }
 
         template <typename TType>

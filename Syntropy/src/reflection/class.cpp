@@ -42,7 +42,7 @@ namespace syntropy
                     base_classes_.end(),
                     [&other](const Class* base_class)
                     {
-                        return *base_class == other;
+                        return base_class->IsA(other);
                     }
                 );
         }

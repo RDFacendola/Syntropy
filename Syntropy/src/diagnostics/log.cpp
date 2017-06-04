@@ -4,6 +4,8 @@
 
 #include "diagnostics/log.h"
 
+#include "diagnostics/diagnostics_meta.h"
+
 namespace syntropy 
 {
     namespace diagnostics
@@ -74,19 +76,26 @@ namespace syntropy
             return instance;
         }
 
-        bool LogManager::ImportConfiguration(const std::string& /*path*/)
+        bool LogManager::ImportConfiguration(const std::string& path)
         {
-            //// Read the file inside the JSON object.
+            // Read the file inside the JSON object.
 
-            //std::ifstream file(path);
+            std::ifstream file(path);
 
-            //nlohmann::json json;
+            nlohmann::json json;
 
-            //file >> json;
+            file >> json;
 
-            ////Deserialize the channel list.
+            //Deserialize the channel list.
 
-            //return serialization::DeserializeObjectFromJSON(channels_, json);
+            auto channels = serialization::DeserializeObjectFromJSON<decltype(channels_)>(json);
+
+            if (channels && !channels->empty())
+            {
+                channels_ = std::move(*channels);
+                return true;
+            }
+
             return false;
         }
 
