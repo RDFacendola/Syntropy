@@ -5,6 +5,8 @@
 
 #include "diagnostics/log.h"
 
+#include "serialization/json/json.h"
+
 #include "memory/memory_meta.h"
 
 namespace syntropy
@@ -29,7 +31,7 @@ namespace syntropy
 
     void MemoryManager::PushContext(const HashedString& allocator_name)
     {
-        auto allocator = GetAllocator(allocator_name);
+        auto allocator = Allocator::GetAllocatorByName(allocator_name);
 
         if (allocator)
         {
@@ -101,21 +103,9 @@ namespace syntropy
             nullptr;
     }
 
-    Allocator* MemoryManager::GetAllocator(const HashedString& allocator_name)
+    MemoryManager& GetMemoryManager()
     {
-        auto it = std::find_if
-        (
-            allocators_.begin(),
-            allocators_.end(),
-            [&allocator_name](const std::unique_ptr<Allocator>& allocator)
-            {
-                return allocator->GetName() == allocator_name;
-            }
-        );
-
-        return it != allocators_.end() ?
-            it->get() :
-            nullptr;
+        return MemoryManager::GetInstance();
     }
 
     bool ImportMemoryConfigurationFromJSON(const std::string& path)
@@ -128,21 +118,31 @@ namespace syntropy
 
         file >> json;
 
-        return false;
+        // Deserialize the JSON object.
 
-        ////Deserialize the channel list.
+        auto default_allocator_name = serialization::DeserializeObjectFromJSON<std::string>(json, std::nullopt, "default_allocator");
+        auto allocators = syntropy::serialization::DeserializeObjectFromJSON<std::vector<std::unique_ptr<syntropy::Allocator>>>(json, std::nullopt, "allocators");
 
-        //auto channels = serialization::DeserializeObjectFromJSON<std::vector<std::unique_ptr<LogChannel> > >(json);
+        auto& memory_manager = MemoryManager::GetInstance();
 
-        //if (channels)
-        //{
-        //    for (auto&& channel : *channels)
-        //    {
-        //        GetLogManager().AddChannel<>(std::move(channel));
-        //    }
-        //}
+        // Add deserialized allocators to the memory manager
 
-        //return channels && !channels->empty();
+        if (allocators)
+        {
+            for (auto&& allocator : *allocators)
+            {
+                memory_manager.AcquireAllocator(std::move(allocator));
+            }
+        }
+
+        // Set a default allocator
+
+        if (default_allocator_name)
+        {
+            memory_manager.SetDefaultAllocator(*default_allocator_name);
+        }
+
+        return (allocators && !allocators->empty()) || default_allocator_name;
     }
 
     /************************************************************************/

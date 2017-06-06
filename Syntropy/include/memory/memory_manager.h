@@ -20,31 +20,31 @@
 /// \brief Instantiate a new object on the active syntropy::MemoryManager allocator.
 /// \usage auto foo = SYNTROPY_MM_NEW Foo();
 #define SYNTROPY_MM_NEW \
-    SYNTROPY_NEW(syntropy::MemoryManager::GetInstance().GetAllocator())
+    SYNTROPY_NEW(syntropy::GetMemoryManager().GetAllocator())
 
 /// \brief Delete an object that was allocated via an allocator registered to syntropy::MemoryManager.
 /// Searches for any allocator owned by MemoryManager that can delete the object, regardless of the current active allocator and the allocator who made the allocation.
 /// \usage SYNTROPY_MM_DELETE(pointer);
 #define SYNTROPY_MM_DELETE(ptr) \
-    SYNTROPY_DELETE(*syntropy::MemoryManager::GetInstance().GetAllocator(ptr), ptr)
+    SYNTROPY_DELETE(*syntropy::GetMemoryManager().GetAllocator(ptr), ptr)
 
 /// \brief Allocate a new buffer on the active syntropy::MemoryManager allocator.
 /// \usage void* buffer = SYNTROPY_MM_ALLOC(size);
 #define SYNTROPY_MM_ALLOC(size) \
-    SYNTROPY_ALLOC(syntropy::MemoryManager::GetInstance().GetAllocator(), size)
+    SYNTROPY_ALLOC(syntropy::GetMemoryManager().GetAllocator(), size)
 
 /// \brief Free a buffer that was allocated via an allocator registered to syntropy::MemoryManager.
 /// Searches for any allocator owned by MemoryManager that can deallocate the object, regardless of the current active allocator and the allocator who made the allocation.
 /// \usage SYNTROPY_MM_FREE(buffer);
 #define SYNTROPY_MM_FREE(ptr) \
-    SYNTROPY_FREE(*syntropy::MemoryManager::GetInstance().GetAllocator(ptr), ptr)
+    SYNTROPY_FREE(*syntropy::GetMemoryManager().GetAllocator(ptr), ptr)
 
 namespace syntropy
 {
 
     /// \brief Class used to manage application allocators and allocation contexts.
     /// This singleton is meant to handle allocators that exist for application's entire duration.
-    /// Allocators can be added to the manager at any given time, however, once created, they lasts until the application is closed.
+    /// The manager can take ownership of existing allocators: once taken those allocator lasts until the application is closed.
     /// Each thread has its own stack of allocators: whenever a new dynamic allocation request is performed (see SYNTROPY_MM_NEW \ SYNTROPY_MM_ALLOC),
     /// the request is forwarded to the allocator on top of the stack. If the stack is empty, the request is handled by the default allocator.
     /// Use syntropy::MemoryContext to push new allocators.
@@ -68,11 +68,11 @@ namespace syntropy
         /// \brief Default destructor.
         ~MemoryManager() = default;
 
-        /// \brief Add a new allocator to the memory manager.
-        /// The allocator name must be unique within the memory manager.
+        /// \brief Add an allocator to the memory manager.
+        /// The memory manager takes ownership of the allocator.
         /// \return Returns a reference to the allocator.
         template <typename TAllocator>
-        TAllocator& AddAllocator(std::unique_ptr<TAllocator> allocator);
+        TAllocator& AcquireAllocator(std::unique_ptr<TAllocator> allocator);
 
         /// \brief Set the default allocator.
         /// The default allocator is the allocator that is used when the allocator stack is empty.
@@ -94,17 +94,13 @@ namespace syntropy
         /// \remarks This method searches only inside the allocators owned by the MemoryManager.
         Allocator* GetAllocator(void* block);
 
-        /// \brief Get an allocator by name.
-        /// \param allocator_name Unique name of the allocator to get.
-        /// \return Returns the allocator whose name is the specified one. If no such allocator exists, returns nullptr.
-        Allocator* GetAllocator(const HashedString& allocator_name);
-
     private:
 
         friend class MemoryContext;
 
         /// \brief Push a named allocator on top of the current allocator stack.
         /// If no matching allocator was found, pushes the default allocator on top of the stack.
+        /// The allocator may or may not be owned by the manager: any named allocator can be chosen. See Allocator.
         /// \param allocator_name Name of the allocator to push on top of the stack.
         void PushContext(const HashedString& allocator_name);
 
@@ -119,6 +115,9 @@ namespace syntropy
         static thread_local std::vector<Allocator*> allocator_stack_;       ///< \brief Current stack of allocators.
 
     };
+
+    /// \brief Get a reference to the MemoryManager singleton.
+    MemoryManager& GetMemoryManager();
 
     /// \brief Import a memory manager configuration from JSON file.
     /// Existing allocators are preserved, default allocator may change.
@@ -170,11 +169,9 @@ namespace syntropy
     /************************************************************************/
 
     template <typename TAllocator>
-    TAllocator& MemoryManager::AddAllocator(std::unique_ptr<TAllocator> allocator)
+    TAllocator& MemoryManager::AcquireAllocator(std::unique_ptr<TAllocator> allocator)
     {
         static_assert(std::is_base_of_v<Allocator, TAllocator>, "TAllocator must derive from syntropy::Allocator");
-
-        SYNTROPY_ASSERT(!GetAllocator(allocator->GetName()));           // Make sure there's no other allocator with the same name.
 
         allocators_.push_back(std::move(allocator));                    // Acquire allocator's ownership.
 

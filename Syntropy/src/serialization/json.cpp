@@ -50,7 +50,7 @@ namespace syntropy
 
             if (concrete_class == nullptr)
             {
-                SYNTROPY_WARNING((SerializationCtx), "Unnrecognized class '", it->get<std::string>(), "'.");
+                SYNTROPY_WARNING((SerializationCtx), "Unrecognized class '", it->get<std::string>(), "'. Did you forget to add it to the reflection system?");
                 return nullptr;
             }
 
