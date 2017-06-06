@@ -519,7 +519,7 @@ namespace syntropy
         , first_level_count_(other.first_level_count_)
         , second_level_count_(other.second_level_count_)
         , first_level_bitmap_(other.first_level_bitmap_)
-        , second_level_bitmap_(std::move(other.second_level_count_))
+        , second_level_bitmap_(std::move(other.second_level_bitmap_))
         , free_lists_(std::move(other.free_lists_))
     {
 
