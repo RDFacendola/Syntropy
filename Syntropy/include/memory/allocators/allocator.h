@@ -53,18 +53,30 @@ namespace syntropy
         template <typename T>
         static void Delete(T* ptr, Allocator& allocator, const syntropy::diagnostics::StackTrace& stack_trace);
 
+        /// \brief Get a named allocator by name.
+        /// If more than one allocator shares the same name, the behaviour is undefined.
+        /// \param allocator_name Name of the allocator to get.
+        /// \return Returns a pointer to an allocator with the provided name, if no such allocator could be found returns nullptr.
+        static Allocator* GetAllocatorByName(const HashedString& allocator_name);
+
+        /// \brief Create a new anonymous allocator.
+        Allocator();
+
         /// \brief Create a new named allocator.
         /// \param name Name of the allocator.
         Allocator(const HashedString& name);
 
-        /// \brief Copy constructor
-        Allocator(const Allocator& other) = default;
+        /// \brief No copy constructor.
+        Allocator(const Allocator& other) = delete;
 
-        /// \brief Move constructor
-        Allocator(Allocator&& other) = default;
+        /// \brief Move constructor.
+        Allocator(Allocator&& other);
 
         /// \brief Virtual destructor.
-        virtual ~Allocator() = default;
+        virtual ~Allocator();
+
+        /// \brief No assignment operator.
+        Allocator& operator=(const Allocator& other) = delete;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate, in bytes.
@@ -99,6 +111,8 @@ namespace syntropy
         operator diagnostics::Context() const;
 
     private:
+
+        class Register;
 
         HashedString name_;                             ///< \brief Name of the allocator.
 
