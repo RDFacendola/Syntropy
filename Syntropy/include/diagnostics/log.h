@@ -154,12 +154,12 @@ namespace syntropy
             const TLogChannel& CreateChannel(TArgs&&... args);
 
             /// \brief Add a log channel to the manager.
-            /// The manager takes ownership of the channel as a result of this method.
+            /// The manager takes ownership of the channel.
             /// \tparam TLogChannel Type of channel to create. Must derive from LogChannel.
             /// \param channel Channel to add to the manager.
             /// \return Returns a reference to the added channel.
             template <typename TLogChannel = LogChannel>
-            const TLogChannel& AddChannel(std::unique_ptr<TLogChannel> channel);
+            const TLogChannel& AcquireChannel(std::unique_ptr<TLogChannel> channel);
 
             /// \brief Send a log message.
             /// \param log_message Log message to send.
@@ -231,7 +231,7 @@ namespace syntropy
         }
 
         template <typename TLogChannel>
-        const TLogChannel& LogManager::AddChannel(std::unique_ptr<TLogChannel> channel)
+        const TLogChannel& LogManager::AcquireChannel(std::unique_ptr<TLogChannel> channel)
         {
             static_assert(std::is_base_of_v<LogChannel, TLogChannel>, "TLogChannel must derive from LogChannel");
 

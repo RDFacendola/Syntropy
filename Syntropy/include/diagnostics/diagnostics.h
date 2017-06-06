@@ -57,6 +57,9 @@ namespace syntropy
             /// \brief Create a root context.
             Context();
 
+            /// \brief Copy constructor constructor.
+            Context(const Context& other) = default;
+
             /// \brief Create a new context from a name.
             Context(const HashedString& name);
 

@@ -124,7 +124,7 @@ namespace syntropy
             {
                 for (auto&& channel : *channels)
                 {
-                    GetLogManager().AddChannel<>(std::move(channel));
+                    GetLogManager().AcquireChannel<>(std::move(channel));
                 }
             }
 
