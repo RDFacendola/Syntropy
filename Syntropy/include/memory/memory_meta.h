@@ -11,7 +11,7 @@
 
 #include "memory/allocators/allocator.h"
 #include "memory/allocators/segregated_allocator.h"
-#include "memory/allocators/master_allocator.h"
+#include "memory/allocators/layered_allocator.h"
 
 #include "reflection/reflection.h"
 #include "reflection/types/stl_types.h"
@@ -108,21 +108,21 @@ namespace syntropy
         };
 
         /************************************************************************/
-        /* MASTER ALLOCATOR.H                                                   */
+        /* LAYERED ALLOCATOR.H                                                  */
         /************************************************************************/
 
-        // Template specialization for MasterAllocator
+        // Template specialization for LayeredAllocator
         template<>
-        struct ClassDeclaration<MasterAllocator>
+        struct ClassDeclaration<LayeredAllocator>
         {
             static constexpr const char* GetName() noexcept
             {
-                return "syntropy::MasterAllocator";
+                return "syntropy::LayeredAllocator";
             }
 
-            void operator()(ClassDefinitionT<MasterAllocator>& definition) const
+            void operator()(ClassDefinitionT<LayeredAllocator>& definition) const
             {
-                //definition << serialization::JSONClass();
+                definition << serialization::JSONClass();
 
                 definition.DefineBaseClass<Allocator>();
             }
@@ -191,6 +191,75 @@ namespace syntropy
                 if (name && capacity)
                 {
                     return TwoLevelSegregatedFitAllocator(std::move(*name), *capacity, *second_level_index);
+                }
+
+                return std::nullopt;
+            }
+        };
+
+        /************************************************************************/
+        /* LAYERED ALLOCATOR.H                                                  */
+        /************************************************************************/
+
+        /// \brief Template specialization for LayeredAllocator::Layer
+        ///
+        /// Example:
+        /// {
+        ///     "allocator_name": "SmallAllocator",
+        ///     "max_size": 256
+        /// }
+        template <>
+        struct JSONDeserializerT<LayeredAllocator::Layer>
+        {
+            std::optional<LayeredAllocator::Layer> operator()(const nlohmann::json& json) const
+            {
+                auto allocator_name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "allocator_name");
+
+                auto allocator = allocator_name ? Allocator::GetAllocatorByName(*allocator_name) : nullptr;
+
+                if (allocator)
+                {
+                    // Maximum allocation size is optional: if none is specified the maximum allowed allocation size is used.
+
+                    auto max_size = allocator->GetMaxAllocationSize();
+
+                    auto size = DeserializeObjectFromJSON<size_t>(json, max_size, "max_size");
+
+                    if (size)
+                    {
+                        max_size = std::min(max_size, *size);
+                    }
+
+                    return LayeredAllocator::Layer{ *allocator, max_size };
+                }
+
+                return std::nullopt;
+            }
+        };
+
+        /// \brief Template specialization for LayeredAllocator
+        ///
+        /// Example:
+        ///{
+        ///     "$class": "syntropy::LayeredAllocator",
+        ///     "name" : "MasterAllocator",
+        ///     "layers" : 
+        ///     [{
+        ///         "allocator_name": "SmallAllocator",
+        ///         "max_size" : 256
+        ///     }]
+        ///}
+        template <>
+        struct JSONDeserializerT<LayeredAllocator>
+        {
+            std::optional<LayeredAllocator> operator()(const nlohmann::json& json) const
+            {
+                auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
+                auto layers = DeserializeObjectFromJSON<std::vector<LayeredAllocator::Layer> >(json, std::nullopt, "layers");
+
+                if (name && layers)
+                {
+                    return LayeredAllocator(std::move(*name), std::move(*layers));
                 }
 
                 return std::nullopt;

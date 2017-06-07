@@ -20,7 +20,7 @@
 #include "memory/allocators/std_allocator.h"
 #include "memory/allocators/segregated_allocator.h"
 #include "memory/allocators/stack_allocator.h"
-#include "memory/allocators/master_allocator.h"
+#include "memory/allocators/layered_allocator.h"
 
 #include "memory/memory_meta.h"
 
@@ -62,47 +62,29 @@ int main()
 
     syntropy::diagnostics::ImportLogConfigurationFromJSON("log.cfg");
 
-    auto& mm = syntropy::MemoryManager::GetInstance();
-
-    Tester t;
-    t.Do();
-
     // Initialization of the memory manager
 
     SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::LinearSegregatedFitAllocator>());
     SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::ExponentialSegregatedFitAllocator>());
     SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::TwoLevelSegregatedFitAllocator>());
+    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::LayeredAllocator>());
 
-    std::ifstream file("memory.cfg");
+    syntropy::ImportMemoryConfigurationFromJSON("memory.cfg");
 
-    nlohmann::json json;
-
-    file >> json;
-
-    auto allocators = syntropy::serialization::DeserializeObjectFromJSON<std::vector<std::unique_ptr<syntropy::Allocator>>>(json);
-
-    SYNTROPY_UNUSED(allocators);
-
-    auto& small_allocator = mm.AddAllocator(std::make_unique<syntropy::LinearSegregatedFitAllocator>("small", 512_MiBytes, 8_Bytes, 32, 16_KiBytes));
-    auto& large_allocator = mm.AddAllocator(std::make_unique<syntropy::ExponentialSegregatedFitAllocator>("large", 160_GiBytes, 64_KiBytes, 10));
-    mm.AddAllocator(std::make_unique<syntropy::MasterAllocator>("master1", 8_GiBytes, small_allocator, large_allocator));
-    mm.AddAllocator(std::make_unique<syntropy::MasterAllocator>("master2", 8_GiBytes, small_allocator, large_allocator));
-
-    mm.SetDefaultAllocator("master1");
-
-    //
+    Tester t;
+    t.Do();
 
     void* p;
     void* q;
     void* r;
 
     {
-        syntropy::MemoryContext ctx1("master2");
+        syntropy::MemoryContext ctx1("MasterAllocator2");
 
         p = SYNTROPY_MM_ALLOC(23_Bytes);
 
         {
-            syntropy::MemoryContext ctx2("master1");
+            syntropy::MemoryContext ctx2("MasterAllocator1");
 
             q = SYNTROPY_MM_ALLOC(24_KiBytes);
             r = SYNTROPY_MM_ALLOC(2_MiBytes);

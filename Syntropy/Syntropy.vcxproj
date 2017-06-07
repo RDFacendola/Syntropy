@@ -74,7 +74,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\allocators\master_allocator.h">
+    <ClInclude Include="include\memory\allocators\layered_allocator.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -208,7 +208,7 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="src\memory\master_allocator.cpp">
+    <ClCompile Include="src\memory\layered_allocator.cpp">
       <SubType>
       </SubType>
     </ClCompile>

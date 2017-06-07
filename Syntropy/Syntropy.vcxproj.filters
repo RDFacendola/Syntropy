@@ -63,12 +63,12 @@
     <ClInclude Include="include\diagnostics\diagnostics_meta.h" />
     <ClInclude Include="include\memory\memory_meta.h" />
     <ClInclude Include="include\memory\allocators\allocator.h" />
-    <ClInclude Include="include\memory\allocators\master_allocator.h" />
     <ClInclude Include="include\memory\allocators\segregated_allocator.h" />
     <ClInclude Include="include\memory\allocators\linear_allocator.h" />
     <ClInclude Include="include\memory\allocators\block_allocator.h" />
     <ClInclude Include="include\memory\allocators\std_allocator.h" />
     <ClInclude Include="include\memory\allocators\stack_allocator.h" />
+    <ClInclude Include="include\memory\allocators\layered_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -99,7 +99,6 @@
     <ClCompile Include="src\memory\std_allocator.cpp" />
     <ClCompile Include="src\memory\stack_allocator.cpp" />
     <ClCompile Include="src\serialization\json.cpp" />
-    <ClCompile Include="src\memory\master_allocator.cpp" />
     <ClCompile Include="src\memory\virtual_memory.cpp" />
     <ClCompile Include="src\memory\allocator.cpp" />
     <ClCompile Include="src\memory\buffer.cpp" />
@@ -108,6 +107,7 @@
     <ClCompile Include="src\reflection\any.cpp" />
     <ClCompile Include="src\diagnostics\log_channels.cpp" />
     <ClCompile Include="src\reflection\interfaces\class_interfaces.cpp" />
+    <ClCompile Include="src\memory\layered_allocator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

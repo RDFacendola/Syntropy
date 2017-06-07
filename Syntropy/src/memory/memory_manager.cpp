@@ -40,7 +40,7 @@ namespace syntropy
         else
         {
             // If this call fails the client would use the allocator on top of the stack: we don't really want to allocate on a random allocator in that case.
-            allocator_stack_.push_back(allocators_.front().get());
+            allocator_stack_.push_back(&GetDefaultAllocator());
 
             SYNTROPY_ERROR((MemoryCtx), "No allocator '", allocator_name, "' found. Using default allocator.");
         }
@@ -76,6 +76,8 @@ namespace syntropy
 
     Allocator& MemoryManager::GetDefaultAllocator()
     {
+        SYNTROPY_PRECONDITION(!allocators_.empty());
+
         return *allocators_.front();        // First registered allocator.
     }
 
