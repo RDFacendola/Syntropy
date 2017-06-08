@@ -118,7 +118,9 @@ namespace syntropy
 
     void* LinearSegregatedFitAllocator::Allocate(size_t size)
     {
-        SYNTROPY_ASSERT(size > 0);
+        SYNTROPY_PRECONDITION(size > 0);
+
+        std::lock_guard<std::mutex> lock(mutex_);
 
         // Get a page from the list whose size is at least as big as the requested allocation size.
 
@@ -142,7 +144,7 @@ namespace syntropy
 
     void* LinearSegregatedFitAllocator::Allocate(size_t size, size_t alignment)
     {
-        SYNTROPY_ASSERT(Math::IsPow2(alignment));
+        SYNTROPY_PRECONDITION(Math::IsPow2(alignment));
 
         // Since blocks are aligned to their own size, we are looking for a block large enough that is also a multiple of the requested alignment.
         auto block = Allocate(Math::Ceil(size, alignment));
@@ -154,6 +156,8 @@ namespace syntropy
 
     void LinearSegregatedFitAllocator::Free(void* address)
     {
+        std::lock_guard<std::mutex> lock(mutex_);
+
         auto page = reinterpret_cast<Page*>(Memory::AlignDown(address, GetPageSize()));     // Page the block belongs to
 
         auto is_full = page->IsFull();
@@ -312,12 +316,14 @@ namespace syntropy
 
     void* ExponentialSegregatedFitAllocator::Allocate(size_t size)
     {
+        std::lock_guard<std::mutex> lock(mutex_);
+
         return GetAllocatorBySize(size).Allocate(size);
     }
 
     void* ExponentialSegregatedFitAllocator::Allocate(size_t size, size_t alignment)
     {
-        SYNTROPY_ASSERT(Math::IsPow2(alignment));
+        SYNTROPY_PRECONDITION(Math::IsPow2(alignment));
 
         auto block = Allocate(size);        // A memory page is always aligned to some power of 2 which is almost always bigger than any requested alignment.
 
@@ -328,7 +334,9 @@ namespace syntropy
 
     void ExponentialSegregatedFitAllocator::Free(void* address)
     {
-        SYNTROPY_ASSERT(memory_range_.Contains(address));
+        SYNTROPY_PRECONDITION(memory_range_.Contains(address));
+
+        std::lock_guard<std::mutex> lock(mutex_);
 
         // The entire memory range is divided evenly among all the allocators
 
@@ -351,12 +359,14 @@ namespace syntropy
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size)
     {
+        std::lock_guard<std::mutex> lock(mutex_);
+
         return GetAllocatorBySize(size).Reserve();
     }
 
     void* ExponentialSegregatedFitAllocator::Reserve(size_t size, size_t alignment)
     {
-        SYNTROPY_ASSERT(Math::IsPow2(alignment));
+        SYNTROPY_PRECONDITION(Math::IsPow2(alignment));
 
         auto block = Reserve(size);         // A memory page is always aligned to some power of 2 which is almost always bigger than any requested alignment.
 
@@ -553,6 +563,8 @@ namespace syntropy
 
     void TwoLevelSegregatedFitAllocator::Free(void* block)
     {
+        std::lock_guard<std::mutex> lock(mutex_);
+
         // The base pointer is guaranteed to be adjacent to the allocated block.
 
         auto base_pointer = reinterpret_cast<BlockHeader**>(Memory::SubOffset(block, sizeof(uintptr_t)));
@@ -595,7 +607,7 @@ namespace syntropy
 
     TwoLevelSegregatedFitAllocator::BlockHeader* TwoLevelSegregatedFitAllocator::GetFreeBlockBySize(size_t size)
     {
-        SYNTROPY_ASSERT(size >= 0);
+        SYNTROPY_PRECONDITION(size > 0);
 
         size += sizeof(BlockHeader);                            // Reserve space for the header.
         size = std::max(size, kMinimumBlockSize);               // The size must be at least as big as the minimum size allowed.
@@ -603,6 +615,8 @@ namespace syntropy
 
         size_t first_level_index;
         size_t second_level_index;
+
+        std::lock_guard<std::mutex> lock(mutex_);
 
         // Start searching from the next class (the current free list may have blocks that are smaller than the requested size)
         GetFreeListIndex(size, first_level_index, second_level_index, true);

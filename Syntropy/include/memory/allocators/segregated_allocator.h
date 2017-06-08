@@ -8,6 +8,7 @@
 
 #include <array>
 #include <vector>
+#include <mutex>
 
 #include "memory/memory.h"
 
@@ -173,6 +174,7 @@ namespace syntropy
 
         size_t class_size_;                         ///< \brief Size of each allocation class, in bytes.
 
+        std::mutex mutex_;                          ///< \brief Used for thread-safety purposes.
     };
 
     /// \brief Low-fragmentation, low-waste allocator best suited to handle allocation of large objects.
@@ -278,6 +280,8 @@ namespace syntropy
         MemoryRange memory_range_;                          ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
 
         std::vector<BlockAllocator> allocators_;            ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
+
+        std::mutex mutex_;                                  ///< \brief Used for thread-safety purposes.
     };
 
     /// \brief High-performances, low-fragmentation allocator to handle allocation of any size.
@@ -469,6 +473,7 @@ namespace syntropy
 
         std::vector<FreeBlockHeader*> free_lists_;          ///< \brief Pointer to the free lists. Flattened to a mono-dimensional array.
 
+        std::mutex mutex_;                                  ///< \brief Used for thread-safety purposes.
     };
 
 }

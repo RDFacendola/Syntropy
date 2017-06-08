@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <mutex>
+
 #include "memory/memory.h"
 #include "memory/virtual_memory.h"
 
@@ -82,6 +84,7 @@ namespace syntropy
 
         void* status_;                  ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
 
+        std::mutex mutex_;              ///< \brief Used for thread-safety purposes.
     };
 
     /// \brief Utility allocator that sits on top of a stack allocator and handles concrete object construction and destruction via RAII.

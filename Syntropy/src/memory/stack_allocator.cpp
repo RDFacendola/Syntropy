@@ -30,7 +30,9 @@ namespace syntropy
 
     void* StackAllocator::Allocate(size_t size)
     {
-        SYNTROPY_ASSERT(size > 0);
+        SYNTROPY_PRECONDITION(size > 0);
+
+        std::lock_guard<std::mutex> lock(mutex_);
 
         auto block = head_;
 
@@ -45,6 +47,8 @@ namespace syntropy
 
     void* StackAllocator::Allocate(size_t size, size_t alignment)
     {
+        std::lock_guard<std::mutex> lock(mutex_);
+
         head_ = Memory::Align(head_, alignment);        // Add a padding so that the allocated block is aligned
 
         auto block = Allocate(size);
@@ -56,6 +60,8 @@ namespace syntropy
 
     void StackAllocator::Free()
     {
+        std::lock_guard<std::mutex> lock(mutex_);
+
         MemoryDebug::MarkFree(*memory_range_, head_);
 
         head_ = *memory_range_;
@@ -63,6 +69,8 @@ namespace syntropy
 
     void StackAllocator::SaveStatus()
     {
+        std::lock_guard<std::mutex> lock(mutex_);
+
         status_ = head_;
 
         *reinterpret_cast<uintptr_t*>(Allocate(sizeof(uintptr_t))) = reinterpret_cast<uintptr_t>(status_);    // Push the current status pointer on the stack
@@ -70,7 +78,9 @@ namespace syntropy
 
     void StackAllocator::RestoreStatus()
     {
-        SYNTROPY_ASSERT(status_);
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        SYNTROPY_PRECONDITION(status_);
 
         auto previous_head = head_;
 
