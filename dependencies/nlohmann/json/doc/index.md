@@ -27,6 +27,7 @@ These pages contain the API documentation of JSON for Modern C++, a C++11 header
     - @link nlohmann::basic_json::get_ptr get_ptr @endlink -- get a value pointer
     - @link nlohmann::basic_json::get_ref get_ref @endlink -- get a value reference
     - @link nlohmann::basic_json::operator ValueType() const operator ValueType @endlink -- get a value (implicit conversion)
+    - @link nlohmann::basic_json::value value @endlink -- get a value from an object and return default value if key is not present
   - lexicographical comparison operators
   - serialization
   - deserialization
@@ -197,7 +198,7 @@ The container functions known from STL have been extended to support the differe
     <td class="ok_green">@link nlohmann::basic_json::max_size `max_size` @endlink (returns `0`)</td>
   </tr>
   <tr>
-    <td rowspan="5">modifiers</td>
+    <td rowspan="6">modifiers</td>
     <td>`clear`</td>
     <td class="ok_green">@link nlohmann::basic_json::clear `clear` @endlink</td>
     <td class="ok_green">@link nlohmann::basic_json::clear `clear` @endlink</td>
@@ -234,6 +235,15 @@ The container functions known from STL have been extended to support the differe
     <td class="ok_green">@link nlohmann::basic_json::push_back(const typename object_t::value_type & val) `push_back` @endlink (creates object)<br>@link nlohmann::basic_json::push_back(const nlohmann::basic_json &) `push_back` @endlink (creates array)</td>
   </tr>
   <tr>
+    <td>`emplace` / `emplace_back`</td>
+    <td class="ok_green">@link nlohmann::basic_json::emplace() `emplace` @endlink</td>
+    <td class="ok_green">@link nlohmann::basic_json::emplace_back() `emplace_back` @endlink</td>
+    <td class="nok_throws">throws `std::domain_error`</td>
+    <td class="nok_throws">throws `std::domain_error`</td>
+    <td class="nok_throws">throws `std::domain_error`</td>
+    <td class="ok_green">@link nlohmann::basic_json::emplace() `emplace` @endlink (creates object)<br>@link nlohmann::basic_json::emplace_back() `emplace_back` @endlink (creates array)</td>
+  </tr>
+  <tr>
     <td>`swap`</td>
     <td class="ok_green">@link nlohmann::basic_json::swap `swap` @endlink</td>
     <td class="ok_green">@link nlohmann::basic_json::swap `swap` @endlink</td>
@@ -245,8 +255,8 @@ The container functions known from STL have been extended to support the differe
   <tr>
     <td rowspan="2">lookup</td>
     <td>`find`</td>
-    <td class="ok_green">@link nlohmann::basic_json::find `find` @endlink (returns `end()`)</td>
     <td class="ok_green">@link nlohmann::basic_json::find `find` @endlink</td>
+    <td class="ok_green">@link nlohmann::basic_json::find `find` @endlink (returns `end()`)</td>
     <td class="ok_green">@link nlohmann::basic_json::find `find` @endlink (returns `end()`)</td>
     <td class="ok_green">@link nlohmann::basic_json::find `find` @endlink (returns `end()`)</td>
     <td class="ok_green">@link nlohmann::basic_json::find `find` @endlink (returns `end()`)</td>
@@ -254,8 +264,8 @@ The container functions known from STL have been extended to support the differe
   </tr>
   <tr>
     <td>`count`</td>
-    <td class="ok_green">@link nlohmann::basic_json::count `count` @endlink (returns `0`)</td>
     <td class="ok_green">@link nlohmann::basic_json::count `count` @endlink</td>
+    <td class="ok_green">@link nlohmann::basic_json::count `count` @endlink (returns `0`)</td>
     <td class="ok_green">@link nlohmann::basic_json::count `count` @endlink (returns `0`)</td>
     <td class="ok_green">@link nlohmann::basic_json::count `count` @endlink (returns `0`)</td>
     <td class="ok_green">@link nlohmann::basic_json::count `count` @endlink (returns `0`)</td>
@@ -263,9 +273,9 @@ The container functions known from STL have been extended to support the differe
   </tr>
 </table>
 
-@copyright Copyright &copy; 2013-2016 Niels Lohmann. The code is licensed under the [MIT License](http://opensource.org/licenses/MIT).
+@copyright Copyright &copy; 2013-2017 Niels Lohmann. The code is licensed under the [MIT License](http://opensource.org/licenses/MIT).
 
 @author [Niels Lohmann](http://nlohmann.me)
 @see https://github.com/nlohmann/json to download the source code
 
-@version 2.0.4
+@version 2.1.1

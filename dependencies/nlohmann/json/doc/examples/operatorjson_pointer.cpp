@@ -1,4 +1,4 @@
-#include <json.hpp>
+#include "json.hpp"
 
 using json = nlohmann::json;
 
@@ -40,7 +40,7 @@ int main()
     // output the changed array
     std::cout << j["array"] << '\n';
 
-    // "change" the arry element past the end
+    // "change" the array element past the end
     j["/array/-"_json_pointer] = 55;
     // output the changed array
     std::cout << j["array"] << '\n';

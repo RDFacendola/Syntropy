@@ -1,4 +1,4 @@
-#include <json.hpp>
+#include "json.hpp"
 
 using json = nlohmann::json;
 
@@ -19,7 +19,7 @@ int main()
     {
         auto r3 = value.get_ref<json::number_float_t&>();
     }
-    catch (std::domain_error& ex)
+    catch (json::type_error& ex)
     {
         std::cout << ex.what() << '\n';
     }
