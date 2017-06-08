@@ -43,7 +43,6 @@
     <ClInclude Include="include\containers\range.h" />
     <ClInclude Include="include\containers\interface_container.h" />
     <ClInclude Include="include\reflection\any.h" />
-    <ClInclude Include="include\cpp17.h" />
     <ClInclude Include="include\utility.h" />
     <ClInclude Include="include\diagnostics\log_channels.h" />
     <ClInclude Include="include\platform\os\os.h" />

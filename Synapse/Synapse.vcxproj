@@ -171,6 +171,7 @@
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

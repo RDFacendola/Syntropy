@@ -9,7 +9,6 @@
 #include <vector>
 #include <algorithm>
 
-#include "cpp17.h"
 #include "type_traits.h"
 #include "utility.h"
 

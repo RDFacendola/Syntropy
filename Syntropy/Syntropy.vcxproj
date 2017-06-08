@@ -27,10 +27,6 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\cpp17.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\date.h">
       <SubType>
       </SubType>
@@ -414,6 +410,7 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -6,3 +6,7 @@ bin/log.txt
 bin/UnitTest_Debug.exe
 bin/UnitTest_Debug.ilk
 bin/UnitTest_Debug.pdb
+bin/UnitTest_Release.exe
+bin/UnitTest_Release.ipdb
+bin/UnitTest_Release.iobj
+bin/UnitTest_Release.pdb

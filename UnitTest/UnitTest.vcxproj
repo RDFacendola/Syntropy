@@ -158,6 +158,7 @@
       <DisableSpecificWarnings>4505</DisableSpecificWarnings>
       <ShowIncludes>false</ShowIncludes>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

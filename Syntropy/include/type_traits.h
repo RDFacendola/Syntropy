@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "cpp17.h"
 #include "utility.h"
 
 #include <type_traits>
@@ -161,13 +160,35 @@ namespace syntropy
         }
 	};
 
+    /// \brief If TCallable(TArgs...) is defined provides a member constant value equal to true, otherwise value is false.
+    /// \author Raffaele D. Facendola - September 2016
+    template <typename TCallable, typename... TArgs>
+    struct is_callable
+    {
+    private:
+
+        template<typename C, typename... A>
+        static auto test(int) -> decltype(std::declval<C&>()(std::declval<A>()...), std::true_type());
+
+        template<typename, typename...>
+        static auto test(...)->std::false_type;
+
+    public:
+
+        static const bool value = decltype(test<TCallable, TArgs...>(0))::value;
+    };
+
+    /// \brief Helper value for is_callable<TCallable, TArgs...>.
+    template <typename TCallable, typename... TArgs>
+    constexpr bool is_callable_v = is_callable<TCallable, TArgs...>::value;
+
     /// \brief If TCallable can be called with the parameters TArgs..., the call is performed, otherwise this function does nothing.
     /// \return Returns the return value if the call could be performed, returns nothing otherwise.
     /// \author Raffaele D. Facendola - September 2016
     template <typename TCallable, typename... TArgs>
 	auto conditional_call(TCallable&& callable, TArgs&&... args)
 	{
-		using caller = std::conditional_t<std::is_invocable_v<TCallable, TArgs...>, call, _>;
+		using caller = std::conditional_t<is_callable_v<TCallable, TArgs...>, call, _>;
 
 		return caller()(std::forward<TCallable>(callable), std::forward<TArgs>(args)...);
 	}
@@ -178,7 +199,7 @@ namespace syntropy
 
 	/// \brief Template specialization for is_in_place_type when T is a specialization of in_place_type_t.
 	template <typename T>
-	struct is_in_place_type<std::in_place_type_t<T>> : std::true_type {};
+	struct is_in_place_type<std::in_place_type_t<T> > : std::true_type {};
 
     //////////////// CONTAINERS ////////////////
 

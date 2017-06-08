@@ -8,7 +8,6 @@
 #include <initializer_list>
 #include <typeinfo>
 
-#include "cpp17.h"
 #include "type_traits.h"
 
 #include "diagnostics/assert.h"
