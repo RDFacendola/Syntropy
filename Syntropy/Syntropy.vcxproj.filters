@@ -68,6 +68,7 @@
     <ClInclude Include="include\memory\allocators\stack_allocator.h" />
     <ClInclude Include="include\memory\allocators\layered_allocator.h" />
     <ClInclude Include="include\patterns\scope_guard.h" />
+    <ClInclude Include="include\patterns\observable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

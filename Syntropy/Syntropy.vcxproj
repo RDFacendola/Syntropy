@@ -103,6 +103,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\patterns\observable.h" />
     <ClInclude Include="include\platform\builtin.h" />
     <ClInclude Include="include\platform\macros.h" />
     <ClInclude Include="include\platform\compiler\msvc.h">
