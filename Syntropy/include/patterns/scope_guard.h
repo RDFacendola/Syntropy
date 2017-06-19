@@ -17,18 +17,18 @@ namespace syntropy
     /// http://channel9.msdn.com/Shows/Going+Deep/C-and-Beyond-2012-Andrei-Alexandrescu-Systematic-Error-Handling-in-C
     /// \author Raffaele D. Facendola - December 2016
     template <typename TFunctor>
-    class ScopeGuard {
-
+    class ScopeGuard
+    {
     public:
 
         /// \brief No default constructor.
         ScopeGuard() = delete;
 
         /// \brief No copy constructor.
-        ScopeGuard(const ScopeGuard &) = delete;
+        ScopeGuard(const ScopeGuard&) = delete;
 
         /// \brief No assignment operator.
-        ScopeGuard & operator=(const ScopeGuard &) = delete;
+        ScopeGuard & operator=(const ScopeGuard&) = delete;
 
         /// \brief Create a new scope guard.
         /// \tparam TFunctor Type of the functor.
@@ -37,7 +37,7 @@ namespace syntropy
 
         /// \brief Move constructor. The original copy gets dismissed.
         /// \param other Original scope guard to move.
-        ScopeGuard(ScopeGuard && other);
+        ScopeGuard(ScopeGuard&& other);
 
         /// \brief Destroy this instance and calls the functor unless the guard has been dismissed.
         ~ScopeGuard();
@@ -62,9 +62,10 @@ namespace syntropy
 
 namespace syntropy
 {
-    // Implementation
 
-    //////////////// SCOPE GUARD ////////////////
+    /************************************************************************/
+    /* SCOPE GUARD                                                          */
+    /************************************************************************/
 
     template <typename TFunctor>
     ScopeGuard<TFunctor>::ScopeGuard(TFunctor functor)

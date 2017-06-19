@@ -148,7 +148,7 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\reflection\types\stl_types.h" />
-    <ClInclude Include="include\scope_guard.h">
+    <ClInclude Include="include\patterns\scope_guard.h">
       <SubType>
       </SubType>
     </ClInclude>
