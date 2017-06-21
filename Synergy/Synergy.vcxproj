@@ -23,12 +23,14 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\task\task.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\synergy.cpp">
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\task\task.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Syntropy\Syntropy.vcxproj">

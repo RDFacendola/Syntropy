@@ -1,11 +1,8 @@
 #include "synergy.h"
 
-namespace syntropy {
+namespace syntropy::synergy
+{
 
-	namespace synergy {
-
-
-
-	}
 
 }
+

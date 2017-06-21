@@ -6,12 +6,8 @@
 
 #pragma once
 
-namespace syntropy {
+namespace syntropy::synergy
+{
 
-	namespace synergy {
-
-
-
-	}
 
 }

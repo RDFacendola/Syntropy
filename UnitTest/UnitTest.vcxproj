@@ -78,7 +78,7 @@
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)build\bin\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(ProjectDir)include;$(SolutionDir)Syntropy\include;$(SolutionDir)Syntax\include;$(SolutionDir)dependencies;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include;$(SolutionDir)Syntropy/include;$(SolutionDir)Syntax/include;$(SolutionDir)Synergy/include;$(SolutionDir)dependencies;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)libs\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -89,7 +89,7 @@
     <OutDir>$(SolutionDir)bin\</OutDir>
     <IntDir>$(SolutionDir)build\bin\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)_$(Configuration)</TargetName>
-    <IncludePath>$(ProjectDir)include;$(SolutionDir)Syntropy\include;$(SolutionDir)Syntax\include;$(SolutionDir)dependencies;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include;$(SolutionDir)Syntropy/include;$(SolutionDir)Syntax/include;$(SolutionDir)Synergy/include;$(SolutionDir)dependencies;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)libs\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -205,6 +205,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Synergy\Synergy.vcxproj">
+      <Project>{2f46b0cf-9a34-47cf-8e1e-71b2a6cc7a53}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\Syntax\Syntax.vcxproj">
       <Project>{36905be6-188f-4deb-ab5a-008ea3e6e7d6}</Project>
     </ProjectReference>

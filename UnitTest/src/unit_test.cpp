@@ -7,6 +7,9 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <thread>
+#include <exception>
+#include <chrono>
 
 #include "unit1.h"
 
@@ -32,6 +35,11 @@
 
 #include "platform/system.h"
 
+#include "patterns/observable.h"
+
+#include "synergy.h"
+#include "task/task.h"
+
 syntropy::diagnostics::Context Root;
 
 struct FooSmall
@@ -49,16 +57,13 @@ struct FooLarge
     char buffer[258];
 };
 
-int main()
+void Initialize()
 {
-
-    using syntropy::diagnostics::LogManager;
-    using syntropy::diagnostics::Severity;
-    using syntropy::diagnostics::FileLogChannel;
-
     // Initialize log
 
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<FileLogChannel>());
+    using syntropy::diagnostics::FileLogChannel;
+
+    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::diagnostics::FileLogChannel>());
 
     syntropy::diagnostics::ImportLogConfigurationFromJSON("log.cfg");
 
@@ -70,10 +75,16 @@ int main()
     SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::LayeredAllocator>());
 
     syntropy::ImportMemoryConfigurationFromJSON("memory.cfg");
+}
 
+void ReflectionAndSerializationTest()
+{
     Tester t;
     t.Do();
+}
 
+void AllocTest()
+{
     void* p;
     void* q;
     void* r;
@@ -94,9 +105,64 @@ int main()
         SYNTROPY_MM_FREE(q);
         SYNTROPY_MM_FREE(r);
     }
+}
+
+void MultithreadTest()
+{
+    using syntropy::synergy::LambdaTask;
+    using namespace std::literals::chrono_literals;
+
+    auto& s = syntropy::synergy::GetScheduler();
+
+    s.CreateTask<LambdaTask>(
+    {},
+    []()
+    {
+        std::cout << "What's up? " << std::this_thread::get_id() << "\n";
+
+        std::this_thread::sleep_for(2s);
+
+        auto& s = syntropy::synergy::GetScheduler();
+
+        s.CreateTask<LambdaTask>(
+        {},
+        []()
+        {
+            std::cout << "Dude! " << std::this_thread::get_id() << "\n";
+            return nullptr;
+        });
+
+        s.CreateTask<LambdaTask>(
+        {},
+        []()
+        {
+            std::cout << "Hey! " << std::this_thread::get_id() << "\n";
+            return nullptr;
+        });
+
+        return nullptr;
+    });
+
+    s.Join();
+
+}
+
+int main()
+{
+
+    Initialize();
+
+    //
+
+    ReflectionAndSerializationTest();
+
+    AllocTest();
+
+    MultithreadTest();
 
     //
 
     system("pause");
 
 }
+
