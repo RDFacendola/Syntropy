@@ -59,7 +59,7 @@ namespace syntropy
 
     protected:
 
-        std::vector<Listener<TArguments...>*> listeners_;           ///< \brief Listeners subscribed to this object. Observer pointers.
+        std::vector<Listener<TArguments...>*> listeners_;               ///< \brief Listeners subscribed to this object. Observer pointers.
 
     };
 
@@ -76,7 +76,7 @@ namespace syntropy
         /// \brief Trigger the event, notifying registered listeners.
         /// \param arguments Arguments passed to the listeners.
         template <typename... TEventArguments>
-        void Notify(const TEventArguments&... arguments);
+        void Notify(TEventArguments&&... arguments);
     };
 
     /// \brief Represents a handler routine subscribed to an observable object.
@@ -164,7 +164,7 @@ namespace syntropy
 
     template <typename... TArguments>
     template <typename... TEventArguments>
-    void Event<TArguments...>::Notify(const TEventArguments&... arguments)
+    void Event<TArguments...>::Notify(TEventArguments&&... arguments)
     {
         // Notify the listeners registered so far.
 
