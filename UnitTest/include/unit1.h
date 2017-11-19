@@ -27,6 +27,7 @@
 #include <tuple>
 #include <iostream>
 #include <iomanip>
+#include "algorithms/search/astar.h"
 
 #define SUPPRESS_PASSED_TESTS
 
@@ -1103,3 +1104,92 @@ private:
     const syntropy::reflection::Property* property_movable_accessor_;
 
 };
+
+
+class Graph
+{
+public:
+
+	Graph(std::initializer_list<int> elements, int col, int rows)
+		:graph_(elements), col_(col), rows_(rows)
+	{
+	}
+
+	Graph(std::vector<int> elements, int col, int rows)
+		:graph_(elements), col_(col), rows_(rows)
+	{
+	}
+
+	~Graph() = default;
+
+	int GetWidth() const { return col_; };
+	int GetHeight() const { return rows_; };
+		
+	const std::vector<int>& GetGraph() const { return graph_; };
+private:
+
+	std::vector<int> graph_;
+	int col_, rows_;
+
+};
+
+class Node
+{
+public:
+
+	Node(int x, int y)
+		: x_(x), y_(y)
+	{
+	}
+
+	Node(int posInGraph, const Graph* graph)
+	{
+		x_ = posInGraph % graph->GetWidth();
+		y_ = static_cast<int>(posInGraph / graph->GetWidth());
+	}
+
+	Node(const Node& other)
+		: x_(other.x_), y_(other.y_)
+	{
+	}
+
+	Node& operator=(Node other)
+	{
+		std::swap(x_, other.x_);
+		std::swap(y_, other.y_);
+		return *this;
+	}
+
+	bool operator==(const Node& other) const
+	{
+		return x_ == other.x_ && y_ == other.y_;
+	}
+
+	bool operator!=(const Node& other) const
+	{
+		return !(*this == other);
+	}
+
+	~Node() = default;
+
+	int X() const { return x_; };
+	int Y() const { return y_; };
+
+private:
+	int x_;
+	int y_;
+};
+
+namespace std
+{
+	template<> struct hash<Node>
+	{
+		typedef Node argument_type;
+		typedef std::size_t result_type;
+		result_type operator()(argument_type const& s) const noexcept
+		{
+			std::string NodeAsString = "x" + std::to_string(s.X()) + "y" + std::to_string(s.Y());
+			return std::hash<std::string>{}(NodeAsString);
+		}
+	};
+}
