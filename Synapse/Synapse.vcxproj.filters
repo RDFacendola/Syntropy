@@ -2,8 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="include\synapse.h" />
+    <ClInclude Include="include\algorithms\search\astar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\synapse.cpp" />
+    <ClCompile Include="src\algorithms\search\astar.cpp" />
   </ItemGroup>
 </Project>

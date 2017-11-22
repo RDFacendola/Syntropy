@@ -19,12 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\algorithms\search\astar.h" />
     <ClInclude Include="include\synapse.h">
       <SubType>
       </SubType>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\algorithms\search\astar.cpp" />
     <ClCompile Include="src\synapse.cpp">
       <SubType>
       </SubType>
