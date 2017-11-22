@@ -14,6 +14,8 @@
 namespace syntropy
 {
 
+    /// \brief Exposes math functionalities.
+    /// \author Raffaele D. Facendola - 2017
     class Math
     {
     public:
@@ -80,7 +82,6 @@ namespace syntropy
                 number :
                 2 << platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(number));
         }
-
     };
 
 }

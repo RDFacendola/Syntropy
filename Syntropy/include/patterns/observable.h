@@ -151,7 +151,7 @@ namespace syntropy
     {
         // Create a new listener and store it inside the listeners list.
 
-        auto listener = new Listener<TArguments...>(*this, std::move(handler));
+        auto listener = new Listener<TArguments...>(*this, std::move(handler));         // #TODO Use proper allocator.
 
         listeners_.emplace_back(listener);
 
