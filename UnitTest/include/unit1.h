@@ -27,6 +27,7 @@
 #include <tuple>
 #include <iostream>
 #include <iomanip>
+
 #include "algorithms/search/astar.h"
 
 #define SUPPRESS_PASSED_TESTS

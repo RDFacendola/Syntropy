@@ -23,14 +23,24 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\task\scheduler.h" />
     <ClInclude Include="include\task\task.h" />
+    <ClInclude Include="include\task\task_execution_context.h" />
+    <ClInclude Include="include\task\task_pool.h" />
+    <ClInclude Include="include\task\worker.h" />
+    <ClInclude Include="include\task\task_queue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\synergy.cpp">
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\task\scheduler.cpp" />
     <ClCompile Include="src\task\task.cpp" />
+    <ClCompile Include="src\task\task_execution_context.cpp" />
+    <ClCompile Include="src\task\task_pool.cpp" />
+    <ClCompile Include="src\task\task_queue.cpp" />
+    <ClCompile Include="src\task\worker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Syntropy\Syntropy.vcxproj">

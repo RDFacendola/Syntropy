@@ -38,7 +38,8 @@
 #include "patterns/observable.h"
 
 #include "synergy.h"
-#include "task/task.h"
+#include "task/scheduler.h"
+
 #include "algorithms/search/astar.h"
 
 syntropy::diagnostics::Context Root;
@@ -110,41 +111,42 @@ void AllocTest()
 
 void MultithreadTest()
 {
-    using syntropy::synergy::LambdaTask;
     using namespace std::literals::chrono_literals;
 
-    auto& s = syntropy::synergy::GetScheduler();
-
-    s.CreateTask<LambdaTask>(
-    {},
+    syntropy::synergy::DetachTask(
     []()
     {
-        std::cout << "What's up? " << std::this_thread::get_id() << "\n";
+        std::cout << "Root " << std::this_thread::get_id() << "\n";
 
         std::this_thread::sleep_for(2s);
 
-        auto& s = syntropy::synergy::GetScheduler();
-
-        s.CreateTask<LambdaTask>(
-        {},
+        auto a = syntropy::synergy::CreateTask(
+        std::initializer_list<std::shared_ptr<syntropy::synergy::Task>>{},
         []()
         {
-            std::cout << "Dude! " << std::this_thread::get_id() << "\n";
-            return nullptr;
+            std::cout << "Left " << std::this_thread::get_id() << "\n";
         });
 
-        s.CreateTask<LambdaTask>(
-        {},
+        auto b =syntropy::synergy::CreateTask(
+        std::initializer_list<std::shared_ptr<syntropy::synergy::Task>>{},
         []()
         {
-            std::cout << "Hey! " << std::this_thread::get_id() << "\n";
-            return nullptr;
+            std::cout << "Right " << std::this_thread::get_id() << "\n";
         });
 
-        return nullptr;
+        auto c = syntropy::synergy::CreateTask(
+        std::initializer_list<std::shared_ptr<syntropy::synergy::Task>>{a,b},
+            []()
+        {
+            std::cout << "Leaf " << std::this_thread::get_id() << "\n";
+        });
     });
 
-    s.Join();
+    std::cout << "zzz... " << std::this_thread::get_id() << "\n";
+
+    std::this_thread::sleep_for(10s);
+
+    std::cout << "...zzz " << std::this_thread::get_id() << "\n";
 
 }
 /// \brief Testing simple pathfinding problem from Paradox
