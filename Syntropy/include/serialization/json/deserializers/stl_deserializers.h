@@ -95,14 +95,13 @@ namespace syntropy
         template <typename TMap>
         struct JSONDeserializerT<TMap, std::enable_if_t<is_map_v<TMap>>>
         {
-            /// \brief JSON property field used to determine the id of an object.
-            static constexpr char* kIdToken = "id";
+
 
             std::optional<TMap> operator()(const nlohmann::json& json) const
             {
                 if (json.is_array())
                 {
-                    return DeserializeFromArray(json);      // Store each element as a map entry. One field is used as key (kIdToken).
+                    return DeserializeFromArray(json);      // Store each element as a map entry. The first field is used as key.
                 }
                 else if (json.is_object())
                 {
@@ -173,6 +172,9 @@ namespace syntropy
             /// \brief Deserialize from an array of objects: the elements are the mapped objects, while one particular field is used as a key.
             std::optional<TMap> DeserializeFromArray(const nlohmann::json& json) const
             {
+                /// \brief JSON property field used to determine the id of an object.
+                static const char kIdToken[] = "id";
+
                 auto map = std::make_optional<TMap>();
 
                 for (unsigned int array_index = 0; array_index < json.size(); ++array_index)
