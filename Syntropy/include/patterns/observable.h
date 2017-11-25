@@ -9,19 +9,63 @@
 #include <vector>
 #include <memory>
 #include <functional>
-#include <algorithm>
 
 namespace syntropy
 {
+    /// \brief Base class for listeners.
+    /// \author Raffaele D. Facendola - November 2017
+    class Listener
+    {
+    public:
 
-    template <typename... TArguments>
-    class Observable;
-    
-    template <typename... TArguments>
-    class Listener;
+        /// \brief Default constructor.
+        Listener() = default;
 
+        /// \brief No copy constructor.
+        Listener(const Listener&) = delete;
+
+        /// \brief No move constructor.
+        Listener(Listener&&) = delete;
+
+        /// \brief No assignment operator.
+        Listener& operator=(const Listener&) = delete;
+
+        /// \brief Default virtual destructor.
+        virtual ~Listener() = default;
+    };
+
+    /// \brief Represents a concrete listener subscribed to an observable object.
+    /// \author Raffaele D. Facendola - June 2017
     template <typename... TArguments>
-    class Event;
+    class ListenerT : public Listener
+    {
+    public:
+
+        /// \brief Create a new listener object.
+        /// \param handler Handler routine for the event being notified.
+        template <typename THandler>
+        ListenerT(THandler handler)
+            : handler_(std::move(handler))
+        {
+
+        }
+
+        /// \brief Default destructor.
+        /// Unsubscribes the listener from the current observable object (if any).
+        virtual ~ListenerT() = default;
+
+        /// \brief Notify the listener.
+        /// \param arguments Argument being passed to the handler routine.
+        template <typename... TEventArguments>
+        void operator()(TEventArguments&&... arguments) const
+        {
+            handler_(std::forward<TEventArguments>(arguments)...);
+        }
+
+    private:
+
+        std::function<void(TArguments...)> handler_;        ///< \brief Handler routine for the event.
+    };
 
     /// \brief Interface for observable objects that can be subscribed to.
     /// An observable object can be subscribed by any number of listener.
@@ -30,9 +74,6 @@ namespace syntropy
     template <typename... TArguments>
     class Observable
     {
-        template <typename... TArguments>
-        friend class Listener;
-
     public:
 
         /// \brief Create a new observable object.
@@ -47,19 +88,25 @@ namespace syntropy
         /// \brief No assignment operator.
         Observable& operator=(const Observable&) = delete;
 
-        /// \brief Virtual destructor.
-        /// Unsubscribes current listeners.
-        virtual ~Observable();
+        /// \brief Virtual default destructor.
+        virtual ~Observable() = default;
 
-        /// \brief Subscribe a new listener.
+        /// \brief Subscribe a new listener to this observable object.
         /// \param handler Handler called whenever the observable object notifies.
-        /// \return Returns a pointer to a listener.
+        /// \return Returns a listener handle. The listener is subscribed as long as this handle is alive.
         template <typename THandler>
-        std::unique_ptr<Listener<TArguments...>> Subscribe(THandler handler);
+        std::shared_ptr<Listener> Subscribe(THandler handler)
+        {
+            auto listener = std::make_shared<ListenerT<TArguments...>>(std::move(handler));      // #TODO Use proper allocator.
+
+            listeners_.emplace_back(listener);
+
+            return listener;
+        }
 
     protected:
 
-        std::vector<Listener<TArguments...>*> listeners_;               ///< \brief Listeners subscribed to this object. Observer pointers.
+        std::vector<std::weak_ptr<ListenerT<TArguments...>>> listeners_;         ///< \brief Listeners subscribed to this object.
 
     };
 
@@ -76,148 +123,27 @@ namespace syntropy
         /// \brief Trigger the event, notifying registered listeners.
         /// \param arguments Arguments passed to the listeners.
         template <typename... TEventArguments>
-        void Notify(TEventArguments&&... arguments);
+        void Notify(TEventArguments&&... arguments)
+        {
+            // Reverse iteration since the collection may change during the loop: new listeners can be added, invalid listeners are removed.
+
+            auto& listeners = this->listeners_;
+
+            for (auto index = listeners.size(); index > 0;)
+            {
+                --index;
+
+                if (auto listener = listeners[index].lock())
+                {
+                    (*listener)(arguments...);
+                }
+                else
+                {
+                    std::swap(listeners.back(), listeners[index]);
+                    listeners.pop_back();
+                }
+            }
+        }
     };
-
-    /// \brief Represents a handler routine subscribed to an observable object.
-    /// If the listener is destroyed, it is automatically unsubscribed from the observable object.
-    /// \author Raffaele D. Facendola - June 2017
-    template <typename... TArguments>
-    class Listener
-    {
-        template <typename... TArguments>
-        friend class Observable;
-
-        template <typename... TArguments>
-        friend class Event;
-
-    public:
-
-        /// \brief No copy constructor.
-        Listener(const Listener&) = delete;
-
-        /// \brief No move constructor.
-        Listener(Listener&&) = delete;
-
-        /// \brief No assignment operator.
-        Listener& operator=(const Listener&) = delete;
-
-        /// \brief Default destructor.
-        /// Unsubscribes the listener from the current observable object (if any).
-        ~Listener();
-
-        /// \brief Unsubscribe the listener from current observable object.
-        /// This method does nothing if the listener is already unsubscribed.
-        void Unsubscribe();
-
-        /// \brief Check whether this listener is subscribed to an observable object.
-        /// \return Returns true if this listener is subscribed to an observable object, returns false otherwise.
-        bool IsSubscribed() const;
-
-    private:
-
-        /// \brief Create a new listener subscribed to an observable object.
-        /// \param observable The object being observed.
-        /// \param handler Handler routine for the event being notified.
-        Listener(Observable<TArguments...>& observable, std::function<void(TArguments...)> handler);
-
-        Observable<TArguments...>* observable_;             ///< \brief Observable this listener refers to. nullptr If the listener was unsubscribed.
-
-        std::function<void(TArguments...)> handler_;        ///< \brief Handler routine for the event.
-    };
-
-}
-
-namespace syntropy
-{
-    /************************************************************************/
-    /* OBSERVABLE                                                           */
-    /************************************************************************/
-    
-    template <typename... TArguments>
-    Observable<TArguments...>::~Observable()
-    {
-        // Unsubscribe all the listeners registered so far.
-
-        while (!listeners_.empty())
-        {
-            listeners_.front()->Unsubscribe();
-        }
-    }
-
-    template <typename... TArguments>
-    template <typename THandler>
-    std::unique_ptr<Listener<TArguments...>> Observable<TArguments...>::Subscribe(THandler handler)
-    {
-        // Create a new listener and store it inside the listeners list.
-
-        auto listener = new Listener<TArguments...>(*this, std::move(handler));         // #TODO Use proper allocator.
-
-        listeners_.emplace_back(listener);
-
-        return std::unique_ptr<Listener<TArguments...>>(listener);
-    }
-
-    /************************************************************************/
-    /* EVENT                                                                */
-    /************************************************************************/
-
-    template <typename... TArguments>
-    template <typename... TEventArguments>
-    void Event<TArguments...>::Notify(TEventArguments&&... arguments)
-    {
-        // Notify the listeners registered so far.
-
-        for (auto&& listener : this->listeners_)
-        {
-            listener->handler_(arguments...);
-        }
-    }
-
-    /************************************************************************/
-    /* LISTENER                                                             */
-    /************************************************************************/
-
-    template <typename... TArguments>
-    Listener<TArguments...>::Listener(Observable<TArguments...>& observable, std::function<void(TArguments...)> handler)
-        : observable_(std::addressof(observable))
-        , handler_(std::move(handler))
-    {
-
-    }
-
-    template <typename... TArguments>
-    Listener<TArguments...>::~Listener()
-    {
-        Unsubscribe();
-    }
-
-    template <typename... TArguments>
-    void Listener<TArguments...>::Unsubscribe()
-    {
-        // Remove this listener from the observable object (if any).
-
-        if (IsSubscribed())
-        {
-            observable_->listeners_.erase
-            (
-                std::remove
-                (
-                    std::begin(observable_->listeners_),
-                    std::end(observable_->listeners_),
-                    this
-                ),
-                std::end(observable_->listeners_)
-            );
-
-            observable_ = nullptr;
-        }
-    }
-
-    template <typename... TArguments>
-    bool Listener<TArguments...>::IsSubscribed() const
-    {
-        return observable_ != nullptr;
-    }
 
 }
