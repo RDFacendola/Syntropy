@@ -166,6 +166,7 @@ int FindPath(const int nStartX, const int nStartY,
 	SYNTROPY_ASSERT(nOutBufferSize > 0 && nMapWidth > 0 && nMapHeight > 0);
 
 	std::vector<int> graph_vector;
+
 	const size_t map_size = nMapWidth*nMapHeight;
 	graph_vector.reserve(map_size);
 	for (size_t i = 0; i < map_size; i++)
@@ -173,66 +174,30 @@ int FindPath(const int nStartX, const int nStartY,
 		graph_vector.emplace_back(*(pMap + i));
 	}
 
-	const Graph graph(graph_vector, nMapWidth, nMapHeight);
-	Node start(nStartX, nStartY);
-	Node end(nTargetX, nTargetY);
+	Graph graph(graph_vector, nMapWidth, nMapHeight);
 
-	auto node_position = [&graph](Node node) ->int
+    auto& start = graph.GetNodeAt(nStartX, nStartY);
+    auto& end = graph.GetNodeAt(nTargetX, nTargetY);
+
+	auto node_position = [&graph](const Node& node)
 	{
-		return (graph.GetWidth() * node.Y()) + node.X();
+		return (graph.GetWidth() * node.GetY()) + node.GetX();
 	};
 
 	auto adjacency_func =
-		[node_position, &graph](Node node) -> std::unordered_set<Node>
+	[&graph](const Node& node)
 	{
-		const int pos = node_position(node);
-		const auto size = graph.GetGraph().size();
-		std::unordered_set<Node> neighbours;
-
-		auto is_valid_node = [graph, size](int position) -> bool
-		{
-			return position >= 0 && position < size
-				&& graph.GetGraph().at(position) != 0;
-		};
-
-		if (is_valid_node(pos))
-		{
-			const int down = pos + graph.GetWidth();
-			if (down < size && is_valid_node(down))
-			{
-				neighbours.emplace(Node(down, &graph));
-			}
-
-			const int top = pos - graph.GetWidth();
-			if (top >= 0 && is_valid_node(top))
-			{
-				neighbours.emplace(Node(top, &graph));
-			}
-
-			const int right = pos + 1;
-			if (right % graph.GetWidth() > 0 && is_valid_node(right))
-			{
-				neighbours.emplace(Node(right, &graph));
-			}
-
-			const int left = pos - 1;
-			if (left % graph.GetWidth() >= 0 && is_valid_node(left))
-			{
-				neighbours.emplace(Node(left, &graph));
-			}			
-		}
-
-		return neighbours;
+        return graph.GetNeighbours(node);
 	};
 
-	auto cost_func_distance = [](Node _start, Node _end) -> float
+	auto cost_func_distance = [](const Node& _start, const Node& _end) -> float
 	{
-		return static_cast<float>(std::abs(_start.X() - _end.X()) + std::abs(_start.Y() - _end.Y()));
+		return static_cast<float>(std::abs(_start.GetX() - _end.GetY()) + std::abs(_start.GetX() - _end.GetY()));
 	};
 
-	auto heuristic_func_distance = [](Node _start, Node _end) -> float
+	auto heuristic_func_distance = [](const Node& _start, const Node& _end) -> float
 	{
-		return std::sqrtf((std::powf(float(_end.X()) - float(_start.X()), 2) + std::powf(float(_end.Y()) - float(_start.Y()), 2)));
+		return std::sqrtf((std::powf(float(_end.GetX()) - float(_start.GetX()), 2) + std::powf(float(_end.GetY()) - float(_start.GetY()), 2)));
 	};
 
 	auto path = syntropy::synapse::AStar(
@@ -255,13 +220,8 @@ int FindPath(const int nStartX, const int nStartY,
 	for (size_t i = 0; i < path.size(); i++)
 	{
 		auto Element = pOutBuffer + i;
-		*Element = node_position(path.at(i));
+		*Element = node_position(*path.at(i));
 	}
-
-	//auto print = [node_position](Node n) { std::cout << "->" << node_position(n); };
-	//std::cout << "Path: " << std::endl;
-	//std::for_each(path.begin(), path.end(), [print](const Node& n) {print(n); });
-	//std::cout << std::endl;
 
 	return static_cast<int>(path.size());
 }
@@ -278,16 +238,37 @@ void SynapseTest()
 	constexpr size_t nOutBufferSize = 12;
 	int pOutBuffer[nOutBufferSize];
 
+    std::fill(std::begin(pOutBuffer), std::end(pOutBuffer), -1);
+
 	typedef std::chrono::high_resolution_clock Time;
 	typedef std::chrono::nanoseconds ns;
 
+    int count = 0;
+
 	auto t0 = Time::now();	
-	auto result = FindPath(1, 2, 2, 1, pMap, 4, 3, pOutBuffer, nOutBufferSize);
-	std::cout << "FindPath Output: " << result << std::endl;
+
+    for (int i = 0; i < 10000; ++i)
+    {
+	    count += FindPath(1, 2, 2, 1, pMap, 4, 3, pOutBuffer, nOutBufferSize);
+    }
 
 	auto t1 = Time::now();
 	auto d = std::chrono::duration_cast<ns>(t1 - t0);
-	std::cout << "A* duration: " <<d.count() << " ns\n";
+
+    count /= 10000;
+
+	std::cout << "A* duration: " << static_cast<float>(d.count()) / 10000.0f << " ns\n";
+	
+    std::cout << "FindPath Output: " << count << std::endl;
+
+    std::cout << "Path: " << std::endl;
+
+    while (count-- > 0)
+    {
+        std::cout << pOutBuffer[count] << " -> ";
+    }
+    std::cout << std::endl;
+
 }
 
 int main()

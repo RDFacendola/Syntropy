@@ -27,6 +27,8 @@
 #include <tuple>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
+#include <iterator>
 
 #include "algorithms/search/astar.h"
 
@@ -1106,91 +1108,105 @@ private:
 
 };
 
+class Node
+{
+public:
+
+    Node(int x, int y, int value)
+        : x_(x), y_(y), value_(value)
+    {
+    }
+
+    bool operator==(const Node& other) const
+    {
+        return x_ == other.x_ && y_ == other.y_;
+    }
+
+    bool operator!=(const Node& other) const
+    {
+        return !(*this == other);
+    }
+
+    ~Node() = default;
+
+    int GetX() const { return x_; };
+    int GetY() const { return y_; };
+    int GetValue() const { return value_; };
+
+private:
+    int x_;
+    int y_;
+    int value_;
+};
 
 class Graph
 {
 public:
 
-	Graph(std::initializer_list<int> elements, int col, int rows)
-		:graph_(elements), col_(col), rows_(rows)
-	{
-	}
+    template <typename TElements>
+    Graph(TElements&& elements, int col, int rows)
+        : col_(col), rows_(rows)
+    {
+        auto count = std::distance(std::begin(elements), std::end(elements));
 
-	Graph(std::vector<int> elements, int col, int rows)
-		:graph_(elements), col_(col), rows_(rows)
-	{
-	}
+        nodes_.reserve(count);
 
-	~Graph() = default;
+        int pos = 0;
 
-	int GetWidth() const { return col_; };
-	int GetHeight() const { return rows_; };
-		
-	const std::vector<int>& GetGraph() const { return graph_; };
+        for (auto&& element : elements)
+        {
+            nodes_.emplace_back(pos % col, pos / col, element);
+            ++pos;
+        }
+    }
+
+    ~Graph() = default;
+
+    int GetWidth() const { return col_; };
+    int GetHeight() const { return rows_; };
+
+    const std::vector<Node>& GetNodes() const { return nodes_; };
+
+    const Node& GetNodeAt(int x, int y) const
+    {
+        return nodes_[x + y * GetWidth()];
+    }
+
+    std::vector<const Node*> GetNeighbours(const Node& node) const
+    {
+        std::vector<const Node*> neighbors;
+
+        if (Contains(node.GetX(), node.GetY() + 1))
+        {
+            neighbors.emplace_back(&GetNodeAt(node.GetX(), node.GetY() + 1));
+        }
+
+        if (Contains(node.GetX(), node.GetY() - 1))
+        {
+            neighbors.emplace_back(&GetNodeAt(node.GetX(), node.GetY() - 1));
+        }
+
+        if (Contains(node.GetX() + 1, node.GetY()))
+        {
+            neighbors.emplace_back(&GetNodeAt(node.GetX() + 1, node.GetY()));
+        }
+
+        if (Contains(node.GetX() - 1, node.GetY()))
+        {
+            neighbors.emplace_back(&GetNodeAt(node.GetX() - 1, node.GetY()));
+        }
+
+        return neighbors;
+    }
+
+    bool Contains(int x, int y) const
+    {
+        return x >= 0 && x < col_ &&
+            y >= 0 && y < rows_ &&
+            GetNodeAt(x, y).GetValue() != 0;
+    }
 private:
 
-	std::vector<int> graph_;
+	std::vector<Node> nodes_;
 	int col_, rows_;
-
 };
-
-class Node
-{
-public:
-
-	Node(int x, int y)
-		: x_(x), y_(y)
-	{
-	}
-
-	Node(int posInGraph, const Graph* graph)
-	{
-		x_ = posInGraph % graph->GetWidth();
-		y_ = static_cast<int>(posInGraph / graph->GetWidth());
-	}
-
-	Node(const Node& other)
-		: x_(other.x_), y_(other.y_)
-	{
-	}
-
-	Node& operator=(Node other)
-	{
-		std::swap(x_, other.x_);
-		std::swap(y_, other.y_);
-		return *this;
-	}
-
-	bool operator==(const Node& other) const
-	{
-		return x_ == other.x_ && y_ == other.y_;
-	}
-
-	bool operator!=(const Node& other) const
-	{
-		return !(*this == other);
-	}
-
-	~Node() = default;
-
-	int X() const { return x_; };
-	int Y() const { return y_; };
-
-private:
-	int x_;
-	int y_;
-};
-
-namespace std
-{
-	template<> struct hash<Node>
-	{
-		typedef Node argument_type;
-		typedef std::size_t result_type;
-		result_type operator()(argument_type const& s) const noexcept
-		{
-			std::string NodeAsString = "x" + std::to_string(s.X()) + "y" + std::to_string(s.Y());
-			return std::hash<std::string>{}(NodeAsString);
-		}
-	};
-}

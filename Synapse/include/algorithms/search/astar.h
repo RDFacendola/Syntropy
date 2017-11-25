@@ -4,10 +4,14 @@
 /// \author Giuseppe Spizzico - 19/11/2017
 
 #pragma once
+
 #include <map>
 #include <string>
 #include <type_traits>
 #include <queue>
+#include <vector>
+#include <tuple>
+#include <algorithm>
 
 namespace syntropy::synapse
 {
@@ -15,94 +19,96 @@ namespace syntropy::synapse
 	///
 	/// \param start The starting node of the path.
 	/// \param end The ending node of the path.
-	/// \param adjacency_func The function that provides the set of nodes adjacent to a node in a graph. TAdjacencyFunc(TNode) -> IterableContainer
-	/// \param cost_func The actual cost ( g(x) )from node A to node B. TCostFunc(TNode A, TNode B) -> TCostType
-	/// \param heuristic_func The estimate cost ( h(x) ) from node A to node B. THeuristicFunc(TNode A, TNode B) -> TCostType
-	/// \return the vector containing the path.
-
+	/// \param adjacency_func The function that provides the list of nodes adjacent to a node in a graph. TAdjacencyFunc(TNode) -> Collection<const TNode*>
+	/// \param cost_func The actual cost ( g(x) )from node A to node B. TCostFunc(const TNode& A, const TNode& B) -> TCostType
+	/// \param heuristic_func The estimate cost ( h(x) ) from node A to node B. THeuristicFunc(const TNode& A, const TNode& B) -> TCostType
+	/// \return the vector containing the path, in reverse order (from end to start).
 	template<typename TNode, typename TAdjacencyFunc, typename TCostFunc, typename THeuristicFunc>
-	std::vector<TNode> AStar(
+	std::vector<const TNode*> AStar(
 		const TNode& start,
 		const TNode& end,
 		TAdjacencyFunc adjacency_func,
 		TCostFunc cost_func,
 		THeuristicFunc heuristic_func)
 	{
-		typedef decltype(heuristic_func(start, end)) TCostType;
-		static_assert(std::is_same_v<TCostType, decltype(cost_func(start, start))>, "syntropy::synapse::AStar: THeuristicFunc and TCostFunc must have the same return type.");
-		static_assert(std::is_arithmetic_v<TCostType>, "syntropy::synapse::AStar: the return type of TCostFunc and THeuristicFunc must be arithmetic.");
+        using TCostType = decltype(heuristic_func(start, end));
 
-		///  Utility struct used to assign a priority to a node.
-		struct FNode
-		{
-		public:
-			FNode(const TNode& node, TCostType priority)
-				: node_(node), priority_(priority)
-			{
-			};
+        std::vector<std::tuple<const TNode*, TCostType>> frontier;                                          // Nodes to be explored yet.
+		std::unordered_map<const TNode*, const TNode*> came_from;                                           // Links each node with the predecessor having the lowest cost.
+		std::unordered_map<const TNode*, TCostType> cost_to_node;                                           // Cost to reach each node from start.
 
-			bool operator>(const FNode& other) const
-			{
-				return priority_ > other.priority_;
-			};
-
-			const TNode& GetNode() const { return node_; };
-
-		private:
-			TNode node_;
-			TCostType priority_;
-		};
-		/// List of the nodes to be explored, sorted by priority ( less is best ).
-		std::priority_queue<FNode, std::vector<FNode>, std::greater<FNode>> frontier;
-		frontier.push(FNode(start, static_cast<TCostType>(0)));
-
-		/// Map of links from node to node with the lowest cost.
-		std::unordered_map<TNode, TNode> came_from;
-		came_from.emplace(start, start);
-
-		/// Mapping the cost from start for each node.
-		std::unordered_map<TNode, TCostType> cost_to_node;
-		cost_to_node.emplace(start, static_cast<TCostType>(0));
+        frontier.emplace_back(&start, TCostType(0));
+		came_from.emplace(&start, &start);
+		cost_to_node.emplace(&start, TCostType(0));
 
 		while (!frontier.empty())
 		{
-			/// Get the node with the lowest cost.
-			FNode current = frontier.top();
-			frontier.pop();
-			
-			const TNode& current_node = current.GetNode();
-			if (current_node == end)
-			{
-				break; /// Stop exploring if the end node has been found.
-			}
-			auto neighbours = adjacency_func(current_node);     /// Get the neighbours of current node.
+			// Extract the node with the lowest cost from the frontier.
+
+            auto lowest_it = std::begin(frontier);
+
+            for (auto frontier_it = std::next(std::begin(frontier)); frontier_it != std::end(frontier); ++frontier_it)
+            {
+                if (std::get<1>(*frontier_it) < std::get<1>(*lowest_it))
+                {
+                    lowest_it = frontier_it;
+                }
+            }
+
+            auto current_node = std::get<0>(*lowest_it);
+
+            std::iter_swap(lowest_it, std::prev(std::end(frontier)));
+
+            frontier.pop_back();
+
+            // Check if the end node was found.
+
+            if (current_node == &end)
+            {
+                break;
+            }
+
+            // Add neighbours to the frontier.
+
+            auto&& neighbours = adjacency_func(*current_node);                                              // Get the neighbours of current node.
+            
+            auto cost_to_current_node = cost_to_node.at(current_node);                                      // Cost to reach the current node from start.
+
             for (auto&& neighbour : neighbours)
-			{
-				TCostType new_cost = cost_to_node.at(current_node) + cost_func(current_node, neighbour); /// actual cost to node = Cost from start + cost from current to next = g(x)
-				if (!cost_to_node.count(neighbour) || new_cost < (cost_to_node.at(neighbour)))
-				{
-					cost_to_node.emplace(neighbour, new_cost);
-					TCostType priority = new_cost + heuristic_func(neighbour, end); ///  f(x) = g(x) + h(x)
-					frontier.push(FNode(neighbour, priority));
-					came_from.emplace(neighbour, current_node);
-				}
+            {
+                auto new_cost = cost_to_current_node + cost_func(*current_node, *neighbour);                // Cost to node = Cost from start + cost from current to next = g(x)
+
+                if ((cost_to_node.find(neighbour) == std::end(cost_to_node)) ||                             // The node hasn't been explored yet.
+                     new_cost < cost_to_node.at(neighbour))                                                 // A better path to the node was found.
+                {
+                    cost_to_node.emplace(neighbour, new_cost);
+                    
+                    auto priority = new_cost + heuristic_func(*neighbour, end);                             //  f(x) = g(x) + h(x)
+
+                    frontier.emplace_back(neighbour, priority);
+
+                    came_from.emplace(neighbour, current_node);
+                }
 			}
 		}
 
-		/// Recreate the path.
-		std::vector<TNode> path;
-		if (came_from.count(end))
+		// Recreate the path.
+
+		std::vector<const TNode*> path;
+
+		if (came_from.find(&end) != std::end(came_from))
 		{
-			auto previous_node = came_from.at(end);
-			while (previous_node != start)
+            path.emplace_back(&end);
+
+			auto previous_node = came_from.at(&end);
+
+			while (previous_node != &start)
 			{
-				path.insert(path.begin(), previous_node);
+				path.emplace_back(previous_node);
 				previous_node = came_from.at(previous_node);
 			}
-
-			path.insert(path.end(), end);
-
 		}
+
 		return path;
 	}		
 }
