@@ -1176,6 +1176,8 @@ public:
     {
         std::vector<const Node*> neighbors;
 
+        neighbors.reserve(4);
+
         if (Contains(node.GetX(), node.GetY() + 1))
         {
             neighbors.emplace_back(&GetNodeAt(node.GetX(), node.GetY() + 1));

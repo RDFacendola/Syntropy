@@ -5,25 +5,26 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-#include <type_traits>
 #include <queue>
 #include <vector>
 #include <tuple>
+#include <map>
 #include <algorithm>
 
 namespace syntropy::synapse
 {
-	/// \brief Classic A* implementation, used for search.
-	///
-	/// \param start The starting node of the path.
-	/// \param end The ending node of the path.
-	/// \param adjacency_func The function that provides the list of nodes adjacent to a node in a graph. TAdjacencyFunc(TNode) -> Collection<const TNode*>
-	/// \param cost_func The actual cost ( g(x) )from node A to node B. TCostFunc(const TNode& A, const TNode& B) -> TCostType
-	/// \param heuristic_func The estimate cost ( h(x) ) from node A to node B. THeuristicFunc(const TNode& A, const TNode& B) -> TCostType
-	/// \return the vector containing the path, in reverse order (from end to start).
-	template<typename TNode, typename TAdjacencyFunc, typename TCostFunc, typename THeuristicFunc>
+
+    /// \brief Find the path with lowest cost among start and end.
+    /// \tparam TAdjacencyFunc Type of the adjacency function: a: (const TNode&) -> Collection<const TNode*>.
+    /// \tparam TCostFunc Type of the cost function: g(n, m): (const TNode&, const TNode&) -> TCostType.
+    /// \tparam THeuristicFunc Type of the heuristic function: h(n, m): (const TNode&, const TNode&) -> THeuristicType.
+    /// \param start Node to start the search from.
+    /// \param end Node to end the search to.
+    /// \param adjacency_func Provides the list of direct neighbors of a node.
+    /// \param cost_func Evaluate the cost to get from a node to one of its neighbors.
+    /// \param heuristic_func Estimates the cost of the cheapest path among two nodes.
+    /// \return Returns the path connecting end to start.
+    template<typename TNode, typename TAdjacencyFunc, typename TCostFunc, typename THeuristicFunc>
     std::vector<const TNode*> AStar(const TNode& start, const TNode& end, TAdjacencyFunc adjacency_func, TCostFunc cost_func, THeuristicFunc heuristic_func)
     {
         using TCostType = decltype(cost_func(start, end));
@@ -39,11 +40,9 @@ namespace syntropy::synapse
         };
 
         std::priority_queue<TFrontierNode, std::vector<TFrontierNode>, FrontierNodeComparator> frontier;    // Nodes to be explored yet.
-
-        std::unordered_map<const TNode*, std::tuple<const TNode*, TCostType>> node_map;                     // Associate each node with the predecessor having the lowest cost and the cost needed to reach it from start.
+        std::unordered_map<const TNode*, TFrontierNode> node_map;                                           // Associate each node with the predecessor having the lowest cost and the cost needed to reach it from start.
 
         frontier.emplace(&start, TCostType(0));
-
         node_map.emplace(&start, std::make_tuple(&start, TCostType(0)));
 
         while (!frontier.empty())
