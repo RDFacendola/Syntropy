@@ -26,25 +26,25 @@ namespace syntropy::synapse
 	template<typename TNode, typename TAdjacencyFunc, typename TCostFunc, typename THeuristicFunc>
     std::vector<const TNode*> AStar(const TNode& start, const TNode& end, TAdjacencyFunc adjacency_func, TCostFunc cost_func, THeuristicFunc heuristic_func)
     {
-        using TCostType = decltype(heuristic_func(start, end));
+        using TCostType = decltype(cost_func(start, end));
 
         using TFrontierNode = std::tuple<const TNode*, TCostType>;
 
         struct FrontierNodeComparator
         {
-            bool operator()(const TFrontierNode& a, const TFrontierNode& b)
+            bool operator()(const TFrontierNode& a, const TFrontierNode& b) const
             {
                 return std::get<1>(a) > std::get<1>(b);
             }
         };
 
         std::priority_queue<TFrontierNode, std::vector<TFrontierNode>, FrontierNodeComparator> frontier;    // Nodes to be explored yet.
-        std::unordered_map<const TNode*, const TNode*> came_from;                                           // Links each node with the predecessor having the lowest cost.
-        std::unordered_map<const TNode*, TCostType> cost_to_node;                                           // Cost to reach each node from start.
+
+        std::unordered_map<const TNode*, std::tuple<const TNode*, TCostType>> node_map;                     // Associate each node with the predecessor having the lowest cost and the cost needed to reach it from start.
 
         frontier.emplace(&start, TCostType(0));
-        came_from.emplace(&start, &start);
-        cost_to_node.emplace(&start, TCostType(0));
+
+        node_map.emplace(&start, std::make_tuple(&start, TCostType(0)));
 
         while (!frontier.empty())
         {
@@ -61,37 +61,32 @@ namespace syntropy::synapse
                 break;
             }
 
-            // Add neighbours to the frontier.
+            // Add neighbors to the frontier.
 
-            auto&& neighbours = adjacency_func(*current_node);                                              // Get the neighbours of current node.
+            auto cost_to_current_node = std::get<1>(node_map.at(current_node));                             // Cost to reach the current node from start.
 
-            auto cost_to_current_node = cost_to_node.at(current_node);                                      // Cost to reach the current node from start.
-
-            for (auto&& neighbour : neighbours)
+            for (auto&& neighbour : adjacency_func(*current_node))
             {
                 auto new_cost = cost_to_current_node + cost_func(*current_node, *neighbour);                // Cost to node = Cost from start + cost from current to next = g(x)
 
-                if ((cost_to_node.find(neighbour) == std::end(cost_to_node)) ||                             // The node hasn't been explored yet.
-                    new_cost < cost_to_node.at(neighbour))                                                 // A better path to the node was found.
+                auto neighbor_it = node_map.find(neighbour);
+
+                if ((neighbor_it == std::end(node_map)) || new_cost < std::get<1>(neighbor_it->second))     // Either the neighbor was never considered, or a better path to it was found.
                 {
-                    cost_to_node.emplace(neighbour, new_cost);
+                    frontier.emplace(neighbour, new_cost + heuristic_func(*neighbour, end));                //  f(x) = g(x) + h(x)
 
-                    auto priority = new_cost + heuristic_func(*neighbour, end);                             //  f(x) = g(x) + h(x)
-
-                    frontier.emplace(neighbour, priority);
-
-                    came_from.emplace(neighbour, current_node);
+                    node_map.emplace(neighbour, std::make_tuple(current_node, new_cost));
                 }
             }
         }
 
-        // Recreate the path.
+        // Recreate the path (reversed).
 
         std::vector<const TNode*> path;
 
-        if (came_from.find(&end) != std::end(came_from))
+        if (node_map.find(&end) != std::end(node_map))
         {
-            for (auto previous_node = &end; previous_node != &start; previous_node = came_from.at(previous_node))
+            for (auto previous_node = &end; previous_node != &start; previous_node = std::get<0>(node_map.at(previous_node)))
             {
                 path.emplace_back(previous_node);
             }
