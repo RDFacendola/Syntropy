@@ -15,17 +15,15 @@ namespace syntropy::synapse
 	///
 	/// \param start The starting node of the path.
 	/// \param end The ending node of the path.
-	/// \param graph The graph in which the nodes are contained.
-	/// \param adjacency_func The function that provides the set of nodes adjacent to a node in a graph. TAdjacencyFunc(TNode, TGraph) -> IterableContainer
+	/// \param adjacency_func The function that provides the set of nodes adjacent to a node in a graph. TAdjacencyFunc(TNode) -> IterableContainer
 	/// \param cost_func The actual cost ( g(x) )from node A to node B. TCostFunc(TNode A, TNode B) -> TCostType
 	/// \param heuristic_func The estimate cost ( h(x) ) from node A to node B. THeuristicFunc(TNode A, TNode B) -> TCostType
 	/// \return the vector containing the path.
 
-	template<typename TNode, typename TGraph, typename TAdjacencyFunc, typename TCostFunc, typename THeuristicFunc>
+	template<typename TNode, typename TAdjacencyFunc, typename TCostFunc, typename THeuristicFunc>
 	std::vector<TNode> AStar(
 		const TNode& start,
 		const TNode& end,
-		const TGraph& graph,
 		TAdjacencyFunc adjacency_func,
 		TCostFunc cost_func,
 		THeuristicFunc heuristic_func)
@@ -77,8 +75,8 @@ namespace syntropy::synapse
 			{
 				break; /// Stop exploring if the end node has been found.
 			}
-			auto neighbours = adjacency_func(current_node, graph); /// Get the neighbours of current node.			
-			for (auto&& neighbour : neighbours)
+			auto neighbours = adjacency_func(current_node);     /// Get the neighbours of current node.
+            for (auto&& neighbour : neighbours)
 			{
 				TCostType new_cost = cost_to_node.at(current_node) + cost_func(current_node, neighbour); /// actual cost to node = Cost from start + cost from current to next = g(x)
 				if (!cost_to_node.count(neighbour) || new_cost < (cost_to_node.at(neighbour)))

@@ -177,48 +177,48 @@ int FindPath(const int nStartX, const int nStartY,
 	Node start(nStartX, nStartY);
 	Node end(nTargetX, nTargetY);
 
-	auto node_position = [](Node node, const Graph* graph) ->int
+	auto node_position = [&graph](Node node) ->int
 	{
-		return (graph->GetWidth() * node.Y()) + node.X();
+		return (graph.GetWidth() * node.Y()) + node.X();
 	};
 
 	auto adjacency_func =
-		[node_position](Node node, const Graph* graph) -> std::unordered_set<Node>
+		[node_position, &graph](Node node) -> std::unordered_set<Node>
 	{
-		const int pos = node_position(node, graph);
-		const auto size = graph->GetGraph().size();
+		const int pos = node_position(node);
+		const auto size = graph.GetGraph().size();
 		std::unordered_set<Node> neighbours;
 
 		auto is_valid_node = [graph, size](int position) -> bool
 		{
 			return position >= 0 && position < size
-				&& graph->GetGraph().at(position) != 0;
+				&& graph.GetGraph().at(position) != 0;
 		};
 
 		if (is_valid_node(pos))
 		{
-			const int down = pos + graph->GetWidth();
+			const int down = pos + graph.GetWidth();
 			if (down < size && is_valid_node(down))
 			{
-				neighbours.emplace(Node(down, graph));
+				neighbours.emplace(Node(down, &graph));
 			}
 
-			const int top = pos - graph->GetWidth();
+			const int top = pos - graph.GetWidth();
 			if (top >= 0 && is_valid_node(top))
 			{
-				neighbours.emplace(Node(top, graph));
+				neighbours.emplace(Node(top, &graph));
 			}
 
 			const int right = pos + 1;
-			if (right % graph->GetWidth() > 0 && is_valid_node(right))
+			if (right % graph.GetWidth() > 0 && is_valid_node(right))
 			{
-				neighbours.emplace(Node(right, graph));
+				neighbours.emplace(Node(right, &graph));
 			}
 
 			const int left = pos - 1;
-			if (left % graph->GetWidth() >= 0 && is_valid_node(left))
+			if (left % graph.GetWidth() >= 0 && is_valid_node(left))
 			{
-				neighbours.emplace(Node(left, graph));
+				neighbours.emplace(Node(left, &graph));
 			}			
 		}
 
@@ -238,7 +238,6 @@ int FindPath(const int nStartX, const int nStartY,
 	auto path = syntropy::synapse::AStar(
 		start,
 		end,
-		&graph,
 		adjacency_func,
 		cost_func_distance,
 		heuristic_func_distance);
@@ -256,13 +255,13 @@ int FindPath(const int nStartX, const int nStartY,
 	for (size_t i = 0; i < path.size(); i++)
 	{
 		auto Element = pOutBuffer + i;
-		*Element = node_position(path.at(i), &graph);
+		*Element = node_position(path.at(i));
 	}
 
-	auto print = [node_position, graph](Node n) { std::cout << "->" << node_position(n, const_cast<Graph*>(&graph)); };
-	std::cout << "Path: " << std::endl;
-	std::for_each(path.begin(), path.end(), [print, graph](const Node& n) {print(n); });
-	std::cout << std::endl;
+	//auto print = [node_position](Node n) { std::cout << "->" << node_position(n); };
+	//std::cout << "Path: " << std::endl;
+	//std::for_each(path.begin(), path.end(), [print](const Node& n) {print(n); });
+	//std::cout << std::endl;
 
 	return static_cast<int>(path.size());
 }
@@ -280,15 +279,15 @@ void SynapseTest()
 	int pOutBuffer[nOutBufferSize];
 
 	typedef std::chrono::high_resolution_clock Time;
-	typedef std::chrono::milliseconds ms;
+	typedef std::chrono::nanoseconds ns;
 
 	auto t0 = Time::now();	
 	auto result = FindPath(1, 2, 2, 1, pMap, 4, 3, pOutBuffer, nOutBufferSize);
 	std::cout << "FindPath Output: " << result << std::endl;
 
 	auto t1 = Time::now();
-	ms d = std::chrono::duration_cast<ms>(t1 - t0);
-	std::cout << "A* duration: " <<d.count() << "ms\n";
+	auto d = std::chrono::duration_cast<ns>(t1 - t0);
+	std::cout << "A* duration: " <<d.count() << " ns\n";
 }
 
 int main()
@@ -296,13 +295,13 @@ int main()
 
 	SynapseTest();
 
-    Initialize();
+ //   Initialize();
 
-    ReflectionAndSerializationTest();
+ //   ReflectionAndSerializationTest();
 
-    AllocTest();
+ //   AllocTest();
 
-	MultithreadTest();
+	//MultithreadTest();
 
     system("pause");
 
