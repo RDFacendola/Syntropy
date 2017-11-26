@@ -37,6 +37,8 @@
 
 #include "patterns/observable.h"
 
+#include "time/calendar.h"
+
 #include "synergy.h"
 #include "task/scheduler.h"
 
@@ -273,8 +275,9 @@ void SynapseTest()
 
 int main()
 {
+    std::cout << syntropy::Calendar::GetDate() << " - " << syntropy::Calendar::GetTimeOfDay() << "\n";
 
-	SynapseTest();
+    SynapseTest();
 
  //   Initialize();
 

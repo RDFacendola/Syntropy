@@ -1,7 +1,7 @@
 #include "diagnostics/log_channels.h"
 
 #include "algorithm.h"
-#include "time/date.h"
+#include "time/calendar.h"
 
 #include "containers/range.h"
 
@@ -84,11 +84,11 @@ namespace syntropy
             // Match each token with the proper thunk
             if (token == kTimeToken)
             {
-                return [](const ThunkArgs& args) { args.out_ << GetTimeOfDay(args.log_.time_); };
+                return [](const ThunkArgs& args) { args.out_ << Calendar::GetTimeOfDay(args.log_.time_); };
             }
             else if (token == kDateToken)
             {
-                return [](const ThunkArgs& args) { args.out_ << GetDate(args.log_.time_); };
+                return [](const ThunkArgs& args) { args.out_ << Calendar::GetDate(args.log_.time_); };
             }
             else if (token == kSeverityToken)
             {
