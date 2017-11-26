@@ -29,7 +29,6 @@
     <ClInclude Include="include\platform\compiler\msvc.h" />
     <ClInclude Include="include\platform\os\windows_os.h" />
     <ClInclude Include="include\algorithm.h" />
-    <ClInclude Include="include\date.h" />
     <ClInclude Include="include\memory\memory.h" />
     <ClInclude Include="include\platform\system.h" />
     <ClInclude Include="include\platform\builtin.h" />
@@ -69,6 +68,7 @@
     <ClInclude Include="include\memory\allocators\layered_allocator.h" />
     <ClInclude Include="include\patterns\scope_guard.h" />
     <ClInclude Include="include\patterns\observable.h" />
+    <ClInclude Include="include\time\date.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -87,7 +87,6 @@
     <ClCompile Include="src\diagnostics\log.cpp" />
     <ClCompile Include="src\diagnostics\diagnostics.cpp" />
     <ClCompile Include="src\platform\os\windows_os.cpp" />
-    <ClCompile Include="src\date.cpp" />
     <ClCompile Include="src\memory\memory.cpp" />
     <ClCompile Include="src\platform\system.cpp" />
     <ClCompile Include="src\platform\builtin.cpp" />
@@ -108,6 +107,7 @@
     <ClCompile Include="src\diagnostics\log_channels.cpp" />
     <ClCompile Include="src\reflection\interfaces\class_interfaces.cpp" />
     <ClCompile Include="src\memory\layered_allocator.cpp" />
+    <ClCompile Include="src\time\date.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

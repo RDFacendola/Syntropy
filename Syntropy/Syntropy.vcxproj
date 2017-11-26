@@ -27,7 +27,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\date.h">
+    <ClInclude Include="include\time\date.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -172,7 +172,7 @@
     <ClInclude Include="include\utility.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\date.cpp">
+    <ClCompile Include="src\time\date.cpp">
       <SubType>
       </SubType>
     </ClCompile>
