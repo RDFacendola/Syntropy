@@ -12,7 +12,8 @@
 #include <memory>
 
 #include "type_traits.h"
-#include "utility.h"
+
+#include "patterns/utility.h"
 
 #include "diagnostics/assert.h"
 

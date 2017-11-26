@@ -10,8 +10,9 @@
 #include <ostream>
 #include <array>
 
-#include "utility.h"
 #include "type_traits.h"
+
+#include "patterns/utility.h"
 
 namespace syntropy
 {

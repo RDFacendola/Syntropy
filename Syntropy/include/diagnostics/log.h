@@ -15,8 +15,9 @@
 
 #include "diagnostics/diagnostics.h"
 
+#include "patterns/algorithm.h"
+
 #include "macro.h"
-#include "algorithm.h"
 
 /// \brief Utility macro for sending a message to the log manager.
 #define SYNTROPY_LOG_MESSAGE(stacktrace, contexts, severity, ...) \

@@ -9,7 +9,6 @@
 #include <tuple>
 
 #include "type_traits.h"
-#include "algorithm.h"
 
 #include "containers/hashed_string.h"
 #include "containers/interface_container.h"

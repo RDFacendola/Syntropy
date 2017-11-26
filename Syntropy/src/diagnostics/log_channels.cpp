@@ -1,7 +1,8 @@
 #include "diagnostics/log_channels.h"
 
-#include "algorithm.h"
 #include "time/calendar.h"
+
+#include "patterns/algorithm.h"
 
 #include "containers/range.h"
 

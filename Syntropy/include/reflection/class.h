@@ -10,7 +10,8 @@
 #include <algorithm>
 
 #include "type_traits.h"
-#include "utility.h"
+
+#include "patterns/utility.h"
 
 #include "containers/hashed_string.h"
 #include "containers/interface_container.h"

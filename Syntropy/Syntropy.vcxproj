@@ -41,7 +41,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\algorithm.h">
+    <ClInclude Include="include\patterns\algorithm.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -170,7 +170,7 @@
     </ClInclude>
     <ClInclude Include="include\time\timer.h" />
     <ClInclude Include="include\type_traits.h" />
-    <ClInclude Include="include\utility.h" />
+    <ClInclude Include="include\patterns\utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\time\calendar.cpp">

@@ -6,14 +6,7 @@
 
 #pragma once
 
-#include <type_traits>
-#include <cassert>
-
 #include <string>
-#include <locale>
-#include <codecvt>
-
-#include "type_traits.h"
 
 #define SYNTROPY_UNUSED(x) (x)
 
