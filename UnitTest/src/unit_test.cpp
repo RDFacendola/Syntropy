@@ -38,6 +38,7 @@
 #include "patterns/observable.h"
 
 #include "time/calendar.h"
+#include "time/timer.h"
 
 #include "synergy.h"
 #include "task/scheduler.h"
@@ -242,24 +243,19 @@ void SynapseTest()
 
     std::fill(std::begin(pOutBuffer), std::end(pOutBuffer), -1);
 
-	typedef std::chrono::high_resolution_clock Time;
-	typedef std::chrono::nanoseconds ns;
-
     int count = 0;
 
-	auto t0 = Time::now();	
+    syntropy::HighResolutionTimer<std::chrono::microseconds> timer(true);
 
     for (int i = 0; i < 10000; ++i)
     {
 	    count += FindPath(1, 2, 2, 1, pMap, 4, 3, pOutBuffer, nOutBufferSize);
     }
-
-	auto t1 = Time::now();
-	auto d = std::chrono::duration_cast<ns>(t1 - t0);
-
+    
+    float time = timer.Stop() / 10000.0f;
     count /= 10000;
 
-	std::cout << "A* duration: " << static_cast<float>(d.count()) / 10000.0f << " ns\n";
+	std::cout << "A* duration: " << time << " us\n";
 	
     std::cout << "FindPath Output: " << count << std::endl;
 

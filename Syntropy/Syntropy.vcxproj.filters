@@ -69,6 +69,7 @@
     <ClInclude Include="include\patterns\scope_guard.h" />
     <ClInclude Include="include\patterns\observable.h" />
     <ClInclude Include="include\time\calendar.h" />
+    <ClInclude Include="include\time\timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
