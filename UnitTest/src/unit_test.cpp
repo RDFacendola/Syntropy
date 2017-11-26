@@ -40,6 +40,8 @@
 #include "time/calendar.h"
 #include "time/timer.h"
 
+#include "math/random.h"
+
 #include "synergy.h"
 #include "task/scheduler.h"
 

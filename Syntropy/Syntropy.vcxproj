@@ -27,6 +27,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\math\random.h" />
     <ClInclude Include="include\time\calendar.h">
       <SubType>
       </SubType>
@@ -173,6 +174,7 @@
     <ClInclude Include="include\patterns\utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\math\random.cpp" />
     <ClCompile Include="src\time\calendar.cpp">
       <SubType>
       </SubType>

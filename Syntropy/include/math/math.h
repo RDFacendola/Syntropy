@@ -1,6 +1,6 @@
 
 /// \file math.h
-/// \brief TODO: Add brief description here
+/// \brief This header is part of the syntropy math system. It contains generic math functions and defintions.
 ///
 /// \author Raffaele D. Facendola - 2017
 
