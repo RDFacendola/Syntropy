@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+#include "diagnostics/assert.h"
+
 namespace syntropy
 {
     namespace syntax
@@ -45,17 +47,21 @@ namespace syntropy
             vm.stack_pointer_ = Memory::AddOffset(vm.stack_pointer_, local_storage);            // Reserve space for local storage.
         }
 
-        void VirtualMachineIntrinsics::Call(VMExecutionContext& context)
+        void VirtualMachineIntrinsics::Call(VMExecutionContext& /*context*/)
         {
-            auto function_name_hash = context.GetNextImmediate<uint64_t>();
+            // #TODO It is not possible to construct a string directly from its hash (what if the hash no associated string?)
 
-            auto& vm = context.GetVirtualMachine();
+            SYNTROPY_ASSERT(false);
 
-            auto function_pointer = vm.GetFunctionAddress(function_name_hash);                  // Resolve function name.
+            //auto function_name_hash = context.GetNextImmediate<uint64_t>();
 
-            *(vm.stack_pointer_++) = reinterpret_cast<uintptr_t>(vm.instruction_pointer_);      // Save the caller's instruction pointer. This actually points to the next instruction after "Call".
+            //auto& vm = context.GetVirtualMachine();
 
-            vm.instruction_pointer_ = reinterpret_cast<instruction_t*>(function_pointer);       // Grant control to the callee.
+            //auto function_pointer = vm.GetFunctionAddress(function_name_hash);                  // Resolve function name. 
+
+            //*(vm.stack_pointer_++) = reinterpret_cast<uintptr_t>(vm.instruction_pointer_);      // Save the caller's instruction pointer. This actually points to the next instruction after "Call".
+
+            //vm.instruction_pointer_ = reinterpret_cast<instruction_t*>(function_pointer);       // Grant control to the callee.
         }
 
         void VirtualMachineIntrinsics::Return(VMExecutionContext& context)

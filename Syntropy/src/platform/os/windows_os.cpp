@@ -24,6 +24,8 @@
 #include <algorithm>
 #include <memory>
 
+#include "syntropy.h"
+
 namespace syntropy
 {
     namespace platform

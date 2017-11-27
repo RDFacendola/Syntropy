@@ -135,7 +135,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\math\fnv1.h" />
+    <ClInclude Include="include\math\hash.h" />
     <ClInclude Include="include\containers\hashed_string.h" />
     <ClInclude Include="include\reflection\property.h">
       <SubType>
@@ -174,6 +174,7 @@
     <ClInclude Include="include\patterns\utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\math\hash.cpp" />
     <ClCompile Include="src\math\random.cpp" />
     <ClCompile Include="src\time\calendar.cpp">
       <SubType>

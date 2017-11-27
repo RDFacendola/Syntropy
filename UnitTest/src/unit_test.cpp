@@ -13,6 +13,8 @@
 
 #include "unit1.h"
 
+#include "containers/hashed_string.h"
+
 #include "vm/virtual_machine.h"
 #include "vm/intrinsics.h"
 
