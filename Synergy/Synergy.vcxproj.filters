@@ -8,6 +8,7 @@
     <ClInclude Include="include\task\task_queue.h" />
     <ClInclude Include="include\task\task_pool.h" />
     <ClInclude Include="include\task\task_execution_context.h" />
+    <ClInclude Include="include\patterns\sync_counter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\synergy.cpp" />
@@ -17,5 +18,6 @@
     <ClCompile Include="src\task\task_queue.cpp" />
     <ClCompile Include="src\task\task_pool.cpp" />
     <ClCompile Include="src\task\task_execution_context.cpp" />
+    <ClCompile Include="src\patterns\sync_counter.cpp" />
   </ItemGroup>
 </Project>

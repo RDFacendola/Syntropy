@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\patterns\sync_counter.h" />
     <ClInclude Include="include\synergy.h">
       <SubType>
       </SubType>
@@ -31,6 +32,7 @@
     <ClInclude Include="include\task\task_queue.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\patterns\sync_counter.cpp" />
     <ClCompile Include="src\synergy.cpp">
       <SubType>
       </SubType>
