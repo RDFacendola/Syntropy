@@ -8,29 +8,24 @@
 
 #include <intrin.h>
 
-namespace syntropy
+namespace syntropy::platform
 {
-    namespace platform
+    /************************************************************************/
+    /* PLATFORM BUILTIN                                                     */
+    /************************************************************************/
+
+    uint64_t PlatformBuiltIn::GetMostSignificantBit(uint64_t number)
     {
+        unsigned long index;
+        _BitScanReverse64(&index, number);
+        return static_cast<uint64_t>(index);
+    }
 
-        /************************************************************************/
-        /* PLATFORM BUILTIN                                                     */
-        /************************************************************************/
-
-        uint64_t PlatformBuiltIn::GetMostSignificantBit(uint64_t number)
-        {
-            unsigned long index;
-            _BitScanReverse64(&index, number);
-            return static_cast<uint64_t>(index);
-        }
-
-        uint64_t PlatformBuiltIn::GetLeastSignificantBit(uint64_t number)
-        {
-            unsigned long index;
-            _BitScanForward64(&index, number);
-            return static_cast<uint64_t>(index);
-        }
-
+    uint64_t PlatformBuiltIn::GetLeastSignificantBit(uint64_t number)
+    {
+        unsigned long index;
+        _BitScanForward64(&index, number);
+        return static_cast<uint64_t>(index);
     }
 }
 

@@ -2,22 +2,19 @@
 
 #include "platform/compiler/compiler.h"
 
-namespace syntropy
+namespace syntropy::platform
 {
-    namespace platform
+    /************************************************************************/
+    /* BUILTIN                                                              */
+    /************************************************************************/
+
+    uint64_t BuiltIn::GetMostSignificantBit(uint64_t number)
     {
-        /************************************************************************/
-        /* PLATFORM BUILTIN                                                     */
-        /************************************************************************/
+        return platform::PlatformBuiltIn::GetMostSignificantBit(number);
+    }
 
-        uint64_t BuiltIn::GetMostSignificantBit(uint64_t number)
-        {
-            return platform::PlatformBuiltIn::GetMostSignificantBit(number);
-        }
-
-        uint64_t BuiltIn::GetLeastSignificantBit(uint64_t number)
-        {
-            return platform::PlatformBuiltIn::GetLeastSignificantBit(number);
-        }
+    uint64_t BuiltIn::GetLeastSignificantBit(uint64_t number)
+    {
+        return platform::PlatformBuiltIn::GetLeastSignificantBit(number);
     }
 }
