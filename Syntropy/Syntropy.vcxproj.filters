@@ -71,6 +71,7 @@
     <ClInclude Include="include\math\hash.h">
       <Filter>hash</Filter>
     </ClInclude>
+    <ClInclude Include="include\platform\threading.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -112,6 +113,7 @@
     <ClCompile Include="src\time\calendar.cpp" />
     <ClCompile Include="src\math\random.cpp" />
     <ClCompile Include="src\math\hash.cpp" />
+    <ClCompile Include="src\platform\threading.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

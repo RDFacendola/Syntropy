@@ -28,6 +28,7 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\math\random.h" />
+    <ClInclude Include="include\platform\threading.h" />
     <ClInclude Include="include\time\calendar.h">
       <SubType>
       </SubType>
@@ -176,6 +177,7 @@
   <ItemGroup>
     <ClCompile Include="src\math\hash.cpp" />
     <ClCompile Include="src\math\random.cpp" />
+    <ClCompile Include="src\platform\threading.cpp" />
     <ClCompile Include="src\time\calendar.cpp">
       <SubType>
       </SubType>

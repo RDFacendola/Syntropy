@@ -16,84 +16,131 @@
 #include "diagnostics/diagnostics.h"
 
 #include "platform/system.h"
+#include "platform/threading.h"
 
 #include "memory/memory.h"
 
-namespace syntropy
+#include <thread>
+
+namespace syntropy::platform
 {
-    namespace platform
+    /************************************************************************/
+    /* PLATFORM DEBUGGER                                                    */
+    /************************************************************************/
+
+    /// \brief Exposes Windows-specific debugging functionalities under Windows OS.
+    /// \author Raffaele D. Facendola - December 2016
+    class PlatformDebugger
     {
+    public:
 
-        /// \brief Exposes Windows-specific debugging functionalities under Windows OS.
-        /// \author Raffaele D. Facendola - December 2016
-        class PlatformDebugger
-        {
-        public:
+        /// \brief Check whether the debugger is attached.
+        /// \return Returns true if a debugger is attached to the application, returns false otherwise.
+        static bool IsDebuggerAttached();
 
-            /// \brief Check whether the debugger is attached.
-            /// \return Returns true if a debugger is attached to the application, returns false otherwise.
-            static bool IsDebuggerAttached();
+        /// \brief Get the stack trace of the current thread.
+        /// \param caller Stack trace element representing the code that called this method.
+        /// \return Returns the stack trace whose head is caller.
+        static diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller);
+    };
 
-            /// \brief Get the stack trace of the current thread.
-            /// \param caller Stack trace element representing the code that called this method.
-            /// \return Returns the stack trace whose head is caller.
-            static diagnostics::StackTrace GetStackTrace(diagnostics::StackTraceElement caller);
-        };
+    /************************************************************************/
+    /* PLATFORM SYSTEM                                                      */
+    /************************************************************************/
 
-        /// \brief Exposes methods to query system's capabilities under Windows OS.
-        /// \author Raffaele D. Facendola 
-        class PlatformSystem
-        {
-        public:
+    /// \brief Exposes methods to query system's capabilities under Windows OS.
+    /// \author Raffaele D. Facendola 
+    class PlatformSystem
+    {
+    public:
 
-            /// \brief Get the current CPU infos.
-            /// \return Returns the current CPU infos.
-            static CPUInfo GetCPUInfo();
+        /// \brief Get the current CPU infos.
+        /// \return Returns the current CPU infos.
+        static CPUInfo GetCPUInfo();
 
-            /// \brief Get the current storage infos.
-            /// \return Returns the current storage infos.
-            static StorageInfo GetStorageInfo();
+        /// \brief Get the current storage infos.
+        /// \return Returns the current storage infos.
+        static StorageInfo GetStorageInfo();
 
-            /// \brief Get the current memory infos.
-            /// \return Returns the current memory infos.
-            static MemoryInfo GetMemoryInfo();
+        /// \brief Get the current memory infos.
+        /// \return Returns the current memory infos.
+        static MemoryInfo GetMemoryInfo();
 
-            /// \brief Get the current desktop infos.
-            /// \return Returns the current desktop infos.
-            static DisplayInfo GetDisplayInfo();
+        /// \brief Get the current desktop infos.
+        /// \return Returns the current desktop infos.
+        static DisplayInfo GetDisplayInfo();
 
-            /// \brief Get the current platform infos.
-            /// \return Returns the current platform infos.
-            static PlatformInfo GetPlatformInfo();
-        };
+        /// \brief Get the current platform infos.
+        /// \return Returns the current platform infos.
+        static PlatformInfo GetPlatformInfo();
+    };
 
-        /// \brief Wraps the low-level calls used to handle virtual memory allocation under Windows OS.
-        /// \author Raffaele D. Facendola - December 2016
-        class PlatformMemory
-        {
-        public:
+    /************************************************************************/
+    /* PLATFORM THREADING                                                   */
+    /************************************************************************/
 
-            /// \brief See Memory::GetPageSize
-            static size_t GetPageSize();
+    /// \brief Exposes threading and scheduler's functionalities under Windows OS.
+    /// \author Raffaele D. Facendola - November 2017
+    class PlatformThreading
+    {
+    public:
 
-            /// \brief See Memory::Allocate
-            static void* Allocate(size_t size);
+        /// \brief Get the index of the CPU on which the calling thread is running.
+        /// \return Returns the index of the CPU on which the calling thread is running.
+        static size_t GetCPUIndex();
 
-            /// \brief See Memory::Release
-            static bool Release(void* address);
+        /// \brief Change a thread's core affinity.
+        /// \param affinity_mask Affinity mask, one bit per core.
+        /// \param thread Thread to change the affinity of. nullptr refers to the calling thread.
+        /// \return Returns true if the method succeeded, returns false otherwise.
+        static bool SetThreadAffinity(size_t affinity_mask, std::thread* thread = nullptr);
 
-            /// \brief See Memory::Reserve
-            static void* Reserve(size_t size);
+        /// \brief Get a thread's core affinity.
+        /// \param thread Thread to get the affinity of. nullptr refers to the calling thread.
+        /// \return Return the thread's core affinity.
+        static size_t GetThreadAffinity(std::thread* thread = nullptr);
 
-            /// \brief See Memory::Commit
-            static bool Commit(void* address, size_t size);
+        /// \brief Change a thread's priority.
+        /// \param priority New priority for the thread.
+        /// \param thread Thread to change the priority of. nullptr refers to the calling thread.
+        /// \return Returns true if the method succeeded, returns false otherwise.
+        static bool SetThreadPriority(ThreadPriority priority, std::thread* thread = nullptr);
 
-            /// \brief See Memory::Decommit
-            static bool Decommit(void* address, size_t size);
+        /// \brief Get a thread's priority.
+        /// \param thread Thread to get the priority of. nullptr refers to the calling thread.
+        /// \return Returns the thread's priority.
+        static ThreadPriority GetThreadPriority(std::thread* thread = nullptr);
+    };
 
-        };
+    /************************************************************************/
+    /* PLATFORM MEMORY                                                      */
+    /************************************************************************/
 
-    }
+    /// \brief Wraps the low-level calls used to handle virtual memory allocation under Windows OS.
+    /// \author Raffaele D. Facendola - December 2016
+    class PlatformMemory
+    {
+    public:
+
+        /// \brief See Memory::GetPageSize
+        static size_t GetPageSize();
+
+        /// \brief See Memory::Allocate
+        static void* Allocate(size_t size);
+
+        /// \brief See Memory::Release
+        static bool Release(void* address);
+
+        /// \brief See Memory::Reserve
+        static void* Reserve(size_t size);
+
+        /// \brief See Memory::Commit
+        static bool Commit(void* address, size_t size);
+
+        /// \brief See Memory::Decommit
+        static bool Decommit(void* address, size_t size);
+
+    };
 }
 
 #endif
