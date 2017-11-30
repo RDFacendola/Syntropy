@@ -109,6 +109,19 @@ namespace syntropy
             }
         }
 
+        /// \brief Pick a random element in the range [begin; end).
+        /// \return Return an iterator to any element in the range [begin;end). If the range is empty returns end.
+        template <typename TIterator>
+        TIterator Pick(const TIterator& begin, const TIterator& end)
+        {
+            if (begin == end)
+            {
+                return end;
+            }
+
+            return begin + Range(static_cast<int32_t>(std::distance(begin, end)) - 1);
+        }
+
     private:
 
         pcg32 engine_;              ///< \brief Underlying random engine.
