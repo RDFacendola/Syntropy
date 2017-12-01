@@ -13,12 +13,27 @@ namespace syntropy::platform
         return PlatformThreading::GetCPUIndex();
     }
 
-    bool Threading::SetThreadAffinity(size_t affinity_mask, std::thread* thread)
+    AffinityMask Threading::GetSystemAffinity()
+    {
+        return PlatformThreading::GetSystemAffinity();
+    }
+
+    bool Threading::SetProcessAffinity(const AffinityMask& affinity_mask)
+    {
+        return PlatformThreading::SetProcessAffinity(affinity_mask);
+    }
+
+    AffinityMask Threading::GetProcessAffinity()
+    {
+        return PlatformThreading::GetProcessAffinity();
+    }
+
+    bool Threading::SetThreadAffinity(const AffinityMask& affinity_mask, std::thread* thread)
     {
         return PlatformThreading::SetThreadAffinity(affinity_mask, thread);
     }
 
-    size_t Threading::GetThreadAffinity(std::thread* thread)
+    AffinityMask Threading::GetThreadAffinity(std::thread* thread)
     {
         return PlatformThreading::GetThreadAffinity(thread);
     }

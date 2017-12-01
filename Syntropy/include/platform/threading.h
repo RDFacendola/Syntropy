@@ -7,6 +7,7 @@
 #pragma once
 
 #include <thread>
+#include <bitset>
 
 namespace syntropy::platform
 {
@@ -24,6 +25,10 @@ namespace syntropy::platform
         kHighest            ///< \brief Highest priority. May interfere with basic OS threads (input, disk, ...).
     };
 
+    /// \brief Type used to specify an affinity mask for both threads and processes.
+    /// Each bit represents the affinity for a particular core.
+    using AffinityMask = std::bitset<64>;
+
     /************************************************************************/
     /* THREADING                                                            */
     /************************************************************************/
@@ -38,26 +43,40 @@ namespace syntropy::platform
         /// \return Returns the index of the CPU on which the calling thread is running.
         static size_t GetCPUIndex();
 
-        /// \brief Change a thread's core affinity.
-        /// \param affinity_mask Affinity mask, one bit per core.
-        /// \param thread Thread to change the affinity of. nullptr refers to the calling thread.
+        /// \brief Get the cores the calling process is allowed to run on.
+        /// This method returns the cores a process can specify an affinity for. To get the actual affinity use GetProcessAffinity().
+        /// \return Returns the cores the calling process is allowed to run on.
+        static AffinityMask GetSystemAffinity();
+
+        /// \brief Set the cores the calling process can be run on.
+        /// \param affinity_mask New process affinity. Must be a subset of the affinity returned by GetSystemAffinity().
         /// \return Returns true if the method succeeded, returns false otherwise.
-        static bool SetThreadAffinity(size_t affinity_mask, std::thread* thread = nullptr);
+        static bool SetProcessAffinity(const AffinityMask& affinity_mask);
 
-        /// \brief Get a thread's core affinity.
-        /// \param thread Thread to get the affinity of. nullptr refers to the calling thread.
-        /// \return Return the thread's core affinity.
-        static size_t GetThreadAffinity(std::thread* thread = nullptr);
+        /// \brief Get the cores the calling process can be run on.
+        /// \return Returns the cores the calling process can be run on.
+        static AffinityMask GetProcessAffinity();
 
-        /// \brief Change a thread's priority.
+        /// \brief Set the cores a thread can be run on.
+        /// \param affinity_mask New thread affinity. Must be a subset of the affinity returned by GetProcessAffinity().
+        /// \param thread Thread to change the affinity of. If this parameter is nullptr, the calling thread will be used.
+        /// \return Returns true if the method succeeded, returns false otherwise.
+        static bool SetThreadAffinity(const AffinityMask& affinity_mask, std::thread* thread = nullptr);
+
+        /// \brief Get the cores a thread can be run on.
+        /// \param thread Thread to get the affinity of. If this parameter is nullptr, the calling thread will be used.
+        /// \return Return the cores the specified thread can be run on.
+        static AffinityMask GetThreadAffinity(std::thread* thread = nullptr);
+
+        /// \brief Set the priority of a thread.
         /// \param priority New priority for the thread.
-        /// \param thread Thread to change the priority of. nullptr refers to the calling thread.
+        /// \param thread Thread to change the priority of. If this parameter is nullptr, the calling thread will be used.
         /// \return Returns true if the method succeeded, returns false otherwise.
         static bool SetThreadPriority(ThreadPriority priority, std::thread* thread = nullptr);
 
-        /// \brief Get a thread's priority.
-        /// \param thread Thread to get the priority of. nullptr refers to the calling thread.
-        /// \return Returns the thread's priority.
+        /// \brief Get the priority of a thread.
+        /// \param thread Thread to get the priority of. If this parameter is nullptr, the calling thread will be used.
+        /// \return Return the priority of the specified thread.
         static ThreadPriority GetThreadPriority(std::thread* thread = nullptr);
     };
 

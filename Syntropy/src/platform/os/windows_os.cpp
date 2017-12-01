@@ -25,6 +25,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include "diagnostics/assert.h"
+
 #include "syntropy.h"
 
 namespace syntropy::platform
@@ -404,25 +406,49 @@ namespace syntropy::platform
         return processor_number.Number + (processor_number.Group * kGroupSize);
     }
 
-    bool PlatformThreading::SetThreadAffinity(size_t affinity_mask, std::thread* thread)
+    AffinityMask PlatformThreading::GetSystemAffinity()
     {
-        HANDLE thread_handle = thread ? thread->native_handle() : GetCurrentThread();
+        size_t process_affinity;
+        size_t system_affinity;
 
-        return SetThreadAffinityMask(thread_handle, affinity_mask) != 0;
+        auto result = ::GetProcessAffinityMask(GetCurrentProcess(), &process_affinity, &system_affinity) != 0;
+
+        return result ? system_affinity : size_t(0);
     }
 
-    size_t PlatformThreading::GetThreadAffinity(std::thread* thread)
+    bool PlatformThreading::SetProcessAffinity(const AffinityMask& affinity_mask)
     {
-        DWORD_PTR process_affinity;
-        DWORD_PTR system_affinity;
+        HANDLE process_handle = GetCurrentProcess();
 
-        GetProcessAffinityMask(GetCurrentProcess(), &process_affinity, &system_affinity);
+        return SetProcessAffinityMask(process_handle, affinity_mask.to_ullong()) != 0;
+    }
 
+    AffinityMask PlatformThreading::GetProcessAffinity()
+    {
+        size_t process_affinity;
+        size_t system_affinity;
+
+        auto result = GetProcessAffinityMask(GetCurrentProcess(), &process_affinity, &system_affinity) != 0;
+
+        return result ? process_affinity : size_t(0);
+    }
+
+    bool PlatformThreading::SetThreadAffinity(const AffinityMask& affinity_mask, std::thread* thread)
+    {
         HANDLE thread_handle = thread ? thread->native_handle() : GetCurrentThread();
 
-        auto affinity_mask = SetThreadAffinityMask(thread_handle, process_affinity);            // Returns the old affinity mask.
+        return SetThreadAffinityMask(thread_handle, affinity_mask.to_ullong()) != 0;
+    }
 
-        SetThreadAffinityMask(thread_handle, affinity_mask);                                    // Restore the original affinity mask. That API, though.
+    AffinityMask PlatformThreading::GetThreadAffinity(std::thread* thread)
+    {
+        HANDLE thread_handle = thread ? thread->native_handle() : GetCurrentThread();
+
+        auto process_affinity = GetProcessAffinity();
+
+        auto affinity_mask = SetThreadAffinityMask(thread_handle, process_affinity.to_ullong());        // Returns the old affinity mask.
+
+        SetThreadAffinityMask(thread_handle, affinity_mask);                                            // Restore the original affinity mask. That API, though.
 
         return affinity_mask;
     }
