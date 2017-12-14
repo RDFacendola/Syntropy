@@ -29,6 +29,13 @@ SOFTWARE.
 #ifndef NLOHMANN_JSON_HPP
 #define NLOHMANN_JSON_HPP
 
+//  [SYNTROPY MOD] Suppressing deprecation warnings on MSVC 1912
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
+
+
 #include <algorithm> // all_of, copy, fill, find, for_each, none_of, remove, reverse, transform
 #include <array> // array
 #include <cassert> // assert
@@ -14503,5 +14510,11 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef JSON_LIKELY
 #undef JSON_UNLIKELY
 #undef JSON_DEPRECATED
+
+
+//  [SYNTROPY MOD] Suppressing deprecation warnings.
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif
