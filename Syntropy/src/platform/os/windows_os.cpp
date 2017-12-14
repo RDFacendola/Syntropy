@@ -291,20 +291,21 @@ namespace syntropy::platform
     {
         StorageInfo storage_info;
 
-        unsigned long drive_mask = GetLogicalDrives();
-        wchar_t unit_path[] = L"A:\\";
+        auto drive_mask = GetLogicalDrives();
+        char unit_path[] = "A:\\";
 
         ULARGE_INTEGER size, available_space;
         DriveInfo drive_info;
 
         while (drive_mask != 0) 
         {
-            if ((drive_mask & 1) && GetDriveType(unit_path) == DRIVE_FIXED) 
+
+            if ((drive_mask & 1) && GetDriveTypeA(unit_path) == DRIVE_FIXED)
             {
-                GetDiskFreeSpaceEx(unit_path, NULL, &size, &available_space);
+                GetDiskFreeSpaceExA(unit_path, NULL, &size, &available_space);
 
                 // Fill current drive info
-                drive_info.label_ = syntropy::to_string(unit_path);
+                drive_info.label_ = unit_path;
                 drive_info.total_space_ = static_cast<uint64_t>(size.QuadPart);
                 drive_info.available_space_ = static_cast<uint64_t>(available_space.QuadPart);
 
@@ -342,34 +343,34 @@ namespace syntropy::platform
     DisplayInfo PlatformSystem::GetDisplayInfo()
     {
         DWORD display_index = 0;
-        DISPLAY_DEVICE adapter_device;
-        DISPLAY_DEVICE monitor_device;
+        DISPLAY_DEVICEA adapter_device;
+        DISPLAY_DEVICEA monitor_device;
 
-        DEVMODE dev_mode;
+        DEVMODEA dev_mode;
 
         DisplayInfo display_info;
         MonitorInfo monitor_info;
 
-        adapter_device.cb = sizeof(DISPLAY_DEVICE);
-        monitor_device.cb = sizeof(DISPLAY_DEVICE);
+        adapter_device.cb = sizeof(adapter_device);
+        monitor_device.cb = sizeof(monitor_device);
 
-        while (EnumDisplayDevices(nullptr, display_index, &adapter_device, EDD_GET_DEVICE_INTERFACE_NAME))
+        while (EnumDisplayDevicesA(nullptr, display_index, &adapter_device, EDD_GET_DEVICE_INTERFACE_NAME))
         {
             // Discard monitors that are not currently attached
             if ((adapter_device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP) != 0)
             {
-                monitor_info.adapter_name_ = syntropy::to_string(adapter_device.DeviceString);
+                monitor_info.adapter_name_ = adapter_device.DeviceString;
 
-                if (EnumDisplaySettings(adapter_device.DeviceName, ENUM_CURRENT_SETTINGS, &dev_mode))
+                if (EnumDisplaySettingsA(adapter_device.DeviceName, ENUM_CURRENT_SETTINGS, &dev_mode))
                 {
                     // Fill current monitor info
-                    EnumDisplayDevices(adapter_device.DeviceName, 0, &monitor_device, 0);
+                    EnumDisplayDevicesA(adapter_device.DeviceName, 0, &monitor_device, 0);
                         
                     monitor_info.is_primary_ = (adapter_device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE) != 0;
                     monitor_info.width_ = static_cast<uint32_t>(dev_mode.dmPelsWidth);
                     monitor_info.height_ = static_cast<uint32_t>(dev_mode.dmPelsHeight);
                     monitor_info.refresh_rate_ = static_cast<float>(dev_mode.dmDisplayFrequency);
-                    monitor_info.monitor_name_ = syntropy::to_string(monitor_device.DeviceString);
+                    monitor_info.monitor_name_ = monitor_device.DeviceString;
 
                     display_info.monitors_.emplace_back(std::move(monitor_info));
                 }
