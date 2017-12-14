@@ -89,7 +89,7 @@ namespace syntropy::platform
     /// \author Raffaele D. Facendola - December 2016
     struct PlatformInfo
     {
-        OperatingSystem operating_system_;          ///< \brief Current operating system.
+        OperatingSystem operating_system_;      ///< \brief Current operating system.
     };
 
     /************************************************************************/
@@ -121,10 +121,5 @@ namespace syntropy::platform
         /// \brief Get the current platform infos.
         /// \return Returns the current platform infos.
         static PlatformInfo GetPlatformInfo();
-
-        /// \brief Get the id of the core running this thread.
-        /// \return Returns an identifier for core running this thread.
-        static size_t GetCoreIndex();
-
     };
 }
