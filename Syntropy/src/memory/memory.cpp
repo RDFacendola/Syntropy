@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "platform/compiler/compiler.h"
+#include "macro.h"
 #include "diagnostics/assert.h"
 
 #include "syntropy.h"

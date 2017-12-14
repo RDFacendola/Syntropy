@@ -13,6 +13,23 @@
 
 #ifdef _MSC_VER
 
+#ifdef _DEBUG
+
+/// \brief Execute x on debug builds only.
+#define SYNTROPY_DEBUG_ONLY(x) x
+
+/// \brief Execute x on release builds only.
+#define SYNTROPY_RELEASE_ONLY(x) 
+
+#else
+
+/// \brief Execute x on debug builds only.
+#define SYNTROPY_DEBUG_ONLY(x)
+
+/// \brief Execute x on release builds only.
+#define SYNTROPY_RELEASE_ONLY(x) x
+#endif
+
 #include "platform/builtin.h"
 
 namespace syntropy::platform

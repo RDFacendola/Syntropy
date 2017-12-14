@@ -7,21 +7,6 @@
 #pragma once
 
 #include <string>
-
-#define SYNTROPY_UNUSED(x) (x)
-
-#ifdef _DEBUG
-#define SYNTROPY_DEBUG_ONLY(x) x
-#else
-#define SYNTROPY_DEBUG_ONLY(x)
-#endif
-
-#ifdef _DEBUG
-#define SYNTROPY_RELEASE_ONLY(x) 
-#else
-#define SYNTROPY_RELEASE_ONLY(x) x
-#endif
-
 namespace syntropy 
 {
 

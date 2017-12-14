@@ -6,6 +6,9 @@
 
 #pragma once
 
+/// \brief Use x as part of an expression to suppress unused warning.
+#define SYNTROPY_UNUSED(x) (void)(x)
+
 /// \brief Expand the provided arguments
 /// \example SYNTROPY_EXPAND(a, b, c) -> a, b, c
 /// \example SYNTROPY_EXPAND((foo, bar)) -> foo, bar
