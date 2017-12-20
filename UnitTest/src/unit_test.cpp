@@ -36,6 +36,7 @@
 #include "serialization/json/json.h"
 
 #include "platform/system.h"
+#include "platform/threading.h"
 
 #include "patterns/observable.h"
 
@@ -46,6 +47,7 @@
 
 #include "synergy.h"
 #include "task/scheduler.h"
+#include "patterns/sync_counter.h"
 
 #include "algorithms/search/astar.h"
 
@@ -116,45 +118,90 @@ void AllocTest()
     }
 }
 
+#define COUNT 1 << 4
+
+struct Maxer
+{
+    Maxer(std::vector<int>& numbers, size_t begin, size_t end, int* max)
+        : numbers_(&numbers)
+        , begin_(begin)
+        , end_(end)
+        , max_(max)
+    {
+
+    }
+
+    void operator()()
+    {
+        if (end_ - begin_ < 2)
+        {
+            *max_ = (*numbers_)[begin_];
+            return;
+        }
+
+        size_t mid = (end_ + begin_) >> 1;
+
+        auto max_l = new int;
+        auto max_r = new int;
+
+        auto l = syntropy::synergy::EmplaceTask<Maxer>({}, *numbers_, begin_, mid, max_l);
+        auto r = syntropy::synergy::EmplaceTask<Maxer>({}, *numbers_, mid, end_, max_r);
+
+        syntropy::synergy::CreateTaskContinuation({l, r},
+            [max_l, max_r, max_lr = max_, be = begin_, en = end_]()
+        {
+            *max_lr = std::max(*max_l, *max_r);
+
+            delete max_l;
+            delete max_r;
+
+            if (be == 0 && en == COUNT)
+            {
+                std::cout << "Maximum value found: " << *max_lr;
+            }
+        });
+    }
+
+    std::vector<int>* numbers_;
+    size_t begin_ = 0;
+    size_t end_ = 0;
+    int* max_ = 0;
+};
+
 void MultithreadTest()
 {
     using namespace std::literals::chrono_literals;
 
-    syntropy::synergy::DetachTask(
-    []()
+    const size_t count = COUNT;
+
+    std::vector<int> numbers(count);
+
+    srand(0);       // Be sure the random sequence stays the same for different runs.
+
+    for (auto&& number : numbers)
     {
-        std::cout << "Root " << std::this_thread::get_id() << "\n";
+        number = rand() % count;
+    }
 
-        std::this_thread::sleep_for(2s);
+    int max;
 
-        auto a = syntropy::synergy::CreateTask(
-        std::initializer_list<std::shared_ptr<syntropy::synergy::Task>>{},
-        []()
-        {
-            std::cout << "Left " << std::this_thread::get_id() << "\n";
-        });
+    auto& scheduler = syntropy::synergy::GetScheduler();
 
-        auto b =syntropy::synergy::CreateTask(
-        std::initializer_list<std::shared_ptr<syntropy::synergy::Task>>{},
-        []()
-        {
-            std::cout << "Right " << std::this_thread::get_id() << "\n";
-        });
+    syntropy::synergy::GetScheduler().Initialize();
 
-        auto c = syntropy::synergy::CreateTask(
-        std::initializer_list<std::shared_ptr<syntropy::synergy::Task>>{a,b},
-            []()
-        {
-            std::cout << "Leaf " << std::this_thread::get_id() << "\n";
-        });
+    syntropy::synergy::DetachTask(
+    [&numbers, &max]()
+    {
+        std::cout << "Starting: " << std::this_thread::get_id() << "\n";
+
+        syntropy::synergy::EmplaceTask<Maxer>({}, numbers, 0, numbers.size(), &max);
     });
 
-    std::cout << "zzz... " << std::this_thread::get_id() << "\n";
+    system("pause");
 
-    std::this_thread::sleep_for(10s);
+    SYNTROPY_UNUSED(scheduler);
 
-    std::cout << "...zzz " << std::this_thread::get_id() << "\n";
-
+    system("pause");
 }
 /// \brief Testing simple pathfinding problem from Paradox
 /// https://paradox.kattis.com/problems/paradoxpath
@@ -275,9 +322,7 @@ void SynapseTest()
 
 int main()
 {
-    std::cout << syntropy::Calendar::GetDate() << " - " << syntropy::Calendar::GetTimeOfDay() << "\n";
-
-    SynapseTest();
+	//SynapseTest();
 
  //   Initialize();
 
@@ -285,7 +330,7 @@ int main()
 
  //   AllocTest();
 
-	//MultithreadTest();
+    MultithreadTest();
 
     system("pause");
 

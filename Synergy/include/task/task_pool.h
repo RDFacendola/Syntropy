@@ -33,29 +33,27 @@ namespace syntropy::synergy
         TaskPool& operator=(const TaskPool&) = delete;
 
         /// \brief Construct a task from a callable object.
-        /// \tparam TDependencies Type of the container for task dependencies. The container must contain std::shared_ptr<Task> and should be iterable.
         /// \param callable Callable object to wrap inside the task.
         /// \param dependencies List of tasks the new task depends upon.
-        template <typename TDependencies, typename TCallable>
-        std::shared_ptr<Task> CreateTask(TDependencies&& dependencies, TCallable&& callable)
+        template <typename TCallable>
+        std::shared_ptr<Task> CreateTask(const TaskList& dependencies, TCallable&& callable)
         {
             auto task = std::make_shared<Task>();
 
-            task->Construct(std::forward<TDependencies>(dependencies), std::forward<TCallable>(callable));
+            task->Construct(dependencies, std::forward<TCallable>(callable));
 
             return task;
         }
 
         /// \brief Construct a task by creating a callable object in-place.
-        /// \tparam TDependencies Type of the container for task dependencies. The container must contain std::shared_ptr<Task> and should be iterable.
         /// \param arguments Arguments to pass to the task constructor.
         /// \param dependencies List of tasks the new task depends upon.
-        template <typename TTask, typename TDependencies, typename... TArguments>
-        std::shared_ptr<Task> EmplaceTask(TDependencies&& dependencies, TArguments&&... arguments)
+        template <typename TTask, typename... TArguments>
+        std::shared_ptr<Task> EmplaceTask(const TaskList& dependencies, TArguments&&... arguments)
         {
             auto task = std::make_shared<Task>();
 
-            task->Emplace<TTask>(std::forward<TDependencies>(dependencies), std::forward<TArguments>(arguments)...);
+            task->Emplace<TTask>(dependencies, std::forward<TArguments>(arguments)...);
 
             return task;
         }

@@ -12,8 +12,9 @@ namespace syntropy::synergy
     /************************************************************************/
 
     TaskQueue::TaskQueue(size_t capacity)
+        : tasks_(capacity)
     {
-        tasks_.resize(std::max(capacity, kMinimumCapacity));
+
     }
 
     std::shared_ptr<Task> TaskQueue::PopBack()
@@ -61,17 +62,6 @@ namespace syntropy::synergy
         }
 
         return nullptr;
-    }
-
-    void TaskQueue::PushFront(std::shared_ptr<Task> task)
-    {
-        std::lock_guard<std::mutex> lock(mutex_);
-
-        begin_index_ = (begin_index_ > 0) ? begin_index_ - 1 : tasks_.size() - 1;       // Decrement and wrap around.
-
-        tasks_[begin_index_] = task;
-
-        SYNTROPY_ASSERT(begin_index_ != end_index_);                                    // Ensure the queue is not full.
     }
 
     void TaskQueue::Clear()

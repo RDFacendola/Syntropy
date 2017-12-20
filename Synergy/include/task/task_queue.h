@@ -45,17 +45,10 @@ namespace syntropy::synergy
         /// \return Returns the last element on the tail. If the queue is empty returns nullptr.
         std::shared_ptr<Task> PopFront();
 
-        /// \brief Push a new element on the tail.
-        /// If the queue is full, the behavior is undefined.
-        /// \param task Task to push.
-        void PushFront(std::shared_ptr<Task> task);
-
         /// \brief Remove any existing task from the queue.
         void Clear();
 
     private:
-
-        static constexpr size_t kMinimumCapacity = 0x10;    ///< \brief Minimum queue capacity.
 
         mutable std::mutex mutex_;                          ///< \brief Used for synchronization purposes.
 

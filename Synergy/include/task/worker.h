@@ -11,6 +11,8 @@
 #include <condition_variable>
 #include <mutex>
 
+#include "patterns/observable.h"
+
 #include "task/task.h"
 #include "task/task_pool.h"
 #include "task/task_queue.h"
@@ -52,14 +54,27 @@ namespace syntropy::synergy
         /// \return Returns true if the worker thread is running, returns false otherwise.
         bool IsRunning() const;
 
-        /// \brief Get the execution context associated to this worker.
-        /// \return Returns the execution context associated to this worker. If no context is available returns nullptr.
-        TaskExecutionContext* GetExecutionContext();
-
-    private:
-
         /// \brief Enqueue a new task for execution.
         void EnqueueTask(std::shared_ptr<Task> task);
+
+        /// \brief Dequeue a task scheduled on this worker.
+        /// \return Returns a task scheduled on this worker. If no such task exists, returns nullptr.
+        std::shared_ptr<Task> DequeueTask();
+
+        /// \brief Get the execution context associated to this worker.
+        /// \return Returns the execution context associated to this worker. If the worker is not running returns nullptr.
+        TaskExecutionContext* GetExecutionContext();
+
+        /// \brief Observable event called whenever a new task is enqueued in this worker.
+        Observable<Worker&>& OnTaskEnqueued();
+
+        /// \brief Observable event called whenever the worker ran out of tasks to execute.
+        Observable<Worker&>& OnStarving();
+
+        ///\brief Observable event called whenever the worker becomes ready to accept tasks for execution.
+        Observable<Worker&>& OnReady();
+
+    private:
 
         /// \brief Fetch a new task for execution.
         /// The thread is put to sleep if no task could be fetched.
@@ -75,5 +90,11 @@ namespace syntropy::synergy
         std::mutex mutex_;                                                      ///< \brief Used for synchronization purposes.
 
         std::condition_variable wake_up_;                                       ///< \brief Condition variable used to wake up a sleeping thread.
+
+        Event<Worker&> on_task_enqueued_;                                       ///< \brief Event called whenever a new task is enqueued in this worker.
+
+        Event<Worker&> on_starving_;                                            ///< \brief Event called whenever the worker ran out of tasks to execute.
+
+        Event<Worker&> on_ready_;                                               ///< \brief Event called whenever the worker becomes ready to accept tasks for execution.
     };
 }

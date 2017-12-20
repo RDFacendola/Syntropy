@@ -15,6 +15,11 @@
 
 namespace syntropy::synergy
 {
+    class Task;
+
+    /// \brief A list of tasks.
+    using TaskList = std::vector<std::shared_ptr<Task>>;
+
     /// \brief Represents the atomic unit of a parallel computation.
     /// Tasks are expected to perform a small, non-blocking computation.
     /// #TODO Tasks should not share a cache line with other tasks, as it would create false sharing among different worker threads.
@@ -24,30 +29,28 @@ namespace syntropy::synergy
     public:
 
         /// \brief Construct the task from a callable object.
-        /// \tparam TDependencies Type of the container for task dependencies. The container must contain std::shared_ptr<Task> and should be iterable.
         /// \tparam TCallable Type of the callable object to wrap inside the task.
         /// \param dependencies List of tasks the new task depends upon.
         /// \param callable Callable object to wrap inside the task.
-        template <typename TDependencies, typename TCallable>
-        void Construct(TDependencies&& dependencies, TCallable&& callable)
+        template <typename TCallable>
+        void Construct(const TaskList& dependencies, TCallable&& callable)
         {
             executable_ = std::make_unique<Executable<TCallable>>(std::forward<TCallable>(callable));               // #TODO Use proper allocator.
 
-            SetDependencies(std::forward<TDependencies>(dependencies));
+            SetDependencies(dependencies);
         }
 
         /// \brief Construct the task by creating a callable object in-place.
         /// \tparam TTask Type of the callable object to construct.
-        /// \tparam TDependencies Type of the container for task dependencies. The container must contain std::shared_ptr<Task> and should be iterable.
         /// \tparam TArguments Types of the arguments to pass to the callable object.
         /// \param dependencies List of tasks the new task depends upon.
         /// \param arguments Arguments to pass to the callable object constructor.
-        template <typename TTask, typename TDependencies, typename... TArguments>
-        void Emplace(TDependencies&& dependencies, TArguments&&... arguments)
+        template <typename TTask, typename... TArguments>
+        void Emplace(const TaskList& dependencies, TArguments&&... arguments)
         {
             executable_ = std::make_unique<Executable<TTask>>(std::forward<TArguments>(arguments)...);              // #TODO Use proper allocator.
 
-            SetDependencies(std::forward<TDependencies>(dependencies));
+            SetDependencies(dependencies);
         }
 
         /// \brief Execute this task.
@@ -57,20 +60,7 @@ namespace syntropy::synergy
         /// This method can only be called if this task has no outstanding dependency.
         /// \tparam TDependencies Type of the collection containing the dependencies. Must be an iterable container of Tasks.
         /// \param dependencies Container of dependencies for this task.
-        template <typename TDependencies>
-        void SetDependencies(TDependencies&& dependencies)
-        {
-            SYNTROPY_ASSERT(dependency_count_.load(std::memory_order_relaxed) == 0);
-
-            auto shared_this = shared_from_this();
-
-            dependency_count_.store(dependencies.size() + 1, std::memory_order_release);                            // Additional dependency needed to schedule the task manually after this call.
-
-            for (auto&& dependency : dependencies)
-            {
-                dependency->successors_.emplace_back(shared_this);
-            }
-        }
+        void SetDependencies(const TaskList& dependencies);
 
         /// \brief Attempt to schedule this task by decreasing its dependency count by one.
         /// \return Returns true if the task can be scheduled, returns false otherwise. This method is guaranteed to return true only to one of any concurrent threads.
@@ -82,7 +72,7 @@ namespace syntropy::synergy
 
         /// \brief Move successors from this task to the provided collection.
         /// \param collection Collection to move the successors to.
-        void MoveSuccessors(std::vector<std::shared_ptr<Task>>& successors);
+        void MoveSuccessors(TaskList& successors);
 
     private:
 
@@ -99,7 +89,7 @@ namespace syntropy::synergy
 
         std::atomic_size_t dependency_count_{ 0 };              ///< \brief Number of tasks this task depends upon, plus one if the task wasn't scheduled yet.
 
-        std::vector<std::shared_ptr<Task>> successors_;         ///< \brief List of tasks depending on this task.
+        TaskList successors_;                                   ///< \brief List of tasks depending on this task.
 
         std::unique_ptr<IExecutable> executable_;               ///< \brief Executable. #TODO Small object optimization.
     };

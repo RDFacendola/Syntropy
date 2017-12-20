@@ -1,5 +1,7 @@
 #include "patterns/sync_counter.h"
 
+#include "diagnostics/assert.h"
+
 namespace syntropy::synergy
 {
     /************************************************************************/
@@ -11,15 +13,28 @@ namespace syntropy::synergy
         count_.store(count, std::memory_order_release);
     }
 
-    void SyncCounter::Decrement(bool wait)
+    void SyncCounter::Reset(size_t count)
     {
-        if (count_.fetch_sub(1, std::memory_order_acq_rel) == 1)
+        size_t zero = 0;
+
+        auto result = count_.compare_exchange_weak(zero, count, std::memory_order_acq_rel);
+
+        SYNTROPY_ASSERT(result);                    // This check won't cover any case, but it may be enough in practice.
+    }
+
+    void SyncCounter::Signal(bool wait)
+    {
+        auto previous_count = count_.fetch_sub(1, std::memory_order_acq_rel);
+
+        SYNTROPY_ASSERT(previous_count > 0);        // The counter was decremented too much!
+
+        if (previous_count == 1)
         {
-            wait_.notify_all();         // Notify everyone and return.
+            wait_.notify_all();                     // Notify everyone and return.
         }
         else if(wait)
         {
-            Wait();                     // Wait until the counter reaches zero.
+            Wait();                                 // Wait until the counter reaches zero.
         }
     }
 
@@ -29,18 +44,8 @@ namespace syntropy::synergy
 
         wait_.wait(lock, [this]
         {
-            return count_.load(std::memory_order_relaxed) == 0;
+            return count_.load(std::memory_order_acquire) == 0;
         });
-    }
-
-    void SyncCounter::WaitAndReset(size_t count)
-    {
-        Wait();
-
-        if (count != 0)
-        {
-            count_.store(count, std::memory_order_release);
-        }
     }
 
     /************************************************************************/
@@ -56,7 +61,7 @@ namespace syntropy::synergy
 
     SyncCounterGuard::~SyncCounterGuard()
     {
-        counter_.Decrement(wait_);
+        counter_.Signal(wait_);
     }
 
 }

@@ -28,7 +28,7 @@ namespace syntropy::synergy
     ///    std::thread([&counter]
     ///    {
     ///       ...some code A ...
-    ///       counter.Decrement();                                  // Synchronization point. Blocks execution.
+    ///       counter.Signal();                                     // Synchronization point. Blocks execution.
     ///       ...some code given that each thread executed A...
     ///    }).detach();
     ///    
@@ -46,16 +46,16 @@ namespace syntropy::synergy
         /// \param count Initial counter value.
         SyncCounter(size_t count = 0);
 
-        /// \brief Reduce the counter by one. Notify each waiting thread when the counter drops to zero.
+        /// \brief Reset the counter.
+        /// This method must be called only when there's no other thread to wait.
+        void Reset(size_t count);
+
+        /// \brief Reduce the counter by one and notify each waiting thread when the counter drops to zero.
         /// \param wait Whether to wait for the counter to drop to zero before proceeding.
-        void Decrement(bool wait = true);
+        void Signal(bool wait = true);
 
         /// \brief Wait until the counter drops to zero.
         void Wait();
-
-        /// \brief Wait until the counter drops to zero and reset its value.
-        /// \param count Value to reset the counter to.
-        void WaitAndReset(size_t count = 0);
 
     private:
 

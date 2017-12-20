@@ -227,7 +227,7 @@ namespace syntropy
             {
                 if (json.is_string())
                 {
-                    return to_wstring(json.get<std::string>());
+                    //return to_wstring(json.get<std::string>());
                 }
                 return std::nullopt;
             }

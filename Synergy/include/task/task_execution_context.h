@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <algorithm>
+#include <vector>
 
 #include "patterns/observable.h"
 
@@ -20,23 +21,15 @@ namespace syntropy::synergy
     /// \author Raffaele D. Facendola - November 2017
     class TaskExecutionContext
     {
-        template <typename TDependencies, typename TCallable>
-        friend std::shared_ptr<Task> CreateTask(TDependencies&& dependencies, TCallable&& callable);
+        template <typename TTask, typename... TArguments>
+        friend std::shared_ptr<Task> EmplaceTask(const TaskList& dependencies, TArguments&&... arguments);
 
-        template <typename TTask, typename TDependencies, typename... TArguments>
-        friend std::shared_ptr<Task> EmplaceTask(TDependencies&& dependencies, TArguments&&... arguments);
+        template <typename TTask, typename... TArguments>
+        friend std::shared_ptr<Task> EmplaceTaskContinuation(const TaskList& dependencies, TArguments&&... arguments);
 
-        template <typename TDependencies, typename TCallable>
-        friend std::shared_ptr<Task> CreateTaskContinuation(TDependencies&& dependencies, TCallable&& callable);
+        friend void RescheduleTask(const TaskList& dependencies);
 
-        template <typename TTask, typename TDependencies, typename... TArguments>
-        friend std::shared_ptr<Task> EmplaceTaskContinuation(TDependencies&& dependencies, TArguments&&... arguments);
-
-        template <typename TDependencies>
-        friend void RescheduleTask(TDependencies&& dependencies);
-
-        template <typename TDependencies>
-        friend void YieldTask(TDependencies&& dependencies);
+        friend void YieldTask(const TaskList& dependencies);
 
     public:
 
@@ -53,7 +46,7 @@ namespace syntropy::synergy
         template <typename TCallable>
         void DetachTask(TCallable&& callable)
         {
-            auto task = task_pool_.CreateTask(std::initializer_list<std::shared_ptr<Task>>{}, std::forward<TCallable>(callable));
+            auto task = task_pool_.CreateTask({}, std::forward<TCallable>(callable));
 
             task->ScheduleConditional();            // The task has no dependencies: this call must yield true.
 
@@ -69,41 +62,20 @@ namespace syntropy::synergy
 
     private:
 
-        template <typename TDependencies, typename TCallable>
-        std::shared_ptr<Task> CreateTask(TDependencies&& dependencies, TCallable&& callable)
+        template <typename TTask, typename... TArguments>
+        std::shared_ptr<Task> EmplaceTask(const TaskList& dependencies, TArguments&&... arguments)
         {
-            auto task = task_pool_.CreateTask(std::forward<TDependencies>(dependencies), std::forward<TCallable>(callable));
+            auto task = task_pool_.EmplaceTask<TTask>(dependencies, std::forward<TArguments>(arguments)...);
 
             pending_tasks_.emplace_back(task);
 
             return task;
         }
 
-        template <typename TTask, typename TDependencies, typename... TArguments>
-        std::shared_ptr<Task> EmplaceTask(TDependencies&& dependencies, TArguments&&... arguments)
+        template <typename TTask, typename... TArguments>
+        std::shared_ptr<Task> EmplaceTaskContinuation(const TaskList& dependencies, TArguments&&... arguments)
         {
-            auto task = task_pool_.EmplaceTask<TTask>(std::forward<TDependencies>(dependencies), std::forward<TArguments>(arguments)...);
-
-            pending_tasks_.emplace_back(task);
-
-            return task;
-        }
-
-        template <typename TDependencies, typename TCallable>
-        std::shared_ptr<Task> CreateTaskContinuation(TDependencies&& dependencies, TCallable&& callable)
-        {
-            auto task = task_pool_.CreateTask(std::forward<TDependencies>(dependencies), std::forward<TCallable>(callable));
-
-            continuation_tasks_.emplace_back(task);
-            pending_tasks_.emplace_back(task);
-
-            return task;
-        }
-
-        template <typename TTask, typename TDependencies, typename... TArguments>
-        std::shared_ptr<Task> EmplaceTaskContinuation(TDependencies&& dependencies, TArguments&&... arguments)
-        {
-            auto task = task_pool_.EmplaceTask<TTask>(std::forward<TDependencies>(dependencies), std::forward<TArguments>(arguments)...);
+            auto task = task_pool_.EmplaceTask<TTask>(dependencies, std::forward<TArguments>(arguments)...);
 
             continuation_tasks_.emplace_back(task);
             pending_tasks_.emplace_back(task);
@@ -114,37 +86,14 @@ namespace syntropy::synergy
         /// \brief Set the current task to be rescheduled as a new task after its current execution.
         /// A task can either be yielded via YieldTask or rescheduled via RescheduleTask, but not both at the same time.
         /// A task can be rescheduled at most once per execution.
-        /// \tparam TDependencies Type of the container for task dependencies. The container must contain TaskHandlers and should be iterable.
         /// \param dependencies List of tasks the current task continuation depends upon.
-        template <typename TDependencies>
-        void RescheduleTask(TDependencies&& dependencies)
-        {
-            SYNTROPY_ASSERT(reschedulable_task_);                                               // A task can be rescheduled at most once per execution.
-
-            reschedulable_task_->SetDependencies(std::forward<TDependencies>(dependencies));    // The current task is not expected to have any dependencies at this point.
-
-            pending_tasks_.emplace_back(reschedulable_task_);
-
-            reschedulable_task_ = nullptr;
-        }
+        void RescheduleTask(const TaskList& dependencies);
 
         /// \brief Set the current task to be rescheduled as a continuation of itself after its current execution.
         /// A task can either be yielded via YieldTask or rescheduled via RescheduleTask, but not both at the same time.
         /// A task can be yielded at most once per execution.
-        /// \tparam TDependencies Type of the container for task dependencies. The container must contain TaskHandlers and should be iterable.
         /// \param dependencies List of tasks the current task continuation depends upon.
-        template <typename TDependencies>
-        void YieldTask(TDependencies&& dependencies)
-        {
-            SYNTROPY_ASSERT(reschedulable_task_);                                               // A task can be rescheduled at most once per execution.
-
-            reschedulable_task_->SetDependencies(std::forward<TDependencies>(dependencies));    // The current task is not expected to have any dependencies at this point.
-
-            continuation_tasks_.emplace_back(reschedulable_task_);
-            pending_tasks_.emplace_back(task);
-
-            reschedulable_task_ = nullptr;
-        }
+        void YieldTask(const TaskList& dependencies);
 
         /// \brief Get the continuation task for the task being executed.
         /// After calling this method, continuation_tasks_ content becomes valid but undefined.
@@ -162,81 +111,65 @@ namespace syntropy::synergy
 
         std::shared_ptr<Task> reschedulable_task_;                                              ///< \brief Task that can be rescheduled in this context. It can either contain the current task or nullptr if the task was already rescheduled.
 
-        std::vector<std::shared_ptr<Task>> pending_tasks_;                                      ///< \brief Pending tasks waiting to be scheduled.
+        TaskList pending_tasks_;                                                               ///< \brief Pending tasks waiting to be scheduled.
 
-        std::vector<std::shared_ptr<Task>> continuation_tasks_;                                 ///< \brief Continuations for the task being executed. Elements in this collection are guaranteed to be contained inside pending_tasks_.
+        TaskList continuation_tasks_;                                                          ///< \brief Continuations for the task being executed. Always a subset of pending_tasks_.
 
-        Event<TaskExecutionContext&, const OnTaskReadyEventArgs&> on_task_ready_;               ///< \brief Event called whenever a new task became ready for execution.
+        Event<TaskExecutionContext&, const OnTaskReadyEventArgs&> on_task_ready_;               ///< \brief Event called whenever a new task becomes ready for execution.
     };
-
-    /// \brief Create a new task from a callable object.
-    /// \param arguments Arguments to pass to the task creation. See Task::Construct.
-    /// \return Returns the new task.
-    template <typename TDependencies, typename TCallable>
-    std::shared_ptr<Task> CreateTask(TDependencies&& dependencies, TCallable&& callable)
-    {
-        SYNTROPY_ASSERT(TaskExecutionContext::innermost_context_);
-
-        return TaskExecutionContext::innermost_context_->CreateTask(std::forward<TDependencies>(dependencies), std::forward<TCallable>(callable));
-    }
 
     /// \brief Create a new task constructing the callable object in-place.
     /// \tparam TTask Type of the callable object to construct.
     /// \param arguments Arguments to pass to the task in-place creation. See Task::Emplace.
     /// \return Returns the new task.
-    template <typename TTask, typename TDependencies, typename... TArguments>
-    std::shared_ptr<Task> EmplaceTask(TDependencies&& dependencies, TArguments&&... arguments)
+    template <typename TTask, typename... TArguments>
+    std::shared_ptr<Task> EmplaceTask(const TaskList& dependencies, TArguments&&... arguments)
     {
         SYNTROPY_ASSERT(TaskExecutionContext::innermost_context_);
 
-        return TaskExecutionContext::innermost_context_->CreateTask(std::forward<TDependencies>(dependencies), std::forward<TArguments>(arguments)...);
-    }
-
-    /// \brief Create a continuation for the current task from a callable object.
-    /// \param arguments Arguments to pass to the task creation. See TaskPool::CreateTask.
-    /// \return Returns the new task.
-    template <typename TDependencies, typename TCallable>
-    std::shared_ptr<Task> CreateTaskContinuation(TDependencies&& dependencies, TCallable&& callable)
-    {
-        SYNTROPY_ASSERT(TaskExecutionContext::innermost_context_);
-
-        return TaskExecutionContext::innermost_context_->CreateTaskContinuation(std::forward<TDependencies>(dependencies), std::forward<TCallable>(callable));
+        return TaskExecutionContext::innermost_context_->EmplaceTask<TTask>(dependencies, std::forward<TArguments>(arguments)...);
     }
 
     /// \brief Create a continuation for the current task constructing the callable object in-place.
     /// \tparam TTask Type of the callable object to construct.
     /// \param arguments Arguments to pass to the task in-place creation. See TaskPool::EmplaceTask.
     /// \return Returns the new task.
-    template <typename TTask, typename TDependencies, typename... TArguments>
-    std::shared_ptr<Task> EmplaceTaskContinuation(TDependencies&& dependencies, TArguments&&... arguments)
+    template <typename TTask, typename... TArguments>
+    std::shared_ptr<Task> EmplaceTaskContinuation(const TaskList& dependencies, TArguments&&... arguments)
     {
         SYNTROPY_ASSERT(TaskExecutionContext::innermost_context_);
 
-        return TaskExecutionContext::innermost_context_->EmplaceTaskContinuation<TTask>(std::forward<TDependencies>(dependencies), std::forward<TArguments>(arguments)...);
+        return TaskExecutionContext::innermost_context_->EmplaceTaskContinuation<TTask>(dependencies, std::forward<TArguments>(arguments)...);
+    }
+
+    /// \brief Create a new task from a callable object.
+    /// \param arguments Arguments to pass to the task creation. See Task::Construct.
+    /// \return Returns the new task.
+    template <typename TCallable>
+    std::shared_ptr<Task> CreateTask(const TaskList& dependencies, TCallable&& callable)
+    {
+        return EmplaceTask<TCallable>(dependencies, std::forward<TCallable>(callable));
+    }
+
+    /// \brief Create a continuation for the current task from a callable object.
+    /// \param arguments Arguments to pass to the task creation. See TaskPool::CreateTask.
+    /// \return Returns the new task.
+    template <typename TCallable>
+    std::shared_ptr<Task> CreateTaskContinuation(const TaskList& dependencies, TCallable&& callable)
+    {
+        return EmplaceTaskContinuation<TCallable>(dependencies, std::forward<TCallable>(callable));
     }
 
     /// \brief Set the current task to be rescheduled as a new task after its current execution.
     /// A task can either be yielded via YieldTask or rescheduled via RescheduleTask, but not both at the same time.
     /// A task can be rescheduled at most once per execution.
-    template <typename TDependencies>
-    void RescheduleTask(TDependencies&& dependencies)
-    {
-        SYNTROPY_ASSERT(TaskExecutionContext::innermost_context_);
-
-        return TaskExecutionContext::innermost_context_->RescheduleTask(std::forward<TDependencies>(dependencies));
-    }
+    void RescheduleTask(const TaskList& dependencies);
 
     /// \brief Set the current task to be rescheduled as a continuation of itself after its current execution.
     /// A task can either be yielded via YieldTask or rescheduled via RescheduleTask, but not both at the same time.
     /// A task can be yielded at most once per execution.
     /// \tparam TDependencies Type of the container for task dependencies. The container must contain TaskHandlers and should be iterable.
     /// \param dependencies List of tasks the current task continuation depends upon.
-    template <typename TDependencies>
-    void YieldTask(TDependencies&& dependencies)
-    {
-        SYNTROPY_ASSERT(TaskExecutionContext::innermost_context_);
-
-        return TaskExecutionContext::innermost_context_->YieldTask(std::forward<TDependencies>(dependencies));
-    }
+    void YieldTask(const TaskList& dependencies);
 
 }

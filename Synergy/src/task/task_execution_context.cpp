@@ -33,16 +33,39 @@ namespace syntropy::synergy
 
         if (auto continuation = GetContinuation())
         {
-            task->ContinueWith(continuation);                               // The task is not yet finished: continue with another task.
+            task->ContinueWith(continuation);                                   // The task is not yet finished: continue with another task.
         }
         else
         {
-            task->MoveSuccessors(pending_tasks_);                           // The task is finished: schedule each successor.
+            task->MoveSuccessors(pending_tasks_);                               // The task is finished: schedule each successor.
         }
 
         // Schedule pending tasks and return.
 
         return SchedulePendingTasks();
+    }
+
+    void TaskExecutionContext::RescheduleTask(const TaskList& dependencies)
+    {
+        SYNTROPY_ASSERT(reschedulable_task_);                                               // A task can be rescheduled at most once per execution.
+
+        reschedulable_task_->SetDependencies(dependencies);                                 // The current task is not expected to have any dependencies at this point.
+
+        pending_tasks_.emplace_back(reschedulable_task_);
+
+        reschedulable_task_ = nullptr;
+    }
+
+    void TaskExecutionContext::YieldTask(const TaskList& dependencies)
+    {
+        SYNTROPY_ASSERT(reschedulable_task_);                                               // A task can be rescheduled at most once per execution.
+
+        reschedulable_task_->SetDependencies(dependencies);                                 // The current task is not expected to have any dependencies at this point.
+
+        continuation_tasks_.emplace_back(reschedulable_task_);
+        pending_tasks_.emplace_back(reschedulable_task_);
+
+        reschedulable_task_ = nullptr;
     }
 
     std::shared_ptr<Task> TaskExecutionContext::GetContinuation()
@@ -65,7 +88,7 @@ namespace syntropy::synergy
 
     std::shared_ptr<Task> TaskExecutionContext::SchedulePendingTasks()
     {
-        std::shared_ptr<Task> next_task;
+        std::shared_ptr<Task> next_task;                // Next task to execute after this call. This task is not notified and is returned directly.
 
         for (auto&& pending_task : pending_tasks_)
         {
@@ -88,6 +111,20 @@ namespace syntropy::synergy
     Observable<TaskExecutionContext&, const TaskExecutionContext::OnTaskReadyEventArgs&>& TaskExecutionContext::OnTaskReady()
     {
         return on_task_ready_;
+    }
+
+    void RescheduleTask(const TaskList& dependencies)
+    {
+        SYNTROPY_ASSERT(TaskExecutionContext::innermost_context_);
+
+        return TaskExecutionContext::innermost_context_->RescheduleTask(dependencies);
+    }
+
+    void YieldTask(const TaskList& dependencies)
+    {
+        SYNTROPY_ASSERT(TaskExecutionContext::innermost_context_);
+
+        return TaskExecutionContext::innermost_context_->YieldTask(dependencies);
     }
 
 }
