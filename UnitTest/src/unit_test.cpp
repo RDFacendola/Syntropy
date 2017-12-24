@@ -118,7 +118,7 @@ void AllocTest()
     }
 }
 
-#define COUNT 1 << 4
+#define COUNT 1 << 16
 
 struct Maxer
 {
@@ -180,7 +180,7 @@ void MultithreadTest()
 
     for (auto&& number : numbers)
     {
-        number = rand() % count;
+        number = rand() % 65536;
     }
 
     int max;

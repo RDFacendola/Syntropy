@@ -99,7 +99,8 @@ namespace syntropy::synergy
         void OnWorkerReady(Worker& sender);
 
         /// \brief Get a reference to any task execution context in the scheduler.
-        /// \return Returns the context associated to this thread, if no such context exists a random context is returned instead.
+        /// This function always prefer a thread-local context, if possible.
+        /// \return Returns any task execution context.
         TaskExecutionContext& GetExecutionContext();
 
         std::vector<WorkerThread> workers_;                     ///< \brief Workers used to execute tasks concurrently.

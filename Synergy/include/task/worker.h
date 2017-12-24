@@ -44,6 +44,7 @@ namespace syntropy::synergy
         ~Worker() = default;
 
         /// \brief Starts the worker loop synchronously.
+        /// This call blocks until a termination request is issued. See Stop().
         void Start();
 
         /// \brief Request loop termination.
@@ -62,7 +63,7 @@ namespace syntropy::synergy
         std::shared_ptr<Task> DequeueTask();
 
         /// \brief Get the execution context associated to this worker.
-        /// \return Returns the execution context associated to this worker. If the worker is not running returns nullptr.
+        /// \return Returns the execution context associated to this worker, if present. If the worker is not running returns nullptr.
         TaskExecutionContext* GetExecutionContext();
 
         /// \brief Observable event called whenever a new task is enqueued in this worker.
@@ -77,7 +78,7 @@ namespace syntropy::synergy
     private:
 
         /// \brief Fetch a new task for execution.
-        /// The thread is put to sleep if no task could be fetched.
+        /// This call blocks until a new task becomes ready for execution or termination was requested.
         /// \return Returns a pointer to the next task to execute if the thread is running, returns nullptr otherwise.
         std::shared_ptr<Task> FetchTask();
 

@@ -33,11 +33,11 @@ namespace syntropy::synergy
 
         if (auto continuation = GetContinuation())
         {
-            task->ContinueWith(continuation);                                   // The task is not yet finished: continue with another task.
+            task->ContinueWith(continuation);                                               // The task is not yet finished: continue with another task.
         }
         else
         {
-            task->MoveSuccessors(pending_tasks_);                               // The task is finished: schedule each successor.
+            task->MoveSuccessors(pending_tasks_);                                           // The task is finished: schedule each successor.
         }
 
         // Schedule pending tasks and return.
@@ -74,21 +74,21 @@ namespace syntropy::synergy
 
         if (continuation_count == 0)
         {
-            return nullptr;                                                     // No continuation.
+            return nullptr;                                                                 // No continuation.
         }
         else if (continuation_count == 1)
         {
-            return continuation_tasks_.back();                                  // Only one continuation, use that task directly.
+            return continuation_tasks_.back();                                              // Only one continuation, use that task directly.
         }
         else
         {
-            return CreateTask(std::move(continuation_tasks_), [] {});           // Create an empty continuation depending on each of the many continuations so they can be executed concurrently.
+            return CreateTask(std::move(continuation_tasks_), [] {});                       // Create an empty continuation depending on each of the many continuations so they can be executed concurrently.
         }
     }
 
     std::shared_ptr<Task> TaskExecutionContext::SchedulePendingTasks()
     {
-        std::shared_ptr<Task> next_task;                // Next task to execute after this call. This task is not notified and is returned directly.
+        std::shared_ptr<Task> next_task;                                                    // Next task to execute after this call. This task is not notified and is returned directly.
 
         for (auto&& pending_task : pending_tasks_)
         {

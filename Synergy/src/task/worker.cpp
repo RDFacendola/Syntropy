@@ -27,25 +27,23 @@ namespace syntropy::synergy
 
         auto handle = context.OnTaskReady().Subscribe([this](auto& /*sender*/, auto& args) 
         {
-            EnqueueTask(args.task_);
+            EnqueueTask(args.task_);                                                        // #TODO Avoid accessing the queue if the task is going to be stolen.
 
             on_task_enqueued_.Notify(*this);
         });
 
         is_running_.store(true, std::memory_order_release);
 
-        on_ready_.Notify(*this);                                                            // Declare that the worker is ready to accept new tasks.
+        on_ready_.Notify(*this);                                                            // the worker is now ready to accept new tasks.
 
         // Main loop.
 
-        while (auto task = FetchTask())                                                     // Fetch a new task concurrently. Blocks until a new task is available or a termination was requested.
+        while (auto task = FetchTask())                                                     // Outer loop: fetch tasks concurrently.
         {
-            // Depth-first execution to improve cache locality and avoid accessing the task queue concurrently.
-            do
+            while(task && IsRunning())
             {
-                task = context.ExecuteTask(std::move(task));
+                task = context.ExecuteTask(std::move(task));                                // Inner loop: non-concurrent depth-first execution to improve scalability and cache locality.
             }
-            while (task && IsRunning());
         }
 
         // Flush remaining tasks.
@@ -74,11 +72,7 @@ namespace syntropy::synergy
 
     std::shared_ptr<Task> Worker::DequeueTask()
     {
-        auto task = tasks_.PopFront();
-
-        //wake_up_.notify_all();
-
-        return task;
+        return tasks_.PopFront();
     }
 
     std::shared_ptr<Task> Worker::FetchTask()
@@ -100,7 +94,7 @@ namespace syntropy::synergy
 
             if (task == nullptr)
             {
-                // Notify the worker is about to starve and check if a new task shows up as a result.
+                // Notify the worker is about to starve and check if a new task shows up.
 
                 on_starving_.Notify(*this);
 

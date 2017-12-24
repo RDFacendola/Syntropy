@@ -81,6 +81,8 @@ namespace syntropy::synergy
 
         // Attempt to steal a task from a random non-starving worker.
 
+        std::scoped_lock<std::mutex> lock(mutex_);
+
         for (auto&& worker : workers_)
         {
             if (auto task = worker.GetWorker().DequeueTask())
@@ -89,8 +91,6 @@ namespace syntropy::synergy
                 return;
             }
         }
-
-        std::scoped_lock<std::mutex> lock(mutex_);
 
         starving_workers_.emplace_back(&sender);
     }
@@ -148,7 +148,7 @@ namespace syntropy::synergy
 
         thread_ = std::thread([this, affinity]() 
         {
-            // Set thread affinity. Note that this call may fail if the specified affinity is not compatible with the process affinity.
+            // Set thread affinity. Note that this call may silently fail if the specified affinity is not compatible with the process affinity.
 
             if (affinity)
             {
