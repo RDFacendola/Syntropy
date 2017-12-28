@@ -85,11 +85,11 @@ namespace syntropy
             return GetString();
         }
 
-        /// \brief Check whether the string is empty or not.
-        /// \return Returns true if the string is empty, returns false otherwise.
+        /// \brief Check whether the string is non-empty.
+        /// \return Returns true if the string is non-empty, returns false otherwise.
         constexpr operator bool() const noexcept
         {
-            return (*this) == HashedStringT<TString, THash>();
+            return (*this) != HashedStringT<TString, THash>();
         }
 
         /// \brief Equality operator.
