@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\application\application.h" />
+    <ClInclude Include="include\application\command_line.h" />
     <ClInclude Include="include\containers\interface_container.h">
       <SubType>
       </SubType>
@@ -175,6 +177,8 @@
     <ClInclude Include="include\patterns\utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\application\application.cpp" />
+    <ClCompile Include="src\application\command_line.cpp" />
     <ClCompile Include="src\math\hash.cpp" />
     <ClCompile Include="src\math\random.cpp" />
     <ClCompile Include="src\platform\threading.cpp" />
