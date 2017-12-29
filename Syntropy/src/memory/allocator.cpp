@@ -146,7 +146,7 @@ namespace syntropy
         return name_;
     }
 
-    Allocator::operator diagnostics::Context() const
+    Allocator::operator Context() const
     {
         return context_;
     }

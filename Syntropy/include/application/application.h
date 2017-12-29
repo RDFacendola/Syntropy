@@ -5,10 +5,13 @@
 
 #pragma once
 
-#include "diagnostics/diagnostics.h"
+#include "command_line.h"
+
+#include "containers/context.h"
 
 namespace syntropy
 {
     /// \brief Log context for the syntropy application system.
-    extern const diagnostics::Context ApplicationCtx;
+    extern const Context ApplicationCtx;
+
 }

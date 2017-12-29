@@ -14,9 +14,10 @@
 
 #include "memory/memory.h"
 
-#include "containers/hashed_string.h"
-
 #include "diagnostics/diagnostics.h"
+
+#include "containers/hashed_string.h"
+#include "containers/context.h"
 
 /// \brief Instantiate a new object via custom allocator.
 /// \usage auto foo = SYNTROPY_NEW(allocator) Foo();
@@ -108,15 +109,15 @@ namespace syntropy
         const HashedString& GetName() const;
 
         /// \brief Get the context associated to this allocator instance.
-        operator diagnostics::Context() const;
+        operator Context() const;
 
     private:
 
         class Register;
 
-        HashedString name_;                             ///< \brief Name of the allocator.
+        HashedString name_;                 ///< \brief Name of the allocator.
 
-        diagnostics::Context context_;                  ///< \brief Context associated to the allocator.
+        Context context_;                   ///< \brief Context associated to the allocator.
 
     };
 

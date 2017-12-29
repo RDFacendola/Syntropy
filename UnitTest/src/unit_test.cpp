@@ -14,6 +14,7 @@
 #include "unit1.h"
 
 #include "containers/hashed_string.h"
+#include "containers/context.h"
 
 #include "vm/virtual_machine.h"
 #include "vm/intrinsics.h"
@@ -53,7 +54,7 @@
 
 #include "application/command_line.h"
 
-syntropy::diagnostics::Context Root;
+syntropy::Context Root;
 
 struct FooSmall
 {

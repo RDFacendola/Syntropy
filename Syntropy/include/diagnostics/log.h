@@ -15,6 +15,8 @@
 
 #include "diagnostics/diagnostics.h"
 
+#include "containers/context.h"
+
 #include "patterns/algorithm.h"
 
 #include "macro.h"

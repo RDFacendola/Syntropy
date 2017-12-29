@@ -6,138 +6,133 @@
 
 #include "containers/range.h"
 
-namespace syntropy
+namespace syntropy::diagnostics
 {
-    namespace diagnostics
+    /************************************************************************/
+    /* STREAM LOG CHANNEL                                                   */
+    /************************************************************************/
+
+    const std::string StreamLogChannel::kTimeToken("{time}");
+    const std::string StreamLogChannel::kDateToken("{date}");
+    const std::string StreamLogChannel::kSeverityToken("{severity}");
+    const std::string StreamLogChannel::kThreadToken("{thread}");
+    const std::string StreamLogChannel::kContextsToken("{context}");
+    const std::string StreamLogChannel::kStackTraceToken("{trace}");
+    const std::string StreamLogChannel::kFunctionToken("{function}");
+    const std::string StreamLogChannel::kMessageToken("{message}");
+
+    const char StreamLogChannel::kTokenStart = '{';
+    const char StreamLogChannel::kTokenEnd = '}';
+
+    StreamLogChannel::StreamLogChannel(const std::string& format, std::vector<Context> contexts, Severity verbosity)
+        : LogChannel(std::move(contexts), verbosity)
     {
+        UpdateThunks(format);
+    }
 
-        /************************************************************************/
-        /* STREAM LOG CHANNEL                                                   */
-        /************************************************************************/
+    void StreamLogChannel::UpdateThunks(const std::string& format)
+    {
+        thunks_.clear();
 
-        const std::string StreamLogChannel::kTimeToken("{time}");
-        const std::string StreamLogChannel::kDateToken("{date}");
-        const std::string StreamLogChannel::kSeverityToken("{severity}");
-        const std::string StreamLogChannel::kThreadToken("{thread}");
-        const std::string StreamLogChannel::kContextsToken("{context}");
-        const std::string StreamLogChannel::kStackTraceToken("{trace}");
-        const std::string StreamLogChannel::kFunctionToken("{function}");
-        const std::string StreamLogChannel::kMessageToken("{message}");
+        std::pair<std::string::const_iterator, std::string::const_iterator> token;
 
-        const char StreamLogChannel::kTokenStart = '{';
-        const char StreamLogChannel::kTokenEnd = '}';
-
-        StreamLogChannel::StreamLogChannel(const std::string& format, std::vector<Context> contexts, Severity verbosity)
-            : LogChannel(std::move(contexts), verbosity)
+        for (auto it = format.cbegin(); it != format.cend(); it = token.second)
         {
-            UpdateThunks(format);
-        }
+            token = GetToken(it, format.cend(), kTokenStart, kTokenEnd);
 
-        void StreamLogChannel::UpdateThunks(const std::string& format)
-        {
-            thunks_.clear();
-
-            std::pair<std::string::const_iterator, std::string::const_iterator> token;
-
-            for (auto it = format.cbegin(); it != format.cend(); it = token.second)
+            // Add a constant string
+            if (it != token.first)
             {
-                token = GetToken(it, format.cend(), kTokenStart, kTokenEnd);
+                std::string message(it, token.first);
+                thunks_.emplace_back([message](const ThunkArgs& args) { args.out_ << message; });
+            }
 
-                // Add a constant string
-                if (it != token.first)
-                {
-                    std::string message(it, token.first);
-                    thunks_.emplace_back([message](const ThunkArgs& args) { args.out_ << message; });
-                }
-
-                // Translate via token
-                if (token.first != token.second)
-                {
-                    thunks_.emplace_back(GetTokenThunk(std::string(token.first, token.second)));
-                }
+            // Translate via token
+            if (token.first != token.second)
+            {
+                thunks_.emplace_back(GetTokenThunk(std::string(token.first, token.second)));
             }
         }
+    }
 
-        void StreamLogChannel::OnSendMessage(const LogMessage& log, const std::vector<Context>& contexts)
+    void StreamLogChannel::OnSendMessage(const LogMessage& log, const std::vector<Context>& contexts)
+    {
+        if (thunks_.size() > 0)
         {
-            if (thunks_.size() > 0)
+            auto& stream = GetStream();
+
+            ThunkArgs args{ stream, log, contexts };
+
+            for (auto&& thunk : thunks_)
             {
-                auto& stream = GetStream();
-
-                ThunkArgs args{ stream, log, contexts };
-
-                for (auto&& thunk : thunks_)
-                {
-                    thunk(args);
-                }
-
-                stream << "\n";
+                thunk(args);
             }
+
+            stream << "\n";
+        }
+    }
+
+    void StreamLogChannel::Flush()
+    {
+        GetStream().flush();
+    }
+
+    StreamLogChannel::Thunk StreamLogChannel::GetTokenThunk(const std::string& token)
+    {
+        // Match each token with the proper thunk
+        if (token == kTimeToken)
+        {
+            return [](const ThunkArgs& args) { args.out_ << Calendar::GetTimeOfDay(args.log_.time_); };
+        }
+        else if (token == kDateToken)
+        {
+            return [](const ThunkArgs& args) { args.out_ << Calendar::GetDate(args.log_.time_); };
+        }
+        else if (token == kSeverityToken)
+        {
+            return [](const ThunkArgs& args) { args.out_ << args.log_.severity_; };
+        }
+        else if (token == kThreadToken)
+        {
+            return [](const ThunkArgs& args) { args.out_ << args.log_.thread_id_; };
+        }
+        else if (token == kContextsToken)
+        {
+            return [](const ThunkArgs& args) { args.out_ << MakeRange(args.contexts_.begin(), args.contexts_.end()); };
+        }
+        else if (token == kStackTraceToken)
+        {
+            return [](const ThunkArgs& args) { args.out_ << args.log_.stacktrace_; };
+        }
+        else if (token == kFunctionToken)
+        {
+            return [](const ThunkArgs& args) { args.out_ << args.log_.stacktrace_.elements_[0]; };
+        }
+        else if (token == kMessageToken)
+        {
+            return [](const ThunkArgs& args) { args.out_ << args.log_.message_; };
         }
 
-        void StreamLogChannel::Flush()
-        {
-            GetStream().flush();
-        }
+        return [token](const ThunkArgs& args) { args.out_ << token; };
+    }
 
-        StreamLogChannel::Thunk StreamLogChannel::GetTokenThunk(const std::string& token)
-        {
-            // Match each token with the proper thunk
-            if (token == kTimeToken)
-            {
-                return [](const ThunkArgs& args) { args.out_ << Calendar::GetTimeOfDay(args.log_.time_); };
-            }
-            else if (token == kDateToken)
-            {
-                return [](const ThunkArgs& args) { args.out_ << Calendar::GetDate(args.log_.time_); };
-            }
-            else if (token == kSeverityToken)
-            {
-                return [](const ThunkArgs& args) { args.out_ << args.log_.severity_; };
-            }
-            else if (token == kThreadToken)
-            {
-                return [](const ThunkArgs& args) { args.out_ << args.log_.thread_id_; };
-            }
-            else if (token == kContextsToken)
-            {
-                return [](const ThunkArgs& args) { args.out_ << MakeRange(args.contexts_.begin(), args.contexts_.end()); };
-            }
-            else if (token == kStackTraceToken)
-            {
-                return [](const ThunkArgs& args) { args.out_ << args.log_.stacktrace_; };
-            }
-            else if (token == kFunctionToken)
-            {
-                return [](const ThunkArgs& args) { args.out_ << args.log_.stacktrace_.elements_[0]; };
-            }
-            else if (token == kMessageToken)
-            {
-                return [](const ThunkArgs& args) { args.out_ << args.log_.message_; };
-            }
+    /************************************************************************/
+    /* FILE LOG CHANNEL                                                     */
+    /************************************************************************/
 
-            return [token](const ThunkArgs& args) { args.out_ << token; };
-        }
+    FileLogChannel::FileLogChannel(const std::string& file, const std::string& format, std::vector<Context> contexts, Severity verbosity)
+        : StreamLogChannel(format, std::move(contexts), verbosity)
+    {
+        file_stream_.open(file);
+    }
 
-        /************************************************************************/
-        /* FILE LOG CHANNEL                                                     */
-        /************************************************************************/
+    FileLogChannel::~FileLogChannel()
+    {
+        file_stream_.close();
+    }
 
-        FileLogChannel::FileLogChannel(const std::string& file, const std::string& format, std::vector<Context> contexts, Severity verbosity)
-            : StreamLogChannel(format, std::move(contexts), verbosity)
-        {
-            file_stream_.open(file);
-        }
-
-        FileLogChannel::~FileLogChannel()
-        {
-            file_stream_.close();
-        }
-
-        std::ostream& FileLogChannel::GetStream()
-        {
-            return file_stream_;
-        }
-
+    std::ostream& FileLogChannel::GetStream()
+    {
+        return file_stream_;
     }
 }

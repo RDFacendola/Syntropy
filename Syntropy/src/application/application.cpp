@@ -2,5 +2,5 @@
 
 namespace syntropy
 {
-    const diagnostics::Context ApplicationCtx("SyntropyApplication");
+    const Context ApplicationCtx("SyntropyApplication");
 }

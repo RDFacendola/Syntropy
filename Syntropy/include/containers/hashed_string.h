@@ -1,6 +1,6 @@
 
 /// \file hashed_string.h
-/// \brief This header is part of the synergy containers. It contains classes used to handle hashed strings.
+/// \brief This header is part of the syntropy containers. It contains classes used to handle hashed strings.
 ///
 /// \author Raffaele D. Facendola - 2016
 

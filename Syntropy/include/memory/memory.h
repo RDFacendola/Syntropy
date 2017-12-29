@@ -8,15 +8,14 @@
 
 #include <cstdint>
 
-#include "diagnostics/diagnostics.h"
+#include "containers/context.h"
 
 #include "math/math.h"
 
 namespace syntropy
 {
-
     /// \brief Log context for the syntropy memory system.
-    extern const diagnostics::Context MemoryCtx;
+    extern const Context MemoryCtx;
 
     /// \brief Wraps the low-level calls used to handle virtual memory allocation.
     /// \author Raffaele D. Facendola - December 2016

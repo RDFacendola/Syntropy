@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>780</x>
+      <y>300</y>
+      <w>340</w>
+      <h>490</h>
+    </coordinates>
+    <panel_attributes>TestSuite
+--
+// Create a new named test suite.
+ctor(suite_name)
+// Executed before all test cases.
+/+BeforeAll()/
+// Executed after all test cases.
+/+AfterAll()/
+// Executed before each test case.
+/+Before()/
+// Executed after each test case.
+/+After()/
+// Get the test suite name.
+/+GetName(): HashedString/
+
+// Events
++OnSuiteStarted()
++OnSuiteFinished()
++OnTestStarted()
++OnTestFinished()
++OnTestFailure()
++OnTestError()
+
+// Run the test suite.
++Run();
+
+// Declare a new test case.
+#AddTestCase(name, test_case_method)
+
+// Assertions
+#Expect(expression, condition, message)
+#ExpectException(...)
+#ExpectNoException(...)
+#ExpectTimeout(...)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>780</x>
+      <y>130</y>
+      <w>340</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>//Register a test suite automatically.
+template &lt;typename TTestSuite&gt;
+AutoTestSuite
+--
+// Register a named test suite.
+ctor(name)
+// Get the underlying test suite.
+TestSuite&amp; GetSuite();</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>940</x>
+      <y>230</y>
+      <w>30</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>260</x>
+      <y>230</y>
+      <w>340</w>
+      <h>320</h>
+    </coordinates>
+    <panel_attributes>// Class used to run test suites. Singleton.
+TestRunner
+--
+// Get the runner instance.
++GetInstance(): TestRunner&amp;
+// Add a new test suite to the runner.
+template &lt;typename TTestSuite&gt;
++AddTestSuite(name);
+
+// Run each test suite.
++RunAll();
+
+// Run each test suite under the provided name.
++Run(name);</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

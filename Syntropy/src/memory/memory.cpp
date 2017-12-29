@@ -3,14 +3,15 @@
 #include <algorithm>
 
 #include "platform/compiler/compiler.h"
-#include "macro.h"
+
 #include "diagnostics/assert.h"
 
+#include "macro.h"
 #include "syntropy.h"
 
 namespace syntropy
 {
-    const diagnostics::Context MemoryCtx("SyntropyMemory");
+    const Context MemoryCtx("SyntropyMemory");
 
     /************************************************************************/
     /* MEMORY DEBUG                                                         */

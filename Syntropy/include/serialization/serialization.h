@@ -6,16 +6,10 @@
 
 #pragma once
 
-#include "diagnostics/diagnostics.h"
+#include "containers/context.h"
 
-namespace syntropy
+namespace syntropy::serialization
 {
-
-    namespace serialization
-    {
-
-        /// \brief Log context for the syntropy serialization system.
-        extern const diagnostics::Context SerializationCtx;
-
-    }
+    /// \brief Log context for the syntropy serialization system.
+    extern const Context SerializationCtx;
 }

@@ -1,9 +1,6 @@
 #include "serialization\serialization.h"
 
-namespace syntropy
+namespace syntropy::serialization
 {
-    namespace serialization
-    {
-        const diagnostics::Context SerializationCtx("SyntropySerialization");
-    }
+    const Context SerializationCtx("SyntropySerialization");
 }
