@@ -176,6 +176,10 @@
     <ClInclude Include="include\time\timer.h" />
     <ClInclude Include="include\type_traits.h" />
     <ClInclude Include="include\patterns\utility.h" />
+    <ClInclude Include="include\unit_test\test_case.h" />
+    <ClInclude Include="include\unit_test\test_fixture.h" />
+    <ClInclude Include="include\unit_test\test_runner.h" />
+    <ClInclude Include="include\unit_test\test_suite.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\application\application.cpp" />
@@ -288,6 +292,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\unit_test\test_case.cpp" />
+    <ClCompile Include="src\unit_test\test_fixture.cpp" />
+    <ClCompile Include="src\unit_test\test_runner.cpp" />
+    <ClCompile Include="src\unit_test\test_suite.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{545E5D36-D079-4183-A375-11F94A20C2A9}</ProjectGuid>

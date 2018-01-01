@@ -54,6 +54,9 @@
 
 #include "application/command_line.h"
 
+#include "unit_test/test_runner.h"
+#include "unit_test/test_fixture.h"
+
 syntropy::Context Root;
 
 struct FooSmall
@@ -323,6 +326,32 @@ void SynapseTest()
 
 }
 
+class MyTestSuite : public syntropy::TestFixture
+{
+public:
+
+    MyTestSuite()
+        : TestFixture("MyTestSuite")
+    {
+        DeclareTestCase("TestCaseA", std::bind(&MyTestSuite::TestCaseA, this));
+        DeclareTestCase("TestCaseB", std::bind(&MyTestSuite::TestCaseB, this));
+    }
+
+    void TestCaseA()
+    {
+        SYNTROPY_TEST_EXPECT(1 + 2 == 3);
+    }
+
+    void TestCaseB()
+    {
+        SYNTROPY_TEST_PRECONDITION(1 == 2);
+
+        // Never called!
+    }
+};
+
+syntropy::AutoTestSuite<MyTestSuite> ut_my_test_suite;
+
 int main(int argc, char **argv)
 {
     Initialize();
@@ -348,6 +377,10 @@ int main(int argc, char **argv)
     {
         MultithreadTest();
     }
+
+    auto&& tr = syntropy::TestRunner::GetInstance();
+
+    tr.Run("");
 
     system("pause");
 

@@ -75,6 +75,10 @@
     <ClInclude Include="include\application\command_line.h" />
     <ClInclude Include="include\application\application.h" />
     <ClInclude Include="include\containers\context.h" />
+    <ClInclude Include="include\unit_test\test_suite.h" />
+    <ClInclude Include="include\unit_test\test_runner.h" />
+    <ClInclude Include="include\unit_test\test_case.h" />
+    <ClInclude Include="include\unit_test\test_fixture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -120,6 +124,10 @@
     <ClCompile Include="src\application\command_line.cpp" />
     <ClCompile Include="src\application\application.cpp" />
     <ClCompile Include="src\containers\context.cpp" />
+    <ClCompile Include="src\unit_test\test_runner.cpp" />
+    <ClCompile Include="src\unit_test\test_suite.cpp" />
+    <ClCompile Include="src\unit_test\test_case.cpp" />
+    <ClCompile Include="src\unit_test\test_fixture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">
