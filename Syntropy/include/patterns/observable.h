@@ -12,6 +12,10 @@
 
 namespace syntropy
 {
+    /************************************************************************/
+    /* LISTENER                                                             */
+    /************************************************************************/
+
     /// \brief Base class for listeners.
     /// \author Raffaele D. Facendola - November 2017
     class Listener
@@ -33,6 +37,10 @@ namespace syntropy
         /// \brief Default virtual destructor.
         virtual ~Listener() = default;
     };
+
+    /************************************************************************/
+    /* LISTENER T                                                           */
+    /************************************************************************/
 
     /// \brief Represents a concrete listener subscribed to an observable object.
     /// \author Raffaele D. Facendola - June 2017
@@ -67,6 +75,10 @@ namespace syntropy
         std::function<void(TArguments...)> handler_;        ///< \brief Handler routine for the event.
     };
 
+    /************************************************************************/
+    /* OBSERVABLE                                                           */
+    /************************************************************************/
+
     /// \brief Interface for observable objects that can be subscribed to.
     /// An observable object can be subscribed by any number of listener.
     /// Whenever the object is destroyed, its listeners are unsubscribed automatically.
@@ -79,11 +91,16 @@ namespace syntropy
         /// \brief Create a new observable object.
         Observable() = default;
 
-        /// \brief No copy constructor.
-        Observable(const Observable&) = delete;
+        /// \brief Empty copy constructor.
+        /// The observable object can be copied, however the new copy won't have any of the existing listeners.
+        Observable(const Observable&)
+        {
 
-        /// \brief No move constructor.
-        Observable(Observable&&) = delete;
+        }
+
+        /// \brief Default move constructor.
+        /// Listeners are moved to the new instance.
+        Observable(Observable&&) = default;
 
         /// \brief No assignment operator.
         Observable& operator=(const Observable&) = delete;
@@ -109,6 +126,10 @@ namespace syntropy
         std::vector<std::weak_ptr<ListenerT<TArguments...>>> listeners_;         ///< \brief Listeners subscribed to this object.
 
     };
+
+    /************************************************************************/
+    /* EVENT                                                                */
+    /************************************************************************/
 
     /// \brief Observable event with notification capabilities.
     /// \author Raffaele D. Facendola - June 2017
