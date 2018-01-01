@@ -34,6 +34,9 @@ namespace syntropy
         /// \brief Create a new context from a name.
         Context(const HashedString& name);
 
+        /// \brief Create a new context from a null-terminated string.
+        Context(const char* name);
+
         /// \brief Implicit conversion to hashed strings.
         operator const HashedString&() const;
 

@@ -149,6 +149,12 @@ namespace syntropy
 
     }
 
+    Context::Context(const char* name)
+        : Context(HashedString(name))
+    {
+
+    }
+
     Context::operator const HashedString&() const
     {
         return GetName();
