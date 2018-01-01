@@ -306,7 +306,7 @@ void SynapseTest()
         count += FindPath(1, 2, 2, 1, pMap, 4, 3, pOutBuffer, nOutBufferSize);
     }
     
-    float time = timer.Stop() / 10000.0f;
+    float time = timer.Stop().count() / 10000.0f;
     count /= 10000;
 
     std::cout << "A* duration: " << time << " us\n";

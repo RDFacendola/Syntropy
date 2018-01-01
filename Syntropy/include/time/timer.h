@@ -11,16 +11,13 @@
 namespace syntropy
 {
     /// \brief Timer class used to get time intervals.
-    /// \tparam TDuration Time interval class used to count ticks.
+    /// \tparam TDuration Time interval type.
     /// \tparam TClock Underlying clock type.
     /// \author Raffaele D. Facendola - November 2017.
     template <typename TDuration, typename TClock>
     class Timer
     {
     public:
-
-        /// \brief Arithmetic type representing the number of ticks.
-        using TTicks = typename TDuration::rep;
 
         /// \brief Create a new timer.
         /// \param start Whether the timer automatically starts after being created.
@@ -33,7 +30,7 @@ namespace syntropy
             }
             else
             {
-                ticks_ = TDuration::zero().count();
+                duration_ = TDuration::zero();
             }
         }
 
@@ -45,21 +42,21 @@ namespace syntropy
         }
 
         /// \brief Stop counting.
-        /// \return Returns the number of ticks since the last call to Start().
-        TTicks Stop()
+        /// \return Returns the time passed since the last call to Start().
+        TDuration Stop()
         {
             if (ticking_)
             {
-                ticks_ = (*this)();
+                duration_ = (*this)();
                 ticking_ = false;
             }
 
-            return ticks_;
+            return duration_;
         }
 
         /// \brief Restart the timer.
-        /// \return Returns the number of ticks since the last call to Start().
-        TTicks Restart()
+        /// \return Returns the time passed since the last call to Start().
+        TDuration Restart()
         {
             auto ticks = Stop();
 
@@ -68,17 +65,17 @@ namespace syntropy
             return ticks;
         }
 
-        /// \brief Get the amount of ticks accumulated so far.
-        /// \return If the timer is still ticking returns the number of ticks since the last call to Start(), otherwise returns the number of ticks between the last Start() and the next Stop().
-        TTicks operator()() const
+        /// \brief Get the time duration accumulated so far.
+        /// \return If the timer is still ticking returns the time duration since the last call to Start(), otherwise returns the time duration between the last Start() and the next Stop().
+        TDuration operator()() const
         {
             if (ticking_)
             {
-                return std::chrono::duration_cast<TDuration>(TClock::now() - base_).count();
+                return std::chrono::duration_cast<TDuration>(TClock::now() - base_);
             }
             else
             {
-                return ticks_;
+                return duration_;
             }
         }
 
@@ -90,7 +87,7 @@ namespace syntropy
         {
             typename TClock::time_point base_;          ///< \brief Base time point of the timer. Valid only if the timer is ticking.
 
-            TTicks ticks_;                              ///< \brief Ticks counter by the timer. Valid only if the timer is not ticking.
+            TDuration duration_;                        ///< \brief Time duration. Valid only if the timer is not ticking.
         };
 
     };
