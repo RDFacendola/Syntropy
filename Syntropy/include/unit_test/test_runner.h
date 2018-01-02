@@ -12,6 +12,8 @@
 
 #include "unit_test/test_suite.h"
 
+#include "patterns/observable.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -23,6 +25,22 @@ namespace syntropy
     class TestRunner
     {
     public:
+
+        /// \brief Arguments of the event called whenever a new test suite is ran.
+        struct OnTestSuiteStartedEventArgs
+        {
+            TestSuite* test_suite_;                             ///< \brief Test suite the event refers to.
+        };
+
+        /// \brief Arguments of the event called whenever a running test suite finished.
+        struct OnTestSuiteFinishedEventArgs
+        {
+            TestSuite* test_suite_;                             ///< \brief Test suite the event refers to.
+
+            TestSuiteResult result_;                            ///< \brief Result of the test suite.
+
+            std::chrono::milliseconds duration_;                ///< \brief Amount of time needed to execute the test case.
+        };
 
         /// \brief Get the singleton instance.
         static TestRunner& GetInstance();
@@ -43,12 +61,22 @@ namespace syntropy
             test_suites_.emplace_back(MakeTestSuite<TTestFixture>(std::forward<TArguments>(arguments)...));
         }
 
+        /// \brief Observable event called whenever a new test case is ran.
+        Observable<TestRunner&, const OnTestSuiteStartedEventArgs&>& OnTestSuiteStarted();
+
+        /// \brief Observable event called whenever a running test case finished.
+        Observable<TestRunner&, const OnTestSuiteFinishedEventArgs&>& OnTestSuiteFinished();
+
     private:
 
         /// \brief Private constructor to avoid instantiation.
         TestRunner() = default;
 
-        std::vector<TestSuite> test_suites_;                            ///< \brief Test suites to run.
+        std::vector<TestSuite> test_suites_;                                                    ///< \brief Test suites to run.
+
+        Event<TestRunner&, const OnTestSuiteStartedEventArgs&> on_test_suite_started_;          ///< \brief Event raised whenever a new test suite starts.
+
+        Event<TestRunner&, const OnTestSuiteFinishedEventArgs&> on_test_suite_finished_;        ///< \brief Event raised whenever a running test suite finished.
     };
 
     /************************************************************************/

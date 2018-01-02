@@ -75,13 +75,13 @@ namespace syntropy
     /* TEST CASE RESULT                                                     */
     /************************************************************************/
 
-    /// \brief Test case result within a test fixture.
+    /// \brief Test case result.
     /// \author Raffaele D. Facendola - January 2018
     struct TestCaseResult
     {
         TestResult result_{ TestResult::kSuccess };         ///< \brief Result of the test case.
 
-        std::string result_message_;                        ///< \brief Message of the test case.
+        std::string message_;                               ///< \brief Message of the test case.
 
         diagnostics::StackTraceElement location_;           ///< \brief Code location the result refers to.
     };
@@ -107,6 +107,10 @@ namespace syntropy
         /// \brief Get the test cases.
         /// \return Returns the test cases.
         const std::vector<TestCase>& GetTestCases() const;
+
+        /// \brief Get the test cases.
+        /// \return Returns the test cases.
+        std::vector<TestCase>& GetTestCases();
 
         /// \brief Get the result of the last test case.
         /// If no test case was run the behavior is undefined.

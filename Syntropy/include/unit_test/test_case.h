@@ -26,6 +26,9 @@ namespace syntropy
         kSkipped,                       ///< \brief The test was skipped.
     };
 
+    /// \brief Stream insertion for TestResult.
+    std::ostream& operator<<(std::ostream& out, TestResult test_result);
+
     /************************************************************************/
     /* TEST CASE                                                            */
     /************************************************************************/

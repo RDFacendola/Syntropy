@@ -20,7 +20,32 @@
 
 namespace syntropy
 {
-    struct TestSuiteReport;
+    /************************************************************************/
+    /* TEST SUITE RESULT                                                    */
+    /************************************************************************/
+
+    /// \brief Test suite result.
+    /// \author Raffaele D. Facendola - January 2018
+    struct TestSuiteResult
+    {
+        TestResult result_{ TestResult::kSuccess };         ///< \brief Result of the test suite. The suite is considered successful only if each test case was either skipped or successful.
+                                                            ///         Test cases failures and errors cause a suite to fail. Unhandled exception during test setup are considered errors.
+
+        std::string message_;                               ///< \brief Test suite message.
+
+        size_t count_{ 0 };                                 ///< \brief Number of test cases ran.
+
+        size_t success_count_{ 0 };                         ///< \brief Number of successful test cases.
+
+        size_t failure_count_{ 0 };                         ///< \brief Number of failed test cases.
+
+        size_t error_count_{ 0 };                           ///< \brief Number of test cases aborted due to errors.
+
+        size_t skip_count_{ 0 };                            ///< \brief Number of skipped test cases.
+
+                                                            /// \brief Add a new test case result.
+        TestSuiteResult& operator +=(TestResult result);
+    };
 
     /************************************************************************/
     /* TEST SUITE                                                           */
@@ -33,40 +58,16 @@ namespace syntropy
     {
     public:
 
-        /// \brief Arguments of the event called whenever a running test suite finishes.
-        struct OnFinishedEventArgs
-        {
-            TestResult result_{ TestResult::kSuccess };         ///< \brief Result of the test suite. The suite is considered successful only if each test case was either skipped or successful.
-                                                                ///         Test cases failures and errors cause a suite to fail. Unhandled exception during test setup are considered errors.
-
-            std::string message_;                               ///< \brief Test suite message.
-
-            size_t count_{ 0 };                                 ///< \brief Number of test cases ran.
-
-            size_t success_count_{ 0 };                         ///< \brief Number of successful test cases.
-
-            size_t failure_count_{ 0 };                         ///< \brief Number of failed test cases.
-
-            size_t error_count_{ 0 };                           ///< \brief Number of test cases aborted due to errors.
-
-            size_t skip_count_{ 0 };                            ///< \brief Number of skipped test cases.
-
-            std::chrono::milliseconds duration_;                ///< \brief Amount of time needed to execute the test suite.
-
-            /// \brief Add a new test case result.
-            OnFinishedEventArgs& operator +=(TestResult result);
-        };
-
         /// \brief Arguments of the event called whenever a new test case is ran.
         struct OnTestCaseStartedEventArgs
         {
-            const TestCase* test_case_;                         ///< \brief Test case the event refers to.
+            TestCase* test_case_;                               ///< \brief Test case the event refers to.
         };
 
         /// \brief Arguments of the event called whenever a running test case finished.
         struct OnTestCaseFinishedEventArgs
         {
-            const TestCase* test_case_;                         ///< \brief Test case the event refers to.
+            TestCase* test_case_;                               ///< \brief Test case the event refers to.
 
             TestCaseResult result_;                             ///< \brief Result of the test case.
 
@@ -84,15 +85,14 @@ namespace syntropy
         /// \return Returns the test cases in this suite.
         const std::vector<TestCase>& GetTestCases() const;
 
+        /// \brief Get the test cases in this suite.
+        /// \return Returns the test cases in this suite.
+        std::vector<TestCase>& GetTestCases();
+
         /// \brief Run the test suite.
         /// \param context Context this suite is run on. Used to filter test suites by context.
-        void Run(const Context& context);
-
-        /// \brief Observable event called whenever this suite is ran.
-        Observable<TestSuite&>& OnStarted();
-
-        /// \brief Observable event called whenever this suite finished running.
-        Observable<TestSuite&, const OnFinishedEventArgs&>& OnFinished();
+        /// \return Returns the result of the test suite.
+        TestSuiteResult Run(const Context& context);
 
         /// \brief Observable event called whenever a new test case is ran.
         Observable<TestSuite&, const OnTestCaseStartedEventArgs&>& OnTestCaseStarted();
@@ -106,13 +106,9 @@ namespace syntropy
         TestSuite() = default;
 
         /// \brief Run a test case.
-        void RunTestCase(const TestCase& test_case);
+        void RunTestCase(TestCase& test_case);
 
         std::unique_ptr<TestFixture> fixture_;                                              ///< \brief Fixture this suite refers to.
-
-        Event<TestSuite&> on_started_;                                                      ///< \brief Event raised whenever the suite is ran.
-
-        Event<TestSuite&, const OnFinishedEventArgs&> on_finished_;                         ///< \brief Event raised whenever the suite finished running.
 
         Event<TestSuite&, const OnTestCaseStartedEventArgs&> on_test_case_started_;         ///< \brief Event raised whenever a new test case started.
 

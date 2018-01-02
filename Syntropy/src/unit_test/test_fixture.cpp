@@ -22,6 +22,11 @@ namespace syntropy
         return test_cases_;
     }
 
+    std::vector<TestCase>& TestFixture::GetTestCases()
+    {
+        return test_cases_;
+    }
+
     TestCaseResult TestFixture::GetLastResult() const
     {
         return test_result_;

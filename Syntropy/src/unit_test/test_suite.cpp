@@ -5,10 +5,10 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* TEST SUITE                                                           */
+    /* TEST SUITE RESULT                                                    */
     /************************************************************************/
 
-    TestSuite::OnFinishedEventArgs& TestSuite::OnFinishedEventArgs::operator+=(TestResult result)
+    TestSuiteResult& TestSuiteResult::operator+=(TestResult result)
     {
         // Update counters.
 
@@ -41,6 +41,10 @@ namespace syntropy
         return *this;
     }
 
+    /************************************************************************/
+    /* TEST SUITE                                                           */
+    /************************************************************************/
+
     const Context& TestSuite::GetName() const
     {
         return fixture_->GetName();
@@ -51,13 +55,14 @@ namespace syntropy
         return fixture_->GetTestCases();
     }
 
-    void TestSuite::Run(const Context& context)
+    std::vector<TestCase>& TestSuite::GetTestCases()
     {
-        on_started_.Notify(*this);
+        return fixture_->GetTestCases();
+    }
 
-        OnFinishedEventArgs report;
-
-        HighResolutionTimer<std::chrono::milliseconds> timer(true);
+    TestSuiteResult TestSuite::Run(const Context& context)
+    {
+        TestSuiteResult result;
 
         // Skip the suite if its context is not contained in the provided one.
 
@@ -74,43 +79,41 @@ namespace syntropy
                 {
                     RunTestCase(test_case);
 
-                    report += fixture_->GetLastResult().result_;
+                    result += fixture_->GetLastResult().result_;
                 }
 
                 fixture_->AfterAll();
             }
             catch (const std::exception& exception)
             {
-                report.result_ = TestResult::kError;
-                report.message_ = exception.what();
+                result.result_ = TestResult::kError;
+                result.message_ = exception.what();
             }
             catch (...)
             {
-                report.result_ = TestResult::kError;
-                report.message_ = "Unhandled exception while running the test suite.";
+                result.result_ = TestResult::kError;
+                result.message_ = "Unhandled exception while running the test suite.";
             }
         }
         else
         {
-            report.result_ = TestResult::kSkipped;
+            result.result_ = TestResult::kSkipped;
         }
 
-        report.duration_ = timer.Stop();
-
-        on_finished_.Notify(*this, report);
+        return result;
     }
 
-    void TestSuite::RunTestCase(const TestCase& test_case)
+    void TestSuite::RunTestCase(TestCase& test_case)
     {
         fixture_->Before();
 
         on_test_case_started_.Notify(*this, OnTestCaseStartedEventArgs{ &test_case });
 
-        OnTestCaseFinishedEventArgs report;
+        OnTestCaseFinishedEventArgs result;
 
         HighResolutionTimer<std::chrono::milliseconds> timer(true);
 
-        report.test_case_ = &test_case;
+        result.test_case_ = &test_case;
         
         // Guarded run: unhandled exception cause the test case to fail. The rest of the test suite is executed normally.
         // Note: won't handle against undefined behaviors (such as division by zero, access violation, etc.)
@@ -121,33 +124,23 @@ namespace syntropy
 
             test_case.Run();
 
-            report.result_ = fixture_->GetLastResult();
+            result.result_ = fixture_->GetLastResult();
 
         }
         catch (const std::exception& exception)
         {
-            report.result_ = { TestResult::kError , exception.what(), SYNTROPY_HERE };
+            result.result_ = { TestResult::kError , exception.what(), SYNTROPY_HERE };
         }
         catch (...)
         {
-            report.result_ = { TestResult::kError , "Unhandled exception while running the test case.", SYNTROPY_HERE };
+            result.result_ = { TestResult::kError , "Unhandled exception while running the test case.", SYNTROPY_HERE };
         }
 
-        report.duration_ = timer.Stop();
+        result.duration_ = timer.Stop();
 
-        on_test_case_finished_.Notify(*this, report);
+        on_test_case_finished_.Notify(*this, result);
 
         fixture_->After();
-    }
-
-    Observable<TestSuite&>& TestSuite::OnStarted()
-    {
-        return on_started_;
-    }
-
-    Observable<TestSuite&, const TestSuite::OnFinishedEventArgs&>& TestSuite::OnFinished()
-    {
-        return on_finished_;
     }
 
     Observable<TestSuite&, const TestSuite::OnTestCaseStartedEventArgs&>& TestSuite::OnTestCaseStarted()

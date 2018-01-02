@@ -4,26 +4,13 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>780</x>
+      <x>790</x>
       <y>300</y>
       <w>340</w>
       <h>490</h>
     </coordinates>
     <panel_attributes>TestSuite
 --
-// Create a new named test suite.
-ctor(suite_name)
-// Executed before all test cases.
-/+BeforeAll()/
-// Executed after all test cases.
-/+AfterAll()/
-// Executed before each test case.
-/+Before()/
-// Executed after each test case.
-/+After()/
-// Get the test suite name.
-/+GetName(): HashedString/
-
 // Events
 +OnSuiteStarted()
 +OnSuiteFinished()
@@ -49,7 +36,7 @@ ctor(suite_name)
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>780</x>
+      <x>790</x>
       <y>130</y>
       <w>340</w>
       <h>110</h>
@@ -67,7 +54,7 @@ TestSuite&amp; GetSuite();</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>940</x>
+      <x>950</x>
       <y>230</y>
       <w>30</w>
       <h>90</h>
@@ -78,7 +65,7 @@ TestSuite&amp; GetSuite();</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>260</x>
+      <x>270</x>
       <y>230</y>
       <w>340</w>
       <h>320</h>
@@ -95,8 +82,8 @@ template &lt;typename TTestSuite&gt;
 // Run each test suite.
 +RunAll();
 
-// Run each test suite under the provided name.
-+Run(name);</panel_attributes>
+// Run each test suite under the provided context.
++Run(context);</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>
