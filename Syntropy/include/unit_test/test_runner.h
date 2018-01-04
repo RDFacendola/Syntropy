@@ -29,13 +29,13 @@ namespace syntropy
         /// \brief Arguments of the event called whenever a new test suite is ran.
         struct OnTestSuiteStartedEventArgs
         {
-            TestSuite* test_suite_;                             ///< \brief Test suite the event refers to.
+            const TestSuite* test_suite_;                       ///< \brief Test suite the event refers to.
         };
 
         /// \brief Arguments of the event called whenever a running test suite finished.
         struct OnTestSuiteFinishedEventArgs
         {
-            TestSuite* test_suite_;                             ///< \brief Test suite the event refers to.
+            const TestSuite* test_suite_;                       ///< \brief Test suite the event refers to.
 
             TestSuiteResult result_;                            ///< \brief Result of the test suite.
 
@@ -47,13 +47,13 @@ namespace syntropy
 
         /// \brief Run registered test suites.
         /// \param context Context used to filter test suites. Provide an empty context to run all the test suites available.
-        void Run(const Context& context = "");
+        void Run(const Context& context = "") const;
 
         /// \brief Get the test suites to run.
         /// \return Returns the test suites to run.
         const std::vector<TestSuite>& GetTestSuites() const;
 
-        /// \brief Add a new test suit in-place.
+        /// \brief Add a new test suite in-place.
         /// \param arguments Arguments to pass to the test fixture constructor.
         template <typename TTestFixture, typename... TArguments>
         void EmplaceTestSuite(TArguments&&... arguments)
@@ -62,21 +62,21 @@ namespace syntropy
         }
 
         /// \brief Observable event called whenever a new test case is ran.
-        Observable<TestRunner&, const OnTestSuiteStartedEventArgs&>& OnTestSuiteStarted();
+        const Observable<const TestRunner&, const OnTestSuiteStartedEventArgs&>& OnTestSuiteStarted() const;
 
         /// \brief Observable event called whenever a running test case finished.
-        Observable<TestRunner&, const OnTestSuiteFinishedEventArgs&>& OnTestSuiteFinished();
+        const Observable<const TestRunner&, const OnTestSuiteFinishedEventArgs&>& OnTestSuiteFinished() const;
 
     private:
 
         /// \brief Private constructor to avoid instantiation.
         TestRunner() = default;
 
-        std::vector<TestSuite> test_suites_;                                                    ///< \brief Test suites to run.
+        std::vector<TestSuite> test_suites_;                                                        ///< \brief Test suites to run.
 
-        Event<TestRunner&, const OnTestSuiteStartedEventArgs&> on_test_suite_started_;          ///< \brief Event raised whenever a new test suite starts.
+        Event<const TestRunner&, const OnTestSuiteStartedEventArgs&> on_test_suite_started_;        ///< \brief Event raised whenever a new test suite starts.
 
-        Event<TestRunner&, const OnTestSuiteFinishedEventArgs&> on_test_suite_finished_;        ///< \brief Event raised whenever a running test suite finished.
+        Event<const TestRunner&, const OnTestSuiteFinishedEventArgs&> on_test_suite_finished_;      ///< \brief Event raised whenever a running test suite finished.
     };
 
     /************************************************************************/
@@ -98,11 +98,12 @@ namespace syntropy
     public:
 
         /// \brief Register a test suite to the TestRunner singleton instance.
+        /// \param name Name of the test suite.
         /// \param arguments Arguments to pass to TTestSuite constructor.
         template <typename... TArguments>
-        AutoTestSuite(TArguments&&... arguments)
+        AutoTestSuite(Context name, TArguments&&... arguments)
         {
-            TestRunner::GetInstance().EmplaceTestSuite<TTestFixture>(std::forward<TArguments>(arguments)...);
+            TestRunner::GetInstance().EmplaceTestSuite<TTestFixture>(std::move(name), std::forward<TArguments>(arguments)...);
         }
     };
 

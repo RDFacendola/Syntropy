@@ -332,7 +332,6 @@ class MyTestSuite : public syntropy::TestFixture
 public:
 
     MyTestSuite()
-        : TestFixture("MyTestSuite")
     {
         DeclareTestCase("TestCaseA", std::bind(&MyTestSuite::TestCaseA, this));
         DeclareTestCase("TestCaseB", std::bind(&MyTestSuite::TestCaseB, this));
@@ -341,23 +340,23 @@ public:
 
     void TestCaseA()
     {
-        SYNTROPY_TEST_EXPECT(1 + 2 == 3);
+        SYNTROPY_UNIT_EXPECT(1 + 2 == 3);
     }
 
     void TestCaseB()
     {
-        SYNTROPY_TEST_PRECONDITION(1 == 2);
+        SYNTROPY_UNIT_PRECONDITION(1 == 2);
 
         // Never called!
     }
 
     void TestCaseC()
     {
-        SYNTROPY_TEST_EXPECT(1 + 1 == 4);
+        SYNTROPY_UNIT_EXPECT(1 + 1 == 4);
     }
 };
 
-syntropy::AutoTestSuite<MyTestSuite> ut_my_test_suite;
+syntropy::AutoTestSuite<MyTestSuite> ut_my_test_suite("MyTestSuite");
 
 int main(int argc, char **argv)
 {
@@ -392,16 +391,16 @@ int main(int argc, char **argv)
     std::shared_ptr<syntropy::Listener> test_case_s;
     std::shared_ptr<syntropy::Listener> test_case_f;
 
-    auto a = tr.OnTestSuiteStarted().Subscribe([&test_case_s, &test_case_f](syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteStartedEventArgs& e)
+    auto a = tr.OnTestSuiteStarted().Subscribe([&test_case_s, &test_case_f](const syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteStartedEventArgs& e)
     {
         std::cout << "Running test suite '" << e.test_suite_->GetName() << "'\n";
 
-        test_case_s = e.test_suite_->OnTestCaseStarted().Subscribe([](syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseStartedEventArgs& e)
+        test_case_s = e.test_suite_->OnTestCaseStarted().Subscribe([](const syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseStartedEventArgs& e)
         {
             std::cout << "   Test case '" << e.test_case_->GetName() << "': ";
         });
 
-        test_case_f = e.test_suite_->OnTestCaseFinished().Subscribe([](syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseFinishedEventArgs& e)
+        test_case_f = e.test_suite_->OnTestCaseFinished().Subscribe([](const syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseFinishedEventArgs& e)
         {
             std::cout << e.result_.result_ << "\n";
 
@@ -416,7 +415,7 @@ int main(int argc, char **argv)
 
     });
 
-    auto b = tr.OnTestSuiteFinished().Subscribe([&test_case_s, &test_case_f](syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteFinishedEventArgs& e)
+    auto b = tr.OnTestSuiteFinished().Subscribe([&test_case_s, &test_case_f](const syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteFinishedEventArgs& e)
     {
         std::cout << "\n" << std::string(32, '-') << "\n"
             << "Ran " << e.result_.count_ << " tests in "<< e.duration_.count() << "ms:\n"

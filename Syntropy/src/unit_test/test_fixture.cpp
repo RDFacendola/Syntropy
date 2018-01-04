@@ -6,50 +6,19 @@ namespace syntropy
     /* TEST FIXTURE                                                         */
     /************************************************************************/
 
-    TestFixture::TestFixture(const Context& name)
-        : name_(name)
-    {
-
-    }
-
-    const Context& TestFixture::GetName() const
-    {
-        return name_;
-    }
-
     const std::vector<TestCase>& TestFixture::GetTestCases() const
     {
         return test_cases_;
     }
 
-    std::vector<TestCase>& TestFixture::GetTestCases()
+    Observable<TestFixture&, const TestFixture::OnResultEventArgs&>& TestFixture::OnResult()
     {
-        return test_cases_;
+        return on_result_;
     }
 
-    TestCaseResult TestFixture::GetLastResult() const
+    void TestFixture::NotifyResult(TestCaseResult result)
     {
-        return test_result_;
-    }
-
-    void TestFixture::SetLastResult(TestCaseResult result)
-    {
-        std::swap(test_result_, result);
-    }
-
-    void TestFixture::ClearLastResult()
-    {
-        test_result_ = TestCaseResult();
-    }
-
-    void TestFixture::BeforeAll()
-    {
-
-    }
-
-    void TestFixture::AfterAll()
-    {
-
+        on_result_.Notify(*this, OnResultEventArgs{ std::move(result) });
     }
 
     void TestFixture::Before()
@@ -61,4 +30,5 @@ namespace syntropy
     {
 
     }
+
 }

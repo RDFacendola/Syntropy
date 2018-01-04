@@ -19,7 +19,7 @@ namespace syntropy
         return test_suites_;
     }
 
-    void TestRunner::Run(const Context& context)
+    void TestRunner::Run(const Context& context) const
     {
         for (auto&& test_suite : test_suites_)
         {
@@ -35,12 +35,12 @@ namespace syntropy
         }
     }
 
-    Observable<TestRunner&, const TestRunner::OnTestSuiteStartedEventArgs&>& TestRunner::OnTestSuiteStarted()
+    const Observable<const TestRunner&, const TestRunner::OnTestSuiteStartedEventArgs&>& TestRunner::OnTestSuiteStarted() const
     {
         return on_test_suite_started_;
     }
 
-    Observable<TestRunner&, const TestRunner::OnTestSuiteFinishedEventArgs&>& TestRunner::OnTestSuiteFinished()
+    const Observable<const TestRunner&, const TestRunner::OnTestSuiteFinishedEventArgs&>& TestRunner::OnTestSuiteFinished() const
     {
         return on_test_suite_finished_;
     }

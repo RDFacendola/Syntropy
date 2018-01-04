@@ -45,9 +45,15 @@ namespace syntropy
     /* TEST SUITE                                                           */
     /************************************************************************/
 
+    TestSuite::TestSuite(Context name)
+        : name_(std::move(name))
+    {
+
+    }
+
     const Context& TestSuite::GetName() const
     {
-        return fixture_->GetName();
+        return name_;
     }
 
     const std::vector<TestCase>& TestSuite::GetTestCases() const
@@ -55,34 +61,22 @@ namespace syntropy
         return fixture_->GetTestCases();
     }
 
-    std::vector<TestCase>& TestSuite::GetTestCases()
-    {
-        return fixture_->GetTestCases();
-    }
-
-    TestSuiteResult TestSuite::Run(const Context& context)
+    TestSuiteResult TestSuite::Run(const Context& context) const
     {
         TestSuiteResult result;
 
-        // Skip the suite if its context is not contained in the provided one.
-
         if (context.Contains(GetName()))
         {
-            // Guarded run: exception thrown below cause the rest of the suite to be aborted since the test fixture is left in an undefined state.
-            // Note: won't handle undefined behaviors (such as division by zero, access violation, etc.)
+            // Unhandled exception cause the test suite to be aborted since the fixture may be left in an undefined state. This won't guard against undefined behaviors (access violation, division by zero, etc.)
 
             try
             {
-                fixture_->BeforeAll();
+                auto fixture = generate_fixture_();
 
-                for (auto&& test_case : GetTestCases())
+                for (auto&& test_case : fixture->GetTestCases())
                 {
-                    RunTestCase(test_case);
-
-                    result += fixture_->GetLastResult().result_;
+                    result += Run(*fixture, test_case);
                 }
-
-                fixture_->AfterAll();
             }
             catch (const std::exception& exception)
             {
@@ -97,35 +91,34 @@ namespace syntropy
         }
         else
         {
+            // Skip the suite if its context doesn't match.
+
             result.result_ = TestResult::kSkipped;
         }
 
         return result;
     }
 
-    void TestSuite::RunTestCase(TestCase& test_case)
+    TestResult TestSuite::Run(TestFixture& fixture, const TestCase& test_case) const
     {
-        fixture_->Before();
-
         on_test_case_started_.Notify(*this, OnTestCaseStartedEventArgs{ &test_case });
 
-        OnTestCaseFinishedEventArgs result;
+        fixture.Before();
+
+        // Unhandled exceptions cause this test case to fail. This won't guard against undefined behaviors (access violation, division by zero, etc.)
 
         HighResolutionTimer<std::chrono::milliseconds> timer(true);
 
-        result.test_case_ = &test_case;
-        
-        // Guarded run: unhandled exception cause the test case to fail. The rest of the test suite is executed normally.
-        // Note: won't handle against undefined behaviors (such as division by zero, access violation, etc.)
+        OnTestCaseFinishedEventArgs result;
+
+        auto on_result = fixture.OnResult().Subscribe([&result](const TestFixture& /*sender*/, const TestFixture::OnResultEventArgs& args)
+        {
+            result.result_ = args.result_;
+        });
 
         try
         {
-            fixture_->ClearLastResult();
-
             test_case.Run();
-
-            result.result_ = fixture_->GetLastResult();
-
         }
         catch (const std::exception& exception)
         {
@@ -136,19 +129,22 @@ namespace syntropy
             result.result_ = { TestResult::kError , "Unhandled exception while running the test case.", SYNTROPY_HERE };
         }
 
+        result.test_case_ = &test_case;
         result.duration_ = timer.Stop();
+
+        fixture.After();
 
         on_test_case_finished_.Notify(*this, result);
 
-        fixture_->After();
+        return result.result_.result_;      // Yep, I got it.
     }
 
-    Observable<TestSuite&, const TestSuite::OnTestCaseStartedEventArgs&>& TestSuite::OnTestCaseStarted()
+    const Observable<const TestSuite&, const TestSuite::OnTestCaseStartedEventArgs&>& TestSuite::OnTestCaseStarted() const
     {
         return on_test_case_started_;
     }
 
-    Observable<TestSuite&, const TestSuite::OnTestCaseFinishedEventArgs&>& TestSuite::OnTestCaseFinished()
+    const Observable<const TestSuite&, const TestSuite::OnTestCaseFinishedEventArgs&>& TestSuite::OnTestCaseFinished() const
     {
         return on_test_case_finished_;
     }
