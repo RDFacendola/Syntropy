@@ -112,7 +112,7 @@ namespace syntropy
         /// \param handler Handler called whenever the observable object notifies.
         /// \return Returns a listener handle. The listener is subscribed as long as this handle is alive.
         template <typename THandler>
-        std::shared_ptr<Listener> Subscribe(THandler handler)
+        std::shared_ptr<Listener> Subscribe(THandler handler) const
         {
             auto listener = std::make_shared<ListenerT<TArguments...>>(std::move(handler));      // #TODO Use proper allocator.
 
@@ -123,8 +123,8 @@ namespace syntropy
 
     protected:
 
-        std::vector<std::weak_ptr<ListenerT<TArguments...>>> listeners_;         ///< \brief Listeners subscribed to this object.
-
+        mutable std::vector<std::weak_ptr<ListenerT<TArguments...>>> listeners_;                ///< \brief Listeners subscribed to this object.
+                                                                                                ///         They are not part of the observable state (otherwise we wouldn't be able to subscribe to const objects).
     };
 
     /************************************************************************/
@@ -144,7 +144,7 @@ namespace syntropy
         /// \brief Trigger the event, notifying registered listeners.
         /// \param arguments Arguments passed to the listeners.
         template <typename... TEventArguments>
-        void Notify(TEventArguments&&... arguments)
+        void Notify(TEventArguments&&... arguments) const
         {
             // Reverse iteration since the collection may change during the loop: new listeners can be added, invalid listeners are removed.
 
