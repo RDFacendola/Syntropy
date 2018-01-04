@@ -1,6 +1,6 @@
 
 /// \file test_case.h
-/// \brief This header is part of the syntropy unit test system. It contains classes used to handle single test cases.
+/// \brief This header is part of the syntropy unit test system. It contains classes used to handle test cases.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -33,7 +33,7 @@ namespace syntropy
     /* TEST CASE                                                            */
     /************************************************************************/
 
-    /// \brief Represents a named test case.
+    /// \brief Represents a single test case.
     /// \author Raffaele D. Facendola - December 2017
     class TestCase
     {

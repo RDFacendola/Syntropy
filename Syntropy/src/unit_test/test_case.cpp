@@ -23,7 +23,7 @@ namespace syntropy
         }
         else
         {
-            out << "<Unknown test result>";
+            out << "<Unknown>";
         }
 
         return out;
