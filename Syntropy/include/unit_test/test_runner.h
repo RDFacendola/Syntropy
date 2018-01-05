@@ -37,7 +37,7 @@ namespace syntropy
         {
             const TestSuite* test_suite_;                       ///< \brief Test suite the event refers to.
 
-            TestSuiteResult result_;                            ///< \brief Result of the test suite.
+            TestResult result_;                                 ///< \brief Result of the test suite.
 
             std::chrono::milliseconds duration_;                ///< \brief Amount of time needed to execute the test case.
         };
@@ -47,7 +47,8 @@ namespace syntropy
 
         /// \brief Run registered test suites.
         /// \param context Context used to filter test suites. Provide an empty context to run all the test suites available.
-        void Run(const Context& context = "") const;
+        /// \return Returns the result of the tests. Won't return TestResult::kSkipped under any circumstance.
+        TestResult Run(const Context& context = "") const;
 
         /// \brief Get the test suites to run.
         /// \return Returns the test suites to run.

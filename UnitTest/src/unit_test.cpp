@@ -417,16 +417,18 @@ int main(int argc, char **argv)
 
     auto b = tr.OnTestSuiteFinished().Subscribe([&test_case_s, &test_case_f](const syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteFinishedEventArgs& e)
     {
-        std::cout << "\n" << std::string(32, '-') << "\n"
-            << "Ran " << e.result_.count_ << " tests in "<< e.duration_.count() << "ms:\n"
-            << std::setw(4) << e.result_.success_count_ << " test(s) succeeded\n"
-            << std::setw(4) << e.result_.failure_count_ << " test(s) failed\n"
-            << std::setw(4) << e.result_.skip_count_ << " test(s) skipped\n"
-            << std::setw(4) << e.result_.error_count_ << " test(s) aborted\n"
-            << "\n"
-            << "result: " << e.result_.result_ << "\n"
-            << "message: " << e.result_.message_ << "\n"
-            << std::string(32, '-') << "\n";
+        std::cout << e.result_ << "\n";
+
+//         std::cout << "\n" << std::string(32, '-') << "\n"
+//             << "Ran " << e.result_.count_ << " tests in "<< e.duration_.count() << "ms:\n"
+//             << std::setw(4) << e.result_.success_count_ << " test(s) succeeded\n"
+//             << std::setw(4) << e.result_.failure_count_ << " test(s) failed\n"
+//             << std::setw(4) << e.result_.skip_count_ << " test(s) skipped\n"
+//             << std::setw(4) << e.result_.error_count_ << " test(s) aborted\n"
+//             << "\n"
+//             << "result: " << e.result_.result_ << "\n"
+//             << "message: " << e.result_.message_ << "\n"
+//             << std::string(32, '-') << "\n";
 
         test_case_s.reset();
         test_case_f.reset();

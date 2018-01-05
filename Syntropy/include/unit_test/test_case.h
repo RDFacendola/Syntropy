@@ -18,12 +18,13 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Result of a test.
+    /// Sorted by severity.
     enum class TestResult : uint8_t
     {
-        kSuccess,                       ///< \brief The test succeeded.
-        kFailure,                       ///< \brief The test failed.
-        kError,                         ///< \brief The test threw unhandled exceptions.
-        kSkipped,                       ///< \brief The test was skipped.
+        kSkipped = 0u,                  ///< \brief The test was skipped.
+        kSuccess = 1u,                  ///< \brief The test succeeded.
+        kFailure = 2u,                  ///< \brief The test failed.
+        kError = 3u,                    ///< \brief The test threw unhandled exceptions.
     };
 
     /// \brief Stream insertion for TestResult.

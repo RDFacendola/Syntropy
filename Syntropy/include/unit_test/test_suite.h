@@ -20,32 +20,6 @@
 
 namespace syntropy
 {
-    /************************************************************************/
-    /* TEST SUITE RESULT                                                    */
-    /************************************************************************/
-
-    /// \brief Test suite result.
-    /// \author Raffaele D. Facendola - January 2018
-    struct TestSuiteResult
-    {
-        TestResult result_{ TestResult::kSuccess };         ///< \brief Result of the test suite. The suite is considered successful only if each test case was either skipped or successful.
-                                                            ///         Test cases failures and errors cause a suite to fail. Unhandled exception during test setup are considered errors.
-
-        std::string message_;                               ///< \brief Test suite message.
-
-        size_t count_{ 0 };                                 ///< \brief Number of test cases ran.
-
-        size_t success_count_{ 0 };                         ///< \brief Number of successful test cases.
-
-        size_t failure_count_{ 0 };                         ///< \brief Number of failed test cases.
-
-        size_t error_count_{ 0 };                           ///< \brief Number of test cases aborted due to errors.
-
-        size_t skip_count_{ 0 };                            ///< \brief Number of skipped test cases.
-
-        /// \brief Add a new test case result.
-        TestSuiteResult& operator +=(TestResult result);
-    };
 
     /************************************************************************/
     /* TEST SUITE                                                           */
@@ -88,7 +62,7 @@ namespace syntropy
         /// \brief Run the test suite.
         /// \param context Context this suite is run on. Used to filter test suites by context.
         /// \return Returns the result of the test suite.
-        TestSuiteResult Run(const Context& context) const;
+        TestResult Run(const Context& context) const;
 
         /// \brief Observable event called whenever a new test case is ran.
         const Observable<const TestSuite&, const OnTestCaseStartedEventArgs&>& OnTestCaseStarted() const;

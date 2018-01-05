@@ -2,45 +2,10 @@
 
 #include "time/timer.h"
 
+#include <algorithm>
+
 namespace syntropy
 {
-    /************************************************************************/
-    /* TEST SUITE RESULT                                                    */
-    /************************************************************************/
-
-    TestSuiteResult& TestSuiteResult::operator+=(TestResult result)
-    {
-        // Update counters.
-
-        ++count_;
-
-        if (result == TestResult::kSuccess)
-        {
-            ++success_count_;
-        }
-        else if (result == TestResult::kFailure)
-        {
-            ++failure_count_;
-        }
-        else if (result == TestResult::kError)
-        {
-            ++error_count_;
-        }
-        else if (result == TestResult::kSkipped)
-        {
-            ++skip_count_;
-        }
-
-        // Errors and failures cause the suite to fail.
-
-        if (result_ == TestResult::kSuccess && (result == TestResult::kFailure || result == TestResult::kError))
-        {
-            result_ = TestResult::kFailure;
-        }
-
-        return *this;
-    }
-
     /************************************************************************/
     /* TEST SUITE                                                           */
     /************************************************************************/
@@ -61,39 +26,27 @@ namespace syntropy
         return fixture_->GetTestCases();
     }
 
-    TestSuiteResult TestSuite::Run(const Context& context) const
+    TestResult TestSuite::Run(const Context& context) const
     {
-        TestSuiteResult result;
+        TestResult result{ TestResult::kSkipped };
 
         if (context.Contains(GetName()))
         {
-            // Unhandled exception cause the test suite to be aborted since the fixture may be left in an undefined state. This won't guard against undefined behaviors (access violation, division by zero, etc.)
-
             try
             {
                 auto fixture = generate_fixture_();
 
                 for (auto&& test_case : fixture->GetTestCases())
                 {
-                    result += Run(*fixture, test_case);
+                    auto test_result = Run(*fixture, test_case);
+
+                    result = std::max(result, test_result);
                 }
-            }
-            catch (const std::exception& exception)
-            {
-                result.result_ = TestResult::kError;
-                result.message_ = exception.what();
             }
             catch (...)
             {
-                result.result_ = TestResult::kError;
-                result.message_ = "Unhandled exception while running the test suite.";
+                result = std::max(result, TestResult::kError);          // Abort the rest since the fixture may be left in an undefined state.
             }
-        }
-        else
-        {
-            // Skip the suite if its context doesn't match.
-
-            result.result_ = TestResult::kSkipped;
         }
 
         return result;
