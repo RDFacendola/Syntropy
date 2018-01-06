@@ -9,7 +9,6 @@
 #include <functional>
 #include <vector>
 #include <type_traits>
-#include <chrono>
 
 #include "unit_test/test_case.h"
 #include "unit_test/test_fixture.h"
@@ -43,9 +42,7 @@ namespace syntropy
         {
             const TestCase* test_case_;                         ///< \brief Test case the event refers to.
 
-            TestCaseResult result_;                             ///< \brief Result of the test case.
-
-            std::chrono::milliseconds duration_;                ///< \brief Amount of time needed to execute the test case.
+            TestResult result_;                                 ///< \brief Result of the test case.
         };
 
         template <typename TTestFixture, typename... TArguments>
@@ -76,17 +73,11 @@ namespace syntropy
         /// \param name Name of the test suite.
         TestSuite(Context name);
 
-        /// \brief Run a test case.
-        /// \param fixture Test fixture the test case is run in.
-        /// \param test_case Test case to run.
-        /// \return Returns the result of the test.
-        TestResult Run(TestFixture& fixture, const TestCase& test_case) const;
-
         Context name_;                                                                          ///< \brief Test suite name.
 
-        std::function<std::unique_ptr<TestFixture>()> generate_fixture_;                        ///< \brief Functor used to generate new fixtures.
+        std::function<std::unique_ptr<TestFixture>()> fixture_;                                 ///< \brief Functor used to generate fixtures.
 
-        std::unique_ptr<TestFixture> fixture_;                                                  ///< \brief Fixture this suite refers to.
+        std::vector<TestCase> test_cases_;                                                      ///< \brief Test cases to run.
 
         Event<const TestSuite&, const OnTestCaseStartedEventArgs&> on_test_case_started_;       ///< \brief Event raised whenever a new test case started.
 
@@ -102,13 +93,15 @@ namespace syntropy
     {
         static_assert(std::is_base_of_v<TestFixture, TTestFixture>, "TTestFixture must derive from TestFixture");
 
+        static_assert(std::is_constructible_v<TTestFixture, TArguments...>, "TTestFixture must be constructible from TArguments...");
+
         TestSuite test_suite(std::move(name));
 
-        test_suite.fixture_ = std::make_unique<TTestFixture>(std::forward<TArguments>(arguments)...);
+        test_suite.test_cases_ = TTestFixture::GetTestCases();
 
-        test_suite.generate_fixture_ = []()
+        test_suite.fixture_ = [arguments...]()
         {
-            return std::make_unique<TTestFixture>(std::forward<TArguments>(arguments)...);
+            return std::make_unique<TTestFixture>(arguments...);
         };
 
         return test_suite;

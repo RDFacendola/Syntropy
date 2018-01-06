@@ -38,8 +38,6 @@ namespace syntropy
             const TestSuite* test_suite_;                       ///< \brief Test suite the event refers to.
 
             TestResult result_;                                 ///< \brief Result of the test suite.
-
-            std::chrono::milliseconds duration_;                ///< \brief Amount of time needed to execute the test case.
         };
 
         /// \brief Get the singleton instance.

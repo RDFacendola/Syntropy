@@ -331,32 +331,47 @@ class MyTestSuite : public syntropy::TestFixture
 {
 public:
 
-    MyTestSuite()
+    static std::vector<syntropy::TestCase> GetTestCases()
     {
-        DeclareTestCase("TestCaseA", std::bind(&MyTestSuite::TestCaseA, this));
-        DeclareTestCase("TestCaseB", std::bind(&MyTestSuite::TestCaseB, this));
-        DeclareTestCase("TestCaseC", std::bind(&MyTestSuite::TestCaseC, this));
+        return 
+        { 
+            { "TestCaseA", &MyTestSuite::TestCaseA },
+            { "TestCaseB", &MyTestSuite::TestCaseB },
+            { "TestCaseC", &MyTestSuite::TestCaseC }
+        };
+    }
+
+    MyTestSuite(int v)
+    {
+        value = v;
     }
 
     void TestCaseA()
     {
-        SYNTROPY_UNIT_EXPECT(1 + 2 == 3);
+        SYNTROPY_UNIT_EXPECT(value + 2 == 3);
+        SYNTROPY_UNIT_EXPECT(value + 1 == 2);
     }
 
     void TestCaseB()
     {
-        SYNTROPY_UNIT_PRECONDITION(1 == 2);
+        SYNTROPY_UNIT_PRECONDITION(value == 4);
 
-        // Never called!
+        SYNTROPY_UNIT_EXPECT(value + 2 == 6);
     }
 
     void TestCaseC()
     {
-        SYNTROPY_UNIT_EXPECT(1 + 1 == 4);
+        SYNTROPY_UNIT_EXPECT(value + value == 8);
+
+        throw "crap!";
     }
+
+    int value;
+
 };
 
-syntropy::AutoTestSuite<MyTestSuite> ut_my_test_suite("MyTestSuite");
+syntropy::AutoTestSuite<MyTestSuite> ut_my_test_suite1("Pippo", 1);
+syntropy::AutoTestSuite<MyTestSuite> ut_my_test_suite2("Pluto", 4);
 
 int main(int argc, char **argv)
 {
@@ -390,45 +405,34 @@ int main(int argc, char **argv)
 
     std::shared_ptr<syntropy::Listener> test_case_s;
     std::shared_ptr<syntropy::Listener> test_case_f;
+    std::shared_ptr<syntropy::Listener> test_case_r;
 
-    auto a = tr.OnTestSuiteStarted().Subscribe([&test_case_s, &test_case_f](const syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteStartedEventArgs& e)
+    auto a = tr.OnTestSuiteStarted().Subscribe([&test_case_s, &test_case_f, &test_case_r](const syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteStartedEventArgs& e)
     {
-        std::cout << "Running test suite '" << e.test_suite_->GetName() << "'\n";
+        std::cout << "\nTesting suite '" << e.test_suite_->GetName() << "'\n";
 
-        test_case_s = e.test_suite_->OnTestCaseStarted().Subscribe([](const syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseStartedEventArgs& e)
+        test_case_s = e.test_suite_->OnTestCaseStarted().Subscribe([&test_case_r](const syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseStartedEventArgs& e)
         {
-            std::cout << "   Test case '" << e.test_case_->GetName() << "': ";
+            std::cout << "   Testing case '" << e.test_case_->GetName() << "'\n";
+
+            test_case_r = e.test_case_->OnResultNotified().Subscribe([](const syntropy::TestCase& /*sender*/, const syntropy::TestCase::OnResultNotifiedEventArgs e)
+            {
+                std::cout << "      " << e.result_ << " : " << e.message_ <<  "\n";
+            });
         });
 
-        test_case_f = e.test_suite_->OnTestCaseFinished().Subscribe([](const syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseFinishedEventArgs& e)
+        test_case_f = e.test_suite_->OnTestCaseFinished().Subscribe([&test_case_r](const syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseFinishedEventArgs& e)
         {
-            std::cout << e.result_.result_ << "\n";
+            std::cout << "   Test case result: " << e.result_ << "\n";
 
-            // Display test failures and errors only.
-
-            if (e.result_.result_ == syntropy::TestResult::kFailure || e.result_.result_ == syntropy::TestResult::kError)
-            {
-                std::cout << "      " << e.result_.message_ << "\n";
-                    //<< "         " << e.result_.location_ << "\n\n";
-            }
+            test_case_r.reset();
         });
 
     });
 
     auto b = tr.OnTestSuiteFinished().Subscribe([&test_case_s, &test_case_f](const syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteFinishedEventArgs& e)
     {
-        std::cout << e.result_ << "\n";
-
-//         std::cout << "\n" << std::string(32, '-') << "\n"
-//             << "Ran " << e.result_.count_ << " tests in "<< e.duration_.count() << "ms:\n"
-//             << std::setw(4) << e.result_.success_count_ << " test(s) succeeded\n"
-//             << std::setw(4) << e.result_.failure_count_ << " test(s) failed\n"
-//             << std::setw(4) << e.result_.skip_count_ << " test(s) skipped\n"
-//             << std::setw(4) << e.result_.error_count_ << " test(s) aborted\n"
-//             << "\n"
-//             << "result: " << e.result_.result_ << "\n"
-//             << "message: " << e.result_.message_ << "\n"
-//             << std::string(32, '-') << "\n";
+        std::cout << "Test suite result: " << e.result_ << "\n";
 
         test_case_s.reset();
         test_case_f.reset();

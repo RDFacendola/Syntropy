@@ -6,19 +6,14 @@ namespace syntropy
     /* TEST FIXTURE                                                         */
     /************************************************************************/
 
-    const std::vector<TestCase>& TestFixture::GetTestCases() const
+    Observable<TestFixture&, const TestFixture::OnResultNotifiedEventArgs&>& TestFixture::OnResultNotified()
     {
-        return test_cases_;
+        return on_result_notified_;
     }
 
-    Observable<TestFixture&, const TestFixture::OnResultEventArgs&>& TestFixture::OnResult()
+    void TestFixture::NotifyResult(const OnResultNotifiedEventArgs& result)
     {
-        return on_result_;
-    }
-
-    void TestFixture::NotifyResult(TestCaseResult result)
-    {
-        on_result_.Notify(*this, OnResultEventArgs{ std::move(result) });
+        on_result_notified_.Notify(*this, result);
     }
 
     void TestFixture::Before()

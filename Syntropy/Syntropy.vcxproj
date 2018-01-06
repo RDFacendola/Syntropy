@@ -176,6 +176,7 @@
     <ClInclude Include="include\time\timer.h" />
     <ClInclude Include="include\type_traits.h" />
     <ClInclude Include="include\patterns\utility.h" />
+    <ClInclude Include="include\unit_test\test.h" />
     <ClInclude Include="include\unit_test\test_case.h" />
     <ClInclude Include="include\unit_test\test_fixture.h" />
     <ClInclude Include="include\unit_test\test_runner.h" />
@@ -292,6 +293,7 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="src\unit_test\test.cpp" />
     <ClCompile Include="src\unit_test\test_case.cpp" />
     <ClCompile Include="src\unit_test\test_fixture.cpp" />
     <ClCompile Include="src\unit_test\test_runner.cpp" />

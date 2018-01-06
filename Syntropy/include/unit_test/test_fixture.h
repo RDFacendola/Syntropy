@@ -6,16 +6,13 @@
 
 #pragma once
 
-#include <vector>
+#include <string>
 
 #include "patterns/observable.h"
 
-#include "unit_test/test_case.h"
+#include "unit_test/test.h"
 
 #include "diagnostics/diagnostics.h"
-
-#include "containers/context.h"
-#include "containers/hashed_string.h"
 
 /************************************************************************/
 /* UNIT TEST MACROS                                                     */
@@ -29,7 +26,11 @@
     { \
         NotifyResult({syntropy::TestResult::kFailure, "SYNTROPY_UNIT_EXPECT(" #expression ")", SYNTROPY_HERE}); \
         return; \
-    }
+    } \
+    else \
+    { \
+        NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_EXPECT(" #expression ")", SYNTROPY_HERE }); \
+    } \
 
 /// \brief Unit test macro. The test is executed if "expression" is true, otherwise the test is skipped.
 /// Must be called within a TestFixture.
@@ -39,7 +40,11 @@
     { \
         NotifyResult({ syntropy::TestResult::kSkipped, "SYNTROPY_UNIT_PRECONDITION(" #expression ")", SYNTROPY_HERE }); \
         return; \
-    }
+    } \
+    else \
+    { \
+        NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_PRECONDITION(" #expression ")", SYNTROPY_HERE }); \
+    } \
 
 /// \brief Unit test macro. The test is successful if "expression" doesn't throw, otherwise report a failure and return.
 /// Must be called within a TestFixture.
@@ -48,6 +53,7 @@
     try \
     { \
         (expression); \
+        NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_NO_THROW(" #expression ")", SYNTROPY_HERE }); \
     } \
     catch (...) \
     { \
@@ -67,26 +73,11 @@
     } \
     catch (...) \
     { \
-        \
+        NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_THROW_ANY(" #expression ")", SYNTROPY_HERE }); \
     }
 
 namespace syntropy
 {
-
-    /************************************************************************/
-    /* TEST CASE RESULT                                                     */
-    /************************************************************************/
-
-    /// \brief Test case result.
-    /// \author Raffaele D. Facendola - January 2018
-    struct TestCaseResult
-    {
-        TestResult result_{ TestResult::kSuccess };         ///< \brief Result of the test case.
-
-        std::string message_;                               ///< \brief Message of the test case.
-
-        diagnostics::StackTraceElement location_;           ///< \brief Code location the result refers to.
-    };
 
     /************************************************************************/
     /* TEST FIXTURE                                                         */
@@ -98,10 +89,14 @@ namespace syntropy
     {
     public:
 
-        /// \brief Arguments for the OnResult event.
-        struct OnResultEventArgs
+        /// \brief Arguments of the event called whenever a test case result is notified.
+        struct OnResultNotifiedEventArgs
         {
-            TestCaseResult result_;                                             ///< \brief Result of the test case.
+            TestResult result_;                                 ///< \brief Result.
+
+            std::string message_;                               ///< \brief Result message.
+
+            diagnostics::StackTraceElement location_;           ///< \brief Code that issued the result.
         };
 
         /// \brief Create a new test fixture.
@@ -112,10 +107,6 @@ namespace syntropy
         /// Use this method to tear down any fixture state after all test cases.
         virtual ~TestFixture() = default;
 
-        /// \brief Get the test cases.
-        /// \return Returns the test cases.
-        const std::vector<TestCase>& GetTestCases() const;
-
         /// \brief Used to setup fixture state before each test case.
         virtual void Before();
 
@@ -123,28 +114,17 @@ namespace syntropy
         virtual void After();
 
         /// \brief Event called whenever a test result is being notified.
-        Observable<TestFixture&, const OnResultEventArgs&>& OnResult();
+        Observable<TestFixture&, const OnResultNotifiedEventArgs&>& OnResultNotified();
 
     protected:
 
-        /// \brief Declare a new test case.
-        /// \param name Name of the test case.
-        /// \param test_case Test case function.
-        template <typename TTestCase>
-        void DeclareTestCase(const HashedString& name, TTestCase test_case)
-        {
-            test_cases_.push_back({ name, test_case });
-        }
-
         /// \brief Notify a test case result.
         /// \param result Result to notify.
-        void NotifyResult(TestCaseResult result);
+        void NotifyResult(const OnResultNotifiedEventArgs& result);
 
     private:
 
-        std::vector<TestCase> test_cases_;                                  ///< \brief List of test cases.
-
-        Event<TestFixture&, const OnResultEventArgs&> on_result_;           ///< \brief Event whenever a test result is being notified.
+        Event<TestFixture&, const OnResultNotifiedEventArgs&> on_result_notified_;          ///< \brief Event whenever a test result is being notified.
     };
 
 }

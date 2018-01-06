@@ -31,13 +31,11 @@ namespace syntropy
         {
             on_test_suite_started_.Notify(*this, OnTestSuiteStartedEventArgs{ &test_suite });
 
-            HighResolutionTimer<std::chrono::milliseconds> timer(true);
-
             auto test_result = test_suite.Run(context);
 
             result = std::max(result, test_result);
 
-            on_test_suite_finished_.Notify(*this, OnTestSuiteFinishedEventArgs{ &test_suite, result, timer.Stop() });
+            on_test_suite_finished_.Notify(*this, OnTestSuiteFinishedEventArgs{ &test_suite, result });
         }
 
         return result;
