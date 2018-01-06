@@ -212,7 +212,7 @@ namespace syntropy
         {
             std::ostringstream builder;
 
-            Insert(builder, std::forward<TMessage>(message)...);
+            (builder << ... << message);
 
             message_ = builder.str();
         }

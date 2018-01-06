@@ -18,28 +18,6 @@ namespace syntropy
     /// \param token-end Final delimiter of the token.
     /// \return Returns a pair of iterators inside the search range representing the token found, if any.
     template <typename TIterator, typename TToken>
-    std::pair<TIterator, TIterator> GetToken(TIterator first, TIterator last, const TToken& token_begin, const TToken& token_end);
-
-    /// \brief Insert many values inside an output stream via the stream insertion operator <<.
-    /// \param stream Output stream.
-    /// \param head First value to insert.
-    /// \param rest Remaining values to insert.
-    template <typename THead, typename... TRest>
-    std::ostream& Insert(std::ostream& stream, THead&& head, TRest&&... rest);
-
-    /// \brief Insert a value inside an output stream via the stream insertion operator <<.
-    /// \param stream Output stream.
-    /// \param head Value to insert.
-    template <typename THead>
-    std::ostream& Insert(std::ostream& stream, THead&& head);
-
-}
-
-namespace syntropy
-{
-    // Implementation
-
-    template <typename TIterator, typename TToken>
     std::pair<TIterator, TIterator> GetToken(TIterator first, TIterator last, const TToken& token_begin, const TToken& token_end)
     {
         auto token_first = last;
@@ -60,19 +38,6 @@ namespace syntropy
 
         // No token found
         return std::make_pair(last, last);
-    }
-
-    template <typename THead, typename... TRest>
-    std::ostream& Insert(std::ostream& stream, THead&& head, TRest&&... rest)
-    {
-        return Insert(Insert(stream, std::forward<THead>(head)), 
-                      std::forward<TRest>(rest)...);
-    }
-
-    template <typename THead>
-    std::ostream& Insert(std::ostream& stream, THead&& head)
-    {
-        return stream << std::forward<THead>(head);
     }
 
 }
