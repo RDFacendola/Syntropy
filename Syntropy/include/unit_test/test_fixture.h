@@ -18,62 +18,46 @@
 /* UNIT TEST MACROS                                                     */
 /************************************************************************/
 
-/// \brief Unit test macro. The test is successful if "expression" is true, otherwise report a failure and return.
+/// \brief Unit test macro. Report a success if "expression" is true, otherwise report a failure and return.
 /// Must be called within a TestFixture.
-/// \usage SYNTROPY_UNIT_EXPECT(1 + 2 == 3);
-#define SYNTROPY_UNIT_EXPECT(expression) \
+/// \usage SYNTROPY_UNIT_ASSERT(1 + 2 == 3);
+#define SYNTROPY_UNIT_ASSERT(expression) \
     if (bool result = (expression); !result) \
     { \
-        NotifyResult({syntropy::TestResult::kFailure, "SYNTROPY_UNIT_EXPECT(" #expression ")", SYNTROPY_HERE}); \
+        NotifyResult({syntropy::TestResult::kFailure, "SYNTROPY_UNIT_ASSERT(" #expression ")", SYNTROPY_HERE}); \
+        return; \
+    } \
+    else \
+    { \
+        NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_ASSERT(" #expression ")", SYNTROPY_HERE }); \
+    }
+
+/// \brief Unit test macro. Report a success if "expression" is true, otherwise report a failure.
+/// Similar to SYNTROPY_UNIT_ASSERT but doesn't return on failure.
+/// Must be called within a TestFixture.
+/// \usage SYNTROPY_UNIT_CHECK(1 + 2 == 3);
+#define SYNTROPY_UNIT_CHECK(expression) \
+    if (bool result = (expression); !result) \
+    { \
+        NotifyResult({syntropy::TestResult::kFailure, "SYNTROPY_UNIT_CHECK(" #expression ")", SYNTROPY_HERE}); \
+    } \
+    else \
+    { \
+        NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_CHECK(" #expression ")", SYNTROPY_HERE }); \
+    }
+
+/// \brief Unit test macro. The test is executed if "expression" is true, otherwise the test is skipped. If used, it must precede any other test.
+/// Must be called within a TestFixture.
+/// \usage SYNTROPY_UNIT_EXPECT(!IsServer());
+#define SYNTROPY_UNIT_EXPECT(expression) \
+    if(bool result = (expression); !result) \
+    { \
+        NotifyResult({ syntropy::TestResult::kSkipped, "SYNTROPY_UNIT_EXPECT(" #expression ")", SYNTROPY_HERE }); \
         return; \
     } \
     else \
     { \
         NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_EXPECT(" #expression ")", SYNTROPY_HERE }); \
-    } \
-
-/// \brief Unit test macro. The test is executed if "expression" is true, otherwise the test is skipped.
-/// Must be called within a TestFixture.
-/// \usage SYNTROPY_UNIT_PRECONDITION(!IsServer());
-#define SYNTROPY_UNIT_PRECONDITION(expression) \
-    if(bool result = (expression); !result) \
-    { \
-        NotifyResult({ syntropy::TestResult::kSkipped, "SYNTROPY_UNIT_PRECONDITION(" #expression ")", SYNTROPY_HERE }); \
-        return; \
-    } \
-    else \
-    { \
-        NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_PRECONDITION(" #expression ")", SYNTROPY_HERE }); \
-    } \
-
-/// \brief Unit test macro. The test is successful if "expression" doesn't throw, otherwise report a failure and return.
-/// Must be called within a TestFixture.
-/// \remarks This will only check exceptions thrown manually via "throw" (access violation is *not* an exception, for instance).
-#define SYNTROPY_UNIT_NO_THROW(expression) \
-    try \
-    { \
-        (expression); \
-        NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_NO_THROW(" #expression ")", SYNTROPY_HERE }); \
-    } \
-    catch (...) \
-    { \
-        NotifyResult({ syntropy::TestResult::kFailure, "SYNTROPY_UNIT_NO_THROW(" #expression ")", SYNTROPY_HERE }); \
-        return; \
-    }
-
-/// \brief Unit test macro. The test is successful if "expression" throws any exception, otherwise report a failure and return.
-/// Must be called within a TestFixture.
-/// \remarks This will only check exceptions thrown manually via "throw" (access violation is *not* an exception, for instance).
-#define SYNTROPY_UNIT_THROW_ANY(expression) \
-    try \
-    { \
-        (expression); \
-        NotifyResult({ syntropy::TestResult::kFailure, "SYNTROPY_UNIT_THROW_ANY(" #expression ")", SYNTROPY_HERE }); \
-        return; \
-    } \
-    catch (...) \
-    { \
-        NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_THROW_ANY(" #expression ")", SYNTROPY_HERE }); \
     }
 
 namespace syntropy

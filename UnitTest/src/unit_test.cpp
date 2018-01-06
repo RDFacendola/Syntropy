@@ -348,20 +348,21 @@ public:
 
     void TestCaseA()
     {
-        SYNTROPY_UNIT_EXPECT(value + 2 == 3);
-        SYNTROPY_UNIT_EXPECT(value + 1 == 2);
+        SYNTROPY_UNIT_CHECK(value + 2 == 3);
+        SYNTROPY_UNIT_ASSERT(value + 1 == 2);
+        SYNTROPY_UNIT_CHECK(value + 2 == 3);
     }
 
     void TestCaseB()
     {
-        SYNTROPY_UNIT_PRECONDITION(value == 4);
+        SYNTROPY_UNIT_EXPECT(value == 4);
 
-        SYNTROPY_UNIT_EXPECT(value + 2 == 6);
+        SYNTROPY_UNIT_ASSERT(value + 2 == 6);
     }
 
     void TestCaseC()
     {
-        SYNTROPY_UNIT_EXPECT(value + value == 8);
+        SYNTROPY_UNIT_ASSERT(value + value == 8);
 
         throw "crap!";
     }
