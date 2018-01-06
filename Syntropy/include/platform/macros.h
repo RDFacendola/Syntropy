@@ -28,4 +28,8 @@
 #define SYNTROPY_TRAP \
     __debugbreak()
 
+#else
+
+#error "Please define compiler-specific macros!"
+
 #endif
