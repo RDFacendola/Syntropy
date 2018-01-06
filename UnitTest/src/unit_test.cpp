@@ -362,9 +362,9 @@ public:
 
     void TestCaseC()
     {
-        SYNTROPY_UNIT_ASSERT(value + value == 8);
+        SYNTROPY_UNIT_MESSAGE("Value of value: ", value, "!");
 
-        throw "crap!";
+        SYNTROPY_UNIT_ASSERT(value + value == 8);
     }
 
     int value;
@@ -407,18 +407,24 @@ int main(int argc, char **argv)
     std::shared_ptr<syntropy::Listener> test_case_s;
     std::shared_ptr<syntropy::Listener> test_case_f;
     std::shared_ptr<syntropy::Listener> test_case_r;
+    std::shared_ptr<syntropy::Listener> test_case_m;
 
-    auto a = tr.OnTestSuiteStarted().Subscribe([&test_case_s, &test_case_f, &test_case_r](const syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteStartedEventArgs& e)
+    auto a = tr.OnTestSuiteStarted().Subscribe([&test_case_s, &test_case_f, &test_case_r, &test_case_m](const syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteStartedEventArgs& e)
     {
         std::cout << "\nTesting suite '" << e.test_suite_->GetName() << "'\n";
 
-        test_case_s = e.test_suite_->OnTestCaseStarted().Subscribe([&test_case_r](const syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseStartedEventArgs& e)
+        test_case_s = e.test_suite_->OnTestCaseStarted().Subscribe([&test_case_r, &test_case_m](const syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseStartedEventArgs& e)
         {
             std::cout << "   Testing case '" << e.test_case_->GetName() << "'\n";
 
             test_case_r = e.test_case_->OnResultNotified().Subscribe([](const syntropy::TestCase& /*sender*/, const syntropy::TestCase::OnResultNotifiedEventArgs e)
             {
                 std::cout << "      " << e.result_ << " : " << e.message_ <<  "\n";
+            });
+
+            test_case_m = e.test_case_->OnMessageNotified().Subscribe([](const syntropy::TestCase& /*sender*/, const syntropy::TestCase::OnMessageNotifiedEventArgs e)
+            {
+                std::cout << "      " << "Message : " << e.message_ << "\n";
             });
         });
 

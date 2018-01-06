@@ -40,6 +40,12 @@ namespace syntropy
             diagnostics::StackTraceElement location_;           ///< \brief Code that issued the result.
         };
 
+        /// \brief Arguments of the event called whenever a test case notifies a message.
+        struct OnMessageNotifiedEventArgs
+        {
+            std::string message_;                               ///< \brief Notified message.
+        };
+
         /// \brief Create a new test case.
         /// \param name Name of the test case.
         /// \param test_case Function bound to this test case.
@@ -68,12 +74,17 @@ namespace syntropy
         /// \brief Observable event called whenever a new test case result is notified.
         const Observable<const TestCase&, const OnResultNotifiedEventArgs&>& OnResultNotified() const;
 
+        /// \brief Observable event called whenever a message is notified.
+        const Observable<const TestCase&, const OnMessageNotifiedEventArgs&>& OnMessageNotified() const;
+
     private:
 
         HashedString name_;                                                                 ///< \brief Name of the test case.
 
-        std::function<void(TestFixture& fixture)> test_case_;                               ///< \brief Thunk used to run the actual test case function.
+        std::function<void(TestFixture& fixture)> test_case_;                               ///< \brief Thunk used to run the actual test case function on a concrete fixture.
 
         Event<const TestCase&, const OnResultNotifiedEventArgs&> on_result_notified_;       ///< \brief Event raised whenever a new result is notified.
+
+        Event<const TestCase&, const OnMessageNotifiedEventArgs&> on_message_notified_;     ///< \brief Event triggered whenever a message is notified.
     };
 }

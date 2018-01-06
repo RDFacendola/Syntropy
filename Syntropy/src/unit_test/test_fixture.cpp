@@ -11,6 +11,11 @@ namespace syntropy
         return on_result_notified_;
     }
 
+    Observable<TestFixture&, const TestFixture::OnMessageNotifiedEventArgs&>& TestFixture::OnMessageNotified()
+    {
+        return on_message_notified_;
+    }
+
     void TestFixture::NotifyResult(const OnResultNotifiedEventArgs& result)
     {
         on_result_notified_.Notify(*this, result);

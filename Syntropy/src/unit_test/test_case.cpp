@@ -40,6 +40,13 @@ namespace syntropy
             on_result_notified_.Notify(*this, OnResultNotifiedEventArgs{ args.result_, args.message_, args.location_ });
         });
 
+        auto on_messag_notified = fixture.OnMessageNotified().Subscribe([this](TestFixture& /*sender*/, const TestFixture::OnMessageNotifiedEventArgs& args)
+        {
+            // Relay the event as if if was originated within the test case.
+
+            on_message_notified_.Notify(*this, OnMessageNotifiedEventArgs{ args.message_ });
+        });
+
         fixture.Before();                                                               // Setup the fixture.
 
         try
@@ -65,6 +72,11 @@ namespace syntropy
     const Observable<const TestCase&, const TestCase::OnResultNotifiedEventArgs&>& TestCase::OnResultNotified() const
     {
         return on_result_notified_;
+    }
+
+    const Observable<const TestCase&, const TestCase::OnMessageNotifiedEventArgs&>& TestCase::OnMessageNotified() const
+    {
+        return on_message_notified_;
     }
 
 }

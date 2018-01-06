@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 
 #include "patterns/observable.h"
 
@@ -60,6 +61,10 @@
         NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_EXPECT(" #expression ")", SYNTROPY_HERE }); \
     }
 
+/// \brief Unit test macro. Notify a message for the current test case being ran.
+#define SYNTROPY_UNIT_MESSAGE(...) \
+    NotifyMessage(__VA_ARGS__);
+
 namespace syntropy
 {
 
@@ -83,6 +88,12 @@ namespace syntropy
             diagnostics::StackTraceElement location_;           ///< \brief Code that issued the result.
         };
 
+        /// \brief Arguments of the event called whenever a test case notifies a message.
+        struct OnMessageNotifiedEventArgs
+        {
+            std::string message_;                               ///< \brief Notified message.
+        };
+
         /// \brief Create a new test fixture.
         /// Use this method to setup any fixture state before all test cases.
         TestFixture() = default;
@@ -97,8 +108,11 @@ namespace syntropy
         /// \brief Used to tear-down fixture state after each test case.
         virtual void After();
 
-        /// \brief Event called whenever a test result is being notified.
+        /// \brief Event called whenever a test result is notified.
         Observable<TestFixture&, const OnResultNotifiedEventArgs&>& OnResultNotified();
+
+        /// \brief Event called whenever a message is notified.
+        Observable<TestFixture&, const OnMessageNotifiedEventArgs&>& OnMessageNotified();
 
     protected:
 
@@ -106,9 +120,23 @@ namespace syntropy
         /// \param result Result to notify.
         void NotifyResult(const OnResultNotifiedEventArgs& result);
 
+        /// \brief Notify a message.
+        /// \param message Message to notify.
+        template <typename... TMessage>
+        void NotifyMessage(TMessage&&... message)
+        {
+            std::ostringstream builder;
+
+            (builder << ... << message);
+
+            on_message_notified_.Notify(*this, OnMessageNotifiedEventArgs{ builder.str() });
+        }
+
     private:
 
-        Event<TestFixture&, const OnResultNotifiedEventArgs&> on_result_notified_;          ///< \brief Event whenever a test result is being notified.
+        Event<TestFixture&, const OnResultNotifiedEventArgs&> on_result_notified_;          ///< \brief Event triggered whenever a test result is notified.
+
+        Event<TestFixture&, const OnMessageNotifiedEventArgs&> on_message_notified_;        ///< \brief Event triggered whenever a message is notified.
     };
 
 }
