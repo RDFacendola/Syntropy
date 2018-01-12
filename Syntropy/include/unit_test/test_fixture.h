@@ -65,6 +65,11 @@
 #define SYNTROPY_UNIT_MESSAGE(...) \
     NotifyMessage(__VA_ARGS__);
 
+/// \brief Unit test macro. Execute "expression" and trace it as a message.
+#define SYNTROPY_UNIT_TRACE(expression) \
+    expression; \
+    NotifyMessage(#expression)\
+
 namespace syntropy
 {
 

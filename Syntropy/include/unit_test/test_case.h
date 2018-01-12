@@ -15,6 +15,7 @@
 #include "containers/hashed_string.h"
 
 #include "diagnostics/diagnostics.h"
+#include "diagnostics/assert.h"
 
 #include "patterns/observable.h"
 
