@@ -52,6 +52,10 @@ namespace syntropy::platform
         /// \return Returns the index of the least significant bit set. Undefined behavior if number is 0.
         static uint64_t GetLeastSignificantBit(uint64_t number);
 
+        /// \brief Get the fast inverse square root of number.
+        /// \return Returns the fast inverse square root of number.
+        static float GetFastInvSqrt(float number);
+
     };
 }
 

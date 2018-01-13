@@ -27,6 +27,15 @@ namespace syntropy::platform
         _BitScanForward64(&index, number);
         return static_cast<uint64_t>(index);
     }
+
+    float PlatformBuiltIn::GetFastInvSqrt(float number)
+    {
+        __m128 mm_number = _mm_load_ss(&number);
+
+        _mm_store_ss(&number, _mm_rsqrt_ss(mm_number));
+
+        return number;
+    }
 }
 
 #endif

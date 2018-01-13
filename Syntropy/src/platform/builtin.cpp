@@ -17,4 +17,9 @@ namespace syntropy::platform
     {
         return platform::PlatformBuiltIn::GetLeastSignificantBit(number);
     }
+
+    float BuiltIn::GetFastInvSqrt(float number)
+    {
+        return platform::PlatformBuiltIn::GetFastInvSqrt(number);
+    }
 }
