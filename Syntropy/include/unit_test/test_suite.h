@@ -31,20 +31,55 @@ namespace syntropy
     {
     public:
 
+        /// \brief Arguments of the event called whenever a test suite starts.
+        struct OnStartedEventArgs
+        {
+
+        };
+
+        /// \brief Arguments of the event called whenever a running test suite finishes.
+        struct OnFinishedEventArgs
+        {
+            TestResult result_;                                 ///< \brief Overall test result.
+        };
+
         /// \brief Arguments of the event called whenever a new test case is ran.
         struct OnTestCaseStartedEventArgs
         {
-            const TestCase* test_case_;                         ///< \brief Test case the event refers to.
+            const TestCase& test_case_;                         ///< \brief Test case the event refers to.
         };
 
         /// \brief Arguments of the event called whenever a running test case finished.
         struct OnTestCaseFinishedEventArgs
         {
-            const TestCase* test_case_;                         ///< \brief Test case the event refers to.
+            const TestCase& test_case_;                         ///< \brief Test case the event refers to.
 
             TestResult result_;                                 ///< \brief Result of the test case.
         };
 
+        /// \brief Arguments of the event called whenever a test case result is notified.
+        struct OnTestCaseResultNotifiedEventArgs
+        {
+            const TestCase& test_case_;                         ///< \brief Test case the event refers to.
+
+            TestResult result_;                                 ///< \brief Result.
+
+            const std::string& message_;                        ///< \brief Result message.
+
+            const diagnostics::StackTraceElement& location_;    ///< \brief Code that issued the result.
+        };
+
+        /// \brief Arguments of the event called whenever a test case notifies a message.
+        struct OnTestCaseMessageNotifiedEventArgs
+        {
+            const TestCase& test_case_;                         ///< \brief Test case the event refers to.
+
+            const std::string& message_;                        ///< \brief Notified message.
+        };
+
+        /// \brief Create a new named test suite bound to a test fixture.
+        /// \param name Name of the test suite.
+        /// \param arguments Arguments to pass to the fixture's constructor.
         template <typename TTestFixture, typename... TArguments>
         friend TestSuite MakeTestSuite(Context name, TArguments&&... arguments);
 
@@ -61,11 +96,23 @@ namespace syntropy
         /// \return Returns the result of the test suite.
         TestResult Run(const Context& context) const;
 
+        /// \brief Observable event called whenever this instance starts running tests.
+        const Observable<const TestSuite&, const OnStartedEventArgs&>& OnStarted() const;
+
+        /// \brief Observable event called whenever a this instance finished running tests.
+        const Observable<const TestSuite&, const OnFinishedEventArgs&>& OnFinished() const;
+
         /// \brief Observable event called whenever a new test case is ran.
         const Observable<const TestSuite&, const OnTestCaseStartedEventArgs&>& OnTestCaseStarted() const;
 
         /// \brief Observable event called whenever a running test case finished.
         const Observable<const TestSuite&, const OnTestCaseFinishedEventArgs&>& OnTestCaseFinished() const;
+
+        /// \brief Observable event called whenever a running test case notifies a result.
+        const Observable<const TestSuite&, const OnTestCaseResultNotifiedEventArgs&>& OnTestCaseResultNotified() const;
+
+        /// \brief Observable event called whenever a running test case notifies a message.
+        const Observable<const TestSuite&, const OnTestCaseMessageNotifiedEventArgs&>& OnTestCaseMessageNotified() const;
 
     private:
 
@@ -73,15 +120,23 @@ namespace syntropy
         /// \param name Name of the test suite.
         TestSuite(Context name);
 
-        Context name_;                                                                          ///< \brief Test suite name.
+        Context name_;                                                                                          ///< \brief Test suite name.
 
-        std::function<std::unique_ptr<TestFixture>()> fixture_;                                 ///< \brief Functor used to generate fixtures.
+        std::function<std::unique_ptr<TestFixture>()> fixture_;                                                 ///< \brief Functor used to generate fixtures.
 
-        std::vector<TestCase> test_cases_;                                                      ///< \brief Test cases to run.
+        std::vector<TestCase> test_cases_;                                                                      ///< \brief Test cases to run.
 
-        Event<const TestSuite&, const OnTestCaseStartedEventArgs&> on_test_case_started_;       ///< \brief Event raised whenever a new test case started.
+        Event<const TestSuite&, const OnStartedEventArgs&> on_started_;                                        ///< \brief Event raised whenever this instance starts running tests.
 
-        Event<const TestSuite&, const OnTestCaseFinishedEventArgs&> on_test_case_finished_;     ///< \brief Event raised whenever a running test case finished.
+        Event<const TestSuite&, const OnFinishedEventArgs&> on_finished_;                                       ///< \brief Event raised whenever this instance finished running tests.
+
+        Event<const TestSuite&, const OnTestCaseStartedEventArgs&> on_test_case_started_;                       ///< \brief Event raised whenever a new test case started.
+
+        Event<const TestSuite&, const OnTestCaseFinishedEventArgs&> on_test_case_finished_;                     ///< \brief Event raised whenever a running test case finished.
+
+        Event<const TestSuite&, const OnTestCaseResultNotifiedEventArgs&> on_test_case_result_notified_;        ///< \brief Event raised whenever a running test case notifies a result.
+
+        Event<const TestSuite&, const OnTestCaseMessageNotifiedEventArgs&> on_test_case_message_notified_;      ///< \brief Event raised whenever a running test case notifies a message.
     };
 
     /// \brief Create a new test suite by specifying a test fixture to bind.

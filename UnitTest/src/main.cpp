@@ -1,8 +1,4 @@
 
-// ProtoDW.cpp : Defines the entry point for the console application.
-//
-
-#include "stdafx.h"
 
 #include <iostream>
 #include <fstream>
@@ -327,58 +323,11 @@ void SynapseTest()
 
 }
 
-class MyTestSuite : public syntropy::TestFixture
-{
-public:
-
-    static std::vector<syntropy::TestCase> GetTestCases()
-    {
-        return 
-        { 
-            { "TestCaseA", &MyTestSuite::TestCaseA },
-            { "TestCaseB", &MyTestSuite::TestCaseB },
-            { "TestCaseC", &MyTestSuite::TestCaseC }
-        };
-    }
-
-    MyTestSuite(int v)
-    {
-        value = v;
-    }
-
-    void TestCaseA()
-    {
-        SYNTROPY_UNIT_CHECK(value + 2 == 3);
-        SYNTROPY_UNIT_ASSERT(value + 1 == 2);
-        SYNTROPY_UNIT_CHECK(value + 2 == 3);
-    }
-
-    void TestCaseB()
-    {
-        SYNTROPY_UNIT_EXPECT(value == 4);
-
-        SYNTROPY_UNIT_ASSERT(value + 2 == 6);
-    }
-
-    void TestCaseC()
-    {
-        SYNTROPY_UNIT_MESSAGE("Value of value: ", value, "!");
-
-        SYNTROPY_UNIT_ASSERT(value + value == 8);
-    }
-
-    int value;
-
-};
-
-syntropy::AutoTestSuite<MyTestSuite> ut_my_test_suite1("Pippo", 1);
-syntropy::AutoTestSuite<MyTestSuite> ut_my_test_suite2("Pluto", 4);
-
 int main(int argc, char **argv)
 {
-    Initialize();
-
     syntropy::CommandLine command_line(argc, argv);
+
+    Initialize();
 
     if (command_line.HasArgument("test_synapse"))
     {
@@ -402,51 +351,49 @@ int main(int argc, char **argv)
 
     std::cout << "\n\n";
 
-    auto&& tr = syntropy::TestRunner::GetInstance();
+    auto&& test_runner = syntropy::TestRunner::GetInstance();
 
-    std::shared_ptr<syntropy::Listener> test_case_s;
-    std::shared_ptr<syntropy::Listener> test_case_f;
-    std::shared_ptr<syntropy::Listener> test_case_r;
-    std::shared_ptr<syntropy::Listener> test_case_m;
-
-    auto a = tr.OnTestSuiteStarted().Subscribe([&test_case_s, &test_case_f, &test_case_r, &test_case_m](const syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteStartedEventArgs& e)
+    auto on_started_listener = test_runner.OnStarted().Subscribe([](auto& /*sender*/, auto& /*args*/)
     {
-        std::cout << "\nTesting suite '" << e.test_suite_->GetName() << "'\n";
-
-        test_case_s = e.test_suite_->OnTestCaseStarted().Subscribe([&test_case_r, &test_case_m](const syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseStartedEventArgs& e)
-        {
-            std::cout << "   Testing case '" << e.test_case_->GetName() << "'\n";
-
-            test_case_r = e.test_case_->OnResultNotified().Subscribe([](const syntropy::TestCase& /*sender*/, const syntropy::TestCase::OnResultNotifiedEventArgs e)
-            {
-                std::cout << "      " << e.result_ << " : " << e.message_ <<  "\n";
-            });
-
-            test_case_m = e.test_case_->OnMessageNotified().Subscribe([](const syntropy::TestCase& /*sender*/, const syntropy::TestCase::OnMessageNotifiedEventArgs e)
-            {
-                std::cout << "      " << "Message : " << e.message_ << "\n";
-            });
-        });
-
-        test_case_f = e.test_suite_->OnTestCaseFinished().Subscribe([&test_case_r](const syntropy::TestSuite& /*sender*/, const syntropy::TestSuite::OnTestCaseFinishedEventArgs& e)
-        {
-            std::cout << "   Test case result: " << e.result_ << "\n";
-
-            test_case_r.reset();
-        });
-
+        std::cout << "\nRunning unit tests:\n";
     });
 
-    auto b = tr.OnTestSuiteFinished().Subscribe([&test_case_s, &test_case_f](const syntropy::TestRunner& /*sender*/, const syntropy::TestRunner::OnTestSuiteFinishedEventArgs& e)
+    auto on_test_suite_started_listener = test_runner.OnTestSuiteStarted().Subscribe([](auto& /*sender*/, auto& args)
     {
-        std::cout << "Test suite result: " << e.result_ << "\n";
-
-        test_case_s.reset();
-        test_case_f.reset();
-
+        std::cout << "   Testing suite '" << args.test_suite_.GetName() << "'\n";
     });
 
-    tr.Run("");
+    auto on_test_case_started_listener = test_runner.OnTestCaseStarted().Subscribe([](auto& /*sender*/, auto& args)
+    {
+        std::cout << "      Testing case '" << args.test_case_.GetName() << "'\n";
+    });
+
+    auto on_test_case_message_listener = test_runner.OnTestCaseMessageNotified().Subscribe([](auto& /*sender*/, auto& args)
+    {
+        std::cout << "         " << "             " << args.message_ << "\n";
+    });
+
+    auto on_test_case_result_listener = test_runner.OnTestCaseResultNotified().Subscribe([](auto& /*sender*/, auto& args)
+    {
+        std::cout << "         " << std::setw(10) << args.result_ << " : " << args.message_ << "\n";
+    });
+
+    auto on_test_case_finished_listener = test_runner.OnTestCaseFinished().Subscribe([](auto& /*sender*/, auto& args)
+    {
+        std::cout << "      Test case result: " << args.result_ << "\n";
+    });
+
+    auto on_test_suite_finished_listener = test_runner.OnTestSuiteFinished().Subscribe([](auto& /*sender*/, auto& args)
+    {
+        std::cout << "   Test suite result: " << args.result_ << "\n";
+    });
+
+    auto on_finished_listener = test_runner.OnFinished().Subscribe([](auto& /*sender*/, auto& args)
+    {
+        std::cout << "Result: " << args.result_ << "\n";
+    });
+
+    test_runner.Run("");
 
     system("pause");
 

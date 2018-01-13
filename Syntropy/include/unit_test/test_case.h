@@ -31,6 +31,18 @@ namespace syntropy
     {
     public:
 
+        /// \brief Arguments of the event called whenever a test case starts.
+        struct OnStartedEventArgs
+        {
+
+        };
+
+        /// \brief Arguments of the event called whenever a running test case finishes.
+        struct OnFinishedEventArgs
+        {
+            TestResult result_;                                 ///< \brief Overall test result.
+        };
+
         /// \brief Arguments of the event called whenever a test case result is notified.
         struct OnResultNotifiedEventArgs
         {
@@ -72,6 +84,12 @@ namespace syntropy
         /// \param fixture Fixture the test case will be run with.
         TestResult Run(TestFixture& fixture) const;
 
+        /// \brief Observable event called whenever this instance starts running.
+        const Observable<const TestCase&, const OnStartedEventArgs&>& OnStarted() const;
+
+        /// \brief Observable event called whenever a this instance finished running.
+        const Observable<const TestCase&, const OnFinishedEventArgs&>& OnFinished() const;
+
         /// \brief Observable event called whenever a new test case result is notified.
         const Observable<const TestCase&, const OnResultNotifiedEventArgs&>& OnResultNotified() const;
 
@@ -83,6 +101,10 @@ namespace syntropy
         HashedString name_;                                                                 ///< \brief Name of the test case.
 
         std::function<void(TestFixture& fixture)> test_case_;                               ///< \brief Thunk used to run the actual test case function on a concrete fixture.
+
+        Event<const TestCase&, const OnStartedEventArgs&> on_started_;                      ///< \brief Event raised whenever this instance starts running.
+
+        Event<const TestCase&, const OnFinishedEventArgs&> on_finished_;                    ///< \brief Event raised whenever this instance finished running.
 
         Event<const TestCase&, const OnResultNotifiedEventArgs&> on_result_notified_;       ///< \brief Event raised whenever a new result is notified.
 

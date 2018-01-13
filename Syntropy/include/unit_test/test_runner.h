@@ -26,18 +26,72 @@ namespace syntropy
     {
     public:
 
+        /// \brief Arguments of the event called whenever a test runner starts.
+        struct OnStartedEventArgs
+        {
+
+        };
+
+        /// \brief Arguments of the event called whenever a running test runner finishes.
+        struct OnFinishedEventArgs
+        {
+            TestResult result_;                                 ///< \brief Overall test result.
+        };
+
         /// \brief Arguments of the event called whenever a new test suite is ran.
         struct OnTestSuiteStartedEventArgs
         {
-            const TestSuite* test_suite_;                       ///< \brief Test suite the event refers to.
+            const TestSuite& test_suite_;                       ///< \brief Test suite the event refers to.
         };
 
         /// \brief Arguments of the event called whenever a running test suite finished.
         struct OnTestSuiteFinishedEventArgs
         {
-            const TestSuite* test_suite_;                       ///< \brief Test suite the event refers to.
+            const TestSuite& test_suite_;                       ///< \brief Test suite the event refers to.
 
             TestResult result_;                                 ///< \brief Result of the test suite.
+        };
+
+        /// \brief Arguments of the event called whenever a new test case is ran.
+        struct OnTestCaseStartedEventArgs
+        {
+            const TestSuite& test_suite_;                       ///< \brief Test suite the event refers to.
+
+            const TestCase& test_case_;                         ///< \brief Test case the event refers to.
+        };
+
+        /// \brief Arguments of the event called whenever a running test case finished.
+        struct OnTestCaseFinishedEventArgs
+        {
+            const TestSuite& test_suite_;                       ///< \brief Test suite the event refers to.
+
+            const TestCase& test_case_;                         ///< \brief Test case the event refers to.
+
+            TestResult result_;                                 ///< \brief Result of the test case.
+        };
+
+        /// \brief Arguments of the event called whenever a test case result is notified.
+        struct OnTestCaseResultNotifiedEventArgs
+        {
+            const TestSuite& test_suite_;                       ///< \brief Test suite the event refers to.
+
+            const TestCase& test_case_;                         ///< \brief Test case the event refers to.
+
+            TestResult result_;                                 ///< \brief Result.
+
+            const std::string& message_;                        ///< \brief Result message.
+
+            const diagnostics::StackTraceElement& location_;    ///< \brief Code that issued the result.
+        };
+
+        /// \brief Arguments of the event called whenever a test case notifies a message.
+        struct OnTestCaseMessageNotifiedEventArgs
+        {
+            const TestSuite& test_suite_;                       ///< \brief Test suite the event refers to.
+
+            const TestCase& test_case_;                         ///< \brief Test case the event refers to.
+
+            const std::string& message_;                        ///< \brief Notified message.
         };
 
         /// \brief Get the singleton instance.
@@ -60,22 +114,52 @@ namespace syntropy
             test_suites_.emplace_back(MakeTestSuite<TTestFixture>(std::forward<TArguments>(arguments)...));
         }
 
-        /// \brief Observable event called whenever a new test case is ran.
+        /// \brief Observable event called whenever this instance starts running tests.
+        const Observable<const TestRunner&, const OnStartedEventArgs&>& OnStarted() const;
+
+        /// \brief Observable event called whenever a this instance finished running tests.
+        const Observable<const TestRunner&, const OnFinishedEventArgs&>& OnFinished() const;
+
+        /// \brief Observable event called whenever a new test suite is ran.
         const Observable<const TestRunner&, const OnTestSuiteStartedEventArgs&>& OnTestSuiteStarted() const;
 
-        /// \brief Observable event called whenever a running test case finished.
+        /// \brief Observable event called whenever a running test suite finishes.
         const Observable<const TestRunner&, const OnTestSuiteFinishedEventArgs&>& OnTestSuiteFinished() const;
+
+        /// \brief Observable event called whenever a new test case is ran.
+        const Observable<const TestRunner&, const OnTestCaseStartedEventArgs&>& OnTestCaseStarted() const;
+
+        /// \brief Observable event called whenever a running test case finishes.
+        const Observable<const TestRunner&, const OnTestCaseFinishedEventArgs&>& OnTestCaseFinished() const;
+
+        /// \brief Observable event called whenever a running test case notifies a result.
+        const Observable<const TestRunner&, const OnTestCaseResultNotifiedEventArgs&>& OnTestCaseResultNotified() const;
+
+        /// \brief Observable event called whenever a running test case notifies a message.
+        const Observable<const TestRunner&, const OnTestCaseMessageNotifiedEventArgs&>& OnTestCaseMessageNotified() const;
 
     private:
 
         /// \brief Private constructor to avoid instantiation.
         TestRunner() = default;
 
-        std::vector<TestSuite> test_suites_;                                                        ///< \brief Test suites to run.
+        std::vector<TestSuite> test_suites_;                                                                    ///< \brief Test suites to run.
 
-        Event<const TestRunner&, const OnTestSuiteStartedEventArgs&> on_test_suite_started_;        ///< \brief Event raised whenever a new test suite starts.
+        Event<const TestRunner&, const OnStartedEventArgs&> on_started_;                                        ///< \brief Event raised whenever this instance starts running tests.
 
-        Event<const TestRunner&, const OnTestSuiteFinishedEventArgs&> on_test_suite_finished_;      ///< \brief Event raised whenever a running test suite finished.
+        Event<const TestRunner&, const OnFinishedEventArgs&> on_finished_;                                      ///< \brief Event raised whenever this instance finished running tests.
+
+        Event<const TestRunner&, const OnTestSuiteStartedEventArgs&> on_test_suite_started_;                    ///< \brief Event raised whenever a new test suite starts.
+
+        Event<const TestRunner&, const OnTestSuiteFinishedEventArgs&> on_test_suite_finished_;                  ///< \brief Event raised whenever a running test suite finished.
+
+        Event<const TestRunner&, const OnTestCaseStartedEventArgs&> on_test_case_started_;                      ///< \brief Event raised whenever a new test case starts.
+
+        Event<const TestRunner&, const OnTestCaseFinishedEventArgs&> on_test_case_finished_;                    ///< \brief Event raised whenever a running test case finishes.
+
+        Event<const TestRunner&, const OnTestCaseResultNotifiedEventArgs&> on_test_case_result_notified_;       ///< \brief Event raised whenever a running test case notifies a result.
+
+        Event<const TestRunner&, const OnTestCaseMessageNotifiedEventArgs&> on_test_case_message_notified_;     ///< \brief Event raised whenever a running test case notifies a message.
     };
 
     /************************************************************************/

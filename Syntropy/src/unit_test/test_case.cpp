@@ -18,9 +18,11 @@ namespace syntropy
 
     TestResult TestCase::Run(TestFixture& fixture) const
     {
+        on_started_.Notify(*this, OnStartedEventArgs{});
+
         std::optional<TestResult> test_result;
 
-        auto on_result_notified = fixture.OnResultNotified().Subscribe([this, &test_result](TestFixture& /*sender*/, const TestFixture::OnResultNotifiedEventArgs& args)
+        auto on_result_notified = fixture.OnResultNotified().Subscribe([this, &test_result](auto& /*sender*/, auto& args)
         {
             if (!test_result)
             {
@@ -29,7 +31,6 @@ namespace syntropy
             else
             {
                 SYNTROPY_ASSERT(*test_result != TestResult::kSkipped);                  // A skip message must not be followed by any other message.
-
                 SYNTROPY_ASSERT(args.result_ != TestResult::kSkipped);                  // A skip message must not be preceded by any other message.
 
                 test_result = std::max(*test_result, args.result_);
@@ -40,7 +41,7 @@ namespace syntropy
             on_result_notified_.Notify(*this, OnResultNotifiedEventArgs{ args.result_, args.message_, args.location_ });
         });
 
-        auto on_messag_notified = fixture.OnMessageNotified().Subscribe([this](TestFixture& /*sender*/, const TestFixture::OnMessageNotifiedEventArgs& args)
+        auto on_message_notified = fixture.OnMessageNotified().Subscribe([this](auto& /*sender*/, auto& args)
         {
             // Relay the event as if if was originated within the test case.
 
@@ -66,7 +67,21 @@ namespace syntropy
 
         fixture.After();                                                                // Tear down the fixture.
 
-        return test_result ? *test_result : TestResult::kSuccess;
+        auto result = test_result ? *test_result : TestResult::kSuccess;
+
+        on_finished_.Notify(*this, OnFinishedEventArgs{ result });
+
+        return result;
+    }
+
+    const Observable<const TestCase&, const TestCase::OnStartedEventArgs&>& TestCase::OnStarted() const
+    {
+        return on_started_;
+    }
+
+    const Observable<const TestCase&, const TestCase::OnFinishedEventArgs&>& TestCase::OnFinished() const
+    {
+        return on_finished_;
     }
 
     const Observable<const TestCase&, const TestCase::OnResultNotifiedEventArgs&>& TestCase::OnResultNotified() const
