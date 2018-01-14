@@ -16,16 +16,7 @@
 #include "vm/virtual_machine.h"
 #include "vm/intrinsics.h"
 
-#include "memory/memory.h"
-#include "memory/memory_units.h"
-#include "memory/memory_manager.h"
 
-#include "memory/allocators/std_allocator.h"
-#include "memory/allocators/segregated_allocator.h"
-#include "memory/allocators/stack_allocator.h"
-#include "memory/allocators/layered_allocator.h"
-
-#include "memory/memory_meta.h"
 
 #include "diagnostics/log.h"
 #include "diagnostics/log_channels.h"
@@ -47,12 +38,9 @@
 #include "task/scheduler.h"
 #include "patterns/sync_counter.h"
 
-#include "algorithms/search/astar.h"
-
 #include "application/command_line.h"
 
 #include "unit_test/test_runner.h"
-#include "unit_test/test_fixture.h"
 
 syntropy::Context Root;
 
@@ -65,45 +53,12 @@ void Initialize()
     SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::diagnostics::FileLogChannel>());
 
     syntropy::diagnostics::ImportLogConfigurationFromJSON("log.cfg");
-
-    // Initialization of the memory manager
-
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::LinearSegregatedFitAllocator>());
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::ExponentialSegregatedFitAllocator>());
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::TwoLevelSegregatedFitAllocator>());
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::LayeredAllocator>());
-
-    syntropy::ImportMemoryConfigurationFromJSON("memory.cfg");
 }
 
 void ReflectionAndSerializationTest()
 {
     Tester t;
     t.Do();
-}
-
-void AllocTest()
-{
-    void* p;
-    void* q;
-    void* r;
-
-    {
-        syntropy::MemoryContext ctx1("MasterAllocator2");
-
-        p = SYNTROPY_MM_ALLOC(23_Bytes);
-
-        {
-            syntropy::MemoryContext ctx2("MasterAllocator1");
-
-            q = SYNTROPY_MM_ALLOC(24_KiBytes);
-            r = SYNTROPY_MM_ALLOC(2_MiBytes);
-        }
-
-        SYNTROPY_MM_FREE(p);        // TODO: quirk! p was allocated by "small", the actual allocator who handled the call was "master2". Incidentally also "master1" references "small", so it will take care of its deallocation. (that's correct but a little bit obscure)
-        SYNTROPY_MM_FREE(q);
-        SYNTROPY_MM_FREE(r);
-    }
 }
 
 #define COUNT 1 << 16
@@ -192,7 +147,6 @@ void MultithreadTest()
     system("pause");
 }
 
-
 int main(int argc, char **argv)
 {
     syntropy::CommandLine command_line(argc, argv);
@@ -202,11 +156,6 @@ int main(int argc, char **argv)
     if (command_line.HasArgument("test_reflection"))
     {
         ReflectionAndSerializationTest();
-    }
-
-    if (command_line.HasArgument("test_alloc"))
-    {
-        AllocTest();
     }
 
     if (command_line.HasArgument("test_synergy"))
@@ -220,7 +169,7 @@ int main(int argc, char **argv)
 
     auto on_started_listener = test_runner.OnStarted().Subscribe([](auto& /*sender*/, auto& /*args*/)
     {
-        std::cout << "\nRunning unit tests:\n";
+        std::cout << "\nRunning unit tests:\n\n";
     });
 
     auto on_test_suite_started_listener = test_runner.OnTestSuiteStarted().Subscribe([](auto& /*sender*/, auto& args)
@@ -250,7 +199,7 @@ int main(int argc, char **argv)
 
     auto on_test_suite_finished_listener = test_runner.OnTestSuiteFinished().Subscribe([](auto& /*sender*/, auto& args)
     {
-        std::cout << "   Test suite result: " << args.result_ << "\n";
+        std::cout << "   Test suite result: " << args.result_ << "\n\n";
     });
 
     auto on_finished_listener = test_runner.OnFinished().Subscribe([](auto& /*sender*/, auto& args)

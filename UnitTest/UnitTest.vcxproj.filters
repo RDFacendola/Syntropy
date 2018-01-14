@@ -33,6 +33,9 @@
     <ClInclude Include="include\tests\synapse_search.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\tests\syntropy_memory_allocators.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tests\syntropy_memory_allocators.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

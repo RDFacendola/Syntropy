@@ -173,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\tests\synapse_search.h" />
+    <ClInclude Include="include\tests\syntropy_memory_allocators.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="include\unit1.h">
@@ -187,6 +188,7 @@
   <ItemGroup>
     <ClCompile Include="src\tests\synapse_search.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\tests\syntropy_memory_allocators.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
