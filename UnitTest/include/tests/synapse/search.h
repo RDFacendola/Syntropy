@@ -1,5 +1,5 @@
 
-/// \file synapse_search.h
+/// \file search.h
 ///
 /// \author Raffaele D. Facendola - 2018
 

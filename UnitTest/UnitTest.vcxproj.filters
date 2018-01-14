@@ -27,14 +27,15 @@
     <ClInclude Include="include\unit1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\tests\synapse\search.h">
       <Filter>Header Files</Filter>
     </ClInclude>
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\tests\syntropy_memory_allocators.h">
+    <ClInclude Include="include\tests\syntropy\memory\allocators.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\tests\synergy_tasksystem.h">
+    <ClInclude Include="include\tests\synergy\task\task_system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -45,16 +46,18 @@
     <ClCompile Include="src\unit1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\tests\synapse_search.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\tests\syntropy_memory_allocators.cpp">
+    <ClCompile Include="src\tests\synapse\search.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\tests\synergy_tasksystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tests\syntropy\memory\allocators.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tests\synergy\task\task_system.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

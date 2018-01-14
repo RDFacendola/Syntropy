@@ -1,5 +1,5 @@
 
-/// \file synergy_tasksystem.h
+/// \file task_system.h
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -25,6 +25,5 @@ public:
     void TestTaskGraph();
 
 private:
-
 
 };

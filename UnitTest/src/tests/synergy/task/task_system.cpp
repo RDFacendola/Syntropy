@@ -1,4 +1,4 @@
-#include "tests/synergy_tasksystem.h"
+#include "tests/synergy/task/task_system.h"
 
 #include "unit_test/test_runner.h"
 
@@ -61,7 +61,7 @@ struct Maxer
 /* TEST SYNERGY TASK SYSTEM                                             */
 /************************************************************************/
 
-syntropy::AutoTestSuite<TestSynergyTaskSystem> suite("synergy.tasksystem");
+syntropy::AutoTestSuite<TestSynergyTaskSystem> suite("synergy.task.tasksystem");
 
 std::vector<syntropy::TestCase> TestSynergyTaskSystem::GetTestCases()
 {

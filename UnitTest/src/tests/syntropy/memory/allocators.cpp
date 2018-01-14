@@ -1,4 +1,4 @@
-#include "tests/syntropy_memory_allocators.h"
+#include "tests/syntropy/memory/allocators.h"
 
 #include "macro.h"
 

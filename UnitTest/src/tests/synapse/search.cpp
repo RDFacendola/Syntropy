@@ -1,4 +1,4 @@
-#include "tests/synapse_search.h"
+#include "tests/synapse/search.h"
 
 #include "unit_test/test_runner.h"
 
