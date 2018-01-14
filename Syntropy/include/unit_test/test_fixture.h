@@ -61,6 +61,15 @@
         NotifyResult({ syntropy::TestResult::kSuccess, "SYNTROPY_UNIT_EXPECT(" #expression ")", SYNTROPY_HERE }); \
     }
 
+/// \brief Unit test macro. Macro used to manually skip a test case.
+/// Must be called within a TestFixture.
+/// \usage SYNTROPY_UNIT_SKIP("Work in progress");
+#define SYNTROPY_UNIT_SKIP(reason) \
+    if (bool result = (reason); result){ \
+        NotifyResult({syntropy::TestResult::kSkipped, "SYNTROPY_UNIT_SKIP(" #reason ")", SYNTROPY_HERE }); \
+        return; \
+    }
+
 /// \brief Unit test macro. Notify a message for the current test case being ran.
 #define SYNTROPY_UNIT_MESSAGE(...) \
     NotifyMessage(__VA_ARGS__);
