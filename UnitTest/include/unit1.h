@@ -22,8 +22,6 @@
 
 #include "nlohmann/json/src/json.hpp"
 
-#include "unit2.h"
-
 #include <tuple>
 #include <iostream>
 #include <iomanip>
@@ -172,6 +170,27 @@ struct syntropy::serialization::JSONDeserializerT<NonDefaultFoo>
         }
         return std::nullopt;
     }
+};
+
+class Bar
+{
+
+public:
+
+    void DoBar()
+    {
+
+    }
+
+    int GetBar()
+    {
+        return a;
+    }
+
+private:
+
+    int a;
+
 };
 
 class Foo : public Bar {

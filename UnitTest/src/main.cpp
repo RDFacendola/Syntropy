@@ -38,12 +38,6 @@ void Initialize()
     syntropy::diagnostics::ImportLogConfigurationFromJSON("log.cfg");
 }
 
-void ReflectionAndSerializationTest()
-{
-    Tester t;
-    t.Do();
-}
-
 int main(int argc, char **argv)
 {
     syntropy::CommandLine command_line(argc, argv);
@@ -52,7 +46,8 @@ int main(int argc, char **argv)
 
     if (command_line.HasArgument("test_reflection"))
     {
-        ReflectionAndSerializationTest();
+        Tester t;
+        t.Do();
     }
 
     std::cout << "\n\n";
