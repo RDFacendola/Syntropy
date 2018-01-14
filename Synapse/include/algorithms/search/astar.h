@@ -89,6 +89,8 @@ namespace syntropy::synapse
             {
                 path.emplace_back(previous_node);
             }
+
+            path.emplace_back(&start);
         }
 
         return path;

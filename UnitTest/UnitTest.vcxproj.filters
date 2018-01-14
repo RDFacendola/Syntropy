@@ -30,6 +30,9 @@
     <ClInclude Include="include\unit2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\tests\synapse_search.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -41,7 +44,10 @@
     <ClCompile Include="src\unit1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\unit_test.cpp">
+    <ClCompile Include="src\tests\synapse_search.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

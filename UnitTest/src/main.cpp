@@ -206,133 +206,13 @@ void MultithreadTest()
 
     system("pause");
 }
-/// \brief Testing simple pathfinding problem from Paradox
-/// https://paradox.kattis.com/problems/paradoxpath
 
-enum KFindPathError
-{
-    kNodeIsUnreachable = -1,
-    kNotEnoughSpace = -2
-};
-
-int FindPath(const int nStartX, const int nStartY,
-    const int nTargetX, const int nTargetY,
-    const unsigned char* pMap, const int nMapWidth, const int nMapHeight,
-    int* pOutBuffer, const int nOutBufferSize)
-{	
-    SYNTROPY_ASSERT(nOutBufferSize > 0 && nMapWidth > 0 && nMapHeight > 0);
-
-    std::vector<int> graph_vector;
-
-    const size_t map_size = nMapWidth*nMapHeight;
-    graph_vector.reserve(map_size);
-    for (size_t i = 0; i < map_size; i++)
-    {
-        graph_vector.emplace_back(*(pMap + i));
-    }
-
-    Graph graph(graph_vector, nMapWidth, nMapHeight);
-
-    auto& start = graph.GetNodeAt(nStartX, nStartY);
-    auto& end = graph.GetNodeAt(nTargetX, nTargetY);
-
-    auto node_position = [&graph](const Node& node)
-    {
-        return (graph.GetWidth() * node.GetY()) + node.GetX();
-    };
-
-    auto adjacency_func =
-    [&graph](const Node& node)
-    {
-        return graph.GetNeighbours(node);
-    };
-
-    auto cost_func_distance = [](const Node& _start, const Node& _end) -> float
-    {
-        return static_cast<float>(std::abs(_start.GetX() - _end.GetY()) + std::abs(_start.GetX() - _end.GetY()));
-    };
-
-    auto heuristic_func_distance = [](const Node& _start, const Node& _end) -> float
-    {
-        return std::sqrtf((std::powf(float(_end.GetX()) - float(_start.GetX()), 2) + std::powf(float(_end.GetY()) - float(_start.GetY()), 2)));
-    };
-
-    auto path = syntropy::synapse::AStar(
-        start,
-        end,
-        adjacency_func,
-        cost_func_distance,
-        heuristic_func_distance);
-    
-    if (!path.size())
-    {
-        return KFindPathError::kNodeIsUnreachable;
-    }
-
-    if (path.size() > nOutBufferSize)
-    {
-        return KFindPathError::kNotEnoughSpace;
-    }
-
-    for (size_t i = 0; i < path.size(); i++)
-    {
-        auto Element = pOutBuffer + i;
-        *Element = node_position(*path.at(i));
-    }
-
-    return static_cast<int>(path.size());
-}
-
-void SynapseTest()
-{		
-    unsigned char pMap[] = 
-    { 
-        1,1,1,0,
-        1,0,1,0,
-        1,1,0,0
-    };
-
-    constexpr size_t nOutBufferSize = 12;
-    int pOutBuffer[nOutBufferSize];
-
-    std::fill(std::begin(pOutBuffer), std::end(pOutBuffer), -1);
-
-    int count = 0;
-
-    syntropy::HighResolutionTimer<std::chrono::microseconds> timer(true);
-
-    for (int i = 0; i < 10000; ++i)
-    {
-        count += FindPath(1, 2, 2, 1, pMap, 4, 3, pOutBuffer, nOutBufferSize);
-    }
-    
-    float time = timer.Stop().count() / 10000.0f;
-    count /= 10000;
-
-    std::cout << "A* duration: " << time << " us\n";
-    
-    std::cout << "FindPath Output: " << count << std::endl;
-
-    std::cout << "Path: " << std::endl;
-
-    while (count-- > 0)
-    {
-        std::cout << pOutBuffer[count] << " -> ";
-    }
-    std::cout << std::endl;
-
-}
 
 int main(int argc, char **argv)
 {
     syntropy::CommandLine command_line(argc, argv);
 
     Initialize();
-
-    if (command_line.HasArgument("test_synapse"))
-    {
-        SynapseTest();
-    }
 
     if (command_line.HasArgument("test_reflection"))
     {
