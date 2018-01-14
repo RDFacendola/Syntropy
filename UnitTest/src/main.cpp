@@ -56,21 +56,6 @@
 
 syntropy::Context Root;
 
-struct FooSmall
-{
-    char buffer[256];
-};
-
-struct FooMedium
-{
-    char buffer[257];
-};
-
-struct FooLarge
-{
-    char buffer[258];
-};
-
 void Initialize()
 {
     // Initialize log

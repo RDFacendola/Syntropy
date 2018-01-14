@@ -3,6 +3,8 @@
 ///
 /// \author Raffaele D. Facendola - 2018
 
+#pragma once
+
 #include "unit_test/test_fixture.h"
 #include "unit_test/test_case.h"
 
