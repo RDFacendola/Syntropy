@@ -1,5 +1,5 @@
 
-/// \file synatropy_memory_allocators.h
+/// \file synergy_tasksystem.h
 ///
 /// \author Raffaele D. Facendola - 2018
 
