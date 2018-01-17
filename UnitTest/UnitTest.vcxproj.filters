@@ -24,12 +24,10 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\unit1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\tests\synapse\search.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\tests\syntropy\math\vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\tests\syntropy\memory\allocators.h">
@@ -49,15 +47,13 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\unit1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\tests\synapse\search.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\tests\syntropy\math\vector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\tests\syntropy\memory\allocators.cpp">

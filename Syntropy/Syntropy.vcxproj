@@ -30,6 +30,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\math\vector.h" />
     <ClInclude Include="include\math\random.h" />
     <ClInclude Include="include\platform\threading.h" />
     <ClInclude Include="include\time\calendar.h">
