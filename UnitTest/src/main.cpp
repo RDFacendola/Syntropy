@@ -1,56 +1,15 @@
 
 
 #include <iostream>
-#include <fstream>
-#include <random>
-#include <thread>
-#include <exception>
-#include <chrono>
 #include <iomanip>
-
-#include "unit1.h"
-
-#include "containers/hashed_string.h"
-#include "containers/context.h"
-
-#include "diagnostics/log.h"
-#include "diagnostics/log_channels.h"
-#include "diagnostics/diagnostics_meta.h"
-
-#include "serialization/json/json.h"
-
-#include "math/random.h"
 
 #include "application/command_line.h"
 
 #include "unit_test/test_runner.h"
 
-syntropy::Context Root;
-
-void Initialize()
-{
-    // Initialize log
-
-    using syntropy::diagnostics::FileLogChannel;
-
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::diagnostics::FileLogChannel>());
-
-    syntropy::diagnostics::ImportLogConfigurationFromJSON("log.cfg");
-}
-
 int main(int argc, char **argv)
 {
     syntropy::CommandLine command_line(argc, argv);
-
-    Initialize();
-
-    if (command_line.HasArgument("test_reflection"))
-    {
-        Tester t;
-        t.Do();
-    }
-
-    std::cout << "\n\n";
 
     auto&& test_runner = syntropy::TestRunner::GetInstance();
 

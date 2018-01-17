@@ -38,6 +38,12 @@
     <ClInclude Include="include\tests\synergy\task\task_system.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\tests\syntropy\reflection\reflection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tests\syntropy\serialization\serialization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -58,6 +64,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\tests\synergy\task\task_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tests\syntropy\reflection\reflection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tests\syntropy\serialization\serialization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
