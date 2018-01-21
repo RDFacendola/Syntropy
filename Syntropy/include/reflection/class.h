@@ -54,10 +54,6 @@ namespace syntropy::reflection
     /// \author Raffaele D. Facendola - 2016
     class Class
     {
-
-        template <typename TClass>
-        friend class ClassDefinitionT;
-
     public:
 
         /// \brief Get the class associated to TClass.
@@ -127,6 +123,48 @@ namespace syntropy::reflection
         const TInterface* GetInterface() const
         {
             return interfaces_.GetInterface<TInterface>();
+        }
+
+        /// \brief Define a name alias for this class.
+        /// If the provided alias already exists, this method does nothing.
+        /// \param name New name alias.
+        void AddNameAlias(HashedString name_alias);
+
+        /// \brief Define a base class for this class.
+        /// If the provided base class already exists, this method does nothing.
+        /// If the provided base class is NOT an actual base class for the class described by this class the behavior is undefined.
+        /// \param base_class Base class.
+        void AddBaseClass(const Class& base_class);
+
+        /// \brief Add a new property to this class.
+        /// If the provided property doesn't belong to this class the behavior is undefined.
+        /// \param name Unique name of the class property.
+        /// \param accessors Member field or methods used to access the property being defined.
+        /// \return Returns the property definition.
+        template <typename... TAccessors>
+        auto AddProperty(const HashedString& property_name, TAccessors... accessors)
+        {
+            if (GetProperty(property_name))
+            {
+                SYNTROPY_CRITICAL((ReflectionCtx), "A property named '", property_name, "' was already defined in the class '", default_name_, "'.");
+            }
+
+            auto& property = properties_.emplace_back(property_name, accessors...);
+
+            return PropertyDefinitionT<TAccessors...>(property, accessors...);              // Returns a definition to allow property extensibility.
+        }
+
+        /// \brief Add a new interface to this class.
+        /// The method creates an instance of TConcrete using TArgs as construction parameters. Only one interface of type TInterface can be added per class.
+        /// TConcrete must be equal to or derive from TInterface.
+        /// \param arguments Arguments to pass to the constructor of TInterface.
+        template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
+        void AddInterface(TArgs&&... arguments)
+        {
+            if (interfaces_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...) == nullptr)
+            {
+                SYNTROPY_ERROR((ReflectionCtx), "An interface '", typeid(TInterface).name(), "' was already part of the class '", default_name_, "'. The new interface has been ignored.");
+            }
         }
 
     private:
@@ -219,7 +257,7 @@ namespace syntropy::reflection
     /************************************************************************/
 
     /// \brief Concrete class definition.
-    /// This class is used to define class names, properties and methods.
+    /// This class is used to safely define class names, properties, methods, etc.
     /// \author Raffaele D. Facendola - 2016
     template <typename TClass>
     class ClassDefinitionT
@@ -227,6 +265,17 @@ namespace syntropy::reflection
         static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
 
     public:
+
+        /// \brief Apply a functor to a class definition.
+        /// \param class_definition Target class definition.
+        /// \param functor Functor to apply.
+        /// \return Returns the class definition.
+        template <typename TFunctor>
+        friend ClassDefinitionT& operator<<(ClassDefinitionT& class_definition, TFunctor&& functor)
+        {
+            functor(class_definition);
+            return class_definition;
+        }
 
         /// \brief Create a new class definition.
         /// \param subject Class this definition refers to.
@@ -236,49 +285,24 @@ namespace syntropy::reflection
 
         }
 
-        /// \brief No copy constructor.
-        ClassDefinitionT(const ClassDefinitionT&) = delete;
-
-        /// \brief No assignment operator.
-        ClassDefinitionT& operator=(const ClassDefinitionT&) = delete;
-
-        /// \brief Default destructor.
-        ~ClassDefinitionT() = default;
-
         /// \brief Define a name alias for the class.
         /// If the name was already defined this method does nothing.
         /// \param name Name alias.
-        ClassDefinitionT& DefineNameAlias(const HashedString& name_alias) noexcept
+        void DefineNameAlias(const HashedString& name_alias) noexcept
         {
-            auto it = std::find(subject_.name_aliases_.begin(), subject_.name_aliases_.end(), name_alias);
-
-            if (it == subject_.name_aliases_.end())
-            {
-                subject_.name_aliases_.push_back(name_alias);
-            }
-
-            return *this;
+            subject_.AddNameAlias(name_alias);
         }
 
         /// \brief Define a base class.
         /// If the base class was already defined this method does nothing.
         /// \tparam TBaseClass Type of the base class.
         template <typename TBaseClass>
-        ClassDefinitionT& DefineBaseClass() noexcept
+        void DefineBaseClass() noexcept
         {
             static_assert(std::is_base_of_v<TBaseClass, TClass>, "TClass must derive from TBaseClass.");
             static_assert(!std::is_same<TBaseClass, TClass>::value, "TClass cannot derive from itself.");
 
-            auto base_class = std::addressof(ClassOf<TBaseClass>());
-
-            auto it = std::find(subject_.base_classes_.begin(), subject_.base_classes_.end(), base_class);
-
-            if (it == subject_.base_classes_.end())
-            {
-                subject_.base_classes_.push_back(base_class);
-            }
-
-            return *this;
+            subject_.AddBaseClass(ClassOf<TBaseClass>());
         }
 
         /// \brief Define a class property.
@@ -286,21 +310,11 @@ namespace syntropy::reflection
         /// \param accessors Member field or methods used to access the property being defined.
         /// \return Returns the property definition.
         template <typename... TAccessors>
-        PropertyDefinitionT<TAccessors...> DefineProperty(const HashedString& property_name, TAccessors... accessors)
+        auto DefineProperty(const HashedString& property_name, TAccessors... accessors)
         {
-            auto it = std::find_if(subject_.properties_.begin(), subject_.properties_.end(), [&property_name](const auto& property)
-            {
-                return property.GetName() == property_name;
-            });
+            // #TODO Check if the provided accessors refer to TClass.
 
-            if (it != subject_.properties_.end())
-            {
-                SYNTROPY_ERROR((ReflectionCtx), "A property named '", property_name, "' was already defined in the class '", subject_.default_name_, "'.");
-            }
-
-            subject_.properties_.emplace_back(property_name, accessors...);                             // Create a new property.
-
-            return PropertyDefinitionT<TAccessors...>(subject_.properties_.back(), accessors...);       // Return a definition to allow property extensibility.
+            return subject_.AddProperty(property_name, std::forward<TAccessors>(accessors)...);
         }
 
         /// \brief Add a new interface to the class.
@@ -310,19 +324,7 @@ namespace syntropy::reflection
         template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
         ClassDefinitionT& AddInterface(TArgs&&... arguments)
         {
-            if (subject_.interfaces_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...) == nullptr)
-            {
-                SYNTROPY_ERROR((ReflectionCtx), "An interface '", typeid(TInterface).name(), "' was already added to the class '", subject_.default_name_, "'. The new interface has been ignored.");
-            }
-
-            return *this;
-        }
-
-        /// \brief Apply a functor to this class definition.
-        template <typename TFunctor>
-        ClassDefinitionT& operator<<(TFunctor&& functor)
-        {
-            functor(*this);
+            subject_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...);
             return *this;
         }
 
@@ -331,7 +333,5 @@ namespace syntropy::reflection
         Class& subject_;            ///< \brief Class this definition refers to.
 
     };
-
 }
-
 

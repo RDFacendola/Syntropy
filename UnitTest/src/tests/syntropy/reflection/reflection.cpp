@@ -136,8 +136,6 @@ void TestSyntropyReflection::TestClassNames()
     SYNTROPY_UNIT_ASSERT(cat_class_->GetDefaultName() == "Cat");
     SYNTROPY_UNIT_ASSERT(cat_class_->GetNameAliases().size() == 1);
     SYNTROPY_UNIT_ASSERT(cat_class_->GetNameAliases().front() == "Catto");
-
-    SYNTROPY_UNUSED(a);
 }
 
 void TestSyntropyReflection::TestClassAttributes()
