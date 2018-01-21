@@ -24,6 +24,30 @@
 
 namespace syntropy::reflection
 {
+    /************************************************************************/
+    /* CLASS DECLARATION                                                    */
+    /************************************************************************/
+
+    /// \brief Represents a class declaration.
+    /// IMPORTANT: Provide a specialization for each class requiring reflection.
+    template <typename TClass>
+    struct ClassDeclarationT
+    {
+        // Name of the class.
+        // static constexpr const char* name_{"MyClass"};
+
+        // Fill class definition with properties, methods, base classes, etc.
+        // void operator()(TDefinition& definition) const;
+    };
+
+    /// \brief Helper variable for ClassDeclarationT<TClass>
+    template <typename TClass>
+    inline constexpr ClassDeclarationT<TClass> ClassDeclaration{};
+
+    /************************************************************************/
+    /* CLASS                                                                */
+    /************************************************************************/
+
     /// \brief Describes a class.
     /// A class can be used to access fields, properties and methods.
     /// \remarks This class is a singleton.
@@ -107,10 +131,38 @@ namespace syntropy::reflection
 
     private:
 
+        /// \brief Functor used to get TClass class name.
+        template <typename TClass>
+        struct ClassNameT
+        {
+            static auto GetName()
+            {
+                return ClassDeclarationT<TClass>::name_;
+            }
+        };
+
+        /// \brief Partial specialization for class templates (recursive).
+        template <template <typename...> typename TClass, typename THead, typename... TRest>
+        struct ClassNameT<TClass<THead, TRest...>>
+        {
+            static auto GetName()
+            {
+                std::stringstream name;
+
+                name << ClassDeclarationT<TClass<THead, TRest...>>::name_ << "<" << TypeOf<THead>();
+
+                ((name << ", " << TypeOf<TRest>()), ...);
+
+                name << ">";
+
+                return name.str();
+            }
+        };
+
         /// \brief Create a new class.
         template <typename TClass>
         Class(tag_t<TClass>)
-            : default_name_(ClassDeclaration<TClass>::GetName())
+            : default_name_(ClassNameT<TClass>::GetName())              // #TODO Add support to alias derived from namespaces!
             , is_abstract_(std::is_abstract<TClass>::value)
         {
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
@@ -121,7 +173,7 @@ namespace syntropy::reflection
             // Fill base classes, properties, methods and name aliases via an explicit class declaration. Optional.
             ClassDefinitionT<TClass> definition(*this);
 
-            conditional_call(ClassDeclaration<TClass>{}, definition);
+            conditional_call(ClassDeclarationT<TClass>{}, definition);
 
             // Register the class to the reflection system.
             Reflection::GetInstance().Register(*this);
@@ -140,8 +192,7 @@ namespace syntropy::reflection
 
         InterfaceContainer<> interfaces_;               ///< \brief Interfaces assigned to this class.
 
-        bool is_abstract_;                              ///< \brief Whether the class is abstract or not.
-
+        bool is_abstract_;                              ///< \brief Whether the class is abstract.
     };
 
     /// \brief Utility method used to get a class by type.
@@ -162,6 +213,10 @@ namespace syntropy::reflection
 
     /// \brief Stream insertion for Class.
     std::ostream& operator<<(std::ostream& out, const Class& class_instance);
+
+    /************************************************************************/
+    /* CLASS DEFINITION                                                     */
+    /************************************************************************/
 
     /// \brief Concrete class definition.
     /// This class is used to define class names, properties and methods.
@@ -277,30 +332,6 @@ namespace syntropy::reflection
 
     };
 
-    /// \brief Functor used to fill a class definition.
-    /// Specialize this functor for each class requiring reflection.
-    template <typename TClass>
-    struct ClassDeclaration
-    {
-        // static constexpr const char* GetName();
-
-        // void operator()(TDefinition& definition) const;
-    };
-
-    /// \brief Generate a full class name from a class name and its template arguments.
-    /// This method is intended to generate names of class templates.
-    template <typename THead, typename... TRest>
-    std::string GenerateClassName(const char* class_name)
-    {
-        std::stringstream name;
-
-        name << class_name << "<" << TypeOf<THead>();
-
-        ((name << ", " << TypeOf<TRest>() ), ...);
-
-        name << ">";
-
-        return name.str();
-    }
-
 }
+
+

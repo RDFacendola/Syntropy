@@ -27,12 +27,9 @@ namespace syntropy::reflection
 
     // Template specialization for Severity
     template<>
-    struct ClassDeclaration<diagnostics::Severity>
+    struct ClassDeclarationT<diagnostics::Severity>
     {
-        static constexpr const char* GetName() noexcept
-        {
-            return "syntropy::diagnostics::Severity";
-        }
+        static constexpr const char* name_{ "syntropy::diagnostics::Severity" };
 
         void operator()(ClassDefinitionT<diagnostics::Severity>& definition) const
         {
@@ -52,12 +49,9 @@ namespace syntropy::reflection
 
     // Template specialization for Context
     template<>
-    struct ClassDeclaration<Context>
+    struct ClassDeclarationT<Context>
     {
-        static constexpr const char* GetName() noexcept
-        {
-            return "syntropy::diagnostics::Context";
-        }
+        static constexpr const char* name_{ "syntropy::diagnostics::Context" };
 
         void operator()(ClassDefinitionT<Context>& definition) const
         {
@@ -71,12 +65,9 @@ namespace syntropy::reflection
 
     // Template specialization for LogChannel.
     template <>
-    struct ClassDeclaration<diagnostics::LogChannel>
+    struct ClassDeclarationT<diagnostics::LogChannel>
     {
-        static constexpr const char* GetName() noexcept
-        {
-            return "diagnostics::LogChannel";
-        }
+        static constexpr const char* name_{ "syntropy::diagnostics::LogChannel" };
     };
 
     /************************************************************************/
@@ -85,45 +76,33 @@ namespace syntropy::reflection
 
     // Template specialization for StreamLogChannel.
     template <>
-    struct ClassDeclaration<diagnostics::StreamLogChannel>
+    struct ClassDeclarationT<diagnostics::StreamLogChannel>
     {
-        static constexpr const char* GetName() noexcept
-        {
-            return "syntropy::diagnostics::StreamLogChannel";
-        }
+        static constexpr const char* name_{ "syntropy::diagnostics::StreamLogChannel" };
 
         void operator()(ClassDefinitionT<diagnostics::StreamLogChannel>& definition) const
         {
-            definition.DefineNameAlias("StreamLogChannel");
-
             definition.DefineBaseClass<diagnostics::LogChannel>();
         }
     };
 
     // Template specialization for FileLogChannel.
     template <>
-    struct ClassDeclaration<diagnostics::FileLogChannel>
+    struct ClassDeclarationT<diagnostics::FileLogChannel>
     {
-        static constexpr const char* GetName() noexcept
-        {
-            return "syntropy::diagnostics::FileLogChannel";
-        }
+        static constexpr const char* name_{ "syntropy::diagnostics::FileLogChannel" };
 
         void operator()(ClassDefinitionT<diagnostics::FileLogChannel>& definition) const
         {
             definition << serialization::JSONClass();
 
-            definition.DefineNameAlias("FileLogChannel");
-
             definition.DefineBaseClass<diagnostics::StreamLogChannel>();
         }
     };
-
 }
 
 namespace syntropy::serialization
 {
-
     /************************************************************************/
     /* DIAGNOSTICS.H                                                        */
     /************************************************************************/

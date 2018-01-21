@@ -19,12 +19,9 @@
 // Pet
 
 template <>
-struct syntropy::reflection::ClassDeclaration<TestSyntropyReflection::Pet>
+struct syntropy::reflection::ClassDeclarationT<TestSyntropyReflection::Pet>
 {
-    static constexpr const char* GetName() noexcept
-    {
-        return "TestSyntropyReflection::Pet";
-    }
+    static constexpr const char* name_{ "TestSyntropyReflection::Pet" };
 
     void operator()(ClassDefinitionT<TestSyntropyReflection::Pet>& definition) const
     {
@@ -48,23 +45,17 @@ size_t TestSyntropyReflection::Pet::GetPawsCount() const
 // IPurrable
 
 template <>
-struct syntropy::reflection::ClassDeclaration<TestSyntropyReflection::IPurrable>
+struct syntropy::reflection::ClassDeclarationT<TestSyntropyReflection::IPurrable>
 {
-    static constexpr const char* GetName() noexcept
-    {
-        return "TestSyntropyReflection::IPurrable";
-    }
+    static constexpr const char* name_{ "TestSyntropyReflection::IPurrable" };
 };
 
 // Cat
 
 template <>
-struct syntropy::reflection::ClassDeclaration<TestSyntropyReflection::Cat>
+struct syntropy::reflection::ClassDeclarationT<TestSyntropyReflection::Cat>
 {
-    static constexpr const char* GetName() noexcept
-    {
-        return "TestSyntropyReflection::Cat";
-    }
+    static constexpr const char* name_{ "TestSyntropyReflection::Cat" };
 
     void operator()(ClassDefinitionT<TestSyntropyReflection::Cat>& definition) const
     {
@@ -91,12 +82,9 @@ void TestSyntropyReflection::Cat::Purr()
 // Canary
 
 template <>
-struct syntropy::reflection::ClassDeclaration<TestSyntropyReflection::Canary>
+struct syntropy::reflection::ClassDeclarationT<TestSyntropyReflection::Canary>
 {
-    static constexpr const char* GetName() noexcept
-    {
-        return "Canary";
-    }
+    static constexpr const char* name_{ "TestSyntropyReflection::Canary" };
 
     void operator()(ClassDefinitionT<TestSyntropyReflection::Cat>& definition) const
     {
@@ -148,6 +136,8 @@ void TestSyntropyReflection::TestClassNames()
     SYNTROPY_UNIT_ASSERT(cat_class_->GetDefaultName() == "Cat");
     SYNTROPY_UNIT_ASSERT(cat_class_->GetNameAliases().size() == 1);
     SYNTROPY_UNIT_ASSERT(cat_class_->GetNameAliases().front() == "Catto");
+
+    SYNTROPY_UNUSED(a);
 }
 
 void TestSyntropyReflection::TestClassAttributes()

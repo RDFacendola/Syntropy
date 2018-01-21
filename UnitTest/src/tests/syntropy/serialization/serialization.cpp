@@ -23,12 +23,10 @@
 // Pet
 
 template <>
-struct syntropy::reflection::ClassDeclaration<TestSyntropySerialization::Pet>
+struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Pet>
 {
-    static constexpr const char* GetName() noexcept
-    {
-        return "TestSyntropySerialization::Pet";
-    }
+    static constexpr const char* name_{ "TestSyntropySerialization::Pet" };
+
 
     void operator()(ClassDefinitionT<TestSyntropySerialization::Pet>& definition) const
     {
@@ -41,12 +39,9 @@ struct syntropy::reflection::ClassDeclaration<TestSyntropySerialization::Pet>
 // Cat
 
 template <>
-struct syntropy::reflection::ClassDeclaration<TestSyntropySerialization::Cat>
+struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Cat>
 {
-    static constexpr const char* GetName() noexcept
-    {
-        return "TestSyntropySerialization::Cat";
-    }
+    static constexpr const char* name_{ "TestSyntropySerialization::Cat" };
 
     void operator()(ClassDefinitionT<TestSyntropySerialization::Cat>& definition) const
     {

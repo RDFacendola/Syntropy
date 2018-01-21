@@ -7,33 +7,35 @@
 #pragma once
 
 #include "containers/hashed_string.h"
+#include "math/hash.h"
 
 #include "reflection/class.h"
 
-namespace syntropy
+namespace syntropy::reflection
 {
+    /************************************************************************/
+    /* HASHED STRING                                                        */
+    /************************************************************************/
 
-    namespace reflection
+    template <>
+    struct ClassDeclarationT<HashedString>
     {
+        static constexpr const char* name_{ "syntropy::HashedString" };
+    };
 
-        /************************************************************************/
-        /* HASHED STRING                                                        */
-        /************************************************************************/
+    /************************************************************************/
+    /* HASHES                                                               */
+    /************************************************************************/
 
-        template <>
-        struct ClassDeclaration<HashedString>
-        {
-            static constexpr const char* GetName() noexcept
-            {
-                return "syntropy::HashedString";
-            }
+    template <typename TString>
+    struct ClassDeclarationT<StringHasher64<TString>>
+    {
+        static constexpr const char* name_{ "syntropy::StringHasher64" };
+    };
 
-            void operator()(ClassDefinitionT<HashedString> definition) const
-            {
-                definition.DefineNameAlias("HashedString");
-            }
-        };
-
-    }
-
+    template <typename TString>
+    struct ClassDeclarationT<StringHasher32<TString>>
+    {
+        static constexpr const char* name_{ "syntropy::StringHasher32" };
+    };
 }
