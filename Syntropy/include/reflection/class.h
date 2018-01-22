@@ -209,17 +209,24 @@ namespace syntropy::reflection
         {
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
 
+            // Common interfaces.
+
             if constexpr(std::is_default_constructible_v<TClass>)
             {
                 AddInterface<Constructible<>>(tag<TClass>);
             }
 
-            // Fill base classes, properties, methods and name aliases via an explicit class declaration. Optional.
-            ClassDefinitionT<TClass> definition(*this);
+            // Declare class members, base classes, etc.
 
-            conditional_call(ClassDeclarationT<TClass>{}, definition);
+            if constexpr(std::is_invocable_v<ClassDeclarationT<TClass>, ClassDefinitionT<TClass>&>)
+            {
+                ClassDefinitionT<TClass> definition(*this);
+
+                ClassDeclaration<TClass>(definition);
+            }
 
             // Register the class to the reflection system.
+
             Reflection::GetInstance().Register(*this);
         }
 
@@ -283,8 +290,8 @@ namespace syntropy::reflection
 
         /// \brief Create a new class definition.
         /// \param subject Class this definition refers to.
-        ClassDefinitionT(Class& subject)
-            : subject_(subject)
+        explicit ClassDefinitionT(Class& subject)
+            : class_(subject)
         {
 
         }
@@ -294,7 +301,7 @@ namespace syntropy::reflection
         /// \param name Name alias.
         void DefineNameAlias(const HashedString& name_alias) noexcept
         {
-            subject_.AddNameAlias(name_alias);
+            class_.AddNameAlias(name_alias);
         }
 
         /// \brief Define a base class.
@@ -306,7 +313,7 @@ namespace syntropy::reflection
             static_assert(std::is_base_of_v<TBaseClass, TClass>, "TClass must derive from TBaseClass.");
             static_assert(!std::is_same<TBaseClass, TClass>::value, "TClass cannot derive from itself.");
 
-            subject_.AddBaseClass(ClassOf<TBaseClass>());
+            class_.AddBaseClass(ClassOf<TBaseClass>());
         }
 
         /// \brief Define a class property.
@@ -318,7 +325,7 @@ namespace syntropy::reflection
         {
             // #TODO Check if the provided accessors refer to TClass.
 
-            return subject_.AddProperty(property_name, std::forward<TAccessors>(accessors)...);
+            return class_.AddProperty(property_name, std::forward<TAccessors>(accessors)...);
         }
 
         /// \brief Add a new interface to the class.
@@ -328,12 +335,12 @@ namespace syntropy::reflection
         template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
         void AddInterface(TArgs&&... arguments)
         {
-            subject_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...);
+            class_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...);
         }
 
     private:
 
-        Class& subject_;            ///< \brief Class this definition refers to.
+        Class& class_;            ///< \brief Class this definition refers to.
 
     };
 }
