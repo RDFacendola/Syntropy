@@ -45,6 +45,38 @@ namespace syntropy::reflection
     inline constexpr ClassDeclarationT<TClass> ClassDeclaration{};
 
     /************************************************************************/
+    /* CLASS NAME T                                                         */
+    /************************************************************************/
+
+    /// \brief Provides a member function used to get TClass class name.
+    template <typename TClass>
+    struct ClassNameT
+    {
+        static auto GetName()
+        {
+            return ClassDeclarationT<TClass>::name_;
+        }
+    };
+
+    /// \brief Partial specialization for class templates (recursive).
+    template <template <typename...> typename TClass, typename THead, typename... TRest>
+    struct ClassNameT<TClass<THead, TRest...>>
+    {
+        static auto GetName()
+        {
+            std::stringstream name;
+
+            name << ClassDeclarationT<TClass<THead, TRest...>>::name_ << "<" << TypeOf<THead>();
+
+            ((name << ", " << TypeOf<TRest>()), ...);
+
+            name << ">";
+
+            return name.str();
+        }
+    };
+
+    /************************************************************************/
     /* CLASS                                                                */
     /************************************************************************/
 
@@ -168,34 +200,6 @@ namespace syntropy::reflection
         }
 
     private:
-
-        /// \brief Functor used to get TClass class name.
-        template <typename TClass>
-        struct ClassNameT
-        {
-            static auto GetName()
-            {
-                return ClassDeclarationT<TClass>::name_;
-            }
-        };
-
-        /// \brief Partial specialization for class templates (recursive).
-        template <template <typename...> typename TClass, typename THead, typename... TRest>
-        struct ClassNameT<TClass<THead, TRest...>>
-        {
-            static auto GetName()
-            {
-                std::stringstream name;
-
-                name << ClassDeclarationT<TClass<THead, TRest...>>::name_ << "<" << TypeOf<THead>();
-
-                ((name << ", " << TypeOf<TRest>()), ...);
-
-                name << ">";
-
-                return name.str();
-            }
-        };
 
         /// \brief Create a new class.
         template <typename TClass>
