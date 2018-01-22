@@ -127,27 +127,6 @@ namespace syntropy
 
     //////////////// OTHER CAPABILITIES ////////////////
 
-    /// \brief If TAssignee = TValue is defined provides the members constant value equal to true, otherwise value is false.
-    /// \author Raffaele D. Facendola - September 2016
-    template <typename TAssignee, typename TValue>
-    class is_assignable{
-
-        template<typename A, typename V>
-        static auto test(int) -> decltype(std::declval<A&>() = std::declval<V>(), std::true_type());
-
-        template<typename, typename>
-        static auto test(...)->std::false_type;
-
-    public:
-
-        static const bool value = decltype(test<TAssignee, TValue>(0))::value;
-
-    };
-
-    /// \brief Helper value for is_assignable<TAssignee, TValue>.
-    template <typename TAssignee, typename TValue>
-    constexpr bool is_assignable_v = is_assignable<TAssignee, TValue>::value;
-
 	/// \brief If T is a specialization of std::in_place_type_t provides a member constant value equal to true, otherwise value is false.
 	template <typename T>
 	struct is_in_place_type : std::false_type {};
