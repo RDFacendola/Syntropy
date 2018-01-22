@@ -15,15 +15,18 @@
 #include <unordered_map>
 #include <array>
 
+namespace std
+{
+    /// \brief (C++20) If the type T is a reference type, provides the member typedef type which is the type referred to by T with its topmost cv-qualifiers removed. Otherwise type is T with its topmost cv-qualifiers removed.
+    template <typename T>
+    using remove_cvref = std::remove_cv_t<std::remove_reference_t<T>>;
+}
+
 namespace syntropy
 {
     /************************************************************************/
     /* UTILITIES                                                            */
     /************************************************************************/
-
-    /// \brief Type equal to TType without references and qualifiers.
-    template <typename TType>
-    using remove_reference_cv_t = std::remove_cv_t<std::remove_reference_t<TType>>;
 
     /// \brief Type equal to TType without references, extents and qualifiers.
     template <typename TType>

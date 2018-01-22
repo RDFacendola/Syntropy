@@ -60,9 +60,9 @@ namespace syntropy::reflection
         template <typename TClass, typename TProperty>
         Property(const HashedString& name, TProperty(TClass::* getter)() const)
             : name_(name)
-            , type_(TypeOf<remove_reference_cv_t<TProperty>>())
+            , type_(TypeOf<std::remove_cvref<TProperty>>())
         {
-            if constexpr(std::is_copy_constructible_v<remove_reference_cv_t<TProperty>>)
+            if constexpr(std::is_copy_constructible_v<std::remove_cvref<TProperty>>)
             {
                 interfaces_.AddInterface<Readable>(getter);
             }
@@ -75,17 +75,17 @@ namespace syntropy::reflection
         template <typename TClass, typename TPropertyGetter, typename TPropertySetter>
         Property(const HashedString& name, TPropertyGetter(TClass::* getter)() const, void (TClass::* setter)(TPropertySetter))
             : name_(name)
-            , type_(TypeOf<remove_reference_cv_t<TPropertyGetter>>())
+            , type_(TypeOf<std::remove_cvref<TPropertyGetter>>())
         {
-            static_assert(std::is_same_v<remove_reference_cv_t<TPropertyGetter>, remove_reference_cv_t<TPropertySetter>>,
+            static_assert(std::is_same_v<std::remove_cvref<TPropertyGetter>, std::remove_cvref<TPropertySetter>>,
                 "TPropertyGetter and TPropertySetter must refer to the same underlying type (regardless of reference and qualifiers)");
 
-            if constexpr(std::is_copy_constructible_v<remove_reference_cv_t<TPropertyGetter>>)
+            if constexpr(std::is_copy_constructible_v<std::remove_cvref<TPropertyGetter>>)
             {
                 interfaces_.AddInterface<Readable>(getter);
             }
 
-            if constexpr(std::is_copy_constructible_v<remove_reference_cv_t<TPropertySetter>>)
+            if constexpr(std::is_copy_constructible_v<std::remove_cvref<TPropertySetter>>)
             {
                 interfaces_.AddInterface<Writeable>(setter);
             }
