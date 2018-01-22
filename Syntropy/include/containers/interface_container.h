@@ -143,45 +143,6 @@ namespace syntropy
         std::vector<AnyInterface, allocator_t> interfaces_;             ///< \brief Interfaces registered so far.
 
     };
-
-    namespace details
-    {
-
-        /// \brief Utility functor type for ConditionalAddInterface. This class does nothing.
-        template <bool>
-        struct ConditionalAddInterfaceFunctor 
-        {
-			template <typename TInterface, typename TConcrete, typename TAllocator, typename... TArguments>
-            static TInterface* AddInterface(InterfaceContainer<TAllocator>&, TArguments&&...)
-            {
-                return nullptr;
-            }
-        };
-
-        /// \brief Utility functor type for ConditionalAddInterface. Specialization for when a condition is met and an interface can be added to the container.
-        template <>
-        struct ConditionalAddInterfaceFunctor<true>
-        {
-            template <typename TInterface, typename TConcrete, typename TAllocator, typename... TArguments>
-            static TInterface* AddInterface(InterfaceContainer<TAllocator>& interface_container, TArguments&&... arguments)
-            {
-                return interface_container.AddInterface<TInterface, TConcrete>(std::forward<TArguments>(arguments)...);
-            }
-        };
-
-    }
-
-    /// \brief Either add an interface is TCondition is true_type, or do nothing if false_type.
-    /// This method is used to provide an uniform way of adding interfaces to a container without having to check whether a given interface is supported by the class it's being added to.
-    /// This method calls the method AddInterface to an InterfaceContainer if TCondition is true_type, otherwise it does nothing.
-    /// \return Returns a pointer to the added interface, if any. Returns nullptr if no interface was added.
-    template <bool Condition, typename TInterface, typename TConcrete = TInterface, typename TAllocator = void, typename... TArguments>
-    TInterface* ConditionalAddInterface(InterfaceContainer<TAllocator>& interface_container, TArguments&&... arguments)
-    {
-        // TODO: much cleaner with C++17's constexpr if
-        return details::ConditionalAddInterfaceFunctor<Condition>::AddInterface<TInterface, TConcrete>(interface_container, std::forward<TArguments>(arguments)...);
-    }
-
 }
 
 // Implementation

@@ -31,6 +31,6 @@ namespace syntropy
 	};
 
 	template <typename TType>
-	constexpr tag_t<TType> tag{};
+	inline constexpr tag_t<TType> tag{};
 
 }

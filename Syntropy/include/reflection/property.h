@@ -43,10 +43,15 @@ namespace syntropy::reflection
             : name_(name)
             , type_(TypeOf<TField>())
         {
+            if constexpr(std::is_copy_constructible_v<std::remove_cv_t<TField>>)
+            {
+                interfaces_.AddInterface<Readable>(field);
+            }
 
-            // Add interface for read\write.
-            ConditionalAddInterface<std::is_copy_constructible_v<std::remove_cv_t<TField>>, Readable>(interfaces_, field);
-            ConditionalAddInterface<std::is_copy_assignable_v<TField>, Writeable>(interfaces_, field);
+            if constexpr(std::is_copy_assignable_v<TField>)
+            {
+                interfaces_.AddInterface<Writeable>(field);
+            }
         }
 
         /// \brief Create a new property from a read-only getter.
@@ -57,9 +62,10 @@ namespace syntropy::reflection
             : name_(name)
             , type_(TypeOf<remove_reference_cv_t<TProperty>>())
         {
-
-            // Add interface for read.
-            ConditionalAddInterface<std::is_copy_constructible_v<remove_reference_cv_t<TProperty>>, Readable>(interfaces_, getter);
+            if constexpr(std::is_copy_constructible_v<remove_reference_cv_t<TProperty>>)
+            {
+                interfaces_.AddInterface<Readable>(getter);
+            }
         }
 
         /// \brief Create a new property from a getter\setter pair.
@@ -74,9 +80,15 @@ namespace syntropy::reflection
             static_assert(std::is_same_v<remove_reference_cv_t<TPropertyGetter>, remove_reference_cv_t<TPropertySetter>>,
                 "TPropertyGetter and TPropertySetter must refer to the same underlying type (regardless of reference and qualifiers)");
 
-            // Add interface for read\write.
-            ConditionalAddInterface<std::is_copy_constructible_v<remove_reference_cv_t<TPropertyGetter>>, Readable>(interfaces_, getter);
-            ConditionalAddInterface<std::is_copy_constructible_v<remove_reference_cv_t<TPropertySetter>>, Writeable>(interfaces_, setter);
+            if constexpr(std::is_copy_constructible_v<remove_reference_cv_t<TPropertyGetter>>)
+            {
+                interfaces_.AddInterface<Readable>(getter);
+            }
+
+            if constexpr(std::is_copy_constructible_v<remove_reference_cv_t<TPropertySetter>>)
+            {
+                interfaces_.AddInterface<Writeable>(setter);
+            }
         }
 
         /// \brief Create a new property from a getter\setter pair.
@@ -88,10 +100,15 @@ namespace syntropy::reflection
             : name_(name)
             , type_(TypeOf<TProperty>())
         {
+            if constexpr(std::is_copy_constructible_v<TProperty>)
+            {
+                interfaces_.AddInterface<Readable>(getter);
+            }
 
-            // Add interface for read\write.
-            ConditionalAddInterface<std::is_copy_constructible_v<TProperty>, Readable>(interfaces_, getter);
-            ConditionalAddInterface<std::is_copy_assignable_v<TProperty>, Writeable>(interfaces_, setter);
+            if constexpr(std::is_copy_assignable_v<TProperty>)
+            {
+                interfaces_.AddInterface<Writeable>(setter);
+            }
         }
 
         /// \brief Move constructor.

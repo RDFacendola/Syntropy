@@ -205,8 +205,10 @@ namespace syntropy::reflection
         {
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
 
-            // Add common interfaces
-            ConditionalAddInterface<std::is_default_constructible<TClass>::value, Constructible<>>(interfaces_, tag_t<TClass>{});
+            if constexpr(std::is_default_constructible_v<TClass>)
+            {
+                AddInterface<Constructible<>>(tag<TClass>);
+            }
 
             // Fill base classes, properties, methods and name aliases via an explicit class declaration. Optional.
             ClassDefinitionT<TClass> definition(*this);
@@ -262,8 +264,6 @@ namespace syntropy::reflection
     template <typename TClass>
     class ClassDefinitionT
     {
-        static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
-
     public:
 
         /// \brief Apply a functor to a class definition.
@@ -322,10 +322,9 @@ namespace syntropy::reflection
         /// TConcrete must be equal to or derive from TInterface.
         /// \param arguments Arguments to pass to the constructor of TInterface.
         template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
-        ClassDefinitionT& AddInterface(TArgs&&... arguments)
+        void AddInterface(TArgs&&... arguments)
         {
             subject_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...);
-            return *this;
         }
 
     private:
