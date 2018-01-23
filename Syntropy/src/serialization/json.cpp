@@ -31,7 +31,7 @@ namespace syntropy
 
         const reflection::Class* GetClassFromJSON(const nlohmann::json& json, const reflection::Class* base_class)
         {
-            static constexpr char* kClassToken = "$class";
+            static constexpr const char* kClassToken = "$class";
 
             auto it = json.find(kClassToken);
 
