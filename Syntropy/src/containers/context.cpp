@@ -172,7 +172,7 @@ namespace syntropy
 
     Context Context::operator |(const HashedString& subcontext) const
     {
-        return context_->name_.GetString() + kSeparator + subcontext.GetString();
+        return Context(context_->name_.GetString() + kSeparator + subcontext.GetString());
     }
 
     const HashedString& Context::GetName() const
