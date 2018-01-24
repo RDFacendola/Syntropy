@@ -31,16 +31,10 @@ namespace syntropy::reflection
 
     bool Class::IsA(const Class& other) const noexcept
     {
-        return (*this == other) ||
-            std::any_of
-            (
-                base_classes_.begin(),
-                base_classes_.end(),
-                [&other](const Class* base_class)
-                {
-                    return base_class->IsA(other);
-                }
-            );
+        return (*this == other) || std::any_of(base_classes_.begin(), base_classes_.end(), [&other](const auto& base_class)
+        {
+            return base_class->IsA(other);
+        });
     }
 
     const HashedString& Class::GetDefaultName() const noexcept
@@ -60,7 +54,7 @@ namespace syntropy::reflection
 
     const Property* Class::GetProperty(const HashedString& property_name) const noexcept
     {
-        auto it = std::find_if(properties_.begin(), properties_.end(), [&property_name](const Property& property)
+        auto it = std::find_if(properties_.begin(), properties_.end(), [&property_name](const auto& property)
         {
             return property.GetName() == property_name;
         });

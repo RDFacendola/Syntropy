@@ -37,9 +37,7 @@ namespace syntropy::reflection
         {
             it = class_aliases_.find(class_name);
 
-            return (it != class_aliases_.end())
-                ? it->second
-                : nullptr;
+            return (it != class_aliases_.end()) ? it->second : nullptr;
         }
     }
 
