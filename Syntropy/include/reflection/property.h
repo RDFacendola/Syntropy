@@ -77,8 +77,7 @@ namespace syntropy::reflection
             : name_(name)
             , type_(TypeOf<std::remove_cvref<TPropertyGetter>>())
         {
-            static_assert(std::is_same_v<std::remove_cvref<TPropertyGetter>, std::remove_cvref<TPropertySetter>>,
-                "TPropertyGetter and TPropertySetter must refer to the same underlying type (regardless of reference and qualifiers)");
+            static_assert(std::is_same_v<std::remove_cvref<TPropertyGetter>, std::remove_cvref<TPropertySetter>>, "TPropertyGetter and TPropertySetter must refer to the same underlying type (regardless of reference and qualifiers)");
 
             if constexpr(std::is_copy_constructible_v<std::remove_cvref<TPropertyGetter>>)
             {
@@ -134,6 +133,19 @@ namespace syntropy::reflection
             return interfaces_.GetInterface<TInterface>();
         }
 
+        /// \brief Add a new interface to the property.
+        /// The method creates an instance of TConcrete using TArgs as construction parameters. Only one interface of type TInterface can be added per property.
+        /// TConcrete must be equal to or derive from TInterface.
+        /// \param arguments Arguments to pass to the constructor of TInterface.
+        template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
+        void AddInterface(TArgs&&... arguments)
+        {
+            if (interfaces_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...) == nullptr)
+            {
+                SYNTROPY_ERROR((ReflectionCtx), "An interface '", typeid(TInterface).name(), "' was already added to the property '", name_, "'. The new interface has been ignored.");
+            }
+        }
+
     private:
 
         HashedString name_;                                             ///< \brief Property name.
@@ -156,11 +168,22 @@ namespace syntropy::reflection
     {
     public:
 
+        /// \brief Apply a functor to this property definition.
+        /// \param property_definition Target property definition.
+        /// \param functor Functor to apply.
+        /// \return Returns the property definition.
+        template <typename TFunctor>
+        PropertyDefinitionT& operator<<(TFunctor&& functor)
+        {
+            std::apply(std::forward<TFunctor>(functor), std::tuple_cat(std::tie(*this), accessors_));
+            return *this;
+        }
+
         /// \brief Create a new property definition.
         /// \param accessor Accessors to the property.
         PropertyDefinitionT(Property& subject, TAccessors... accessors)
             : property_(subject)
-            , arguments_(*this, std::forward<TAccessors>(accessors)...)
+            , accessors_(std::forward<TAccessors>(accessors)...)
         {
 
         }
@@ -172,28 +195,14 @@ namespace syntropy::reflection
         template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
         PropertyDefinitionT& AddInterface(TArgs&&... arguments)
         {
-            if (property_.interfaces_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...) == nullptr)
-            {
-                SYNTROPY_ERROR((ReflectionCtx), "An interface '", typeid(TInterface).name(), "' was already added to the property '", property_.name_, "'. The new interface has been ignored.");
-            }
-
-            return *this;
-        }
-
-        /// \brief Apply a functor to this property definition.
-        template <typename TFunctor>
-        PropertyDefinitionT& operator<<(TFunctor&& functor)
-        {
-            std::apply(std::forward<TFunctor>(functor), arguments_);
+            property_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...);
             return *this;
         }
 
     private:
 
-        Property& property_;                                        ///< \brief Property this definition refers to.
+        Property& property_;                            ///< \brief Property this definition refers to.
 
-        using TArguments = std::tuple<PropertyDefinitionT<TAccessors...>&, TAccessors...>;
-
-        TArguments arguments_;                                      ///< \brief Arguments passed to the functors (a reference to this object and any property accessor).
+        std::tuple<TAccessors...> accessors_;           ///< \brief Concrete accessors to the property.
     };
 }
