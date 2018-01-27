@@ -31,9 +31,13 @@ struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Pet>
     void operator()(ClassDefinitionT<TestSyntropySerialization::Pet>& definition) const
     {
         using syntropy::serialization::JSONProperty;
+		using syntropy::serialization::JSONConvertible;
 
-        definition.DefineProperty("Name", &TestSyntropySerialization::Pet::name_) << JSONProperty();
-    }
+		definition.DefineProperty("Name", &TestSyntropySerialization::Pet::name_) << JSONProperty();
+		definition.DefineProperty("Nickname", &TestSyntropySerialization::Pet::nickname_) << JSONProperty();
+		definition.AddInterface<JSONConvertible>();
+	}
+
 };
 
 // Cat
@@ -60,7 +64,8 @@ std::vector<syntropy::TestCase> TestSyntropySerialization::GetTestCases()
 {
     return
     {
-        { "deserialization", &TestSyntropySerialization::TestDeserialization }
+        { "deserialization", &TestSyntropySerialization::TestDeserialization },
+		{ "serialization", &TestSyntropySerialization::TestSerialization }
     };
 }
 
@@ -71,11 +76,29 @@ TestSyntropySerialization::TestSyntropySerialization()
     cat_class_ = &ClassOf<Cat>();
 }
 
+void TestSyntropySerialization::TestSerialization()
+{
+	using namespace syntropy::serialization;
+
+	TestSyntropySerialization::Pet Petto;
+	Petto.name_ = "Kitty";
+	Petto.nickname_ = "Kitten";
+
+	std::optional<nlohmann::json> json = SerializeObjectToJSON(Petto);
+
+	TestSerializationResults(*json, Petto, 
+		[](const TestSyntropySerialization::Pet& A, const TestSyntropySerialization::Pet& B) -> bool
+	{
+		return A.name_ == B.name_
+			&& A.nickname_ == B.nickname_;
+	});
+}
+
 void TestSyntropySerialization::TestDeserialization()
 {
-    SYNTROPY_UNIT_SKIP("Not yet implemented.");
+	SYNTROPY_UNIT_SKIP("Not yet implemented.");
 
-    nlohmann::json json = R"({
+	nlohmann::json json = R"({
                                 "Name": "Kitty",
                                 "float_value": 67.5,
                                 "const_value": 100.0,
@@ -110,9 +133,10 @@ void TestSyntropySerialization::TestDeserialization()
                                 "nondefault": 100
                                 })"_json;
 
-    auto cat = syntropy::serialization::DeserializeObjectFromJSON<Cat>(json);
+	auto cat = syntropy::serialization::DeserializeObjectFromJSON<Cat>(json);
 
-    SYNTROPY_UNIT_ASSERT(cat.has_value());
+	SYNTROPY_UNIT_ASSERT(cat.has_value());
 
-    // #TODO Test actual parameter values.
+	// #TODO Test actual parameter values.
+
 }

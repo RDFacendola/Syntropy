@@ -16,6 +16,15 @@ namespace syntropy
             return deserializer_(instance, json);
         }
 
+		/************************************************************************/
+		/* JSON SERIALIZABLE                                                  */
+		/************************************************************************/
+
+		void JSONSerializable::operator()(const std::string& name, syntropy::reflection::Any& instance, nlohmann::json& json) const
+		{
+			serializer_(name, instance, json);
+		}
+
         /************************************************************************/
         /* JSON CONSTRUCTIBLE                                                   */
         /************************************************************************/
@@ -31,8 +40,6 @@ namespace syntropy
 
         const reflection::Class* GetClassFromJSON(const nlohmann::json& json, const reflection::Class* base_class)
         {
-            static constexpr const char* kClassToken = "$class";
-
             auto it = json.find(kClassToken);
 
             if (it == json.end())
