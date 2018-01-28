@@ -19,6 +19,25 @@
 
 #include "nlohmann/json/src/json.hpp"
 
+
+/// \brief Pointer to JSON conversion. Creates a JSON from a valid instance.
+/// \param j output JSON, will return nullptr if the instance is not valid.
+/// \param instance The object that will be serialized.
+template<typename TType>
+void to_json(nlohmann::json& j, const TType* instance)
+{
+	if (instance)
+	{
+		auto json = syntropy::serialization::SerializeObjectToJSON(*instance);
+		if (json.has_value())
+		{
+			j = *json;
+			return;
+		}
+	}	
+	j = nullptr;	
+}
+
 namespace syntropy::serialization
 {
 	/// \brief Class token used to identify the class type in a JSON. 
@@ -278,7 +297,7 @@ namespace syntropy::serialization
 				}
 			}
 
-			if (serialized_properties > 0)
+			if (serialized_properties > 0)	/// \brief Not serializing the object if there were no properties to be serialized.
 			{
 				json[kClassToken] = Class->GetDefaultName().GetString();
 				return std::make_optional<nlohmann::json>(json);
@@ -459,49 +478,6 @@ namespace syntropy::serialization
 	/// \author Raffaele D. Facendola - May 2017
 	template <typename TType>
 	constexpr JSONDeserializerT<TType> JSONDeserializer{};
-
-	/************************************************************************/
-	/* JSON SERIALIZER                                                      */
-	/************************************************************************/
-
-	/// \brief Functor used to serialize an object to a JSON.
-	/// Can be specialized for any object requiring particular JSON serialization capabilities.
-	/// \author Giuseppe Spizzico - January 2018
-	template <typename TType>
-	struct JSONSerializerT
-	{
-		static_assert(!std::is_abstract_v<TType>, "TType must not be abstract.");
-		static_assert(std::is_default_constructible_v<TType>, "TType must be default constructible, otherwise a specialization of JSONSerializerT<TType> is required!");
-
-		nlohmann::json operator()(const std::string& name, const TType& object) const
-		{
-			nlohmann::json json;
-			json[name] = object;
-			return json;
-		}
-	};
-
-	/// \brief Partial specialization of JSONDeserializerT for a reflection::Property.
-	template <>
-	struct JSONSerializerT<reflection::Property>
-	{
-		template<typename TType>
-		nlohmann::json operator()(const syntropy::reflection::Property& property, const TType& object) const
-		{
-			nlohmann::json json;
-			auto PropertyName = property.GetName();
-			auto ReadableInterface = property.GetInterface<syntropy::reflection::Readable>();
-			syntropy::reflection::Any Value = (*ReadableInterface)(object);
-
-			return json;
-		}
-	};
-
-	/// \brief Utility object for JSONSerializerT.
-	/// Usage: JSONSerializer<TType>(name, object) instead of JSONSerializer<TType>{}(name, object) 
-	/// \author Giuseppe Spizzico - January 2018
-	template <typename TType>
-	constexpr JSONSerializerT<TType> JSONSerializer{};
 
 	/************************************************************************/
 	/* METHODS                                                              */

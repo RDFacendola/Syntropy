@@ -20,6 +20,26 @@
 /* TEST CLASSES                                                         */
 /************************************************************************/
 
+// Collar
+
+template <>
+struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Collar>
+{
+	static constexpr const char* name_{ "TestSyntropySerialization::Collar" };
+
+
+	void operator()(ClassDefinitionT<TestSyntropySerialization::Collar>& definition) const
+	{		
+		using syntropy::serialization::JSONClass;
+		using syntropy::serialization::JSONProperty;
+		using syntropy::serialization::JSONConvertible;
+
+		definition << JSONClass();
+		definition.DefineProperty("Colour", &TestSyntropySerialization::Collar::colour_) << JSONProperty();
+		definition.AddInterface<JSONConvertible>();
+	}
+};
+
 // Pet
 
 template <>
@@ -35,6 +55,7 @@ struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Pet>
 
 		definition.DefineProperty("Name", &TestSyntropySerialization::Pet::GetName, &TestSyntropySerialization::Pet::SetName) << JSONProperty();
 		definition.DefineProperty("Nickname", &TestSyntropySerialization::Pet::nickname_) << JSONProperty();
+		definition.DefineProperty("Collar", &TestSyntropySerialization::Pet::collar_) << JSONProperty();
 		definition.AddInterface<JSONConvertible>();
 	}
 
@@ -83,6 +104,8 @@ void TestSyntropySerialization::TestSerialization()
 	TestSyntropySerialization::Pet Petto;
 	Petto.name_ = "Kitty";
 	Petto.nickname_ = "Kitten";
+	Petto.collar_ = new TestSyntropySerialization::Collar();
+	Petto.collar_->colour_= "Blue";
 
 	std::optional<nlohmann::json> json = SerializeObjectToJSON(Petto);
 
@@ -90,7 +113,9 @@ void TestSyntropySerialization::TestSerialization()
 		[](const TestSyntropySerialization::Pet& A, const TestSyntropySerialization::Pet& B) -> bool
 	{
 		return A.name_ == B.name_
-			&& A.nickname_ == B.nickname_;
+			&& A.nickname_ == B.nickname_
+			&& A.collar_ != nullptr && B.collar_ != nullptr
+			&& A.collar_->colour_ == B.collar_->colour_;
 	});
 }
 

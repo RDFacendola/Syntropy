@@ -24,11 +24,18 @@ class TestSyntropySerialization : public syntropy::TestFixture
 {
 public:
 
+	struct Collar
+	{
+		std::string colour_;
+	};
+
     /// \brief Class used for serialization test cases.
     struct Pet
     {
         std::string name_;
 		std::string nickname_;
+
+		Collar* collar_ = nullptr;
 
 		const std::string& GetName() const { return name_; };
 		void SetName(std::string name) { name_ = name; };
