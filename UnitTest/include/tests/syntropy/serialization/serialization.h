@@ -35,7 +35,7 @@ public:
         std::string name_;
 		std::string nickname_;
 
-		Collar* collar_ = nullptr;
+		std::shared_ptr<Collar> collar_ = nullptr;
 
 		const std::string& GetName() const { return name_; };
 		void SetName(std::string name) { name_ = name; };

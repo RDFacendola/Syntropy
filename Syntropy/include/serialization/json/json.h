@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <optional>
+#include <utility>
 
 #include "type_traits.h"
 
@@ -24,24 +25,27 @@
 /// \param j output JSON, will return nullptr if the instance is not valid.
 /// \param instance The object that will be serialized.
 template<typename TType>
-void to_json(nlohmann::json& j, const TType* instance)
+void to_json(nlohmann::json& json, const TType* instance)
 {
 	if (instance)
 	{
-		auto json = syntropy::serialization::SerializeObjectToJSON(*instance);
-		if (json.has_value())
+		auto instanceJson = syntropy::serialization::SerializeObjectToJSON(*instance);
+		if (instanceJson.has_value())
 		{
-			j = *json;
+			json = *instanceJson;
 			return;
 		}
 	}	
-	j = nullptr;	
+	json = nullptr;
 }
 
 namespace syntropy::serialization
 {
 	/// \brief Class token used to identify the class type in a JSON. 
 	static constexpr const char* kClassToken = "$class";
+
+	/// \brief Token used to identify a shared_ptr object in a JSON.
+	static constexpr const char* kSharedPtrIdToken = "$spid";
 
 	/// \brief Serialize an object properties to a JSON.
 	/// This method enumerates TType's properties and attempts to serialize each one.
@@ -169,7 +173,7 @@ namespace syntropy::serialization
 
 			serializer_ = [field](const std::string& name, const syntropy::reflection::Any& instance, nlohmann::json& json)
 			{
-				json[name] = reflection::AnyCast<TClass const *>(instance)->*field;
+				JSONSerializer<TClass>(json[name], reflection::AnyCast<TClass const *>(instance)->*field);
 			};
 		}
 
@@ -181,7 +185,7 @@ namespace syntropy::serialization
 
 			serializer_ = [getter](const std::string& name, const syntropy::reflection::Any& instance, nlohmann::json& json)
 			{
-				json[name] = (reflection::AnyCast<TClass const*>(instance)->*getter)();				
+				JSONSerializer<TClass>(json[name], (reflection::AnyCast<TClass const*>(instance)->*getter)());
 			};
 		}
 		/// \brief Serialize the property value.
@@ -478,6 +482,55 @@ namespace syntropy::serialization
 	/// \author Raffaele D. Facendola - May 2017
 	template <typename TType>
 	constexpr JSONDeserializerT<TType> JSONDeserializer{};
+
+	/************************************************************************/
+	/* JSON SERIALIZER                                                    */
+	/************************************************************************/
+
+	/// \brief Functor used to serialize an object to a JSON.
+	/// Can be specialized for any object requiring particular JSON deserialization capabilities.
+	/// \author Giuseppe Spizzico - January 2018
+	template<typename TType>
+	struct JSONSerializerT
+	{
+		static_assert(!std::is_abstract_v<TType>, "TType must not be abstract.");
+
+		/// \brief Base specialization of JSONSerializerT for object types.
+		template<typename TType>
+		void operator()(nlohmann::json& json, TType&& instance) const
+		{
+			/// \brief Compile time error if there is not a specialization of to_json in the same namespace of TType or the global namespace for TType.
+			json = instance; 
+		}
+		
+		/// \brief Partial specialization of JSONSerializerT for pointer types.
+		template<typename TType>
+		void operator()(nlohmann::json& json, const TType* instance) const
+		{
+			(*this)(json, *instance);
+		}
+		
+		/// \brief Partial specialization of JSONSerializerT for shared_ptr.
+		template<typename TType>
+		void operator()(nlohmann::json& json, std::shared_ptr<TType> instance) const
+		{
+			(*this)(json, instance.get());
+			json[kSharedPtrIdToken] = std::hash<std::shared_ptr<TType>>()(instance);
+		}
+
+		/// \brief Partial specialization of JSONSerializerT for weak_ptr.
+		template<typename TType>
+		void operator()(nlohmann::json& json, std::weak_ptr<TType> instance) const
+		{
+			(*this)(jsoninstance.lock());
+		}
+	};
+
+	/// \brief Utility object for JSONDeserializerT.
+	/// Usage: JSONDeserializer<TType>(json) instead of JSONDeserializerT<TType>{}(json)
+	/// \author Giuseppe Spizzico - January 2018
+	template <typename TType>
+	constexpr JSONSerializerT<TType> JSONSerializer{};
 
 	/************************************************************************/
 	/* METHODS                                                              */

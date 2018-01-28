@@ -104,8 +104,8 @@ void TestSyntropySerialization::TestSerialization()
 	TestSyntropySerialization::Pet Petto;
 	Petto.name_ = "Kitty";
 	Petto.nickname_ = "Kitten";
-	Petto.collar_ = new TestSyntropySerialization::Collar();
-	Petto.collar_->colour_= "Blue";
+	Petto.collar_ = std::make_shared<TestSyntropySerialization::Collar>(TestSyntropySerialization::Collar());
+	Petto.collar_.get()->colour_= "Blue";
 
 	std::optional<nlohmann::json> json = SerializeObjectToJSON(Petto);
 
@@ -115,7 +115,7 @@ void TestSyntropySerialization::TestSerialization()
 		return A.name_ == B.name_
 			&& A.nickname_ == B.nickname_
 			&& A.collar_ != nullptr && B.collar_ != nullptr
-			&& A.collar_->colour_ == B.collar_->colour_;
+			&& A.collar_.get()->colour_ == B.collar_.get()->colour_;
 	});
 }
 
