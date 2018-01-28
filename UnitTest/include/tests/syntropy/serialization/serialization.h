@@ -29,6 +29,9 @@ public:
     {
         std::string name_;
 		std::string nickname_;
+
+		const std::string& GetName() const { return name_; };
+		void SetName(std::string name) { name_ = name; };
     };
 
     /// \brief Class used for serialization test cases.

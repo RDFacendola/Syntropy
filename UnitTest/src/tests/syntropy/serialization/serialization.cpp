@@ -33,7 +33,7 @@ struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Pet>
         using syntropy::serialization::JSONProperty;
 		using syntropy::serialization::JSONConvertible;
 
-		definition.DefineProperty("Name", &TestSyntropySerialization::Pet::name_) << JSONProperty();
+		definition.DefineProperty("Name", &TestSyntropySerialization::Pet::GetName, &TestSyntropySerialization::Pet::SetName) << JSONProperty();
 		definition.DefineProperty("Nickname", &TestSyntropySerialization::Pet::nickname_) << JSONProperty();
 		definition.AddInterface<JSONConvertible>();
 	}

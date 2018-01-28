@@ -153,6 +153,18 @@ namespace syntropy::serialization
 				json[name] = reflection::AnyCast<TClass const *>(instance)->*field;
 			};
 		}
+
+		/// \brief Create a new interface from a getter method.
+		template <typename TClass, typename TProperty>
+		JSONSerializable(TProperty(TClass::* getter)(void) const)
+		{
+			static_assert(std::is_move_constructible_v<std::remove_cvref<TProperty>>, "remove_reference_cv_t<TProperty> must be move-constructible");
+
+			serializer_ = [getter](const std::string& name, const syntropy::reflection::Any& instance, nlohmann::json& json)
+			{
+				json[name] = (reflection::AnyCast<TClass const*>(instance)->*getter)();				
+			};
+		}
 		/// \brief Serialize the property value.
 		/// \param name Name of the property to serialize.
 		/// \param instance Object that owns the property to serialize. Expects pointer to the actual object instance.
@@ -303,6 +315,7 @@ namespace syntropy::serialization
 		void operator()(reflection::PropertyDefinitionT<TAccessors...>& property, TPropertyGetter(TClass::* getter)() const, void (TClass::* setter)(TPropertySetter))
 		{
 			property.AddInterface<JSONDeserializable>(setter);
+			property.AddInterface<JSONSerializable>(getter);
 		}
 
 		/// \brief Add a JSONDeserializable interface to the provided property.
@@ -313,6 +326,7 @@ namespace syntropy::serialization
 		void operator()(reflection::PropertyDefinitionT<TAccessors...>& property, const TProperty&(TClass::* getter)() const, TProperty& (TClass::* setter)())
 		{
 			property.AddInterface<JSONDeserializable>(setter);
+			property.AddInterface<JSONSerializable>(getter);
 		}
 	};
 
