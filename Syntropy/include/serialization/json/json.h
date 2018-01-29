@@ -172,7 +172,7 @@ namespace syntropy::serialization
 
 			serializer_ = [field](const std::string& name, const syntropy::reflection::Any& instance, nlohmann::json& json)
 			{
-				JSONSerializer<TClass>(json[name], reflection::AnyCast<TClass const *>(instance)->*field);
+				JSONSerializer<TProperty>(json[name], reflection::AnyCast<TClass const *>(instance)->*field);
 			};
 		}
 
@@ -184,7 +184,7 @@ namespace syntropy::serialization
 
 			serializer_ = [getter](const std::string& name, const syntropy::reflection::Any& instance, nlohmann::json& json)
 			{
-				JSONSerializer<TClass>(json[name], (reflection::AnyCast<TClass const*>(instance)->*getter)());
+				JSONSerializer<TProperty>(json[name], (reflection::AnyCast<TClass const*>(instance)->*getter)());
 			};
 		}
 		/// \brief Serialize the property value.
@@ -422,28 +422,6 @@ namespace syntropy::serialization
 		{
 			/// \brief Compile time error if there is not a specialization of to_json in the same namespace of TType or the global namespace for TType.
 			json = instance; 
-		}
-		
-		/// \brief Partial specialization of JSONSerializerT for pointer types.
-		template<typename TType>
-		void operator()(nlohmann::json& json, const TType* instance) const
-		{
-			(*this)(json, *instance);
-		}
-		
-		/// \brief Partial specialization of JSONSerializerT for shared_ptr.
-		template<typename TType>
-		void operator()(nlohmann::json& json, std::shared_ptr<TType> instance) const
-		{
-			(*this)(json, instance.get());
-			json[kSharedPtrIdToken] = std::hash<std::shared_ptr<TType>>()(instance);
-		}
-
-		/// \brief Partial specialization of JSONSerializerT for weak_ptr.
-		template<typename TType>
-		void operator()(nlohmann::json& json, std::weak_ptr<TType> instance) const
-		{
-			(*this)(jsoninstance.lock());
 		}
 	};
 

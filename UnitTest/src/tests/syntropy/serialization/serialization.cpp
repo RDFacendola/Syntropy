@@ -15,6 +15,7 @@
 #include "serialization/json/deserializers/stl_deserializers.h"
 #include "serialization/json/deserializers/core_deserializers.h"
 
+#include "serialization/json/serializers/stl_serializers.h"
 #include <sstream>
 #include <iomanip>
 
