@@ -81,6 +81,7 @@
     <ClInclude Include="include\unit_test\test_fixture.h" />
     <ClInclude Include="include\unit_test\test.h" />
     <ClInclude Include="include\math\vector.h" />
+    <ClInclude Include="include\serialization\json\deserializers\fundamental_deserializers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

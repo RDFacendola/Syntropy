@@ -11,8 +11,6 @@
 #include "reflection/reflection.h"
 #include "reflection/class.h"
 
-
-
 #include "nlohmann/json/src/json.hpp"
 
 /************************************************************************/

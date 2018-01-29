@@ -10,6 +10,8 @@
 #include "reflection/types/stl_types.h"
 
 #include "serialization/json/json.h"
+
+#include "serialization/json/deserializers/fundamental_deserializers.h"
 #include "serialization/json/deserializers/stl_deserializers.h"
 #include "serialization/json/deserializers/core_deserializers.h"
 

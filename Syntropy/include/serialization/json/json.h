@@ -20,7 +20,6 @@
 
 #include "nlohmann/json/src/json.hpp"
 
-
 /// \brief Pointer to JSON conversion. Creates a JSON from a valid instance.
 /// \param j output JSON, will return nullptr if the instance is not valid.
 /// \param instance The object that will be serialized.
@@ -399,84 +398,6 @@ namespace syntropy::serialization
 		}
 	};
 
-	/// \brief Partial specialization of JSONDeserializerT for pointer types.
-	template <typename TType>
-	struct JSONDeserializerT<TType*, std::enable_if_t<!std::is_pointer<TType>::value> >
-	{
-		std::optional<TType*> operator()(const nlohmann::json& json) const
-		{
-			// Find the concrete class type
-
-			auto concrete_class = GetClassFromJSON(json, &reflection::ClassOf<TType>());
-
-			if (concrete_class)
-			{
-				// Use double dispatch to ensure that the concrete type is instantiated and deserialized.
-
-				auto json_constructible = concrete_class->GetInterface<JSONConstructible>();
-
-				if (json_constructible)
-				{
-					auto instance = (*json_constructible)(json);
-
-					if (instance.HasValue())
-					{
-						return reflection::AnyCast<TType*>(instance);
-					}
-				}
-			}
-
-			return std::nullopt;
-		}
-	};
-
-	/// \brief Specialization of JSONDeserializerT for boolean types.
-	template <>
-	struct JSONDeserializerT<bool>
-	{
-		std::optional<bool> operator()(const nlohmann::json& json) const
-		{
-			if (json.is_boolean())
-			{
-				return json.get<bool>();
-			}
-			return std::nullopt;
-		}
-	};
-
-	/// \brief Partial specialization of JSONDeserializerT for arithmetic types.
-	template <typename TType>
-	struct JSONDeserializerT<TType, typename std::enable_if_t<std::is_arithmetic_v<TType> > >
-	{
-		std::optional<TType> operator()(const nlohmann::json& json) const
-		{
-			if (json.is_number())
-			{
-				return json.get<TType>();
-			}
-			return std::nullopt;
-		}
-	};
-
-	/// \brief Partial specialization of JSONDeserializerT for enumeration types.
-	template <typename TType>
-	struct JSONDeserializerT<TType, typename std::enable_if_t<std::is_enum_v<TType> > >
-	{
-		std::optional<TType> operator()(const nlohmann::json& json) const
-		{
-			if (json.is_string())
-			{
-				auto enum_interface = reflection::ClassOf<TType>().GetInterface<reflection::Enumeration>();
-
-				if (enum_interface)
-				{
-					return enum_interface->GetValueByName<TType>(json.get<std::string>());
-				}
-			}
-			return std::nullopt;
-		}
-	};
-
 	/// \brief Utility object for JSONDeserializerT.
 	/// Usage: JSONDeserializer<TType>(json) instead of JSONDeserializerT<TType>{}(json)
 	/// \author Raffaele D. Facendola - May 2017
@@ -484,7 +405,7 @@ namespace syntropy::serialization
 	constexpr JSONDeserializerT<TType> JSONDeserializer{};
 
 	/************************************************************************/
-	/* JSON SERIALIZER                                                    */
+	/* JSON SERIALIZER                                                      */
 	/************************************************************************/
 
 	/// \brief Functor used to serialize an object to a JSON.
