@@ -10,28 +10,22 @@
 
 #include "serialization/json/json.h"
 
-namespace syntropy
+namespace syntropy::serialization
 {
-    namespace serialization
+    /************************************************************************/
+    /* HASHED STRING                                                        */
+    /************************************************************************/
+
+    template <>
+    struct JSONDeserializerT<HashedString>
     {
-
-        /************************************************************************/
-        /* HASHED STRING                                                        */
-        /************************************************************************/
-
-        template <>
-        struct JSONDeserializerT<HashedString>
+        std::optional<HashedString> operator()(const nlohmann::json& json) const
         {
-            std::optional<HashedString> operator()(const nlohmann::json& json) const
+            if (json.is_string())
             {
-                if (json.is_string())
-                {
-                   return HashedString(json.get<std::string>());
-                }
-                return std::nullopt;
+                return HashedString(json.get<std::string>());
             }
-        };
-
-    }
-
+            return std::nullopt;
+        }
+    };
 }
