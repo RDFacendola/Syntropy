@@ -1,6 +1,6 @@
 
 /// \file serialization.h
-/// \brief TODO: Add brief description here
+/// \brief This header is part of the syntropy serialization system. It contains common types and functionalities.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -11,5 +11,5 @@
 namespace syntropy::serialization
 {
     /// \brief Log context for the syntropy serialization system.
-    extern const Context SerializationCtx;
+    inline const Context SerializationCtx("SyntropySerialization");
 }

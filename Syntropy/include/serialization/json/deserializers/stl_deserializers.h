@@ -42,7 +42,7 @@ namespace syntropy::serialization
                 {
                     if (auto item = JSONDeserializer<TType>(json[array_index]))
                     {
-                        vector->push_back(std::move(*item));
+                        vector->emplace_back(std::move(*item));
                     }
                 }
 

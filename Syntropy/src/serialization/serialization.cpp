@@ -2,5 +2,5 @@
 
 namespace syntropy::serialization
 {
-    const Context SerializationCtx("SyntropySerialization");
+
 }

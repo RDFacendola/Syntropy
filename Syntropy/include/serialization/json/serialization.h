@@ -164,7 +164,7 @@ namespace syntropy::serialization
     /************************************************************************/
 
     /// \brief Functor used to serialize an object to a JSON.
-    /// Can be specialized for any object requiring particular JSON deserialization capabilities.
+    /// Can be specialized for any object requiring particular JSON serialization capabilities.
     /// \author Giuseppe Spizzico - January 2018
     template<typename TType>
     struct JSONSerializerT

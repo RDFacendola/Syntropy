@@ -3,7 +3,9 @@
 /// \brief This header is part of the syntropy serialization system. It contains serializers for STL types.
 ///
 /// \author Giuseppe Spizzico - 2018
+
 #pragma once
+
 #include "type_traits.h"
 
 #include "serialization/json/json.h"
