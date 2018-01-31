@@ -33,7 +33,10 @@
     <ClInclude Include="include\math\vector.h" />
     <ClInclude Include="include\math\random.h" />
     <ClInclude Include="include\platform\threading.h" />
+    <ClInclude Include="include\serialization\json\deserialization.h" />
     <ClInclude Include="include\serialization\json\deserializers\fundamental_deserializers.h" />
+    <ClInclude Include="include\serialization\json\json.h" />
+    <ClInclude Include="include\serialization\json\serialization.h" />
     <ClInclude Include="include\serialization\json\serializers\stl_serializers.h" />
     <ClInclude Include="include\time\calendar.h">
       <SubType>
@@ -163,7 +166,6 @@
     </ClInclude>
     <ClInclude Include="include\serialization\json\deserializers\core_deserializers.h" />
     <ClInclude Include="include\serialization\json\deserializers\stl_deserializers.h" />
-    <ClInclude Include="include\serialization\json\json.h" />
     <ClInclude Include="include\serialization\serialization.h">
       <SubType>
       </SubType>
@@ -192,6 +194,9 @@
     <ClCompile Include="src\math\hash.cpp" />
     <ClCompile Include="src\math\random.cpp" />
     <ClCompile Include="src\platform\threading.cpp" />
+    <ClCompile Include="src\serialization\json\deserialization.cpp" />
+    <ClCompile Include="src\serialization\json\json.cpp" />
+    <ClCompile Include="src\serialization\json\serialization.cpp" />
     <ClCompile Include="src\time\calendar.cpp">
       <SubType>
       </SubType>
@@ -287,7 +292,6 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="src\serialization\json.cpp" />
     <ClCompile Include="src\serialization\serialization.cpp">
       <SubType>
       </SubType>

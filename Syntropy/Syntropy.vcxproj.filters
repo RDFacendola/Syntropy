@@ -49,7 +49,6 @@
     <ClInclude Include="include\reflection\interfaces\class_interfaces.h" />
     <ClInclude Include="include\platform\macros.h" />
     <ClInclude Include="include\diagnostics\assert.h" />
-    <ClInclude Include="include\serialization\json\json.h" />
     <ClInclude Include="include\serialization\json\deserializers\core_deserializers.h" />
     <ClInclude Include="include\serialization\json\deserializers\stl_deserializers.h" />
     <ClInclude Include="include\diagnostics\diagnostics_meta.h" />
@@ -83,6 +82,9 @@
     <ClInclude Include="include\math\vector.h" />
     <ClInclude Include="include\serialization\json\deserializers\fundamental_deserializers.h" />
     <ClInclude Include="include\serialization\json\serializers\stl_serializers.h" />
+    <ClInclude Include="include\serialization\json\deserialization.h" />
+    <ClInclude Include="include\serialization\json\serialization.h" />
+    <ClInclude Include="include\serialization\json\json.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -111,7 +113,6 @@
     <ClCompile Include="src\memory\block_allocator.cpp" />
     <ClCompile Include="src\memory\std_allocator.cpp" />
     <ClCompile Include="src\memory\stack_allocator.cpp" />
-    <ClCompile Include="src\serialization\json.cpp" />
     <ClCompile Include="src\memory\virtual_memory.cpp" />
     <ClCompile Include="src\memory\allocator.cpp" />
     <ClCompile Include="src\memory\buffer.cpp" />
@@ -133,6 +134,9 @@
     <ClCompile Include="src\unit_test\test_case.cpp" />
     <ClCompile Include="src\unit_test\test_fixture.cpp" />
     <ClCompile Include="src\unit_test\test.cpp" />
+    <ClCompile Include="src\serialization\json\deserialization.cpp" />
+    <ClCompile Include="src\serialization\json\serialization.cpp" />
+    <ClCompile Include="src\serialization\json\json.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">
