@@ -142,6 +142,7 @@
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)\</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -188,6 +189,7 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <ConformanceMode>true</ConformanceMode>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)\</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
