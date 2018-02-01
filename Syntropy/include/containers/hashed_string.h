@@ -49,9 +49,9 @@ namespace syntropy
 
         }
 
-        /// \brief Create a new hashed string from a string.
-        template <typename TStringArg>
-        HashedStringT(TStringArg&& string, typename std::enable_if_t<!std::is_same_v<std::decay_t<TStringArg>, HashedStringT<TString, THash>>>* = nullptr)
+        /// \brief Create a new hashed string from anything that can construct a TString.
+        template <typename TStringArg, typename = std::enable_if_t<std::is_constructible_v<TString, TStringArg&&>>>
+        HashedStringT(TStringArg&& string)
         {
             std::tie(hash_, string_) = Atlas::GetInstance().AddEntry(std::forward<TStringArg>(string));
         }
@@ -132,26 +132,10 @@ namespace syntropy
 
             /// \brief Register a new entry to the atlas.
             /// \return Returns the hash-string pair.
-            std::tuple<THashValue, const TString*> AddEntry(const TString& string)
+            template <typename TAtlasString>
+            std::tuple<THashValue, const TString*> AddEntry(TAtlasString&& string)
             {
-                return EmplaceEntry(string);
-            }
-
-            /// \brief Register a new entry to the atlas.
-            /// \return Returns the hash-string pair.
-            std::tuple<THashValue, const TString*> AddEntry(std::add_rvalue_reference_t<TString> string)
-            {
-                return EmplaceEntry(std::move(string));
-            }
-
-        private:
-
-            /// \brief Emplace a new entry to the atlas.
-            /// \return Returns the hash-string pair.
-            template <typename TStringArg>
-            std::tuple<THashValue, const TString*> EmplaceEntry(TStringArg&& string)
-            {
-                auto hash = THash{}(static_cast<const TString&>(string));
+                auto hash = THash{}(static_cast<const TAtlasString&>(string));
 
                 if (auto it = registry_.find(hash); it != std::end(registry_))
                 {
@@ -159,11 +143,13 @@ namespace syntropy
                 }
                 else
                 {
-                    auto string_ptr = std::make_unique<TString>(std::forward<TStringArg>(string));
+                    auto string_ptr = std::make_unique<TString>(std::forward<TAtlasString>(string));
 
                     return { hash, registry_.emplace(hash, std::move(string_ptr)).first->second.get() };        // Add a new string to the atlas.
                 }
             }
+
+        private:
 
             /// \brief Default constructor.
             Atlas() = default;
