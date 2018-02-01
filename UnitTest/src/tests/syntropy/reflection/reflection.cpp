@@ -109,6 +109,7 @@ std::vector<syntropy::TestCase> TestSyntropyReflection::GetTestCases()
     return
     {
         { "class names", &TestSyntropyReflection::TestClassNames },
+        { "dynamic class", &TestSyntropyReflection::TestDynamicClass },
         { "class attributes", &TestSyntropyReflection::TestClassAttributes },
         { "class inheritance", &TestSyntropyReflection::TestClassInheritance },
         { "class properties", &TestSyntropyReflection::TestClassProperties },
@@ -133,9 +134,19 @@ void TestSyntropyReflection::TestClassNames()
 {
     using namespace syntropy::reflection;
 
-    SYNTROPY_UNIT_ASSERT(cat_class_->GetDefaultName() == "Cat");
+    SYNTROPY_UNIT_ASSERT(cat_class_->GetDefaultName() == "TestSyntropyReflection::Cat");
     SYNTROPY_UNIT_ASSERT(cat_class_->GetNameAliases().size() == 1);
     SYNTROPY_UNIT_ASSERT(cat_class_->GetNameAliases().front() == "Catto");
+}
+
+void TestSyntropyReflection::TestDynamicClass()
+{
+    using namespace syntropy::reflection;
+
+    SYNTROPY_UNIT_TRACE(auto cat_instance = std::make_unique<Cat>());
+    SYNTROPY_UNIT_TRACE(Pet* pet_instance = cat_instance.get());
+
+    SYNTROPY_UNIT_ASSERT(ClassOf(*pet_instance) == *cat_class_);
 }
 
 void TestSyntropyReflection::TestClassAttributes()

@@ -28,6 +28,8 @@ public:
     {
         Pet(size_t paws_count);
 
+        virtual ~Pet() = default;
+
         std::string name_;
 
         size_t age_;
@@ -42,6 +44,8 @@ public:
     /// \brief Interface for animals that can purr.
     struct IPurrable
     {
+        virtual ~IPurrable() = default;
+
         virtual void Purr() = 0;
     };
 
@@ -49,6 +53,8 @@ public:
     struct Cat : Pet, IPurrable
     {
         Cat();
+
+        virtual ~Cat() = default;
 
         void Purr() override;
 
@@ -68,6 +74,9 @@ public:
 
     /// \brief Test class names.
     void TestClassNames();
+
+    /// \brie Test class.
+    void TestDynamicClass();
 
     /// \brief Test class attributes.
     void TestClassAttributes();
