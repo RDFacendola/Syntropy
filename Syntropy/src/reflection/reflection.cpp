@@ -20,7 +20,7 @@ namespace syntropy::reflection
     Reflection::Reflection()
     {
         default_classes_.reserve(1024);
-        class_aliases_.reserve(1024);
+        aliases_classes_.reserve(1024);
     }
 
     const Class* Reflection::GetClass(const HashedString& class_name) const noexcept
@@ -31,15 +31,22 @@ namespace syntropy::reflection
         }
         else
         {
-            it = class_aliases_.find(class_name);
+            it = aliases_classes_.find(class_name);
 
-            return (it != class_aliases_.end()) ? it->second : nullptr;
+            return (it != aliases_classes_.end()) ? it->second : nullptr;
         }
+    }
+
+    const Class* Reflection::GetClass(const std::type_index& type_index) const noexcept
+    {
+        auto it = typeindex_classes_.find(type_index);
+
+        return it != std::end(typeindex_classes_) ? it->second : nullptr;
     }
 
     void Reflection::Register(Class& class_instance)
     {
-        // Register the default class name
+        // Register the default class name.
 
         if (auto it = default_classes_.find(class_instance.GetDefaultName()); it == default_classes_.end())
         {
@@ -50,13 +57,13 @@ namespace syntropy::reflection
             SYNTROPY_ERROR((ReflectionCtx), "A class with default name '", it->first, "' already exists. The new instance has been ignored.");
         }
 
-        // Register each alias as a different entry
+        // Register each alias as a different entry.
 
         for (auto&& name_alias : class_instance.GetNameAliases())
         {
-            if (auto it = class_aliases_.find(name_alias); it == class_aliases_.end())
+            if (auto it = aliases_classes_.find(name_alias); it == aliases_classes_.end())
             {
-                class_aliases_.emplace(std::make_pair(name_alias, &class_instance));
+                aliases_classes_.emplace(std::make_pair(name_alias, &class_instance));
             }
             else
             {
@@ -65,6 +72,16 @@ namespace syntropy::reflection
             }
         }
 
+        // Register the class type index.
+
+        if (auto it = typeindex_classes_.find(class_instance.GetTypeIndex()); it == typeindex_classes_.end())
+        {
+            typeindex_classes_.emplace(std::make_pair(class_instance.GetTypeIndex(), &class_instance));
+        }
+        else
+        {
+            SYNTROPY_ERROR((ReflectionCtx), "A class with type info '", it->first.name(), "' already exists. The new instance has been ignored.");
+        }
     }
 
     /************************************************************************/
@@ -74,6 +91,11 @@ namespace syntropy::reflection
     const Class* GetClass(const HashedString& class_name) noexcept
     {
         return Reflection::GetInstance().GetClass(class_name);
+    }
+
+    const Class* GetClass(const std::type_info& type_info) noexcept
+    {
+        return Reflection::GetInstance().GetClass(type_info);
     }
 }
 

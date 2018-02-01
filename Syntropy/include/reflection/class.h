@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <typeindex>
 
 #include "type_traits.h"
 
@@ -107,16 +108,6 @@ namespace syntropy::reflection
         /// \brief Virtual destructor.
         virtual ~Class() = default;
 
-        /// \brief Equality comparison.
-        /// Check whether this class is exactly the same as another class.
-        /// \brief Returns true if this class is the same as the other class, returns false otherwise.
-        bool operator==(const Class& other) const noexcept;
-
-        /// \brief Inequality comparison.
-        /// Check whether this class is not the same as another class.
-        /// \brief Returns true if this class is not the same as the other class, returns false otherwise.
-        bool operator!=(const Class& other) const noexcept;
-
         /// \brief Check whether this class is equal to or derives from another class.
         /// \return Returns true if this class is equal to or derives from other, returns false otherwise.
         bool IsA(const Class& other) const noexcept;
@@ -142,6 +133,10 @@ namespace syntropy::reflection
         /// \brief Get the list of properties supported by this class.
         /// \return Returns the list of properties supported by this class.
         const std::vector<Property>& GetProperties() const noexcept;
+
+        /// \brief Get the type index of the underlying class.
+        /// \return Returns the type index of the underlying class.
+        const std::type_index& GetTypeIndex() const noexcept;
 
         /// \brief Check whether this class is abstract or not.
         /// \return Returns true if the class is abstract, returns false otherwise.
@@ -205,6 +200,7 @@ namespace syntropy::reflection
         template <typename TClass>
         Class(tag_t<TClass>)
             : default_name_(ClassNameT<TClass>::GetName())              // #TODO Add support to alias derived from namespaces!
+            , type_index_(typeid(TClass))
             , is_abstract_(std::is_abstract<TClass>::value)
         {
             static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
@@ -243,8 +239,21 @@ namespace syntropy::reflection
 
         InterfaceContainer<> interfaces_;               ///< \brief Interfaces assigned to this class.
 
+        std::type_index type_index_;                    ///< \brief Type index the type this object refers to.
+
         bool is_abstract_;                              ///< \brief Whether the class is abstract.
     };
+
+    /// \brief Test two classes for equality.
+    /// This method check if two classes are exactly the same.
+    /// \brief Returns true if lhs class is the same as rhs class, returns false otherwise.
+    /// \see See Class:IsA(...) if polymorphic comparison is needed.
+    bool operator==(const Class& lhs, const Class& rhs) noexcept;
+
+    /// \brief Test two classes for inequality.
+    /// This method check if two classes are not the same.
+    /// \brief Returns true if lhs class is not the same as rhs class, returns false otherwise.
+    bool operator!=(const Class& lhs, const Class& rhs) noexcept;
 
     /// \brief Utility method used to get a class by type.
     /// \return Returns a reference to the class describing TType.
@@ -252,14 +261,6 @@ namespace syntropy::reflection
     const Class& ClassOf()
     {
         return Class::GetClass<class_name_t<TType>>();
-    }
-
-    /// \brief Utility method used to get a class by type.
-    /// \return Returns a reference to the class describing TType.
-    template <typename TType>
-    const Class& ClassOf(TType&&)
-    {
-        return Class::GetClass<class_name_t<TType&&>>();
     }
 
     /// \brief Stream insertion for Class.

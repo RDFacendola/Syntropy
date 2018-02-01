@@ -12,21 +12,11 @@ namespace syntropy::reflection
 
     Class::Class(tag_t<void>)
         : default_name_("void")
+        , type_index_(typeid(void))
         , is_abstract_(true)
     {
         // Register the class to the reflection system.
         Reflection::GetInstance().Register(*this);
-    }
-
-    bool Class::operator ==(const Class& other) const noexcept
-    {
-        return this == std::addressof(other);
-    }
-
-    bool Class::operator !=(const Class& other) const noexcept
-    {
-
-        return this != std::addressof(other);
     }
 
     bool Class::IsA(const Class& other) const noexcept
@@ -67,6 +57,11 @@ namespace syntropy::reflection
         return properties_;
     }
 
+    const std::type_index& Class::GetTypeIndex() const noexcept
+    {
+        return type_index_;
+    }
+
     bool Class::IsAbstract() const noexcept
     {
         return is_abstract_;
@@ -88,12 +83,28 @@ namespace syntropy::reflection
         }
     }
 
+
+    /************************************************************************/
+    /* METHODS                                                              */
+    /************************************************************************/
+
+    bool operator ==(const Class& lhs, const Class& rhs) noexcept
+    {
+        return std::addressof(lhs) == std::addressof(rhs);      // Classes are singleton! Check if their address is the same will suffice.
+    }
+
+    bool operator !=(const Class& lhs, const Class& rhs) noexcept
+    {
+        return !(lhs == rhs);
+    }
+
     std::ostream& operator<<(std::ostream& out, const Class& class_instance)
     {
         out << class_instance.GetDefaultName();
 
         return out;
     }
+
 }
 
 
