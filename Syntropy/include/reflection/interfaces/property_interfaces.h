@@ -47,7 +47,7 @@ namespace syntropy::reflection
         template <typename TClass, typename TProperty>
         Readable(TProperty(TClass::* getter)() const)
         {
-            static_assert(std::is_copy_constructible_v<std::remove_cvref<TProperty>>, "remove_reference_cv_t<TProperty> must be copy-constructible.");
+            static_assert(std::is_copy_constructible_v<std::remove_cvref_t<TProperty>>, "remove_reference_cv_t<TProperty> must be copy-constructible.");
 
             reader_ = [getter](const Any& instance)
             {
@@ -126,7 +126,7 @@ namespace syntropy::reflection
         template <typename TClass, typename TProperty>
         Writeable(void(TClass::* setter)(TProperty))
         {
-            static_assert(std::is_copy_constructible_v<std::remove_cvref<TProperty>>, "remove_reference_cv_t<TProperty> must be copy-constructible");
+            static_assert(std::is_copy_constructible_v<std::remove_cvref_t<TProperty>>, "remove_reference_cv_t<TProperty> must be copy-constructible");
 
             writer_ = [setter](const Any& instance, const Any& value)
             {

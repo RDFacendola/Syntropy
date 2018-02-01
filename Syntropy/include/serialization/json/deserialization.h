@@ -66,11 +66,11 @@ namespace syntropy::serialization
         template <typename TClass, typename TProperty>
         JSONDeserializable(void(TClass::* setter)(TProperty))
         {
-            static_assert(std::is_move_constructible_v<std::remove_cvref<TProperty>>, "remove_reference_cv_t<TProperty> must be move-constructible");
+            static_assert(std::is_move_constructible_v<std::remove_cvref_t<TProperty>>, "remove_reference_cv_t<TProperty> must be move-constructible");
 
             deserializer_ = [setter](const reflection::Any& object, const nlohmann::json& json)
             {
-                auto value = JSONDeserializer<std::remove_cvref<TProperty>>(json);
+                auto value = JSONDeserializer<std::remove_cvref_t<TProperty>>(json);
 
                 if (value)
                 {

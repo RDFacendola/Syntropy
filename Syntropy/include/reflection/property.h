@@ -60,9 +60,9 @@ namespace syntropy::reflection
         template <typename TClass, typename TProperty>
         Property(const HashedString& name, TProperty(TClass::* getter)() const)
             : name_(name)
-            , type_(TypeOf<std::remove_cvref<TProperty>>())
+            , type_(TypeOf<std::remove_cvref_t<TProperty>>())
         {
-            if constexpr(std::is_copy_constructible_v<std::remove_cvref<TProperty>>)
+            if constexpr(std::is_copy_constructible_v<std::remove_cvref_t<TProperty>>)
             {
                 interfaces_.AddInterface<Readable>(getter);
             }
@@ -75,16 +75,16 @@ namespace syntropy::reflection
         template <typename TClass, typename TPropertyGetter, typename TPropertySetter>
         Property(const HashedString& name, TPropertyGetter(TClass::* getter)() const, void (TClass::* setter)(TPropertySetter))
             : name_(name)
-            , type_(TypeOf<std::remove_cvref<TPropertyGetter>>())
+            , type_(TypeOf<std::remove_cvref_t<TPropertyGetter>>())
         {
-            static_assert(std::is_same_v<std::remove_cvref<TPropertyGetter>, std::remove_cvref<TPropertySetter>>, "TPropertyGetter and TPropertySetter must refer to the same underlying type (regardless of reference and qualifiers)");
+            static_assert(std::is_same_v<std::remove_cvref_t<TPropertyGetter>, std::remove_cvref_t<TPropertySetter>>, "TPropertyGetter and TPropertySetter must refer to the same underlying type (regardless of reference and qualifiers)");
 
-            if constexpr(std::is_copy_constructible_v<std::remove_cvref<TPropertyGetter>>)
+            if constexpr(std::is_copy_constructible_v<std::remove_cvref_t<TPropertyGetter>>)
             {
                 interfaces_.AddInterface<Readable>(getter);
             }
 
-            if constexpr(std::is_copy_constructible_v<std::remove_cvref<TPropertySetter>>)
+            if constexpr(std::is_copy_constructible_v<std::remove_cvref_t<TPropertySetter>>)
             {
                 interfaces_.AddInterface<Writeable>(setter);
             }

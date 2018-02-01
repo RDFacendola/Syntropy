@@ -76,7 +76,7 @@ namespace syntropy::serialization
         template <typename TClass, typename TProperty>
         JSONSerializable(TProperty(TClass::* getter)(void) const)
         {
-            static_assert(std::is_move_constructible_v<std::remove_cvref<TProperty>>, "remove_reference_cv_t<TProperty> must be move-constructible");
+            static_assert(std::is_move_constructible_v<std::remove_cvref_t<TProperty>>, "remove_reference_cv_t<TProperty> must be move-constructible");
 
             serializer_ = [getter](const std::string& name, const syntropy::reflection::Any& instance, nlohmann::json& json)
             {
