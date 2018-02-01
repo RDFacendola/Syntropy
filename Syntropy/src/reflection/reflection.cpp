@@ -6,8 +6,6 @@
 
 namespace syntropy::reflection
 {
-    const Context ReflectionCtx("SyntropyReflection");
-
     /************************************************************************/
     /* REFLECTION                                                           */
     /************************************************************************/
@@ -27,9 +25,7 @@ namespace syntropy::reflection
 
     const Class* Reflection::GetClass(const HashedString& class_name) const noexcept
     {
-        auto it = default_classes_.find(class_name);
-
-        if (it != default_classes_.end())
+        if (auto it = default_classes_.find(class_name); it != default_classes_.end())
         {
             return it->second;
         }
@@ -45,9 +41,7 @@ namespace syntropy::reflection
     {
         // Register the default class name
 
-        auto it = default_classes_.find(class_instance.GetDefaultName());
-
-        if (it == default_classes_.end())
+        if (auto it = default_classes_.find(class_instance.GetDefaultName()); it == default_classes_.end())
         {
             default_classes_.emplace(std::make_pair(class_instance.GetDefaultName(), &class_instance));
         }
@@ -60,9 +54,7 @@ namespace syntropy::reflection
 
         for (auto&& name_alias : class_instance.GetNameAliases())
         {
-            it = class_aliases_.find(name_alias);
-
-            if (it == class_aliases_.end())
+            if (auto it = class_aliases_.find(name_alias); it == class_aliases_.end())
             {
                 class_aliases_.emplace(std::make_pair(name_alias, &class_instance));
             }

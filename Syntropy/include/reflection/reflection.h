@@ -17,7 +17,7 @@
 namespace syntropy::reflection
 {
     /// \brief Log context for the syntropy reflection system.
-    extern const Context ReflectionCtx;
+    inline const Context ReflectionCtx("SyntropyReflection");
 
     /// \brief Contains the list of all classes registered so far.
     /// \author Raffaele D. Facendola - 2016

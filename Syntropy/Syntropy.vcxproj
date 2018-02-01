@@ -194,6 +194,7 @@
     <ClCompile Include="src\math\hash.cpp" />
     <ClCompile Include="src\math\random.cpp" />
     <ClCompile Include="src\platform\threading.cpp" />
+    <ClCompile Include="src\reflection\interfaces\property_interfaces.cpp" />
     <ClCompile Include="src\serialization\json\deserialization.cpp" />
     <ClCompile Include="src\serialization\json\json.cpp" />
     <ClCompile Include="src\serialization\json\serialization.cpp" />

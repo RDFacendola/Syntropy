@@ -137,6 +137,7 @@
     <ClCompile Include="src\serialization\json\deserialization.cpp" />
     <ClCompile Include="src\serialization\json\serialization.cpp" />
     <ClCompile Include="src\serialization\json\json.cpp" />
+    <ClCompile Include="src\reflection\interfaces\property_interfaces.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">
