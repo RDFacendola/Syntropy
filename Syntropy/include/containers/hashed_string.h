@@ -33,6 +33,9 @@ namespace syntropy
         /// \brief Type of the hashing function return value.
         using THashValue = decltype(std::declval<THash>()(std::declval<TString>()));
 
+        /// \brief Represents an empty string.
+        static const HashedStringT kEmpty;
+
         /// \brief Create an empty hashed string.
         constexpr HashedStringT()
             : HashedStringT(TString{})
@@ -161,6 +164,9 @@ namespace syntropy
 
         const TString* string_{ nullptr };                                              ///< \brief Pointer to the actual string. Non-owning pointer.
     };
+
+    template <typename TString, typename THash>
+    const HashedStringT<TString, THash> HashedStringT<TString, THash>::kEmpty;
 
     /// \brief Default hashed string type.
     using HashedString = HashedStringT<std::string, StringHasher32<std::string>>;

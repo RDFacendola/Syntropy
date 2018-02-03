@@ -82,7 +82,7 @@ namespace syntropy
     {
         SYNTROPY_PRECONDITION(allocator.GetName());
 
-        allocator.name_ = HashedString();
+        allocator.name_ = HashedString::kEmpty;
 
         allocators_.erase(
             std::remove(allocators_.begin(), allocators_.end(), &allocator),

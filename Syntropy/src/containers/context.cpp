@@ -84,9 +84,7 @@ namespace syntropy
 
             std::unique_lock<std::recursive_mutex> lock(mutex_);
 
-            auto it = contexts_.find(name);
-
-            if (it != contexts_.end())
+            if (auto it = contexts_.find(name); it != contexts_.end())
             {
                 return *(it->second);      // Found
             }
@@ -136,6 +134,8 @@ namespace syntropy
     /************************************************************************/
     /* CONTEXT                                                              */
     /************************************************************************/
+
+    const Context Context::kRoot;
 
     Context::Context()
         : context_(std::addressof(Pool::GetInstance().GetRootContext()))

@@ -25,6 +25,9 @@ namespace syntropy
         /// \brief character used to separate two context levels.
         static const char kSeparator = '|';
 
+        /// \brief Represents a root context.
+        static const Context kRoot;
+
         /// \brief Create a root context.
         Context();
 
