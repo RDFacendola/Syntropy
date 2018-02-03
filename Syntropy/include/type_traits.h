@@ -127,13 +127,13 @@ namespace syntropy
 
     //////////////// OTHER CAPABILITIES ////////////////
 
-	/// \brief If T is a specialization of std::in_place_type_t provides a member constant value equal to true, otherwise value is false.
-	template <typename T>
-	struct is_in_place_type : std::false_type {};
+    /// \brief If T is a specialization of std::in_place_type_t provides a member constant value equal to true, otherwise value is false.
+    template <typename T>
+    struct is_in_place_type : std::false_type {};
 
-	/// \brief Template specialization for is_in_place_type when T is a specialization of in_place_type_t.
-	template <typename T>
-	struct is_in_place_type<std::in_place_type_t<T> > : std::true_type {};
+    /// \brief Template specialization for is_in_place_type when T is a specialization of in_place_type_t.
+    template <typename T>
+    struct is_in_place_type<std::in_place_type_t<T> > : std::true_type {};
 
     //////////////// CONTAINERS ////////////////
 

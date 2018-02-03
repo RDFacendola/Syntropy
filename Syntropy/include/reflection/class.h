@@ -237,7 +237,7 @@ namespace syntropy::reflection
 
         std::vector<Property> properties_;              ///< \brief Class properties.
 
-        InterfaceContainer<> interfaces_;               ///< \brief Interfaces assigned to this class.
+        InterfaceContainer interfaces_;                 ///< \brief Interfaces assigned to this class.
 
         std::type_index type_index_;                    ///< \brief Type index the type this object refers to.
 

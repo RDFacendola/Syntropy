@@ -148,11 +148,11 @@ namespace syntropy::reflection
 
     private:
 
-        HashedString name_;                                             ///< \brief Property name.
+        HashedString name_;                                     ///< \brief Property name.
 
-        const Type& type_;                                              ///< \brief Underlying property type.
+        const Type& type_;                                      ///< \brief Underlying property type.
 
-        InterfaceContainer<> interfaces_;                               ///< \brief Interfaces assigned to the property.
+        InterfaceContainer interfaces_;                         ///< \brief Interfaces assigned to the property.
 
     };
 
