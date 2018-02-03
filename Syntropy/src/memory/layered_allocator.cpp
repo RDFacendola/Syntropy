@@ -40,9 +40,9 @@ namespace syntropy
             }
         }
 
-        SYNTROPY_ERROR((*this), "Cannot allocate ", size, " bytes.");
+        SYNTROPY_CRITICAL((*this), "Cannot allocate ", size, " bytes.");
 
-        throw std::bad_alloc();
+        return nullptr;
     }
 
     void* LayeredAllocator::Allocate(size_t size, size_t alignment)
@@ -55,9 +55,9 @@ namespace syntropy
             }
         }
 
-        SYNTROPY_ERROR((*this), "Cannot allocate ", size, " bytes.");
+        SYNTROPY_CRITICAL((*this), "Cannot allocate ", size, " bytes.");
 
-        throw std::bad_alloc();
+        return nullptr;
     }
 
     void LayeredAllocator::Free(void* block)

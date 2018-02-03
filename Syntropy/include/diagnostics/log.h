@@ -63,7 +63,7 @@
 #define SYNTROPY_CRITICAL(contexts, ...) \
     { \
         SYNTROPY_LOG_MESSAGE(SYNTROPY_STACKTRACE, contexts, kCritical, __VA_ARGS__); \
-        SYNTROPY_BREAK; \
+        SYNTROPY_TRAP; \
     }
 
 namespace syntropy
