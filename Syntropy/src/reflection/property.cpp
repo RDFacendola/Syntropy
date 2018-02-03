@@ -8,9 +8,9 @@ namespace syntropy::reflection
     /************************************************************************/
 
     Property::Property(Property&& other)
-        : name_(std::move(other.name_))
+        : MultiInterfaceMixin(std::move(other))
+        , name_(std::move(other.name_))
         , type_(other.type_)
-        , interfaces_(std::move(other.interfaces_))
     {
 
     }

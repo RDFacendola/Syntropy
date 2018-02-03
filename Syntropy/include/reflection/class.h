@@ -15,7 +15,8 @@
 #include "patterns/utility.h"
 
 #include "containers/hashed_string.h"
-#include "containers/interface_container.h"
+
+#include "patterns/multi_interface.h"
 
 #include "reflection/type.h"
 #include "reflection/property.h"
@@ -85,7 +86,7 @@ namespace syntropy::reflection
     /// A class can be used to access fields, properties and methods.
     /// \remarks This class is a singleton.
     /// \author Raffaele D. Facendola - 2016
-    class Class
+    class Class : public MultiInterfaceMixin<>
     {
     public:
 
@@ -142,16 +143,6 @@ namespace syntropy::reflection
         /// \return Returns true if the class is abstract, returns false otherwise.
         bool IsAbstract() const noexcept;
 
-        /// \brief Query the class for an interface of type TInterface.
-        /// Only interfaces defined in this class are checked.
-        /// \return If an interface of type TInterface was added during class declaration, returns a pointer to that interface, otherwise returns nullptr.
-        /// \remarks This method doesn't account for polymorphism. If a class of type Foo derived from Bar is added to the class, GetInterface<Bar>() will return nullptr even if a conversion exists.
-        template <typename TInterface>
-        const TInterface* GetInterface() const
-        {
-            return interfaces_.GetInterface<TInterface>();
-        }
-
         /// \brief Define a name alias for this class.
         /// If the provided alias already exists, this method does nothing.
         /// \param name New name alias.
@@ -179,19 +170,6 @@ namespace syntropy::reflection
             auto& property = properties_.emplace_back(property_name, accessors...);
 
             return PropertyDefinitionT<TAccessors...>(property, accessors...);              // Returns a definition to allow property extensibility.
-        }
-
-        /// \brief Add a new interface to this class.
-        /// The method creates an instance of TConcrete using TArgs as construction parameters. Only one interface of type TInterface can be added per class.
-        /// TConcrete must be equal to or derive from TInterface.
-        /// \param arguments Arguments to pass to the constructor of TInterface.
-        template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
-        void AddInterface(TArgs&&... arguments)
-        {
-            if (interfaces_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...) == nullptr)
-            {
-                SYNTROPY_ERROR((ReflectionCtx), "An interface '", typeid(TInterface).name(), "' was already part of the class '", default_name_, "'. The new interface has been ignored.");
-            }
         }
 
     private:
@@ -236,8 +214,6 @@ namespace syntropy::reflection
         std::vector<const Class*> base_classes_;        ///< \brief List of all base classes.
 
         std::vector<Property> properties_;              ///< \brief Class properties.
-
-        InterfaceContainer interfaces_;                 ///< \brief Interfaces assigned to this class.
 
         std::type_index type_index_;                    ///< \brief Type index the type this object refers to.
 

@@ -11,7 +11,8 @@
 #include "type_traits.h"
 
 #include "containers/hashed_string.h"
-#include "containers/interface_container.h"
+
+#include "patterns/multi_interface.h"
 
 #include "reflection/type.h"
 #include "reflection/any.h"
@@ -28,7 +29,7 @@ namespace syntropy::reflection
     /// \brief Describes a class property.
     /// A property can either be a member field, a getter method (for read-only properties) or a getter\setter method pairs.
     /// \author Raffaele D. Facendola - 2016
-    class Property
+    class Property : public MultiInterfaceMixin<>
     {
         template <typename... TAccessors>
         friend class PropertyDefinitionT;
@@ -45,12 +46,12 @@ namespace syntropy::reflection
         {
             if constexpr(std::is_copy_constructible_v<std::remove_cv_t<TField>>)
             {
-                interfaces_.AddInterface<Readable>(field);
+                AddInterface<Readable>(field);
             }
 
             if constexpr(std::is_copy_assignable_v<TField>)
             {
-                interfaces_.AddInterface<Writeable>(field);
+                AddInterface<Writeable>(field);
             }
         }
 
@@ -64,7 +65,7 @@ namespace syntropy::reflection
         {
             if constexpr(std::is_copy_constructible_v<std::remove_cvref_t<TProperty>>)
             {
-                interfaces_.AddInterface<Readable>(getter);
+                AddInterface<Readable>(getter);
             }
         }
 
@@ -81,12 +82,12 @@ namespace syntropy::reflection
 
             if constexpr(std::is_copy_constructible_v<std::remove_cvref_t<TPropertyGetter>>)
             {
-                interfaces_.AddInterface<Readable>(getter);
+                AddInterface<Readable>(getter);
             }
 
             if constexpr(std::is_copy_constructible_v<std::remove_cvref_t<TPropertySetter>>)
             {
-                interfaces_.AddInterface<Writeable>(setter);
+                AddInterface<Writeable>(setter);
             }
         }
 
@@ -101,14 +102,17 @@ namespace syntropy::reflection
         {
             if constexpr(std::is_copy_constructible_v<TProperty>)
             {
-                interfaces_.AddInterface<Readable>(getter);
+                AddInterface<Readable>(getter);
             }
 
             if constexpr(std::is_copy_assignable_v<TProperty>)
             {
-                interfaces_.AddInterface<Writeable>(setter);
+                AddInterface<Writeable>(setter);
             }
         }
+
+        /// \brief No copy constructor.
+        Property(const Property&) = delete;
 
         /// \brief Move constructor.
         Property(Property&& other);
@@ -124,36 +128,11 @@ namespace syntropy::reflection
         /// \brief Returns the property type.
         const Type& GetType() const noexcept;
             
-        /// \brief Query the property for an interface of type TInterface.
-        /// \return If an interface of type TInterface was previously added via AddInterface(.), returns a pointer to that interface, otherwise returns nullptr.
-        /// \remarks This method doesn't account for polymorphism. If a class of type Foo derived from Bar is added to the property, GetInterface<Bar>() will return nullptr even if a conversion exists.
-        template <typename TInterface>
-        const TInterface* GetInterface() const
-        {
-            return interfaces_.GetInterface<TInterface>();
-        }
-
-        /// \brief Add a new interface to the property.
-        /// The method creates an instance of TConcrete using TArgs as construction parameters. Only one interface of type TInterface can be added per property.
-        /// TConcrete must be equal to or derive from TInterface.
-        /// \param arguments Arguments to pass to the constructor of TInterface.
-        template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
-        void AddInterface(TArgs&&... arguments)
-        {
-            if (interfaces_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...) == nullptr)
-            {
-                SYNTROPY_ERROR((ReflectionCtx), "An interface '", typeid(TInterface).name(), "' was already added to the property '", name_, "'. The new interface has been ignored.");
-            }
-        }
-
     private:
 
         HashedString name_;                                     ///< \brief Property name.
 
         const Type& type_;                                      ///< \brief Underlying property type.
-
-        InterfaceContainer interfaces_;                         ///< \brief Interfaces assigned to the property.
-
     };
 
     /************************************************************************/

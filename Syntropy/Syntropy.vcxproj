@@ -22,7 +22,7 @@
     <ClInclude Include="include\application\application.h" />
     <ClInclude Include="include\application\command_line.h" />
     <ClInclude Include="include\containers\context.h" />
-    <ClInclude Include="include\containers\interface_container.h">
+    <ClInclude Include="include\patterns\multi_interface.h">
       <SubType>
       </SubType>
     </ClInclude>
