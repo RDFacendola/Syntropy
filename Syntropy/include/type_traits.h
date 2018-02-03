@@ -142,36 +142,15 @@ namespace syntropy
 
     /// \brief Provides a member typedef which is the same as TType except that any pointer, qualifiers, references and extents are removed recursively.
     /// For example: class_name<int ** const *[1][3]> has a member type 'int'.
-    template <typename TType>
+    template <typename TType, typename = void>
     struct class_name
     {
-        using type = typename std::remove_cv_t<TType>;
+        using type = TType;
     };
 
     template <typename TType>
-    struct class_name<TType*> : class_name<TType> {};
+    struct class_name<TType, std::enable_if_t<!std::is_same_v<strip_t<TType>, TType>>> : class_name<strip_t<TType>> {};
 
-    template <typename TType>
-    struct class_name<TType* const> : class_name<TType> {};
-
-    template <typename TType>
-    struct class_name<TType* volatile> : class_name<TType> {};
-
-    template <typename TType>
-    struct class_name<TType* const volatile> : class_name<TType> {};
-
-    template <typename TType>
-    struct class_name<TType&> : class_name<TType> {};
-
-    template <typename TType>
-    struct class_name<TType&&> : class_name<TType> {};
-
-    template <typename TType>
-    struct class_name<TType[]> : class_name<TType> {};
-
-    template <typename TType, size_t size>
-    struct class_name<TType[size]> : class_name<TType> {};
-   
     /// \brief Helper type for class_name<TType>.
     template <typename TType>
     using class_name_t = typename class_name<TType>::type;  
