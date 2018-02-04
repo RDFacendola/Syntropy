@@ -19,7 +19,7 @@
 namespace syntropy::reflection
 {
     template <typename TClass>
-    class ClassDefinitionT;
+    class ClassT;
 
     /// \brief Class interface used to instantiate new objects via explicit constructor.
     /// \tparam TConstructorArguments Type of the arguments passed to the class constructor.
@@ -31,7 +31,7 @@ namespace syntropy::reflection
 
         /// \brief Create a new interface.
         template <typename TClass>
-        Constructible(tag_t<TClass>)
+        Constructible(ClassT<TClass>&)
             : instancer_(&Instantiate<TClass>)
         {
             static_assert(std::is_constructible<TClass, TConstructorArguments...>::value, "TClass is not constructible with arguments TConstructorArguments.");
@@ -134,9 +134,9 @@ namespace syntropy::reflection
 
         /// \brief Add a Enumeration interface to the provided class.
         /// \param class_definition Definition of the class the interface will be added to.
-        void operator()(reflection::ClassDefinitionT<TEnum>& class_definition) const
+        void operator()(reflection::ClassT<TEnum>& class_t) const
         {
-            class_definition.AddInterface<Enumeration>(values_);
+            class_t.AddInterface<Enumeration>(values_);
         }
 
     private:

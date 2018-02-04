@@ -16,44 +16,54 @@ namespace syntropy::reflection
 {
     /// \brief Append additional name aliases for fixed width integer types.
     template <typename TClass>
-    void AddFixedWidthIntegerTypeDefinition(ClassDefinitionT<TClass>& definition)
+    void AddFixedWidthIntegerTypeDefinition(ClassT<TClass>& class_t)
     {
-        if (std::is_same_v<TClass, int8_t>)               definition.DefineNameAlias("int8_t");
-        if (std::is_same_v<TClass, int16_t>)              definition.DefineNameAlias("int16_t");
-        if (std::is_same_v<TClass, int32_t>)              definition.DefineNameAlias("int32_t");
-        if (std::is_same_v<TClass, int64_t>)              definition.DefineNameAlias("int64_t");
+        if (std::is_same_v<TClass, int8_t>)               class_t.AddNameAlias("int8_t");
+        if (std::is_same_v<TClass, int16_t>)              class_t.AddNameAlias("int16_t");
+        if (std::is_same_v<TClass, int32_t>)              class_t.AddNameAlias("int32_t");
+        if (std::is_same_v<TClass, int64_t>)              class_t.AddNameAlias("int64_t");
 
-        if (std::is_same_v<TClass, int_fast8_t>)          definition.DefineNameAlias("int_fast8_t");
-        if (std::is_same_v<TClass, int_fast16_t>)         definition.DefineNameAlias("int_fast16_t");
-        if (std::is_same_v<TClass, int_fast32_t>)         definition.DefineNameAlias("int_fast32_t");
-        if (std::is_same_v<TClass, int_fast64_t>)         definition.DefineNameAlias("int_fast64_t");
+        if (std::is_same_v<TClass, int_fast8_t>)          class_t.AddNameAlias("int_fast8_t");
+        if (std::is_same_v<TClass, int_fast16_t>)         class_t.AddNameAlias("int_fast16_t");
+        if (std::is_same_v<TClass, int_fast32_t>)         class_t.AddNameAlias("int_fast32_t");
+        if (std::is_same_v<TClass, int_fast64_t>)         class_t.AddNameAlias("int_fast64_t");
 
-        if (std::is_same_v<TClass, int_least8_t>)         definition.DefineNameAlias("int_least8_t");
-        if (std::is_same_v<TClass, int_least16_t>)        definition.DefineNameAlias("int_least16_t");
-        if (std::is_same_v<TClass, int_least32_t>)        definition.DefineNameAlias("int_least32_t");
-        if (std::is_same_v<TClass, int_least64_t>)        definition.DefineNameAlias("int_least64_t");
+        if (std::is_same_v<TClass, int_least8_t>)         class_t.AddNameAlias("int_least8_t");
+        if (std::is_same_v<TClass, int_least16_t>)        class_t.AddNameAlias("int_least16_t");
+        if (std::is_same_v<TClass, int_least32_t>)        class_t.AddNameAlias("int_least32_t");
+        if (std::is_same_v<TClass, int_least64_t>)        class_t.AddNameAlias("int_least64_t");
 
-        if (std::is_same_v<TClass, intmax_t>)             definition.DefineNameAlias("intmax_t");
-        if (std::is_same_v<TClass, intptr_t>)             definition.DefineNameAlias("intptr_t");
+        if (std::is_same_v<TClass, intmax_t>)             class_t.AddNameAlias("intmax_t");
+        if (std::is_same_v<TClass, intptr_t>)             class_t.AddNameAlias("intptr_t");
 
-        if (std::is_same_v<TClass, uint8_t>)              definition.DefineNameAlias("uint8_t");
-        if (std::is_same_v<TClass, uint16_t>)             definition.DefineNameAlias("uint16_t");
-        if (std::is_same_v<TClass, uint32_t>)             definition.DefineNameAlias("uint32_t");
-        if (std::is_same_v<TClass, uint64_t>)             definition.DefineNameAlias("uint64_t");
+        if (std::is_same_v<TClass, uint8_t>)              class_t.AddNameAlias("uint8_t");
+        if (std::is_same_v<TClass, uint16_t>)             class_t.AddNameAlias("uint16_t");
+        if (std::is_same_v<TClass, uint32_t>)             class_t.AddNameAlias("uint32_t");
+        if (std::is_same_v<TClass, uint64_t>)             class_t.AddNameAlias("uint64_t");
 
-        if (std::is_same_v<TClass, uint_fast8_t>)         definition.DefineNameAlias("uint_fast8_t");
-        if (std::is_same_v<TClass, uint_fast16_t>)        definition.DefineNameAlias("uint_fast16_t");
-        if (std::is_same_v<TClass, uint_fast32_t>)        definition.DefineNameAlias("uint_fast32_t");
-        if (std::is_same_v<TClass, uint_fast64_t>)        definition.DefineNameAlias("uint_fast64_t");
+        if (std::is_same_v<TClass, uint_fast8_t>)         class_t.AddNameAlias("uint_fast8_t");
+        if (std::is_same_v<TClass, uint_fast16_t>)        class_t.AddNameAlias("uint_fast16_t");
+        if (std::is_same_v<TClass, uint_fast32_t>)        class_t.AddNameAlias("uint_fast32_t");
+        if (std::is_same_v<TClass, uint_fast64_t>)        class_t.AddNameAlias("uint_fast64_t");
 
-        if (std::is_same_v<TClass, uint_least8_t>)        definition.DefineNameAlias("uint_least8_t");
-        if (std::is_same_v<TClass, uint_least16_t>)       definition.DefineNameAlias("uint_least16_t");
-        if (std::is_same_v<TClass, uint_least32_t>)       definition.DefineNameAlias("uint_least32_t");
-        if (std::is_same_v<TClass, uint_least64_t>)       definition.DefineNameAlias("uint_least64_t");
+        if (std::is_same_v<TClass, uint_least8_t>)        class_t.AddNameAlias("uint_least8_t");
+        if (std::is_same_v<TClass, uint_least16_t>)       class_t.AddNameAlias("uint_least16_t");
+        if (std::is_same_v<TClass, uint_least32_t>)       class_t.AddNameAlias("uint_least32_t");
+        if (std::is_same_v<TClass, uint_least64_t>)       class_t.AddNameAlias("uint_least64_t");
 
-        if (std::is_same_v<TClass, uintmax_t>)            definition.DefineNameAlias("uintmax_t");
-        if (std::is_same_v<TClass, uintptr_t>)            definition.DefineNameAlias("uintptr_t");
+        if (std::is_same_v<TClass, uintmax_t>)            class_t.AddNameAlias("uintmax_t");
+        if (std::is_same_v<TClass, uintptr_t>)            class_t.AddNameAlias("uintptr_t");
     }
+
+    /************************************************************************/
+    /* VOID                                                                 */
+    /************************************************************************/
+
+    template <>
+    struct ClassDeclarationT<void>
+    {
+        static constexpr const char* name_{ "void" };
+    };
 
     /************************************************************************/
     /* BOOLEAN TYPES                                                        */
@@ -74,9 +84,9 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "signed char" };
 
-        void operator()(ClassDefinitionT<signed char>& definition) const
+        void operator()(ClassT<signed char>& class_t) const
         {
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -85,9 +95,9 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "unsigned char" };
 
-        void operator()(ClassDefinitionT<unsigned char>& definition) const
+        void operator()(ClassT<unsigned char>& class_t) const
         {
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -96,9 +106,9 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "char" };
 
-        void operator()(ClassDefinitionT<char>& definition) const
+        void operator()(ClassT<char>& class_t) const
         {
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -107,9 +117,9 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "wchar_t" };
 
-        void operator()(ClassDefinitionT<wchar_t>& definition) const
+        void operator()(ClassT<wchar_t>& class_t) const
         {
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -118,9 +128,9 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "char16_t" };
 
-        void operator()(ClassDefinitionT<char16_t>& definition) const
+        void operator()(ClassT<char16_t>& class_t) const
         {
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -129,9 +139,9 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "char32_t" };
 
-        void operator()(ClassDefinitionT<char32_t>& definition) const
+        void operator()(ClassT<char32_t>& class_t) const
         {
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -144,13 +154,13 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "short int" };
 
-        void operator()(ClassDefinitionT<short int>& definition) const
+        void operator()(ClassT<short int>& class_t) const
         {
-            definition.DefineNameAlias("short");
-            definition.DefineNameAlias("signed short");
-            definition.DefineNameAlias("signed short int");
+            class_t.AddNameAlias("short");
+            class_t.AddNameAlias("signed short");
+            class_t.AddNameAlias("signed short int");
 
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -159,11 +169,11 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "unsigned short int" };
 
-        void operator()(ClassDefinitionT<unsigned short int>& definition) const
+        void operator()(ClassT<unsigned short int>& class_t) const
         {
-            definition.DefineNameAlias("unsigned short int");
+            class_t.AddNameAlias("unsigned short int");
                 
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -172,12 +182,12 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "int" };
 
-        void operator()(ClassDefinitionT<int>& definition) const
+        void operator()(ClassT<int>& class_t) const
         {
-            definition.DefineNameAlias("signed");
-            definition.DefineNameAlias("signed int");
+            class_t.AddNameAlias("signed");
+            class_t.AddNameAlias("signed int");
 
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -186,11 +196,11 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "unsigned int" };
 
-        void operator()(ClassDefinitionT<unsigned int>& definition) const
+        void operator()(ClassT<unsigned int>& class_t) const
         {
-            definition.DefineNameAlias("unsigned");
+            class_t.AddNameAlias("unsigned");
 
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -199,13 +209,13 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "long int" };
 
-        void operator()(ClassDefinitionT<long int>& definition) const
+        void operator()(ClassT<long int>& class_t) const
         {
-            definition.DefineNameAlias("long");
-            definition.DefineNameAlias("signed long");
-            definition.DefineNameAlias("signed long int");
+            class_t.AddNameAlias("long");
+            class_t.AddNameAlias("signed long");
+            class_t.AddNameAlias("signed long int");
 
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -214,11 +224,11 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "unsigned long int" };
 
-        void operator()(ClassDefinitionT<unsigned long int>& definition) const
+        void operator()(ClassT<unsigned long int>& class_t) const
         {
-            definition.DefineNameAlias("unsigned long");
+            class_t.AddNameAlias("unsigned long");
 
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -227,13 +237,13 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "long long int" };
 
-        void operator()(ClassDefinitionT<long long int>& definition) const
+        void operator()(ClassT<long long int>& class_t) const
         {
-            definition.DefineNameAlias("long long");
-            definition.DefineNameAlias("signed long long");
-            definition.DefineNameAlias("signed long long int");
+            class_t.AddNameAlias("long long");
+            class_t.AddNameAlias("signed long long");
+            class_t.AddNameAlias("signed long long int");
 
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
 
@@ -242,11 +252,11 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "unsigned long long int" };
 
-        void operator()(ClassDefinitionT<unsigned long long int>& definition) const
+        void operator()(ClassT<unsigned long long int>& class_t) const
         {
-            definition.DefineNameAlias("unsigned long long");
+            class_t.AddNameAlias("unsigned long long");
 
-            AddFixedWidthIntegerTypeDefinition(definition);
+            AddFixedWidthIntegerTypeDefinition(class_t);
         }
     };
         

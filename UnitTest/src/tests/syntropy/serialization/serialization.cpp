@@ -28,19 +28,19 @@
 template <>
 struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Collar>
 {
-	static constexpr const char* name_{ "TestSyntropySerialization::Collar" };
+    static constexpr const char* name_{ "TestSyntropySerialization::Collar" };
 
 
-	void operator()(ClassDefinitionT<TestSyntropySerialization::Collar>& definition) const
-	{		
-		using syntropy::serialization::JSONClass;
-		using syntropy::serialization::JSONProperty;
-		using syntropy::serialization::JSONConvertible;
+    void operator()(ClassT<TestSyntropySerialization::Collar>& class_t) const
+    {		
+        using syntropy::serialization::JSONClass;
+        using syntropy::serialization::JSONProperty;
+        using syntropy::serialization::JSONConvertible;
 
-		definition << JSONClass();
-		definition.DefineProperty("Colour", &TestSyntropySerialization::Collar::colour_) << JSONProperty();
-		definition.AddInterface<JSONConvertible>();
-	}
+        class_t << JSONClass();
+        class_t.AddProperty("Colour", &TestSyntropySerialization::Collar::colour_) << JSONProperty();
+        class_t.AddInterface<JSONConvertible>();
+    }
 };
 
 // Pet
@@ -51,16 +51,16 @@ struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Pet>
     static constexpr const char* name_{ "TestSyntropySerialization::Pet" };
 
 
-    void operator()(ClassDefinitionT<TestSyntropySerialization::Pet>& definition) const
+    void operator()(ClassT<TestSyntropySerialization::Pet>& class_t) const
     {
         using syntropy::serialization::JSONProperty;
-		using syntropy::serialization::JSONConvertible;
+        using syntropy::serialization::JSONConvertible;
 
-		definition.DefineProperty("Name", &TestSyntropySerialization::Pet::GetName, &TestSyntropySerialization::Pet::SetName) << JSONProperty();
-		definition.DefineProperty("Nickname", &TestSyntropySerialization::Pet::nickname_) << JSONProperty();
-		definition.DefineProperty("Collar", &TestSyntropySerialization::Pet::collar_) << JSONProperty();
-		definition.AddInterface<JSONConvertible>();
-	}
+        class_t.AddProperty("Name", &TestSyntropySerialization::Pet::GetName, &TestSyntropySerialization::Pet::SetName) << JSONProperty();
+        class_t.AddProperty("Nickname", &TestSyntropySerialization::Pet::nickname_) << JSONProperty();
+        class_t.AddProperty("Collar", &TestSyntropySerialization::Pet::collar_) << JSONProperty();
+        class_t.AddInterface<JSONConvertible>();
+    }
 
 };
 
@@ -71,9 +71,9 @@ struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Cat>
 {
     static constexpr const char* name_{ "TestSyntropySerialization::Cat" };
 
-    void operator()(ClassDefinitionT<TestSyntropySerialization::Cat>& definition) const
+    void operator()(ClassT<TestSyntropySerialization::Cat>& class_t) const
     {
-        definition.DefineBaseClass<TestSyntropySerialization::Pet>();
+        class_t.AddBaseClass<TestSyntropySerialization::Pet>();
     }
 };
 
@@ -89,7 +89,7 @@ std::vector<syntropy::TestCase> TestSyntropySerialization::GetTestCases()
     return
     {
         { "deserialization", &TestSyntropySerialization::TestDeserialization },
-		{ "serialization", &TestSyntropySerialization::TestSerialization }
+        { "serialization", &TestSyntropySerialization::TestSerialization }
     };
 }
 
@@ -102,31 +102,31 @@ TestSyntropySerialization::TestSyntropySerialization()
 
 void TestSyntropySerialization::TestSerialization()
 {
-	using namespace syntropy::serialization;
+    using namespace syntropy::serialization;
 
-	TestSyntropySerialization::Pet Petto;
-	Petto.name_ = "Kitty";
-	Petto.nickname_ = "Kitten";
-	Petto.collar_ = std::make_shared<TestSyntropySerialization::Collar>(TestSyntropySerialization::Collar());
-	Petto.collar_.get()->colour_= "Blue";
+    TestSyntropySerialization::Pet Petto;
+    Petto.name_ = "Kitty";
+    Petto.nickname_ = "Kitten";
+    Petto.collar_ = std::make_shared<TestSyntropySerialization::Collar>(TestSyntropySerialization::Collar());
+    Petto.collar_.get()->colour_= "Blue";
 
-	std::optional<nlohmann::json> json = SerializeObjectToJSON(Petto);
+    std::optional<nlohmann::json> json = SerializeObjectToJSON(Petto);
 
-	TestSerializationResults(*json, Petto, 
-		[](const TestSyntropySerialization::Pet& A, const TestSyntropySerialization::Pet& B) -> bool
-	{
-		return A.name_ == B.name_
-			&& A.nickname_ == B.nickname_
-			&& A.collar_ != nullptr && B.collar_ != nullptr
-			&& A.collar_.get()->colour_ == B.collar_.get()->colour_;
-	});
+    TestSerializationResults(*json, Petto, 
+        [](const TestSyntropySerialization::Pet& A, const TestSyntropySerialization::Pet& B) -> bool
+    {
+        return A.name_ == B.name_
+            && A.nickname_ == B.nickname_
+            && A.collar_ != nullptr && B.collar_ != nullptr
+            && A.collar_.get()->colour_ == B.collar_.get()->colour_;
+    });
 }
 
 void TestSyntropySerialization::TestDeserialization()
 {
-	SYNTROPY_UNIT_SKIP("Not yet implemented.");
+    SYNTROPY_UNIT_SKIP("Not yet implemented.");
 
-	nlohmann::json json = R"({
+    nlohmann::json json = R"({
                                 "Name": "Kitty",
                                 "float_value": 67.5,
                                 "const_value": 100.0,
@@ -161,10 +161,10 @@ void TestSyntropySerialization::TestDeserialization()
                                 "nondefault": 100
                                 })"_json;
 
-	auto cat = syntropy::serialization::DeserializeObjectFromJSON<Cat>(json);
+    auto cat = syntropy::serialization::DeserializeObjectFromJSON<Cat>(json);
 
-	SYNTROPY_UNIT_ASSERT(cat.has_value());
+    SYNTROPY_UNIT_ASSERT(cat.has_value());
 
-	// #TODO Test actual parameter values.
+    // #TODO Test actual parameter values.
 
 }

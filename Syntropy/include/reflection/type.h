@@ -9,6 +9,7 @@
 #include <typeinfo>
 #include <ostream>
 #include <array>
+#include <sstream>
 
 #include "type_traits.h"
 
@@ -20,6 +21,10 @@ namespace syntropy::reflection
 
     template <typename TType>
     const Class& ClassOf();
+
+    /************************************************************************/
+    /* TYPE                                                                 */
+    /************************************************************************/
 
     /// \brief Describes a type.
     /// A 'type' is made out of class names, pointers, qualifiers, references and\or extents.
@@ -126,15 +131,19 @@ namespace syntropy::reflection
 
         uint8_t indirection_levels_;                ///< \brief Levels of indirection.
 
-        int8_t const_mask_;                         ///< \brief Bitmask containing the "const-ness" of each indirection level, starting from the innermost type.
+        int8_t const_mask_;                         ///< \brief Bitmask containing the constness of each indirection level, starting from the innermost type.
 
-        int8_t volatile_mask_;                      ///< \brief Bitmask containing the "volatile-ness" of each indirection level, starting from the innermost type.
+        int8_t volatile_mask_;                      ///< \brief Bitmask containing the volatileness of each indirection level, starting from the innermost type.
 
         bool is_lvalue_reference_ : 1;              ///< \brief Whether the type is a l-value reference.
 
         bool is_rvalue_reference_ : 1;              ///< \brief Whether the type is a r-value reference.
 
     };
+
+    /************************************************************************/
+    /* METHODS                                                              */
+    /************************************************************************/
 
     /// \brief Get the type associated to TType.
     /// \return Returns a reference to the type associated to TType.
@@ -146,4 +155,36 @@ namespace syntropy::reflection
 
     /// \brief Stream insertion for Type.
     std::ostream& operator<<(std::ostream& out, const Type& type);
+
+    /************************************************************************/
+    /* TYPE NAME T                                                          */
+    /************************************************************************/
+
+    /// \brief Provides a member function used to get the name of a type TType.
+    template <typename TType>
+    struct TypeNameT
+    {
+        static auto GetName()
+        {
+            return ClassDeclarationT<TType>::name_;
+        }
+    };
+
+    /// \brief Partial specialization for templates (recursive).
+    template <template <typename...> typename TType, typename THead, typename... TRest>
+    struct TypeNameT<TType<THead, TRest...>>
+    {
+        static auto GetName()
+        {
+            std::stringstream name;
+
+            name << ClassDeclarationT<TType<THead, TRest...>>::name_ << "<" << TypeOf<THead>();
+
+            ((name << ", " << TypeOf<TRest>()), ...);
+
+            name << ">";
+
+            return name.str();
+        }
+    };
 }

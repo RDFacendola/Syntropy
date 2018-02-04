@@ -39,7 +39,7 @@ namespace syntropy::reflection
         // static constexpr const char* name_{"MyClass"};
 
         // Fill class definition with properties, methods, base classes, etc.
-        // void operator()(TDefinition& definition) const;
+        // void operator()(ClassT<TClass>& definition) const;
     };
 
     /// \brief Helper variable for ClassDeclarationT<TClass>
@@ -47,58 +47,15 @@ namespace syntropy::reflection
     inline constexpr ClassDeclarationT<TClass> ClassDeclaration{};
 
     /************************************************************************/
-    /* CLASS NAME T                                                         */
-    /************************************************************************/
-
-    /// \brief Provides a member function used to get TClass class name.
-    template <typename TClass>
-    struct ClassNameT
-    {
-        static auto GetName()
-        {
-            return ClassDeclarationT<TClass>::name_;
-        }
-    };
-
-    /// \brief Partial specialization for class templates (recursive).
-    template <template <typename...> typename TClass, typename THead, typename... TRest>
-    struct ClassNameT<TClass<THead, TRest...>>
-    {
-        static auto GetName()
-        {
-            std::stringstream name;
-
-            name << ClassDeclarationT<TClass<THead, TRest...>>::name_ << "<" << TypeOf<THead>();
-
-            ((name << ", " << TypeOf<TRest>()), ...);
-
-            name << ">";
-
-            return name.str();
-        }
-    };
-
-    /************************************************************************/
     /* CLASS                                                                */
     /************************************************************************/
 
     /// \brief Describes a class.
     /// A class can be used to access fields, properties and methods.
-    /// \remarks This class is a singleton.
     /// \author Raffaele D. Facendola - 2016
     class Class : public MultiInterfaceMixin<>
     {
     public:
-
-        /// \brief Get the class associated to TClass.
-        /// \return Returns a reference to the singleton describing the class TClass.
-        template <typename TClass>
-        static const Class& GetClass()
-        {
-            static Class instance(tag<TClass>);
-
-            return instance;
-        }
 
         /// \brief No copy constructor.
         Class(const Class&) = delete;
@@ -143,69 +100,20 @@ namespace syntropy::reflection
         /// \return Returns true if the class is abstract, returns false otherwise.
         bool IsAbstract() const noexcept;
 
-        /// \brief Define a name alias for this class.
-        /// If the provided alias already exists, this method does nothing.
-        /// \param name New name alias.
-        void AddNameAlias(HashedString name_alias);
+    protected:
 
-        /// \brief Define a base class for this class.
-        /// If the provided base class already exists, this method does nothing.
-        /// If the provided base class is NOT an actual base class for the class described by this class the behavior is undefined.
-        /// \param base_class Base class.
-        void AddBaseClass(const Class& base_class);
-
-        /// \brief Add a new property to this class.
-        /// If the provided property doesn't belong to this class the behavior is undefined.
-        /// \param name Unique name of the class property.
-        /// \param accessors Member field or methods used to access the property being defined.
-        /// \return Returns the property definition.
-        template <typename... TAccessors>
-        auto AddProperty(const HashedString& property_name, TAccessors... accessors)
-        {
-            if (GetProperty(property_name))
-            {
-                SYNTROPY_CRITICAL((ReflectionCtx), "A property named '", property_name, "' was already defined in the class '", default_name_, "'.");
-            }
-
-            auto& property = properties_.emplace_back(property_name, accessors...);
-
-            return PropertyDefinitionT<TAccessors...>(property, accessors...);              // Returns a definition to allow property extensibility.
-        }
-
-    private:
-
-        /// \brief Create a new class.
+        // Create a new class from a type.
         template <typename TClass>
         Class(tag_t<TClass>)
-            : default_name_(ClassNameT<TClass>::GetName())              // #TODO Add support to alias derived from namespaces!
+            : default_name_(TypeNameT<TClass>::GetName())      // #TODO Add support to alias derived from namespaces!
             , type_index_(typeid(TClass))
             , is_abstract_(std::is_abstract<TClass>::value)
         {
-            static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
-
-            // Common interfaces.
-
-            if constexpr(std::is_default_constructible_v<TClass>)
-            {
-                AddInterface<Constructible<>>(tag<TClass>);
-            }
-
-            // Declare class members, base classes, etc.
-
-            if constexpr(std::is_invocable_v<ClassDeclarationT<TClass>, ClassDefinitionT<TClass>&>)
-            {
-                ClassDefinitionT<TClass> definition(*this);
-
-                ClassDeclaration<TClass>(definition);
-            }
-
-            // Register the class to the reflection system.
-
-            Reflection::GetInstance().Register(*this);
+            RegisterClass();
         }
 
-        /// \brief Create a new class for the void type.
-        Class(tag_t<void>);
+        // Register this class to the reflection system.
+        void RegisterClass();
 
         HashedString default_name_;                     ///< \brief Default class name.
 
@@ -220,6 +128,112 @@ namespace syntropy::reflection
         bool is_abstract_;                              ///< \brief Whether the class is abstract.
     };
 
+    /// \brief Describes a concrete class.
+    /// \author Raffaele D. Facendola - 2018
+    /// \remarks This class is a singleton.
+    template <typename TClass>
+    class ClassT : public Class
+    {
+        static_assert(is_class_name_v<TClass>, "TClass must be a plain class name (without pointers, references, extents and/or qualifiers)");
+
+    public:
+
+        /// \brief Get the class singleton.
+        /// \return Returns a reference to the singleton describing TClass.
+        static const Class& GetClass()
+        {
+            static ClassT<TClass> instance;
+
+            return instance;
+        }
+
+        /// \brief No copy constructor.
+        ClassT(const ClassT&) = delete;
+
+        /// \brief No assignment operator.
+        ClassT& operator=(const ClassT&) = delete;
+
+        /// \brief Define a name alias for this class.
+        /// If the provided alias already exists, this method does nothing.
+        /// \param name New name alias.
+        void AddNameAlias(HashedString name_alias)
+        {
+            if (std::find(name_aliases_.begin(), name_aliases_.end(), name_alias) == name_aliases_.end())
+            {
+                name_aliases_.push_back(name_alias);
+            }
+        }
+
+        /// \brief Define a base class for this class.
+        /// If the provided base class already exists, this method does nothing.
+        /// If the provided base class is NOT an actual base class for the class described by this class the behavior is undefined.
+        template <typename TBaseClass>
+        void AddBaseClass()
+        {
+            static_assert(std::is_base_of_v<TBaseClass, TClass>, "TBaseClass is not a base class for this class.");
+            static_assert(!std::is_same<TBaseClass, TClass>::value, "A class may not derive from itself.");
+
+            auto& base_class = ClassOf<TBaseClass>();
+
+            if (std::find(base_classes_.begin(), base_classes_.end(), &base_class) == base_classes_.end())
+            {
+                base_classes_.push_back(&base_class);
+            }
+        }
+
+        /// \brief Add a new property to this class.
+        /// If the provided property doesn't belong to this class the behavior is undefined.
+        /// \param name Unique name of the class property.
+        /// \param accessors Member field or methods used to access the property being defined.
+        /// \return Returns the property definition.
+        template <typename... TAccessors>
+        auto AddProperty(const HashedString& property_name, TAccessors... accessors)
+        {
+            // #TODO Check if TAccessors refer to TClass.
+
+            if (GetProperty(property_name))
+            {
+                SYNTROPY_CRITICAL((ReflectionCtx), "A property named '", property_name, "' was already defined in the class '", default_name_, "'.");
+            }
+
+            auto& property = properties_.emplace_back(property_name, accessors...);
+
+            return PropertyDefinitionT<TAccessors...>(property, accessors...);              // Returns a definition to allow property extensibility.
+        }
+
+        /// \brief Apply a functor to this class.
+        /// \param class_t Target concrete class.
+        /// \param functor Functor to apply.
+        /// \return Returns the class definition.
+        template <typename TFunctor>
+        friend auto& operator<<(ClassT& class_t, TFunctor&& functor)
+        {
+            functor(class_t);
+            return class_t;
+        }
+
+    private:
+
+        // Create a new concrete class.
+        ClassT()
+            : Class(tag<TClass>)
+        {
+            // Add common interfaces for this class.
+
+            if constexpr(std::is_default_constructible_v<TClass>)
+            {
+                AddInterface<Constructible<>>(*this);
+            }
+
+            // Fill the concrete class with actual members, base classes, etc.
+
+            if constexpr(std::is_invocable_v<ClassDeclarationT<TClass>, ClassT<TClass>&>)
+            {
+                ClassDeclaration<TClass>(*this);
+            }
+        }
+    };
+
     /// \brief Test two classes for equality.
     /// This method check if two classes are exactly the same.
     /// \brief Returns true if lhs class is the same as rhs class, returns false otherwise.
@@ -231,94 +245,15 @@ namespace syntropy::reflection
     /// \brief Returns true if lhs class is not the same as rhs class, returns false otherwise.
     bool operator!=(const Class& lhs, const Class& rhs) noexcept;
 
-    /// \brief Utility method used to get a class by type.
+    /// \brief Get a class by type.
     /// \return Returns a reference to the class describing TType.
     template <typename TType>
     const Class& ClassOf()
     {
-        return Class::GetClass<class_name_t<TType>>();
+        return ClassT<class_name_t<TType>>::GetClass();
     }
 
     /// \brief Stream insertion for Class.
-    std::ostream& operator<<(std::ostream& out, const Class& class_instance);
-
-    /************************************************************************/
-    /* CLASS DEFINITION                                                     */
-    /************************************************************************/
-
-    /// \brief Concrete class definition.
-    /// This class is used to safely define class names, properties, methods, etc.
-    /// \author Raffaele D. Facendola - 2016
-    template <typename TClass>
-    class ClassDefinitionT
-    {
-    public:
-
-        /// \brief Apply a functor to a class definition.
-        /// \param class_definition Target class definition.
-        /// \param functor Functor to apply.
-        /// \return Returns the class definition.
-        template <typename TFunctor>
-        friend ClassDefinitionT& operator<<(ClassDefinitionT& class_definition, TFunctor&& functor)
-        {
-            functor(class_definition);
-            return class_definition;
-        }
-
-        /// \brief Create a new class definition.
-        /// \param subject Class this definition refers to.
-        explicit ClassDefinitionT(Class& subject)
-            : class_(subject)
-        {
-
-        }
-
-        /// \brief Define a name alias for the class.
-        /// If the name was already defined this method does nothing.
-        /// \param name Name alias.
-        void DefineNameAlias(const HashedString& name_alias) noexcept
-        {
-            class_.AddNameAlias(name_alias);
-        }
-
-        /// \brief Define a base class.
-        /// If the base class was already defined this method does nothing.
-        /// \tparam TBaseClass Type of the base class.
-        template <typename TBaseClass>
-        void DefineBaseClass() noexcept
-        {
-            static_assert(std::is_base_of_v<TBaseClass, TClass>, "TClass must derive from TBaseClass.");
-            static_assert(!std::is_same<TBaseClass, TClass>::value, "TClass cannot derive from itself.");
-
-            class_.AddBaseClass(ClassOf<TBaseClass>());
-        }
-
-        /// \brief Define a class property.
-        /// \param name Unique name of the class property.
-        /// \param accessors Member field or methods used to access the property being defined.
-        /// \return Returns the property definition.
-        template <typename... TAccessors>
-        auto DefineProperty(const HashedString& property_name, TAccessors... accessors)
-        {
-            // #TODO Check if the provided accessors refer to TClass.
-
-            return class_.AddProperty(property_name, std::forward<TAccessors>(accessors)...);
-        }
-
-        /// \brief Add a new interface to the class.
-        /// The method creates an instance of TConcrete using TArgs as construction parameters. Only one interface of type TInterface can be added per class.
-        /// TConcrete must be equal to or derive from TInterface.
-        /// \param arguments Arguments to pass to the constructor of TInterface.
-        template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
-        void AddInterface(TArgs&&... arguments)
-        {
-            class_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...);
-        }
-
-    private:
-
-        Class& class_;            ///< \brief Class this definition refers to.
-
-    };
+    std::ostream& operator<<(std::ostream& out, const Class& class_t);
 }
 

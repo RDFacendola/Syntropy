@@ -14,6 +14,7 @@
 #include "memory/allocators/layered_allocator.h"
 
 #include "reflection/reflection.h"
+#include "reflection/types/fundamental_types.h"
 #include "reflection/types/stl_types.h"
 #include "reflection/types/core_types.h"
 
@@ -34,10 +35,10 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "syntropy::Allocator" };
 
-        void operator()(ClassDefinitionT<Allocator>& definition) const
+        void operator()(ClassT<Allocator>& class_t) const
         {
-            definition.DefineProperty("name", &Allocator::GetName);
-            definition.DefineProperty("max_allocation_size", &Allocator::GetMaxAllocationSize);
+            class_t.AddProperty("name", &Allocator::GetName);
+            class_t.AddProperty("max_allocation_size", &Allocator::GetMaxAllocationSize);
         }
     };
 
@@ -51,14 +52,14 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "syntropy::LinearSegregatedFitAllocator" };
 
-        void operator()(ClassDefinitionT<LinearSegregatedFitAllocator>& definition) const
+        void operator()(ClassT<LinearSegregatedFitAllocator>& class_t) const
         {
-            definition << serialization::JSONClass();
+            class_t << serialization::JSONClass();
 
-            definition.DefineBaseClass<Allocator>();
+            class_t.AddBaseClass<Allocator>();
 
-            definition.DefineProperty("order", &LinearSegregatedFitAllocator::GetOrder);
-            definition.DefineProperty("page_size", &LinearSegregatedFitAllocator::GetPageSize);
+            class_t.AddProperty("order", &LinearSegregatedFitAllocator::GetOrder);
+            class_t.AddProperty("page_size", &LinearSegregatedFitAllocator::GetPageSize);
         }
     };
 
@@ -68,14 +69,14 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "syntropy::ExponentialSegregatedFitAllocator" };
 
-        void operator()(ClassDefinitionT<ExponentialSegregatedFitAllocator>& definition) const
+        void operator()(ClassT<ExponentialSegregatedFitAllocator>& class_t) const
         {
-            definition << serialization::JSONClass();
+            class_t << serialization::JSONClass();
 
-            definition.DefineBaseClass<Allocator>();
+            class_t.AddBaseClass<Allocator>();
 
-            definition.DefineProperty("order", &ExponentialSegregatedFitAllocator::GetOrder);
-            definition.DefineProperty("class_size", &ExponentialSegregatedFitAllocator::GetClassSize);
+            class_t.AddProperty("order", &ExponentialSegregatedFitAllocator::GetOrder);
+            class_t.AddProperty("class_size", &ExponentialSegregatedFitAllocator::GetClassSize);
         }
     };
 
@@ -85,11 +86,11 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "syntropy::TwoLevelSegregatedFitAllocator" };
 
-        void operator()(ClassDefinitionT<TwoLevelSegregatedFitAllocator>& definition) const
+        void operator()(ClassT<TwoLevelSegregatedFitAllocator>& class_t) const
         {
-            definition << serialization::JSONClass();
+            class_t << serialization::JSONClass();
 
-            definition.DefineBaseClass<Allocator>();
+            class_t.AddBaseClass<Allocator>();
         }
     };
 
@@ -103,11 +104,11 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "syntropy::LayeredAllocator" };
 
-        void operator()(ClassDefinitionT<LayeredAllocator>& definition) const
+        void operator()(ClassT<LayeredAllocator>& class_t) const
         {
-            definition << serialization::JSONClass();
+            class_t << serialization::JSONClass();
 
-            definition.DefineBaseClass<Allocator>();
+            class_t.AddBaseClass<Allocator>();
         }
     };
 

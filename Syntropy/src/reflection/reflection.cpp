@@ -44,13 +44,15 @@ namespace syntropy::reflection
         return it != std::end(typeindex_classes_) ? it->second : nullptr;
     }
 
-    void Reflection::Register(Class& class_instance)
+    void Reflection::RegisterClass(const Class& class_t)
     {
+        // #TODO Check if the same class was registered more than once (and ignore the rest of the method)
+
         // Register the default class name.
 
-        if (auto it = default_classes_.find(class_instance.GetDefaultName()); it == default_classes_.end())
+        if (auto it = default_classes_.find(class_t.GetDefaultName()); it == default_classes_.end())
         {
-            default_classes_.emplace(std::make_pair(class_instance.GetDefaultName(), &class_instance));
+            default_classes_.emplace(std::make_pair(class_t.GetDefaultName(), &class_t));
         }
         else
         {
@@ -59,11 +61,11 @@ namespace syntropy::reflection
 
         // Register each alias as a different entry.
 
-        for (auto&& name_alias : class_instance.GetNameAliases())
+        for (auto&& name_alias : class_t.GetNameAliases())
         {
             if (auto it = aliases_classes_.find(name_alias); it == aliases_classes_.end())
             {
-                aliases_classes_.emplace(std::make_pair(name_alias, &class_instance));
+                aliases_classes_.emplace(std::make_pair(name_alias, &class_t));
             }
             else
             {
@@ -74,9 +76,9 @@ namespace syntropy::reflection
 
         // Register the class type index.
 
-        if (auto it = typeindex_classes_.find(class_instance.GetTypeIndex()); it == typeindex_classes_.end())
+        if (auto it = typeindex_classes_.find(class_t.GetTypeIndex()); it == typeindex_classes_.end())
         {
-            typeindex_classes_.emplace(std::make_pair(class_instance.GetTypeIndex(), &class_instance));
+            typeindex_classes_.emplace(std::make_pair(class_t.GetTypeIndex(), &class_t));
         }
         else
         {

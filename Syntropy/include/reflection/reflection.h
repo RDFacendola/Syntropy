@@ -13,12 +13,15 @@
 #include "containers/context.h"
 
 #include "reflection/class.h"
-#include "reflection/types/fundamental_types.h"
 
 namespace syntropy::reflection
 {
     /// \brief Log context for the syntropy reflection system.
     inline const Context ReflectionCtx("SyntropyReflection");
+
+    /************************************************************************/
+    /* REFLECTION                                                           */
+    /************************************************************************/
 
     /// \brief Contains the list of all classes registered so far.
     /// \author Raffaele D. Facendola - 2016
@@ -55,16 +58,20 @@ namespace syntropy::reflection
         /// \brief Private constructor to prevent instantiation and inheritance.
         Reflection();
 
-        /// \brief Register a new class to the registry.
-        /// \param class_instance Class to register.
-        void Register(Class& class_instance);
+        /// \brief Register a new class the the reflection system..
+        /// \param class_t Class to register.
+        void RegisterClass(const Class& class_t);
 
-        std::unordered_map<HashedString, Class*> default_classes_;          ///< \brief Associates a default name to each registered class.
+        std::unordered_map<HashedString, const Class*> default_classes_;            ///< \brief Associates a default name to each registered class.
 
-        std::unordered_map<HashedString, Class*> aliases_classes_;          ///< \brief Associates each name alias to each registered class.
+        std::unordered_map<HashedString, const Class*> aliases_classes_;            ///< \brief Associates each name alias to each registered class.
 
-        std::unordered_map<std::type_index, Class*>  typeindex_classes_;    ///< \brief Associates a type_index to each registered class.
+        std::unordered_map<std::type_index, const Class*>  typeindex_classes_;      ///< \brief Associates a type_index to each registered class.
     };
+
+    /************************************************************************/
+    /* METHODS                                                              */
+    /************************************************************************/
 
     /// \brief Get a class by name.
     /// \param class_name Name or alias of the class to get.

@@ -23,11 +23,11 @@ struct syntropy::reflection::ClassDeclarationT<TestSyntropyReflection::Pet>
 {
     static constexpr const char* name_{ "TestSyntropyReflection::Pet" };
 
-    void operator()(ClassDefinitionT<TestSyntropyReflection::Pet>& definition) const
+    void operator()(ClassT<TestSyntropyReflection::Pet>& class_t) const
     {
-        definition.DefineProperty("Name", &TestSyntropyReflection::Pet::name_);
-        definition.DefineProperty("Age", &TestSyntropyReflection::Pet::age_);
-        definition.DefineProperty("Paws", &TestSyntropyReflection::Pet::GetPawsCount);      // Read only!
+        class_t.AddProperty("Name", &TestSyntropyReflection::Pet::name_);
+        class_t.AddProperty("Age", &TestSyntropyReflection::Pet::age_);
+        class_t.AddProperty("Paws", &TestSyntropyReflection::Pet::GetPawsCount);      // Read only!
     }
 };
 
@@ -57,14 +57,14 @@ struct syntropy::reflection::ClassDeclarationT<TestSyntropyReflection::Cat>
 {
     static constexpr const char* name_{ "TestSyntropyReflection::Cat" };
 
-    void operator()(ClassDefinitionT<TestSyntropyReflection::Cat>& definition) const
+    void operator()(ClassT<TestSyntropyReflection::Cat>& class_t) const
     {
-        definition.DefineNameAlias("Catto");
+        class_t.AddNameAlias("Catto");
 
-        definition.DefineBaseClass<TestSyntropyReflection::Pet>();
-        definition.DefineBaseClass<TestSyntropyReflection::IPurrable>();
+        class_t.AddBaseClass<TestSyntropyReflection::Pet>();
+        class_t.AddBaseClass<TestSyntropyReflection::IPurrable>();
 
-        //definition.DefineProperty("Toxic", &TestSyntropyReflection::Base::const_);   // #TODO This shouldn't compile.
+        //definition.AddProperty("Toxic", &TestSyntropyReflection::Base::const_);   // #TODO This shouldn't compile.
     }
 };
 
@@ -86,9 +86,9 @@ struct syntropy::reflection::ClassDeclarationT<TestSyntropyReflection::Canary>
 {
     static constexpr const char* name_{ "TestSyntropyReflection::Canary" };
 
-    void operator()(ClassDefinitionT<TestSyntropyReflection::Cat>& definition) const
+    void operator()(ClassT<TestSyntropyReflection::Cat>& class_t) const
     {
-        definition.DefineBaseClass<TestSyntropyReflection::Pet>();
+        class_t.AddBaseClass<TestSyntropyReflection::Pet>();
     }
 };
 

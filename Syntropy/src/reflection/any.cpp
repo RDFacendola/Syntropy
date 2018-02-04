@@ -1,6 +1,7 @@
 #include "reflection/any.h"
 
 #include "reflection/class.h"
+#include "reflection/types/fundamental_types.h"
 
 namespace syntropy::reflection
 {

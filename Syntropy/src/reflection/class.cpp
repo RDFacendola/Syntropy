@@ -10,13 +10,9 @@ namespace syntropy::reflection
     /* CLASS                                                                */
     /************************************************************************/
 
-    Class::Class(tag_t<void>)
-        : default_name_("void")
-        , type_index_(typeid(void))
-        , is_abstract_(true)
+    void Class::RegisterClass()
     {
-        // Register the class to the reflection system.
-        Reflection::GetInstance().Register(*this);
+        Reflection::GetInstance().RegisterClass(*this);
     }
 
     bool Class::IsA(const Class& other) const noexcept
@@ -67,30 +63,13 @@ namespace syntropy::reflection
         return is_abstract_;
     }
 
-    void Class::AddNameAlias(HashedString name_alias)
-    {
-        if (std::find(name_aliases_.begin(), name_aliases_.end(), name_alias) == name_aliases_.end())
-        {
-            name_aliases_.push_back(name_alias);
-        }
-    }
-
-    void Class::AddBaseClass(const Class& base_class)
-    {
-        if (std::find(base_classes_.begin(), base_classes_.end(), &base_class) == base_classes_.end())
-        {
-            base_classes_.push_back(&base_class);
-        }
-    }
-
-
     /************************************************************************/
     /* METHODS                                                              */
     /************************************************************************/
 
     bool operator ==(const Class& lhs, const Class& rhs) noexcept
     {
-        return std::addressof(lhs) == std::addressof(rhs);      // Classes are singleton! Check if their address is the same will suffice.
+        return lhs.GetDefaultName() == rhs.GetDefaultName();
     }
 
     bool operator !=(const Class& lhs, const Class& rhs) noexcept
@@ -98,9 +77,9 @@ namespace syntropy::reflection
         return !(lhs == rhs);
     }
 
-    std::ostream& operator<<(std::ostream& out, const Class& class_instance)
+    std::ostream& operator<<(std::ostream& out, const Class& class_t)
     {
-        out << class_instance.GetDefaultName();
+        out << class_t.GetDefaultName();
 
         return out;
     }

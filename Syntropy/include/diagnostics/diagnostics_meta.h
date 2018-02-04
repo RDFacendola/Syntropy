@@ -13,7 +13,8 @@
 #include "diagnostics/log.h"
 #include "diagnostics/log_channels.h"
 
-#include "reflection/reflection.h"
+#include "reflection/class.h"
+#include "reflection/types/fundamental_types.h"
 #include "reflection/types/stl_types.h"
 
 #include "serialization/json/json.h"
@@ -31,13 +32,13 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "syntropy::diagnostics::Severity" };
 
-        void operator()(ClassDefinitionT<diagnostics::Severity>& definition) const
+        void operator()(ClassT<diagnostics::Severity>& class_t) const
         {
             using diagnostics::Severity;
 
-            definition << serialization::JSONClass();
+            class_t << serialization::JSONClass();
 
-            definition << reflection::EnumerationClass<Severity>(
+            class_t << reflection::EnumerationClass<Severity>(
             {
                 {"Informative", Severity::kInformative},
                 {"Warning", Severity::kWarning},
@@ -53,9 +54,9 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "syntropy::diagnostics::Context" };
 
-        void operator()(ClassDefinitionT<Context>& definition) const
+        void operator()(ClassT<Context>& class_t) const
         {
-            definition << serialization::JSONClass();
+            class_t << serialization::JSONClass();
         }
     };
 
@@ -80,9 +81,9 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "syntropy::diagnostics::StreamLogChannel" };
 
-        void operator()(ClassDefinitionT<diagnostics::StreamLogChannel>& definition) const
+        void operator()(ClassT<diagnostics::StreamLogChannel>& class_t) const
         {
-            definition.DefineBaseClass<diagnostics::LogChannel>();
+            class_t.AddBaseClass<diagnostics::LogChannel>();
         }
     };
 
@@ -92,11 +93,11 @@ namespace syntropy::reflection
     {
         static constexpr const char* name_{ "syntropy::diagnostics::FileLogChannel" };
 
-        void operator()(ClassDefinitionT<diagnostics::FileLogChannel>& definition) const
+        void operator()(ClassT<diagnostics::FileLogChannel>& class_t) const
         {
-            definition << serialization::JSONClass();
+            class_t << serialization::JSONClass();
 
-            definition.DefineBaseClass<diagnostics::StreamLogChannel>();
+            class_t.AddBaseClass<diagnostics::StreamLogChannel>();
         }
     };
 }

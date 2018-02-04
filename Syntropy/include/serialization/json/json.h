@@ -69,7 +69,7 @@ namespace syntropy::serialization
         /// \brief Add a JSONConstructible interface to the provided class.
         /// \param class_definition Definition of the class the interface will be added to.
         template <typename TClass>
-        void operator()(reflection::ClassDefinitionT<TClass>& class_definition) const
+        void operator()(reflection::ClassT<TClass>& class_definition) const
         {
             class_definition.AddInterface<JSONConstructible>(tag_t<TClass>{});
             //class_definition.AddInterface<JSONConvertible>(tag_t<TClass>{});
