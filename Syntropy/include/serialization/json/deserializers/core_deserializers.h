@@ -7,6 +7,7 @@
 #pragma once
 
 #include "containers/hashed_string.h"
+#include "containers/context.h"
 
 #include "serialization/json/json.h"
 
@@ -24,6 +25,23 @@ namespace syntropy::serialization
             if (json.is_string())
             {
                 return HashedString(json.get<std::string>());
+            }
+            return std::nullopt;
+        }
+    };
+
+    /************************************************************************/
+    /* CONTEXT                                                              */
+    /************************************************************************/
+
+    template <>
+    struct JSONDeserializerT<Context>
+    {
+        std::optional<Context> operator()(const nlohmann::json& json) const
+        {
+            if (json.is_string())
+            {
+                return Context(json.get<std::string>());
             }
             return std::nullopt;
         }

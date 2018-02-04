@@ -138,6 +138,11 @@
     <ClCompile Include="src\serialization\json\serialization.cpp" />
     <ClCompile Include="src\serialization\json\json.cpp" />
     <ClCompile Include="src\reflection\interfaces\property_interfaces.cpp" />
+    <ClCompile Include="src\reflection\types\core_types.cpp" />
+    <ClCompile Include="src\reflection\types\fundamental_types.cpp" />
+    <ClCompile Include="src\reflection\types\stl_types.cpp" />
+    <ClCompile Include="src\diagnostics\diagnostics_meta.cpp" />
+    <ClCompile Include="src\memory\memory_meta.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

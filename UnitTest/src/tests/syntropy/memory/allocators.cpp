@@ -25,12 +25,6 @@ TestSyntropyMemoryAllocators::TestSyntropyMemoryAllocators()
     // Initialization of the memory manager
 
     // #TODO This test should not rely on the reflection system and its configuration should not be provided by an external file (since it would most likely change the test result).
-
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::LinearSegregatedFitAllocator>());
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::ExponentialSegregatedFitAllocator>());
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::TwoLevelSegregatedFitAllocator>());
-    SYNTROPY_UNUSED(syntropy::reflection::ClassOf<syntropy::LayeredAllocator>());
-
     syntropy::ImportMemoryConfigurationFromJSON("memory.cfg");
 }
 

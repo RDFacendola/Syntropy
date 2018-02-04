@@ -7,9 +7,12 @@
 #pragma once
 
 #include "containers/hashed_string.h"
+#include "containers/context.h"
 #include "math/hash.h"
 
 #include "reflection/class.h"
+
+#include "serialization/json/json.h"
 
 namespace syntropy::reflection
 {
@@ -21,6 +24,21 @@ namespace syntropy::reflection
     struct ClassDeclarationT<HashedString>
     {
         static constexpr const char* name_{ "syntropy::HashedString" };
+    };
+
+    /************************************************************************/
+    /* CONTEXT                                                              */
+    /************************************************************************/
+
+    template<>
+    struct ClassDeclarationT<Context>
+    {
+        static constexpr const char* name_{ "syntropy::diagnostics::Context" };
+
+        void operator()(ClassT<Context>& class_t) const
+        {
+            class_t << serialization::JSONClass();
+        }
     };
 
     /************************************************************************/

@@ -104,4 +104,22 @@ namespace syntropy::reflection
 
         return ClassOf<TType&&>();              // The object is either not polymorphic or its dynamic type is not registered to the reflection system: returns the static class.
     }
+
+    /************************************************************************/
+    /* AUTO REGISTER CLASS                                                  */
+    /************************************************************************/
+
+    /// \brief Automatically register a class to syntropy reflection system.
+    ///
+    /// \usage (in my_class.cpp) AutoRegisterClass<MyClass> auto_class;
+    /// \author Raffaele D. Facendola - February 2018
+    template <typename TClass>
+    struct AutoRegisterClass
+    {
+        AutoRegisterClass()
+        {
+            // Will trigger class registration.
+            SYNTROPY_UNUSED(ClassOf<TClass>());
+        }
+    };
 }

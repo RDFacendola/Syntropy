@@ -16,6 +16,7 @@
 #include "reflection/class.h"
 #include "reflection/types/fundamental_types.h"
 #include "reflection/types/stl_types.h"
+#include "reflection/types/core_types.h"
 
 #include "serialization/json/json.h"
 #include "serialization/json/deserializers/stl_deserializers.h"
@@ -45,18 +46,6 @@ namespace syntropy::reflection
                 {"Error", Severity::kError},
                 {"Critical", Severity::kCritical}
             });
-        }
-    };
-
-    // Template specialization for Context
-    template<>
-    struct ClassDeclarationT<Context>
-    {
-        static constexpr const char* name_{ "syntropy::diagnostics::Context" };
-
-        void operator()(ClassT<Context>& class_t) const
-        {
-            class_t << serialization::JSONClass();
         }
     };
 
@@ -104,24 +93,6 @@ namespace syntropy::reflection
 
 namespace syntropy::serialization
 {
-    /************************************************************************/
-    /* DIAGNOSTICS.H                                                        */
-    /************************************************************************/
-
-    // Template specialization for Context
-    template <>
-    struct JSONDeserializerT<Context>
-    {
-        std::optional<Context> operator()(const nlohmann::json& json) const
-        {
-            if (json.is_string())
-            {
-                return Context(json.get<std::string>());
-            }
-            return std::nullopt;
-        }
-    };
-
     /************************************************************************/
     /* LOG_CHANNELS.H                                                       */
     /************************************************************************/
