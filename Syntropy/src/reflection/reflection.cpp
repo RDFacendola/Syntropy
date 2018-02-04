@@ -46,8 +46,6 @@ namespace syntropy::reflection
 
     void Reflection::RegisterClass(const Class& class_t)
     {
-        // #TODO Check if the same class was registered more than once (and ignore the rest of the method)
-
         // Register the default class name.
 
         if (auto it = default_classes_.find(class_t.GetDefaultName()); it == default_classes_.end())
