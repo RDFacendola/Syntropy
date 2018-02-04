@@ -174,12 +174,8 @@ namespace syntropy
     /// 
     /// \author Raffaele D. Facendola - December 2017
     template <typename TTestFixture>
-    class AutoTestSuite
+    struct AutoTestSuite
     {
-        static_assert(std::is_base_of_v<TestFixture, TTestFixture>, "TTestFixture must derive from TestFixture");
-
-    public:
-
         /// \brief Register a test suite to the TestRunner singleton instance.
         /// \param name Name of the test suite.
         /// \param arguments Arguments to pass to TTestSuite constructor.

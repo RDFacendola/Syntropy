@@ -45,6 +45,8 @@ namespace syntropy
 
             static_assert(std::is_base_of_v<TInterface, TConcrete>, "TConcrete must be equal to or derive from TInterface.");
 
+            static_assert(std::is_constructible_v<TConcrete, TArguments...>, "TConcrete must be constructible from TArguments.");
+
             auto[it, success] = interfaces_.emplace(typeid(TInterface), [interface = TConcrete(std::forward<TArguments>(arguments)...)]() mutable
             {
                 return &interface;
