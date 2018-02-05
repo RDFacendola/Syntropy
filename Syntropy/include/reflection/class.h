@@ -11,6 +11,7 @@
 #include <typeindex>
 
 #include "type_traits.h"
+#include "contexts.h"
 
 #include "patterns/utility.h"
 

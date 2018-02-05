@@ -2,12 +2,12 @@
 
 #include <algorithm>
 
+#include "contexts.h"
+
 #include "containers/range.h"
 
 #include "diagnostics/assert.h"
 #include "diagnostics/log.h"
-
-#include "application/application.h"
 
 namespace syntropy
 {

@@ -6,8 +6,6 @@
 
 namespace syntropy::diagnostics
 {
-    const Context DiagnosticsCtx("SyntropyDiagnostics");
-
     /************************************************************************/
     /* SEVERITY                                                             */
     /************************************************************************/

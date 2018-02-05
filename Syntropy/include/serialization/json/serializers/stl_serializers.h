@@ -9,7 +9,6 @@
 #include "type_traits.h"
 
 #include "serialization/json/json.h"
-#include "serialization/serialization.h"
 
 #include "nlohmann/json/src/json.hpp"
 

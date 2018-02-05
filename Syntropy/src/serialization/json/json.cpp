@@ -1,5 +1,7 @@
 #include "serialization/json/json.h"
 
+#include "contexts.h"
+
 #include "diagnostics/log.h"
 
 namespace syntropy::serialization

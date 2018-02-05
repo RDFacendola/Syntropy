@@ -33,7 +33,6 @@
     <ClInclude Include="include\memory\virtual_memory.h" />
     <ClInclude Include="include\memory\buffer.h" />
     <ClInclude Include="include\memory\memory_manager.h" />
-    <ClInclude Include="include\serialization\serialization.h" />
     <ClInclude Include="include\containers\range.h" />
     <ClInclude Include="include\reflection\any.h" />
     <ClInclude Include="include\diagnostics\log_channels.h" />
@@ -71,7 +70,6 @@
     </ClInclude>
     <ClInclude Include="include\platform\threading.h" />
     <ClInclude Include="include\application\command_line.h" />
-    <ClInclude Include="include\application\application.h" />
     <ClInclude Include="include\containers\context.h" />
     <ClInclude Include="include\unit_test\test_suite.h" />
     <ClInclude Include="include\unit_test\test_runner.h" />
@@ -82,9 +80,10 @@
     <ClInclude Include="include\serialization\json\deserializers\fundamental_deserializers.h" />
     <ClInclude Include="include\serialization\json\serializers\stl_serializers.h" />
     <ClInclude Include="include\serialization\json\deserialization.h" />
-    <ClInclude Include="include\serialization\json\serialization.h" />
     <ClInclude Include="include\serialization\json\json.h" />
     <ClInclude Include="include\patterns\multi_interface.h" />
+    <ClInclude Include="include\contexts.h" />
+    <ClInclude Include="include\serialization\json\serialization.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -99,7 +98,6 @@
     <ClCompile Include="src\reflection\property.cpp">
       <Filter>reflection</Filter>
     </ClCompile>
-    <ClCompile Include="src\syntropy.cpp" />
     <ClCompile Include="src\diagnostics\log.cpp" />
     <ClCompile Include="src\diagnostics\diagnostics.cpp" />
     <ClCompile Include="src\platform\os\windows_os.cpp" />
@@ -117,7 +115,6 @@
     <ClCompile Include="src\memory\allocator.cpp" />
     <ClCompile Include="src\memory\buffer.cpp" />
     <ClCompile Include="src\memory\memory_manager.cpp" />
-    <ClCompile Include="src\serialization\serialization.cpp" />
     <ClCompile Include="src\reflection\any.cpp" />
     <ClCompile Include="src\diagnostics\log_channels.cpp" />
     <ClCompile Include="src\reflection\interfaces\class_interfaces.cpp" />
@@ -127,7 +124,6 @@
     <ClCompile Include="src\math\hash.cpp" />
     <ClCompile Include="src\platform\threading.cpp" />
     <ClCompile Include="src\application\command_line.cpp" />
-    <ClCompile Include="src\application\application.cpp" />
     <ClCompile Include="src\containers\context.cpp" />
     <ClCompile Include="src\unit_test\test_runner.cpp" />
     <ClCompile Include="src\unit_test\test_suite.cpp" />
@@ -143,6 +139,7 @@
     <ClCompile Include="src\reflection\types\stl_types.cpp" />
     <ClCompile Include="src\diagnostics\diagnostics_meta.cpp" />
     <ClCompile Include="src\memory\memory_meta.cpp" />
+    <ClCompile Include="src\contexts.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

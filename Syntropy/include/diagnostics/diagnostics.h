@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "containers/context.h"
 #include "platform/macros.h"
 
 /// \brief Causes the debugger to break. If no debugger is present, does nothing.
@@ -27,9 +26,6 @@
 
 namespace syntropy::diagnostics
 {
-    /// \brief Log context for the syntropy diagnostic system.
-    extern const Context DiagnosticsCtx;
-
     /// \brief Severity of an event.
     /// \author Raffaele D. Facendola - November 2016
     enum class Severity : uint8_t

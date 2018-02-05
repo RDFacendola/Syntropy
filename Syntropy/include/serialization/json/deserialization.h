@@ -11,8 +11,6 @@
 
 #include "type_traits.h"
 
-#include "serialization/serialization.h"
-
 #include "diagnostics/log.h"
 
 #include "reflection/reflection.h"

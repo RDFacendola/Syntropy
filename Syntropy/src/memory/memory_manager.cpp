@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <fstream>
 
+#include "contexts.h"
+
 #include "diagnostics/log.h"
 
 #include "serialization/json/json.h"

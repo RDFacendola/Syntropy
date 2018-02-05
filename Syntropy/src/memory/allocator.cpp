@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "contexts.h"
+
 #include "diagnostics/log.h"
 #include "diagnostics/assert.h"
 

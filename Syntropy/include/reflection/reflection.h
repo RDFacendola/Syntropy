@@ -16,9 +16,6 @@
 
 namespace syntropy::reflection
 {
-    /// \brief Log context for the syntropy reflection system.
-    inline const Context ReflectionCtx("SyntropyReflection");
-
     /************************************************************************/
     /* REFLECTION                                                           */
     /************************************************************************/

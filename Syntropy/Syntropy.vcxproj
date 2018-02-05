@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\application\application.h" />
     <ClInclude Include="include\application\command_line.h" />
     <ClInclude Include="include\containers\context.h" />
+    <ClInclude Include="include\contexts.h" />
     <ClInclude Include="include\patterns\multi_interface.h">
       <SubType>
       </SubType>
@@ -166,10 +166,6 @@
     </ClInclude>
     <ClInclude Include="include\serialization\json\deserializers\core_deserializers.h" />
     <ClInclude Include="include\serialization\json\deserializers\stl_deserializers.h" />
-    <ClInclude Include="include\serialization\serialization.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
     <ClInclude Include="include\syntropy.h">
       <SubType>
       </SubType>
@@ -188,9 +184,9 @@
     <ClInclude Include="include\unit_test\test_suite.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\application\application.cpp" />
     <ClCompile Include="src\application\command_line.cpp" />
     <ClCompile Include="src\containers\context.cpp" />
+    <ClCompile Include="src\contexts.cpp" />
     <ClCompile Include="src\diagnostics\diagnostics_meta.cpp" />
     <ClCompile Include="src\math\hash.cpp" />
     <ClCompile Include="src\math\random.cpp" />
@@ -295,14 +291,6 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="src\reflection\type.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="src\serialization\serialization.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="src\syntropy.cpp">
       <SubType>
       </SubType>
     </ClCompile>

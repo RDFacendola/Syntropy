@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "serialization/serialization.h"
 #include "serialization/json/serialization.h"
 #include "serialization/json/deserialization.h"
 

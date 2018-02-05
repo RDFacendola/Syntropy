@@ -1,5 +1,7 @@
 #include "reflection/reflection.h"
 
+#include "contexts.h"
+
 #include "reflection/class.h"
 
 #include "diagnostics/log.h"
