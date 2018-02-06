@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <type_traits>
 #include <cmath>
+#include <algorithm>
 
 #include "platform/builtin.h"
 
@@ -151,6 +152,25 @@ namespace syntropy
         /// \brief Get the approximated hyperbolic tangent of rhs.
         static float FastTanh(float rhs);
 
+        // Distance.
+
+        /// \brief Get the Manhattan distance of point from the origin.
+        /// \param coordinates Coordinates of the point.
+        /// \return Returns the Manhattan distance of the point from the origin.
+        template <typename... TNumbers>
+        static decltype(auto) GetManhattanDistance(TNumbers... coordinates)
+        {
+            return ((FastAbs(coordinates) + ...));
+        }
+
+        /// \brief Get the Chebyshev distance of a point from the origin.
+        /// \param coordinates Coordinates of the point.
+        /// \return Returns the Manhattan distance of the point from the origin.
+        template <typename... TNumbers>
+        static decltype(auto) GetChebyshevDistance(TNumbers... coordinates)
+        {
+            return std::max({ FastAbs(coordinates) ... });
+        }
     };
 
 }
