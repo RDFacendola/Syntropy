@@ -135,18 +135,21 @@ namespace syntropy
 
         /// \brief Get the absolute value of number.
         template <typename TNumber>
-        static TNumber FastAbs(TNumber number)
+        static TNumber FastAbs(TNumber rhs)
         {
             static_assert(std::is_arithmetic_v<TNumber>, "TNumber must be floating point or integer.");
 
-            return number > 0 ? number : -number;
+            return rhs > 0 ? rhs : -rhs;
         }
 
         /// \brief Get the approximated inverse square root of number.
-        static float FastInvSqrt(float number);
+        static float FastInvSqrt(float rhs);
 
         /// \brief Get the square root of number.
-        static float FastSqrt(float number);
+        static float FastSqrt(float rhs);
+
+        /// \brief Get the approximated hyperbolic tangent of rhs.
+        static float FastTanh(float rhs);
 
     };
 
