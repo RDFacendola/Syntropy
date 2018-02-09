@@ -130,8 +130,8 @@ namespace syntropy::serialization
 								}
 								else if constexpr(std::is_pointer_v<TKey>)
 								{
-									delete *key;        // Avoid leaking the key when a the value could not be deserialized and the key represents a raw pointer.
-								}
+							    	delete *key;        // Avoid leaking the key when a the value could not be deserialized and the key represents a raw pointer.
+						        }
 							}
                         }
                     }
@@ -161,6 +161,8 @@ namespace syntropy::serialization
 			}
 			else
 			{
+                SYNTROPY_UNUSED(json);
+
 				return std::nullopt;
 			}
         }

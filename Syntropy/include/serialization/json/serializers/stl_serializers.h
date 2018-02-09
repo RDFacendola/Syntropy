@@ -42,7 +42,7 @@ namespace syntropy::serialization
 	struct JSONSerializerT<std::map<TKey, TValue>>
 	{
 		template <typename TKey, typename TValue>
-		void operator()(nlohmann::json& json, std::map<TKey, TValue> map) const
+		void operator()(nlohmann::json& json, const std::map<TKey, TValue>& map) const
 		{			
 			for (auto&& pair : map)
 			{			

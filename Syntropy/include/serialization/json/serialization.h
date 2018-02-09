@@ -18,24 +18,6 @@
 
 #include "nlohmann/json/src/json.hpp"
 
-/// \brief Pointer to JSON conversion. Creates a JSON from a valid instance.
-/// \param j output JSON, will return nullptr if the instance is not valid.
-/// \param instance The object that will be serialized.
-template<typename TType>
-void to_json(nlohmann::json& json, const TType* instance)
-{
-    if (instance)
-    {
-        auto instanceJson = syntropy::serialization::SerializeObjectToJSON(*instance);
-        if (instanceJson.has_value())
-        {
-            json = *instanceJson;
-            return;
-        }
-    }	
-    json = nullptr;
-}
-
 namespace syntropy::serialization
 {
 	namespace map

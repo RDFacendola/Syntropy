@@ -16,6 +16,25 @@
 
 namespace syntropy::serialization
 {
+    /************************************************************************/
+    /* POINTERS                                                             */
+    /************************************************************************/
+
+    /// \brief Partial specialization of JSONSerializerT for pointer types.
+    template <typename TType>
+    struct JSONSerializerT<TType*>
+    {
+        void operator()(nlohmann::json& json, const TType* value) const
+        {
+            auto value_json = syntropy::serialization::SerializeObjectToJSON(*value);
+
+            if (value_json.has_value())
+            {
+                json = *value_json;
+            }
+        }
+    };
+
 	/************************************************************************/
 	/* ENUMERATIONS                                                         */
 	/************************************************************************/
