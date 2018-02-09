@@ -38,7 +38,16 @@ void to_json(nlohmann::json& json, const TType* instance)
 
 namespace syntropy::serialization
 {
-    /// \brief Token used to identify a shared_ptr object in a JSON.
+	namespace map
+	{
+		/// \brief JSON property token used to determine the id of a map pair.
+		static constexpr const char* kIdToken = "$id";
+
+		/// \brief JSON property token used to determine the value of map pair.
+		static constexpr const char* kValueToken = "$value";
+	}
+	
+	/// \brief Token used to identify a shared_ptr object in a JSON.
     static constexpr const char* kSharedPtrIdToken = "$spid";
 
     /// \brief Serialize an object properties to a JSON.
@@ -66,7 +75,7 @@ namespace syntropy::serialization
 
             serializer_ = [field](const std::string& name, const syntropy::reflection::Any& instance, nlohmann::json& json)
             {
-                JSONSerializer<TProperty>(json[name], reflection::AnyCast<TClass const *>(instance)->*field);
+                JSONSerialize(json[name], reflection::AnyCast<TClass const *>(instance)->*field);
             };
         }
 
@@ -78,7 +87,7 @@ namespace syntropy::serialization
 
             serializer_ = [getter](const std::string& name, const syntropy::reflection::Any& instance, nlohmann::json& json)
             {
-                JSONSerializer<TProperty>(json[name], (reflection::AnyCast<TClass const*>(instance)->*getter)());
+                JSONSerialize(json[name], (reflection::AnyCast<TClass const*>(instance)->*getter)());
             };
         }
         /// \brief Serialize the property value.
@@ -176,11 +185,14 @@ namespace syntropy::serialization
         }
     };
 
-    /// \brief Utility object for JSONSerializerT.
-    /// Usage: JSONDeserializer<TType>(json) instead of JSONSerializerT<TType>{}(json)
+    /// \brief Utility function for JSONSerializerT.
+    ///  Usage:  JSONSerialize(json, value) instead of JSONSerializerT<TType>{}(json, value)
     /// \author Giuseppe Spizzico - January 2018
-    template <typename TType>
-    inline constexpr JSONSerializerT<TType> JSONSerializer{};
+	template <typename TType>
+	inline constexpr void JSONSerialize(nlohmann::json& json, const TType& instance)
+	{
+		JSONSerializerT<TType>()(json, instance);
+	};
 
     /************************************************************************/
     /* METHODS                                                              */

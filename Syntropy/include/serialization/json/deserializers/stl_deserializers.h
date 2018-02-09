@@ -112,27 +112,27 @@ namespace syntropy::serialization
         /// \brief Deserialize from an array of objects: the elements are the mapped objects, while one particular field is used as a key.
         std::optional<TMap> DeserializeFromArray(const nlohmann::json& json) const
         {
-            /// \brief JSON property field used to determine the id of an object.
-            static const char kIdToken[] = "id";
-
             auto map = std::make_optional<TMap>();
 
             for (unsigned int array_index = 0; array_index < json.size(); ++array_index)
             {
                 if (auto& json_item = json[array_index]; json_item.is_object())
                 {
-                    if (auto key_it = json_item.find(kIdToken); key_it != json_item.cend())
+                    if (auto key_it = json_item.find(map::kIdToken); key_it != json_item.cend())
                     {
                         if (auto key = JSONDeserializer<TKey>(*key_it))
                         {
-                            if (auto value = JSONDeserializer<TValue>(json_item))
-                            {
-                                map->insert(std::make_pair(std::move(*key), std::move(*value)));
-                            }
-                            else if constexpr(std::is_pointer_v<TKey>)
-                            {
-                                delete *key;        // Avoid leaking the key when a the value could not be deserialized and the key represents a raw pointer.
-                            }
+							if (auto value_it = json_item.find(map::kValueToken); value_it != json_item.cend())
+							{
+								if (auto value = JSONDeserializer<TValue>(*value_it))
+								{
+									map->insert(std::make_pair(std::move(*key), std::move(*value)));
+								}
+								else if constexpr(std::is_pointer_v<TKey>)
+								{
+									delete *key;        // Avoid leaking the key when a the value could not be deserialized and the key represents a raw pointer.
+								}
+							}
                         }
                     }
                 }

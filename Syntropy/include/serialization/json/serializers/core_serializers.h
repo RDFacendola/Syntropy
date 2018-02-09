@@ -22,8 +22,7 @@ namespace syntropy::serialization
 	{
 		void operator()(nlohmann::json& json, const HashedString& hashed_string) const
 		{
-			using TStringType = decltype(hashed_string.GetString());
-			JSONSerializer<TStringType>(json, hashed_string.GetString());
+			JSONSerialize(json, hashed_string.GetString());
 		}
 	};
 
@@ -36,8 +35,7 @@ namespace syntropy::serialization
 	{
 	void operator()(nlohmann::json& json, const Context& context) const
 		{
-			using TNameType = decltype(context.GetName());
-			JSONSerializer<TNameType>(json, context.GetName());
+			JSONSerialize(json, context.GetName());
 		}
 	};
 }

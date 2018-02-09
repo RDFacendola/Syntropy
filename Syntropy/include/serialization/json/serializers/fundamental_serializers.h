@@ -31,7 +31,7 @@ namespace syntropy::serialization
 				if(auto name = enum_interface->GetNameByValue(value); name.has_value())
 				{
 					using TNameType = decltype(name.value());
-					JSONSerializer<TNameType>(json, name.value());
+					JSONSerialize(json, name.value());
 				}
 			}		
 		}

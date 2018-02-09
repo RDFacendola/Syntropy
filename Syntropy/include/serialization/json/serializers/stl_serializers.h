@@ -21,7 +21,7 @@ namespace syntropy::serialization
 		template<typename TType>
 		void operator()(nlohmann::json& json, std::shared_ptr<TType> instance) const
 		{
-			JSONSerializer<TType>(json, instance.get());
+			JSONSerialize(json, instance.get());
 			json[kSharedPtrIdToken] = std::hash<std::shared_ptr<TType>>()(instance);
 		}
 	};
@@ -33,28 +33,30 @@ namespace syntropy::serialization
 		template<typename TType>
 		void operator()(nlohmann::json& json, std::weak_ptr<TType> instance) const
 		{
-			JSONSerializer<std::shared_ptr<TType>>(json, instance.lock());
+			JSONSerialize(json, instance.lock());
 		}
 	};
 
-	// #TODO std::map can be deserialized as objects or array. It should be faster to deserialize objects...
 	/// \brief Partial specialization of JSONSerializerT for std::map.
-	template <typename TKeyType, typename TValueType>
-	struct JSONSerializerT<std::map<TKeyType, TValueType>>
+	template <typename TKey, typename TValue>
+	struct JSONSerializerT<std::map<TKey, TValue>>
 	{
-		template <typename TKeyType, typename TValueType>
-		void operator()(nlohmann::json& json, std::map<TKeyType, TValueType> map) const
-		{
+		template <typename TKey, typename TValue>
+		void operator()(nlohmann::json& json, std::map<TKey, TValue> map) const
+		{			
 			for (auto&& pair : map)
 			{			
-				json[std::get<0>(pair)] = std::get<1>(pair); 
-				/*
-					#TODO This should work similarly to the others serializers:
-					JSONSerializer<TKeyType>(json, key)
-					JSONSerializer<TValueType>(json, value)
-
-					How do I append an object to an object?
-				*/
+				if constexpr(std::is_constructible_v<nlohmann::json::object_t::key_type, TKey>)
+				{
+					JSONSerialize(json[std::get<0>(pair)], std::get<1>(pair));
+				}
+				else
+				{
+					nlohmann::json pair_json;
+					JSONSerialize(pair_json[map::kIdToken], std::get<0>(pair));
+					JSONSerialize(pair_json[map::kValueToken], std::get<1>(pair));
+					json.push_back(pair_json);
+				}
 			}
 		}
 	};

@@ -126,7 +126,7 @@ void TestSyntropySerialization::TestSerialization()
     Petto.nickname_ = "Kitten";
 	Petto.numbers_ = { 3 , 4 , 5 };
 	Petto.names_ = { "A", "B", "C" };
-	Petto.map_ = { {"A", 1} , { "B", 2 } };
+	Petto.map_ = { {std::make_shared<int>(3), "1"} , { std::make_shared<int>(4), "2" } };
 	Petto.hashed_string_ = syntropy::HashedString("Mammt");
 	Petto.context_ = Petto.hashed_string_;
 	Petto.animal_ = TestSyntropySerialization::Animal::kUnknown;
