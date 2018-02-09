@@ -164,12 +164,12 @@ namespace syntropy::serialization
     /// \brief Functor used to serialize an object to a JSON.
     /// Can be specialized for any object requiring particular JSON serialization capabilities.
     /// \author Giuseppe Spizzico - January 2018
-    template<typename TType>
+    template<typename TType, typename = void>
     struct JSONSerializerT
     {
         /// \brief Base specialization of JSONSerializerT for object types.
         template<typename TType>
-        void operator()(nlohmann::json& json, TType&& instance) const
+        void operator()(nlohmann::json& json, const TType& instance) const
         {
             /// \brief Compile time error if there is not a specialization of to_json in the same namespace of TType or the global namespace for TType.
             json = instance; 
@@ -180,7 +180,7 @@ namespace syntropy::serialization
     /// Usage: JSONDeserializer<TType>(json) instead of JSONSerializerT<TType>{}(json)
     /// \author Giuseppe Spizzico - January 2018
     template <typename TType>
-    constexpr JSONSerializerT<TType> JSONSerializer{};
+    inline constexpr JSONSerializerT<TType> JSONSerializer{};
 
     /************************************************************************/
     /* METHODS                                                              */

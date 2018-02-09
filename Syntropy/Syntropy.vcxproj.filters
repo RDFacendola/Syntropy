@@ -84,6 +84,8 @@
     <ClInclude Include="include\patterns\multi_interface.h" />
     <ClInclude Include="include\contexts.h" />
     <ClInclude Include="include\serialization\json\serialization.h" />
+    <ClInclude Include="include\serialization\json\serializers\core_serializers.h" />
+    <ClInclude Include="include\serialization\json\serializers\fundamental_serializers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

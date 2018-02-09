@@ -97,16 +97,16 @@ namespace syntropy::reflection
         /// \param value Value of the enumeration value name to get.
         /// \return Returns the enumeration value name associated to value. If no such name could be found returns std::nullopt.
         template <typename TEnum>
-        std::optional<HashedString> GetNameByValue(const TEnum& value) const
+        std::optional<HashedString> GetNameByValue(const TEnum& in_value) const
         {
-            auto it = std::find_if(values_.begin(), values_.end(), [&value](auto&& value)
+            auto it = std::find_if(values_.begin(), values_.end(), [&in_value](auto&& value)
             {
                 auto enum_value = AnyCast<TEnum>(&(value.second));
 
-                return enum_value && *enum_value == value;
+				return enum_value && *enum_value == in_value;
             });
 
-            return (it != values_.end()) ? it->first : std::nullopt;
+            return (it != values_.end()) ? std::make_optional(it->first) : std::nullopt;
         }
 
     private:

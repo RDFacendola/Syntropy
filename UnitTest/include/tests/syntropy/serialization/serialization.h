@@ -22,18 +22,27 @@ class TestSyntropySerialization : public syntropy::TestFixture
 {
 public:
 
-	struct Collar
+	enum class Animal
 	{
-		std::string colour_;
+		kPet,
+		kWild,
+		kUnknown
 	};
 
     /// \brief Class used for serialization test cases.
     struct Pet
     {
         std::string name_;
-		std::string nickname_;
+		std::string nickname_;		
 
-		std::shared_ptr<Collar> collar_ = nullptr;
+		std::vector<int> numbers_;
+		std::set<std::string> names_;
+		std::map<std::string, int> map_;
+
+		syntropy::HashedString hashed_string_;
+		syntropy::Context context_;
+
+		Animal animal_;
 
 		const std::string& GetName() const { return name_; };
 		void SetName(std::string name) { name_ = name; };

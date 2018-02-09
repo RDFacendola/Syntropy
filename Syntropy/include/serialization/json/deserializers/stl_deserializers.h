@@ -158,9 +158,11 @@ namespace syntropy::serialization
                 }
 
                 return map;
-            }
-
-            return std::nullopt;
+			}
+			else
+			{
+				return std::nullopt;
+			}
         }
 
     };

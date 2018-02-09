@@ -2,6 +2,8 @@
 
 #include "unit_test/test_runner.h"
 
+#include "reflection/class.h"
+
 #include "reflection/interfaces/class_interfaces.h"
 #include "reflection/interfaces/property_interfaces.h"
 
@@ -16,6 +18,8 @@
 #include "serialization/json/deserializers/core_deserializers.h"
 
 #include "serialization/json/serializers/stl_serializers.h"
+#include "serialization/json/serializers/core_serializers.h"
+#include "serialization/json/serializers/fundamental_serializers.h"
 #include <sstream>
 #include <iomanip>
 
@@ -23,24 +27,32 @@
 /* TEST CLASSES                                                         */
 /************************************************************************/
 
-// Collar
+// Animal
 
 template <>
-struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Collar>
+struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Animal>
 {
-    static constexpr const char* name_{ "TestSyntropySerialization::Collar" };
+	static constexpr const char* name_{ "TestSyntropySerialization::Animal" };
 
 
-    void operator()(ClassT<TestSyntropySerialization::Collar>& class_t) const
-    {		
-        using syntropy::serialization::JSONClass;
-        using syntropy::serialization::JSONProperty;
-        using syntropy::serialization::JSONConvertible;
+	void operator()(ClassT<TestSyntropySerialization::Animal>& class_t) const
+	{
+		using syntropy::reflection::Enumeration;
+		using syntropy::serialization::JSONConvertible;
+		using syntropy::serialization::JSONConstructible;
 
-        class_t << JSONClass();
-        class_t.AddProperty("Colour", &TestSyntropySerialization::Collar::colour_) << JSONProperty();
-        class_t.AddInterface<JSONConvertible>();
-    }
+		
+		class_t << reflection::EnumerationClass<TestSyntropySerialization::Animal>(
+			{
+			{ "Pet", TestSyntropySerialization::Animal::kPet },
+			{ "Wild", TestSyntropySerialization::Animal::kWild },
+			{ "Unknown", TestSyntropySerialization::Animal::kUnknown }
+			});
+
+		
+		class_t.AddInterface<JSONConvertible>();
+	}
+
 };
 
 // Pet
@@ -58,7 +70,12 @@ struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Pet>
 
         class_t.AddProperty("Name", &TestSyntropySerialization::Pet::GetName, &TestSyntropySerialization::Pet::SetName) << JSONProperty();
         class_t.AddProperty("Nickname", &TestSyntropySerialization::Pet::nickname_) << JSONProperty();
-        class_t.AddProperty("Collar", &TestSyntropySerialization::Pet::collar_) << JSONProperty();
+		class_t.AddProperty("Numbers", &TestSyntropySerialization::Pet::numbers_) << JSONProperty();
+		class_t.AddProperty("Names", &TestSyntropySerialization::Pet::names_) << JSONProperty();
+		class_t.AddProperty("Map", &TestSyntropySerialization::Pet::map_) << JSONProperty();
+		class_t.AddProperty("HashedString", &TestSyntropySerialization::Pet::hashed_string_) << JSONProperty();
+		class_t.AddProperty("Context", &TestSyntropySerialization::Pet::context_) << JSONProperty();
+		class_t.AddProperty("Animal", &TestSyntropySerialization::Pet::animal_) << JSONProperty();
         class_t.AddInterface<JSONConvertible>();
     }
 
@@ -107,8 +124,12 @@ void TestSyntropySerialization::TestSerialization()
     TestSyntropySerialization::Pet Petto;
     Petto.name_ = "Kitty";
     Petto.nickname_ = "Kitten";
-    Petto.collar_ = std::make_shared<TestSyntropySerialization::Collar>(TestSyntropySerialization::Collar());
-    Petto.collar_.get()->colour_= "Blue";
+	Petto.numbers_ = { 3 , 4 , 5 };
+	Petto.names_ = { "A", "B", "C" };
+	Petto.map_ = { {"A", 1} , { "B", 2 } };
+	Petto.hashed_string_ = syntropy::HashedString("Mammt");
+	Petto.context_ = Petto.hashed_string_;
+	Petto.animal_ = TestSyntropySerialization::Animal::kUnknown;
 
     std::optional<nlohmann::json> json = SerializeObjectToJSON(Petto);
 
@@ -116,9 +137,7 @@ void TestSyntropySerialization::TestSerialization()
         [](const TestSyntropySerialization::Pet& A, const TestSyntropySerialization::Pet& B) -> bool
     {
         return A.name_ == B.name_
-            && A.nickname_ == B.nickname_
-            && A.collar_ != nullptr && B.collar_ != nullptr
-            && A.collar_.get()->colour_ == B.collar_.get()->colour_;
+            && A.nickname_ == B.nickname_;
     });
 }
 
