@@ -102,10 +102,11 @@ namespace syntropy
         void Shuffle(TIterator begin, TIterator middle, TIterator end)
         {
             //Fisher-Yates shuffle.
+            using std::distance;
 
-            for (auto distance = static_cast<int32_t>(std::distance(begin, end)); begin != middle; ++begin)
+            for (auto range = static_cast<int32_t>(distance(begin, end)); begin != middle; ++begin)
             {
-                std::iter_swap(begin, begin + Range(--distance));
+                std::iter_swap(begin, begin + Range(--range));
             }
         }
 
@@ -114,12 +115,14 @@ namespace syntropy
         template <typename TIterator>
         TIterator Pick(const TIterator& begin, const TIterator& end)
         {
+            using std::distance;
+
             if (begin == end)
             {
                 return end;
             }
 
-            return begin + Range(static_cast<int32_t>(std::distance(begin, end)) - 1);
+            return begin + Range(static_cast<int32_t>(distance(begin, end)) - 1);
         }
 
     private:
