@@ -23,6 +23,7 @@ namespace syntropy
         /// \param start Whether the timer automatically starts after being created.
         Timer(bool ticking = true)
             : ticking_(ticking)
+            , base()
         {
             if (ticking_)
             {
