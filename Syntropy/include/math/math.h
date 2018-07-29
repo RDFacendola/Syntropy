@@ -116,7 +116,7 @@ namespace syntropy
             auto abs_lhs = FastAbs(lhs);
             auto abs_rhs = FastAbs(rhs);
 
-            return FastAbs(lhs - rhs) <= ((abs_lhs < abs_rhs ? abs_rhs : abs_lhs) * epsilon);1
+            return FastAbs(lhs - rhs) <= ((abs_lhs < abs_rhs ? abs_rhs : abs_lhs) * epsilon);
         }
 
         /// \brief Check whether two real numbers are essentially equal.
