@@ -12,7 +12,7 @@
 
 namespace syntropy
 {
-    /// \brief Wraps the low-level calls used to handle virtual memory allocation.
+    /// \brief Exposes generic functionalities used to handle memory addresses such as alignment and offsets.
     /// \author Raffaele D. Facendola - December 2016
     class Memory
     {
