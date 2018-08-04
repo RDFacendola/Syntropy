@@ -197,15 +197,14 @@ namespace syntropy
     constexpr MemoryAddress MemoryAddress::GetAligned(Alignment alignment) const noexcept
     {
         auto alignment_mask = std::size_t(alignment) - 1u;
-
-        return (uintptr_t(*this) + alignment_mask) & !alignment_mask;
+        return (uintptr_t(*this) + alignment_mask) & ~alignment_mask;
     }
 
     constexpr MemoryAddress MemoryAddress::GetAlignedDown(Alignment alignment) const noexcept
     {
         auto alignment_mask = std::size_t(alignment) - 1u;
 
-        return uintptr_t(*this) & !alignment_mask;
+        return uintptr_t(*this) & ~alignment_mask;
     }
 
     constexpr bool operator==(const MemoryAddress& lhs, const MemoryAddress& rhs) noexcept
