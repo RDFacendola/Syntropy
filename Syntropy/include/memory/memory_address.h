@@ -31,6 +31,9 @@ namespace syntropy
         /// \brief Create a new address.
         constexpr MemoryAddress(void* address);
 
+        /// \brief Create a en empty address.
+        constexpr MemoryAddress(std::nullptr_t);
+
         /// \brief Create a new address.
         constexpr MemoryAddress(uintptr_t address);
 
@@ -135,6 +138,12 @@ namespace syntropy
 
     constexpr MemoryAddress::MemoryAddress(void* address)
         : address_(address)
+    {
+
+    }
+
+    constexpr MemoryAddress::MemoryAddress(std::nullptr_t)
+        : MemoryAddress()
     {
 
     }
