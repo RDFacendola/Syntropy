@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "diagnostics/assert.h"
+#include "memory/memory_address.h"
 
 namespace syntropy
 {
@@ -22,7 +23,7 @@ namespace syntropy
         {
             auto& vm = context.GetVirtualMachine();
 
-            vm.instruction_pointer_ = nullptr;                                                      // nullptr means that the VM has no other instructions to execute.
+            vm.instruction_pointer_ = nullptr;                                                                          // nullptr means that the VM has no other instructions to execute.
         }
 
         void VirtualMachineIntrinsics::Jump(VMExecutionContext& context)
@@ -31,7 +32,7 @@ namespace syntropy
 
             auto& vm = context.GetVirtualMachine();
 
-            vm.instruction_pointer_ = Memory::AddOffset(vm.instruction_pointer_, Bytes(offset));    // Jump forward or backward depending on the provided offset.
+            vm.instruction_pointer_ = (MemoryAddress(vm.instruction_pointer_) + Bytes(offset)).As<instruction_t>();     // Jump forward or backward depending on the provided offset.
         }
 
         void VirtualMachineIntrinsics::Enter(VMExecutionContext& context)
@@ -40,11 +41,11 @@ namespace syntropy
 
             auto& vm = context.GetVirtualMachine();
 
-            *(vm.stack_pointer_++) = reinterpret_cast<word_t>(vm.base_pointer_);                    // Save the caller's base pointer.
+            *(vm.stack_pointer_++) = reinterpret_cast<word_t>(vm.base_pointer_);                                    // Save the caller's base pointer.
 
-            vm.base_pointer_ = vm.stack_pointer_;                                                   // Setup a new base pointer for the current frame.
+            vm.base_pointer_ = vm.stack_pointer_;                                                                   // Setup a new base pointer for the current frame.
             
-            vm.stack_pointer_ = Memory::AddOffset(vm.stack_pointer_, Bytes(local_storage));         // Reserve space for local storage.
+            vm.stack_pointer_ = (MemoryAddress(vm.stack_pointer_) + Bytes(local_storage)).As<word_t>();             // Reserve space for local storage.
         }
 
         void VirtualMachineIntrinsics::Call(VMExecutionContext& /*context*/)
@@ -70,13 +71,13 @@ namespace syntropy
 
             auto& vm = context.GetVirtualMachine();
 
-            vm.stack_pointer_ = vm.base_pointer_;                                                       // Tear down the local storage by unwinding the stack pointer.
+            vm.stack_pointer_ = vm.base_pointer_;                                                           // Tear down the local storage by unwinding the stack pointer.
 
-            vm.base_pointer_ = reinterpret_cast<word_t*>(*(--vm.stack_pointer_));                       // Restore the previous base pointer.
+            vm.base_pointer_ = reinterpret_cast<word_t*>(*(--vm.stack_pointer_));                           // Restore the previous base pointer.
 
-            vm.instruction_pointer_ = reinterpret_cast<instruction_t*>(*(--vm.stack_pointer_));         // Restore the previous instruction pointer and return the control to the caller.
+            vm.instruction_pointer_ = reinterpret_cast<instruction_t*>(*(--vm.stack_pointer_));             // Restore the previous instruction pointer and return the control to the caller.
 
-            vm.stack_pointer_ = Memory::SubOffset(vm.stack_pointer_, Bytes(input_storage));             // Tear down input arguments storage.
+            vm.stack_pointer_ = (MemoryAddress(vm.stack_pointer_) - Bytes(input_storage)).As<word_t>();     // Tear down input arguments storage.
         }
 
         void VirtualMachineIntrinsics::PushWord(VMExecutionContext& context)

@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "memory/memory.h"
 #include "memory/bytes.h"
+#include "memory/alignment.h"
 
 #include "diagnostics/diagnostics.h"
 
@@ -92,7 +92,7 @@ namespace syntropy
         /// \param size Size of the memory block to allocate, in bytes.
         /// \param alignment Alignment of the allocated block. Must be a multiple of the minimum allocation size.
         /// \return Returns a pointer to the allocated memory block.
-        virtual void* Allocate(Bytes size, Bytes alignment) = 0;
+        virtual void* Allocate(Bytes size, Alignment alignment) = 0;
 
         /// \brief Free a memory block.
         /// The caller must ensure that the block belongs to the allocator otherwise the behavior is undefined.

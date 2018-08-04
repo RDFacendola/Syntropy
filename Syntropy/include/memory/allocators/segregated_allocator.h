@@ -10,8 +10,9 @@
 #include <vector>
 #include <mutex>
 
-#include "memory/memory.h"
-
+#include "memory/bytes.h"
+#include "memory/memory_address.h"
+#include "memory/virtual_memory_range.h"
 #include "memory/allocators/allocator.h"
 #include "memory/allocators/block_allocator.h"
 
@@ -72,7 +73,7 @@ namespace syntropy
 
         virtual void* Allocate(Bytes size) override;
 
-        virtual void* Allocate(Bytes size, Bytes alignment) override;
+        virtual void* Allocate(Bytes size, Alignment alignment) override;
 
         virtual void Free(void* block) override;
 
@@ -224,7 +225,7 @@ namespace syntropy
 
         virtual void* Allocate(Bytes size) override;
 
-        virtual void* Allocate(Bytes size, Bytes alignment) override;
+        virtual void* Allocate(Bytes size, Alignment alignment) override;
 
         virtual void Free(void* block) override;
 
@@ -245,7 +246,7 @@ namespace syntropy
         /// \param alignment Alignment of the reserved block.
         /// \return Returns a pointer to the reserved memory block.
         /// \remarks The block is guaranteed not to share any memory page with any other allocation.
-        void* Reserve(Bytes size, Bytes alignment);
+        void* Reserve(Bytes size, Alignment alignment);
 
         /// \brief Get the order of this allocator.
         /// \return Returns the number of allocation classes handled by the allocator.
@@ -275,7 +276,7 @@ namespace syntropy
         /// \return Returns the capacity of each allocator, in bytes.
         Bytes GetAllocatorCapacity() const;
 
-        MemoryPool memory_pool_;                            ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
+        VirtualMemoryRange memory_pool_;                    ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
 
         MemoryRange memory_range_;                          ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
 
@@ -320,7 +321,7 @@ namespace syntropy
 
         virtual void* Allocate(Bytes size) override;
 
-        virtual void* Allocate(Bytes size, Bytes alignment) override;
+        virtual void* Allocate(Bytes size, Alignment alignment) override;
 
         virtual void Free(void* block) override;
 

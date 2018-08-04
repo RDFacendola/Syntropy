@@ -18,7 +18,7 @@
 #include "platform/system.h"
 #include "platform/threading.h"
 
-#include "memory/memory.h"
+#include "memory/memory_range.h"
 
 #include <thread>
 
@@ -139,20 +139,20 @@ namespace syntropy::platform
         /// \brief See Memory::GetPageSize
         static Bytes GetPageSize();
 
+        /// \brief See Memory::Reserve
+        static MemoryRange Reserve(Bytes size);
+
         /// \brief See Memory::Allocate
-        static void* Allocate(Bytes size);
+        static MemoryRange Allocate(Bytes size);
 
         /// \brief See Memory::Release
-        static bool Release(void* address);
-
-        /// \brief See Memory::Reserve
-        static void* Reserve(Bytes size);
+        static bool Release(const MemoryRange& memory_range);
 
         /// \brief See Memory::Commit
-        static bool Commit(void* address, Bytes size);
+        static bool Commit(const MemoryRange& memory_range);
 
         /// \brief See Memory::Decommit
-        static bool Decommit(void* address, Bytes size);
+        static bool Decommit(const MemoryRange& memory_range);
 
     };
 }

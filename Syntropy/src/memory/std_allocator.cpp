@@ -24,9 +24,9 @@ namespace syntropy
         return ::operator new(std::size_t(size));
     }
 
-    void* STDAllocator::Allocate(Bytes size, Bytes alignment)
+    void* STDAllocator::Allocate(Bytes size, Alignment alignment)
     {
-        return ::operator new(std::size_t(size), std::align_val_t(std::size_t(alignment)));
+        return ::operator new(std::size_t(size), alignment);
     }
 
     void STDAllocator::Free(void* block)

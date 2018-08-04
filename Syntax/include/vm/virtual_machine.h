@@ -9,8 +9,7 @@
 #include <cstdint>
 #include <unordered_map>
 
-#include "memory/memory.h"
-#include "memory/buffer.h"
+#include "memory/memory_buffer.h"
 #include "memory/allocators/allocator.h"
 
 #include "containers/hashed_string.h"
@@ -153,7 +152,7 @@ namespace syntropy
         {
             TArgument* argument = reinterpret_cast<TArgument*>(virtual_machine_.instruction_pointer_);
 
-            virtual_machine_.instruction_pointer_ = reinterpret_cast<instruction_t*>(argument + 1);         // Advances the instruction pointer to the next instruction/argument
+            virtual_machine_.instruction_pointer_ = reinterpret_cast<instruction_t*>(argument + 1);             // Advances the instruction pointer to the next instruction/argument
 
             return *argument;
         }
@@ -161,11 +160,9 @@ namespace syntropy
         template <typename TArgument>
         inline TArgument* VMExecutionContext::GetNextArgument()
         {
-            auto register_offset = GetNextImmediate<register_t>();                                          // Offset of the register, relative to the current base pointer.
+            auto register_offset = GetNextImmediate<register_t>();                                              // Offset of the register, relative to the current base pointer.
 
-            auto base_pointer = reinterpret_cast<TArgument*>(virtual_machine_.base_pointer_);
-
-            return Memory::AddOffset(base_pointer, Bytes(register_offset));
+            return (MemoryAddress(virtual_machine_.base_pointer_) + Bytes(register_offset)).As<TArgument>();
         }
 
     }

@@ -45,7 +45,7 @@ namespace syntropy
         return nullptr;
     }
 
-    void* LayeredAllocator::Allocate(Bytes size, Bytes alignment)
+    void* LayeredAllocator::Allocate(Bytes size, Alignment alignment)
     {
         for (auto&& layer : layers_)
         {

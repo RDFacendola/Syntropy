@@ -502,29 +502,29 @@ namespace syntropy::platform
         return WindowsMemory::GetInstance().GetPageSize();
     }
 
-    void* PlatformMemory::Allocate(Bytes size)
+    MemoryRange PlatformMemory::Allocate(Bytes size)
     {
-        return VirtualAlloc(0, std::size_t(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+        return MemoryRange(VirtualAlloc(0, std::size_t(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE), size);
     }
 
-    bool PlatformMemory::Release(void* address)
+    MemoryRange PlatformMemory::Reserve(Bytes size)
     {
-        return VirtualFree(address, 0, MEM_RELEASE) != 0;
+        return MemoryRange(VirtualAlloc(0, std::size_t(size), MEM_RESERVE, PAGE_READWRITE), size);
     }
 
-    void* PlatformMemory::Reserve(Bytes size)
+    bool PlatformMemory::Release(const MemoryRange& memory_range)
     {
-        return VirtualAlloc(0, std::size_t(size), MEM_RESERVE, PAGE_READWRITE);
+        return VirtualFree(memory_range.GetBase(), 0, MEM_RELEASE) != 0;
     }
 
-    bool PlatformMemory::Commit(void* address, Bytes size)
+    bool PlatformMemory::Commit(const MemoryRange& memory_range)
     {
-        return VirtualAlloc(address, std::size_t(size), MEM_COMMIT, PAGE_READWRITE) != nullptr;
+        return VirtualAlloc(memory_range.GetBase(), std::size_t(memory_range.GetSize()), MEM_COMMIT, PAGE_READWRITE) != nullptr;
     }
 
-    bool PlatformMemory::Decommit(void* address, Bytes size)
+    bool PlatformMemory::Decommit(const MemoryRange& memory_range)
     {
-        return VirtualFree(address, std::size_t(size), MEM_DECOMMIT) != 0;
+        return VirtualFree(memory_range.GetBase(), std::size_t(memory_range.GetSize()), MEM_DECOMMIT) != 0;
     }
 
 }

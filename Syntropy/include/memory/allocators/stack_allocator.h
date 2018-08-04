@@ -8,11 +8,15 @@
 
 #include <mutex>
 
-#include "memory/memory.h"
-#include "memory/virtual_memory.h"
+#include "memory/alignment.h"
+#include "memory/memory_address.h"
+#include "memory/virtual_memory_range.h"
 
 namespace syntropy
 {
+    /************************************************************************/
+    /* STACK ALLOCATOR                                                      */
+    /************************************************************************/
 
     /// \brief Used to allocate memory on a preallocated contiguous memory block.
     /// Allocations are performed on the head of the stack. Pointer-level deallocations are not supported.
@@ -27,13 +31,13 @@ namespace syntropy
         /// \brief Create a new allocator.
         /// \param capacity Amount of memory reserved by the allocator.
         /// \param alignment Memory alignment.
-        StackAllocator(Bytes capacity, Bytes alignment);
+        StackAllocator(Bytes capacity, Alignment alignment);
 
-        /// \brief Create a new allocator.
+        /// \brief Create a new allocator from a non-owned memory range.
         /// \param memory_range Memory range used by the allocator.
         /// \param alignment Memory alignment.
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        StackAllocator(const MemoryRange& memory_range, Bytes alignment = 1_Bytes);
+        StackAllocator(const MemoryRange& memory_range, Alignment alignment = Alignment(1_Bytes));
 
         /// \brief No copy constructor.
         StackAllocator(const StackAllocator&) = delete;
@@ -52,7 +56,7 @@ namespace syntropy
         /// \brief Allocate a new aligned memory block on the allocator's head.
         /// \param size Size of the memory block to allocate, in bytes.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(Bytes size, Bytes alignment);
+        void* Allocate(Bytes size, Alignment alignment);
 
         /// \brief Free all the allocations performed so far.
         void Free();
@@ -76,15 +80,15 @@ namespace syntropy
 
     private:
 
-        MemoryPool memory_pool_;        ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
+        VirtualMemoryRange memory_pool_;        ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
 
-        MemoryRange memory_range_;      ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
+        MemoryRange memory_range_;              ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
 
-        void* head_;                    ///< \brief Pointer to the first unallocated memory block.
+        MemoryAddress head_;                    ///< \brief Pointer to the first unallocated memory block.
 
-        void* status_;                  ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
+        MemoryAddress status_;                  ///< \brief Points to the last saved status. Grows backwards from the top of the allocator range.
 
-        std::mutex mutex_;              ///< \brief Used for thread-safety purposes.
+        std::mutex mutex_;                      ///< \brief Used for thread-safety purposes.
     };
 
     /// \brief Utility allocator that sits on top of a stack allocator and handles concrete object construction and destruction via RAII.
@@ -171,7 +175,7 @@ namespace syntropy
         /// \brief Create a new allocator.
         /// \param capacity Amount of memory reserved by each allocator.
         /// \param alignment Memory alignment.
-        DoubleBufferedAllocator(Bytes capacity, Bytes alignment);
+        DoubleBufferedAllocator(Bytes capacity, Alignment alignment);
 
         /// \brief Allocate a new memory block on the current allocator.
         /// \param size Size of the memory block to allocate, in bytes.
@@ -181,7 +185,7 @@ namespace syntropy
         /// \brief Allocate a new aligned memory block on the current allocator.
         /// \param size Size of the memory block to allocate, in bytes.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(Bytes size, Bytes alignment);
+        void* Allocate(Bytes size, Alignment alignment);
 
         /// \brief Free all the memory blocks allocated so far in the current allocator.
         void Free();

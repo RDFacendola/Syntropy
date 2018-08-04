@@ -9,26 +9,19 @@ namespace syntropy
     /* LINEAR ALLOCATOR                                                     */
     /************************************************************************/
 
-    LinearAllocator::LinearAllocator()
-        : head_(nullptr)
-        , page_head_(nullptr)
+    LinearAllocator::LinearAllocator(Bytes capacity, Alignment alignment)
+        : memory_pool_(capacity, alignment)
+        , memory_range_(memory_pool_)
+        , head_(memory_range_.GetBase())
+        , page_head_(memory_range_.GetBase())
     {
 
     }
 
-    LinearAllocator::LinearAllocator(Bytes capacity, Bytes alignment)
-        : memory_pool_(capacity, alignment)             // Allocate a new virtual address range.
-        , memory_range_(memory_pool_)                   // Get the full range out of the memory pool.
-        , head_(*memory_range_)
-        , page_head_(*memory_range_)
-    {
-
-    }
-
-    LinearAllocator::LinearAllocator(const MemoryRange& memory_range, Bytes alignment)
-        : memory_range_(memory_range, alignment)        // Copy the memory range without taking ownership.
-        , head_(*memory_range_)
-        , page_head_(*memory_range_)
+    LinearAllocator::LinearAllocator(const MemoryRange& memory_range, Alignment alignment)
+        : memory_range_(memory_range.GetBase().GetAligned(alignment), memory_range.GetTop())
+        , head_(memory_range_.GetBase())
+        , page_head_(memory_range_.GetBase())
     {
 
     }
@@ -42,47 +35,45 @@ namespace syntropy
 
     }
 
-    void* LinearAllocator::Allocate(Bytes size, Bytes alignment)
+    void* LinearAllocator::Allocate(Bytes size, Alignment alignment)
     {
         SYNTROPY_ASSERT(size > 0_Bytes);
 
-        auto block = Memory::Align(head_, alignment);
+        auto block = MemoryAddress(head_).GetAligned(alignment);
 
-        head_ = Memory::AddOffset(head_, size);
+        head_ = block + size;
 
-        SYNTROPY_ASSERT(Memory::GetDistance(memory_range_.GetTop(), head_) <= 0);                           // Out-of-memory check.
+        SYNTROPY_ASSERT(head_ <= memory_range_.GetTop());                                                   // Out-of-memory check.
 
         // Commit each memory page between the old page head and the new one
 
-        auto next_page = Memory::Align(head_, VirtualMemory::GetPageSize());                                // Ceil to next memory page boundary.
+        auto next_page = head_.GetAligned(Alignment(VirtualMemory::GetPageSize()));                         // Ceil to next memory page boundary.
 
-        auto allocation_size = Memory::GetDistance(page_head_, next_page);
+        auto allocation_size = next_page - page_head_;
 
         if (allocation_size > 0)
         {
-            VirtualMemory::Commit(page_head_, Bytes(static_cast<size_t>(allocation_size)));                 // Commit the missing memory pages.
+            VirtualMemory::Commit(MemoryRange(page_head_, next_page));                                      // Commit the missing memory pages.
 
             page_head_ = next_page;                                                                         // Update the page head.
         }
 
-        MemoryDebug::MarkUninitialized(block, head_);
-
         return block;
     }
 
-    void* LinearAllocator::Reserve(Bytes size, Bytes alignment)
+    void* LinearAllocator::Reserve(Bytes size, Alignment alignment)
     {
         SYNTROPY_ASSERT(size > 0_Bytes);
 
-        auto block = Memory::Align(head_, VirtualMemory::GetPageSize());                                    // Reserve at page boundary, we don't want to share memory pages with other allocations.
+        auto block = head_.GetAligned(Alignment(VirtualMemory::GetPageSize()));                             // Reserve at page boundary, we don't want to share memory pages with other allocations.
         
-        block = Memory::Align(block, alignment);                                                            // Align the block to the requested value.
+        block = block.GetAligned(alignment);                                                                // Align the block to the requested value.
 
-        head_ = Memory::AddOffset(block, size);                                                             // Reserve the requested size.
+        head_ = block + size;                                                                               // Reserve the requested size.
 
-        head_ = Memory::Align(head_, VirtualMemory::GetPageSize());                                         // Move the head to the next memory page so that following allocations won't share any memory page with this one.
+        head_ = head_.GetAligned(Alignment(VirtualMemory::GetPageSize()));                                  // Move the head to the next memory page so that following allocations won't share any memory page with this one.
 
-        SYNTROPY_ASSERT(Memory::GetDistance(memory_range_.GetTop(), head_) <= 0);                           // Out-of-memory check.
+        SYNTROPY_ASSERT(head_ <= memory_range_.GetTop());                                                   // Out-of-memory check.
 
         page_head_ = head_;                                                                                 // Update the page head.
 
@@ -91,10 +82,10 @@ namespace syntropy
 
     void LinearAllocator::Free()
     {
-        VirtualMemory::Decommit(*memory_range_, MemoryRange(*memory_range_, page_head_).GetSize());        // Decommit everything.
+        VirtualMemory::Decommit(MemoryRange(memory_range_.GetBase(), page_head_));                          // Decommit everything.
 
-        head_ = *memory_range_;
-        page_head_ = head_;
+        head_ = memory_range_.GetBase();
+        page_head_ = memory_range_.GetBase();
     }
 
     const MemoryRange& LinearAllocator::GetRange() const

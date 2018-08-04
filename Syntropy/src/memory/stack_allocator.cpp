@@ -9,23 +9,21 @@ namespace syntropy
     /* STACK ALLOCATOR                                                      */
     /************************************************************************/
 
-    StackAllocator::StackAllocator(Bytes capacity, Bytes alignment)
-        : memory_pool_(capacity, alignment)             // Allocate a new virtual address range.
-        , memory_range_(memory_pool_)                   // Get the full range out of the memory pool.
-        , head_(*memory_range_)
+    StackAllocator::StackAllocator(Bytes capacity, Alignment alignment)
+        : memory_pool_(capacity, alignment)
+        , memory_range_(memory_pool_)
+        , head_(memory_range_.GetBase())
         , status_(nullptr)
     {
-        // Allocate everything upfront.
-        VirtualMemory::Commit(*memory_range_, memory_range_.GetSize());
+        VirtualMemory::Commit(memory_range_);                   // Allocate everything upfront.
     }
 
-    StackAllocator::StackAllocator(const MemoryRange& memory_range, Bytes alignment)
-        : memory_range_(memory_range, alignment)        // Copy the memory range without taking ownership.
-        , head_(*memory_range_)
+    StackAllocator::StackAllocator(const MemoryRange& memory_range, Alignment alignment)
+        : memory_range_(memory_range.GetBase().GetAligned(alignment), memory_range.GetTop())
+        , head_(memory_range_.GetBase())
         , status_(nullptr)
     {
-        // Allocate everything upfront.
-        VirtualMemory::Commit(*memory_range_, memory_range_.GetSize());
+        VirtualMemory::Commit(memory_range_);                           // Allocate everything upfront.
     }
 
     void* StackAllocator::Allocate(Bytes size)
@@ -36,24 +34,22 @@ namespace syntropy
 
         auto block = head_;
 
-        head_ = Memory::AddOffset(head_, size);
+        head_ += size;
 
-        SYNTROPY_ASSERT(Memory::GetDistance(memory_range_.GetTop(), head_) <= 0);       // Out-of-memory check.
-
-        MemoryDebug::MarkUninitialized(block, head_);
+        SYNTROPY_ASSERT(head_ <= memory_range_.GetTop());               // Out-of-memory check.
 
         return block;
     }
 
-    void* StackAllocator::Allocate(Bytes size, Bytes alignment)
+    void* StackAllocator::Allocate(Bytes size, Alignment alignment)
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
-        head_ = Memory::Align(head_, alignment);        // Add a padding so that the allocated block is aligned
+        head_ = head_.GetAligned(alignment);                            // Align the head to the provided alignment.
 
         auto block = Allocate(size);
 
-        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, alignment));
+        SYNTROPY_ASSERT(MemoryAddress(block).IsAlignedTo(alignment));
 
         return block;
     }
@@ -62,9 +58,7 @@ namespace syntropy
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
-        MemoryDebug::MarkFree(*memory_range_, head_);
-
-        head_ = *memory_range_;
+        head_ = memory_range_.GetBase();
     }
 
     void StackAllocator::SaveStatus()
@@ -73,26 +67,24 @@ namespace syntropy
 
         status_ = head_;
 
-        *reinterpret_cast<uintptr_t*>(Allocate(Bytes(sizeof(uintptr_t)))) = reinterpret_cast<uintptr_t>(status_);    // Push the current status pointer on the stack
+        *reinterpret_cast<uintptr_t*>(Allocate(Bytes(sizeof(uintptr_t)))) = uintptr_t(status_);    // Push the current status pointer on the stack
     }
 
     void StackAllocator::RestoreStatus()
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
-        SYNTROPY_PRECONDITION(status_);
+        SYNTROPY_PRECONDITION(status_ != MemoryAddress(nullptr));
 
         auto previous_head = head_;
 
-        head_ = status_;                                                                // Restore the last status
-        status_ = reinterpret_cast<int8_t*>(*reinterpret_cast<uintptr_t*>(head_));      // Move to the next status
-
-        MemoryDebug::MarkFree(head_, previous_head);
+        head_ = status_;                                                                    // Restore the last status
+        status_ = reinterpret_cast<int8_t*>(*reinterpret_cast<uintptr_t*>(*head_));         // Move to the next status
     }
 
     Bytes StackAllocator::GetAllocationSize() const
     {
-        return Bytes(static_cast<size_t>(Memory::GetDistance(*memory_range_, head_)));
+        return Bytes(head_ - memory_range_.GetBase());
     }
 
     Bytes StackAllocator::GetCommitSize() const
@@ -131,7 +123,7 @@ namespace syntropy
     /* DOUBLE BUFFERED ALLOCATOR                                            */
     /************************************************************************/
 
-    DoubleBufferedAllocator::DoubleBufferedAllocator(Bytes capacity, Bytes alignment)
+    DoubleBufferedAllocator::DoubleBufferedAllocator(Bytes capacity, Alignment alignment)
         : allocators_{ { capacity, alignment },{ capacity, alignment } }
         , current_(allocators_)
     {
@@ -143,7 +135,7 @@ namespace syntropy
         return current_->Allocate(size);
     }
 
-    void* DoubleBufferedAllocator::Allocate(Bytes size, Bytes alignment)
+    void* DoubleBufferedAllocator::Allocate(Bytes size, Alignment alignment)
     {
         return current_->Allocate(size, alignment);
     }

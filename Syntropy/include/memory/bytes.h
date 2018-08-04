@@ -98,7 +98,7 @@ namespace syntropy
 
     private:
 
-        std::size_t bytes_ = 0;                 ///< \brief Number of bytes.
+        std::size_t bytes_ = 0u;                ///< \brief Number of bytes.
 
     };
 

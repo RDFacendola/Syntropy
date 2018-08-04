@@ -11,8 +11,6 @@
 
 #include "type_traits.h"
 
-#include "memory/memory.h"
-
 #include "memory/allocators/segregated_allocator.h"
 
 namespace syntropy
@@ -49,7 +47,7 @@ namespace syntropy
 
         virtual void* Allocate(Bytes size) override;
 
-        virtual void* Allocate(Bytes size, Bytes alignment) override;
+        virtual void* Allocate(Bytes size, Alignment alignment) override;
 
         virtual void Free(void* block) override;
 

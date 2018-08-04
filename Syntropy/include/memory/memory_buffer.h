@@ -1,16 +1,19 @@
 
-/// \file buffer.h
-/// \brief TODO: Add brief description here
+/// \file memory_buffer.h
+/// \brief This header is part of the syntropy memory management system. It contains classes and definitions for memory buffers.
 ///
 /// \author Raffaele D. Facendola - 2017
 
 #pragma once
 
-#include "memory/memory.h"
+#include "memory/memory_range.h"
 #include "memory/allocators/allocator.h"
 
 namespace syntropy
 {
+    /************************************************************************/
+    /* MEMORY BUFFER                                                        */
+    /************************************************************************/
 
     /// \brief Represents a raw memory buffer.
     /// The buffer must be allocated via an explicit allocator.

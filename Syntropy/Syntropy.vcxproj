@@ -24,6 +24,7 @@
     <ClInclude Include="include\contexts.h" />
     <ClInclude Include="include\memory\memory_address.h" />
     <ClInclude Include="include\memory\alignment.h" />
+    <ClInclude Include="include\memory\memory_range.h" />
     <ClInclude Include="include\memory\virtual_memory_range.h" />
     <ClInclude Include="include\patterns\multi_interface.h">
       <SubType>
@@ -78,7 +79,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="include\memory\buffer.h">
+    <ClInclude Include="include\memory\memory_buffer.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -87,10 +88,6 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\memory\allocators\layered_allocator.h">
-      <SubType>
-      </SubType>
-    </ClInclude>
-    <ClInclude Include="include\memory\memory.h">
       <SubType>
       </SubType>
     </ClInclude>
@@ -229,7 +226,7 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="src\memory\buffer.cpp">
+    <ClCompile Include="src\memory\memory_buffer.cpp">
       <SubType>
       </SubType>
     </ClCompile>
@@ -238,10 +235,6 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="src\memory\layered_allocator.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
-    <ClCompile Include="src\memory\memory.cpp">
       <SubType>
       </SubType>
     </ClCompile>

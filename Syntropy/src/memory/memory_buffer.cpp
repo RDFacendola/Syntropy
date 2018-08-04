@@ -1,4 +1,4 @@
-#include "memory/buffer.h"
+#include "memory/memory_buffer.h"
 
 #include <cstring>
 
@@ -25,7 +25,7 @@ namespace syntropy
     MemoryBuffer::MemoryBuffer(const MemoryBuffer& other)
         : MemoryBuffer(other.GetSize(), *other.allocator_)
     {
-        std::memmove(*range_, *other.range_, std::size_t(other.GetSize()));          // Copy the buffer's content.
+        std::memmove(range_.GetBase(), other.range_.GetBase(), std::size_t(other.GetSize()));           // Copy the buffer's content.
     }
 
     MemoryBuffer::MemoryBuffer(MemoryBuffer&& other)
@@ -38,9 +38,9 @@ namespace syntropy
 
     MemoryBuffer::~MemoryBuffer()
     {
-        if (*range_)
+        if (range_)
         {
-            SYNTROPY_FREE(*allocator_, *range_);
+            SYNTROPY_FREE(*allocator_, range_.GetBase());
         }
     }
 
@@ -52,7 +52,7 @@ namespace syntropy
 
     void* MemoryBuffer::operator*() const
     {
-        return *range_;
+        return range_.GetBase();
     }
 
     void* MemoryBuffer::operator[](Bytes offset) const

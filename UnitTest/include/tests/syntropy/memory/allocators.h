@@ -8,7 +8,6 @@
 #include "unit_test/test_fixture.h"
 #include "unit_test/test_case.h"
 
-#include "memory/memory.h"
 #include "memory/bytes.h"
 #include "memory/memory_manager.h"
 #include "memory/memory_meta.h"

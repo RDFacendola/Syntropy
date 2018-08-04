@@ -42,7 +42,7 @@ namespace syntropy
 
         virtual void* Allocate(Bytes size) override;
 
-        virtual void* Allocate(Bytes size, Bytes alignment) override;
+        virtual void* Allocate(Bytes size, Alignment alignment) override;
 
         virtual void Free(void* block) override;
 

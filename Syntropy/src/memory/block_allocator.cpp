@@ -56,16 +56,16 @@ namespace syntropy
     }
 
     BlockAllocator::BlockAllocator(Bytes capacity, Bytes block_size)
-        : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
-        , allocator_(capacity, block_size_)                         // Reserve the virtual memory range upfront without allocating.
+        : block_size_(VirtualMemory::CeilToPageSize(block_size))            // Round up to the next system page size.
+        , allocator_(capacity, Alignment(block_size_))                      // Reserve the virtual memory range upfront without allocating.
         , free_list_(nullptr)
     {
 
     }
 
     BlockAllocator::BlockAllocator(const MemoryRange& memory_range, Bytes block_size)
-        : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
-        , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
+        : block_size_(VirtualMemory::CeilToPageSize(block_size))            // Round up to the next system page size.
+        , allocator_(memory_range, Alignment(block_size_))                  // Get the memory range without taking ownership.
         , free_list_(nullptr)
     {
 
@@ -81,16 +81,13 @@ namespace syntropy
 
     void* BlockAllocator::Allocate(Bytes commit_size)
     {
-        commit_size = VirtualMemory::CeilToPageSize(std::min(commit_size, block_size_));
+        SYNTROPY_ASSERT(commit_size <= block_size_);
+
+        commit_size = VirtualMemory::CeilToPageSize(commit_size);
 
         auto block = Reserve();
 
-        if (commit_size > 0_Bytes)
-        {
-            VirtualMemory::Commit(block, commit_size);
-
-            MemoryDebug::MarkUninitialized(block, Memory::AddOffset(block, commit_size));
-        }
+        VirtualMemory::Commit(MemoryRange(block, commit_size));
 
         return block;
     }
@@ -100,27 +97,30 @@ namespace syntropy
         if (!free_list_)
         {
             // No free block
-            return allocator_.Reserve(block_size_, block_size_);    // Reserve a new block aligned to its own size.
+
+            return allocator_.Reserve(block_size_, Alignment(block_size_));     // Reserve a new block aligned to its own size.
         }
         else if(free_list_->IsEmpty())
         {
             // No free block referenced by the current chunk
-            auto block = free_list_;                                // Reuse the chunk itself.
-            free_list_ = free_list_->next_;                         // Move to the next free list block. The block is already committed.
+
+            auto block = free_list_;                                            // Reuse the chunk itself.
+            free_list_ = free_list_->next_;                                     // Move to the next free list block. The block is already committed.
 
             return block;
         }
         else
         {
             // Restore a deallocated memory block.
-            return free_list_->PopBlock();                          // Pop a free block address.
+
+            return free_list_->PopBlock();                                      // Pop a free block address.
         }
     }
 
     void BlockAllocator::Free(void* block)
     {
-        SYNTROPY_ASSERT(allocator_.GetRange().Contains(block));     // Check whether the block belongs to this allocator.
-        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, block_size_));   // Check whether the block is properly aligned (guaranteed by Allocate()\Reserve())
+        SYNTROPY_ASSERT(allocator_.GetRange().Contains(block));                         // Check whether the block belongs to this allocator.
+        SYNTROPY_ASSERT(MemoryAddress(block).IsAlignedTo(Alignment(block_size_)));      // Check whether the block is properly aligned (guaranteed by Allocate()\Reserve())
 
         if (!free_list_ || free_list_->IsFull())
         {
@@ -128,7 +128,7 @@ namespace syntropy
 
             auto capacity = (block_size_ - Bytes(sizeof(FreeBlock))) / Bytes(sizeof(uintptr_t)) + 1;
 
-            VirtualMemory::Commit(block, block_size_);              // Make sure the block is mapped to the system memory.
+            VirtualMemory::Commit(MemoryRange(block, block_size_));                     // Make sure the block is mapped to the system memory.
 
             free_list_ = new (block) FreeBlock(free_list_, capacity);
         }
@@ -136,9 +136,9 @@ namespace syntropy
         {
             // Add the block to the current free list chunk.
 
-            free_list_->PushBlock(block);                           // Push the address of the free block.
+            free_list_->PushBlock(block);                                               // Push the address of the free block.
 
-            VirtualMemory::Decommit(block, block_size_);            // Unmap the block from the system memory.
+            VirtualMemory::Decommit(MemoryRange(block, block_size_));                   // Unmap the block from the system memory.
         }
 
     }
@@ -166,7 +166,7 @@ namespace syntropy
 
     StaticBlockAllocator::StaticBlockAllocator(Bytes capacity, Bytes block_size)
         : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
-        , allocator_(capacity, block_size_)                         // Reserve the virtual memory range upfront without allocating.
+        , allocator_(capacity, Alignment(block_size_))              // Reserve the virtual memory range upfront without allocating.
         , free_list_(nullptr)
     {
 
@@ -174,7 +174,7 @@ namespace syntropy
 
     StaticBlockAllocator::StaticBlockAllocator(const MemoryRange& memory_range, Bytes block_size)
         : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
-        , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
+        , allocator_(memory_range, Alignment(block_size_))          // Get the memory range without taking ownership.
         , free_list_(nullptr)
     {
 
@@ -192,25 +192,21 @@ namespace syntropy
     {
         if (free_list_)
         {
-            auto block = free_list_;                                // Recycle the first unused memory block.
-            free_list_ = block->next_;                              // Move to the next free block.
-
-            MemoryDebug::MarkUninitialized(block, Memory::AddOffset(block, block_size_));
+            auto block = free_list_;                                            // Recycle the first unused memory block.
+            free_list_ = block->next_;                                          // Move to the next free block.
 
             return block;
         }
         else
         {
-            return allocator_.Allocate(block_size_, block_size_);   // Allocate a new block aligned to its own size.
+            return allocator_.Allocate(block_size_, Alignment(block_size_));    // Allocate a new block aligned to its own size.
         }
     }
 
     void StaticBlockAllocator::Free(void* block)
     {
-        SYNTROPY_ASSERT(allocator_.GetRange().Contains(block));     // Check whether the block belongs to this allocator.
-        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, block_size_));   // Check whether the block is properly aligned (guaranteed by Allocate())
-
-        MemoryDebug::MarkFree(block, Memory::AddOffset(block, block_size_));
+        SYNTROPY_ASSERT(allocator_.GetRange().Contains(block));                         // Check whether the block belongs to this allocator.
+        SYNTROPY_ASSERT(MemoryAddress(block).IsAlignedTo(Alignment(block_size_)));      // Check whether the block is properly aligned (guaranteed by Allocate())
 
         auto free_block = reinterpret_cast<Block*>(block);
 

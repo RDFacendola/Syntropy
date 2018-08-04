@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <new>
 
-#include "memory/memory.h"
 #include "memory/virtual_memory.h"
 
 #include "diagnostics/assert.h"
@@ -30,11 +29,11 @@ namespace syntropy
         // Fill the free-block linked list
         auto last_block = GetLastBlock(page_size);
         
-        SYNTROPY_ASSERT(Memory::GetDistance(free_, last_block) >= 0);
+        SYNTROPY_ASSERT(free_ < last_block);
 
         for(auto block = free_; block != last_block; block = block->next_)
         {
-            block->next_ = Memory::AddOffset(block, block_size_);
+            block->next_ = (MemoryAddress(block) + block_size).As<Block>();
         }
         
         last_block->next_ = nullptr;
@@ -75,7 +74,7 @@ namespace syntropy
     LinearSegregatedFitAllocator::Block* LinearSegregatedFitAllocator::Page::GetFirstBlock()
     {
         // Find the first address past the page which is aligned to the block size.
-        return reinterpret_cast<Block*>(Memory::Align(Memory::AddOffset(this, Bytes(sizeof(Page))), block_size_));
+        return (MemoryAddress(this) + Bytes(sizeof(Page))).GetAligned(Alignment(block_size_)).As<Block>();
     }
 
     LinearSegregatedFitAllocator::Block* LinearSegregatedFitAllocator::Page::GetLastBlock(Bytes page_size)
@@ -84,7 +83,7 @@ namespace syntropy
 
         auto size = page_size - (block_size_ * 2u) - 1_Bytes;
 
-        return reinterpret_cast<Block*>(Memory::Align(Memory::AddOffset(this, size), block_size_));
+        return (MemoryAddress(this) + size).GetAligned(Alignment(block_size_)).As<Block>();
     }
 
     /************************************************************************/
@@ -146,15 +145,13 @@ namespace syntropy
         return block;
     }
 
-    void* LinearSegregatedFitAllocator::Allocate(Bytes size, Bytes alignment)
+    void* LinearSegregatedFitAllocator::Allocate(Bytes size, Alignment alignment)
     {
-        SYNTROPY_PRECONDITION(Math::IsPow2(alignment));
-
         // Since blocks are aligned to their own size, we are looking for a block large enough that is also a multiple of the requested alignment.
 
-        auto block = Allocate(Math::Ceil(size, alignment));
+        auto block = Allocate(Math::Ceil(size, Bytes(alignment)));
 
-        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, alignment));
+        SYNTROPY_ASSERT(MemoryAddress(block).IsAlignedTo(alignment));
 
         return block;
     }
@@ -163,7 +160,7 @@ namespace syntropy
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
-        auto page = reinterpret_cast<Page*>(Memory::AlignDown(address, GetPageSize()));     // Page the block belongs to
+        auto page = MemoryAddress(address).GetAlignedDown(Alignment(GetPageSize())).As<Page>();     // Page the block belongs to.
 
         auto is_full = page->IsFull();
 
@@ -297,15 +294,15 @@ namespace syntropy
 
     ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const HashedString& name, Bytes capacity, Bytes class_size, size_t order)
         : Allocator(name)
-        , memory_pool_(capacity, VirtualMemory::CeilToPageSize(class_size))         // Allocate a new virtual address range.
-        , memory_range_(memory_pool_)                                               // Get the full range out of the memory pool.
+        , memory_pool_(capacity, Alignment(VirtualMemory::CeilToPageSize(class_size)))          // Allocate a new virtual address range.
+        , memory_range_(memory_pool_)                                                           // Get the full range out of the memory pool.
     {
         InitializeAllocators(order, VirtualMemory::CeilToPageSize(class_size));
     }
 
     ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, Bytes class_size, size_t order)
         : Allocator(name)
-        , memory_range_(memory_range, VirtualMemory::CeilToPageSize(class_size))    // Align the input memory range. Doesn't take ownership.
+        , memory_range_(memory_range.GetBase().GetAligned(Alignment(VirtualMemory::CeilToPageSize(class_size))), memory_range.GetTop())     // Align the input memory range. Doesn't take ownership.
     {
         InitializeAllocators(order, VirtualMemory::CeilToPageSize(class_size));
     }
@@ -326,13 +323,11 @@ namespace syntropy
         return GetAllocatorBySize(size).Allocate(size);
     }
 
-    void* ExponentialSegregatedFitAllocator::Allocate(Bytes size, Bytes alignment)
+    void* ExponentialSegregatedFitAllocator::Allocate(Bytes size, Alignment alignment)
     {
-        SYNTROPY_PRECONDITION(Math::IsPow2(alignment));
-
         auto block = Allocate(size);        // A memory page is always aligned to some power of 2 which is almost always bigger than any requested alignment.
 
-        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, alignment));
+        SYNTROPY_ASSERT(MemoryAddress(block).IsAlignedTo(alignment));
 
         return block;
     }
@@ -345,7 +340,7 @@ namespace syntropy
 
         // The entire memory range is divided evenly among all the allocators
 
-        auto distance = Memory::GetDistance(*memory_range_, address);
+        auto distance = address - memory_range_.GetBase();
 
         auto index = Bytes(distance) / GetAllocatorCapacity();
 
@@ -369,13 +364,11 @@ namespace syntropy
         return GetAllocatorBySize(size).Reserve();
     }
 
-    void* ExponentialSegregatedFitAllocator::Reserve(Bytes size, Bytes alignment)
+    void* ExponentialSegregatedFitAllocator::Reserve(Bytes size, Alignment alignment)
     {
-        SYNTROPY_PRECONDITION(Math::IsPow2(alignment));
-
         auto block = Reserve(size);         // A memory page is always aligned to some power of 2 which is almost always bigger than any requested alignment.
 
-        SYNTROPY_ASSERT(Memory::IsAlignedTo(block, alignment));
+        SYNTROPY_ASSERT(MemoryAddress(block).IsAlignedTo(alignment));
 
         return block;
     }
@@ -408,8 +401,8 @@ namespace syntropy
         for(size_t index = 0; index < order; ++index)
         {
             allocators_.emplace_back(
-                MemoryRange(Memory::AddOffset(*memory_range_, index * capacity), capacity),         // Split the range into sub ranges.
-                class_size * (std::size_t(1u) << index));                                           // Class size is doubled at each iteration.
+                MemoryRange(memory_range_.GetBase() + index * capacity, capacity),                  // Split the range into sub ranges.
+                class_size << index);                                                               // Class size is doubled at each iteration.
 
             SYNTROPY_ASSERT(memory_range_.Contains(allocators_.back().GetRange()));
         }
@@ -486,12 +479,12 @@ namespace syntropy
 
     void* TwoLevelSegregatedFitAllocator::BlockHeader::begin()
     {
-        return Memory::AddOffset(this, Bytes(sizeof(BlockHeader)));
+        return MemoryAddress(this) + Bytes(sizeof(BlockHeader));
     }
 
     void* TwoLevelSegregatedFitAllocator::BlockHeader::end()
     {
-        return Memory::AddOffset(this, GetSize());
+        return MemoryAddress(this) + GetSize();
     }
 
     /************************************************************************/
@@ -500,12 +493,12 @@ namespace syntropy
 
     void* TwoLevelSegregatedFitAllocator::FreeBlockHeader::begin()
     {
-        return Memory::AddOffset(this, Bytes(sizeof(FreeBlockHeader)));
+        return MemoryAddress(this) + Bytes(sizeof(FreeBlockHeader));
     }
 
     void* TwoLevelSegregatedFitAllocator::FreeBlockHeader::end()
     {
-        return Memory::AddOffset(this, GetSize());
+        return MemoryAddress(this) + GetSize();
     }
 
     /************************************************************************/
@@ -516,14 +509,14 @@ namespace syntropy
 
     TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(const HashedString& name, Bytes capacity, size_t second_level_index)
         : Allocator(name)
-        , allocator_(capacity, VirtualMemory::GetPageSize())
+        , allocator_(capacity, Alignment(VirtualMemory::GetPageSize()))
     {
         Initialize(second_level_index);
     }
 
     TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t second_level_index)
         : Allocator(name)
-        , allocator_(memory_range, VirtualMemory::GetPageSize())
+        , allocator_(memory_range, Alignment(VirtualMemory::GetPageSize()))
     {
         Initialize(second_level_index);
     }
@@ -550,19 +543,19 @@ namespace syntropy
 
         *reinterpret_cast<BlockHeader**>(block->begin()) = block;                   // The base pointer points to the header.
 
-        return Memory::AddOffset(block->begin(), Bytes(sizeof(uintptr_t)));
+        return MemoryAddress(block->begin()) + Bytes(sizeof(uintptr_t));
     }
 
-    void* TwoLevelSegregatedFitAllocator::Allocate(Bytes size, Bytes alignment)
+    void* TwoLevelSegregatedFitAllocator::Allocate(Bytes size, Alignment alignment)
     {
         // Structure of the block:
         // || HEADER | PADDING | BASE_POINTER | ... ALIGNED BLOCK ... ||
 
         auto block = GetFreeBlockBySize(size + alignment - 1_Bytes + Bytes(sizeof(uintptr_t)));                         // Reserve enough space for the block, the base pointer and the eventual padding.
 
-        auto aligned_begin = Memory::Align(Memory::AddOffset(block->begin(), Bytes(sizeof(uintptr_t))), alignment);     // First address of the requested aligned block.
+        auto aligned_begin = MemoryAddress(block->begin() + Bytes(sizeof(uintptr_t))).GetAligned(alignment);            // First address of the requested aligned block.
 
-        *reinterpret_cast<BlockHeader**>(Memory::SubOffset(aligned_begin, Bytes(sizeof(uintptr_t)))) = block;           // The base pointer points to the header.
+        *(aligned_begin - Bytes(sizeof(uintptr_t))).As<BlockHeader*>() = block;                                         // The base pointer points to the header.
 
         return aligned_begin;
     }
@@ -573,7 +566,7 @@ namespace syntropy
 
         // The base pointer is guaranteed to be adjacent to the allocated block.
 
-        auto base_pointer = reinterpret_cast<BlockHeader**>(Memory::SubOffset(block, Bytes(sizeof(uintptr_t))));
+        auto base_pointer = (MemoryAddress(block) - Bytes(sizeof(uintptr_t))).As<BlockHeader*>();
 
         PushBlock(*base_pointer);
     }
@@ -678,8 +671,6 @@ namespace syntropy
 
         SYNTROPY_ASSERT(block->GetSize() >= size);
 
-        MemoryDebug::MarkUninitialized(block->begin(), block->end());
-
         return block;
     }
 
@@ -780,8 +771,6 @@ namespace syntropy
 
         merged_block->SetBusy(false);                                                   // The block is no longer busy
 
-        MemoryDebug::MarkFree(merged_block->begin(), merged_block->end());
-
         InsertBlock(merged_block);
     }
 
@@ -811,7 +800,7 @@ namespace syntropy
 
         if (block->GetSize() >= kMinimumBlockSize + size)               // Do not split if the remaining block size would fall below the minimum size allowed.
         {
-            auto remaining_block = Memory::AddOffset(block, size);
+            auto remaining_block = (MemoryAddress(block) + size).As<BlockHeader>();
 
             // Setup the new block
             remaining_block->previous_ = block;                         // Previous physical block
