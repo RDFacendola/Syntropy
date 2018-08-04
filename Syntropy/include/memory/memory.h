@@ -8,6 +8,7 @@
 
 #include <cstdint>
 
+#include "memory/bytes.h"
 #include "math/math.h"
 
 namespace syntropy
@@ -25,14 +26,14 @@ namespace syntropy
         /// \param offset Offset to add, in bytes.
         /// \return Returns the address moved forward by the specified amount of bytes.
         template <typename T>
-        static constexpr T* AddOffset(T* address, size_t offset);
+        static constexpr T* AddOffset(T* address, Bytes offset);
 
         /// \brief Subtract and offset from an address.
         /// \param address Address to offset.
         /// \param offset Offset to subtract, in bytes.
         /// \return Returns the address moved backward by the specified amount of bytes.
         template <typename T>
-        static constexpr T* SubOffset(T* address, size_t offset);
+        static constexpr T* SubOffset(T* address, Bytes offset);
 
         /// \brief Get the distance of two addresses, in bytes.
         /// \param first First address.
@@ -48,7 +49,7 @@ namespace syntropy
         /// \return Returns the address aligned to the given alignment boundary.
         /// \remarks This method aligns by adding a padding value to the base address.
         template <typename T>
-        static constexpr T* Align(T* address, size_t alignment);
+        static constexpr T* Align(T* address, Bytes alignment);
 
         /// \brief Align an address.
         /// \param address Address to align
@@ -56,13 +57,13 @@ namespace syntropy
         /// \return Returns the address aligned down to the given alignment boundary.
         /// \remarks This method aligns by subtracting a padding value to the base address.
         template <typename T>
-        static constexpr T* AlignDown(T* address, size_t alignment);
+        static constexpr T* AlignDown(T* address, Bytes alignment);
 
         /// \brief Check whether an address is aligned to a particular size.
         /// \param address Address to check.
         /// \param alignment Alignment to test against.
         /// \return Returns true if address is aligned to the provided alignment, returns false otherwise.
-        static constexpr bool IsAlignedTo(void* address, size_t alignment);
+        static constexpr bool IsAlignedTo(void* address, Bytes alignment);
 
     };
 
@@ -112,13 +113,13 @@ namespace syntropy
         /// \brief Create a memory range.
         /// \param base First address in the range.
         /// \param size Size of the range.
-        MemoryRange(void* base, size_t size);
+        MemoryRange(void* base, Bytes size);
 
         /// \brief Create a memory range which is the aligned version of another range.
         /// This range is guaranteed to be contained inside the original range.
         /// \param other Range to copy.
         /// \param alignment Alignment of this range.
-        MemoryRange(const MemoryRange& other, size_t alignment);
+        MemoryRange(const MemoryRange& other, Bytes alignment);
 
         /// \brief Dereferencing operator. Access the base address of the range.
         /// \return Returns the base address of the range.
@@ -127,7 +128,7 @@ namespace syntropy
         /// \brief Access an element in the range.
         /// \param offset Offset with respect to the first element of the range.
         /// \return Returns a pointer to offset-bytes after the base of the range.
-        void* operator[](size_t offset) const;
+        void* operator[](Bytes offset) const;
 
         /// \brief Get the address past the end of this range,
         /// \return Returns the address past the end of this range.
@@ -135,7 +136,7 @@ namespace syntropy
 
         /// \brief Get the size of the range, in bytes.
         /// \return Returns the total capacity of the memory range, in bytes.
-        size_t GetSize() const;
+        Bytes GetSize() const;
 
         /// \brief Check whether a memory range is contained entirely inside this range.
         /// \param memory_range Memory range to check.
@@ -167,15 +168,15 @@ namespace syntropy
     /************************************************************************/
 
     template <typename T>
-    constexpr T* Memory::AddOffset(T* address, size_t offset)
+    constexpr T* Memory::AddOffset(T* address, Bytes offset)
     {
-        return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) + offset);
+        return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) + std::size_t(offset));
     }
 
     template <typename T>
-    constexpr T* Memory::SubOffset(T* address, size_t offset)
+    constexpr T* Memory::SubOffset(T* address, Bytes offset)
     {
-        return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) - offset);
+        return reinterpret_cast<T*>(reinterpret_cast<int8_t*>(address) - std::size_t(offset));
     }
 
     constexpr ptrdiff_t Memory::GetDistance(const void* first, const void* second)
@@ -184,20 +185,20 @@ namespace syntropy
     }
 
     template <typename T>
-    constexpr T* Memory::Align(T* address, size_t alignment)
+    constexpr T* Memory::Align(T* address, Bytes alignment)
     {
-        return reinterpret_cast<T*>(Math::Ceil(reinterpret_cast<uintptr_t>(address), alignment));
+        return reinterpret_cast<T*>(Math::Ceil(reinterpret_cast<uintptr_t>(address), std::size_t(alignment)));
     }
 
     template <typename T>
-    constexpr T* Memory::AlignDown(T* address, size_t alignment)
+    constexpr T* Memory::AlignDown(T* address, Bytes alignment)
     {
-        return reinterpret_cast<T*>(Math::Floor(reinterpret_cast<uintptr_t>(address), alignment));
+        return reinterpret_cast<T*>(Math::Floor(reinterpret_cast<uintptr_t>(address), std::size_t(alignment)));
     }
 
-    constexpr bool Memory::IsAlignedTo(void* address, size_t alignment)
+    constexpr bool Memory::IsAlignedTo(void* address, Bytes alignment)
     {
-        return reinterpret_cast<uintptr_t>(address) % alignment == 0;
+        return reinterpret_cast<uintptr_t>(address) % std::size_t(alignment) == 0;
     }
 
 }

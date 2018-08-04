@@ -1,5 +1,7 @@
 #include "memory/allocators/block_allocator.h"
 
+#include <algorithm>
+
 #include "platform/system.h"
 #include "diagnostics/assert.h"
 
@@ -53,7 +55,7 @@ namespace syntropy
 
     }
 
-    BlockAllocator::BlockAllocator(size_t capacity, size_t block_size)
+    BlockAllocator::BlockAllocator(Bytes capacity, Bytes block_size)
         : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
         , allocator_(capacity, block_size_)                         // Reserve the virtual memory range upfront without allocating.
         , free_list_(nullptr)
@@ -61,7 +63,7 @@ namespace syntropy
 
     }
 
-    BlockAllocator::BlockAllocator(const MemoryRange& memory_range, size_t block_size)
+    BlockAllocator::BlockAllocator(const MemoryRange& memory_range, Bytes block_size)
         : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
         , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
         , free_list_(nullptr)
@@ -77,13 +79,13 @@ namespace syntropy
 
     }
 
-    void* BlockAllocator::Allocate(size_t commit_size)
+    void* BlockAllocator::Allocate(Bytes commit_size)
     {
         commit_size = VirtualMemory::CeilToPageSize(std::min(commit_size, block_size_));
 
         auto block = Reserve();
 
-        if (commit_size > 0)
+        if (commit_size > 0_Bytes)
         {
             VirtualMemory::Commit(block, commit_size);
 
@@ -124,7 +126,7 @@ namespace syntropy
         {
             // Recycle the block itself as a new free list chunk.
 
-            auto capacity = (block_size_ - sizeof(FreeBlock)) / sizeof(uintptr_t) + 1;
+            auto capacity = (block_size_ - Bytes(sizeof(FreeBlock))) / Bytes(sizeof(uintptr_t)) + 1;
 
             VirtualMemory::Commit(block, block_size_);              // Make sure the block is mapped to the system memory.
 
@@ -141,7 +143,7 @@ namespace syntropy
 
     }
 
-    size_t BlockAllocator::GetBlockSize() const
+    Bytes BlockAllocator::GetBlockSize() const
     {
         return block_size_;
     }
@@ -162,7 +164,7 @@ namespace syntropy
 
     }
 
-    StaticBlockAllocator::StaticBlockAllocator(size_t capacity, size_t block_size)
+    StaticBlockAllocator::StaticBlockAllocator(Bytes capacity, Bytes block_size)
         : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
         , allocator_(capacity, block_size_)                         // Reserve the virtual memory range upfront without allocating.
         , free_list_(nullptr)
@@ -170,7 +172,7 @@ namespace syntropy
 
     }
 
-    StaticBlockAllocator::StaticBlockAllocator(const MemoryRange& memory_range, size_t block_size)
+    StaticBlockAllocator::StaticBlockAllocator(const MemoryRange& memory_range, Bytes block_size)
         : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
         , allocator_(memory_range, block_size_)                     // Get the memory range without taking ownership.
         , free_list_(nullptr)
@@ -216,7 +218,7 @@ namespace syntropy
         free_list_ = free_block;
     }
 
-    size_t StaticBlockAllocator::GetBlockSize() const
+    Bytes StaticBlockAllocator::GetBlockSize() const
     {
         return block_size_;
     }

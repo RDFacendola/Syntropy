@@ -1,5 +1,6 @@
 #include "tests/syntropy/memory/allocators.h"
 
+#include "memory/bytes.h"
 #include "macro.h"
 
 #include "reflection/class.h"
@@ -30,6 +31,8 @@ TestSyntropyMemoryAllocators::TestSyntropyMemoryAllocators()
 
 void TestSyntropyMemoryAllocators::TestMemoryContext()
 {
+    using namespace syntropy;
+
     // #TODO This is not a proper unit test: it resembles an integration test which cannot be verified (since the output is provided to the logging system).
 
     void* p;

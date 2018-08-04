@@ -39,7 +39,7 @@ namespace syntropy
     public:
 
         /// \brief Minimum allocation size, in bytes.
-        static const size_t kMinimumAllocationSize = sizeof(uintptr_t);
+        static const Bytes kMinimumAllocationSize;
         
         /// \brief Create a new allocator.
         /// \param name Name of the allocator.
@@ -47,7 +47,7 @@ namespace syntropy
         /// \param class_size Size of each allocation class, in bytes.
         /// \param order Number of allocation classes handled by the allocator.
         /// \param page_size Size of each memory page, in bytes. This value is rounded up to the next system memory page size.
-        LinearSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t class_size, size_t order, size_t page_size);
+        LinearSegregatedFitAllocator(const HashedString& name, Bytes capacity, Bytes class_size, size_t order, Bytes page_size);
 
         /// \brief Create a new allocator.
         /// \param name Name of the allocator.
@@ -56,7 +56,7 @@ namespace syntropy
         /// \param order Number of allocation classes handled by the allocator.
         /// \param page_size Size of each memory page, in bytes. This value is rounded up to the next system memory page size.
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        LinearSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t class_size, size_t order, size_t page_size);
+        LinearSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, Bytes class_size, size_t order, Bytes page_size);
 
         /// \brief No copy constructor.
         LinearSegregatedFitAllocator(const LinearSegregatedFitAllocator&) = delete;
@@ -70,15 +70,15 @@ namespace syntropy
         /// \brief Default destructor.
         ~LinearSegregatedFitAllocator() = default;
 
-        virtual void* Allocate(size_t size) override;
+        virtual void* Allocate(Bytes size) override;
 
-        virtual void* Allocate(size_t size, size_t alignment) override;
+        virtual void* Allocate(Bytes size, Bytes alignment) override;
 
         virtual void Free(void* block) override;
 
         virtual bool Owns(void* block) const override;
 
-        virtual size_t GetMaxAllocationSize() const override;
+        virtual Bytes GetMaxAllocationSize() const override;
 
         /// \brief Get the order of this allocator.
         /// \return Returns the number of allocation classes handled by the allocator.
@@ -86,7 +86,7 @@ namespace syntropy
 
         /// \brief Get the size of each page.
         /// \return Returns the size of each page, in bytes.
-        size_t GetPageSize() const;
+        Bytes GetPageSize() const;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -104,13 +104,13 @@ namespace syntropy
         struct Page
         {
 
-            Page(size_t block_size, size_t page_size);
+            Page(Bytes block_size, Bytes page_size);
 
             Page* next_;                            ///< \brief Address of the next page in the allocator.
 
             Page* previous_;                        ///< \brief Address of the previous page in the allocator.
 
-            size_t block_size_;                     ///< \brief Size of each memory block in this page in bytes.
+            Bytes block_size_;                      ///< \brief Size of each memory block in this page in bytes.
 
             size_t allocated_blocks_;               ///< \brief Amount of allocated blocks in this page.
 
@@ -138,18 +138,18 @@ namespace syntropy
 
             /// \brief Get a pointer to the last block in the page.
             /// \return Returns a pointer to the last block in the page.
-            Block* GetLastBlock(size_t page_size);
+            Block* GetLastBlock(Bytes page_size);
 
         };
 
         /// \brief Get the index of the smallest free list that can contain an allocation of a given size.
         /// \param size Size of the allocation.
-        size_t GetListIndexBySize(size_t size) const;
+        size_t GetListIndexBySize(Bytes size) const;
 
         /// \brief Allocate a new page.
         /// \param block_size Size of the blocks in the page, in bytes.
         /// \return Returns the address to the allocated page.
-        Page* AllocatePage(size_t block_size);
+        Page* AllocatePage(Bytes block_size);
 
         /// \brief Discard the first page in a free list and move forward.
         /// \param list_index Index of the free list whose head should be discarded.
@@ -172,7 +172,7 @@ namespace syntropy
 
         std::vector<Page*> free_lists_;             ///< \brief Segregated lists of partially allocated pages. The n-th list handles memory blocks up to (1+n) * minimum_allocation_size bytes.
 
-        size_t class_size_;                         ///< \brief Size of each allocation class, in bytes.
+        Bytes class_size_;                          ///< \brief Size of each allocation class, in bytes.
 
         std::mutex mutex_;                          ///< \brief Used for thread-safety purposes.
     };
@@ -200,7 +200,7 @@ namespace syntropy
         /// \param capacity Maximum amount of memory allocated by the allocator.
         /// \param class_size Size of the first allocation class, in bytes. Rounded up to memory page size.
         /// \param order Number of allocation classes handled by the allocator.
-        ExponentialSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t class_size, size_t order);
+        ExponentialSegregatedFitAllocator(const HashedString& name, Bytes capacity, Bytes class_size, size_t order);
 
         /// \brief Create a new allocator.
         /// \param name Name of the allocator.
@@ -208,7 +208,7 @@ namespace syntropy
         /// \param class_size Size of the first allocation class, in bytes. Rounded up to memory page size.
         /// \param order Number of allocation classes handled by the allocator.
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        ExponentialSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, size_t class_size, size_t order);
+        ExponentialSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, Bytes class_size, size_t order);
 
         /// \brief No copy constructor.
         ExponentialSegregatedFitAllocator(const ExponentialSegregatedFitAllocator&) = delete;
@@ -222,22 +222,22 @@ namespace syntropy
         /// \brief Default destructor.
         ~ExponentialSegregatedFitAllocator() = default;
 
-        virtual void* Allocate(size_t size) override;
+        virtual void* Allocate(Bytes size) override;
 
-        virtual void* Allocate(size_t size, size_t alignment) override;
+        virtual void* Allocate(Bytes size, Bytes alignment) override;
 
         virtual void Free(void* block) override;
 
         virtual bool Owns(void* block) const override;
 
-        virtual size_t GetMaxAllocationSize() const override;
+        virtual Bytes GetMaxAllocationSize() const override;
 
         /// \brief Reserve a memory block.
         /// A reserved block must be committed before it can be accessed.
         /// \param size Size of the memory block to reserve, in bytes.
         /// \return Returns a pointer to the reserved memory block. 
         /// \remarks The block is guaranteed not to share any memory page with any other allocation.
-        void* Reserve(size_t size);
+        void* Reserve(Bytes size);
 
         /// \brief Reserve an aligned memory block.
         /// A reserved block must be committed before it can be accessed.
@@ -245,15 +245,15 @@ namespace syntropy
         /// \param alignment Alignment of the reserved block.
         /// \return Returns a pointer to the reserved memory block.
         /// \remarks The block is guaranteed not to share any memory page with any other allocation.
-        void* Reserve(size_t size, size_t alignment);
+        void* Reserve(Bytes size, Bytes alignment);
 
         /// \brief Get the order of this allocator.
         /// \return Returns the number of allocation classes handled by the allocator.
-        size_t GetOrder() const;
+        std::size_t GetOrder() const;
 
         /// \brief Get the size of the smallest allocation class.
         /// \brief Returns the size of the smallest allocation class, in bytes.
-        size_t GetClassSize() const;
+        Bytes GetClassSize() const;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -264,16 +264,16 @@ namespace syntropy
         /// \brief Initialize the allocators for each allocation class.
         /// \param order Number of allocators to initialize.
         /// \param class_size Size of the first allocation class in bytes.
-        void InitializeAllocators(size_t order, size_t class_size);
+        void InitializeAllocators(std::size_t order, Bytes class_size);
 
         /// \brief Get a reference to an allocator by block size.
         /// \param block_size Size of the block to allocate or reserve.
         /// \return Returns a reference to the smallest allocator that can handle the given allocation size.
-        BlockAllocator& GetAllocatorBySize(size_t block_size);
+        BlockAllocator& GetAllocatorBySize(Bytes block_size);
 
         /// \brief Get the capacity of each allocator.
         /// \return Returns the capacity of each allocator, in bytes.
-        size_t GetAllocatorCapacity() const;
+        Bytes GetAllocatorCapacity() const;
 
         MemoryPool memory_pool_;                            ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
 
@@ -298,7 +298,7 @@ namespace syntropy
         /// \param name Name of the allocator.
         /// \param capacity Maximum capacity of the allocator, in bytes.
         /// \param second_level_index Number of classes for each first level index. The actual number of classes is 2^second_level_index.
-        TwoLevelSegregatedFitAllocator(const HashedString& name, size_t capacity, size_t second_level_index);
+        TwoLevelSegregatedFitAllocator(const HashedString& name, Bytes capacity, size_t second_level_index);
 
         /// \brief Create a new allocator.
         /// \param name Name of the allocator.
@@ -318,15 +318,15 @@ namespace syntropy
         /// \brief Virtual destructor.
         virtual ~TwoLevelSegregatedFitAllocator() = default;
 
-        virtual void* Allocate(size_t size) override;
+        virtual void* Allocate(Bytes size) override;
 
-        virtual void* Allocate(size_t size, size_t alignment) override;
+        virtual void* Allocate(Bytes size, Bytes alignment) override;
 
         virtual void Free(void* block) override;
 
         virtual bool Owns(void* block) const override;
 
-        virtual size_t GetMaxAllocationSize() const override;
+        virtual Bytes GetMaxAllocationSize() const override;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -335,7 +335,7 @@ namespace syntropy
     private:
 
         /// \brief Minimum size for each memory block.
-        static const size_t kMinimumBlockSize = 32;
+        static const Bytes kMinimumBlockSize;
 
         /// \brief Header for an allocated block (either free or busy).
         struct BlockHeader
@@ -352,11 +352,11 @@ namespace syntropy
             BlockHeader* previous_;             ///< \brief Pointer to the previous physical block.
 
             /// \brief Get the size of the block, in bytes. This size accounts for the size of the header, the payload and any padding.
-            size_t GetSize() const;
+            Bytes GetSize() const;
 
             /// \brief Set the size of the block.
             /// \param size New size of the block. This size should account for the size of the header, the payload and any padding.
-            void SetSize(size_t size);
+            void SetSize(Bytes size);
 
             /// \brief Check whether this block is being used.
             /// \return Returns true if this block refers to an allocated block, returns false otherwise.
@@ -384,7 +384,7 @@ namespace syntropy
 
         private:
 
-            size_t size_;           ///< \brief Size of the block. The last two bits (Busy and Last) are used to store the block status.
+            Bytes size_;            ///< \brief Size of the block. The last two bits (Busy and Last) are used to store the block status.
 
         };
 
@@ -410,7 +410,7 @@ namespace syntropy
         /// \brief Get a pointer to the smallest free block that can fit an allocation of a given size.
         /// \param block_size Size of the block to fit.
         /// \return Returns a pointer to the smallest free block that can fit an allocation of size size.
-        BlockHeader* GetFreeBlockBySize(size_t size);
+        BlockHeader* GetFreeBlockBySize(Bytes size);
 
         /// \brief Mark the bit relative to a free list as "set".
         void SetBitmap(size_t first_level_index, size_t second_level_index);
@@ -431,12 +431,12 @@ namespace syntropy
         /// \brief Allocate a new block from the pool. This method doesn't recycle any existing free blocks.
         /// \param size Size of the block to allocate.
         /// \return Returns a pointer to the allocated block.
-        BlockHeader* AllocateBlock(size_t size);
+        BlockHeader* AllocateBlock(Bytes size);
 
         /// \brief Split a block in two more blocks a stores the second inside the proper segregated free list. The second block is considered not busy.
         /// \param block Block to split.
         /// \param size Size of block after the split, in bytes. The remaining block after the split (if any) is stored as an additional free block.
-        void SplitBlock(BlockHeader* block, size_t size);
+        void SplitBlock(BlockHeader* block, Bytes size);
 
         /// \param Remove a block from its current segregated free list.
         /// \param block Block to remove.
@@ -451,7 +451,7 @@ namespace syntropy
         /// \param first_level_index Index of the first-level class. Output.
         /// \param second_level_index Index of the second-level class. Output.
         /// \param roundup Whether to round up the size to the next class.
-        void GetFreeListIndex(size_t size, size_t& first_level_index, size_t& second_level_index, bool roundup = false) const;
+        void GetFreeListIndex(Bytes size, size_t& first_level_index, size_t& second_level_index, bool roundup = false) const;
 
         /// \brief Get the index of a free list inside the flat free list array given its first-level and second-level indexes.
         /// \param first_level_index First level index.

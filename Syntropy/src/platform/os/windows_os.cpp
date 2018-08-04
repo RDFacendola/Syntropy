@@ -25,6 +25,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "memory/bytes.h"
 #include "diagnostics/assert.h"
 
 #include "syntropy.h"
@@ -208,7 +209,7 @@ namespace syntropy::platform
             return instance;
         }
 
-        size_t GetPageSize() const
+        Bytes GetPageSize() const
         {
             return page_size_;
         }
@@ -220,13 +221,13 @@ namespace syntropy::platform
             SYSTEM_INFO system_info;
             GetSystemInfo(&system_info);
 
-            allocation_granularity_ = system_info.dwAllocationGranularity;
-            page_size_ = system_info.dwPageSize;
+            allocation_granularity_ = Bytes(system_info.dwAllocationGranularity);
+            page_size_ = Bytes(system_info.dwPageSize);
         }
 
-        size_t allocation_granularity_;     ///< \brief Memory allocation granularity, in bytes.
+        Bytes allocation_granularity_;      ///< \brief Memory allocation granularity, in bytes.
 
-        size_t page_size_;                  ///< \brief Memory page size, in bytes.
+        Bytes page_size_;                   ///< \brief Memory page size, in bytes.
     };
 
     /************************************************************************/
@@ -496,14 +497,14 @@ namespace syntropy::platform
     /* PLATFORM MEMORY                                                      */
     /************************************************************************/
 
-    size_t PlatformMemory::GetPageSize()
+    Bytes PlatformMemory::GetPageSize()
     {
         return WindowsMemory::GetInstance().GetPageSize();
     }
 
-    void* PlatformMemory::Allocate(size_t size)
+    void* PlatformMemory::Allocate(Bytes size)
     {
-        return VirtualAlloc(0, size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+        return VirtualAlloc(0, std::size_t(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
     }
 
     bool PlatformMemory::Release(void* address)
@@ -511,19 +512,19 @@ namespace syntropy::platform
         return VirtualFree(address, 0, MEM_RELEASE) != 0;
     }
 
-    void* PlatformMemory::Reserve(size_t size)
+    void* PlatformMemory::Reserve(Bytes size)
     {
-        return VirtualAlloc(0, size, MEM_RESERVE, PAGE_READWRITE);
+        return VirtualAlloc(0, std::size_t(size), MEM_RESERVE, PAGE_READWRITE);
     }
 
-    bool PlatformMemory::Commit(void* address, size_t size)
+    bool PlatformMemory::Commit(void* address, Bytes size)
     {
-        return VirtualAlloc(address, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
+        return VirtualAlloc(address, std::size_t(size), MEM_COMMIT, PAGE_READWRITE) != nullptr;
     }
 
-    bool PlatformMemory::Decommit(void* address, size_t size)
+    bool PlatformMemory::Decommit(void* address, Bytes size)
     {
-        return VirtualFree(address, size, MEM_DECOMMIT) != 0;
+        return VirtualFree(address, std::size_t(size), MEM_DECOMMIT) != 0;
     }
 
 }

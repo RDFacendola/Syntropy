@@ -24,40 +24,42 @@ namespace syntropy
 
         /// \brief Check whether a number is a power of 2.
         /// \return Returns true if number is a power of 2, returns false otherwise.
-        template <typename TUnsigned, typename = std::enable_if_t<std::is_unsigned<TUnsigned>::value>>
-        static constexpr bool IsPow2(TUnsigned number)
+        template <typename TUnsigned>
+        static constexpr bool IsPow2(TUnsigned rhs)
         {
-            return (number & (number - 1u)) == 0u;
+            static_assert(!std::is_signed_v<TUnsigned>, "rhs must be an unsigned number");
+
+            return (rhs & (rhs - TUnsigned(1u))) == TUnsigned(0u);
         }
 
-        /// \brief Ceil a number to a multiple.
+        /// \brief Ceil a number to a multiple of another value.
         /// This overload does participate for overload resolution only for unsigned values.
         /// \return Returns the first number equal or greater than number which is multiple of multiple.
-        template <typename TUnsigned, typename = std::enable_if_t<std::is_unsigned<TUnsigned>::value>>
-        static constexpr TUnsigned Ceil(TUnsigned number, TUnsigned multiple)
+        template <typename TUnsigned, typename = std::enable_if_t<!std::is_signed_v<TUnsigned>>>
+        static constexpr TUnsigned Ceil(TUnsigned rhs, TUnsigned multiple)
         {
-            return Floor(number + multiple - 1, multiple);
+            return Floor(rhs + multiple - TUnsigned(1u), multiple);
         }
 
         /// \brief Floor a number to a multiple.
         /// This overload does participate for overload resolution only for unsigned values.
         /// \return Returns the first number equal or lesser than number which is multiple of multiple.
-        template <typename TUnsigned, typename = std::enable_if_t<std::is_unsigned<TUnsigned>::value>>
-        static constexpr TUnsigned Floor(TUnsigned number, TUnsigned multiple)
+        template <typename TUnsigned, typename = std::enable_if_t<!std::is_signed_v<TUnsigned>>>
+        static constexpr TUnsigned Floor(TUnsigned rhs, TUnsigned multiple)
         {
-            return (number / multiple) * multiple;
+            return (rhs / multiple) * multiple;
         }
 
         /// \brief Get the base 2 logarithm of a number and ceil the result to the next integer value.
         /// This overload does participate for overload resolution only for unsigned values.
         /// \return Returns the base 2 logarithm of the provided number rounded up to the next integer value. If the provided number is 0 the result is also 0.
-        template <typename TUnsigned, typename = std::enable_if_t<std::is_unsigned<TUnsigned>::value>>
-        static TUnsigned CeilLog2(TUnsigned number)
+        template <typename TUnsigned, typename = std::enable_if_t<!std::is_signed_v<TUnsigned>>>
+        static TUnsigned CeilLog2(TUnsigned rhs)
         {
-            if (number > 0)
+            if (rhs > TUnsigned(0))
             {
-                auto msb = platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(number));
-                return msb + ((number & (number - 1)) >> msb);        // Ceiling required for non-power of 2.
+                auto msb = platform::BuiltIn::GetMostSignificantBit(uint64_t(rhs));
+                return msb + ((rhs & (rhs - TUnsigned(1))) >> msb);        // Ceiling required for non-power of 2.
             }
 
             return 0;
@@ -67,10 +69,10 @@ namespace syntropy
         /// This overload does participate for overload resolution only for unsigned values.
         /// \return Returns the base 2 logarithm of the provided number rounded down to the previous integer value. If the provided number is 0 the result is also 0.
         template <typename TUnsigned, typename = std::enable_if_t<std::is_unsigned<TUnsigned>::value>>
-        static TUnsigned FloorLog2(TUnsigned number)
+        static TUnsigned FloorLog2(TUnsigned rhs)
         {
-            return number > 0 ?
-                platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(number)) :
+            return rhs > 0 ?
+                platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(rhs)) :
                 0;
         }
 

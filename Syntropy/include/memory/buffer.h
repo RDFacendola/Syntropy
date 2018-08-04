@@ -25,7 +25,7 @@ namespace syntropy
         /// \brief Create a new buffer.
         /// \param size Size of the buffer, in bytes.
         /// \param allocator Allocator used to allocate the memory.
-        MemoryBuffer(size_t size, Allocator& allocator);
+        MemoryBuffer(Bytes size, Allocator& allocator);
 
         /// \brief Copy constructor.
         /// Copy the content of another buffer to this one.
@@ -50,11 +50,11 @@ namespace syntropy
         /// \brief Access an element in the buffer.
         /// \param offset Offset with respect to the first element of the buffer.
         /// \return Returns a pointer to the element (buffer+offset).
-        void* operator[](size_t offset) const;
+        void* operator[](Bytes offset) const;
 
         /// \brief Get the size of the buffer, in bytes.
         /// \return Returns the size of the buffer, in bytes.
-        size_t GetSize() const;
+        Bytes GetSize() const;
 
         /// \brief Get the buffer memory range.
         operator MemoryRange() const;

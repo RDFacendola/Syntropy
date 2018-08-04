@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "memory/bytes.h"
 #include "memory/memory.h"
 #include "memory/virtual_memory.h"
 
@@ -27,13 +28,13 @@ namespace syntropy
         /// \brief Create a new allocator.
         /// \param capacity Amount of memory reserved by the allocator.
         /// \param alignment Memory alignment.
-        LinearAllocator(size_t capacity, size_t alignment);
+        LinearAllocator(Bytes capacity, Bytes alignment);
 
         /// \brief Create a new allocator.
         /// \param memory_range Memory range used by the allocator.
         /// \param alignment Memory alignment.
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        LinearAllocator(const MemoryRange& memory_range, size_t alignment);
+        LinearAllocator(const MemoryRange& memory_range, Bytes alignment);
 
         /// \brief No copy constructor.
         LinearAllocator(const LinearAllocator&) = delete;
@@ -51,13 +52,13 @@ namespace syntropy
         /// \param size Size of the memory block to allocate, in bytes.
         /// \param alignment Alignment of the block.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size, size_t alignment = 1);
+        void* Allocate(Bytes size, Bytes alignment = 1_Bytes);
 
         /// \brief Reserve a new memory block on the allocator's head.
         /// \param size Size of the memory block to reserve, in bytes.
         /// \param alignment Alignment of the block.
         /// \return Returns a pointer to the reserved memory block.
-        void* Reserve(size_t size, size_t alignment = 1);
+        void* Reserve(Bytes size, Bytes alignment = 1_Bytes);
 
         /// \brief Free all the allocations performed so far.
         void Free();

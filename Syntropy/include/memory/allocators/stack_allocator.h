@@ -27,13 +27,13 @@ namespace syntropy
         /// \brief Create a new allocator.
         /// \param capacity Amount of memory reserved by the allocator.
         /// \param alignment Memory alignment.
-        StackAllocator(size_t capacity, size_t alignment);
+        StackAllocator(Bytes capacity, Bytes alignment);
 
         /// \brief Create a new allocator.
         /// \param memory_range Memory range used by the allocator.
         /// \param alignment Memory alignment.
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        StackAllocator(const MemoryRange& memory_range, size_t alignment = 1);
+        StackAllocator(const MemoryRange& memory_range, Bytes alignment = 1_Bytes);
 
         /// \brief No copy constructor.
         StackAllocator(const StackAllocator&) = delete;
@@ -47,12 +47,12 @@ namespace syntropy
         /// \brief Allocate a new memory block on the allocator's head.
         /// \param size Size of the memory block to allocate, in bytes.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size);
+        void* Allocate(Bytes size);
 
         /// \brief Allocate a new aligned memory block on the allocator's head.
         /// \param size Size of the memory block to allocate, in bytes.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size, size_t alignment);
+        void* Allocate(Bytes size, Bytes alignment);
 
         /// \brief Free all the allocations performed so far.
         void Free();
@@ -67,12 +67,12 @@ namespace syntropy
 
         /// \brief Get the current allocation size, in bytes.
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetAllocationSize() const;
+        Bytes GetAllocationSize() const;
 
         /// \brief Get the amount of system memory committed by the allocator, in bytes.
         /// Note that the stack allocator allocates all the memory it needs upfront.
         /// \return Returns the amount of system memory committed by the allocator, in bytes.
-        size_t GetCommitSize() const;
+        Bytes GetCommitSize() const;
 
     private:
 
@@ -171,17 +171,17 @@ namespace syntropy
         /// \brief Create a new allocator.
         /// \param capacity Amount of memory reserved by each allocator.
         /// \param alignment Memory alignment.
-        DoubleBufferedAllocator(size_t capacity, size_t alignment);
+        DoubleBufferedAllocator(Bytes capacity, Bytes alignment);
 
         /// \brief Allocate a new memory block on the current allocator.
         /// \param size Size of the memory block to allocate, in bytes.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size);
+        void* Allocate(Bytes size);
 
         /// \brief Allocate a new aligned memory block on the current allocator.
         /// \param size Size of the memory block to allocate, in bytes.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t size, size_t alignment);
+        void* Allocate(Bytes size, Bytes alignment);
 
         /// \brief Free all the memory blocks allocated so far in the current allocator.
         void Free();
@@ -204,12 +204,12 @@ namespace syntropy
 
         /// \brief Get the current allocation size, in bytes.
         /// \return Returns the total amount of allocations performed so far by this allocator, in bytes.
-        size_t GetAllocationSize() const;
+        Bytes GetAllocationSize() const;
 
         /// \brief Get the amount of system memory committed by the allocator, in bytes.
         /// Note that the stack allocator allocates all the memory it needs upfront.
         /// \return Returns the amount of system memory committed by the allocator, in bytes.
-        size_t GetCommitSize() const;
+        Bytes GetCommitSize() const;
 
     private:
 

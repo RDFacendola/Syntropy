@@ -29,7 +29,6 @@
     <ClInclude Include="include\platform\system.h" />
     <ClInclude Include="include\platform\builtin.h" />
     <ClInclude Include="include\math\math.h" />
-    <ClInclude Include="include\memory\memory_units.h" />
     <ClInclude Include="include\memory\virtual_memory.h" />
     <ClInclude Include="include\memory\buffer.h" />
     <ClInclude Include="include\memory\memory_manager.h" />
@@ -86,6 +85,7 @@
     <ClInclude Include="include\serialization\json\serialization.h" />
     <ClInclude Include="include\serialization\json\serializers\core_serializers.h" />
     <ClInclude Include="include\serialization\json\serializers\fundamental_serializers.h" />
+    <ClInclude Include="include\memory\bytes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

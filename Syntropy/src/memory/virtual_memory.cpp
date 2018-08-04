@@ -13,17 +13,17 @@ namespace syntropy
     /* VIRTUAL MEMORY                                                       */
     /************************************************************************/
 
-    size_t VirtualMemory::GetPageSize()
+    Bytes VirtualMemory::GetPageSize()
     {
         return platform::PlatformMemory::GetPageSize();
     }
 
-    void* VirtualMemory::Reserve(size_t size)
+    void* VirtualMemory::Reserve(Bytes size)
     {
         return platform::PlatformMemory::Reserve(size);
     }
 
-    void* VirtualMemory::Allocate(size_t size)
+    void* VirtualMemory::Allocate(Bytes size)
     {
         return platform::PlatformMemory::Allocate(size);
     }
@@ -33,17 +33,17 @@ namespace syntropy
         return platform::PlatformMemory::Release(address);
     }
 
-    bool VirtualMemory::Commit(void* address, size_t size)
+    bool VirtualMemory::Commit(void* address, Bytes size)
     {
         return platform::PlatformMemory::Commit(address, size);
     }
 
-    bool VirtualMemory::Decommit(void* address, size_t size)
+    bool VirtualMemory::Decommit(void* address, Bytes size)
     {
         return platform::PlatformMemory::Decommit(address, size);
     }
 
-    size_t VirtualMemory::CeilToPageSize(size_t size)
+    Bytes VirtualMemory::CeilToPageSize(Bytes size)
     {
         return Math::Ceil(size, GetPageSize());
     }
@@ -58,15 +58,15 @@ namespace syntropy
 
     }
 
-    MemoryPool::MemoryPool(size_t size)
+    MemoryPool::MemoryPool(Bytes size)
         : pool_(VirtualMemory::Reserve(size))
         , range_(pool_, size)
     {
 
     }
 
-    MemoryPool::MemoryPool(size_t size, size_t alignment)
-        : pool_(VirtualMemory::Reserve(size + alignment - 1))
+    MemoryPool::MemoryPool(Bytes size, Bytes alignment)
+        : pool_(VirtualMemory::Reserve(size + alignment - 1_Bytes))
         , range_(Memory::Align(pool_, alignment), size)       // Align the buffer to the required boundary
     {
 
@@ -93,12 +93,12 @@ namespace syntropy
         return *range_;
     }
 
-    void* MemoryPool::operator[](size_t offset) const
+    void* MemoryPool::operator[](Bytes offset) const
     {
         return range_[offset];
     }
 
-    size_t MemoryPool::GetSize() const
+    Bytes MemoryPool::GetSize() const
     {
         return range_.GetSize();
     }

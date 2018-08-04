@@ -7,7 +7,9 @@
 
 #pragma once
 
-#include "memory/memory_units.h"
+#include <algorithm>
+
+#include "memory/bytes.h"
 
 #include "memory/allocators/allocator.h"
 #include "memory/allocators/segregated_allocator.h"
@@ -25,6 +27,18 @@
 
 namespace syntropy::reflection
 {
+    
+    /************************************************************************/
+    /* MEMORY UNITS.H                                                       */
+    /************************************************************************/
+
+    // Template specialization for Bytes
+    template<>
+    struct ClassDeclarationT<Bytes>
+    {
+        static constexpr const char* name_{ "syntropy::Bytes" };
+    };
+
     /************************************************************************/
     /* ALLOCATOR.H                                                          */
     /************************************************************************/
@@ -116,6 +130,25 @@ namespace syntropy::reflection
 
 namespace syntropy::serialization
 {
+
+    /************************************************************************/
+    /* MEMORY UNITS.H                                                       */
+    /************************************************************************/
+
+    // Template specialization for Bytes
+    template <>
+    struct JSONDeserializerT<Bytes>
+    {
+        std::optional<Bytes> operator()(const nlohmann::json& json) const
+        {
+            if (json.is_number())
+            {
+                return Bytes(json.get<size_t>());
+            }
+            return std::nullopt;
+        }
+    };
+
     /************************************************************************/
     /* SEGREGATED ALLOCATOR.H                                               */
     /************************************************************************/
@@ -127,10 +160,10 @@ namespace syntropy::serialization
         std::optional<LinearSegregatedFitAllocator> operator()(const nlohmann::json& json) const
         {
             auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
-            auto capacity = DeserializeObjectFromJSON<size_t>(json, std::nullopt, "capacity");
-            auto class_size = DeserializeObjectFromJSON<size_t>(json, 8_Bytes, "class_size");
+            auto capacity = DeserializeObjectFromJSON<Bytes>(json, std::nullopt, "capacity");
+            auto class_size = DeserializeObjectFromJSON<Bytes>(json, 8_Bytes, "class_size");
             auto order = DeserializeObjectFromJSON<size_t>(json, 32, "order");
-            auto page_size = DeserializeObjectFromJSON<size_t>(json, 16_KiBytes, "page_size");
+            auto page_size = DeserializeObjectFromJSON<Bytes>(json, 16_KiBytes, "page_size");
 
             if (name && capacity)
             {
@@ -148,8 +181,8 @@ namespace syntropy::serialization
         std::optional<ExponentialSegregatedFitAllocator> operator()(const nlohmann::json& json) const
         {
             auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
-            auto capacity = DeserializeObjectFromJSON<size_t>(json, std::nullopt, "capacity");
-            auto class_size = DeserializeObjectFromJSON<size_t>(json, 64_KiBytes, "class_size");
+            auto capacity = DeserializeObjectFromJSON<Bytes>(json, std::nullopt, "capacity");
+            auto class_size = DeserializeObjectFromJSON<Bytes>(json, 64_KiBytes, "class_size");
             auto order = DeserializeObjectFromJSON<size_t>(json, 10, "order");
 
             if (name && capacity)
@@ -168,7 +201,7 @@ namespace syntropy::serialization
         std::optional<TwoLevelSegregatedFitAllocator> operator()(const nlohmann::json& json) const
         {
             auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
-            auto capacity = DeserializeObjectFromJSON<size_t>(json, std::nullopt, "capacity");
+            auto capacity = DeserializeObjectFromJSON<Bytes>(json, std::nullopt, "capacity");
             auto second_level_index = DeserializeObjectFromJSON<size_t>(json, 5, "second_level_index");
 
             if (name && capacity)
@@ -206,7 +239,7 @@ namespace syntropy::serialization
 
                 auto max_size = allocator->GetMaxAllocationSize();
 
-                auto size = DeserializeObjectFromJSON<size_t>(json, max_size, "max_size");
+                auto size = DeserializeObjectFromJSON<Bytes>(json, max_size, "max_size");
 
                 if (size)
                 {

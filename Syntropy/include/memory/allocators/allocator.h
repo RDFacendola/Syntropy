@@ -13,6 +13,7 @@
 #pragma once
 
 #include "memory/memory.h"
+#include "memory/bytes.h"
 
 #include "diagnostics/diagnostics.h"
 
@@ -32,7 +33,7 @@
 /// \brief Allocate a new buffer via custom allocator.
 /// \usage void* buffer = SYNTROPY_ALLOC(allocator, size);
 #define SYNTROPY_ALLOC(allocator, size) \
-    operator new(size, allocator, SYNTROPY_HERE)
+    operator new(std::size_t(size), allocator, SYNTROPY_HERE)
 
 /// \brief Free a buffer allocated via custom allocator.
 /// \usage SYNTROPY_FREE(allocator, buffer);
@@ -41,6 +42,9 @@
 
 namespace syntropy
 {
+    /************************************************************************/
+    /* ALLOCATOR                                                            */
+    /************************************************************************/
 
     /// \brief Base interface for allocators.
     /// \author Raffaele D. Facendola - February 2017
@@ -82,16 +86,16 @@ namespace syntropy
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate, in bytes.
         /// \return Returns a pointer to the allocated memory block.
-        virtual void* Allocate(size_t size) = 0;
+        virtual void* Allocate(Bytes size) = 0;
 
         /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate, in bytes.
         /// \param alignment Alignment of the allocated block. Must be a multiple of the minimum allocation size.
         /// \return Returns a pointer to the allocated memory block.
-        virtual void* Allocate(size_t size, size_t alignment) = 0;
+        virtual void* Allocate(Bytes size, Bytes alignment) = 0;
 
         /// \brief Free a memory block.
-        /// The caller must ensure that the block belongs to the allocator otherwise the behaviour is undefined.
+        /// The caller must ensure that the block belongs to the allocator otherwise the behavior is undefined.
         /// \param block Pointer to the block to free.
         virtual void Free(void* block) = 0;
 
@@ -102,7 +106,7 @@ namespace syntropy
         virtual bool Owns(void* block) const = 0;
 
         /// \brief Get the biggest allocation that can be performed by this allocator.
-        virtual size_t GetMaxAllocationSize() const = 0;
+        virtual Bytes GetMaxAllocationSize() const = 0;
 
         /// \brief Get a symbolic name for the allocator.
         /// \return Returns a symbolic name for the allocator.

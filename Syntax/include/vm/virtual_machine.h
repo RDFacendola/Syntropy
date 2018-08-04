@@ -80,7 +80,7 @@ namespace syntropy
 
             /// \brief Create a new virtual machine.
             /// \param stack_size Size of the memory buffer containing the stack, in bytes.
-            VirtualMachine(size_t stack_size, Allocator& allocator);
+            VirtualMachine(Bytes stack_size, Allocator& allocator);
 
             /// \brief No copy constructor.
             VirtualMachine(const VirtualMachine&) = delete;
@@ -165,7 +165,7 @@ namespace syntropy
 
             auto base_pointer = reinterpret_cast<TArgument*>(virtual_machine_.base_pointer_);
 
-            return Memory::AddOffset(base_pointer, register_offset);
+            return Memory::AddOffset(base_pointer, Bytes(register_offset));
         }
 
     }

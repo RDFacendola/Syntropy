@@ -19,14 +19,14 @@ namespace syntropy
 
     }
 
-    void* STDAllocator::Allocate(size_t size)
+    void* STDAllocator::Allocate(Bytes size)
     {
-        return ::operator new(size);
+        return ::operator new(std::size_t(size));
     }
 
-    void* STDAllocator::Allocate(size_t size, size_t /*alignment*/)
+    void* STDAllocator::Allocate(Bytes size, Bytes alignment)
     {
-        return ::operator new(size);
+        return ::operator new(std::size_t(size), std::align_val_t(std::size_t(alignment)));
     }
 
     void STDAllocator::Free(void* block)
@@ -39,9 +39,9 @@ namespace syntropy
         return true;
     }
 
-    size_t STDAllocator::GetMaxAllocationSize() const
+    Bytes STDAllocator::GetMaxAllocationSize() const
     {
-        return std::numeric_limits<size_t>::max();
+        return Bytes(std::numeric_limits<size_t>::max());
     }
 
 }

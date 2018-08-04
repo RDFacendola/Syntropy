@@ -40,7 +40,7 @@ namespace syntropy
 
         //////////////// VIRTUAL MACHINE ////////////////
 
-        VirtualMachine::VirtualMachine(size_t stack_size, Allocator& allocator)
+        VirtualMachine::VirtualMachine(Bytes stack_size, Allocator& allocator)
             : stack_segment_(stack_size, allocator)
             , execution_context_(*this)
             , instruction_pointer_(nullptr)

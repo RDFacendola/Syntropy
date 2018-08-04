@@ -137,22 +137,22 @@ namespace syntropy::platform
     public:
 
         /// \brief See Memory::GetPageSize
-        static size_t GetPageSize();
+        static Bytes GetPageSize();
 
         /// \brief See Memory::Allocate
-        static void* Allocate(size_t size);
+        static void* Allocate(Bytes size);
 
         /// \brief See Memory::Release
         static bool Release(void* address);
 
         /// \brief See Memory::Reserve
-        static void* Reserve(size_t size);
+        static void* Reserve(Bytes size);
 
         /// \brief See Memory::Commit
-        static bool Commit(void* address, size_t size);
+        static bool Commit(void* address, Bytes size);
 
         /// \brief See Memory::Decommit
-        static bool Decommit(void* address, size_t size);
+        static bool Decommit(void* address, Bytes size);
 
     };
 }

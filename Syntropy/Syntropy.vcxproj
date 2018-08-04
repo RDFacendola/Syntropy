@@ -96,7 +96,7 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\memory\memory_meta.h" />
-    <ClInclude Include="include\memory\memory_units.h">
+    <ClInclude Include="include\memory\bytes.h">
       <SubType>
       </SubType>
     </ClInclude>

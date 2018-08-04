@@ -9,7 +9,7 @@ namespace syntropy
     /* STACK ALLOCATOR                                                      */
     /************************************************************************/
 
-    StackAllocator::StackAllocator(size_t capacity, size_t alignment)
+    StackAllocator::StackAllocator(Bytes capacity, Bytes alignment)
         : memory_pool_(capacity, alignment)             // Allocate a new virtual address range.
         , memory_range_(memory_pool_)                   // Get the full range out of the memory pool.
         , head_(*memory_range_)
@@ -19,7 +19,7 @@ namespace syntropy
         VirtualMemory::Commit(*memory_range_, memory_range_.GetSize());
     }
 
-    StackAllocator::StackAllocator(const MemoryRange& memory_range, size_t alignment)
+    StackAllocator::StackAllocator(const MemoryRange& memory_range, Bytes alignment)
         : memory_range_(memory_range, alignment)        // Copy the memory range without taking ownership.
         , head_(*memory_range_)
         , status_(nullptr)
@@ -28,9 +28,9 @@ namespace syntropy
         VirtualMemory::Commit(*memory_range_, memory_range_.GetSize());
     }
 
-    void* StackAllocator::Allocate(size_t size)
+    void* StackAllocator::Allocate(Bytes size)
     {
-        SYNTROPY_PRECONDITION(size > 0);
+        SYNTROPY_PRECONDITION(size > 0_Bytes);
 
         std::lock_guard<std::mutex> lock(mutex_);
 
@@ -45,7 +45,7 @@ namespace syntropy
         return block;
     }
 
-    void* StackAllocator::Allocate(size_t size, size_t alignment)
+    void* StackAllocator::Allocate(Bytes size, Bytes alignment)
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
@@ -73,7 +73,7 @@ namespace syntropy
 
         status_ = head_;
 
-        *reinterpret_cast<uintptr_t*>(Allocate(sizeof(uintptr_t))) = reinterpret_cast<uintptr_t>(status_);    // Push the current status pointer on the stack
+        *reinterpret_cast<uintptr_t*>(Allocate(Bytes(sizeof(uintptr_t)))) = reinterpret_cast<uintptr_t>(status_);    // Push the current status pointer on the stack
     }
 
     void StackAllocator::RestoreStatus()
@@ -90,12 +90,12 @@ namespace syntropy
         MemoryDebug::MarkFree(head_, previous_head);
     }
 
-    size_t StackAllocator::GetAllocationSize() const
+    Bytes StackAllocator::GetAllocationSize() const
     {
-        return static_cast<size_t>(Memory::GetDistance(*memory_range_, head_));
+        return Bytes(static_cast<size_t>(Memory::GetDistance(*memory_range_, head_)));
     }
 
-    size_t StackAllocator::GetCommitSize() const
+    Bytes StackAllocator::GetCommitSize() const
     {
         return memory_range_.GetSize();
     }
@@ -131,19 +131,19 @@ namespace syntropy
     /* DOUBLE BUFFERED ALLOCATOR                                            */
     /************************************************************************/
 
-    DoubleBufferedAllocator::DoubleBufferedAllocator(size_t capacity, size_t alignment)
+    DoubleBufferedAllocator::DoubleBufferedAllocator(Bytes capacity, Bytes alignment)
         : allocators_{ { capacity, alignment },{ capacity, alignment } }
         , current_(allocators_)
     {
 
     }
 
-    void* DoubleBufferedAllocator::Allocate(size_t size)
+    void* DoubleBufferedAllocator::Allocate(Bytes size)
     {
         return current_->Allocate(size);
     }
 
-    void* DoubleBufferedAllocator::Allocate(size_t size, size_t alignment)
+    void* DoubleBufferedAllocator::Allocate(Bytes size, Bytes alignment)
     {
         return current_->Allocate(size, alignment);
     }
@@ -174,12 +174,12 @@ namespace syntropy
         current_->RestoreStatus();
     }
 
-    size_t DoubleBufferedAllocator::GetAllocationSize() const
+    Bytes DoubleBufferedAllocator::GetAllocationSize() const
     {
         return allocators_[0].GetAllocationSize() + allocators_[1].GetAllocationSize();
     }
 
-    size_t DoubleBufferedAllocator::GetCommitSize() const
+    Bytes DoubleBufferedAllocator::GetCommitSize() const
     {
         return allocators_[0].GetCommitSize() + allocators_[1].GetCommitSize();
     }

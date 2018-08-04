@@ -59,13 +59,13 @@ namespace syntropy
         SYNTROPY_ASSERT(reinterpret_cast<uintptr_t>(base) <= reinterpret_cast<uintptr_t>(top));
     }
 
-    MemoryRange::MemoryRange(void* base, size_t size)
+    MemoryRange::MemoryRange(void* base, Bytes size)
         : MemoryRange(base, Memory::AddOffset(base, size))
     {
 
     }
 
-    MemoryRange::MemoryRange(const MemoryRange& other, size_t alignment)
+    MemoryRange::MemoryRange(const MemoryRange& other, Bytes alignment)
         : MemoryRange(Memory::Align(other.base_, alignment), other.top_)
     {
         SYNTROPY_ASSERT(other.Contains(*this));
@@ -76,7 +76,7 @@ namespace syntropy
         return base_;
     }
 
-    void* MemoryRange::operator[](size_t offset) const
+    void* MemoryRange::operator[](Bytes offset) const
     {
         auto ptr = Memory::AddOffset(base_, offset);
 
@@ -90,9 +90,9 @@ namespace syntropy
         return top_;
     }
 
-    size_t MemoryRange::GetSize() const
+    Bytes MemoryRange::GetSize() const
     {
-        return static_cast<size_t>(Memory::GetDistance(base_, top_));
+        return Bytes(static_cast<size_t>(Memory::GetDistance(base_, top_)));
     }
 
     bool MemoryRange::Contains(const MemoryRange& memory_range) const

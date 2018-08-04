@@ -210,8 +210,8 @@ void TestSyntropyReflection::TestPropertyRead()
     Cat sylvester;
     Canary tweety;
 
-    sylvester.name_ == "Sylvester";
-    tweety.name_ == "Tweety";
+    sylvester.name_ = "Sylvester";
+    tweety.name_ = "Tweety";
 
     SYNTROPY_UNIT_TRACE(auto name_property = pet_class_->GetProperty("Name"));
     SYNTROPY_UNIT_TRACE(auto paws_property = pet_class_->GetProperty("Paws"));

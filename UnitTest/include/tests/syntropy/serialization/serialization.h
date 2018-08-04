@@ -22,36 +22,36 @@ class TestSyntropySerialization : public syntropy::TestFixture
 {
 public:
 
-	enum class Animal
-	{
-		kPet,
-		kWild,
-		kUnknown
-	};
+    enum class Animal
+    {
+        kPet,
+        kWild,
+        kUnknown
+    };
 
     /// \brief Class used for serialization test cases.
     struct Pet
     {
         std::string name_;
-		std::string nickname_;		
+        std::string nickname_;		
 
-		std::vector<int> numbers_;
-		std::set<std::string> names_;
-		std::map<std::shared_ptr<int>, syntropy::HashedString> map_;
+        std::vector<int> numbers_;
+        std::set<std::string> names_;
+        std::map<std::shared_ptr<int>, syntropy::HashedString> map_;
 
-		syntropy::HashedString hashed_string_;
-		syntropy::Context context_;
+        syntropy::HashedString hashed_string_;
+        syntropy::Context context_;
 
-		Animal animal_;
+        Animal animal_;
 
-		const std::string& GetName() const { return name_; };
-		void SetName(std::string name) { name_ = name; };
+        const std::string& GetName() const { return name_; };
+        void SetName(std::string name) { name_ = name; };
     };
 
     /// \brief Class used for serialization test cases.
     struct Cat : Pet
     {
-		
+        
     };
 
     static std::vector<syntropy::TestCase> GetTestCases();
@@ -61,12 +61,12 @@ public:
     /// \brief Test object deserialization.
     void TestDeserialization();
 
-	/// \brief Test object serialization.
-	void TestSerialization();
+    /// \brief Test object serialization.
+    void TestSerialization();
 
-	/// \brief Tests if object serialization is successful.
-	template<typename TClass, typename TPredicate>
-	void TestSerializationResults(const nlohmann::json& json, const TClass& object, TPredicate&& predicate);
+    /// \brief Tests if object serialization is successful.
+    template<typename TClass, typename TPredicate>
+    void TestSerializationResults(const nlohmann::json& json, const TClass& object, TPredicate&& predicate);
 
 private:
 
@@ -76,6 +76,6 @@ private:
 template<typename TClass, typename TPredicate>
 void TestSyntropySerialization::TestSerializationResults(const nlohmann::json& json, const TClass& object, TPredicate&& predicate)
 {
-	auto copy = *syntropy::serialization::DeserializeObjectFromJSON<TClass>(json);
-	SYNTROPY_UNIT_ASSERT(predicate(object, copy));
+    auto copy = *syntropy::serialization::template DeserializeObjectFromJSON<TClass>(json);
+    SYNTROPY_UNIT_ASSERT(predicate(object, copy));
 }

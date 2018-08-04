@@ -33,7 +33,7 @@ namespace syntropy
         {
             std::reference_wrapper<Allocator> allocator_;       ///< \brief Allocator used to handle the allocation of this layer.
 
-            size_t max_size_;                                   ///< \brief Maximum allocation size that can be handled by this layer.
+            Bytes max_size_;                                    ///< \brief Maximum allocation size that can be handled by this layer.
 
             /// \brief Get a reference to the allocator.
             Allocator* operator->();
@@ -47,15 +47,15 @@ namespace syntropy
         /// \param layers Layers in this allocator. The order of these layers determines the priority of the allocator handling incoming allocation requests.
         LayeredAllocator(const HashedString& name, const std::vector<Layer>& layers);
 
-        virtual void* Allocate(size_t size) override;
+        virtual void* Allocate(Bytes size) override;
 
-        virtual void* Allocate(size_t size, size_t alignment) override;
+        virtual void* Allocate(Bytes size, Bytes alignment) override;
 
         virtual void Free(void* block) override;
 
         virtual bool Owns(void* block) const override;
 
-        virtual size_t GetMaxAllocationSize() const override;
+        virtual Bytes GetMaxAllocationSize() const override;
 
     private:
 

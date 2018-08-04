@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <ostream>
+
 #include "containers/hashed_string.h"
 
 namespace syntropy

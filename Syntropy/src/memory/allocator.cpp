@@ -161,7 +161,7 @@ namespace syntropy
 
 void* operator new (std::size_t size, syntropy::Allocator& allocator, const syntropy::diagnostics::StackTrace& stack_trace)
 {
-    auto ptr = allocator.Allocate(size);
+    auto ptr = allocator.Allocate(syntropy::Bytes(size));
 
     SYNTROPY_LOG((allocator), "Allocating ", size, " bytes. Address: ", ptr, ". Caller: ", stack_trace);
 

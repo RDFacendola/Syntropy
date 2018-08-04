@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "memory/memory.h"
+#include "memory/bytes.h"
 
 #include "memory/allocators/linear_allocator.h"
 
@@ -29,13 +30,13 @@ namespace syntropy
         /// \brief Create a new block allocator.
         /// \param capacity Amount of memory reserved by the allocator.
         /// \param block_size Size of each block, in bytes.
-        BlockAllocator(size_t capacity, size_t block_size);
+        BlockAllocator(Bytes capacity, Bytes block_size);
 
         /// \brief Create a new block allocator.
         /// \param memory_range Memory range used by the allocator.
         /// \param block_size Size of each block, in bytes.
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        BlockAllocator(const MemoryRange& memory_range, size_t block_size);
+        BlockAllocator(const MemoryRange& memory_range, Bytes block_size);
 
         /// \brief No copy constructor.
         BlockAllocator(const BlockAllocator&) = delete;
@@ -53,7 +54,7 @@ namespace syntropy
         /// Allocated memory blocks are guaranteed to be aligned to the allocator's block size.
         /// \param commit_size Amount of memory to commit inside the block. This value is rounded up to the next page size and capped to the block size.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(size_t commit_size = std::numeric_limits<size_t>::max());
+        void* Allocate(Bytes commit_size);
 
         /// \brief Reserve a memory block.
         /// Reserved memory blocks are guaranteed to be aligned to the allocator's block size.
@@ -67,7 +68,7 @@ namespace syntropy
 
         /// \brief Get the size of each block.
         /// \return Returns the size of each block in bytes.
-        size_t GetBlockSize() const;
+        Bytes GetBlockSize() const;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -85,7 +86,7 @@ namespace syntropy
 
             FreeBlock* next_;           ///< \brief Pointer to next chunk.
 
-            size_t count_;              ///< \brief Current amount of free blocks referenced by this block.
+            size_t count_;               ///< \brief Current amount of free blocks referenced by this block.
 
             size_t capacity_;           ///< \brief Maximum amount of free blocks that can be referenced by this block.
 
@@ -109,7 +110,7 @@ namespace syntropy
 
         };
 
-        size_t block_size_;             ///< \brief Size of each block in bytes.
+        Bytes block_size_;              ///< \brief Size of each block in bytes.
 
         LinearAllocator allocator_;     ///< \brief Underlying linear allocator.
 
@@ -131,13 +132,13 @@ namespace syntropy
         /// \brief Create a new monotonic block allocator.
         /// \param capacity Amount of memory reserved by the allocator.
         /// \param block_size Size of each block, in bytes.
-        StaticBlockAllocator(size_t capacity, size_t block_size);
+        StaticBlockAllocator(Bytes capacity, Bytes block_size);
 
         /// \brief Create a new monotonic block allocator.
         /// \param memory_range Memory range used by the allocator.
         /// \param block_size Size of each block, in bytes.
         /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        StaticBlockAllocator(const MemoryRange& memory_range, size_t block_size);
+        StaticBlockAllocator(const MemoryRange& memory_range, Bytes block_size);
 
         /// \brief No copy constructor.
         StaticBlockAllocator(const StaticBlockAllocator&) = delete;
@@ -162,7 +163,7 @@ namespace syntropy
 
         /// \brief Get the size of each block.
         /// \return Returns the size of each block in bytes.
-        size_t GetBlockSize() const;
+        Bytes GetBlockSize() const;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -176,7 +177,7 @@ namespace syntropy
             Block* next_;               ///< \brief Pointer to the next free block.
         };
 
-        size_t block_size_;             ///< \brief Size of each block in bytes.
+        Bytes block_size_;              ///< \brief Size of each block in bytes.
 
         LinearAllocator allocator_;     ///< \brief Underlying linear allocator.
 

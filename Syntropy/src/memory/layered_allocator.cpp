@@ -30,7 +30,7 @@ namespace syntropy
 
     }
 
-    void* LayeredAllocator::Allocate(size_t size)
+    void* LayeredAllocator::Allocate(Bytes size)
     {
         for (auto&& layer : layers_)
         {
@@ -45,7 +45,7 @@ namespace syntropy
         return nullptr;
     }
 
-    void* LayeredAllocator::Allocate(size_t size, size_t alignment)
+    void* LayeredAllocator::Allocate(Bytes size, Bytes alignment)
     {
         for (auto&& layer : layers_)
         {
@@ -82,7 +82,7 @@ namespace syntropy
         });
     }
 
-    size_t LayeredAllocator::GetMaxAllocationSize() const
+    Bytes LayeredAllocator::GetMaxAllocationSize() const
     {
         return layers_.back().max_size_;
     }

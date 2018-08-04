@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "memory/bytes.h"
 #include "memory/memory.h"
 
 namespace syntropy
@@ -19,21 +20,21 @@ namespace syntropy
 
         /// \brief Get the virtual memory page size.
         /// \return Returns the virtual memory page size, in bytes.
-        static size_t GetPageSize();
+        static Bytes GetPageSize();
 
         /// \brief Reserve a range of virtual memory addresses.
         /// Reserved memory pages must be committed via Commit() before accessing them.
         /// \param size Size of the range to reserve, in bytes.
         /// \return Returns the first address in the reserved range. If the method fails, returns nullptr.
         /// \remark The reserved memory is guaranteed to be aligned to virtual memory page boundary.
-        static void* Reserve(size_t size);
+        static void* Reserve(Bytes size);
 
         /// \brief Allocate a range of virtual memory addresses.
         /// This method has the same effect as a Reserve() followed by a Commit().
         /// \param size Size of the range to reserve, in bytes.
         /// \return Returns the first address in the allocated range. If the method fails, returns nullptr.
         /// \remark The allocated memory is guaranteed to be aligned to virtual memory page boundary.
-        static void* Allocate(size_t size);
+        static void* Allocate(Bytes size);
 
         /// \brief Release a range of virtual memory addresses.
         /// \param address First address of the range to release. Must match any return value of a previous Reserve() / Allocate(), otherwise the behaviour is unspecified.
@@ -46,18 +47,18 @@ namespace syntropy
         /// \param size Size of the block to commit, in bytes.
         /// \return Returns true if the memory could be committed, returns false otherwise.
         /// \remarks address and size must refer to a memory region that was previously reserved via Reserve().
-        static bool Commit(void* address, size_t size);
+        static bool Commit(void* address, Bytes size);
 
         /// \brief Decommit a virtual memory block.
         /// This method decommits all the pages containing at least one byte in the range [address, address + size].
         /// \param address Base address of the memory block to decommit.
         /// \param size Size of the block to decommit, in bytes.
-        static bool Decommit(void* address, size_t size);
+        static bool Decommit(void* address, Bytes size);
 
         /// \brief Round a size up to the next virtual page size.
         /// \param size Size to round up.
         /// \return Returns the size extended such that is a multiple of the page size.
-        static size_t CeilToPageSize(size_t size);
+        static Bytes CeilToPageSize(Bytes size);
 
     };
 
@@ -73,12 +74,12 @@ namespace syntropy
 
         /// \brief Create a new pool.
         /// \param size Size of the pool, in bytes.
-        MemoryPool(size_t size);
+        MemoryPool(Bytes size);
 
         /// \brief Create a new aligned pool
         /// \param size Size of the pool, in bytes.
         /// \param alignment Alignment of the pool, in bytes.
-        MemoryPool(size_t size, size_t alignment);
+        MemoryPool(Bytes size, Bytes alignment);
 
         /// \brief No copy ctor.
         MemoryPool(const MemoryPool&) = delete;
@@ -99,11 +100,11 @@ namespace syntropy
         /// \brief Access an element in the pool.
         /// \param offset Offset with respect to the first element of the pool.
         /// \return Returns a pointer to the element (base+offset).
-        void* operator[](size_t offset) const;
+        void* operator[](Bytes offset) const;
 
         /// \brief Get the size of the pool, in bytes.
         /// \return Returns the size of the pool, in bytes.
-        size_t GetSize() const;
+        Bytes GetSize() const;
 
         /// \brief Get the pool's memory range.
         operator MemoryRange() const;

@@ -40,15 +40,15 @@ namespace syntropy
         /// \brief Default constructor.
         STDAllocator();
 
-        virtual void* Allocate(size_t size) override;
+        virtual void* Allocate(Bytes size) override;
 
-        virtual void* Allocate(size_t size, size_t alignment) override;
+        virtual void* Allocate(Bytes size, Bytes alignment) override;
 
         virtual void Free(void* block) override;
 
         virtual bool Owns(void* block) const;
 
-        virtual size_t GetMaxAllocationSize() const;
+        virtual Bytes GetMaxAllocationSize() const;
 
     };
 
