@@ -22,6 +22,9 @@
     <ClInclude Include="include\application\command_line.h" />
     <ClInclude Include="include\containers\context.h" />
     <ClInclude Include="include\contexts.h" />
+    <ClInclude Include="include\memory\memory_address.h" />
+    <ClInclude Include="include\memory\alignment.h" />
+    <ClInclude Include="include\memory\virtual_memory_range.h" />
     <ClInclude Include="include\patterns\multi_interface.h">
       <SubType>
       </SubType>
