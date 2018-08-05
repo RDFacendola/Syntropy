@@ -209,9 +209,24 @@ namespace syntropy::platform
             return instance;
         }
 
+        /// \brief Get the allocation granularity.
+        /// This value determines the granularity at which virtual memory can be reserved and released.
+        Bytes GetAllocationGranularity() const
+        {
+            return allocation_granularity_;
+        }
+
+        /// \brief Get the size of each virtual memory page.
+        /// This value determines the granularity at which virtual memory can be committed and decommitted.
         Bytes GetPageSize() const
         {
             return page_size_;
+        }
+
+        /// \brief Get the alignment of each virtual memory page.
+        Alignment GetPageAlignment() const
+        {
+            return page_alignment_;
         }
 
     private:
@@ -223,11 +238,14 @@ namespace syntropy::platform
 
             allocation_granularity_ = Bytes(system_info.dwAllocationGranularity);
             page_size_ = Bytes(system_info.dwPageSize);
+            page_alignment_ = Alignment(page_size_);                        // Since each page can be committed at page size boundaries, the page size is also the alignment.
         }
 
         Bytes allocation_granularity_;      ///< \brief Memory allocation granularity, in bytes.
 
         Bytes page_size_;                   ///< \brief Memory page size, in bytes.
+
+        Alignment page_alignment_;          ///< \brief Memory page alignment, in bytes.
     };
 
     /************************************************************************/
@@ -500,6 +518,11 @@ namespace syntropy::platform
     Bytes PlatformMemory::GetPageSize()
     {
         return WindowsMemory::GetInstance().GetPageSize();
+    }
+
+    Alignment PlatformMemory::GetPageAlignment()
+    {
+        return WindowsMemory::GetInstance().GetPageAlignment();
     }
 
     MemoryRange PlatformMemory::Allocate(Bytes size)

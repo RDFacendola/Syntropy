@@ -18,7 +18,9 @@ namespace syntropy
         return platform::PlatformMemory::GetPageSize();
     }
 
+    Alignment VirtualMemory::GetPageAlignment()
     {
+        return platform::PlatformMemory::GetPageAlignment();
     }
 
     MemoryRange VirtualMemory::Reserve(Bytes size)

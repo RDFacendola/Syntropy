@@ -27,6 +27,9 @@ namespace syntropy
         /// \return Returns the virtual memory page size, in bytes.
         static Bytes GetPageSize();
 
+        /// \brief Get the virtual memory page alignment.
+        /// \return Returns the virtual memory page alignment, in bytes.
+        static Alignment GetPageAlignment();
 
         /// \brief Reserve a range of virtual memory addresses.
         /// Reserved memory pages must be committed via Commit() before accessing them.
