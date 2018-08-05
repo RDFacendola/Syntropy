@@ -56,6 +56,16 @@ namespace syntropy
         /// \return Returns a pointer to offset-bytes after the base of the range.
         constexpr MemoryAddress operator[](Bytes offset) const;
 
+        /// \brief Advance the memory range forward.
+        /// \param rhs Number of bytes to move the range forward to.
+        /// \return Returns a reference to this element.
+        constexpr MemoryRange& operator+=(Bytes rhs) noexcept;
+
+        /// \brief Move the memory range backwards.
+        /// \param rhs Number of bytes to move the range backwards to.
+        /// \return Returns a reference to this element.
+        constexpr MemoryRange& operator-=(Bytes rhs) noexcept;
+
         /// \brief Get the base address of the range.
         /// \return Returns the base address of the range.
         constexpr MemoryAddress GetBase() const noexcept;
@@ -85,6 +95,22 @@ namespace syntropy
         MemoryAddress top_;           ///< \brief One past the last address in the memory range.
 
     };
+
+    /// \brief Equality comparison for MemoryRange.
+    /// \return Returns true if lhs and rhs refer to the same memory range, returns false otherwise.
+    constexpr bool operator==(const MemoryRange& lhs, const MemoryRange& rhs) noexcept;
+
+    /// \brief Inequality comparison for MemoryRange.
+    /// \return Returns true if lhs and rhs refer to different memory ranges, returns false otherwise.
+    constexpr bool operator!=(const MemoryRange& lhs, const MemoryRange& rhs) noexcept;
+
+    /// \brief Move a memory range forward.
+    /// \return Returns a memory range which is equal to lhs moved forward by rhs bytes.
+    constexpr MemoryRange operator+(const MemoryRange& lhs, const Bytes& rhs) noexcept;
+
+    /// \brief Move a memory range backward.
+    /// \return Returns a memory range which is equal to lhs moved backwards by rhs bytes.
+    constexpr MemoryRange operator-(const MemoryRange& lhs, const Bytes& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -117,6 +143,22 @@ namespace syntropy
         return address;
     }
 
+    constexpr MemoryRange& MemoryRange::operator+=(Bytes rhs) noexcept
+    {
+        base_ += rhs;
+        top_ += rhs;
+        return *this;
+    }
+
+    constexpr MemoryRange& MemoryRange::operator-=(Bytes rhs) noexcept
+    {
+        SYNTROPY_ASSERT(uintptr_t(base_) >= std::size_t(rhs));
+
+        base_ -= rhs;
+        top_ -= rhs;
+        return *this;
+    }
+
     constexpr MemoryAddress MemoryRange::GetBase() const noexcept
     {
         return base_;
@@ -141,4 +183,25 @@ namespace syntropy
     {
         return base_ <= address && address < top_;
     }
+
+    constexpr bool operator==(const MemoryRange& lhs, const MemoryRange& rhs) noexcept
+    {
+        return lhs.GetBase() == rhs.GetBase() && lhs.GetTop() == rhs.GetTop();
+    }
+
+    constexpr bool operator!=(const MemoryRange& lhs, const MemoryRange& rhs) noexcept
+    {
+        return !(lhs == rhs);
+    }
+
+    constexpr MemoryRange operator+(const MemoryRange& lhs, const Bytes& rhs) noexcept
+    {
+        return MemoryRange(lhs) += rhs;
+    }
+
+    constexpr MemoryRange operator-(const MemoryRange& lhs, const Bytes& rhs) noexcept
+    {
+        return MemoryRange(lhs) -= rhs;
+    }
+
 }
