@@ -136,22 +136,23 @@ namespace syntropy::platform
     {
     public:
 
-        /// \brief See Memory::GetPageSize
+        /// \brief See VirtualMemory::GetPageSize
         static Bytes GetPageSize();
 
-        /// \brief See Memory::Reserve
+
+        /// \brief See VirtualMemory::Reserve
         static MemoryRange Reserve(Bytes size);
 
-        /// \brief See Memory::Allocate
+        /// \brief See VirtualMemory::Allocate
         static MemoryRange Allocate(Bytes size);
 
-        /// \brief See Memory::Release
+        /// \brief See VirtualMemory::Release
         static bool Release(const MemoryRange& memory_range);
 
-        /// \brief See Memory::Commit
+        /// \brief See VirtualMemory::Commit
         static bool Commit(const MemoryRange& memory_range);
 
-        /// \brief See Memory::Decommit
+        /// \brief See VirtualMemory::Decommit
         static bool Decommit(const MemoryRange& memory_range);
 
     };

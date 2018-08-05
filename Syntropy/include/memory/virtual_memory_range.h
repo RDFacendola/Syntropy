@@ -20,7 +20,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents a range of virtual memory addresses.
-    /// RAII: the range is reserved when the object is created and released upon destruction.
+    /// RAII: the range is reserved when the range is created and released upon destruction.
     /// Addresses in the range must be committed\decommitted manually.
     /// \author Raffaele D. Facendola - August 2018
     class VirtualMemoryRange

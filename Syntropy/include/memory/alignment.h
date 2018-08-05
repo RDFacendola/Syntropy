@@ -18,9 +18,8 @@ namespace syntropy
     /* ALIGNMENT                                                            */
     /************************************************************************/
 
-    /// \brief Represents an alignment.
+    /// \brief Represents an alignment that is a power of 2.
     /// This type is meant to be a strongly-typed replacement for std::align_val_t.
-    /// The amount is always a positive power of two.
     /// \author Raffaele D. Facendola - August 2018
     class Alignment
     {

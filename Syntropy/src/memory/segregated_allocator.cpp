@@ -294,17 +294,17 @@ namespace syntropy
 
     ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const HashedString& name, Bytes capacity, Bytes class_size, size_t order)
         : Allocator(name)
-        , memory_pool_(capacity, Alignment(VirtualMemory::CeilToPageSize(class_size)))          // Allocate a new virtual address range.
-        , memory_range_(memory_pool_)                                                           // Get the full range out of the memory pool.
+        , memory_pool_(capacity, Alignment(Math::Ceil(class_size, VirtualMemory::GetPageSize())))           // Allocate a new virtual address range.
+        , memory_range_(memory_pool_)                                                                       // Get the full range out of the memory pool.
     {
-        InitializeAllocators(order, VirtualMemory::CeilToPageSize(class_size));
+        InitializeAllocators(order, Math::Ceil(class_size, VirtualMemory::GetPageSize()));
     }
 
     ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, Bytes class_size, size_t order)
         : Allocator(name)
-        , memory_range_(memory_range.GetBase().GetAligned(Alignment(VirtualMemory::CeilToPageSize(class_size))), memory_range.GetTop())     // Align the input memory range. Doesn't take ownership.
+        , memory_range_(memory_range.GetBase().GetAligned(Alignment(Math::Ceil(class_size, VirtualMemory::GetPageSize()))), memory_range.GetTop())      // Align the input memory range. Doesn't take ownership.
     {
-        InitializeAllocators(order, VirtualMemory::CeilToPageSize(class_size));
+        InitializeAllocators(order, Math::Ceil(class_size, VirtualMemory::GetPageSize()));
     }
 
     ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(ExponentialSegregatedFitAllocator&& other)

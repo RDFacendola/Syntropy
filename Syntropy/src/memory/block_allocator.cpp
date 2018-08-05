@@ -56,16 +56,16 @@ namespace syntropy
     }
 
     BlockAllocator::BlockAllocator(Bytes capacity, Bytes block_size)
-        : block_size_(VirtualMemory::CeilToPageSize(block_size))            // Round up to the next system page size.
-        , allocator_(capacity, Alignment(block_size_))                      // Reserve the virtual memory range upfront without allocating.
+        : block_size_(Math::Ceil(block_size, VirtualMemory::GetPageSize()))     // Round up to the next system page size.
+        , allocator_(capacity, Alignment(block_size_))                          // Reserve the virtual memory range upfront without allocating.
         , free_list_(nullptr)
     {
 
     }
 
     BlockAllocator::BlockAllocator(const MemoryRange& memory_range, Bytes block_size)
-        : block_size_(VirtualMemory::CeilToPageSize(block_size))            // Round up to the next system page size.
-        , allocator_(memory_range, Alignment(block_size_))                  // Get the memory range without taking ownership.
+        : block_size_(Math::Ceil(block_size, VirtualMemory::GetPageSize()))     // Round up to the next system page size.
+        , allocator_(memory_range, Alignment(block_size_))                      // Get the memory range without taking ownership.
         , free_list_(nullptr)
     {
 
@@ -83,7 +83,7 @@ namespace syntropy
     {
         SYNTROPY_ASSERT(commit_size <= block_size_);
 
-        commit_size = VirtualMemory::CeilToPageSize(commit_size);
+        commit_size = Math::Ceil(commit_size, VirtualMemory::GetPageSize());
 
         auto block = Reserve();
 
@@ -165,16 +165,16 @@ namespace syntropy
     }
 
     StaticBlockAllocator::StaticBlockAllocator(Bytes capacity, Bytes block_size)
-        : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
-        , allocator_(capacity, Alignment(block_size_))              // Reserve the virtual memory range upfront without allocating.
+        : block_size_(Math::Ceil(block_size, VirtualMemory::GetPageSize()))     // Round up to the next system page size.
+        , allocator_(capacity, Alignment(block_size_))                          // Reserve the virtual memory range upfront without allocating.
         , free_list_(nullptr)
     {
 
     }
 
     StaticBlockAllocator::StaticBlockAllocator(const MemoryRange& memory_range, Bytes block_size)
-        : block_size_(VirtualMemory::CeilToPageSize(block_size))    // Round up to the next system page size.
-        , allocator_(memory_range, Alignment(block_size_))          // Get the memory range without taking ownership.
+        : block_size_(Math::Ceil(block_size, VirtualMemory::GetPageSize()))     // Round up to the next system page size.
+        , allocator_(memory_range, Alignment(block_size_))                      // Get the memory range without taking ownership.
         , free_list_(nullptr)
     {
 

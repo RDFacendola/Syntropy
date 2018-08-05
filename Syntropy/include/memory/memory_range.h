@@ -9,7 +9,6 @@
 #include <cstdint>
 
 #include "memory/bytes.h"
-#include "memory/alignment.h"
 #include "memory/memory_address.h"
 
 #include "diagnostics/assert.h"

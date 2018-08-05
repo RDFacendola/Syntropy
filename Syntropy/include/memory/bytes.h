@@ -8,7 +8,6 @@
 
 #include <cstddef>
 #include <ostream>
-#include <algorithm>
 
 #include "diagnostics/assert.h"
 

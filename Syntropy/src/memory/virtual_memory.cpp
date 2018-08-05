@@ -18,9 +18,7 @@ namespace syntropy
         return platform::PlatformMemory::GetPageSize();
     }
 
-    Bytes VirtualMemory::CeilToPageSize(Bytes size)
     {
-        return Math::Ceil(size, GetPageSize());
     }
 
     MemoryRange VirtualMemory::Reserve(Bytes size)

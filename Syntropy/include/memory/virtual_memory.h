@@ -7,7 +7,7 @@
 #pragma once
 
 #include "memory/bytes.h"
-#include "memory/memory_address.h"
+#include "memory/alignment.h"
 #include "memory/memory_range.h"
 
 namespace syntropy
@@ -27,23 +27,17 @@ namespace syntropy
         /// \return Returns the virtual memory page size, in bytes.
         static Bytes GetPageSize();
 
-        /// \brief Round a size up to the next virtual page size.
-        /// \param size Size to round up.
-        /// \return Returns the size extended such that is a multiple of the page size.
-        static Bytes CeilToPageSize(Bytes size);
 
         /// \brief Reserve a range of virtual memory addresses.
         /// Reserved memory pages must be committed via Commit() before accessing them.
         /// \param size Size of the range to reserve, in bytes.
         /// \return Returns the reserved memory range. If the method fails returns an empty range.
-        /// \remark The reserved memory is guaranteed to be aligned to virtual memory page boundary.
         static MemoryRange Reserve(Bytes size);
 
         /// \brief Allocate a range of virtual memory addresses.
         /// This method has the same effect as a Reserve() followed by a Commit().
         /// \param size Size of the range to reserve, in bytes.
         /// \return Returns the reserved memory range. If the method fails returns an empty range.
-        /// \remark The allocated memory is guaranteed to be aligned to virtual memory page boundary.
         static MemoryRange Allocate(Bytes size);
 
         /// \brief Release a range of virtual memory addresses.
