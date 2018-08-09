@@ -89,6 +89,8 @@
     <ClInclude Include="include\memory\memory_address.h" />
     <ClInclude Include="include\memory\memory_buffer.h" />
     <ClInclude Include="include\memory\virtual_memory_range.h" />
+    <ClInclude Include="include\memory\virtual_memory_page.h" />
+    <ClInclude Include="include\memory\virtual_memory_buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

@@ -22,7 +22,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents a range of contiguous memory addresses.
-    /// The range is of the form [base; top)
+    /// The range is of the form [begin; end)
     /// \author Raffaele D. Facendola - December 2016
     class MemoryRange
     {
@@ -35,14 +35,14 @@ namespace syntropy
         constexpr MemoryRange(const MemoryRange&) = default;
 
         /// \brief Create a memory range.
-        /// \param base First address in the range.
-        /// \param top One past the last address in the range.
-        constexpr MemoryRange(MemoryAddress base, MemoryAddress top);
+        /// \param begin First address in the range.
+        /// \param end One past the last address in the range.
+        constexpr MemoryRange(MemoryAddress begin, MemoryAddress end);
 
         /// \brief Create a memory range.
-        /// \param base First address in the range.
+        /// \param begin First address in the range.
         /// \param size Size of the range.
-        constexpr MemoryRange(MemoryAddress base, Bytes size);
+        constexpr MemoryRange(MemoryAddress begin, Bytes size);
 
         /// \brief Default assignment operator.
         constexpr MemoryRange& operator=(const MemoryRange&) = default;
@@ -68,11 +68,11 @@ namespace syntropy
 
         /// \brief Get the base address of the range.
         /// \return Returns the base address of the range.
-        constexpr MemoryAddress GetBase() const noexcept;
+        constexpr MemoryAddress Begin() const noexcept;
 
         /// \brief Get the address past the end of this range,
         /// \return Returns the address past the end of this range.
-        constexpr MemoryAddress GetTop() const noexcept;
+        constexpr MemoryAddress End() const noexcept;
 
         /// \brief Get the size of the range, in bytes.
         /// \return Returns the total capacity of the memory range, in bytes.
@@ -90,9 +90,9 @@ namespace syntropy
 
     private:
 
-        MemoryAddress base_;          ///< \brief First address in the memory range.
+        MemoryAddress begin_;       ///< \brief First address in the memory range.
 
-        MemoryAddress top_;           ///< \brief One past the last address in the memory range.
+        MemoryAddress end_;         ///< \brief One past the last address in the memory range.
 
     };
 
@@ -116,27 +116,27 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    constexpr MemoryRange::MemoryRange(MemoryAddress base, MemoryAddress top)
-        : base_(base)
-        , top_(top)
+    constexpr MemoryRange::MemoryRange(MemoryAddress begin, MemoryAddress end)
+        : begin_(begin)
+        , end_(end)
     {
-        SYNTROPY_ASSERT(base <= top);
+        SYNTROPY_ASSERT(begin <= end);
     }
 
-    constexpr MemoryRange::MemoryRange(MemoryAddress base, Bytes size)
-        : MemoryRange(base, base + size)
+    constexpr MemoryRange::MemoryRange(MemoryAddress begin, Bytes size)
+        : MemoryRange(begin, begin + size)
     {
 
     }
 
     constexpr MemoryRange::operator bool() const noexcept
     {
-        return top_ != base_;
+        return end_ != begin_;
     }
 
     constexpr MemoryAddress MemoryRange::operator[](Bytes offset) const
     {
-        auto address = base_ + offset;
+        auto address = begin_ + offset;
 
         SYNTROPY_ASSERT(Contains(address));
 
@@ -145,48 +145,48 @@ namespace syntropy
 
     constexpr MemoryRange& MemoryRange::operator+=(Bytes rhs) noexcept
     {
-        base_ += rhs;
-        top_ += rhs;
+        begin_ += rhs;
+        end_ += rhs;
         return *this;
     }
 
     constexpr MemoryRange& MemoryRange::operator-=(Bytes rhs) noexcept
     {
-        SYNTROPY_ASSERT(uintptr_t(base_) >= std::size_t(rhs));
+        SYNTROPY_ASSERT(uintptr_t(begin_) >= std::size_t(rhs));
 
-        base_ -= rhs;
-        top_ -= rhs;
+        begin_ -= rhs;
+        end_ -= rhs;
         return *this;
     }
 
-    constexpr MemoryAddress MemoryRange::GetBase() const noexcept
+    constexpr MemoryAddress MemoryRange::Begin() const noexcept
     {
-        return base_;
+        return begin_;
     }
 
-    constexpr MemoryAddress MemoryRange::GetTop() const noexcept
+    constexpr MemoryAddress MemoryRange::End() const noexcept
     {
-        return top_;
+        return end_;
     }
 
     constexpr Bytes MemoryRange::GetSize() const noexcept
     {
-        return Bytes(std::size_t(top_ - base_));
+        return Bytes(std::size_t(end_ - begin_));
     }
 
     constexpr bool MemoryRange::Contains(const MemoryRange& memory_range) const noexcept
     {
-        return base_ <= memory_range.base_ && memory_range.top_ <= top_;
+        return begin_ <= memory_range.begin_ && memory_range.end_ <= end_;
     }
 
     constexpr bool MemoryRange::Contains(MemoryAddress address) const noexcept
     {
-        return base_ <= address && address < top_;
+        return begin_ <= address && address < end_;
     }
 
     constexpr bool operator==(const MemoryRange& lhs, const MemoryRange& rhs) noexcept
     {
-        return lhs.GetBase() == rhs.GetBase() && lhs.GetTop() == rhs.GetTop();
+        return lhs.Begin() == rhs.Begin() && lhs.End() == rhs.End();
     }
 
     constexpr bool operator!=(const MemoryRange& lhs, const MemoryRange& rhs) noexcept

@@ -12,15 +12,15 @@ namespace syntropy
     StackAllocator::StackAllocator(Bytes capacity, Alignment alignment)
         : memory_pool_(capacity, alignment)
         , memory_range_(memory_pool_)
-        , head_(memory_range_.GetBase())
+        , head_(memory_range_.Begin())
         , status_(nullptr)
     {
         VirtualMemory::Commit(memory_range_);                   // Allocate everything upfront.
     }
 
     StackAllocator::StackAllocator(const MemoryRange& memory_range, Alignment alignment)
-        : memory_range_(memory_range.GetBase().GetAligned(alignment), memory_range.GetTop())
-        , head_(memory_range_.GetBase())
+        : memory_range_(memory_range.Begin().GetAligned(alignment), memory_range.End())
+        , head_(memory_range_.Begin())
         , status_(nullptr)
     {
         VirtualMemory::Commit(memory_range_);                           // Allocate everything upfront.
@@ -36,7 +36,7 @@ namespace syntropy
 
         head_ += size;
 
-        SYNTROPY_ASSERT(head_ <= memory_range_.GetTop());               // Out-of-memory check.
+        SYNTROPY_ASSERT(head_ <= memory_range_.End());               // Out-of-memory check.
 
         return block;
     }
@@ -58,7 +58,7 @@ namespace syntropy
     {
         std::lock_guard<std::mutex> lock(mutex_);
 
-        head_ = memory_range_.GetBase();
+        head_ = memory_range_.Begin();
     }
 
     void StackAllocator::SaveStatus()
@@ -84,7 +84,7 @@ namespace syntropy
 
     Bytes StackAllocator::GetAllocationSize() const
     {
-        return Bytes(head_ - memory_range_.GetBase());
+        return Bytes(head_ - memory_range_.Begin());
     }
 
     Bytes StackAllocator::GetCommitSize() const

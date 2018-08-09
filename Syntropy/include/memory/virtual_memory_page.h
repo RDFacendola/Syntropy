@@ -22,16 +22,11 @@ namespace syntropy
     {
     public:
 
-        /// \brief Get the virtual memory page size.
-        /// \return Returns the virtual memory page size, in bytes.
-        static Bytes GetSize();
-
-        /// \brief Get the virtual memory page alignment.
-        /// \return Returns the virtual memory page alignment, in bytes.
-        static Alignment GetAlignment();
-
-        /// \brief Create a en empty address.
+        /// \brief Create an empty memory page.
         constexpr VirtualMemoryPage() = default;
+
+        /// \brief Create a new virtual memory page.
+        VirtualMemoryPage(MemoryAddress begin, MemoryAddress end);
 
         /// \brief Default copy-constructor.
         VirtualMemoryPage(const VirtualMemoryPage&) = default;
@@ -53,18 +48,26 @@ namespace syntropy
         /// \return Returns a reference to this element.
         constexpr VirtualMemoryPage& operator-=(std::size_t rhs) noexcept;
 
-        /// \brief Commit the memory page, making it accessible by the application.
-        /// \remarks When committing more than one memory page prefer VirtualMemoryRange::Commit() to this method.
-        void Commit();
+        /// \brief Get the first address in the memory page.
+        /// \return Returns the first address in the memory page.
+        constexpr MemoryAddress Begin() const noexcept;
 
-        /// \brief Decommit the memory page, making it inaccessible by the application.
-        /// \remarks When decommitting more than one memory page prefer VirtualMemoryRange::Decommit() to this method.
-        void Decommit();
+        /// \brief Get the one past the last address in the memory page.
+        /// \return Returns one past the the last address in the memory page.
+        constexpr MemoryAddress End() const noexcept;
+
+        /// \brief Get the virtual memory page size.
+        /// \return Returns the virtual memory page size, in bytes.
+        constexpr Bytes GetSize() const noexcept;
+
+        /// \brief Check whether an address falls within this memory page.
+        /// \param address Address to check.
+        /// \return Returns true if address is contained inside this memory page, returns false otherwise.
+        constexpr bool Contains(MemoryAddress address) const noexcept;
 
     private:
 
         MemoryRange memory_range_;              ///< \brief Virtual memory range.
-
     };
 
     /// \brief Equality comparison for VirtualMemoryPage.
@@ -107,6 +110,12 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
+    VirtualMemoryPage::VirtualMemoryPage(MemoryAddress begin, MemoryAddress end)
+        : memory_range_(begin, end)
+    {
+
+    }
+
     constexpr VirtualMemoryPage::operator const MemoryRange&() const noexcept
     {
         return memory_range_;
@@ -124,6 +133,26 @@ namespace syntropy
         return *this;
     }
 
+    constexpr MemoryAddress VirtualMemoryPage::Begin() const noexcept
+    {
+        return memory_range_.Begin();
+    }
+
+    constexpr MemoryAddress VirtualMemoryPage::End() const noexcept
+    {
+        return memory_range_.End();
+    }
+    
+    constexpr Bytes VirtualMemoryPage::GetSize() const noexcept
+    {
+        return memory_range_.GetSize();
+    }
+
+    constexpr bool VirtualMemoryPage::Contains(MemoryAddress address) const noexcept
+    {
+        return memory_range_.Contains(address);
+    }
+
     constexpr bool operator==(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept
     {
         return MemoryRange(lhs) = MemoryRange(rhs);
@@ -136,22 +165,22 @@ namespace syntropy
 
     constexpr bool operator>(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept
     {
-        return MemoryRange(lhs).GetBase() > MemoryRange(rhs).GetBase();
+        return MemoryRange(lhs).Begin() > MemoryRange(rhs).Begin();
     }
 
     constexpr bool operator<(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept
     {
-        return MemoryRange(lhs).GetBase() < MemoryRange(rhs).GetBase();
+        return MemoryRange(lhs).Begin() < MemoryRange(rhs).Begin();
     }
 
     constexpr bool operator>=(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept
     {
-        return MemoryRange(lhs).GetBase() >= MemoryRange(rhs).GetBase();
+        return MemoryRange(lhs).Begin() >= MemoryRange(rhs).Begin();
     }
 
     constexpr bool operator<=(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept
     {
-        return MemoryRange(lhs).GetBase() <= MemoryRange(rhs).GetBase();
+        return MemoryRange(lhs).Begin() <= MemoryRange(rhs).Begin();
     }
 
     constexpr VirtualMemoryPage operator+(const VirtualMemoryPage& lhs, std::size_t rhs) noexcept
@@ -166,7 +195,7 @@ namespace syntropy
 
     constexpr ptrdiff_t operator-(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept
     {
-        auto difference = MemoryRange(rhs).GetBase() - MemoryRange(lhs).GetBase();
+        auto difference = MemoryRange(rhs).Begin() - MemoryRange(lhs).Begin();
 
         return difference / intptr_t(std::size_t(VirtualMemoryPage::GetSize()));
     }

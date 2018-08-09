@@ -25,7 +25,10 @@
 #include <memory>
 #include <unordered_map>
 
+#include "math/math.h"
 #include "memory/bytes.h"
+#include "memory/memory_address.h"
+#include "memory/virtual_memory_page.h"
 #include "diagnostics/assert.h"
 
 #include "syntropy.h"
@@ -525,29 +528,47 @@ namespace syntropy::platform
         return WindowsMemory::GetInstance().GetPageAlignment();
     }
 
-    MemoryRange PlatformMemory::Allocate(Bytes size)
+    VirtualMemoryRange PlatformMemory::Allocate(Bytes size)
     {
-        return MemoryRange(VirtualAlloc(0, std::size_t(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE), size);
+        size = Math::Ceil(size, GetPageSize());
+
+        MemoryAddress address = VirtualAlloc(0, std::size_t(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+
+        return VirtualMemoryRange(VirtualMemoryPage(address), VirtualMemoryPage(address + size));
     }
 
-    MemoryRange PlatformMemory::Reserve(Bytes size)
+    VirtualMemoryRange PlatformMemory::Reserve(Bytes size)
     {
-        return MemoryRange(VirtualAlloc(0, std::size_t(size), MEM_RESERVE, PAGE_READWRITE), size);
+        size = Math::Ceil(size, GetPageSize());
+
+        MemoryAddress address = VirtualAlloc(0, std::size_t(size), MEM_RESERVE, PAGE_READWRITE);
+
+        return VirtualMemoryRange(VirtualMemoryPage(address), VirtualMemoryPage(address + size));
     }
 
-    bool PlatformMemory::Release(const MemoryRange& memory_range)
+    bool PlatformMemory::Release(const VirtualMemoryRange& memory_range)
     {
-        return VirtualFree(memory_range.GetBase(), 0, MEM_RELEASE) != 0;
+        auto address = memory_range.Begin().Begin();                        // Memory range > memory page > memory address
+
+        return VirtualFree(address, 0, MEM_RELEASE) != 0;
     }
 
-    bool PlatformMemory::Commit(const MemoryRange& memory_range)
+    bool PlatformMemory::Commit(const VirtualMemoryRange& memory_range)
     {
-        return VirtualAlloc(memory_range.GetBase(), std::size_t(memory_range.GetSize()), MEM_COMMIT, PAGE_READWRITE) != nullptr;
+        auto address = memory_range.Begin().Begin();                        // Memory range > memory page > memory address
+
+        auto size = std::size_t(memory_range.GetSize() * GetPageSize());
+
+        return VirtualAlloc(address, size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
     }
 
-    bool PlatformMemory::Decommit(const MemoryRange& memory_range)
+    bool PlatformMemory::Decommit(const VirtualMemoryRange& memory_range)
     {
-        return VirtualFree(memory_range.GetBase(), std::size_t(memory_range.GetSize()), MEM_DECOMMIT) != 0;
+        auto address = memory_range.Begin().Begin();                        // Memory range > memory page > memory address
+
+        auto size = std::size_t(memory_range.GetSize() * GetPageSize());
+
+        return VirtualFree(address, size, MEM_DECOMMIT) != 0;
     }
 
 }

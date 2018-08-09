@@ -302,7 +302,7 @@ namespace syntropy
 
     ExponentialSegregatedFitAllocator::ExponentialSegregatedFitAllocator(const HashedString& name, const MemoryRange& memory_range, Bytes class_size, size_t order)
         : Allocator(name)
-        , memory_range_(memory_range.GetBase().GetAligned(Alignment(Math::Ceil(class_size, VirtualMemory::GetPageSize()))), memory_range.GetTop())      // Align the input memory range. Doesn't take ownership.
+        , memory_range_(memory_range.Begin().GetAligned(Alignment(Math::Ceil(class_size, VirtualMemory::GetPageSize()))), memory_range.End())      // Align the input memory range. Doesn't take ownership.
     {
         InitializeAllocators(order, Math::Ceil(class_size, VirtualMemory::GetPageSize()));
     }
@@ -340,7 +340,7 @@ namespace syntropy
 
         // The entire memory range is divided evenly among all the allocators
 
-        auto distance = address - memory_range_.GetBase();
+        auto distance = address - memory_range_.Begin();
 
         auto index = Bytes(distance) / GetAllocatorCapacity();
 
@@ -401,7 +401,7 @@ namespace syntropy
         for(size_t index = 0; index < order; ++index)
         {
             allocators_.emplace_back(
-                MemoryRange(memory_range_.GetBase() + index * capacity, capacity),                  // Split the range into sub ranges.
+                MemoryRange(memory_range_.Begin() + index * capacity, capacity),                  // Split the range into sub ranges.
                 class_size << index);                                                               // Class size is doubled at each iteration.
 
             SYNTROPY_ASSERT(memory_range_.Contains(allocators_.back().GetRange()));

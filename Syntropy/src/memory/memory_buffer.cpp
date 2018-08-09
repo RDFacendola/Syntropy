@@ -25,7 +25,7 @@ namespace syntropy
     MemoryBuffer::MemoryBuffer(const MemoryBuffer& other)
         : MemoryBuffer(other.GetSize(), *other.allocator_)
     {
-        std::memmove(range_.GetBase(), other.range_.GetBase(), std::size_t(other.GetSize()));           // Copy the buffer's content.
+        std::memmove(range_.Begin(), other.range_.Begin(), std::size_t(other.GetSize()));           // Copy the buffer's content.
     }
 
     MemoryBuffer::MemoryBuffer(MemoryBuffer&& other)
@@ -40,7 +40,7 @@ namespace syntropy
     {
         if (range_)
         {
-            SYNTROPY_FREE(*allocator_, range_.GetBase());
+            SYNTROPY_FREE(*allocator_, range_.Begin());
         }
     }
 
@@ -52,7 +52,7 @@ namespace syntropy
 
     void* MemoryBuffer::operator*() const
     {
-        return range_.GetBase();
+        return range_.Begin();
     }
 
     void* MemoryBuffer::operator[](Bytes offset) const

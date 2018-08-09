@@ -12,16 +12,16 @@ namespace syntropy
     LinearAllocator::LinearAllocator(Bytes capacity, Alignment alignment)
         : memory_pool_(capacity, alignment)
         , memory_range_(memory_pool_)
-        , head_(memory_range_.GetBase())
-        , page_head_(memory_range_.GetBase())
+        , head_(memory_range_.Begin())
+        , page_head_(memory_range_.Begin())
     {
 
     }
 
     LinearAllocator::LinearAllocator(const MemoryRange& memory_range, Alignment alignment)
-        : memory_range_(memory_range.GetBase().GetAligned(alignment), memory_range.GetTop())
-        , head_(memory_range_.GetBase())
-        , page_head_(memory_range_.GetBase())
+        : memory_range_(memory_range.Begin().GetAligned(alignment), memory_range.End())
+        , head_(memory_range_.Begin())
+        , page_head_(memory_range_.Begin())
     {
 
     }
@@ -43,7 +43,7 @@ namespace syntropy
 
         head_ = block + size;
 
-        SYNTROPY_ASSERT(head_ <= memory_range_.GetTop());                                                   // Out-of-memory check.
+        SYNTROPY_ASSERT(head_ <= memory_range_.End());                                                   // Out-of-memory check.
 
         // Commit each memory page between the old page head and the new one
 
@@ -73,7 +73,7 @@ namespace syntropy
 
         head_ = head_.GetAligned(Alignment(VirtualMemory::GetPageSize()));                                  // Move the head to the next memory page so that following allocations won't share any memory page with this one.
 
-        SYNTROPY_ASSERT(head_ <= memory_range_.GetTop());                                                   // Out-of-memory check.
+        SYNTROPY_ASSERT(head_ <= memory_range_.End());                                                   // Out-of-memory check.
 
         page_head_ = head_;                                                                                 // Update the page head.
 
@@ -82,10 +82,10 @@ namespace syntropy
 
     void LinearAllocator::Free()
     {
-        VirtualMemory::Decommit(MemoryRange(memory_range_.GetBase(), page_head_));                          // Decommit everything.
+        VirtualMemory::Decommit(MemoryRange(memory_range_.Begin(), page_head_));                          // Decommit everything.
 
-        head_ = memory_range_.GetBase();
-        page_head_ = memory_range_.GetBase();
+        head_ = memory_range_.Begin();
+        page_head_ = memory_range_.Begin();
     }
 
     const MemoryRange& LinearAllocator::GetRange() const
