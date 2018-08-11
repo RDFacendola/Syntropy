@@ -9,6 +9,7 @@
 #include "memory/bytes.h"
 #include "memory/alignment.h"
 #include "memory/memory_range.h"
+#include "memory/virtual_memory.h"
 
 namespace syntropy
 {
@@ -26,7 +27,8 @@ namespace syntropy
         constexpr VirtualMemoryPage() = default;
 
         /// \brief Create a new virtual memory page.
-        VirtualMemoryPage(MemoryAddress begin, MemoryAddress end);
+        /// \param page_address Initial address of the memory page. Assumes the page size is the same as VirtualMemory::GetPageSize().
+        VirtualMemoryPage(MemoryAddress page_address);
 
         /// \brief Default copy-constructor.
         VirtualMemoryPage(const VirtualMemoryPage&) = default;
@@ -55,10 +57,6 @@ namespace syntropy
         /// \brief Get the one past the last address in the memory page.
         /// \return Returns one past the the last address in the memory page.
         constexpr MemoryAddress End() const noexcept;
-
-        /// \brief Get the virtual memory page size.
-        /// \return Returns the virtual memory page size, in bytes.
-        constexpr Bytes GetSize() const noexcept;
 
         /// \brief Check whether an address falls within this memory page.
         /// \param address Address to check.
@@ -90,7 +88,7 @@ namespace syntropy
     /// \return Returns true if lhs refers to a page whose address is equal or greater than rhs, returns false otherwise.
     constexpr bool operator>=(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept;
 
-    /// \brief Less-or-equal comparison for MemoryAddress.
+    /// \brief Less-or-equal comparison for VirtualMemoryPage.
     /// \return Returns true if lhs refers to a page whose address is equal or less than rhs, returns false otherwise.
     constexpr bool operator<=(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept;
 
@@ -110,10 +108,10 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    VirtualMemoryPage::VirtualMemoryPage(MemoryAddress begin, MemoryAddress end)
-        : memory_range_(begin, end)
+    VirtualMemoryPage::VirtualMemoryPage(MemoryAddress page_address)
+        : memory_range_(page_address, page_address + VirtualMemory::GetPageSize())
     {
-
+        SYNTROPY_ASSERT(page_address.IsAlignedTo(VirtualMemory::GetPageAlignment()));
     }
 
     constexpr VirtualMemoryPage::operator const MemoryRange&() const noexcept
@@ -123,13 +121,13 @@ namespace syntropy
 
     constexpr VirtualMemoryPage& VirtualMemoryPage::operator+=(std::size_t rhs) noexcept
     {
-        memory_range_ += GetSize() * rhs;
+        memory_range_ += memory_range_.GetSize() * rhs;
         return *this;
     }
 
     constexpr VirtualMemoryPage& VirtualMemoryPage::operator-=(std::size_t rhs) noexcept
     {
-        memory_range_ -= GetSize() * rhs;
+        memory_range_ -= memory_range_.GetSize() * rhs;
         return *this;
     }
 
@@ -141,11 +139,6 @@ namespace syntropy
     constexpr MemoryAddress VirtualMemoryPage::End() const noexcept
     {
         return memory_range_.End();
-    }
-    
-    constexpr Bytes VirtualMemoryPage::GetSize() const noexcept
-    {
-        return memory_range_.GetSize();
     }
 
     constexpr bool VirtualMemoryPage::Contains(MemoryAddress address) const noexcept
@@ -197,7 +190,7 @@ namespace syntropy
     {
         auto difference = MemoryRange(rhs).Begin() - MemoryRange(lhs).Begin();
 
-        return difference / intptr_t(std::size_t(VirtualMemoryPage::GetSize()));
+        return difference / intptr_t(std::size_t(VirtualMemory::GetPageSize()));
     }
 
 }

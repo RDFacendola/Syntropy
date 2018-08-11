@@ -23,27 +23,27 @@ namespace syntropy
         return platform::PlatformMemory::GetPageAlignment();
     }
 
-    VirtualMemoryRange VirtualMemory::Reserve(Bytes size)
+    MemoryRange VirtualMemory::Reserve(Bytes size)
     {
         return platform::PlatformMemory::Reserve(size);
     }
 
-    VirtualMemoryRange VirtualMemory::Allocate(Bytes size)
+    MemoryRange VirtualMemory::Allocate(Bytes size)
     {
         return platform::PlatformMemory::Allocate(size);
     }
 
-    bool VirtualMemory::Release(const VirtualMemoryRange& memory_range)
+    bool VirtualMemory::Release(const MemoryRange& memory_range)
     {
         return platform::PlatformMemory::Release(memory_range);
     }
 
-    bool VirtualMemory::Commit(const VirtualMemoryRange& memory_range)
+    bool VirtualMemory::Commit(const MemoryRange& memory_range)
     {
         return platform::PlatformMemory::Commit(memory_range);
     }
 
-    bool VirtualMemory::Decommit(const VirtualMemoryRange& memory_range)
+    bool VirtualMemory::Decommit(const MemoryRange& memory_range)
     {
         return platform::PlatformMemory::Decommit(memory_range);
     }

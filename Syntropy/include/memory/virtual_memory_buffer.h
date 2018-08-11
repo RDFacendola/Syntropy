@@ -42,14 +42,14 @@ namespace syntropy
         ~VirtualMemoryBuffer();
 
         /// \brief Unified assignment operator.
-        VirtualMemoryBuffer& operator=(VirtualMemoryBuffer rhs);
+        VirtualMemoryBuffer& operator=(VirtualMemoryBuffer rhs) noexcept;
 
         /// \brief Get the underlying virtual memory range.
         operator const VirtualMemoryRange&() noexcept;
 
         /// \brief Get the size of the buffer, in bytes.
         /// \return Returns the size of the buffer, in bytes.
-        Bytes GetSize() const;
+        Bytes GetSize() const noexcept;
 
         /// \brief Swap the content of this buffer with another one.
         void Swap(VirtualMemoryBuffer& rhs) noexcept;
@@ -94,7 +94,7 @@ namespace syntropy
 
     Bytes VirtualMemoryBuffer::GetSize() const
     {
-        return virtual_memory_range_.GetSize();
+        return virtual_memory_range_.GetSize() * VirtualMemory::GetPageSize();
     }
 
     void VirtualMemoryBuffer::Swap(VirtualMemoryBuffer& rhs) noexcept

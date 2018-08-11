@@ -39,11 +39,6 @@ namespace syntropy
         /// \param end One past the last address in the range.
         constexpr MemoryRange(MemoryAddress begin, MemoryAddress end);
 
-        /// \brief Create a memory range.
-        /// \param begin First address in the range.
-        /// \param size Size of the range.
-        constexpr MemoryRange(MemoryAddress begin, Bytes size);
-
         /// \brief Default assignment operator.
         constexpr MemoryRange& operator=(const MemoryRange&) = default;
 
@@ -121,12 +116,6 @@ namespace syntropy
         , end_(end)
     {
         SYNTROPY_ASSERT(begin <= end);
-    }
-
-    constexpr MemoryRange::MemoryRange(MemoryAddress begin, Bytes size)
-        : MemoryRange(begin, begin + size)
-    {
-
     }
 
     constexpr MemoryRange::operator bool() const noexcept

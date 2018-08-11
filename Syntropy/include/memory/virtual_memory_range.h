@@ -8,6 +8,7 @@
 
 #include "memory/bytes.h"
 #include "memory/virtual_memory_page.h"
+#include "memory/virtual_memory.h"
 
 #include "diagnostics/assert.h"
 
@@ -30,19 +31,14 @@ namespace syntropy
         /// \brief Default copy constructor.
         constexpr VirtualMemoryRange(const VirtualMemoryRange&) = default;
 
-        /// \brief Create a virtual memory range.
-        /// \param base First page in the range.
+        /// \brief Create a virtual memory range from a range of virtual memory pages.
+        /// \param begin First page in the range.
         /// \param top One past the last page in the range.
-        constexpr VirtualMemoryRange(const VirtualMemoryPage& base, const VirtualMemoryPage& top);
+        constexpr VirtualMemoryRange(const VirtualMemoryPage& begin, const VirtualMemoryPage& end);
 
-        /// \brief Create a memory range.
-        /// \param base First address in the range.
-        /// \param size Number of pages in the range.
-        constexpr VirtualMemoryRange(const VirtualMemoryPage& base, std::size_t pages);
-
-        /// \brief Create a memory range of a single page.
-        /// \param page Page in the range.
-        constexpr VirtualMemoryRange(const VirtualMemoryPage& page);
+        /// \brief Create a virtual memory range from a memory range.
+        /// \param memory_range Memory range, must represent a full range of virtual memory pages.
+        constexpr VirtualMemoryRange(const MemoryRange& memory_range);
 
         /// \brief Default assignment operator.
         constexpr VirtualMemoryRange& operator=(const VirtualMemoryRange&) = default;
@@ -82,21 +78,24 @@ namespace syntropy
         /// \return Returns the total number of pages in this range.
         constexpr std::size_t GetSize() const noexcept;
 
-        /// \brief Check whether a virtual memory range is contained entirely inside this range.
+        /// \brief Check whether a memory range is contained entirely inside this range.
         /// \param memory_range Memory range to check.
         /// \return Returns true if memory_range is contained inside this virtual memory range, returns false otherwise.
-        constexpr bool Contains(const VirtualMemoryRange& memory_range) const noexcept;
+        constexpr bool Contains(const MemoryRange& memory_range) const noexcept;
 
-        /// \brief Check whether a memory page falls within this memory range.
-        /// \param memory_page Memory page to check.
-        /// \return Returns true if memory_page is contained inside this virtual memory range, returns false otherwise.
-        constexpr bool Contains(const VirtualMemoryPage& memory_page) const noexcept;
+        /// \brief Commit the virtual memory range making it accessible by the application.
+        /// \return Returns true if the memory could be committed, returns false otherwise.
+        bool Commit() const;
+
+        /// \brief Decommit the virtual memory range making it inaccessible by the application.
+        /// \return Returns true if the memory could be decommitted, returns false otherwise.
+        bool Decommit() const;
 
     private:
 
-        VirtualMemoryPage base_;            ///< \brief First virtual memory page in the range.
+        VirtualMemoryPage begin_;           ///< \brief First virtual memory page in the range.
 
-        VirtualMemoryPage top_;             ///< \brief One past the last memory page in the range.
+        VirtualMemoryPage end_;             ///< \brief One past the last memory page in the range.
 
     };
 
@@ -120,38 +119,32 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    constexpr VirtualMemoryRange::VirtualMemoryRange(const VirtualMemoryPage& base, const VirtualMemoryPage& top)
-        : base_(base)
-        , top_(top)
+    constexpr VirtualMemoryRange::VirtualMemoryRange(const VirtualMemoryPage& begin, const VirtualMemoryPage& end)
+        : begin_(begin)
+        , end_(end)
     {
-        SYNTROPY_ASSERT(base <= top);
+        SYNTROPY_ASSERT(begin <= end);
     }
 
-    constexpr VirtualMemoryRange::VirtualMemoryRange(const VirtualMemoryPage& base, std::size_t pages)
-        : VirtualMemoryRange(base, base + pages)
-    {
-
-    }
-
-    constexpr VirtualMemoryRange::VirtualMemoryRange(const VirtualMemoryPage& page)
-        : VirtualMemoryRange(page, page + 1u)
+    constexpr VirtualMemoryRange::VirtualMemoryRange(const MemoryRange& memory_range)
+        : VirtualMemoryRange(memory_range.Begin(), memory_range.End())
     {
 
     }
 
     constexpr VirtualMemoryRange::operator bool() const noexcept
     {
-        return top_ != base_;
+        return end_ != begin_;
     }
 
     constexpr VirtualMemoryRange::operator MemoryRange() const noexcept
     {
-        return MemoryRange(base_.Begin(), top_.End());
+        return MemoryRange(begin_.Begin(), end_.End());
     }
 
     constexpr const VirtualMemoryPage& VirtualMemoryRange::operator[](std::size_t offset) const
     {
-        auto page = base_ + offset;
+        auto page = begin_ + offset;
 
         SYNTROPY_ASSERT(Contains(page));
 
@@ -160,41 +153,46 @@ namespace syntropy
 
     constexpr VirtualMemoryRange& VirtualMemoryRange::operator+=(std::size_t rhs) noexcept
     {
-        base_ += rhs;
-        top_ += rhs;
+        begin_ += rhs;
+        end_ += rhs;
         return *this;
     }
 
     constexpr VirtualMemoryRange& VirtualMemoryRange::operator-=(std::size_t rhs) noexcept
     {
-        base_ -= rhs;
-        top_ -= rhs;
+        begin_ -= rhs;
+        end_ -= rhs;
         return *this;
     }
 
     constexpr const VirtualMemoryPage& VirtualMemoryRange::Begin() const noexcept
     {
-        return base_;
+        return begin_;
     }
 
     constexpr const VirtualMemoryPage& VirtualMemoryRange::End() const noexcept
     {
-        return top_;
+        return end_;
     }
 
     constexpr std::size_t VirtualMemoryRange::GetSize() const noexcept
     {
-        return top_ - base_;
+        return end_ - begin_;
     }
 
-    constexpr bool VirtualMemoryRange::Contains(const VirtualMemoryRange& memory_range) const noexcept
+    constexpr bool VirtualMemoryRange::Contains(const MemoryRange& memory_range) const noexcept
     {
-        return base_ <= memory_range.base_ && memory_range.top_ <= top_;
+        return begin_ <= memory_range.Begin() && memory_range.End() <= end_;
     }
 
-    constexpr bool VirtualMemoryRange::Contains(const VirtualMemoryPage& memory_page) const noexcept
+    inline bool VirtualMemoryRange::Commit() const
     {
-        return base_ <= memory_page && memory_page < top_;
+        return VirtualMemory::Commit(*this);
+    }
+
+    inline bool VirtualMemoryRange::Decommit() const
+    {
+        return VirtualMemory::Decommit(*this);
     }
 
     constexpr bool operator==(const VirtualMemoryRange& lhs, const VirtualMemoryRange& rhs) noexcept
