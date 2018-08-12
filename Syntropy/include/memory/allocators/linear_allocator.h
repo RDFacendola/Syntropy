@@ -23,6 +23,7 @@ namespace syntropy
 
     /// \brief Allocator used to allocate memory over a contiguous range of memory addresses.
     /// Memory is allocated sequentially on demand. Pointer-level deallocations are not supported.
+    /// The allocator can be rewound to a previous state, undoing all the allocations that were performed from that point on.
     /// \author Raffaele D. Facendola - January 2017
     class LinearAllocator
     {
@@ -60,6 +61,14 @@ namespace syntropy
 
         /// \brief Free all the allocations performed so far.
         void Free() noexcept;
+
+        /// \brief Restore the allocator to a previous state.
+        /// \param head Head status to restore. Must match any value returned by GetHead() otherwise the behaviour is undefined.
+        void Restore(MemoryAddress head);
+
+        /// \brief Get the pointer to the head of the allocator.
+        /// \return Returns the pointer to the head of the allocator.
+        MemoryAddress GetHead() const noexcept;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -121,6 +130,18 @@ namespace syntropy
     inline void LinearAllocator::Free() noexcept
     {
         head_ = memory_range_.Begin();
+    }
+
+    inline void LinearAllocator::Restore(MemoryAddress head)
+    {
+        SYNTROPY_ASSERT(head >= memory_range_.Begin() && head <= memory_range_.End());
+
+        head_ = head;
+    }
+
+    inline MemoryAddress LinearAllocator::GetHead() const noexcept
+    {
+        return head_;
     }
 
     inline const MemoryRange& LinearAllocator::GetRange() const noexcept
