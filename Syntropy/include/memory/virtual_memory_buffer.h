@@ -26,7 +26,7 @@ namespace syntropy
         VirtualMemoryBuffer() = default;
 
         /// \brief Create a new virtual memory buffer.
-        /// \param size Size of the buffer, in bytes.
+        /// \param size Size of the buffer, in bytes. Must be a multiple of the system virtual page size.
         VirtualMemoryBuffer(Bytes size);
 
         /// \brief No copy constructor.
