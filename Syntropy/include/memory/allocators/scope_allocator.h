@@ -69,7 +69,7 @@ namespace syntropy
 
             TFinalizer destructor_;                     ///< \brief Destructor used to destroy the object after this finalizer.
 
-            Finalizer* next_;                           ///< \brief Next finalizer.
+            Finalizer* next_ = nullptr;                 ///< \brief Next finalizer.
         };
 
         /// \brief Destroy an object of type TObject.
@@ -89,9 +89,9 @@ namespace syntropy
         template <typename TObject>
         void ConstructFinalizer(Finalizer& finalizer);
 
-        TAllocator& allocator_;                   ///< \brief Underlying allocator.
+        TAllocator& allocator_;                         ///< \brief Underlying allocator.
 
-        Finalizer* finalizers_;                         ///< \brief First finalizer functor.
+        Finalizer* finalizers_ = nullptr;               ///< \brief First finalizer functor.
 
         MemoryAddress scope_;                           ///< \brief Allocator status to restore upon destruction.
     };
