@@ -51,24 +51,25 @@ namespace syntropy
         /// \brief Allocate a memory block.
         /// \param size Size of the memory block to allocate.
         /// \return Returns a pointer to the allocated memory block.
-        MemoryRange Allocate(Bytes size);
+        MemoryAddress Allocate(Bytes size);
 
         /// \brief Allocate an aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Alignment of the block.
         /// \return Returns a pointer to the allocated memory block.
-        MemoryRange Allocate(Bytes size, Alignment alignment);
+        MemoryAddress Allocate(Bytes size, Alignment alignment);
 
         /// \brief Free all the allocations performed so far.
         void Free() noexcept;
 
         /// \brief Restore the allocator to a previous state.
-        /// \param head Head status to restore. Must match any value returned by GetHead() otherwise the behaviour is undefined.
-        void Restore(MemoryAddress head);
+        /// \param state State to restore the allocator to. Must match any value returned by SaveState() otherwise the behaviour is undefined.
+        void RestoreState(MemoryAddress state);
 
-        /// \brief Get the pointer to the head of the allocator.
-        /// \return Returns the pointer to the head of the allocator.
-        MemoryAddress GetHead() const noexcept;
+        /// \brief Get the current state of the allocator.
+        /// The returned value can be used to restore the allocator to a previous state via the method RestoreState(state);
+        /// \return Returns the current state of the allocator.
+        MemoryAddress SaveState() const noexcept;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
@@ -109,7 +110,7 @@ namespace syntropy
         return *this;
     }
 
-    inline MemoryRange LinearAllocator::Allocate(Bytes size)
+    inline MemoryAddress LinearAllocator::Allocate(Bytes size)
     {
         auto block = head_;
 
@@ -117,10 +118,10 @@ namespace syntropy
 
         SYNTROPY_ASSERT(head_ < memory_range_.End());           // Out-of-memory check.
 
-        return { block, head_ };
+        return block;
     }
 
-    inline MemoryRange LinearAllocator::Allocate(Bytes size, Alignment alignment)
+    inline MemoryAddress LinearAllocator::Allocate(Bytes size, Alignment alignment)
     {
         head_ = head_.GetAligned(alignment);
 
@@ -132,14 +133,14 @@ namespace syntropy
         head_ = memory_range_.Begin();
     }
 
-    inline void LinearAllocator::Restore(MemoryAddress head)
+    inline void LinearAllocator::RestoreState(MemoryAddress head)
     {
         SYNTROPY_ASSERT(head >= memory_range_.Begin() && head <= memory_range_.End());
 
         head_ = head;
     }
 
-    inline MemoryAddress LinearAllocator::GetHead() const noexcept
+    inline MemoryAddress LinearAllocator::SaveState() const noexcept
     {
         return head_;
     }
