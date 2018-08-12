@@ -192,9 +192,6 @@
     <ClCompile Include="src\memory\layered_allocator.cpp">
       <Filter>allocators</Filter>
     </ClCompile>
-    <ClCompile Include="src\memory\linear_allocator.cpp">
-      <Filter>allocators</Filter>
-    </ClCompile>
     <ClCompile Include="src\memory\segregated_allocator.cpp">
       <Filter>allocators</Filter>
     </ClCompile>

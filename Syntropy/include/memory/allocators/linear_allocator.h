@@ -11,13 +11,18 @@
 #include "memory/bytes.h"
 #include "memory/alignment.h"
 #include "memory/memory_address.h"
-#include "memory/virtual_memory_range.h"
+#include "memory/memory_range.h"
+
+#include "diagnostics/assert.h"
 
 namespace syntropy
 {
+    /************************************************************************/
+    /* LINEAR ALLOCATOR                                                     */
+    /************************************************************************/
 
-    /// \brief Allocator used to allocate memory blocks over a contiguous range of virtual memory addresses. Blocks are allocated sequentially.
-    /// Memory is committed and decommited on demand. Memory is always allocated on the head. Pointer-level deallocations are not supported.
+    /// \brief Allocator used to allocate memory over a contiguous range of memory addresses.
+    /// Memory is allocated sequentially on demand. Pointer-level deallocations are not supported.
     /// \author Raffaele D. Facendola - January 2017
     class LinearAllocator
     {
@@ -27,57 +32,106 @@ namespace syntropy
         LinearAllocator() = default;
 
         /// \brief Create a new allocator.
-        /// \param capacity Amount of memory reserved by the allocator.
-        /// \param alignment Memory alignment.
-        LinearAllocator(Bytes capacity, Alignment alignment);
-
-        /// \brief Create a new allocator.
-        /// \param memory_range Memory range used by the allocator.
-        /// \param alignment Memory alignment.
-        /// \remarks The allocator doesn't take ownership of the memory range provided as input.
-        LinearAllocator(const MemoryRange& memory_range, Alignment alignment);
+        /// \param memory_range Memory range the allocator will operate on.
+        LinearAllocator(const MemoryRange& memory_range);
 
         /// \brief No copy constructor.
         LinearAllocator(const LinearAllocator&) = delete;
 
         /// \brief Move constructor.
-        LinearAllocator(LinearAllocator&& other);
+        LinearAllocator(LinearAllocator&& other) noexcept;
 
         /// \brief Default destructor.
         ~LinearAllocator() = default;
 
-        /// \brief No assignment operator.
-        LinearAllocator& operator=(const LinearAllocator&) = delete;
+        /// \brief Unified assignment operator.
+        LinearAllocator& operator=(LinearAllocator rhs) noexcept;
 
-        /// \brief Allocate a new memory block on the allocator's head.
-        /// \param size Size of the memory block to allocate, in bytes.
+        /// \brief Allocate a memory block.
+        /// \param size Size of the memory block to allocate.
+        /// \return Returns a pointer to the allocated memory block.
+        MemoryRange Allocate(Bytes size);
+
+        /// \brief Allocate an aligned memory block.
+        /// \param size Size of the memory block to allocate.
         /// \param alignment Alignment of the block.
         /// \return Returns a pointer to the allocated memory block.
-        void* Allocate(Bytes size, Alignment alignment = Alignment(1_Bytes));
-
-        /// \brief Reserve a new memory block on the allocator's head.
-        /// \param size Size of the memory block to reserve, in bytes.
-        /// \param alignment Alignment of the block.
-        /// \return Returns a pointer to the reserved memory block.
-        void* Reserve(Bytes size, Alignment alignment = Alignment(1_Bytes));
+        MemoryRange Allocate(Bytes size, Alignment alignment);
 
         /// \brief Free all the allocations performed so far.
-        void Free();
+        void Free() noexcept;
 
         /// \brief Get the memory range managed by this allocator.
         /// \return Returns the memory range managed by this allocator.
-        const MemoryRange& GetRange() const;
+        const MemoryRange& GetRange() const noexcept;
+
+        /// \brief Swap this allocator with the provided instance.
+        void Swap(LinearAllocator& rhs) noexcept;
 
     private:
 
-        VirtualMemoryRange memory_pool_;        ///< \brief Virtual memory range owned by this allocator. Empty if the allocator owns no virtual memory.
+        MemoryRange memory_range_;          ///< \brief Memory range manager by this allocator.
 
-        MemoryRange memory_range_;              ///< \brief Memory range managed by the allocator. May refer to memory_pool_ or to a range owned by someone else.
-
-        MemoryAddress head_;                    ///< \brief Points to the first unallocated memory address.
-
-        MemoryAddress page_head_;               ///< \brief Points to the first unmapped memory page.
-
+        MemoryAddress head_;                ///< \brief Pointer past the last allocated address.
     };
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    inline LinearAllocator::LinearAllocator(const MemoryRange& memory_range)
+        : memory_range_(memory_range)
+        , head_(memory_range_.Begin())
+    {
+
+    }
+
+    inline LinearAllocator::LinearAllocator(LinearAllocator&& other) noexcept
+        : memory_range_(other.memory_range_)
+        , head_(other.head_)
+    {
+        memory_range_ = MemoryRange();
+        head_ = memory_range_.Begin();
+    }
+
+    inline LinearAllocator& LinearAllocator::operator=(LinearAllocator rhs) noexcept
+    {
+        rhs.Swap(*this);
+        return *this;
+    }
+
+    inline MemoryRange LinearAllocator::Allocate(Bytes size)
+    {
+        auto block = head_;
+
+        head_ = block + size;
+
+        SYNTROPY_ASSERT(head_ < memory_range_.End());           // Out-of-memory check.
+
+        return { block, head_ };
+    }
+
+    inline MemoryRange LinearAllocator::Allocate(Bytes size, Alignment alignment)
+    {
+        head_ = head_.GetAligned(alignment);
+
+        return Allocate(size);
+    }
+
+    inline void LinearAllocator::Free() noexcept
+    {
+        head_ = memory_range_.Begin();
+    }
+
+    inline const MemoryRange& LinearAllocator::GetRange() const noexcept
+    {
+        return memory_range_;
+    }
+
+    inline void LinearAllocator::Swap(LinearAllocator& rhs) noexcept
+    {
+        std::swap(memory_range_, rhs.memory_range_);
+        std::swap(head_, rhs.head_);
+    }
 
 }

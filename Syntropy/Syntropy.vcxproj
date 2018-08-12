@@ -235,10 +235,6 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="src\memory\linear_allocator.cpp">
-      <SubType>
-      </SubType>
-    </ClCompile>
     <ClCompile Include="src\memory\layered_allocator.cpp">
       <SubType>
       </SubType>
