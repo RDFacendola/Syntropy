@@ -544,7 +544,12 @@ namespace syntropy::platform
 
     bool PlatformMemory::Release(const MemoryRange& memory_range)
     {
-        return VirtualFree(memory_range.Begin(), 0, MEM_RELEASE) != 0;                                  // Will deallocate the entire previously-allocated range.
+        if (memory_range)
+        {
+            return VirtualFree(memory_range.Begin(), 0, MEM_RELEASE) != 0;                                  // Will deallocate the entire previously-allocated range.
+        }
+
+        return true;
     }
 
     bool PlatformMemory::Commit(const MemoryRange& memory_range)
