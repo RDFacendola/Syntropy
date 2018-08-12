@@ -121,10 +121,10 @@
     <ClInclude Include="include\memory\allocators\segregated_allocator.h">
       <Filter>allocators</Filter>
     </ClInclude>
-    <ClInclude Include="include\memory\allocators\stack_allocator.h">
+    <ClInclude Include="include\memory\allocators\std_allocator.h">
       <Filter>allocators</Filter>
     </ClInclude>
-    <ClInclude Include="include\memory\allocators\std_allocator.h">
+    <ClInclude Include="include\memory\allocators\scope_allocator.h">
       <Filter>allocators</Filter>
     </ClInclude>
   </ItemGroup>
@@ -193,9 +193,6 @@
       <Filter>allocators</Filter>
     </ClCompile>
     <ClCompile Include="src\memory\segregated_allocator.cpp">
-      <Filter>allocators</Filter>
-    </ClCompile>
-    <ClCompile Include="src\memory\stack_allocator.cpp">
       <Filter>allocators</Filter>
     </ClCompile>
     <ClCompile Include="src\memory\std_allocator.cpp">

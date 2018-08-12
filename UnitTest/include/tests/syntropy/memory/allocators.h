@@ -12,9 +12,11 @@
 #include "memory/memory_manager.h"
 #include "memory/memory_meta.h"
 
+#include "memory/allocators/linear_allocator.h"
+#include "memory/allocators/scope_allocator.h"
+
 #include "memory/allocators/std_allocator.h"
 #include "memory/allocators/segregated_allocator.h"
-#include "memory/allocators/stack_allocator.h"
 #include "memory/allocators/layered_allocator.h"
 
 #include <vector>
