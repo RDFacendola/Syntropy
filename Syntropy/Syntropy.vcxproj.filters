@@ -127,6 +127,7 @@
     <ClInclude Include="include\memory\allocators\scope_allocator.h">
       <Filter>allocators</Filter>
     </ClInclude>
+    <ClInclude Include="include\memory\allocators\pool_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
