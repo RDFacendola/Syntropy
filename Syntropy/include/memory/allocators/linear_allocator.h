@@ -40,7 +40,7 @@ namespace syntropy
         LinearAllocator(const LinearAllocator&) = delete;
 
         /// \brief Move constructor.
-        LinearAllocator(LinearAllocator&& other) noexcept;
+        LinearAllocator(LinearAllocator&& rhs) noexcept;
 
         /// \brief Default destructor.
         ~LinearAllocator() = default;
@@ -50,13 +50,13 @@ namespace syntropy
 
         /// \brief Allocate a memory block.
         /// \param size Size of the memory block to allocate.
-        /// \return Returns a pointer to the allocated memory block.
+        /// \return Returns a pointer to the allocated memory block. If no allocation could be performed returns nullptr.
         MemoryAddress Allocate(Bytes size);
 
         /// \brief Allocate an aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Alignment of the block.
-        /// \return Returns a pointer to the allocated memory block.
+        /// \return Returns a pointer to the allocated memory block.  If no allocation could be performed returns nullptr.
         MemoryAddress Allocate(Bytes size, Alignment alignment);
 
         /// \brief Free all the allocations performed so far.
@@ -85,10 +85,17 @@ namespace syntropy
         MemoryAddress head_;                ///< \brief Pointer past the last allocated address.
     };
 
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
+}
 
+/// \brief Swaps two syntropy::LinearAllocator instances.
+void swap(syntropy::LinearAllocator& lhs, syntropy::LinearAllocator& rhs) noexcept;
+
+/************************************************************************/
+/* IMPLEMENTATION                                                       */
+/************************************************************************/
+ 
+namespace syntropy
+{
     inline LinearAllocator::LinearAllocator(const MemoryRange& memory_range)
         : memory_range_(memory_range)
         , head_(memory_range_.Begin())
@@ -96,9 +103,9 @@ namespace syntropy
 
     }
 
-    inline LinearAllocator::LinearAllocator(LinearAllocator&& other) noexcept
-        : memory_range_(other.memory_range_)
-        , head_(other.head_)
+    inline LinearAllocator::LinearAllocator(LinearAllocator&& rhs) noexcept
+        : memory_range_(rhs.memory_range_)
+        , head_(rhs.head_)
     {
         memory_range_ = MemoryRange();
         head_ = memory_range_.Begin();
@@ -112,20 +119,36 @@ namespace syntropy
 
     inline MemoryAddress LinearAllocator::Allocate(Bytes size)
     {
-        auto block = head_;
+        auto head = head_ + size;
 
-        head_ = block + size;
+        if (head < memory_range_.End())
+        {
+            auto block = head_;
 
-        SYNTROPY_ASSERT(head_ < memory_range_.End());           // Out-of-memory check.
+            head_ = head;
 
-        return block;
+            return block;
+        }
+
+        return nullptr;                                         // Out-of-memory.
     }
 
     inline MemoryAddress LinearAllocator::Allocate(Bytes size, Alignment alignment)
     {
-        head_ = head_.GetAligned(alignment);
+        auto aligned_head = head_.GetAligned(alignment);
 
-        return Allocate(size);
+        auto head = aligned_head + size;
+
+        if (head < memory_range_.End())
+        {
+            auto block = aligned_head;
+
+            head_ = head;
+
+            return block;
+        }
+
+        return nullptr;                                         // Out-of-memory.
     }
 
     inline void LinearAllocator::Free() noexcept
@@ -152,8 +175,15 @@ namespace syntropy
 
     inline void LinearAllocator::Swap(LinearAllocator& rhs) noexcept
     {
-        std::swap(memory_range_, rhs.memory_range_);
-        std::swap(head_, rhs.head_);
+        using std::swap;
+
+        swap(memory_range_, rhs.memory_range_);
+        swap(head_, rhs.head_);
     }
 
+}
+
+void swap(syntropy::LinearAllocator& lhs, syntropy::LinearAllocator& rhs) noexcept
+{
+    lhs.Swap(rhs);
 }
