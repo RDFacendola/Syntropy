@@ -29,6 +29,41 @@ namespace syntropy::serialization
     size_t DeserializeObjectFromJSON(TType& object, const nlohmann::json& json);
 
     /************************************************************************/
+    /* JSON DESERIALIZER                                                    */
+    /************************************************************************/
+
+    /// \brief Functor used to deserialize an object from JSON.
+    /// Can be specialized for any object requiring particular JSON deserialization capabilities.
+    /// \author Raffaele D. Facendola - September 2016
+    template <typename TType, typename = void>
+    struct JSONDeserializerT
+    {
+        static_assert(!std::is_abstract_v<TType>, "TType must not be abstract.");
+        static_assert(std::is_default_constructible_v<TType>, "TType must be default constructible, otherwise a specialization of JSONDeserializerT<TType> is required!");
+
+        std::optional<TType> operator()(const nlohmann::json& json) const
+        {
+            if (json.is_object())
+            {
+                auto object = std::make_optional<TType>();
+
+                if (DeserializeObjectFromJSON(*object, json) > 0)
+                {
+                    return object;
+                }
+            }
+
+            return std::nullopt;
+        }
+    };
+
+    /// \brief Utility object for JSONDeserializerT.
+    /// Usage: JSONDeserializer<TType>(json) instead of JSONDeserializerT<TType>{}(json)
+    /// \author Raffaele D. Facendola - May 2017
+    template <typename TType>
+    inline constexpr JSONDeserializerT<TType> JSONDeserializer{};
+
+    /************************************************************************/
     /* JSON DESERIALIZABLE                                                  */
     /************************************************************************/
 
@@ -163,40 +198,6 @@ namespace syntropy::serialization
 
     };
 
-    /************************************************************************/
-    /* JSON DESERIALIZER                                                    */
-    /************************************************************************/
-
-    /// \brief Functor used to deserialize an object from JSON.
-    /// Can be specialized for any object requiring particular JSON deserialization capabilities.
-    /// \author Raffaele D. Facendola - September 2016
-    template <typename TType, typename = void>
-    struct JSONDeserializerT
-    {
-        static_assert(!std::is_abstract_v<TType>, "TType must not be abstract.");
-        static_assert(std::is_default_constructible_v<TType>, "TType must be default constructible, otherwise a specialization of JSONDeserializerT<TType> is required!");
-
-        std::optional<TType> operator()(const nlohmann::json& json) const
-        {
-            if (json.is_object())
-            {
-                auto object = std::make_optional<TType>();
-
-                if (DeserializeObjectFromJSON(*object, json) > 0)
-                {
-                    return object;
-                }
-            }
-
-            return std::nullopt;
-        }
-    };
-
-    /// \brief Utility object for JSONDeserializerT.
-    /// Usage: JSONDeserializer<TType>(json) instead of JSONDeserializerT<TType>{}(json)
-    /// \author Raffaele D. Facendola - May 2017
-    template <typename TType>
-    inline constexpr JSONDeserializerT<TType> JSONDeserializer{};
 
     /************************************************************************/
     /* METHODS                                                              */

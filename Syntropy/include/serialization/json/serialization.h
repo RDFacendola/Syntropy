@@ -20,16 +20,19 @@
 
 namespace syntropy::serialization
 {
-	namespace map
-	{
-		/// \brief JSON property token used to determine the id of a map pair.
-		static constexpr const char* kIdToken = "$id";
+    /// \brief Class token used to identify the class type in a JSON. 
+    static constexpr const char* kClassToken = "$class";
 
-		/// \brief JSON property token used to determine the value of map pair.
-		static constexpr const char* kValueToken = "$value";
-	}
-	
-	/// \brief Token used to identify a shared_ptr object in a JSON.
+    namespace map
+    {
+        /// \brief JSON property token used to determine the id of a map pair.
+        static constexpr const char* kIdToken = "$id";
+
+        /// \brief JSON property token used to determine the value of map pair.
+        static constexpr const char* kValueToken = "$value";
+    }
+    
+    /// \brief Token used to identify a shared_ptr object in a JSON.
     static constexpr const char* kSharedPtrIdToken = "$spid";
 
     /// \brief Serialize an object properties to a JSON.
@@ -38,6 +41,9 @@ namespace syntropy::serialization
     /// \return Returns a JSON object if successful.
     template <typename TType>
     std::optional<nlohmann::json> SerializeObjectToJSON(const TType& object);
+
+    template <typename TType>
+    constexpr void JSONSerialize(nlohmann::json& json, const TType& instance);
 
     /************************************************************************/
     /* JSON SERIALIZABLE                                                    */
@@ -170,11 +176,11 @@ namespace syntropy::serialization
     /// \brief Utility function for JSONSerializerT.
     ///  Usage:  JSONSerialize(json, value) instead of JSONSerializerT<TType>{}(json, value)
     /// \author Giuseppe Spizzico - January 2018
-	template <typename TType>
-	inline constexpr void JSONSerialize(nlohmann::json& json, const TType& instance)
-	{
-		JSONSerializerT<TType>()(json, instance);
-	};
+    template <typename TType>
+    inline constexpr void JSONSerialize(nlohmann::json& json, const TType& instance)
+    {
+        JSONSerializerT<TType>()(json, instance);
+    };
 
     /************************************************************************/
     /* METHODS                                                              */

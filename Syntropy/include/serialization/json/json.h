@@ -79,9 +79,6 @@ namespace syntropy::serialization
     /* METHODS                                                              */
     /************************************************************************/
 
-    /// \brief Class token used to identify the class type in a JSON. 
-    static constexpr const char* kClassToken = "$class";
-
     /// \brief Get the class associated to the provided JSON object.
     /// \param json JSON object to parse looking for the class.
     /// \param base_class Base class to match. If the found class is not in the same hierarchy of this class, the method returns nullptr. Optional.
