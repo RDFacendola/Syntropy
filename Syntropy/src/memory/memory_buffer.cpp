@@ -15,9 +15,9 @@ namespace syntropy
 
     }
 
-    MemoryBuffer::MemoryBuffer(Bytes size, Allocator& allocator)
-        : range_(SYNTROPY_ALLOC(allocator, size), size)
-        , allocator_(std::addressof(allocator))
+    MemoryBuffer::MemoryBuffer(Bytes /*size*/, Allocator& /*allocator*/)
+        //: range_(SYNTROPY_ALLOC(allocator, size), size)
+        //, allocator_(std::addressof(allocator))
     {
 
     }

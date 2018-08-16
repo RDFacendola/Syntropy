@@ -48,37 +48,6 @@ namespace syntropy
     /* BLOCK ALLOCATOR                                                      */
     /************************************************************************/
 
-    BlockAllocator::BlockAllocator()
-        : block_size_(0u)
-        , free_list_(nullptr)
-    {
-
-    }
-
-    BlockAllocator::BlockAllocator(Bytes capacity, Bytes block_size)
-        : block_size_(Math::Ceil(block_size, VirtualMemory::GetPageSize()))     // Round up to the next system page size.
-        , allocator_(capacity, Alignment(block_size_))                          // Reserve the virtual memory range upfront without allocating.
-        , free_list_(nullptr)
-    {
-
-    }
-
-    BlockAllocator::BlockAllocator(const MemoryRange& memory_range, Bytes block_size)
-        : block_size_(Math::Ceil(block_size, VirtualMemory::GetPageSize()))     // Round up to the next system page size.
-        , allocator_(memory_range, Alignment(block_size_))                      // Get the memory range without taking ownership.
-        , free_list_(nullptr)
-    {
-
-    }
-
-    BlockAllocator::BlockAllocator(BlockAllocator&& other)
-        : block_size_(other.block_size_)
-        , allocator_(std::move(other.allocator_))
-        , free_list_(other.free_list_)
-    {
-
-    }
-
     void* BlockAllocator::Allocate(Bytes commit_size)
     {
         SYNTROPY_ASSERT(commit_size <= block_size_);
@@ -119,9 +88,6 @@ namespace syntropy
 
     void BlockAllocator::Free(void* block)
     {
-        SYNTROPY_ASSERT(allocator_.GetRange().Contains(block));                         // Check whether the block belongs to this allocator.
-        SYNTROPY_ASSERT(MemoryAddress(block).IsAlignedTo(Alignment(block_size_)));      // Check whether the block is properly aligned (guaranteed by Allocate()\Reserve())
-
         if (!free_list_ || free_list_->IsFull())
         {
             // Recycle the block itself as a new free list chunk.
@@ -141,87 +107,6 @@ namespace syntropy
             VirtualMemory::Decommit(MemoryRange(block, block_size_));                   // Unmap the block from the system memory.
         }
 
-    }
-
-    Bytes BlockAllocator::GetBlockSize() const
-    {
-        return block_size_;
-    }
-
-    const MemoryRange& BlockAllocator::GetRange() const
-    {
-        return allocator_.GetRange();
-    }
-
-    /************************************************************************/
-    /* STATIC BLOCK ALLOCATOR                                               */
-    /************************************************************************/
-
-    StaticBlockAllocator::StaticBlockAllocator()
-        : block_size_(0u)
-        , free_list_(nullptr)
-    {
-
-    }
-
-    StaticBlockAllocator::StaticBlockAllocator(Bytes capacity, Bytes block_size)
-        : block_size_(Math::Ceil(block_size, VirtualMemory::GetPageSize()))     // Round up to the next system page size.
-        , allocator_(capacity, Alignment(block_size_))                          // Reserve the virtual memory range upfront without allocating.
-        , free_list_(nullptr)
-    {
-
-    }
-
-    StaticBlockAllocator::StaticBlockAllocator(const MemoryRange& memory_range, Bytes block_size)
-        : block_size_(Math::Ceil(block_size, VirtualMemory::GetPageSize()))     // Round up to the next system page size.
-        , allocator_(memory_range, Alignment(block_size_))                      // Get the memory range without taking ownership.
-        , free_list_(nullptr)
-    {
-
-    }
-
-    StaticBlockAllocator::StaticBlockAllocator(StaticBlockAllocator&& other)
-        : block_size_(other.block_size_)
-        , allocator_(std::move(other.allocator_))
-        , free_list_(other.free_list_)
-    {
-
-    }
-
-    void* StaticBlockAllocator::Allocate()
-    {
-        if (free_list_)
-        {
-            auto block = free_list_;                                            // Recycle the first unused memory block.
-            free_list_ = block->next_;                                          // Move to the next free block.
-
-            return block;
-        }
-        else
-        {
-            return allocator_.Allocate(block_size_, Alignment(block_size_));    // Allocate a new block aligned to its own size.
-        }
-    }
-
-    void StaticBlockAllocator::Free(void* block)
-    {
-        SYNTROPY_ASSERT(allocator_.GetRange().Contains(block));                         // Check whether the block belongs to this allocator.
-        SYNTROPY_ASSERT(MemoryAddress(block).IsAlignedTo(Alignment(block_size_)));      // Check whether the block is properly aligned (guaranteed by Allocate())
-
-        auto free_block = reinterpret_cast<Block*>(block);
-
-        free_block->next_ = free_list_;
-        free_list_ = free_block;
-    }
-
-    Bytes StaticBlockAllocator::GetBlockSize() const
-    {
-        return block_size_;
-    }
-
-    const MemoryRange& StaticBlockAllocator::GetRange() const
-    {
-        return allocator_.GetRange();
     }
 
 }

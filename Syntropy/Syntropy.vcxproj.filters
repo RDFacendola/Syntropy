@@ -94,9 +94,6 @@
     <ClInclude Include="include\memory\memory_address.h">
       <Filter>memory</Filter>
     </ClInclude>
-    <ClInclude Include="include\memory\memory_buffer.h">
-      <Filter>memory</Filter>
-    </ClInclude>
     <ClInclude Include="include\memory\memory_manager.h">
       <Filter>memory</Filter>
     </ClInclude>
@@ -109,16 +106,10 @@
     <ClInclude Include="include\memory\allocators\allocator.h">
       <Filter>allocators</Filter>
     </ClInclude>
-    <ClInclude Include="include\memory\allocators\block_allocator.h">
-      <Filter>allocators</Filter>
-    </ClInclude>
     <ClInclude Include="include\memory\allocators\layered_allocator.h">
       <Filter>allocators</Filter>
     </ClInclude>
     <ClInclude Include="include\memory\allocators\linear_allocator.h">
-      <Filter>allocators</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\allocators\segregated_allocator.h">
       <Filter>allocators</Filter>
     </ClInclude>
     <ClInclude Include="include\memory\allocators\scope_allocator.h">
@@ -128,6 +119,7 @@
     <ClInclude Include="include\memory\allocators\null_allocator.h" />
     <ClInclude Include="include\memory\allocators\standard_allocator.h" />
     <ClInclude Include="include\memory\allocators\chain_allocator.h" />
+    <ClInclude Include="include\memory\memory_buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">
@@ -175,9 +167,6 @@
     <ClCompile Include="src\memory\virtual_memory.cpp">
       <Filter>memory</Filter>
     </ClCompile>
-    <ClCompile Include="src\memory\memory_buffer.cpp">
-      <Filter>memory</Filter>
-    </ClCompile>
     <ClCompile Include="src\memory\memory_manager.cpp">
       <Filter>memory</Filter>
     </ClCompile>
@@ -187,15 +176,10 @@
     <ClCompile Include="src\memory\allocator.cpp">
       <Filter>allocators</Filter>
     </ClCompile>
-    <ClCompile Include="src\memory\block_allocator.cpp">
-      <Filter>allocators</Filter>
-    </ClCompile>
     <ClCompile Include="src\memory\layered_allocator.cpp">
       <Filter>allocators</Filter>
     </ClCompile>
-    <ClCompile Include="src\memory\segregated_allocator.cpp">
-      <Filter>allocators</Filter>
-    </ClCompile>
+    <ClCompile Include="src\memory\memory_buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="reflection">

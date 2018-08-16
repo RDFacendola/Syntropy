@@ -18,6 +18,7 @@
 
 namespace syntropy
 {
+    struct StaticBlockAllocator {};
 
     /// \brief High-performance, low-fragmentation allocator best suited to handle allocation of small objects.
     /// The allocator is designed to minimize external fragmentation while keeping constant response time.

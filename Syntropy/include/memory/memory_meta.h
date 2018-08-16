@@ -61,52 +61,52 @@ namespace syntropy::reflection
     /************************************************************************/
 
     // Template specialization for LinearSegregatedFitAllocator
-    template<>
-    struct ClassDeclarationT<LinearSegregatedFitAllocator>
-    {
-        static constexpr const char* name_{ "syntropy::LinearSegregatedFitAllocator" };
-
-        void operator()(ClassT<LinearSegregatedFitAllocator>& class_t) const
-        {
-            class_t << serialization::JSONClass();
-
-            class_t.AddBaseClass<Allocator>();
-
-            class_t.AddProperty("order", &LinearSegregatedFitAllocator::GetOrder);
-            class_t.AddProperty("page_size", &LinearSegregatedFitAllocator::GetPageSize);
-        }
-    };
+//     template<>
+//     struct ClassDeclarationT<LinearSegregatedFitAllocator>
+//     {
+//         static constexpr const char* name_{ "syntropy::LinearSegregatedFitAllocator" };
+// 
+//         void operator()(ClassT<LinearSegregatedFitAllocator>& class_t) const
+//         {
+//             class_t << serialization::JSONClass();
+// 
+//             class_t.AddBaseClass<Allocator>();
+// 
+//             class_t.AddProperty("order", &LinearSegregatedFitAllocator::GetOrder);
+//             class_t.AddProperty("page_size", &LinearSegregatedFitAllocator::GetPageSize);
+//         }
+//     };
 
     // Template specialization for ExponentialSegregatedFitAllocator
-    template<>
-    struct ClassDeclarationT<ExponentialSegregatedFitAllocator>
-    {
-        static constexpr const char* name_{ "syntropy::ExponentialSegregatedFitAllocator" };
-
-        void operator()(ClassT<ExponentialSegregatedFitAllocator>& class_t) const
-        {
-            class_t << serialization::JSONClass();
-
-            class_t.AddBaseClass<Allocator>();
-
-            class_t.AddProperty("order", &ExponentialSegregatedFitAllocator::GetOrder);
-            class_t.AddProperty("class_size", &ExponentialSegregatedFitAllocator::GetClassSize);
-        }
-    };
+//     template<>
+//     struct ClassDeclarationT<ExponentialSegregatedFitAllocator>
+//     {
+//         static constexpr const char* name_{ "syntropy::ExponentialSegregatedFitAllocator" };
+// 
+//         void operator()(ClassT<ExponentialSegregatedFitAllocator>& class_t) const
+//         {
+//             class_t << serialization::JSONClass();
+// 
+//             class_t.AddBaseClass<Allocator>();
+// 
+//             class_t.AddProperty("order", &ExponentialSegregatedFitAllocator::GetOrder);
+//             class_t.AddProperty("class_size", &ExponentialSegregatedFitAllocator::GetClassSize);
+//         }
+//     };
 
     // Template specialization for TwoLevelSegregatedFitAllocator
-    template<>
-    struct ClassDeclarationT<TwoLevelSegregatedFitAllocator>
-    {
-        static constexpr const char* name_{ "syntropy::TwoLevelSegregatedFitAllocator" };
-
-        void operator()(ClassT<TwoLevelSegregatedFitAllocator>& class_t) const
-        {
-            class_t << serialization::JSONClass();
-
-            class_t.AddBaseClass<Allocator>();
-        }
-    };
+//     template<>
+//     struct ClassDeclarationT<TwoLevelSegregatedFitAllocator>
+//     {
+//         static constexpr const char* name_{ "syntropy::TwoLevelSegregatedFitAllocator" };
+// 
+//         void operator()(ClassT<TwoLevelSegregatedFitAllocator>& class_t) const
+//         {
+//             class_t << serialization::JSONClass();
+// 
+//             class_t.AddBaseClass<Allocator>();
+//         }
+//     };
 
     /************************************************************************/
     /* LAYERED ALLOCATOR.H                                                  */
@@ -154,64 +154,64 @@ namespace syntropy::serialization
     /************************************************************************/
 
     // Template specialization for LinearSegregatedFitAllocator
-    template <>
-    struct JSONDeserializerT<LinearSegregatedFitAllocator>
-    {
-        std::optional<LinearSegregatedFitAllocator> operator()(const nlohmann::json& json) const
-        {
-            auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
-            auto capacity = DeserializeObjectFromJSON<Bytes>(json, std::nullopt, "capacity");
-            auto class_size = DeserializeObjectFromJSON<Bytes>(json, 8_Bytes, "class_size");
-            auto order = DeserializeObjectFromJSON<size_t>(json, 32, "order");
-            auto page_size = DeserializeObjectFromJSON<Bytes>(json, 16_KiBytes, "page_size");
-
-            if (name && capacity)
-            {
-                return LinearSegregatedFitAllocator(std::move(*name), *capacity, *class_size, *order, *page_size);
-            }
-
-            return std::nullopt;
-        }
-    };
+//     template <>
+//     struct JSONDeserializerT<LinearSegregatedFitAllocator>
+//     {
+//         std::optional<LinearSegregatedFitAllocator> operator()(const nlohmann::json& json) const
+//         {
+//             auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
+//             auto capacity = DeserializeObjectFromJSON<Bytes>(json, std::nullopt, "capacity");
+//             auto class_size = DeserializeObjectFromJSON<Bytes>(json, 8_Bytes, "class_size");
+//             auto order = DeserializeObjectFromJSON<size_t>(json, 32, "order");
+//             auto page_size = DeserializeObjectFromJSON<Bytes>(json, 16_KiBytes, "page_size");
+// 
+//             if (name && capacity)
+//             {
+//                 return LinearSegregatedFitAllocator(std::move(*name), *capacity, *class_size, *order, *page_size);
+//             }
+// 
+//             return std::nullopt;
+//         }
+//     };
 
     // Template specialization for ExponentialSegregatedFitAllocator
-    template <>
-    struct JSONDeserializerT<ExponentialSegregatedFitAllocator>
-    {
-        std::optional<ExponentialSegregatedFitAllocator> operator()(const nlohmann::json& json) const
-        {
-            auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
-            auto capacity = DeserializeObjectFromJSON<Bytes>(json, std::nullopt, "capacity");
-            auto class_size = DeserializeObjectFromJSON<Bytes>(json, 64_KiBytes, "class_size");
-            auto order = DeserializeObjectFromJSON<size_t>(json, 10, "order");
-
-            if (name && capacity)
-            {
-                return ExponentialSegregatedFitAllocator(std::move(*name), *capacity, *class_size, *order);
-            }
-
-            return std::nullopt;
-        }
-    };
+//     template <>
+//     struct JSONDeserializerT<ExponentialSegregatedFitAllocator>
+//     {
+//         std::optional<ExponentialSegregatedFitAllocator> operator()(const nlohmann::json& json) const
+//         {
+//             auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
+//             auto capacity = DeserializeObjectFromJSON<Bytes>(json, std::nullopt, "capacity");
+//             auto class_size = DeserializeObjectFromJSON<Bytes>(json, 64_KiBytes, "class_size");
+//             auto order = DeserializeObjectFromJSON<size_t>(json, 10, "order");
+// 
+//             if (name && capacity)
+//             {
+//                 return ExponentialSegregatedFitAllocator(std::move(*name), *capacity, *class_size, *order);
+//             }
+// 
+//             return std::nullopt;
+//         }
+//     };
 
     // Template specialization for TwoLevelSegregatedFitAllocator
-    template <>
-    struct JSONDeserializerT<TwoLevelSegregatedFitAllocator>
-    {
-        std::optional<TwoLevelSegregatedFitAllocator> operator()(const nlohmann::json& json) const
-        {
-            auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
-            auto capacity = DeserializeObjectFromJSON<Bytes>(json, std::nullopt, "capacity");
-            auto second_level_index = DeserializeObjectFromJSON<size_t>(json, 5, "second_level_index");
-
-            if (name && capacity)
-            {
-                return TwoLevelSegregatedFitAllocator(std::move(*name), *capacity, *second_level_index);
-            }
-
-            return std::nullopt;
-        }
-    };
+//     template <>
+//     struct JSONDeserializerT<TwoLevelSegregatedFitAllocator>
+//     {
+//         std::optional<TwoLevelSegregatedFitAllocator> operator()(const nlohmann::json& json) const
+//         {
+//             auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
+//             auto capacity = DeserializeObjectFromJSON<Bytes>(json, std::nullopt, "capacity");
+//             auto second_level_index = DeserializeObjectFromJSON<size_t>(json, 5, "second_level_index");
+// 
+//             if (name && capacity)
+//             {
+//                 return TwoLevelSegregatedFitAllocator(std::move(*name), *capacity, *second_level_index);
+//             }
+// 
+//             return std::nullopt;
+//         }
+//     };
 
     /************************************************************************/
     /* LAYERED ALLOCATOR.H                                                  */
