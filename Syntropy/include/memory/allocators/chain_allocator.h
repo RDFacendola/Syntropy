@@ -166,11 +166,11 @@ namespace syntropy
     {
         if (THeadAllocator::Owns(block))
         {
-            THeadAllocator::Deallocate(block);
+            THeadAllocator::Deallocate(block, alignment);
         }
         else
         {
-            ChainAllocator<TRestAllocators...>::Deallocate(block);
+            ChainAllocator<TRestAllocators...>::Deallocate(block, alignment);
         }
     }
 
