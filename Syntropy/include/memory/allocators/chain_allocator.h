@@ -123,7 +123,7 @@ namespace syntropy
 namespace syntropy
 {
     template <typename THeadAllocator, typename... TRestAllocators>
-    MemoryRange ChainAllocator<THeadAllocator, TRestAllocators...>::Allocate(Bytes size) noexcept
+    inline MemoryRange ChainAllocator<THeadAllocator, TRestAllocators...>::Allocate(Bytes size) noexcept
     {
         if (auto Block = THeadAllocator::Allocate(size))
         {
@@ -136,7 +136,7 @@ namespace syntropy
     }
 
     template <typename THeadAllocator, typename... TRestAllocators>
-    MemoryRange ChainAllocator<THeadAllocator, TRestAllocators...>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemoryRange ChainAllocator<THeadAllocator, TRestAllocators...>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto Block = THeadAllocator::Allocate(size, alignment))
         {
@@ -149,7 +149,7 @@ namespace syntropy
     }
 
     template <typename THeadAllocator, typename... TRestAllocators>
-    void ChainAllocator<THeadAllocator, TRestAllocators...>::Deallocate(const MemoryRange& block)
+    inline void ChainAllocator<THeadAllocator, TRestAllocators...>::Deallocate(const MemoryRange& block)
     {
         if (THeadAllocator::Owns(block))
         {
@@ -162,7 +162,7 @@ namespace syntropy
     }
 
     template <typename THeadAllocator, typename... TRestAllocators>
-    void ChainAllocator<THeadAllocator, TRestAllocators...>::Deallocate(const MemoryRange& block, Alignment alignment)
+    inline void ChainAllocator<THeadAllocator, TRestAllocators...>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
         if (THeadAllocator::Owns(block))
         {
@@ -175,7 +175,7 @@ namespace syntropy
     }
 
     template <typename THeadAllocator, typename... TRestAllocators>
-    bool ChainAllocator<THeadAllocator, TRestAllocators...>::Owns(const MemoryRange& block) const noexcept
+    inline bool ChainAllocator<THeadAllocator, TRestAllocators...>::Owns(const MemoryRange& block) const noexcept
     {
         return THeadAllocator::Owns(block) || ChainAllocator<TRestAllocators...>::Owns(block);
     }
@@ -183,31 +183,31 @@ namespace syntropy
     //
 
     template <typename THeadAllocator>
-    MemoryRange ChainAllocator<THeadAllocator>::Allocate(Bytes size) noexcept
+    inline MemoryRange ChainAllocator<THeadAllocator>::Allocate(Bytes size) noexcept
     {
         return THeadAllocator::Allocate(size);
     }
 
     template <typename THeadAllocator>
-    MemoryRange ChainAllocator<THeadAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemoryRange ChainAllocator<THeadAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         return THeadAllocator::Allocate(size, alignment);
     }
 
     template <typename THeadAllocator>
-    void ChainAllocator<THeadAllocator>::Deallocate(const MemoryRange& block)
+    inline void ChainAllocator<THeadAllocator>::Deallocate(const MemoryRange& block)
     {
         return THeadAllocator::Deallocate(block);
     }
 
     template <typename THeadAllocator>
-    void ChainAllocator<THeadAllocator>::Deallocate(const MemoryRange& block, Alignment alignment)
+    inline void ChainAllocator<THeadAllocator>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
         return THeadAllocator::Deallocate(block, alignment);
     }
 
     template <typename THeadAllocator>
-    bool ChainAllocator<THeadAllocator>::Owns(const MemoryRange& block) const noexcept
+    inline bool ChainAllocator<THeadAllocator>::Owns(const MemoryRange& block) const noexcept
     {
         return THeadAllocator::Owns(block);
     }
