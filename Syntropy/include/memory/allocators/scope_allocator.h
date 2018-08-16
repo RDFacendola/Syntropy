@@ -125,7 +125,7 @@ namespace syntropy
             finalizers_ = finalizers_->next_;
         }
 
-        allocator.RestoreState(scope_);                 // Restore the old state of the allocator.
+        allocator_.RestoreState(scope_);                // Restore the old state of the allocator.
     }
 
     template <typename TAllocator>
