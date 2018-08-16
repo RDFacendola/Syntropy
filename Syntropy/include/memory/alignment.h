@@ -26,10 +26,10 @@ namespace syntropy
     public:
 
         /// \brief Create a new alignment equal to 1.
-        constexpr Alignment() = default;
+        constexpr Alignment() noexcept = default;
 
         /// \brief Create a new alignment.
-        constexpr Alignment(std::align_val_t alignment);
+        constexpr Alignment(std::align_val_t alignment) noexcept;
 
         /// \brief Create a new alignment.
         constexpr explicit Alignment(Bytes alignment);
@@ -105,7 +105,7 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    constexpr Alignment::Alignment(std::align_val_t alignment)
+    constexpr Alignment::Alignment(std::align_val_t alignment) noexcept
         : Alignment(Bytes(std::size_t(alignment)))
     {
 
