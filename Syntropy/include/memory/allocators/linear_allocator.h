@@ -1,5 +1,5 @@
 
-/// \file frame_allocator.h
+/// \file linear_allocator.h
 /// \brief This header is part of the syntropy memory management system. It contains sequential and linear allocators.
 ///
 /// \author Raffaele D. Facendola - 2017
@@ -80,7 +80,7 @@ namespace syntropy
 
     private:
 
-        MemoryRange memory_range_;          ///< \brief Memory range manager by this allocator.
+        MemoryRange memory_range_;          ///< \brief Memory range managed by this allocator.
 
         MemoryAddress head_;                ///< \brief Pointer past the last allocated address.
     };
@@ -119,18 +119,7 @@ namespace syntropy
 
     inline MemoryAddress LinearAllocator::Allocate(Bytes size)
     {
-        auto head = head_ + size;
-
-        if (head < memory_range_.End())
-        {
-            auto block = head_;
-
-            head_ = head;
-
-            return block;
-        }
-
-        return nullptr;                                         // Out-of-memory.
+        return Allocate(size, Alignment());
     }
 
     inline MemoryAddress LinearAllocator::Allocate(Bytes size, Alignment alignment)
