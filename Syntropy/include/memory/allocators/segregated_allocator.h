@@ -13,11 +13,12 @@
 #include "memory/bytes.h"
 #include "memory/memory_address.h"
 #include "memory/virtual_memory_range.h"
+#include "memory/allocators/linear_allocator.h"
 #include "memory/allocators/allocator.h"
-#include "memory/allocators/block_allocator.h"
 
 namespace syntropy
 {
+    struct BlockAllocator {};
     struct StaticBlockAllocator {};
 
     /// \brief High-performance, low-fragmentation allocator best suited to handle allocation of small objects.
