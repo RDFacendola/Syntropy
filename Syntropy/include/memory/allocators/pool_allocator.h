@@ -31,7 +31,7 @@ namespace syntropy
     public:
 
         /// \brief Default constructor.
-        PoolAllocator() = default;
+        PoolAllocator() noexcept = default;
 
         /// \brief Create a new allocator.
         /// \param memory_range Memory range the allocator will operate on.
@@ -77,7 +77,7 @@ namespace syntropy
             FreeBlock* next_{ nullptr };    ///< \brief Next free block.
         };
 
-        MemoryRange memory_range_;          ///< \brief Memory range manager by this allocator.
+        MemoryRange memory_range_;          ///< \brief Memory range managed by this allocator.
 
         Bytes allocation_size_;             ///< \brief Size of each allocated block.
 
@@ -106,8 +106,10 @@ namespace syntropy
              free > memory_range.Begin();
              free -= allocation_size)
         {
-            free.As<FreeBlock>()->next_ = free_;
-            free_ = free.As<FreeBlock>();
+            auto free_block = free.As<FreeBlock>();
+
+            free_block->next_ = free_;
+            free_ = free_block;
         }
     }
 
