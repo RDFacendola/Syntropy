@@ -13,7 +13,6 @@
 
 #include "memory/allocators/allocator.h"
 #include "memory/allocators/segregated_allocator.h"
-#include "memory/allocators/layered_allocator.h"
 
 #include "reflection/reflection.h"
 #include "reflection/types/fundamental_types.h"
@@ -108,24 +107,6 @@ namespace syntropy::reflection
 //         }
 //     };
 
-    /************************************************************************/
-    /* LAYERED ALLOCATOR.H                                                  */
-    /************************************************************************/
-
-    // Template specialization for LayeredAllocator
-    template<>
-    struct ClassDeclarationT<LayeredAllocator>
-    {
-        static constexpr const char* name_{ "syntropy::LayeredAllocator" };
-
-        void operator()(ClassT<LayeredAllocator>& class_t) const
-        {
-            class_t << serialization::JSONClass();
-
-            class_t.AddBaseClass<Allocator>();
-        }
-    };
-
 }
 
 namespace syntropy::serialization
@@ -213,72 +194,4 @@ namespace syntropy::serialization
 //         }
 //     };
 
-    /************************************************************************/
-    /* LAYERED ALLOCATOR.H                                                  */
-    /************************************************************************/
-
-    /// \brief Template specialization for LayeredAllocator::Layer
-    ///
-    /// Example:
-    /// {
-    ///     "allocator_name": "SmallAllocator",
-    ///     "max_size": 256
-    /// }
-    template <>
-    struct JSONDeserializerT<LayeredAllocator::Layer>
-    {
-        std::optional<LayeredAllocator::Layer> operator()(const nlohmann::json& json) const
-        {
-            auto allocator_name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "allocator_name");
-
-            auto allocator = allocator_name ? Allocator::GetAllocatorByName(*allocator_name) : nullptr;
-
-            if (allocator)
-            {
-                // Maximum allocation size is optional: if none is specified the maximum allowed allocation size is used.
-
-                auto max_size = allocator->GetMaxAllocationSize();
-
-                auto size = DeserializeObjectFromJSON<Bytes>(json, max_size, "max_size");
-
-                if (size)
-                {
-                    max_size = std::min(max_size, *size);
-                }
-
-                return LayeredAllocator::Layer{ *allocator, max_size };
-            }
-
-            return std::nullopt;
-        }
-    };
-
-    /// \brief Template specialization for LayeredAllocator
-    ///
-    /// Example:
-    ///{
-    ///     "$class": "syntropy::LayeredAllocator",
-    ///     "name" : "MasterAllocator",
-    ///     "layers" : 
-    ///     [{
-    ///         "allocator_name": "SmallAllocator",
-    ///         "max_size" : 256
-    ///     }]
-    ///}
-    template <>
-    struct JSONDeserializerT<LayeredAllocator>
-    {
-        std::optional<LayeredAllocator> operator()(const nlohmann::json& json) const
-        {
-            auto name = DeserializeObjectFromJSON<std::string>(json, std::nullopt, "name");
-            auto layers = DeserializeObjectFromJSON<std::vector<LayeredAllocator::Layer> >(json, std::nullopt, "layers");
-
-            if (name && layers)
-            {
-                return LayeredAllocator(std::move(*name), std::move(*layers));
-            }
-
-            return std::nullopt;
-        }
-    };
 }

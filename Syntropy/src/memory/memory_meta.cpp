@@ -9,6 +9,4 @@ namespace syntropy::memory
 //     reflection::AutoRegisterClass<LinearSegregatedFitAllocator> linear_segregated_fit_allocator;
 //     reflection::AutoRegisterClass<ExponentialSegregatedFitAllocator> exponential_segregated_fit_allocator;
 //     reflection::AutoRegisterClass<TwoLevelSegregatedFitAllocator> two_level_segregated_fit_allocator;
-
-    reflection::AutoRegisterClass<LayeredAllocator> layered_allocator;
 }

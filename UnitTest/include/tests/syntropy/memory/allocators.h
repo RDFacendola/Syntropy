@@ -16,7 +16,6 @@
 #include "memory/allocators/scope_allocator.h"
 
 #include "memory/allocators/segregated_allocator.h"
-#include "memory/allocators/layered_allocator.h"
 
 #include <vector>
 

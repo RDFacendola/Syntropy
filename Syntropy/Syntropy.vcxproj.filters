@@ -106,9 +106,6 @@
     <ClInclude Include="include\memory\allocators\allocator.h">
       <Filter>allocators</Filter>
     </ClInclude>
-    <ClInclude Include="include\memory\allocators\layered_allocator.h">
-      <Filter>allocators</Filter>
-    </ClInclude>
     <ClInclude Include="include\memory\allocators\linear_allocator.h">
       <Filter>allocators</Filter>
     </ClInclude>
@@ -174,9 +171,6 @@
       <Filter>memory</Filter>
     </ClCompile>
     <ClCompile Include="src\memory\allocator.cpp">
-      <Filter>allocators</Filter>
-    </ClCompile>
-    <ClCompile Include="src\memory\layered_allocator.cpp">
       <Filter>allocators</Filter>
     </ClCompile>
     <ClCompile Include="src\memory\memory_buffer.cpp" />
