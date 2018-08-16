@@ -22,6 +22,9 @@ namespace syntropy::reflection
     template <typename TType>
     const Class& ClassOf();
 
+    template <typename TClass>
+    struct ClassDeclarationT;
+
     /************************************************************************/
     /* TYPE                                                                 */
     /************************************************************************/

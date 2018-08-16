@@ -11,7 +11,6 @@
 #include "type_traits.h"
 
 #include "reflection/any.h"
-#include "reflection/property.h"
 
 namespace syntropy::reflection
 {
