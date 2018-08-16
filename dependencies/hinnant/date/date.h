@@ -64,7 +64,10 @@ namespace date
 #  define CONSTDATA const
 #  define CONSTCD11
 #  define CONSTCD14
-#  define NOEXCEPT _NOEXCEPT
+// <SYNTROPY_MOD> _NOEXCEPT was removed with VS2017 15.8
+//#  define NOEXCEPT _NOEXCEPT
+#  define NOEXCEPT noexcept
+// <\SYNTROPY_MOD>
 #elif __cplusplus >= 201402
 // C++14
 #  define CONSTDATA constexpr
