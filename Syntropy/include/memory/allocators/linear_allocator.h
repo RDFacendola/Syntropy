@@ -172,7 +172,7 @@ namespace syntropy
 
 }
 
-void swap(syntropy::LinearAllocator& lhs, syntropy::LinearAllocator& rhs) noexcept
+inline void swap(syntropy::LinearAllocator& lhs, syntropy::LinearAllocator& rhs) noexcept
 {
     lhs.Swap(rhs);
 }
