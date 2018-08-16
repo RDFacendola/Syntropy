@@ -71,9 +71,9 @@ namespace syntropy
 
 namespace syntropy
 {
-    MemoryRange StandardAllocator::Allocate(Bytes size) noexcept
+    inline MemoryRange StandardAllocator::Allocate(Bytes size) noexcept
     {
-        if (auto block = MemoryAddress{ ::operator new(size, std::nothrow) })
+        if (auto block = MemoryAddress{ ::operator new(std::size_t{size}, std::nothrow) })
         {
             return { block, block + size };
         }
@@ -81,9 +81,9 @@ namespace syntropy
         return {};
     }
 
-    MemoryRange StandardAllocator::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemoryRange StandardAllocator::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (auto block = MemoryAddress{ ::operator new(size, alignment, std::nothrow) })
+        if (auto block = MemoryAddress{ ::operator new(std::size_t{size}, alignment, std::nothrow) })
         {
             return { block, block + size };
         }
@@ -91,12 +91,12 @@ namespace syntropy
         return {};
     }
 
-    void StandardAllocator::Deallocate(const MemoryRange& block) noexcept
+    inline void StandardAllocator::Deallocate(const MemoryRange& block) noexcept
     {
         ::operator delete(block.Begin(), std::nothrow);
     }
 
-    void StandardAllocator::Deallocate(const MemoryRange& block, Alignment alignment) noexcept
+    inline void StandardAllocator::Deallocate(const MemoryRange& block, Alignment alignment) noexcept
     {
         ::operator delete(block.Begin(), alignment, std::nothrow);
     }
