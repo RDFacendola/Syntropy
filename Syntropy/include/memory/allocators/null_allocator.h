@@ -75,27 +75,27 @@ namespace syntropy
  
 namespace syntropy
 {
-    MemoryRange NullAllocator::Allocate(Bytes /*size*/) noexcept
+    inline MemoryRange NullAllocator::Allocate(Bytes /*size*/) noexcept
     {
         return {};
     }
 
-    MemoryRange NullAllocator::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
+    inline MemoryRange NullAllocator::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
     {
         return {};
     }
 
-    void NullAllocator::Deallocate(const MemoryRange& block)
+    inline void NullAllocator::Deallocate(const MemoryRange& block)
     {
         SYNTROPY_ASSERT(!block);        // Only empty ranges can be "deallocated" by this allocator.
     }
 
-    void NullAllocator::Deallocate(const MemoryRange& block, Alignment /*alignment*/)
+    inline void NullAllocator::Deallocate(const MemoryRange& block, Alignment /*alignment*/)
     {
         SYNTROPY_ASSERT(!block);        // Only empty ranges can be "deallocated" by this allocator.
     }
 
-    bool NullAllocator::Owns(const MemoryRange& block) const noexcept
+    inline bool NullAllocator::Owns(const MemoryRange& block) const noexcept
     {
         return !block;                  // This allocator "owns" only empty ranges.
     }
