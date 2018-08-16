@@ -108,7 +108,7 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    VirtualMemoryPage::VirtualMemoryPage(MemoryAddress page_address)
+    inline VirtualMemoryPage::VirtualMemoryPage(MemoryAddress page_address)
         : memory_range_(page_address, page_address + VirtualMemory::GetPageSize())
     {
         SYNTROPY_ASSERT(page_address.IsAlignedTo(VirtualMemory::GetPageAlignment()));
