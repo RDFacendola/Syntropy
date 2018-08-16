@@ -40,7 +40,6 @@
     <ClCompile Include="src\task\scheduler.cpp" />
     <ClCompile Include="src\task\task.cpp" />
     <ClCompile Include="src\task\task_execution_context.cpp" />
-    <ClCompile Include="src\task\task_pool.cpp" />
     <ClCompile Include="src\task\task_queue.cpp" />
     <ClCompile Include="src\task\worker.cpp" />
   </ItemGroup>
