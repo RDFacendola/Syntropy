@@ -58,6 +58,10 @@ namespace syntropy
         /// \return Returns an signed number that represents the underlying address.
         constexpr operator intptr_t() const noexcept;
 
+        /// \brief Check whether the memory address points to a valid address or to nullptr.
+        /// \return Returns true if the stored address is nullptr, returns false otherwise.
+        constexpr operator bool() const noexcept;
+
         /// \brief Get the underlying pointer.
         /// \return Returns the underlying pointer.
         constexpr void* operator*() const noexcept;
@@ -173,6 +177,11 @@ namespace syntropy
     constexpr MemoryAddress::operator intptr_t() const noexcept
     {
         return reinterpret_cast<intptr_t>(address_);
+    }
+
+    constexpr MemoryAddress::operator bool() const noexcept
+    {
+        return !!address_;
     }
 
     constexpr void* MemoryAddress::operator*() const noexcept
