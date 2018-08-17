@@ -73,6 +73,11 @@ namespace syntropy
         /// \brief Deallocate every allocation performed so far on this allocator.
         void DeallocateAll() noexcept;
 
+        /// \brief Check whether this allocator owns the provided memory block.
+        /// \param block Block to check the ownership of.
+        /// \return Returns true if the provided memory range was allocated by this allocator, returns false otherwise.
+        bool Owns(const MemoryRange& block) const noexcept;
+
         /// \brief Restore the allocator to a previous state.
         /// \param state State to restore the allocator to. Must match any value returned by SaveState() otherwise the behaviour is undefined.
         void RestoreState(MemoryAddress state);
@@ -81,10 +86,6 @@ namespace syntropy
         /// The returned value can be used to restore the allocator to a previous state via the method RestoreState(state);
         /// \return Returns the current state of the allocator.
         MemoryAddress SaveState() const noexcept;
-
-        /// \brief Get the memory range managed by this allocator.
-        /// \return Returns the memory range managed by this allocator.
-        const MemoryRange& GetRange() const noexcept;
 
         /// \brief Swap this allocator with the provided instance.
         void Swap(LinearAllocator& rhs) noexcept;
@@ -171,6 +172,11 @@ namespace syntropy
         head_ = memory_range_.Begin();
     }
 
+    inline bool LinearAllocator::Owns(const MemoryRange& block) const noexcept
+    {
+        return block.Begin() >= memory_range_.Begin() && block.End() <= head_;
+    }
+
     inline void LinearAllocator::RestoreState(MemoryAddress head)
     {
         SYNTROPY_ASSERT(head >= memory_range_.Begin() && head <= memory_range_.End());
@@ -181,11 +187,6 @@ namespace syntropy
     inline MemoryAddress LinearAllocator::SaveState() const noexcept
     {
         return head_;
-    }
-
-    inline const MemoryRange& LinearAllocator::GetRange() const noexcept
-    {
-        return memory_range_;
     }
 
     inline void LinearAllocator::Swap(LinearAllocator& rhs) noexcept
