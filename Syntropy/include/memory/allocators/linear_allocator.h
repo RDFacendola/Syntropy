@@ -130,7 +130,7 @@ namespace syntropy
 
     inline MemoryRange LinearAllocator::Allocate(Bytes size) noexcept
     {
-        return Allocate(size, Alignment(size));
+        return Allocate(size, Alignment());
     }
 
     inline MemoryRange LinearAllocator::Allocate(Bytes size, Alignment alignment) noexcept
