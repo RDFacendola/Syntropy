@@ -1,6 +1,6 @@
 
 /// \file standard_allocator.h
-/// \brief This header is part of the syntropy memory management system. It contains an allocator around the standard malloc.
+/// \brief This header is part of the syntropy memory management system. It contains an allocator that wraps system heap calls.
 ///
 /// \author Raffaele D. Facendola - 2017
 

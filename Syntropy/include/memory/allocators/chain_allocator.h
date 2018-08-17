@@ -99,8 +99,8 @@ namespace syntropy
         void Deallocate(const MemoryRange& block, Alignment alignment);
 
         /// \brief Check whether this allocator owns the provided memory block.
-        /// The null allocator only contains empty ranges.
-        /// \return Returns true if the provided memory range is empty, returns false otherwise.
+        /// \param block Block to check the ownership of.
+        /// \return Returns true if the provided memory range was allocated by this allocator, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
     private:
