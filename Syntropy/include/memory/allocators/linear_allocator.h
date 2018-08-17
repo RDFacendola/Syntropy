@@ -22,9 +22,9 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Allocator used to allocate memory over a contiguous range of memory addresses.
-    /// Memory is allocated sequentially on demand. Pointer-level deallocations are not supported.
+    /// Memory is allocated sequentially on demand. Pointer-level deallocations are not supported, unless they refer to the last allocation performed.
     /// The allocator can be rewound to a previous state, undoing all the allocations that were performed from that point on.
-    /// \author Raffaele D. Facendola - January 2017
+    /// \author Raffaele D. Facendola - January 2017, August 2018
     class LinearAllocator
     {
     public:
@@ -48,19 +48,30 @@ namespace syntropy
         /// \brief Unified assignment operator.
         LinearAllocator& operator=(LinearAllocator rhs) noexcept;
 
-        /// \brief Allocate a memory block.
+        /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate.
-        /// \return Returns a pointer to the allocated memory block. If no allocation could be performed returns nullptr.
-        MemoryAddress Allocate(Bytes size);
+        /// \return Returns a range representing the requested memory block. If no allocation could be performed returns an empty range.
+        MemoryRange Allocate(Bytes size) noexcept;
 
-        /// \brief Allocate an aligned memory block.
+        /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate.
-        /// \param alignment Alignment of the block.
-        /// \return Returns a pointer to the allocated memory block.  If no allocation could be performed returns nullptr.
-        MemoryAddress Allocate(Bytes size, Alignment alignment);
+        /// \param alignment Block alignment.
+        /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
+        MemoryRange Allocate(Bytes size, Alignment alignment) noexcept;
 
-        /// \brief Free all the allocations performed so far.
-        void Free() noexcept;
+        /// \brief Deallocate a memory block.
+        /// \param block Block to deallocate.
+        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size).
+        void Deallocate(const MemoryRange& block) noexcept;
+
+        /// \brief Deallocate an aligned memory block.
+        /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
+        /// \param alignment Block alignment.
+        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
+        void Deallocate(const MemoryRange& block, Alignment alignment) noexcept;
+
+        /// \brief Deallocate every allocation performed so far on this allocator.
+        void DeallocateAll() noexcept;
 
         /// \brief Restore the allocator to a previous state.
         /// \param state State to restore the allocator to. Must match any value returned by SaveState() otherwise the behaviour is undefined.
@@ -117,31 +128,46 @@ namespace syntropy
         return *this;
     }
 
-    inline MemoryAddress LinearAllocator::Allocate(Bytes size)
+    inline MemoryRange LinearAllocator::Allocate(Bytes size) noexcept
     {
-        return Allocate(size, Alignment());
+        return Allocate(size, Alignment(size));
     }
 
-    inline MemoryAddress LinearAllocator::Allocate(Bytes size, Alignment alignment)
+    inline MemoryRange LinearAllocator::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        auto aligned_head = head_.GetAligned(alignment);
+        auto block = head_.GetAligned(alignment);
 
-        auto head = aligned_head + size;
+        auto head = block + size;
 
         if (head < memory_range_.End())
         {
-            auto block = aligned_head;
-
             head_ = head;
 
-            return block;
+            return { block, head_ };
         }
 
-        return nullptr;                                         // Out-of-memory.
+        return {};
     }
 
-    inline void LinearAllocator::Free() noexcept
+    inline void LinearAllocator::Deallocate(const MemoryRange& block) noexcept
     {
+        // Only the last block can be deallocated.
+
+        if (block.End() == head_)
+        {
+            head_ = block.Begin();
+        }
+    }
+
+    inline void LinearAllocator::Deallocate(const MemoryRange& block, Alignment /*alignment*/) noexcept
+    {
+        Deallocate(block);
+    }
+
+    inline void LinearAllocator::DeallocateAll() noexcept
+    {
+        // Unwind the head pointer.
+
         head_ = memory_range_.Begin();
     }
 
