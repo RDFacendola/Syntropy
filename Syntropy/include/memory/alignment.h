@@ -25,7 +25,7 @@ namespace syntropy
     {
     public:
 
-        /// \brief Create a new alignment equal to 1.
+        /// \brief Create a new alignment equal to the default system alignment.
         constexpr Alignment() noexcept = default;
 
         /// \brief Create a new alignment.
@@ -62,7 +62,7 @@ namespace syntropy
 
     private:
 
-        std::size_t alignment_ = 1u;           ///< \brief Alignment, in bytes.
+        std::size_t alignment_ = alignof(void*);        ///< \brief Alignment, in bytes.
 
     };
 
