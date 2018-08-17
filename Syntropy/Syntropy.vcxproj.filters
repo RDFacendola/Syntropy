@@ -117,6 +117,7 @@
     <ClInclude Include="include\memory\allocators\standard_allocator.h" />
     <ClInclude Include="include\memory\allocators\chain_allocator.h" />
     <ClInclude Include="include\memory\memory_buffer.h" />
+    <ClInclude Include="include\memory\allocators\stack_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

@@ -25,6 +25,7 @@
     <ClInclude Include="include\memory\allocators\chain_allocator.h" />
     <ClInclude Include="include\memory\allocators\null_allocator.h" />
     <ClInclude Include="include\memory\allocators\pool_allocator.h" />
+    <ClInclude Include="include\memory\allocators\stack_allocator.h" />
     <ClInclude Include="include\memory\memory_address.h" />
     <ClInclude Include="include\memory\alignment.h" />
     <ClInclude Include="include\memory\memory_buffer.h" />
