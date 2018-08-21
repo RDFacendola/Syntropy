@@ -35,8 +35,8 @@ namespace syntropy
 
         /// \brief Create a new allocator.
         /// \param memory_range Memory range the allocator will operate on.
-        /// \param allocation_size Size of each allocation.
-        PoolAllocator(const MemoryRange& memory_range, Bytes allocation_size);
+        /// \param max_size Maximum size for each allocation. Allocated blocks are guaranteed to be aligned to this value.
+        PoolAllocator(const MemoryRange& memory_range, Bytes max_size) noexcept;
 
         /// \brief No copy constructor.
         PoolAllocator(const PoolAllocator&) = delete;
@@ -51,20 +51,31 @@ namespace syntropy
         PoolAllocator& operator=(PoolAllocator rhs) noexcept;
 
         /// \brief Allocate a new memory block.
-        /// \return Returns a pointer to the allocated memory block. If no allocation could be performed returns nullptr.
-        MemoryAddress Allocate();
+        /// \param size Size of the memory block to allocate.
+        /// \return Returns a range representing the requested memory block. If no allocation could be performed returns an empty range.
+        MemoryRange Allocate(Bytes size) noexcept;
 
-        /// \brief Free a memory block.
-        /// \param block Memory block to free.
-        void Free(MemoryAddress block) noexcept;
+        /// \brief Allocate a new aligned memory block.
+        /// \param size Size of the memory block to allocate.
+        /// \param alignment Block alignment.
+        /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
+        MemoryRange Allocate(Bytes size, Alignment alignment) noexcept;
 
-        /// \brief Get the memory range managed by this allocator.
-        /// \return Returns the memory range managed by this allocator.
-        const MemoryRange& GetRange() const noexcept;
+        /// \brief Deallocate a memory block.
+        /// \param block Block to deallocate.
+        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size).
+        void Deallocate(const MemoryRange& block);
 
-        /// \brief Get the size of each allocated memory block.
-        /// \return Returns the size of each allocated memory block.
-        Bytes GetAllocationSize() const noexcept;
+        /// \brief Deallocate an aligned memory block.
+        /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
+        /// \param alignment Block alignment.
+        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
+        void Deallocate(const MemoryRange& block, Alignment alignment);
+
+        /// \brief Check whether this allocator owns the provided memory block.
+        /// \param block Block to check the ownership of.
+        /// \return Returns true if the provided memory range was allocated by this allocator, returns false otherwise.
+        bool Owns(const MemoryRange& block) const noexcept;
 
         /// \brief Swap this allocator with the provided instance.
         void Swap(PoolAllocator& rhs) noexcept;
@@ -77,11 +88,11 @@ namespace syntropy
             FreeBlock* next_{ nullptr };    ///< \brief Next free block.
         };
 
-        MemoryRange memory_range_;          ///< \brief Memory range managed by this allocator.
+        LinearAllocator allocator_;         ///< \brief Allocator used to manage the pooled memory. Deallocated blocks are sent to the free list and never deallocated by this allocator.
 
-        Bytes allocation_size_;             ///< \brief Size of each allocated block.
+        Bytes max_size_;                    ///< \brief Maximum size for each allocated block.
 
-        FreeBlock* free_{ nullptr };        ///< \brief Next free block in the pool, nullptr if the pool is full.
+        FreeBlock* free_{ nullptr };        ///< \brief Next free block in the pool. nullptr if no previous block was freed.
     };
 
 }
@@ -89,33 +100,22 @@ namespace syntropy
 /// \brief Swaps two syntropy::PoolAllocator instances.
 void swap(syntropy::PoolAllocator& lhs, syntropy::PoolAllocator& rhs) noexcept;
 
-/************************************************************************/
-/* IMPLEMENTATION                                                       */
-/************************************************************************/
-
 namespace syntropy
 {
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
 
-    inline PoolAllocator::PoolAllocator(const MemoryRange& memory_range, Bytes allocation_size)
-        : memory_range_(memory_range)
-        , allocation_size_(allocation_size_)
+    inline PoolAllocator::PoolAllocator(const MemoryRange& memory_range, Bytes max_size) noexcept
+        : allocator_(memory_range)
+        , max_size_(max_size)
     {
-        // Initialize the free list.
-        
-        for (auto free = memory_range.End().GetAlignedDown(Alignment(allocation_size)) - allocation_size;
-             free > memory_range.Begin();
-             free -= allocation_size)
-        {
-            auto free_block = free.As<FreeBlock>();
 
-            free_block->next_ = free_;
-            free_ = free_block;
-        }
     }
 
     inline PoolAllocator::PoolAllocator(PoolAllocator&& rhs) noexcept
-        : memory_range_(std::move(rhs.memory_range_))
-        , allocation_size_(std::move(rhs.allocation_size_))
+        : allocator_(std::move(rhs.allocator_))
+        , max_size_(std::move(rhs.max_size_))
         , free_(std::move(rhs.free_))
     {
 
@@ -127,44 +127,73 @@ namespace syntropy
         return *this;
     }
 
-    inline MemoryAddress PoolAllocator::Allocate()
+    inline MemoryRange PoolAllocator::Allocate(Bytes size) noexcept
     {
-        MemoryAddress block = free_;
-
-        if (free_)
+        if (size <= max_size_)
         {
-            free_ = free_->next_;
+            if (free_)
+            {
+                auto block = MemoryAddress(free_);
+
+                free_ = free_->next_;
+
+                return { block, block + max_size_ };                                    // Recycle an existing free-block.
+            }
+            else
+            {
+                auto block = allocator_.Allocate(max_size_);                            // Allocate from the underlying allocator.
+
+                SYNTROPY_POSTCONDITION(block.Begin().IsAlignedTo(Alignment(size)));
+
+                return block;
+            }
         }
 
-        return block;
+        return {};
     }
 
-    inline void PoolAllocator::Free(MemoryAddress block) noexcept
+    inline MemoryRange PoolAllocator::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        SYNTROPY_ASSERT(memory_range_.Contains(block));             // Check whether the block was allocated by this allocator.
+        if (Bytes(alignment) <= max_size_)                                              // Power of 2 alignment guarantees that if a smaller alignment is required, the request should be fulfilled without any further alignment.
+        {
+            auto block = Allocate(size);                                                // Default allocations are already aligned.
 
-        auto free_block = block.As<FreeBlock>();
+            SYNTROPY_POSTCONDITION(block.Begin().IsAlignedTo(alignment));               // Right?
 
-        free_block->next_ = free_;
+            return block;
+        }
+
+        return {};
+    }
+
+    inline void PoolAllocator::Deallocate(const MemoryRange& block)
+    {
+        SYNTROPY_ASSERT(allocator_.Owns(block));                                        // Check whether the block was allocated by this allocator.
+
+        auto free_block = block.Begin().As<FreeBlock>();
+
+        free_block->next_ = free_;                                                      // Chain the free block to the free list.
         free_ = free_block;
     }
 
-    inline const MemoryRange& PoolAllocator::GetRange() const noexcept
+    inline void PoolAllocator::Deallocate(const MemoryRange& block, Alignment alignment)
     {
-        return memory_range_;
+        SYNTROPY_ASSERT(Bytes(alignment) <= max_size_);
+
+        Deallocate(block);
     }
 
-    inline Bytes PoolAllocator::GetAllocationSize() const noexcept
+    inline bool PoolAllocator::Owns(const MemoryRange& block) const noexcept
     {
-        return allocation_size_;
+        return allocator_.Owns(block);
     }
 
     inline void PoolAllocator::Swap(PoolAllocator& rhs) noexcept
     {
         using std::swap;
 
-        swap(memory_range_, rhs.memory_range_);
-        swap(allocation_size_, rhs.allocation_size_);
+        swap(allocator_, rhs.allocator_);
+        swap(max_size_, rhs.max_size_);
         swap(free_, rhs.free_);
     }
 
