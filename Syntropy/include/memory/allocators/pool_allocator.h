@@ -13,8 +13,6 @@
 #include "memory/memory_address.h"
 #include "memory/memory_range.h"
 
-#include "memory/allocators/linear_allocator.h"
-
 #include "diagnostics/assert.h"
 
 namespace syntropy
@@ -23,20 +21,20 @@ namespace syntropy
     /* POOL ALLOCATOR                                                       */
     /************************************************************************/
 
-    /// \brief Allocator used to allocate fixed-size memory blocks over a contiguous range of memory addresses.
+    /// \brief Allocator used to allocate fixed-size memory blocks.
     /// Allocated blocks are guaranteed to be aligned to their own size.
+    /// \tparam TAllocator Type of the underlying allocator.
     /// \author Raffaele D. Facendola - August 2018
+    template <typename TAllocator>
     class PoolAllocator
     {
     public:
 
-        /// \brief Default constructor.
-        PoolAllocator() noexcept = default;
-
         /// \brief Create a new allocator.
-        /// \param memory_range Memory range the allocator will operate on.
+        /// \param Arguments used to construct the underlying allocator.
         /// \param max_size Maximum size for each allocation. Allocated blocks are guaranteed to be aligned to this value.
-        PoolAllocator(const MemoryRange& memory_range, Bytes max_size) noexcept;
+        template <typename... TArguments>
+        PoolAllocator(Bytes max_size, TArguments&&... arguments) noexcept;
 
         /// \brief No copy constructor.
         PoolAllocator(const PoolAllocator&) = delete;
@@ -88,7 +86,7 @@ namespace syntropy
             FreeBlock* next_{ nullptr };    ///< \brief Next free block.
         };
 
-        LinearAllocator allocator_;         ///< \brief Allocator used to manage the pooled memory. Deallocated blocks are sent to the free list and never deallocated by this allocator.
+        TAllocator allocator_;              ///< \brief Allocator used to manage the pooled memory. Deallocated blocks are sent to the free list and never deallocated by this allocator.
 
         Bytes max_size_;                    ///< \brief Maximum size for each allocated block.
 
@@ -97,8 +95,9 @@ namespace syntropy
 
 }
 
-/// \brief Swaps two syntropy::PoolAllocator instances.
-void swap(syntropy::PoolAllocator& lhs, syntropy::PoolAllocator& rhs) noexcept;
+/// \brief Swaps two syntropy::PoolAllocator<> instances.
+template <typename TAllocator>
+void swap(syntropy::PoolAllocator<TAllocator>& lhs, syntropy::PoolAllocator<TAllocator>& rhs) noexcept;
 
 namespace syntropy
 {
@@ -106,14 +105,17 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    inline PoolAllocator::PoolAllocator(const MemoryRange& memory_range, Bytes max_size) noexcept
-        : allocator_(memory_range)
+    template <typename TAllocator>
+    template <typename... TArguments>
+    inline PoolAllocator<TAllocator>::PoolAllocator(Bytes max_size, TArguments&&... arguments) noexcept
+        : allocator_(std::forward<TArguments>(arguments)...)
         , max_size_(max_size)
     {
 
     }
 
-    inline PoolAllocator::PoolAllocator(PoolAllocator&& rhs) noexcept
+    template <typename TAllocator>
+    inline PoolAllocator<TAllocator>::PoolAllocator(PoolAllocator&& rhs) noexcept
         : allocator_(std::move(rhs.allocator_))
         , max_size_(std::move(rhs.max_size_))
         , free_(std::move(rhs.free_))
@@ -121,13 +123,15 @@ namespace syntropy
 
     }
 
-    inline PoolAllocator& PoolAllocator::operator=(PoolAllocator rhs) noexcept
+    template <typename TAllocator>
+    inline PoolAllocator<TAllocator>& PoolAllocator<TAllocator>::operator=(PoolAllocator rhs) noexcept
     {
         rhs.Swap(*this);
         return *this;
     }
 
-    inline MemoryRange PoolAllocator::Allocate(Bytes size) noexcept
+    template <typename TAllocator>
+    inline MemoryRange PoolAllocator<TAllocator>::Allocate(Bytes size) noexcept
     {
         if (size <= max_size_)
         {
@@ -137,28 +141,23 @@ namespace syntropy
 
                 free_ = free_->next_;
 
-                return { block, block + max_size_ };                                    // Recycle an existing free-block.
+                return { block, block + max_size_ };                                // Recycle an existing free-block.
             }
-            else
-            {
-                auto block = allocator_.Allocate(max_size_);                            // Allocate from the underlying allocator.
 
-                SYNTROPY_POSTCONDITION(block.Begin().IsAlignedTo(Alignment(size)));
-
-                return block;
-            }
+            return allocator_.Allocate(max_size_, Alignment(size));                 // Allocate from the underlying allocator.
         }
 
         return {};
     }
 
-    inline MemoryRange PoolAllocator::Allocate(Bytes size, Alignment alignment) noexcept
+    template <typename TAllocator>
+    inline MemoryRange PoolAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (Bytes(alignment) <= max_size_)                                              // Power of 2 alignment guarantees that if a smaller alignment is required, the request should be fulfilled without any further alignment.
+        if (Bytes(alignment) <= max_size_)                                          // Power of 2 alignment guarantees that if a smaller alignment is required, the request should be fulfilled without any further alignment.
         {
-            auto block = Allocate(size);                                                // Default allocations are already aligned.
+            auto block = Allocate(size);                                            // Default allocations are already aligned.
 
-            SYNTROPY_POSTCONDITION(block.Begin().IsAlignedTo(alignment));               // Right?
+            SYNTROPY_POSTCONDITION(block.Begin().IsAlignedTo(alignment));           // Right?
 
             return block;
         }
@@ -166,7 +165,8 @@ namespace syntropy
         return {};
     }
 
-    inline void PoolAllocator::Deallocate(const MemoryRange& block)
+    template <typename TAllocator>
+    inline void PoolAllocator<TAllocator>::Deallocate(const MemoryRange& block)
     {
         SYNTROPY_ASSERT(allocator_.Owns(block));                                        // Check whether the block was allocated by this allocator.
 
@@ -176,19 +176,22 @@ namespace syntropy
         free_ = free_block;
     }
 
-    inline void PoolAllocator::Deallocate(const MemoryRange& block, Alignment alignment)
+    template <typename TAllocator>
+    inline void PoolAllocator<TAllocator>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(Bytes(alignment) <= max_size_);
 
         Deallocate(block);
     }
 
-    inline bool PoolAllocator::Owns(const MemoryRange& block) const noexcept
+    template <typename TAllocator>
+    inline bool PoolAllocator<TAllocator>::Owns(const MemoryRange& block) const noexcept
     {
         return allocator_.Owns(block);
     }
 
-    inline void PoolAllocator::Swap(PoolAllocator& rhs) noexcept
+    template <typename TAllocator>
+    inline void PoolAllocator<TAllocator>::Swap(PoolAllocator& rhs) noexcept
     {
         using std::swap;
 
@@ -199,7 +202,8 @@ namespace syntropy
 
 }
 
-void swap(syntropy::PoolAllocator& lhs, syntropy::PoolAllocator& rhs) noexcept
+template <typename TAllocator>
+void swap(syntropy::PoolAllocator<TAllocator>& lhs, syntropy::PoolAllocator<TAllocator>& rhs) noexcept
 {
     lhs.Swap(rhs);
 }
