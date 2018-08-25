@@ -30,11 +30,11 @@ namespace syntropy
     public:
 
         /// \brief Default constructor.
-        LinearAllocator() = default;
+        LinearAllocator() noexcept = default;
 
         /// \brief Create a new allocator.
         /// \param memory_range Memory range the allocator will operate on.
-        LinearAllocator(const MemoryRange& memory_range);
+        LinearAllocator(const MemoryRange& memory_range) noexcept;
 
         /// \brief No copy constructor.
         LinearAllocator(const LinearAllocator&) = delete;
@@ -101,14 +101,15 @@ namespace syntropy
 
 /// \brief Swaps two syntropy::LinearAllocator instances.
 void swap(syntropy::LinearAllocator& lhs, syntropy::LinearAllocator& rhs) noexcept;
-
-/************************************************************************/
-/* IMPLEMENTATION                                                       */
-/************************************************************************/
  
 namespace syntropy
 {
-    inline LinearAllocator::LinearAllocator(const MemoryRange& memory_range)
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    inline LinearAllocator::LinearAllocator(const MemoryRange& memory_range) noexcept
         : memory_range_(memory_range)
         , head_(memory_range_.Begin())
     {
