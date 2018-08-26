@@ -1,6 +1,8 @@
 #include "tests/syntropy/memory/allocators.h"
 
 #include "memory/bytes.h"
+#include "memory/allocators/pool_allocator.h"
+#include "memory/allocators/page_allocator.h"
 #include "macro.h"
 
 #include "reflection/class.h"
