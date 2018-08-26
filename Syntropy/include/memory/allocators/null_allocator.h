@@ -20,7 +20,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Basic allocator that rejects any form of allocation.
-    /// \author Raffaele D. Facendola - August 0218
+    /// \author Raffaele D. Facendola - August 2018
     class NullAllocator
     {
     public:
