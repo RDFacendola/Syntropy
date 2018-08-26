@@ -78,7 +78,7 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    MemoryRange DefaultPoolAllocatorPolicy::Allocate(Bytes size) noexcept
+    inline MemoryRange DefaultPoolAllocatorPolicy::Allocate(Bytes size) noexcept
     {
         if (free_)
         {
@@ -92,7 +92,7 @@ namespace syntropy
         return {};
     }
 
-    void DefaultPoolAllocatorPolicy::Deallocate(const MemoryRange& block)
+    inline void DefaultPoolAllocatorPolicy::Deallocate(const MemoryRange& block)
     {
         auto free_block = block.Begin().As<FreeBlock>();
 
