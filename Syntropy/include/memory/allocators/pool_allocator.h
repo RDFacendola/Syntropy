@@ -13,6 +13,8 @@
 #include "memory/memory_address.h"
 #include "memory/memory_range.h"
 
+#include "memory/allocators/pool_allocator_policy.h"
+
 #include "diagnostics/assert.h"
 
 namespace syntropy
@@ -24,8 +26,9 @@ namespace syntropy
     /// \brief Allocator used to allocate fixed-size memory blocks.
     /// Allocated blocks are guaranteed to be aligned to their own size.
     /// \tparam TAllocator Type of the underlying allocator.
+    /// \tparam TPolicy Policy to be used when freeing and recycling previous allocations.
     /// \author Raffaele D. Facendola - August 2018
-    template <typename TAllocator>
+    template <typename TAllocator, typename TPolicy = DefaultPoolAllocatorPolicy>
     class PoolAllocator
     {
     public:
@@ -75,6 +78,11 @@ namespace syntropy
         /// \return Returns true if the provided memory range was allocated by this allocator, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
+        /// \brief Get the maximum allocation size that can be handled by this allocator.
+        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
+        /// \return Returns the maximum allocation size that can be handled by this allocator.
+        Bytes GetMaxAllocationSize() const noexcept;
+
         /// \brief Swap this allocator with the provided instance.
         void Swap(PoolAllocator& rhs) noexcept;
 
@@ -105,17 +113,17 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    template <typename TAllocator>
+    template <typename TAllocator, typename TPolicy>
     template <typename... TArguments>
-    inline PoolAllocator<TAllocator>::PoolAllocator(Bytes max_size, TArguments&&... arguments) noexcept
+    inline PoolAllocator<TAllocator, TPolicy>::PoolAllocator(Bytes max_size, TArguments&&... arguments) noexcept
         : allocator_(std::forward<TArguments>(arguments)...)
         , max_size_(max_size)
     {
 
     }
 
-    template <typename TAllocator>
-    inline PoolAllocator<TAllocator>::PoolAllocator(PoolAllocator&& rhs) noexcept
+    template <typename TAllocator, typename TPolicy>
+    inline PoolAllocator<TAllocator, TPolicy>::PoolAllocator(PoolAllocator&& rhs) noexcept
         : allocator_(std::move(rhs.allocator_))
         , max_size_(std::move(rhs.max_size_))
         , free_(std::move(rhs.free_))
@@ -123,15 +131,15 @@ namespace syntropy
 
     }
 
-    template <typename TAllocator>
-    inline PoolAllocator<TAllocator>& PoolAllocator<TAllocator>::operator=(PoolAllocator rhs) noexcept
+    template <typename TAllocator, typename TPolicy>
+    inline PoolAllocator<TAllocator, TPolicy>& PoolAllocator<TAllocator, TPolicy>::operator=(PoolAllocator rhs) noexcept
     {
         rhs.Swap(*this);
         return *this;
     }
 
-    template <typename TAllocator>
-    inline MemoryRange PoolAllocator<TAllocator>::Allocate(Bytes size) noexcept
+    template <typename TAllocator, typename TPolicy>
+    inline MemoryRange PoolAllocator<TAllocator, TPolicy>::Allocate(Bytes size) noexcept
     {
         if (size <= max_size_)
         {
@@ -144,14 +152,16 @@ namespace syntropy
                 return { block, block + max_size_ };                                // Recycle an existing free-block.
             }
 
-            return allocator_.Allocate(max_size_, Alignment(size));                 // Allocate from the underlying allocator.
+            auto block = allocator_.Allocate(max_size_, Alignment(size));           // Allocate from the underlying allocator.
+
+            return { block.Begin(), block.Begin() + size };                         // Returns a correctly-sized block.
         }
 
         return {};
     }
 
-    template <typename TAllocator>
-    inline MemoryRange PoolAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    template <typename TAllocator, typename TPolicy>
+    inline MemoryRange PoolAllocator<TAllocator, TPolicy>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (Bytes(alignment) <= max_size_)                                          // Power of 2 alignment guarantees that if a smaller alignment is required, the request should be fulfilled without any further alignment.
         {
@@ -165,8 +175,8 @@ namespace syntropy
         return {};
     }
 
-    template <typename TAllocator>
-    inline void PoolAllocator<TAllocator>::Deallocate(const MemoryRange& block)
+    template <typename TAllocator, typename TPolicy>
+    inline void PoolAllocator<TAllocator, TPolicy>::Deallocate(const MemoryRange& block)
     {
         SYNTROPY_ASSERT(allocator_.Owns(block));                                        // Check whether the block was allocated by this allocator.
 
@@ -176,22 +186,28 @@ namespace syntropy
         free_ = free_block;
     }
 
-    template <typename TAllocator>
-    inline void PoolAllocator<TAllocator>::Deallocate(const MemoryRange& block, Alignment alignment)
+    template <typename TAllocator, typename TPolicy>
+    inline void PoolAllocator<TAllocator, TPolicy>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(Bytes(alignment) <= max_size_);
 
         Deallocate(block);
     }
 
-    template <typename TAllocator>
-    inline bool PoolAllocator<TAllocator>::Owns(const MemoryRange& block) const noexcept
+    template <typename TAllocator, typename TPolicy>
+    inline bool PoolAllocator<TAllocator, TPolicy>::Owns(const MemoryRange& block) const noexcept
     {
         return allocator_.Owns(block);
     }
 
-    template <typename TAllocator>
-    inline void PoolAllocator<TAllocator>::Swap(PoolAllocator& rhs) noexcept
+    template <typename TAllocator, typename TPolicy>
+    inline Bytes PoolAllocator<TAllocator, TPolicy>::GetMaxAllocationSize() const noexcept
+    {
+        return max_size_;
+    }
+
+    template <typename TAllocator, typename TPolicy>
+    inline void PoolAllocator<TAllocator, TPolicy>::Swap(PoolAllocator& rhs) noexcept
     {
         using std::swap;
 
@@ -202,8 +218,8 @@ namespace syntropy
 
 }
 
-template <typename TAllocator>
-void swap(syntropy::PoolAllocator<TAllocator>& lhs, syntropy::PoolAllocator<TAllocator>& rhs) noexcept
+template <typename TAllocator, typename TPolicy>
+void swap(syntropy::PoolAllocator<TAllocator, typename TPolicy>& lhs, syntropy::PoolAllocator<TAllocator, typename TPolicy>& rhs) noexcept
 {
     lhs.Swap(rhs);
 }
