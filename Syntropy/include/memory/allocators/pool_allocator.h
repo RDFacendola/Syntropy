@@ -23,7 +23,7 @@ namespace syntropy
     /* POOL ALLOCATOR                                                       */
     /************************************************************************/
 
-    /// \brief Allocator used to allocate fixed-size memory blocks.
+    /// \brief Allocator used to allocate fixed-size memory blocks. Deallocated blocks are kept around and recycled when possible.
     /// Allocated blocks are guaranteed to be aligned to their own size.
     /// \tparam TAllocator Type of the underlying allocator.
     /// \tparam TPolicy Policy to be used when freeing and recycling previous allocations.
@@ -88,17 +88,11 @@ namespace syntropy
 
     private:
 
-        /// \brief Represents a free block in the pool.
-        struct FreeBlock
-        {
-            FreeBlock* next_{ nullptr };    ///< \brief Next free block.
-        };
-
         TAllocator allocator_;              ///< \brief Allocator used to manage the pooled memory. Deallocated blocks are sent to the free list and never deallocated by this allocator.
 
         Bytes max_size_;                    ///< \brief Maximum size for each allocated block.
 
-        FreeBlock* free_{ nullptr };        ///< \brief Next free block in the pool. nullptr if no previous block was freed.
+        TPolicy policy_;                    ///< \brief Policy functor used to allocate and recycle memory blocks.
     };
 
 }
@@ -126,7 +120,7 @@ namespace syntropy
     inline PoolAllocator<TAllocator, TPolicy>::PoolAllocator(PoolAllocator&& rhs) noexcept
         : allocator_(std::move(rhs.allocator_))
         , max_size_(std::move(rhs.max_size_))
-        , free_(std::move(rhs.free_))
+        , policy_(std::move(rhs.policy_))
     {
 
     }
@@ -143,18 +137,16 @@ namespace syntropy
     {
         if (size <= max_size_)
         {
-            if (free_)
+            if (auto block = policy_.Allocate(size))                                // Attempts to recycle a previously deallocated block.
             {
-                auto block = MemoryAddress(free_);
-
-                free_ = free_->next_;
-
-                return { block, block + max_size_ };                                // Recycle an existing free-block.
+                return block;
             }
+            else
+            {
+                auto block = allocator_.Allocate(max_size_, Alignment(size));       // Allocate from the underlying allocator.
 
-            auto block = allocator_.Allocate(max_size_, Alignment(size));           // Allocate from the underlying allocator.
-
-            return { block.Begin(), block.Begin() + size };                         // Returns a correctly-sized block.
+                return { block.Begin(), block.Begin() + size };                     // Returns a correctly-sized block.
+            }
         }
 
         return {};
@@ -163,13 +155,9 @@ namespace syntropy
     template <typename TAllocator, typename TPolicy>
     inline MemoryRange PoolAllocator<TAllocator, TPolicy>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (Bytes(alignment) <= max_size_)                                          // Power of 2 alignment guarantees that if a smaller alignment is required, the request should be fulfilled without any further alignment.
+        if (Bytes(alignment) <= max_size_)              // Allocations are aligned at block boundaries (and any smaller power-of-two alignments).
         {
-            auto block = Allocate(size);                                            // Default allocations are already aligned.
-
-            SYNTROPY_POSTCONDITION(block.Begin().IsAlignedTo(alignment));           // Right?
-
-            return block;
+            return Allocate(size);
         }
 
         return {};
@@ -178,12 +166,9 @@ namespace syntropy
     template <typename TAllocator, typename TPolicy>
     inline void PoolAllocator<TAllocator, TPolicy>::Deallocate(const MemoryRange& block)
     {
-        SYNTROPY_ASSERT(allocator_.Owns(block));                                        // Check whether the block was allocated by this allocator.
+        SYNTROPY_ASSERT(allocator_.Owns(block));
 
-        auto free_block = block.Begin().As<FreeBlock>();
-
-        free_block->next_ = free_;                                                      // Chain the free block to the free list.
-        free_ = free_block;
+        policy_.Deallocate(block);                  // Mark the block as ready for recycle.
     }
 
     template <typename TAllocator, typename TPolicy>
@@ -213,13 +198,13 @@ namespace syntropy
 
         swap(allocator_, rhs.allocator_);
         swap(max_size_, rhs.max_size_);
-        swap(free_, rhs.free_);
+        swap(policy_, rhs.policy_);
     }
 
 }
 
 template <typename TAllocator, typename TPolicy>
-void swap(syntropy::PoolAllocator<TAllocator, typename TPolicy>& lhs, syntropy::PoolAllocator<TAllocator, typename TPolicy>& rhs) noexcept
+void swap(syntropy::PoolAllocator<TAllocator, TPolicy>& lhs, syntropy::PoolAllocator<TAllocator, typename TPolicy>& rhs) noexcept
 {
     lhs.Swap(rhs);
 }
