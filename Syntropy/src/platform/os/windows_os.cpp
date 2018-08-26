@@ -546,7 +546,7 @@ namespace syntropy::platform
     {
         if (memory_range)
         {
-            return VirtualFree(memory_range.Begin(), 0, MEM_RELEASE) != 0;                                  // Will deallocate the entire previously-allocated range.
+            return VirtualFree(memory_range.Begin(), 0, MEM_RELEASE) != 0;                                          // Will deallocate the entire previously-allocated range.
         }
 
         return true;
@@ -556,14 +556,14 @@ namespace syntropy::platform
     {
         auto size = std::size_t(memory_range.GetSize());
 
-        return VirtualAlloc(memory_range.Begin(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;         // Will commit each page containing at least one byte in the range.
+        return VirtualAlloc(memory_range.Begin(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;                     // Will commit each page containing at least one byte in the range.
     }
 
     bool PlatformMemory::Decommit(const MemoryRange& memory_range)
     {
         auto size = std::size_t(memory_range.GetSize());
 
-        return VirtualFree(memory_range.Begin(), size, MEM_DECOMMIT) != 0;                              // Will decommit each page containing at least one byte in the range.
+        return VirtualFree(memory_range.Begin(), size, MEM_DECOMMIT) != 0;                                          // Will decommit each page containing at least one byte in the range.
     }
 
 }
