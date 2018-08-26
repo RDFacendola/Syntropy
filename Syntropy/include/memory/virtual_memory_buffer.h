@@ -47,6 +47,14 @@ namespace syntropy
         /// \brief Get the underlying virtual memory range.
         operator const VirtualMemoryRange&() noexcept;
 
+        /// \brief Get the underlying memory range.
+        operator const MemoryRange&() const noexcept;
+
+        /// \brief Check whether a memory range is contained entirely inside this buffer.
+        /// \param memory_range Memory range to check.
+        /// \return Returns true if memory_range is contained inside this virtual memory buffer, returns false otherwise.
+        bool Contains(const MemoryRange& memory_range) const noexcept;
+
         /// \brief Get the size of the buffer, in bytes.
         /// \return Returns the size of the buffer, in bytes.
         Bytes GetSize() const noexcept;
@@ -64,40 +72,50 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    VirtualMemoryBuffer::VirtualMemoryBuffer(Bytes size)
+    inline VirtualMemoryBuffer::VirtualMemoryBuffer(Bytes size)
         : virtual_memory_range_(VirtualMemory::Reserve(size))
     {
 
     }
 
-    VirtualMemoryBuffer::VirtualMemoryBuffer(VirtualMemoryBuffer&& rhs)
+    inline VirtualMemoryBuffer::VirtualMemoryBuffer(VirtualMemoryBuffer&& rhs)
         : virtual_memory_range_(rhs.virtual_memory_range_)
     {
         rhs.virtual_memory_range_ = VirtualMemoryRange();
     }
 
-    VirtualMemoryBuffer::~VirtualMemoryBuffer()
+    inline VirtualMemoryBuffer::~VirtualMemoryBuffer()
     {
         VirtualMemory::Release(virtual_memory_range_);
     }
 
-    VirtualMemoryBuffer& VirtualMemoryBuffer::operator=(VirtualMemoryBuffer rhs)
+    inline VirtualMemoryBuffer& VirtualMemoryBuffer::operator=(VirtualMemoryBuffer rhs) noexcept
     {
         rhs.Swap(*this);
         return *this;
     }
 
-    VirtualMemoryBuffer::operator const VirtualMemoryRange&() noexcept
+    inline VirtualMemoryBuffer::operator const VirtualMemoryRange&() noexcept
     {
         return virtual_memory_range_;
     }
 
-    Bytes VirtualMemoryBuffer::GetSize() const
+    inline VirtualMemoryBuffer::operator const MemoryRange&() const noexcept
+    {
+        return virtual_memory_range_;
+    }
+
+    inline bool VirtualMemoryBuffer::Contains(const MemoryRange& memory_range) const noexcept
+    {
+        return virtual_memory_range_.Contains(memory_range);
+    }
+
+    inline Bytes VirtualMemoryBuffer::GetSize() const noexcept
     {
         return virtual_memory_range_.GetSize() * VirtualMemory::GetPageSize();
     }
 
-    void VirtualMemoryBuffer::Swap(VirtualMemoryBuffer& rhs) noexcept
+    inline void VirtualMemoryBuffer::Swap(VirtualMemoryBuffer& rhs) noexcept
     {
         std::swap(virtual_memory_range_, rhs.virtual_memory_range_);
     }
