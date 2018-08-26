@@ -78,6 +78,11 @@ namespace syntropy
         /// \return Returns true if the provided memory range was allocated by this allocator, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
+        /// \brief Get the maximum allocation size that can be handled by this allocator.
+        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
+        /// \return Returns the maximum allocation size that can be handled by this allocator.
+        Bytes GetMaxAllocationSize() const noexcept;
+
         /// \brief Restore the allocator to a previous state.
         /// \param state State to restore the allocator to. Must match any value returned by SaveState() otherwise the behaviour is undefined.
         void RestoreState(MemoryAddress state);
@@ -176,6 +181,11 @@ namespace syntropy
     inline bool LinearAllocator::Owns(const MemoryRange& block) const noexcept
     {
         return block.Begin() >= memory_range_.Begin() && block.End() <= head_;
+    }
+
+    inline Bytes LinearAllocator::GetMaxAllocationSize() const noexcept
+    {
+        return Bytes(memory_range_.End() - head_);
     }
 
     inline void LinearAllocator::RestoreState(MemoryAddress head)

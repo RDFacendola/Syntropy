@@ -65,6 +65,10 @@ namespace syntropy
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
+        /// \brief Get the maximum allocation size that can be handled by this allocator.
+        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
+        /// \return Returns the maximum allocation size that can be handled by this allocator.
+        Bytes GetMaxAllocationSize() const noexcept;
     };
 
 }
@@ -98,5 +102,10 @@ namespace syntropy
     inline bool NullAllocator::Owns(const MemoryRange& block) const noexcept
     {
         return !block;                  // This allocator "owns" only empty ranges.
+    }
+
+    inline bool Bytes NullAllocator::GetMaxAllocationSize() const noexcept
+    {
+        return 0_Bytes;
     }
 }

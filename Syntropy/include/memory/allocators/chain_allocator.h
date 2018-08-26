@@ -103,6 +103,11 @@ namespace syntropy
         /// \return Returns true if the provided memory range was allocated by this allocator, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
+        /// \brief Get the maximum allocation size that can be handled by this allocator.
+        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
+        /// \return Returns the maximum allocation size that can be handled by this allocator.
+        Bytes GetMaxAllocationSize() const noexcept;
+
     private:
 
         THeadAllocator head_allocator_;                             ///< \brief Primary allocator the requests will be attempted on.
@@ -182,6 +187,14 @@ namespace syntropy
     inline bool ChainAllocator<THeadAllocator, TRestAllocators...>::Owns(const MemoryRange& block) const noexcept
     {
         return head_allocator_.Owns(block) || rest_allocators_.Owns(block);
+    }
+
+    template <typename THeadAllocator, typename... TRestAllocators>
+    inline Bytes ChainAllocator<THeadAllocator, TRestAllocators...>::GetMaxAllocationSize() const noexcept
+    {
+        using std::max;
+
+        return max(head_allocator_.GetMaxAllocationSize(), rest_allocators_.GetMaxAllocationSize());
     }
 
     template <typename... TAllocators>
