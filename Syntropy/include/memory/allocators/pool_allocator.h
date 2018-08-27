@@ -137,7 +137,7 @@ namespace syntropy
     {
         if (size <= max_size_)
         {
-            if (auto block = policy_.Allocate(size))                                // Attempts to recycle a previously deallocated block.
+            if (auto block = policy_.Recycle(size, max_size_))                      // Attempts to recycle a previously deallocated block.
             {
                 return block;
             }
@@ -168,7 +168,7 @@ namespace syntropy
     {
         SYNTROPY_ASSERT(allocator_.Owns(block));
 
-        policy_.Deallocate(block);                  // Mark the block as ready for recycle.
+        policy_.Trash(block);                                                       // Trash the block and make it available for future recycle.
     }
 
     template <typename TAllocator, typename TPolicy>
