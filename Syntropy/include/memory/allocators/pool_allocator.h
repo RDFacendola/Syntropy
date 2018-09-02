@@ -137,15 +137,13 @@ namespace syntropy
     {
         if (size <= max_size_)
         {
-            if (auto block = policy_.Recycle(size))                                 // Attempts to recycle a previously deallocated block.
+            if (auto block = policy_.Recycle(size))                                     // Attempts to recycle a previously deallocated block.
             {
                 return block;
             }
-            else
+            else if(auto block = allocator_.Allocate(max_size_, Alignment(size)))       // Allocate from the underlying allocator.
             {
-                auto block = allocator_.Allocate(max_size_, Alignment(size));       // Allocate from the underlying allocator.
-
-                return { block.Begin(), block.Begin() + size };                     // Returns a correctly-sized block.
+                return { block.Begin(), block.Begin() + size };
             }
         }
 
