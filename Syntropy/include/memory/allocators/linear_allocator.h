@@ -158,6 +158,8 @@ namespace syntropy
 
     inline void LinearAllocator::Deallocate(const MemoryRange& block) noexcept
     {
+        SYNTROPY_ASSERT(memory_range_.Contains(block));
+
         // Only the last block can be deallocated.
 
         if (block.End() == head_)

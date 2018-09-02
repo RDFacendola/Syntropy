@@ -88,8 +88,6 @@ namespace syntropy
 
         if (block.Begin() >= head_)
         {
-            auto page_alignment = VirtualMemory::GetPageAlignment();
-
             VirtualMemoryRange(block.Begin(), block.Begin() + page_size).Commit();                          // Kernel call.
 
             head_ = block.Begin() + page_size;

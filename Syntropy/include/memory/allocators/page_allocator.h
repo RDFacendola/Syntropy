@@ -164,6 +164,8 @@ namespace syntropy
     template <typename TPolicy>
     inline void PageAllocator<TPolicy>::Deallocate(const MemoryRange& block)
     {
+        SYNTROPY_ASSERT(allocator_.Owns(block));
+
         policy_.Decommit(block, GetMaxAllocationSize());
 
         allocator_.Deallocate(block);
