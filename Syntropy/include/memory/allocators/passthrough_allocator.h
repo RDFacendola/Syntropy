@@ -10,6 +10,7 @@
 #include "memory/alignment.h"
 #include "memory/memory_address.h"
 #include "memory/memory_range.h"
+#include "memory/allocators/null_allocator.h"
 
 namespace syntropy
 {
@@ -18,9 +19,10 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Basic allocator that relays allocation requests to another allocator.
+    /// If no allocator is bound, this allocator behaves like a syntropy::NullAllocator.
     /// \author Raffaele D. Facendola - September 2018
     template <typename TAllocator>
-    class PassthroughAllocator
+    class PassthroughAllocator : private NullAllocator
     {
     public:
 
@@ -101,7 +103,7 @@ namespace syntropy
             return allocator_->Allocate(size);
         }
 
-        return {};
+        return NullAllocator::Allocate(size);
     }
 
     template <typename TAllocator>
@@ -112,7 +114,7 @@ namespace syntropy
             return allocator_->Allocate(size, alignment);
         }
 
-        return {};
+        return NullAllocator::Allocate(size);
     }
 
     template <typename TAllocator>
@@ -123,7 +125,7 @@ namespace syntropy
             allocator_->Deallocate(block);
         }
 
-        SYNTROPY_ASSERT(!block);        // If no allocator is bound, this allocator can only "deallocate" empty blocks.
+        NullAllocator::Deallocate(block);
     }
 
     template <typename TAllocator>
@@ -134,18 +136,18 @@ namespace syntropy
             allocator_->Deallocate(block, alignment);
         }
 
-        SYNTROPY_ASSERT(!block);        // If no allocator is bound, this allocator can only "deallocate" empty blocks.
+        NullAllocator::Deallocate(block, alignment);
     }
 
     template <typename TAllocator>
     inline bool PassthroughAllocator<TAllocator>::Owns(const MemoryRange& block) const noexcept
     {
-        return allocator_ ? allocator_->Owns(block) : !block;
+        return allocator_ ? allocator_->Owns(block) : NullAllocator::Owns(block);
     }
 
     template <typename TAllocator>
     inline Bytes PassthroughAllocator<TAllocator>::GetMaxAllocationSize() const noexcept
     {
-        return allocator_ ? allocator_->GetMaxAllocationSize() : 0_Bytes;
+        return allocator_ ? allocator_->GetMaxAllocationSize() : NullAllocator::GetMaxAllocationSize();
     }
 }
