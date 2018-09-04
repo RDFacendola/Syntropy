@@ -20,7 +20,7 @@ namespace syntropy
     /* DEFAULT POOL ALLOCATOR POLICY                                        */
     /************************************************************************/
 
-    /// \brief Represents a syntropy::PoolAllocator policy that is used to recycle allocated memory blocks.
+    /// \brief Represents a syntropy::PoolAllocator policy that is used to recycle allocated memory blocks intrusively.
     /// This policy uses the freed block itself intrusively in order to store a linked-list of free blocks ready to be recycled again.
     /// \author Raffaele D. Facendola - August 2018
     struct DefaultPoolAllocatorPolicy
@@ -51,7 +51,7 @@ namespace syntropy
     /* NON-INTRUSIVE POOL ALLOCATOR POLICY                                  */
     /************************************************************************/
 
-    /// \brief Represents a syntropy::PoolAllocator policy that is used to recycle allocated memory blocks.
+    /// \brief Represents a syntropy::PoolAllocator policy that is used to recycle allocated memory blocks non-intrusively.
     /// This policy uses some of the deallocated memory blocks to store the linked-list of other free blocks without accessing them directly.
     /// The policy is non-intrusive and should be used when storing data inside a free block is not an option (for example when virtual memory gets decommitted).
     /// \author Raffaele D. Facendola - August 2018
