@@ -104,7 +104,7 @@ namespace syntropy
         return !block;                  // This allocator "owns" only empty ranges.
     }
 
-    inline bool Bytes NullAllocator::GetMaxAllocationSize() const noexcept
+    inline Bytes NullAllocator::GetMaxAllocationSize() const noexcept
     {
         return 0_Bytes;
     }
