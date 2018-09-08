@@ -115,7 +115,7 @@ namespace syntropy
             return block;
         }
 
-        return {}
+        return {};
     }
 
     template <typename TAllocator>
@@ -128,7 +128,7 @@ namespace syntropy
             return block;
         }
 
-        return {}
+        return {};
     }
 
     template <typename TAllocator>
