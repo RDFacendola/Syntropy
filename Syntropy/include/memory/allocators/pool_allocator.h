@@ -34,8 +34,8 @@ namespace syntropy
     public:
 
         /// \brief Create a new allocator.
-        /// \param Arguments used to construct the underlying allocator.
         /// \param max_size Maximum size for each allocation. Allocated blocks are guaranteed to be aligned to this value.
+        /// \param Arguments used to construct the underlying allocator.
         template <typename... TArguments>
         PoolAllocator(Bytes max_size, TArguments&&... arguments) noexcept;
 
