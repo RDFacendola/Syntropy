@@ -122,6 +122,7 @@
     <ClInclude Include="include\memory\allocators\page_allocator_policy.h" />
     <ClInclude Include="include\memory\allocators\pool_allocator_policy.h" />
     <ClInclude Include="include\memory\allocators\passthrough_allocator.h" />
+    <ClInclude Include="include\memory\allocators\counting_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\reflection\class.cpp">

@@ -23,6 +23,7 @@
     <ClInclude Include="include\containers\context.h" />
     <ClInclude Include="include\contexts.h" />
     <ClInclude Include="include\memory\allocators\chain_allocator.h" />
+    <ClInclude Include="include\memory\allocators\counting_allocator.h" />
     <ClInclude Include="include\memory\allocators\null_allocator.h" />
     <ClInclude Include="include\memory\allocators\page_allocator.h" />
     <ClInclude Include="include\memory\allocators\page_allocator_policy.h" />
