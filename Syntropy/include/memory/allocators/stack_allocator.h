@@ -22,7 +22,7 @@ namespace syntropy
     /// \brief Allocator used to allocate memory over a contiguous range of memory addresses on the stack.
     /// This allocator behaves identically as syntropy::LinearAllocator except it uses stack storage.
     /// \author Raffaele D. Facendola - August 2018
-    template <std::size_t kSize, std::size_t kAlignment>
+    template <std::size_t kSize, std::size_t kAlignment = alignof(void*)>
     class StackAllocator : public LinearAllocator
     {
     public:
