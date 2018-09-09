@@ -62,7 +62,7 @@ namespace syntropy
 
     private:
 
-        std::size_t alignment_ = alignof(void*);        ///< \brief Alignment, in bytes.
+        std::size_t alignment_ = 1u;         ///< \brief Alignment, in bytes.
 
     };
 
