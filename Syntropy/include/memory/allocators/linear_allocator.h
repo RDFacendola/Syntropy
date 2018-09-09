@@ -125,8 +125,7 @@ namespace syntropy
         : memory_range_(rhs.memory_range_)
         , head_(rhs.head_)
     {
-        memory_range_ = MemoryRange();
-        head_ = memory_range_.Begin();
+
     }
 
     inline LinearAllocator& LinearAllocator::operator=(LinearAllocator rhs) noexcept
