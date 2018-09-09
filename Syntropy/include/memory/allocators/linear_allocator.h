@@ -145,7 +145,7 @@ namespace syntropy
 
         auto head = block + size;
 
-        if (head < memory_range_.End())
+        if (head <= memory_range_.End())
         {
             head_ = head;
 
