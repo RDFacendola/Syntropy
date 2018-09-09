@@ -122,6 +122,8 @@ namespace syntropy
 
         Bytes cascade_capacity_;                                ///< \brief Capacity of each cascade. The capacity is shared among the space used to perform allocations and the actual allocator state.
 
+        Alignment cascade_alignment_;                           ///< \brief Alignment of each cascade. Used to quickly determine which cascade a block belongs to.
+
         Cascade* cascade_{ nullptr };                           ///< \brief Available cascade list.
 
         TAllocator allocator_;                                  ///< \brief Underlying allocator used to allocate cascades.
@@ -145,15 +147,17 @@ namespace syntropy
     template <typename TCascadeConstructor, typename... TArguments>
     inline CascadingAllocator<TAllocator, TCascade>::CascadingAllocator(Bytes cascade_capacity, TCascadeConstructor&& cascade_constructor, TArguments&&... arguments)
         : cascade_capacity_(cascade_capacity)
+        , cascade_alignment_(Alignment(Math::NextPow2(cascade_capacity)))
         , allocator_(std::forward<TArguments>(arguments)...)
         , cascade_constructor_(std::forward<TCascadeConstructor>(cascade_constructor))
     {
-
+        
     }
 
     template <typename TAllocator, typename TCascade>
     inline CascadingAllocator<TAllocator, TCascade>::CascadingAllocator(CascadingAllocator&& rhs) noexcept
         : cascade_capacity_(std::move(rhs.cascade_capacity_))
+        , cascade_alignment_(std::move(rhs.cascade_alignment_))
         , cascade_(std::move(rhs.cascade_))
         , allocator_(std::move(rhs.allocator_))
         , cascade_constructor_(std::move(rhs.cascade_constructor_))
@@ -204,6 +208,7 @@ namespace syntropy
         using std::swap;
 
         swap(cascade_capacity_, rhs.cascade_capacity_);
+        swap(cascade_alignment_, rhs.cascade_alignment_);
         swap(cascade_, rhs.cascade_);
         swap(allocator_, rhs.allocator_);
         swap(cascade_constructor_, rhs.cascade_constructor_);
@@ -249,7 +254,7 @@ namespace syntropy
     {
         SYNTROPY_ASSERT(allocator_.Owns(block));
 
-        auto cascade = block.Begin().GetAlignedDown(Alignment(cascade_capacity_)).As<Cascade>();            // Cascades are required to be aligned to their own size.
+        auto cascade = block.Begin().GetAlignedDown(cascade_alignment_).As<Cascade>();
 
         deallocate(cascade->allocator_);                                                                    // Deallocate the block on the proper cascade.
 
@@ -259,7 +264,7 @@ namespace syntropy
 
             auto cascade_range = MemoryRange({ cascade, MemoryAddress(cascade) + cascade_capacity_ });
 
-            allocator_.Deallocate(cascade_range, Alignment(cascade_capacity_));
+            allocator_.Deallocate(cascade_range, cascade_alignment_);
         }
         else if (!IsLinked(*cascade))                                                                       // If the cascade wasn't already linked to the free list, link it now.
         {
@@ -270,20 +275,20 @@ namespace syntropy
     template <typename TAllocator, typename TCascade>
     typename CascadingAllocator<TAllocator, TCascade>::Cascade* CascadingAllocator<TAllocator, TCascade>::CreateCascade() noexcept
     {
-        if (auto block = allocator_.Allocate(cascade_capacity_, Alignment(cascade_capacity_)))              // Cascades are required to be aligned to their own capacity.
+        if (auto block = allocator_.Allocate(cascade_capacity_, cascade_alignment_))
         {
             auto cascade = block.Begin().As<Cascade>();
 
-            auto cascade_range = MemoryRange(cascade + 1, block.End());                                     // The cascade range is adjacent to the cascade data.
+            auto cascade_range = MemoryRange(cascade + 1, block.End());                             // The cascade range is adjacent to the cascade data.
 
-            new (cascade) Cascade(cascade_constructor_(cascade_range));                                     // Construct the cascade in-place.
+            new (cascade) Cascade(cascade_constructor_(cascade_range));                             // Construct the cascade in-place.
 
             LinkCascade(*cascade);
 
             return cascade;
         }
 
-        return nullptr;                                                                                     // The underlying allocator could not handle the request.
+        return nullptr;                                                                             // The underlying allocator could not handle the request.
     }
 
     template <typename TAllocator, typename TCascade>
