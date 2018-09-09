@@ -141,7 +141,7 @@ namespace syntropy
             {
                 return block;
             }
-            else if(auto block = allocator_.Allocate(max_size_, Alignment(size)))       // Allocate from the underlying allocator.
+            else if(block = allocator_.Allocate(max_size_, Alignment(size)))            // Allocate from the underlying allocator.
             {
                 return { block.Begin(), block.Begin() + size };
             }
