@@ -116,7 +116,7 @@ namespace syntropy
     template <typename TPolicy>
     inline PageAllocator<TPolicy>::PageAllocator(Bytes capacity, Bytes page_size) noexcept
         : memory_buffer_(capacity)
-        , allocator_(Math::Ceil(page_size, VirtualMemory::GetPageSize()), memory_buffer_)
+        , allocator_(Math::Ceil(page_size, VirtualMemory::GetPageSize()), VirtualMemory::GetPageAlignment(), memory_buffer_)
     {
 
     }
@@ -153,9 +153,11 @@ namespace syntropy
     template <typename TPolicy>
     inline MemoryRange PageAllocator<TPolicy>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (Bytes(alignment) <= VirtualMemory::GetPageAlignment())          // Allocations are aligned at page boundaries (and any smaller power-of-two alignments).
+        if (auto block = allocator_.Allocate(size, alignment))
         {
-            return Allocate(size);
+            policy_.Commit(block, GetMaxAllocationSize());
+
+            return block;
         }
 
         return {};
@@ -174,7 +176,7 @@ namespace syntropy
     template <typename TPolicy>
     inline void PageAllocator<TPolicy>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
-        SYNTROPY_ASSERT(Bytes(alignment) <= VirtualMemory::GetPageAlignment());
+        SYNTROPY_ASSERT(alignment <= VirtualMemory::GetPageAlignment());
 
         Deallocate(block);
     }

@@ -23,8 +23,7 @@ namespace syntropy
     /* POOL ALLOCATOR                                                       */
     /************************************************************************/
 
-    /// \brief Allocator used to allocate fixed-size memory blocks. Deallocated blocks are kept around and recycled when possible.
-    /// Allocated blocks are guaranteed to be aligned to their own size.
+    /// \brief Allocator used to allocate fixed-sized memory blocks. Deallocated blocks are kept around and recycled when possible.
     /// \tparam TAllocator Type of the underlying allocator.
     /// \tparam TPolicy Policy to be used when freeing and recycling previous allocations.
     /// \author Raffaele D. Facendola - August 2018
@@ -34,10 +33,11 @@ namespace syntropy
     public:
 
         /// \brief Create a new allocator.
-        /// \param max_size Maximum size for each allocation. Allocated blocks are guaranteed to be aligned to this value.
+        /// \param max_size Maximum size for each allocation.
+        /// \param max_alignment Maximum alignment for each allocation.
         /// \param Arguments used to construct the underlying allocator.
         template <typename... TArguments>
-        PoolAllocator(Bytes max_size, TArguments&&... arguments) noexcept;
+        PoolAllocator(Bytes max_size, Alignment max_alignment, TArguments&&... arguments) noexcept;
 
         /// \brief No copy constructor.
         PoolAllocator(const PoolAllocator&) = delete;
@@ -92,6 +92,8 @@ namespace syntropy
 
         Bytes max_size_;                    ///< \brief Maximum size for each allocated block.
 
+        Alignment max_alignment_;           ///< \brief Maximum alignment for each allocated block.
+
         TPolicy policy_;                    ///< \brief Policy functor used to allocate and recycle memory blocks.
     };
 
@@ -109,9 +111,10 @@ namespace syntropy
 
     template <typename TAllocator, typename TPolicy>
     template <typename... TArguments>
-    inline PoolAllocator<TAllocator, TPolicy>::PoolAllocator(Bytes max_size, TArguments&&... arguments) noexcept
+    inline PoolAllocator<TAllocator, TPolicy>::PoolAllocator(Bytes max_size, Alignment max_alignment, TArguments&&... arguments) noexcept
         : allocator_(std::forward<TArguments>(arguments)...)
         , max_size_(max_size)
+        , max_alignment_(max_alignment)
     {
 
     }
@@ -120,6 +123,7 @@ namespace syntropy
     inline PoolAllocator<TAllocator, TPolicy>::PoolAllocator(PoolAllocator&& rhs) noexcept
         : allocator_(std::move(rhs.allocator_))
         , max_size_(std::move(rhs.max_size_))
+        , max_alignment_(std::move(rhs.max_alignment_))
         , policy_(std::move(rhs.policy_))
     {
 
@@ -137,11 +141,11 @@ namespace syntropy
     {
         if (size <= max_size_)
         {
-            if (auto block = policy_.Recycle(size))                                     // Attempts to recycle a previously deallocated block.
+            if (auto block = policy_.Recycle(size))                                 // Attempts to recycle a previously deallocated block.
             {
                 return block;
             }
-            else if(block = allocator_.Allocate(max_size_, Alignment(size)))            // Allocate from the underlying allocator.
+            else if(block = allocator_.Allocate(max_size_, max_alignment_))         // Allocate from the underlying allocator.
             {
                 return { block.Begin(), block.Begin() + size };
             }
@@ -153,7 +157,7 @@ namespace syntropy
     template <typename TAllocator, typename TPolicy>
     inline MemoryRange PoolAllocator<TAllocator, TPolicy>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (Bytes(alignment) <= max_size_)              // Allocations are aligned at block boundaries (and any smaller power-of-two alignments).
+        if (alignment <= max_alignment_)
         {
             return Allocate(size);
         }
@@ -166,13 +170,13 @@ namespace syntropy
     {
         SYNTROPY_ASSERT(allocator_.Owns(block));
 
-        policy_.Trash(block, max_size_);                                            // Trash the block and make it available for future recycle.
+        policy_.Trash(block, max_size_);                                                // Trash the block and make it available for future recycle.
     }
 
     template <typename TAllocator, typename TPolicy>
     inline void PoolAllocator<TAllocator, TPolicy>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
-        SYNTROPY_ASSERT(Bytes(alignment) <= max_size_);
+        SYNTROPY_ASSERT(alignment <= max_alignment_);
 
         Deallocate(block);
     }
@@ -196,6 +200,7 @@ namespace syntropy
 
         swap(allocator_, rhs.allocator_);
         swap(max_size_, rhs.max_size_);
+        swap(max_alignment_, rhs.max_alignment_);
         swap(policy_, rhs.policy_);
     }
 
