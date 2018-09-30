@@ -10,3 +10,4 @@ bin/UnitTest_Release.exe
 bin/UnitTest_Release.ipdb
 bin/UnitTest_Release.iobj
 bin/UnitTest_Release.pdb
+*.user
