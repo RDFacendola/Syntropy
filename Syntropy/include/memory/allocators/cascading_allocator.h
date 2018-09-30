@@ -33,7 +33,7 @@ namespace syntropy
 
         /// \brief Create a new allocator.
         /// \param cascade_capacity Capacity of each cascade, in bytes.
-        /// \param cascade_constructor Functor used to construct a cascade and underlying memory range. Must be of the form: MemoryRange -> TCascade.
+        /// \param cascade_constructor Functor used to construct a cascade. Must be of the form: MemoryRange -> TCascade.
         /// \param arguments Arguments to pass to the underlying allocator.
         template <typename TCascadeConstructor, typename... TArguments>
         CascadingAllocator(Bytes cascade_capacity, TCascadeConstructor&& cascade_constructor, TArguments&&... arguments);
@@ -45,6 +45,9 @@ namespace syntropy
         CascadingAllocator(CascadingAllocator&& rhs) noexcept;
 
         /// \brief Default destructor.
+        /// Cascades are returned to the underlying allocator when the allocation count reaches 0.
+        /// When this allocator goes out of scope it is expected that each block allocated via this allocator was already deallocated
+        /// by the user. No cascade is expected to be alive when this happens.
         ~CascadingAllocator() = default;
 
         /// \brief Unified assignment operator.
@@ -98,9 +101,15 @@ namespace syntropy
             CountingAllocator<TCascade> allocator_;         ///< \brief Cascade allocator.
         };
 
+        /// \brief Perform an allocation on the first available cascade. If no such cascade exists spawn a new one.
+        /// \param allocate Allocation functor.
+        /// \return Returns the allocated memory block. If the allocation could not be performed, returns an empty range.
         template <typename TAllocation>
         MemoryRange AllocateOnCascade(TAllocation&& allocate) noexcept;
 
+        /// \brief Perform a deallocation on the proper cascade.
+        /// \param block Block to deallocate.
+        /// \param deallocate Deallocation functor.
         template <typename TDeallocation>
         void DeallocateOnCascade(const MemoryRange& block, TDeallocation&& deallocate) noexcept;
 
@@ -262,6 +271,8 @@ namespace syntropy
         {
             UnlinkCascade(*cascade);
 
+            cascade->~Cascade();                                                                            // Destroy the cascade.
+
             auto cascade_range = MemoryRange({ cascade, MemoryAddress(cascade) + cascade_capacity_ });
 
             allocator_.Deallocate(cascade_range, cascade_alignment_);
@@ -298,7 +309,7 @@ namespace syntropy
     }
 
     template <typename TAllocator, typename TCascade>
-    void CascadingAllocator<TAllocator, TCascade>::LinkCascade(Cascade& cascade) noexcept
+    inline void CascadingAllocator<TAllocator, TCascade>::LinkCascade(Cascade& cascade) noexcept
     {
         cascade.next_ = cascade_;
 
@@ -311,7 +322,7 @@ namespace syntropy
     }
 
     template <typename TAllocator, typename TCascade>
-    void CascadingAllocator<TAllocator, TCascade>::UnlinkCascade(Cascade& cascade) noexcept
+    inline void CascadingAllocator<TAllocator, TCascade>::UnlinkCascade(Cascade& cascade) noexcept
     {
         if (cascade.next_)
         {
@@ -331,7 +342,7 @@ namespace syntropy
     }
 
     template <typename TAllocator, typename TCascade>
-    CascadingAllocator<TAllocator, TCascade>::Cascade::Cascade(TCascade&& allocator)
+    inline CascadingAllocator<TAllocator, TCascade>::Cascade::Cascade(TCascade&& allocator)
         : allocator_(std::move(allocator))
     {
 
