@@ -241,7 +241,7 @@ namespace syntropy
     {
         if (cluster_index < order_)
         {
-            return clusters_.Begin().As<TClusterAllocator>()[cluster_index];
+            return &(clusters_.Begin().As<TClusterAllocator>()[cluster_index]);
         }
 
         return nullptr;

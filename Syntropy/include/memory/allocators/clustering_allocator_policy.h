@@ -122,7 +122,7 @@ namespace syntropy
     /* EXPONENTIAL CLUSTERING ALLOCATOR POLICY                              */
     /************************************************************************/
 
-    inline ExponentialClusteringAllocatorPolicy::ExponentialClusteringAllocatorPolicy(Bytes base_size = 0_Bytes, Bytes class_size = 8_Bytes)
+    inline ExponentialClusteringAllocatorPolicy::ExponentialClusteringAllocatorPolicy(Bytes base_size, Bytes class_size)
         : base_size_(base_size)
         , class_size_(class_size)
     {
