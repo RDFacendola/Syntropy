@@ -124,8 +124,10 @@ namespace syntropy
         {
             allocator_->Deallocate(block);
         }
-
-        NullAllocator::Deallocate(block);
+        else
+        {
+            NullAllocator::Deallocate(block);
+        }
     }
 
     template <typename TAllocator>
@@ -135,8 +137,10 @@ namespace syntropy
         {
             allocator_->Deallocate(block, alignment);
         }
-
-        NullAllocator::Deallocate(block, alignment);
+        else
+        {
+            NullAllocator::Deallocate(block, alignment);
+        }
     }
 
     template <typename TAllocator>
