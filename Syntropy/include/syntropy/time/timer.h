@@ -14,10 +14,12 @@ namespace syntropy
     /// \tparam TDuration Time interval type.
     /// \tparam TClock Underlying clock type.
     /// \author Raffaele D. Facendola - November 2017.
-    template <typename TDuration, typename TClock>
+    template <typename TDuration = std::chrono::milliseconds>
     class Timer
     {
     public:
+
+        using TClock = std::chrono::steady_clock;
 
         /// \brief Create a new timer.
         /// \param start Whether the timer automatically starts after being created.
@@ -92,9 +94,5 @@ namespace syntropy
         };
 
     };
-
-    /// \brief High resolution timer definition.
-    template <typename TDuration = std::chrono::high_resolution_clock::duration>
-    using HighResolutionTimer = Timer<TDuration, std::chrono::high_resolution_clock>;
 
 }
