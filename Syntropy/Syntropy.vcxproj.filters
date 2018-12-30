@@ -1,210 +1,130 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="include\type_traits.h">
-      <Filter>type_traits</Filter>
-    </ClInclude>
-    <ClInclude Include="include\reflection\class.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="include\reflection\property.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="include\reflection\reflection.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="include\reflection\type.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="include\syntropy.h" />
-    <ClInclude Include="include\containers\hashed_string.h">
-      <Filter>hash</Filter>
-    </ClInclude>
-    <ClInclude Include="include\diagnostics\log.h" />
-    <ClInclude Include="include\diagnostics\diagnostics.h" />
-    <ClInclude Include="include\macro.h" />
-    <ClInclude Include="include\platform\compiler\msvc.h" />
-    <ClInclude Include="include\platform\os\windows_os.h" />
-    <ClInclude Include="include\platform\system.h" />
-    <ClInclude Include="include\platform\builtin.h" />
-    <ClInclude Include="include\math\math.h" />
-    <ClInclude Include="include\containers\range.h" />
-    <ClInclude Include="include\reflection\any.h" />
-    <ClInclude Include="include\diagnostics\log_channels.h" />
-    <ClInclude Include="include\platform\os\os.h" />
-    <ClInclude Include="include\platform\compiler\compiler.h" />
-    <ClInclude Include="include\reflection\types\core_types.h" />
-    <ClInclude Include="include\reflection\types\stl_types.h" />
-    <ClInclude Include="include\reflection\types\fundamental_types.h">
-      <Filter>reflection</Filter>
-    </ClInclude>
-    <ClInclude Include="include\reflection\interfaces\property_interfaces.h" />
-    <ClInclude Include="include\reflection\interfaces\class_interfaces.h" />
-    <ClInclude Include="include\platform\macros.h" />
-    <ClInclude Include="include\diagnostics\assert.h" />
-    <ClInclude Include="include\serialization\json\deserializers\core_deserializers.h" />
-    <ClInclude Include="include\serialization\json\deserializers\stl_deserializers.h" />
-    <ClInclude Include="include\diagnostics\diagnostics_meta.h" />
-    <ClInclude Include="include\patterns\scope_guard.h" />
-    <ClInclude Include="include\patterns\observable.h" />
-    <ClInclude Include="include\time\calendar.h" />
-    <ClInclude Include="include\time\timer.h" />
-    <ClInclude Include="include\patterns\algorithm.h" />
-    <ClInclude Include="include\patterns\utility.h" />
-    <ClInclude Include="include\math\random.h" />
-    <ClInclude Include="include\math\hash.h">
-      <Filter>hash</Filter>
-    </ClInclude>
-    <ClInclude Include="include\platform\threading.h" />
-    <ClInclude Include="include\application\command_line.h" />
-    <ClInclude Include="include\containers\context.h" />
-    <ClInclude Include="include\unit_test\test_suite.h" />
-    <ClInclude Include="include\unit_test\test_runner.h" />
-    <ClInclude Include="include\unit_test\test_case.h" />
-    <ClInclude Include="include\unit_test\test_fixture.h" />
-    <ClInclude Include="include\unit_test\test.h" />
-    <ClInclude Include="include\math\vector.h" />
-    <ClInclude Include="include\serialization\json\deserializers\fundamental_deserializers.h" />
-    <ClInclude Include="include\serialization\json\serializers\stl_serializers.h" />
-    <ClInclude Include="include\serialization\json\deserialization.h" />
-    <ClInclude Include="include\serialization\json\json.h" />
-    <ClInclude Include="include\patterns\multi_interface.h" />
-    <ClInclude Include="include\contexts.h" />
-    <ClInclude Include="include\serialization\json\serialization.h" />
-    <ClInclude Include="include\serialization\json\serializers\core_serializers.h" />
-    <ClInclude Include="include\serialization\json\serializers\fundamental_serializers.h" />
-    <ClInclude Include="include\memory\alignment.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\bytes.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\virtual_memory_range.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\virtual_memory_page.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\virtual_memory_buffer.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\virtual_memory.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\memory_address.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\memory_manager.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\memory_meta.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\memory_range.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\allocators\allocator.h">
-      <Filter>allocators</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\allocators\linear_allocator.h">
-      <Filter>allocators</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\allocators\scope_allocator.h">
-      <Filter>allocators</Filter>
-    </ClInclude>
-    <ClInclude Include="include\memory\allocators\pool_allocator.h" />
-    <ClInclude Include="include\memory\allocators\null_allocator.h" />
-    <ClInclude Include="include\memory\allocators\standard_allocator.h" />
-    <ClInclude Include="include\memory\allocators\chain_allocator.h" />
-    <ClInclude Include="include\memory\memory_buffer.h" />
-    <ClInclude Include="include\memory\allocators\stack_allocator.h" />
-    <ClInclude Include="include\memory\allocators\page_allocator.h" />
-    <ClInclude Include="include\memory\allocators\page_allocator_policy.h" />
-    <ClInclude Include="include\memory\allocators\pool_allocator_policy.h" />
-    <ClInclude Include="include\memory\allocators\cascading_allocator.h" />
-    <ClInclude Include="include\memory\allocators\passthrough_allocator.h" />
-    <ClInclude Include="include\memory\allocators\counting_allocator.h" />
-    <ClInclude Include="include\memory\allocators\clustering_allocator.h" />
-    <ClInclude Include="include\memory\allocators\clustering_allocator_policy.h" />
+    <ClInclude Include="include\syntropy\application\command_line.h" />
+    <ClInclude Include="include\syntropy\containers\context.h" />
+    <ClInclude Include="include\syntropy\containers\hashed_string.h" />
+    <ClInclude Include="include\syntropy\containers\range.h" />
+    <ClInclude Include="include\syntropy\diagnostics\assert.h" />
+    <ClInclude Include="include\syntropy\diagnostics\diagnostics.h" />
+    <ClInclude Include="include\syntropy\diagnostics\diagnostics_meta.h" />
+    <ClInclude Include="include\syntropy\diagnostics\log.h" />
+    <ClInclude Include="include\syntropy\diagnostics\log_channels.h" />
+    <ClInclude Include="include\syntropy\math\hash.h" />
+    <ClInclude Include="include\syntropy\math\math.h" />
+    <ClInclude Include="include\syntropy\math\random.h" />
+    <ClInclude Include="include\syntropy\math\vector.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\cascading_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\chain_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\clustering_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\clustering_allocator_policy.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\counting_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\linear_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\null_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\page_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\page_allocator_policy.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\passthrough_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\pool_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\pool_allocator_policy.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\scope_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\stack_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\standard_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\alignment.h" />
+    <ClInclude Include="include\syntropy\memory\bytes.h" />
+    <ClInclude Include="include\syntropy\memory\memory_address.h" />
+    <ClInclude Include="include\syntropy\memory\memory_buffer.h" />
+    <ClInclude Include="include\syntropy\memory\memory_manager.h" />
+    <ClInclude Include="include\syntropy\memory\memory_meta.h" />
+    <ClInclude Include="include\syntropy\memory\memory_range.h" />
+    <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
+    <ClInclude Include="include\syntropy\memory\virtual_memory_buffer.h" />
+    <ClInclude Include="include\syntropy\memory\virtual_memory_page.h" />
+    <ClInclude Include="include\syntropy\memory\virtual_memory_range.h" />
+    <ClInclude Include="include\syntropy\patterns\algorithm.h" />
+    <ClInclude Include="include\syntropy\patterns\multi_interface.h" />
+    <ClInclude Include="include\syntropy\patterns\observable.h" />
+    <ClInclude Include="include\syntropy\patterns\scope_guard.h" />
+    <ClInclude Include="include\syntropy\patterns\utility.h" />
+    <ClInclude Include="include\syntropy\platform\compiler\compiler.h" />
+    <ClInclude Include="include\syntropy\platform\compiler\msvc.h" />
+    <ClInclude Include="include\syntropy\platform\os\os.h" />
+    <ClInclude Include="include\syntropy\platform\os\windows_os.h" />
+    <ClInclude Include="include\syntropy\platform\builtin.h" />
+    <ClInclude Include="include\syntropy\platform\macros.h" />
+    <ClInclude Include="include\syntropy\platform\system.h" />
+    <ClInclude Include="include\syntropy\platform\threading.h" />
+    <ClInclude Include="include\syntropy\reflection\interfaces\class_interfaces.h" />
+    <ClInclude Include="include\syntropy\reflection\interfaces\property_interfaces.h" />
+    <ClInclude Include="include\syntropy\reflection\types\core_types.h" />
+    <ClInclude Include="include\syntropy\reflection\types\fundamental_types.h" />
+    <ClInclude Include="include\syntropy\reflection\types\stl_types.h" />
+    <ClInclude Include="include\syntropy\reflection\any.h" />
+    <ClInclude Include="include\syntropy\reflection\class.h" />
+    <ClInclude Include="include\syntropy\reflection\property.h" />
+    <ClInclude Include="include\syntropy\reflection\reflection.h" />
+    <ClInclude Include="include\syntropy\reflection\type.h" />
+    <ClInclude Include="include\syntropy\serialization\json\deserializers\core_deserializers.h" />
+    <ClInclude Include="include\syntropy\serialization\json\deserializers\fundamental_deserializers.h" />
+    <ClInclude Include="include\syntropy\serialization\json\deserializers\stl_deserializers.h" />
+    <ClInclude Include="include\syntropy\serialization\json\serializers\core_serializers.h" />
+    <ClInclude Include="include\syntropy\serialization\json\serializers\fundamental_serializers.h" />
+    <ClInclude Include="include\syntropy\serialization\json\serializers\stl_serializers.h" />
+    <ClInclude Include="include\syntropy\serialization\json\deserialization.h" />
+    <ClInclude Include="include\syntropy\serialization\json\json.h" />
+    <ClInclude Include="include\syntropy\serialization\json\serialization.h" />
+    <ClInclude Include="include\syntropy\time\calendar.h" />
+    <ClInclude Include="include\syntropy\time\timer.h" />
+    <ClInclude Include="include\syntropy\unit_test\test.h" />
+    <ClInclude Include="include\syntropy\unit_test\test_case.h" />
+    <ClInclude Include="include\syntropy\unit_test\test_fixture.h" />
+    <ClInclude Include="include\syntropy\unit_test\test_runner.h" />
+    <ClInclude Include="include\syntropy\unit_test\test_suite.h" />
+    <ClInclude Include="include\syntropy\contexts.h" />
+    <ClInclude Include="include\syntropy\macro.h" />
+    <ClInclude Include="include\syntropy\syntropy.h" />
+    <ClInclude Include="include\syntropy\type_traits.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\reflection\class.cpp">
-      <Filter>reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\reflection\reflection.cpp">
-      <Filter>reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\reflection\type.cpp">
-      <Filter>reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\reflection\property.cpp">
-      <Filter>reflection</Filter>
-    </ClCompile>
-    <ClCompile Include="src\diagnostics\log.cpp" />
-    <ClCompile Include="src\diagnostics\diagnostics.cpp" />
-    <ClCompile Include="src\platform\os\windows_os.cpp" />
-    <ClCompile Include="src\platform\system.cpp" />
-    <ClCompile Include="src\platform\builtin.cpp" />
-    <ClCompile Include="src\platform\compiler\msvc.cpp" />
-    <ClCompile Include="src\math\math.cpp" />
-    <ClCompile Include="src\reflection\any.cpp" />
-    <ClCompile Include="src\diagnostics\log_channels.cpp" />
-    <ClCompile Include="src\reflection\interfaces\class_interfaces.cpp" />
-    <ClCompile Include="src\time\calendar.cpp" />
-    <ClCompile Include="src\math\random.cpp" />
-    <ClCompile Include="src\math\hash.cpp" />
-    <ClCompile Include="src\platform\threading.cpp" />
-    <ClCompile Include="src\application\command_line.cpp" />
-    <ClCompile Include="src\containers\context.cpp" />
-    <ClCompile Include="src\unit_test\test_runner.cpp" />
-    <ClCompile Include="src\unit_test\test_suite.cpp" />
-    <ClCompile Include="src\unit_test\test_case.cpp" />
-    <ClCompile Include="src\unit_test\test_fixture.cpp" />
-    <ClCompile Include="src\unit_test\test.cpp" />
-    <ClCompile Include="src\serialization\json\deserialization.cpp" />
-    <ClCompile Include="src\serialization\json\serialization.cpp" />
-    <ClCompile Include="src\serialization\json\json.cpp" />
-    <ClCompile Include="src\reflection\interfaces\property_interfaces.cpp" />
-    <ClCompile Include="src\reflection\types\core_types.cpp" />
-    <ClCompile Include="src\reflection\types\fundamental_types.cpp" />
-    <ClCompile Include="src\reflection\types\stl_types.cpp" />
-    <ClCompile Include="src\diagnostics\diagnostics_meta.cpp" />
-    <ClCompile Include="src\contexts.cpp" />
-    <ClCompile Include="src\memory\virtual_memory.cpp">
-      <Filter>memory</Filter>
-    </ClCompile>
-    <ClCompile Include="src\memory\memory_manager.cpp">
-      <Filter>memory</Filter>
-    </ClCompile>
-    <ClCompile Include="src\memory\memory_meta.cpp">
-      <Filter>memory</Filter>
-    </ClCompile>
-    <ClCompile Include="src\memory\allocator.cpp">
-      <Filter>allocators</Filter>
-    </ClCompile>
-    <ClCompile Include="src\memory\memory_buffer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="reflection">
-      <UniqueIdentifier>{98520dcf-672c-4315-87f3-fa14c6797060}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="functional">
-      <UniqueIdentifier>{3c9988c6-6437-4734-9652-a433d30469dd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="hash">
-      <UniqueIdentifier>{19d60c50-b69b-472c-8a0d-91be7c701ddc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="type_traits">
-      <UniqueIdentifier>{d82d2e88-346e-4399-ab6f-52a086fe0456}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="serialization">
-      <UniqueIdentifier>{52727aa0-0114-47ac-9578-3aa3955c6c14}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="memory">
-      <UniqueIdentifier>{84c6b189-fca9-40c8-9089-32b580e5f991}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="allocators">
-      <UniqueIdentifier>{936ac0b7-357b-4f47-99b1-2d9fbaf6ddd8}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="src\syntropy\application\command_line.cpp" />
+    <ClCompile Include="src\syntropy\containers\context.cpp" />
+    <ClCompile Include="src\syntropy\diagnostics\diagnostics.cpp" />
+    <ClCompile Include="src\syntropy\diagnostics\diagnostics_meta.cpp" />
+    <ClCompile Include="src\syntropy\diagnostics\log.cpp" />
+    <ClCompile Include="src\syntropy\diagnostics\log_channels.cpp" />
+    <ClCompile Include="src\syntropy\math\hash.cpp" />
+    <ClCompile Include="src\syntropy\math\math.cpp" />
+    <ClCompile Include="src\syntropy\math\random.cpp" />
+    <ClCompile Include="src\syntropy\memory\allocator.cpp" />
+    <ClCompile Include="src\syntropy\memory\memory_buffer.cpp" />
+    <ClCompile Include="src\syntropy\memory\memory_manager.cpp" />
+    <ClCompile Include="src\syntropy\memory\memory_meta.cpp" />
+    <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
+    <ClCompile Include="src\syntropy\platform\compiler\msvc.cpp" />
+    <ClCompile Include="src\syntropy\platform\os\windows_os.cpp" />
+    <ClCompile Include="src\syntropy\platform\builtin.cpp" />
+    <ClCompile Include="src\syntropy\platform\system.cpp" />
+    <ClCompile Include="src\syntropy\platform\threading.cpp" />
+    <ClCompile Include="src\syntropy\reflection\interfaces\class_interfaces.cpp" />
+    <ClCompile Include="src\syntropy\reflection\interfaces\property_interfaces.cpp" />
+    <ClCompile Include="src\syntropy\reflection\types\core_types.cpp" />
+    <ClCompile Include="src\syntropy\reflection\types\fundamental_types.cpp" />
+    <ClCompile Include="src\syntropy\reflection\types\stl_types.cpp" />
+    <ClCompile Include="src\syntropy\reflection\any.cpp" />
+    <ClCompile Include="src\syntropy\reflection\class.cpp" />
+    <ClCompile Include="src\syntropy\reflection\property.cpp" />
+    <ClCompile Include="src\syntropy\reflection\reflection.cpp" />
+    <ClCompile Include="src\syntropy\reflection\type.cpp" />
+    <ClCompile Include="src\syntropy\serialization\json\deserialization.cpp" />
+    <ClCompile Include="src\syntropy\serialization\json\json.cpp" />
+    <ClCompile Include="src\syntropy\serialization\json\serialization.cpp" />
+    <ClCompile Include="src\syntropy\time\calendar.cpp" />
+    <ClCompile Include="src\syntropy\unit_test\test.cpp" />
+    <ClCompile Include="src\syntropy\unit_test\test_case.cpp" />
+    <ClCompile Include="src\syntropy\unit_test\test_fixture.cpp" />
+    <ClCompile Include="src\syntropy\unit_test\test_runner.cpp" />
+    <ClCompile Include="src\syntropy\unit_test\test_suite.cpp" />
+    <ClCompile Include="src\syntropy\contexts.cpp" />
+    <ClCompile Include="src\syntropy\syntropy.cpp" />
   </ItemGroup>
 </Project>
