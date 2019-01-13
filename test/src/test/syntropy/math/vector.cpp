@@ -63,6 +63,12 @@ void TestSyntropyMathVector::TestConstructors()
         f3 = syntropy::Float3(i3);              // Copy-assign.
         i3 = syntropy::Int3(f3);                // Copy-assign.
 
+        auto x = Dot(f3, i3);
+        auto y = Distance(f3, i3);
+        auto z = ManhattanDistance(i3, f3);
+        auto w = ChebyshevDistance(i3, f3);
+        auto t = Distance2(i3, f3);
+
         //f3 = i3;                              // Error. Implicit conversion.
         //i3 = f3;                              // Error. Implicit conversion.
 
