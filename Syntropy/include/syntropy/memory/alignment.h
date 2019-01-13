@@ -114,7 +114,7 @@ namespace syntropy
     constexpr Alignment::Alignment(Bytes alignment)
         : alignment_(std::size_t(alignment))
     {
-        SYNTROPY_ASSERT(Math::IsPow2(alignment_));          // Support to power-of-two alignment only.
+        SYNTROPY_ASSERT(IsPow2(alignment_));            // Support to power-of-two alignment only.
     }
 
     constexpr Alignment::operator std::size_t() const noexcept

@@ -116,7 +116,7 @@ namespace syntropy
     template <typename TPolicy>
     inline PageAllocator<TPolicy>::PageAllocator(Bytes capacity, Bytes page_size) noexcept
         : memory_buffer_(capacity)
-        , allocator_(Math::Ceil(page_size, VirtualMemory::GetPageSize()), VirtualMemory::GetPageAlignment(), memory_buffer_)
+        , allocator_(Ceil(page_size, VirtualMemory::GetPageSize()), VirtualMemory::GetPageAlignment(), memory_buffer_)
     {
 
     }

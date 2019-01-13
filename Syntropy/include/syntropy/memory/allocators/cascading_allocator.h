@@ -156,7 +156,7 @@ namespace syntropy
     template <typename TCascadeConstructor, typename... TArguments>
     inline CascadingAllocator<TAllocator, TCascade>::CascadingAllocator(Bytes cascade_capacity, TCascadeConstructor&& cascade_constructor, TArguments&&... arguments)
         : cascade_capacity_(cascade_capacity)
-        , cascade_alignment_(Alignment(Math::NextPow2(cascade_capacity)))
+        , cascade_alignment_(Alignment(NextPow2(cascade_capacity)))
         , allocator_(std::forward<TArguments>(arguments)...)
         , cascade_constructor_(std::forward<TCascadeConstructor>(cascade_constructor))
     {

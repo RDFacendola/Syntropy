@@ -2,22 +2,7 @@
 
 namespace syntropy
 {
-
-    /************************************************************************/
-    /* MATH                                                                 */
-    /************************************************************************/
-
-    float Math::FastInvSqrt(float rhs)
-    {
-        return platform::BuiltIn::GetFastInvSqrt(rhs);
-    }
-
-    float Math::FastSqrt(float rhs)
-    {
-        return 1.0f / FastInvSqrt(rhs);
-    }
-
-    float Math::FastTanh(float rhs)
+    float FastTanh(float rhs)
     {
         // Pade approximation.
 

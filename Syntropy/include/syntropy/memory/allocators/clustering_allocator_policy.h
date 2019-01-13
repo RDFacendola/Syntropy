@@ -146,7 +146,7 @@ namespace syntropy
             return 0u;
         }
 
-        return Math::CeilLog2(((size - base_size_ - 1_Bytes) / class_size_) + 1u) + 1u;
+        return CeilLog2(((size - base_size_ - 1_Bytes) / class_size_) + 1u) + 1u;
     }
 
     inline std::size_t ExponentialClusteringAllocatorPolicy::GetIndex(Bytes size, Alignment /*alignment*/) const
