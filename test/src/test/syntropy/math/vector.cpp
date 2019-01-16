@@ -2,6 +2,8 @@
 
 #include "syntropy/unit_test/test_runner.h"
 
+#include "syntropy/type_traits.h"
+
 /************************************************************************/
 /* TEST SYNTROPY MATH VECTOR                                            */
 /************************************************************************/
@@ -67,7 +69,22 @@ void TestSyntropyMathVector::TestConstructors()
         auto y = Distance(f3, i3);
         auto z = ManhattanDistance(i3, f3);
         auto w = ChebyshevDistance(i3, f3);
-        auto t = Distance2(i3, f3);
+        auto t = SqrDistance(i3, f3);
+
+        using syntropy::Shuffle;
+
+        auto a = Shuffle<0, 0, 0, 0>(f3);
+
+        XY(f3) = { 1.4f, 2.4f };
+        XY(f3) = Shuffle<1, 0>(-f3);
+
+        f3 *= 2.0f;
+
+        auto f33 = f3 + 2.5f;
+
+        auto k = Append(f3, 2.0f);
+        auto kk = Append(2.0f, f3);
+        auto kkk = Append(f3, f3);
 
         //f3 = i3;                              // Error. Implicit conversion.
         //i3 = f3;                              // Error. Implicit conversion.

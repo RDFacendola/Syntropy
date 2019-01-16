@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <type_traits> 
-#include <utility>
-#include <algorithm>
+#include <array>
 
 #include "syntropy/diagnostics/assert.h"
-
+#include "syntropy/patterns/tuple.h"
 #include "syntropy/math/math.h"
+#include "syntropy/type_traits.h"
+#include "syntropy/patterns/utility.h"
 
 namespace syntropy
 {
@@ -22,33 +22,43 @@ namespace syntropy
 
     /// \brief Base definition for n-ary vectors.
     template <typename T, size_t kRank>
-    struct BaseVectorN {};
+    struct BaseVectorN
+    {
+        std::array<T, kRank> e_;        /// \brief Elements in the vector.
+    };
+
+    /// \brief Storage type for 1-vectors.
+    template <typename T>
+    struct BaseVectorN<T, 1>
+    {
+        T x_;                           ///< \brief First element.
+    };
 
     /// \brief Storage type for 2-vectors.
     template <typename T>
     struct BaseVectorN<T, 2>
     {
-        T x_;           ///< \brief First element.
-        T y_;           ///< \brief Second element.
+        T x_;                           ///< \brief First element.
+        T y_;                           ///< \brief Second element.
     };
 
     /// \brief Storage type for 3-vectors.
     template <typename T>
     struct BaseVectorN<T, 3>
     {
-        T x_;           ///< \brief First element.
-        T y_;           ///< \brief Second element.
-        T z_;           ///< \brief Third element.
+        T x_;                           ///< \brief First element.
+        T y_;                           ///< \brief Second element.
+        T z_;                           ///< \brief Third element.
     };
 
     /// \brief Storage type for 4-vectors.
     template <typename T>
     struct BaseVectorN<T, 4>
     {
-        T x_;           ///< \brief First element.
-        T y_;           ///< \brief Second element.
-        T z_;           ///< \brief Third element.
-        T w_;           ///< \brief Fourth element.
+        T x_;                           ///< \brief First element.
+        T y_;                           ///< \brief Second element.
+        T z_;                           ///< \brief Third element.
+        T w_;                           ///< \brief Fourth element.
     };
 
     /************************************************************************/
@@ -65,6 +75,9 @@ namespace syntropy
 
         /// \brief Vector where each element equals 1.
         static const VectorN kOne;
+
+        /// \brief Create an uninitialized vector.
+        VectorN(uninitialized_t);
 
         /// \brief Create a zero-vector.
         VectorN();
@@ -84,10 +97,25 @@ namespace syntropy
         explicit VectorN(const VectorN<U, kRank>& rhs);
 
         /// \brief Access an element in the vector.
-        T& operator[](size_t index);
+        constexpr T& operator[](size_t index) noexcept;
 
         /// \brief Access an element in the vector.
-        const T& operator[](size_t index) const;
+        constexpr const T& operator[](size_t index) const noexcept;
+
+        /// \brief Sum a value to this vector.
+        VectorN<T, kRank>& operator+=(T rhs);
+
+        /// \brief Subtract a value from this vector.
+        VectorN<T, kRank>& operator-=(T rhs);
+
+        /// \brief Member-wise multiplication of this vector by a value.
+        VectorN<T, kRank>& operator*=(T rhs);
+
+        /// \brief Member-wise division of this vector by a value.
+        VectorN<T, kRank>& operator/=(T rhs);
+
+        /// \brief Member-wise modulus of this vector by a value.
+        VectorN<T, kRank>& operator%=(T rhs);
 
         /// \brief Sum a vector to this one.
         template <typename U>
@@ -110,73 +138,166 @@ namespace syntropy
         VectorN<T, kRank>& operator%=(const VectorN<U, kRank>& rhs);
     };
 
+    /// \brief Specialization of LockstepRank for VectorN.
+    template <size_t kRank, typename... Ts>
+    struct LockstepRank<VectorN<Ts, kRank>...>
+    {
+        static constexpr size_t Value = kRank;
+    };
+
+    /// \brief Extracts the I-th element from the vector.I must be an integer value in[0, kRank).
+    template <std::size_t I, typename T, std::size_t kRank>
+    constexpr T& get(VectorN<T, kRank>& rhs) noexcept;
+
+    /// \brief Extracts the I-th element from the vector.I must be an integer value in[0, kRank).
+    template <std::size_t I, typename T, std::size_t kRank>
+    constexpr T&& get(VectorN<T, kRank>&& rhs) noexcept;
+
+    /// \brief Extracts the I-th element from the vector.I must be an integer value in[0, kRank).
+    template <std::size_t I, typename T, std::size_t kRank>
+    constexpr const T& get(const VectorN<T, kRank>& rhs) noexcept;
+
+    /// \brief Extracts the I-th element from the vector.I must be an integer value in[0, kRank).
+    template <std::size_t I, typename T, std::size_t kRank>
+    constexpr const T&& get(const VectorN<T, kRank>&& rhs) noexcept;
+
+    /// \brief Equality comparison.
+    template <typename T, typename U, size_t kRank>
+    bool operator==(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
+
+    /// \brief Inequality comparison.
+    template <typename T, typename U, size_t kRank>
+    bool operator!=(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
+
+    /// \brief Sum a value to a vector.
+    template <typename T, size_t kRank>
+    auto operator+(const VectorN<T, kRank>& lhs, T rhs);
+
+    /// \brief Subtract a value from a vector.
+    template <typename T, size_t kRank>
+    auto operator-(const VectorN<T, kRank>& lhs, T rhs);
+
+    /// \brief Multiply a vector by a value.
+    template <typename T, size_t kRank>
+    auto operator*(const VectorN<T, kRank>& lhs, T rhs);
+
+    /// \brief Divide a vector by a value.
+    template <typename T, size_t kRank>
+    auto operator/(const VectorN<T, kRank>& lhs, T rhs);
+
+    /// \brief Modulus of a vector by a value.
+    template <typename T, size_t kRank>
+    auto operator%(const VectorN<T, kRank>& lhs, T rhs);
+
     /// \brief Vector sum.
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     auto operator+(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
     /// \brief Vector difference.
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     auto operator-(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
     /// \brief Vector negation.
-    template <size_t kRank, typename T>
+    template <typename T, size_t kRank>
     auto operator-(const VectorN<T, kRank>& lhs);
 
     /// \brief Vector memberwise multiplication.
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     auto operator*(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
     /// \brief Vector memberwise division.
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     auto operator/(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
     /// \brief Vector memberwise modulus.
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     auto operator%(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
-    /// \brief Step on each element tuple of all the provided vectors executing a function.
-    template <typename TOp, typename... TVectors>
-    constexpr void LockstepApply(TOp op, TVectors&&... vectors);
+    /// \brief Reinterpret a kInRank-ary vector as a kOutRank-ary one.
+    template <std::size_t kOutRank, std::size_t kIndex, typename T, std::size_t kInRank>
+    const VectorN<T, kOutRank>& AsVector(const VectorN<T, kInRank>& rhs);
+
+    /// \brief Reinterpret a kInRank-ary vector as a kOutRank-ary one.
+    template <std::size_t kOutRank, std::size_t kIndex, typename T, std::size_t kInRank>
+    VectorN<T, kOutRank>& AsVector(VectorN<T, kInRank>& rhs);
+
+    /// \brief Get a new vector by shuffling the elements of another vector.
+    template <std::size_t I, std::size_t... Is, typename T, std::size_t kRank>
+    decltype(auto) Shuffle(const VectorN<T, kRank>& rhs);
+
+    /// \brief Get a new vector by shuffling the elements of another vector.
+    template <std::size_t I, std::size_t... Is, typename T, std::size_t kRank>
+    decltype(auto) Shuffle(VectorN<T, kRank>& rhs);
+
+    /// \brief Append a vector to another vector.
+    template <typename T, std::size_t kTRank, typename U, std::size_t kURank>
+    auto Append(const VectorN<T, kTRank>& lhs, const VectorN<U, kURank>& rhs);
+
+    /// \brief Append a value to a vector.
+    template <typename T, std::size_t kRank>
+    auto Append(const VectorN<T, kRank>& lhs, T rhs);
+
+    /// \brief Append a value to a vector.
+    template <typename T, std::size_t kRank>
+    auto Append(T lhs, const VectorN<T, kRank>& rhs);
+
+    /// \brief Get the the XY elements of a N-vector and return it as a 2-vector.
+    /// \see Shuffle(rhs).
+    template <typename TVector>
+    decltype(auto) XY(TVector&& rhs);
+
+    /// \brief Get the the ZW elements of a N-vector and return it as a 2-vector.
+    /// \see Shuffle(rhs).
+    template <typename TVector>
+    decltype(auto) ZW(TVector&& rhs);
+
+    /// \brief Get the the XYZ elements of a N-vector and return it as a 3-vector.
+    /// \see Shuffle(rhs).
+    template <typename TVector>
+    decltype(auto) XYZ(TVector&& rhs);
 
     /// \brief Get the dot product of two vectors.
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     auto Dot(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
     /// \brief Get the euclidean length of a vector.
-    template <size_t kRank, typename T>
+    template <typename T, size_t kRank>
     float Length(const VectorN<T, kRank>& rhs);
 
     /// \brief Get the squared euclidean length of a vector.
-    template <size_t kRank, typename T>
-    float Length2(const VectorN<T, kRank>& rhs);
+    template <typename T, size_t kRank>
+    float SqrLength(const VectorN<T, kRank>& rhs);
 
     /// \brief Get the Manhattan length of a vector.
-    template <size_t kRank, typename T>
+    template <typename T, size_t kRank>
     T ManhattanLength(const VectorN<T, kRank>& rhs);
 
     /// \brief Get the Chebyshev length of a vector.
-    template <size_t kRank, typename T>
+    template <typename T, size_t kRank>
     T ChebyshevLength(const VectorN<T, kRank>& rhs);
 
     /// \brief Get the euclidean distance between two vectors.
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     float Distance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
     /// \brief Get the squared euclidean distance between two vectors.
-    template <size_t kRank, typename T, typename U>
-    float Distance2(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
+    template <typename T, typename U, size_t kRank>
+    float SqrDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
     /// \brief Get the Manhattan distance between two vectors.
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     auto ManhattanDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
     /// \brief Get the Chebyshev distance between two vectors.
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     auto ChebyshevDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
     /************************************************************************/
     /* CONCRETE VECTOR TYPES                                                */
     /************************************************************************/
+
+    template <typename T>
+    using Vector1 = VectorN<T, 1>;
 
     template <typename T>
     using Vector2 = VectorN<T, 2>;
@@ -187,59 +308,32 @@ namespace syntropy
     template <typename T>
     using Vector4 = VectorN<T, 4>;
 
+    using Float1 = Vector1<float>;
     using Float2 = Vector2<float>;
     using Float3 = Vector3<float>;
     using Float4 = Vector4<float>;
 
+    using Int1 = Vector1<int32_t>;
     using Int2 = Vector2<int32_t>;
     using Int3 = Vector3<int32_t>;
     using Int4 = Vector4<int32_t>;
 
+    using UInt1 = Vector1<uint32_t>;
     using UInt2 = Vector2<uint32_t>;
     using UInt3 = Vector3<uint32_t>;
     using UInt4 = Vector4<uint32_t>;
-
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    namespace details
-    {
-        /// \brief Provides a member value containing the rank of the elements in TVectors if the rank is the same for each element.
-        template <typename... TVectors>
-        struct LockstepRank{};
-
-        /// \brief Helper constant for LockstepRank.
-        template <typename... TVectors>
-        constexpr size_t LockstepRankV = LockstepRank<std::decay_t<TVectors>...>::Value;
-
-        /// \brief Specialization for VectorN.
-        template <size_t kRank, typename... Ts>
-        struct LockstepRank<VectorN<Ts, kRank>...>
-        {
-            static constexpr size_t Value = kRank;
-        };
-
-        /// \brief Apply a function on all the i-th elements of the provided vectors at once.
-        template <size_t I, typename TOp, typename... TVectors>
-        inline constexpr void LockstepApply(TOp&& op, TVectors&&... vectors)
-        {
-            op(vectors[I]...);
-        }
-
-        /// \brief Apply a function on all the i-th elements of the provided vectors at once.
-         template <typename TOp, typename... TVectors, size_t... Is>
-         inline constexpr void LockstepApply(TOp&& op, TVectors&&... vectors, std::index_sequence<Is...>)
-         {
-             (LockstepApply<Is>(std::forward<TOp>(op), std::forward<TVectors>(vectors)...), ...);
-         }
-    }
 
     template <typename T, size_t kRank>
     inline const VectorN<T, kRank> VectorN<T, kRank>::kZero = VectorN<T, kRank>(T(0));
 
     template <typename T, size_t kRank>
     inline const VectorN<T, kRank> VectorN<T, kRank>::kOne = VectorN<T, kRank>(T(1));
+
+    template <typename T, size_t kRank>
+    VectorN<T, kRank>::VectorN(uninitialized_t)
+    {
+
+    }
 
     template <typename T, size_t kRank>
     VectorN<T, kRank>::VectorN()
@@ -259,7 +353,7 @@ namespace syntropy
     VectorN<T, kRank>::VectorN(Ts... ts)
         : BaseVectorN<T, kRank>{ ts... }
     {
-
+        static_assert(sizeof...(Ts) == kRank, "Vector rank mismatch.");
     }
 
     template <typename T, size_t kRank>
@@ -270,7 +364,7 @@ namespace syntropy
     }
 
     template <typename T, size_t kRank>
-    T& VectorN<T, kRank>::operator[](size_t index)
+    constexpr T& VectorN<T, kRank>::operator[](size_t index) noexcept
     {
         SYNTROPY_ASSERT(index < kRank);
 
@@ -278,11 +372,51 @@ namespace syntropy
     }
 
     template <typename T, size_t kRank>
-    const T& VectorN<T, kRank>::operator[](size_t index) const
+    constexpr const T& VectorN<T, kRank>::operator[](size_t index) const noexcept
     {
         SYNTROPY_ASSERT(index < kRank);
 
         return reinterpret_cast<const T*>(this)[index];
+    }
+
+    template <typename T, size_t kRank>
+    VectorN<T, kRank>& VectorN<T, kRank>::operator+=(T rhs)
+    {
+        LockstepApply([rhs](auto& lhs) { lhs += rhs; }, *this);
+
+        return *this;
+    }
+
+    template <typename T, size_t kRank>
+    VectorN<T, kRank>& VectorN<T, kRank>::operator-=(T rhs)
+    {
+        LockstepApply([rhs](auto& lhs) { lhs -= rhs; }, *this);
+
+        return *this;
+    }
+
+    template <typename T, size_t kRank>
+    VectorN<T, kRank>& VectorN<T, kRank>::operator*=(T rhs)
+    {
+        LockstepApply([rhs](auto& lhs) { lhs *= rhs; }, *this);
+
+        return *this;
+    }
+
+    template <typename T, size_t kRank>
+    VectorN<T, kRank>& VectorN<T, kRank>::operator/=(T rhs)
+    {
+        LockstepApply([rhs](auto& lhs) { lhs /= rhs; }, *this);
+
+        return *this;
+    }
+
+    template <typename T, size_t kRank>
+    VectorN<T, kRank>& VectorN<T, kRank>::operator%=(T rhs)
+    {
+        LockstepApply([rhs](auto& lhs) { lhs %= rhs; }, *this);
+
+        return *this;
     }
 
     template <typename T, size_t kRank>
@@ -325,67 +459,229 @@ namespace syntropy
     template <typename U>
     VectorN<T, kRank>& VectorN<T, kRank>::operator%=(const VectorN<U, kRank>& rhs)
     {
-        LockstepApply(*this, rhs, [](auto& lhs, auto rhs)
-        {
-            lhs = Mod(lhs, static_cast<T>(rhs));
-        });
+        LockstepApply([](auto& lhs, auto rhs) { lhs = Mod(lhs, static_cast<T>(rhs)); }, *this, rhs);
 
         return *this;
     }
 
-    template <size_t kRank, typename T, typename U>
-    auto operator+(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    template <std::size_t I, typename T, std::size_t kRank>
+    constexpr T& get(VectorN<T, kRank>& rhs) noexcept
+    {
+        return rhs[I];
+    }
+
+    template <std::size_t I, typename T, std::size_t kRank>
+    constexpr T&& get(VectorN<T, kRank>&& rhs) noexcept
+    {
+        return rhs[I];
+    }
+
+    template <std::size_t I, typename T, std::size_t kRank>
+    constexpr const T& get(const VectorN<T, kRank>& rhs) noexcept
+    {
+        return rhs[I];
+    }
+
+    template <std::size_t I, typename T, std::size_t kRank>
+    constexpr const T&& get(const VectorN<T, kRank>&& rhs) noexcept
+    {
+        return rhs[I];
+    }
+
+    template <typename T, typename U, size_t kRank>
+    bool operator==(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    {
+        auto result = true;
+
+        LockstepApply([&result](auto l, auto r) { result &= (l == r); }, lhs, rhs);         // Avoid branching.
+
+        return result;
+    }
+
+    template <typename T, typename U, size_t kRank>
+    inline bool operator!=(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <typename T, size_t kRank>
+    auto operator+(const VectorN<T, kRank>& lhs, T rhs)
+    {
+        return VectorN<T, kRank>(lhs) += rhs;
+    }
+
+    template <typename T, size_t kRank>
+    auto operator-(const VectorN<T, kRank>& lhs, T rhs)
+    {
+        return VectorN<T, kRank>(lhs) -= rhs;
+    }
+
+    template <typename T, size_t kRank>
+    auto operator*(const VectorN<T, kRank>& lhs, T rhs)
+    {
+        return VectorN<T, kRank>(lhs) *= rhs;
+    }
+
+    template <typename T, size_t kRank>
+    auto operator/(const VectorN<T, kRank>& lhs, T rhs)
+    {
+        return VectorN<T, kRank>(lhs) /= rhs;
+    }
+
+    template <typename T, size_t kRank>
+    auto operator%(const VectorN<T, kRank>& lhs, T rhs)
+    {
+        return VectorN<T, kRank>(lhs) %= rhs;
+    }
+
+    template <typename T, typename U, size_t kRank>
+    inline auto operator+(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         using CommonVectorType = VectorN<std::common_type_t<T, U>, kRank>;
 
         return CommonVectorType(lhs) += CommonVectorType(rhs);
     }
 
-    template <size_t kRank, typename T, typename U>
-    auto operator-(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    template <typename T, typename U, size_t kRank>
+    inline auto operator-(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         using CommonVectorType = VectorN<std::common_type_t<T, U>, kRank>;
 
         return CommonVectorType(lhs) -= CommonVectorType(rhs);
     }
 
-    template <size_t kRank, typename T>
-    auto operator-(const VectorN<T, kRank>& lhs)
+    template <typename T, size_t kRank>
+    inline auto operator-(const VectorN<T, kRank>& lhs)
     {
         return VectorN<T, kRank>::kZero - lhs;
     }
 
-    template <size_t kRank, typename T, typename U>
-    auto operator*(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    template <typename T, typename U, size_t kRank>
+    inline auto operator*(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         using CommonVectorType = VectorN<std::common_type_t<T, U>, kRank>;
 
         return CommonVectorType(lhs) *= CommonVectorType(rhs);
     }
 
-    template <size_t kRank, typename T, typename U>
-    auto operator/(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    template <typename T, typename U, size_t kRank>
+    inline auto operator/(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         using CommonVectorType = VectorN<std::common_type_t<T, U>, kRank>;
 
         return CommonVectorType(lhs) /= CommonVectorType(rhs);
     }
 
-    template <size_t kRank, typename T, typename U>
-    auto operator%(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    template <typename T, typename U, size_t kRank>
+    inline auto operator%(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         using CommonVectorType = VectorN<std::common_type_t<T, U>, kRank>;
 
         return CommonVectorType(lhs) %= CommonVectorType(rhs);
     }
 
-    template <typename TOp, typename... TVectors>
-    inline constexpr void LockstepApply(TOp op, TVectors&&... vectors)
+    template <std::size_t kOutRank, std::size_t kIndex, typename T, std::size_t kInRank>
+    inline const VectorN<T, kOutRank>& AsVector(const VectorN<T, kInRank>& rhs)
     {
-        details::LockstepApply<TOp, TVectors...>(std::forward<TOp>(op), std::forward<TVectors>(vectors)..., std::make_index_sequence<details::LockstepRankV<TVectors...>>{});
+        static_assert(kOutRank + kIndex <= kInRank, "The out rank must be equal or smaller than the in rank.");
+
+        return *reinterpret_cast<const VectorN<T, kOutRank>*>(&rhs[kIndex]);
     }
 
-    template <size_t kRank, typename T, typename U>
+    template <std::size_t kOutRank, std::size_t kIndex, typename T, std::size_t kInRank>
+    inline VectorN<T, kOutRank>& AsVector(VectorN<T, kInRank>& rhs)
+    {
+        static_assert(kOutRank + kIndex <= kInRank, "The out rank must be equal or smaller than the in rank.");
+
+        return *reinterpret_cast<VectorN<T, kOutRank>*>(&rhs[kIndex]);
+    }
+
+    template <std::size_t I, std::size_t... Is, typename T, std::size_t kRank>
+    inline decltype(auto) Shuffle(const VectorN<T, kRank>& rhs)
+    {
+        static_assert((I < kRank) && ((Is < kRank) && ...), "Invalid element index. I and Is must be in [0; kRank).");
+
+        constexpr std::size_t kOutRank = sizeof...(Is) + 1;
+
+        if constexpr (!is_contiguous_index_sequence_v<I, Is...>)
+        {
+            return VectorN<T, kOutRank>{rhs[I], rhs[Is]...};
+        }
+        else
+        {
+            return AsVector<kOutRank, I>(rhs);
+        }
+    }
+
+    template <std::size_t I, std::size_t... Is, typename T, std::size_t kRank>
+    inline decltype(auto) Shuffle(VectorN<T, kRank>& rhs)
+    {
+        static_assert((I < kRank) && ((Is < kRank) && ...), "Invalid element index. I and Is must be in [0; kRank).");
+
+        constexpr std::size_t kOutRank = sizeof...(Is) + 1;
+
+        if constexpr (!is_contiguous_index_sequence_v<I, Is...>)
+        {
+            return VectorN<T, kOutRank>{rhs[I], rhs[Is]...};
+        }
+        else
+        {
+            return AsVector<kOutRank, I>(rhs);
+        }
+    }
+
+    template <typename T, std::size_t kTRank, typename U, std::size_t kURank>
+    inline auto Append(const VectorN<T, kTRank>& lhs, const VectorN<U, kURank>& rhs)
+    {
+        auto out = VectorN<T, kTRank + kURank>(uninitialized);
+
+        AsVector<kTRank, 0>(out) = lhs;
+        AsVector<kURank, kTRank>(out) = rhs;
+
+        return out;
+    }
+
+    template <typename T, std::size_t kRank>
+    inline auto Append(const VectorN<T, kRank>& lhs, T rhs)
+    {
+        auto out = VectorN<T, kRank + 1>(uninitialized);
+
+        AsVector<kRank, 0>(out) = lhs;
+        out[kRank] = rhs;
+
+        return out;
+    }
+
+    template <typename T, std::size_t kRank>
+    inline auto Append(T lhs, const VectorN<T, kRank>& rhs)
+    {
+        auto out = VectorN<T, kRank + 1>(uninitialized);
+
+        out[0] = lhs;
+        AsVector<kRank, 1>(out) = rhs;
+
+        return out;
+    }
+
+    template <typename TVector>
+    decltype(auto) XY(TVector&& rhs)
+    {
+        return Shuffle<0, 1>(std::forward<TVector>(rhs));
+    }
+
+    template <typename TVector>
+    decltype(auto) ZW(TVector&& rhs)
+    {
+        return Shuffle<2, 3>(std::forward<TVector>(rhs));
+    }
+
+    template <typename TVector>
+    decltype(auto) XYZ(TVector&& rhs)
+    {
+        return Shuffle<0, 1, 2>(std::forward<TVector>(rhs));
+    }
+
+    template <typename T, typename U, size_t kRank>
     auto Dot(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         auto dot = std::common_type_t<T, U>{};
@@ -395,19 +691,19 @@ namespace syntropy
         return dot;
     }
 
-    template <size_t kRank, typename T>
+    template <typename T, size_t kRank>
     inline float Length(const VectorN<T, kRank>& rhs)
     {
-        return FastSqrt(Length2(rhs));
+        return FastSqrt(SqrLength(rhs));
     }
 
-    template <size_t kRank, typename T>
-    inline float Length2(const VectorN<T, kRank>& rhs)
+    template <typename T, size_t kRank>
+    inline float SqrLength(const VectorN<T, kRank>& rhs)
     {
         return Dot(rhs, rhs);
     }
 
-    template <size_t kRank, typename T>
+    template <typename T, size_t kRank>
     T ManhattanLength(const VectorN<T, kRank>& rhs)
     {
         auto length = T{};
@@ -417,7 +713,7 @@ namespace syntropy
         return length;
     }
 
-    template <size_t kRank, typename T>
+    template <typename T, size_t kRank>
     T ChebyshevLength(const VectorN<T, kRank>& rhs)
     {
         auto length = T{};
@@ -427,25 +723,25 @@ namespace syntropy
         return length;
     }
 
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     inline float Distance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         return Length(lhs - rhs);
     }
 
-    template <size_t kRank, typename T, typename U>
-    inline float Distance2(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    template <typename T, typename U, size_t kRank>
+    inline float SqrDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
-        return Length2(lhs - rhs);
+        return SqrLength(lhs - rhs);
     }
 
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     inline auto ManhattanDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         return ManhattanLength(lhs - rhs);
     }
 
-    template <size_t kRank, typename T, typename U>
+    template <typename T, typename U, size_t kRank>
     inline auto ChebyshevDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         return ChebyshevLength(lhs - rhs);

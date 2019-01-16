@@ -28,6 +28,12 @@ namespace syntropy
     /* UTILITIES                                                            */
     /************************************************************************/
 
+    namespace details
+    {
+
+        
+    }
+
     /// \brief Type equal to TType without references, extents and qualifiers.
     template <typename TType>
     using remove_extents_cvref = std::remove_cv_t<std::remove_all_extents_t<std::remove_reference_t<TType>>>;
@@ -43,6 +49,32 @@ namespace syntropy
     /// \brief Helper type strip<TType>.
     template <typename TType>
     using strip_t = typename strip<TType>::type;
+
+    /// \brief If the sequence {Ints} is contiguous provides a member constant value equal to true, otherwise value is false.
+    template <typename T, T... Ints>
+    struct is_contiguous_sequence
+    {
+        static constexpr bool value = true;     // Zero or one element sequence.
+    };
+
+    /// \brief Specialization for two-element sequences or more.
+    template <typename T, T Int1, T Int2, T... Ints>
+    struct is_contiguous_sequence<T, Int1, Int2, Ints...>
+    {
+        static constexpr bool value = (Int1 + T(1) == Int2) && is_contiguous_sequence<T, Int2, Ints...>::value;
+    };
+
+    /// \brief Typedef of is_contiguous_sequence when T is std::size_t.
+    template <std::size_t... Ints>
+    struct is_contiguous_index_sequence : is_contiguous_sequence<std::size_t, Ints...> {};
+
+    /// \brief Helper value for is_contiguous_sequence<T, Ints...>.
+    template <typename T, T... Ints>
+    constexpr bool is_contiguous_sequence_v = is_contiguous_sequence<T, Ints...>::value;
+
+    /// \brief Helper value for is_contiguous_index_sequence<T, Ints...>.
+    template <std::size_t... Ints>
+    constexpr bool is_contiguous_index_sequence_v = is_contiguous_index_sequence<Ints...>::value;
 
     /************************************************************************/
     /* STREAM INSERTABLE \ EXTRACTABLE                                      */
