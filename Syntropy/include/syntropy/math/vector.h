@@ -146,6 +146,51 @@ namespace syntropy
         static constexpr size_t Value = kRank;
     };
 
+    /************************************************************************/
+    /* CONCRETE VECTOR TYPES                                                */
+    /************************************************************************/
+
+    template <typename T>
+    using Vector1 = VectorN<T, 1>;
+
+    template <typename T>
+    using Vector2 = VectorN<T, 2>;
+
+    template <typename T>
+    using Vector3 = VectorN<T, 3>;
+
+    template <typename T>
+    using Vector4 = VectorN<T, 4>;
+
+    using Float1 = Vector1<float>;
+    using Float2 = Vector2<float>;
+    using Float3 = Vector3<float>;
+    using Float4 = Vector4<float>;
+
+    using Int1 = Vector1<int32_t>;
+    using Int2 = Vector2<int32_t>;
+    using Int3 = Vector3<int32_t>;
+    using Int4 = Vector4<int32_t>;
+
+    using UInt1 = Vector1<uint32_t>;
+    using UInt2 = Vector2<uint32_t>;
+    using UInt3 = Vector3<uint32_t>;
+    using UInt4 = Vector4<uint32_t>;
+
+    using Long1 = Vector1<int64_t>;
+    using Long2 = Vector2<int64_t>;
+    using Long3 = Vector3<int64_t>;
+    using Long4 = Vector4<int64_t>;
+
+    using ULong1 = Vector1<uint64_t>;
+    using ULong2 = Vector2<uint64_t>;
+    using ULong3 = Vector3<uint64_t>;
+    using ULong4 = Vector4<uint64_t>;
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
     /// \brief Extracts the I-th element from the vector.I must be an integer value in[0, kRank).
     template <std::size_t I, typename T, std::size_t kRank>
     constexpr T& get(VectorN<T, kRank>& rhs) noexcept;
@@ -174,21 +219,41 @@ namespace syntropy
     template <typename T, size_t kRank>
     auto operator+(const VectorN<T, kRank>& lhs, T rhs);
 
+    /// \brief Sum a vector to a value.
+    template <typename T, size_t kRank>
+    auto operator+(T lhs, const VectorN<T, kRank>& rhs);
+
     /// \brief Subtract a value from a vector.
     template <typename T, size_t kRank>
     auto operator-(const VectorN<T, kRank>& lhs, T rhs);
+
+    /// \brief Subtract a vector from a value.
+    template <typename T, size_t kRank>
+    auto operator-(T lhs, const VectorN<T, kRank>& rhs);
 
     /// \brief Multiply a vector by a value.
     template <typename T, size_t kRank>
     auto operator*(const VectorN<T, kRank>& lhs, T rhs);
 
+    /// \brief Multiply a value by a vector.
+    template <typename T, size_t kRank>
+    auto operator*(T lhs, const VectorN<T, kRank>& rhs);
+
     /// \brief Divide a vector by a value.
     template <typename T, size_t kRank>
     auto operator/(const VectorN<T, kRank>& lhs, T rhs);
 
+    /// \brief Divide a vector by a value.
+    template <typename T, size_t kRank>
+    auto operator/(T lhs, const VectorN<T, kRank>& rhs);
+
     /// \brief Modulus of a vector by a value.
     template <typename T, size_t kRank>
     auto operator%(const VectorN<T, kRank>& lhs, T rhs);
+
+    /// \brief Modulus of a value by a vector.
+    template <typename T, size_t kRank>
+    auto operator%(T lhs, const VectorN<T, kRank>& rhs);
 
     /// \brief Vector sum.
     template <typename T, typename U, size_t kRank>
@@ -261,6 +326,18 @@ namespace syntropy
     template <typename T, typename U, size_t kRank>
     auto Dot(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
+    /// \brief Get a vector which is orthogonal to rhs.
+    template <typename T>
+    Vector2<T> Cross(const Vector2<T>& rhs);
+
+    /// \brief Get the length of a vector which is orthogonal to both lhs and rhs.
+    template <typename T>
+    float Cross(const Vector2<T>& lhs, const Vector2<T>& rhs);
+
+    /// \brief Get a vector which is orthogonal to both lhs and rhs.
+    template <typename T>
+    Vector3<T> Cross(const Vector3<T>& lhs, const Vector3<T>& rhs);
+
     /// \brief Get the euclidean length of a vector.
     template <typename T, size_t kRank>
     float Length(const VectorN<T, kRank>& rhs);
@@ -277,6 +354,10 @@ namespace syntropy
     template <typename T, size_t kRank>
     T ChebyshevLength(const VectorN<T, kRank>& rhs);
 
+    /// \brief Normalize rhs using the euclidean metric.
+    template <typename T, size_t kRank>
+    VectorN<T, kRank> Normalize(const VectorN<T, kRank>& rhs);
+
     /// \brief Get the euclidean distance between two vectors.
     template <typename T, typename U, size_t kRank>
     float Distance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
@@ -292,47 +373,6 @@ namespace syntropy
     /// \brief Get the Chebyshev distance between two vectors.
     template <typename T, typename U, size_t kRank>
     auto ChebyshevDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
-
-    /************************************************************************/
-    /* CONCRETE VECTOR TYPES                                                */
-    /************************************************************************/
-
-    template <typename T>
-    using Vector1 = VectorN<T, 1>;
-
-    template <typename T>
-    using Vector2 = VectorN<T, 2>;
-
-    template <typename T>
-    using Vector3 = VectorN<T, 3>;
-
-    template <typename T>
-    using Vector4 = VectorN<T, 4>;
-
-    using Float1 = Vector1<float>;
-    using Float2 = Vector2<float>;
-    using Float3 = Vector3<float>;
-    using Float4 = Vector4<float>;
-
-    using Int1 = Vector1<int32_t>;
-    using Int2 = Vector2<int32_t>;
-    using Int3 = Vector3<int32_t>;
-    using Int4 = Vector4<int32_t>;
-
-    using UInt1 = Vector1<uint32_t>;
-    using UInt2 = Vector2<uint32_t>;
-    using UInt3 = Vector3<uint32_t>;
-    using UInt4 = Vector4<uint32_t>;
-
-    using Long1 = Vector1<int64_t>;
-    using Long2 = Vector2<int64_t>;
-    using Long3 = Vector3<int64_t>;
-    using Long4 = Vector4<int64_t>;
-
-    using ULong1 = Vector1<uint64_t>;
-    using ULong2 = Vector2<uint64_t>;
-    using ULong3 = Vector3<uint64_t>;
-    using ULong4 = Vector4<uint64_t>;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -352,7 +392,7 @@ namespace syntropy
 
     template <typename T, size_t kRank>
     VectorN<T, kRank>::VectorN()
-        : VectorN(T())
+        : VectorN(kZero)
     {
 
     }
@@ -526,7 +566,19 @@ namespace syntropy
     }
 
     template <typename T, size_t kRank>
+    auto operator+(T lhs, const VectorN<T, kRank>& rhs)
+    {
+        return VectorN<T, kRank>(lhs) += rhs;
+    }
+
+    template <typename T, size_t kRank>
     auto operator-(const VectorN<T, kRank>& lhs, T rhs)
+    {
+        return VectorN<T, kRank>(lhs) -= rhs;
+    }
+
+    template <typename T, size_t kRank>
+    auto operator-(T lhs, const VectorN<T, kRank>& rhs)
     {
         return VectorN<T, kRank>(lhs) -= rhs;
     }
@@ -538,13 +590,31 @@ namespace syntropy
     }
 
     template <typename T, size_t kRank>
+    auto operator*(T lhs, const VectorN<T, kRank>& rhs)
+    {
+        return VectorN<T, kRank>(lhs) *= rhs;
+    }
+
+    template <typename T, size_t kRank>
     auto operator/(const VectorN<T, kRank>& lhs, T rhs)
     {
         return VectorN<T, kRank>(lhs) /= rhs;
     }
 
     template <typename T, size_t kRank>
+    auto operator/(T lhs, const VectorN<T, kRank>& rhs)
+    {
+        return VectorN<T, kRank>(lhs) /= rhs;
+    }
+
+    template <typename T, size_t kRank>
     auto operator%(const VectorN<T, kRank>& lhs, T rhs)
+    {
+        return VectorN<T, kRank>(lhs) %= rhs;
+    }
+
+    template <typename T, size_t kRank>
+    auto operator%(T lhs, const VectorN<T, kRank>& rhs)
     {
         return VectorN<T, kRank>(lhs) %= rhs;
     }
@@ -683,6 +753,24 @@ namespace syntropy
         return dot;
     }
 
+    template <typename T>
+    inline Vector2<T> Cross(const Vector2<T>& rhs)
+    {
+        return { rhs.y_, -rhs.x };
+    }
+
+    template <typename T>
+    inline float Cross(const Vector2<T>& lhs, const Vector2<T>& rhs)
+    {
+        return lhs.x_ * rhs.y_ - lhs.y_ * rhs.x_;
+    }
+
+    template <typename T>
+    inline Vector3<T> Cross(const Vector3<T>& lhs, const Vector3<T>& rhs)
+    {
+        return { lhs.y_ * rhs.z_ - lhs.z_ * rhs.y_, lhs.z_ * rhs.x_ - lhs.x_ * rhs.z_, lhs.x_ * rhs.y_ - lhs.y_ * rhs.x_ };
+    }
+
     template <typename T, size_t kRank>
     inline float Length(const VectorN<T, kRank>& rhs)
     {
@@ -703,6 +791,12 @@ namespace syntropy
         LockstepApply([&length](auto r) { length += FastAbs(r); }, rhs);
 
         return length;
+    }
+
+    template <typename T, size_t kRank>
+    VectorN<T, kRank> Normalize(const VectorN<T, kRank>& rhs)
+    {
+        return rhs / Length(rhs);
     }
 
     template <typename T, size_t kRank>
