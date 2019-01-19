@@ -7,6 +7,7 @@
 #pragma once
 
 #include <array>
+#include <utility>
 
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/patterns/tuple.h"
@@ -323,6 +324,10 @@ namespace syntropy
     using UInt3 = Vector3<uint32_t>;
     using UInt4 = Vector4<uint32_t>;
 
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
     template <typename T, size_t kRank>
     inline const VectorN<T, kRank> VectorN<T, kRank>::kZero = VectorN<T, kRank>(T(0));
 
@@ -591,9 +596,7 @@ namespace syntropy
     template <std::size_t kOutRank, std::size_t kIndex, typename T, std::size_t kInRank>
     inline VectorN<T, kOutRank>& AsVector(VectorN<T, kInRank>& rhs)
     {
-        static_assert(kOutRank + kIndex <= kInRank, "The out rank must be equal or smaller than the in rank.");
-
-        return *reinterpret_cast<VectorN<T, kOutRank>*>(&rhs[kIndex]);
+        return AsNonConst(AsVector<kOutRank, kIndex>(std::as_const(rhs)));
     }
 
     template <std::size_t I, std::size_t... Is, typename T, std::size_t kRank>
@@ -616,18 +619,7 @@ namespace syntropy
     template <std::size_t I, std::size_t... Is, typename T, std::size_t kRank>
     inline decltype(auto) Shuffle(VectorN<T, kRank>& rhs)
     {
-        static_assert((I < kRank) && ((Is < kRank) && ...), "Invalid element index. I and Is must be in [0; kRank).");
-
-        constexpr std::size_t kOutRank = sizeof...(Is) + 1;
-
-        if constexpr (!is_contiguous_index_sequence_v<I, Is...>)
-        {
-            return VectorN<T, kOutRank>{rhs[I], rhs[Is]...};
-        }
-        else
-        {
-            return AsVector<kOutRank, I>(rhs);
-        }
+        return AsNonConst(Shuffle<I, Is...>(std::as_const(rhs)));
     }
 
     template <typename T, std::size_t kTRank, typename U, std::size_t kURank>
@@ -644,23 +636,13 @@ namespace syntropy
     template <typename T, std::size_t kRank>
     inline auto Append(const VectorN<T, kRank>& lhs, T rhs)
     {
-        auto out = VectorN<T, kRank + 1>(uninitialized);
-
-        AsVector<kRank, 0>(out) = lhs;
-        out[kRank] = rhs;
-
-        return out;
+        return Append(lhs, Vector1<T>{rhs});
     }
 
     template <typename T, std::size_t kRank>
     inline auto Append(T lhs, const VectorN<T, kRank>& rhs)
     {
-        auto out = VectorN<T, kRank + 1>(uninitialized);
-
-        out[0] = lhs;
-        AsVector<kRank, 1>(out) = rhs;
-
-        return out;
+        return Append(Vector1<T>{lhs}, rhs);
     }
 
     template <typename TVector>

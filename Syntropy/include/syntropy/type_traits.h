@@ -52,10 +52,7 @@ namespace syntropy
 
     /// \brief If the sequence {Ints} is contiguous provides a member constant value equal to true, otherwise value is false.
     template <typename T, T... Ints>
-    struct is_contiguous_sequence
-    {
-        static constexpr bool value = true;     // Zero or one element sequence.
-    };
+    struct is_contiguous_sequence : std::true_type {};
 
     /// \brief Specialization for two-element sequences or more.
     template <typename T, T Int1, T Int2, T... Ints>

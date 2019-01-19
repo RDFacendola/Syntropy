@@ -17,10 +17,10 @@ namespace syntropy
     struct _
     {
         template <typename... TArgs>
-        _(TArgs&&...) {}
+        _(TArgs&&...);
 
         template <typename... TArgs>
-        void operator()(TArgs&&...) {}
+        void operator()(TArgs&&...);
     };
 
     /// \brief Tag type used to declare a type when automatic type deduction cannot be used.
@@ -35,6 +35,53 @@ namespace syntropy
 
     /// \brief Tag type used to declare an uninitialized type.
     struct uninitialized_t {};
-
+ 
     inline constexpr uninitialized_t uninitialized{};
+
+    /// \brief Form a l-value reference to a non-const type of rhs.
+    template <typename TType>
+    std::remove_const_t<TType>& AsNonConst(const TType& rhs);
+
+    /// \brief Form a l-value reference to a non-const type of rhs.
+    template <typename TType>
+    TType& AsNonConst(TType& rhs);
+
+    /// \brief Form a l-value reference to a non-const type of rhs.
+    template <typename TType>
+    TType AsNonConst(TType&& rhs);
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    template <typename... TArgs>
+    _::_(TArgs&&...)
+    {
+
+    }
+
+    template <typename... TArgs>
+    void _::operator()(TArgs&&...)
+    {
+
+    }
+
+    template <typename TType>
+    std::remove_const_t<TType>& AsNonConst(const TType& rhs)
+    {
+        return const_cast<TType&>(rhs);
+    }
+
+    template <typename TType>
+    TType& AsNonConst(TType& rhs)
+    {
+        return rhs;
+    }
+
+    template <typename TType>
+    TType AsNonConst(TType&& rhs)
+    {
+        return rhs;
+    }
+
 }
