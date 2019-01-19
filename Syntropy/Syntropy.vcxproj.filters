@@ -85,6 +85,7 @@
     <ClInclude Include="include\syntropy\syntropy.h" />
     <ClInclude Include="include\syntropy\type_traits.h" />
     <ClInclude Include="include\syntropy\patterns\tuple.h" />
+    <ClInclude Include="include\syntropy\math\quaternion.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
