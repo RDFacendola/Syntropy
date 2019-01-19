@@ -65,6 +65,12 @@ namespace syntropy
     /// \param epsilon Error percentage relative to the absolute smaller number.
     bool EssentiallyEqual(float lhs, float rhs, float epsilon = 0.01f);
 
+    // Interpolation.
+
+    /// \brief Linearly interpolate lhs and rhs using alpha as blending factor.
+    template <typename TType>
+    TType Lerp(const TType& lhs, const TType& rhs, float alpha);
+
     // Fast approximation functions.
 
     /// \brief Get the absolute value of number.
@@ -159,6 +165,12 @@ namespace syntropy
         auto abs_rhs = FastAbs(rhs);
 
         return FastAbs(lhs - rhs) <= ((abs_lhs > abs_rhs ? abs_rhs : abs_lhs) * epsilon);
+    }
+
+    template <typename TType>
+    inline TType Lerp(const TType& lhs, const TType& rhs, float alpha)
+    {
+        return lhs + (rhs - lhs) * alpha;
     }
 
     template <typename TNumber>
