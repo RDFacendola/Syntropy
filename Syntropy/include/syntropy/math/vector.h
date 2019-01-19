@@ -324,6 +324,16 @@ namespace syntropy
     using UInt3 = Vector3<uint32_t>;
     using UInt4 = Vector4<uint32_t>;
 
+    using Long1 = Vector1<int64_t>;
+    using Long2 = Vector2<int64_t>;
+    using Long3 = Vector3<int64_t>;
+    using Long4 = Vector4<int64_t>;
+
+    using ULong1 = Vector1<uint64_t>;
+    using ULong2 = Vector2<uint64_t>;
+    using ULong3 = Vector3<uint64_t>;
+    using ULong4 = Vector4<uint64_t>;
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
