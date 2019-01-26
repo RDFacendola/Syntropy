@@ -358,6 +358,10 @@ namespace syntropy
     template <typename T, size_t kRank>
     VectorN<T, kRank> Normalize(const VectorN<T, kRank>& rhs);
 
+    /// \brief Check whether a vector is normalized.
+    template <typename T, size_t kRank>
+    bool IsNormalized(const VectorN<T, kRank>& rhs, float epsilon = 0.01f);
+
     /// \brief Get the euclidean distance between two vectors.
     template <typename T, typename U, size_t kRank>
     float Distance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
@@ -560,61 +564,61 @@ namespace syntropy
     }
 
     template <typename T, size_t kRank>
-    auto operator+(const VectorN<T, kRank>& lhs, T rhs)
+    inline auto operator+(const VectorN<T, kRank>& lhs, T rhs)
     {
         return VectorN<T, kRank>(lhs) += rhs;
     }
 
     template <typename T, size_t kRank>
-    auto operator+(T lhs, const VectorN<T, kRank>& rhs)
+    inline auto operator+(T lhs, const VectorN<T, kRank>& rhs)
     {
         return VectorN<T, kRank>(lhs) += rhs;
     }
 
     template <typename T, size_t kRank>
-    auto operator-(const VectorN<T, kRank>& lhs, T rhs)
+    inline auto operator-(const VectorN<T, kRank>& lhs, T rhs)
     {
         return VectorN<T, kRank>(lhs) -= rhs;
     }
 
     template <typename T, size_t kRank>
-    auto operator-(T lhs, const VectorN<T, kRank>& rhs)
+    inline auto operator-(T lhs, const VectorN<T, kRank>& rhs)
     {
         return VectorN<T, kRank>(lhs) -= rhs;
     }
 
     template <typename T, size_t kRank>
-    auto operator*(const VectorN<T, kRank>& lhs, T rhs)
+    inline auto operator*(const VectorN<T, kRank>& lhs, T rhs)
     {
         return VectorN<T, kRank>(lhs) *= rhs;
     }
 
     template <typename T, size_t kRank>
-    auto operator*(T lhs, const VectorN<T, kRank>& rhs)
+    inline auto operator*(T lhs, const VectorN<T, kRank>& rhs)
     {
         return VectorN<T, kRank>(lhs) *= rhs;
     }
 
     template <typename T, size_t kRank>
-    auto operator/(const VectorN<T, kRank>& lhs, T rhs)
+    inline auto operator/(const VectorN<T, kRank>& lhs, T rhs)
     {
         return VectorN<T, kRank>(lhs) /= rhs;
     }
 
     template <typename T, size_t kRank>
-    auto operator/(T lhs, const VectorN<T, kRank>& rhs)
+    inline auto operator/(T lhs, const VectorN<T, kRank>& rhs)
     {
         return VectorN<T, kRank>(lhs) /= rhs;
     }
 
     template <typename T, size_t kRank>
-    auto operator%(const VectorN<T, kRank>& lhs, T rhs)
+    inline auto operator%(const VectorN<T, kRank>& lhs, T rhs)
     {
         return VectorN<T, kRank>(lhs) %= rhs;
     }
 
     template <typename T, size_t kRank>
-    auto operator%(T lhs, const VectorN<T, kRank>& rhs)
+    inline auto operator%(T lhs, const VectorN<T, kRank>& rhs)
     {
         return VectorN<T, kRank>(lhs) %= rhs;
     }
@@ -726,19 +730,19 @@ namespace syntropy
     }
 
     template <typename TVector>
-    decltype(auto) XY(TVector&& rhs)
+    inline decltype(auto) XY(TVector&& rhs)
     {
         return Shuffle<0, 1>(std::forward<TVector>(rhs));
     }
 
     template <typename TVector>
-    decltype(auto) ZW(TVector&& rhs)
+    inline decltype(auto) ZW(TVector&& rhs)
     {
         return Shuffle<2, 3>(std::forward<TVector>(rhs));
     }
 
     template <typename TVector>
-    decltype(auto) XYZ(TVector&& rhs)
+    inline decltype(auto) XYZ(TVector&& rhs)
     {
         return Shuffle<0, 1, 2>(std::forward<TVector>(rhs));
     }
@@ -794,9 +798,15 @@ namespace syntropy
     }
 
     template <typename T, size_t kRank>
-    VectorN<T, kRank> Normalize(const VectorN<T, kRank>& rhs)
+    inline VectorN<T, kRank> Normalize(const VectorN<T, kRank>& rhs)
     {
         return rhs / Length(rhs);
+    }
+
+    template <typename T, size_t kRank>
+    inline bool IsNormalized(const VectorN<T, kRank>& rhs, float epsilon)
+    {
+        return FastAbs(SqrLength(rhs)) < epsilon;
     }
 
     template <typename T, size_t kRank>
