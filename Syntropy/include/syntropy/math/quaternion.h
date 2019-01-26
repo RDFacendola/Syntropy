@@ -43,11 +43,17 @@ namespace syntropy
         /// \brief Sum a quaternion to this one.
         Quaternion& operator+=(const Quaternion& rhs);
 
-        /// \brief Multiply this quaternion by a scalar.
+        /// \brief Subtract a quaternion from this one.
+        Quaternion& operator-=(const Quaternion& rhs);
+
+        /// \brief Memberwise multiplication of this quaternion by a scalar.
         Quaternion& operator*=(float rhs);
 
         /// \brief Multiply this quaternion by another one.
         Quaternion& operator*=(const Quaternion& rhs);
+
+        /// \brief Memberwise division of this quaternion by a scalar.
+        Quaternion& operator/=(float rhs);
 
     };
 
@@ -58,11 +64,17 @@ namespace syntropy
     /// \brief Sum two quaternions.
     Quaternion operator+(const Quaternion& lhs, const Quaternion& rhs);
 
+    /// \brief Difference between two quaternions.
+    Quaternion operator-(const Quaternion& lhs, const Quaternion& rhs);
+
     /// \brief Multiply two quaternions.
     Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs);
 
     /// \brief Multiply a quaternion by a scalar.
     Quaternion operator*(const Quaternion& lhs, float rhs);
+
+    /// \brief Divide a quaternion by a scalar.
+    Quaternion operator/(const Quaternion& lhs, float rhs);
 
     /// \brief Multiply a scalar by a quaternion.
     Quaternion operator*(float lhs, const Quaternion& rhs);
@@ -79,8 +91,11 @@ namespace syntropy
     /// \brief Get the squared norm of a quaternion.
     float SqrNorm(const Quaternion& rhs);
 
-    /// \brief Get a quaternion from an axis of rotation and an angle.
-    Quaternion MakeRotation(const Float3& axis, float angle);
+    /// \brief Get a normalized quaternion.
+    Quaternion Normalize(const Quaternion& rhs);
+
+    /// \brief Check whether a quaternion is a unit quaternion.
+    bool IsNormalized(const Quaternion& rhs, float epsilon = 0.01f);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -115,6 +130,14 @@ namespace syntropy
         return *this;
     }
 
+    inline Quaternion& Quaternion::operator-=(const Quaternion& rhs)
+    {
+        xyz_ -= rhs.xyz_;
+        w_ -= rhs.w_;
+
+        return *this;
+    }
+
     inline Quaternion& Quaternion::operator*=(float rhs)
     {
         xyz_ *= rhs;
@@ -131,9 +154,22 @@ namespace syntropy
         return *this;
     }
 
+    inline Quaternion& Quaternion::operator/=(float rhs)
+    {
+        xyz_ /= rhs;
+        w_ /= rhs;
+
+        return *this;
+    }
+
     inline Quaternion operator+(const Quaternion& lhs, const Quaternion& rhs)
     {
         return Quaternion(lhs) += rhs;
+    }
+
+    inline Quaternion operator-(const Quaternion& lhs, const Quaternion& rhs)
+    {
+        return Quaternion(lhs) -= rhs;
     }
 
     inline Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs)
@@ -151,6 +187,11 @@ namespace syntropy
         return Quaternion(rhs) *= lhs;
     }
 
+    inline Quaternion operator/(const Quaternion& lhs, float rhs)
+    {
+        return Quaternion(lhs) /= rhs;
+    }
+
     inline Quaternion Conjugate(const Quaternion& rhs)
     {
         return { -rhs.xyz_, rhs.w_ };
@@ -158,7 +199,7 @@ namespace syntropy
 
     inline Quaternion Inverse(const Quaternion& rhs)
     {
-        return (1.0f / SqrNorm(rhs)) * Conjugate(rhs);
+        return Conjugate(rhs) / SqrNorm(rhs);
     }
 
     inline float Norm(const Quaternion& rhs)
@@ -171,11 +212,14 @@ namespace syntropy
         return Dot(rhs.xyz_, rhs.xyz_) + rhs.w_ * rhs.w_;
     }
 
-   inline Quaternion MakeRotation(const Float3& axis, float angle)
+   inline Quaternion Normalize(const Quaternion& rhs)
    {
-       auto theta = angle * 0.5f;
+       return rhs / Norm(rhs);
+   }
 
-       return { std::sin(theta) * Normalize(axis), std::cos(theta) };
+   inline bool IsNormalized(const Quaternion& rhs, float epsilon)
+   {
+       return FastAbs(SqrNorm(rhs)) < epsilon;
    }
 
 }
