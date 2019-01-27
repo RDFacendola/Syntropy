@@ -151,7 +151,7 @@
     <ClInclude Include="include\syntropy\serialization\json\serializers\fundamental_serializers.h" />
     <ClInclude Include="include\syntropy\serialization\json\serializers\stl_serializers.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
-    <ClInclude Include="include\syntropy\time\calendar.h" />
+    <ClInclude Include="include\syntropy\time\time.h" />
     <ClInclude Include="include\syntropy\time\timer.h" />
     <ClInclude Include="include\syntropy\type_traits.h" />
     <ClInclude Include="include\syntropy\unit_test\test.h" />
@@ -195,7 +195,6 @@
     <ClCompile Include="src\syntropy\serialization\json\json.cpp" />
     <ClCompile Include="src\syntropy\serialization\json\serialization.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
-    <ClCompile Include="src\syntropy\time\calendar.cpp" />
     <ClCompile Include="src\syntropy\unit_test\test.cpp" />
     <ClCompile Include="src\syntropy\unit_test\test_case.cpp" />
     <ClCompile Include="src\syntropy\unit_test\test_fixture.cpp" />

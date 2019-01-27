@@ -73,7 +73,6 @@
     <ClInclude Include="include\syntropy\serialization\json\deserialization.h" />
     <ClInclude Include="include\syntropy\serialization\json\json.h" />
     <ClInclude Include="include\syntropy\serialization\json\serialization.h" />
-    <ClInclude Include="include\syntropy\time\calendar.h" />
     <ClInclude Include="include\syntropy\time\timer.h" />
     <ClInclude Include="include\syntropy\unit_test\test.h" />
     <ClInclude Include="include\syntropy\unit_test\test_case.h" />
@@ -87,6 +86,7 @@
     <ClInclude Include="include\syntropy\patterns\tuple.h" />
     <ClInclude Include="include\syntropy\math\quaternion.h" />
     <ClInclude Include="include\syntropy\math\rotation.h" />
+    <ClInclude Include="include\syntropy\time\time.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
@@ -121,7 +121,6 @@
     <ClCompile Include="src\syntropy\serialization\json\deserialization.cpp" />
     <ClCompile Include="src\syntropy\serialization\json\json.cpp" />
     <ClCompile Include="src\syntropy\serialization\json\serialization.cpp" />
-    <ClCompile Include="src\syntropy\time\calendar.cpp" />
     <ClCompile Include="src\syntropy\unit_test\test.cpp" />
     <ClCompile Include="src\syntropy\unit_test\test_case.cpp" />
     <ClCompile Include="src\syntropy\unit_test\test_fixture.cpp" />
