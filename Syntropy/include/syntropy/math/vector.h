@@ -32,34 +32,34 @@ namespace syntropy
     template <typename T>
     struct BaseVectorN<T, 1>
     {
-        T x_;                           ///< \brief First element.
+        T x_{};                         ///< \brief First element.
     };
 
     /// \brief Storage type for 2-vectors.
     template <typename T>
     struct BaseVectorN<T, 2>
     {
-        T x_;                           ///< \brief First element.
-        T y_;                           ///< \brief Second element.
+        T x_{};                         ///< \brief First element.
+        T y_{};                         ///< \brief Second element.
     };
 
     /// \brief Storage type for 3-vectors.
     template <typename T>
     struct BaseVectorN<T, 3>
     {
-        T x_;                           ///< \brief First element.
-        T y_;                           ///< \brief Second element.
-        T z_;                           ///< \brief Third element.
+        T x_{};                         ///< \brief First element.
+        T y_{};                         ///< \brief Second element.
+        T z_{};                         ///< \brief Third element.
     };
 
     /// \brief Storage type for 4-vectors.
     template <typename T>
     struct BaseVectorN<T, 4>
     {
-        T x_;                           ///< \brief First element.
-        T y_;                           ///< \brief Second element.
-        T z_;                           ///< \brief Third element.
-        T w_;                           ///< \brief Fourth element.
+        T x_{};                         ///< \brief First element.
+        T y_{};                         ///< \brief Second element.
+        T z_{};                         ///< \brief Third element.
+        T w_{};                         ///< \brief Fourth element.
     };
 
     /************************************************************************/
@@ -71,17 +71,8 @@ namespace syntropy
     template <typename T, size_t kRank>
     struct VectorN : BaseVectorN<T, kRank>
     {
-        /// \brief Vector where each element equals 0.
-        static const VectorN kZero;
-
-        /// \brief Vector where each element equals 1.
-        static const VectorN kOne;
-
-        /// \brief Create an uninitialized vector.
-        VectorN(uninitialized_t);
-
         /// \brief Create a zero-vector.
-        VectorN();
+        VectorN() = default;
 
         /// \brief Create a vector having all equal elements.
         /// \param value Value for each element.
@@ -383,25 +374,6 @@ namespace syntropy
     /************************************************************************/
 
     template <typename T, size_t kRank>
-    inline const VectorN<T, kRank> VectorN<T, kRank>::kZero = VectorN<T, kRank>(T(0));
-
-    template <typename T, size_t kRank>
-    inline const VectorN<T, kRank> VectorN<T, kRank>::kOne = VectorN<T, kRank>(T(1));
-
-    template <typename T, size_t kRank>
-    VectorN<T, kRank>::VectorN(uninitialized_t)
-    {
-
-    }
-
-    template <typename T, size_t kRank>
-    VectorN<T, kRank>::VectorN()
-        : VectorN(kZero)
-    {
-
-    }
-
-    template <typename T, size_t kRank>
     VectorN<T, kRank>::VectorN(T value)
     {
         LockstepApply([value](auto& rhs) { rhs = value; }, *this);
@@ -642,7 +614,7 @@ namespace syntropy
     template <typename T, size_t kRank>
     inline auto operator-(const VectorN<T, kRank>& lhs)
     {
-        return VectorN<T, kRank>::kZero - lhs;
+        return VectorN<T, kRank>(T(0)) - lhs;
     }
 
     template <typename T, typename U, size_t kRank>
@@ -709,7 +681,7 @@ namespace syntropy
     template <typename T, std::size_t kTRank, typename U, std::size_t kURank>
     inline auto Append(const VectorN<T, kTRank>& lhs, const VectorN<U, kURank>& rhs)
     {
-        auto out = VectorN<T, kTRank + kURank>(uninitialized);
+        auto out = VectorN<T, kTRank + kURank>{};
 
         AsVector<kTRank, 0>(out) = lhs;
         AsVector<kURank, kTRank>(out) = rhs;

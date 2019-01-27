@@ -22,20 +22,17 @@ namespace syntropy
     /// \author Raffaele D. Facendola - January 2019
     struct Quaternion
     {
-        /// \brief Quaternion which represents no rotation.
-        static const Quaternion kIdentity;
-
         /// \brief Imaginary part of the quaternion.
         Float3 xyz_;
 
         /// \brief Real part of the quaternion.
-        float w_;
-
-        /// \brief Create an uninitialized quaternion.
-        Quaternion(uninitialized_t);
+        float w_{};
 
         /// \brief Create an identity quaternion.
-        Quaternion();
+        Quaternion() = default;
+
+        /// \brief Create a quaternion from explicit values.
+        Quaternion(float x, float y, float z, float w);
 
         /// \brief Create a quaternion from explicit values.
         Quaternion(const Float3& xyz, float w);
@@ -101,16 +98,8 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    inline const Quaternion Quaternion::kIdentity = Quaternion(Float3::kZero, 0.0f);
-
-    inline Quaternion::Quaternion(uninitialized_t)
-        : xyz_(uninitialized)
-    {
-
-    }
-
-    inline Quaternion::Quaternion()
-        : Quaternion(kIdentity)
+    inline Quaternion::Quaternion(float x, float y, float z, float w)
+        : Quaternion({ x, y, z }, w)
     {
 
     }

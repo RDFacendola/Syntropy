@@ -23,9 +23,6 @@ namespace syntropy
     /// \author Raffaele D. Facendola - January 2019
     struct Rotation
     {
-        /// \brief Object that represents no rotation.
-        static const Rotation kIdentity;
-
         /// \brief Create an identity rotation.
         Rotation() = default;
 
@@ -60,9 +57,6 @@ namespace syntropy
 
     private:
 
-        /// \brief Create an uninitialized rotation.
-        Rotation(uninitialized_t);
-
         /// \brief Unit quaternion representing this rotation.
         Quaternion quaternion_;
 
@@ -78,8 +72,6 @@ namespace syntropy
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
-
-    inline const Rotation Rotation::kIdentity = Quaternion();
 
     inline Rotation::Rotation(const Float3& axis, float angle)
         : quaternion_(std::sin(angle * 0.5f) * Normalize(axis), std::cos(angle * 0.5f))
@@ -107,7 +99,7 @@ namespace syntropy
 
     inline Rotation Rotation::operator-() const
     {
-        Rotation inverse(uninitialized);
+        auto inverse = Rotation{};
 
         inverse.quaternion_ = Conjugate(quaternion_);
 
@@ -137,11 +129,6 @@ namespace syntropy
     inline bool Rotation::IsIdentity(float epsilon) const
     {
         return FastAbs(quaternion_.w_) > (1.0f - epsilon);
-    }
-
-    inline Rotation::Rotation(uninitialized_t)
-    {
-
     }
 
     inline Rotation operator*(const Rotation& lhs, const Rotation& rhs)

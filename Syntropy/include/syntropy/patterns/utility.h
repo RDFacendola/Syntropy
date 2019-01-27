@@ -33,11 +33,6 @@ namespace syntropy
     template <typename TType>
     inline constexpr tag_t<TType> tag{};
 
-    /// \brief Tag type used to declare an uninitialized type.
-    struct uninitialized_t {};
- 
-    inline constexpr uninitialized_t uninitialized{};
-
     /// \brief Form a l-value reference to a non-const type of rhs.
     template <typename TType>
     std::remove_const_t<TType>& AsNonConst(const TType& rhs);
