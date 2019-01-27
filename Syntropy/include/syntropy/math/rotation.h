@@ -134,7 +134,7 @@ namespace syntropy
         return quaternion_.xyz_ * FastInvSqrt(1.0f - quaternion_.w_ * quaternion_.w_);      // sin(theta) = sqrt(1 - cos(theta)^2)
     }
 
-    bool Rotation::IsIdentity(float epsilon) const
+    inline bool Rotation::IsIdentity(float epsilon) const
     {
         return FastAbs(quaternion_.w_) > (1.0f - epsilon);
     }
