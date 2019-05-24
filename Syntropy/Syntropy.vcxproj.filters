@@ -87,6 +87,7 @@
     <ClInclude Include="include\syntropy\math\quaternion.h" />
     <ClInclude Include="include\syntropy\math\rotation.h" />
     <ClInclude Include="include\syntropy\time\time.h" />
+    <ClInclude Include="include\syntropy\math\metrics.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />

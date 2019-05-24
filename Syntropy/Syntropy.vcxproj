@@ -14,7 +14,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B970D1B5-1F2A-495A-BF7E-3DBBBEE1F33A}</ProjectGuid>
     <RootNamespace>syntropy</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='dbg|x64'" Label="Configuration">
@@ -86,6 +86,7 @@
     <ClInclude Include="include\syntropy\macro.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\math\math.h" />
+    <ClInclude Include="include\syntropy\math\metrics.h" />
     <ClInclude Include="include\syntropy\math\quaternion.h" />
     <ClInclude Include="include\syntropy\math\random.h" />
     <ClInclude Include="include\syntropy\math\rotation.h" />
