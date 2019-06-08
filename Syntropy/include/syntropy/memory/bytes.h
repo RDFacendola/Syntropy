@@ -155,7 +155,7 @@ namespace syntropy
 
     /// \brief Bitwise not of a byte quantity.
     /// \return Returns a memory amount which is the bitwise not of rhs.
-    constexpr Bytes operator!(const Bytes& rhs) noexcept;
+    constexpr Bytes operator~(const Bytes& rhs) noexcept;
 
     /// \brief Bitwise and between two bytes quantities.
     /// \return Returns a memory amount which is equal to the bitwise and between lhs and rhs.
@@ -334,9 +334,9 @@ namespace syntropy
         return Bytes(lhs) <<= rhs;
     }
 
-    constexpr Bytes operator!(const Bytes& rhs) noexcept
+    constexpr Bytes operator~(const Bytes& rhs) noexcept
     {
-        return Bytes(!std::size_t(rhs));
+        return Bytes(~std::size_t(rhs));
     }
 
     constexpr Bytes operator&(const Bytes& lhs, const Bytes& rhs) noexcept
