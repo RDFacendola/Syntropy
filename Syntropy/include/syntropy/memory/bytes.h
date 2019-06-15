@@ -818,12 +818,12 @@ namespace syntropy
 
     constexpr syntropy::Bytes ToBytesCeil(Bits rhs)
     {
-        return syntropy::Bytes(Ceil(std::size_t(rhs), Bits::kByte));
+        return Bytes(DivCeil(std::size_t(rhs), Bits::kByte));
     }
 
     constexpr syntropy::Bytes ToBytesFloor(Bits rhs)
     {
-        return syntropy::Bytes(Floor(std::size_t(rhs), Bits::kByte));
+        return Bytes(DivFloor(std::size_t(rhs), Bits::kByte));
     }
 
     template <typename TType>
