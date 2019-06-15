@@ -1,6 +1,6 @@
 
 /// \file bit.h
-/// \brief This header is part of the syntropy memory management system. It contains the definition of the Bit and BitReference type and related functions.
+/// \brief This header is part of the syntropy memory management system. It contains the definition of the bit types and bit-manipulation functionalities.
 ///
 /// \author Raffaele D. Facendola - June 2019
 
@@ -10,6 +10,7 @@
 #include <cstddef>
 
 #include "syntropy/memory/memory_address.h"
+#include "syntropy/memory/bytes.h"
 
 namespace syntropy
 {
@@ -91,24 +92,26 @@ namespace syntropy
     /// \return Returns the bitwise and between lhs and rhs.
     constexpr Bit operator^(const Bit& lhs, const Bit& rhs) noexcept;
 
-    /// \brief User-defined literal used to convert a number to a bit.
-    /// \param lhs Number to convert.
-    constexpr Bit operator "" _Bit(std::size_t lhs);
-    
+    /// \brief Copy a number of bits from one bit-addressed memory region to another one.
+    /// \remarks If the two memory regions overlap, the behavior of this function is undefined.
+    /// \param destination Memory location to copy to.
+    /// \param source Memory location to copy from.
+    /// \param count Number of bits to copy.
+    constexpr void BitMemCopy(MemoryBitAddress destination, MemoryBitAddress source, Bits count);
+
     /************************************************************************/
     /* BIT REFERENCE                                                        */
     /************************************************************************/
 
-    /// \brief Reference to a bit in a byte.
+    /// \brief Reference to a single bit.
     /// \author Raffaele D. Facendola - June 2019
     class BitReference
     {
     public:
 
         /// \brief Create a reference to a bit.
-        /// \param address Base address.
-        /// \param offset Offset relative to the base address, in bits.
-        constexpr BitReference(const MemoryAddress& address, std::size_t offset);
+        /// \param address Bit address.
+        constexpr BitReference(const MemoryBitAddress& address);
 
         /// \brief Get the boolean value of the bit.
         /// \return Returns true if the bit is one, returns false otherwise.
@@ -122,11 +125,12 @@ namespace syntropy
 
     private:
 
-        /// \brief Pointer of the byte holding the bit.
-        uint8_t* byte_{ nullptr };
+        /// \brief Base address of the bit.
+        uint8_t* base_address_{ nullptr };
 
-        /// \brief Index of the bit.
-        uint8_t index_{ 0 };
+        /// \brief Bit offset relative to the base address.
+        uint8_t offset_{ 0 };
+
     };
 
     /************************************************************************/
@@ -205,16 +209,40 @@ namespace syntropy
         return Bit(lhs) ^= rhs;
     }
 
-    constexpr Bit operator "" _Bit(std::size_t lhs)
+    constexpr void BitMemCopy(MemoryBitAddress destination, MemoryBitAddress source, Bits count)
     {
-        return Bit(lhs);
+        while (count > 0_Bits)
+        {
+            auto source_buffer = *source.GetBaseAddress().As<uint8_t>();
+            auto& destination_buffer = *destination.GetBaseAddress().As<uint8_t>();
+
+            auto destination_offset = destination.GetOffset();
+            auto source_offset = source.GetOffset();
+
+            auto bits = std::min(count, Bits(Bits::kByte) - std::max(destination_offset, source_offset));       // Number of bits to copy this iteration.
+
+            auto source_mask = uint8_t((1u << std::size_t(bits)) - 1u);
+            auto destination_mask = ~uint8_t((source_mask << std::size_t(destination_offset)));
+
+            auto chunk = uint8_t(source_buffer >> std::size_t(source_offset));
+
+            chunk &= source_mask;
+            chunk <<= std::size_t(destination_offset);
+
+            destination_buffer &= destination_mask;
+            destination_buffer |= chunk;
+
+            destination += bits;
+            source += bits;
+            count -= bits;
+        }
     }
 
     // BitReference.
 
-    constexpr BitReference::BitReference(const MemoryAddress& address, std::size_t offset)
-        : byte_((address + Bytes(offset / 8)).As<uint8_t>())
-        , index_(offset % 8)
+    constexpr BitReference::BitReference(const MemoryBitAddress& address)
+        : base_address_(address.GetBaseAddress().As<uint8_t>())
+        , offset_(static_cast<uint8_t>(std::size_t(address.GetOffset())))
     {
 
     }
@@ -226,15 +254,15 @@ namespace syntropy
 
     constexpr BitReference::operator Bit() const
     {
-        auto bit = !!(*byte_ & (1u << index_));
+        auto bit = !!(*base_address_ & uint8_t(1u << offset_));
 
         return Bit(bit);
     }
 
     inline BitReference& BitReference::operator=(const Bit& bit)
     {
-        *byte_ &= ~uint8_t(1u << index_);
-        *byte_ |= uint8_t(bit << index_);
+        *base_address_ &= ~uint8_t(1u << offset_);
+        *base_address_ |= uint8_t(bit << offset_);
 
         return *this;
     }

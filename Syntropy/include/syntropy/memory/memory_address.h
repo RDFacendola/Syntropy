@@ -1,6 +1,6 @@
 
 /// \file memory_address.h
-/// \brief This header is part of the syntropy memory management system. It contains the definition of the Address type and related functions.
+/// \brief This header is part of the syntropy memory management system. It contains the definition of the address type and related functions.
 ///
 /// \author Raffaele D. Facendola - August 2018
 
@@ -137,8 +137,105 @@ namespace syntropy
     std::ostream& operator<<(std::ostream& lhs, const MemoryAddress& rhs);
 
     /************************************************************************/
+    /* MEMORY BIT ADDRESS                                                   */
+    /************************************************************************/
+
+    /// \brief Represents a bit address.
+    /// This type is meant to be used when addressing non-byte aligned memory blocks.
+    /// \author Raffaele D. Facendola - June 2019
+    class MemoryBitAddress
+    {
+    public:
+
+        /// \brief Create a en empty address.
+        constexpr MemoryBitAddress() = default;
+
+        /// \brief Create a new address.
+        /// \param address Base address.
+        constexpr MemoryBitAddress(MemoryAddress address);
+
+        /// \brief Create a new address.
+        /// \param address Base address.
+        /// \param offset Offset relative to the base address, in bits.
+        constexpr MemoryBitAddress(MemoryAddress address, Bits offset);
+
+        /// \brief Create a en empty address.
+        constexpr MemoryBitAddress(std::nullptr_t);
+
+        /// \brief Default copy-constructor.
+        constexpr MemoryBitAddress(const MemoryBitAddress&) = default;
+
+        /// \brief Default assignment operator.
+        MemoryBitAddress& operator=(const MemoryBitAddress&) = default;
+
+        /// \brief Get the memory base address, aligned down to byte boundary.
+        constexpr MemoryAddress GetBaseAddress() const noexcept;
+
+        /// \brief Get the bit offset, relative to the base address.
+        constexpr Bits GetOffset() const noexcept;
+
+        /// \brief Check whether the memory address points to a valid address or to nullptr.
+        /// \return Returns true if the stored address is nullptr, returns false otherwise.
+        constexpr operator bool() const noexcept;
+
+        /// \brief Move the address forward.
+        /// \return Returns a reference to this element.
+        constexpr MemoryBitAddress& operator+=(const Bits& rhs) noexcept;
+
+        /// \brief Move the address backwards.
+        /// \return Returns a reference to this element.
+        constexpr MemoryBitAddress& operator-=(const Bits& rhs) noexcept;
+
+    private:
+
+        /// \brief Underlying memory address.
+        MemoryAddress address_;
+
+        /// \brief Bit offset, relative to the address.
+        Bits offset_;
+
+    };
+
+    /// \brief Equality comparison for MemoryBitAddress.
+    /// \return Returns true if lhs and rhs refer to the same address, returns false otherwise.
+    constexpr bool operator==(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept;
+
+    /// \brief Inequality comparison for MemoryBitAddress.
+    /// \return Returns true if lhs and rhs refer to different address, returns false otherwise.
+    constexpr bool operator!=(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept;
+
+    /// \brief Greater-than comparison for MemoryBitAddress.
+    /// \return Returns true if lhs refers to an address that is strictly greater than rhs, returns false otherwise.
+    constexpr bool operator>(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept;
+
+    /// \brief Less-than comparison for MemoryBitAddress.
+    /// \return Returns true if lhs refers to an address that is strictly less than rhs, returns false otherwise.
+    constexpr bool operator<(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept;
+
+    /// \brief Greater-or-equal comparison for MemoryBitAddress.
+    /// \return Returns true if lhs refers to an address that is equal or greater than rhs, returns false otherwise.
+    constexpr bool operator>=(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept;
+
+    /// \brief Less-or-equal comparison for MemoryBitAddress.
+    /// \return Returns true if lhs refers to an address that is equal or less than rhs, returns false otherwise.
+    constexpr bool operator<=(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept;
+
+    /// \brief Move a bit address forward.
+    /// \return Returns a bit address which is equal to lhs moved forward by rhs bits.
+    constexpr MemoryBitAddress operator+(const MemoryBitAddress& lhs, const Bits& rhs) noexcept;
+
+    /// \brief Move a bit address backward.
+    /// \return Returns a bit address which is equal to lhs moved backward by rhs bits.
+    constexpr MemoryBitAddress operator-(const MemoryBitAddress& lhs, const Bits& rhs) noexcept;
+
+    /// \brief Stream insertion for MemoryAddress.
+    std::ostream& operator<<(std::ostream& lhs, const MemoryBitAddress& rhs);
+
+    /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
+
+    // Memory address.
 
     constexpr MemoryAddress::MemoryAddress(void* address)
         : address_(address)
@@ -273,6 +370,107 @@ namespace syntropy
     inline std::ostream& operator<<(std::ostream& lhs, const MemoryAddress& rhs)
     {
         return lhs << uintptr_t(rhs);
+    }
+
+    // MemoryBitAddress.
+
+    constexpr MemoryBitAddress::MemoryBitAddress(MemoryAddress address)
+        : address_(address)
+    {
+
+    }
+
+    constexpr MemoryBitAddress::MemoryBitAddress(MemoryAddress address, Bits offset)
+        : address_(address + ToBytesFloor(offset))
+        , offset_(offset % Bits::kByte)
+    {
+
+    }
+
+    constexpr MemoryBitAddress::MemoryBitAddress(std::nullptr_t)
+        : MemoryBitAddress()
+    {
+
+    }
+
+    constexpr MemoryAddress MemoryBitAddress::GetBaseAddress() const noexcept
+    {
+        return address_;
+    }
+
+    constexpr Bits MemoryBitAddress::GetOffset() const noexcept
+    {
+        return offset_;
+    }
+
+    constexpr MemoryBitAddress::operator bool() const noexcept
+    {
+        return address_ || (offset_ > 0_Bits);
+    }
+
+    constexpr MemoryBitAddress& MemoryBitAddress::operator+=(const Bits& rhs) noexcept
+    {
+        offset_ += rhs;
+        address_ += ToBytesFloor(offset_);
+        offset_ %= Bits::kByte;
+        return *this;
+    }
+
+    constexpr MemoryBitAddress& MemoryBitAddress::operator-=(const Bits& rhs) noexcept
+    {
+        offset_ = (Bits(Bits::kByte) - offset_) + rhs;
+        address_ -= ToBytesFloor(offset_ - 1_Bits);
+        offset_ = (Bits(Bits::kByte) - (offset_ % Bits::kByte)) % Bits::kByte;
+        return *this;
+    }
+
+    constexpr bool operator==(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept
+    {
+        return (lhs.GetBaseAddress() == rhs.GetBaseAddress()) && (lhs.GetOffset() == rhs.GetOffset());
+    }
+
+    constexpr bool operator!=(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept
+    {
+        return !(lhs == rhs);
+    }
+
+    constexpr bool operator>(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept
+    {
+        return (lhs.GetBaseAddress() > rhs.GetBaseAddress()) ||
+            (lhs.GetBaseAddress() == rhs.GetBaseAddress() && lhs.GetOffset() > rhs.GetOffset());
+    }
+
+    constexpr bool operator<(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept
+    {
+        return (lhs.GetBaseAddress() < rhs.GetBaseAddress()) ||
+            (lhs.GetBaseAddress() == rhs.GetBaseAddress() && lhs.GetOffset() < rhs.GetOffset());
+    }
+
+    constexpr bool operator>=(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept
+    {
+        return (lhs.GetBaseAddress() > rhs.GetBaseAddress()) ||
+            (lhs.GetBaseAddress() == rhs.GetBaseAddress() && lhs.GetOffset() >= rhs.GetOffset());
+    }
+
+    constexpr bool operator<=(const MemoryBitAddress& lhs, const MemoryBitAddress& rhs) noexcept
+    {
+        return (lhs.GetBaseAddress() < rhs.GetBaseAddress()) ||
+            (lhs.GetBaseAddress() == rhs.GetBaseAddress() && lhs.GetOffset() <= rhs.GetOffset());
+    }
+
+    constexpr MemoryBitAddress operator+(const MemoryBitAddress& lhs, const Bits& rhs) noexcept
+    {
+        return MemoryBitAddress(lhs) += rhs;
+    }
+
+    constexpr MemoryBitAddress operator-(const MemoryBitAddress& lhs, const Bits& rhs) noexcept
+    {
+        return MemoryBitAddress(lhs) -= rhs;
+    }
+
+    inline std::ostream& operator<<(std::ostream& lhs, const MemoryBitAddress& rhs)
+    {
+        return lhs << rhs.GetBaseAddress() << ":" << rhs.GetOffset();
     }
 }
 
