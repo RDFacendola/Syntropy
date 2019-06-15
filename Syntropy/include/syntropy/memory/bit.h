@@ -92,6 +92,18 @@ namespace syntropy
     /// \return Returns the bitwise and between lhs and rhs.
     constexpr Bit operator^(const Bit& lhs, const Bit& rhs) noexcept;
 
+    /// \brief User-defined literal used to convert a number to a bit value.
+    /// \param number Number to convert.
+    constexpr Bit operator "" _Bit(std::size_t lhs);
+
+    /// \brief Template specialization for Bit.
+    template <>
+    constexpr Bits BitsOf<Bit>(const Bit& rhs);
+
+    /// \brief Template specialization for Bit.
+    template <>
+    constexpr Bits BitsOf<Bit>();
+
     /// \brief Copy a number of bits from one bit-addressed memory region to another one.
     /// \remarks If the two memory regions overlap, the behavior of this function is undefined.
     /// \param destination Memory location to copy to.
@@ -207,6 +219,23 @@ namespace syntropy
     constexpr Bit operator^(const Bit& lhs, const Bit& rhs) noexcept
     {
         return Bit(lhs) ^= rhs;
+    }
+
+    constexpr Bit operator "" _Bit(std::size_t lhs)
+    {
+        return Bit(lhs);
+    }
+
+    template <>
+    constexpr Bits BitsOf<Bit>(const Bit& rhs)
+    {
+        return 1_Bits;
+    }
+
+    template <>
+    constexpr Bits BitsOf<Bit>()
+    {
+        return 1_Bits;
     }
 
     constexpr void BitMemCopy(MemoryBitAddress destination, MemoryBitAddress source, Bits count)
