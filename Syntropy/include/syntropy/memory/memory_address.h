@@ -156,8 +156,17 @@ namespace syntropy
 
         /// \brief Create a new address.
         /// \param address Base address.
+        constexpr MemoryBitAddress(void* address);
+
+        /// \brief Create a new address.
+        /// \param address Base address.
         /// \param offset Offset relative to the base address, in bits.
         constexpr MemoryBitAddress(MemoryAddress address, Bits offset);
+
+        /// \brief Create a new address.
+        /// \param address Base address.
+        /// \param offset Offset relative to the base address, in bits.
+        constexpr MemoryBitAddress(void* address, Bits offset);
 
         /// \brief Create a en empty address.
         constexpr MemoryBitAddress(std::nullptr_t);
@@ -380,9 +389,21 @@ namespace syntropy
 
     }
 
+    constexpr MemoryBitAddress::MemoryBitAddress(void* address)
+        : MemoryBitAddress(MemoryAddress(address))
+    {
+
+    }
+
     constexpr MemoryBitAddress::MemoryBitAddress(MemoryAddress address, Bits offset)
         : address_(address + ToBytesFloor(offset))
         , offset_(offset % Bits::kByte)
+    {
+
+    }
+
+    constexpr MemoryBitAddress::MemoryBitAddress(void* address, Bits offset)
+        : MemoryBitAddress(MemoryAddress(address), offset)
     {
 
     }
