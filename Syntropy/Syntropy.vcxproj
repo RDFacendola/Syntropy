@@ -109,6 +109,7 @@
     <ClInclude Include="include\syntropy\memory\allocators\stack_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\standard_allocator.h" />
     <ClInclude Include="include\syntropy\memory\bit.h" />
+    <ClInclude Include="include\syntropy\memory\bit_buffer.h" />
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\memory\memory_address.h" />
     <ClInclude Include="include\syntropy\memory\memory_buffer.h" />
