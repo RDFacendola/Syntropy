@@ -63,29 +63,29 @@ namespace syntropy
     /// \brief Get the remainder after the division of lhs by rhs.
     /// \remarks The sign of the remainder is the same as lhs's.
     template <typename TNumber>
-    TNumber Mod(TNumber lhs, TNumber rhs);
+    constexpr TNumber Mod(TNumber lhs, TNumber rhs);
 
     // Comparison.
 
     /// \brief Check whether two numbers are approximately equal.
     /// \param epsilon Error percentage relative to the absolute larger number.
-    bool ApproximatelyEqual(float lhs, float rhs, float epsilon = 0.01f);
+    constexpr bool ApproximatelyEqual(float lhs, float rhs, float epsilon = 0.01f);
 
     /// \brief Check whether two numbers are essentially equal.
     /// \param epsilon Error percentage relative to the absolute smaller number.
-    bool EssentiallyEqual(float lhs, float rhs, float epsilon = 0.01f);
+    constexpr bool EssentiallyEqual(float lhs, float rhs, float epsilon = 0.01f);
 
     // Interpolation.
 
     /// \brief Linearly interpolate lhs and rhs using alpha as blending factor.
     template <typename TType>
-    TType Lerp(const TType& lhs, const TType& rhs, float alpha);
+    constexpr TType Lerp(const TType& lhs, const TType& rhs, float alpha);
 
     // Fast approximation functions.
 
     /// \brief Get the absolute value of number.
     template <typename TNumber>
-    TNumber FastAbs(TNumber rhs);
+    constexpr TNumber FastAbs(TNumber rhs);
 
     /// \brief Get the approximated inverse square root of number.
     float FastInvSqrt(float rhs);
@@ -94,7 +94,7 @@ namespace syntropy
     float FastSqrt(float rhs);
 
     /// \brief Get the approximated hyperbolic tangent of rhs.
-    float FastTanh(float rhs);
+    constexpr float FastTanh(float rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -167,7 +167,7 @@ namespace syntropy
     }
 
     template <typename TNumber>
-    TNumber Mod(TNumber lhs, TNumber rhs)
+    constexpr TNumber Mod(TNumber lhs, TNumber rhs)
     {
         if constexpr (std::is_floating_point_v<TNumber>)
         {
@@ -179,7 +179,7 @@ namespace syntropy
         }
     }
 
-    inline bool ApproximatelyEqual(float lhs, float rhs, float epsilon)
+    constexpr bool ApproximatelyEqual(float lhs, float rhs, float epsilon)
     {
         auto abs_lhs = FastAbs(lhs);
         auto abs_rhs = FastAbs(rhs);
@@ -187,7 +187,7 @@ namespace syntropy
         return FastAbs(lhs - rhs) <= ((abs_lhs < abs_rhs ? abs_rhs : abs_lhs) * epsilon);
     }
 
-    inline bool EssentiallyEqual(float lhs, float rhs, float epsilon)
+    constexpr bool EssentiallyEqual(float lhs, float rhs, float epsilon)
     {
         auto abs_lhs = FastAbs(lhs);
         auto abs_rhs = FastAbs(rhs);
@@ -196,13 +196,13 @@ namespace syntropy
     }
 
     template <typename TType>
-    inline TType Lerp(const TType& lhs, const TType& rhs, float alpha)
+    constexpr TType Lerp(const TType& lhs, const TType& rhs, float alpha)
     {
         return lhs + (rhs - lhs) * alpha;
     }
 
     template <typename TNumber>
-    inline TNumber FastAbs(TNumber rhs)
+    constexpr TNumber FastAbs(TNumber rhs)
     {
         return rhs > 0 ? rhs : -rhs;
     }
@@ -215,5 +215,24 @@ namespace syntropy
     inline float FastSqrt(float rhs)
     {
         return 1.0f / FastInvSqrt(rhs);
+    }
+
+    constexpr float FastTanh(float rhs)
+    {
+        // Pade approximation.
+
+        if (rhs < -3.0f)
+        {
+            return -1.0f;
+        }
+
+        if (rhs > 3.0f)
+        {
+            return +1.0f;
+        }
+
+        float rhs2 = rhs * rhs;
+
+        return rhs * (27.0f + rhs2) / (27.0f + 9.0f * rhs2);
     }
 }

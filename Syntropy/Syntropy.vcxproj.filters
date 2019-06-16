@@ -99,7 +99,6 @@
     <ClCompile Include="src\syntropy\diagnostics\log.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\log_channels.cpp" />
     <ClCompile Include="src\syntropy\math\hash.cpp" />
-    <ClCompile Include="src\syntropy\math\math.cpp" />
     <ClCompile Include="src\syntropy\math\random.cpp" />
     <ClCompile Include="src\syntropy\memory\allocator.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_buffer.cpp" />
