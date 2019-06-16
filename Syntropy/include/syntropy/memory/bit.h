@@ -109,7 +109,7 @@ namespace syntropy
     /// \param destination Memory location to copy to.
     /// \param source Memory location to copy from.
     /// \param count Number of bits to copy.
-    constexpr void BitMemCopy(MemoryBitAddress destination, MemoryBitAddress source, Bits count);
+    constexpr void BitMemCopy(MemoryBitAddress destination, ConstMemoryBitAddress source, Bits count);
 
     /************************************************************************/
     /* BIT REFERENCE                                                        */
@@ -238,7 +238,7 @@ namespace syntropy
         return 1_Bits;
     }
 
-    constexpr void BitMemCopy(MemoryBitAddress destination, MemoryBitAddress source, Bits count)
+    constexpr void BitMemCopy(MemoryBitAddress destination, ConstMemoryBitAddress source, Bits count)
     {
         while (count > 0_Bits)
         {
