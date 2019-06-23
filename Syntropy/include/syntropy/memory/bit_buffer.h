@@ -34,7 +34,7 @@ namespace syntropy
         BitBuffer(BitBuffer&&) = default;
 
         /// \brief Create a new buffer copying an existing memory region.
-        BitBuffer(MemoryAddress& address, Bits size);
+        BitBuffer(ConstMemoryAddress address, Bits size);
 
         /// \brief Create a new buffer by moving from an existing buffer.
         BitBuffer(std::vector<uint8_t> data, Bits size);
@@ -46,10 +46,17 @@ namespace syntropy
         BitBuffer& operator=(BitBuffer&&) = default;
 
         /// \brief Access the buffer data.
-        ConstMemoryBitAddress GetData() const;
+        ConstMemoryAddress GetData() const;
+
+        /// \brief Access the buffer data.
+        MemoryAddress GetData();
 
         /// \brief Get the size of the buffer, in bits.
         Bits GetSize() const;
+
+        /// \brief Resize the buffer.
+        /// \remarks If the new size is greater than the current one, the exceeding bits are zero-initialized.
+        void Resize(Bits size);
 
     private:
 
@@ -197,7 +204,7 @@ namespace syntropy
 
     // BitBuffer.
 
-    inline BitBuffer::BitBuffer(MemoryAddress& address, Bits size)
+    inline BitBuffer::BitBuffer(ConstMemoryAddress address, Bits size)
         : size_(size)
     {
         data_.resize(std::size_t(ToBytesCeil(size)));
@@ -212,7 +219,12 @@ namespace syntropy
         SYNTROPY_ASSERT(size <= Bytes(data_.size()));
     }
 
-    inline ConstMemoryBitAddress BitBuffer::GetData() const
+    inline ConstMemoryAddress BitBuffer::GetData() const
+    {
+        return &data_.front();
+    }
+
+    inline MemoryAddress BitBuffer::GetData()
     {
         return &data_.front();
     }
@@ -220,6 +232,12 @@ namespace syntropy
     inline Bits BitBuffer::GetSize() const
     {
         return size_;
+    }
+
+    inline void BitBuffer::Resize(Bits size)
+    {
+        data_.resize(std::size_t(ToBytesCeil(size)), 0u);
+        size_ = size;
     }
 
     // BitBufferView.
@@ -267,7 +285,7 @@ namespace syntropy
 
     inline ConstMemoryBitAddress BitBufferView::GetData() const
     {
-        return buffer_.GetData() + offset_;
+        return ConstMemoryBitAddress(buffer_.GetData()) + offset_;
     }
 
     inline Bits BitBufferView::GetSize() const
