@@ -7,6 +7,7 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bit.h"
@@ -36,8 +37,9 @@ namespace syntropy
         /// \brief Create a new buffer copying an existing memory region.
         BitBuffer(ConstMemoryAddress address, Bits size);
 
-        /// \brief Create a new buffer by moving from an existing buffer.
-        BitBuffer(std::vector<uint8_t> data, Bits size);
+        /// \brief Create a new buffer using an explicit value.
+        template <typename TType>
+        BitBuffer(const TType& value);
 
         /// \brief Default copy assignment operator.
         BitBuffer& operator=(const BitBuffer&) = default;
@@ -54,9 +56,26 @@ namespace syntropy
         /// \brief Get the size of the buffer, in bits.
         Bits GetSize() const;
 
+        /// \brief Reserve some memory, but leaves the current content of the buffer unchanged.
+        /// \param capacity Memory to reserve. If this value is less than the current size this method behaves as no-op.
+        void Reserve(Bits capacity);
+
         /// \brief Resize the buffer.
         /// \remarks If the new size is greater than the current one, the exceeding bits are zero-initialized.
         void Resize(Bits size);
+
+        /// \brief Read a value at given position.
+        /// \remarks Reading past the end of the buffer behaves as if the buffer ended with a trail of zeroes.
+        template <typename TType>
+        TType Read(Bits position);
+
+        /// \brief Write a value at given position, overwriting existing bits and resizing the buffer if necessary.
+        template <typename TType>
+        void Write(Bits position, const TType& value);
+
+        /// \brief Append a value at the end of the buffer.
+        template <typename TType>
+        void Append(const TType& value);
 
     private:
 
@@ -102,6 +121,11 @@ namespace syntropy
         /// \brief Get the size of the buffer, in bits.
         Bits GetSize() const;
 
+        /// \brief Read a value at given position.
+        /// \remarks Reading past the end of the buffer behaves as if the buffer ended with a trail of zeroes.
+        template <typename TType>
+        TType Read(Bits position);
+
     private:
 
         /// \brief Underlying bit buffer.
@@ -112,89 +136,6 @@ namespace syntropy
 
         /// \brief Size of the view.
         Bits size_ = 0_Bits;
-
-    };
-
-    /************************************************************************/
-    /* BIT WRITER                                                           */
-    /************************************************************************/
-
-    /// \brief Class used to sequentially write values to a bit-addressed buffer.
-    /// \author Raffaele D. Facendola - June 2019.
-    class BitWriter
-    {
-    public:
-
-        /// \brief Default constructor.
-        BitWriter() = default;
-
-        /// \brief Default copy constructor.
-        BitWriter(const BitWriter&) = default;
-
-        /// \brief Default move constructor.
-        BitWriter(BitWriter&&) = default;
-
-        /// \brief Append a value to the buffer.
-        template <typename TType>
-        BitWriter& operator<<(const TType& value);
-
-        /// \brief Get the written buffer and reset the writer status.
-        /// \return Returns a buffer containing all the values written so far through this writer.
-        BitBuffer GetBuffer();
-
-        /// \brief Reset the writer status.
-        void Reset();
-
-    private:
-
-        /// \brief Buffer data.
-        std::vector<uint8_t> data_;
-
-        /// \brief Size of the buffer.
-        Bits size_ = 0_Bits;
-
-    };
-
-    /************************************************************************/
-    /* BIT READER                                                           */
-    /************************************************************************/
-
-    /// \brief Class used to sequentially read values from a bit-addressed buffer.
-    /// \author Raffaele D. Facendola - June 2019.
-    class BitReader
-    {
-    public:
-
-        /// \brief Default constructor.
-        BitReader() = default;
-
-        /// \brief Default copy constructor.
-        BitReader(const BitReader&) = default;
-
-        /// \brief Default move constructor.
-        BitReader(BitReader&&) = default;
-
-        /// \brief Create a new buffer read for a buffer view.
-        BitReader(const BitBufferView& buffer_view);
-
-        /// \brief Read a value from the underlying buffer view.
-        /// \remarks Reading past the end of the view behaves as a no-op.
-        template <typename TType>
-        BitReader& operator>>(TType& value);
-
-        /// \brief Get the underlying reading buffer view.
-        const BitBufferView& GetBuffer() const;
-
-        /// \brief Reset the reader status.
-        void Reset();
-
-    private:
-
-        /// \brief View to the buffer to read the values from.
-        BitBufferView buffer_view_;
-
-        /// \brief Offset to start reading from.
-        Bits cursor_ = 0_Bits;
 
     };
 
@@ -212,11 +153,10 @@ namespace syntropy
         BitMemCopy(&data_.front(), address, size);
     }
 
-    inline BitBuffer::BitBuffer(std::vector<uint8_t> data, Bits size)
-        : data_(std::move(data))
-        , size_(size)
+    template <typename TType>
+    inline BitBuffer::BitBuffer(const TType& value)
     {
-        SYNTROPY_ASSERT(size <= Bytes(data_.size()));
+        Append(value);
     }
 
     inline ConstMemoryAddress BitBuffer::GetData() const
@@ -234,10 +174,41 @@ namespace syntropy
         return size_;
     }
 
+    inline void BitBuffer::Reserve(Bits capacity)
+    {
+        data_.reserve(std::size_t(ToBytesCeil(capacity)));
+    }
+
     inline void BitBuffer::Resize(Bits size)
     {
         data_.resize(std::size_t(ToBytesCeil(size)), 0u);
         size_ = size;
+    }
+
+    template <typename TType>
+    inline TType BitBuffer::Read(Bits position)
+    {
+        TType value;
+
+        auto read_count = std::min(BitsOf<TType>(), size_ - position);
+
+        BitMemCopy(&value, MemoryBitAddress(GetData(), position), read_count);
+
+        return value;
+    }
+
+    template <typename TType>
+    inline void BitBuffer::Write(Bits position, const TType& value)
+    {
+        Resize(std::max(size_, position + BitsOf<TType>()));
+
+        BitMemCopy(MemoryBitAddress(GetData(), position), &value, BitsOf<TType>());
+    }
+
+    template <typename TType>
+    inline void BitBuffer::Append(const TType& value)
+    {
+        Write(GetSize(), value);
     }
 
     // BitBufferView.
@@ -293,66 +264,16 @@ namespace syntropy
         return size_;
     }
 
-    // BitWriter.
-
     template <typename TType>
-    inline BitWriter& BitWriter::operator<<(const TType& value)
+    inline TType BitBufferView::Read(Bits position)
     {
-        auto offset = size_;
-        auto value_size = BitsOf(value);
+        TType value;
 
-        size_ += value_size;
+        auto read_count = std::min(BitsOf<TType>(), GetSize() - position);
 
-        data_.resize(std::size_t(ToBytesCeil(size_)));
+        BitMemCopy(&value, GetData() + position, read_count);
 
-        BitMemCopy(MemoryBitAddress(&data_.front(), offset), &value, value_size);
-
-        return *this;
+        return value;
     }
 
-    inline BitBuffer BitWriter::GetBuffer()
-    {
-        BitBuffer buffer{ std::move(data_), size_ };
-
-        data_ = {};
-        size_ = 0_Bits;
-
-        return buffer;
-    }
-
-    inline void BitWriter::Reset()
-    {
-        data_.clear();
-        size_ = 0_Bits;
-    }
-
-    // BitReader.
-
-    inline BitReader::BitReader(const BitBufferView& buffer_view)
-        : buffer_view_(buffer_view)
-    {
-
-    }
-
-    template <typename TType>
-    inline BitReader& BitReader::operator>>(TType& value)
-    {
-        auto value_size = std::min(BitsOf(value), buffer_view_.GetSize() - cursor_);
-
-        BitMemCopy(&value, buffer_view_.GetData() + cursor_, value_size);
-
-        cursor_ += value_size;
-
-        return *this;
-    }
-
-    inline const BitBufferView& BitReader::GetBuffer() const
-    {
-        return buffer_view_;
-    }
-
-    inline void BitReader::Reset()
-    {
-        cursor_ = 0_Bits;
-    }
 }
