@@ -269,6 +269,8 @@ namespace syntropy
     {
         TType value;
 
+        std::memset(&value, 0, sizeof(TType));
+
         auto read_count = std::min(BitsOf<TType>(), GetSize() - position);
 
         BitMemCopy(&value, GetData() + position, read_count);
