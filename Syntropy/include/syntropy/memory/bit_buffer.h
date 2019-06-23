@@ -39,6 +39,12 @@ namespace syntropy
         /// \brief Create a new buffer by moving from an existing buffer.
         BitBuffer(std::vector<uint8_t> data, Bits size);
 
+        /// \brief Default copy assignment operator.
+        BitBuffer& operator=(const BitBuffer&) = default;
+
+        /// \brief Default move assignment operator.
+        BitBuffer& operator=(BitBuffer&&) = default;
+
         /// \brief Access the buffer data.
         ConstMemoryBitAddress GetData() const;
 
