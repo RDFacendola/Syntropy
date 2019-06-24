@@ -67,7 +67,7 @@ namespace syntropy
         /// \brief Read a value at given position.
         /// \remarks Reading past the end of the buffer behaves as if the buffer ended with a trail of zeroes.
         template <typename TType>
-        TType Read(Bits position);
+        TType Read(Bits position) const;
 
         /// \brief Write a value at given position, overwriting existing bits and resizing the buffer if necessary.
         template <typename TType>
@@ -124,7 +124,7 @@ namespace syntropy
         /// \brief Read a value at given position.
         /// \remarks Reading past the end of the buffer behaves as if the buffer ended with a trail of zeroes.
         template <typename TType>
-        TType Read(Bits position);
+        TType Read(Bits position) const;
 
     private:
 
@@ -186,7 +186,7 @@ namespace syntropy
     }
 
     template <typename TType>
-    inline TType BitBuffer::Read(Bits position)
+    inline TType BitBuffer::Read(Bits position) const
     {
         TType value;
 
@@ -267,7 +267,7 @@ namespace syntropy
     }
 
     template <typename TType>
-    inline TType BitBufferView::Read(Bits position)
+    inline TType BitBufferView::Read(Bits position) const
     {
         TType value;
 
