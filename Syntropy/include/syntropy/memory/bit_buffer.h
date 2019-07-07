@@ -83,7 +83,17 @@ namespace syntropy
         /// \brief Read a value at given position.
         /// \remarks Reading past the end of the buffer behaves as if the buffer ended with a trail of zeroes.
         template <typename TType>
-        TType Read(Bits position) const;
+        TType ReadAs(Bits position) const;
+
+        /// \brief Read a number of bits at given position.
+        /// \param position Position to start reading from.
+        /// \param count Number of bits to read.
+        /// \remarks Reading past the end of the underlying streams behaves as if the underlying buffer ended with trailing zeroes.
+        BitBuffer ReadBits(Bits position, Bits count) const;
+
+        /// \brief Read a bit sequence from the buffer to the provided memory destination.
+        /// \return Returns the total number of bits read.
+        Bits ReadBits(MemoryBitAddress destination, Bits position, Bits count) const;
 
         /// \brief Write a value at given position, overwriting existing bits and resizing the buffer if necessary.
         template <typename TType>
@@ -174,7 +184,17 @@ namespace syntropy
         /// \brief Read a value at given position.
         /// \remarks Reading past the end of the buffer behaves as if the buffer ended with a trail of zeroes.
         template <typename TType>
-        TType Read(Bits position) const;
+        TType ReadAs(Bits position) const;
+
+        /// \brief Read a number of bits at given position.
+        /// \param position Position to start reading from.
+        /// \param count Number of bits to read.
+        /// \remarks Reading past the end of the underlying streams behaves as if the underlying buffer ended with trailing zeroes.
+        BitBuffer ReadBits(Bits position, Bits count) const;
+
+        /// \brief Read a bit sequence from the buffer to the provided memory destination.
+        /// \return Returns the total number of bits read.
+        Bits ReadBits(MemoryBitAddress destination, Bits position, Bits count) const;
 
     private:
 
@@ -256,17 +276,37 @@ namespace syntropy
     }
 
     template <typename TType>
-    inline TType BitBuffer::Read(Bits position) const
+    inline TType BitBuffer::ReadAs(Bits position) const
     {
-        TType value;
+        TType result;
 
-        std::memset(&value, 0, sizeof(TType));
+        std::memset(&result, 0, sizeof(TType));
 
-        auto read_count = std::min(BitsOf<TType>(), size_ - position);
+        ReadBits(&result, position, BitsOf<TType>());
 
-        BitMemCopy(&value, MemoryBitAddress(GetData(), position), read_count);
+        return result;
+    }
 
-        return value;
+    inline BitBuffer BitBuffer::ReadBits(Bits position, Bits count) const
+    {
+        auto result = BitBuffer{};
+
+        result.Resize(count);
+
+        ReadBits(&result, position, count);
+
+        return result;
+    }
+
+    inline Bits BitBuffer::ReadBits(MemoryBitAddress destination, Bits position, Bits count) const
+    {
+        count = ((position <= size_) ? std::min(count, size_ - position) : 0_Bits);
+
+        auto source = ConstMemoryBitAddress(GetData(), position);
+
+        BitMemCopy(destination, source, count);
+
+        return count;
     }
 
     template <typename TType>
@@ -392,13 +432,39 @@ namespace syntropy
     }
 
     template <typename TType>
-    inline TType BitBufferView::Read(Bits position) const
+    inline TType BitBufferView::ReadAs(Bits position) const
     {
-        TType value;
+        auto result = TType{};
 
-        std::memset(&value, 0, sizeof(TType));
+        std::memset(&result, 0, sizeof(TType));
 
-        auto read_count = std::min(BitsOf<TType>(), GetSize() - position);
+        ReadBits(&result, position, BitsOf<TType>());
+
+        return result;
+    }
+
+    inline BitBuffer BitBufferView::ReadBits(Bits position, Bits count) const
+    {
+        auto result = BitBuffer{};
+
+        result.Resize(count);
+
+        ReadBits(result.GetData(), position, count);
+
+        return result;
+    }
+
+    inline Bits BitBufferView::ReadBits(MemoryBitAddress destination, Bits position, Bits count) const
+    {
+        count = ((position <= size_) ? std::min(count, size_ - position) : 0_Bits);
+
+        auto source = GetData() + position;
+
+        BitMemCopy(destination, source, count);
+
+        return count;
+    }
+
 
         BitMemCopy(&value, GetData() + position, read_count);
 
