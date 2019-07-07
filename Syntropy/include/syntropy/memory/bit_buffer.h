@@ -141,11 +141,20 @@ namespace syntropy
         /// \brief Create a new view to a buffer.
         BitBufferView(const BitBuffer& buffer);
 
+        /// \brief A view to a temporary buffer is not allowed.
+        BitBufferView(const BitBuffer&&) = delete;
+
         /// \brief Create a new view to a buffer, starting at a given offset.
         BitBufferView(const BitBuffer& buffer, Bits offset);
 
+        /// \brief A view to a temporary buffer is not allowed.
+        BitBufferView(const BitBuffer&&, Bits) = delete;
+
         /// \brief Create a new view to a buffer, starting at a given offset and with an explicit size.
         BitBufferView(const BitBuffer& buffer, Bits offset, Bits size);
+
+        /// \brief A view to a temporary buffer is not allowed.
+        BitBufferView(const BitBuffer&&, Bits, Bits) = delete;
 
         /// \brief Default copy constructor.
         BitBufferView(const BitBufferView& rhs) = default;
