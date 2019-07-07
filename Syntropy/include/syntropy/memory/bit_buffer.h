@@ -210,6 +210,46 @@ namespace syntropy
     };
 
     /************************************************************************/
+    /* BIT BUFFER READER                                                    */
+    /************************************************************************/
+
+    /// \brief Class used to read a bit buffer sequentially.
+    /// \author Raffaele D. Facendola - June 2019.
+    class BitBufferReader
+    {
+    public:
+
+        /// \brief Create a new reader.
+        BitBufferReader(const BitBufferView& buffer);
+
+        /// \brief Check whether there are bits yet to read.
+        bool IsEnd() const;
+
+        /// \brief Read a value at current position.
+        /// \remarks Reading past the end of the buffer behaves as if the buffer ended with a trail of zeros.
+        template <typename TType>
+        TType ReadAs();
+
+        /// \brief Read a number of bits at current position.
+        /// \param count Number of bits to read.
+        /// \remarks Reading past the end of the underlying streams behaves as if the underlying buffer ended with trailing zeros.
+        BitBuffer ReadBits(Bits count);
+
+        /// \brief Read a bit sequence from the buffer to the provided memory destination.
+        /// \return Returns the total number of bits read.
+        Bits ReadBits(MemoryBitAddress destination, Bits count);
+
+    private:
+
+        /// \brief Underlying buffer view.
+        BitBufferView buffer_;
+
+        /// \brief Current position.
+        Bits cursor_;
+
+    };
+
+    /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
@@ -465,10 +505,45 @@ namespace syntropy
         return count;
     }
 
+    // BitBufferReader.
 
-        BitMemCopy(&value, GetData() + position, read_count);
+    inline BitBufferReader::BitBufferReader(const BitBufferView& buffer)
+        : buffer_(buffer)
+    {
 
-        return value;
+    }
+
+    inline bool BitBufferReader::IsEnd() const
+    {
+        return cursor_ >= buffer_.GetSize();
+    }
+
+    template <typename TType>
+    inline TType BitBufferReader::ReadAs()
+    {
+        auto position = cursor_;
+
+        cursor_ += BitsOf<TType>();
+
+        return buffer_.ReadAs<TType>(position);
+    }
+
+    inline BitBuffer BitBufferReader::ReadBits(Bits count)
+    {
+        auto position = cursor_;
+
+        cursor_ += count;
+
+        return buffer_.ReadBits(position, count);
+    }
+
+    inline Bits BitBufferReader::ReadBits(MemoryBitAddress destination, Bits count)
+    {
+        auto position = cursor_;
+
+        cursor_ += count;
+
+        return buffer_.ReadBits(destination, position, count);
     }
 
 }
