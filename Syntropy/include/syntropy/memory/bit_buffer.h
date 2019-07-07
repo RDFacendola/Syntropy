@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bit.h"
@@ -47,6 +48,21 @@ namespace syntropy
         /// \brief Default move assignment operator.
         BitBuffer& operator=(BitBuffer&&) = default;
 
+        /// \brief Bitwise-and operator. Operators are padded with trailing zeros.
+        /// \return Returns a reference to this element.
+        BitBuffer& operator&=(const BitBuffer& rhs);
+
+        /// \brief Bitwise-or operator. Operators are padded with trailing zeros.
+        /// \return Returns a reference to this element.
+        BitBuffer& operator|=(const BitBuffer& rhs);
+
+        /// \brief Bitwise-xor operator. Operators are padded with trailing zeros.
+        /// \return Returns a reference to this element.
+        BitBuffer& operator^=(const BitBuffer& rhs);
+
+        /// \brief Bitwise-not operator.
+        BitBuffer operator~() const;
+
         /// \brief Access the buffer data.
         ConstMemoryAddress GetData() const;
 
@@ -79,6 +95,19 @@ namespace syntropy
 
     private:
 
+        /// \brief Perform a binary word-wise operation on this buffer and rhs.
+        /// This buffer is resized to maximum size between this and rhs.
+        template <typename TOp>
+        BitBuffer& BinaryOp(const BitBuffer& rhs, TOp operation);
+
+        /// \brief Perform a unary word-wise operation on this buffer.
+        /// This buffer is resized to maximum size between this and rhs.
+        template <typename TOp>
+        BitBuffer& UnaryOp(TOp operation);
+
+        /// \brief Sanitize the end of the buffer with trailing zeroes.
+        void Sanitize();
+
         /// \brief Buffer data.
         std::vector<uint8_t> data_;
 
@@ -86,6 +115,18 @@ namespace syntropy
         Bits size_ = 0_Bits;
 
     };
+
+    /// \brief Bitwise and between two bit-buffers. Operands are padded with trailing zeros.
+    /// \return Returns a bit-buffer which is equal to the bitwise and between lhs and rhs.
+    BitBuffer operator&(const BitBuffer& lhs, const BitBuffer& rhs);
+
+    /// \brief Bitwise or between two bit-buffers. Operands are padded with trailing zeros.
+    /// \return Returns a bit-buffer  amount which is equal to the bitwise or between lhs and rhs.
+    BitBuffer operator|(const BitBuffer& lhs, const BitBuffer& rhs);
+
+    /// \brief Bitwise xor between two bit-buffers. Operands are padded with trailing zeros.
+    /// \return Returns a bit-buffer  amount which is equal to the bitwise xor between lhs and rhs.
+    BitBuffer operator^(const BitBuffer& lhs, const BitBuffer& rhs);
 
     /************************************************************************/
     /* BIT BUFFER VIEW                                                      */
@@ -169,6 +210,26 @@ namespace syntropy
         return &data_.front();
     }
 
+    inline BitBuffer& BitBuffer::operator&=(const BitBuffer& rhs)
+    {
+        return BinaryOp(rhs, std::bit_and<uint8_t>{});
+    }
+
+    inline BitBuffer& BitBuffer::operator|=(const BitBuffer& rhs)
+    {
+        return BinaryOp(rhs, std::bit_or<uint8_t>{});
+    }
+
+    inline BitBuffer& BitBuffer::operator^=(const BitBuffer& rhs)
+    {
+        return BinaryOp(rhs, std::bit_xor<uint8_t>{});
+    }
+
+    inline BitBuffer BitBuffer::operator~() const
+    {
+        return BitBuffer(*this).UnaryOp(std::bit_not<uint8_t>{});
+    }
+
     inline Bits BitBuffer::GetSize() const
     {
         return size_;
@@ -211,6 +272,61 @@ namespace syntropy
     inline void BitBuffer::Append(const TType& value)
     {
         Write(GetSize(), value);
+    }
+
+    template <typename TOp>
+    BitBuffer& BitBuffer::BinaryOp(const BitBuffer& rhs, TOp operation)
+    {
+        Resize(std::max(rhs.size_, size_));
+
+        auto lhs_word = std::begin(data_);
+
+        for (auto&& rhs_word : rhs.data_)
+        {
+            *lhs_word = operation(*lhs_word, rhs_word);
+
+            ++lhs_word;
+        }
+
+        Sanitize();
+
+        return *this;
+    }
+
+    template <typename TOp>
+    inline BitBuffer& BitBuffer::UnaryOp(TOp operation)
+    {
+        for (auto&& lhs_word : data_)
+        {
+            lhs_word = operation(lhs_word);
+        }
+
+        Sanitize();
+
+        return *this;
+    }
+
+    inline void BitBuffer::Sanitize()
+    {
+        if (auto trail = std::size_t(size_) % Bits::kByte; trail > 0u)
+        {
+            data_.back() &= std::uint8_t((1u << trail) - 1u);
+        }
+    }
+
+    inline BitBuffer operator&(const BitBuffer& lhs, const BitBuffer& rhs)
+    {
+        return BitBuffer(lhs) &= rhs;
+    }
+
+    inline BitBuffer operator|(const BitBuffer& lhs, const BitBuffer& rhs)
+    {
+        return BitBuffer(lhs) |= rhs;
+    }
+
+    inline BitBuffer operator^(const BitBuffer& lhs, const BitBuffer& rhs)
+    {
+        return BitBuffer(lhs) ^= rhs;
     }
 
     // BitBufferView.
