@@ -127,6 +127,7 @@
     <ClInclude Include="include\syntropy\patterns\scope_guard.h" />
     <ClInclude Include="include\syntropy\patterns\tuple.h" />
     <ClInclude Include="include\syntropy\patterns\utility.h" />
+    <ClInclude Include="include\syntropy\patterns\visitor.h" />
     <ClInclude Include="include\syntropy\platform\builtin.h" />
     <ClInclude Include="include\syntropy\platform\compiler\compiler.h" />
     <ClInclude Include="include\syntropy\platform\compiler\msvc.h" />

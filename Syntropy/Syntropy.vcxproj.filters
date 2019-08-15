@@ -91,6 +91,7 @@
     <ClInclude Include="include\syntropy\memory\bit.h" />
     <ClInclude Include="include\syntropy\memory\bit_buffer.h" />
     <ClInclude Include="include\syntropy\math\encoding.h" />
+    <ClInclude Include="include\syntropy\patterns\visitor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
