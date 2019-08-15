@@ -28,12 +28,6 @@ namespace syntropy
     /* UTILITIES                                                            */
     /************************************************************************/
 
-    namespace details
-    {
-
-        
-    }
-
     /// \brief Type equal to TType without references, extents and qualifiers.
     template <typename TType>
     using remove_extents_cvref = std::remove_cv_t<std::remove_all_extents_t<std::remove_reference_t<TType>>>;
@@ -41,12 +35,12 @@ namespace syntropy
     /// \brief Provides a member typedef which is the resulting type after stripping either all references or extents, an indirection level or all qualifiers from TType (in this order).
     template <typename TType>
     struct strip : std::conditional<std::is_array<TType>::value || std::is_reference<TType>::value,
-                                    std::remove_all_extents_t<std::remove_reference_t<TType>>,              // Remove references and extents from the outermost level (mutually exclusive)
-                                    std::conditional_t<std::is_pointer<TType>::value,
-                                                       std::remove_pointer_t<TType>,                        // Remove a pointer level (removes qualifiers as well)
-                                                       std::remove_cv_t<TType>>> {};                        // Remove const and volatile qualifiers from the innermost level
+        std::remove_all_extents_t<std::remove_reference_t<TType>>,              // Remove references and extents from the outermost level (mutually exclusive)
+        std::conditional_t<std::is_pointer<TType>::value,
+        std::remove_pointer_t<TType>,                                           // Remove a pointer level (removes qualifiers as well)
+        std::remove_cv_t<TType>>> {};                                           // Remove const and volatile qualifiers from the innermost level
 
-    /// \brief Helper type strip<TType>.
+/// \brief Helper type strip<TType>.
     template <typename TType>
     using strip_t = typename strip<TType>::type;
 
@@ -73,6 +67,28 @@ namespace syntropy
     template <std::size_t... Ints>
     constexpr bool is_contiguous_index_sequence_v = is_contiguous_index_sequence<Ints...>::value;
 
+    /// \brief Trait used to determine the type of the kArgumentIndex-th argument of a callable object.
+    template <std::size_t kArgumentIndex, typename TCallable>
+    struct function_argument : function_argument<kArgumentIndex, decltype(&TCallable::operator())> {};
+
+    /// \brief Specialization for member functions.
+    template <std::size_t kArgumentIndex, typename TCallable, typename TReturn, typename... TArguments>
+    struct function_argument<kArgumentIndex, TReturn(TCallable::*)(TArguments...)>
+    {
+        using type = std::tuple_element_t<kArgumentIndex, std::tuple<TArguments...>>;
+    };
+
+    /// \brief Specialization for const member functions.
+    template <std::size_t kArgumentIndex, typename TCallable, typename TReturn, typename... TArguments>
+    struct function_argument<kArgumentIndex, TReturn(TCallable::*)(TArguments...) const>
+    {
+        using type = std::tuple_element_t<kArgumentIndex, std::tuple<TArguments...>>;
+    };
+
+    /// \brief Helper type for FunctionArgument<kArgumentIndex, TFunction>.
+    template <std::size_t kArgumentIndex, typename TFunction>
+    using function_argument_t = typename function_argument<kArgumentIndex, TFunction>::type;
+
     /************************************************************************/
     /* STREAM INSERTABLE \ EXTRACTABLE                                      */
     /************************************************************************/
@@ -86,7 +102,7 @@ namespace syntropy
         static auto test(int) -> decltype(std::declval<S&>() << std::declval<T>(), std::true_type());
 
         template<typename, typename>
-        static auto test(...) -> std::false_type;
+        static auto test(...)->std::false_type;
 
     public:
 
@@ -103,7 +119,7 @@ namespace syntropy
         static auto test(int) -> decltype(std::declval<S&>() >> std::declval<T&>(), std::true_type());
 
         template<typename, typename>
-        static auto test(...) -> std::false_type;
+        static auto test(...)->std::false_type;
 
     public:
 
@@ -182,15 +198,15 @@ namespace syntropy
 
     /// \brief Helper type for class_name<TType>.
     template <typename TType>
-    using class_name_t = typename class_name<TType>::type;  
-    
+    using class_name_t = typename class_name<TType>::type;
+
     template <typename TType>
     constexpr bool is_class_name_v = std::is_same<class_name_t<TType>, TType>::value;
 
     /************************************************************************/
     /* ARRAYS                                                               */
     /************************************************************************/
-    
+
     namespace details
     {
         /// \brief Builds the sequence of extents for the array TType.
@@ -242,7 +258,7 @@ namespace syntropy
     ///                             (std::is_const<int const *>::value << 1) |                              0 * 2^1
     ///                             (std::is_const<int const ** const>::value << 2) |                       1 * 2^2
     template <template <typename> typename TPredicate, typename TType, size_t mask = 0, typename = void>
-    struct predicate_mask : predicate_mask<TPredicate, strip_t<TType>, (mask << 1u) | TPredicate<TType>::value>{};
+    struct predicate_mask : predicate_mask<TPredicate, strip_t<TType>, (mask << 1u) | TPredicate<TType>::value> {};
 
     /// \brief Specialization for the last level of indirection.
     template <template <typename> typename TPredicate, typename TType, size_t mask>
