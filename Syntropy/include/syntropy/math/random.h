@@ -9,11 +9,15 @@
 #include <limits>
 #include <iterator>
 #include <type_traits>
+#include <cmath>
 
 #include "pcg/include/pcg_random.hpp"
 
 namespace syntropy
 {
+    /************************************************************************/
+    /* RANDOM                                                               */
+    /************************************************************************/
 
     /// \brief Wraps a PCG random number generator and exposes methods to generate random numbers.
     /// This wrapper uses the multiple-stream version of the generator.
@@ -84,14 +88,16 @@ namespace syntropy
         /// \return Returns a random number distributed according to a Gaussian distribution N(mean, std^2).
         float Gaussian(float mean, float standard_deviation);
 
+        /// \brief Generate a random number distributed according to an Exponential distribution.
+        /// \param lambda Expected occurrences per unit of time.
+        /// \return Returns the time at which the next event happens according to the exponential distribution.
+        float Exponential(float lambda);
+
         /// \brief Randomly shuffle the elements in the range [begin; end).
         /// \param begin Iterator to the first element to shuffle.
         /// \param end Iterator past the last element to shuffle.
         template <typename TIterator>
-        void Shuffle(TIterator begin, TIterator end)
-        {
-            Shuffle(begin, end, end);
-        }
+        void Shuffle(TIterator begin, TIterator end);
 
         /// \brief Randomly shuffle elements in [begin; middle) picking random elements from [begin; end).
         /// After this call the range [begin; middle) contains random elements, while the content of [middle; end) is unspecified.
@@ -99,36 +105,59 @@ namespace syntropy
         /// \param middle Iterator past the last element in the shuffled collection.
         /// \param end Iterator past the last element in the collection.
         template <typename TIterator>
-        void Shuffle(TIterator begin, TIterator middle, TIterator end)
-        {
-            //Fisher-Yates shuffle.
-            using std::distance;
-
-            for (auto range = static_cast<int32_t>(distance(begin, end)); begin != middle; ++begin)
-            {
-                std::iter_swap(begin, begin + Range(--range));
-            }
-        }
+        void Shuffle(TIterator begin, TIterator middle, TIterator end);
 
         /// \brief Pick a random element in the range [begin; end).
         /// \return Return an iterator to any element in the range [begin;end). If the range is empty returns end.
         template <typename TIterator>
-        TIterator Pick(const TIterator& begin, const TIterator& end)
-        {
-            using std::distance;
-
-            if (begin == end)
-            {
-                return end;
-            }
-
-            return begin + Range(static_cast<int32_t>(distance(begin, end)) - 1);
-        }
+        TIterator Pick(const TIterator& begin, const TIterator& end);
 
     private:
 
         pcg32 engine_;              ///< \brief Underlying random engine.
 
     };
+
+    /************************************************************************/
+    /* ENGINE                                                               */
+    /************************************************************************/
+
+    // Random.
+
+    inline float Random::Exponential(float lambda)
+    {
+        return -std::log(Uniform()) / lambda;
+    }
+
+    template <typename TIterator>
+    inline void Random::Shuffle(TIterator begin, TIterator end)
+    {
+        Shuffle(begin, end, end);
+    }
+
+    template <typename TIterator>
+    void Random::Shuffle(TIterator begin, TIterator middle, TIterator end)
+    {
+        //Fisher-Yates shuffle.
+        using std::distance;
+
+        for (auto range = static_cast<int32_t>(distance(begin, end)); begin != middle; ++begin)
+        {
+            std::iter_swap(begin, begin + Range(--range));
+        }
+    }
+
+    template <typename TIterator>
+    TIterator Random::Pick(const TIterator& begin, const TIterator& end)
+    {
+        using std::distance;
+
+        if (begin == end)
+        {
+            return end;
+        }
+
+        return begin + Range(static_cast<int32_t>(distance(begin, end)) - 1);
+    }
 
 }
