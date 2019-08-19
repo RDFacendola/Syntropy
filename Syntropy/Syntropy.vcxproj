@@ -84,6 +84,7 @@
     <ClInclude Include="include\syntropy\diagnostics\log.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_channels.h" />
     <ClInclude Include="include\syntropy\macro.h" />
+    <ClInclude Include="include\syntropy\math\constants.h" />
     <ClInclude Include="include\syntropy\math\encoding.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\math\math.h" />
