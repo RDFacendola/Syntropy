@@ -291,12 +291,12 @@ namespace syntropy
     auto Append(const VectorN<T, kTRank>& lhs, const VectorN<U, kURank>& rhs);
 
     /// \brief Append a value to a vector.
-    template <typename T, std::size_t kRank>
-    auto Append(const VectorN<T, kRank>& lhs, T rhs);
+    template <typename T, std::size_t kRank, typename U>
+    auto Append(const VectorN<T, kRank>& lhs, U rhs);
 
     /// \brief Append a value to a vector.
-    template <typename T, std::size_t kRank>
-    auto Append(T lhs, const VectorN<T, kRank>& rhs);
+    template <typename T, std::size_t kRank, typename U>
+    auto Append(U lhs, const VectorN<T, kRank>& rhs);
 
     /// \brief Get the the XY elements of a N-vector and return it as a 2-vector.
     /// \see Shuffle(rhs).
