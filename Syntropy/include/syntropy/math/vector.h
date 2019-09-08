@@ -681,24 +681,26 @@ namespace syntropy
     template <typename T, std::size_t kTRank, typename U, std::size_t kURank>
     inline auto Append(const VectorN<T, kTRank>& lhs, const VectorN<U, kURank>& rhs)
     {
-        auto out = VectorN<T, kTRank + kURank>{};
+        using CommonType = std::common_type_t<T, U>;
 
-        AsVector<kTRank, 0>(out) = lhs;
-        AsVector<kURank, kTRank>(out) = rhs;
+        auto out = VectorN<CommonType, kTRank + kURank>{};
+
+        AsVector<kTRank, 0>(out) = VectorN<CommonType, kTRank>(lhs);
+        AsVector<kURank, kTRank>(out) = VectorN<CommonType, kURank>(rhs);
 
         return out;
     }
 
-    template <typename T, std::size_t kRank>
-    inline auto Append(const VectorN<T, kRank>& lhs, T rhs)
+    template <typename T, std::size_t kRank, typename U>
+    inline auto Append(const VectorN<T, kRank>& lhs, U rhs)
     {
-        return Append(lhs, Vector1<T>{rhs});
+        return Append(lhs, Vector1<U>{rhs});
     }
 
-    template <typename T, std::size_t kRank>
-    inline auto Append(T lhs, const VectorN<T, kRank>& rhs)
+    template <typename T, std::size_t kRank, typename U>
+    inline auto Append(U lhs, const VectorN<T, kRank>& rhs)
     {
-        return Append(Vector1<T>{lhs}, rhs);
+        return Append(Vector1<U>{lhs}, rhs);
     }
 
     template <typename TVector>
