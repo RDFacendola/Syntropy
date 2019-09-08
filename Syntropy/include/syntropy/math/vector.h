@@ -369,6 +369,14 @@ namespace syntropy
     template <typename T, typename U, size_t kRank>
     auto ChebyshevDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
+    /// \brief Get the element-wise absolute of rhs.
+    template <typename T, size_t kRank>
+    VectorN<T, kRank> Abs(VectorN<T, kRank> rhs);
+
+    /// \brief Get the element-wise wrap of lhs in the range [0; rhs).
+    template <typename T, size_t kRank>
+    VectorN<T, kRank> Wrap(VectorN<T, kRank> lhs, const VectorN<T, kRank>& rhs);
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -815,6 +823,22 @@ namespace syntropy
     inline auto ChebyshevDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         return ChebyshevLength(lhs - rhs);
+    }
+
+    template <typename T, size_t kRank>
+    inline VectorN<T, kRank> Abs(VectorN<T, kRank> rhs)
+    {
+        LockstepApply([](auto& element) { element = FastAbs(element); }, rhs);
+
+        return rhs;
+    }
+
+    template <typename T, size_t kRank>
+    inline VectorN<T, kRank> Wrap(VectorN<T, kRank> lhs, const VectorN<T, kRank>& rhs)
+    {
+        LockstepApply([](auto& element, auto& wrap) { element = Wrap(element, wrap); }, lhs, rhs);
+
+        return lhs;
     }
 
 }

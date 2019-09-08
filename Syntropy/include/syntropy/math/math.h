@@ -65,6 +65,10 @@ namespace syntropy
     template <typename TNumber>
     constexpr TNumber Mod(TNumber lhs, TNumber rhs);
 
+    /// \brief Wrap lhs around in the range [0; rhs)
+    template <typename TNumber>
+    constexpr TNumber Wrap(TNumber lhs, TNumber rhs);
+
     // Comparison.
 
     /// \brief Check whether two numbers are approximately equal.
@@ -177,6 +181,15 @@ namespace syntropy
         {
             return lhs % rhs;
         }
+    }
+
+    template <typename TNumber>
+    constexpr TNumber Wrap(TNumber lhs, TNumber rhs)
+    {
+        lhs = Mod(lhs, rhs);
+        lhs = (lhs >= TNumber(0)) ? lhs : (lhs + rhs);
+
+        return lhs;
     }
 
     constexpr bool ApproximatelyEqual(float lhs, float rhs, float epsilon)
