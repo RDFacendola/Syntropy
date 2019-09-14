@@ -8,6 +8,7 @@
 
 #include <array>
 #include <utility>
+#include <cmath>
 
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/patterns/tuple.h"
@@ -371,11 +372,19 @@ namespace syntropy
 
     /// \brief Get the element-wise absolute of rhs.
     template <typename T, size_t kRank>
-    VectorN<T, kRank> Abs(VectorN<T, kRank> rhs);
+    VectorN<T, kRank> Abs(const VectorN<T, kRank>& rhs);
 
     /// \brief Get the element-wise wrap of lhs in the range [0; rhs).
     template <typename T, size_t kRank>
-    VectorN<T, kRank> Wrap(VectorN<T, kRank> lhs, const VectorN<T, kRank>& rhs);
+    VectorN<T, kRank> Wrap(const VectorN<T, kRank>& lhs, const VectorN<T, kRank>& rhs);
+
+    /// \brief Get the member-wise ceil of lhs.
+    template <typename T, size_t kRank>
+    VectorN<T, kRank> Ceil(const VectorN<T, kRank>& rhs);
+
+    /// \brief Get the member-wise floor of lhs.
+    template <typename T, size_t kRank>
+    VectorN<T, kRank> Floor(const VectorN<T, kRank>& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -826,19 +835,43 @@ namespace syntropy
     }
 
     template <typename T, size_t kRank>
-    inline VectorN<T, kRank> Abs(VectorN<T, kRank> rhs)
+    inline VectorN<T, kRank> Abs(const VectorN<T, kRank>& rhs)
     {
-        LockstepApply([](auto& element) { element = FastAbs(element); }, rhs);
+        auto result = rhs;
 
-        return rhs;
+        LockstepApply([](auto& element) { element = FastAbs(element); }, result);
+
+        return result;
     }
 
     template <typename T, size_t kRank>
-    inline VectorN<T, kRank> Wrap(VectorN<T, kRank> lhs, const VectorN<T, kRank>& rhs)
+    inline VectorN<T, kRank> Wrap(const VectorN<T, kRank>& lhs, const VectorN<T, kRank>& rhs)
     {
-        LockstepApply([](auto& element, auto& wrap) { element = Wrap(element, wrap); }, lhs, rhs);
+        auto result = lhs;
 
-        return lhs;
+        LockstepApply([](auto& element, auto& wrap) { element = Wrap(element, wrap); }, result, rhs);
+
+        return result;
+    }
+
+    template <typename T, size_t kRank>
+    inline VectorN<T, kRank> Ceil(const VectorN<T, kRank>& rhs)
+    {
+        auto result = rhs;
+
+        LockstepApply([](auto& element) { element = std::ceil(element); }, result);
+
+        return result;
+    }
+
+    template <typename T, size_t kRank>
+    inline VectorN<T, kRank> Floor(const VectorN<T, kRank>& rhs)
+    {
+        auto result = rhs;
+
+        LockstepApply([](auto& element) { element = std::floor(element); }, result);
+
+        return result;
     }
 
 }
