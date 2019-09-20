@@ -75,9 +75,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\synchrony\network.h" />
     <ClInclude Include="include\synchrony\synchrony.h" />
+    <ClInclude Include="src\synchrony\platform\windows_network.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\synchrony\network.cpp" />
+    <ClCompile Include="src\synchrony\platform\windows_network.cpp" />
     <ClCompile Include="src\synchrony\synchrony.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
