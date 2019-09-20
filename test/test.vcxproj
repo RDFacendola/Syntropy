@@ -68,6 +68,7 @@
     <Import Project="..\vs\syntropy_lib.props" />
     <Import Project="..\vs\synergy_lib.props" />
     <Import Project="..\vs\synapse_lib.props" />
+    <Import Project="..\vs\synchrony_lib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='rel|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -75,6 +76,7 @@
     <Import Project="..\vs\syntropy_lib.props" />
     <Import Project="..\vs\synergy_lib.props" />
     <Import Project="..\vs\synapse_lib.props" />
+    <Import Project="..\vs\synchrony_lib.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
