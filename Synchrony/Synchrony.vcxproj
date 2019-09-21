@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\synchrony\network\network.h" />
+    <ClInclude Include="include\synchrony\network\network_port.h" />
     <ClInclude Include="include\synchrony\synchrony.h" />
     <ClInclude Include="src\synchrony\platform\windows_network.h" />
   </ItemGroup>
