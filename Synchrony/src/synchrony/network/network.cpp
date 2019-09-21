@@ -1,4 +1,4 @@
-#include "synchrony/network.h"
+#include "synchrony/network/network.h"
 
 #include "synchrony/platform/windows_network.h"
 

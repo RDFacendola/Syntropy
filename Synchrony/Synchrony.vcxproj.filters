@@ -2,12 +2,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="include\synchrony\synchrony.h" />
-    <ClInclude Include="include\synchrony\network.h" />
     <ClInclude Include="src\synchrony\platform\windows_network.h" />
+    <ClInclude Include="include\synchrony\network\network.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\synchrony\synchrony.cpp" />
-    <ClCompile Include="src\synchrony\network.cpp" />
     <ClCompile Include="src\synchrony\platform\windows_network.cpp" />
+    <ClCompile Include="src\synchrony\network\network.cpp" />
   </ItemGroup>
 </Project>
