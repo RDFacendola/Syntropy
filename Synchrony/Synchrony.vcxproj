@@ -75,6 +75,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\synchrony\network\ip.h" />
     <ClInclude Include="include\synchrony\network\network.h" />
     <ClInclude Include="include\synchrony\network\network_port.h" />
     <ClInclude Include="include\synchrony\synchrony.h" />
