@@ -19,6 +19,12 @@ namespace synchrony
     /// \author Raffaele D. Facendola - 2019.
     struct IPv4Address
     {
+        /// \brief Create the local host \ loopback address.
+        static constexpr IPv4Address Loopback();
+
+        /// \brief Create the 'any' address.
+        static constexpr IPv4Address Any();
+
         /// \brief Create an address from its standard text presentation form.
         /// \return Returns the address if the provided string could be converted, returns an empty value otherwise.
         static std::optional<IPv4Address> FromString(const std::string& address);
@@ -40,6 +46,12 @@ namespace synchrony
     /// \author Raffaele D. Facendola - 2019.
     struct IPv6Address
     {
+        /// \brief Create the local host \ loopback address.
+        static constexpr IPv6Address Loopback();
+
+        /// \brief Create the 'any' address.
+        static constexpr IPv6Address Any();
+
         /// \brief Create an address from its standard text presentation form.
         /// \return Returns the address if the provided string could be converted, returns an empty value otherwise.
         static std::optional<IPv6Address> FromString(const std::string& address);
@@ -56,6 +68,34 @@ namespace synchrony
         std::uint16_t g_;
         std::uint16_t h_;
     };
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // IPv4Address.
+
+    constexpr IPv4Address IPv4Address::Loopback()
+    {
+        return { 127u, 0u, 0u, 1u };
+    }
+
+    constexpr IPv4Address IPv4Address::Any()
+    {
+        return { 0u, 0u, 0u, 0u };
+    }
+
+    // IPv6Address.
+
+    constexpr IPv6Address IPv6Address::Loopback()
+    {
+        return { 0u, 0u, 0u, 0u, 0u, 0u, 0u, 1u };
+    }
+
+    constexpr IPv6Address IPv6Address::Any()
+    {
+        return { 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u };
+    }
 
 }
 
