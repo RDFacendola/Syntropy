@@ -16,11 +16,6 @@ namespace synchrony
     struct IPv4Address;
     struct IPv6Address;
 
-    struct NetworkPort;
-
-    struct IPv4Endpoint;
-    struct IPv6Endpoint;
-
     /************************************************************************/
     /* WINDOWS NETWORK                                                      */
     /************************************************************************/
