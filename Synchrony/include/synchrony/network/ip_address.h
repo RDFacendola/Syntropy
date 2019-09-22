@@ -8,7 +8,6 @@
 
 #include <optional>
 #include <string>
-#include <array>
 
 namespace synchrony
 {
@@ -17,19 +16,20 @@ namespace synchrony
     /************************************************************************/
 
     /// \brief Represents a 32-bit address for the Internet Protocol version 4.
-    /// The address is represented in network byte-order.
     /// \author Raffaele D. Facendola - 2019.
     struct IPv4Address
     {
-        /// \brief Create an IPv4 address from its standard text presentation form.
-        /// \return Returns the IPv4 address if the text could be converted, returns an empty value otherwise.
+        /// \brief Create an address from its standard text presentation form.
+        /// \return Returns the address if the provided string could be converted, returns an empty value otherwise.
         static std::optional<IPv4Address> FromString(const std::string& address);
 
-        /// \brief Convert the IP address to its standard text presentation form.
+        /// \brief Convert the address to its standard text presentation form.
         std::string ToString() const;
 
-        /// \brief Binary address, in network byte-order.
-        std::array<std::uint8_t, 4> address_;
+        std::uint8_t a_;
+        std::uint8_t b_;
+        std::uint8_t c_;
+        std::uint8_t d_;
     };
 
     /************************************************************************/
@@ -37,19 +37,24 @@ namespace synchrony
     /************************************************************************/
 
     /// \brief Represents a 128-bit address for the Internet Protocol version 6.
-    /// The address is represented in network byte-order.
     /// \author Raffaele D. Facendola - 2019.
     struct IPv6Address
     {
-        /// \brief Create an IPv6 address from its standard text presentation form.
-        /// \return Returns the IPv6 address if the text could be converted, returns an empty value otherwise.
+        /// \brief Create an address from its standard text presentation form.
+        /// \return Returns the address if the provided string could be converted, returns an empty value otherwise.
         static std::optional<IPv6Address> FromString(const std::string& address);
 
-        /// \brief Convert the IP address to its standard text presentation form.
+        /// \brief Convert the address to its standard text presentation form.
         std::string ToString() const;
 
-        /// \brief Binary address, in network byte-order.
-        std::array<std::uint8_t, 16> address_;
+        std::uint16_t a_;
+        std::uint16_t b_;
+        std::uint16_t c_;
+        std::uint16_t d_;
+        std::uint16_t e_;
+        std::uint16_t f_;
+        std::uint16_t g_;
+        std::uint16_t h_;
     };
 
 }

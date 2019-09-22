@@ -10,12 +10,12 @@ namespace synchrony
 
     std::optional<IPv4Address> IPv4Address::FromString(const std::string& address)
     {
-        return PlatformNetwork::StringToIPv4Address(address);
+        return PlatformNetwork::MakeIPv4Address(address);
     }
 
     std::string IPv4Address::ToString() const
     {
-        return PlatformNetwork::IPv4AddressToString(*this);
+        return PlatformNetwork::AddressToString(*this);
     }
 
     /************************************************************************/
@@ -24,12 +24,12 @@ namespace synchrony
 
     std::optional<IPv6Address> IPv6Address::FromString(const std::string& address)
     {
-        return PlatformNetwork::StringToIPv6Address(address);
+        return PlatformNetwork::MakeIPv6Address(address);
     }
 
     std::string IPv6Address::ToString() const
     {
-        return PlatformNetwork::IPv6AddressToString(*this);
+        return PlatformNetwork::AddressToString(*this);
     }
 
 }

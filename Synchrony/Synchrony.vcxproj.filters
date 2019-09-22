@@ -4,9 +4,9 @@
     <ClInclude Include="include\synchrony\synchrony.h" />
     <ClInclude Include="src\synchrony\platform\windows_network.h" />
     <ClInclude Include="include\synchrony\network\network.h" />
-    <ClInclude Include="include\synchrony\network\network_port.h" />
     <ClInclude Include="include\synchrony\network\ip_address.h" />
     <ClInclude Include="include\synchrony\network\ip.h" />
+    <ClInclude Include="include\synchrony\network\ip_endpoint.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\synchrony\synchrony.cpp" />
