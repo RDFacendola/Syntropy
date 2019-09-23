@@ -5,9 +5,6 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include "synchrony/network/ip_address.h"
-#include "synchrony/network/ip_endpoint.h"
-
 #pragma comment(lib, "Ws2_32.lib")
 
 namespace synchrony
@@ -30,18 +27,36 @@ namespace synchrony
         return WSACleanup() == 0;
     }
 
-    std::optional<IPv4Address> WindowsNetwork::MakeIPv4Address(const std::string& address)
+    std::optional<NetworkAddress> WindowsNetwork::MakeNetworkAddress(const std::string& address)
     {
-        auto network_address = IN_ADDR{};           // Network byte-order: big-endian.
+        auto ipv6_address = IN6_ADDR{};                                             // Network byte-order: big-endian.
+        auto ipv4_address = IN_ADDR{};
 
-        if (inet_pton(AF_INET, address.c_str(), &network_address) == 1)
+        auto host_address = NetworkAddress{};
+
+        if (inet_pton(AF_INET6, address.c_str(), &ipv6_address) == 1)               // Translate an IPv6 address.
         {
-            auto host_address = IPv4Address{};
+            host_address.a_ = ntohs(ipv6_address.u.Word[0]);
+            host_address.b_ = ntohs(ipv6_address.u.Word[1]);
+            host_address.c_ = ntohs(ipv6_address.u.Word[2]);
+            host_address.d_ = ntohs(ipv6_address.u.Word[3]);
+            host_address.e_ = ntohs(ipv6_address.u.Word[4]);
+            host_address.f_ = ntohs(ipv6_address.u.Word[5]);
+            host_address.g_ = ntohs(ipv6_address.u.Word[6]);
+            host_address.h_ = ntohs(ipv6_address.u.Word[7]);
 
-            host_address.a_ = network_address.S_un.S_un_b.s_b1;
-            host_address.b_ = network_address.S_un.S_un_b.s_b2;
-            host_address.c_ = network_address.S_un.S_un_b.s_b3;
-            host_address.d_ = network_address.S_un.S_un_b.s_b4;
+            return host_address;
+        }
+        else if (inet_pton(AF_INET, address.c_str(), &ipv4_address) == 1)           // Try IPv4-mapped IPv6 address.
+        {
+            host_address.a_ = 0x0000;
+            host_address.b_ = 0x0000;
+            host_address.c_ = 0x0000;
+            host_address.d_ = 0x0000;
+            host_address.e_ = 0x0000;
+            host_address.f_ = 0xFFFF;
+            host_address.g_ = ntohs(ipv4_address.S_un.S_un_w.s_w1);
+            host_address.h_ = ntohs(ipv4_address.S_un.S_un_w.s_w2);
 
             return host_address;
         }
@@ -49,48 +64,9 @@ namespace synchrony
         return {};
     }
 
-    std::optional<IPv6Address> WindowsNetwork::MakeIPv6Address(const std::string& address)
+    std::string WindowsNetwork::NetworkAddressToString(const NetworkAddress& address)
     {
-        auto network_address = IN6_ADDR{};          // Network byte-order: big-endian.
-
-        if (inet_pton(AF_INET6, address.c_str(), &network_address) == 1)
-        {
-            auto host_address = IPv6Address{};
-
-            host_address.a_ = ntohs(network_address.u.Word[0]);
-            host_address.b_ = ntohs(network_address.u.Word[1]);
-            host_address.c_ = ntohs(network_address.u.Word[2]);
-            host_address.d_ = ntohs(network_address.u.Word[3]);
-            host_address.e_ = ntohs(network_address.u.Word[4]);
-            host_address.f_ = ntohs(network_address.u.Word[5]);
-            host_address.g_ = ntohs(network_address.u.Word[6]);
-            host_address.h_ = ntohs(network_address.u.Word[7]);
-
-            return host_address;
-        }
-
-        return {};
-    }
-
-    std::string WindowsNetwork::AddressToString(const IPv4Address& address)
-    {
-        auto network_address = IN_ADDR{};           // Network byte-order: big-endian.
-
-        network_address.S_un.S_un_b.s_b1 = address.a_;
-        network_address.S_un.S_un_b.s_b2 = address.b_;
-        network_address.S_un.S_un_b.s_b3 = address.c_;
-        network_address.S_un.S_un_b.s_b4 = address.d_;
-
-        char ipv4_address[16];
-
-        inet_ntop(AF_INET, &network_address, ipv4_address, sizeof(ipv4_address));
-
-        return ipv4_address;
-    }
-
-    std::string WindowsNetwork::AddressToString(const IPv6Address& address)
-    {
-        auto network_address = IN6_ADDR{};          // Network byte-order: big-endian.
+        auto network_address = IN6_ADDR{};                                          // Network byte-order: big-endian.
 
         network_address.u.Word[0] = htons(address.a_);
         network_address.u.Word[1] = htons(address.b_);
