@@ -71,6 +71,7 @@ namespace synchrony
 
     WindowsTCPSocket::~WindowsTCPSocket()
     {
+        shutdown(tcp_socket_, SD_BOTH);
         closesocket(tcp_socket_);
     }
 
