@@ -119,6 +119,21 @@ namespace syntropy
     template <bool is_const>
     constexpr MemoryRangeT<is_const> operator-(const MemoryRangeT<is_const>& lhs, const Bytes& rhs) noexcept;
 
+    /// \brief Create a memory range from data.
+    /// \param data Data to wrap.
+    template <typename TType>
+    constexpr MemoryRange MakeMemoryRange(TType& data) noexcept;
+
+    /// \brief Create a memory range from data.
+        /// \param data Data to wrap.
+    template <typename TType>
+    constexpr ConstMemoryRange MakeMemoryRange(const TType& data) noexcept;
+
+    /// \brief Create a memory range from data.
+    /// \param data Data to wrap.
+    template <typename TType>
+    constexpr ConstMemoryRange MakeConstMemoryRange(const TType& data) noexcept;
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -227,5 +242,24 @@ namespace syntropy
     {
         return MemoryRangeT(lhs) -= rhs;
     }
+
+    template <typename TType>
+    constexpr MemoryRange MakeMemoryRange(TType& data) noexcept
+    {
+        return { &data, &data + 1 };
+    }
+
+    template <typename TType>
+    constexpr ConstMemoryRange MakeMemoryRange(const TType& data) noexcept
+    {
+        return { &data, &data + 1 };
+    }
+
+    template <typename TType>
+    constexpr ConstMemoryRange MakeConstMemoryRange(const TType& data) noexcept
+    {
+        return MakeMemoryRange(data);
+    }
+
 
 }
