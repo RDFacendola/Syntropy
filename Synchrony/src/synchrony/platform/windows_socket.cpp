@@ -24,6 +24,10 @@ namespace synchrony
         /// \brief Virtual destructor. Close any open connection.
         virtual ~WindowsTCPSocket();
 
+        virtual bool Send(syntropy::ConstMemoryRange& buffer) override;
+
+        virtual bool Receive(syntropy::MemoryRange& buffer) override;
+
     private:
 
         /// \brief Underlying socket.
@@ -68,6 +72,36 @@ namespace synchrony
     WindowsTCPSocket::~WindowsTCPSocket()
     {
         closesocket(tcp_socket_);
+    }
+
+    bool WindowsTCPSocket::Send(syntropy::ConstMemoryRange& buffer)
+    {
+        auto send_buffer = buffer.Begin().As<char>();
+        auto send_size = static_cast<int>(std::size_t(buffer.GetSize()));
+
+        if (auto sent_amount = send(tcp_socket_, send_buffer, send_size, 0); sent_amount != SOCKET_ERROR)
+        {
+            buffer = syntropy::ConstMemoryRange(buffer.Begin() + syntropy::Bytes(sent_amount), buffer.End());
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool WindowsTCPSocket::Receive(syntropy::MemoryRange& buffer)
+    {
+        auto receive_buffer = buffer.Begin().As<char>();
+        auto receive_size = static_cast<int>(std::size_t(buffer.GetSize()));
+
+        if (auto receive_amount = recv(tcp_socket_, receive_buffer, receive_size, 0); receive_amount != SOCKET_ERROR)
+        {
+            buffer = syntropy::MemoryRange(buffer.Begin(), buffer.Begin() + syntropy::Bytes(receive_amount));
+
+            return true;
+        }
+
+        return false;
     }
 
     /************************************************************************/

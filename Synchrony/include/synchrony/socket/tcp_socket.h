@@ -25,6 +25,17 @@ namespace synchrony
         /// \brief Virtual destructor.
         virtual ~TCPSocket() = default;
 
+        /// \brief Send data to the connected host.
+        /// \param buffer Buffer to send.
+        /// \return If data could be sent reduce buffer capacity to fit the unsent data and returns true, otherwise returns false and buffer is left untouched.
+        virtual bool Send(syntropy::ConstMemoryRange& buffer) = 0;
+
+        /// \brief Receive data from the connected host.
+        /// This method will block until some data is received from the connected host.
+        /// \param buffer Buffer to receive in.
+        /// \return If data could be received reduce buffer capacity to fit that amount and returns true, otherwise returns false and buffer is left untouched.
+        virtual bool Receive(syntropy::MemoryRange& buffer) = 0;
+
     };
 
     /************************************************************************/
