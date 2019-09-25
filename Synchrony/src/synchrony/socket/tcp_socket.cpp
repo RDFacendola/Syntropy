@@ -13,9 +13,9 @@ namespace synchrony
         return PlatformTCP::Connect(server);
     }
 
-    std::unique_ptr<TCPServer> TCP::StartServer(const NetworkEndpoint& server, std::int32_t backlog)
+    std::unique_ptr<TCPServer> TCP::StartServer(const NetworkEndpoint& listen_interface, std::int32_t backlog)
     {
-        return PlatformTCP::StartServer(server, backlog);
+        return PlatformTCP::StartServer(listen_interface, backlog);
     }
 
 }

@@ -163,23 +163,23 @@ namespace synchrony
         return nullptr;
     }
 
-    std::unique_ptr<TCPServer> WindowsTCP::StartServer(const NetworkEndpoint& server, std::int32_t backlog)
+    std::unique_ptr<TCPServer> WindowsTCP::StartServer(const NetworkEndpoint& listen_interface, std::int32_t backlog)
     {
         if (auto tcp_socket = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP); tcp_socket != INVALID_SOCKET)
         {
             auto address = SOCKADDR_IN6{};
 
             address.sin6_family = AF_INET6;
-            address.sin6_port = htons(server.port_);
+            address.sin6_port = htons(listen_interface.port_);
 
-            address.sin6_addr.u.Word[0] = htons(server.address_.a_);
-            address.sin6_addr.u.Word[1] = htons(server.address_.b_);
-            address.sin6_addr.u.Word[2] = htons(server.address_.c_);
-            address.sin6_addr.u.Word[3] = htons(server.address_.d_);
-            address.sin6_addr.u.Word[4] = htons(server.address_.e_);
-            address.sin6_addr.u.Word[5] = htons(server.address_.f_);
-            address.sin6_addr.u.Word[6] = htons(server.address_.g_);
-            address.sin6_addr.u.Word[7] = htons(server.address_.h_);
+            address.sin6_addr.u.Word[0] = htons(listen_interface.address_.a_);
+            address.sin6_addr.u.Word[1] = htons(listen_interface.address_.b_);
+            address.sin6_addr.u.Word[2] = htons(listen_interface.address_.c_);
+            address.sin6_addr.u.Word[3] = htons(listen_interface.address_.d_);
+            address.sin6_addr.u.Word[4] = htons(listen_interface.address_.e_);
+            address.sin6_addr.u.Word[5] = htons(listen_interface.address_.f_);
+            address.sin6_addr.u.Word[6] = htons(listen_interface.address_.g_);
+            address.sin6_addr.u.Word[7] = htons(listen_interface.address_.h_);
 
             if (bind(tcp_socket, reinterpret_cast<SOCKADDR*>(&address), sizeof(address)) != SOCKET_ERROR &&
                 listen(tcp_socket, backlog) != SOCKET_ERROR)

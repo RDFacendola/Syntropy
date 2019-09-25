@@ -27,13 +27,13 @@ namespace synchrony
 
         /// \brief Send data to the connected host.
         /// \param buffer Buffer to send.
-        /// \return If data could be sent reduce buffer capacity to fit the unsent data and returns true, otherwise returns false and buffer is left untouched.
+        /// \return If data could be sent reduce buffer capacity to fit the unsent data and returns true, otherwise returns false.
         virtual bool Send(syntropy::ConstMemoryRange& buffer) = 0;
 
         /// \brief Receive data from the connected host.
         /// This method will block until some data is received from the connected host.
         /// \param buffer Buffer to receive in.
-        /// \return If data could be received reduce buffer capacity to fit that amount and returns true, otherwise returns false and buffer is left untouched.
+        /// \return If data could be received reduce buffer capacity to fit that amount and returns true, otherwise returns false.
         virtual bool Receive(syntropy::MemoryRange& buffer) = 0;
 
     };
@@ -68,13 +68,13 @@ namespace synchrony
     {
         /// \brief Connect to a remote TCP server.
         /// \param server Server interface to connect to.
-        ///\ return Returns a valid TCP socket if a connection could be established with the provided server, returns false otherwise.
+        ///\ return Returns a valid TCP socket if a connection could be established with the remote server, returns false otherwise.
         std::unique_ptr<TCPSocket> Connect(const NetworkEndpoint& server);
 
         /// \brief Start a new TCP server.
-        /// \param server Server interface to listen to.
+        /// \param listen_interface Interface to listen to.
         /// \param backlog Maximum number of simultaneous connections to the server.
         /// \return Returns a valid TCP server if the server could be created, returns nullptr otherwise.
-        std::unique_ptr<TCPServer> StartServer(const NetworkEndpoint& server, std::int32_t backlog);
+        std::unique_ptr<TCPServer> StartServer(const NetworkEndpoint& listen_interface, std::int32_t backlog);
     }
 }
