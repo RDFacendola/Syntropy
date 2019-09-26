@@ -8,14 +8,14 @@ namespace synchrony
     /* TCP                                                                  */
     /************************************************************************/
 
-    std::unique_ptr<TCPSocket> TCP::Connect(const NetworkEndpoint& server)
+    std::unique_ptr<TCPSocket> TCP::Connect(const NetworkEndpoint& local, const NetworkEndpoint& remote)
     {
-        return PlatformTCP::Connect(server);
+        return PlatformTCP::Connect(local, remote);
     }
 
-    std::unique_ptr<TCPServer> TCP::StartServer(const NetworkEndpoint& listen_interface, std::int32_t backlog)
+    std::unique_ptr<TCPServer> TCP::StartServer(const NetworkEndpoint& local, std::int32_t backlog)
     {
-        return PlatformTCP::StartServer(listen_interface, backlog);
+        return PlatformTCP::StartServer(local, backlog);
     }
 
 }

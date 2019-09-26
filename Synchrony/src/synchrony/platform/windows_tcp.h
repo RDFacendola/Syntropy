@@ -22,15 +22,16 @@ namespace synchrony
     namespace WindowsTCP
     {
         /// \brief Connect to a remote TCP server.
-        /// \param server Server interface to connect to.
+        /// \param local Address used to receive and send data to\from.
+        /// \param remote Server address used to receive and send data from\to.
         ///\ return Returns a valid TCP socket if a connection could be established with the remote server, returns false otherwise.
-        std::unique_ptr<TCPSocket> Connect(const NetworkEndpoint& server);
+        std::unique_ptr<TCPSocket> Connect(const NetworkEndpoint& local, const NetworkEndpoint& remote);
 
         /// \brief Start a new TCP server.
-        /// \param listen_interface Interface to listen to.
+        /// \param local Address used to receive and send data to\from.
         /// \param backlog Maximum number of simultaneous connections to the server.
         /// \return Returns a valid TCP server if the server could be created, returns nullptr otherwise.
-        std::unique_ptr<TCPServer> StartServer(const NetworkEndpoint& listen_interface, std::int32_t backlog);
+        std::unique_ptr<TCPServer> StartServer(const NetworkEndpoint& local, std::int32_t backlog);
     }
 
     namespace PlatformTCP = WindowsTCP;

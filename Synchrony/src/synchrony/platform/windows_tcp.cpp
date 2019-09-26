@@ -130,9 +130,9 @@ namespace synchrony
 
     std::unique_ptr<TCPSocket> WindowsTCPServer::Accept()
     {
-        if (auto server_socket = accept(tcp_socket_, nullptr, nullptr); server_socket != INVALID_SOCKET)
+        if (auto tcp_socket = accept(tcp_socket_, nullptr, nullptr); tcp_socket != INVALID_SOCKET)
         {
-            return std::make_unique<WindowsTCPSocket>(server_socket);
+            return std::make_unique<WindowsTCPSocket>(tcp_socket);
         }
 
         return nullptr;
@@ -142,11 +142,12 @@ namespace synchrony
     /* WINDOWS TCP                                                          */
     /************************************************************************/
 
-    std::unique_ptr<TCPSocket> WindowsTCP::Connect(const NetworkEndpoint& server)
+    std::unique_ptr<TCPSocket> WindowsTCP::Connect(const NetworkEndpoint& local, const NetworkEndpoint& remote)
     {
         if (auto tcp_socket = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP); tcp_socket != INVALID_SOCKET)
         {
-            if (WindowsNetwork::Connect(tcp_socket, server) != SOCKET_ERROR)
+            if (WindowsNetwork::Bind(tcp_socket, local) != SOCKET_ERROR &&
+                WindowsNetwork::Connect(tcp_socket, remote) != SOCKET_ERROR)
             {
                 return std::make_unique<WindowsTCPSocket>(tcp_socket);
             }
@@ -157,11 +158,11 @@ namespace synchrony
         return nullptr;
     }
 
-    std::unique_ptr<TCPServer> WindowsTCP::StartServer(const NetworkEndpoint& listen_interface, std::int32_t backlog)
+    std::unique_ptr<TCPServer> WindowsTCP::StartServer(const NetworkEndpoint& local, std::int32_t backlog)
     {
         if (auto tcp_socket = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP); tcp_socket != INVALID_SOCKET)
         {
-            if (WindowsNetwork::Bind(tcp_socket, listen_interface) != SOCKET_ERROR &&
+            if (WindowsNetwork::Bind(tcp_socket, local) != SOCKET_ERROR &&
                 listen(tcp_socket, backlog) != SOCKET_ERROR)
             {
                 return std::make_unique<WindowsTCPServer>(tcp_socket);
