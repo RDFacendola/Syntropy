@@ -1,6 +1,6 @@
 
-/// \file network.h
-/// \brief This header is part of the synchrony network system. It contains basic functionalities used to startup and shutdown the networking service.
+/// \file windows_socket.h
+/// \brief This header is part of the synchrony socket system. It contains basic socket functionalities.
 ///
 /// \author Raffaele D. Facendola - 2019
 
@@ -8,55 +8,41 @@
 
 #ifdef _WIN64
 
-#include <memory>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 #include "synchrony/network/network_endpoint.h"
-#include "synchrony/socket/tcp_socket.h"
-#include "synchrony/socket/udp_socket.h"
 
 namespace synchrony
 {
     /************************************************************************/
-    /* WINDOWS TCP                                                          */
+    /* WINDOWS NETWORK                                                      */
     /************************************************************************/
 
-    /// \brief Contains network-related functions under Windows OS.
+    /// \brief Contains socket-related functions under Windows.
     /// \author Raffaele D. Facendola - September 2019.
-    namespace WindowsTCP
+    namespace WindowsNetwork
     {
-        /// \brief Connect to a remote TCP server.
-        /// \param server Server interface to connect to.
-        ///\ return Returns a valid TCP socket if a connection could be established with the remote server, returns false otherwise.
-        std::unique_ptr<TCPSocket> Connect(const NetworkEndpoint& server);
+        /// \brief Convert a NetworkEndpoint to a SOCKADDR_IN6 structure.
+        /// \param endpoint Endpoint to convert.
+        /// \return Returns the converted endpoint.
+        SOCKADDR_IN6 ToSockAddr(const NetworkEndpoint& endpoint);
 
-        /// \brief Start a new TCP server.
-        /// \param listen_interface Interface to listen to.
-        /// \param backlog Maximum number of simultaneous connections to the server.
-        /// \return Returns a valid TCP server if the server could be created, returns nullptr otherwise.
-        std::unique_ptr<TCPServer> StartServer(const NetworkEndpoint& listen_interface, std::int32_t backlog);
+        /// \brief Convert a SockAddr to a NetworkEndpoint.
+        /// \param address Address to convert.
+        /// \return Returns the converted address.
+        NetworkEndpoint FromSockAddr(const SOCKADDR_IN6& address);
+
+        /// \brief Wraps the bind(socket, name, namelen) method.
+        /// \param socket Socket to bind.
+        /// \param endpoint Interface to bind to.
+        int Bind(SOCKET socket, const NetworkEndpoint& endpoint);
+
+        /// \brief Wraps the connect(socket, name, namelen) method.
+        /// \param socket Socket to bind.
+        /// \param endpoint Interface to bind to.
+        int Connect(SOCKET socket, const NetworkEndpoint& endpoint);
     }
-
-    namespace PlatformTCP = WindowsTCP;
-
-    /************************************************************************/
-    /* WINDOWS UDP                                                          */
-    /************************************************************************/
-
-    namespace WindowsUDP
-    {
-        /// \brief Create a new UDP peer bound to a local interface.
-        /// \param local Address used to receive and send datagram to\from.
-        /// \return Returns a valid UDP socket if the peer could be created, returns false otherwise.
-        std::unique_ptr<UDPSocket> CreatePeer(const NetworkEndpoint& local);
-
-        /// \brief Create a new UDP peer bound to a local interface.
-        /// \param local Address used to receive and send datagram to\from.
-        /// \param remote Address used to receive and send datagram from\to.
-        /// \return Returns a valid UDP socket if the peer could be created, returns false otherwise.
-        std::unique_ptr<UDPChannel> CreatePeer(const NetworkEndpoint& local, const NetworkEndpoint& remote);
-    }
-
-    namespace PlatformUDP = WindowsUDP;
 
 }
 

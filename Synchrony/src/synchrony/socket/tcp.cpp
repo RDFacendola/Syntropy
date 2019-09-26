@@ -1,6 +1,6 @@
-#include "synchrony/socket/tcp_socket.h"
+#include "synchrony/socket/tcp.h"
 
-#include "synchrony/platform/windows_socket.h"
+#include "synchrony/platform/windows_tcp.h"
 
 namespace synchrony
 {

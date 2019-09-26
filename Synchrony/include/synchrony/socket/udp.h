@@ -1,5 +1,5 @@
 
-/// \file udp_socket.h
+/// \file udp.h
 /// \brief This header is part of the synchrony socket system. It contains interfaces for User Datagram Protocol sockets.
 ///
 /// \author Raffaele D. Facendola - 2019
@@ -26,16 +26,17 @@ namespace synchrony
         virtual ~UDPSocket() = default;
 
         /// \brief Send a datagram to a remote peer.
-        /// \param peer Address of the peer to send the data to.
+        /// \param remote Address of the peer to send the data to.
         /// \param datagram Datagram to send.
         /// \return Returns true if the datagram could be sent entirely, returns false otherwise.
-        virtual bool Send(const NetworkEndpoint& peer, const syntropy::ConstMemoryRange& datagram) = 0;
+        virtual bool Send(const NetworkEndpoint& remote, const syntropy::ConstMemoryRange& datagram) = 0;
 
         /// \brief Receive a datagram from a remote peer.
         /// This method will block until some data is received from the remote peer.
+        /// \param remote If the method succeeds contains the address of the peer the datagram originated from.
         /// \param datagram Datagram buffer to receive in.
         /// \return If a datagram could be received reduce datagram capacity to fit that amount and returns true, otherwise return false.
-        virtual bool Receive(NetworkEndpoint& peer, syntropy::MemoryRange& datagram) = 0;
+        virtual bool Receive(NetworkEndpoint& remote, syntropy::MemoryRange& datagram) = 0;
 
     };
 
@@ -44,7 +45,7 @@ namespace synchrony
     /************************************************************************/
 
     /// \brief Base interface for UDP channels.
-    /// UDP channels are UDP sockets that are "virtually" connected to a single remote host which is chosen during socket initialization.
+    /// UDP channels are UDP sockets that are virtually connected to a single remote host chosen during initialization.
     /// \author Raffaele D. Facendola - September 2019.
     class UDPChannel
     {

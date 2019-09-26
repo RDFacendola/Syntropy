@@ -1,5 +1,5 @@
 
-/// \file tcp_socket.h
+/// \file tcp.h
 /// \brief This header is part of the synchrony socket system. It contains interfaces for Transmission Control Protocol sockets.
 ///
 /// \author Raffaele D. Facendola - 2019

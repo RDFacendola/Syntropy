@@ -19,7 +19,7 @@ namespace synchrony
     /* WINDOWS NETWORK                                                      */
     /************************************************************************/
 
-    /// \brief Contains network-related functions under Windows OS.
+    /// \brief Contains network-related functions under Windows.
     /// \author Raffaele D. Facendola - September 2019.
     namespace WindowsNetwork
     {
