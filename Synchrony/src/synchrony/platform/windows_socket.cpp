@@ -45,6 +45,34 @@ namespace synchrony
         return endpoint;
     }
 
+    std::optional<NetworkEndpoint> WindowsNetwork::GetRemoteEndpoint(SOCKET socket)
+    {
+        auto remote_address = SOCKADDR_IN6{};
+        auto remote_size = int(sizeof(remote_address));
+
+        if (getpeername(socket, reinterpret_cast<SOCKADDR*>(&remote_address), &remote_size) != SOCKET_ERROR &&
+            remote_address.sin6_family == AF_INET6)
+        {
+            return FromSockAddr(remote_address);
+        }
+
+        return {};
+    }
+
+    std::optional<NetworkEndpoint> WindowsNetwork::GetLocalEndpoint(SOCKET socket)
+    {
+        auto local_address = SOCKADDR_IN6{};
+        auto local_size = int(sizeof(local_address));
+
+        if (getsockname(socket, reinterpret_cast<SOCKADDR*>(&local_address), &local_size) != SOCKET_ERROR &&
+            local_address.sin6_family == AF_INET6)
+        {
+            return FromSockAddr(local_address);
+        }
+
+        return {};
+    }
+
     int WindowsNetwork::Bind(SOCKET socket, const NetworkEndpoint& endpoint)
     {
         auto address = ToSockAddr(endpoint);

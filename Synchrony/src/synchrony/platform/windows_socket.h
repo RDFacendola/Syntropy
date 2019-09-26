@@ -10,6 +10,7 @@
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <optional>
 
 #include "synchrony/network/network_endpoint.h"
 
@@ -32,6 +33,14 @@ namespace synchrony
         /// \param address Address to convert.
         /// \return Returns the converted address.
         NetworkEndpoint FromSockAddr(const SOCKADDR_IN6& address);
+
+        /// \brief Get the remote endpoint associated to a socket.
+        /// \param socket Socket to get the remote endpoint of.
+        std::optional<NetworkEndpoint> GetRemoteEndpoint(SOCKET socket);
+
+        /// \brief Get the local endpoint associated to a socket.
+        /// \param socket Socket to get the local endpoint of.
+        std::optional<NetworkEndpoint> GetLocalEndpoint(SOCKET socket);
 
         /// \brief Wraps the bind(socket, name, namelen) method.
         /// \param socket Socket to bind.
