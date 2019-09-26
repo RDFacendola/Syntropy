@@ -12,6 +12,7 @@
 
 #include "synchrony/network/network_endpoint.h"
 #include "synchrony/socket/tcp_socket.h"
+#include "synchrony/socket/udp_socket.h"
 
 namespace synchrony
 {
@@ -36,6 +37,27 @@ namespace synchrony
     }
 
     namespace PlatformTCP = WindowsTCP;
+
+    /************************************************************************/
+    /* WINDOWS UDP                                                          */
+    /************************************************************************/
+
+    namespace WindowsUDP
+    {
+        /// \brief Create a new UDP peer bound to a local interface.
+        /// \param local Address used to receive and send datagram to\from.
+        /// \return Returns a valid UDP socket if the peer could be created, returns false otherwise.
+        std::unique_ptr<UDPSocket> CreatePeer(const NetworkEndpoint& local);
+
+        /// \brief Create a new UDP peer bound to a local interface.
+        /// \param local Address used to receive and send datagram to\from.
+        /// \param remote Address used to receive and send datagram from\to.
+        /// \return Returns a valid UDP socket if the peer could be created, returns false otherwise.
+        std::unique_ptr<UDPChannel> CreatePeer(const NetworkEndpoint& local, const NetworkEndpoint& remote);
+    }
+
+    namespace PlatformUDP = WindowsUDP;
+
 }
 
 #endif
