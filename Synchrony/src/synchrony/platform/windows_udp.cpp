@@ -97,14 +97,16 @@ namespace synchrony
         auto send_address = WindowsNetwork::ToSockAddr(remote);
 
         if (auto sent_amount = sendto(udp_socket_, send_buffer, send_size, 0, reinterpret_cast<SOCKADDR*>(&send_address), sizeof(send_address));
-            sent_amount != SOCKET_ERROR)
+            sent_amount != SOCKET_ERROR && sent_amount > 0)
         {
             SYNTROPY_ASSERT(sent_amount == send_size);          // Datagram-oriented protocols are supposed to preserve datagram boundaries!
 
             return true;
         }
-
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
     bool WindowsUDPSocket::Receive(NetworkEndpoint& remote, syntropy::MemoryRange& datagram)
@@ -115,15 +117,17 @@ namespace synchrony
         auto receive_address_size = int(sizeof(receive_address));
 
         if (auto receive_amount = recvfrom(udp_socket_, receive_buffer, receive_size, 0, reinterpret_cast<SOCKADDR*>(&receive_address), &receive_address_size);
-            receive_amount != SOCKET_ERROR && receive_address.sin6_family == AF_INET6)
+            receive_amount != SOCKET_ERROR && receive_address.sin6_family == AF_INET6 && receive_amount > 0)
         {
             remote = WindowsNetwork::FromSockAddr(receive_address);
             datagram = syntropy::MemoryRange(datagram.Begin(), datagram.Begin() + syntropy::Bytes(receive_amount));
 
             return true;
         }
-
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
     NetworkEndpoint WindowsUDPSocket::GetLocalEndpoint() const
@@ -151,14 +155,17 @@ namespace synchrony
         auto send_buffer = datagram.Begin().As<char>();
         auto send_size = static_cast<int>(std::size_t(datagram.GetSize()));
 
-        if (auto sent_amount = send(udp_socket_, send_buffer, send_size, 0); sent_amount != SOCKET_ERROR)
+        if (auto sent_amount = send(udp_socket_, send_buffer, send_size, 0);
+            sent_amount != SOCKET_ERROR && sent_amount > 0)
         {
             SYNTROPY_ASSERT(sent_amount == send_size);          // Datagram-oriented protocols are supposed to preserve datagram boundaries!
 
             return true;
         }
-
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
     bool WindowsUDPChannel::Receive(syntropy::MemoryRange& datagram)
@@ -166,14 +173,17 @@ namespace synchrony
         auto receive_buffer = datagram.Begin().As<char>();
         auto receive_size = int(std::size_t(datagram.GetSize()));
 
-        if (auto receive_amount = recv(udp_socket_, receive_buffer, receive_size, 0); receive_amount != SOCKET_ERROR)
+        if (auto receive_amount = recv(udp_socket_, receive_buffer, receive_size, 0);
+            receive_amount != SOCKET_ERROR && receive_amount > 0)
         {
             datagram = syntropy::MemoryRange(datagram.Begin(), datagram.Begin() + syntropy::Bytes(receive_amount));
 
             return true;
         }
-
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
     NetworkEndpoint WindowsUDPChannel::GetLocalEndpoint() const

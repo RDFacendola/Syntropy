@@ -36,6 +36,8 @@ namespace synchrony
 
         virtual NetworkEndpoint GetRemoteEndpoint() const override;
 
+        virtual bool IsConnected() const override;
+
     private:
 
         /// \brief Underlying socket.
@@ -92,14 +94,17 @@ namespace synchrony
         auto send_buffer = buffer.Begin().As<char>();
         auto send_size = static_cast<int>(std::size_t(buffer.GetSize()));
 
-        if (auto sent_amount = send(tcp_socket_, send_buffer, send_size, 0); sent_amount != SOCKET_ERROR)
+        if (auto sent_amount = send(tcp_socket_, send_buffer, send_size, 0);
+            sent_amount != SOCKET_ERROR)
         {
             buffer = syntropy::ConstMemoryRange(buffer.Begin() + syntropy::Bytes(sent_amount), buffer.End());
 
             return true;
         }
-
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
     bool WindowsTCPSocket::Receive(syntropy::MemoryRange& buffer)
@@ -107,14 +112,17 @@ namespace synchrony
         auto receive_buffer = buffer.Begin().As<char>();
         auto receive_size = static_cast<int>(std::size_t(buffer.GetSize()));
 
-        if (auto receive_amount = recv(tcp_socket_, receive_buffer, receive_size, 0); receive_amount != SOCKET_ERROR)
+        if (auto receive_amount = recv(tcp_socket_, receive_buffer, receive_size, 0);
+            receive_amount != SOCKET_ERROR && receive_amount > 0)
         {
             buffer = syntropy::MemoryRange(buffer.Begin(), buffer.Begin() + syntropy::Bytes(receive_amount));
 
             return true;
         }
-
-        return false;
+        else
+        {
+            return false;
+        }
     }
 
     NetworkEndpoint WindowsTCPSocket::GetLocalEndpoint() const
@@ -125,6 +133,28 @@ namespace synchrony
     NetworkEndpoint WindowsTCPSocket::GetRemoteEndpoint() const
     {
         return *WindowsNetwork::GetRemoteEndpoint(tcp_socket_);
+    }
+
+    bool WindowsTCPSocket::IsConnected() const
+    {
+        auto socket_set = fd_set{};
+        auto timeout = timeval{ 0, 0 };
+
+        FD_ZERO(&socket_set);
+        FD_SET(tcp_socket_, &socket_set);
+
+        auto result = select(0, &socket_set, 0, 0, &timeout);
+
+        if (FD_ISSET(tcp_socket_, &socket_set) == 0)                // Check if the socket is in a readable state.
+        {
+            return true;                                            // Not readable: disconnected!
+        }
+
+        auto read_count = u_long{};
+
+        ioctlsocket(tcp_socket_, FIONREAD, &read_count);            // Check if there are data yet to read.
+
+        return read_count != 0;                                     // If there are pending data the socket is connected.
     }
 
     /************************************************************************/

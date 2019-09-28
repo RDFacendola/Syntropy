@@ -43,6 +43,10 @@ namespace synchrony
         /// \brief Get the remote endpoint the socket is bound to.
         /// \return Returns the remote endpoint the socket is bound to.
         virtual NetworkEndpoint GetRemoteEndpoint() const = 0;
+
+        /// \brief Check whether the socket is connected to a remote endpoint.
+        /// \return Returns true if the socket is connected to a remote endpoint, returns false otherwise.
+        virtual bool IsConnected() const = 0;
     };
 
     /************************************************************************/
