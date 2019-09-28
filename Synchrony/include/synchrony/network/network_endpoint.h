@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <string>
+#include <ostream>
 
 #include "synchrony/network/network_address.h"
 
@@ -42,6 +43,9 @@ namespace synchrony
         NetworkPort port_;
     };
 
+    /// \brief Stream insertion for NetworkEndpoint.
+    std::ostream& operator<<(std::ostream& out, const NetworkEndpoint& endpoint);
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -61,6 +65,12 @@ namespace synchrony
     inline std::string NetworkEndpoint::ToString() const
     {
         return "[" + address_.ToString() + "]:" + std::to_string(port_);
+    }
+
+    inline std::ostream& operator<<(std::ostream& out, const NetworkEndpoint& endpoint)
+    {
+        out << endpoint.ToString();
+        return out;
     }
 }
 

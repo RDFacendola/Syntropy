@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <string>
+#include <ostream>
 
 namespace synchrony
 {
@@ -44,6 +45,9 @@ namespace synchrony
         std::uint16_t h_;
     };
 
+    /// \brief Stream insertion for NetworkAddress.
+    std::ostream& operator<<(std::ostream& out, const NetworkAddress& address);
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -58,6 +62,12 @@ namespace synchrony
     constexpr NetworkAddress NetworkAddress::Any()
     {
         return { 0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u };
+    }
+
+    inline std::ostream& operator<<(std::ostream& out, const NetworkAddress& address)
+    {
+        out << address.ToString();
+        return out;
     }
 
 }

@@ -36,6 +36,13 @@ namespace synchrony
         /// \return If data could be received reduce buffer capacity to fit that amount and returns true, otherwise returns false.
         virtual bool Receive(syntropy::MemoryRange& buffer) = 0;
 
+        /// \brief Get the local endpoint the socket is bound to.
+        /// \return Returns the local endpoint the socket is bound to.
+        virtual NetworkEndpoint GetLocalEndpoint() const = 0;
+
+        /// \brief Get the remote endpoint the socket is bound to.
+        /// \return Returns the remote endpoint the socket is bound to.
+        virtual NetworkEndpoint GetRemoteEndpoint() const = 0;
     };
 
     /************************************************************************/

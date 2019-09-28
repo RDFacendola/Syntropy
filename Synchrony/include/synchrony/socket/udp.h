@@ -38,6 +38,10 @@ namespace synchrony
         /// \return If a datagram could be received reduce datagram capacity to fit that amount and returns true, otherwise return false.
         virtual bool Receive(NetworkEndpoint& remote, syntropy::MemoryRange& datagram) = 0;
 
+        /// \brief Get the local endpoint the socket is bound to.
+        /// \return Returns the local endpoint the socket is bound to.
+        virtual NetworkEndpoint GetLocalEndpoint() const = 0;
+
     };
 
     /************************************************************************/
@@ -64,6 +68,14 @@ namespace synchrony
         /// \param datagram Datagram buffer to receive in.
         /// \return If a datagram could be received reduce datagram capacity to fit that amount and returns true, otherwise return false.
         virtual bool Receive(syntropy::MemoryRange& datagram) = 0;
+
+        /// \brief Get the local endpoint the socket is bound to.
+        /// \return Returns the local endpoint the socket is bound to.
+        virtual NetworkEndpoint GetLocalEndpoint() const = 0;
+
+        /// \brief Get the remote endpoint the socket is bound to.
+        /// \return Returns the remote endpoint the socket is bound to.
+        virtual NetworkEndpoint GetRemoteEndpoint() const = 0;
 
     };
 

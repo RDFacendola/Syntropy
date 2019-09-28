@@ -32,6 +32,8 @@ namespace synchrony
 
         virtual bool Receive(NetworkEndpoint& remote, syntropy::MemoryRange& datagram) override;
 
+        virtual NetworkEndpoint GetLocalEndpoint() const override;
+
     private:
 
         /// \brief Underlying socket.
@@ -58,6 +60,10 @@ namespace synchrony
         virtual bool Send(const syntropy::ConstMemoryRange& datagram) override;
 
         virtual bool Receive(syntropy::MemoryRange& datagram) override;
+
+        virtual NetworkEndpoint GetLocalEndpoint() const override;
+
+        virtual NetworkEndpoint GetRemoteEndpoint() const override;
 
     private:
 
@@ -120,6 +126,11 @@ namespace synchrony
         return false;
     }
 
+    NetworkEndpoint WindowsUDPSocket::GetLocalEndpoint() const
+    {
+        return *WindowsNetwork::GetLocalEndpoint(udp_socket_);
+    }
+
     /************************************************************************/
     /* WINDOWS UDP CHANNEL                                                  */
     /************************************************************************/
@@ -163,6 +174,16 @@ namespace synchrony
         }
 
         return false;
+    }
+
+    NetworkEndpoint WindowsUDPChannel::GetLocalEndpoint() const
+    {
+        return *WindowsNetwork::GetLocalEndpoint(udp_socket_);
+    }
+
+    NetworkEndpoint WindowsUDPChannel::GetRemoteEndpoint() const
+    {
+        return *WindowsNetwork::GetRemoteEndpoint(udp_socket_);
     }
 
     /************************************************************************/

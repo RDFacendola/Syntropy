@@ -32,6 +32,10 @@ namespace synchrony
 
         virtual bool Receive(syntropy::MemoryRange& buffer) override;
 
+        virtual NetworkEndpoint GetLocalEndpoint() const override;
+
+        virtual NetworkEndpoint GetRemoteEndpoint() const override;
+
     private:
 
         /// \brief Underlying socket.
@@ -111,6 +115,16 @@ namespace synchrony
         }
 
         return false;
+    }
+
+    NetworkEndpoint WindowsTCPSocket::GetLocalEndpoint() const
+    {
+        return *WindowsNetwork::GetLocalEndpoint(tcp_socket_);
+    }
+
+    NetworkEndpoint WindowsTCPSocket::GetRemoteEndpoint() const
+    {
+        return *WindowsNetwork::GetRemoteEndpoint(tcp_socket_);
     }
 
     /************************************************************************/
