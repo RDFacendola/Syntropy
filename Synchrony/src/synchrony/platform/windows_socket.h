@@ -11,6 +11,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <optional>
+#include <chrono>
 
 #include "synchrony/network/network_endpoint.h"
 
@@ -51,6 +52,12 @@ namespace synchrony
         /// \param socket Socket to bind.
         /// \param endpoint Interface to bind to.
         int Connect(SOCKET socket, const NetworkEndpoint& endpoint);
+
+        /// \brief Check for a socket readability.
+        /// \param socket Socket to check the readability of.
+        /// \param timeout Maximum time to wait.
+        /// \return Returns true if the socket becomes readable in the provided timeout, returns false otherwise.
+        bool ReadTimeout(SOCKET socket, std::chrono::milliseconds timeout);
     }
 
 }

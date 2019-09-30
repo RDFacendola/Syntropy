@@ -62,6 +62,8 @@ namespace synchrony
 
         virtual std::unique_ptr<TCPSocket> Accept() override;
 
+        virtual std::unique_ptr<TCPSocket> Accept(std::chrono::milliseconds timeout) override;
+
     private:
 
         /// \brief Listener socket.
@@ -137,24 +139,18 @@ namespace synchrony
 
     bool WindowsTCPSocket::IsConnected() const
     {
-        auto socket_set = fd_set{};
-        auto timeout = timeval{ 0, 0 };
+        using namespace std::chrono_literals;
 
-        FD_ZERO(&socket_set);
-        FD_SET(tcp_socket_, &socket_set);
-
-        auto result = select(0, &socket_set, 0, 0, &timeout);
-
-        if (FD_ISSET(tcp_socket_, &socket_set) == 0)                // Check if the socket is in a readable state.
+        if (WindowsNetwork::ReadTimeout(tcp_socket_, 0ms))
         {
-            return true;                                            // Not readable: disconnected!
+            auto read_count = u_long{};
+
+            ioctlsocket(tcp_socket_, FIONREAD, &read_count);            // Check if there are data yet to read.
+
+            return read_count != 0;                                     // If there are pending data the socket is connected.
         }
 
-        auto read_count = u_long{};
-
-        ioctlsocket(tcp_socket_, FIONREAD, &read_count);            // Check if there are data yet to read.
-
-        return read_count != 0;                                     // If there are pending data the socket is connected.
+        return false;                                                   // Not readable: disconnected!
     }
 
     /************************************************************************/
@@ -180,6 +176,11 @@ namespace synchrony
         }
 
         return nullptr;
+    }
+
+    std::unique_ptr<TCPSocket> WindowsTCPServer::Accept(std::chrono::milliseconds timeout)
+    {
+        return WindowsNetwork::ReadTimeout(tcp_socket_, timeout) ? Accept() : nullptr;
     }
 
     /************************************************************************/

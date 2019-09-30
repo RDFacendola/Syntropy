@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <chrono>
+
 #include "syntropy/memory/memory_range.h"
 
 #include "synchrony/network/network_endpoint.h"
@@ -67,6 +69,12 @@ namespace synchrony
         /// \return Returns a valid TCP socket if a connection could be established, returns nullptr otherwise.
         /// \remarks This method blocks until a connection is established or an exception occurs.
         virtual std::unique_ptr<TCPSocket> Accept() = 0;
+
+        /// \brief Accept an incoming TCP connection.
+        /// \param timeout Maximum waiting time for this call.
+        /// \return Returns a valid TCP socket if a connection could be established within the specified timeout, returns nullptr otherwise.
+        /// \remarks This method blocks until a connection is established, an exception occurs or the timeout expires.
+        virtual std::unique_ptr<TCPSocket> Accept(std::chrono::milliseconds timeout) = 0;
     };
 
     /************************************************************************/

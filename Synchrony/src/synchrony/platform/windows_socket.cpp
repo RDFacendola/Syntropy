@@ -86,6 +86,23 @@ namespace synchrony
 
         return connect(socket, reinterpret_cast<SOCKADDR*>(&address), sizeof(address));
     }
+
+    bool WindowsNetwork::ReadTimeout(SOCKET socket, std::chrono::milliseconds timeout)
+    {
+        auto timeout_seconds = std::chrono::duration_cast<std::chrono::seconds>(timeout);
+        auto timeout_microseconds = std::chrono::duration_cast<std::chrono::microseconds>(timeout - timeout_seconds);
+
+        auto socket_set = fd_set{};
+        auto timeout_val = timeval{ long(timeout_seconds.count()), long(timeout_microseconds.count()) };
+
+        FD_ZERO(&socket_set);
+        FD_SET(socket, &socket_set);
+
+        auto result = select(0, &socket_set, 0, 0, &timeout_val);
+
+        return (FD_ISSET(socket, &socket_set) != 0);
+    }
+
 }
 
 #endif
