@@ -207,8 +207,11 @@ namespace synchrony
     {
         if (auto tcp_socket = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP); tcp_socket != INVALID_SOCKET)
         {
-            if (WindowsNetwork::Bind(tcp_socket, local) != SOCKET_ERROR &&
-                listen(tcp_socket, backlog) != SOCKET_ERROR)
+            auto disable = int(0);
+
+            if (setsockopt(tcp_socket, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<const char*>(&disable), sizeof(disable)) != SOCKET_ERROR
+                && WindowsNetwork::Bind(tcp_socket, local) != SOCKET_ERROR
+                && listen(tcp_socket, backlog) != SOCKET_ERROR)
             {
                 return std::make_unique<WindowsTCPServer>(tcp_socket);
             }
