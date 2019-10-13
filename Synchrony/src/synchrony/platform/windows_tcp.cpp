@@ -42,6 +42,9 @@ namespace synchrony
 
         /// \brief Underlying socket.
         SOCKET tcp_socket_{ INVALID_SOCKET };
+
+        /// \brief Whether the socket is connected.
+        bool is_connected_{ true };
     };
 
     /************************************************************************/
@@ -96,17 +99,18 @@ namespace synchrony
         auto send_buffer = buffer.Begin().As<char>();
         auto send_size = static_cast<int>(std::size_t(buffer.GetSize()));
 
-        if (auto sent_amount = send(tcp_socket_, send_buffer, send_size, 0);
-            sent_amount != SOCKET_ERROR)
+        auto sent_amount = send(tcp_socket_, send_buffer, send_size, 0);
+
+        if (sent_amount != SOCKET_ERROR)
         {
             buffer = syntropy::ConstMemoryRange(buffer.Begin() + syntropy::Bytes(sent_amount), buffer.End());
-
-            return true;
         }
-        else
+        else if (auto error = WSAGetLastError(); error == WSAECONNABORTED || error == WSAECONNRESET)
         {
-            return false;
+            is_connected_ = false;          // Connection was closed either gracefully or abortively.
         }
+
+        return (sent_amount != SOCKET_ERROR);
     }
 
     bool WindowsTCPSocket::Receive(syntropy::MemoryRange& buffer)
@@ -114,17 +118,18 @@ namespace synchrony
         auto receive_buffer = buffer.Begin().As<char>();
         auto receive_size = static_cast<int>(std::size_t(buffer.GetSize()));
 
-        if (auto receive_amount = recv(tcp_socket_, receive_buffer, receive_size, 0);
-            receive_amount != SOCKET_ERROR && receive_amount > 0)
+        auto receive_amount = recv(tcp_socket_, receive_buffer, receive_size, 0);
+
+        if (receive_amount > 0)
         {
             buffer = syntropy::MemoryRange(buffer.Begin(), buffer.Begin() + syntropy::Bytes(receive_amount));
-
-            return true;
         }
-        else
+        else if (auto error = WSAGetLastError(); receive_amount == 0 || error == WSAECONNABORTED || error == WSAECONNRESET)
         {
-            return false;
+            is_connected_ = false;          // Connection was closed either gracefully or abortively.
         }
+
+        return (receive_amount > 0);
     }
 
     NetworkEndpoint WindowsTCPSocket::GetLocalEndpoint() const
@@ -139,18 +144,7 @@ namespace synchrony
 
     bool WindowsTCPSocket::IsConnected() const
     {
-        using namespace std::chrono_literals;
-
-        if (WindowsNetwork::ReadTimeout(tcp_socket_, 0ms))
-        {
-            auto read_count = u_long{};
-
-            ioctlsocket(tcp_socket_, FIONREAD, &read_count);            // Check if there are data yet to read.
-
-            return read_count != 0;                                     // If there are pending data the socket is connected.
-        }
-
-        return false;                                                   // Not readable: disconnected!
+        return is_connected_;
     }
 
     /************************************************************************/
