@@ -49,6 +49,11 @@ namespace synchrony
         /// \brief Check whether the socket is connected to a remote endpoint.
         /// \return Returns true if the socket is connected to a remote endpoint, returns false otherwise.
         virtual bool IsConnected() const = 0;
+
+        /// \brief Send data to the connected host.
+        /// \param buffer Buffer to send.
+        /// \return Returns true if the entire buffer could be sent, returns false otherwise.
+        bool SendAll(syntropy::ConstMemoryRange buffer);
     };
 
     /************************************************************************/
@@ -97,4 +102,24 @@ namespace synchrony
         /// \return Returns a valid TCP server if the server could be created, returns nullptr otherwise.
         std::unique_ptr<TCPServer> StartServer(const NetworkEndpoint& local, std::int32_t backlog);
     }
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // TCPSocket.
+
+    inline bool TCPSocket::SendAll(syntropy::ConstMemoryRange buffer)
+    {
+        while (buffer)
+        {
+            if (!Send(buffer))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }
