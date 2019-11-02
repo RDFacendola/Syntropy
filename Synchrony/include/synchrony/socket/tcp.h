@@ -96,16 +96,56 @@ namespace synchrony
         ///\ return Returns a valid TCP socket if a connection could be established with the remote server, returns false otherwise.
         std::unique_ptr<TCPSocket> Connect(const NetworkEndpoint& local, const NetworkEndpoint& remote);
 
+        /// \brief Connect to a remote TCP server.
+        /// \param local_address Address used to receive and send data to\from.
+        /// \param local_port Port used to receive and send data to\from.
+        /// \param remote_address Server address used to receive and send data from\to.
+        /// \param local_port Port used to receive and send data from\to.
+        ///\ return Returns a valid TCP socket if a connection could be established with the remote server, returns false otherwise.
+        std::unique_ptr<TCPSocket> Connect(const std::string& local_address, NetworkPort local_port, const std::string& remote_address, NetworkPort remote_port);
+
         /// \brief Start a new TCP server.
         /// \param local Address used to receive and send data to\from.
         /// \param backlog Maximum number of simultaneous connections to the server.
         /// \return Returns a valid TCP server if the server could be created, returns nullptr otherwise.
         std::unique_ptr<TCPServer> StartServer(const NetworkEndpoint& local, std::int32_t backlog);
+
+        /// \brief Start a new TCP server.
+        /// \param local_address Address used to receive and send data to\from.
+        /// \param local_port Port to bound the server to.
+        /// \param backlog Maximum number of simultaneous connections to the server.
+        /// \return Returns a valid TCP server if the server could be created, returns nullptr otherwise.
+        std::unique_ptr<TCPServer> StartServer(const std::string& local_address, NetworkPort local_port, std::int32_t backlog);
     }
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
+
+    // TCP.
+
+    inline std::unique_ptr<TCPSocket> TCP::Connect(const std::string& local_address, NetworkPort local_port, const std::string& remote_address, NetworkPort remote_port)
+    {
+        auto local_endpoint = NetworkEndpoint::FromString(local_address, local_port);
+        auto remote_endpoint = NetworkEndpoint::FromString(remote_address, remote_port);
+
+        if (local_endpoint && remote_endpoint)
+        {
+            return TCP::Connect(*local_endpoint, *remote_endpoint);
+        }
+
+        return nullptr;
+    }
+
+    inline std::unique_ptr<TCPServer> TCP::StartServer(const std::string& local_address, NetworkPort local_port, std::int32_t backlog)
+    {
+        if (auto local_endpoint = NetworkEndpoint::FromString(local_address, local_port))
+        {
+            return TCP::StartServer(*local_endpoint, backlog);
+        }
+
+        return nullptr;
+    }
 
     // TCPSocket.
 
