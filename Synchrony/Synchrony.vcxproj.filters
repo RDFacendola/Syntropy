@@ -11,6 +11,7 @@
     <ClInclude Include="include\synchrony\socket\tcp.h" />
     <ClInclude Include="src\synchrony\platform\windows_tcp.h" />
     <ClInclude Include="src\synchrony\platform\windows_socket.h" />
+    <ClInclude Include="include\synchrony\rpc\rpc_server.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\synchrony\synchrony.cpp" />
@@ -22,5 +23,6 @@
     <ClCompile Include="src\synchrony\platform\windows_tcp.cpp" />
     <ClCompile Include="src\synchrony\socket\tcp.cpp" />
     <ClCompile Include="src\synchrony\platform\windows_socket.cpp" />
+    <ClCompile Include="src\synchrony\rpc\rpc_server.cpp" />
   </ItemGroup>
 </Project>

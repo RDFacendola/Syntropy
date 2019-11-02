@@ -67,22 +67,33 @@ namespace syntropy
     template <std::size_t... Ints>
     constexpr bool is_contiguous_index_sequence_v = is_contiguous_index_sequence<Ints...>::value;
 
-    /// \brief Trait used to determine the type of the kArgumentIndex-th argument of a callable object.
-    template <std::size_t kArgumentIndex, typename TCallable>
-    struct function_argument : function_argument<kArgumentIndex, decltype(&TCallable::operator())> {};
+    /// \brief Trait used to determine the type of the arguments of a callable object.
+    template <typename TCallable>
+    struct function_arguments : function_arguments<decltype(&TCallable::operator())> {};
 
     /// \brief Specialization for member functions.
-    template <std::size_t kArgumentIndex, typename TCallable, typename TReturn, typename... TArguments>
-    struct function_argument<kArgumentIndex, TReturn(TCallable::*)(TArguments...)>
+    template <typename TCallable, typename TReturn, typename... TArguments>
+    struct function_arguments<TReturn(TCallable::*)(TArguments...)>
     {
-        using type = std::tuple_element_t<kArgumentIndex, std::tuple<TArguments...>>;
+        using type = std::tuple<TArguments...>;
     };
 
     /// \brief Specialization for const member functions.
-    template <std::size_t kArgumentIndex, typename TCallable, typename TReturn, typename... TArguments>
-    struct function_argument<kArgumentIndex, TReturn(TCallable::*)(TArguments...) const>
+    template <typename TCallable, typename TReturn, typename... TArguments>
+    struct function_arguments<TReturn(TCallable::*)(TArguments...) const>
     {
-        using type = std::tuple_element_t<kArgumentIndex, std::tuple<TArguments...>>;
+        using type = std::tuple<TArguments...>;
+    };
+
+    /// \brief Helper type for FunctionArguments<TFunction>.
+    template <typename TFunction>
+    using function_arguments_t = typename function_arguments<TFunction>::type;
+
+    /// \brief Trait used to determine the type of the kArgumentIndex-th argument of a callable object.
+    template <std::size_t kArgumentIndex, typename TCallable>
+    struct function_argument
+    {
+        using type = std::tuple_element_t<kArgumentIndex, function_arguments_t<TCallable>>;
     };
 
     /// \brief Helper type for FunctionArgument<kArgumentIndex, TFunction>.

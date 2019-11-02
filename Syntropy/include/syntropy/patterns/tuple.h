@@ -28,6 +28,13 @@ namespace syntropy
     template <typename... TTuples>
     constexpr size_t LockstepRankV = LockstepRank<TTuples...>::Value;
 
+    /// \brief Specialization for tuples.
+    template<typename... TElements>
+    struct LockstepRank<std::tuple<TElements...>>
+    {
+        static constexpr size_t Value = sizeof...(TElements);
+    };
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
