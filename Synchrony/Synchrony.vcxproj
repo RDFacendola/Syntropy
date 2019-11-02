@@ -78,6 +78,7 @@
     <ClInclude Include="include\synchrony\network\network_endpoint.h" />
     <ClInclude Include="include\synchrony\network\network.h" />
     <ClInclude Include="include\synchrony\network\network_address.h" />
+    <ClInclude Include="include\synchrony\rpc\rpc_client.h" />
     <ClInclude Include="include\synchrony\rpc\rpc_server.h" />
     <ClInclude Include="include\synchrony\socket\tcp.h" />
     <ClInclude Include="include\synchrony\socket\udp.h" />
@@ -94,6 +95,7 @@
     <ClCompile Include="src\synchrony\platform\windows_socket.cpp" />
     <ClCompile Include="src\synchrony\platform\windows_tcp.cpp" />
     <ClCompile Include="src\synchrony\platform\windows_udp.cpp" />
+    <ClCompile Include="src\synchrony\rpc\rpc_client.cpp" />
     <ClCompile Include="src\synchrony\rpc\rpc_server.cpp" />
     <ClCompile Include="src\synchrony\socket\tcp.cpp" />
     <ClCompile Include="src\synchrony\socket\udp.cpp" />
