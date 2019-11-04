@@ -74,6 +74,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\syntropy\application\command_line.h" />
+    <ClInclude Include="include\syntropy\application\command_parser.h" />
     <ClInclude Include="include\syntropy\containers\context.h" />
     <ClInclude Include="include\syntropy\containers\hashed_string.h" />
     <ClInclude Include="include\syntropy\containers\range.h" />

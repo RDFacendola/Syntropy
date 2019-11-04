@@ -93,6 +93,7 @@
     <ClInclude Include="include\syntropy\math\encoding.h" />
     <ClInclude Include="include\syntropy\patterns\visitor.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
+    <ClInclude Include="include\syntropy\application\command_parser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
