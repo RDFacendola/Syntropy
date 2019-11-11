@@ -158,6 +158,8 @@
     <ClInclude Include="include\syntropy\serialization\json\serializers\core_serializers.h" />
     <ClInclude Include="include\syntropy\serialization\json\serializers\fundamental_serializers.h" />
     <ClInclude Include="include\syntropy\serialization\json\serializers\stl_serializers.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_stream.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
     <ClInclude Include="include\syntropy\time\time.h" />
     <ClInclude Include="include\syntropy\time\timer.h" />
@@ -204,6 +206,7 @@
     <ClCompile Include="src\syntropy\serialization\json\deserialization.cpp" />
     <ClCompile Include="src\syntropy\serialization\json\json.cpp" />
     <ClCompile Include="src\syntropy\serialization\json\serialization.cpp" />
+    <ClCompile Include="src\syntropy\serialization\msgpack\msgpack_stream.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\unit_test\test.cpp" />
     <ClCompile Include="src\syntropy\unit_test\test_case.cpp" />

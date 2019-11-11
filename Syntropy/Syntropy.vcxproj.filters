@@ -94,6 +94,8 @@
     <ClInclude Include="include\syntropy\patterns\visitor.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
     <ClInclude Include="include\syntropy\application\command_parser.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_stream.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack.h" />
     <ClInclude Include="include\syntropy\platform\endianness.h" />
     <ClInclude Include="src\syntropy\platform\architecture\x64_endianness.h" />
   </ItemGroup>
@@ -136,6 +138,7 @@
     <ClCompile Include="src\syntropy\unit_test\test_suite.cpp" />
     <ClCompile Include="src\syntropy\contexts.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
+    <ClCompile Include="src\syntropy\serialization\msgpack\msgpack_stream.cpp" />
     <ClCompile Include="src\syntropy\platform\endianness.cpp" />
     <ClCompile Include="src\syntropy\platform\architecture\x64_endianness.cpp" />
   </ItemGroup>
