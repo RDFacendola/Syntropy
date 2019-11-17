@@ -11,12 +11,11 @@
 #include <atomic>
 #include <thread>
 #include <functional>
-#include <sstream>
 #include <tuple>
 
 #include "syntropy/type_traits.h"
 #include "syntropy/patterns/tuple.h"
-
+#include "syntropy/serialization/msgpack/msgpack_stream.h"
 #include "syntropy/containers/hashed_string.h"
 
 #include "synchrony/socket/tcp.h"
@@ -24,20 +23,21 @@
 namespace synchrony
 {
     /************************************************************************/
-    /* RPC SERVER                                                           */
+    /* RPC SERVER T                                                         */
     /************************************************************************/
 
     /// \brief Exposes functions that can be called from a remote peer.
     /// \author Raffaele D. Facendola - October 2019.
-    class RPCServer
+    template <typename TStream>
+    class RPCServerT
     {
     public:
 
         /// \brief Default constructor.
-        RPCServer() = default;
+        RPCServerT() = default;
 
         /// \brief Destroy the RPC server.
-        ~RPCServer();
+        ~RPCServerT();
 
         /// \brief Bind a new procedure to the server by name.
         /// If another procedure is registered with the same name the behavior of this function is undefined.
@@ -45,7 +45,7 @@ namespace synchrony
         /// \param procedure Procedure to bind.
         /// \return Returns a reference to this.
         template <typename TProcedure>
-        RPCServer& Bind(const syntropy::HashedString& name, TProcedure&& procedure);
+        RPCServerT& Bind(const syntropy::HashedString& name, TProcedure&& procedure);
 
         /// \brief Start the RPC server asynchronously.
         void Start(TCPSocket& socket);
@@ -63,7 +63,7 @@ namespace synchrony
     private:
 
         /// \brief Stored routine.
-        using RemoteProcedure = std::function<void(std::stringstream& stream)>;
+        using RemoteProcedure = std::function<void(TStream& stream)>;
 
         /// \brief RPC server loop.
         void Run(TCPSocket& socket);
@@ -73,7 +73,7 @@ namespace synchrony
 
         /// \brief Deserialize a single procedure encoded in a stream.
         /// \return 
-        bool DeserializeProcedure(std::stringstream& stream);
+        bool DeserializeProcedure(TStream& stream);
 
         /// \brief Receiving thread.
         std::unique_ptr<std::thread> thread_;
@@ -86,20 +86,25 @@ namespace synchrony
 
     };
 
+    /// \brief Default command parser.
+    using RPCServer = RPCServerT<syntropy::MsgpackStream>;
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    inline RPCServer::~RPCServer()
+    template <typename TStream>
+    inline RPCServerT<TStream>::~RPCServerT()
     {
         Stop();
         Join();
     }
 
+    template <typename TStream>
     template <typename TProcedure>
-    inline RPCServer& RPCServer::Bind(const syntropy::HashedString& name, TProcedure&& procedure)
+    inline RPCServerT<TStream>& RPCServerT<TStream>::Bind(const syntropy::HashedString& name, TProcedure&& procedure)
     {
-        procedures_[name] = [this, procedure = std::move(procedure)](std::stringstream& stream)
+        procedures_[name] = [this, procedure = std::move(procedure)](TStream& stream)
         {
             // Deserialize the procedure arguments from the stream.
 
@@ -107,17 +112,14 @@ namespace synchrony
 
             auto deserialize_argument = [&stream](auto&& argument)
             {
-                if (!stream.fail())
-                {
-                    stream >> argument;
-                }
+                stream >> argument;
             };
 
             syntropy::LockstepApply(deserialize_argument, arguments);
 
             // Call the procedure.
 
-            if (!stream.fail())
+            if (!stream.IsFail())
             {
                 std::apply(procedure, std::move(arguments));
             }
@@ -126,7 +128,8 @@ namespace synchrony
         return *this;
     }
 
-    inline void RPCServer::Start(TCPSocket& socket)
+    template <typename TStream>
+    inline void RPCServerT<TStream>::Start(TCPSocket& socket)
     {
         bool expected = false;
 
@@ -139,12 +142,14 @@ namespace synchrony
         }
     }
 
-    inline void RPCServer::Stop()
+    template <typename TStream>
+    inline void RPCServerT<TStream>::Stop()
     {
         is_running_ = false;
     }
 
-    inline void RPCServer::Join()
+    template <typename TStream>
+    inline void RPCServerT<TStream>::Join()
     {
         if (thread_)
         {
@@ -153,9 +158,70 @@ namespace synchrony
         }
     }
 
-    inline bool RPCServer::IsRunning() const
+    template <typename TStream>
+    inline bool RPCServerT<TStream>::IsRunning() const
     {
         return is_running_;
+    }
+
+    template <typename TStream>
+    void RPCServerT<TStream>::Run(TCPSocket& socket)
+    {
+        static const auto kBufferSize = 1024;
+
+        auto receive_buffer = std::array<char, kBufferSize>{};
+        auto receive_stream = std::string{};
+
+        while (IsRunning())
+        {
+            auto receive_range = syntropy::MakeMemoryRange(receive_buffer);
+
+            if (socket.Receive(receive_range))                  // Receive a chunk of data.
+            {
+                receive_stream.reserve(receive_stream.capacity() + std::size_t(receive_range.GetSize()));
+
+                std::copy(receive_range.Begin().As<std::int8_t>(), receive_range.End().As<std::int8_t>(), std::back_inserter(receive_stream));
+
+                DeserializeStream(receive_stream);              // Attempt to deserialize a remote procedure.
+            }
+            else if (!socket.IsConnected())
+            {
+                Stop();                                         // Disconnected: stop the server and return.
+            }
+        }
+    }
+
+    template <typename TStream>
+    void RPCServerT<TStream>::DeserializeStream(std::string& stream)
+    {
+        auto reader = TStream{ stream };
+
+        auto reader_position = reader.GetReadPosition();
+
+        for (; DeserializeProcedure(reader); reader_position = reader.GetReadPosition());
+
+        stream.erase(begin(stream), begin(stream) + reader_position);
+    }
+
+    template <typename TStream>
+    bool RPCServerT<TStream>::DeserializeProcedure(TStream& stream)
+    {
+        auto procedure_name = std::string{};
+
+        stream >> procedure_name;
+
+        auto procedure_it = procedures_.find(procedure_name);
+
+        if (procedure_it != end(procedures_))
+        {
+            procedure_it->second(stream);
+        }
+
+        auto more = stream.IsEndOfStream() && (stream.IsFail() || (procedure_it == end(procedures_)));
+
+        stream.Recover();
+
+        return !more;
     }
 
 }

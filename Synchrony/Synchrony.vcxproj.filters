@@ -24,7 +24,5 @@
     <ClCompile Include="src\synchrony\platform\windows_tcp.cpp" />
     <ClCompile Include="src\synchrony\socket\tcp.cpp" />
     <ClCompile Include="src\synchrony\platform\windows_socket.cpp" />
-    <ClCompile Include="src\synchrony\rpc\rpc_server.cpp" />
-    <ClCompile Include="src\synchrony\rpc\rpc_client.cpp" />
   </ItemGroup>
 </Project>

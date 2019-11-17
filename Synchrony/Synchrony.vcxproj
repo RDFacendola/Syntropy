@@ -95,8 +95,6 @@
     <ClCompile Include="src\synchrony\platform\windows_socket.cpp" />
     <ClCompile Include="src\synchrony\platform\windows_tcp.cpp" />
     <ClCompile Include="src\synchrony\platform\windows_udp.cpp" />
-    <ClCompile Include="src\synchrony\rpc\rpc_client.cpp" />
-    <ClCompile Include="src\synchrony\rpc\rpc_server.cpp" />
     <ClCompile Include="src\synchrony\socket\tcp.cpp" />
     <ClCompile Include="src\synchrony\socket\udp.cpp" />
     <ClCompile Include="src\synchrony\synchrony.cpp" />

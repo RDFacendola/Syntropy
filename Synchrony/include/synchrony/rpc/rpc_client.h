@@ -13,26 +13,28 @@
 #include <mutex>
 
 #include "syntropy/containers/hashed_string.h"
+#include "syntropy/serialization/msgpack/msgpack_stream.h"
 
 #include "synchrony/socket/tcp.h"
 
 namespace synchrony
 {
     /************************************************************************/
-    /* RPC CLIENT                                                           */
+    /* RPC CLIENT T                                                         */
     /************************************************************************/
 
     /// \brief Object that is used to send commands to a remote peer.
     /// \author Raffaele D. Facendola - November 2019.
-    class RPCClient
+    template <typename TStream>
+    class RPCClientT
     {
     public:
 
         /// \brief Default constructor.
-        RPCClient() = default;
+        RPCClientT() = default;
 
         /// \brief Destroy the RPC client.
-        ~RPCClient();
+        ~RPCClientT();
 
         /// \brief Call a remote procedure on the server.
         /// If the client is not running the behavior of this method is undefined.
@@ -70,33 +72,40 @@ namespace synchrony
 
         /// \brief Stream to send.
         std::string send_buffer_;
+
     };
+
+    /// \brief Default RPC client.
+    using RPCClient = RPCClientT<syntropy::MsgpackStream>;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    inline RPCClient::~RPCClient()
+    template <typename TStream>
+    inline RPCClientT<TStream>::~RPCClientT()
     {
         Stop();
         Join();
     }
 
+    template <typename TStream>
     template <typename... TArguments>
-    void RPCClient::Call(const syntropy::HashedString& name, TArguments&&... arguments)
+    void RPCClientT<TStream>::Call(const syntropy::HashedString& name, TArguments&&... arguments)
     {
-        auto stream = std::stringstream{};
+        auto stream = TStream{};
 
-        stream << name << " ";
+        stream << name.GetString();
 
-        ((stream << arguments, stream << " "), ...);
+        ((stream << arguments), ...);
 
         auto lock = std::lock_guard<std::mutex>(mutex_);
 
-        send_buffer_ += stream.str();
+        send_buffer_ += stream.ToString();
     }
 
-    inline void RPCClient::Start(TCPSocket& socket)
+    template <typename TStream>
+    inline void RPCClientT<TStream>::Start(TCPSocket& socket)
     {
         bool expected = false;
 
@@ -109,12 +118,14 @@ namespace synchrony
         }
     }
 
-    inline void RPCClient::Stop()
+    template <typename TStream>
+    inline void RPCClientT<TStream>::Stop()
     {
         is_running_ = false;
     }
 
-    inline void RPCClient::Join()
+    template <typename TStream>
+    inline void RPCClientT<TStream>::Join()
     {
         if (thread_)
         {
@@ -123,9 +134,32 @@ namespace synchrony
         }
     }
 
-    inline bool RPCClient::IsRunning() const
+    template <typename TStream>
+    inline bool RPCClientT<TStream>::IsRunning() const
     {
         return is_running_;
     }
 
+    template <typename TStream>
+    void RPCClientT<TStream>::Run(TCPSocket& socket)
+    {
+        while (IsRunning())
+        {
+            auto lock = std::lock_guard<std::mutex>(mutex_);
+
+            if (send_buffer_.size() > 0)
+            {
+                auto send_range = syntropy::ConstMemoryRange(send_buffer_.data(), send_buffer_.data() + send_buffer_.size());
+
+                if (socket.SendAll(send_range))                 // Send the buffered commands.
+                {
+                    send_buffer_.clear();
+                }
+                else if (!socket.IsConnected())
+                {
+                    Stop();                                     // Disconnected: stop the client and return.
+                }
+            }
+        }
+    }
 }

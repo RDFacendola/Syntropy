@@ -143,6 +143,9 @@ namespace syntropy
         /// \brief Clear the status of the stream after a reading error.
         void Recover();
 
+        /// \brief Get the index of the next byte to read.
+        std::size_t GetReadPosition() const;
+
         /// \brief Clear the underlying stream.
         void Clear();
 
@@ -419,6 +422,11 @@ namespace syntropy
         stream_.str("");
     }
 
+    inline std::size_t MsgpackStream::GetReadPosition() const
+    {
+        return stream_.rdbuf()->pubseekoff(0, std::ios::cur, std::ios::in);
+    }
+
     inline std::string MsgpackStream::ToString() const
     {
         return stream_.str();
@@ -500,9 +508,12 @@ namespace syntropy
 
         if ((!dismissed_ || stream_.fail()) && position_)
         {
+            auto state = stream_.rdstate() | std::ios::failbit;
+
             stream_.clear();
             stream_.seekg(*position_);
-            stream_.setstate(std::ios::failbit);
+
+            stream_.setstate(state);
         }
     }
 
