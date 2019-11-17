@@ -8,203 +8,191 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator<<(std::int8_t rhs)
     {
-        if (rhs >= 0 && rhs <= 127)
+        if (Msgpack::IsPositiveFixInt(rhs))
         {
-            return WriteByte(static_cast<std::uint8_t>(MsgpackFormat::kPositiveFixInt) | std::uint8_t(rhs));
+            Put(Msgpack::EncodePositiveFixInt(rhs));
         }
-        else if (rhs >= -63 && rhs <= 0)
+        else if (Msgpack::IsNegativeFixInt(rhs))
         {
-            return WriteByte(static_cast<std::uint8_t>(MsgpackFormat::kNegativeFixInt) | std::uint8_t(-rhs));
+            Put(Msgpack::EncodeNegativeFixInt(rhs));
         }
         else
         {
-            return WriteByte(MsgpackFormat::kInt8).WriteByte(rhs);
+            Put(MsgpackFormat::kInt8);
+            Put(Msgpack::Encode(rhs));
         }
+
+        return *this;
     }
 
     MsgpackStream& MsgpackStream::operator<<(std::int16_t rhs)
     {
-        if (rhs >= std::numeric_limits<std::int8_t>::min() && rhs <= std::numeric_limits<std::int8_t>::max())
+        if (Msgpack::IsInt8(rhs))
         {
-            return (*this << std::int8_t(rhs));
+            operator<<(std::int8_t(rhs));
         }
         else
         {
-            return WriteByte(MsgpackFormat::kInt16).WriteBytes(Endianness::ToBigEndian(rhs));
+            Put(MsgpackFormat::kInt16);
+            Put(Msgpack::Encode(rhs));
         }
+
+        return *this;
     }
 
     MsgpackStream& MsgpackStream::operator<<(std::int32_t rhs)
     {
-        if (rhs >= std::numeric_limits<std::int16_t>::min() && rhs <= std::numeric_limits<std::int16_t>::max())
+        if (Msgpack::IsInt16(rhs))
         {
-            return (*this << std::int16_t(rhs));
+            operator<<(std::int16_t(rhs));
         }
         else
         {
-            return WriteByte(MsgpackFormat::kInt32).WriteBytes(Endianness::ToBigEndian(rhs));
+            Put(MsgpackFormat::kInt32);
+            Put(Msgpack::Encode(rhs));
         }
+
+        return *this;
     }
 
     MsgpackStream& MsgpackStream::operator<<(std::int64_t rhs)
     {
-        if (rhs >= std::numeric_limits<std::int32_t>::min() && rhs <= std::numeric_limits<std::int32_t>::max())
+        if (Msgpack::IsInt32(rhs))
         {
-            return (*this << std::int32_t(rhs));
+            operator<<(std::int32_t(rhs));
         }
         else
         {
-            return WriteByte(MsgpackFormat::kInt64).WriteBytes(Endianness::ToBigEndian(rhs));
+            Put(MsgpackFormat::kInt64);
+            Put(Msgpack::Encode(rhs));
         }
+
+        return *this;
     }
 
     MsgpackStream& MsgpackStream::operator<<(std::uint8_t rhs)
     {
-        if (rhs >= 0 && rhs <= 127)
+        if (Msgpack::IsPositiveFixInt(rhs))
         {
-            return WriteByte(static_cast<std::uint8_t>(MsgpackFormat::kPositiveFixInt) | rhs);
+            Put(Msgpack::EncodePositiveFixInt(rhs));
         }
         else
         {
-            return WriteByte(MsgpackFormat::kUInt8).WriteByte(rhs);
+            Put(MsgpackFormat::kUInt8);
+            Put(Msgpack::Encode(rhs));
         }
+
+        return *this;
     }
 
     MsgpackStream& MsgpackStream::operator<<(std::uint16_t rhs)
     {
-        if (rhs >= std::numeric_limits<std::uint8_t>::min() && rhs <= std::numeric_limits<std::uint8_t>::max())
+        if (Msgpack::IsUInt8(rhs))
         {
-            return (*this << std::uint8_t(rhs));
+            operator<<(std::uint8_t(rhs));
         }
         else
         {
-            return WriteByte(MsgpackFormat::kUInt16).WriteBytes(Endianness::ToBigEndian(rhs));
+            Put(MsgpackFormat::kUInt16);
+            Put(Msgpack::Encode(rhs));
         }
+
+        return *this;
     }
 
     MsgpackStream& MsgpackStream::operator<<(std::uint32_t rhs)
     {
-        if (rhs >= std::numeric_limits<std::uint16_t>::min() && rhs <= std::numeric_limits<std::uint16_t>::max())
+        if (Msgpack::IsUInt16(rhs))
         {
-            return (*this << std::uint16_t(rhs));
+            operator<<(std::uint16_t(rhs));
         }
         else
         {
-            return WriteByte(MsgpackFormat::kUInt32).WriteBytes(Endianness::ToBigEndian(rhs));
+            Put(MsgpackFormat::kUInt32);
+            Put(Msgpack::Encode(rhs));
         }
+
+        return *this;
     }
 
     MsgpackStream& MsgpackStream::operator<<(std::uint64_t rhs)
     {
-        if (rhs >= std::numeric_limits<std::uint32_t>::min() && rhs <= std::numeric_limits<std::uint32_t>::max())
+        if (Msgpack::IsUInt32(rhs))
         {
-            return (*this << std::uint32_t(rhs));
+            operator<<(std::uint32_t(rhs));
         }
         else
         {
-            return WriteByte(MsgpackFormat::kUInt64).WriteBytes(Endianness::ToBigEndian(rhs));
+            Put(MsgpackFormat::kUInt64);
+            Put(Msgpack::Encode(rhs));
         }
-    }
 
-    MsgpackStream& MsgpackStream::operator<<(float rhs)
-    {
-        auto bytes = std::uint32_t{};
-
-        std::memcpy(&bytes, &rhs, sizeof(float));
-
-        return WriteByte(MsgpackFormat::kFloat32).WriteBytes(Endianness::ToBigEndian(bytes));
-    }
-
-    MsgpackStream& MsgpackStream::operator<<(double rhs)
-    {
-        auto bytes = std::uint64_t{};
-
-        std::memcpy(&bytes, &rhs, sizeof(double));
-
-        return WriteByte(MsgpackFormat::kFloat64).WriteBytes(Endianness::ToBigEndian(bytes));
+        return *this;
     }
 
     MsgpackStream& MsgpackStream::operator<<(const std::string& rhs)
     {
-        auto length = rhs.size();
-        auto capacity = buffer_.size() + rhs.size();
-
-        // Header.
-
-        if (length <= 31)
+        if (Msgpack::IsFixStr(rhs))
         {
-            buffer_.reserve(capacity + 1);
-
-            WriteByte(static_cast<std::uint8_t>(MsgpackFormat::kFixStr) | std::uint8_t(length));
+            Put(Msgpack::EncodeFixStrLength(std::uint8_t(rhs.size())));
         }
-        else if (length <= ((1ull << 8u) - 1u))
+        else if (Msgpack::IsStr8(rhs))
         {
-            buffer_.reserve(capacity + 2);
-
-            WriteByte(MsgpackFormat::kStr8).WriteBytes(std::uint8_t(length));
+            Put(MsgpackFormat::kStr8);
+            Put(Msgpack::Encode(std::uint8_t(rhs.size())));
         }
-        else if (length <= ((1ull << 16u) - 1u))
+        else if (Msgpack::IsStr16(rhs))
         {
-            buffer_.reserve(capacity + 3);
-
-            WriteByte(MsgpackFormat::kStr16).WriteBytes(Endianness::ToBigEndian(std::uint16_t(length)));
+            Put(MsgpackFormat::kStr16);
+            Put(Msgpack::Encode(std::uint16_t(rhs.size())));
         }
-        else if (length <= ((1ull << 32u) - 1u))
+        else if (Msgpack::IsStr32(rhs))
         {
-            buffer_.reserve(capacity + 5);
-
-            WriteByte(MsgpackFormat::kStr32).WriteBytes(Endianness::ToBigEndian(std::uint32_t(length)));
+            Put(MsgpackFormat::kStr32);
+            Put(Msgpack::Encode(std::uint32_t(rhs.size())));
         }
 
-        // Data.
+        Put(rhs.data(), rhs.size());
 
-        return WriteBytes(rhs.data(), sizeof(char) * length);
+        return *this;
     }
 
     MsgpackStream& MsgpackStream::operator<<(const std::vector<std::uint8_t>& rhs)
     {
-        auto length = rhs.size();
-        auto capacity = buffer_.size() + rhs.size();
-
-        // Header.
-
-        if (length <= ((1ull << 8u) - 1u))
+        if (Msgpack::IsBin8(rhs))
         {
-            buffer_.reserve(capacity + 2);
-
-            WriteByte(MsgpackFormat::kBin8).WriteBytes(std::uint8_t(length));
+            Put(MsgpackFormat::kBin8);
+            Put(Msgpack::Encode(std::uint8_t(rhs.size())));
         }
-        else if (length <= ((1ull << 16u) - 1u))
+        else if (Msgpack::IsBin16(rhs))
         {
-            buffer_.reserve(capacity + 3);
-
-            WriteByte(MsgpackFormat::kBin16).WriteBytes(Endianness::ToBigEndian(std::uint16_t(length)));
+            Put(MsgpackFormat::kBin16);
+            Put(Msgpack::Encode(std::uint16_t(rhs.size())));
         }
-        else if (length <= ((1ull << 32u) - 1u))
+        else if (Msgpack::IsBin32(rhs))
         {
-            buffer_.reserve(capacity + 5);
-
-            WriteByte(MsgpackFormat::kBin32).WriteBytes(Endianness::ToBigEndian(std::uint32_t(length)));
+            Put(MsgpackFormat::kBin32);
+            Put(Msgpack::Encode(std::uint32_t(rhs.size())));
         }
 
-        // Data.
+        Put(rhs.data(), rhs.size());
 
-        return WriteBytes(rhs.data(), sizeof(std::uint8_t) * length);
+        return *this;
     }
 
     MsgpackStream& MsgpackStream::operator>>(bool& rhs)
     {
-        if (TestByte(MsgpackFormat::kTrue))
+        auto sentry = Sentry(*this);
+
+        if (Test(MsgpackFormat::kTrue))
         {
             rhs = true;
+            sentry.Dismiss();
         }
-        else if (TestByte(MsgpackFormat::kFalse))
+        else if (Test(MsgpackFormat::kFalse))
         {
             rhs = false;
-        }
-        else
-        {
-            SetReadFail();
+            sentry.Dismiss();
         }
 
         return *this;
@@ -212,21 +200,22 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(std::int8_t& rhs)
     {
-        if (auto positive_fix_int = TestByte(MsgpackFormat::kPositiveFixInt, MsgpackFixTypeMask::kPositiveFixInt))
+        auto sentry = Sentry(*this);
+
+        if (Msgpack::IsPositiveFixIntFormat(Peek()))
         {
-            rhs = +(*positive_fix_int & ~static_cast<std::uint8_t>(MsgpackFixTypeMask::kPositiveFixInt));
+            rhs = Msgpack::DecodePositiveFixInt(Get());
+            sentry.Dismiss();
         }
-        else if (auto negative_fix_int = TestByte(MsgpackFormat::kNegativeFixInt, MsgpackFixTypeMask::kNegativeFixInt))
+        else if (Msgpack::IsNegativeFixIntFormat(Peek()))
         {
-            rhs = -(*negative_fix_int & ~static_cast<std::uint8_t>(MsgpackFixTypeMask::kNegativeFixInt));
+            rhs = Msgpack::DecodeNegativeFixInt(Get());
+            sentry.Dismiss();
         }
-        else if (TestByte(MsgpackFormat::kInt8))
+        else if (Test(MsgpackFormat::kInt8))
         {
-            ReadByte(rhs);
-        }
-        else
-        {
-            SetReadFail();
+            rhs = Msgpack::DecodeInt8(Get());
+            sentry.Dismiss();
         }
 
         return *this;
@@ -234,15 +223,21 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(std::int16_t& rhs)
     {
-        if (TestByte(MsgpackFormat::kInt16))
-        {
-            ReadBytes(rhs);
+        auto sentry = Sentry(*this);
 
-            rhs = Endianness::FromBigEndian(rhs);
-        }
-        else if (auto rhs_low = std::int8_t{}; !(*this >> rhs_low).IsReadFail())
+        if (Test(MsgpackFormat::kInt16))
         {
+            auto rhs_high = std::int16_t{};
+            Get(rhs_high);
+            rhs = Msgpack::DecodeInt16(rhs_high);
+            sentry.Dismiss();
+        }
+        else
+        {
+            auto rhs_low = std::int8_t{};
+            operator>>(rhs_low);
             rhs = rhs_low;
+            sentry.Dismiss();
         }
 
         return *this;
@@ -250,15 +245,21 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(std::int32_t& rhs)
     {
-        if (TestByte(MsgpackFormat::kInt32))
-        {
-            ReadBytes(rhs);
+        auto sentry = Sentry(*this);
 
-            rhs = Endianness::FromBigEndian(rhs);
-        }
-        else if (auto rhs_low = std::int16_t{}; !(*this >> rhs_low).IsReadFail())
+        if (Test(MsgpackFormat::kInt32))
         {
+            auto rhs_high = std::int32_t{};
+            Get(rhs_high);
+            rhs = Msgpack::DecodeInt32(rhs_high);
+            sentry.Dismiss();
+        }
+        else
+        {
+            auto rhs_low = std::int16_t{};
+            operator>>(rhs_low);
             rhs = rhs_low;
+            sentry.Dismiss();
         }
 
         return *this;
@@ -266,15 +267,21 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(std::int64_t& rhs)
     {
-        if (TestByte(MsgpackFormat::kInt64))
-        {
-            ReadBytes(rhs);
+        auto sentry = Sentry(*this);
 
-            rhs = Endianness::FromBigEndian(rhs);
-        }
-        else if (auto rhs_low = std::int32_t{}; !(*this >> rhs_low).IsReadFail())
+        if (Test(MsgpackFormat::kInt64))
         {
+            auto rhs_high = std::int64_t{};
+            Get(rhs_high);
+            rhs = Msgpack::DecodeInt64(rhs_high);
+            sentry.Dismiss();
+        }
+        else
+        {
+            auto rhs_low = std::int32_t{};
+            operator>>(rhs_low);
             rhs = rhs_low;
+            sentry.Dismiss();
         }
 
         return *this;
@@ -282,17 +289,17 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(std::uint8_t& rhs)
     {
-        if (auto positive_fix_int = TestByte(MsgpackFormat::kPositiveFixInt, MsgpackFixTypeMask::kPositiveFixInt))
+        auto sentry = Sentry(*this);
+
+        if (Msgpack::IsPositiveFixIntFormat(Peek()))
         {
-            rhs = +(*positive_fix_int & ~static_cast<std::uint8_t>(MsgpackFixTypeMask::kPositiveFixInt));
+            rhs = Msgpack::DecodePositiveFixUInt(Get());
+            sentry.Dismiss();
         }
-        else if (TestByte(MsgpackFormat::kUInt8))
+        else if (Test(MsgpackFormat::kUInt8))
         {
-            ReadByte(rhs);
-        }
-        else
-        {
-            SetReadFail();
+            rhs = Msgpack::DecodeUInt8(Get());
+            sentry.Dismiss();
         }
 
         return *this;
@@ -300,15 +307,21 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(std::uint16_t& rhs)
     {
-        if (TestByte(MsgpackFormat::kUInt16))
-        {
-            ReadBytes(rhs);
+        auto sentry = Sentry(*this);
 
-            rhs = Endianness::FromBigEndian(rhs);
-        }
-        else if (auto rhs_low = std::uint8_t{}; !(*this >> rhs_low).IsReadFail())
+        if (Test(MsgpackFormat::kUInt16))
         {
+            auto rhs_high = std::int16_t{};
+            Get(rhs_high);
+            rhs = Msgpack::DecodeUInt16(rhs_high);
+            sentry.Dismiss();
+        }
+        else
+        {
+            auto rhs_low = std::uint8_t{};
+            operator>>(rhs_low);
             rhs = rhs_low;
+            sentry.Dismiss();
         }
 
         return *this;
@@ -316,15 +329,21 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(std::uint32_t& rhs)
     {
-        if (TestByte(MsgpackFormat::kUInt32))
-        {
-            ReadBytes(rhs);
+        auto sentry = Sentry(*this);
 
-            rhs = Endianness::FromBigEndian(rhs);
-        }
-        else if (auto rhs_low = std::uint16_t{}; !(*this >> rhs_low).IsReadFail())
+        if (Test(MsgpackFormat::kUInt32))
         {
+            auto rhs_high = std::int32_t{};
+            Get(rhs_high);
+            rhs = Msgpack::DecodeUInt32(rhs_high);
+            sentry.Dismiss();
+        }
+        else
+        {
+            auto rhs_low = std::uint16_t{};
+            operator>>(rhs_low);
             rhs = rhs_low;
+            sentry.Dismiss();
         }
 
         return *this;
@@ -332,15 +351,21 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(std::uint64_t& rhs)
     {
-        if (TestByte(MsgpackFormat::kUInt64))
-        {
-            ReadBytes(rhs);
+        auto sentry = Sentry(*this);
 
-            rhs = Endianness::FromBigEndian(rhs);
-        }
-        else if (auto rhs_low = std::uint32_t{}; !(*this >> rhs_low).IsReadFail())
+        if (Test(MsgpackFormat::kUInt64))
         {
+            auto rhs_high = std::int64_t{};
+            Get(rhs_high);
+            rhs = Msgpack::DecodeUInt64(rhs_high);
+            sentry.Dismiss();
+        }
+        else
+        {
+            auto rhs_low = std::uint32_t{};
+            operator>>(rhs_low);
             rhs = rhs_low;
+            sentry.Dismiss();
         }
 
         return *this;
@@ -348,19 +373,14 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(float& rhs)
     {
-        if (TestByte(MsgpackFormat::kFloat32))
+        auto sentry = Sentry(*this);
+
+        if (Test(MsgpackFormat::kFloat32))
         {
-            auto buffer = std::uint32_t{};
-
-            ReadBytes(buffer);
-
-            buffer = Endianness::FromBigEndian(buffer);
-
-            std::memcpy(&rhs, &buffer, sizeof(float));
-        }
-        else
-        {
-            SetReadFail();
+            auto rhs_encoded = std::int32_t{};
+            Get(rhs_encoded);
+            rhs = Msgpack::DecodeFloat(rhs_encoded);
+            sentry.Dismiss();
         }
 
         return *this;
@@ -368,19 +388,14 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(double& rhs)
     {
-        if (TestByte(MsgpackFormat::kFloat64))
+        auto sentry = Sentry(*this);
+
+        if (Test(MsgpackFormat::kFloat64))
         {
-            auto buffer = std::uint64_t{};
-
-            ReadBytes(buffer);
-
-            buffer = Endianness::FromBigEndian(buffer);
-
-            std::memcpy(&rhs, &buffer, sizeof(double));
-        }
-        else
-        {
-            SetReadFail();
+            auto rhs_encoded = std::int64_t{};
+            Get(rhs_encoded);
+            rhs = Msgpack::DecodeDouble(rhs_encoded);
+            sentry.Dismiss();
         }
 
         return *this;
@@ -388,52 +403,43 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator>>(std::string& rhs)
     {
-        // Header.
+        auto sentry = Sentry(*this);
 
-        auto length = std::uint32_t{};
+        auto length = std::optional<std::size_t>{};
 
-        if (auto FixStr = TestByte(MsgpackFormat::kFixStr, MsgpackFixTypeMask::kFixStr))
+        if (Msgpack::IsFixStrFormat(Peek()))
         {
-            length = std::uint32_t((*FixStr) & ~static_cast<std::uint8_t>(MsgpackFixTypeMask::kFixStr));
+            length = Msgpack::DecodeFixStrLength(Get());
         }
-        else if (TestByte(MsgpackFormat::kStr8))
+        else if (Test(MsgpackFormat::kStr8))
         {
-            auto length_low = std::uint8_t{};
-
-            ReadByte(length_low);
-
-            length = std::uint32_t(length_low);
+            auto length_encoded = std::int8_t{};
+            Get(length_encoded);
+            length = Msgpack::DecodeUInt8(length_encoded);
         }
-        else if(TestByte(MsgpackFormat::kStr16))
+        else if (Test(MsgpackFormat::kStr16))
         {
-            auto length_low = std::uint16_t{};
-
-            ReadByte(length_low);
-
-            length = std::uint32_t(Endianness::FromBigEndian(length_low));
+            auto length_encoded = std::int16_t{};
+            Get(length_encoded);
+            length = Msgpack::DecodeUInt16(length_encoded);
         }
-        else if (TestByte(MsgpackFormat::kStr32))
+        else if (Test(MsgpackFormat::kStr32))
         {
-            auto length_low = std::uint32_t{};
-
-            ReadByte(length_low);
-
-            length = std::uint32_t(Endianness::FromBigEndian(length_low));
-        }
-        else
-        {
-            SetReadFail();
+            auto length_encoded = std::int32_t{};
+            Get(length_encoded);
+            length = Msgpack::DecodeUInt32(length_encoded);
         }
 
-        // Data.
-
-        if (!IsReadFail())
+        if (length)
         {
-            rhs.resize(length);
+            rhs.resize(*length);
 
-            ReadBytes(rhs.data(), sizeof(char) * length);
+            Get(rhs.data(), *length);
+
+            sentry.Dismiss();
         }
 
         return *this;
     }
+
 }

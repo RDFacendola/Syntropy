@@ -12,10 +12,9 @@
 #include <string>
 #include <unordered_map>
 #include <optional>
+#include <sstream>
 
 #include "syntropy/serialization/msgpack/msgpack.h"
-
-#include "syntropy/platform/endianness.h"
 
 namespace syntropy
 {
@@ -23,12 +22,18 @@ namespace syntropy
     /* MSGPACK STREAM                                                       */
     /************************************************************************/
 
-    /// \brief Stream encoding data using msgpack specification.
-    /// Specification: https://github.com/msgpack/msgpack/blob/master/spec.md
+    /// \brief Stream whose data are encoded via msgpack specification.
     /// \author Raffaele D. Facendola - November 2019.
+    /// \see https://github.com/msgpack/msgpack/blob/master/spec.md
     class MsgpackStream
     {
     public:
+
+        /// \brief Create an empty stream.
+        MsgpackStream() = default;
+
+        /// \brief Create a stream.
+        MsgpackStream(std::string stream);
 
         /// \brief Insert a null value.
         MsgpackStream& operator<<(std::nullptr_t rhs);
@@ -67,10 +72,10 @@ namespace syntropy
         MsgpackStream& operator<<(double rhs);
 
         /// \brief Insert a string.
-        MsgpackStream& operator<<(const char* rhs);
+        MsgpackStream& operator<<(const std::string& rhs);
 
         /// \brief Insert a string.
-        MsgpackStream& operator<<(const std::string& rhs);
+        MsgpackStream& operator<<(const char* rhs);
 
         /// \brief Insert a byte-array.
         MsgpackStream& operator<<(const std::vector<std::uint8_t>& rhs);
@@ -84,51 +89,39 @@ namespace syntropy
         MsgpackStream& operator<<(const std::unordered_map<TKey, TValue>& rhs);
 
         /// \brief Extract a boolean value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(bool& rhs);
 
         /// \brief Extract an 8-bit integer value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(std::int8_t& rhs);
 
         /// \brief Extract a 16-bit integer value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(std::int16_t& rhs);
 
         /// \brief Extract a 32-bit integer value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(std::int32_t& rhs);
 
         /// \brief Extract a 64-bit integer value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(std::int64_t& rhs);
 
         /// \brief Extract a 8-bit unsigned integer value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(std::uint8_t& rhs);
 
         /// \brief Extract a 16-bit unsigned integer value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(std::uint16_t& rhs);
 
         /// \brief Extract a 32-bit unsigned integer value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(std::uint32_t& rhs);
 
         /// \brief Extract a 64-bit unsigned integer value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(std::uint64_t& rhs);
 
         /// \brief Extract a single precision floating point value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(float& rhs);
 
         /// \brief Extract a double precision floating point value.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(double& rhs);
 
         /// \brief Extract a string.
-        /// If the read operation succeeded rhs contains the extracted value, otherwise a read error is signaled.
         MsgpackStream& operator>>(std::string& rhs);
 
         /// \brief Extract an array.
@@ -139,9 +132,9 @@ namespace syntropy
         template <typename TKey, typename TValue>
         MsgpackStream& operator>>(std::unordered_map<TKey, TValue>& rhs);
 
-        /// \brief Check whether the last read operation failed.
-        /// \return Returns true if the last read operation failed, returns false otherwise
-        bool IsReadFail() const;
+        /// \brief Check whether the fail bit of the underlying stream is set.
+        /// \return Returns true if the fail bit is set, returns false otherwise
+        bool IsFail() const;
 
         /// \brief Check whether the last byte in the stream was read.
         /// \return Returns true if the last byte in the stream was read, returns false otherwise.
@@ -150,54 +143,68 @@ namespace syntropy
         /// \brief Clear the status of the stream after a reading error.
         void Recover();
 
+        /// \brief Clear the underlying stream.
+        void Clear();
+
+        /// \brief Access the underlying stream.
+        std::string ToString() const;
+
     private:
 
-        /// \brief Write a value that can be implicitly converted to a 8-bit unsigned integer to the underlying buffer.
-        template <typename TValue>
-        MsgpackStream& WriteByte(TValue value);
+        /// \brief Utility class used to rollback the status of the owning stream upon destruction unless dismissed.
+        /// \author Raffaele D. Facendola - November 2019.
+        class Sentry
+        {
+        public:
 
-        /// \brief Write a value to the underlying buffer.
-        template <typename TValue>
-        MsgpackStream& WriteBytes(TValue value);
+            /// \brief Create the sentry.
+            Sentry(MsgpackStream& stream);
 
-        /// \brief Write a buffer to the underlying buffer.
-        MsgpackStream& WriteBytes(const void* buffer, std::size_t length);
+            /// \brief Destroy the sentry. If not dismissed rollback the status of the owning stream.
+            ~Sentry();
 
-        /// \brief Read a byte from the underlying buffer.
-        template <typename TValue>
-        MsgpackStream& ReadByte(TValue& value);
+            /// \brief Dismiss the sentry.
+            void Dismiss();
 
-        /// \brief Read many bytes from the underlying buffer.
-        template <typename TValue>
-        MsgpackStream& ReadBytes(TValue& value);
+        private:
 
-        /// \brief Read data from the underlying buffer.
-        MsgpackStream& ReadBytes(void* buffer, std::size_t length);
+            /// \brief Underlying stream.
+            std::stringstream& stream_;
 
-        /// \brief Notify a read failure.
-        void SetReadFail();
+            /// \brief Position of the stream upon sentry construction.
+            std::optional<std::streampos> position_;
 
-        /// \brief Check whether the next unread byte matches a given value.
-        /// \param value Value to test the next byte to read against.
-        /// \param mask Mask used while performing the test.
-        /// \return If the test succeeds returns the next value and advances the cursor, otherwise returns false.
-        template <typename TValue, typename TMask>
-        std::optional<std::uint8_t> TestByte(TValue value, TMask mask);
+            /// \brief Whether the sentry was dismissed.
+            bool dismissed_{ false };
 
-        /// \brief Check whether the next unread byte matches a given value.
-        /// \param value Value to test the next byte to read against.
-        /// \return If the test succeeds returns the next value and advances the cursor, otherwise returns false.
-        template <typename TValue>
-        std::optional<std::uint8_t> TestByte(TValue value);
+        };
 
-        /// \brief Underlying buffer.
-        std::vector<std::uint8_t> buffer_;
+        /// \brief Put a value inside the underlying stream.
+        template <typename TType>
+        void Put(TType value);
 
-        /// \brief Whether the last read operation failed.
-        bool read_fail_{ false };
+        /// \brief Put a buffer inside the underlying stream.
+        void Put(const void* data, std::size_t size);
 
-        /// \brief Index of the next byte to read.
-        std::size_t cursor_{ 0 };
+        /// \brief Get a single byte from the underlying stream.
+        std::int8_t Get();
+
+        /// \brief Peek a single byte from the underlying stream.
+        std::int8_t Peek();
+
+        /// \brief Peek a single byte from the underlying stream and test it with the provided type.
+        /// \return If the peeked byte matches the provided type, consume the byte and returns true, otherwise returns false.
+        bool Test(MsgpackFormat type);
+
+        /// \brief Get a value from the underlying stream.
+        template <typename TType>
+        void Get(TType& value);
+
+        /// \brief Read data from the underlying stream.
+        void Get(void* buffer, std::size_t length);
+
+        /// \brief Underlying stream.
+        std::stringstream stream_;
     };
 
     /************************************************************************/
@@ -206,53 +213,70 @@ namespace syntropy
 
     // MsgpackStream.
 
+    inline MsgpackStream::MsgpackStream(std::string stream)
+        :stream_(std::move(stream))
+    {
+
+    }
+
     inline MsgpackStream& MsgpackStream::operator<<(std::nullptr_t rhs)
     {
-        return WriteByte(MsgpackFormat::kNil);
+        Put(Msgpack::Encode(rhs));
+
+        return *this;
     }
 
     inline MsgpackStream& MsgpackStream::operator<<(bool rhs)
     {
-        return WriteByte(rhs ? MsgpackFormat::kTrue : MsgpackFormat::kFalse);
+        Put(Msgpack::Encode(rhs));
+
+        return *this;
     }
 
     inline MsgpackStream& MsgpackStream::operator<<(const char* rhs)
     {
-        return (*this << std::string(rhs));
+        operator<<(std::string(rhs));
+
+        return *this;
+    }
+
+    inline MsgpackStream& MsgpackStream::operator<<(float rhs)
+    {
+        Put(MsgpackFormat::kFloat32);
+        Put(Msgpack::Encode(rhs));
+
+        return *this;
+    }
+
+    inline MsgpackStream& MsgpackStream::operator<<(double rhs)
+    {
+        Put(MsgpackFormat::kFloat64);
+        Put(Msgpack::Encode(rhs));
+
+        return *this;
     }
 
     template <typename TElement>
     MsgpackStream& MsgpackStream::operator<<(const std::vector<TElement>& rhs)
     {
-        auto count = rhs.size();
-        auto capacity = buffer_.size() + count * sizeof(TElement);
-
-        // Header.
-
-        if (count <= 15)
+        if (Msgpack::IsFixArray(rhs))
         {
-            buffer_.reserve(capacity + 1);
-
-            WriteByte(static_cast<std::uint8_t>(MsgpackFormat::kFixArray) | std::uint8_t(count));
+            Put(Msgpack::EncodeFixArrayLength(std::uint8_t(rhs.size())));
         }
-        else if (count <= ((1ull << 16u) - 1u))
+        else if (Msgpack::IsArray16(rhs))
         {
-            buffer_.reserve(capacity + 3);
-
-            WriteByte(MsgpackFormat::kArray16).WriteBytes(Endianness::ToBigEndian(std::uint16_t(count)));
+            Put(MsgpackFormat::kArray16);
+            Put(Msgpack::Encode(std::uint16_t(rhs.size())));
         }
-        else if (count <= ((1ull << 32u) - 1u))
+        else if (Msgpack::IsArray32(rhs))
         {
-            buffer_.reserve(capacity + 5);
-
-            WriteByte(MsgpackFormat::kArray32).WriteBytes(Endianness::ToBigEndian(std::uint32_t(count)));
+            Put(MsgpackFormat::kArray32);
+            Put(Msgpack::Encode(std::uint32_t(rhs.size())));
         }
-
-        // Insert each element.
 
         for (auto&& element : rhs)
         {
-            *this << element;
+            operator<<(element);
         }
 
         return *this;
@@ -261,35 +285,25 @@ namespace syntropy
     template <typename TKey, typename TValue>
     MsgpackStream& MsgpackStream::operator<<(const std::unordered_map<TKey, TValue>& rhs)
     {
-        auto count = rhs.size();
-        auto capacity = buffer_.size() + count * (sizeof(TKey) + sizeof(TValue));
-
-        // Header.
-
-        if (count <= 15)
+        if (Msgpack::IsFixMap(rhs))
         {
-            buffer_.reserve(capacity + 1);
-
-            WriteByte(static_cast<std::uint8_t>(MsgpackFormat::kFixMap) | std::uint8_t(count));
+            Put(Msgpack::EncodeFixMapLength(std::uint8_t(rhs.size())));
         }
-        else if (count <= ((1ull << 16u) - 1u))
+        else if (Msgpack::IsMap16(rhs))
         {
-            buffer_.reserve(capacity + 3);
-
-            WriteByte(MsgpackFormat::kMap16).WriteBytes(Endianness::ToBigEndian(std::uint16_t(count)));
+            Put(MsgpackFormat::kMap16);
+            Put(Msgpack::Encode(std::uint16_t(rhs.size())));
         }
-        else if (count <= ((1ull << 32u) - 1u))
+        else if (Msgpack::IsMap32(rhs))
         {
-            buffer_.reserve(capacity + 5);
-
-            WriteByte(MsgpackFormat::kMap32).WriteBytes(Endianness::ToBigEndian(std::uint32_t(count)));
+            Put(MsgpackFormat::kMap32);
+            Put(Msgpack::Encode(std::uint32_t(rhs.size())));
         }
-
-        // Insert each element.
 
         for (auto&& element : rhs)
         {
-            *this << element.first << element.second;
+            operator<<(element.first);
+            operator<<(element.second);
         }
 
         return *this;
@@ -298,59 +312,42 @@ namespace syntropy
     template <typename TElement>
     MsgpackStream& MsgpackStream::operator>>(std::vector<TElement>& rhs)
     {
-        auto old_cursor = cursor_;
+        auto sentry = Sentry(*this);
 
-        // Header.
+        auto length = std::optional<std::size_t>{};
 
-        auto elements = std::uint32_t{};
-
-        if (auto FixArray = TestByte(MsgpackFormat::kFixArray, MsgpackFixTypeMask::kFixArray))
+        if (Msgpack::IsFixArrayFormat(Peek()))
         {
-            elements = std::uint32_t((*FixArray) & ~static_cast<std::uint8_t>(MsgpackFixTypeMask::kFixArray));
+            length = Msgpack::DecodeFixArrayLength(Get());
         }
-        else if (TestByte(MsgpackFormat::kArray16))
+        else if (Test(MsgpackFormat::kArray16))
         {
-            auto elements_low = std::uint16_t{};
-
-            ReadByte(elements_low);
-
-            elements = std::uint32_t(elements_low);
+            auto length_encoded = std::int16_t{};
+            Get(length_encoded);
+            length = Msgpack::DecodeUInt16(length_encoded);
         }
-        else if (TestByte(MsgpackFormat::kArray32))
+        else if (Test(MsgpackFormat::kArray32))
         {
-            auto elements_low = std::uint32_t{};
-
-            ReadByte(elements_low);
-
-            elements = std::uint32_t(Endianness::FromBigEndian(elements_low));
-        }
-        else
-        {
-            SetReadFail();
-
-            return *this;
+            auto length_encoded = std::int32_t{};
+            Get(length_encoded);
+            length = Msgpack::DecodeUInt32(length_encoded);
         }
 
-        // Data.
-
-        rhs.clear();
-        rhs.reserve(elements);
-
-        for (; elements > 0; --elements)
+        if (length)
         {
-            if(auto element = TElement{}; !(*this >> element).IsReadFail())
+            rhs.clear();
+            rhs.reserve(*length);
+
+            for (auto elements = *length; elements > 0u; --elements)
             {
+                auto element = TElement{};
+
+                operator>>(element);
+
                 rhs.emplace_back(std::move(element));
             }
-            else
-            {
-                break;
-            }
-        }
 
-        if (IsReadFail())
-        {
-            cursor_ = old_cursor;       // Rollback!
+            sentry.Dismiss();
         }
 
         return *this;
@@ -359,187 +356,160 @@ namespace syntropy
     template <typename TKey, typename TValue>
     MsgpackStream& MsgpackStream::operator>>(std::unordered_map<TKey, TValue>& rhs)
     {
-        auto old_cursor = cursor_;
+        auto sentry = Sentry(*this);
 
-        // Header.
+        auto length = std::optional<std::size_t>{};
 
-        auto elements = std::uint32_t{};
-
-        if (auto FixMap = TestByte(MsgpackFormat::kFixMap, MsgpackFixTypeMask::kFixMap))
+        if (Msgpack::IsFixMapFormat(Peek()))
         {
-            elements = std::uint32_t((*FixMap) & ~static_cast<std::uint8_t>(MsgpackFixTypeMask::kFixMap));
+            length = Msgpack::DecodeFixMapLength(Get());
         }
-        else if (TestByte(MsgpackFormat::kMap16))
+        else if (Test(MsgpackFormat::kMap16))
         {
-            auto elements_low = std::uint16_t{};
-
-            ReadByte(elements_low);
-
-            elements = std::uint32_t(elements_low);
+            auto length_encoded = std::int16_t{};
+            Get(length_encoded);
+            length = Msgpack::DecodeUInt16(length_encoded);
         }
-        else if (TestByte(MsgpackFormat::kMap32))
+        else if (Test(MsgpackFormat::kMap32))
         {
-            auto elements_low = std::uint32_t{};
-
-            ReadByte(elements_low);
-
-            elements = std::uint32_t(Endianness::FromBigEndian(elements_low));
-        }
-        else
-        {
-            SetReadFail();
-
-            return *this;
+            auto length_encoded = std::int32_t{};
+            Get(length_encoded);
+            length = Msgpack::DecodeUInt32(length_encoded);
         }
 
-        // Data.
-
-        rhs.clear();
-        rhs.reserve(elements);
-
-        for (; elements > 0; --elements)
+        if (length)
         {
-            auto key = TKey{};
-            auto value = TValue{};
+            rhs.clear();
+            rhs.reserve(*length);
 
-            if(!(*this >> key >> value).IsReadFail())
+            for (auto elements = *length; elements > 0u; --elements)
             {
-                rhs.emplace(std::make_pair(key, value));
-            }
-            else
-            {
-                break;
-            }
-        }
+                auto key = TKey{};
+                auto value = TValue{};
 
-        if (IsReadFail())
-        {
-            cursor_ = old_cursor;       // Rollback!
+                operator>>(key);
+                operator>>(value);
+
+                rhs.emplace(std::make_pair(std::move(key), std::move(value)));
+            }
+
+            sentry.Dismiss();
         }
 
         return *this;
     }
 
-    inline bool MsgpackStream::IsReadFail() const
+    inline bool MsgpackStream::IsFail() const
     {
-        return read_fail_;
+        return stream_.fail();
     }
 
     inline bool MsgpackStream::IsEndOfStream() const
     {
-        return cursor_ >= buffer_.size();
+        return stream_.eof();
     }
 
     inline void MsgpackStream::Recover()
     {
-        read_fail_ = false;
+        stream_.clear();
     }
 
-    template <typename TValue>
-    inline MsgpackStream& MsgpackStream::WriteByte(TValue value)
+    inline void MsgpackStream::Clear()
     {
-        buffer_.emplace_back(static_cast<std::uint8_t>(value));
-        return *this;
+        stream_.str("");
     }
 
-    template <typename TValue>
-    inline MsgpackStream& MsgpackStream::WriteBytes(TValue value)
+    inline std::string MsgpackStream::ToString() const
     {
-        if constexpr (sizeof(value) == sizeof(std::uint8_t))
+        return stream_.str();
+    }
+
+    template <typename TType>
+    inline void MsgpackStream::Put(TType value)
+    {
+        if constexpr (sizeof(TType) == sizeof(char))
         {
-            return WriteByte(value);
+            stream_.put(char(value));
         }
         else
         {
-            return WriteBytes(&value, sizeof(value));
+            stream_.write(reinterpret_cast<char*>(&value), sizeof(TType));
         }
     }
 
-    inline MsgpackStream& MsgpackStream::WriteBytes(const void* buffer, std::size_t length)
+    inline void MsgpackStream::Put(const void* data, std::size_t size)
     {
-        auto cursor = buffer_.size();
-
-        buffer_.resize(cursor + length);
-
-        std::memcpy(buffer_.data() + cursor, buffer, length);
-
-        return *this;
+        stream_.write(reinterpret_cast<const char*>(data), size);
     }
 
-    template <typename TValue>
-    inline MsgpackStream& MsgpackStream::ReadByte(TValue& value)
+    inline std::int8_t MsgpackStream::Get()
     {
-        if (cursor_ + 1 <= buffer_.size())
+        return std::int8_t(stream_.get());
+    }
+
+    inline std::int8_t MsgpackStream::Peek()
+    {
+        return std::int8_t(stream_.peek());
+    }
+
+    inline bool MsgpackStream::Test(MsgpackFormat type)
+    {
+        if (Peek() == std::int8_t(type))
         {
-            value = TValue(buffer_[cursor_++]);
+            Get();
+            return true;
         }
         else
         {
-            SetReadFail();
+            return false;
         }
-
-        return *this;
     }
 
-    template <typename TValue>
-    inline MsgpackStream& MsgpackStream::ReadBytes(TValue& value)
+    template <typename TType>
+    inline void MsgpackStream::Get(TType& value)
     {
-        if (cursor_ + sizeof(TValue) <= buffer_.size())
+        if constexpr (sizeof(TType) == sizeof(char))
         {
-            std::memcpy(&value, buffer_.data() + cursor_, sizeof(TValue));
-
-            cursor_ += sizeof(TValue);
+            value = TType(stream_.get());
         }
         else
         {
-            SetReadFail();
+            stream_.read(reinterpret_cast<char*>(&value), sizeof(TType));
         }
-
-        return *this;
     }
 
-    inline MsgpackStream& MsgpackStream::ReadBytes(void* buffer, std::size_t length)
+    inline void MsgpackStream::Get(void* buffer, std::size_t length)
     {
-        if (!IsReadFail())
+        stream_.read(reinterpret_cast<char*>(buffer), length);
+    }
+
+    // MsgpackStream :: Sentry.
+
+    inline MsgpackStream::Sentry::Sentry(MsgpackStream& stream)
+        : stream_(stream.stream_)
+    {
+        if (!stream_.fail())
         {
-            if (cursor_ + length <= buffer_.size())
-            {
-                std::memcpy(buffer, buffer_.data() + cursor_, length);
-
-                cursor_ += length;
-            }
-            else
-            {
-                SetReadFail();          // Not enough data.
-            }
+            position_ = stream.stream_.tellg();
         }
-
-        return *this;
     }
 
-    inline void MsgpackStream::SetReadFail()
+    inline MsgpackStream::Sentry::~Sentry()
     {
-        read_fail_ = true;
-    }
+        // If the failbit is set an underlying read failed and wrong data were decoded: rollback!
 
-    template <typename TValue, typename TMask>
-    inline std::optional<std::uint8_t> MsgpackStream::TestByte(TValue value, TMask mask)
-    {
-        auto value_byte = static_cast<std::uint8_t>(value);
-        auto mask_byte = static_cast<std::uint8_t>(mask);
-
-        if (!IsReadFail() && !IsEndOfStream() && ((buffer_[cursor_] & mask_byte) == (value_byte & mask_byte)))
+        if ((!dismissed_ || stream_.fail()) && position_)
         {
-            return buffer_[cursor_++];
+            stream_.clear();
+            stream_.seekg(*position_);
+            stream_.setstate(std::ios::failbit);
         }
-
-        return {};
     }
 
-    template <typename TValue>
-    inline std::optional<std::uint8_t> MsgpackStream::TestByte(TValue value)
+    inline void MsgpackStream::Sentry::Dismiss()
     {
-        return TestByte(value, -1);
+        dismissed_ = true;
     }
+
 }
 
