@@ -47,6 +47,18 @@ namespace synchrony
         template <typename TProcedure>
         RPCServerT& Bind(const syntropy::HashedString& name, TProcedure&& procedure);
 
+        /// \brief Bind a new procedure that is called whenever an error occurs.
+        /// \param procedure Procedure to bind.
+        /// \return Returns a reference to this.
+        template <typename TProcedure>
+        RPCServerT& BindError(TProcedure&& procedure);
+
+        /// \brief Bind a new procedure that is called whenever the server is disconnected.
+        /// \param procedure Procedure to bind.
+        /// \return Returns a reference to this.
+        template <typename TProcedure>
+        RPCServerT& BindDisconnected(TProcedure&& procedure);
+
         /// \brief Start the RPC server asynchronously.
         void Start(TCPSocket& socket);
 
@@ -62,8 +74,11 @@ namespace synchrony
 
     private:
 
-        /// \brief Stored routine.
+        /// \brief Type of a remote procedure.
         using RemoteProcedure = std::function<void(TStream& stream)>;
+
+        /// \brief Type of an RPC server event.
+        using RemoteEvent = std::function<void(void)>;
 
         /// \brief RPC server loop.
         void Run(TCPSocket& socket);
@@ -72,8 +87,14 @@ namespace synchrony
         void DeserializeStream(std::string& stream);
 
         /// \brief Deserialize a single procedure encoded in a stream.
-        /// \return 
+        /// \return Returns true if there are data yet to process inside the stream, returns false otherwise.
         bool DeserializeProcedure(TStream& stream);
+
+        /// \brief Called whenever an error occurs while receiving remote data.
+        void OnError();
+
+        /// \brief Called whenever the RPC server gets disconnected.
+        void OnDisconnected();
 
         /// \brief Receiving thread.
         std::unique_ptr<std::thread> thread_;
@@ -84,6 +105,11 @@ namespace synchrony
         /// \brief Procedures bound to the server.
         std::unordered_map<syntropy::HashedString, RemoteProcedure> procedures_;
 
+        /// \brief Handlers to events that are called whenever a server error occurs.
+        std::vector<RemoteEvent> error_handlers_;
+
+        /// \brief Handlers to events that are called whenever the server is disconnected.
+        std::vector<RemoteEvent> disconnected_handlers_;
     };
 
     /// \brief Default command parser.
@@ -124,6 +150,24 @@ namespace synchrony
                 std::apply(procedure, std::move(arguments));
             }
         };
+
+        return *this;
+    }
+
+    template <typename TStream>
+    template <typename TProcedure>
+    inline RPCServerT<TStream>& RPCServerT<TStream>::BindError(TProcedure&& procedure)
+    {
+        error_handlers_.emplace_back(std::move(procedure));
+
+        return *this;
+    }
+
+    template <typename TStream>
+    template <typename TProcedure>
+    inline RPCServerT<TStream>& RPCServerT<TStream>::BindDisconnected(TProcedure&& procedure)
+    {
+        disconnected_handlers_.emplace_back(std::move(procedure));
 
         return *this;
     }
@@ -184,9 +228,13 @@ namespace synchrony
 
                 DeserializeStream(receive_stream);              // Attempt to deserialize a remote procedure.
             }
-            else if (!socket.IsConnected())
+            else if (!socket.IsConnected())                     // Disconnected.
             {
-                Stop();                                         // Disconnected: stop the server and return.
+                OnDisconnected();
+            }
+            else                                                // Error.
+            {
+                OnError();
             }
         }
     }
@@ -224,4 +272,23 @@ namespace synchrony
         return !more;
     }
 
+    template <typename TStream>
+    inline void RPCServerT<TStream>::OnError()
+    {
+        for (auto&& error_handler : error_handlers_)
+        {
+            error_handler();
+        }
+    }
+
+    template <typename TStream>
+    inline void RPCServerT<TStream>::OnDisconnected()
+    {
+        for (auto&& disconnected_handler : disconnected_handlers_)
+        {
+            disconnected_handler();
+        }
+
+        Stop();
+    }
 }
