@@ -69,7 +69,7 @@ namespace syntropy
 
     /// \brief Trait used to determine the type of the arguments of a callable object.
     template <typename TCallable>
-    struct function_arguments : function_arguments<decltype(&TCallable::operator())> {};
+    struct function_arguments : function_arguments<decltype(&std::decay_t<TCallable>::operator())> {};
 
     /// \brief Specialization for member functions.
     template <typename TCallable, typename TReturn, typename... TArguments>
