@@ -79,6 +79,7 @@
     <ClInclude Include="include\synchrony\network\network.h" />
     <ClInclude Include="include\synchrony\network\network_address.h" />
     <ClInclude Include="include\synchrony\rpc\rpc_client.h" />
+    <ClInclude Include="include\synchrony\rpc\rpc_peer.h" />
     <ClInclude Include="include\synchrony\rpc\rpc_server.h" />
     <ClInclude Include="include\synchrony\socket\tcp.h" />
     <ClInclude Include="include\synchrony\socket\udp.h" />

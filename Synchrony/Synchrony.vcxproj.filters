@@ -13,6 +13,7 @@
     <ClInclude Include="src\synchrony\platform\windows_socket.h" />
     <ClInclude Include="include\synchrony\rpc\rpc_server.h" />
     <ClInclude Include="include\synchrony\rpc\rpc_client.h" />
+    <ClInclude Include="include\synchrony\rpc\rpc_peer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\synchrony\synchrony.cpp" />
