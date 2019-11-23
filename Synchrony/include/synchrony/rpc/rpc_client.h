@@ -11,6 +11,7 @@
 #include <memory>
 #include <sstream>
 #include <mutex>
+#include <functional>
 
 #include "syntropy/containers/hashed_string.h"
 #include "syntropy/serialization/msgpack/msgpack_stream.h"
@@ -43,6 +44,18 @@ namespace synchrony
         template <typename... TArguments>
         void Call(const syntropy::HashedString& name, TArguments&&... arguments);
 
+        /// \brief Bind a new procedure that is called whenever an error occurs.
+        /// \param procedure Procedure to bind.
+        /// \return Returns a reference to this.
+        template <typename TProcedure>
+        RPCClientT& BindError(TProcedure&& procedure);
+
+        /// \brief Bind a new procedure that is called whenever the server is disconnected.
+        /// \param procedure Procedure to bind.
+        /// \return Returns a reference to this.
+        template <typename TProcedure>
+        RPCClientT& BindDisconnected(TProcedure&& procedure);
+
         /// \brief Start the RPC client asynchronously.
         void Start(TCPSocket& socket);
 
@@ -58,14 +71,29 @@ namespace synchrony
 
     private:
 
+        /// \brief Type of an RPC server event.
+        using RemoteEvent = std::function<void(void)>;
+
         /// \brief RPC client loop.
         void Run(TCPSocket& socket);
+
+        /// \brief Called whenever an error occurs while sending data.
+        void OnError();
+
+        /// \brief Called whenever the RPC client gets disconnected.
+        void OnDisconnected();
 
         /// \brief Receiving thread.
         std::unique_ptr<std::thread> thread_;
 
-        /// \brief Whether the RPC server is running.
+        /// \brief Whether the RPC client is running.
         std::atomic_bool is_running_{ false };
+
+        /// \brief Handlers to events that are called whenever a client error occurs.
+        std::vector<RemoteEvent> error_handlers_;
+
+        /// \brief Handlers to events that are called whenever the client is disconnected.
+        std::vector<RemoteEvent> disconnected_handlers_;
 
         /// \brief Used to synchronize the sender thread.
         std::mutex mutex_;
@@ -102,6 +130,24 @@ namespace synchrony
         auto lock = std::lock_guard<std::mutex>(mutex_);
 
         send_buffer_ += stream.ToString();
+    }
+
+    template <typename TStream>
+    template <typename TProcedure>
+    inline RPCClientT<TStream>& RPCClientT<TStream>::BindError(TProcedure&& procedure)
+    {
+        error_handlers_.emplace_back(std::move(procedure));
+
+        return *this;
+    }
+
+    template <typename TStream>
+    template <typename TProcedure>
+    inline RPCClientT<TStream>& RPCClientT<TStream>::BindDisconnected(TProcedure&& procedure)
+    {
+        disconnected_handlers_.emplace_back(std::move(procedure));
+
+        return *this;
     }
 
     template <typename TStream>
@@ -151,15 +197,41 @@ namespace synchrony
             {
                 auto send_range = syntropy::ConstMemoryRange(send_buffer_.data(), send_buffer_.data() + send_buffer_.size());
 
-                if (socket.SendAll(send_range))                 // Send the buffered commands.
+                if (auto send_result = socket.SendAll(send_range);
+                    send_result == TCPSendResult::kOk)                              // Send the buffered commands.
                 {
                     send_buffer_.clear();
                 }
-                else if (!socket.IsConnected())
+                else if (send_result == TCPSendResult::kDisconnected)               // Disconnected.
                 {
-                    Stop();                                     // Disconnected: stop the client and return.
+                    OnDisconnected();
+                }
+                else if (send_result == TCPSendResult::kError)                      // Error.
+                {
+                    OnError();
                 }
             }
         }
     }
+
+    template <typename TStream>
+    inline void RPCClientT<TStream>::OnError()
+    {
+        for (auto&& error_handler : error_handlers_)
+        {
+            error_handler();
+        }
+    }
+
+    template <typename TStream>
+    inline void RPCClientT<TStream>::OnDisconnected()
+    {
+        for (auto&& disconnected_handler : disconnected_handlers_)
+        {
+            disconnected_handler();
+        }
+
+        Stop();
+    }
+
 }

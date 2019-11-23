@@ -28,9 +28,11 @@ namespace synchrony
         /// \brief Virtual destructor. Close any open connection.
         virtual ~WindowsTCPSocket();
 
-        virtual bool Send(syntropy::ConstMemoryRange& buffer) override;
+        virtual TCPSendResult Send(syntropy::ConstMemoryRange& buffer) override;
 
-        virtual bool Receive(syntropy::MemoryRange& buffer) override;
+        virtual TCPReceiveResult Receive(syntropy::MemoryRange& buffer) override;
+
+        virtual TCPReceiveResult Receive(syntropy::MemoryRange& buffer, std::chrono::milliseconds timeout) override;
 
         virtual NetworkEndpoint GetLocalEndpoint() const override;
 
@@ -94,7 +96,7 @@ namespace synchrony
         closesocket(tcp_socket_);
     }
 
-    bool WindowsTCPSocket::Send(syntropy::ConstMemoryRange& buffer)
+    TCPSendResult WindowsTCPSocket::Send(syntropy::ConstMemoryRange& buffer)
     {
         auto send_buffer = buffer.Begin().As<char>();
         auto send_size = static_cast<int>(std::size_t(buffer.GetSize()));
@@ -104,16 +106,20 @@ namespace synchrony
         if (sent_amount != SOCKET_ERROR)
         {
             buffer = syntropy::ConstMemoryRange(buffer.Begin() + syntropy::Bytes(sent_amount), buffer.End());
+
+            return TCPSendResult::kOk;
         }
         else if (auto error = WSAGetLastError(); error == WSAECONNABORTED || error == WSAECONNRESET)
         {
             is_connected_ = false;          // Connection was closed either gracefully or abortively.
+
+            return TCPSendResult::kDisconnected;
         }
 
-        return (sent_amount != SOCKET_ERROR);
+        return TCPSendResult::kError;
     }
 
-    bool WindowsTCPSocket::Receive(syntropy::MemoryRange& buffer)
+    TCPReceiveResult WindowsTCPSocket::Receive(syntropy::MemoryRange& buffer)
     {
         auto receive_buffer = buffer.Begin().As<char>();
         auto receive_size = static_cast<int>(std::size_t(buffer.GetSize()));
@@ -123,13 +129,22 @@ namespace synchrony
         if (receive_amount > 0)
         {
             buffer = syntropy::MemoryRange(buffer.Begin(), buffer.Begin() + syntropy::Bytes(receive_amount));
+
+            return TCPReceiveResult::kOk;
         }
         else if (auto error = WSAGetLastError(); receive_amount == 0 || error == WSAECONNABORTED || error == WSAECONNRESET)
         {
             is_connected_ = false;          // Connection was closed either gracefully or abortively.
+
+            return TCPReceiveResult::kDisconnected;
         }
 
-        return (receive_amount > 0);
+        return TCPReceiveResult::kError;
+    }
+
+    TCPReceiveResult WindowsTCPSocket::Receive(syntropy::MemoryRange& buffer, std::chrono::milliseconds timeout)
+    {
+        return WindowsNetwork::ReadTimeout(tcp_socket_, timeout) ? Receive(buffer) : TCPReceiveResult::kTimeout;
     }
 
     NetworkEndpoint WindowsTCPSocket::GetLocalEndpoint() const

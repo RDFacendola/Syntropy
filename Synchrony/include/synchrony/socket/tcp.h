@@ -18,6 +18,35 @@ namespace synchrony
     /* TCP SOCKET                                                           */
     /************************************************************************/
 
+        /// \brief Result of a TCP send call.
+    enum class TCPSendResult : std::uint8_t
+    {
+        /// \brief Data was sent successfully.
+        kOk = 0,
+
+        /// \brief The socket is disconnected.
+        kDisconnected = 2,
+
+        /// \brief Send error.
+        kError = 3
+    };
+
+    /// \brief Result of a TCP receive call.
+    enum class TCPReceiveResult : std::uint8_t
+    {
+        /// \brief Data was received successfully.
+        kOk = 0,
+
+        /// \brief Timeout.
+        kTimeout = 1,
+
+        /// \brief The socket is disconnected.
+        kDisconnected = 2,
+
+        /// \brief Receive error.
+        kError = 3
+    };
+
     /// \brief Base interface for TCP sockets.
     /// \author Raffaele D. Facendola - September 2019.
     class TCPSocket
@@ -30,13 +59,20 @@ namespace synchrony
         /// \brief Send data to the connected host.
         /// \param buffer Buffer to send.
         /// \return If data could be sent reduce buffer capacity to fit the unsent data and returns true, otherwise returns false.
-        virtual bool Send(syntropy::ConstMemoryRange& buffer) = 0;
+        virtual TCPSendResult Send(syntropy::ConstMemoryRange& buffer) = 0;
 
         /// \brief Receive data from the connected host.
-        /// This method will block until some data is received from the connected host.
         /// \param buffer Buffer to receive in.
-        /// \return If data could be received reduce buffer capacity to fit that amount and returns true, otherwise returns false.
-        virtual bool Receive(syntropy::MemoryRange& buffer) = 0;
+        /// \return If data could be received reduce buffer capacity to fit that amount and returns TCPReceiveResult::kOk, otherwise returns an error.
+        /// \remarks This method blocks until data are received or an exception occurs.
+        virtual TCPReceiveResult Receive(syntropy::MemoryRange& buffer) = 0;
+
+        /// \brief Receive data from the connected host.
+        /// \param buffer Buffer to receive in.
+        /// \param timeout Maximum waiting time for this call.
+        /// \return If data could be received within the specified timeout reduce buffer capacity to fit that amount and returns TCPReceiveResult::kOk, otherwise returns an error.
+        /// \remarks This method blocks until data are received, an exception occurs or the timeout expires.
+        virtual TCPReceiveResult Receive(syntropy::MemoryRange& buffer, std::chrono::milliseconds timeout) = 0;
 
         /// \brief Get the local endpoint the socket is bound to.
         /// \return Returns the local endpoint the socket is bound to.
@@ -52,8 +88,8 @@ namespace synchrony
 
         /// \brief Send data to the connected host.
         /// \param buffer Buffer to send.
-        /// \return Returns true if the entire buffer could be sent, returns false otherwise.
-        bool SendAll(syntropy::ConstMemoryRange buffer);
+        /// \return Returns TCPSendResult::kOk if the entire buffer could be sent, returns an error code otherwise.
+        TCPSendResult SendAll(syntropy::ConstMemoryRange buffer);
     };
 
     /************************************************************************/
@@ -149,17 +185,17 @@ namespace synchrony
 
     // TCPSocket.
 
-    inline bool TCPSocket::SendAll(syntropy::ConstMemoryRange buffer)
+    inline TCPSendResult TCPSocket::SendAll(syntropy::ConstMemoryRange buffer)
     {
         while (buffer)
         {
-            if (!Send(buffer))
+            if (auto send_result = Send(buffer); send_result != TCPSendResult::kOk)
             {
-                return false;
+                return send_result;
             }
         }
 
-        return true;
+        return TCPSendResult::kOk;
     }
 
 }

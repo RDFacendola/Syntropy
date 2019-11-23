@@ -12,11 +12,13 @@
 #include <thread>
 #include <functional>
 #include <tuple>
+#include <chrono>
 
 #include "syntropy/type_traits.h"
 #include "syntropy/patterns/tuple.h"
 #include "syntropy/serialization/msgpack/msgpack_stream.h"
 #include "syntropy/containers/hashed_string.h"
+#include "syntropy/memory/bytes.h"
 
 #include "synchrony/socket/tcp.h"
 
@@ -72,6 +74,12 @@ namespace synchrony
         /// \brief Check whether the RPC server is running.
         bool IsRunning() const;
 
+        /// \brief Set the rate at which data are received from the network.
+        void SetReceiveRate(std::chrono::milliseconds receive_rate);
+
+        /// \brief Set the size of the buffer used to receive data from the network.
+        void SetReceiveSize(syntropy::Bytes receive_size);
+
     private:
 
         /// \brief Type of a remote procedure.
@@ -110,6 +118,12 @@ namespace synchrony
 
         /// \brief Handlers to events that are called whenever the server is disconnected.
         std::vector<RemoteEvent> disconnected_handlers_;
+
+        /// \brief Rate at which data are received from the network.
+        std::chrono::milliseconds receive_rate_ = std::chrono::milliseconds{ 1000 };
+
+        /// \brief Size of the buffer used to receive data from the network.
+        syntropy::Bytes receive_size_ = syntropy::Bytes{ 1024 };
     };
 
     /// \brief Default command parser.
@@ -209,30 +223,43 @@ namespace synchrony
     }
 
     template <typename TStream>
+    inline void RPCServerT<TStream>::SetReceiveRate(std::chrono::milliseconds receive_rate)
+    {
+        receive_rate_ = receive_rate;
+    }
+
+    template <typename TStream>
+    inline void RPCServerT<TStream>::SetReceiveSize(syntropy::Bytes receive_size)
+    {
+        receive_size_ = receive_size;
+    }
+
+    template <typename TStream>
     void RPCServerT<TStream>::Run(TCPSocket& socket)
     {
-        static const auto kBufferSize = 1024;
-
-        auto receive_buffer = std::array<char, kBufferSize>{};
+        auto receive_buffer = std::string{};
         auto receive_stream = std::string{};
 
         while (IsRunning())
         {
-            auto receive_range = syntropy::MakeMemoryRange(receive_buffer);
+            receive_buffer.resize(std::size_t(receive_size_));
 
-            if (socket.Receive(receive_range))                  // Receive a chunk of data.
+            auto receive_range = syntropy::MemoryRange(receive_buffer.data(), receive_buffer.data() + std::size_t(receive_size_));
+
+            if (auto receive_result = socket.Receive(receive_range, receive_rate_);
+                receive_result == TCPReceiveResult::kOk)                                    // Receive a chunk of data.
             {
                 receive_stream.reserve(receive_stream.capacity() + std::size_t(receive_range.GetSize()));
 
-                std::copy(receive_range.Begin().As<std::int8_t>(), receive_range.End().As<std::int8_t>(), std::back_inserter(receive_stream));
+                std::copy(receive_range.Begin().As<char>(), receive_range.End().As<char>(), std::back_inserter(receive_stream));
 
-                DeserializeStream(receive_stream);              // Attempt to deserialize a remote procedure.
+                DeserializeStream(receive_stream);                                          // Attempt to deserialize a remote procedure.
             }
-            else if (!socket.IsConnected())                     // Disconnected.
+            else if (receive_result == TCPReceiveResult::kDisconnected)                     // Disconnected.
             {
                 OnDisconnected();
             }
-            else                                                // Error.
+            else if (receive_result == TCPReceiveResult::kError)                             // Error.
             {
                 OnError();
             }
