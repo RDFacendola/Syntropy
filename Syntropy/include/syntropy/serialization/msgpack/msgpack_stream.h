@@ -197,9 +197,6 @@ namespace syntropy
         /// \brief Put a buffer inside the underlying stream.
         void Put(const void* data, std::size_t size);
 
-        /// \brief Get a single byte from the underlying stream.
-        std::int8_t Get();
-
         /// \brief Peek a single byte from the underlying stream.
         std::int8_t Peek();
 
@@ -209,7 +206,7 @@ namespace syntropy
 
         /// \brief Get a value from the underlying stream.
         template <typename TType>
-        void Get(TType& value);
+        TType Get();
 
         /// \brief Read data from the underlying stream.
         void Get(void* buffer, std::size_t length);
@@ -381,19 +378,15 @@ namespace syntropy
 
         if (Msgpack::IsFixArrayFormat(Peek()))
         {
-            length = Msgpack::DecodeFixArrayLength(Get());
+            length = Msgpack::DecodeFixArrayLength(Get<std::int8_t>());
         }
         else if (Test(MsgpackFormat::kArray16))
         {
-            auto length_encoded = std::int16_t{};
-            Get(length_encoded);
-            length = Msgpack::DecodeUInt16(length_encoded);
+            length = Msgpack::DecodeUInt16(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kArray32))
         {
-            auto length_encoded = std::int32_t{};
-            Get(length_encoded);
-            length = Msgpack::DecodeUInt32(length_encoded);
+            length = Msgpack::DecodeUInt32(Get<std::int32_t>());
         }
 
         if (length)
@@ -425,19 +418,15 @@ namespace syntropy
 
         if (Msgpack::IsFixMapFormat(Peek()))
         {
-            length = Msgpack::DecodeFixMapLength(Get());
+            length = Msgpack::DecodeFixMapLength(Get<std::int8_t>());
         }
         else if (Test(MsgpackFormat::kMap16))
         {
-            auto length_encoded = std::int16_t{};
-            Get(length_encoded);
-            length = Msgpack::DecodeUInt16(length_encoded);
+            length = Msgpack::DecodeUInt16(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kMap32))
         {
-            auto length_encoded = std::int32_t{};
-            Get(length_encoded);
-            length = Msgpack::DecodeUInt32(length_encoded);
+            length = Msgpack::DecodeUInt32(Get<std::int32_t>());
         }
 
         if (length)
@@ -493,27 +482,18 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kExt8))
         {
-            auto size_encoded = std::int8_t{};
-            Get(size_encoded);
-
-            size = Bytes(Msgpack::DecodeUInt8(size_encoded));
+            size = Bytes(Msgpack::DecodeUInt8(Get<std::int8_t>()));
         }
         else if (Test(MsgpackFormat::kExt16))
         {
-            auto size_encoded = std::int16_t{};
-            Get(size_encoded);
-
-            size = Bytes(Msgpack::DecodeUInt16(size_encoded));
+            size = Bytes(Msgpack::DecodeUInt16(Get<std::int16_t>()));
         }
         else if (Test(MsgpackFormat::kExt32))
         {
-            auto size_encoded = std::int32_t{};
-            Get(size_encoded);
-
-            size = Bytes(Msgpack::DecodeUInt32(size_encoded));
+            size = Bytes(Msgpack::DecodeUInt32(Get<std::int32_t>()));
         }
 
-        if (size && std::int8_t(TMsgpackExtensionType::GetType()) == Get())
+        if (size && std::int8_t(TMsgpackExtensionType::GetType()) == Get<std::int8_t>())
         {
             TMsgpackExtensionType::Decode(static_cast<std::istream&>(stream_), *size, rhs);
 
@@ -571,11 +551,6 @@ namespace syntropy
         stream_.write(reinterpret_cast<const char*>(data), size);
     }
 
-    inline std::int8_t MsgpackStream::Get()
-    {
-        return std::int8_t(stream_.get());
-    }
-
     inline std::int8_t MsgpackStream::Peek()
     {
         return std::int8_t(stream_.peek());
@@ -585,7 +560,7 @@ namespace syntropy
     {
         if (Peek() == std::int8_t(type))
         {
-            Get();
+            Get<std::int8_t>();
             return true;
         }
         else
@@ -595,15 +570,19 @@ namespace syntropy
     }
 
     template <typename TType>
-    inline void MsgpackStream::Get(TType& value)
+    inline TType MsgpackStream::Get()
     {
         if constexpr (sizeof(TType) == sizeof(char))
         {
-            value = TType(stream_.get());
+            return TType(stream_.get());
         }
         else
         {
-            stream_.read(reinterpret_cast<char*>(&value), sizeof(TType));
+            auto buffer = TType{};
+
+            stream_.read(reinterpret_cast<char*>(&buffer), sizeof(TType));
+
+            return buffer;
         }
     }
 

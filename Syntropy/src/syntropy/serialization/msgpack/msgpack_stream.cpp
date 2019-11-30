@@ -204,17 +204,17 @@ namespace syntropy
 
         if (Msgpack::IsPositiveFixIntFormat(Peek()))
         {
-            rhs = Msgpack::DecodePositiveFixInt(Get());
+            rhs = Msgpack::DecodePositiveFixInt(Get<std::int8_t>());
             sentry.Dismiss();
         }
         else if (Msgpack::IsNegativeFixIntFormat(Peek()))
         {
-            rhs = Msgpack::DecodeNegativeFixInt(Get());
+            rhs = Msgpack::DecodeNegativeFixInt(Get<std::int8_t>());
             sentry.Dismiss();
         }
         else if (Test(MsgpackFormat::kInt8))
         {
-            rhs = Msgpack::DecodeInt8(Get());
+            rhs = Msgpack::DecodeInt8(Get<std::int8_t>());
             sentry.Dismiss();
         }
 
@@ -227,9 +227,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kInt16))
         {
-            auto rhs_high = std::int16_t{};
-            Get(rhs_high);
-            rhs = Msgpack::DecodeInt16(rhs_high);
+            rhs = Msgpack::DecodeInt16(Get<std::int16_t>());
             sentry.Dismiss();
         }
         else
@@ -249,9 +247,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kInt32))
         {
-            auto rhs_high = std::int32_t{};
-            Get(rhs_high);
-            rhs = Msgpack::DecodeInt32(rhs_high);
+            rhs = Msgpack::DecodeInt32(Get<std::int32_t>());
             sentry.Dismiss();
         }
         else
@@ -271,9 +267,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kInt64))
         {
-            auto rhs_high = std::int64_t{};
-            Get(rhs_high);
-            rhs = Msgpack::DecodeInt64(rhs_high);
+            rhs = Msgpack::DecodeInt64(Get<std::int64_t>());
             sentry.Dismiss();
         }
         else
@@ -293,12 +287,12 @@ namespace syntropy
 
         if (Msgpack::IsPositiveFixIntFormat(Peek()))
         {
-            rhs = Msgpack::DecodePositiveFixUInt(Get());
+            rhs = Msgpack::DecodePositiveFixUInt(Get<std::int8_t>());
             sentry.Dismiss();
         }
         else if (Test(MsgpackFormat::kUInt8))
         {
-            rhs = Msgpack::DecodeUInt8(Get());
+            rhs = Msgpack::DecodeUInt8(Get<std::int8_t>());
             sentry.Dismiss();
         }
 
@@ -311,9 +305,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kUInt16))
         {
-            auto rhs_high = std::int16_t{};
-            Get(rhs_high);
-            rhs = Msgpack::DecodeUInt16(rhs_high);
+            rhs = Msgpack::DecodeUInt16(Get<std::int16_t>());
             sentry.Dismiss();
         }
         else
@@ -333,9 +325,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kUInt32))
         {
-            auto rhs_high = std::int32_t{};
-            Get(rhs_high);
-            rhs = Msgpack::DecodeUInt32(rhs_high);
+            rhs = Msgpack::DecodeUInt32(Get<std::int32_t>());
             sentry.Dismiss();
         }
         else
@@ -355,9 +345,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kUInt64))
         {
-            auto rhs_high = std::int64_t{};
-            Get(rhs_high);
-            rhs = Msgpack::DecodeUInt64(rhs_high);
+            rhs = Msgpack::DecodeUInt64(Get<std::int64_t>());
             sentry.Dismiss();
         }
         else
@@ -377,9 +365,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kFloat32))
         {
-            auto rhs_encoded = std::int32_t{};
-            Get(rhs_encoded);
-            rhs = Msgpack::DecodeFloat(rhs_encoded);
+            rhs = Msgpack::DecodeFloat(Get<std::int32_t>());
             sentry.Dismiss();
         }
 
@@ -392,9 +378,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kFloat64))
         {
-            auto rhs_encoded = std::int64_t{};
-            Get(rhs_encoded);
-            rhs = Msgpack::DecodeDouble(rhs_encoded);
+            rhs = Msgpack::DecodeDouble(Get<std::int64_t>());
             sentry.Dismiss();
         }
 
@@ -409,25 +393,19 @@ namespace syntropy
 
         if (Msgpack::IsFixStrFormat(Peek()))
         {
-            length = Msgpack::DecodeFixStrLength(Get());
+            length = Msgpack::DecodeFixStrLength(Get<std::int8_t>());
         }
         else if (Test(MsgpackFormat::kStr8))
         {
-            auto length_encoded = std::int8_t{};
-            Get(length_encoded);
-            length = Msgpack::DecodeUInt8(length_encoded);
+            length = Msgpack::DecodeUInt8(Get<std::int8_t>());
         }
         else if (Test(MsgpackFormat::kStr16))
         {
-            auto length_encoded = std::int16_t{};
-            Get(length_encoded);
-            length = Msgpack::DecodeUInt16(length_encoded);
+            length = Msgpack::DecodeUInt16(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kStr32))
         {
-            auto length_encoded = std::int32_t{};
-            Get(length_encoded);
-            length = Msgpack::DecodeUInt32(length_encoded);
+            length = Msgpack::DecodeUInt32(Get<std::int32_t>());
         }
 
         if (length)
