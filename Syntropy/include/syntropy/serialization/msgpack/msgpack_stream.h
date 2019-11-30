@@ -90,7 +90,7 @@ namespace syntropy
         MsgpackStream& operator<<(const char* rhs);
 
         /// \brief Insert a byte-array.
-        MsgpackStream& operator<<(const std::vector<std::uint8_t>& rhs);
+        MsgpackStream& operator<<(const std::vector<std::int8_t>& rhs);
 
         /// \brief Insert an array.
         template <typename TElement>
@@ -139,6 +139,9 @@ namespace syntropy
 
         /// \brief Extract a string.
         MsgpackStream& operator>>(std::string& rhs);
+
+        /// \brief Extract a byte-array.
+        MsgpackStream& operator>>(std::vector<std::int8_t>& rhs);
 
         /// \brief Extract an array.
         template <typename TElement>

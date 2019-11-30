@@ -193,13 +193,13 @@ namespace syntropy
         bool IsStr32(const std::string& rhs);
 
         /// \brief Check whether rhs can be encoded using a 8-bit long byte-array.
-        bool IsBin8(const std::vector<std::uint8_t>& rhs);
+        bool IsBin8(const std::vector<std::int8_t>& rhs);
 
         /// \brief Check whether rhs can be encoded using a 16-bit long byte-array.
-        bool IsBin16(const std::vector<std::uint8_t>& rhs);
+        bool IsBin16(const std::vector<std::int8_t>& rhs);
 
         /// \brief Check whether rhs can be encoded using a 32-bit long byte-array.
-        bool IsBin32(const std::vector<std::uint8_t>& rhs);
+        bool IsBin32(const std::vector<std::int8_t>& rhs);
 
         /// \brief Check whether rhs can be encoded using a fixed-length array.
         template <typename TArray>
@@ -455,17 +455,17 @@ namespace syntropy
         return rhs.size() <= 0xFFFFFFFF;
     }
 
-    inline bool Msgpack::IsBin8(const std::vector<std::uint8_t>& rhs)
+    inline bool Msgpack::IsBin8(const std::vector<std::int8_t>& rhs)
     {
         return rhs.size() <= 0xF;
     }
 
-    inline bool Msgpack::IsBin16(const std::vector<std::uint8_t>& rhs)
+    inline bool Msgpack::IsBin16(const std::vector<std::int8_t>& rhs)
     {
         return rhs.size() <= 0xFFFF;
     }
 
-    inline bool Msgpack::IsBin32(const std::vector<std::uint8_t>& rhs)
+    inline bool Msgpack::IsBin32(const std::vector<std::int8_t>& rhs)
     {
         return rhs.size() <= 0xFFFFFFFF;
     }

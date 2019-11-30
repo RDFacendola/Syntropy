@@ -157,7 +157,7 @@ namespace syntropy
         return *this;
     }
 
-    MsgpackStream& MsgpackStream::operator<<(const std::vector<std::uint8_t>& rhs)
+    MsgpackStream& MsgpackStream::operator<<(const std::vector<std::int8_t>& rhs)
     {
         if (Msgpack::IsBin8(rhs))
         {
@@ -413,6 +413,38 @@ namespace syntropy
             rhs.resize(*length);
 
             Get(rhs.data(), *length);
+
+            sentry.Dismiss();
+        }
+
+        return *this;
+    }
+
+    MsgpackStream& MsgpackStream::operator>>(std::vector<std::int8_t>& rhs)
+    {
+        auto sentry = Sentry(*this);
+
+        auto size = std::optional<std::size_t>{};
+
+        if (Test(MsgpackFormat::kBin8))
+        {
+            size = Msgpack::DecodeUInt8(Get<std::int8_t>());
+        }
+        else if (Test(MsgpackFormat::kBin16))
+        {
+            size = Msgpack::DecodeUInt16(Get<std::int16_t>());
+        }
+        else if (Test(MsgpackFormat::kBin32))
+        {
+            size = Msgpack::DecodeUInt32(Get<std::int32_t>());
+        }
+
+        if (size)
+        {
+            rhs.clear();
+            rhs.resize(*size);
+
+            Get(rhs.data(), *size);
 
             sentry.Dismiss();
         }
