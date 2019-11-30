@@ -29,11 +29,23 @@ namespace syntropy
     {
     public:
 
+        /// \brief Type of the underlying string.
+        using TString = std::basic_string<std::int8_t>;
+
+        /// \brief Type of the underlying stream.
+        using TStream = std::basic_stringstream<std::int8_t>;
+
+        /// \brief Type of the underlying input stream.
+        using TInputStream = std::basic_istream<std::int8_t>;
+
+        /// \brief Type of the underlying output stream.
+        using TOutputStream = std::basic_ostream<std::int8_t>;
+
         /// \brief Create an empty stream.
         MsgpackStream() = default;
 
         /// \brief Create a stream.
-        MsgpackStream(std::string stream);
+        MsgpackStream(TString stream);
 
         /// \brief Insert a null value.
         MsgpackStream& operator<<(std::nullptr_t rhs);
@@ -157,8 +169,8 @@ namespace syntropy
         /// \brief Clear the underlying stream.
         void Clear();
 
-        /// \brief Access the underlying stream.
-        std::string ToString() const;
+        /// \brief Access the underlying string.
+        TString ToString() const;
 
     private:
 
@@ -180,7 +192,7 @@ namespace syntropy
         private:
 
             /// \brief Underlying stream.
-            std::stringstream& stream_;
+            TStream& stream_;
 
             /// \brief Position of the stream upon sentry construction.
             std::optional<std::streampos> position_;
@@ -212,7 +224,7 @@ namespace syntropy
         void Get(void* buffer, std::size_t length);
 
         /// \brief Underlying stream.
-        std::stringstream stream_;
+        TStream stream_;
     };
 
     /************************************************************************/
@@ -221,7 +233,7 @@ namespace syntropy
 
     // MsgpackStream.
 
-    inline MsgpackStream::MsgpackStream(std::string stream)
+    inline MsgpackStream::MsgpackStream(TString stream)
         :stream_(std::move(stream))
     {
 
@@ -364,7 +376,7 @@ namespace syntropy
 
         Put(std::int8_t(TMsgpackExtensionType::GetType()));
 
-        TMsgpackExtensionType::Encode(static_cast<std::ostream&>(stream_), rhs);
+        TMsgpackExtensionType::Encode(static_cast<TOutputStream&>(stream_), rhs);
 
         return *this;
     }
@@ -495,7 +507,7 @@ namespace syntropy
 
         if (size && std::int8_t(TMsgpackExtensionType::GetType()) == Get<std::int8_t>())
         {
-            TMsgpackExtensionType::Decode(static_cast<std::istream&>(stream_), *size, rhs);
+            TMsgpackExtensionType::Decode(static_cast<TInputStream&>(stream_), *size, rhs);
 
             sentry.Dismiss();
         }
@@ -520,7 +532,7 @@ namespace syntropy
 
     inline void MsgpackStream::Clear()
     {
-        stream_.str("");
+        stream_.str({});
     }
 
     inline std::size_t MsgpackStream::GetReadPosition() const
@@ -528,7 +540,7 @@ namespace syntropy
         return stream_.rdbuf()->pubseekoff(0, std::ios::cur, std::ios::in);
     }
 
-    inline std::string MsgpackStream::ToString() const
+    inline MsgpackStream::TString MsgpackStream::ToString() const
     {
         return stream_.str();
     }
@@ -536,19 +548,19 @@ namespace syntropy
     template <typename TType>
     inline void MsgpackStream::Put(TType value)
     {
-        if constexpr (sizeof(TType) == sizeof(char))
+        if constexpr (sizeof(TType) == sizeof(std::int8_t))
         {
-            stream_.put(char(value));
+            stream_.put(std::int8_t(value));
         }
         else
         {
-            stream_.write(reinterpret_cast<char*>(&value), sizeof(TType));
+            stream_.write(reinterpret_cast<std::int8_t*>(&value), sizeof(TType));
         }
     }
 
     inline void MsgpackStream::Put(const void* data, std::size_t size)
     {
-        stream_.write(reinterpret_cast<const char*>(data), size);
+        stream_.write(reinterpret_cast<const std::int8_t*>(data), size);
     }
 
     inline std::int8_t MsgpackStream::Peek()
@@ -572,7 +584,7 @@ namespace syntropy
     template <typename TType>
     inline TType MsgpackStream::Get()
     {
-        if constexpr (sizeof(TType) == sizeof(char))
+        if constexpr (sizeof(TType) == sizeof(std::int8_t))
         {
             return TType(stream_.get());
         }
@@ -580,7 +592,7 @@ namespace syntropy
         {
             auto buffer = TType{};
 
-            stream_.read(reinterpret_cast<char*>(&buffer), sizeof(TType));
+            stream_.read(reinterpret_cast<std::int8_t*>(&buffer), sizeof(TType));
 
             return buffer;
         }
@@ -588,7 +600,7 @@ namespace syntropy
 
     inline void MsgpackStream::Get(void* buffer, std::size_t length)
     {
-        stream_.read(reinterpret_cast<char*>(buffer), length);
+        stream_.read(reinterpret_cast<std::int8_t*>(buffer), length);
     }
 
     // MsgpackStream :: Sentry.
