@@ -88,6 +88,10 @@ namespace syntropy
         template <typename TKey, typename TValue>
         MsgpackStream& operator<<(const std::unordered_map<TKey, TValue>& rhs);
 
+        /// \brief Insert an extension-type value.
+        template <typename TExtension>
+        MsgpackStream& operator<<(const TExtension& rhs);
+
         /// \brief Extract a boolean value.
         MsgpackStream& operator>>(bool& rhs);
 
@@ -131,6 +135,10 @@ namespace syntropy
         /// \brief Extract a map.
         template <typename TKey, typename TValue>
         MsgpackStream& operator>>(std::unordered_map<TKey, TValue>& rhs);
+
+        /// \brief Extract an extension-type value.
+        template <typename TExtension>
+        MsgpackStream& operator>>(TExtension& rhs);
 
         /// \brief Check whether the fail bit of the underlying stream is set.
         /// \return Returns true if the fail bit is set, returns false otherwise
@@ -312,6 +320,58 @@ namespace syntropy
         return *this;
     }
 
+    template <typename TExtension>
+    MsgpackStream& MsgpackStream::operator<<(const TExtension& rhs)
+    {
+        using TMsgpackExtensionType = MsgpackExtensionType<TExtension>;
+
+        auto size = std::size_t(TMsgpackExtensionType::GetSize(rhs));
+
+        // Format | (size) | Type | Data...
+
+        if (Msgpack::IsFixExt1(rhs))
+        {
+            Put(MsgpackFormat::kFixExt1);
+        }
+        else if (Msgpack::IsFixExt2(rhs))
+        {
+            Put(MsgpackFormat::kFixExt2);
+        }
+        else if (Msgpack::IsFixExt4(rhs))
+        {
+            Put(MsgpackFormat::kFixExt4);
+        }
+        else if (Msgpack::IsFixExt8(rhs))
+        {
+            Put(MsgpackFormat::kFixExt8);
+        }
+        else if (Msgpack::IsFixExt16(rhs))
+        {
+            Put(MsgpackFormat::kFixExt16);
+        }
+        else if (Msgpack::IsExt8(rhs))
+        {
+            Put(MsgpackFormat::kExt8);
+            Put(Msgpack::Encode(std::uint8_t(size)));
+        }
+        else if (Msgpack::IsExt16(rhs))
+        {
+            Put(MsgpackFormat::kExt16);
+            Put(Msgpack::Encode(std::uint16_t(size)));
+        }
+        else if (Msgpack::IsExt32(rhs))
+        {
+            Put(MsgpackFormat::kExt32);
+            Put(Msgpack::Encode(std::uint32_t(size)));
+        }
+
+        Put(std::int8_t(TMsgpackExtensionType::GetType()));
+
+        TMsgpackExtensionType::Encode(static_cast<std::ostream&>(stream_), rhs);
+
+        return *this;
+    }
+
     template <typename TElement>
     MsgpackStream& MsgpackStream::operator>>(std::vector<TElement>& rhs)
     {
@@ -395,6 +455,67 @@ namespace syntropy
 
                 rhs.emplace(std::make_pair(std::move(key), std::move(value)));
             }
+
+            sentry.Dismiss();
+        }
+
+        return *this;
+    }
+
+    template <typename TExtension>
+    MsgpackStream& MsgpackStream::operator>>(TExtension& rhs)
+    {
+        using TMsgpackExtensionType = MsgpackExtensionType<TExtension>;
+
+        auto sentry = Sentry(*this);
+
+        auto size = std::optional<Bytes>{};
+
+        if (Test(MsgpackFormat::kFixExt1))
+        {
+            size = 1_Bytes;
+        }
+        else if (Test(MsgpackFormat::kFixExt2))
+        {
+            size = 2_Bytes;
+        }
+        else if (Test(MsgpackFormat::kFixExt4))
+        {
+            size = 4_Bytes;
+        }
+        else if (Test(MsgpackFormat::kFixExt8))
+        {
+            size = 8_Bytes;
+        }
+        else if (Test(MsgpackFormat::kFixExt16))
+        {
+            size = 16_Bytes;
+        }
+        else if (Test(MsgpackFormat::kExt8))
+        {
+            auto size_encoded = std::int8_t{};
+            Get(size_encoded);
+
+            size = Bytes(Msgpack::DecodeUInt8(size_encoded));
+        }
+        else if (Test(MsgpackFormat::kExt16))
+        {
+            auto size_encoded = std::int16_t{};
+            Get(size_encoded);
+
+            size = Bytes(Msgpack::DecodeUInt16(size_encoded));
+        }
+        else if (Test(MsgpackFormat::kExt32))
+        {
+            auto size_encoded = std::int32_t{};
+            Get(size_encoded);
+
+            size = Bytes(Msgpack::DecodeUInt32(size_encoded));
+        }
+
+        if (size && std::int8_t(TMsgpackExtensionType::GetType()) == Get())
+        {
+            TMsgpackExtensionType::Decode(static_cast<std::istream&>(stream_), *size, rhs);
 
             sentry.Dismiss();
         }

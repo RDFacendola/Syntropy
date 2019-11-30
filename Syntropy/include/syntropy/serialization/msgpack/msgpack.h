@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <limits>
+#include "syntropy/memory/bytes.h"
 
 #include "syntropy/platform/endianness.h"
 
@@ -19,7 +20,7 @@ namespace syntropy
     /* MSGPACK FORMAT                                                       */
     /************************************************************************/
 
-    /// \brief Defines each type format supported by msgpack.
+    /// \brief Type formats supported by msgpack.
     /// \author Raffaele D. Facendola - November 2019.
     enum class MsgpackFormat : std::uint8_t
     {
@@ -136,6 +137,15 @@ namespace syntropy
     };
 
     /************************************************************************/
+    /* MSGPACK EXTENSION TYPE                                               */
+    /************************************************************************/
+
+    /// \brief Exposes methods used to handle extension types encoded using msgpack specification.
+    /// \author Raffaele D. Facendola - November 2019.
+    template <typename TType>
+    struct MsgpackExtensionType {};
+
+    /************************************************************************/
     /* MSGPACK                                                              */
     /************************************************************************/
 
@@ -214,6 +224,38 @@ namespace syntropy
         /// \brief Check whether rhs can be encoded using a 32-bit long map.
         template <typename TMap>
         bool IsMap32(const TMap& rhs);
+
+        /// \brief Check whether rhs can be encoded using a 1-byte fixed extension type.
+        template <typename TExtension>
+        bool IsFixExt1(const TExtension& rhs);
+
+        /// \brief Check whether rhs can be encoded using a 2-bytes fixed extension type.
+        template <typename TExtension>
+        bool IsFixExt2(const TExtension& rhs);
+
+        /// \brief Check whether rhs can be encoded using a 4-bytes fixed extension type.
+        template <typename TExtension>
+        bool IsFixExt4(const TExtension& rhs);
+
+        /// \brief Check whether rhs can be encoded using a 8-bytes fixed extension type.
+        template <typename TExtension>
+        bool IsFixExt8(const TExtension& rhs);
+
+        /// \brief Check whether rhs can be encoded using a 16-bytes fixed extension type.
+        template <typename TExtension>
+        bool IsFixExt16(const TExtension& rhs);
+
+        /// \brief Check whether rhs can be encoded using an extension type whose size is up to (2^8)-1 bytes.
+        template <typename TExtension>
+        bool IsExt8(const TExtension& rhs);
+
+        /// \brief Check whether rhs can be encoded using an extension type whose size is up to (2^16)-1 bytes.
+        template <typename TExtension>
+        bool IsExt16(const TExtension& rhs);
+
+        /// \brief Check whether rhs can be encoded using an extension type whose size is up to (2^32)-1 bytes.
+        template <typename TExtension>
+        bool IsExt32(const TExtension& rhs);
 
         /// \brief Encode a null value.
         std::int8_t Encode(std::nullptr_t rhs);
@@ -346,6 +388,8 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
+    // Msgpack.
+
     inline bool Msgpack::IsPositiveFixInt(std::int8_t rhs)
     {
         return rhs >= 0 && rhs <= 127;
@@ -460,6 +504,54 @@ namespace syntropy
     inline bool Msgpack::IsMap32(const TMap& rhs)
     {
         return rhs.size() <= 0xFFFFFFFF;
+    }
+
+    template <typename TExtension>
+    inline bool Msgpack::IsFixExt1(const TExtension& rhs)
+    {
+        return MsgpackExtensionType<TExtension>::GetSize(rhs) == 1_Bytes;
+    }
+
+    template <typename TExtension>
+    inline bool Msgpack::IsFixExt2(const TExtension& rhs)
+    {
+        return MsgpackExtensionType<TExtension>::GetSize(rhs) == 2_Bytes;
+    }
+
+    template <typename TExtension>
+    inline bool Msgpack::IsFixExt4(const TExtension& rhs)
+    {
+        return MsgpackExtensionType<TExtension>::GetSize(rhs) == 4_Bytes;
+    }
+
+    template <typename TExtension>
+    inline bool Msgpack::IsFixExt8(const TExtension& rhs)
+    {
+        return MsgpackExtensionType<TExtension>::GetSize(rhs) == 8_Bytes;
+    }
+
+    template <typename TExtension>
+    inline bool Msgpack::IsFixExt16(const TExtension& rhs)
+    {
+        return MsgpackExtensionType<TExtension>::GetSize(rhs) == 16_Bytes;
+    }
+
+    template <typename TExtension>
+    inline bool Msgpack::IsExt8(const TExtension& rhs)
+    {
+        return MsgpackExtensionType<TExtension>::GetSize(rhs) <= 0xFF_Bytes;
+    }
+
+    template <typename TExtension>
+    inline bool Msgpack::IsExt16(const TExtension& rhs)
+    {
+        return MsgpackExtensionType<TExtension>::GetSize(rhs) <= 0xFFFF_Bytes;
+    }
+
+    template <typename TExtension>
+    inline bool Msgpack::IsExt32(const TExtension& rhs)
+    {
+        return MsgpackExtensionType<TExtension>::GetSize(rhs) <= 0xFFFFFFFF_Bytes;
     }
 
     inline std::int8_t Msgpack::Encode(std::nullptr_t rhs)
