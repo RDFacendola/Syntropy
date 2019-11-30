@@ -199,6 +199,30 @@ namespace syntropy
     template <std::size_t I, typename T, std::size_t kRank>
     constexpr const T&& get(const VectorN<T, kRank>&& rhs) noexcept;
 
+    /// \brief Get an iterator to the first vector element.
+    template <typename T, std::size_t kRank>
+    T* begin(VectorN<T, kRank>& rhs);
+
+    /// \brief Get an iterator past the last vector element.
+    template <typename T, std::size_t kRank>
+    T* end(VectorN<T, kRank>& rhs);
+
+    /// \brief Get a const iterator to the first vector element.
+    template <typename T, std::size_t kRank>
+    const T* begin(const VectorN<T, kRank>& rhs);
+
+    /// \brief Get a const iterator past the last vector element.
+    template <typename T, std::size_t kRank>
+    const T* end(const VectorN<T, kRank>& rhs);
+
+    /// \brief Get a const iterator to the first vector element.
+    template <typename T, std::size_t kRank>
+    const T* cbegin(const VectorN<T, kRank>& rhs);
+
+    /// \brief Get a const iterator past the last vector element.
+    template <typename T, std::size_t kRank>
+    const T* cend(const VectorN<T, kRank>& rhs);
+
     /// \brief Equality comparison.
     template <typename T, typename U, size_t kRank>
     bool operator==(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
@@ -534,6 +558,42 @@ namespace syntropy
     constexpr const T&& get(const VectorN<T, kRank>&& rhs) noexcept
     {
         return rhs[I];
+    }
+
+    template <typename T, std::size_t kRank>
+    inline T* begin(VectorN<T, kRank>& rhs)
+    {
+        return &rhs[0];
+    }
+
+    template <typename T, std::size_t kRank>
+    inline T* end(VectorN<T, kRank>& rhs)
+    {
+        return begin(rhs) + kRank;
+    }
+
+    template <typename T, std::size_t kRank>
+    inline const T* begin(const VectorN<T, kRank>& rhs)
+    {
+        return &rhs[0];
+    }
+
+    template <typename T, std::size_t kRank>
+    inline const T* end(const VectorN<T, kRank>& rhs)
+    {
+        return begin(rhs) + kRank;
+    }
+
+    template <typename T, std::size_t kRank>
+    inline const T* cbegin(const VectorN<T, kRank>& rhs)
+    {
+        return &rhs[0];
+    }
+
+    template <typename T, std::size_t kRank>
+    inline const T* cend(const VectorN<T, kRank>& rhs)
+    {
+        return cbegin(rhs) + kRank;
     }
 
     template <typename T, typename U, size_t kRank>
