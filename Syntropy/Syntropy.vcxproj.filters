@@ -98,6 +98,7 @@
     <ClInclude Include="include\syntropy\serialization\msgpack\msgpack.h" />
     <ClInclude Include="include\syntropy\platform\endianness.h" />
     <ClInclude Include="src\syntropy\platform\architecture\x64_endianness.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_vector_extensions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
