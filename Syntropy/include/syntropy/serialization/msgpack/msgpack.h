@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <type_traits>
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/platform/endianness.h"
@@ -144,6 +145,19 @@ namespace syntropy
     /// \author Raffaele D. Facendola - November 2019.
     template <typename TType>
     struct MsgpackExtensionType {};
+
+    /************************************************************************/
+    /* MSGPACK SELECT ENCODED TYPE                                          */
+    /************************************************************************/
+
+    /// \brief Trait used to associate each type with an encoded data type.
+    /// \author Raffaele D. Facendola - December 2019.
+    template <typename TType>
+    using MsgpackSelectEncodedTypeT = std::conditional_t<sizeof(TType) == sizeof(std::int8_t), std::int8_t,
+                                      std::conditional_t<sizeof(TType) == sizeof(std::int16_t), std::int16_t,
+                                      std::conditional_t<sizeof(TType) == sizeof(std::int32_t), std::int32_t,
+                                      std::conditional_t<sizeof(TType) == sizeof(std::int64_t), std::int64_t,
+                                      void>>>>;
 
     /************************************************************************/
     /* MSGPACK                                                              */
@@ -364,35 +378,21 @@ namespace syntropy
         /// \brief Decode the length of a fixed-length string.
         std::uint8_t DecodeFixStrLength(std::int8_t rhs);
 
-        /// \brief Decode a 32-bit floating point number.
-        float DecodeFloat(std::int32_t rhs);
+        /// \brief Decode an 8-bit value.
+        template <typename TDecoded>
+        TDecoded Decode(std::int8_t rhs);
 
-        /// \brief Decode a 64-bit floating point number.
-        double DecodeDouble(std::int64_t rhs);
+        /// \brief Decode a 16-bit value.
+        template <typename TDecoded>
+        TDecoded Decode(std::int16_t rhs);
 
-        /// \brief Decode a 8-bit unsigned int.
-        std::uint8_t DecodeUInt8(std::int8_t rhs);
+        /// \brief Decode a 32-bit value.
+        template <typename TDecoded>
+        TDecoded Decode(std::int32_t rhs);
 
-        /// \brief Decode a 16-bit unsigned int.
-        std::uint16_t DecodeUInt16(std::int16_t rhs);
-
-        /// \brief Decode a 32-bit unsigned int.
-        std::uint32_t DecodeUInt32(std::int32_t rhs);
-
-        /// \brief Decode a 64-bit unsigned int.
-        std::uint64_t DecodeUInt64(std::int64_t rhs);
-
-        /// \brief Decode a 8-bit signed int.
-        std::int8_t DecodeInt8(std::int8_t rhs);
-
-        /// \brief Decode a 16-bit signed int.
-        std::int16_t DecodeInt16(std::int16_t rhs);
-
-        /// \brief Decode a 32-bit signed int.
-        std::int32_t DecodeInt32(std::int32_t rhs);
-
-        /// \brief Decode a 64-bit signed int.
-        std::int64_t DecodeInt64(std::int64_t rhs);
+        /// \brief Decode a 64-bit value.
+        template <typename TDecoded>
+        TDecoded Decode(std::int64_t rhs);
 
         /// \brief Decode a negative fix int.
         /// The behavior of this method is undefined if rhs is incompatible with the negative fix int specification.
@@ -724,7 +724,32 @@ namespace syntropy
         return std::uint8_t(rhs & 0b00011111);
     }
 
-    inline float Msgpack::DecodeFloat(std::int32_t rhs)
+    template <>
+    inline std::uint8_t Msgpack::Decode<std::uint8_t>(std::int8_t rhs)
+    {
+        return Endianness::FromBigEndian(std::uint8_t(rhs));
+    }
+
+    template <>
+    inline std::int8_t Msgpack::Decode<std::int8_t>(std::int8_t rhs)
+    {
+        return Endianness::FromBigEndian(rhs);
+    }
+
+    template <>
+    inline std::uint16_t Msgpack::Decode<std::uint16_t>(std::int16_t rhs)
+    {
+        return Endianness::FromBigEndian(std::uint16_t(rhs));
+    }
+
+    template <>
+    inline std::int16_t Msgpack::Decode<std::int16_t>(std::int16_t rhs)
+    {
+        return Endianness::FromBigEndian(rhs);
+    }
+
+    template <>
+    inline float Msgpack::Decode<float>(std::int32_t rhs)
     {
         auto value = float{};
 
@@ -735,7 +760,20 @@ namespace syntropy
         return value;
     }
 
-    inline double Msgpack::DecodeDouble(std::int64_t rhs)
+    template <>
+    inline std::uint32_t Msgpack::Decode<std::uint32_t>(std::int32_t rhs)
+    {
+        return Endianness::FromBigEndian(std::uint32_t(rhs));
+    }
+
+    template <>
+    inline std::int32_t Msgpack::Decode<std::int32_t>(std::int32_t rhs)
+    {
+        return Endianness::FromBigEndian(rhs);
+    }
+
+    template <>
+    inline double Msgpack::Decode<double>(std::int64_t rhs)
     {
         auto value = double{};
 
@@ -746,42 +784,14 @@ namespace syntropy
         return value;
     }
 
-    inline std::uint8_t Msgpack::DecodeUInt8(std::int8_t rhs)
-    {
-        return Endianness::FromBigEndian(std::uint8_t(rhs));
-    }
-
-    inline std::uint16_t Msgpack::DecodeUInt16(std::int16_t rhs)
-    {
-        return Endianness::FromBigEndian(std::uint16_t(rhs));
-    }
-
-    inline std::uint32_t Msgpack::DecodeUInt32(std::int32_t rhs)
-    {
-        return Endianness::FromBigEndian(std::uint32_t(rhs));
-    }
-
-    inline std::uint64_t Msgpack::DecodeUInt64(std::int64_t rhs)
+    template <>
+    inline std::uint64_t Msgpack::Decode<std::uint64_t>(std::int64_t rhs)
     {
         return Endianness::FromBigEndian(std::uint64_t(rhs));
     }
 
-    inline std::int8_t Msgpack::DecodeInt8(std::int8_t rhs)
-    {
-        return Endianness::FromBigEndian(rhs);
-    }
-
-    inline std::int16_t Msgpack::DecodeInt16(std::int16_t rhs)
-    {
-        return Endianness::FromBigEndian(rhs);
-    }
-
-    inline std::int32_t Msgpack::DecodeInt32(std::int32_t rhs)
-    {
-        return Endianness::FromBigEndian(rhs);
-    }
-
-    inline std::int64_t Msgpack::DecodeInt64(std::int64_t rhs)
+    template <>
+    inline std::int64_t Msgpack::Decode<std::int64_t>(std::int64_t rhs)
     {
         return Endianness::FromBigEndian(rhs);
     }

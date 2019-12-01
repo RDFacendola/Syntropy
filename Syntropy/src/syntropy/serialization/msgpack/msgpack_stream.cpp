@@ -214,7 +214,7 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kInt8))
         {
-            rhs = Msgpack::DecodeInt8(Get<std::int8_t>());
+            rhs = Msgpack::Decode<std::int8_t>(Get<std::int8_t>());
             sentry.Dismiss();
         }
 
@@ -227,7 +227,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kInt16))
         {
-            rhs = Msgpack::DecodeInt16(Get<std::int16_t>());
+            rhs = Msgpack::Decode<std::int16_t>(Get<std::int16_t>());
             sentry.Dismiss();
         }
         else
@@ -247,7 +247,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kInt32))
         {
-            rhs = Msgpack::DecodeInt32(Get<std::int32_t>());
+            rhs = Msgpack::Decode<std::int32_t>(Get<std::int32_t>());
             sentry.Dismiss();
         }
         else
@@ -267,7 +267,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kInt64))
         {
-            rhs = Msgpack::DecodeInt64(Get<std::int64_t>());
+            rhs = Msgpack::Decode<std::int64_t>(Get<std::int64_t>());
             sentry.Dismiss();
         }
         else
@@ -292,7 +292,7 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kUInt8))
         {
-            rhs = Msgpack::DecodeUInt8(Get<std::int8_t>());
+            rhs = Msgpack::Decode<std::uint8_t>(Get<std::int8_t>());
             sentry.Dismiss();
         }
 
@@ -305,7 +305,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kUInt16))
         {
-            rhs = Msgpack::DecodeUInt16(Get<std::int16_t>());
+            rhs = Msgpack::Decode<std::uint16_t>(Get<std::int16_t>());
             sentry.Dismiss();
         }
         else
@@ -325,7 +325,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kUInt32))
         {
-            rhs = Msgpack::DecodeUInt32(Get<std::int32_t>());
+            rhs = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
             sentry.Dismiss();
         }
         else
@@ -345,7 +345,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kUInt64))
         {
-            rhs = Msgpack::DecodeUInt64(Get<std::int64_t>());
+            rhs = Msgpack::Decode<std::uint64_t>(Get<std::int64_t>());
             sentry.Dismiss();
         }
         else
@@ -365,7 +365,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kFloat32))
         {
-            rhs = Msgpack::DecodeFloat(Get<std::int32_t>());
+            rhs = Msgpack::Decode<float>(Get<std::int32_t>());
             sentry.Dismiss();
         }
 
@@ -378,7 +378,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kFloat64))
         {
-            rhs = Msgpack::DecodeDouble(Get<std::int64_t>());
+            rhs = Msgpack::Decode<double>(Get<std::int64_t>());
             sentry.Dismiss();
         }
 
@@ -397,15 +397,15 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kStr8))
         {
-            length = Msgpack::DecodeUInt8(Get<std::int8_t>());
+            length = Msgpack::Decode<std::uint8_t>(Get<std::int8_t>());
         }
         else if (Test(MsgpackFormat::kStr16))
         {
-            length = Msgpack::DecodeUInt16(Get<std::int16_t>());
+            length = Msgpack::Decode<std::uint16_t>(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kStr32))
         {
-            length = Msgpack::DecodeUInt32(Get<std::int32_t>());
+            length = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
         }
 
         if (length)
@@ -428,15 +428,15 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kBin8))
         {
-            size = Msgpack::DecodeUInt8(Get<std::int8_t>());
+            size = Msgpack::Decode<std::uint8_t>(Get<std::int8_t>());
         }
         else if (Test(MsgpackFormat::kBin16))
         {
-            size = Msgpack::DecodeUInt16(Get<std::int16_t>());
+            size = Msgpack::Decode<std::uint16_t>(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kBin32))
         {
-            size = Msgpack::DecodeUInt32(Get<std::int32_t>());
+            size = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
         }
 
         if (size)

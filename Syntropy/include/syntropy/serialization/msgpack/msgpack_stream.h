@@ -397,11 +397,11 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kArray16))
         {
-            length = Msgpack::DecodeUInt16(Get<std::int16_t>());
+            length = Msgpack::Decode<std::uint16_t>(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kArray32))
         {
-            length = Msgpack::DecodeUInt32(Get<std::int32_t>());
+            length = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
         }
 
         if (length)
@@ -437,11 +437,11 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kMap16))
         {
-            length = Msgpack::DecodeUInt16(Get<std::int16_t>());
+            length = Msgpack::Decode<std::uint16_t>(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kMap32))
         {
-            length = Msgpack::DecodeUInt32(Get<std::int32_t>());
+            length = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
         }
 
         if (length)
@@ -497,15 +497,15 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kExt8))
         {
-            size = Bytes(Msgpack::DecodeUInt8(Get<std::int8_t>()));
+            size = Bytes(Msgpack::Decode<std::uint8_t>(Get<std::int8_t>()));
         }
         else if (Test(MsgpackFormat::kExt16))
         {
-            size = Bytes(Msgpack::DecodeUInt16(Get<std::int16_t>()));
+            size = Bytes(Msgpack::Decode<std::uint16_t>(Get<std::int16_t>()));
         }
         else if (Test(MsgpackFormat::kExt32))
         {
-            size = Bytes(Msgpack::DecodeUInt32(Get<std::int32_t>()));
+            size = Bytes(Msgpack::Decode<std::uint32_t>(Get<std::int32_t>()));
         }
 
         if (size && std::int8_t(TMsgpackExtensionType::GetType()) == Get<std::int8_t>())
