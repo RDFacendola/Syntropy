@@ -39,7 +39,7 @@ namespace syntropy
         auto b6 = (rhs & 0x000000000000FF00) >> 8u;
         auto b7 = (rhs & 0x00000000000000FF) >> 0u;
 
-        return std::uint32_t((b7 << 56u) | (b6 << 48u) | (b5 << 40u) | (b4 << 32u) | (b3 << 24u) | (b2 << 16u) | (b1 << 8u) | (b0 << 0u));
+        return std::uint64_t((b7 << 56u) | (b6 << 48u) | (b5 << 40u) | (b4 << 32u) | (b3 << 24u) | (b2 << 16u) | (b1 << 8u) | (b0 << 0u));
     }
 
 }
