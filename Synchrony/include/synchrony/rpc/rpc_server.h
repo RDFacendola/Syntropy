@@ -88,11 +88,14 @@ namespace synchrony
         /// \brief Type of an RPC server event.
         using RemoteEvent = std::function<void(void)>;
 
+        /// \brief Type of the buffer received from the network.
+        using ReceiveBuffer = typename TStream::TString;
+
         /// \brief RPC server loop.
         void Run(TCPSocket& socket);
 
         /// \brief Deserialize a procedure encoded in a remote stream.
-        void DeserializeStream(std::string& stream);
+        void DeserializeStream(ReceiveBuffer& stream);
 
         /// \brief Deserialize a single procedure encoded in a stream.
         /// \return Returns true if there are data yet to process inside the stream, returns false otherwise.
@@ -237,8 +240,10 @@ namespace synchrony
     template <typename TStream>
     void RPCServerT<TStream>::Run(TCPSocket& socket)
     {
-        auto receive_buffer = std::string{};
-        auto receive_stream = std::string{};
+        using ReceiveChar = typename ReceiveBuffer::value_type;
+
+        auto receive_buffer = ReceiveBuffer{};
+        auto receive_stream = ReceiveBuffer{};
 
         while (IsRunning())
         {
@@ -251,7 +256,7 @@ namespace synchrony
             {
                 receive_stream.reserve(receive_stream.capacity() + std::size_t(receive_range.GetSize()));
 
-                std::copy(receive_range.Begin().As<char>(), receive_range.End().As<char>(), std::back_inserter(receive_stream));
+                std::copy(receive_range.Begin().As<ReceiveChar>(), receive_range.End().As<ReceiveChar>(), std::back_inserter(receive_stream));
 
                 DeserializeStream(receive_stream);                                          // Attempt to deserialize a remote procedure.
             }
@@ -267,7 +272,7 @@ namespace synchrony
     }
 
     template <typename TStream>
-    void RPCServerT<TStream>::DeserializeStream(std::string& stream)
+    void RPCServerT<TStream>::DeserializeStream(ReceiveBuffer& stream)
     {
         auto reader = TStream{ stream };
 

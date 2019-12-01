@@ -74,6 +74,9 @@ namespace synchrony
         /// \brief Type of an RPC server event.
         using RemoteEvent = std::function<void(void)>;
 
+        /// \brief Type of the underlying buffer to send over
+        using SendBuffer = typename TStream::TString;
+
         /// \brief RPC client loop.
         void Run(TCPSocket& socket);
 
@@ -99,8 +102,7 @@ namespace synchrony
         std::mutex mutex_;
 
         /// \brief Stream to send.
-        std::string send_buffer_;
-
+        SendBuffer send_buffer_;
     };
 
     /// \brief Default RPC client.
