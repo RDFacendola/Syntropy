@@ -9,6 +9,8 @@
 #include <array>
 #include <utility>
 #include <cmath>
+#include <istream>
+#include <ostream>
 
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/patterns/tuple.h"
@@ -409,6 +411,14 @@ namespace syntropy
     /// \brief Get the member-wise floor of lhs.
     template <typename T, size_t kRank>
     VectorN<T, kRank> Floor(const VectorN<T, kRank>& rhs);
+
+    /// \brief Stream insertion for VectorN.
+    template <typename T, size_t kRank>
+    std::ostream& operator<<(std::ostream& out, const VectorN<T, kRank>& vector);
+
+    /// \brief Stream extraction for VectorN.
+    template <typename T, size_t kRank>
+    std::istream& operator>>(std::istream& in, VectorN<T, kRank>& vector);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -932,6 +942,28 @@ namespace syntropy
         LockstepApply([](auto& element) { element = std::floor(element); }, result);
 
         return result;
+    }
+
+    template <typename T, size_t kRank>
+    inline std::ostream& operator<<(std::ostream& out, const VectorN<T, kRank>& vector)
+    {
+        for (auto&& element : vector)
+        {
+            out << element << " ";
+        }
+
+        return out;
+    }
+
+    template <typename T, size_t kRank>
+    inline std::istream& operator>>(std::istream& in, VectorN<T, kRank>& vector)
+    {
+        for (auto&& element : vector)
+        {
+            in >> element;
+        }
+
+        return in;
     }
 
 }
