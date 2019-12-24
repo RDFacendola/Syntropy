@@ -100,6 +100,10 @@ namespace syntropy
     template <std::size_t kArgumentIndex, typename TFunction>
     using function_argument_t = typename function_argument<kArgumentIndex, TFunction>::type;
 
+    /// \brief Evaluates to false.
+    template <typename...>
+    inline constexpr bool false_v = false;
+
     /************************************************************************/
     /* STREAM INSERTABLE \ EXTRACTABLE                                      */
     /************************************************************************/
