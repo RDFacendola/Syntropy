@@ -157,25 +157,27 @@ namespace syntropy
         return *this;
     }
 
-    MsgpackStream& MsgpackStream::operator<<(const std::vector<std::int8_t>& rhs)
+    MsgpackStream& MsgpackStream::operator<<(const ConstMemoryRange& rhs)
     {
+        auto rhs_size = static_cast<std::size_t>(rhs.GetSize());
+
         if (Msgpack::IsBin8(rhs))
         {
             Put(MsgpackFormat::kBin8);
-            Put(Msgpack::Encode(std::uint8_t(rhs.size())));
+            Put(Msgpack::Encode(static_cast<std::uint8_t>(rhs_size)));
         }
         else if (Msgpack::IsBin16(rhs))
         {
             Put(MsgpackFormat::kBin16);
-            Put(Msgpack::Encode(std::uint16_t(rhs.size())));
+            Put(Msgpack::Encode(static_cast<std::uint16_t>(rhs_size)));
         }
         else if (Msgpack::IsBin32(rhs))
         {
             Put(MsgpackFormat::kBin32);
-            Put(Msgpack::Encode(std::uint32_t(rhs.size())));
+            Put(Msgpack::Encode(static_cast<std::uint32_t>(rhs_size)));
         }
 
-        Put(rhs.data(), rhs.size());
+        Put(rhs.Begin().As<void>(), rhs_size);
 
         return *this;
     }
@@ -420,7 +422,7 @@ namespace syntropy
         return *this;
     }
 
-    MsgpackStream& MsgpackStream::operator>>(std::vector<std::int8_t>& rhs)
+    MsgpackStream& MsgpackStream::operator>>(MemoryRange& rhs)
     {
         auto sentry = Sentry(*this);
 
@@ -439,12 +441,11 @@ namespace syntropy
             size = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
         }
 
-        if (size)
+        if (size && *size <= static_cast<std::size_t>(rhs.GetSize()))
         {
-            rhs.clear();
-            rhs.resize(*size);
+            Get(rhs.Begin().As<void>(), *size);
 
-            Get(rhs.data(), *size);
+            rhs = MemoryRange(rhs.Begin(), rhs.End() + Bytes{ *size });
 
             sentry.Dismiss();
         }

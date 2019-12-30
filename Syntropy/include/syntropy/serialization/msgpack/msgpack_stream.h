@@ -15,6 +15,7 @@
 #include <sstream>
 
 #include "syntropy/serialization/msgpack/msgpack.h"
+#include "syntropy/memory/memory_range.h"
 
 namespace syntropy
 {
@@ -90,7 +91,10 @@ namespace syntropy
         MsgpackStream& operator<<(const char* rhs);
 
         /// \brief Insert a byte-array.
-        MsgpackStream& operator<<(const std::vector<std::int8_t>& rhs);
+        MsgpackStream& operator<<(const MemoryRange& rhs);
+
+        /// \brief Insert a byte-array.
+        MsgpackStream& operator<<(const ConstMemoryRange& rhs);
 
         /// \brief Insert an array.
         template <typename TElement>
@@ -141,7 +145,7 @@ namespace syntropy
         MsgpackStream& operator>>(std::string& rhs);
 
         /// \brief Extract a byte-array.
-        MsgpackStream& operator>>(std::vector<std::int8_t>& rhs);
+        MsgpackStream& operator>>(MemoryRange& rhs);
 
         /// \brief Extract an array.
         template <typename TElement>
@@ -277,6 +281,11 @@ namespace syntropy
         Put(Msgpack::Encode(rhs));
 
         return *this;
+    }
+
+    inline MsgpackStream& MsgpackStream::operator<<(const MemoryRange& rhs)
+    {
+        return ((*this) << ConstMemoryRange(rhs));
     }
 
     template <typename TElement>

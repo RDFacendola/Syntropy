@@ -15,6 +15,8 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/platform/endianness.h"
 
+#include "syntropy/memory/memory_range.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -185,13 +187,13 @@ namespace syntropy
         bool IsFixStr(const std::string& rhs);
 
         /// \brief Check whether rhs can be encoded using a 8-bit long byte-array.
-        bool IsBin8(const std::vector<std::int8_t>& rhs);
+        bool IsBin8(const ConstMemoryRange& rhs);
 
         /// \brief Check whether rhs can be encoded using a 16-bit long byte-array.
-        bool IsBin16(const std::vector<std::int8_t>& rhs);
+        bool IsBin16(const ConstMemoryRange& rhs);
 
         /// \brief Check whether rhs can be encoded using a 32-bit long byte-array.
-        bool IsBin32(const std::vector<std::int8_t>& rhs);
+        bool IsBin32(const ConstMemoryRange& rhs);
 
         /// \brief Check whether rhs can be encoded using an extension type whose size is up to (2^8)-1 bytes.
         template <typename TExtension>
@@ -432,19 +434,19 @@ namespace syntropy
         return rhs.size() <= 0b11111;
     }
 
-    inline bool Msgpack::IsBin8(const std::vector<std::int8_t>& rhs)
+    inline bool Msgpack::IsBin8(const ConstMemoryRange& rhs)
     {
-        return rhs.size() <= 0xF;
+        return std::size_t(rhs.GetSize()) <= 0xF;
     }
 
-    inline bool Msgpack::IsBin16(const std::vector<std::int8_t>& rhs)
+    inline bool Msgpack::IsBin16(const ConstMemoryRange& rhs)
     {
-        return rhs.size() <= 0xFFFF;
+        return std::size_t(rhs.GetSize()) <= 0xFFFF;
     }
 
-    inline bool Msgpack::IsBin32(const std::vector<std::int8_t>& rhs)
+    inline bool Msgpack::IsBin32(const ConstMemoryRange& rhs)
     {
-        return rhs.size() <= 0xFFFFFFFF;
+        return std::size_t(rhs.GetSize()) <= 0xFFFFFFFF;
     }
 
     template <typename TExtension>
