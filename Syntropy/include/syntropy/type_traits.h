@@ -40,7 +40,7 @@ namespace syntropy
         std::remove_pointer_t<TType>,                                           // Remove a pointer level (removes qualifiers as well)
         std::remove_cv_t<TType>>> {};                                           // Remove const and volatile qualifiers from the innermost level
 
-/// \brief Helper type strip<TType>.
+    /// \brief Helper type strip<TType>.
     template <typename TType>
     using strip_t = typename strip<TType>::type;
 
@@ -103,6 +103,28 @@ namespace syntropy
     /// \brief Evaluates to false.
     template <typename...>
     inline constexpr bool false_v = false;
+
+    /// \brief Provides a member constant value equal to the index of the first tuple element whose type is equal to TType.
+    template <class TType, class TTuple>
+    struct tuple_element_index;
+
+    /// \brief Partial template specialization when the first element of the tuple is equal to TType.
+    template <class TType, class... TTypes>
+    struct tuple_element_index<TType, std::tuple<TType, TTypes...>>
+    {
+        static constexpr std::size_t value = 0;
+    };
+
+    /// \brief Partial template specialization when the first element in the tuple is not equal to TType.
+    template <class TType, class TDiscard, class... TTypes>
+    struct tuple_element_index<TType, std::tuple<TDiscard, TTypes...>>
+    {
+        static constexpr std::size_t value = 1 + tuple_element_index<TType, std::tuple<TTypes...>>::value;
+    };
+
+    /// \brief Helper value for tuple_element_index<TType, TTuple>.
+    template <class TType, class TTuple>
+    constexpr bool tuple_element_index_v = tuple_element_index<TType, TTuple>::value;
 
     /************************************************************************/
     /* STREAM INSERTABLE \ EXTRACTABLE                                      */
