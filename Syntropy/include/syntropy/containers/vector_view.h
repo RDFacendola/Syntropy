@@ -24,16 +24,23 @@ namespace syntropy
     template <typename TElement>
     class VectorView
     {
+
+        template <typename UElement>
+        friend class VectorView;
+
     public:
 
-        /// \brief Type of the underlying vector.
-        using TVector = std::conditional_t<std::is_const_v<TElement>, const std::vector<std::remove_const_t<TElement>>, std::vector<TElement>>;
+        /// \brief Create a view into a non-const vector.
+        template <typename UElement>
+        VectorView(std::vector<UElement>& vector);
 
-        /// \brief Create a view into a vector.
-        VectorView(TVector& vector);
+        /// \brief Create a view into a const vector.
+        template <typename UElement>
+        VectorView(const std::vector<UElement>& vector);
 
         /// \brief Default copy constructor.
-        VectorView(const VectorView& rhs) = default;
+        template <typename UElement>
+        VectorView(const VectorView<UElement>& rhs);
 
         /// \brief Default assignment operator.
         VectorView& operator=(VectorView& rhs) = default;
@@ -69,6 +76,9 @@ namespace syntropy
 
     private:
 
+        /// \brief Const elements are not supported: propagate the constness outside the container.
+        using TVector = std::conditional_t<std::is_const_v<TElement>, const std::vector<std::remove_const_t<TElement>>, std::vector<TElement>>;
+
         /// \brief Underlying vector.
         TVector* vector_{ nullptr };
 
@@ -82,13 +92,21 @@ namespace syntropy
     template <typename TElement>
     VectorView<TElement> MakeVectorView(std::vector<TElement>& vector);
 
-    /// \brief Create a new constant vector view from a vector.
+    /// \brief Create a new const vector view from a const vector.
     template <typename TElement>
-    VectorView<const TElement> MakeConstVectorView(std::vector<TElement>& vector);
+    VectorView<const TElement> MakeVectorView(const std::vector<TElement>& vector);
 
-    /// \brief Create a new constant vector view from a constant vector.
+    /// \brief Create a new vector view from a vector view.
+    template <typename TElement>
+    VectorView<TElement> MakeVectorView(const VectorView<TElement>& vector_view);
+
+    /// \brief Create a new const vector view from a vector.
     template <typename TElement>
     VectorView<const TElement> MakeConstVectorView(const std::vector<TElement>& vector);
+
+    /// \brief Create a new const vector view from a vector view.
+    template <typename TElement>
+    VectorView<const TElement> MakeConstVectorView(const VectorView<TElement>& vector_view);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -97,10 +115,27 @@ namespace syntropy
     // VectorView<TElement>.
 
     template <typename TElement>
-    inline VectorView<TElement>::VectorView(TVector& vector)
+    template <typename UElement>
+    inline VectorView<TElement>::VectorView(std::vector<UElement>& vector)
         : vector_(&vector)
     {
 
+    }
+
+    template <typename TElement>
+    template <typename UElement>
+    inline VectorView<TElement>::VectorView(const std::vector<UElement>& vector)
+        : vector_(&vector)
+    {
+        static_assert(std::is_const_v<TElement>, "Conversion loses const qualifiers.");
+    }
+
+    template <typename TElement>
+    template <typename UElement>
+    inline VectorView<TElement>::VectorView(const VectorView<UElement>& rhs)
+        : vector_(rhs.vector_)
+    {
+        static_assert(std::is_const_v<TElement> || !std::is_const_v<UElement>, "Conversion loses const qualifiers.");
     }
 
     template <typename TElement>
@@ -154,20 +189,33 @@ namespace syntropy
     // Non-member functions.
 
     template <typename TElement>
-    inline VectorView<TElement> MakeVectorView(std::vector<TElement>& vector)
+    VectorView<TElement> MakeVectorView(std::vector<TElement>& vector)
     {
         return { vector };
     }
 
     template <typename TElement>
-    inline VectorView<const TElement> MakeConstVectorView(std::vector<TElement>& vector)
+    VectorView<const TElement> MakeVectorView(const std::vector<TElement>& vector)
     {
         return { vector };
     }
 
     template <typename TElement>
-    inline VectorView<const TElement> MakeConstVectorView(const std::vector<TElement>& vector)
+    VectorView<TElement> MakeVectorView(const VectorView<TElement>& vector_view)
+    {
+        return { vector_view };
+    }
+
+    template <typename TElement>
+    VectorView<const TElement> MakeConstVectorView(const std::vector<TElement>& vector)
     {
         return { vector };
     }
+
+    template <typename TElement>
+    VectorView<const TElement> MakeConstVectorView(const VectorView<TElement>& vector_view)
+    {
+        return { vector_view };
+    }
+
 }
