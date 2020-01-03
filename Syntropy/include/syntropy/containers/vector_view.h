@@ -49,10 +49,10 @@ namespace syntropy
         ~VectorView() = default;
 
         /// \brief Access an element by index.
-        TElement& operator[](std::size_t index);
+        TElement& operator[](std::int64_t index);
 
         /// \brief Access an element by index.
-        const TElement& operator[](std::size_t index) const;
+        const TElement& operator[](std::int64_t index) const;
 
         /// \brief Get a reference to the first element in the vector.
         TElement& GetFront();
@@ -72,7 +72,7 @@ namespace syntropy
 
         /// \brief Get the number of elements in the container.
         /// \return Returns the number of elements in the container.
-        std::size_t GetSize() const noexcept;
+        std::int64_t GetSize() const noexcept;
 
     private:
 
@@ -139,13 +139,13 @@ namespace syntropy
     }
 
     template <typename TElement>
-    inline TElement& VectorView<TElement>::operator[](std::size_t index)
+    inline TElement& VectorView<TElement>::operator[](std::int64_t index)
     {
         return (*vector_)[index];
     }
 
     template <typename TElement>
-    inline const TElement& VectorView<TElement>::operator[](std::size_t index) const
+    inline const TElement& VectorView<TElement>::operator[](std::int64_t index) const
     {
         return (*vector_)[index];
     }
@@ -181,7 +181,7 @@ namespace syntropy
     }
 
     template <typename TElement>
-    inline std::size_t VectorView<TElement>::GetSize() const noexcept
+    inline std::int64_t VectorView<TElement>::GetSize() const noexcept
     {
         return (*vector_).size();
     }
