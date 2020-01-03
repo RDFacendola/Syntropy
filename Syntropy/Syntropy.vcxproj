@@ -79,6 +79,7 @@
     <ClInclude Include="include\syntropy\containers\hashed_string.h" />
     <ClInclude Include="include\syntropy\containers\range.h" />
     <ClInclude Include="include\syntropy\containers\stream_vector.h" />
+    <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\containers\string.h" />
     <ClInclude Include="include\syntropy\containers\vector_view.h" />
     <ClInclude Include="include\syntropy\contexts.h" />
