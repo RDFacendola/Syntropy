@@ -11,6 +11,8 @@
 #include <vector>
 #include <type_traits>
 
+#include "syntropy/containers/vector_view.h"
+
 #include "syntropy/type_traits.h"
 
 namespace syntropy
@@ -151,6 +153,30 @@ namespace syntropy
         /// \brief Execute an operation on each element of the given streams, by stream type.
         template <typename... TStreamTypes, typename TOperation>
         void ForEach(TOperation&& operation) const;
+
+        /// \brief Get a view into a stream by index.
+        template <std::size_t kStream>
+        auto GetStream();
+
+        /// \brief Get a view into a constant stream by index.
+        template <std::size_t kStream>
+        auto GetStream() const;
+
+        /// \brief Get a view into a constant stream by index.
+        template <std::size_t kStream>
+        auto GetConstStream() const;
+
+        /// \brief Get a view into a stream by type.
+        template <typename TStream>
+        VectorView<TStream> GetStream();
+
+        /// \brief Get a view into a constant stream by type.
+        template <typename TStream>
+        VectorView<const TStream> GetStream() const;
+
+        /// \brief Get a view into a constant stream by type.
+        template <typename TStream>
+        VectorView<const TStream> GetConstStream() const;
 
     private:
 
@@ -384,6 +410,55 @@ namespace syntropy
     inline void StreamVector<TStreams...>::ForEach(TOperation&& operation) const
     {
         ForEach<tuple_element_index_v<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
+    }
+
+    template <typename... TStreams>
+    template <std::size_t kStream>
+    inline auto StreamVector<TStreams...>::GetStream()
+    {
+        if constexpr (std::is_const_v<std::tuple_element_t<kStream, std::tuple<TStreams...>>>)
+        {
+            return GetConstStream<kStream>();
+        }
+        else
+        {
+            return MakeVectorView(std::get<kStream>(streams_));
+        }
+    }
+
+    template <typename... TStreams>
+    template <std::size_t kStream>
+    inline auto StreamVector<TStreams...>::GetStream() const
+    {
+        return GetConstStream<kStream>();
+    }
+
+    template <typename... TStreams>
+    template <std::size_t kStream>
+    inline auto StreamVector<TStreams...>::GetConstStream() const
+    {
+        return MakeConstVectorView(std::get<kStream>(streams_));
+    }
+
+    template <typename... TStreams>
+    template <typename TStream>
+    inline VectorView<TStream> StreamVector<TStreams...>::GetStream()
+    {
+        return GetStream<tuple_element_index_v<TStream, std::tuple<TStreams...>>>();
+    }
+
+    template <typename... TStreams>
+    template <typename TStream>
+    inline VectorView<const TStream> StreamVector<TStreams...>::GetStream() const
+    {
+        return GetConstStream<TStream>();
+    }
+
+    template <typename... TStreams>
+    template <typename TStream>
+    inline VectorView<const TStream> StreamVector<TStreams...>::GetConstStream() const
+    {
+        return GetConstStream<tuple_element_index_v<TStream, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
