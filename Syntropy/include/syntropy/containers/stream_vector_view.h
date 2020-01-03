@@ -319,7 +319,7 @@ namespace syntropy
     {
         auto size = GetSize<kStreams...>();
 
-        for (auto index = 0u; index < size; ++index)
+        for (auto index = 0; index < size; ++index)
         {
             operation(GetElementAt<kStreams>(index)...);
         }
@@ -331,7 +331,7 @@ namespace syntropy
     {
         auto size = GetSize<kStreams>();
 
-        for (auto index = 0u; index < size; ++index)
+        for (auto index = 0; index < size; ++index)
         {
             operation(GetElementAt<kStreams>(index)...);
         }

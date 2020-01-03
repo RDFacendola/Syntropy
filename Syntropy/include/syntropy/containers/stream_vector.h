@@ -369,7 +369,7 @@ namespace syntropy
     {
         ForEachStream([index](auto& stream)
         {
-            if (index < stream.size() - 1)
+            if (index < static_cast<std::int64_t>(stream.size()) - 1)
             {
                 stream[index] = std::move(stream.back());
             }
@@ -382,7 +382,7 @@ namespace syntropy
     template <std::int64_t... kStreams, typename TOperation>
     inline void StreamVector<TStreams...>::ForEach(TOperation&& operation)
     {
-        for (auto index = 0u; index < GetSize(); ++index)
+        for (auto index = 0; index < GetSize(); ++index)
         {
             operation(GetElementAt<kStreams>(index)...);
         }
@@ -392,7 +392,7 @@ namespace syntropy
     template <std::int64_t... kStreams, typename TOperation>
     inline void StreamVector<TStreams...>::ForEach(TOperation&& operation) const
     {
-        for (auto index = 0u; index < GetSize(); ++index)
+        for (auto index = 0; index < GetSize(); ++index)
         {
             operation(GetElementAt<kStreams>(index)...);
         }
