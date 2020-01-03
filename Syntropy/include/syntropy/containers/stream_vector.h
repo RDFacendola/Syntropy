@@ -416,14 +416,9 @@ namespace syntropy
     template <std::size_t kStream>
     inline auto StreamVector<TStreams...>::GetStream()
     {
-        if constexpr (std::is_const_v<std::tuple_element_t<kStream, std::tuple<TStreams...>>>)
-        {
-            return GetConstStream<kStream>();
-        }
-        else
-        {
-            return MakeVectorView(std::get<kStream>(streams_));
-        }
+        using TElement = std::tuple_element_t<kStream, std::tuple<TStreams...>>;
+
+        return VectorView<TElement>{std::get<kStream>(streams_)};
     }
 
     template <typename... TStreams>
