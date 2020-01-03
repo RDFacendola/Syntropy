@@ -101,6 +101,7 @@
     <ClInclude Include="include\syntropy\serialization\msgpack\vector_extensions.h" />
     <ClInclude Include="include\syntropy\containers\stream_vector.h" />
     <ClInclude Include="include\syntropy\containers\string.h" />
+    <ClInclude Include="include\syntropy\containers\vector_view.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
