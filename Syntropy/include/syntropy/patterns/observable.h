@@ -73,13 +73,13 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Interface for observable objects that can be subscribed to.
-    /// An observable object can be subscribed by any number of listener.
-    /// Whenever the object is destroyed, its listeners are unsubscribed automatically.
     /// \author Raffaele D. Facendola - June 2017
     template <typename... TArguments>
     class Observable
     {
     public:
+
+        Listener
 
         /// \brief Create a new observable object.
         Observable() = default;
@@ -106,8 +106,7 @@ namespace syntropy
 
     protected:
 
-        mutable std::vector<std::weak_ptr<ListenerT<TArguments...>>> listeners_;                ///< \brief Listeners subscribed to this object.
-                                                                                                ///         They are not part of the observable state (otherwise we wouldn't be able to subscribe to const objects).
+        mutable std::vector<std::weak_ptr<ListenerT<TArguments...>>> listeners_;        ///< \brief Listeners subscribed to this object. Mutable needed to subscribe to const events.
     };
 
     /************************************************************************/
@@ -115,11 +114,17 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Observable event with notification capabilities.
+    /// An observable object can be subscribed by any number of listener.
+    /// Whenever the object is destroyed, its listeners are unsubscribed automatically.
     /// \author Raffaele D. Facendola - June 2017
     template <typename... TArguments>
     class Event : public Observable<TArguments...>
     {
     public:
+
+        /// \brief Empty copy constructor.
+        /// Copying an event won't preserve existing listeners.
+        Observable(const Observable&);
 
         /// \brief Virtual default constructor.
         virtual ~Event() = default;
@@ -180,10 +185,8 @@ namespace syntropy
 
         auto& listeners = this->listeners_;
 
-        for (auto index = listeners.size(); index > 0;)
+        for (auto index = static_cast<std::int64_t>(listeners.size()) - 1; index > 0; --index)
         {
-            --index;
-
             if (auto listener = listeners[index].lock())
             {
                 (*listener)(arguments...);
