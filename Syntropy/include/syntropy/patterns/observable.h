@@ -39,7 +39,7 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* LISTENER T                                                           */
+    /* LISTENERT <TARGUMENTS...>                                            */
     /************************************************************************/
 
     /// \brief Represents a concrete listener subscribed to an observable object.
@@ -52,11 +52,7 @@ namespace syntropy
         /// \brief Create a new listener object.
         /// \param handler Handler routine for the event being notified.
         template <typename THandler>
-        ListenerT(THandler handler)
-            : handler_(std::move(handler))
-        {
-
-        }
+        ListenerT(THandler handler);
 
         /// \brief Default destructor.
         /// Unsubscribes the listener from the current observable object (if any).
@@ -64,11 +60,8 @@ namespace syntropy
 
         /// \brief Notify the listener.
         /// \param arguments Argument being passed to the handler routine.
-        template <typename... TEventArguments>
-        void operator()(TEventArguments&&... arguments) const
-        {
-            handler_(std::forward<TEventArguments>(arguments)...);
-        }
+        template <typename... UArguments>
+        void operator()(UArguments&&... arguments) const;
 
     private:
 
@@ -92,11 +85,8 @@ namespace syntropy
         Observable() = default;
 
         /// \brief Empty copy constructor.
-        /// The observable object can be copied, however the new copy won't have any of the existing listeners.
-        Observable(const Observable&)
-        {
-
-        }
+        /// Copying an event won't preserve existing listeners.
+        Observable(const Observable&);
 
         /// \brief Default move constructor.
         /// Listeners are moved to the new instance.
@@ -112,14 +102,7 @@ namespace syntropy
         /// \param handler Handler called whenever the observable object notifies.
         /// \return Returns a listener handle. The listener is subscribed as long as this handle is alive.
         template <typename THandler>
-        std::shared_ptr<Listener> Subscribe(THandler handler) const
-        {
-            auto listener = std::make_shared<ListenerT<TArguments...>>(std::move(handler));      // #TODO Use proper allocator.
-
-            listeners_.emplace_back(listener);
-
-            return listener;
-        }
+        std::shared_ptr<Listener> Subscribe(THandler handler) const;
 
     protected:
 
@@ -143,28 +126,74 @@ namespace syntropy
 
         /// \brief Trigger the event, notifying registered listeners.
         /// \param arguments Arguments passed to the listeners.
-        template <typename... TEventArguments>
-        void Notify(TEventArguments&&... arguments) const
+        template <typename... UArguments>
+        void Notify(UArguments&&... arguments) const;
+    };
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // ListenerT<TArguments...>.
+
+    template <typename... TArguments>
+    template <typename THandler>
+    inline ListenerT<TArguments...>::ListenerT(THandler handler)
+        : handler_(std::move(handler))
+    {
+
+    }
+
+    template <typename... TArguments>
+    template <typename... UArguments>
+    inline void ListenerT<TArguments...>::operator()(UArguments&&... arguments) const
+    {
+        handler_(std::forward<UArguments>(arguments)...);
+    }
+
+    // Observable<TArguments...>.
+
+    template <typename... TArguments>
+    inline Observable<TArguments...>::Observable(const Observable&)
+    {
+
+    }
+
+    template <typename... TArguments>
+    template <typename THandler>
+    inline std::shared_ptr<Listener> Observable<TArguments...>::Subscribe(THandler handler) const
+    {
+        auto listener = std::make_shared<ListenerT<TArguments...>>(std::move(handler));
+
+        listeners_.emplace_back(listener);
+
+        return listener;
+    }
+
+    // Event<TArguments...>.
+
+    template <typename... TArguments>
+    template <typename... UArguments>
+    void Event<TArguments...>::Notify(UArguments&&... arguments) const
+    {
+        // Reverse iteration since the collection may change during the loop: new listeners can be added, invalid listeners are removed.
+
+        auto& listeners = this->listeners_;
+
+        for (auto index = listeners.size(); index > 0;)
         {
-            // Reverse iteration since the collection may change during the loop: new listeners can be added, invalid listeners are removed.
+            --index;
 
-            auto& listeners = this->listeners_;
-
-            for (auto index = listeners.size(); index > 0;)
+            if (auto listener = listeners[index].lock())
             {
-                --index;
-
-                if (auto listener = listeners[index].lock())
-                {
-                    (*listener)(arguments...);
-                }
-                else
-                {
-                    std::swap(listeners.back(), listeners[index]);
-                    listeners.pop_back();
-                }
+                (*listener)(arguments...);
+            }
+            else
+            {
+                std::swap(listeners.back(), listeners[index]);
+                listeners.pop_back();
             }
         }
-    };
+    }
 
 }
