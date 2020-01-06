@@ -16,166 +16,147 @@ namespace syntropy
     /* LISTENER                                                             */
     /************************************************************************/
 
-    /// \brief Base class for listeners.
+    /// \brief Represents zero or more listeners subscribed to observable objects.
     /// \author Raffaele D. Facendola - November 2017
     class Listener
     {
     public:
 
-        /// \brief Default constructor.
+        /// \brief Create an empty listener.
         Listener() = default;
 
-        /// \brief No copy constructor.
-        Listener(const Listener&) = delete;
+        /// \brief Create a non-empty listener.
+        Listener(const std::shared_ptr<void>& listener);
 
-        /// \brief No move constructor.
-        Listener(Listener&&) = delete;
+        /// \brief Default copy constructor.
+        Listener(const Listener&) = default;
+
+        /// \brief Default move constructor.
+        Listener(Listener&&) = default;
 
         /// \brief No assignment operator.
         Listener& operator=(const Listener&) = delete;
 
-        /// \brief Default virtual destructor.
-        virtual ~Listener() = default;
-    };
-
-    /************************************************************************/
-    /* LISTENERT <TARGUMENTS...>                                            */
-    /************************************************************************/
-
-    /// \brief Represents a concrete listener subscribed to an observable object.
-    /// \author Raffaele D. Facendola - June 2017
-    template <typename... TArguments>
-    class ListenerT : public Listener
-    {
-    public:
-
-        /// \brief Create a new listener object.
-        /// \param handler Handler routine for the event being notified.
-        template <typename THandler>
-        ListenerT(THandler handler);
-
         /// \brief Default destructor.
-        /// Unsubscribes the listener from the current observable object (if any).
-        virtual ~ListenerT() = default;
+        ~Listener() = default;
 
-        /// \brief Notify the listener.
-        /// \param arguments Argument being passed to the handler routine.
-        template <typename... UArguments>
-        void operator()(UArguments&&... arguments) const;
+        /// \brief Chain this listener with another one.
+        Listener& operator+=(Listener&& rhs);
 
     private:
 
-        std::function<void(TArguments...)> handler_;        ///< \brief Handler routine for the event.
+        /// \brief Opaque strong references to listeners.
+        std::vector<std::shared_ptr<void>> listeners_;
+
     };
 
     /************************************************************************/
     /* OBSERVABLE                                                           */
     /************************************************************************/
 
-    /// \brief Interface for observable objects that can be subscribed to.
-    /// \author Raffaele D. Facendola - June 2017
+    /// \brief Interface for observable events.
+    /// \author Raffaele D. Facendola - June 2017.
     template <typename... TArguments>
     class Observable
     {
     public:
 
-        Listener
-
-        /// \brief Create a new observable object.
-        Observable() = default;
-
-        /// \brief Empty copy constructor.
-        /// Copying an event won't preserve existing listeners.
-        Observable(const Observable&);
-
-        /// \brief Default move constructor.
-        /// Listeners are moved to the new instance.
-        Observable(Observable&&) = default;
-
-        /// \brief No assignment operator.
-        Observable& operator=(const Observable&) = delete;
-
         /// \brief Virtual default destructor.
         virtual ~Observable() = default;
 
-        /// \brief Subscribe a new listener to this observable object.
-        /// \param handler Handler called whenever the observable object notifies.
+        /// \brief Subscribe a new listener.
         /// \return Returns a listener handle. The listener is subscribed as long as this handle is alive.
-        template <typename THandler>
-        std::shared_ptr<Listener> Subscribe(THandler handler) const;
+        template <typename TListener>
+        Listener Subscribe(TListener&& listener) const;
 
     protected:
 
-        mutable std::vector<std::weak_ptr<ListenerT<TArguments...>>> listeners_;        ///< \brief Listeners subscribed to this object. Mutable needed to subscribe to const events.
+        /// \brief Add a new listener to the event.
+        virtual Listener AddListener(std::function<void(TArguments...)> listener) const = 0;
+
     };
 
     /************************************************************************/
     /* EVENT                                                                */
     /************************************************************************/
 
-    /// \brief Observable event with notification capabilities.
-    /// An observable object can be subscribed by any number of listener.
-    /// Whenever the object is destroyed, its listeners are unsubscribed automatically.
+    /// \brief Observable object that can be used to notify subscribed listeners.
     /// \author Raffaele D. Facendola - June 2017
     template <typename... TArguments>
     class Event : public Observable<TArguments...>
     {
     public:
 
-        /// \brief Empty copy constructor.
-        /// Copying an event won't preserve existing listeners.
-        Observable(const Observable&);
+        /// \brief Default constructor.
+        Event() = default;
 
-        /// \brief Virtual default constructor.
+        /// \brief Empty copy constructor.
+        Event(const Event&);
+
+        /// \brief Move constructor.
+        /// Moving an event moves existing listeners.
+        Event(Event&&) = default;
+
+        /// \brief No assignment operator.
+        Event& operator=(const Event&) = delete;
+
+        /// \brief Virtual default destructor.
         virtual ~Event() = default;
 
-        /// \brief Trigger the event, notifying registered listeners.
+        /// \brief Notify all subscribed listeners.
         /// \param arguments Arguments passed to the listeners.
         template <typename... UArguments>
         void Notify(UArguments&&... arguments) const;
+
+    protected:
+
+        /// \brief Type of a listener function.
+        using TListener = std::function<void(TArguments...)>;
+
+        virtual Listener AddListener(std::function<void(TArguments...)> listener) const override;
+
+        mutable std::vector<std::weak_ptr<TListener>> listeners_;           ///< \brief Listeners subscribed to this object. Mutable needed to subscribe to const events.
     };
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // ListenerT<TArguments...>.
+    // Listener.
 
-    template <typename... TArguments>
-    template <typename THandler>
-    inline ListenerT<TArguments...>::ListenerT(THandler handler)
-        : handler_(std::move(handler))
+    inline Listener::Listener(const std::shared_ptr<void>& listener)
     {
-
+        listeners_.emplace_back(listener);
     }
 
-    template <typename... TArguments>
-    template <typename... UArguments>
-    inline void ListenerT<TArguments...>::operator()(UArguments&&... arguments) const
+    inline Listener& Listener::operator+=(Listener&& rhs)
     {
-        handler_(std::forward<UArguments>(arguments)...);
+        listeners_.reserve(listeners_.size() + rhs.listeners_.size());
+
+        for (auto&& listener : rhs.listeners_)
+        {
+            listeners_.emplace_back(std::move(listener));
+        }
+
+        return *this;
     }
 
     // Observable<TArguments...>.
 
     template <typename... TArguments>
-    inline Observable<TArguments...>::Observable(const Observable&)
+    template <typename TListener>
+    inline Listener Observable<TArguments...>::Subscribe(TListener&& listener) const
     {
-
-    }
-
-    template <typename... TArguments>
-    template <typename THandler>
-    inline std::shared_ptr<Listener> Observable<TArguments...>::Subscribe(THandler handler) const
-    {
-        auto listener = std::make_shared<ListenerT<TArguments...>>(std::move(handler));
-
-        listeners_.emplace_back(listener);
-
-        return listener;
+        return AddListener(std::forward<TListener>(listener));
     }
 
     // Event<TArguments...>.
+
+    template <typename... TArguments>
+    inline Event<TArguments...>::Event(const Event&)
+    {
+        // Copying an event won't preserve existing listeners.
+    }
 
     template <typename... TArguments>
     template <typename... UArguments>
@@ -183,20 +164,28 @@ namespace syntropy
     {
         // Reverse iteration since the collection may change during the loop: new listeners can be added, invalid listeners are removed.
 
-        auto& listeners = this->listeners_;
-
-        for (auto index = static_cast<std::int64_t>(listeners.size()) - 1; index > 0; --index)
+        for (auto index = static_cast<std::int64_t>(listeners_.size()) - 1; index >= 0; --index)
         {
-            if (auto listener = listeners[index].lock())
+            if (auto listener = listeners_[index].lock())
             {
                 (*listener)(arguments...);
             }
             else
             {
-                std::swap(listeners.back(), listeners[index]);
-                listeners.pop_back();
+                std::swap(listeners_.back(), listeners_[index]);
+                listeners_.pop_back();
             }
         }
+    }
+
+    template <typename... TArguments>
+    Listener Event<TArguments...>::AddListener(std::function<void(TArguments...)> listener) const
+    {
+        auto shared_listener = std::make_shared<TListener>(std::move(listener));
+
+        listeners_.emplace_back(shared_listener);       // Weak reference.
+
+        return std::shared_ptr<void>(shared_listener);
     }
 
 }
