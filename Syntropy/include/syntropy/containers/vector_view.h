@@ -43,7 +43,7 @@ namespace syntropy
         VectorView(const VectorView<UElement>& rhs);
 
         /// \brief Default assignment operator.
-        VectorView& operator=(VectorView& rhs) = default;
+        VectorView& operator=(const VectorView& rhs) = default;
 
         /// \brief Default destructor.
         ~VectorView() = default;

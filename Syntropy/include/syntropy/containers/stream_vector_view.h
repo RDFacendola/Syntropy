@@ -44,7 +44,7 @@ namespace syntropy
         StreamVectorView(StreamVectorView&& rhs) = default;
 
         /// \brief Default assignment operator.
-        StreamVectorView& operator=(StreamVectorView& rhs) = default;
+        StreamVectorView& operator=(const StreamVectorView& rhs) = default;
 
         /// \brief Default destructor.
         ~StreamVectorView() = default;
