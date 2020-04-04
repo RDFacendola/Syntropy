@@ -75,12 +75,16 @@
   <ItemGroup>
     <ClInclude Include="include\syntropy\application\command_line.h" />
     <ClInclude Include="include\syntropy\application\command_parser.h" />
+    <ClInclude Include="include\syntropy\containers\array.h" />
     <ClInclude Include="include\syntropy\containers\context.h" />
     <ClInclude Include="include\syntropy\containers\hashed_string.h" />
+    <ClInclude Include="include\syntropy\containers\map.h" />
     <ClInclude Include="include\syntropy\containers\range.h" />
+    <ClInclude Include="include\syntropy\containers\set.h" />
     <ClInclude Include="include\syntropy\containers\stream_vector.h" />
     <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\containers\string.h" />
+    <ClInclude Include="include\syntropy\containers\vector.h" />
     <ClInclude Include="include\syntropy\containers\vector_view.h" />
     <ClInclude Include="include\syntropy\contexts.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
@@ -106,10 +110,12 @@
     <ClInclude Include="include\syntropy\memory\allocators\clustering_allocator_policy.h" />
     <ClInclude Include="include\syntropy\memory\allocators\counting_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\linear_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\memory_resource.h" />
     <ClInclude Include="include\syntropy\memory\allocators\null_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\page_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\page_allocator_policy.h" />
     <ClInclude Include="include\syntropy\memory\allocators\passthrough_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\pool_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\pool_allocator_policy.h" />
     <ClInclude Include="include\syntropy\memory\allocators\scope_allocator.h" />
@@ -187,6 +193,7 @@
     <ClCompile Include="src\syntropy\math\hash.cpp" />
     <ClCompile Include="src\syntropy\math\random.cpp" />
     <ClCompile Include="src\syntropy\memory\allocator.cpp" />
+    <ClCompile Include="src\syntropy\memory\allocators\memory_resource.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_buffer.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_manager.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_meta.cpp" />
