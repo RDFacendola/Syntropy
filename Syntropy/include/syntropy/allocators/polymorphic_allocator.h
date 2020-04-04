@@ -54,7 +54,7 @@ namespace syntropy
         /// \brief Deallocate the storage pointed to by storage, which must have been allocated from a MemoryResorce that compares equal to the underlying resource.
         void deallocate(TType* storage, size_t count) noexcept;
 
-
+        /// \brief Construct an object in a given storage.
         template <typename UType, typename... TArguments>
         void construct(UType* storage, TArguments&&... arguments);
 
