@@ -110,15 +110,15 @@
     <ClInclude Include="include\syntropy\memory\allocators\clustering_allocator_policy.h" />
     <ClInclude Include="include\syntropy\memory\allocators\counting_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\linear_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\allocators\memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\memory_resource.h" />
     <ClInclude Include="include\syntropy\memory\allocators\null_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\page_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\page_allocator_policy.h" />
     <ClInclude Include="include\syntropy\memory\allocators\passthrough_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\allocators\polymorphic_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\pool_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\pool_allocator_policy.h" />
-    <ClInclude Include="include\syntropy\memory\allocators\scoped_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\scoped_memory_resource.h" />
     <ClInclude Include="include\syntropy\memory\allocators\scope_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\stack_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\standard_allocator.h" />
@@ -194,7 +194,7 @@
     <ClCompile Include="src\syntropy\math\hash.cpp" />
     <ClCompile Include="src\syntropy\math\random.cpp" />
     <ClCompile Include="src\syntropy\memory\allocator.cpp" />
-    <ClCompile Include="src\syntropy\memory\allocators\memory_resource.cpp" />
+    <ClCompile Include="src\syntropy\allocators\memory_resource.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_buffer.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_manager.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_meta.cpp" />

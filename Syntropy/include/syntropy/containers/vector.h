@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include "syntropy/memory/allocators/polymorphic_allocator.h"
+#include "syntropy/allocators/polymorphic_allocator.h"
 
 namespace syntropy
 {

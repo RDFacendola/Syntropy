@@ -1,4 +1,4 @@
-#include "syntropy/memory/allocators/memory_resource.h"
+#include "syntropy/allocators/memory_resource.h"
 
 #include <new>
 
