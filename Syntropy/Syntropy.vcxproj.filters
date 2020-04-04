@@ -16,7 +16,6 @@
     <ClInclude Include="include\syntropy\math\vector.h" />
     <ClInclude Include="include\syntropy\memory\allocators\allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\cascading_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\allocators\chain_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\clustering_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\clustering_allocator_policy.h" />
     <ClInclude Include="include\syntropy\memory\allocators\counting_allocator.h" />
@@ -110,6 +109,7 @@
     <ClInclude Include="include\syntropy\allocators\null_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\new_delete_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\passthrough_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\chain_memory_resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
