@@ -1,6 +1,6 @@
 
-/// \file null_allocator.h
-/// \brief This header is part of the syntropy memory management system. It contains empty allocators.
+/// \file null_memory_resource.h
+/// \brief This header is part of the syntropy memory management system. It contains null memory resources.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -8,7 +8,6 @@
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_address.h"
 #include "syntropy/memory/memory_range.h"
 
 #include "syntropy/diagnostics/assert.h"
@@ -16,29 +15,29 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* NULL ALLOCATOR                                                       */
+    /* NULL MEMORY RESOURCE                                                 */
     /************************************************************************/
 
-    /// \brief Basic allocator that rejects any form of allocation.
+    /// \brief Memory resource that rejects any form of allocation.
     /// \author Raffaele D. Facendola - August 2018
-    class NullAllocator
+    class NullMemoryResource
     {
     public:
 
         /// \brief Default constructor.
-        NullAllocator() noexcept = default;
+        NullMemoryResource() noexcept = default;
 
         /// \brief Default copy constructor.
-        NullAllocator(const NullAllocator&) noexcept = default;
+        NullMemoryResource(const NullMemoryResource&) noexcept = default;
 
         /// \brief Default move constructor.
-        NullAllocator(NullAllocator&&) noexcept = default;
+        NullMemoryResource(NullMemoryResource&&) noexcept = default;
 
         /// \brief Default destructor.
-        ~NullAllocator() noexcept = default;
+        ~NullMemoryResource() noexcept = default;
 
         /// \brief Default assignment operator.
-        NullAllocator& operator=(const NullAllocator&) noexcept = default;
+        NullMemoryResource& operator=(const NullMemoryResource&) noexcept = default;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate.
@@ -60,52 +59,52 @@ namespace syntropy
         /// \param alignment Block alignment.
         void Deallocate(const MemoryRange& block, Alignment alignment);
 
-        /// \brief Check whether this allocator owns the provided memory block.
-        /// The null allocator only contains empty ranges.
+        /// \brief Check whether this memory resource owns the provided memory block.
+        /// The null memory resource only contains empty ranges.
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
-        /// \brief Get the maximum allocation size that can be handled by this allocator.
+        /// \brief Get the maximum allocation size that can be handled by this memory resource.
         /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this allocator.
+        /// \return Returns the maximum allocation size that can be handled by this memory resource.
         Bytes GetMaxAllocationSize() const noexcept;
     };
 
-}
-
-/************************************************************************/
-/* IMPLEMENTATION                                                       */
-/************************************************************************/
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
  
-namespace syntropy
-{
-    inline MemoryRange NullAllocator::Allocate(Bytes /*size*/) noexcept
+    // NullMemoryResource.
+
+    inline MemoryRange NullMemoryResource::Allocate(Bytes /*size*/) noexcept
     {
         return {};
     }
 
-    inline MemoryRange NullAllocator::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
+    inline MemoryRange NullMemoryResource::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
     {
         return {};
     }
 
-    inline void NullAllocator::Deallocate(const MemoryRange& block)
+    inline void NullMemoryResource::Deallocate(const MemoryRange& block)
     {
-        SYNTROPY_ASSERT(!block);        // Only empty ranges can be "deallocated" by this allocator.
+        SYNTROPY_ASSERT(!block);        // Only empty ranges can be deallocated.
     }
 
-    inline void NullAllocator::Deallocate(const MemoryRange& block, Alignment /*alignment*/)
+    inline void NullMemoryResource::Deallocate(const MemoryRange& block, Alignment /*alignment*/)
     {
-        SYNTROPY_ASSERT(!block);        // Only empty ranges can be "deallocated" by this allocator.
+        SYNTROPY_ASSERT(!block);        // Only empty ranges can be deallocated.
     }
 
-    inline bool NullAllocator::Owns(const MemoryRange& block) const noexcept
+    inline bool NullMemoryResource::Owns(const MemoryRange& block) const noexcept
     {
-        return !block;                  // This allocator "owns" only empty ranges.
+        return !block;                  // This memory resource owns only empty ranges.
     }
 
-    inline Bytes NullAllocator::GetMaxAllocationSize() const noexcept
+    inline Bytes NullMemoryResource::GetMaxAllocationSize() const noexcept
     {
         return 0_Bytes;
     }
+
 }
+
