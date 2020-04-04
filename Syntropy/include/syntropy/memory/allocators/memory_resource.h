@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <atomic>
 #include <cstddef>
 
 namespace syntropy
