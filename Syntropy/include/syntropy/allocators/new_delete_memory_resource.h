@@ -1,6 +1,6 @@
 
-/// \file standard_allocator.h
-/// \brief This header is part of the syntropy memory management system. It contains an allocator that wraps system heap calls.
+/// \file new_delete_memory_resource.h
+/// \brief This header is part of the syntropy memory management system. It contains an allocator that wraps system heap allocation calls.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -16,29 +16,29 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* STANDARD ALLOCATOR                                                   */
+    /* NEW DELETE MEMORY RESOURCE                                           */
     /************************************************************************/
 
-    /// \brief Allocator used to wrap new\delete calls.
+    /// \brief Memory resource used to wrap new\delete calls.
     /// \author Raffaele D. Facendola - February 2017
-    class StandardAllocator
+    class NewDeleteMemoryResource
     {
     public:
 
         /// \brief Default constructor.
-        StandardAllocator() noexcept = default;
+        NewDeleteMemoryResource() noexcept = default;
 
         /// \brief Default copy constructor.
-        StandardAllocator(const StandardAllocator&) noexcept = default;
+        NewDeleteMemoryResource(const NewDeleteMemoryResource&) noexcept = default;
 
         /// \brief Default move constructor.
-        StandardAllocator(StandardAllocator&&) noexcept = default;
+        NewDeleteMemoryResource(NewDeleteMemoryResource&&) noexcept = default;
 
         /// \brief Default destructor.
-        ~StandardAllocator() noexcept = default;
+        ~NewDeleteMemoryResource() noexcept = default;
 
         /// \brief Default assignment operator.
-        StandardAllocator& operator=(const StandardAllocator&) noexcept = default;
+        NewDeleteMemoryResource& operator=(const NewDeleteMemoryResource&) noexcept = default;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate.
@@ -61,17 +61,16 @@ namespace syntropy
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
         void Deallocate(const MemoryRange& block, Alignment alignment) noexcept;
+
     };
 
-}
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
 
-/************************************************************************/
-/* IMPLEMENTATION                                                       */
-/************************************************************************/
+    // NewDeleteMemoryResource.
 
-namespace syntropy
-{
-    inline MemoryRange StandardAllocator::Allocate(Bytes size) noexcept
+    inline MemoryRange NewDeleteMemoryResource::Allocate(Bytes size) noexcept
     {
         if (auto block = MemoryAddress{ ::operator new(std::size_t{size}, std::nothrow) })
         {
@@ -81,7 +80,7 @@ namespace syntropy
         return {};
     }
 
-    inline MemoryRange StandardAllocator::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemoryRange NewDeleteMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto block = MemoryAddress{ ::operator new(std::size_t{size}, alignment, std::nothrow) })
         {
@@ -91,12 +90,12 @@ namespace syntropy
         return {};
     }
 
-    inline void StandardAllocator::Deallocate(const MemoryRange& block) noexcept
+    inline void NewDeleteMemoryResource::Deallocate(const MemoryRange& block) noexcept
     {
         ::operator delete(block.Begin(), std::nothrow);
     }
 
-    inline void StandardAllocator::Deallocate(const MemoryRange& block, Alignment alignment) noexcept
+    inline void NewDeleteMemoryResource::Deallocate(const MemoryRange& block, Alignment alignment) noexcept
     {
         ::operator delete(block.Begin(), alignment, std::nothrow);
     }
