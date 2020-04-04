@@ -98,7 +98,7 @@ namespace syntropy
 
             Cascade* previous_{ nullptr };                  ///< \brief Previous cascade.
 
-            CountingAllocator<TCascade> allocator_;         ///< \brief Cascade allocator.
+            TracingMemoryResource<TCascade> allocator_;         ///< \brief Cascade allocator.
         };
 
         /// \brief Perform an allocation on the first available cascade. If no such cascade exists spawn a new one.

@@ -18,7 +18,6 @@
     <ClInclude Include="include\syntropy\memory\allocators\cascading_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\clustering_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\clustering_allocator_policy.h" />
-    <ClInclude Include="include\syntropy\memory\allocators\counting_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\linear_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\page_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\page_allocator_policy.h" />
@@ -110,6 +109,7 @@
     <ClInclude Include="include\syntropy\allocators\new_delete_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\passthrough_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\chain_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\tracing_memory_resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
