@@ -17,9 +17,9 @@
 #include "syntropy/memory/virtual_memory_buffer.h"
 #include "syntropy/memory/virtual_memory_page.h"
 
-#include "syntropy/memory/allocators/page_allocator_policy.h"
+#include "syntropy/allocators/sequential_memory_resource.h"
 
-#include "syntropy/memory/allocators/linear_allocator.h"
+#include "syntropy/memory/allocators/page_allocator_policy.h"
 #include "syntropy/memory/allocators/pool_allocator.h"
 
 #include "syntropy/diagnostics/assert.h"
@@ -96,7 +96,7 @@ namespace syntropy
 
         VirtualMemoryBuffer memory_buffer_;                                                         ///< \brief Virtual memory buffer reserved by this allocator.
 
-        PoolAllocator<LinearAllocator, typename TPolicy::TPoolAllocatorPolicy> allocator_;          ///< \brief Underlying pool allocator used to handle memory pages.
+        PoolAllocator<SequentialMemoryResource, typename TPolicy::TPoolAllocatorPolicy> allocator_;          ///< \brief Underlying pool allocator used to handle memory pages.
 
         TPolicy policy_;                                                                            ///< \brief Policy functor used to commit\decommit memory pages.
     };

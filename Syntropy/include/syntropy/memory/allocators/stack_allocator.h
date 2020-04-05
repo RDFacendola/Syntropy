@@ -23,7 +23,7 @@ namespace syntropy
     /// This allocator behaves identically as syntropy::LinearAllocator except it uses stack storage.
     /// \author Raffaele D. Facendola - August 2018
     template <std::size_t kSize, std::size_t kAlignment = alignof(void*)>
-    class StackAllocator : public LinearAllocator
+    class StackAllocator : public SequentialMemoryResource
     {
     public:
 
@@ -54,7 +54,7 @@ namespace syntropy
 {
     template <std::size_t kSize, std::size_t kAlignment>
     StackAllocator<kSize, kAlignment>::StackAllocator() noexcept
-        : LinearAllocator({ MemoryAddress(&storage_), MemoryAddress(&storage_) + Bytes(kSize) })
+        : SequentialMemoryResource({ MemoryAddress(&storage_), MemoryAddress(&storage_) + Bytes(kSize) })
     {
 
     }

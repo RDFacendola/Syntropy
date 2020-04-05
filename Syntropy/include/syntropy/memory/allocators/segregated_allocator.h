@@ -13,7 +13,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_address.h"
 #include "syntropy/memory/virtual_memory_range.h"
-#include "syntropy/memory/allocators/linear_allocator.h"
+#include "syntropy/allocators/sequential_memory_resource.h"
 #include "syntropy/memory/allocators/allocator.h"
 
 namespace syntropy
@@ -193,7 +193,7 @@ namespace syntropy
         /// \return Returns the index of the free list associated with the given first-level and second-level index.
         size_t GetFreeListIndex(size_t first_level_index, size_t second_level_index) const;
         
-        LinearAllocator allocator_;                         ///< \brief Underlying allocator used by this one.
+        SequentialMemoryResource allocator_;                ///< \brief Underlying allocator used by this one.
 
         BlockHeader* last_block_;                           ///< \brief Pointer to the block currently on the head of the pool.
 
