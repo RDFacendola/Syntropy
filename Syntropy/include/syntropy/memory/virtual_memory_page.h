@@ -148,7 +148,7 @@ namespace syntropy
 
     constexpr bool operator==(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept
     {
-        return MemoryRange(lhs) = MemoryRange(rhs);
+        return MemoryRange(lhs) == MemoryRange(rhs);
     }
 
     constexpr bool operator!=(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept
