@@ -139,7 +139,7 @@ namespace syntropy
 
     constexpr VirtualMemoryRange::operator MemoryRange() const noexcept
     {
-        return MemoryRange(begin_.Begin(), end_.End());
+        return MemoryRange(begin_.Begin(), end_.Begin());
     }
 
     constexpr const VirtualMemoryPage& VirtualMemoryRange::operator[](std::size_t offset) const
@@ -182,7 +182,7 @@ namespace syntropy
 
     constexpr bool VirtualMemoryRange::Contains(const MemoryRange& memory_range) const noexcept
     {
-        return begin_ <= memory_range.Begin() && memory_range.End() <= end_;
+        return begin_.Begin() <= memory_range.Begin() && memory_range.End() <= end_.Begin();
     }
 
     inline bool VirtualMemoryRange::Commit() const
@@ -197,7 +197,7 @@ namespace syntropy
 
     constexpr bool operator==(const VirtualMemoryRange& lhs, const VirtualMemoryRange& rhs) noexcept
     {
-        return lhs.Begin() == rhs.Begin() && lhs.End() == rhs.End();
+        return (lhs.Begin() == rhs.Begin()) && (lhs.End() == rhs.End());
     }
 
     constexpr bool operator!=(const VirtualMemoryRange& lhs, const VirtualMemoryRange& rhs) noexcept
