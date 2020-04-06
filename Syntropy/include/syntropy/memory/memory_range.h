@@ -37,6 +37,11 @@ namespace syntropy
         /// \param end One past the last address in the range.
         constexpr MemoryRangeT(MemoryAddressT<is_const> begin, MemoryAddressT<is_const> end);
 
+        /// \brief Create a memory range.
+        /// \param begin First address in the range.
+        /// \param size Size of the range.
+        constexpr MemoryRangeT(MemoryAddressT<is_const> begin, Bytes size);
+
         /// \brief Default copy-constructor.
         template <bool is_rhs_const>
         constexpr MemoryRangeT(const MemoryRangeT<is_rhs_const>& rhs);
@@ -144,6 +149,13 @@ namespace syntropy
         , end_(end)
     {
         SYNTROPY_ASSERT(begin <= end);
+    }
+
+    template <bool is_const>
+    constexpr MemoryRangeT<is_const>::MemoryRangeT(MemoryAddressT<is_const> begin, Bytes size)
+        : MemoryRangeT{ begin, begin + size }
+    {
+
     }
 
     template <bool is_const>
