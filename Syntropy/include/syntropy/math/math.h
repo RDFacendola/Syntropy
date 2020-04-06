@@ -19,12 +19,12 @@ namespace syntropy
     /// \brief Divide lhs by rhs and ceil the result.
     /// \return Returns lhs divided by rhs, rounded up to the next value.
     template <typename TNumber>
-    constexpr TNumber DivCeil(TNumber lhs, TNumber rhs);
+    constexpr auto DivCeil(TNumber lhs, TNumber rhs);
 
     /// \brief Divide lhs by rhs and floor the result.
     /// \return Returns lhs divided by rhs, rounded down to the previous value.
     template <typename TNumber>
-    constexpr TNumber DivFloor(TNumber lhs, TNumber rhs);
+    constexpr auto DivFloor(TNumber lhs, TNumber rhs);
 
     /// \brief Ceil a number to a multiple of another value.
     /// \return Returns the first number equal or greater than number which is multiple of multiple.
@@ -105,7 +105,7 @@ namespace syntropy
     /************************************************************************/
 
     template <typename TNumber>
-    constexpr TNumber DivCeil(TNumber lhs, TNumber rhs)
+    constexpr auto DivCeil(TNumber lhs, TNumber rhs)
     {
         static_assert(!std::is_signed_v<TNumber>, "Not implemented.");
 
@@ -113,7 +113,7 @@ namespace syntropy
     }
 
     template <typename TNumber>
-    constexpr TNumber DivFloor(TNumber lhs, TNumber rhs)
+    constexpr auto DivFloor(TNumber lhs, TNumber rhs)
     {
         static_assert(!std::is_signed_v<TNumber>, "Not implemented.");
 
