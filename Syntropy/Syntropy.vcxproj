@@ -112,8 +112,7 @@
     <ClInclude Include="include\syntropy\allocators\sequential_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\null_memory_resource.h" />
-    <ClInclude Include="include\syntropy\memory\allocators\page_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\allocators\page_allocator_policy.h" />
+    <ClInclude Include="include\syntropy\allocators\virtual_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\passthrough_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\pool_allocator.h" />
@@ -184,6 +183,7 @@
     <ClInclude Include="src\syntropy\platform\architecture\x64_endianness.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
     <ClCompile Include="src\syntropy\containers\context.cpp" />
     <ClCompile Include="src\syntropy\contexts.cpp" />

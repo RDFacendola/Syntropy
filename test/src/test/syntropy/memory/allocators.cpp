@@ -2,7 +2,7 @@
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/allocators/pool_allocator.h"
-#include "syntropy/memory/allocators/page_allocator.h"
+#include "syntropy/allocators/virtual_memory_resource.h"
 #include "syntropy/macro.h"
 
 #include "syntropy/reflection/class.h"
