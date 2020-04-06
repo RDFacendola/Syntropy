@@ -45,10 +45,10 @@ namespace syntropy
         VirtualMemoryBuffer& operator=(VirtualMemoryBuffer rhs) noexcept;
 
         /// \brief Get the underlying virtual memory range.
-        operator const VirtualMemoryRange&() noexcept;
+        operator VirtualMemoryRange() noexcept;
 
         /// \brief Get the underlying memory range.
-        operator const MemoryRange&() const noexcept;
+        operator MemoryRange() const noexcept;
 
         /// \brief Check whether a memory range is contained entirely inside this buffer.
         /// \param memory_range Memory range to check.
@@ -95,14 +95,14 @@ namespace syntropy
         return *this;
     }
 
-    inline VirtualMemoryBuffer::operator const VirtualMemoryRange&() noexcept
+    inline VirtualMemoryBuffer::operator VirtualMemoryRange() noexcept
     {
         return virtual_memory_range_;
     }
 
-    inline VirtualMemoryBuffer::operator const MemoryRange&() const noexcept
+    inline VirtualMemoryBuffer::operator MemoryRange() const noexcept
     {
-        return virtual_memory_range_;
+        return  virtual_memory_range_ ;
     }
 
     inline bool VirtualMemoryBuffer::Contains(const MemoryRange& memory_range) const noexcept
