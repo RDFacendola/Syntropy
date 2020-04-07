@@ -1,7 +1,7 @@
 #include "test/syntropy/memory/allocators.h"
 
 #include "syntropy/memory/bytes.h"
-#include "syntropy/memory/allocators/pool_allocator.h"
+#include "syntropy/allocators/pool_memory_resource.h"
 #include "syntropy/allocators/virtual_memory_resource.h"
 #include "syntropy/macro.h"
 
