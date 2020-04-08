@@ -144,7 +144,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange PoolMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
+    MemoryRange PoolMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
     {
         if (size <= max_size_)
         {
@@ -177,7 +177,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void PoolMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block)
+    void PoolMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block)
     {
         SYNTROPY_ASSERT(memory_resource_.Owns(block));
 

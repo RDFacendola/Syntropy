@@ -144,9 +144,9 @@ namespace syntropy
     template <typename TMemoryResource, typename... TMemoryResources>
     inline MemoryRange ChainMemoryResource<TMemoryResource, TMemoryResources...>::Allocate(Bytes size) noexcept
     {
-        if (auto Block = memory_resource_.Allocate(size))
+        if (auto block = memory_resource_.Allocate(size))
         {
-            return Block;
+            return block;
         }
         
         return memory_resources_.Allocate(size);
@@ -155,9 +155,9 @@ namespace syntropy
     template <typename TMemoryResource, typename... TMemoryResources>
     inline MemoryRange ChainMemoryResource<TMemoryResource, TMemoryResources...>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (auto Block = memory_resource_.Allocate(size, alignment))
+        if (auto block = memory_resource_.Allocate(size, alignment))
         {
-            return Block;
+            return block;
         }
 
         return memory_resources_.Allocate(size, alignment);

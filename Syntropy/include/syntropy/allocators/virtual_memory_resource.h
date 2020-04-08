@@ -38,8 +38,8 @@ namespace syntropy
 
         /// \brief Create a new memory resource.
         /// \param capacity Virtual memory capacity to reserve. This amount is not committed initially, therefore it can be much higher than system physical memory size.
-        /// \param min_allocation_size Minimum size of each allocation performed on this memory resource.
-        VirtualMemoryResource(Bytes capacity, Bytes min_allocation_size) noexcept;
+        /// \param max_allocation_size Maximum size of each allocation performed on this memory resource.
+        VirtualMemoryResource(Bytes capacity, Bytes max_allocation_size) noexcept;
 
         /// \brief No copy constructor.
         VirtualMemoryResource(const VirtualMemoryResource&) = delete;
@@ -122,10 +122,10 @@ namespace syntropy
 
     // VirtualMemoryResource.
 
-    inline VirtualMemoryResource::VirtualMemoryResource(Bytes capacity, Bytes allocation_size) noexcept
+    inline VirtualMemoryResource::VirtualMemoryResource(Bytes capacity, Bytes max_allocation_size) noexcept
         : virtual_memory_(capacity)
         , memory_resource_(MemoryRange{ virtual_memory_ })
-        , allocation_size_(Ceil(allocation_size, VirtualMemory::GetPageSize()))
+        , allocation_size_(Ceil(max_allocation_size, VirtualMemory::GetPageSize()))
         , allocation_alignment_(VirtualMemory::GetPageSize())
     {
 

@@ -1,5 +1,5 @@
 
-/// \file tracing_memory_resource.h
+/// \file counting_memory_resource.h
 /// \brief This header is part of the syntropy memory management system. It contains definition for memory resources used to count allocations on another memory resource.
 ///
 /// \author Raffaele D. Facendola - 2018
@@ -14,32 +14,32 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* TRACING MEMORY RESOURCE                                              */
+    /* COUNTING MEMORY RESOURCE                                             */
     /************************************************************************/
 
     /// \brief Memory resources used to gather allocation counters.
     /// \author Raffaele D. Facendola - September 2018
     template <typename TMemoryResource>
-    class TracingMemoryResource
+    class CountingMemoryResource
     {
     public:
 
-        /// \brief Create a new tracing memory resource.
+        /// \brief Create a new counting memory resource.
         /// \param Arguments used to construct the underlying memory resource.
         template <typename... TArguments>
-        TracingMemoryResource(TArguments&&... arguments);
+        CountingMemoryResource(TArguments&&... arguments);
 
         /// \brief Default copy constructor.
-        TracingMemoryResource(const TracingMemoryResource&) noexcept = default;
+        CountingMemoryResource(const CountingMemoryResource&) noexcept = default;
 
         /// \brief Default move constructor.
-        TracingMemoryResource(TracingMemoryResource&&) noexcept = default;
+        CountingMemoryResource(CountingMemoryResource&&) noexcept = default;
 
         /// \brief Default destructor.
-        ~TracingMemoryResource() noexcept = default;
+        ~CountingMemoryResource() noexcept = default;
 
         /// \brief Default assignment operator.
-        TracingMemoryResource& operator=(const TracingMemoryResource&) noexcept = default;
+        CountingMemoryResource& operator=(const CountingMemoryResource&) noexcept = default;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate.
@@ -81,11 +81,14 @@ namespace syntropy
 
     private:
 
-        std::size_t allocation_count_{ 0u };        ///< \brief Number of allocations.
+        ///< \brief Number of allocations.
+        std::size_t allocation_count_{ 0u };
 
-        std::size_t deallocation_count_{ 0u };      ///< \brief Number of deallocations.
+        ///< \brief Number of deallocations.
+        std::size_t deallocation_count_{ 0u };
 
-        TMemoryResource memory_resource_;           ///< \brief Underlying memory resource.
+        ///< \brief Underlying memory resource.
+        TMemoryResource memory_resource_;
 
     };
 
@@ -93,18 +96,18 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // TracingMemoryResource<TMemoryResource>.
+    // CountingMemoryResource<TMemoryResource>.
 
     template <typename TMemoryResource>
     template <typename... TArguments>
-    TracingMemoryResource<TMemoryResource>::TracingMemoryResource(TArguments&&... arguments)
+    CountingMemoryResource<TMemoryResource>::CountingMemoryResource(TArguments&&... arguments)
         : memory_resource_(std::forward<TArguments>(arguments)...)
     {
 
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange TracingMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
+    inline MemoryRange CountingMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
     {
         if (auto block = memory_resource_.Allocate(size))
         {
@@ -117,7 +120,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange TracingMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemoryRange CountingMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto block = memory_resource_.Allocate(size, alignment))
         {
@@ -130,7 +133,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void TracingMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block)
+    inline void CountingMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block)
     {
         memory_resource_.Deallocate(block);
 
@@ -138,7 +141,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void TracingMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block, Alignment alignment)
+    inline void CountingMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
         memory_resource_.Deallocate(block, alignment);
 
@@ -146,25 +149,25 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline bool TracingMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
+    inline bool CountingMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
         return memory_resource_.Owns(block);
     }
 
     template <typename TMemoryResource>
-    inline Bytes TracingMemoryResource<TMemoryResource>::GetMaxAllocationSize() const noexcept
+    inline Bytes CountingMemoryResource<TMemoryResource>::GetMaxAllocationSize() const noexcept
     {
         return memory_resource_.GetMaxAllocationSize();
     }
 
     template <typename TMemoryResource>
-    inline std::size_t TracingMemoryResource<TMemoryResource>::GetAllocationCount() const noexcept
+    inline std::size_t CountingMemoryResource<TMemoryResource>::GetAllocationCount() const noexcept
     {
         return allocation_count_ - deallocation_count_;
     }
 
     template <typename TMemoryResource>
-    inline std::size_t TracingMemoryResource<TMemoryResource>::GetProgressiveAllocationCount() const noexcept
+    inline std::size_t CountingMemoryResource<TMemoryResource>::GetProgressiveAllocationCount() const noexcept
     {
         return allocation_count_;
     }
