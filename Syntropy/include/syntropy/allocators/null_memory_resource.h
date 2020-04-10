@@ -1,6 +1,6 @@
 
 /// \file null_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains null memory resources.
+/// \brief This header is part of the syntropy memory management system. It contains memory resources that use no system memory at all.
 ///
 /// \author Raffaele D. Facendola - 2018
 

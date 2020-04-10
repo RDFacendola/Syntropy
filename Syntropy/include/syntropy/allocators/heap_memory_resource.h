@@ -1,6 +1,6 @@
 
-/// \file new_delete_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains an allocator that wraps system heap allocation calls.
+/// \file heap_memory_resource.h
+/// \brief This header is part of the syntropy memory management system. It contains memory resources using system heap memory.
 ///
 /// \author Raffaele D. Facendola - 2017
 

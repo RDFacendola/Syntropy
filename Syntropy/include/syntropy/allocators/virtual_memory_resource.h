@@ -1,6 +1,6 @@
 
 /// \file virtul_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains virtual memory resources.
+/// \brief This header is part of the syntropy memory management system. It contains memory resources using system virtual memory.
 ///
 /// \author Raffaele D. Facendola - 2018
 
