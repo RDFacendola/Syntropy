@@ -78,8 +78,8 @@ namespace syntropy
         /// \brief Stack storage.
         std::aligned_storage_t<kSize, kAlignment> storage_;
 
-        /// \brief Whether the memory resource is out-of-memory.
-        bool out_of_memory_{ false };
+        /// \brief Whether the memory resource is free and can be used for allocation.
+        bool is_free_{ true };
 
     };
 
@@ -87,14 +87,14 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // StackMemoryResourc<kSize, kAlignment>.
+    // StackMemoryResource<kSize, kAlignment>.
 
     template <std::size_t kSize, std::size_t kAlignment>
     inline MemoryRange StackMemoryResource<kSize, kAlignment>::Allocate(Bytes size) noexcept
     {
-        if (!out_of_memory_ && size <= Bytes(kSize))
+        if (is_free_ && size <= Bytes(kSize))
         {
-            out_of_memory_ = true;
+            is_free_ = false;
 
             return { &storage_, size };
         }
@@ -118,7 +118,7 @@ namespace syntropy
     {
         SYNTROPY_ASSERT(Owns(block));
 
-        out_of_memory_ = false;
+        is_free_ = true;
     }
 
     template <std::size_t kSize, std::size_t kAlignment>

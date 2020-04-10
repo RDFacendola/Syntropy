@@ -7,6 +7,7 @@
 #pragma once
 
 #include <new>
+#include <limits>
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -62,6 +63,16 @@ namespace syntropy
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
         void Deallocate(const MemoryRange& block, Alignment alignment) noexcept;
 
+        /// \brief Check whether this memory resource owns the provided memory block.
+        /// \param block Block to check the ownership of.
+        /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
+        bool Owns(const MemoryRange& block) const noexcept;
+
+        /// \brief Get the maximum allocation size that can be handled by this allocator.
+        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
+        /// \return Returns the maximum allocation size that can be handled by this allocator.
+        Bytes GetMaxAllocationSize() const noexcept;
+
     };
 
     /************************************************************************/
@@ -98,6 +109,22 @@ namespace syntropy
     inline void HeapMemoryResource::Deallocate(const MemoryRange& block, Alignment alignment) noexcept
     {
         ::operator delete(block.Begin(), alignment, std::nothrow);
+    }
+
+    inline bool HeapMemoryResource::Owns(const MemoryRange& block) const noexcept
+    {
+        // The heap memory resource is expected to be used as the single application memory resource or as a last resort fallback
+        // for other memory resources; assumes the system heap may contain any block.
+
+        return true;
+    }
+
+    inline Bytes HeapMemoryResource::GetMaxAllocationSize() const noexcept
+    {
+        // The heap memory resource is expected to be used as the single application memory resource or as a last resort fallback
+        // for other memory resources; assumes the system heap is arbitrary large.
+
+        return Bytes(std::numeric_limits<std::size_t>::infinity());
     }
 
 }
