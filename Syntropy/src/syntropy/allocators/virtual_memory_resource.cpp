@@ -24,7 +24,7 @@ namespace syntropy
 
     MemoryRange VirtualMemoryResource::Allocate(Bytes size) noexcept
     {
-        if (size <= allocation_size_)
+        if (size <= page_size_)
         {
             if (auto block = Allocate())
             {
@@ -41,7 +41,7 @@ namespace syntropy
     {
         SYNTROPY_ASSERT(Owns(block));
 
-        if (!free_ || (MemoryAddress{ *free_->free_block_ } >= MemoryAddress(free_) + allocation_size_))
+        if (!free_ || (MemoryAddress{ *free_->free_block_ } >= MemoryAddress(free_) + page_size_))
         {
             // The current free list is full: the block is recycled as a new free list linked to the current one.
 
@@ -63,10 +63,21 @@ namespace syntropy
 
             // Kernel call: decommit the entire block.
 
-            auto virtual_block = VirtualMemoryRange(block.Begin(), block.Begin() + allocation_size_);
+            auto virtual_block = VirtualMemoryRange(block.Begin(), block.Begin() + page_size_);
 
             virtual_block.Decommit();
         }
+    }
+
+    void VirtualMemoryResource::Swap(VirtualMemoryResource& rhs) noexcept
+    {
+        using std::swap;
+
+        swap(virtual_memory_, rhs.virtual_memory_);
+        swap(memory_resource_, rhs.memory_resource_);
+        swap(page_size_, rhs.page_size_);
+        swap(page_alignment_, rhs.page_alignment_);
+        swap(free_, rhs.free_);
     }
 
     MemoryRange VirtualMemoryResource::Allocate()
@@ -77,7 +88,7 @@ namespace syntropy
         {
             --(free_->free_block_);
 
-            auto block = MemoryRange{ *free_->free_block_, allocation_size_ };
+            auto block = MemoryRange{ *free_->free_block_, page_size_ };
 
             if (block.Begin() == free_)
             {
@@ -89,7 +100,6 @@ namespace syntropy
 
         // Allocate from the underlying memory resource if the block could not be recycled.
 
-        return memory_resource_.Allocate(allocation_size_);
+        return memory_resource_.Allocate(page_size_);
     }
-
 }

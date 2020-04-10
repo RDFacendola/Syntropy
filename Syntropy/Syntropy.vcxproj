@@ -119,7 +119,7 @@
     <ClInclude Include="include\syntropy\allocators\scoped_memory_resource.h" />
     <ClInclude Include="include\syntropy\memory\allocators\scope_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\stack_memory_resource.h" />
-    <ClInclude Include="include\syntropy\allocators\new_delete_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\heap_memory_resource.h" />
     <ClInclude Include="include\syntropy\memory\bit.h" />
     <ClInclude Include="include\syntropy\memory\bit_buffer.h" />
     <ClInclude Include="include\syntropy\memory\bytes.h" />

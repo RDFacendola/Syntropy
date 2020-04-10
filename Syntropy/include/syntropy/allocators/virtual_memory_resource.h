@@ -27,10 +27,9 @@ namespace syntropy
     /* VIRTUAL MEMORY RESOURCE                                              */
     /************************************************************************/
 
-    /// \brief Memory resource used to allocate blocks using system virtual memory.
+    /// \brief Tier 0 memory resource used to allocate blocks on system virtual memory.
     /// Allocation sizes are rounded up and aligned to page boundaries.
     /// Memory pages are committed and decommitted automatically.
-    /// \tparam TPolicy Policy to be used to free and recycle previous memory pages.
     /// \author Raffaele D. Facendola - August 2018
     class VirtualMemoryResource
     {
@@ -38,8 +37,8 @@ namespace syntropy
 
         /// \brief Create a new memory resource.
         /// \param capacity Virtual memory capacity to reserve. This amount is not committed initially, therefore it can be much higher than system physical memory size.
-        /// \param max_allocation_size Maximum size of each allocation performed on this memory resource.
-        VirtualMemoryResource(Bytes capacity, Bytes max_allocation_size) noexcept;
+        /// \param page_size Size of each allocation.
+        VirtualMemoryResource(Bytes capacity, Bytes page_size) noexcept;
 
         /// \brief No copy constructor.
         VirtualMemoryResource(const VirtualMemoryResource&) = delete;
@@ -103,10 +102,10 @@ namespace syntropy
         SequentialMemoryResource memory_resource_;
 
         /// \brief Size of each allocation. This value is a multiple of system's virtual memory pages.
-        Bytes allocation_size_;
+        Bytes page_size_;
 
-        ///< \brief Maximum alignment for each allocated block.
-        Alignment allocation_alignment_;
+        ///< \brief Maximum alignment for each allocated page.
+        Alignment page_alignment_;
 
         /// \brief Current free list.
         FreeList* free_{ nullptr };
@@ -122,11 +121,11 @@ namespace syntropy
 
     // VirtualMemoryResource.
 
-    inline VirtualMemoryResource::VirtualMemoryResource(Bytes capacity, Bytes max_allocation_size) noexcept
+    inline VirtualMemoryResource::VirtualMemoryResource(Bytes capacity, Bytes page_size) noexcept
         : virtual_memory_(capacity)
         , memory_resource_(MemoryRange{ virtual_memory_ })
-        , allocation_size_(Ceil(max_allocation_size, VirtualMemory::GetPageSize()))
-        , allocation_alignment_(VirtualMemory::GetPageSize())
+        , page_size_(Ceil(page_size, VirtualMemory::GetPageSize()))
+        , page_alignment_(VirtualMemory::GetPageSize())
     {
 
     }
@@ -134,8 +133,8 @@ namespace syntropy
     inline VirtualMemoryResource::VirtualMemoryResource(VirtualMemoryResource&& rhs) noexcept
         : virtual_memory_(std::move(rhs.virtual_memory_))
         , memory_resource_(std::move(rhs.memory_resource_))
-        , allocation_size_(rhs.allocation_size_)
-        , allocation_alignment_(rhs.allocation_alignment_)
+        , page_size_(rhs.page_size_)
+        , page_alignment_(rhs.page_alignment_)
         , free_(rhs.free_)
     {
 
@@ -149,7 +148,7 @@ namespace syntropy
 
     inline MemoryRange VirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (alignment <= allocation_alignment_)
+        if (alignment <= page_alignment_)
         {
             return Allocate(size);
         }
@@ -161,7 +160,7 @@ namespace syntropy
     {
         SYNTROPY_ASSERT(Owns(block));
 
-        SYNTROPY_ASSERT(alignment <= allocation_alignment_);
+        SYNTROPY_ASSERT(alignment <= page_alignment_);
 
         Deallocate(block);
     }
@@ -173,18 +172,7 @@ namespace syntropy
 
     inline Bytes VirtualMemoryResource::GetMaxAllocationSize() const noexcept
     {
-        return allocation_size_;
-    }
-
-    inline void VirtualMemoryResource::Swap(VirtualMemoryResource& rhs) noexcept
-    {
-        using std::swap;
-
-        swap(virtual_memory_, rhs.virtual_memory_);
-        swap(memory_resource_, rhs.memory_resource_);
-        swap(allocation_size_, rhs.allocation_size_);
-        swap(allocation_alignment_, rhs.allocation_alignment_);
-        swap(free_, rhs.free_);
+        return page_size_;
     }
 
     inline void swap(syntropy::VirtualMemoryResource& lhs, syntropy::VirtualMemoryResource& rhs) noexcept

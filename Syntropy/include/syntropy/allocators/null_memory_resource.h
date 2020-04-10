@@ -18,7 +18,7 @@ namespace syntropy
     /* NULL MEMORY RESOURCE                                                 */
     /************************************************************************/
 
-    /// \brief Memory resource that rejects any form of allocation.
+    /// \brief Tier 0 memory resource that rejects any form of allocation.
     /// \author Raffaele D. Facendola - August 2018
     class NullMemoryResource
     {

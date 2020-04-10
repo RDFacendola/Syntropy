@@ -16,29 +16,29 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* NEW DELETE MEMORY RESOURCE                                           */
+    /* HEAP MEMORY RESOURCE                                                 */
     /************************************************************************/
 
-    /// \brief Memory resource used to wrap new\delete calls.
+    /// \brief Tier 0 memory resource used to allocate memory on system heap via new\delete calls.
     /// \author Raffaele D. Facendola - February 2017
-    class NewDeleteMemoryResource
+    class HeapMemoryResource
     {
     public:
 
         /// \brief Default constructor.
-        NewDeleteMemoryResource() noexcept = default;
+        HeapMemoryResource() noexcept = default;
 
         /// \brief Default copy constructor.
-        NewDeleteMemoryResource(const NewDeleteMemoryResource&) noexcept = default;
+        HeapMemoryResource(const HeapMemoryResource&) noexcept = default;
 
         /// \brief Default move constructor.
-        NewDeleteMemoryResource(NewDeleteMemoryResource&&) noexcept = default;
+        HeapMemoryResource(HeapMemoryResource&&) noexcept = default;
 
         /// \brief Default destructor.
-        ~NewDeleteMemoryResource() noexcept = default;
+        ~HeapMemoryResource() noexcept = default;
 
         /// \brief Default assignment operator.
-        NewDeleteMemoryResource& operator=(const NewDeleteMemoryResource&) noexcept = default;
+        HeapMemoryResource& operator=(const HeapMemoryResource&) noexcept = default;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate.
@@ -68,9 +68,9 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // NewDeleteMemoryResource.
+    // HeapMemoryResource.
 
-    inline MemoryRange NewDeleteMemoryResource::Allocate(Bytes size) noexcept
+    inline MemoryRange HeapMemoryResource::Allocate(Bytes size) noexcept
     {
         if (auto block = MemoryAddress{ ::operator new(std::size_t{size}, std::nothrow) })
         {
@@ -80,7 +80,7 @@ namespace syntropy
         return {};
     }
 
-    inline MemoryRange NewDeleteMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemoryRange HeapMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto block = MemoryAddress{ ::operator new(std::size_t{size}, alignment, std::nothrow) })
         {
@@ -90,12 +90,12 @@ namespace syntropy
         return {};
     }
 
-    inline void NewDeleteMemoryResource::Deallocate(const MemoryRange& block) noexcept
+    inline void HeapMemoryResource::Deallocate(const MemoryRange& block) noexcept
     {
         ::operator delete(block.Begin(), std::nothrow);
     }
 
-    inline void NewDeleteMemoryResource::Deallocate(const MemoryRange& block, Alignment alignment) noexcept
+    inline void HeapMemoryResource::Deallocate(const MemoryRange& block, Alignment alignment) noexcept
     {
         ::operator delete(block.Begin(), alignment, std::nothrow);
     }

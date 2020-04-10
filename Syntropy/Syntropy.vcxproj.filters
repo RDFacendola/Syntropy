@@ -100,7 +100,6 @@
     <ClInclude Include="include\syntropy\allocators\memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\scoped_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\null_memory_resource.h" />
-    <ClInclude Include="include\syntropy\allocators\new_delete_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\passthrough_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\chain_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\sequential_memory_resource.h" />
@@ -108,6 +107,7 @@
     <ClInclude Include="include\syntropy\allocators\virtual_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\pool_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\counting_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\heap_memory_resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
