@@ -1,5 +1,5 @@
 
-/// \file sequential_memory_resource.h
+/// \file linear_memory_resource.h
 /// \brief This header is part of the syntropy memory management system. It contains sequential memory resources.
 ///
 /// \author Raffaele D. Facendola - 2017
@@ -18,35 +18,35 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* SEQUENTIAL MEMORY RESOURCE                                           */
+    /* LINEAR MEMORY RESOURCE                                               */
     /************************************************************************/
 
     /// \brief Memory resource used to allocate memory over a contiguous range of memory addresses.
     /// Memory is allocated sequentially on demand. Pointer-level deallocations are not supported.
     /// The memory resource can be rewound to a previous state, undoing all the allocations that were performed from that point on.
     /// \author Raffaele D. Facendola - January 2017, August 2018
-    class SequentialMemoryResource
+    class LinearMemoryResource
     {
     public:
 
         /// \brief Default constructor.
-        SequentialMemoryResource() noexcept = default;
+        LinearMemoryResource() noexcept = default;
 
         /// \brief Create a new memory resource.
         /// \param memory_range Memory range the memory resource will operate on.
-        SequentialMemoryResource(const MemoryRange& memory_range) noexcept;
+        LinearMemoryResource(const MemoryRange& memory_range) noexcept;
 
         /// \brief No copy constructor.
-        SequentialMemoryResource(const SequentialMemoryResource&) = delete;
+        LinearMemoryResource(const LinearMemoryResource&) = delete;
 
         /// \brief Move constructor.
-        SequentialMemoryResource(SequentialMemoryResource&& rhs) noexcept;
+        LinearMemoryResource(LinearMemoryResource&& rhs) noexcept;
 
         /// \brief Default destructor.
-        ~SequentialMemoryResource() = default;
+        ~LinearMemoryResource() = default;
 
         /// \brief Unified assignment operator.
-        SequentialMemoryResource& operator=(SequentialMemoryResource rhs) noexcept;
+        LinearMemoryResource& operator=(LinearMemoryResource rhs) noexcept;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate.
@@ -90,7 +90,7 @@ namespace syntropy
         MemoryAddress SaveState() const noexcept;
 
         /// \brief Swap this memory resource with the provided instance.
-        void Swap(SequentialMemoryResource& rhs) noexcept;
+        void Swap(LinearMemoryResource& rhs) noexcept;
 
     private:
 
@@ -103,40 +103,40 @@ namespace syntropy
     };
 
     /// \brief Swaps two SequentialMemoryResource.
-    void swap(syntropy::SequentialMemoryResource& lhs, syntropy::SequentialMemoryResource& rhs) noexcept;
+    void swap(syntropy::LinearMemoryResource& lhs, syntropy::LinearMemoryResource& rhs) noexcept;
  
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // SequentialMemoryResource.
+    // LinearMemoryResource.
 
-    inline SequentialMemoryResource::SequentialMemoryResource(const MemoryRange& memory_range) noexcept
+    inline LinearMemoryResource::LinearMemoryResource(const MemoryRange& memory_range) noexcept
         : memory_range_(memory_range)
         , head_(memory_range_.Begin())
     {
 
     }
 
-    inline SequentialMemoryResource::SequentialMemoryResource(SequentialMemoryResource&& rhs) noexcept
+    inline LinearMemoryResource::LinearMemoryResource(LinearMemoryResource&& rhs) noexcept
         : memory_range_(rhs.memory_range_)
         , head_(rhs.head_)
     {
 
     }
 
-    inline SequentialMemoryResource& SequentialMemoryResource::operator=(SequentialMemoryResource rhs) noexcept
+    inline LinearMemoryResource& LinearMemoryResource::operator=(LinearMemoryResource rhs) noexcept
     {
         rhs.Swap(*this);
         return *this;
     }
 
-    inline MemoryRange SequentialMemoryResource::Allocate(Bytes size) noexcept
+    inline MemoryRange LinearMemoryResource::Allocate(Bytes size) noexcept
     {
         return Allocate(size, Alignment());
     }
 
-    inline MemoryRange SequentialMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemoryRange LinearMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
         auto block = head_.GetAligned(alignment);
 
@@ -152,44 +152,44 @@ namespace syntropy
         return {};      // Out of memory.
     }
 
-    inline void SequentialMemoryResource::Deallocate(const MemoryRange& block) noexcept
+    inline void LinearMemoryResource::Deallocate(const MemoryRange& block) noexcept
     {
         SYNTROPY_ASSERT(memory_range_.Contains(block));
     }
 
-    inline void SequentialMemoryResource::Deallocate(const MemoryRange& block, Alignment /*alignment*/) noexcept
+    inline void LinearMemoryResource::Deallocate(const MemoryRange& block, Alignment /*alignment*/) noexcept
     {
         SYNTROPY_ASSERT(memory_range_.Contains(block));
     }
 
-    inline void SequentialMemoryResource::DeallocateAll() noexcept
+    inline void LinearMemoryResource::DeallocateAll() noexcept
     {
         head_ = memory_range_.Begin();      // Unwind the head pointer.
     }
 
-    inline bool SequentialMemoryResource::Owns(const MemoryRange& block) const noexcept
+    inline bool LinearMemoryResource::Owns(const MemoryRange& block) const noexcept
     {
         return block.Begin() >= memory_range_.Begin() && block.End() <= head_;
     }
 
-    inline Bytes SequentialMemoryResource::GetMaxAllocationSize() const noexcept
+    inline Bytes LinearMemoryResource::GetMaxAllocationSize() const noexcept
     {
         return Bytes(memory_range_.End() - head_);
     }
 
-    inline void SequentialMemoryResource::RestoreState(MemoryAddress head)
+    inline void LinearMemoryResource::RestoreState(MemoryAddress head)
     {
         SYNTROPY_ASSERT(head >= memory_range_.Begin() && head <= memory_range_.End());
 
         head_ = head;
     }
 
-    inline MemoryAddress SequentialMemoryResource::SaveState() const noexcept
+    inline MemoryAddress LinearMemoryResource::SaveState() const noexcept
     {
         return head_;
     }
 
-    inline void SequentialMemoryResource::Swap(SequentialMemoryResource& rhs) noexcept
+    inline void LinearMemoryResource::Swap(LinearMemoryResource& rhs) noexcept
     {
         using std::swap;
 
@@ -197,7 +197,7 @@ namespace syntropy
         swap(head_, rhs.head_);
     }
 
-    inline void swap(syntropy::SequentialMemoryResource& lhs, syntropy::SequentialMemoryResource& rhs) noexcept
+    inline void swap(syntropy::LinearMemoryResource& lhs, syntropy::LinearMemoryResource& rhs) noexcept
     {
         lhs.Swap(rhs);
     }

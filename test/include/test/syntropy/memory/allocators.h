@@ -12,7 +12,7 @@
 #include "syntropy/memory/memory_manager.h"
 #include "syntropy/memory/memory_meta.h"
 
-#include "syntropy/allocators/sequential_memory_resource.h"
+#include "syntropy/allocators/linear_memory_resource.h"
 #include "syntropy/memory/allocators/scope_allocator.h"
 
 #include "syntropy/memory/allocators/segregated_allocator.h"

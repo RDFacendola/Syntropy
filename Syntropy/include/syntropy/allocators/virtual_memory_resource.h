@@ -17,7 +17,7 @@
 #include "syntropy/memory/virtual_memory_buffer.h"
 #include "syntropy/memory/virtual_memory_page.h"
 
-#include "syntropy/allocators/sequential_memory_resource.h"
+#include "syntropy/allocators/linear_memory_resource.h"
 
 #include "syntropy/diagnostics/assert.h"
 
@@ -99,7 +99,7 @@ namespace syntropy
         VirtualMemoryBuffer virtual_memory_;
 
         /// \brief Underlying memory resource.
-        SequentialMemoryResource memory_resource_;
+        LinearMemoryResource memory_resource_;
 
         /// \brief Size of each allocation. This value is a multiple of system's virtual memory pages.
         Bytes page_size_;
