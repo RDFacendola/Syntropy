@@ -73,6 +73,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\syntropy\allocators\counting_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\fixed_memory_resource.h" />
     <ClInclude Include="include\syntropy\application\command_line.h" />
     <ClInclude Include="include\syntropy\application\command_parser.h" />
