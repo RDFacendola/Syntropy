@@ -1,12 +1,12 @@
 
 /// \file chain_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains memory resources that defer actual allocation to other memory resources according to different policies.
+/// \brief This header is part of the syntropy memory management system. It contains memory resources that attempt to perform allocation on different underlying memory resources.
 ///
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
 
-#include <type_traits.h>
+#include <type_traits>
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -21,7 +21,7 @@ namespace syntropy
     /* CHAIN MEMORY RESOURCE                                                */
     /************************************************************************/
 
-    /// \brief Basic memory resource that attempts to perform allocation on the primary memory resource and falls back to others upon failure.
+    /// \brief Tier Omega memory resource that attempts to perform allocation on the primary memory resource and falls back to others upon failure.
     /// This definition is used to break the chain after each other memory resource failed.
     /// \author Raffaele D. Facendola - August 2018
     template <typename...>
@@ -46,7 +46,7 @@ namespace syntropy
 
     };
 
-    /// \brief Basic memory resource that attempts to perform allocation on the primary memory resource and falls back to others upon failure.
+    /// \brief Tier Omega memory resource that attempts to perform allocation on the primary memory resource and falls back to others upon failure.
     /// \author Raffaele D. Facendola - August 2018
     template <typename TMemoryResource, typename... TMemoryResources>
     class ChainMemoryResource<TMemoryResource, TMemoryResources...>
@@ -67,8 +67,8 @@ namespace syntropy
 
         /// \brief Create a new chain memory resource by initializing each sub-memory resource explicitly.
         /// This overload only participates in overload resolution if the provided arguments may not be used to perform copy or move construction of this memory resource.
-        template <typename TArgument, typename... TArguments, typename = std::enable_if_t<!std::is_same_v<std::decay_t<TArgument>, ChainMemoryResource>>>
-        ChainMemoryResource(TArgument&& argument, TArguments&&... arguments);
+        template <typename UMemoryResource, typename... UMemoryResources, typename = std::enable_if_t<!std::is_same_v<std::decay_t<UMemoryResource>, ChainMemoryResource>>>
+        ChainMemoryResource(UMemoryResource&& memory_resource, UMemoryResources&&... memory_resources);
 
         /// \brief Default destructor.
         ~ChainMemoryResource() noexcept = default;
@@ -132,10 +132,10 @@ namespace syntropy
     // ChainMemoryResource<TMemoryResource, TMemoryResources>.
 
     template <typename TMemoryResource, typename... TMemoryResources>
-    template <typename TArgument, typename... TArguments, typename>
-    ChainMemoryResource<TMemoryResource, TMemoryResources...>::ChainMemoryResource(TArgument&& argument, TArguments&&... arguments)
-        : memory_resource_(std::forward<TArgument>(argument))
-        , memory_resources_(std::forward<TArguments>(arguments)...)
+    template <typename UMemoryResource, typename... UMemoryResources, typename>
+    ChainMemoryResource<TMemoryResource, TMemoryResources...>::ChainMemoryResource(UMemoryResource&& memory_resource, UMemoryResources&&... memory_resources)
+        : memory_resource_(std::forward<UMemoryResource>(memory_resource))
+        , memory_resources_(std::forward<UMemoryResources>(memory_resources)...)
     {
 
     }
