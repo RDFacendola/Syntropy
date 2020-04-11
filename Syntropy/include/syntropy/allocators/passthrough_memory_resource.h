@@ -10,6 +10,7 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_address.h"
 #include "syntropy/memory/memory_range.h"
+
 #include "syntropy/allocators/null_memory_resource.h"
 
 namespace syntropy
@@ -18,8 +19,8 @@ namespace syntropy
     /* PASSTHROUGH MEMORY RESOURCE                                          */
     /************************************************************************/
 
-    /// \brief Memory resource that relays allocation requests to another memory resource.
-    /// If no memory resource is bound, this memory resource behaves like a syntropy::NullMemoryResource.
+    /// \brief Tier Omega memory resource that forwards requests to an underlying memory resource.
+    /// If no memory resource is bound, this memory resource behaves like a syntropy::NullMemoryResource.   ??
     /// \author Raffaele D. Facendola - September 2018
     template <typename TMemoryResource>
     class PassthroughMemoryResource : private NullMemoryResource
