@@ -62,6 +62,9 @@ namespace syntropy
         /// \brief Swap the content of this buffer with another one.
         void Swap(VirtualMemoryBuffer& rhs) noexcept;
 
+        /// \brief Access the underlying memory range
+        MemoryRange GetRange() const noexcept;
+
     private:
 
         VirtualMemoryRange virtual_memory_range_;           ///< \brief Underlying virtual memory range.
@@ -118,6 +121,11 @@ namespace syntropy
     inline void VirtualMemoryBuffer::Swap(VirtualMemoryBuffer& rhs) noexcept
     {
         std::swap(virtual_memory_range_, rhs.virtual_memory_range_);
+    }
+
+    inline MemoryRange VirtualMemoryBuffer::GetRange() const noexcept
+    {
+        return virtual_memory_range_;
     }
 }
 

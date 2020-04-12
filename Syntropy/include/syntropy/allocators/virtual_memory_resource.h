@@ -17,8 +17,6 @@
 #include "syntropy/memory/virtual_memory_buffer.h"
 #include "syntropy/memory/virtual_memory_page.h"
 
-#include "syntropy/allocators/linear_memory_resource.h"
-
 #include "syntropy/diagnostics/assert.h"
 
 namespace syntropy
@@ -98,10 +96,10 @@ namespace syntropy
         /// \brief Virtual memory buffer reserved by this allocator.
         VirtualMemoryBuffer virtual_memory_;
 
-        /// \brief Underlying memory resource.
-        LinearMemoryResource memory_resource_;
+        /// \brief Pointer past the last allocated address.
+        MemoryAddress head_;
 
-        /// \brief Size of each allocation. This value is a multiple of system's virtual memory pages.
+        /// \brief Size of each allocation. This value is a multiple of the system virtual memory page size.
         Bytes page_size_;
 
         ///< \brief Maximum alignment for each allocated page.
@@ -123,7 +121,7 @@ namespace syntropy
 
     inline VirtualMemoryResource::VirtualMemoryResource(Bytes capacity, Bytes page_size) noexcept
         : virtual_memory_(capacity)
-        , memory_resource_(MemoryRange{ virtual_memory_ })
+        , head_(virtual_memory_.GetRange().Begin())
         , page_size_(Ceil(page_size, VirtualMemory::GetPageSize()))
         , page_alignment_(VirtualMemory::GetPageSize())
     {
@@ -132,7 +130,7 @@ namespace syntropy
 
     inline VirtualMemoryResource::VirtualMemoryResource(VirtualMemoryResource&& rhs) noexcept
         : virtual_memory_(std::move(rhs.virtual_memory_))
-        , memory_resource_(std::move(rhs.memory_resource_))
+        , head_(rhs.head_)
         , page_size_(rhs.page_size_)
         , page_alignment_(rhs.page_alignment_)
         , free_(rhs.free_)

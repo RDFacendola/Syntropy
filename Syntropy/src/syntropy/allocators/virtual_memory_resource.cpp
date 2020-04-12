@@ -74,7 +74,7 @@ namespace syntropy
         using std::swap;
 
         swap(virtual_memory_, rhs.virtual_memory_);
-        swap(memory_resource_, rhs.memory_resource_);
+        swap(head_, rhs.head_);
         swap(page_size_, rhs.page_size_);
         swap(page_alignment_, rhs.page_alignment_);
         swap(free_, rhs.free_);
@@ -98,8 +98,19 @@ namespace syntropy
             return block;
         }
 
-        // Allocate from the underlying memory resource if the block could not be recycled.
+        // Allocate directly from the underlying virtual memory range.
 
-        return memory_resource_.Allocate(page_size_);
+        auto block = head_;
+
+        auto head = block + page_size_;
+
+        if (head <= virtual_memory_.GetRange().End())
+        {
+            head_ = head;
+
+            return { block, head_ };
+        }
+
+        return {};           // Out of memory!
     }
 }
