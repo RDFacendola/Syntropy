@@ -20,7 +20,6 @@
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\memory\memory_address.h" />
     <ClInclude Include="include\syntropy\memory\memory_buffer.h" />
-    <ClInclude Include="include\syntropy\memory\memory_manager.h" />
     <ClInclude Include="include\syntropy\memory\memory_meta.h" />
     <ClInclude Include="include\syntropy\memory\memory_range.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
@@ -119,7 +118,6 @@
     <ClCompile Include="src\syntropy\math\random.cpp" />
     <ClCompile Include="src\syntropy\memory\allocator.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_buffer.cpp" />
-    <ClCompile Include="src\syntropy\memory\memory_manager.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_meta.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\platform\compiler\msvc.cpp" />
