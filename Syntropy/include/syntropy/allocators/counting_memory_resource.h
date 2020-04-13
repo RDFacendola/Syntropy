@@ -14,7 +14,7 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* COUNTING MEMORY RESOURCE                                             */
+    /* COUNTING MEMORY RESOURCE <TMEMORY RESOURCE>                          */
     /************************************************************************/
 
     /// \brief Tier Omega memory resources used to count allocations performed on another memory resource.

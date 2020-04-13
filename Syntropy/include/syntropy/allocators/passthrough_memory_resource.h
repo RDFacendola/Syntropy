@@ -16,7 +16,7 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* PASSTHROUGH MEMORY RESOURCE                                          */
+    /* PASSTHROUGH MEMORY RESOURCE <TMEMORY RESOURCE>                       */
     /************************************************************************/
 
     /// \brief Tier Omega memory resource that forwards requests to an underlying memory resource.
