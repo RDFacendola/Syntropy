@@ -92,7 +92,7 @@ namespace syntropy
     template <typename TType>
     template<class UType>
     inline PolymorphicAllocator<TType>::PolymorphicAllocator(const PolymorphicAllocator<UType>& rhs) noexcept
-            : memory_resource_{ rhs.memory_resource_ }
+        : memory_resource_{ rhs.memory_resource_ }
     {
 
     }
