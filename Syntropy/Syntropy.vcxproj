@@ -115,7 +115,7 @@
     <ClInclude Include="include\syntropy\allocators\passthrough_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\pool_memory_resource.h" />
-    <ClInclude Include="include\syntropy\allocators\scoped_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\memory_context.h" />
     <ClInclude Include="include\syntropy\memory\allocators\scope_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\stack_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\heap_memory_resource.h" />

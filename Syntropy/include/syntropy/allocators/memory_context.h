@@ -1,5 +1,5 @@
 
-/// \file scoped_memory_resource.h
+/// \file memory_context.h
 /// \brief This header is part of the syntropy memory management. It contains definitions for scope-based memory resources.
 ///
 /// \author Raffaele D. Facendola - 2020
@@ -12,27 +12,27 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* SCOPED MEMORY RESOURCE                                               */
+    /* MEMORY CONTEXT                                                       */
     /************************************************************************/
 
     /// \brief Represents a RAII guard to change a memory resource in the current scope and restore the previous one upon destruction.
-    /// Scoped memory resources can be nested. Overlapping scoped memory resources results in undefined behavior.
+    /// Memory contexts can be nested but overlapping results in undefined behavior.
     /// \author Raffaele D. Facendola - April 2020.
-    class ScopedMemoryResource
+    class MemoryContext
     {
     public:
 
         /// \brief Set a new memory resource for the current scope.
-        ScopedMemoryResource(PolymorphicMemoryResource& memory_resource);
+        MemoryContext(PolymorphicMemoryResource& memory_resource);
 
         /// \brief Restore the previous memory resource.
-        ~ScopedMemoryResource();
+        ~MemoryContext();
 
         /// \brief No copy constructor.
-        ScopedMemoryResource(const ScopedMemoryResource&) = delete;
+        MemoryContext(const MemoryContext&) = delete;
 
         /// \brief No assignment operator.
-        ScopedMemoryResource& operator=(const ScopedMemoryResource&) = delete;
+        MemoryContext& operator=(const MemoryContext&) = delete;
 
     public:
 
@@ -45,15 +45,15 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // ScopedMemoryResource.
+    // MemoryContext.
 
-    inline ScopedMemoryResource::ScopedMemoryResource(PolymorphicMemoryResource& memory_resource)
+    inline MemoryContext::MemoryContext(PolymorphicMemoryResource& memory_resource)
         : previous_memory_resource_(&MemoryResource::SetDefaultResource(memory_resource))
     {
 
     }
 
-    inline ScopedMemoryResource::~ScopedMemoryResource()
+    inline MemoryContext::~MemoryContext()
     {
         MemoryResource::SetDefaultResource(*previous_memory_resource_);
     }
