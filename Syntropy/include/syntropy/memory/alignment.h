@@ -101,6 +101,14 @@ namespace syntropy
     /// \brief Stream insertion for Alignment.
     std::ostream& operator<<(std::ostream& lhs, const Alignment& rhs);
 
+    /// \brief Get the alignment of rhs.
+    template <typename TType>
+    constexpr Alignment AlignmentOf(const TType& rhs);
+
+    /// \brief Get the size of TType.
+    template <typename TType>
+    constexpr Alignment AlignmentOf();
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -187,6 +195,18 @@ namespace syntropy
     inline std::ostream& operator<<(std::ostream& lhs, const Alignment& rhs)
     {
         return lhs << std::size_t(rhs);
+    }
+
+    template <typename TType>
+    constexpr Alignment AlignmentOf(const TType& rhs)
+    {
+        return Alignment(Bytes{ alignof(TType) });
+    }
+
+    template <typename TType>
+    constexpr Alignment AlignmentOf()
+    {
+        return Alignment(Bytes{ alignof(TType) });
     }
 }
 
