@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 #include "syntropy/memory/memory_buffer.h"
-#include "syntropy/memory/allocators/allocator.h"
 
 #include "syntropy/containers/hashed_string.h"
 
@@ -79,7 +78,7 @@ namespace syntropy
 
             /// \brief Create a new virtual machine.
             /// \param stack_size Size of the memory buffer containing the stack, in bytes.
-            VirtualMachine(Bytes stack_size, Allocator& allocator);
+            VirtualMachine(Bytes stack_size);
 
             /// \brief No copy constructor.
             VirtualMachine(const VirtualMachine&) = delete;

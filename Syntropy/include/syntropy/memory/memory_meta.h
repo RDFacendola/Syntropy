@@ -11,7 +11,6 @@
 
 #include "syntropy/memory/bytes.h"
 
-#include "syntropy/memory/allocators/allocator.h"
 //#include "syntropy/memory/allocators/segregated_allocator.h"
 
 #include "syntropy/reflection/reflection.h"
@@ -36,23 +35,6 @@ namespace syntropy::reflection
     struct ClassDeclarationT<Bytes>
     {
         static constexpr const char* name_{ "syntropy::Bytes" };
-    };
-
-    /************************************************************************/
-    /* ALLOCATOR.H                                                          */
-    /************************************************************************/
-
-    // Template specialization for Allocator
-    template<>
-    struct ClassDeclarationT<Allocator>
-    {
-        static constexpr const char* name_{ "syntropy::Allocator" };
-
-        void operator()(ClassT<Allocator>& class_t) const
-        {
-            class_t.AddProperty("name", &Allocator::GetName);
-            class_t.AddProperty("max_allocation_size", &Allocator::GetMaxAllocationSize);
-        }
     };
 
     /************************************************************************/

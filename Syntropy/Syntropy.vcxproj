@@ -106,7 +106,6 @@
     <ClInclude Include="include\syntropy\math\rotation.h" />
     <ClInclude Include="include\syntropy\math\vector.h" />
     <ClInclude Include="include\syntropy\memory\alignment.h" />
-    <ClInclude Include="include\syntropy\memory\allocators\allocator.h" />
     <ClInclude Include="include\syntropy\allocators\chain_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\linear_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\memory_resource.h" />
@@ -190,8 +189,6 @@
     <ClCompile Include="src\syntropy\diagnostics\log_channels.cpp" />
     <ClCompile Include="src\syntropy\math\hash.cpp" />
     <ClCompile Include="src\syntropy\math\random.cpp" />
-    <ClCompile Include="src\syntropy\memory\allocator.cpp" />
-    <ClCompile Include="src\syntropy\memory\memory_meta.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\platform\architecture\x64_endianness.cpp" />
     <ClCompile Include="src\syntropy\platform\builtin.cpp" />
