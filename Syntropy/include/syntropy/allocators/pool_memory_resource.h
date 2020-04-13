@@ -1,6 +1,6 @@
 
 /// \file pool_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains fixed-size memory resources.
+/// \brief This header is part of the syntropy memory management system. It contains pooled memory resources.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -18,11 +18,12 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* POOL MEMORY RESOURCE                                                 */
+    /* POOL MEMORY RESOURCE <TMEMORY RESOURCE>                              */
     /************************************************************************/
 
-    /// \brief Memory resource that allocates fixed-size blocks. Deallocated blocks are kept around and recycled when possible.
-    /// \tparam TMemoryResource Type of the underlying memory resource.
+    /// \brief Tier 1 memory resource that uses an underlying memory resource to allocate fixed-size blocks.
+    /// Blocks are aligned to their own size.
+    /// Deallocated blocks are kept around and recycled when possible.
     /// \author Raffaele D. Facendola - August 2018
     template <typename TMemoryResource>
     class PoolMemoryResource
@@ -30,11 +31,11 @@ namespace syntropy
     public:
 
         /// \brief Create a new memory resource.
-        /// \param max_size Maximum size for each allocation.
-        /// \param max_alignment Maximum alignment for each allocation.
+        /// \param block_size Size of each allocated block.
+        /// \param chunk_size Size of each chunk allocated from the underlying memory resource.
         /// \param Arguments used to construct the underlying memory resource.
         template <typename... TArguments>
-        PoolMemoryResource(Bytes max_size, Alignment max_alignment, TArguments&&... arguments) noexcept;
+        PoolMemoryResource(Bytes block_size, Bytes chunk_size, TArguments&&... arguments) noexcept;
 
         /// \brief No copy constructor.
         PoolMemoryResource(const PoolMemoryResource&) = delete;
@@ -42,8 +43,8 @@ namespace syntropy
         /// \brief Move constructor.
         PoolMemoryResource(PoolMemoryResource&& rhs) noexcept;
 
-        /// \brief Default destructor.
-        ~PoolMemoryResource() = default;
+        /// \brief Destructor.
+        ~PoolMemoryResource();
 
         /// \brief Unified assignment operator.
         PoolMemoryResource& operator=(PoolMemoryResource rhs) noexcept;
@@ -70,6 +71,10 @@ namespace syntropy
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
         void Deallocate(const MemoryRange& block, Alignment alignment);
 
+        /// \brief Deallocate every allocation performed so far.
+        /// \remarks This method returns every allocation to the underlying memory resource.
+        void DeallocateAll() noexcept;
+
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
@@ -85,6 +90,16 @@ namespace syntropy
 
     private:
 
+        /// \brief A chunk in the allocation chain.
+        struct Chunk
+        {
+            /// \brief Pointer to the previous chunk.
+            Chunk* previous_;
+
+            /// \brief Pointer past the last allocable address in the chunk.
+            MemoryAddress end_;
+        };
+
         /// \brief Represents a free block: the memory block itself is used to store a pointer to the next free block in the list.
         struct FreeBlock
         {
@@ -92,21 +107,27 @@ namespace syntropy
             FreeBlock* next_{ nullptr };
         };
 
-        ///< \brief Underlying memory resource used to manage the pooled memory. Deallocated blocks are sent to the free list and never deallocated by this memory resource.
+        ///< \brief Underlying memory resource. Deallocated blocks are sent to the free list and never deallocated by this memory resource.
         TMemoryResource memory_resource_;
 
-        ///< \brief Maximum size for each allocated block.
-        Bytes max_size_;
+        /// \brief Size of each chunk in the allocation chain.
+        Bytes chunk_size_;
 
-        ///< \brief Maximum alignment for each allocated block.
-        Alignment max_alignment_;
+        /// \brief Pointer past the last allocated address in the active chunk.
+        MemoryAddress head_;
+
+        ///< \brief Size of each allocated block.
+        Bytes block_size_;
 
         ///< \brief Next free block in the pool.
         FreeBlock* free_{ nullptr };
 
+        ///< \brief Current active chunk.
+        Chunk* chunk_{ nullptr };
+
     };
 
-    /// \brief Swaps two syntropy::PoolMemoryResource<> instances.
+    /// \brief Swaps two syntropy::PoolMemoryResource.
     template <typename TMemoryResource>
     void swap(syntropy::PoolMemoryResource<TMemoryResource>& lhs, syntropy::PoolMemoryResource<TMemoryResource>& rhs) noexcept;
 
@@ -118,10 +139,10 @@ namespace syntropy
 
     template <typename TMemoryResource>
     template <typename... TArguments>
-    inline PoolMemoryResource<TMemoryResource>::PoolMemoryResource(Bytes max_size, Alignment max_alignment, TArguments&&... arguments) noexcept
+    inline PoolMemoryResource<TMemoryResource>::PoolMemoryResource(Bytes block_size, Bytes chunk_size, TArguments&&... arguments) noexcept
         : memory_resource_(std::forward<TArguments>(arguments)...)
-        , max_size_(max_size)
-        , max_alignment_(max_alignment)
+        , chunk_size_(chunk_size)
+        , block_size_(block_size)
     {
 
     }
@@ -129,11 +150,20 @@ namespace syntropy
     template <typename TMemoryResource>
     inline PoolMemoryResource<TMemoryResource>::PoolMemoryResource(PoolMemoryResource&& rhs) noexcept
         : memory_resource_(std::move(rhs.memory_resource_))
-        , max_size_(std::move(rhs.max_size_))
-        , max_alignment_(std::move(rhs.max_alignment_))
+        , chunk_size_(rhs.chunk_size_)
+        , head_(rhs.head_)
+        , block_size_(rhs.block_size_)
         , free_(rhs.free_)
+        , chunk_(chunk_)
     {
+        rhs.free_ = nullptr;
+        rhs.chunk_ = nullptr;
+    }
 
+    template <typename TMemoryResource>
+    inline PoolMemoryResource<TMemoryResource>::~PoolMemoryResource()
+    {
+        DeallocateAll();
     }
 
     template <typename TMemoryResource>
@@ -146,19 +176,52 @@ namespace syntropy
     template <typename TMemoryResource>
     MemoryRange PoolMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
     {
-        if (size <= max_size_)
+        if (size <= block_size_)
         {
-            if (free_)                                                                      // Attempts to recycle a previously deallocated block.
+            // Attempt to recycle a free block. Fast-path.
+
+            if (free_)
             {
                 auto block = MemoryAddress(free_);
 
                 free_ = free_->next_;
 
-                return { block, block + size };
+                return { block, size };
             }
-            else if(auto block = memory_resource_.Allocate(max_size_, max_alignment_))      // Allocate from the underlying memory resource.
+
+            // Attempt to allocate on the current chunk. Fast-path.
+
             {
-                return { block.Begin(), block.Begin() + size };
+                auto block = MemoryRange{ head_, block_size_ };
+
+                if (chunk_ && (block.End() <= chunk_->end_))
+                {
+                    head_ = block.End();
+
+                    return { block.Begin(), size };
+                }
+            }
+
+            // Allocate a new chunk accounting for Chunk header and alignment requirements. Performance cost depends on the underlying memory resource.
+
+            if (auto block = memory_resource_.Allocate(chunk_size_))
+            {
+                // Link to the previous chunk.
+
+                auto chunk = block.Begin().As<Chunk>();
+
+                chunk->previous_ = chunk_;
+                chunk->end_ = block.End();
+
+                chunk_ = chunk;
+
+                // Allocate the block from the new chunk.
+
+                auto head = (block.Begin() + BytesOf<Chunk>()).GetAligned(Alignment(block_size_));
+
+                head_ = head + block_size_;
+
+                return { head, size };
             }
         }
 
@@ -168,7 +231,7 @@ namespace syntropy
     template <typename TMemoryResource>
     inline MemoryRange PoolMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (alignment <= max_alignment_)
+        if (alignment <= Alignment(block_size_))
         {
             return Allocate(size);
         }
@@ -181,11 +244,11 @@ namespace syntropy
     {
         SYNTROPY_ASSERT(memory_resource_.Owns(block));
 
+        // Send the block to the free list, making it eligible for recycling. Fast-path.
+
         auto free = free_;
 
-        free_ = block.Begin().As<FreeBlock>();      // Send the block to the free list, making it eligible for recycling.
-
-        new (free_) FreeBlock();
+        free_ = block.Begin().As<FreeBlock>();
 
         free_->next_ = free;
     }
@@ -193,21 +256,47 @@ namespace syntropy
     template <typename TMemoryResource>
     inline void PoolMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
-        SYNTROPY_ASSERT(alignment <= max_alignment_);
+        SYNTROPY_ASSERT(alignment <= Alignment(block_size_));
 
         Deallocate(block);
     }
 
     template <typename TMemoryResource>
+    inline void PoolMemoryResource<TMemoryResource>::DeallocateAll() noexcept
+    {
+        for (; chunk_ != nullptr;)
+        {
+            auto previous = chunk_->previous_;
+
+            memory_resource_.Deallocate({ chunk_, chunk_->end_ });
+
+            chunk_ = previous;
+        }
+
+        head_ = nullptr;
+        free_ = nullptr;
+    }
+
+    template <typename TMemoryResource>
     inline bool PoolMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
-        return memory_resource_.Owns(block);
+        // Can't query the underlying memory resource directly since it might be shared with other allocators.
+
+        for (auto chunk = chunk_; chunk; chunk = chunk->previous_)
+        {
+            if (MemoryRange{ chunk, chunk->end_ }.Contains(block))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     template <typename TMemoryResource>
     inline Bytes PoolMemoryResource<TMemoryResource>::GetMaxAllocationSize() const noexcept
     {
-        return max_size_;
+        return block_size_;
     }
 
     template <typename TMemoryResource>
@@ -216,9 +305,11 @@ namespace syntropy
         using std::swap;
 
         swap(memory_resource_, rhs.memory_resource_);
-        swap(max_size_, rhs.max_size_);
-        swap(max_alignment_, rhs.max_alignment_);
+        swap(chunk_size_, rhs.chunk_size_);
+        swap(head_, rhs.head_);
+        swap(block_size_, rhs.block_size_);
         swap(free_, rhs.free_);
+        swap(chunk_, rhs.chunk_);
     }
 
     template <typename TMemoryResource>
