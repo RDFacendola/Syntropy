@@ -12,7 +12,7 @@
 #include "syntropy/memory/bytes.h"
 
 #include "syntropy/memory/allocators/allocator.h"
-#include "syntropy/memory/allocators/segregated_allocator.h"
+//#include "syntropy/memory/allocators/segregated_allocator.h"
 
 #include "syntropy/reflection/reflection.h"
 #include "syntropy/reflection/types/fundamental_types.h"

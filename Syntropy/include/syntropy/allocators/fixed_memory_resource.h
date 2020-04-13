@@ -16,7 +16,7 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* FIXED MEMORY RESOURCE                                                */
+    /* FIXED MEMORY RESOURCE <TMEMORY RESOURCE>                             */
     /************************************************************************/
 
     /// \brief Tier 1 memory resource used to allocate a single block of memory from an underlying allocator.

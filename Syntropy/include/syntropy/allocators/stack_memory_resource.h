@@ -16,7 +16,7 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* STACK MEMORY RESOURCE                                                */
+    /* STACK MEMORY RESOURCE <KSIZE, KALIGNMENT>                            */
     /************************************************************************/
 
     /// \brief Tier 0 memory resource used to allocate a single block of memory on system stack.
