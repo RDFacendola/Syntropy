@@ -192,7 +192,6 @@
     <ClCompile Include="src\syntropy\math\hash.cpp" />
     <ClCompile Include="src\syntropy\math\random.cpp" />
     <ClCompile Include="src\syntropy\memory\allocator.cpp" />
-    <ClCompile Include="src\syntropy\allocators\memory_resource.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_buffer.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_manager.cpp" />
     <ClCompile Include="src\syntropy\memory\memory_meta.cpp" />

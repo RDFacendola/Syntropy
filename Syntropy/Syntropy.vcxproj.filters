@@ -150,7 +150,6 @@
     <ClCompile Include="src\syntropy\serialization\msgpack\msgpack_stream.cpp" />
     <ClCompile Include="src\syntropy\platform\endianness.cpp" />
     <ClCompile Include="src\syntropy\platform\architecture\x64_endianness.cpp" />
-    <ClCompile Include="src\syntropy\allocators\memory_resource.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
   </ItemGroup>
 </Project>
