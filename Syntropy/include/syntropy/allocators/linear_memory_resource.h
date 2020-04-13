@@ -1,6 +1,6 @@
 
 /// \file linear_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains sequential memory resources.
+/// \brief This header is part of the syntropy memory management system. It contains linear memory resources.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -18,23 +18,22 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* LINEAR MEMORY RESOURCE                                               */
+    /* LINEAR MEMORY RESOURCE <TMEMORY RESOURCE>                            */
     /************************************************************************/
 
-    /// \brief Memory resource used to allocate memory over a contiguous range of memory addresses.
-    /// Memory is allocated sequentially on demand. Pointer-level deallocations are not supported.
-    /// The memory resource can be rewound to a previous state, undoing all the allocations that were performed from that point on.
+    /// \brief Tier 1 memory resource that use an underlying memory resource to allocate over a contiguous range of memory addresses.
+    /// Memory is allocated sequentially and divided into chunks. Pointer-level deallocation is not supported.
+    /// When the current allocation chunk is exhausted a new chunk is requested from the underlying memory resource automatically.
     /// \author Raffaele D. Facendola - January 2017, August 2018
+    template <typename TMemoryResource>
     class LinearMemoryResource
     {
     public:
 
-        /// \brief Default constructor.
-        LinearMemoryResource() noexcept = default;
-
         /// \brief Create a new memory resource.
-        /// \param memory_range Memory range the memory resource will operate on.
-        LinearMemoryResource(const MemoryRange& memory_range) noexcept;
+        /// \param chunk_size Allocation granularity for each allocated chunk.
+        template <typename... TArguments>
+        LinearMemoryResource(Bytes chunk_size, TArguments&&... arguments) noexcept;
 
         /// \brief No copy constructor.
         LinearMemoryResource(const LinearMemoryResource&) = delete;
@@ -42,8 +41,8 @@ namespace syntropy
         /// \brief Move constructor.
         LinearMemoryResource(LinearMemoryResource&& rhs) noexcept;
 
-        /// \brief Default destructor.
-        ~LinearMemoryResource() = default;
+        /// \brief Destructor.
+        ~LinearMemoryResource();
 
         /// \brief Unified assignment operator.
         LinearMemoryResource& operator=(LinearMemoryResource rhs) noexcept;
@@ -80,124 +79,189 @@ namespace syntropy
         /// \return Returns the maximum allocation size that can be handled by this memory resource.
         Bytes GetMaxAllocationSize() const noexcept;
 
-        /// \brief Restore the memory resource to a previous state.
-        /// \param state State to restore the memory resource to. Must match any value returned by SaveState() otherwise the behaviour is undefined.
-        void RestoreState(MemoryAddress state);
-
-        /// \brief Get the current state of the memory resource.
-        /// The returned value can be used to restore the memory resource to a previous state via the method RestoreState(state);
-        /// \return Returns the current state of the memory resource.
-        MemoryAddress SaveState() const noexcept;
-
         /// \brief Swap this memory resource with the provided instance.
         void Swap(LinearMemoryResource& rhs) noexcept;
 
     private:
 
-        /// \brief Memory range manager by this memory resource.
-        MemoryRange memory_range_;
+        /// \brief A chunk in the allocation chain.
+        struct Chunk
+        {
+            /// \brief Pointer to the previous chunk.
+            Chunk* previous_;
 
-        /// \brief Pointer past the last allocated address.
+            /// \brief Pointer past the last allocable address in the chunk.
+            MemoryAddress end_;
+        };
+
+        /// \brief Underlying memory resource.
+        TMemoryResource memory_resource_;
+
+        /// \brief Allocation granularity.
+        Bytes chunk_size_;
+
+        /// \brief Pointer past the last allocated address in the active chunk.
         MemoryAddress head_;
+
+        /// \brief Current active chunk.
+        Chunk* chunk_{ nullptr };
 
     };
 
     /// \brief Swaps two SequentialMemoryResource.
-    void swap(syntropy::LinearMemoryResource& lhs, syntropy::LinearMemoryResource& rhs) noexcept;
+    template <typename TMemoryResource>
+    void swap(syntropy::LinearMemoryResource<TMemoryResource>& lhs, syntropy::LinearMemoryResource<TMemoryResource>& rhs) noexcept;
  
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // LinearMemoryResource.
+    // LinearMemoryResource<TMemoryResource>.
 
-    inline LinearMemoryResource::LinearMemoryResource(const MemoryRange& memory_range) noexcept
-        : memory_range_(memory_range)
-        , head_(memory_range_.Begin())
+    template <typename TMemoryResource>
+    template <typename... TArguments>
+    inline LinearMemoryResource<TMemoryResource>::LinearMemoryResource(Bytes chunk_size, TArguments&&... arguments) noexcept
+        : memory_resource_(std::forward<TArguments>(arguments)...)
+        , chunk_size_(chunk_size)
     {
 
     }
 
-    inline LinearMemoryResource::LinearMemoryResource(LinearMemoryResource&& rhs) noexcept
-        : memory_range_(rhs.memory_range_)
+    template <typename TMemoryResource>
+    inline LinearMemoryResource<TMemoryResource>::LinearMemoryResource(LinearMemoryResource&& rhs) noexcept
+        : memory_resource_(std::move(rhs.memory_resource_))
+        , chunk_size_(rhs.chunk_size_)
+        , chunk_(rhs.chunk_)
         , head_(rhs.head_)
     {
-
+        rhs.chunk_size_ = nullptr;
     }
 
-    inline LinearMemoryResource& LinearMemoryResource::operator=(LinearMemoryResource rhs) noexcept
+    template <typename TMemoryResource>
+    inline LinearMemoryResource<TMemoryResource>::~LinearMemoryResource()
+    {
+        DeallocateAll();
+    }
+
+    template <typename TMemoryResource>
+    inline LinearMemoryResource<TMemoryResource>& LinearMemoryResource<TMemoryResource>::operator=(LinearMemoryResource rhs) noexcept
     {
         rhs.Swap(*this);
         return *this;
     }
 
-    inline MemoryRange LinearMemoryResource::Allocate(Bytes size) noexcept
+    template <typename TMemoryResource>
+    inline MemoryRange LinearMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
     {
         return Allocate(size, Alignment());
     }
 
-    inline MemoryRange LinearMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
+    template <typename TMemoryResource>
+    MemoryRange LinearMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        auto block = head_.GetAligned(alignment);
+        // Attempt to allocate on the current chunk. Fast-path.
 
-        auto head = block + size;
-
-        if (head <= memory_range_.End())
         {
-            head_ = head;
+            auto head = head_.GetAligned(alignment);
+            auto block = MemoryRange{ head, size };
 
-            return { block, head_ };
+            if (chunk_ && (block.End() <= chunk_->end_))
+            {
+                head_ = block.End();
+
+                return block;
+            }
         }
 
-        return {};      // Out of memory.
+        // Allocate a new chunk accounting for Chunk header and alignment requirements. Performance cost depends on the underlying memory resource.
+
+        auto chunk_size = Ceil(BytesOf<Chunk>() + size + alignment - 1_Bytes, chunk_size_);
+
+        if (auto block = memory_resource_.Allocate(chunk_size))
+        {
+            // Link to the previous chunk.
+
+            auto chunk = block.Begin().As<Chunk>();
+
+            chunk->previous_ = chunk_;
+            chunk->end_ = block.End();
+
+            chunk_ = chunk;
+
+            // Allocate the block from the new chunk.
+
+            auto head = (block.Begin() + BytesOf<Chunk>()).GetAligned(alignment);
+
+            head_ = head + size;
+
+            return { head, head_ };
+        }
+
+        return {};              // Out-of-memory.
     }
 
-    inline void LinearMemoryResource::Deallocate(const MemoryRange& block) noexcept
+    template <typename TMemoryResource>
+    inline void LinearMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block) noexcept
     {
-        SYNTROPY_ASSERT(memory_range_.Contains(block));
+        SYNTROPY_ASSERT(Owns(block));
     }
 
-    inline void LinearMemoryResource::Deallocate(const MemoryRange& block, Alignment /*alignment*/) noexcept
+    template <typename TMemoryResource>
+    inline void LinearMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block, Alignment /*alignment*/) noexcept
     {
-        SYNTROPY_ASSERT(memory_range_.Contains(block));
+        SYNTROPY_ASSERT(Owns(block));
     }
 
-    inline void LinearMemoryResource::DeallocateAll() noexcept
+    template <typename TMemoryResource>
+    inline void LinearMemoryResource<TMemoryResource>::DeallocateAll() noexcept
     {
-        head_ = memory_range_.Begin();      // Unwind the head pointer.
+        for (; chunk_ != nullptr;)
+        {
+            auto previous = chunk_->previous_;
+
+            memory_resource_.Deallocate({ &chunk_, chunk_->end_ });
+
+            chunk_ = previous;
+        }
+
+        head_ = nullptr;
     }
 
-    inline bool LinearMemoryResource::Owns(const MemoryRange& block) const noexcept
+    template <typename TMemoryResource>
+    inline bool LinearMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
-        return block.Begin() >= memory_range_.Begin() && block.End() <= head_;
+        // Can't query the underlying memory resource since it might be shared with other allocators.
+
+        for (auto chunk = chunk_; chunk; chunk = chunk->previous_)
+        {
+            if (MemoryRange{ chunk, chunk->end_ }.Contains(block))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    inline Bytes LinearMemoryResource::GetMaxAllocationSize() const noexcept
+    template <typename TMemoryResource>
+    inline Bytes LinearMemoryResource<TMemoryResource>::GetMaxAllocationSize() const noexcept
     {
-        return Bytes(memory_range_.End() - head_);
+        return memory_resource_.GetMaxAllocationSize();
     }
 
-    inline void LinearMemoryResource::RestoreState(MemoryAddress head)
-    {
-        SYNTROPY_ASSERT(head >= memory_range_.Begin() && head <= memory_range_.End());
-
-        head_ = head;
-    }
-
-    inline MemoryAddress LinearMemoryResource::SaveState() const noexcept
-    {
-        return head_;
-    }
-
-    inline void LinearMemoryResource::Swap(LinearMemoryResource& rhs) noexcept
+    template <typename TMemoryResource>
+    inline void LinearMemoryResource<TMemoryResource>::Swap(LinearMemoryResource& rhs) noexcept
     {
         using std::swap;
 
-        swap(memory_range_, rhs.memory_range_);
+        swap(memory_resource_, rhs.memory_resource_);
+        swap(chunk_size_, rhs.chunk_size_);
+        swap(chunk_, rhs.chunk_);
         swap(head_, rhs.head_);
     }
 
-    inline void swap(syntropy::LinearMemoryResource& lhs, syntropy::LinearMemoryResource& rhs) noexcept
+    template <typename TMemoryResource>
+    inline void swap(syntropy::LinearMemoryResource<TMemoryResource>& lhs, syntropy::LinearMemoryResource<TMemoryResource>& rhs) noexcept
     {
         lhs.Swap(rhs);
     }
