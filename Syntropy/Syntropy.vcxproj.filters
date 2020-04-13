@@ -109,6 +109,7 @@
     <ClInclude Include="include\syntropy\allocators\fixed_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\counting_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\linear_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\polymorphic_memory_resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
