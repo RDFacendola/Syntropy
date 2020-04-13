@@ -97,7 +97,7 @@ namespace syntropy
         /// \brief Underlying memory resource.
         TMemoryResource memory_resource_;
 
-        /// \brief Allocation granularity.
+        /// \brief Size of each chunk in the allocation chain.
         Bytes chunk_size_;
 
         /// \brief Pointer past the last allocated address in the active chunk.
@@ -134,7 +134,7 @@ namespace syntropy
         , chunk_(rhs.chunk_)
         , head_(rhs.head_)
     {
-        rhs.chunk_size_ = nullptr;
+        rhs.chunk_ = nullptr;
     }
 
     template <typename TMemoryResource>
@@ -219,7 +219,7 @@ namespace syntropy
         {
             auto previous = chunk_->previous_;
 
-            memory_resource_.Deallocate({ &chunk_, chunk_->end_ });
+            memory_resource_.Deallocate({ chunk_, chunk_->end_ });
 
             chunk_ = previous;
         }
@@ -230,7 +230,7 @@ namespace syntropy
     template <typename TMemoryResource>
     inline bool LinearMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
-        // Can't query the underlying memory resource since it might be shared with other allocators.
+        // Can't query the underlying memory resource directly since it might be shared with other allocators.
 
         for (auto chunk = chunk_; chunk; chunk = chunk->previous_)
         {
