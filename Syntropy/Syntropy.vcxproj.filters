@@ -14,7 +14,6 @@
     <ClInclude Include="include\syntropy\math\math.h" />
     <ClInclude Include="include\syntropy\math\random.h" />
     <ClInclude Include="include\syntropy\math\vector.h" />
-    <ClInclude Include="include\syntropy\memory\allocators\scope_allocator.h" />
     <ClInclude Include="include\syntropy\memory\alignment.h" />
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\memory\memory_address.h" />
@@ -104,6 +103,7 @@
     <ClInclude Include="include\syntropy\allocators\counting_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\linear_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\memory_context.h" />
+    <ClInclude Include="include\syntropy\allocators\scope_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
