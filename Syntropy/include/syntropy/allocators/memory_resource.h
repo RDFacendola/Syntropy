@@ -120,6 +120,12 @@ namespace syntropy
 
         virtual Bytes GetMaxAllocationSize() const noexcept override;
 
+        /// \brief Get the underlying memory resource.
+        TMemoryResource& GetMemoryResource();
+
+        /// \brief Get the underlying memory resource.
+        const TMemoryResource& GetMemoryResource() const;
+
     private:
 
         /// \brief Underlying memory resource.
@@ -198,6 +204,18 @@ namespace syntropy
     inline Bytes MemoryResourceT<TMemoryResource>::GetMaxAllocationSize() const noexcept
     {
         return memory_resource_.GetMaxAllocationSize();
+    }
+
+    template <typename TMemoryResource>
+    inline TMemoryResource& MemoryResourceT<TMemoryResource>::GetMemoryResource()
+    {
+        return memory_resource_;
+    }
+
+    template <typename TMemoryResource>
+    inline const TMemoryResource& MemoryResourceT<TMemoryResource>::GetMemoryResource() const
+    {
+        return memory_resource_;
     }
 
 }
