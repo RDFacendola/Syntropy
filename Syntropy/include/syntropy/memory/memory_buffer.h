@@ -11,7 +11,6 @@
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/memory_address.h"
 
-#include "syntropy/allocators/polymorphic_memory_resource.h"
 #include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy
@@ -41,13 +40,13 @@ namespace syntropy
         /// \brief Create a new memory buffer.
         /// \param size Size of the buffer, in bytes.
         /// \param memory_resource Memory resource the buffer will be allocated from.
-        MemoryBuffer(Bytes size, PolymorphicMemoryResource& memory_resource);
+        MemoryBuffer(Bytes size, MemoryResource& memory_resource);
 
         /// \brief Create a new memory buffer.
         /// \param size Size of the buffer, in bytes.
         /// \param alignment Buffer alignment.
         /// \param memory_resource Memory resource the buffer will be allocated from.
-        MemoryBuffer(Bytes size, Alignment alignment, PolymorphicMemoryResource& memory_resource);
+        MemoryBuffer(Bytes size, Alignment alignment, MemoryResource& memory_resource);
 
         /// \brief Copy constructor.
         /// Copy the content of another buffer to this one.
@@ -98,8 +97,8 @@ namespace syntropy
 
     private:
 
-        ///< \brief Memory resource used to allocate the buffer.
-        PolymorphicMemoryResource* memory_resource_{ nullptr };
+        ///< \brief Memory resource the buffer was allocated on.
+        MemoryResource* memory_resource_{ nullptr };
 
         /// \brief Buffer alignment.
         Alignment alignment_;
@@ -125,19 +124,19 @@ namespace syntropy
     }
 
     inline MemoryBuffer::MemoryBuffer(Bytes size, Alignment alignment)
-        : MemoryBuffer(size, alignment, MemoryResource::GetDefaultResource())
+        : MemoryBuffer(size, alignment, GetDefaultMemoryResource())
     {
 
     }
 
 
-    inline MemoryBuffer::MemoryBuffer(Bytes size, PolymorphicMemoryResource& memory_resource)
+    inline MemoryBuffer::MemoryBuffer(Bytes size, MemoryResource& memory_resource)
         : MemoryBuffer(size, Alignment{}, memory_resource)
     {
 
     }
 
-    inline MemoryBuffer::MemoryBuffer(Bytes size, Alignment alignment, PolymorphicMemoryResource& memory_resource)
+    inline MemoryBuffer::MemoryBuffer(Bytes size, Alignment alignment, MemoryResource& memory_resource)
         : memory_resource_(std::addressof(memory_resource))
         , alignment_(alignment)
         , buffer_(memory_resource.Allocate(size, alignment))

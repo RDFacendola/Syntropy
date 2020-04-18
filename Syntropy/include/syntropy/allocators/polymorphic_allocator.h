@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "syntropy/allocators/polymorphic_memory_resource.h"
-
 #include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy
@@ -35,7 +33,7 @@ namespace syntropy
         PolymorphicAllocator() noexcept = default;
 
         /// \brief Create a new polymorphic allocator with explicit memory resource.
-        PolymorphicAllocator(PolymorphicMemoryResource& memory_resource) noexcept;
+        PolymorphicAllocator(MemoryResource& memory_resource) noexcept;
 
         /// \brief Default copy constructor.
         PolymorphicAllocator(const PolymorphicAllocator&) = default;
@@ -48,7 +46,7 @@ namespace syntropy
         PolymorphicAllocator& operator=(const PolymorphicAllocator&) = delete;
 
         /// \brief Get the underlying memory resource.
-        [[nodiscard]] PolymorphicMemoryResource& GetMemoryResource() const noexcept;
+        [[nodiscard]] MemoryResource& GetMemoryResource() const noexcept;
 
         /// \brief Allocate storage for count objects of type TType using the underlying memory resource.
         [[nodiscard]] TType* allocate(std::size_t count);
@@ -66,7 +64,7 @@ namespace syntropy
     private:
 
         /// \brief Underlying memory resource.
-        PolymorphicMemoryResource* memory_resource_ = &MemoryResource::GetDefaultResource();
+        MemoryResource* memory_resource_ = &GetDefaultMemoryResource();
 
     };
 
@@ -83,7 +81,7 @@ namespace syntropy
     // PolymorphicAllocator<TType>.
 
     template <typename TType>
-    inline PolymorphicAllocator<TType>::PolymorphicAllocator(PolymorphicMemoryResource& memory_resource) noexcept
+    inline PolymorphicAllocator<TType>::PolymorphicAllocator(MemoryResource& memory_resource) noexcept
         : memory_resource_{ std::addressof(memory_resource) }
     {
 
@@ -98,7 +96,7 @@ namespace syntropy
     }
 
     template <typename TType>
-    inline PolymorphicMemoryResource& PolymorphicAllocator<TType>::GetMemoryResource() const noexcept
+    inline MemoryResource& PolymorphicAllocator<TType>::GetMemoryResource() const noexcept
     {
         return *memory_resource_;
     }

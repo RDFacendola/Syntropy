@@ -7,7 +7,6 @@
 #pragma once
 
 #include "syntropy/allocators/memory_resource.h"
-#include "syntropy/allocators/polymorphic_memory_resource.h"
 
 namespace syntropy
 {
@@ -23,7 +22,7 @@ namespace syntropy
     public:
 
         /// \brief Set a new memory resource for the current scope.
-        MemoryContext(PolymorphicMemoryResource& memory_resource);
+        MemoryContext(MemoryResource& memory_resource);
 
         /// \brief Restore the previous memory resource.
         ~MemoryContext();
@@ -37,7 +36,7 @@ namespace syntropy
     public:
 
         /// \brief Previous memory resource.
-        PolymorphicMemoryResource* previous_memory_resource_ = nullptr;
+        MemoryResource* previous_memory_resource_ = nullptr;
 
     };
 
@@ -47,15 +46,15 @@ namespace syntropy
 
     // MemoryContext.
 
-    inline MemoryContext::MemoryContext(PolymorphicMemoryResource& memory_resource)
-        : previous_memory_resource_(&MemoryResource::SetDefaultResource(memory_resource))
+    inline MemoryContext::MemoryContext(MemoryResource& memory_resource)
+        : previous_memory_resource_(&SetDefaultMemoryResource(memory_resource))
     {
 
     }
 
     inline MemoryContext::~MemoryContext()
     {
-        MemoryResource::SetDefaultResource(*previous_memory_resource_);
+        SetDefaultMemoryResource(*previous_memory_resource_);
     }
 
 }
