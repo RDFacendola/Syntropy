@@ -87,6 +87,7 @@ namespace syntropy
 
         /// \brief Restore the allocator to a previous state.
         /// If the provided state wasn't obtained by means of ::SaveState(), the behavior of this method is undefined.
+        /// RestoreState invalidates all states obtained after the state being provided. Restoring an invalid state results in undefined behavior.
         void RestoreState(MemoryAddress state);
 
     private:
