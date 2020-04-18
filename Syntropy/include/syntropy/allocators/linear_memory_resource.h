@@ -82,6 +82,13 @@ namespace syntropy
         /// \brief Swap this memory resource with the provided instance.
         void Swap(LinearMemoryResource& rhs) noexcept;
 
+        /// \brief Get the current state of the allocator.
+        MemoryAddress SaveState() const;
+
+        /// \brief Restore the allocator to a previous state.
+        /// If the provided state wasn't obtained by means of ::SaveState(), the behavior of this method is undefined.
+        void RestoreState(MemoryAddress state);
+
     private:
 
         /// \brief A chunk in the allocation chain.
@@ -258,6 +265,29 @@ namespace syntropy
         swap(chunk_size_, rhs.chunk_size_);
         swap(chunk_, rhs.chunk_);
         swap(head_, rhs.head_);
+    }
+
+    template <typename TMemoryResource>
+    inline MemoryAddress LinearMemoryResource<TMemoryResource>::SaveState() const
+    {
+        return head_;
+    }
+
+    template <typename TMemoryResource>
+    inline void LinearMemoryResource<TMemoryResource>::RestoreState(MemoryAddress state)
+    {
+        // Start deallocating until the current chunk contains the state to restore and then set that as the new state.
+
+        for (; !MemoryRange{ chunk_, chunk_->end_ }.Contains(state);)
+        {
+            auto previous = chunk_->previous_;
+
+            memory_resource_.Deallocate({ chunk_, chunk_->end_ });
+
+            chunk_ = previous;
+        }
+
+        head_ = state;
     }
 
     template <typename TMemoryResource>
