@@ -9,19 +9,35 @@
 #include <string>
 #include <string_view>
 
+#include "syntropy/allocators/polymorphic_allocator.h"
+
 namespace syntropy
 {
+    /************************************************************************/
+    /* STRING                                                               */
+    /************************************************************************/
+
+    /// \brief Alias type for std::string with polymorphic allocator type.
+    using String = std::basic_string<char, std::char_traits<char>, PolymorphicAllocator<char>>;
+
+    /************************************************************************/
+    /* STRING VIEW                                                          */
+    /************************************************************************/
+
+    /// \brief Alias type for std::string_view.
+    using StringView = std::basic_string_view<char>;
+
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
     /// \brief Check whether lhs is a prefix of rhs.
     /// \return Returns true if lhs is a prefix of rhs, returns false otherwise.
-    bool IsPrefix(const std::string_view& lhs, const std::string_view& rhs);
+    bool IsPrefix(const StringView& lhs, const StringView& rhs);
 
     /// \brief Check whether lhs is a suffix of rhs.
     /// \return Returns true if lhs is a suffix of rhs, returns false otherwise.
-    bool IsSuffix(const std::string_view& lhs, const std::string_view& rhs);
+    bool IsSuffix(const StringView& lhs, const StringView& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -29,12 +45,12 @@ namespace syntropy
 
     // Non-member functions.
 
-    inline bool IsPrefix(const std::string_view& lhs, const std::string_view& rhs)
+    inline bool IsPrefix(const StringView& lhs, const StringView& rhs)
     {
         return (lhs.length() <= rhs.length()) && (rhs.compare(0, lhs.length(), lhs) == 0);
     }
 
-    inline bool IsSuffix(const std::string_view& lhs, const std::string_view& rhs)
+    inline bool IsSuffix(const StringView& lhs, const StringView& rhs)
     {
         return (lhs.length() <= rhs.length()) && (rhs.compare(rhs.length() - lhs.length(), lhs.length(), lhs) == 0);
     }
