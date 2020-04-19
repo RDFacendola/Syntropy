@@ -12,7 +12,7 @@
 
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bit.h"
-#include "syntropy/memory/memory_address.h"
+#include "syntropy/memory/memory_bit_address.h"
 
 namespace syntropy
 {
@@ -258,7 +258,7 @@ namespace syntropy
     inline BitBuffer::BitBuffer(ConstMemoryAddress address, Bits size)
         : size_(size)
     {
-        data_.resize(std::size_t(ToBytesCeil(size)));
+        data_.resize(*ToBytesCeil(size));
 
         BitMemCopy(&data_.front(), address, size);
     }
@@ -306,12 +306,12 @@ namespace syntropy
 
     inline void BitBuffer::Reserve(Bits capacity)
     {
-        data_.reserve(std::size_t(ToBytesCeil(capacity)));
+        data_.reserve(*ToBytesCeil(capacity));
     }
 
     inline void BitBuffer::Resize(Bits size)
     {
-        data_.resize(std::size_t(ToBytesCeil(size)), 0u);
+        data_.resize(*ToBytesCeil(size), 0u);
         size_ = size;
     }
 
@@ -397,9 +397,9 @@ namespace syntropy
 
     inline void BitBuffer::Sanitize()
     {
-        if (auto trail = std::size_t(size_) % Bits::kByte; trail > 0u)
+        if (auto trail = *size_ % Bits::kByte; trail > 0)
         {
-            data_.back() &= std::uint8_t((1u << trail) - 1u);
+            data_.back() &= std::int8_t((1 << trail) - 1);
         }
     }
 

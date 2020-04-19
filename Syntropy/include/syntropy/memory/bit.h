@@ -9,8 +9,8 @@
 #include <cstdint>
 #include <cstddef>
 
-#include "syntropy/memory/memory_address.h"
-#include "syntropy/memory/bytes.h"
+#include "syntropy/memory/memory_bit_address.h"
+#include "syntropy/memory/bits.h"
 
 namespace syntropy
 {
@@ -33,7 +33,7 @@ namespace syntropy
 
         /// \brief Create a new bit from a value.
         /// Values other than zero are considered one.
-        constexpr explicit Bit(std::size_t bit);
+        constexpr explicit Bit(std::int64_t bit);
 
         /// \brief Default copy-constructor.
         constexpr Bit(const Bit&) = default;
@@ -43,7 +43,7 @@ namespace syntropy
 
         /// \brief Get the numeric value of the bit.
         /// \return Returns the numeric value of the bit.
-        constexpr explicit operator std::size_t() const;
+        constexpr std::int64_t operator*() const;
 
         /// \brief Get the boolean value of the bit.
         /// \return Returns true if the bit is one, returns false otherwise.
@@ -64,7 +64,7 @@ namespace syntropy
     private:
 
         /// \brief Bit value.
-        uint8_t bit_ = 0u;
+        std::int8_t bit_ = 0;
 
     };
 
@@ -138,10 +138,10 @@ namespace syntropy
     private:
 
         /// \brief Base address of the bit.
-        uint8_t* base_address_{ nullptr };
+        int8_t* base_address_{ nullptr };
 
         /// \brief Bit offset relative to the base address.
-        uint8_t offset_{ 0 };
+        int8_t offset_{ 0 };
 
     };
 
@@ -157,13 +157,13 @@ namespace syntropy
 
     }
 
-    constexpr Bit::Bit(std::size_t bit)
+    constexpr Bit::Bit(std::int64_t bit)
         : bit_(bit == 0 ? 0 : 1)
     {
 
     }
 
-    constexpr Bit::operator std::size_t() const
+    constexpr std::int64_t Bit::operator*() const
     {
         return bit_;
     }
@@ -223,7 +223,7 @@ namespace syntropy
 
     constexpr Bit operator "" _Bit(std::size_t lhs)
     {
-        return Bit(lhs);
+        return Bit(static_cast<std::int64_t>(lhs));
     }
 
     template <>
@@ -250,13 +250,13 @@ namespace syntropy
 
             auto bits = std::min(count, Bits(Bits::kByte) - std::max(destination_offset, source_offset));       // Number of bits to copy this iteration.
 
-            auto source_mask = uint8_t((1u << std::size_t(bits)) - 1u);
-            auto destination_mask = ~uint8_t((source_mask << std::size_t(destination_offset)));
+            auto source_mask = int8_t((1 << *bits) - 1);
+            auto destination_mask = ~int8_t(source_mask << *destination_offset);
 
-            auto chunk = uint8_t(source_buffer >> std::size_t(source_offset));
+            auto chunk = int8_t(source_buffer >> *source_offset);
 
             chunk &= source_mask;
-            chunk <<= std::size_t(destination_offset);
+            chunk <<= *destination_offset;
 
             destination_buffer &= destination_mask;
             destination_buffer |= chunk;
@@ -270,8 +270,8 @@ namespace syntropy
     // BitReference.
 
     constexpr BitReference::BitReference(const MemoryBitAddress& address)
-        : base_address_(address.GetBaseAddress().As<uint8_t>())
-        , offset_(static_cast<uint8_t>(std::size_t(address.GetOffset())))
+        : base_address_(address.GetBaseAddress().As<int8_t>())
+        , offset_(static_cast<int8_t>(*address.GetOffset()))
     {
 
     }
@@ -283,15 +283,15 @@ namespace syntropy
 
     constexpr BitReference::operator Bit() const
     {
-        auto bit = !!(*base_address_ & uint8_t(1u << offset_));
+        auto bit = !!(*base_address_ & int8_t(1 << offset_));
 
         return Bit(bit);
     }
 
     inline BitReference& BitReference::operator=(const Bit& bit)
     {
-        *base_address_ &= ~uint8_t(1u << offset_);
-        *base_address_ |= uint8_t(bit << offset_);
+        *base_address_ &= ~int8_t(1 << offset_);
+        *base_address_ |= int8_t(bit << offset_);
 
         return *this;
     }
