@@ -100,6 +100,14 @@ namespace syntropy
     template <std::size_t kArgumentIndex, typename TFunction>
     using function_argument_t = typename function_argument<kArgumentIndex, TFunction>::type;
 
+    /// \brief If TType is a specialization of TTemplate is_specialization_v is true, false otherwise.
+    template<typename TType, template <typename...> typename TTemplate>
+    constexpr bool is_specialization_v = false;
+
+    /// \brief If TType is a specialization of TTemplate is_specialization_v is true, false otherwise.
+    template<template <typename...> typename TTemplate, typename... TTypes>
+    constexpr bool is_specialization_v<TTemplate<TTypes...>, TTemplate> = true;
+
     /// \brief Evaluates to false.
     template <typename...>
     inline constexpr bool false_v = false;
