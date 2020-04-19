@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "syntropy/type_traits.h"
+
 #include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy
@@ -121,7 +123,33 @@ namespace syntropy
     template <typename UType, typename... TArguments>
     inline void PolymorphicAllocator<TType>::construct(UType* storage, TArguments&&... arguments)
     {
-        new (storage) TType(std::forward<TArguments>(arguments)...);
+        static_assert(!is_specialization_v<UType, std::pair>, "Not supported. See std::pmr::polymorphic_allocator<T>::construct");
+
+        using TOuterAlloc = std::allocator<char>;
+        using TInnerAlloc = PolymorphicAllocator<TType>;
+
+        auto outer_allocator = TOuterAlloc{};
+
+        // Uses-allocator construction: propagate *this if UType uses a PolymorphicAllocator, otherwise ignore it.
+
+        if constexpr (std::uses_allocator_v<UType, TInnerAlloc> && std::is_constructible_v<UType, std::allocator_arg_t, TInnerAlloc&, TArguments...>)
+        {
+            // Leading-allocator convention.
+
+            std::allocator_traits<TOuterAlloc>::construct(outer_allocator, storage, std::allocator_arg, *this, std::forward<TArguments>(arguments)...);
+        }
+        else if constexpr (std::uses_allocator_v<UType, TInnerAlloc>)
+        {
+            // Trailing-allocator convention.
+
+            std::allocator_traits<TOuterAlloc>::construct(outer_allocator, storage, std::forward<TArguments>(arguments)..., *this);
+        }
+        else
+        {
+            // UType doesn't use this allocator.
+
+            std::allocator_traits<TOuterAlloc>::construct(outer_allocator, storage, std::forward<TArguments>(arguments)...);
+        }
     }
  
     template <typename TType>
