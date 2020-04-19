@@ -12,48 +12,6 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* COMMAND LINE ARGUMENT                                                */
-    /************************************************************************/
-
-    CommandLineArgument::CommandLineArgument(const HashedString& name, std::vector<std::string> values)
-        : name_(name)
-        , values_(std::move(values))
-    {
-
-    }
-
-    CommandLineArgument::CommandLineArgument(const HashedString& name, std::string value)
-        : name_(name)
-    {
-        values_.emplace_back(std::move(value));
-    }
-
-    const HashedString& CommandLineArgument::GetName() const
-    {
-        return name_;
-    }
-
-    CommandLineArgument::operator const std::string&() const
-    {
-        return GetValue();
-    }
-
-    const std::string& CommandLineArgument::GetValue() const
-    {
-        return values_.front();
-    }
-
-    const std::vector<std::string>& CommandLineArgument::GetValues() const
-    {
-        return values_;
-    }
-
-    bool CommandLineArgument::IsEmpty() const
-    {
-        return values_.empty();
-    }
-
-    /************************************************************************/
     /* COMMAND LINE                                                         */
     /************************************************************************/
 

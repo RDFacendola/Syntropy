@@ -10,82 +10,10 @@
 
 #include "syntropy/containers/hashed_string.h"
 
+#include "syntropy/application/command_line_argument.h"
+
 namespace syntropy
 {
-
-    /************************************************************************/
-    /* COMMAND LINE ARGUMENT                                                */
-    /************************************************************************/
-
-    /// \brief Class used to hold a command line argument along with its values.
-    /// \author Raffaele D. Facendola - December 2017
-    class CommandLineArgument
-    {
-    public:
-
-        /// \brief Default constructor.
-        CommandLineArgument() = default;
-
-        /// \brief Copyable.
-        CommandLineArgument(const CommandLineArgument&) = default;
-
-        /// \brief Movable.
-        CommandLineArgument(CommandLineArgument&&) = default;
-        
-        /// \brief Create a new command line argument from explicit name and values.
-        /// \param name Name of the command line argument.
-        /// \param values Argument values.
-        CommandLineArgument(const HashedString& name, std::vector<std::string> values);
-
-        /// \brief Create a new command line argument from explicit name and values in a range.
-        /// \param name Name of the command line argument.
-        /// \param first Iterator to the first argument value.
-        /// \param last Iterator past the last argument value.
-        template <typename TInputIterator>
-        CommandLineArgument(const HashedString& name, TInputIterator first, TInputIterator last)
-            : name_(name)
-            , values_(first, last)
-        {
-
-        }
-
-        /// \brief Create a new command line argument from explicit name and value.
-        /// \param name Name of the command line argument.
-        /// \param value Argument value.
-        CommandLineArgument(const HashedString& name, std::string value);
-
-        /// \brief Default assignment operator.
-        CommandLineArgument& operator=(const CommandLineArgument&) = default;
-
-        /// \brief Get the argument name.
-        /// \return Returns the argument name.
-        const HashedString& GetName() const;
-
-        /// \brief Implicitly get the first argument value.
-        /// Do not call if the argument is empty.
-        /// \return Returns the first argument value.
-        operator const std::string&() const;
-
-        /// \brief Get the first argument value.
-        /// Do not call if the argument is empty.
-        /// \return Returns the first argument value.
-        const std::string& GetValue() const;
-
-        /// \brief Get the argument values.
-        /// \return Returns the argument values.
-        const std::vector<std::string>& GetValues() const;
-
-        /// \brief Check whether the argument has at least one value.
-        /// \return Returns true if the argument has no value, returns false otherwise.
-        bool IsEmpty() const;
-
-    private:
-
-        HashedString name_;                 ///< \brief Argument name.
-
-        std::vector<std::string> values_;   ///< \brief Argument values.
-    };
-
     /************************************************************************/
     /* COMMAND LINE                                                         */
     /************************************************************************/

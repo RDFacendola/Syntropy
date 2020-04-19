@@ -33,7 +33,6 @@
     <ClInclude Include="include\syntropy\platform\compiler\msvc.h" />
     <ClInclude Include="include\syntropy\platform\os\os.h" />
     <ClInclude Include="include\syntropy\platform\os\windows_os.h" />
-    <ClInclude Include="include\syntropy\platform\builtin.h" />
     <ClInclude Include="include\syntropy\platform\macros.h" />
     <ClInclude Include="include\syntropy\platform\system.h" />
     <ClInclude Include="include\syntropy\platform\threading.h" />
@@ -106,6 +105,8 @@
     <ClInclude Include="include\syntropy\allocators\scope_allocator.h" />
     <ClInclude Include="include\syntropy\memory\bits.h" />
     <ClInclude Include="include\syntropy\memory\memory_bit_address.h" />
+    <ClInclude Include="include\syntropy\platform\builtin.h" />
+    <ClInclude Include="include\syntropy\application\command_line_argument.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
