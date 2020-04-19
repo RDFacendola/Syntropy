@@ -159,7 +159,7 @@ namespace syntropy
 
     MsgpackStream& MsgpackStream::operator<<(const ConstMemoryRange& rhs)
     {
-        auto rhs_size = static_cast<std::size_t>(rhs.GetSize());
+        auto rhs_size = *rhs.GetSize();
 
         if (Msgpack::IsBin8(rhs))
         {
@@ -391,23 +391,23 @@ namespace syntropy
     {
         auto sentry = Sentry(*this);
 
-        auto length = std::optional<std::size_t>{};
+        auto length = std::optional<std::int64_t>{};
 
         if (Msgpack::IsFixStrFormat(Peek()))
         {
-            length = Msgpack::DecodeFixStrLength(Get<std::int8_t>());
+            length = static_cast<std::int64_t>(Msgpack::DecodeFixStrLength(Get<std::int8_t>()));
         }
         else if (Test(MsgpackFormat::kStr8))
         {
-            length = Msgpack::Decode<std::uint8_t>(Get<std::int8_t>());
+            length = Msgpack::Decode<std::int8_t>(Get<std::int8_t>());
         }
         else if (Test(MsgpackFormat::kStr16))
         {
-            length = Msgpack::Decode<std::uint16_t>(Get<std::int16_t>());
+            length = Msgpack::Decode<std::int16_t>(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kStr32))
         {
-            length = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
+            length = Msgpack::Decode<std::int32_t>(Get<std::int32_t>());
         }
 
         if (length)
@@ -426,22 +426,22 @@ namespace syntropy
     {
         auto sentry = Sentry(*this);
 
-        auto size = std::optional<std::size_t>{};
+        auto size = std::optional<std::int64_t>{};
 
         if (Test(MsgpackFormat::kBin8))
         {
-            size = Msgpack::Decode<std::uint8_t>(Get<std::int8_t>());
+            size = Msgpack::Decode<std::int8_t>(Get<std::int8_t>());
         }
         else if (Test(MsgpackFormat::kBin16))
         {
-            size = Msgpack::Decode<std::uint16_t>(Get<std::int16_t>());
+            size = Msgpack::Decode<std::int16_t>(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kBin32))
         {
-            size = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
+            size = Msgpack::Decode<std::int32_t>(Get<std::int32_t>());
         }
 
-        if (size && *size <= static_cast<std::size_t>(rhs.GetSize()))
+        if (size && *size <= *rhs.GetSize())
         {
             Get(rhs.Begin().As<void>(), *size);
 

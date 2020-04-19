@@ -190,7 +190,7 @@ namespace syntropy
     {
         auto difference = MemoryRange(rhs).Begin() - MemoryRange(lhs).Begin();
 
-        return difference / intptr_t(std::size_t(VirtualMemory::GetPageSize()));
+        return difference / (*VirtualMemory::GetPageSize());
     }
 
 }

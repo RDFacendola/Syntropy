@@ -99,7 +99,7 @@ namespace synchrony
     TCPSendResult WindowsTCPSocket::Send(syntropy::ConstMemoryRange& buffer)
     {
         auto send_buffer = buffer.Begin().As<char>();
-        auto send_size = static_cast<int>(std::size_t(buffer.GetSize()));
+        auto send_size = static_cast<int>(*buffer.GetSize());
 
         auto sent_amount = send(tcp_socket_, send_buffer, send_size, 0);
 
@@ -122,7 +122,7 @@ namespace synchrony
     TCPReceiveResult WindowsTCPSocket::Receive(syntropy::MemoryRange& buffer)
     {
         auto receive_buffer = buffer.Begin().As<char>();
-        auto receive_size = static_cast<int>(std::size_t(buffer.GetSize()));
+        auto receive_size = static_cast<int>(*buffer.GetSize());
 
         auto receive_amount = recv(tcp_socket_, receive_buffer, receive_size, 0);
 

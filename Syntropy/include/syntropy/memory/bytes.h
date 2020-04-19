@@ -19,36 +19,44 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents a number of bytes.
-    /// This type is meant to be a strongly-typed replacement for std::size_t.
-    /// The amount shall never reach a negative amount.
+    /// This type is meant to be a strongly-typed replacement for std::int64_t.
     /// \author Raffaele D. Facendola - July 2018
     class Bytes
     {
     public:
 
-        static constexpr std::size_t kByte = 0x1;                           ///< \brief Number of Bytes in a Byte.
+        ///< \brief Number of Bytes in a Byte.
+        static constexpr std::int64_t kByte = 0x1;
 
-        static constexpr std::size_t kKibiByte = kByte << 10;               ///< \brief Number of Bytes in a KibiByte.
+        ///< \brief Number of Bytes in a KibiByte.
+        static constexpr std::int64_t kKibiByte = kByte * 1024;
 
-        static constexpr std::size_t kMebiByte = kKibiByte << 10;           ///< \brief Number of Bytes in a MebiByte.
+        ///< \brief Number of Bytes in a MebiByte.
+        static constexpr std::int64_t kMebiByte = kKibiByte * 1024;
 
-        static constexpr std::size_t kGibiByte = kMebiByte << 10;           ///< \brief Number of Bytes in a GibiByte.
+        ///< \brief Number of Bytes in a GibiByte.
+        static constexpr std::int64_t kGibiByte = kMebiByte * 1024;
 
-        static constexpr std::size_t kTebiByte = kGibiByte << 10;           ///< \brief Number of Bytes in a TebiByte.
+        ///< \brief Number of Bytes in a TebiByte.
+        static constexpr std::int64_t kTebiByte = kGibiByte * 1024;
 
-        static constexpr std::size_t kKiloByte = kByte * 1000;              ///< \brief Number of Bytes in a KiloByte.
+        ///< \brief Number of Bytes in a KiloByte.
+        static constexpr std::int64_t kKiloByte = kByte * 1000;
 
-        static constexpr std::size_t kMegaByte = kKiloByte * 1000;          ///< \brief Number of Bytes in a MegaByte.
+        ///< \brief Number of Bytes in a MegaByte.
+        static constexpr std::int64_t kMegaByte = kKiloByte * 1000;
 
-        static constexpr std::size_t kGigaByte = kMegaByte * 1000;          ///< \brief Number of Bytes in a GigaByte.
+        ///< \brief Number of Bytes in a GigaByte.
+        static constexpr std::int64_t kGigaByte = kMegaByte * 1000;
 
-        static constexpr std::size_t kTeraByte = kGigaByte * 1000;          ///< \brief Number of Bytes in a TeraByte.
+        ///< \brief Number of Bytes in a TeraByte.
+        static constexpr std::int64_t kTeraByte = kGigaByte * 1000;
 
         /// \brief Create a new bytes count equal to zero.
         constexpr Bytes() = default;
 
         /// \brief Create a new bytes count.
-        constexpr explicit Bytes(std::size_t bytes);
+        constexpr explicit Bytes(std::int64_t bytes);
 
         /// \brief Default copy-constructor.
         constexpr Bytes(const Bytes&) = default;
@@ -58,7 +66,7 @@ namespace syntropy
 
         /// \brief Get the number of bytes.
         /// \return Returns the number of bytes.
-        constexpr explicit operator std::size_t() const;
+        constexpr std::int64_t operator*() const;
 
         /// \brief Add a bytes amount.
         /// \return Returns a reference to this element.
@@ -70,23 +78,23 @@ namespace syntropy
 
         /// \brief Multiply this element by a number.
         /// \return Returns a reference to this element.
-        constexpr Bytes& operator*=(std::size_t rhs) noexcept;
+        constexpr Bytes& operator*=(std::int64_t rhs) noexcept;
 
         /// \brief Divides this element by a number.
         /// \return Returns a reference to this element.
-        constexpr Bytes& operator/=(std::size_t rhs) noexcept;
+        constexpr Bytes& operator/=(std::int64_t rhs) noexcept;
 
         /// \brief Division remainder of this element by a number.
         /// \return Returns a reference to this element.
-        constexpr Bytes& operator%=(std::size_t rhs) noexcept;
+        constexpr Bytes& operator%=(std::int64_t rhs) noexcept;
 
         /// \brief Right shift operator.
         /// \return Returns a reference to this element.
-        constexpr Bytes& operator>>=(std::size_t rhs) noexcept;
+        constexpr Bytes& operator>>=(std::int64_t rhs) noexcept;
 
         /// \brief Left shift operator.
         /// \return Returns a reference to this element.
-        constexpr Bytes& operator<<=(std::size_t rhs) noexcept;
+        constexpr Bytes& operator<<=(std::int64_t rhs) noexcept;
 
         /// \brief Bitwise-and operator.
         /// \return Returns a reference to this element.
@@ -102,7 +110,8 @@ namespace syntropy
 
     private:
 
-        std::size_t bytes_ = 0u;                ///< \brief Number of bytes.
+        ///< \brief Number of bytes.
+        std::int64_t bytes_ = 0u;
 
     };
 
@@ -140,35 +149,35 @@ namespace syntropy
 
     /// \brief Multiply a byte amount by a number.
     /// \return Returns a memory amount which is equal to lhs times rhs.
-    constexpr Bytes operator*(const Bytes& lhs, std::size_t rhs) noexcept;
+    constexpr Bytes operator*(const Bytes& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Multiply a byte amount by a number.
     /// \return Returns a memory amount which is equal to rhs times lhs.
-    constexpr Bytes operator*(std::size_t lhs, const Bytes& rhs) noexcept;
+    constexpr Bytes operator*(std::int64_t lhs, const Bytes& rhs) noexcept;
 
     /// \brief Divide a byte amount by a number.
     /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
-    constexpr Bytes operator/(const Bytes& lhs, std::size_t rhs) noexcept;
+    constexpr Bytes operator/(const Bytes& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Divide a byte amount by another byte amount.
     /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
-    constexpr std::size_t operator/(const Bytes& lhs, const Bytes& rhs) noexcept;
+    constexpr std::int64_t operator/(const Bytes& lhs, const Bytes& rhs) noexcept;
 
     /// \brief Get the remainder of a byte amount divided by a number.
     /// \return Returns a memory amount which is equal to lhs modulus rhs.
-    constexpr Bytes operator%(const Bytes& lhs, std::size_t rhs) noexcept;
+    constexpr Bytes operator%(const Bytes& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Get the remainder of a byte amount divided by another byte amount.
     /// \return Returns a memory amount which is equal to lhs modulus rhs.
-    constexpr std::size_t operator%(const Bytes& lhs, const Bytes& rhs) noexcept;
+    constexpr std::int64_t operator%(const Bytes& lhs, const Bytes& rhs) noexcept;
 
     /// \brief Right-shift a bytes amount.
     /// \return Returns a memory amount which is equal to lhs right-shifted by rhs.
-    constexpr Bytes operator>>(const Bytes& lhs, std::size_t rhs) noexcept;
+    constexpr Bytes operator>>(const Bytes& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Left-shift a bytes amount.
     /// \return Returns a memory amount which is equal to lhs left-shifted by rhs.
-    constexpr Bytes operator<<(const Bytes& lhs, std::size_t rhs) noexcept;
+    constexpr Bytes operator<<(const Bytes& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Bitwise not of a byte quantity.
     /// \return Returns a memory amount which is the bitwise not of rhs.
@@ -190,7 +199,6 @@ namespace syntropy
     std::ostream& operator<<(std::ostream& lhs, const Bytes& rhs);
 
     /// \brief User-defined literal used to convert a number from Bytes to Bytes.
-    /// This method is only used for clarity: Foo(78_Bytes) is better than Foo(78).
     /// \param number Number to convert.
     constexpr Bytes operator "" _Bytes(std::size_t lhs);
 
@@ -223,7 +231,7 @@ namespace syntropy
     /************************************************************************/
 
      /// \brief Represents a number of bits.
-     /// This type is meant to be a strongly-typed replacement for std::size_t.
+     /// This type is meant to be a strongly-typed replacement for std::int64_t.
      /// The amount shall never reach a negative amount.
      /// \author Raffaele D. Facendola - June 2019
     class Bits
@@ -231,13 +239,13 @@ namespace syntropy
     public:
 
         /// \brief Number of bits per Byte.
-        static constexpr std::size_t kByte = 0x8;
+        static constexpr std::int64_t kByte = 0x8;
 
         /// \brief Create a new bits count equal to zero.
         constexpr Bits() = default;
 
         /// \brief Create a new bits count.
-        constexpr explicit Bits(std::size_t bits);
+        constexpr explicit Bits(std::int64_t bits);
 
         /// \brief Create a new bits count from a byte amount.
         constexpr Bits(const Bytes& bytes);
@@ -250,7 +258,7 @@ namespace syntropy
 
         /// \brief Get the number of bits.
         /// \return Returns the number of bits.
-        constexpr explicit operator std::size_t() const;
+        constexpr std::int64_t operator*() const;
 
         /// \brief Add a bits amount.
         /// \return Returns a reference to this element.
@@ -262,23 +270,23 @@ namespace syntropy
 
         /// \brief Multiply this element by a number.
         /// \return Returns a reference to this element.
-        constexpr Bits& operator*=(std::size_t rhs) noexcept;
+        constexpr Bits& operator*=(std::int64_t rhs) noexcept;
 
         /// \brief Divides this element by a number.
         /// \return Returns a reference to this element.
-        constexpr Bits& operator/=(std::size_t rhs) noexcept;
+        constexpr Bits& operator/=(std::int64_t rhs) noexcept;
 
         /// \brief Modulus operator between this element and a number.
         /// \return Returns a reference to this element.
-        constexpr Bits& operator%=(std::size_t rhs) noexcept;
+        constexpr Bits& operator%=(std::int64_t rhs) noexcept;
 
         /// \brief Right shift operator.
         /// \return Returns a reference to this element.
-        constexpr Bits& operator>>=(std::size_t rhs) noexcept;
+        constexpr Bits& operator>>=(std::int64_t rhs) noexcept;
 
         /// \brief Left shift operator.
         /// \return Returns a reference to this element.
-        constexpr Bits& operator<<=(std::size_t rhs) noexcept;
+        constexpr Bits& operator<<=(std::int64_t rhs) noexcept;
 
         /// \brief Bitwise-and operator.
         /// \return Returns a reference to this element.
@@ -295,7 +303,7 @@ namespace syntropy
     private:
 
         /// \brief Number of bits.
-        std::size_t bits_ = 0u;
+        std::int64_t bits_ = 0u;
 
     };
 
@@ -333,35 +341,35 @@ namespace syntropy
 
     /// \brief Multiply a bits amount by a number.
     /// \return Returns a memory amount which is equal to lhs times rhs.
-    constexpr Bits operator*(const Bits& lhs, std::size_t rhs) noexcept;
+    constexpr Bits operator*(const Bits& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Multiply a bits amount by a number.
     /// \return Returns a memory amount which is equal to rhs times lhs.
-    constexpr Bits operator*(std::size_t lhs, const Bits& rhs) noexcept;
+    constexpr Bits operator*(std::int64_t lhs, const Bits& rhs) noexcept;
 
     /// \brief Divide a bits amount by a number.
     /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
-    constexpr Bits operator/(const Bits& lhs, std::size_t rhs) noexcept;
+    constexpr Bits operator/(const Bits& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Divide a bits amount by another bit amount.
     /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
-    constexpr std::size_t operator/(const Bits& lhs, const Bits& rhs) noexcept;
+    constexpr std::int64_t operator/(const Bits& lhs, const Bits& rhs) noexcept;
 
     /// \brief Get the remainder of a bits amount divided by a number.
     /// \return Returns a memory amount which is equal to lhs modulus rhs.
-    constexpr Bits operator%(const Bits& lhs, std::size_t rhs) noexcept;
+    constexpr Bits operator%(const Bits& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Get the remainder of a bits amount divided by another bits amount.
     /// \return Returns a memory amount which is equal to lhs modulus rhs.
-    constexpr std::size_t operator%(const Bits& lhs, const Bits& rhs) noexcept;
+    constexpr std::int64_t operator%(const Bits& lhs, const Bits& rhs) noexcept;
 
     /// \brief Right-shift a bits amount.
     /// \return Returns a memory amount which is equal to lhs right-shifted by rhs.
-    constexpr Bits operator>>(const Bits& lhs, std::size_t rhs) noexcept;
+    constexpr Bits operator>>(const Bits& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Left-shift a bits amount.
     /// \return Returns a memory amount which is equal to lhs left-shifted by rhs.
-    constexpr Bits operator<<(const Bits& lhs, std::size_t rhs) noexcept;
+    constexpr Bits operator<<(const Bits& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Bitwise not of a bits quantity.
     /// \return Returns a memory amount which is the bitwise not of rhs.
@@ -410,13 +418,13 @@ namespace syntropy
 
     // Bytes.
 
-    constexpr Bytes::Bytes(std::size_t bytes)
+    constexpr Bytes::Bytes(std::int64_t bytes)
         : bytes_(bytes)
     {
 
     }
 
-    constexpr Bytes::operator std::size_t() const
+    constexpr std::int64_t Bytes::operator*() const
     {
         return bytes_;
     }
@@ -429,37 +437,35 @@ namespace syntropy
 
     constexpr Bytes& Bytes::operator-=(const Bytes& rhs) noexcept
     {
-        SYNTROPY_ASSERT(*this >= rhs);
-
         bytes_ -= rhs.bytes_;
         return *this;
     }
 
-    constexpr Bytes& Bytes::operator*=(std::size_t rhs) noexcept
+    constexpr Bytes& Bytes::operator*=(std::int64_t rhs) noexcept
     {
         bytes_ *= rhs;
         return *this;
     }
 
-    constexpr Bytes& Bytes::operator/=(std::size_t rhs) noexcept
+    constexpr Bytes& Bytes::operator/=(std::int64_t rhs) noexcept
     {
         bytes_ /= rhs;
         return *this;
     }
 
-    constexpr Bytes& Bytes::operator%=(std::size_t rhs) noexcept
+    constexpr Bytes& Bytes::operator%=(std::int64_t rhs) noexcept
     {
         bytes_ %= rhs;
         return *this;
     }
 
-    constexpr Bytes& Bytes::operator>>=(std::size_t rhs) noexcept
+    constexpr Bytes& Bytes::operator>>=(std::int64_t rhs) noexcept
     {
         bytes_ >>= rhs;
         return *this;
     }
 
-    constexpr Bytes& Bytes::operator<<=(std::size_t rhs) noexcept
+    constexpr Bytes& Bytes::operator<<=(std::int64_t rhs) noexcept
     {
         bytes_ <<= rhs;
         return *this;
@@ -485,7 +491,7 @@ namespace syntropy
 
     constexpr bool operator==(const Bytes& lhs, const Bytes& rhs) noexcept
     {
-        return std::size_t(lhs) == std::size_t(rhs);
+        return *lhs == *rhs;
     }
 
     constexpr bool operator!=(const Bytes& lhs, const Bytes& rhs) noexcept
@@ -495,22 +501,22 @@ namespace syntropy
 
     constexpr bool operator>(const Bytes& lhs, const Bytes& rhs) noexcept
     {
-        return std::size_t(lhs) > std::size_t(rhs);
+        return *lhs > *rhs;
     }
 
     constexpr bool operator<(const Bytes& lhs, const Bytes& rhs) noexcept
     {
-        return std::size_t(lhs) < std::size_t(rhs);
+        return *lhs < *rhs;
     }
 
     constexpr bool operator>=(const Bytes& lhs, const Bytes& rhs) noexcept
     {
-        return std::size_t(lhs) >= std::size_t(rhs);
+        return *lhs >= *rhs;
     }
 
     constexpr bool operator<=(const Bytes& lhs, const Bytes& rhs) noexcept
     {
-        return std::size_t(lhs) <= std::size_t(rhs);
+        return *lhs <= *rhs;
     }
 
     constexpr Bytes operator+(const Bytes& lhs, const Bytes& rhs) noexcept
@@ -523,49 +529,49 @@ namespace syntropy
         return Bytes(lhs) -= rhs;
     }
 
-    constexpr Bytes operator*(const Bytes& lhs, std::size_t rhs) noexcept
+    constexpr Bytes operator*(const Bytes& lhs, std::int64_t rhs) noexcept
     {
         return Bytes(lhs) *= rhs;
     }
 
-    constexpr Bytes operator*(std::size_t lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator*(std::int64_t lhs, const Bytes& rhs) noexcept
     {
         return Bytes(rhs) *= lhs;
     }
 
-    constexpr Bytes operator/(const Bytes& lhs, std::size_t rhs) noexcept
+    constexpr Bytes operator/(const Bytes& lhs, std::int64_t rhs) noexcept
     {
         return Bytes(lhs) /= rhs;
     }
 
-    constexpr std::size_t operator/(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr std::int64_t operator/(const Bytes& lhs, const Bytes& rhs) noexcept
     {
-        return std::size_t(lhs) / std::size_t(rhs);
+        return *lhs / *rhs;
     }
 
-    constexpr Bytes operator%(const Bytes& lhs, std::size_t rhs) noexcept
+    constexpr Bytes operator%(const Bytes& lhs, std::int64_t rhs) noexcept
     {
         return Bytes(lhs) %= rhs;
     }
 
-    constexpr std::size_t operator%(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr std::int64_t operator%(const Bytes& lhs, const Bytes& rhs) noexcept
     {
-        return std::size_t(lhs) % std::size_t(rhs);
+        return *lhs % *rhs;
     }
 
-    constexpr Bytes operator>>(const Bytes& lhs, std::size_t rhs) noexcept
+    constexpr Bytes operator>>(const Bytes& lhs, std::int64_t rhs) noexcept
     {
         return Bytes(lhs) >>= rhs;
     }
 
-    constexpr Bytes operator<<(const Bytes& lhs, std::size_t rhs) noexcept
+    constexpr Bytes operator<<(const Bytes& lhs, std::int64_t rhs) noexcept
     {
         return Bytes(lhs) <<= rhs;
     }
 
     constexpr Bytes operator~(const Bytes& rhs) noexcept
     {
-        return Bytes(~std::size_t(rhs));
+        return Bytes(~(*rhs));
     }
 
     constexpr Bytes operator&(const Bytes& lhs, const Bytes& rhs) noexcept
@@ -585,7 +591,7 @@ namespace syntropy
 
     inline std::ostream& operator<<(std::ostream& lhs, const Bytes& rhs)
     {
-        return lhs << std::size_t(rhs);
+        return lhs << *rhs;
     }
 
     constexpr Bytes operator "" _Bytes(std::size_t lhs)
@@ -627,19 +633,19 @@ namespace syntropy
 
     // Bits.
 
-    constexpr Bits::Bits(std::size_t bits)
+    constexpr Bits::Bits(std::int64_t bits)
         : bits_(bits)
     {
 
     }
 
     constexpr Bits::Bits(const Bytes& bytes)
-        : bits_(std::size_t(bytes) * kByte)
+        : bits_(*bytes * kByte)
     {
 
     }
 
-    constexpr Bits::operator std::size_t() const
+    constexpr std::int64_t Bits::operator*() const
     {
         return bits_;
     }
@@ -652,37 +658,35 @@ namespace syntropy
 
     constexpr Bits& Bits::operator-=(const Bits& rhs) noexcept
     {
-        SYNTROPY_ASSERT(*this >= rhs);
-
         bits_ -= rhs.bits_;
         return *this;
     }
 
-    constexpr Bits& Bits::operator*=(std::size_t rhs) noexcept
+    constexpr Bits& Bits::operator*=(std::int64_t rhs) noexcept
     {
         bits_ *= rhs;
         return *this;
     }
 
-    constexpr Bits& Bits::operator/=(std::size_t rhs) noexcept
+    constexpr Bits& Bits::operator/=(std::int64_t rhs) noexcept
     {
         bits_ /= rhs;
         return *this;
     }
 
-    constexpr Bits& Bits::operator%=(std::size_t rhs) noexcept
+    constexpr Bits& Bits::operator%=(std::int64_t rhs) noexcept
     {
         bits_ %= rhs;
         return *this;
     }
 
-    constexpr Bits& Bits::operator>>=(std::size_t rhs) noexcept
+    constexpr Bits& Bits::operator>>=(std::int64_t rhs) noexcept
     {
         bits_ >>= rhs;
         return *this;
     }
 
-    constexpr Bits& Bits::operator<<=(std::size_t rhs) noexcept
+    constexpr Bits& Bits::operator<<=(std::int64_t rhs) noexcept
     {
         bits_ <<= rhs;
         return *this;
@@ -708,7 +712,7 @@ namespace syntropy
 
     constexpr bool operator==(const Bits& lhs, const Bits& rhs) noexcept
     {
-        return std::size_t(lhs) == std::size_t(rhs);
+        return *lhs == *rhs;
     }
 
     constexpr bool operator!=(const Bits& lhs, const Bits& rhs) noexcept
@@ -718,22 +722,22 @@ namespace syntropy
 
     constexpr bool operator>(const Bits& lhs, const Bits& rhs) noexcept
     {
-        return std::size_t(lhs) > std::size_t(rhs);
+        return *lhs > *rhs;
     }
 
     constexpr bool operator<(const Bits& lhs, const Bits& rhs) noexcept
     {
-        return std::size_t(lhs) < std::size_t(rhs);
+        return *lhs < *rhs;
     }
 
     constexpr bool operator>=(const Bits& lhs, const Bits& rhs) noexcept
     {
-        return std::size_t(lhs) >= std::size_t(rhs);
+        return *lhs >= *rhs;
     }
 
     constexpr bool operator<=(const Bits& lhs, const Bits& rhs) noexcept
     {
-        return std::size_t(lhs) <= std::size_t(rhs);
+        return *lhs <= *rhs;
     }
 
     constexpr Bits operator+(const Bits& lhs, const Bits& rhs) noexcept
@@ -746,49 +750,49 @@ namespace syntropy
         return Bits(lhs) -= rhs;
     }
 
-    constexpr Bits operator*(const Bits& lhs, std::size_t rhs) noexcept
+    constexpr Bits operator*(const Bits& lhs, std::int64_t rhs) noexcept
     {
         return Bits(lhs) *= rhs;
     }
 
-    constexpr Bits operator*(std::size_t lhs, const Bits& rhs) noexcept
+    constexpr Bits operator*(std::int64_t lhs, const Bits& rhs) noexcept
     {
         return Bits(rhs) *= lhs;
     }
 
-    constexpr Bits operator/(const Bits& lhs, std::size_t rhs) noexcept
+    constexpr Bits operator/(const Bits& lhs, std::int64_t rhs) noexcept
     {
         return Bits(lhs) /= rhs;
     }
 
-    constexpr std::size_t operator/(const Bits& lhs, const Bits& rhs) noexcept
+    constexpr std::int64_t operator/(const Bits& lhs, const Bits& rhs) noexcept
     {
-        return std::size_t(lhs) / std::size_t(rhs);
+        return *lhs / *rhs;
     }
 
-    constexpr Bits operator%(const Bits& lhs, std::size_t rhs) noexcept
+    constexpr Bits operator%(const Bits& lhs, std::int64_t rhs) noexcept
     {
         return Bits(lhs) %= rhs;
     }
 
-    constexpr std::size_t operator%(const Bits& lhs, const Bits& rhs) noexcept
+    constexpr std::int64_t operator%(const Bits& lhs, const Bits& rhs) noexcept
     {
-        return std::size_t(lhs) % std::size_t(rhs);
+        return *lhs % *rhs;
     }
 
-    constexpr Bits operator>>(const Bits& lhs, std::size_t rhs) noexcept
+    constexpr Bits operator>>(const Bits& lhs, std::int64_t rhs) noexcept
     {
         return Bits(lhs) >>= rhs;
     }
 
-    constexpr Bits operator<<(const Bits& lhs, std::size_t rhs) noexcept
+    constexpr Bits operator<<(const Bits& lhs, std::int64_t rhs) noexcept
     {
         return Bits(lhs) <<= rhs;
     }
 
     constexpr Bits operator~(const Bits& rhs) noexcept
     {
-        return Bits(~std::size_t(rhs));
+        return Bits(~(*rhs));
     }
 
     constexpr Bits operator&(const Bits& lhs, const Bits& rhs) noexcept
@@ -808,7 +812,7 @@ namespace syntropy
 
     inline std::ostream& operator<<(std::ostream& lhs, const Bits& rhs)
     {
-        return lhs << std::size_t(rhs);
+        return lhs << *rhs;
     }
 
     constexpr Bits operator "" _Bits(std::size_t lhs)
@@ -818,12 +822,12 @@ namespace syntropy
 
     constexpr syntropy::Bytes ToBytesCeil(Bits rhs)
     {
-        return Bytes(DivCeil(std::size_t(rhs), Bits::kByte));
+        return Bytes(DivCeil(*rhs, Bits::kByte));
     }
 
     constexpr syntropy::Bytes ToBytesFloor(Bits rhs)
     {
-        return Bytes(DivFloor(std::size_t(rhs), Bits::kByte));
+        return Bytes(DivFloor(*rhs, Bits::kByte));
     }
 
     template <typename TType>

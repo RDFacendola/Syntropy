@@ -150,7 +150,7 @@ namespace syntropy
         , buffer_(memory_resource_->Allocate(other.GetSize(), alignment_))
 
     {
-        std::memmove(buffer_.Begin(), other.buffer_.Begin(), std::size_t(other.GetSize()));
+        std::memmove(buffer_.Begin(), other.buffer_.Begin(), *other.GetSize());
     }
 
     inline MemoryBuffer::MemoryBuffer(MemoryBuffer&& other)

@@ -436,17 +436,17 @@ namespace syntropy
 
     inline bool Msgpack::IsBin8(const ConstMemoryRange& rhs)
     {
-        return std::size_t(rhs.GetSize()) <= 0xF;
+        return *rhs.GetSize() <= 0xF;
     }
 
     inline bool Msgpack::IsBin16(const ConstMemoryRange& rhs)
     {
-        return std::size_t(rhs.GetSize()) <= 0xFFFF;
+        return *rhs.GetSize() <= 0xFFFF;
     }
 
     inline bool Msgpack::IsBin32(const ConstMemoryRange& rhs)
     {
-        return std::size_t(rhs.GetSize()) <= 0xFFFFFFFF;
+        return *rhs.GetSize() <= 0xFFFFFFFF;
     }
 
     template <typename TExtension>

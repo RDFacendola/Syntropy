@@ -20,7 +20,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents an address.
-    /// This type is meant to be a strongly-typed replacement for void*, uintptr_t and intptr_t.
+    /// This type is meant to be a strongly-typed replacement for void* and intptr_t.
     /// \author Raffaele D. Facendola - August 2018
     template <bool is_const>
     class MemoryAddressT
@@ -29,19 +29,16 @@ namespace syntropy
     public:
 
         /// \brief Type alias for the underlying pointer type.
-        using Pointer = std::conditional_t<is_const, const void*, void *>;
+        using TPointer = std::conditional_t<is_const, const void*, void *>;
 
         /// \brief Create a en empty address.
         constexpr MemoryAddressT() = default;
 
         /// \brief Create a new address.
-        constexpr MemoryAddressT(Pointer address);
+        constexpr MemoryAddressT(TPointer address);
 
         /// \brief Create a en empty address.
         constexpr MemoryAddressT(std::nullptr_t);
-
-        /// \brief Create a new address.
-        constexpr MemoryAddressT(uintptr_t address);
 
         /// \brief Create a new address.
         constexpr MemoryAddressT(intptr_t address);
@@ -55,11 +52,7 @@ namespace syntropy
 
         /// \brief Get the underlying pointer.
         /// \return Returns the underlying pointer.
-        constexpr operator Pointer() const noexcept;
-
-        /// \brief Convert the address to an unsigned numeric value.
-        /// \return Returns an unsigned number that represents the underlying address.
-        constexpr operator uintptr_t() const noexcept;
+        constexpr operator TPointer() const noexcept;
 
         /// \brief Convert the address to an signed numeric value.
         /// \return Returns an signed number that represents the underlying address.
@@ -71,7 +64,7 @@ namespace syntropy
 
         /// \brief Get the underlying pointer.
         /// \return Returns the underlying pointer.
-        constexpr Pointer operator*() const noexcept;
+        constexpr TPointer operator*() const noexcept;
 
         /// \brief Get the underlying strongly-type pointer.
         /// \return Returns the underlying strongly-type pointer.
@@ -100,7 +93,7 @@ namespace syntropy
 
     private:
 
-        Pointer address_ = nullptr;             ///< \brief Underlying address.
+        TPointer address_ = nullptr;             ///< \brief Underlying address.
 
     };
 
@@ -173,7 +166,7 @@ namespace syntropy
     public:
 
         /// \brief Type alias for the underlying pointer type.
-        using Pointer = std::conditional_t<is_const, const void*, void *>;
+        using TPointer = std::conditional_t<is_const, const void*, void *>;
 
         /// \brief Create a en empty address.
         constexpr MemoryBitAddressT() = default;
@@ -185,7 +178,7 @@ namespace syntropy
 
         /// \brief Create a new address.
         /// \param address Base address.
-        constexpr MemoryBitAddressT(Pointer address);
+        constexpr MemoryBitAddressT(TPointer address);
 
         /// \brief Create a new address.
         /// \param address Base address.
@@ -196,7 +189,7 @@ namespace syntropy
         /// \brief Create a new address.
         /// \param address Base address.
         /// \param offset Offset relative to the base address, in bits.
-        constexpr MemoryBitAddressT(Pointer address, Bits offset);
+        constexpr MemoryBitAddressT(TPointer address, Bits offset);
 
         /// \brief Create a en empty address.
         constexpr MemoryBitAddressT(std::nullptr_t);
@@ -293,7 +286,7 @@ namespace syntropy
     // Memory address.
 
     template <bool is_const>
-    constexpr MemoryAddressT<is_const>::MemoryAddressT(MemoryAddressT::Pointer address)
+    constexpr MemoryAddressT<is_const>::MemoryAddressT(MemoryAddressT::TPointer address)
         : address_(address)
     {
 
@@ -307,15 +300,8 @@ namespace syntropy
     }
 
     template <bool is_const>
-    constexpr MemoryAddressT<is_const>::MemoryAddressT(uintptr_t address)
-        : address_(reinterpret_cast<Pointer>(address))
-    {
-
-    }
-
-    template <bool is_const>
     constexpr MemoryAddressT<is_const>::MemoryAddressT(intptr_t address)
-        : address_(reinterpret_cast<Pointer>(address))
+        : address_(reinterpret_cast<TPointer>(address))
     {
 
     }
@@ -329,15 +315,9 @@ namespace syntropy
     }
 
     template <bool is_const>
-    constexpr MemoryAddressT<is_const>::operator typename MemoryAddressT<is_const>::Pointer() const noexcept
+    constexpr MemoryAddressT<is_const>::operator typename MemoryAddressT<is_const>::TPointer() const noexcept
     {
         return address_;
-    }
-
-    template <bool is_const>
-    constexpr MemoryAddressT<is_const>::operator uintptr_t() const noexcept
-    {
-        return reinterpret_cast<uintptr_t>(address_);
     }
 
     template <bool is_const>
@@ -353,7 +333,7 @@ namespace syntropy
     }
 
     template <bool is_const>
-    constexpr typename MemoryAddressT<is_const>::Pointer MemoryAddressT<is_const>::operator*() const noexcept
+    constexpr typename MemoryAddressT<is_const>::TPointer MemoryAddressT<is_const>::operator*() const noexcept
     {
         return address_;
     }
@@ -368,42 +348,43 @@ namespace syntropy
     template <bool is_const>
     constexpr MemoryAddressT<is_const>& MemoryAddressT<is_const>::operator+=(const Bytes& rhs) noexcept
     {
-        address_ = reinterpret_cast<std::conditional_t<is_const, const int8_t*, int8_t*>>(address_) + std::size_t(rhs);
+        address_ = reinterpret_cast<std::conditional_t<is_const, const int8_t*, int8_t*>>(address_) + *rhs;
         return *this;
     }
 
     template <bool is_const>
     constexpr MemoryAddressT<is_const>& MemoryAddressT<is_const>::operator-=(const Bytes& rhs) noexcept
     {
-        address_ = reinterpret_cast<std::conditional_t<is_const, const int8_t*, int8_t*>>(address_) - std::size_t(rhs);
+        address_ = reinterpret_cast<std::conditional_t<is_const, const int8_t*, int8_t*>>(address_) - *rhs;
         return *this;
     }
 
     template <bool is_const>
     constexpr bool MemoryAddressT<is_const>::IsAlignedTo(Alignment alignment) const noexcept
     {
-        return (uintptr_t(*this) & (std::size_t(alignment) - 1u)) == 0u;
+        return (intptr_t(*this) & (*alignment - 1)) == 0;
     }
 
     template <bool is_const>
     constexpr MemoryAddressT<is_const> MemoryAddressT<is_const>::GetAligned(Alignment alignment) const noexcept
     {
-        auto alignment_mask = std::size_t(alignment) - 1u;
-        return (uintptr_t(*this) + alignment_mask) & ~alignment_mask;
+        auto alignment_mask = *alignment - 1;
+
+        return (intptr_t(*this) + alignment_mask) & ~alignment_mask;
     }
 
     template <bool is_const>
     constexpr MemoryAddressT<is_const> MemoryAddressT<is_const>::GetAlignedDown(Alignment alignment) const noexcept
     {
-        auto alignment_mask = std::size_t(alignment) - 1u;
+        auto alignment_mask = *alignment - 1u;
 
-        return uintptr_t(*this) & ~alignment_mask;
+        return intptr_t(*this) & ~alignment_mask;
     }
 
     template <bool is_lhs_const, bool is_rhs_const>
     constexpr bool operator==(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
     {
-        return uintptr_t(lhs) == uintptr_t(rhs);
+        return intptr_t(lhs) == intptr_t(rhs);
     }
 
     template <bool is_lhs_const, bool is_rhs_const>
@@ -415,25 +396,25 @@ namespace syntropy
     template <bool is_lhs_const, bool is_rhs_const>
     constexpr bool operator>(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
     {
-        return uintptr_t(lhs) > uintptr_t(rhs);
+        return intptr_t(lhs) > intptr_t(rhs);
     }
 
     template <bool is_lhs_const, bool is_rhs_const>
     constexpr bool operator<(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
     {
-        return uintptr_t(lhs) < uintptr_t(rhs);
+        return intptr_t(lhs) < intptr_t(rhs);
     }
 
     template <bool is_lhs_const, bool is_rhs_const>
     constexpr bool operator>=(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
     {
-        return uintptr_t(lhs) >= uintptr_t(rhs);
+        return intptr_t(lhs) >= intptr_t(rhs);
     }
 
     template <bool is_lhs_const, bool is_rhs_const>
     constexpr bool operator<=(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
     {
-        return uintptr_t(lhs) <= uintptr_t(rhs);
+        return intptr_t(lhs) <= intptr_t(rhs);
     }
 
     template <bool is_const>
@@ -457,7 +438,7 @@ namespace syntropy
     template <bool is_const>
     inline std::ostream& operator<<(std::ostream& lhs, const MemoryAddressT<is_const>& rhs)
     {
-        return lhs << uintptr_t(rhs);
+        return lhs << intptr_t(rhs);
     }
 
     // MemoryBitAddress.
@@ -471,7 +452,7 @@ namespace syntropy
     }
 
     template <bool is_const>
-    constexpr MemoryBitAddressT<is_const>::MemoryBitAddressT(MemoryBitAddressT::Pointer address)
+    constexpr MemoryBitAddressT<is_const>::MemoryBitAddressT(MemoryBitAddressT::TPointer address)
         : MemoryBitAddressT(MemoryAddressT<is_const>(address))
     {
 
@@ -487,7 +468,7 @@ namespace syntropy
     }
 
     template <bool is_const>
-    constexpr MemoryBitAddressT<is_const>::MemoryBitAddressT(MemoryBitAddressT::Pointer address, Bits offset)
+    constexpr MemoryBitAddressT<is_const>::MemoryBitAddressT(MemoryBitAddressT::TPointer address, Bits offset)
         : MemoryBitAddressT(MemoryAddressT<is_const>(address), offset)
     {
 

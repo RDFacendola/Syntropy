@@ -530,14 +530,14 @@ namespace syntropy::platform
 
     MemoryRange PlatformMemory::Allocate(Bytes size)
     {
-        MemoryAddress address = VirtualAlloc(0, std::size_t(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);       // Will allocate up to the next page boundary.
+        MemoryAddress address = VirtualAlloc(0, *size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);           // Will allocate up to the next page boundary.
 
         return { address, address + size };
     }
 
     MemoryRange PlatformMemory::Reserve(Bytes size)
     {
-        MemoryAddress address = VirtualAlloc(0, std::size_t(size), MEM_RESERVE, PAGE_READWRITE);                    // Will reserve up to the next page boundary.
+        MemoryAddress address = VirtualAlloc(0, *size, MEM_RESERVE, PAGE_READWRITE);                        // Will reserve up to the next page boundary.
 
         return { address, address + size };
     }
@@ -546,7 +546,7 @@ namespace syntropy::platform
     {
         if (memory_range)
         {
-            return VirtualFree(memory_range.Begin(), 0, MEM_RELEASE) != 0;                                          // Will deallocate the entire previously-allocated range.
+            return VirtualFree(memory_range.Begin(), 0, MEM_RELEASE) != 0;                                  // Will deallocate the entire previously-allocated range.
         }
 
         return true;
@@ -554,16 +554,16 @@ namespace syntropy::platform
 
     bool PlatformMemory::Commit(const MemoryRange& memory_range)
     {
-        auto size = std::size_t(memory_range.GetSize());
+        auto size = *memory_range.GetSize();
 
-        return VirtualAlloc(memory_range.Begin(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;                     // Will commit each page containing at least one byte in the range.
+        return VirtualAlloc(memory_range.Begin(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;             // Will commit each page containing at least one byte in the range.
     }
 
     bool PlatformMemory::Decommit(const MemoryRange& memory_range)
     {
-        auto size = std::size_t(memory_range.GetSize());
+        auto size = *memory_range.GetSize();
 
-        return VirtualFree(memory_range.Begin(), size, MEM_DECOMMIT) != 0;                                          // Will decommit each page containing at least one byte in the range.
+        return VirtualFree(memory_range.Begin(), size, MEM_DECOMMIT) != 0;                                  // Will decommit each page containing at least one byte in the range.
     }
 
 }

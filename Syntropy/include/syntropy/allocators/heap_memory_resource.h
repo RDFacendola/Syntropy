@@ -83,7 +83,7 @@ namespace syntropy
 
     inline MemoryRange HeapMemoryResource::Allocate(Bytes size) noexcept
     {
-        if (auto block = MemoryAddress{ ::operator new(std::size_t{size}, std::nothrow) })
+        if (auto block = MemoryAddress{ ::operator new(*size, std::nothrow) })
         {
             return { block, block + size };
         }
@@ -93,7 +93,7 @@ namespace syntropy
 
     inline MemoryRange HeapMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (auto block = MemoryAddress{ ::operator new(std::size_t{size}, alignment, std::nothrow) })
+        if (auto block = MemoryAddress{ ::operator new(*size, alignment, std::nothrow) })
         {
             return { block, block + size };
         }

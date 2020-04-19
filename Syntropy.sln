@@ -5,17 +5,17 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "synchrony", "synchrony\synchrony.vcxproj", "{07CF6633-0803-43C0-BB45-FCA4D71499F2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "synergy", "synergy\synergy.vcxproj", "{6FDAA3A5-7776-4BB1-BF7E-68A27184BF07}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "synergy", "Synergy\synergy.vcxproj", "{6FDAA3A5-7776-4BB1-BF7E-68A27184BF07}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "synesthesia", "synesthesia\synesthesia.vcxproj", "{766BF6EB-8EC1-482F-BF84-157BD0D2EF02}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "syntax", "syntax\syntax.vcxproj", "{872F9623-52FD-469B-9391-2A18557345DB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "syntax", "Syntax\syntax.vcxproj", "{872F9623-52FD-469B-9391-2A18557345DB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "synapse", "synapse\synapse.vcxproj", "{D69B4D7B-3124-4386-B49A-7766FAFD1617}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "synapse", "Synapse\synapse.vcxproj", "{D69B4D7B-3124-4386-B49A-7766FAFD1617}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{8BACAA8E-D0D9-4E11-A66B-BAF30C9F1C09}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "syntropy", "syntropy\syntropy.vcxproj", "{B970D1B5-1F2A-495A-BF7E-3DBBBEE1F33A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "syntropy", "Syntropy\syntropy.vcxproj", "{B970D1B5-1F2A-495A-BF7E-3DBBBEE1F33A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

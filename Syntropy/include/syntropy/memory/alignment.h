@@ -42,7 +42,7 @@ namespace syntropy
 
         /// \brief Get the alignment value, in bytes.
         /// \return Returns the alignment value, in bytes.
-        constexpr operator std::size_t() const noexcept;
+        constexpr std::int64_t operator*() const noexcept;
 
         /// \brief Get the alignment value, in bytes.
         /// \return Returns the alignment value, in bytes.
@@ -54,15 +54,16 @@ namespace syntropy
 
         /// \brief Right shift operator.
         /// \return Returns a reference to this element.
-        constexpr Alignment& operator>>=(std::size_t rhs) noexcept;
+        constexpr Alignment& operator>>=(std::int64_t rhs) noexcept;
 
         /// \brief Left shift operator.
         /// \return Returns a reference to this element.
-        constexpr Alignment& operator<<=(std::size_t rhs) noexcept;
+        constexpr Alignment& operator<<=(std::int64_t rhs) noexcept;
 
     private:
 
-        std::size_t alignment_ = 1u;         ///< \brief Alignment, in bytes.
+        ///< \brief Alignment, in bytes.
+        std::int64_t alignment_ = 1u;
 
     };
 
@@ -92,11 +93,11 @@ namespace syntropy
 
     /// \brief Right-shift an alignment.
     /// \return Returns an alignment which is equal to lhs right-shifted by rhs.
-    constexpr Alignment operator>>(const Alignment& lhs, std::size_t rhs) noexcept;
+    constexpr Alignment operator>>(const Alignment& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Left-shift an alignment.
     /// \return Returns an alignment which is equal to lhs left-shifted by rhs.
-    constexpr Alignment operator<<(const Alignment& lhs, std::size_t rhs) noexcept;
+    constexpr Alignment operator<<(const Alignment& lhs, std::int64_t rhs) noexcept;
 
     /// \brief Stream insertion for Alignment.
     std::ostream& operator<<(std::ostream& lhs, const Alignment& rhs);
@@ -114,18 +115,18 @@ namespace syntropy
     /************************************************************************/
 
     constexpr Alignment::Alignment(std::align_val_t alignment) noexcept
-        : Alignment(Bytes(std::size_t(alignment)))
+        : alignment_(std::int64_t(alignment))
     {
 
     }
 
     constexpr Alignment::Alignment(Bytes alignment)
-        : alignment_(std::size_t(alignment))
+        : alignment_(*alignment)
     {
-        SYNTROPY_ASSERT(IsPow2(alignment_));            // Support to power-of-two alignment only.
+        SYNTROPY_ASSERT(IsPow2(alignment_));        // Alignment are expected to be power-of-two.
     }
 
-    constexpr Alignment::operator std::size_t() const noexcept
+    constexpr std::int64_t Alignment::operator*() const noexcept
     {
         return alignment_;
     }
@@ -140,13 +141,13 @@ namespace syntropy
         return std::align_val_t(alignment_);
     }
 
-    constexpr Alignment& Alignment::operator>>=(std::size_t rhs) noexcept
+    constexpr Alignment& Alignment::operator>>=(std::int64_t rhs) noexcept
     {
         alignment_ >>= rhs;
         return *this;
     }
 
-    constexpr Alignment& Alignment::operator<<=(std::size_t rhs) noexcept
+    constexpr Alignment& Alignment::operator<<=(std::int64_t rhs) noexcept
     {
         alignment_ <<= rhs;
         return *this;
@@ -154,7 +155,7 @@ namespace syntropy
 
     constexpr bool operator==(const Alignment& lhs, const Alignment& rhs) noexcept
     {
-        return std::size_t(lhs) == std::size_t(rhs);
+        return *lhs == *rhs;
     }
 
     constexpr bool operator!=(const Alignment& lhs, const Alignment& rhs) noexcept
@@ -164,49 +165,49 @@ namespace syntropy
 
     constexpr bool operator>(const Alignment& lhs, const Alignment& rhs) noexcept
     {
-        return std::size_t(lhs) > std::size_t(rhs);
+        return *lhs > *rhs;
     }
 
     constexpr bool operator<(const Alignment& lhs, const Alignment& rhs) noexcept
     {
-        return std::size_t(lhs) < std::size_t(rhs);
+        return *lhs < *rhs;
     }
 
     constexpr bool operator>=(const Alignment& lhs, const Alignment& rhs) noexcept
     {
-        return std::size_t(lhs) >= std::size_t(rhs);
+        return *lhs >= *rhs;
     }
 
     constexpr bool operator<=(const Alignment& lhs, const Alignment& rhs) noexcept
     {
-        return std::size_t(lhs) <= std::size_t(rhs);
+        return *lhs <= *rhs;
     }
 
-    constexpr Alignment operator>>(const Alignment& lhs, std::size_t rhs) noexcept
+    constexpr Alignment operator>>(const Alignment& lhs, std::int64_t rhs) noexcept
     {
         return Alignment(lhs) >>= rhs;
     }
 
-    constexpr Alignment operator<<(const Alignment& lhs, std::size_t rhs) noexcept
+    constexpr Alignment operator<<(const Alignment& lhs, std::int64_t rhs) noexcept
     {
         return Alignment(lhs) <<= rhs;
     }
 
     inline std::ostream& operator<<(std::ostream& lhs, const Alignment& rhs)
     {
-        return lhs << std::size_t(rhs);
+        return lhs << *rhs;
     }
 
     template <typename TType>
     constexpr Alignment AlignmentOf(const TType& rhs)
     {
-        return Alignment(Bytes{ alignof(TType) });
+        return Alignment(std::align_val_t{ alignof(TType) });
     }
 
     template <typename TType>
     constexpr Alignment AlignmentOf()
     {
-        return Alignment(Bytes{ alignof(TType) });
+        return Alignment(std::align_val_t{ alignof(TType) });
     }
 }
 

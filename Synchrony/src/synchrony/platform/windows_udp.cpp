@@ -93,7 +93,7 @@ namespace synchrony
     bool WindowsUDPSocket::Send(const NetworkEndpoint& remote, const syntropy::ConstMemoryRange& datagram)
     {
         auto send_buffer = datagram.Begin().As<char>();
-        auto send_size = static_cast<int>(std::size_t(datagram.GetSize()));
+        auto send_size = static_cast<int>(*datagram.GetSize());
         auto send_address = WindowsNetwork::ToSockAddr(remote);
 
         if (auto sent_amount = sendto(udp_socket_, send_buffer, send_size, 0, reinterpret_cast<SOCKADDR*>(&send_address), sizeof(send_address));
@@ -112,7 +112,7 @@ namespace synchrony
     bool WindowsUDPSocket::Receive(NetworkEndpoint& remote, syntropy::MemoryRange& datagram)
     {
         auto receive_buffer = datagram.Begin().As<char>();
-        auto receive_size = int(std::size_t(datagram.GetSize()));
+        auto receive_size = static_cast<int>(*datagram.GetSize());
         auto receive_address = SOCKADDR_IN6{};
         auto receive_address_size = int(sizeof(receive_address));
 
@@ -153,7 +153,7 @@ namespace synchrony
     bool WindowsUDPChannel::Send(const syntropy::ConstMemoryRange& datagram)
     {
         auto send_buffer = datagram.Begin().As<char>();
-        auto send_size = static_cast<int>(std::size_t(datagram.GetSize()));
+        auto send_size = static_cast<int>(*datagram.GetSize());
 
         if (auto sent_amount = send(udp_socket_, send_buffer, send_size, 0);
             sent_amount != SOCKET_ERROR && sent_amount > 0)
@@ -171,7 +171,7 @@ namespace synchrony
     bool WindowsUDPChannel::Receive(syntropy::MemoryRange& datagram)
     {
         auto receive_buffer = datagram.Begin().As<char>();
-        auto receive_size = int(std::size_t(datagram.GetSize()));
+        auto receive_size = static_cast<int>(*datagram.GetSize());
 
         if (auto receive_amount = recv(udp_socket_, receive_buffer, receive_size, 0);
             receive_amount != SOCKET_ERROR && receive_amount > 0)

@@ -37,13 +37,13 @@ namespace syntropy
     constexpr TNumber Floor(TNumber rhs, TNumber multiple);
 
     /// \brief Get the base 2 logarithm of a number and ceil the result to the next integer value.
-    /// If the provided number is 0 the result is undefined.
+    /// If the provided number is 0 or less the result is undefined.
     /// \return Returns the base 2 logarithm of the provided number rounded up to the next integer value.
     template <typename TNumber>
     TNumber CeilLog2(TNumber rhs);
 
     /// \brief Get the base 2 logarithm of a number and floor the result to the previous integer value.
-    /// If the provided number is 0 the result is undefined.
+    /// If the provided number is 0 or less the result is undefined.
     /// \return Returns the base 2 logarithm of the provided number rounded down to the previous integer value.
     template <typename TNumber>
     TNumber FloorLog2(TNumber rhs);
@@ -107,41 +107,41 @@ namespace syntropy
     template <typename TNumber>
     constexpr auto DivCeil(TNumber lhs, TNumber rhs)
     {
-        static_assert(!std::is_signed_v<TNumber>, "Not implemented.");
-
         return DivFloor(lhs + rhs - TNumber(1), rhs);
     }
 
     template <typename TNumber>
     constexpr auto DivFloor(TNumber lhs, TNumber rhs)
     {
-        static_assert(!std::is_signed_v<TNumber>, "Not implemented.");
+        auto quotient = lhs / rhs;
+        auto remainder = lhs % rhs;
 
-        return lhs / rhs;
+        if (remainder != decltype(remainder){ 0 })
+        {
+            quotient -= (lhs < TNumber{ 0 }) ^ (rhs < TNumber{ 0 });
+        }
+
+        return quotient;
     }
 
     template <typename TNumber>
     constexpr TNumber Ceil(TNumber rhs, TNumber multiple)
     {
-        static_assert(!std::is_signed_v<TNumber>, "Not implemented.");
-
         return DivCeil(rhs, multiple) * multiple;
     }
 
     template <typename TNumber>
     constexpr TNumber Floor(TNumber rhs, TNumber multiple)
     {
-        static_assert(!std::is_signed_v<TNumber>, "Not implemented.");
-
         return DivFloor(rhs, multiple) * multiple;
     }
 
     template <typename TNumber>
     TNumber CeilLog2(TNumber rhs)
     {
-        static_assert(!std::is_signed_v<TNumber>, "Not implemented.");
+        static_assert(std::is_integral_v<TNumber>, "Expected an integral type.");
 
-        auto msb = platform::BuiltIn::GetMostSignificantBit(uint64_t(rhs));
+        auto msb = platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(rhs));
 
         return msb + ((rhs & (rhs - TNumber(1))) >> msb);                           // Ceiling required for non-power of 2.
     }
@@ -149,7 +149,7 @@ namespace syntropy
     template <typename TNumber>
     TNumber FloorLog2(TNumber rhs)
     {
-        static_assert(!std::is_signed_v<TNumber>, "Not implemented.");
+        static_assert(std::is_integral_v<TNumber>, "Expected an integral type.");
 
         return platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(rhs));
     }
@@ -157,17 +157,25 @@ namespace syntropy
     template <typename TNumber>
     constexpr bool IsPow2(TNumber rhs)
     {
-        static_assert(!std::is_signed_v<TNumber>, "Not implemented.");
+        if (rhs > TNumber{ 0 })
+        {
+            return ((rhs & (rhs - TNumber(1))) == TNumber(0));
+        }
 
-        return (rhs & (rhs - TNumber(1u))) == TNumber(0u);
+        return false;   // No negative number can be a power of 2.
     }
 
     template <typename TNumber>
-    TNumber NextPow2(TNumber number)
+    inline TNumber NextPow2(TNumber number)
     {
-        static_assert(!std::is_signed_v<TNumber>, "Not implemented.");
+        static_assert(std::is_integral_v<TNumber>, "Expected an integral type.");
 
-        return IsPow2(number) ? number : TNumber(2 << platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(number)));
+        if (number > TNumber{ 0 })
+        {
+            return IsPow2(number) ? number : TNumber(2 << platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(number)));
+        }
+
+        return TNumber{ 1 };        // 2^0, assuming integral type.
     }
 
     template <typename TNumber>

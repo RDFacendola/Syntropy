@@ -194,7 +194,7 @@ namespace syntropy
     template <bool is_const>
     constexpr MemoryRangeT<is_const>& MemoryRangeT<is_const>::operator-=(Bytes rhs) noexcept
     {
-        SYNTROPY_ASSERT(uintptr_t(begin_) >= std::size_t(rhs));
+        SYNTROPY_ASSERT(intptr_t(begin_) >= *rhs);
 
         begin_ -= rhs;
         end_ -= rhs;
@@ -216,7 +216,7 @@ namespace syntropy
     template <bool is_const>
     constexpr Bytes MemoryRangeT<is_const>::GetSize() const noexcept
     {
-        return Bytes(std::size_t(end_ - begin_));
+        return Bytes(end_ - begin_);
     }
 
     template <bool is_const>
