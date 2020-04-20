@@ -5,9 +5,8 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-
+#include "syntropy/containers/string.h"
+#include "syntropy/containers/vector.h"
 #include "syntropy/containers/hashed_string.h"
 
 namespace syntropy
@@ -34,12 +33,12 @@ namespace syntropy
         /// \brief Create a new command line argument from explicit name and value.
         /// \param name Name of the command line argument.
         /// \param value Argument value.
-        CommandLineArgument(const HashedString& name, std::string value);
+        CommandLineArgument(const HashedString& name, String value);
 
         /// \brief Create a new command line argument from explicit name and values.
         /// \param name Name of the command line argument.
         /// \param values Argument values.
-        CommandLineArgument(const HashedString& name, std::vector<std::string> values);
+        CommandLineArgument(const HashedString& name, Vector<String> values);
 
         /// \brief Create a new command line argument from explicit name and values in a range.
         /// \param name Name of the command line argument.
@@ -58,11 +57,11 @@ namespace syntropy
         /// \brief Get the first argument value.
         /// Do not call if the argument is empty.
         /// \return Returns the first argument value.
-        const std::string& GetValue() const;
+        const String& GetValue() const;
 
         /// \brief Get the argument values.
         /// \return Returns the argument values.
-        const std::vector<std::string>& GetValues() const;
+        const Vector<String>& GetValues() const;
 
         /// \brief Check whether the argument has at least one value.
         /// \return Returns true if the argument has no value, returns false otherwise.
@@ -74,7 +73,7 @@ namespace syntropy
         HashedString name_;
 
         /// \brief Argument values.
-        std::vector<std::string> values_;
+        Vector<String> values_;
     };
 
     /************************************************************************/
@@ -83,7 +82,7 @@ namespace syntropy
 
     // CommandLineArgument.
 
-    inline CommandLineArgument::CommandLineArgument(const HashedString& name, std::vector<std::string> values)
+    inline CommandLineArgument::CommandLineArgument(const HashedString& name, Vector<String> values)
         : name_(name)
         , values_(std::move(values))
     {
@@ -98,7 +97,7 @@ namespace syntropy
 
     }
 
-    inline CommandLineArgument::CommandLineArgument(const HashedString& name, std::string value)
+    inline CommandLineArgument::CommandLineArgument(const HashedString& name, String value)
         : name_(name)
     {
         values_.emplace_back(std::move(value));
@@ -109,12 +108,12 @@ namespace syntropy
         return name_;
     }
 
-    inline const std::string& CommandLineArgument::GetValue() const
+    inline const String& CommandLineArgument::GetValue() const
     {
         return values_.front();
     }
 
-    inline const std::vector<std::string>& CommandLineArgument::GetValues() const
+    inline const Vector<String>& CommandLineArgument::GetValues() const
     {
         return values_;
     }
