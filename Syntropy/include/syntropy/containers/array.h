@@ -15,7 +15,7 @@ namespace syntropy
     /************************************************************************/
 
         /// \brief Alias type for std::array.
-    template <typename TType, std::size_t kSize>
-    using Array = std::array<TType, kSize>;
+    template <typename TType, std::int64_t kSize>
+    using Array = std::array<TType, static_cast<std::size_t>(kSize)>;
 
 }
