@@ -68,9 +68,29 @@ namespace syntropy
     template <typename TIterator>
     TIterator end(const Range<TIterator>& range);
 
+    /// \brief Get a const iterator to the first element in the range.
+    template <typename TIterator>
+    TIterator cbegin(const Range<TIterator>& range);
+
+    /// \brief Get a const iterator past the last element in the range.
+    template <typename TIterator>
+    TIterator cend(const Range<TIterator>& range);
+
     /// \brief Create a new range from a pair of iterators.
     template <typename TIterator>
     Range<TIterator> MakeRange(TIterator begin, TIterator end);
+
+    /// \brief Create a new range from a collection.
+    template <typename TCollection>
+    auto MakeRange(TCollection& collection);
+
+    /// \brief Create a new range from a collection.
+    template <typename TCollection>
+    auto MakeRange(const TCollection& collection);
+
+    /// \brief Create a new range from a collection.
+    template <typename TCollection>
+    auto MakeConstRange(const TCollection& collection);
 
     /// \brief Stream insertion for a range of elements.
     template <typename TIterator>
@@ -135,7 +155,19 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline TIterator end(Range<TIterator>& range)
+    inline TIterator end(const Range<TIterator>& range)
+    {
+        return range.End();
+    }
+
+    template <typename TIterator>
+    inline TIterator cbegin(const Range<TIterator>& range)
+    {
+        return range.Begin();
+    }
+
+    template <typename TIterator>
+    inline TIterator cend(Range<TIterator>& range)
     {
         return range.End();
     }
@@ -144,6 +176,33 @@ namespace syntropy
     inline Range<TIterator> MakeRange(TIterator begin, TIterator end)
     {
         return { begin, end };
+    }
+
+    template <typename TCollection>
+    inline auto MakeRange(TCollection& collection)
+    {
+        using std::begin;
+        using std::end;
+
+        return MakeRange(begin(collection), end(collection));
+    }
+
+    template <typename TCollection>
+    inline auto MakeRange(const TCollection& collection)
+    {
+        using std::begin;
+        using std::end;
+
+        return MakeRange(begin(collection), end(collection));
+    }
+
+    template <typename TCollection>
+    inline auto MakeConstRange(const TCollection& collection)
+    {
+        using std::cbegin;
+        using std::cend;
+
+        return MakeRange(cbegin(collection), cend(collection));
     }
 
     template <typename TIterator>
