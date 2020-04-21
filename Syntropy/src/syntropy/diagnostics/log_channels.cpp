@@ -4,7 +4,7 @@
 
 #include "syntropy/patterns/algorithm.h"
 
-#include "syntropy/containers/range.h"
+#include "syntropy/types/range.h"
 
 namespace syntropy::diagnostics
 {

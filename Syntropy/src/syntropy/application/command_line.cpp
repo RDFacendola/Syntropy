@@ -4,7 +4,7 @@
 
 #include "syntropy/contexts.h"
 
-#include "syntropy/containers/range.h"
+#include "syntropy/types/range.h"
 
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/diagnostics/log.h"
