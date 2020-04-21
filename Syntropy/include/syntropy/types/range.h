@@ -39,13 +39,9 @@ namespace syntropy
         /// \brief Pointer to the element pointed by head.
         auto operator->();
 
-        /// \brief Moves the head of the range forward by one element.
+        /// \brief Advance the range head forward by one element.
         /// This method results in undefined behavior if the range is empty.
-        Range& operator++();
-
-        /// \brief Moves the head of the range forward by one element.
-        /// This method results in undefined behavior if the range is empty.
-        Range operator++(int);
+        void Advance();
 
         /// \brief Check whether the range is empty.
         operator bool() const;
@@ -119,21 +115,9 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline Range<TIterator>& Range<TIterator>::operator++()
+    inline void Range<TIterator>::Advance()
     {
         ++begin_;
-
-        return *this;
-    }
-
-    template <typename TIterator>
-    inline Range<TIterator> Range<TIterator>::operator++(int)
-    {
-        auto old = Range<TIterator>{ *this };
-
-        ++begin_;
-
-        return old;
     }
 
     template <typename TIterator>
