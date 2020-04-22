@@ -189,7 +189,6 @@
     <ClCompile Include="src\syntropy\diagnostics\diagnostics_meta.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\log.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\log_channels.cpp" />
-    <ClCompile Include="src\syntropy\math\hash.cpp" />
     <ClCompile Include="src\syntropy\math\random.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\platform\architecture\x64_endianness.cpp" />
