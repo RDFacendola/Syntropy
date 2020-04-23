@@ -146,7 +146,7 @@ namespace syntropy
     /// \brief Get the difference of two memory addresses.
     /// \return Returns a the signed difference between lhs and rhs.
     template <bool is_lhs_const, bool is_rhs_const>
-    constexpr ptrdiff_t operator-(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept;
+    constexpr Bytes operator-(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept;
 
     /// \brief Stream insertion for MemoryAddress.
     template <bool is_const>
@@ -303,9 +303,9 @@ namespace syntropy
     }
 
     template <bool is_lhs_const, bool is_rhs_const>
-    constexpr ptrdiff_t operator-(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
+    constexpr Bytes operator-(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
     {
-        return intptr_t(lhs) - intptr_t(rhs);
+        return Bytes{ intptr_t(lhs) - intptr_t(rhs) };
     }
 
     template <bool is_const>

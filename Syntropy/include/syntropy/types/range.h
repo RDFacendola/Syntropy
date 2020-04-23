@@ -23,8 +23,14 @@ namespace syntropy
     {
     public:
 
+        /// \brief Reference type.
+        using TReference = decltype(*std::declval<TIterator>());
+
         /// \brief Value type.
-        using TValue = std::remove_reference_t<decltype(*std::declval<TIterator>())>;
+        using TValue = std::remove_reference_t<TReference>;
+
+        /// \brief Difference type between two iterators.
+        using TDifference = decltype(std::declval<TIterator>() - std::declval<TIterator>());
 
         /// \brief Create a new range.
         /// \param begin Iterator to the first element in the range.
@@ -33,8 +39,8 @@ namespace syntropy
 
         /// \brief Create a new range.
         /// \param begin First element in the range.
-        /// \param size Number of elements in the range.
-        Range(TIterator begin, std::int64_t size);
+        /// \param count Number of elements in the range.
+        Range(TIterator begin, TDifference count);
 
         /// \brief Get an iterator to the first element in the range.
         TIterator Begin() const;
@@ -43,13 +49,13 @@ namespace syntropy
         TIterator End() const;
 
         /// \brief Access the first element in the range.
-        TValue& GetFront() const;
+        TReference GetFront() const;
 
         /// \brief Access the last element in the range.
-        TValue& GetBack() const;
+        TReference GetBack() const;
 
-        /// \brief Access an element by index.
-        TValue& operator[](std::int64_t index) const;
+        /// \brief Access an element by offset from the first element in the range.
+        TReference operator[](TDifference offset) const;
 
         /// \brief Get a pointer to the beginning of the range.
         TValue* GetData() const;
@@ -58,7 +64,7 @@ namespace syntropy
         operator bool() const;
 
         /// \brief Get the number of elements in the range.
-        std::int64_t GetSize() const;
+        TDifference GetSize() const;
 
         /// \brief Advance the range head forward by one element.
         /// This method results in undefined behavior is the range is empty.
@@ -91,8 +97,8 @@ namespace syntropy
     Range<TIterator> MakeRange(TIterator begin, TIterator end);
 
     /// \brief Create a new range from an iterator and a number of elements.
-    template <typename TIterator>
-    Range<TIterator> MakeRange(TIterator begin, std::int64_t size);
+    template <typename TIterator, typename TDifference>
+    Range<TIterator> MakeRange(TIterator begin, TDifference count);
 
     /// \brief Create a new range from a collection.
     template <typename TCollection>
@@ -125,7 +131,7 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline Range<TIterator>::Range(TIterator begin, std::int64_t count)
+    inline Range<TIterator>::Range(TIterator begin, TDifference count)
         : Range(begin, begin + count)
     {
 
@@ -144,21 +150,21 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline typename Range<TIterator>::TValue& Range<TIterator>::GetFront() const
+    inline typename Range<TIterator>::TReference Range<TIterator>::GetFront() const
     {
         return *begin_;
     }
 
     template <typename TIterator>
-    inline typename Range<TIterator>::TValue& Range<TIterator>::GetBack() const
+    inline typename Range<TIterator>::TReference Range<TIterator>::GetBack() const
     {
         return *(end_ - 1);
     }
 
     template <typename TIterator>
-    inline typename Range<TIterator>::TValue& Range<TIterator>::operator[](std::int64_t index) const
+    inline typename Range<TIterator>::TReference Range<TIterator>::operator[](TDifference offset) const
     {
-        return GetData()[index];
+        return *(Begin() + offset);
     }
 
     template <typename TIterator>
@@ -174,7 +180,7 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline std::int64_t Range<TIterator>::GetSize() const
+    inline typename Range<TIterator>::TDifference Range<TIterator>::GetSize() const
     {
         using std::distance;
 
@@ -207,10 +213,10 @@ namespace syntropy
         return { begin, end };
     }
 
-    template <typename TIterator>
-    inline Range<TIterator> MakeRange(TIterator begin, std::int64_t size)
+    template <typename TIterator, typename TDifference>
+    inline Range<TIterator> MakeRange(TIterator begin, TDifference count)
     {
-        return { begin, size };
+        return { begin, count };
     }
 
     template <typename TCollection>
