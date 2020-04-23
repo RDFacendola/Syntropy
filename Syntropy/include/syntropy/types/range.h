@@ -42,6 +42,12 @@ namespace syntropy
         /// \param count Number of elements in the range.
         Range(TIterator begin, TDifference count);
 
+        /// \brief Default copy ctor.
+        Range(const Range&) = default;
+
+        /// \brief DEFAULT assignment operator.
+        Range& operator=(const Range&) = default;
+
         /// \brief Get an iterator to the first element in the range.
         TIterator Begin() const;
 
@@ -91,6 +97,14 @@ namespace syntropy
     /// \brief Get an iterator past the last element in the range.
     template <typename TIterator>
     TIterator end(const Range<TIterator>& range);
+
+    /// \brief Equality comparison for Ranges.
+    template <typename TIterator>
+    bool operator==(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
+
+    /// \brief Inequality comparison for Ranges.
+    template <typename TIterator>
+    bool operator==(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
 
     /// \brief Create a new range from a pair of iterators.
     template <typename TIterator>
@@ -205,6 +219,18 @@ namespace syntropy
     inline TIterator end(const Range<TIterator>& range)
     {
         return range.End();
+    }
+
+    template <typename TIterator>
+    inline bool operator==(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
+    {
+        return (lhs.Begin() == rhs.Begin()) && (lhs.End() == rhs.End());
+    }
+
+    template <typename TIterator>
+    inline bool operator!=(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
+    {
+        return !(lhs == rhs);
     }
 
     template <typename TIterator>
