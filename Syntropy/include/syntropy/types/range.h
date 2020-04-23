@@ -86,7 +86,7 @@ namespace syntropy
         /// \brief Check whether an iterator falls within this range.
         bool Contains(const TIterator& rhs) const;
 
-    protected:
+    private:
 
         /// \brief Iterator to the first element in the range.
         TIterator begin_;
