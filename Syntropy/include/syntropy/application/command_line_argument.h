@@ -5,7 +5,8 @@
 
 #pragma once
 
-#include "syntropy/containers/string.h"
+#include "syntropy/types/string.h"
+
 #include "syntropy/containers/vector.h"
 #include "syntropy/containers/hashed_string.h"
 

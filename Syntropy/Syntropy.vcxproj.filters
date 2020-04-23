@@ -81,7 +81,6 @@
     <ClInclude Include="src\syntropy\platform\architecture\x64_endianness.h" />
     <ClInclude Include="include\syntropy\serialization\msgpack\vector_extensions.h" />
     <ClInclude Include="include\syntropy\containers\stream_vector.h" />
-    <ClInclude Include="include\syntropy\containers\string.h" />
     <ClInclude Include="include\syntropy\containers\vector_view.h" />
     <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\containers\vector.h" />
@@ -107,6 +106,7 @@
     <ClInclude Include="include\syntropy\platform\builtin.h" />
     <ClInclude Include="include\syntropy\application\command_line_argument.h" />
     <ClInclude Include="include\syntropy\types\range.h" />
+    <ClInclude Include="include\syntropy\types\string.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
