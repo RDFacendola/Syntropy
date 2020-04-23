@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstdint>
+#include <iterator>
 #include <type_traits>
 
 #include "syntropy/diagnostics/assert.h"
@@ -25,11 +26,16 @@ namespace syntropy
     template <bool is_const>
     class MemoryAddressT
     {
-
     public:
 
         /// \brief Type alias for the underlying pointer type.
         using TPointer = std::conditional_t<is_const, const void*, void *>;
+
+        using difference_type = Bytes;
+        using value_type = TPointer;
+        using pointer = TPointer*;
+        using reference = TPointer&;
+        using iterator_category = std::random_access_iterator_tag;
 
         /// \brief Create a en empty address.
         constexpr MemoryAddressT() = default;
