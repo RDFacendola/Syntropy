@@ -32,6 +32,9 @@ namespace syntropy
         /// \brief Difference type between two iterators.
         using TDifference = decltype(std::declval<TIterator>() - std::declval<TIterator>());
 
+        /// \brief Create an empty range.
+        Range() = default;
+
         /// \brief Create a new range.
         /// \param begin Iterator to the first element in the range.
         /// \param end Iterator past the last element in the range.
@@ -75,6 +78,12 @@ namespace syntropy
         /// \brief Advance the range head forward by one element.
         /// This method results in undefined behavior is the range is empty.
         void PopFront();
+
+        /// \brief Check whether a range is contained entirely inside this range.
+        bool Contains(const Range& rhs) const;
+
+        /// \brief Check whether an iterator falls within this range.
+        bool Contains(const TIterator& rhs) const;
 
     protected:
 
@@ -190,7 +199,7 @@ namespace syntropy
     template <typename TIterator>
     inline Range<TIterator>::operator bool() const
     {
-        return GetSize() > 0;
+        return GetSize() > TDifference{ 0 };
     }
 
     template <typename TIterator>
@@ -205,6 +214,18 @@ namespace syntropy
     inline void Range<TIterator>::PopFront()
     {
         ++begin_;
+    }
+
+    template <typename TIterator>
+    inline bool Range<TIterator>::Contains(const Range& rhs) const
+    {
+        return (begin_ <= rhs.Begin()) && (rhs.End() <= end_);
+    }
+
+    template <typename TIterator>
+    inline bool Range<TIterator>::Contains(const TIterator& rhs) const
+    {
+        return (begin_ <= rhs) && (rhs < end_);
     }
 
     // Non-member functions.
