@@ -26,62 +26,51 @@ namespace syntropy
     public:
 
         /// \brief Create an empty virtual memory range.
-        constexpr VirtualMemoryRange() = default;
+        VirtualMemoryRange() = default;
 
         /// \brief Default copy constructor.
-        constexpr VirtualMemoryRange(const VirtualMemoryRange&) = default;
+        VirtualMemoryRange(const VirtualMemoryRange&) = default;
 
         /// \brief Create a virtual memory range from a range of virtual memory pages.
         /// \param begin First page in the range.
         /// \param top One past the last page in the range.
-        constexpr VirtualMemoryRange(const VirtualMemoryPage& begin, const VirtualMemoryPage& end);
+        VirtualMemoryRange(const VirtualMemoryPage& begin, const VirtualMemoryPage& end);
 
         /// \brief Create a virtual memory range from a memory range.
         /// \param memory_range Memory range, must represent a full range of virtual memory pages.
-        constexpr VirtualMemoryRange(const MemoryRange& memory_range);
+        VirtualMemoryRange(const MemoryRange& memory_range);
 
         /// \brief Default assignment operator.
-        constexpr VirtualMemoryRange& operator=(const VirtualMemoryRange&) = default;
+        VirtualMemoryRange& operator=(const VirtualMemoryRange&) = default;
 
         /// \brief Check whether the range is non-empty.
         /// \return Returns true if the range is non-empty, returns false otherwise.
-        constexpr operator bool() const noexcept;
+        operator bool() const noexcept;
 
         /// \brief Get the memory range this virtual memory range refers to.
         /// \return Returns the memory range this virtual memory range refers to.
-        constexpr operator MemoryRange() const noexcept;
+        operator MemoryRange() const noexcept;
 
-        /// \brief Access a page in the range.
-        /// \param offset Offset with respect to the first page of the range.
-        /// \return Returns the offset-th page after the first one in this range.
-        constexpr const VirtualMemoryPage& operator[](std::size_t offset) const;
-
-        /// \brief Advance the virtual memory range forward.
-        /// \param rhs Number of pages to move the range forward to.
-        /// \return Returns a reference to this element.
-        constexpr VirtualMemoryRange& operator+=(std::size_t rhs) noexcept;
-
-        /// \brief Move the virtual memory range backwards.
-        /// \param rhs Number of pages to move the range backwards to.
-        /// \return Returns a reference to this element.
-        constexpr VirtualMemoryRange& operator-=(std::size_t rhs) noexcept;
+        /// \brief Access a page in the range by index.
+        /// \return Returns the page-index-th page after the first one in this range.
+        const VirtualMemoryPage& operator[](std::int64_t page_index) const;
 
         /// \brief Get the first memory page in the range.
         /// \return Returns the first memory page in the range.
-        constexpr const VirtualMemoryPage& Begin() const noexcept;
+        const VirtualMemoryPage& Begin() const noexcept;
 
         /// \brief Get the one past the last memory page in the range.
         /// \return Returns one past the last memory page in the range.
-        constexpr const VirtualMemoryPage& End() const noexcept;
+        const VirtualMemoryPage& End() const noexcept;
 
         /// \brief Get the number of pages in this range.
         /// \return Returns the total number of pages in this range.
-        constexpr std::size_t GetSize() const noexcept;
+        std::size_t GetSize() const noexcept;
 
         /// \brief Check whether a memory range is contained entirely inside this range.
         /// \param memory_range Memory range to check.
         /// \return Returns true if memory_range is contained inside this virtual memory range, returns false otherwise.
-        constexpr bool Contains(const MemoryRange& memory_range) const noexcept;
+        bool Contains(const MemoryRange& memory_range) const noexcept;
 
         /// \brief Commit the virtual memory range making it accessible by the application.
         /// \return Returns true if the memory could be committed, returns false otherwise.
@@ -99,88 +88,68 @@ namespace syntropy
 
     };
 
-    /// \brief Equality comparison for VirtualMemoryPage.
+    /// \brief Equality comparison for VirtualMemoryRange.
     /// \return Returns true if lhs and rhs refer to the same virtual memory range, returns false otherwise.
-    constexpr bool operator==(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept;
+    bool operator==(const VirtualMemoryRange& lhs, const VirtualMemoryRange& rhs) noexcept;
 
-    /// \brief Inequality comparison for VirtualMemoryPage.
+    /// \brief Inequality comparison for VirtualMemoryRange.
     /// \return Returns true if lhs and rhs refer to different virtual memory ranges, returns false otherwise.
-    constexpr bool operator!=(const VirtualMemoryPage& lhs, const VirtualMemoryPage& rhs) noexcept;
-
-    /// \brief Move a virtual memory range forward.
-    /// \return Returns a virtual memory range which is equal to lhs moved forward by rhs pages.
-    constexpr VirtualMemoryPage operator+(const VirtualMemoryPage& lhs, std::size_t rhs) noexcept;
-
-    /// \brief Move a virtual memory range backward.
-    /// \return Returns a virtual memory range which is equal to lhs moved backwards by rhs pages.
-    constexpr VirtualMemoryPage operator-(const VirtualMemoryPage& lhs, std::size_t rhs) noexcept;
+    bool operator!=(const VirtualMemoryRange& lhs, const VirtualMemoryRange& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    constexpr VirtualMemoryRange::VirtualMemoryRange(const VirtualMemoryPage& begin, const VirtualMemoryPage& end)
+    // VirtualMemoryRange.
+
+    inline VirtualMemoryRange::VirtualMemoryRange(const VirtualMemoryPage& begin, const VirtualMemoryPage& end)
         : begin_(begin)
         , end_(end)
     {
         SYNTROPY_ASSERT(begin <= end);
     }
 
-    constexpr VirtualMemoryRange::VirtualMemoryRange(const MemoryRange& memory_range)
+    inline VirtualMemoryRange::VirtualMemoryRange(const MemoryRange& memory_range)
         : VirtualMemoryRange(memory_range.Begin(), memory_range.End())
     {
 
     }
 
-    constexpr VirtualMemoryRange::operator bool() const noexcept
+    inline VirtualMemoryRange::operator bool() const noexcept
     {
         return end_ != begin_;
     }
 
-    constexpr VirtualMemoryRange::operator MemoryRange() const noexcept
+    inline VirtualMemoryRange::operator MemoryRange() const noexcept
     {
         return MemoryRange(begin_.Begin(), end_.Begin());
     }
 
-    constexpr const VirtualMemoryPage& VirtualMemoryRange::operator[](std::size_t offset) const
+    inline const VirtualMemoryPage& VirtualMemoryRange::operator[](std::int64_t page_index) const
     {
-        auto page = begin_ + offset;
+        auto page = begin_ + page_index;
 
         SYNTROPY_ASSERT(Contains(page));
 
         return page;
     }
 
-    constexpr VirtualMemoryRange& VirtualMemoryRange::operator+=(std::size_t rhs) noexcept
-    {
-        begin_ += rhs;
-        end_ += rhs;
-        return *this;
-    }
-
-    constexpr VirtualMemoryRange& VirtualMemoryRange::operator-=(std::size_t rhs) noexcept
-    {
-        begin_ -= rhs;
-        end_ -= rhs;
-        return *this;
-    }
-
-    constexpr const VirtualMemoryPage& VirtualMemoryRange::Begin() const noexcept
+    inline const VirtualMemoryPage& VirtualMemoryRange::Begin() const noexcept
     {
         return begin_;
     }
 
-    constexpr const VirtualMemoryPage& VirtualMemoryRange::End() const noexcept
+    inline const VirtualMemoryPage& VirtualMemoryRange::End() const noexcept
     {
         return end_;
     }
 
-    constexpr std::size_t VirtualMemoryRange::GetSize() const noexcept
+    inline std::size_t VirtualMemoryRange::GetSize() const noexcept
     {
         return end_ - begin_;
     }
 
-    constexpr bool VirtualMemoryRange::Contains(const MemoryRange& memory_range) const noexcept
+    inline bool VirtualMemoryRange::Contains(const MemoryRange& memory_range) const noexcept
     {
         return begin_.Begin() <= memory_range.Begin() && memory_range.End() <= end_.Begin();
     }
@@ -195,23 +164,14 @@ namespace syntropy
         return VirtualMemory::Decommit(*this);
     }
 
-    constexpr bool operator==(const VirtualMemoryRange& lhs, const VirtualMemoryRange& rhs) noexcept
+    inline bool operator==(const VirtualMemoryRange& lhs, const VirtualMemoryRange& rhs) noexcept
     {
         return (lhs.Begin() == rhs.Begin()) && (lhs.End() == rhs.End());
     }
 
-    constexpr bool operator!=(const VirtualMemoryRange& lhs, const VirtualMemoryRange& rhs) noexcept
+    inline bool operator!=(const VirtualMemoryRange& lhs, const VirtualMemoryRange& rhs) noexcept
     {
         return !(lhs == rhs);
     }
 
-    constexpr VirtualMemoryRange operator+(const VirtualMemoryRange& lhs, std::size_t rhs) noexcept
-    {
-        return VirtualMemoryRange(lhs) += rhs;
-    }
-
-    constexpr VirtualMemoryRange operator-(const VirtualMemoryRange& lhs, std::size_t rhs) noexcept
-    {
-        return VirtualMemoryRange(lhs) -= rhs;
-    }
 }
