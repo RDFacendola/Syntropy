@@ -45,8 +45,9 @@ namespace syntropy
         /// \param count Number of elements in the range.
         Range(TIterator begin, TDifference count);
 
-        /// \brief Default copy ctor.
-        Range(const Range&) = default;
+        /// \brief Copy constructor.
+        template <typename UIterator>
+        Range(const Range<UIterator>& rhs);
 
         /// \brief DEFAULT assignment operator.
         Range& operator=(const Range&) = default;
@@ -156,6 +157,15 @@ namespace syntropy
     template <typename TIterator>
     inline Range<TIterator>::Range(TIterator begin, TDifference count)
         : Range(begin, begin + count)
+    {
+
+    }
+
+    template <typename TIterator>
+    template <typename UIterator>
+    inline Range<TIterator>::Range(const Range<UIterator>& rhs)
+        : begin_(rhs.Begin())
+        , end_(rhs.End())
     {
 
     }
