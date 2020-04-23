@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <cstdint>
 
+#include "syntropy/memory/memory_range.h"
 #include "syntropy/math/hash.h"
 
 namespace syntropy
@@ -163,6 +164,18 @@ namespace syntropy
         THashValue hash_;                                                               ///< \brief String hash.
 
         const TString* string_{ nullptr };                                              ///< \brief Pointer to the actual string. Non-owning pointer.
+    };
+
+    template <typename TString>
+    struct StringHasher32
+    {
+        auto operator()(const TString& string) const
+        {
+            using std::begin;
+            using std::end;
+
+            return Hash::FastHash32(syntropy::ConstMemoryRange{ string.data(), Bytes(string.size()) });
+        }
     };
 
     template <typename TString, typename THash>
