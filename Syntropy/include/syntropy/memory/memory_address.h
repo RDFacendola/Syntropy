@@ -109,6 +109,22 @@ namespace syntropy
     /// \brief Type alias for const memory address.
     using ConstMemoryAddress = MemoryAddressT<true>;
 
+    /// \brief Increment the address by one Byte. Prefix.
+    template <bool is_const>
+    constexpr MemoryAddressT<is_const>& operator++(MemoryAddressT<is_const>& rhs);
+
+    /// \brief Increment the address by one Byte. Postfix.
+    template <bool is_const>
+    constexpr MemoryAddressT<is_const> operator++(MemoryAddressT<is_const>& rhs, int);
+
+    /// \brief Decrement the address by one Byte. Prefix.
+    template <bool is_const>
+    constexpr MemoryAddressT<is_const>& operator--(MemoryAddressT<is_const>& rhs);
+
+    /// \brief Decrement the address by one Byte. Postfix.
+    template <bool is_const>
+    constexpr MemoryAddressT<is_const> operator--(MemoryAddressT<is_const>& rhs, int);
+
     /// \brief Equality comparison for MemoryAddress.
     /// \return Returns true if lhs and rhs refer to the same address, returns false otherwise.
     template <bool is_lhs_const, bool is_rhs_const>
@@ -258,6 +274,42 @@ namespace syntropy
         auto alignment_mask = *alignment - 1u;
 
         return intptr_t(*this) & ~alignment_mask;
+    }
+
+    template <bool is_const>
+    constexpr MemoryAddressT<is_const>& operator++(MemoryAddressT<is_const>& rhs)
+    {
+        rhs += Bytes{ 1 };
+
+        return rhs;
+    }
+
+    template <bool is_const>
+    constexpr MemoryAddressT<is_const> operator++(MemoryAddressT<is_const>& rhs, int)
+    {
+        auto copy = rhs;
+
+        ++rhs;
+
+        return copy;
+    }
+
+    template <bool is_const>
+    constexpr MemoryAddressT<is_const>& operator--(MemoryAddressT<is_const>& rhs)
+    {
+        rhs -= Bytes{ 1 };
+
+        return rhs;
+    }
+
+    template <bool is_const>
+    constexpr MemoryAddressT<is_const> operator--(MemoryAddressT<is_const>& rhs, int)
+    {
+        auto copy = rhs;
+
+        --rhs;
+
+        return copy;
     }
 
     template <bool is_lhs_const, bool is_rhs_const>
