@@ -102,7 +102,7 @@ namespace syntropy::serialization
         template<typename TInstance>
         void operator()(const syntropy::reflection::Property& property, TInstance& instance, nlohmann::json& json) const
         {
-            (*this)(property.GetName(), std::forward<TInstance>(instance), json);
+            (*this)(property.GetName().GetString(), std::forward<TInstance>(instance), json);
         }
 
     private:

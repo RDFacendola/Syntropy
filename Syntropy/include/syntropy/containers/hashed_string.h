@@ -29,86 +29,32 @@ namespace syntropy
     public:
 
         /// \brief Create an empty hashed string.
-        HashedString()
-            : HashedString(std::string{})
-        {
-
-        }
+        HashedString() = default;
 
         /// \brief Copy constructor.
-        /// \param other String to copy.
-        HashedString(const HashedString& other) noexcept
-            : string_(other.string_)
-            , hash_(other.hash_)
-        {
+        HashedString(const HashedString& other) noexcept = default;
 
-        }
+        /// \brief Create a new hashed string from a string.
+        HashedString(std::string string);
 
-        /// \brief Create a new hashed string from anything that can construct a TString.
-        template <typename TStringArg, typename = std::enable_if_t<std::is_constructible_v<std::string, TStringArg&&>>>
-        HashedString(TStringArg string)
-        {
-            std::tie(hash_, string_) = Atlas::GetInstance().AddEntry(std::move(string));
-        }
+        /// \brief Create a new hashed string from a null-terminated string.
+        HashedString(const char* string);
 
-        /// \brief Unified assignment operator.
-        /// \param other Other instance to copy.
-        /// \return Returns a reference to this.
-        HashedString& operator=(HashedString other) noexcept
-        {
-            return other.swap(*this);
-        }
+        /// \brief Assignment operator.
+        HashedString& operator=(HashedString other) noexcept;
 
-        /// \brief Get the hash associated to this instance.
-        /// \return Returns the hash associated to this instance.
-        std::int64_t GetHash() const noexcept
-        {
-            return hash_;
-        }
+        /// \brief Get the string hash used for comparison.
+        std::int64_t GetHash() const noexcept;
 
-        /// \brief Get the string associated to this instance.
-        /// \brief Returns the string associated to this instance.
-        const std::string& GetString() const noexcept
-        {
-            return *string_;
-        }
-
-        /// \brief Get the string associated to this instance.
-        /// \brief Returns the string associated to this instance.
-        operator const std::string&() const noexcept
-        {
-            return GetString();
-        }
+        /// \brief Get the underlying string.
+        const std::string& GetString() const noexcept;
 
         /// \brief Check whether the string is non-empty.
         /// \return Returns true if the string is non-empty, returns false otherwise.
-        constexpr operator bool() const noexcept
-        {
-            return (*this) != HashedString{};
-        }
+        operator bool() const noexcept;
 
-        /// \brief Equality operator.
-        /// \return Returns true if the two hashed strings are identical, returns false otherwise.
-        constexpr bool operator==(const HashedString& other) const noexcept
-        {
-            return other.hash_ == hash_;
-        }
-
-        /// \brief Inequality operator.
-        /// \return Returns true if the two hashed strings are different, returns false otherwise.
-        constexpr bool operator!=(const HashedString& other) const noexcept
-        {
-            return other.hash_ != hash_;
-        }
-
-        /// \brief Swaps two instances.
-        /// \param other Object to swap with the current instance.
-        HashedString& swap(HashedString& other) noexcept
-        {
-            std::swap(other.string_, string_);
-            std::swap(other.hash_, hash_);
-            return *this;
-        }
+        /// \brief Swaps two hashed string.
+        void Swap(HashedString& other) noexcept;
 
     private:
 
@@ -151,30 +97,106 @@ namespace syntropy
             std::unordered_map<std::int64_t, std::unique_ptr<std::string>> registry_;         ///< \brief Associate hashes with their respective strings.
         };
 
+        /// \brief String hash.
         std::int64_t hash_;                                                             ///< \brief String hash.
 
         const std::string* string_{ nullptr };                                               ///< \brief Pointer to the actual string. Non-owning pointer.
     };
 
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Equality comparison.
+    bool operator==(const HashedString& lhs, const HashedString& rhs) noexcept;
+
+    /// \brief Inequality comparison.
+    bool operator!=(const HashedString& lhs, const HashedString& rhs) noexcept;
+
     /// \brief Swaps two hashed strings.
-    inline void swap(HashedString& first, HashedString second) noexcept
-    {
-        first.swap(second);
-    }
+    void swap(HashedString& lhs, HashedString& rhs) noexcept;
 
     /// \brief Stream insertion for HashedString.
-    inline std::ostream& operator<<(std::ostream& out, const HashedString& hashed_string)
+    std::ostream& operator<<(std::ostream& out, const HashedString& rhs);
+
+    /// \brief Sort hashed string by hash.
+    bool operator<(const HashedString& lhs, const HashedString& rhs);
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // HashedString.
+
+    inline HashedString::HashedString(std::string string)
     {
-        out << hashed_string.GetString();
+        std::tie(hash_, string_) = Atlas::GetInstance().AddEntry(std::move(string));
+    }
+
+    inline HashedString::HashedString(const char* string)
+        : HashedString(std::string(string))
+    {
+
+    }
+
+    inline HashedString& HashedString::operator=(HashedString other) noexcept
+    {
+        other.Swap(*this);
+
+        return *this;
+    }
+
+    inline std::int64_t HashedString::GetHash() const noexcept
+    {
+        return hash_;
+    }
+
+    inline const std::string& HashedString::GetString() const noexcept
+    {
+        return *string_;
+    }
+
+    inline HashedString::operator bool() const noexcept
+    {
+        return (*this) != HashedString{};
+    }
+
+    inline void HashedString::Swap(HashedString& other) noexcept
+    {
+        using std::swap;
+
+        swap(other.string_, string_);
+        swap(other.hash_, hash_);
+    }
+
+    // Non-member functions.
+
+    inline bool operator==(const HashedString& lhs, const HashedString& rhs) noexcept
+    {
+        return lhs.GetHash() == rhs.GetHash();
+    }
+
+    inline bool operator!=(const HashedString& lhs, const HashedString& rhs) noexcept
+    {
+        return !(lhs == rhs);
+    }
+
+    inline void swap(HashedString& lhs, HashedString& rhs) noexcept
+    {
+        lhs.Swap(rhs);
+    }
+
+    inline std::ostream& operator<<(std::ostream& out, const HashedString& rhs)
+    {
+        out << rhs.GetString();
+
         return out;
     }
 
-    /// \brief Used to sort hashed strings.
-    inline bool operator<(const HashedString& first, const HashedString& second)
+    inline bool operator<(const HashedString& lhs, const HashedString& rhs)
     {
-        return first.GetHash() < second.GetHash();
+        return lhs.GetHash() < rhs.GetHash();
     }
-
 }
 
 namespace std
