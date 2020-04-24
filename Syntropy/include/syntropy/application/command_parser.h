@@ -11,7 +11,7 @@
 
 #include "syntropy/type_traits.h"
 #include "syntropy/patterns/tuple.h"
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 
 namespace syntropy
 {
@@ -30,7 +30,7 @@ namespace syntropy
         /// If another command is bound with the same name, the behavior of this method is undefined.
         /// \return Returns a reference to the parser.
         template <typename TCommand>
-        CommandParserT& Bind(const HashedString& name, TCommand&& command);
+        CommandParserT& Bind(const Label& name, TCommand&& command);
 
         /// \brief Parse a command by string and call the corresponding callable object.
         /// \param command Command string to parse.
@@ -43,7 +43,7 @@ namespace syntropy
         using Command = std::function<bool(TStream& stream)>;
 
         /// \brief Commands bound to the parser.
-        std::unordered_map<syntropy::HashedString, Command> commands_;
+        std::unordered_map<syntropy::Label, Command> commands_;
 
     };
 
@@ -56,7 +56,7 @@ namespace syntropy
 
     template <typename TStream>
     template <typename TCommand>
-    CommandParserT<TStream>& CommandParserT<TStream>::Bind(const HashedString& name, TCommand&& command)
+    CommandParserT<TStream>& CommandParserT<TStream>::Bind(const Label& name, TCommand&& command)
     {
         commands_[name] = [this, command = std::move(command)](TStream& stream)
         {

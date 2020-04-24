@@ -71,7 +71,7 @@ namespace syntropy::reflection
         /// \brief Create a new interface.
         /// \param values Enumeration values pairs: the first element is the enumeration value name, the second element is the actual enumeration value.
         template <typename TEnum>
-        Enumeration(const std::unordered_map<HashedString, TEnum>& values)
+        Enumeration(const std::unordered_map<Label, TEnum>& values)
         {
             std::transform(values.begin(), values.end(), std::inserter(values_, values_.end()), [](auto&& value)
             {
@@ -83,7 +83,7 @@ namespace syntropy::reflection
         /// \param value_name Name of the enumeration value to get.
         /// \return Returns the enumeration value associated to value_name. If no such enumeration value could be found returns std::nullopt.
         template <typename TEnum>
-        std::optional<TEnum> GetValueByName(const HashedString& value_name) const
+        std::optional<TEnum> GetValueByName(const Label& value_name) const
         {
             auto value = GetValueByName(value_name);
 
@@ -99,7 +99,7 @@ namespace syntropy::reflection
         /// \param value Value of the enumeration value name to get.
         /// \return Returns the enumeration value name associated to value. If no such name could be found returns std::nullopt.
         template <typename TEnum>
-        std::optional<HashedString> GetNameByValue(const TEnum& value) const
+        std::optional<Label> GetNameByValue(const TEnum& value) const
         {
             auto it = std::find_if(values_.begin(), values_.end(), [&value](auto&& enum_value_pair)
             {
@@ -116,9 +116,9 @@ namespace syntropy::reflection
         /// \brief Get an enumeration value by name.
         /// \param value_name Name of the enumeration value to get.
         /// \return Returns the enumeration value associated to value_name. If no such enumeration value could be found returns an empty object.
-        Any GetValueByName(const HashedString& value_name) const;
+        Any GetValueByName(const Label& value_name) const;
 
-        std::unordered_map<HashedString, Any> values_;      ///< \brief Registered enumeration values.
+        std::unordered_map<Label, Any> values_;      ///< \brief Registered enumeration values.
     };
 
     /// \brief Functor object used to give enumeration capabilities to classes.
@@ -128,7 +128,7 @@ namespace syntropy::reflection
     {
         /// \brief Create a new functor.
         /// \param values Enumeration values pairs: the first element is the enumeration value name, the second element is the actual enumeration value.
-        EnumerationClass(const std::unordered_map<HashedString, TEnum>& values)
+        EnumerationClass(const std::unordered_map<Label, TEnum>& values)
             : values_(values)
         {
 
@@ -143,6 +143,6 @@ namespace syntropy::reflection
 
     private:
 
-        const std::unordered_map<HashedString, TEnum>& values_;         ///< \brief Enumeration values to register.
+        const std::unordered_map<Label, TEnum>& values_;         ///< \brief Enumeration values to register.
     };
 }

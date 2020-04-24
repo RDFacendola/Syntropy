@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 
 #include "syntropy/application/command_line_argument.h"
 
@@ -43,12 +43,12 @@ namespace syntropy
         /// \brief Get an argument by name.
         /// \param argument_name Name of the argument to get.
         /// \return Returns the requested argument. If no such argument exists returns nullptr.
-        const CommandLineArgument* GetArgument(const HashedString& argument_name) const;
+        const CommandLineArgument* GetArgument(const Label& argument_name) const;
 
         /// \brief Check whether the command line defines an argument.
         /// \param argument_name Name of the argument to test.
         /// \return Returns true if the requested argument was defined, returns false otherwise.
-        bool HasArgument(const HashedString& argument_name) const;
+        bool HasArgument(const Label& argument_name) const;
 
         /// \brief Get the arguments in this command line.
         /// \return Returns the arguments in this command line, as key-value pairs.
@@ -74,7 +74,7 @@ namespace syntropy
         /// The string must be a valid argument name, otherwise the behavior of this method is undefined.
         /// \param string String to convert.
         /// \return Returns an argument name by stripping any extra token from the provided string.
-        HashedString ToArgumentName(std::string string);
+        Label ToArgumentName(std::string string);
 
         std::vector<CommandLineArgument> arguments_;            ///< \brief Arguments in the command line.
     };

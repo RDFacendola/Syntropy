@@ -12,7 +12,7 @@
 #include "syntropy/unit_test/test.h"
 #include "syntropy/unit_test/test_fixture.h"
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 
 #include "syntropy/diagnostics/diagnostics.h"
 #include "syntropy/diagnostics/assert.h"
@@ -63,7 +63,7 @@ namespace syntropy
         /// \param name Name of the test case.
         /// \param test_case Function bound to this test case.
         template <typename TTestFixture>
-        TestCase(HashedString name, void (TTestFixture::* test_case)())
+        TestCase(Label name, void (TTestFixture::* test_case)())
             : name_(std::move(name))
         {
             test_case_ = [this, test_case](TestFixture& fixture)
@@ -78,7 +78,7 @@ namespace syntropy
 
         /// \brief Get the test case name.
         /// \return Return the test case name.
-        const HashedString& GetName() const;
+        const Label& GetName() const;
 
         /// \brief Run the test case.
         /// \param fixture Fixture the test case will be run with.
@@ -98,7 +98,7 @@ namespace syntropy
 
     private:
 
-        HashedString name_;                                                                 ///< \brief Name of the test case.
+        Label name_;                                                                 ///< \brief Name of the test case.
 
         std::function<void(TestFixture& fixture)> test_case_;                               ///< \brief Thunk used to run the actual test case function on a concrete fixture.
 

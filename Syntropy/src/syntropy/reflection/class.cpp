@@ -23,12 +23,12 @@ namespace syntropy::reflection
         });
     }
 
-    const HashedString& Class::GetDefaultName() const noexcept
+    const Label& Class::GetDefaultName() const noexcept
     {
         return default_name_;
     }
 
-    const std::vector<HashedString>& Class::GetNameAliases() const noexcept
+    const std::vector<Label>& Class::GetNameAliases() const noexcept
     {
         return name_aliases_;
     }
@@ -38,7 +38,7 @@ namespace syntropy::reflection
         return base_classes_;
     }
 
-    const Property* Class::GetProperty(const HashedString& property_name) const noexcept
+    const Property* Class::GetProperty(const Label& property_name) const noexcept
     {
         auto it = std::find_if(properties_.begin(), properties_.end(), [&property_name](const auto& property)
         {

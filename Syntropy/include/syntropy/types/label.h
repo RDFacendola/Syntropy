@@ -1,6 +1,6 @@
 
-/// \file hashed_string.h
-/// \brief This header is part of the syntropy containers. It contains classes used to handle hashed strings.
+/// \file label.h
+/// \brief This header is part of syntropy types. It contains classes used to handle hashed strings.
 ///
 /// \author Raffaele D. Facendola - 2016
 
@@ -19,29 +19,29 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* HASHED STRING                                                        */
+    /* LABEL                                                                */
     /************************************************************************/
 
     /// \brief Represents an immutable string optimized for fast comparison.
     /// \author Raffaele D. Facendola.
-    class HashedString
+    class Label
     {
     public:
 
-        /// \brief Create an empty hashed string.
-        HashedString();
+        /// \brief Create an empty label.
+        Label();
 
         /// \brief Copy constructor.
-        HashedString(const HashedString& other) noexcept = default;
+        Label(const Label& other) noexcept = default;
 
-        /// \brief Create a new hashed string from a string.
-        HashedString(const std::string& string);
+        /// \brief Create a new label from a string.
+        Label(const std::string& string);
 
-        /// \brief Create a new hashed string from a null-terminated string.
-        HashedString(const char* string);
+        /// \brief Create a new label from a null-terminated string.
+        Label(const char* string);
 
         /// \brief Assignment operator.
-        HashedString& operator=(HashedString other) noexcept;
+        Label& operator=(Label other) noexcept;
 
         /// \brief Get the string hash used for comparison.
         std::int64_t GetHash() const noexcept;
@@ -53,16 +53,17 @@ namespace syntropy
         /// \return Returns true if the string is non-empty, returns false otherwise.
         operator bool() const noexcept;
 
-        /// \brief Swaps two hashed string.
-        void Swap(HashedString& other) noexcept;
+        /// \brief Swaps two label.
+        void Swap(Label& other) noexcept;
 
     private:
 
-        /// \brief Get a dictionary of all registered hashed strings.
+        /// \brief Get a dictionary of all registered labels.
         static std::unordered_map<std::int64_t, std::string>& GetDictionary();
 
         /// \brief String hash.
         std::int64_t hash_;
+
     };
 
     /************************************************************************/
@@ -70,74 +71,74 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Equality comparison.
-    bool operator==(const HashedString& lhs, const HashedString& rhs) noexcept;
+    bool operator==(const Label& lhs, const Label& rhs) noexcept;
 
     /// \brief Inequality comparison.
-    bool operator!=(const HashedString& lhs, const HashedString& rhs) noexcept;
+    bool operator!=(const Label& lhs, const Label& rhs) noexcept;
 
-    /// \brief Swaps two hashed strings.
-    void swap(HashedString& lhs, HashedString& rhs) noexcept;
+    /// \brief Swaps two labels.
+    void swap(Label& lhs, Label& rhs) noexcept;
 
-    /// \brief Stream insertion for HashedString.
-    std::ostream& operator<<(std::ostream& out, const HashedString& rhs);
+    /// \brief Stream insertion for labels.
+    std::ostream& operator<<(std::ostream& out, const Label& rhs);
 
-    /// \brief Sort hashed string by hash.
-    bool operator<(const HashedString& lhs, const HashedString& rhs);
+    /// \brief Sort labels by hash.
+    bool operator<(const Label& lhs, const Label& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // HashedString.
+    // Label.
 
-    inline HashedString::HashedString()
-        : HashedString("")
+    inline Label::Label()
+        : Label("")
     {
 
     }
 
-    inline HashedString::HashedString(const std::string& string)
+    inline Label::Label(const std::string& string)
         : hash_(Hash::FastHash64(ConstMemoryRange{ string.data(), Bytes{ static_cast<std::int64_t>(string.size()) } }))
     {
         GetDictionary().insert_or_assign(hash_, string);
     }
 
-    inline HashedString::HashedString(const char* string)
-        : HashedString(std::string(string))
+    inline Label::Label(const char* string)
+        : Label(std::string(string))
     {
 
     }
 
-    inline HashedString& HashedString::operator=(HashedString other) noexcept
+    inline Label& Label::operator=(Label other) noexcept
     {
         other.Swap(*this);
 
         return *this;
     }
 
-    inline std::int64_t HashedString::GetHash() const noexcept
+    inline std::int64_t Label::GetHash() const noexcept
     {
         return hash_;
     }
 
-    inline const std::string& HashedString::GetString() const noexcept
+    inline const std::string& Label::GetString() const noexcept
     {
         return GetDictionary()[hash_];
     }
 
-    inline HashedString::operator bool() const noexcept
+    inline Label::operator bool() const noexcept
     {
-        return (*this) != HashedString{};
+        return (*this) != Label{};
     }
 
-    inline void HashedString::Swap(HashedString& other) noexcept
+    inline void Label::Swap(Label& other) noexcept
     {
         using std::swap;
 
         swap(other.hash_, hash_);
     }
 
-    inline std::unordered_map<std::int64_t, std::string>& HashedString::GetDictionary()
+    inline std::unordered_map<std::int64_t, std::string>& Label::GetDictionary()
     {
         static auto dictionary = std::unordered_map<std::int64_t, std::string>{};
 
@@ -146,29 +147,29 @@ namespace syntropy
 
     // Non-member functions.
 
-    inline bool operator==(const HashedString& lhs, const HashedString& rhs) noexcept
+    inline bool operator==(const Label& lhs, const Label& rhs) noexcept
     {
         return lhs.GetHash() == rhs.GetHash();
     }
 
-    inline bool operator!=(const HashedString& lhs, const HashedString& rhs) noexcept
+    inline bool operator!=(const Label& lhs, const Label& rhs) noexcept
     {
         return !(lhs == rhs);
     }
 
-    inline void swap(HashedString& lhs, HashedString& rhs) noexcept
+    inline void swap(Label& lhs, Label& rhs) noexcept
     {
         lhs.Swap(rhs);
     }
 
-    inline std::ostream& operator<<(std::ostream& out, const HashedString& rhs)
+    inline std::ostream& operator<<(std::ostream& out, const Label& rhs)
     {
         out << rhs.GetString();
 
         return out;
     }
 
-    inline bool operator<(const HashedString& lhs, const HashedString& rhs)
+    inline bool operator<(const Label& lhs, const Label& rhs)
     {
         return lhs.GetHash() < rhs.GetHash();
     }
@@ -178,9 +179,9 @@ namespace std
 {
     /// \param Template specialization of std::hash for HashedStrings.
     template <>
-    struct hash<syntropy::HashedString>
+    struct hash<syntropy::Label>
     {
-        using argument_type = syntropy::HashedString;
+        using argument_type = syntropy::Label;
         using result_type = std::int64_t;
 
         result_type operator()(const argument_type& hashed_string) const

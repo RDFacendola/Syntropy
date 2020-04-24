@@ -3,7 +3,6 @@
   <ItemGroup>
     <ClInclude Include="include\syntropy\application\command_line.h" />
     <ClInclude Include="include\syntropy\containers\context.h" />
-    <ClInclude Include="include\syntropy\containers\hashed_string.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\diagnostics\diagnostics.h" />
     <ClInclude Include="include\syntropy\diagnostics\diagnostics_meta.h" />
@@ -107,6 +106,7 @@
     <ClInclude Include="include\syntropy\application\command_line_argument.h" />
     <ClInclude Include="include\syntropy\types\range.h" />
     <ClInclude Include="include\syntropy\types\string.h" />
+    <ClInclude Include="include\syntropy\types\label.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\application\command_line.cpp" />

@@ -17,7 +17,7 @@
 #include "syntropy/type_traits.h"
 #include "syntropy/patterns/tuple.h"
 #include "syntropy/serialization/msgpack/msgpack_stream.h"
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 #include "syntropy/memory/bytes.h"
 
 #include "synchrony/socket/tcp.h"
@@ -47,7 +47,7 @@ namespace synchrony
         /// \param procedure Procedure to bind.
         /// \return Returns a reference to this.
         template <typename TProcedure>
-        RPCServerT& Bind(const syntropy::HashedString& name, TProcedure&& procedure);
+        RPCServerT& Bind(const syntropy::Label& name, TProcedure&& procedure);
 
         /// \brief Bind a new procedure that is called whenever an error occurs.
         /// \param procedure Procedure to bind.
@@ -114,7 +114,7 @@ namespace synchrony
         std::atomic_bool is_running_{ false };
 
         /// \brief Procedures bound to the server.
-        std::unordered_map<syntropy::HashedString, RemoteProcedure> procedures_;
+        std::unordered_map<syntropy::Label, RemoteProcedure> procedures_;
 
         /// \brief Handlers to events that are called whenever a server error occurs.
         std::vector<RemoteEvent> error_handlers_;
@@ -145,7 +145,7 @@ namespace synchrony
 
     template <typename TStream>
     template <typename TProcedure>
-    inline RPCServerT<TStream>& RPCServerT<TStream>::Bind(const syntropy::HashedString& name, TProcedure&& procedure)
+    inline RPCServerT<TStream>& RPCServerT<TStream>::Bind(const syntropy::Label& name, TProcedure&& procedure)
     {
         procedures_[name] = [this, procedure = std::move(procedure)](TStream& stream)
         {

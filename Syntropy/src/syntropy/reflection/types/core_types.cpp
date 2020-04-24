@@ -9,7 +9,7 @@ namespace syntropy::reflection
 {
     // Hashed string and context
 
-    AutoRegisterClass<HashedString> hashed_string_class;
+    AutoRegisterClass<Label> hashed_string_class;
     AutoRegisterClass<Context> context_class;
 
 }

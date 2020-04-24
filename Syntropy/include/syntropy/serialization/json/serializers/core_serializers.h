@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 #include "syntropy/containers/context.h"
 
 #include "syntropy/serialization/json/json.h"
@@ -18,9 +18,9 @@ namespace syntropy::serialization
 	/************************************************************************/
 
 	template <>
-	struct JSONSerializerT<HashedString>
+	struct JSONSerializerT<Label>
 	{
-		void operator()(nlohmann::json& json, const HashedString& hashed_string) const
+		void operator()(nlohmann::json& json, const Label& hashed_string) const
 		{
 			JSONSerialize(json, hashed_string.GetString());
 		}

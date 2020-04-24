@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 #include "syntropy/containers/context.h"
 
 #include "syntropy/serialization/json/json.h"
@@ -18,13 +18,13 @@ namespace syntropy::serialization
     /************************************************************************/
 
     template <>
-    struct JSONDeserializerT<HashedString>
+    struct JSONDeserializerT<Label>
     {
-        std::optional<HashedString> operator()(const nlohmann::json& json) const
+        std::optional<Label> operator()(const nlohmann::json& json) const
         {
             if (json.is_string())
             {
-                return HashedString(json.get<std::string>());
+                return Label(json.get<std::string>());
             }
             return std::nullopt;
         }

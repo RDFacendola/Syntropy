@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/type_traits.h"
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 
 #include "syntropy/reflection/reflection.h"
 #include "syntropy/reflection/interfaces/class_interfaces.h"

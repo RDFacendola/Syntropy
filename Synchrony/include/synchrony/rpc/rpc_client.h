@@ -13,7 +13,7 @@
 #include <mutex>
 #include <functional>
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 #include "syntropy/serialization/msgpack/msgpack_stream.h"
 
 #include "synchrony/socket/tcp.h"
@@ -42,7 +42,7 @@ namespace synchrony
         /// \param name Procedure to call.
         /// \param arguments Arguments passed to the function.
         template <typename... TArguments>
-        void Call(const syntropy::HashedString& name, TArguments&&... arguments);
+        void Call(const syntropy::Label& name, TArguments&&... arguments);
 
         /// \brief Bind a new procedure that is called whenever an error occurs.
         /// \param procedure Procedure to bind.
@@ -121,7 +121,7 @@ namespace synchrony
 
     template <typename TStream>
     template <typename... TArguments>
-    void RPCClientT<TStream>::Call(const syntropy::HashedString& name, TArguments&&... arguments)
+    void RPCClientT<TStream>::Call(const syntropy::Label& name, TArguments&&... arguments)
     {
         auto stream = TStream{};
 

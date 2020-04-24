@@ -55,7 +55,7 @@ namespace syntropy
 
             //void* code = instruction_pointer_;
 
-            //HashedString f1_name("Function1");
+            //Label f1_name("Function1");
 
             //auto f1 = __VM(code, &VirtualMachineIntrinsics::Enter, storage_t(8));                                   // Function1(int, int, int*)
 
@@ -71,7 +71,7 @@ namespace syntropy
 
 
             //// MAIN
-            //HashedString main_name("Main");
+            //Label main_name("Main");
             //auto main = __VM(code, &VirtualMachineIntrinsics::Enter, storage_t(24));
 
             //__VM(code, &VirtualMachineIntrinsics::MoveImmediate, register_t(0), word_t(47));                        // Loc0 = 47
@@ -110,7 +110,7 @@ namespace syntropy
             return !!instruction_pointer_;
         }
 
-        void* VirtualMachine::GetFunctionAddress(const HashedString& function_name)
+        void* VirtualMachine::GetFunctionAddress(const Label& function_name)
         {
             auto it = function_address_table_.find(function_name);
 
@@ -119,7 +119,7 @@ namespace syntropy
                    nullptr;
         }
 
-        void VirtualMachine::RegisterFunctionAddress(const HashedString& function_name, void* function_address)
+        void VirtualMachine::RegisterFunctionAddress(const Label& function_name, void* function_address)
         {
             function_address_table_.emplace(function_name, function_address);
         }

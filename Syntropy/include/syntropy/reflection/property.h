@@ -10,7 +10,7 @@
 
 #include "syntropy/type_traits.h"
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 
 #include "syntropy/patterns/multi_interface.h"
 
@@ -40,7 +40,7 @@ namespace syntropy::reflection
         /// \param name Name of the property.
         /// \param field Pointer to a member field.
         template <typename TClass, typename TField>
-        Property(const HashedString& name, TField(TClass::* field))
+        Property(const Label& name, TField(TClass::* field))
             : name_(name)
             , type_(TypeOf<TField>())
         {
@@ -59,7 +59,7 @@ namespace syntropy::reflection
         /// \param name Name of the property.
         /// \param getter Pointer to the member function used as property getter.
         template <typename TClass, typename TProperty>
-        Property(const HashedString& name, TProperty(TClass::* getter)() const)
+        Property(const Label& name, TProperty(TClass::* getter)() const)
             : name_(name)
             , type_(TypeOf<std::remove_cvref_t<TProperty>>())
         {
@@ -74,7 +74,7 @@ namespace syntropy::reflection
         /// \param getter Pointer to the member function used as property getter.
         /// \param setter Pointer to the member function used as property setter.
         template <typename TClass, typename TPropertyGetter, typename TPropertySetter>
-        Property(const HashedString& name, TPropertyGetter(TClass::* getter)() const, void (TClass::* setter)(TPropertySetter))
+        Property(const Label& name, TPropertyGetter(TClass::* getter)() const, void (TClass::* setter)(TPropertySetter))
             : name_(name)
             , type_(TypeOf<std::remove_cvref_t<TPropertyGetter>>())
         {
@@ -96,7 +96,7 @@ namespace syntropy::reflection
         /// \param getter Pointer to the member function used as const accessor to the property.
         /// \param setter Pointer to the member function used as non-const accessor to the property.
         template <typename TClass, typename TProperty>
-        Property(const HashedString& name, const TProperty&(TClass::* getter)() const, TProperty& (TClass::* setter)())
+        Property(const Label& name, const TProperty&(TClass::* getter)() const, TProperty& (TClass::* setter)())
             : name_(name)
             , type_(TypeOf<TProperty>())
         {
@@ -122,7 +122,7 @@ namespace syntropy::reflection
 
         /// \brief Get the property name.
         /// \return Returns the property name.
-        const HashedString& GetName() const noexcept;
+        const Label& GetName() const noexcept;
 
         /// \brief Get the property type.
         /// \brief Returns the property type.
@@ -130,7 +130,7 @@ namespace syntropy::reflection
             
     private:
 
-        HashedString name_;                                     ///< \brief Property name.
+        Label name_;                                     ///< \brief Property name.
 
         const Type& type_;                                      ///< \brief Underlying property type.
     };

@@ -1,6 +1,6 @@
 
 /// \file context.h
-/// \brief This header is part of the syntropy containers. It contains classes used to handle hashed strings paths.
+/// \brief This header is part of the syntropy containers. It contains classes used to handle hashed paths.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -8,7 +8,7 @@
 
 #include <ostream>
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 
 namespace syntropy
 {
@@ -37,13 +37,13 @@ namespace syntropy
         Context(const Context& other) = default;
 
         /// \brief Create a new context from a name.
-        Context(const HashedString& name);
+        Context(const Label& name);
 
         /// \brief Create a new context from a null-terminated string.
         Context(const char* name);
 
-        /// \brief Implicit conversion to hashed strings.
-        operator const HashedString&() const;
+        /// \brief Implicit conversion to label.
+        operator const Label&() const;
 
         /// \brief Check whether two contexts are the same.
         /// \param other Other context to  check against.
@@ -58,10 +58,10 @@ namespace syntropy
         /// \brief Append a subcontext to this one and return the resulting context.
         /// \param subcontext Name of the subcontext to append. May contain sub-subcontexts.
         /// \return Returns a context associated with the provided subcontext whose parent is this context.
-        Context operator |(const HashedString& subcontext) const;
+        Context operator |(const Label& subcontext) const;
 
         /// \brief Get the context name.
-        const HashedString& GetName() const;
+        const Label& GetName() const;
 
         /// \brief Check whether this context is equal to another context or is a more general context than it.
         /// \return Returns true if this context is equal to other or any of its ancestors, returns false otherwise.

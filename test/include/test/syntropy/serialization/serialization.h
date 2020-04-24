@@ -37,9 +37,9 @@ public:
 
         std::vector<int> numbers_;
         std::set<std::string> names_;
-        std::map<std::shared_ptr<int>, syntropy::HashedString> map_;
+        std::map<std::shared_ptr<int>, syntropy::Label> map_;
 
-        syntropy::HashedString hashed_string_;
+        syntropy::Label hashed_string_;
         syntropy::Context context_;
 
         Animal animal_;

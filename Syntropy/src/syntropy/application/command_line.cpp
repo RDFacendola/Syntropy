@@ -37,7 +37,7 @@ namespace syntropy
         }
     }
 
-    const CommandLineArgument* CommandLine::GetArgument(const HashedString& argument_name) const
+    const CommandLineArgument* CommandLine::GetArgument(const Label& argument_name) const
     {
         auto it = std::find_if(std::begin(arguments_), std::end(arguments_), [&argument_name](auto& argument)
         {
@@ -47,7 +47,7 @@ namespace syntropy
         return it != std::end(arguments_) ? &(*it) : nullptr;
     }
 
-    bool CommandLine::HasArgument(const HashedString& argument_name) const
+    bool CommandLine::HasArgument(const Label& argument_name) const
     {
         return GetArgument(argument_name) != nullptr;
     }
@@ -89,10 +89,10 @@ namespace syntropy
         });
     }
 
-    HashedString CommandLine::ToArgumentName(std::string string)
+    Label CommandLine::ToArgumentName(std::string string)
     {
         string.erase(std::begin(string));               // Drop the first character (sigil). Should not reallocate (the standard doesn't guarantee that, though).
 
-        return HashedString(std::move(string));
+        return Label(std::move(string));
     }
 }

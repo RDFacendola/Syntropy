@@ -74,7 +74,7 @@ struct syntropy::reflection::ClassDeclarationT<TestSyntropySerialization::Pet>
 		class_t.AddProperty("Numbers", &TestSyntropySerialization::Pet::numbers_) << JSONProperty();
 		class_t.AddProperty("Names", &TestSyntropySerialization::Pet::names_) << JSONProperty();
 		class_t.AddProperty("Map", &TestSyntropySerialization::Pet::map_) << JSONProperty();
-		class_t.AddProperty("HashedString", &TestSyntropySerialization::Pet::hashed_string_) << JSONProperty();
+		class_t.AddProperty("Label", &TestSyntropySerialization::Pet::hashed_string_) << JSONProperty();
 		class_t.AddProperty("Context", &TestSyntropySerialization::Pet::context_) << JSONProperty();
 		class_t.AddProperty("Animal", &TestSyntropySerialization::Pet::animal_) << JSONProperty();
         class_t.AddInterface<JSONConvertible>();
@@ -128,7 +128,7 @@ void TestSyntropySerialization::TestSerialization()
 	Petto.numbers_ = { 3 , 4 , 5 };
 	Petto.names_ = { "A", "B", "C" };
 	Petto.map_ = { {std::make_shared<int>(3), "1"} , { std::make_shared<int>(4), "2" } };
-	Petto.hashed_string_ = syntropy::HashedString("Mammt");
+	Petto.hashed_string_ = syntropy::Label("Mammt");
 	Petto.context_ = Petto.hashed_string_;
 	Petto.animal_ = TestSyntropySerialization::Animal::kUnknown;
 

@@ -55,14 +55,14 @@ namespace synchrony
         /// \param procedure Procedure to bind.
         /// \return Returns a reference to this.
         template <typename TProcedure>
-        RPCPeerT& Bind(const syntropy::HashedString& name, TProcedure&& procedure);
+        RPCPeerT& Bind(const syntropy::Label& name, TProcedure&& procedure);
 
         /// \brief Call a remote procedure on the remote peer.
         /// If the transceiver is not running the behavior of this method is undefined.
         /// \param name Procedure to call.
         /// \param arguments Arguments passed to the function.
         template <typename... TArguments>
-        void Call(const syntropy::HashedString& name, TArguments&&... arguments);
+        void Call(const syntropy::Label& name, TArguments&&... arguments);
 
         /// \brief Bind a new procedure that is called whenever an error occurs.
         /// \param procedure Procedure to bind.
@@ -145,7 +145,7 @@ namespace synchrony
 
     template <typename TStream>
     template <typename TProcedure>
-    inline RPCPeerT<TStream>& RPCPeerT<TStream>::Bind(const syntropy::HashedString& name, TProcedure&& procedure)
+    inline RPCPeerT<TStream>& RPCPeerT<TStream>::Bind(const syntropy::Label& name, TProcedure&& procedure)
     {
         rpc_server_.Bind(name, std::forward<TProcedure>(procedure));
 
@@ -154,7 +154,7 @@ namespace synchrony
 
     template <typename TStream>
     template <typename... TArguments>
-    inline void RPCPeerT<TStream>::Call(const syntropy::HashedString& name, TArguments&&... arguments)
+    inline void RPCPeerT<TStream>::Call(const syntropy::Label& name, TArguments&&... arguments)
     {
         rpc_client_.Call(name, std::forward<TArguments>(arguments)...);
     }

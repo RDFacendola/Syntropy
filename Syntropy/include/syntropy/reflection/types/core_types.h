@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 #include "syntropy/containers/context.h"
 #include "syntropy/math/hash.h"
 
@@ -21,9 +21,9 @@ namespace syntropy::reflection
     /************************************************************************/
 
     template <>
-    struct ClassDeclarationT<HashedString>
+    struct ClassDeclarationT<Label>
     {
-        static constexpr const char* name_{ "syntropy::HashedString" };
+        static constexpr const char* name_{ "syntropy::Label" };
     };
 
     /************************************************************************/

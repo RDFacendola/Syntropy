@@ -11,7 +11,7 @@
 
 #include "syntropy/memory/memory_buffer.h"
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 
 namespace syntropy
 {
@@ -101,12 +101,12 @@ namespace syntropy
             /// \brief Get the address of a function by name.
             /// \param function_name Name of the function.
             /// \return Returns a pointer to the requested function. Returns nullptr if no such function could be found.
-            void* GetFunctionAddress(const HashedString& function_name);
+            void* GetFunctionAddress(const Label& function_name);
 
             /// \brief Register an address for a symbolic function name.
             /// \param function_name Symbolic function name.
             /// \param function_address Actual address of the function.
-            void RegisterFunctionAddress(const HashedString& function_name, void* function_address);
+            void RegisterFunctionAddress(const Label& function_name, void* function_address);
 
         private:
 
@@ -118,7 +118,7 @@ namespace syntropy
 
             VMExecutionContext execution_context_;              ///< \brief Execution context passed to the instructions.
 
-            std::unordered_map<HashedString, void*> function_address_table_;        ///< \brief Maps each function name with its actual pointer in memory.
+            std::unordered_map<Label, void*> function_address_table_;        ///< \brief Maps each function name with its actual pointer in memory.
 
             // Registers
 

@@ -25,7 +25,7 @@ namespace syntropy::reflection
         aliases_classes_.reserve(1024);
     }
 
-    const Class* Reflection::GetClass(const HashedString& class_name) const noexcept
+    const Class* Reflection::GetClass(const Label& class_name) const noexcept
     {
         if (auto it = default_classes_.find(class_name); it != default_classes_.end())
         {
@@ -90,7 +90,7 @@ namespace syntropy::reflection
     /* METHODS                                                              */
     /************************************************************************/
 
-    const Class* GetClass(const HashedString& class_name) noexcept
+    const Class* GetClass(const Label& class_name) noexcept
     {
         return Reflection::GetInstance().GetClass(class_name);
     }

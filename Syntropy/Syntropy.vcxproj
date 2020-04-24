@@ -80,7 +80,7 @@
     <ClInclude Include="include\syntropy\application\command_parser.h" />
     <ClInclude Include="include\syntropy\containers\array.h" />
     <ClInclude Include="include\syntropy\containers\context.h" />
-    <ClInclude Include="include\syntropy\containers\hashed_string.h" />
+    <ClInclude Include="include\syntropy\types\label.h" />
     <ClInclude Include="include\syntropy\containers\map.h" />
     <ClInclude Include="include\syntropy\types\range.h" />
     <ClInclude Include="include\syntropy\containers\set.h" />

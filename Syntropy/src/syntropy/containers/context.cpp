@@ -26,7 +26,7 @@ namespace syntropy
         /// \brief Create a context by name.
         /// \param Full name of the context.
         /// \param Parent context.
-        InnerContext(const HashedString& name, const InnerContext* parent)
+        InnerContext(const Label& name, const InnerContext* parent)
             : name_(name)
             , parent_(parent)
         {
@@ -50,7 +50,7 @@ namespace syntropy
             return !!other_context;
         }
 
-        HashedString name_;                         ///< \brief Full name of the context.
+        Label name_;                         ///< \brief Full name of the context.
 
         const InnerContext* parent_;                ///< \brief Parent context. nullptr if root context. Non-owning pointer.
     };
@@ -75,7 +75,7 @@ namespace syntropy
 
         /// \brief Get a context by name.
         /// The method will create a new context if none is found.
-        const InnerContext& GetContextByName(const HashedString& name) const
+        const InnerContext& GetContextByName(const Label& name) const
         {
             if (!name)
             {
@@ -111,7 +111,7 @@ namespace syntropy
 
     private:
 
-        using TContextMap = std::unordered_map<HashedString, std::unique_ptr<InnerContext>>;
+        using TContextMap = std::unordered_map<Label, std::unique_ptr<InnerContext>>;
 
         /// \brief Create a new pool of contexts.
         Pool()
@@ -143,19 +143,19 @@ namespace syntropy
 
     }
 
-    Context::Context(const HashedString& name)
+    Context::Context(const Label& name)
         : context_(std::addressof(Pool::GetInstance().GetContextByName(name)))
     {
 
     }
 
     Context::Context(const char* name)
-        : Context(HashedString(name))
+        : Context(Label(name))
     {
 
     }
 
-    Context::operator const HashedString&() const
+    Context::operator const Label&() const
     {
         return GetName();
     }
@@ -170,12 +170,12 @@ namespace syntropy
         return context_ != other.context_;      // Flyweight, check by address.
     }
 
-    Context Context::operator |(const HashedString& subcontext) const
+    Context Context::operator |(const Label& subcontext) const
     {
         return Context(context_->name_.GetString() + kSeparator + subcontext.GetString());
     }
 
-    const HashedString& Context::GetName() const
+    const Label& Context::GetName() const
     {
         return context_->name_;
     }

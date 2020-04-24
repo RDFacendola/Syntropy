@@ -15,7 +15,7 @@ namespace syntropy::reflection
 
     }
 
-    const HashedString& Property::GetName() const noexcept
+    const Label& Property::GetName() const noexcept
     {
         return name_;
     }

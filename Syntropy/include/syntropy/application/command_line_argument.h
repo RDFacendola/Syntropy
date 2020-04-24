@@ -8,7 +8,7 @@
 #include "syntropy/types/string.h"
 
 #include "syntropy/containers/vector.h"
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 
 namespace syntropy
 {
@@ -34,26 +34,26 @@ namespace syntropy
         /// \brief Create a new command line argument from explicit name and value.
         /// \param name Name of the command line argument.
         /// \param value Argument value.
-        CommandLineArgument(const HashedString& name, String value);
+        CommandLineArgument(const Label& name, String value);
 
         /// \brief Create a new command line argument from explicit name and values.
         /// \param name Name of the command line argument.
         /// \param values Argument values.
-        CommandLineArgument(const HashedString& name, Vector<String> values);
+        CommandLineArgument(const Label& name, Vector<String> values);
 
         /// \brief Create a new command line argument from explicit name and values in a range.
         /// \param name Name of the command line argument.
         /// \param first Iterator to the first argument value.
         /// \param last Iterator past the last argument value.
         template <typename TInputIterator>
-        CommandLineArgument(const HashedString& name, TInputIterator first, TInputIterator last);
+        CommandLineArgument(const Label& name, TInputIterator first, TInputIterator last);
 
         /// \brief Default assignment operator.
         CommandLineArgument& operator=(const CommandLineArgument&) = default;
 
         /// \brief Get the argument name.
         /// \return Returns the argument name.
-        const HashedString& GetName() const;
+        const Label& GetName() const;
 
         /// \brief Get the first argument value.
         /// Do not call if the argument is empty.
@@ -71,7 +71,7 @@ namespace syntropy
     private:
 
         /// \brief Argument name.
-        HashedString name_;
+        Label name_;
 
         /// \brief Argument values.
         Vector<String> values_;
@@ -83,7 +83,7 @@ namespace syntropy
 
     // CommandLineArgument.
 
-    inline CommandLineArgument::CommandLineArgument(const HashedString& name, Vector<String> values)
+    inline CommandLineArgument::CommandLineArgument(const Label& name, Vector<String> values)
         : name_(name)
         , values_(std::move(values))
     {
@@ -91,20 +91,20 @@ namespace syntropy
     }
 
     template <typename TInputIterator>
-    inline CommandLineArgument::CommandLineArgument(const HashedString& name, TInputIterator first, TInputIterator last)
+    inline CommandLineArgument::CommandLineArgument(const Label& name, TInputIterator first, TInputIterator last)
         : name_(name)
         , values_(first, last)
     {
 
     }
 
-    inline CommandLineArgument::CommandLineArgument(const HashedString& name, String value)
+    inline CommandLineArgument::CommandLineArgument(const Label& name, String value)
         : name_(name)
     {
         values_.emplace_back(std::move(value));
     }
 
-    inline const HashedString& CommandLineArgument::GetName() const
+    inline const Label& CommandLineArgument::GetName() const
     {
         return name_;
     }

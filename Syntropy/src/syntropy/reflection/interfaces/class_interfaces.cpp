@@ -6,7 +6,7 @@ namespace syntropy::reflection
     /* ENUMERATION                                                          */
     /************************************************************************/
 
-    Any Enumeration::GetValueByName(const HashedString& value_name) const
+    Any Enumeration::GetValueByName(const Label& value_name) const
     {
         auto it = values_.find(value_name);
 

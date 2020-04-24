@@ -15,7 +15,7 @@
 
 #include "syntropy/patterns/utility.h"
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 
 #include "syntropy/patterns/multi_interface.h"
 
@@ -73,12 +73,12 @@ namespace syntropy::reflection
 
         /// \brief Get the default class name.
         /// \return Returns the default class name.
-        const HashedString& GetDefaultName() const noexcept;
+        const Label& GetDefaultName() const noexcept;
 
         /// \brief Get all the class name aliases except for the default class name.
         /// Certain types have different name aliases (like signed short int, short, short int which refer to the same type).
         /// \brief Returns a list containing the class names.
-        const std::vector<HashedString>& GetNameAliases() const noexcept;
+        const std::vector<Label>& GetNameAliases() const noexcept;
 
         /// \brief Get the list of the base classes of this class.
         /// \return Returns the list of classes that are extended by this class.
@@ -87,7 +87,7 @@ namespace syntropy::reflection
         /// \brief Get a class property by name.
         /// Only properties defined in this class are checked.
         /// \return Returns a pointer to the requested property. If no such property could be found returns nullptr.
-        const Property* GetProperty(const HashedString& property_name) const noexcept;
+        const Property* GetProperty(const Label& property_name) const noexcept;
 
         /// \brief Get the list of properties supported by this class.
         /// \return Returns the list of properties supported by this class.
@@ -116,9 +116,9 @@ namespace syntropy::reflection
         // Register this class to the reflection system.
         void RegisterClass();
 
-        HashedString default_name_;                     ///< \brief Default class name.
+        Label default_name_;                     ///< \brief Default class name.
 
-        std::vector<HashedString> name_aliases_;        ///< \brief Class name aliases.
+        std::vector<Label> name_aliases_;        ///< \brief Class name aliases.
 
         std::vector<const Class*> base_classes_;        ///< \brief List of all base classes.
 
@@ -157,7 +157,7 @@ namespace syntropy::reflection
         /// \brief Define a name alias for this class.
         /// If the provided alias already exists, this method does nothing.
         /// \param name New name alias.
-        void AddNameAlias(HashedString name_alias)
+        void AddNameAlias(Label name_alias)
         {
             if (std::find(name_aliases_.begin(), name_aliases_.end(), name_alias) == name_aliases_.end())
             {
@@ -188,7 +188,7 @@ namespace syntropy::reflection
         /// \param accessors Member field or methods used to access the property being defined.
         /// \return Returns the property definition.
         template <typename... TAccessors>
-        auto AddProperty(const HashedString& property_name, TAccessors... accessors)
+        auto AddProperty(const Label& property_name, TAccessors... accessors)
         {
             // #TODO Check if TAccessors refer to TClass.
 

@@ -11,7 +11,7 @@ namespace syntropy
     /* TEST CASE                                                            */
     /************************************************************************/
 
-    const HashedString& TestCase::GetName() const
+    const Label& TestCase::GetName() const
     {
         return name_;
     }

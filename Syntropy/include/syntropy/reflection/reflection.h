@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <typeindex>
 
-#include "syntropy/containers/hashed_string.h"
+#include "syntropy/types/label.h"
 #include "syntropy/containers/context.h"
 
 #include "syntropy/reflection/class.h"
@@ -42,7 +42,7 @@ namespace syntropy::reflection
         /// A default class name always takes precedence over aliases.
         /// \param class_name Name or alias of the class to get.
         /// \return Returns a pointer to the class whose name is the specified one, if any. Returns nullptr otherwise.
-        const Class* GetClass(const HashedString& class_name) const noexcept;
+        const Class* GetClass(const Label& class_name) const noexcept;
 
         /// \brief Get a class instance by type index.
         /// This method can be used to retrieve the dynamic class of a polymorphic object.
@@ -59,9 +59,9 @@ namespace syntropy::reflection
         /// \param class_t Class to register.
         void RegisterClass(const Class& class_t);
 
-        std::unordered_map<HashedString, const Class*> default_classes_;            ///< \brief Associates a default name to each registered class.
+        std::unordered_map<Label, const Class*> default_classes_;            ///< \brief Associates a default name to each registered class.
 
-        std::unordered_map<HashedString, const Class*> aliases_classes_;            ///< \brief Associates each name alias to each registered class.
+        std::unordered_map<Label, const Class*> aliases_classes_;            ///< \brief Associates each name alias to each registered class.
 
         std::unordered_map<std::type_index, const Class*>  typeindex_classes_;      ///< \brief Associates a type_index to each registered class.
     };
@@ -73,7 +73,7 @@ namespace syntropy::reflection
     /// \brief Get a class by name.
     /// \param class_name Name or alias of the class to get.
     /// \return Returns a pointer to the class whose name is the specified one, if any. Returns nullptr otherwise.
-    const Class* GetClass(const HashedString& class_name) noexcept;
+    const Class* GetClass(const Label& class_name) noexcept;
 
     /// \brief Get a class by type info.
     /// This method can be used to retrieve the dynamic class of a polymorphic object.
