@@ -29,13 +29,13 @@ namespace syntropy
     public:
 
         /// \brief Create an empty hashed string.
-        HashedString() = default;
+        HashedString();
 
         /// \brief Copy constructor.
         HashedString(const HashedString& other) noexcept = default;
 
         /// \brief Create a new hashed string from a string.
-        HashedString(std::string string);
+        HashedString(const std::string& string);
 
         /// \brief Create a new hashed string from a null-terminated string.
         HashedString(const char* string);
@@ -58,49 +58,11 @@ namespace syntropy
 
     private:
 
-        /// \brief Used to index hashed strings.
-        /// Static member variables are avoided to prevent static initialization order fiasco (some hashed strings may be created during static initialization).
-        class Atlas
-        {
-        public:
-
-            /// \brief Get the singleton instance.
-            static Atlas& GetInstance()
-            {
-                static Atlas instance;
-                return instance;
-            }
-
-            /// \brief Register a new entry to the atlas.
-            /// \return Returns the hash-string pair.
-            std::tuple<std::int64_t, const std::string*> AddEntry(std::string string)
-            {
-                auto hash = Hash::FastHash64(syntropy::ConstMemoryRange{ string.data(), Bytes(string.size()) });
-
-                if (auto it = registry_.find(hash); it != std::end(registry_))
-                {
-                    return { hash, it->second.get() };                                                          // The string was already registered to the atlas.
-                }
-                else
-                {
-                    auto string_ptr = std::make_unique<std::string>(std::move(string));
-
-                    return { hash, registry_.emplace(hash, std::move(string_ptr)).first->second.get() };        // Add a new string to the atlas.
-                }
-            }
-
-        private:
-
-            /// \brief Default constructor.
-            Atlas() = default;
-
-            std::unordered_map<std::int64_t, std::unique_ptr<std::string>> registry_;         ///< \brief Associate hashes with their respective strings.
-        };
+        /// \brief Get a dictionary of all registered hashed strings.
+        static std::unordered_map<std::int64_t, std::string>& GetDictionary();
 
         /// \brief String hash.
-        std::int64_t hash_;                                                             ///< \brief String hash.
-
-        const std::string* string_{ nullptr };                                               ///< \brief Pointer to the actual string. Non-owning pointer.
+        std::int64_t hash_;
     };
 
     /************************************************************************/
@@ -128,9 +90,16 @@ namespace syntropy
 
     // HashedString.
 
-    inline HashedString::HashedString(std::string string)
+    inline HashedString::HashedString()
+        : HashedString("")
     {
-        std::tie(hash_, string_) = Atlas::GetInstance().AddEntry(std::move(string));
+
+    }
+
+    inline HashedString::HashedString(const std::string& string)
+        : hash_(Hash::FastHash64(ConstMemoryRange{ string.data(), Bytes{ static_cast<std::int64_t>(string.size()) } }))
+    {
+        GetDictionary().insert_or_assign(hash_, string);
     }
 
     inline HashedString::HashedString(const char* string)
@@ -153,7 +122,7 @@ namespace syntropy
 
     inline const std::string& HashedString::GetString() const noexcept
     {
-        return *string_;
+        return GetDictionary()[hash_];
     }
 
     inline HashedString::operator bool() const noexcept
@@ -165,8 +134,14 @@ namespace syntropy
     {
         using std::swap;
 
-        swap(other.string_, string_);
         swap(other.hash_, hash_);
+    }
+
+    inline std::unordered_map<std::int64_t, std::string>& HashedString::GetDictionary()
+    {
+        static auto dictionary = std::unordered_map<std::int64_t, std::string>{};
+
+        return dictionary;
     }
 
     // Non-member functions.
