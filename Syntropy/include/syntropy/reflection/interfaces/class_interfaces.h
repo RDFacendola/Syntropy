@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "syntropy/types/string.h"
+
 #include "syntropy/type_traits.h"
 
 #include "syntropy/reflection/any.h"

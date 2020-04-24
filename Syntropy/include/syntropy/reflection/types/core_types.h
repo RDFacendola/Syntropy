@@ -41,13 +41,4 @@ namespace syntropy::reflection
         }
     };
 
-    /************************************************************************/
-    /* HASHES                                                               */
-    /************************************************************************/
-
-    template <typename TString>
-    struct ClassDeclarationT<StringHasher32<TString>>
-    {
-        static constexpr const char* name_{ "syntropy::StringHasher32" };
-    };
 }
