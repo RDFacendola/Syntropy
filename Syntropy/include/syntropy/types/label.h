@@ -6,11 +6,7 @@
 
 #pragma once
 
-#include <utility>
-#include <memory>
 #include <unordered_map>
-#include <type_traits>
-#include <cstdint>
 
 #include "syntropy/types/string.h"
 #include "syntropy/memory/memory_range.h"
