@@ -1,12 +1,10 @@
 
 /// \file virtul_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains memory resources using system virtual memory.
+/// \brief This header is part of the Syntropy allocators module. It contains memory resources using system virtual memory.
 ///
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
-
-#include <algorithm>
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -14,8 +12,7 @@
 #include "syntropy/memory/memory_range.h"
 
 #include "syntropy/memory/virtual_memory.h"
-#include "syntropy/memory/virtual_memory_buffer.h"
-#include "syntropy/memory/virtual_memory_page.h"
+#include "syntropy/memory/virtual_memory_range.h"
 
 #include "syntropy/diagnostics/assert.h"
 
@@ -77,11 +74,6 @@ namespace syntropy
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
-        /// \brief Get the maximum allocation size that can be handled by this allocator.
-        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this allocator.
-        Bytes GetMaxAllocationSize() const noexcept;
-
         /// \brief Swap this allocator with the provided instance.
         void Swap(VirtualMemoryResource& rhs) noexcept;
 
@@ -93,8 +85,8 @@ namespace syntropy
         /// \brief Represents a list used to track free pages.
         struct FreeList;
 
-        /// \brief Virtual memory buffer reserved by this allocator.
-        VirtualMemoryBuffer virtual_memory_;
+        /// \brief Virtual memory range reserved for this resource.
+        VirtualMemoryRange virtual_memory_;
 
         /// \brief Pointer past the last allocated address.
         MemoryAddress head_;
@@ -110,6 +102,10 @@ namespace syntropy
 
     };
 
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
     /// \brief Swaps two VirtualMemoryResources.
     void swap(syntropy::VirtualMemoryResource& lhs, syntropy::VirtualMemoryResource& rhs) noexcept;
 
@@ -121,7 +117,7 @@ namespace syntropy
 
     inline VirtualMemoryResource::VirtualMemoryResource(Bytes capacity, Bytes page_size) noexcept
         : virtual_memory_(capacity)
-        , head_(virtual_memory_.GetRange().Begin())
+        , head_(virtual_memory_.Begin())
         , page_size_(Ceil(page_size, VirtualMemory::GetPageSize()))
         , page_alignment_(VirtualMemory::GetPageSize())
     {
@@ -166,11 +162,6 @@ namespace syntropy
     inline bool VirtualMemoryResource::Owns(const MemoryRange& block) const noexcept
     {
         return virtual_memory_.Contains(block);
-    }
-
-    inline Bytes VirtualMemoryResource::GetMaxAllocationSize() const noexcept
-    {
-        return page_size_;
     }
 
     inline void swap(syntropy::VirtualMemoryResource& lhs, syntropy::VirtualMemoryResource& rhs) noexcept

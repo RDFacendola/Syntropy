@@ -31,10 +31,12 @@
     <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
     <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory_range.h" />
+    <ClInclude Include="include\syntropy\allocators\virtual_memory_resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_virtual_memory.cpp" />
+    <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
   </ItemGroup>
 </Project>

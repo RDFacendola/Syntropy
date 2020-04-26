@@ -28,7 +28,7 @@ namespace syntropy
         {
             if (auto block = Allocate())
             {
-                VirtualMemoryRange{ block }.Commit();                   // Kernel call: commit the entire block.
+                VirtualMemory::Commit(block);           // Kernel call: commit the entire block.
 
                 return { block.Begin(), block.Begin() + size };
             }
@@ -63,9 +63,9 @@ namespace syntropy
 
             // Kernel call: decommit the entire block.
 
-            auto virtual_block = VirtualMemoryRange(block.Begin(), block.Begin() + page_size_);
+            auto virtual_block = MemoryRange(block.Begin(), block.Begin() + page_size_);
 
-            virtual_block.Decommit();
+            VirtualMemory::Decommit(virtual_block);
         }
     }
 
@@ -104,7 +104,7 @@ namespace syntropy
 
         auto head = block + page_size_;
 
-        if (head <= virtual_memory_.GetRange().End())
+        if (head <= virtual_memory_.End())
         {
             head_ = head;
 

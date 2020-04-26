@@ -18,6 +18,7 @@
 #include "syntropy/allocators/null_memory_resource.h"
 #include "syntropy/allocators/heap_memory_resource.h"
 #include "syntropy/allocators/stack_memory_resource.h"
+#include "syntropy/allocators/virtual_memory_resource.h"
 
 #include "syntropy/allocators/fixed_memory_resource.h"
 #include "syntropy/allocators/linear_memory_resource.h"
@@ -37,7 +38,7 @@ int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-    auto vmr = syntropy::VirtualMemoryRange(10_GiBytes);
+    auto vmr = syntropy::VirtualMemoryResource{ 10_GiBytes, 64_KiBytes };
 
 
     return 0;
