@@ -1,6 +1,6 @@
 
 /// \file macro.h
-/// \brief Contains utility macros.
+/// \brief This header is part of Syntropy language module. It contains generic macros.
 ///
 /// \author Raffaele D. Facendola - 2016
 
