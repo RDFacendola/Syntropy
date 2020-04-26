@@ -198,60 +198,6 @@ namespace syntropy::platform
     };
 
     /************************************************************************/
-    /* WINDOWS MEMORY                                                       */
-    /************************************************************************/
-
-    /// \brief Stateful details for the Windows memory.
-    class WindowsMemory
-    {
-    public:
-
-        static WindowsMemory& GetInstance()
-        {
-            static WindowsMemory instance;
-            return instance;
-        }
-
-        /// \brief Get the allocation granularity.
-        /// This value determines the granularity at which virtual memory can be reserved and released.
-        Bytes GetAllocationGranularity() const
-        {
-            return allocation_granularity_;
-        }
-
-        /// \brief Get the size of each virtual memory page.
-        /// This value determines the granularity at which virtual memory can be committed and decommitted.
-        Bytes GetPageSize() const
-        {
-            return page_size_;
-        }
-
-        /// \brief Get the alignment of each virtual memory page.
-        Alignment GetPageAlignment() const
-        {
-            return page_alignment_;
-        }
-
-    private:
-
-        WindowsMemory()
-        {
-            SYSTEM_INFO system_info;
-            GetSystemInfo(&system_info);
-
-            allocation_granularity_ = Bytes(system_info.dwAllocationGranularity);
-            page_size_ = Bytes(system_info.dwPageSize);
-            page_alignment_ = Alignment(page_size_);                        // Since each page can be committed at page size boundaries, the page size is also the alignment.
-        }
-
-        Bytes allocation_granularity_;      ///< \brief Memory allocation granularity, in bytes.
-
-        Bytes page_size_;                   ///< \brief Memory page size, in bytes.
-
-        Alignment page_alignment_;          ///< \brief Memory page alignment, in bytes.
-    };
-
-    /************************************************************************/
     /* PLATFORM DEBUGGER                                                    */
     /************************************************************************/
         
@@ -512,58 +458,6 @@ namespace syntropy::platform
         auto priority = ::GetThreadPriority(thread_handle);
 
         return priority_table[priority];
-    }
-
-    /************************************************************************/
-    /* PLATFORM MEMORY                                                      */
-    /************************************************************************/
-
-    Bytes PlatformMemory::GetPageSize()
-    {
-        return WindowsMemory::GetInstance().GetPageSize();
-    }
-
-    Alignment PlatformMemory::GetPageAlignment()
-    {
-        return WindowsMemory::GetInstance().GetPageAlignment();
-    }
-
-    MemoryRange PlatformMemory::Allocate(Bytes size)
-    {
-        MemoryAddress address = VirtualAlloc(0, *size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);           // Will allocate up to the next page boundary.
-
-        return { address, address + size };
-    }
-
-    MemoryRange PlatformMemory::Reserve(Bytes size)
-    {
-        MemoryAddress address = VirtualAlloc(0, *size, MEM_RESERVE, PAGE_READWRITE);                        // Will reserve up to the next page boundary.
-
-        return { address, address + size };
-    }
-
-    bool PlatformMemory::Release(const MemoryRange& memory_range)
-    {
-        if (memory_range)
-        {
-            return VirtualFree(memory_range.Begin(), 0, MEM_RELEASE) != 0;                                  // Will deallocate the entire previously-allocated range.
-        }
-
-        return true;
-    }
-
-    bool PlatformMemory::Commit(const MemoryRange& memory_range)
-    {
-        auto size = *memory_range.GetSize();
-
-        return VirtualAlloc(memory_range.Begin(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;             // Will commit each page containing at least one byte in the range.
-    }
-
-    bool PlatformMemory::Decommit(const MemoryRange& memory_range)
-    {
-        auto size = *memory_range.GetSize();
-
-        return VirtualFree(memory_range.Begin(), size, MEM_DECOMMIT) != 0;                                  // Will decommit each page containing at least one byte in the range.
     }
 
 }

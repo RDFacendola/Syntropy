@@ -28,8 +28,12 @@
     <ClInclude Include="include\syntropy\allocators\scope_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\memory_context.h" />
+    <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
+    <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
+    <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
+    <ClCompile Include="src\syntropy\hal\windows\hal_virtual_memory.cpp" />
   </ItemGroup>
 </Project>

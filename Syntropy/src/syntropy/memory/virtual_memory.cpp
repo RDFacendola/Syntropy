@@ -1,51 +1,46 @@
 #include "syntropy/memory/virtual_memory.h"
 
-#include "syntropy/platform/os/os.h"
-
-#include "syntropy/math/math.h"
-
-#include "syntropy/diagnostics/diagnostics.h"
+#include "syntropy/hal/hal_virtual_memory.h"
 
 namespace syntropy
 {
-
     /************************************************************************/
     /* VIRTUAL MEMORY                                                       */
     /************************************************************************/
 
     Bytes VirtualMemory::GetPageSize()
     {
-        return platform::PlatformMemory::GetPageSize();
+        return HALVirtualMemory::GetPageSize();
     }
 
     Alignment VirtualMemory::GetPageAlignment()
     {
-        return platform::PlatformMemory::GetPageAlignment();
+        return HALVirtualMemory::GetPageAlignment();
     }
 
     MemoryRange VirtualMemory::Reserve(Bytes size)
     {
-        return platform::PlatformMemory::Reserve(size);
+        return HALVirtualMemory::Reserve(size);
     }
 
     MemoryRange VirtualMemory::Allocate(Bytes size)
     {
-        return platform::PlatformMemory::Allocate(size);
+        return HALVirtualMemory::Allocate(size);
     }
 
     bool VirtualMemory::Release(const MemoryRange& memory_range)
     {
-        return platform::PlatformMemory::Release(memory_range);
+        return HALVirtualMemory::Release(memory_range);
     }
 
     bool VirtualMemory::Commit(const MemoryRange& memory_range)
     {
-        return platform::PlatformMemory::Commit(memory_range);
+        return HALVirtualMemory::Commit(memory_range);
     }
 
     bool VirtualMemory::Decommit(const MemoryRange& memory_range)
     {
-        return platform::PlatformMemory::Decommit(memory_range);
+        return HALVirtualMemory::Decommit(memory_range);
     }
 
 }
