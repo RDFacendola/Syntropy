@@ -12,6 +12,7 @@
 
 #include "syntropy/allocators/null_memory_resource.h"
 #include "syntropy/allocators/heap_memory_resource.h"
+#include "syntropy/allocators/stack_memory_resource.h"
 
 #include "syntropy/diagnostics/assert.h"
 
@@ -21,7 +22,7 @@ int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-     auto nmr = syntropy::HeapMemoryResource{};
+     auto nmr = syntropy::StackMemoryResource<1024>{};
  
      nmr.Allocate(10_Bytes);
 

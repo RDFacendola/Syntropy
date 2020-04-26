@@ -1,6 +1,6 @@
 
 /// \file heap_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains memory resources using system heap memory.
+/// \brief This header is part of the Syntropy allocators module. It contains memory resources using system heap memory.
 ///
 /// \author Raffaele D. Facendola - 2017
 

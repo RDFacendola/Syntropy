@@ -1,12 +1,12 @@
 
 /// \file stack_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains memory resources using system stack memory.
+/// \brief This header is part of the Syntropy allocators module. It contains memory resources using system stack memory.
 ///
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
 
-#include <type_traits>
+#include "syntropy/language/type_traits.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -39,7 +39,7 @@ namespace syntropy
         ~StackMemoryResource() = default;
 
         /// \brief No assignment operator.
-        StackMemoryResource& operator=(VirtualMemoryResource rhs) = delete;
+        StackMemoryResource& operator=(StackMemoryResource rhs) = delete;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate.
@@ -67,11 +67,6 @@ namespace syntropy
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
-
-        /// \brief Get the maximum allocation size that can be handled by this allocator.
-        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this allocator.
-        Bytes GetMaxAllocationSize() const noexcept;
 
     private:
 
@@ -133,12 +128,6 @@ namespace syntropy
     inline bool StackMemoryResource<kSize, kAlignment>::Owns(const MemoryRange& block) const noexcept
     {
         return ConstMemoryRange{ &storage_, Bytes{kSize} }.Contains(block);
-    }
-
-    template <std::int64_t kSize, std::align_val_t kAlignment>
-    inline Bytes StackMemoryResource<kSize, kAlignment>::GetMaxAllocationSize() const noexcept
-    {
-        return Bytes(kSize);
     }
 
 }
