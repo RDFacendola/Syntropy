@@ -22,6 +22,7 @@
     <ClInclude Include="include\syntropy\memory\alignment.h" />
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\memory\memory_address.h" />
+    <ClInclude Include="include\syntropy\memory\memory_range.h" />
     <ClInclude Include="include\syntropy\memory\observer_ptr.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
   </ItemGroup>

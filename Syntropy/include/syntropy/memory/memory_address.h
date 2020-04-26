@@ -1,6 +1,6 @@
 
 /// \file memory_address.h
-/// \brief This header is part of the syntropy memory module. It contains the definition of the address type and related functions.
+/// \brief This header is part of the Syntropy memory module. It contains the definition of the address type and related functions.
 ///
 /// \author Raffaele D. Facendola - August 2018
 

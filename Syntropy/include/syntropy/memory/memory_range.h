@@ -1,15 +1,14 @@
 
 /// \file memory_range.h
-/// \brief This header is part of the syntropy memory management system. It contains classes and definitions for memory ranges.
+/// \brief This header is part of the Syntropy memory module. It contains classes and definitions for memory ranges.
 ///
 /// \author Raffaele D. Facendola - August 2018
 
 #pragma once
 
-#include "syntropy/memory/bytes.h"
-#include "syntropy/memory/memory_address.h"
+#include "syntropy/core/range.h"
 
-#include "syntropy/types/range.h"
+#include "syntropy/memory/memory_address.h"
 
 namespace syntropy
 {
@@ -46,19 +45,19 @@ namespace syntropy
     // Non-member functions.
 
     template <typename TType>
-    MemoryRange MakeMemoryRange(TType& data) noexcept
+    inline MemoryRange MakeMemoryRange(TType& data) noexcept
     {
         return { &data, &data + 1 };
     }
 
     template <typename TType>
-    ConstMemoryRange MakeMemoryRange(const TType& data) noexcept
+    inline ConstMemoryRange MakeMemoryRange(const TType& data) noexcept
     {
         return { &data, &data + 1 };
     }
 
     template <typename TType>
-    ConstMemoryRange MakeConstMemoryRange(const TType& data) noexcept
+    inline ConstMemoryRange MakeConstMemoryRange(const TType& data) noexcept
     {
         return MakeMemoryRange(data);
     }

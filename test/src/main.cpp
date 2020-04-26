@@ -7,6 +7,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_address.h"
+#include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/observer_ptr.h"
 
 #include "syntropy/diagnostics/assert.h"
@@ -21,6 +22,8 @@ int main(int argc, char **argv)
 
     auto aof = syntropy::AlignmentOf(fun);
     auto ma = syntropy::MemoryAddress(&fun);
+
+    auto rfun = syntropy::MakeMemoryRange(fun);
 
     SYNTROPY_ASSERT(false);
 
