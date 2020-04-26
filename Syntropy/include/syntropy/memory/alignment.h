@@ -1,16 +1,20 @@
 
 /// \file alignment.h
-/// \brief This header is part of the syntropy memory management system. It contains the definition of the Alignment type and related functions.
+/// \brief This header is part of Syntropy memory module. It contains the definition of the Alignment type and related functions.
 ///
 /// \author Raffaele D. Facendola - August 2018
 
 #pragma once
 
-#include <ostream>
+#include "syntropy/syntropy.h"
+
+#include "syntropy/math/arithmetic.h"
 
 #include "syntropy/diagnostics/assert.h"
+
 #include "syntropy/memory/bytes.h"
-#include "syntropy/math/math.h"
+
+#include "syntropy/language/stream.h"
 
 namespace syntropy
 {
@@ -66,6 +70,10 @@ namespace syntropy
         std::int64_t alignment_ = 1u;
 
     };
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
     /// \brief Equality comparison for Alignment.
     /// \return Returns true if lhs and rhs refer to the same alignment, returns false otherwise.
@@ -123,7 +131,8 @@ namespace syntropy
     constexpr Alignment::Alignment(Bytes alignment)
         : alignment_(*alignment)
     {
-        SYNTROPY_ASSERT(IsPow2(alignment_));        // Alignment are expected to be power-of-two.
+        // Alignment are expected to be power-of-two.
+        SYNTROPY_ASSERT(IsPow2(alignment_));
     }
 
     constexpr std::int64_t Alignment::operator*() const noexcept

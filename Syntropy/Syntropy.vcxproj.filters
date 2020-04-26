@@ -11,5 +11,6 @@
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\math\arithmetic.h" />
+    <ClInclude Include="include\syntropy\memory\alignment.h" />
   </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@
 #include "syntropy/language/macro.h"
 
 #include "syntropy/memory/bytes.h"
+#include "syntropy/memory/alignment.h"
 #include "syntropy/memory/observer_ptr.h"
 
 #include "syntropy/diagnostics/assert.h"
@@ -16,6 +17,8 @@ int main(int argc, char **argv)
     using namespace syntropy::literals;
 
     auto fun = std::string(SYNTROPY_FUNCTION);
+
+    auto aof = syntropy::AlignmentOf(fun);
 
     SYNTROPY_ASSERT(false);
 

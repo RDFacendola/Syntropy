@@ -18,6 +18,7 @@
     <ClInclude Include="include\syntropy\language\type_traits.h" />
     <ClInclude Include="include\syntropy\language\utility.h" />
     <ClInclude Include="include\syntropy\math\arithmetic.h" />
+    <ClInclude Include="include\syntropy\memory\alignment.h" />
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\memory\observer_ptr.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
