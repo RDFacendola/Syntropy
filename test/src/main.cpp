@@ -10,6 +10,8 @@
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/observer_ptr.h"
 
+#include "syntropy/allocators/memory_resource.h"
+
 #include "syntropy/allocators/null_memory_resource.h"
 #include "syntropy/allocators/heap_memory_resource.h"
 #include "syntropy/allocators/stack_memory_resource.h"
@@ -32,23 +34,12 @@ int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-    auto nmr0 = syntropy::StackMemoryResource<1024>{};
-    auto nmr1 = syntropy::StackMemoryResource<1024>{};
-
-
-    auto lmr = syntropy::LinearMemoryResource<syntropy::StackMemoryResource<1024>>(1024_Bytes);
-    auto pmr = syntropy::PoolMemoryResource<syntropy::StackMemoryResource<1024>>(syntropy::BytesOf<int>(), 1024_Bytes);
+    auto& mr = syntropy::GetDefaultMemoryResource();
 
     {
-        auto a = syntropy::MakeScopeAllocator(lmr);
-
-        auto i = a.New<int>(5);
-        auto v = a.New<std::vector<int>>();
+        auto x = mr.Allocate(20_Bytes);
 
     }
-
-    lmr.Allocate(15_Bytes);
-    pmr.Allocate(4_Bytes);
 
     return 0;
 }

@@ -1,12 +1,15 @@
 
 /// \file memory_resource.h
-/// \brief This header is part of the syntropy memory management. It contains definitions and interfaces for memory resource.
+/// \brief This header is part of the Syntropy allocators module. It contains definitions and interfaces for memory resource.
 ///
 /// \author Raffaele D. Facendola - 2020
 
 #pragma once
 
+#include "syntropy/syntropy.h"
+
 #include "syntropy/memory/bytes.h"
+#include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_range.h"
 
 #include "syntropy/allocators/heap_memory_resource.h"
@@ -77,11 +80,6 @@ namespace syntropy
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
         virtual bool Owns(const MemoryRange& block) const noexcept = 0;
 
-        /// \brief Get the maximum allocation size that can be handled by this allocator.
-        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this allocator.
-        virtual Bytes GetMaxAllocationSize() const noexcept = 0;
-
     private:
 
         /// \brief Thread-local default memory resource.
@@ -116,8 +114,6 @@ namespace syntropy
         virtual void Deallocate(const MemoryRange& block, Alignment alignment) override;
 
         virtual bool Owns(const MemoryRange& block) const noexcept override;
-
-        virtual Bytes GetMaxAllocationSize() const noexcept override;
 
         /// \brief Get the underlying memory resource.
         TMemoryResource& GetMemoryResource();
@@ -197,12 +193,6 @@ namespace syntropy
     inline bool MemoryResourceT<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
         return memory_resource_.Owns(block);
-    }
-
-    template <typename TMemoryResource>
-    inline Bytes MemoryResourceT<TMemoryResource>::GetMaxAllocationSize() const noexcept
-    {
-        return memory_resource_.GetMaxAllocationSize();
     }
 
     template <typename TMemoryResource>
