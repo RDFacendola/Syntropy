@@ -1,15 +1,14 @@
 
 /// \file observer_ptr.h
-/// \brief This header is part of syntropy types. It contains classes used to wrap raw pointers.
+/// \brief This header is part of Syntropy memory module. It contains classes used to wrap raw pointers.
 ///
 /// \author Raffaele D. Facendola - 2020.
 
 #pragma once
 
-#include <cstddef>
-#include <functional>
+#include "syntropy/syntropy.h"
 
-#include "syntropy/type_traits.h"
+#include "syntropy/language/type_traits.h"
 
 namespace syntropy
 {
