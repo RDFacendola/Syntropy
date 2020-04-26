@@ -1,13 +1,16 @@
 
 /// \file range.h
-/// \brief This header is part of syntropy types. It contains definition of a range.
+/// \brief This header is part of Syntropy core module. It contains definition of ranges.
 ///
 /// \author Raffaele D. Facendola - 2017
 
 #pragma once
 
-#include <type_traits>
-#include <ostream>
+#include "syntropy/syntropy.h"
+
+#include "syntropy/language/type_traits.h"
+#include "syntropy/language/utility.h"
+#include "syntropy/language/stream.h"
 
 namespace syntropy
 {

@@ -5,5 +5,8 @@
     <ClInclude Include="include\syntropy\memory\observer_ptr.h" />
     <ClInclude Include="include\syntropy\language\type_traits.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
+    <ClInclude Include="include\syntropy\core\range.h" />
+    <ClInclude Include="include\syntropy\language\utility.h" />
+    <ClInclude Include="include\syntropy\language\stream.h" />
   </ItemGroup>
 </Project>
