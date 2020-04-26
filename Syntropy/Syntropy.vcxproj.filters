@@ -32,6 +32,7 @@
     <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory_range.h" />
     <ClInclude Include="include\syntropy\allocators\virtual_memory_resource.h" />
+    <ClInclude Include="include\syntropy\patterns\scope_guard.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

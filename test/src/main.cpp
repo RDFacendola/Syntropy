@@ -1,8 +1,11 @@
 
 #include <vector>
+#include <iostream>
 #include <string>
 
 #include "syntropy/language/macro.h"
+
+#include "syntropy/patterns/scope_guard.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -37,6 +40,13 @@
 int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
+
+    {
+        auto sg0 = syntropy::MakeScopeGuard([]() { std::cout << "sg0\n"; });
+        auto sg1 = syntropy::MakeScopeGuard([]() { std::cout << "sg1\n"; });
+
+        sg1.Dismiss();
+    }
 
     auto vmr = syntropy::VirtualMemoryResource{ 10_GiBytes, 64_KiBytes };
 
