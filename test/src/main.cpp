@@ -10,6 +10,7 @@
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/observer_ptr.h"
 
+#include "syntropy/allocators/memory_context.h"
 #include "syntropy/allocators/memory_resource.h"
 
 #include "syntropy/allocators/null_memory_resource.h"
@@ -34,11 +35,15 @@ int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-    auto& mr = syntropy::GetDefaultMemoryResource();
+
+    auto hmr = syntropy::HeapMemoryResource{};
 
     {
-        auto x = mr.Allocate(20_Bytes);
+        auto mc = syntropy::MakeMemoryContext(hmr);
 
+        auto& mr = syntropy::GetDefaultMemoryResource();
+
+        auto x = mr.Allocate(20_Bytes);
     }
 
     return 0;
