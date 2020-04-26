@@ -67,3 +67,32 @@
 /// \brief Drops the first five arguments from the argument list.
 #define SYNTROPY_DROP_5(_0, _1, _2, _3, _4, ...) \
     __VA_ARGS__
+
+/// \brief Expands to the current file name.
+#define SYNTROPY_FILE \
+    __FILE__
+
+/// \brief Expands to the current line number.
+#define SYNTROPY_LINE \
+    __LINE__
+
+/// \brief Expands to the current function name.
+#define SYNTROPY_FUNCTION \
+    SYNTROPY_FUNCTION_IMPL
+
+/************************************************************************/
+/* DETAILS                                                              */
+/************************************************************************/
+
+namespace syntropy::details
+{
+#ifdef _MSC_VER
+
+#define SYNTROPY_FUNCTION_IMPL __FUNCTION__
+
+#else
+
+#error "SYNTROPY_FUNCTION_IMPL is undefined!"
+
+#endif
+}
