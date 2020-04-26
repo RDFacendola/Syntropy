@@ -281,7 +281,7 @@ namespace syntropy
     {
         // Start deallocating until the current chunk contains the state to restore and then set that as the new state.
 
-        for (; !MemoryRange{ chunk_, chunk_->end_ }.Contains(state);)
+        for (; chunk_ && !MemoryRange{ chunk_, chunk_->end_ }.Contains(state);)
         {
             auto previous = chunk_->previous_;
 
