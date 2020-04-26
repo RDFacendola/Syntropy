@@ -1,6 +1,6 @@
 
 /// \file array.h
-/// \brief This header is part of the syntropy containers. It contains wrappers for arrays.
+/// \brief This header is part of the Syntropy container module. It contains wrappers for arrays.
 ///
 /// \author Raffaele D. Facendola - 2020
 

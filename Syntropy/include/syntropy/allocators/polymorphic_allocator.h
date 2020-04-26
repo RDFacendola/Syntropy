@@ -1,14 +1,13 @@
 
 /// \file polymorphic_allocator.h
-/// \brief This header is part of the syntropy memory management. It contains definitions of polymorphic allocators.
+/// \brief This header is part of the Syntropy allocators module. It contains definitions of polymorphic allocators.
 ///
 /// \author Raffaele D. Facendola - 2020
 
 #pragma once
 
-#include <tuple>
+#include "syntropy/language/tuple.h"
 
-#include "syntropy/type_traits.h"
 #include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy

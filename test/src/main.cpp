@@ -5,6 +5,11 @@
 
 #include "syntropy/language/macro.h"
 
+#include "syntropy/containers/array.h"
+#include "syntropy/containers/vector.h"
+#include "syntropy/containers/map.h"
+#include "syntropy/containers/set.h"
+
 #include "syntropy/patterns/scope_guard.h"
 
 #include "syntropy/memory/bytes.h"
@@ -31,6 +36,7 @@
 #include "syntropy/allocators/chain_memory_resource.h"
 #include "syntropy/allocators/counting_memory_resource.h"
 
+#include "syntropy/allocators/polymorphic_allocator.h"
 #include "syntropy/allocators/scope_allocator.h"
 
 #include "syntropy/diagnostics/assert.h"
@@ -43,9 +49,9 @@ int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-    std::cout << syntropy::kE;
+    auto V = syntropy::Vector<int>{ 1, 2, 3 };
 
-    auto vmr = syntropy::VirtualMemoryResource{ 10_GiBytes, 64_KiBytes };
+
 
 
     return 0;
