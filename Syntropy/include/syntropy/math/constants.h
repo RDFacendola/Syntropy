@@ -1,6 +1,6 @@
 
 /// \file constants.h
-/// \brief This header is part of the syntropy math system. It contains math constants.
+/// \brief This header is part of the Syntropy math module. It contains math constants.
 ///
 /// \author Raffaele D. Facendola - 2019
 
@@ -13,11 +13,12 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Archimedes' constant.
-    inline const float kPi = 3.14159f;
+    constexpr float kPi = 3.14159f;
 
     /// \brief Two times the Archimedes' constant.
-    inline const float kTau = 2.0f * kPi;
+    constexpr float kTau = 2.0f * kPi;
 
     /// \brief Euler's number.
-    inline const float kE = 2.71828f;
+    constexpr float kE = 2.71828f;
+
 }

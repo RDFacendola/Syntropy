@@ -29,6 +29,7 @@
     <ClInclude Include="include\syntropy\language\iterator.h" />
     <ClInclude Include="include\syntropy\language\macro.h" />
     <ClInclude Include="include\syntropy\language\new.h" />
+    <ClInclude Include="include\syntropy\math\constants.h" />
     <ClInclude Include="include\syntropy\patterns\scope_guard.h" />
     <ClInclude Include="include\syntropy\language\stream.h" />
     <ClInclude Include="include\syntropy\language\type_traits.h" />

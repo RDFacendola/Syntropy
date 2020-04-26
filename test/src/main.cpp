@@ -35,18 +35,15 @@
 
 #include "syntropy/diagnostics/assert.h"
 
+#include "syntropy/math/constants.h"
+
 #include "syntropy/core/range.h"
 
 int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-    {
-        auto sg0 = syntropy::MakeScopeGuard([]() { std::cout << "sg0\n"; });
-        auto sg1 = syntropy::MakeScopeGuard([]() { std::cout << "sg1\n"; });
-
-        sg1.Dismiss();
-    }
+    std::cout << syntropy::kE;
 
     auto vmr = syntropy::VirtualMemoryResource{ 10_GiBytes, 64_KiBytes };
 
