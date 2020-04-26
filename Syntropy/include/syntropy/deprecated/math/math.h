@@ -48,11 +48,6 @@ namespace syntropy
     template <typename TNumber>
     TNumber FloorLog2(TNumber rhs);
 
-    /// \brief Check whether a number is a power of 2.
-    /// \return Returns true if number is a power of 2, returns false otherwise.
-    template <typename TNumber>
-    constexpr bool IsPow2(TNumber rhs);
-
     /// \brief Round the argument up to the next power of 2.
     /// \return Returns the smallest power of 2 greater than or equal to number.
     template <typename TNumber>
@@ -152,17 +147,6 @@ namespace syntropy
         static_assert(std::is_integral_v<TNumber>, "Expected an integral type.");
 
         return platform::BuiltIn::GetMostSignificantBit(static_cast<uint64_t>(rhs));
-    }
-
-    template <typename TNumber>
-    constexpr bool IsPow2(TNumber rhs)
-    {
-        if (rhs > TNumber{ 0 })
-        {
-            return ((rhs & (rhs - TNumber(1))) == TNumber(0));
-        }
-
-        return false;   // No negative number can be a power of 2.
     }
 
     template <typename TNumber>
