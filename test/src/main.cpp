@@ -51,9 +51,17 @@ int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-    auto V = syntropy::Vector<int>{ 1, 2, 3 };
+    auto hmr = syntropy::HeapMemoryResource{};
 
-    auto S = syntropy::String{ "hello world!" };
+    auto V = syntropy::Vector<syntropy::Vector<int>>{ {1, 2}, {3, 4, 5} };
+
+    auto ctx = syntropy::MakeMemoryContext(hmr);        // ERROR!!!! Containers will take a reference to the wrapper allocator, causing undefined behavior when the context goes out of scope.
+
+    auto S = syntropy::Map<int, syntropy::Vector<int>>{ {1, {1, 1, 1} }, {2, {2, 2}} };
+
+    {
+        S.insert(std::make_pair(3, syntropy::Vector<int>{3, 3, 3}));
+    }
 
 
     return 0;

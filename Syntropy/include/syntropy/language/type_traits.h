@@ -10,7 +10,23 @@
 
 #include <type_traits>
 
-namespace syntropy
+namespace syntropy::traits
 {
+    /************************************************************************/
+    /* TYPE TRAITS                                                          */
+    /************************************************************************/
+
+    /// \brief If TType is a specialization of TTemplate IsSpecializationV is true, false otherwise.
+    template<typename TType, template <typename...> typename TTemplate>
+    constexpr bool IsSpecializationV = false;
+
+    /// \brief If TType is a specialization of TTemplate IsSpecializationV is true, false otherwise.
+    template<template <typename...> typename TTemplate, typename... TTypes>
+    constexpr bool IsSpecializationV<TTemplate<TTypes...>, TTemplate> = true;
+
+    /// \brief Evaluates to false.
+    /// This value can be used to trigger static_assert that evaluates to false.
+    template <typename...>
+    inline constexpr bool AlwaysFalseV = false;
 
 }
