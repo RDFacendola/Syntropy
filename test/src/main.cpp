@@ -3,6 +3,9 @@
 #include <iostream>
 #include <string>
 
+#include "syntropy/core/range.h"
+#include "syntropy/core/string.h"
+
 #include "syntropy/language/macro.h"
 
 #include "syntropy/containers/array.h"
@@ -43,15 +46,13 @@
 
 #include "syntropy/math/constants.h"
 
-#include "syntropy/core/range.h"
-
 int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
     auto V = syntropy::Vector<int>{ 1, 2, 3 };
 
-
+    auto S = syntropy::String{ "hello world!" };
 
 
     return 0;

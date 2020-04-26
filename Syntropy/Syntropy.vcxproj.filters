@@ -41,6 +41,7 @@
     <ClInclude Include="include\syntropy\containers\vector.h" />
     <ClInclude Include="include\syntropy\allocators\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\language\functional.h" />
+    <ClInclude Include="include\syntropy\core\string.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

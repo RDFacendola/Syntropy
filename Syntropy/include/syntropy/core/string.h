@@ -1,6 +1,6 @@
 
 /// \file string.h
-/// \brief This header is part of syntropy types. It contains utility methods for strings.
+/// \brief This header is part of the Syntropy core module. It contains classes and functions for string definition and manipulation.
 ///
 /// \author Raffaele D. Facendola - 2016
 
@@ -48,11 +48,9 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Check whether lhs is a prefix of rhs.
-    /// \return Returns true if lhs is a prefix of rhs, returns false otherwise.
     bool IsPrefix(const StringView& lhs, const StringView& rhs);
 
     /// \brief Check whether lhs is a suffix of rhs.
-    /// \return Returns true if lhs is a suffix of rhs, returns false otherwise.
     bool IsSuffix(const StringView& lhs, const StringView& rhs);
 
     /************************************************************************/
@@ -70,4 +68,5 @@ namespace syntropy
     {
         return (lhs.length() <= rhs.length()) && (rhs.compare(rhs.length() - lhs.length(), lhs.length(), lhs) == 0);
     }
+
 }
