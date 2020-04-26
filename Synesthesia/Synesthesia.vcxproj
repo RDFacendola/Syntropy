@@ -74,6 +74,12 @@
       <Project>{b970d1b5-1f2a-495a-bf7e-3dbbbee1f33a}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\synesthesia\synesthesia.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\synesthesia\synesthesia.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

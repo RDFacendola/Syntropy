@@ -5,3 +5,8 @@
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
+
+namespace syntax
+{
+
+}
