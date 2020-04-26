@@ -10,6 +10,8 @@
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/observer_ptr.h"
 
+#include "syntropy/allocators/null_memory_resource.h"
+
 #include "syntropy/diagnostics/assert.h"
 
 #include "syntropy/core/range.h"
@@ -18,20 +20,9 @@ int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-    auto fun = std::string(SYNTROPY_FUNCTION);
-
-    auto aof = syntropy::AlignmentOf(fun);
-    auto ma = syntropy::MemoryAddress(&fun);
-
-    auto rfun = syntropy::MakeMemoryRange(fun);
-
-    SYNTROPY_ASSERT(false);
-
-    auto k = 4_GiBytes;
-
-    auto v = std::vector<char>{ 'H', 'e', 'l' };
-
-    auto r = syntropy::MakeRange(v);
+     auto nmr = syntropy::NullMemoryResource{};
+ 
+     nmr.Allocate(10_Bytes);
 
     return 0;
 }

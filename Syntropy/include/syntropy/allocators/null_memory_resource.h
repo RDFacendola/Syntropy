@@ -1,6 +1,6 @@
 
 /// \file null_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains memory resources that use no system memory at all.
+/// \brief This header is part of the Syntropy allocators module. It contains memory resources that use no system memory at all.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -64,10 +64,6 @@ namespace syntropy
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
-        /// \brief Get the maximum allocation size that can be handled by this memory resource.
-        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this memory resource.
-        Bytes GetMaxAllocationSize() const noexcept;
     };
 
     /************************************************************************/
@@ -99,11 +95,6 @@ namespace syntropy
     inline bool NullMemoryResource::Owns(const MemoryRange& block) const noexcept
     {
         return !block;                  // This memory resource owns only empty ranges.
-    }
-
-    inline Bytes NullMemoryResource::GetMaxAllocationSize() const noexcept
-    {
-        return 0_Bytes;
     }
 
 }

@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\syntropy\allocators\null_memory_resource.h" />
     <ClInclude Include="include\syntropy\core\range.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\language\iterator.h" />
@@ -25,6 +26,9 @@
     <ClInclude Include="include\syntropy\memory\memory_range.h" />
     <ClInclude Include="include\syntropy\memory\observer_ptr.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\syntropy\syntropy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
