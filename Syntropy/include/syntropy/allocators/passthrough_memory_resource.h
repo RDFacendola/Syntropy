@@ -1,6 +1,6 @@
 
 /// \file passthrough_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains memory resources used to forward calls to other memory resources.
+/// \brief This header is part of the Syntropy allocators module. It contains memory resources used to forward calls to other memory resources.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -20,7 +20,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Tier Omega memory resource that forwards requests to an underlying memory resource.
-    /// If no memory resource is bound, this memory resource behaves like a syntropy::NullMemoryResource.   ??
+    /// If no memory resource is bound, this memory resource behaves like a syntropy::NullMemoryResource.
     /// \author Raffaele D. Facendola - September 2018
     template <typename TMemoryResource>
     class PassthroughMemoryResource : private NullMemoryResource
@@ -69,11 +69,6 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
-
-        /// \brief Get the maximum allocation size that can be handled by this memory resource.
-        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this memory resource.
-        Bytes GetMaxAllocationSize() const noexcept;
 
     private:
 
@@ -147,12 +142,6 @@ namespace syntropy
     inline bool PassthroughMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
         return memory_resource_ ? memory_resource_->Owns(block) : NullMemoryResource::Owns(block);
-    }
-
-    template <typename TMemoryResource>
-    inline Bytes PassthroughMemoryResource<TMemoryResource>::GetMaxAllocationSize() const noexcept
-    {
-        return memory_resource_ ? memory_resource_->GetMaxAllocationSize() : NullMemoryResource::GetMaxAllocationSize();
     }
 
 }

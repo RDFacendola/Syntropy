@@ -1,12 +1,10 @@
 
 /// \file fixed_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains memory resources allocating a single memory block.
+/// \brief This header is part of the Syntropy allocators module. It contains memory resources allocating a single memory block.
 ///
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
-
-#include <type_traits>
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -71,11 +69,6 @@ namespace syntropy
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
-
-        /// \brief Get the maximum allocation size that can be handled by this allocator.
-        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this allocator.
-        Bytes GetMaxAllocationSize() const noexcept;
 
     private:
 
@@ -163,12 +156,6 @@ namespace syntropy
     inline bool FixedMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
         return !is_free_ && block_.Contains(block);
-    }
-
-    template <typename TMemoryResource>
-    inline Bytes FixedMemoryResource<TMemoryResource>::GetMaxAllocationSize() const noexcept
-    {
-        return std::min(max_size_, memory_resource_.GetMaxAllocationSize());
     }
 
 }

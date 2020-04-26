@@ -14,6 +14,9 @@
 #include "syntropy/allocators/heap_memory_resource.h"
 #include "syntropy/allocators/stack_memory_resource.h"
 
+#include "syntropy/allocators/passthrough_memory_resource.h"
+#include "syntropy/allocators/fixed_memory_resource.h"
+
 #include "syntropy/diagnostics/assert.h"
 
 #include "syntropy/core/range.h"
