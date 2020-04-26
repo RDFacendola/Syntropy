@@ -5,3 +5,8 @@
 /// \author Raffaele D. Facendola - 2016
 
 #pragma once
+
+namespace syntropy
+{
+
+}

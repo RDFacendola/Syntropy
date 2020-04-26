@@ -10,6 +10,12 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\syntropy\syntropy.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\syntropy\syntropy.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B970D1B5-1F2A-495A-BF7E-3DBBBEE1F33A}</ProjectGuid>
