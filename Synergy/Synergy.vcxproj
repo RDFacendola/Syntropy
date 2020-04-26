@@ -70,26 +70,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\synergy\patterns\sync_counter.h" />
-    <ClInclude Include="include\synergy\synergy.h" />
-    <ClInclude Include="include\synergy\task\scheduler.h" />
-    <ClInclude Include="include\synergy\task\task.h" />
-    <ClInclude Include="include\synergy\task\task_execution_context.h" />
-    <ClInclude Include="include\synergy\task\task_pool.h" />
-    <ClInclude Include="include\synergy\task\task_queue.h" />
-    <ClInclude Include="include\synergy\task\worker.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\synergy\patterns\sync_counter.cpp" />
-    <ClCompile Include="src\synergy\synergy.cpp" />
-    <ClCompile Include="src\synergy\task\scheduler.cpp" />
-    <ClCompile Include="src\synergy\task\task.cpp" />
-    <ClCompile Include="src\synergy\task\task_execution_context.cpp" />
-    <ClCompile Include="src\synergy\task\task_pool.cpp" />
-    <ClCompile Include="src\synergy\task\task_queue.cpp" />
-    <ClCompile Include="src\synergy\task\worker.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\syntropy\syntropy.vcxproj">
       <Project>{b970d1b5-1f2a-495a-bf7e-3dbbbee1f33a}</Project>
     </ProjectReference>

@@ -70,16 +70,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\synapse\algorithms\search\astar.h" />
-    <ClInclude Include="include\synapse\synapse.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\syntropy\syntropy.vcxproj">
       <Project>{b970d1b5-1f2a-495a-bf7e-3dbbbee1f33a}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\synapse\synapse.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

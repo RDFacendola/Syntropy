@@ -74,32 +74,6 @@
       <Project>{b970d1b5-1f2a-495a-bf7e-3dbbbee1f33a}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\synchrony\network\network_endpoint.h" />
-    <ClInclude Include="include\synchrony\network\network.h" />
-    <ClInclude Include="include\synchrony\network\network_address.h" />
-    <ClInclude Include="include\synchrony\rpc\rpc_client.h" />
-    <ClInclude Include="include\synchrony\rpc\rpc_peer.h" />
-    <ClInclude Include="include\synchrony\rpc\rpc_server.h" />
-    <ClInclude Include="include\synchrony\socket\tcp.h" />
-    <ClInclude Include="include\synchrony\socket\udp.h" />
-    <ClInclude Include="include\synchrony\synchrony.h" />
-    <ClInclude Include="src\synchrony\platform\windows_network.h" />
-    <ClInclude Include="src\synchrony\platform\windows_socket.h" />
-    <ClInclude Include="src\synchrony\platform\windows_tcp.h" />
-    <ClInclude Include="src\synchrony\platform\windows_udp.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\synchrony\network\network_address.cpp" />
-    <ClCompile Include="src\synchrony\network\network.cpp" />
-    <ClCompile Include="src\synchrony\platform\windows_network.cpp" />
-    <ClCompile Include="src\synchrony\platform\windows_socket.cpp" />
-    <ClCompile Include="src\synchrony\platform\windows_tcp.cpp" />
-    <ClCompile Include="src\synchrony\platform\windows_udp.cpp" />
-    <ClCompile Include="src\synchrony\socket\tcp.cpp" />
-    <ClCompile Include="src\synchrony\socket\udp.cpp" />
-    <ClCompile Include="src\synchrony\synchrony.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -70,16 +70,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\syntax\syntax.h" />
-    <ClInclude Include="include\syntax\vm\intrinsics.h" />
-    <ClInclude Include="include\syntax\vm\virtual_machine.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\syntax\syntax.cpp" />
-    <ClCompile Include="src\syntax\vm\instrinsics.cpp" />
-    <ClCompile Include="src\syntax\vm\virtual_machine.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\syntropy\syntropy.vcxproj">
       <Project>{b970d1b5-1f2a-495a-bf7e-3dbbbee1f33a}</Project>
     </ProjectReference>
