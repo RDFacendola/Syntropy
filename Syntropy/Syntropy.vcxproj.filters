@@ -16,6 +16,8 @@
     <ClInclude Include="include\syntropy\language\iterator.h" />
     <ClInclude Include="include\syntropy\memory\memory_range.h" />
     <ClInclude Include="include\syntropy\allocators\null_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\heap_memory_resource.h" />
+    <ClInclude Include="include\syntropy\language\new.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

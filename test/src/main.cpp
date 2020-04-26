@@ -11,6 +11,7 @@
 #include "syntropy/memory/observer_ptr.h"
 
 #include "syntropy/allocators/null_memory_resource.h"
+#include "syntropy/allocators/heap_memory_resource.h"
 
 #include "syntropy/diagnostics/assert.h"
 
@@ -20,7 +21,7 @@ int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-     auto nmr = syntropy::NullMemoryResource{};
+     auto nmr = syntropy::HeapMemoryResource{};
  
      nmr.Allocate(10_Bytes);
 

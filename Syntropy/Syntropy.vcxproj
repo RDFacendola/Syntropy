@@ -11,11 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\syntropy\allocators\heap_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\null_memory_resource.h" />
     <ClInclude Include="include\syntropy\core\range.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\language\iterator.h" />
     <ClInclude Include="include\syntropy\language\macro.h" />
+    <ClInclude Include="include\syntropy\language\new.h" />
     <ClInclude Include="include\syntropy\language\stream.h" />
     <ClInclude Include="include\syntropy\language\type_traits.h" />
     <ClInclude Include="include\syntropy\language\utility.h" />

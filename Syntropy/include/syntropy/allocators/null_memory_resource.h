@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "syntropy/syntropy.h"
+
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_range.h"
