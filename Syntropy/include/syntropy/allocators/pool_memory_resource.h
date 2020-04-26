@@ -1,12 +1,10 @@
 
 /// \file pool_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains pooled memory resources.
+/// \brief This header is part of the Syntropy allocators module. It contains pooled memory resources.
 ///
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
-
-#include <algorithm>
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -80,32 +78,13 @@ namespace syntropy
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
-        /// \brief Get the maximum allocation size that can be handled by this memory resource.
-        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this memory resource.
-        Bytes GetMaxAllocationSize() const noexcept;
-
         /// \brief Swap this memory resource with the provided instance.
         void Swap(PoolMemoryResource& rhs) noexcept;
 
     private:
 
-        /// \brief A chunk in the allocation chain.
-        struct Chunk
-        {
-            /// \brief Pointer to the previous chunk.
-            Chunk* previous_;
-
-            /// \brief Pointer past the last allocable address in the chunk.
-            MemoryAddress end_;
-        };
-
-        /// \brief Represents a free block: the memory block itself is used to store a pointer to the next free block in the list.
-        struct FreeBlock
-        {
-            ///< \brief Next free block in the pool.
-            FreeBlock* next_{ nullptr };
-        };
+        struct Chunk;
+        struct FreeBlock;
 
         ///< \brief Underlying memory resource. Deallocated blocks are sent to the free list and never deallocated by this memory resource.
         TMemoryResource memory_resource_;
@@ -126,6 +105,37 @@ namespace syntropy
         Chunk* chunk_{ nullptr };
 
     };
+
+    /************************************************************************/
+    /* POOL MEMORY RESOURCE <MEMORY RESOURCE> :: CHUNK                      */
+    /************************************************************************/
+
+    /// \brief A chunk in the allocation chain.
+    template <typename TMemoryResource>
+    struct PoolMemoryResource<TMemoryResource>::Chunk
+    {
+        /// \brief Pointer to the previous chunk.
+        PoolMemoryResource::Chunk* previous_;
+
+        /// \brief Pointer past the last allocable address in the chunk.
+        MemoryAddress end_;
+    };
+
+    /************************************************************************/
+    /* POOL MEMORY RESOURCE <MEMORY RESOURCE> :: FREE BLOCK                 */
+    /************************************************************************/
+
+    /// \brief Represents a free block: the memory block itself is used to store a pointer to the next free block in the list.
+    template <typename TMemoryResource>
+    struct PoolMemoryResource<TMemoryResource>::FreeBlock
+    {
+        ///< \brief Next free block in the pool.
+        FreeBlock* next_{ nullptr };
+    };
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
     /// \brief Swaps two syntropy::PoolMemoryResource.
     template <typename TMemoryResource>
@@ -294,12 +304,6 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline Bytes PoolMemoryResource<TMemoryResource>::GetMaxAllocationSize() const noexcept
-    {
-        return block_size_;
-    }
-
-    template <typename TMemoryResource>
     inline void PoolMemoryResource<TMemoryResource>::Swap(PoolMemoryResource& rhs) noexcept
     {
         using std::swap;
@@ -311,6 +315,8 @@ namespace syntropy
         swap(free_, rhs.free_);
         swap(chunk_, rhs.chunk_);
     }
+
+    // Non-member functions.
 
     template <typename TMemoryResource>
     void swap(syntropy::PoolMemoryResource<TMemoryResource>& lhs, syntropy::PoolMemoryResource<TMemoryResource>& rhs) noexcept

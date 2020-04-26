@@ -1,12 +1,12 @@
 
 /// \file linear_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains linear memory resources.
+/// \brief This header is part of the Syntropy allocators module. It contains linear memory resources.
 ///
 /// \author Raffaele D. Facendola - 2017
 
 #pragma once
 
-#include <algorithm>
+#include "syntropy/math/arithmetic.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -74,11 +74,6 @@ namespace syntropy
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
-        /// \brief Get the maximum allocation size that can be handled by this memory resource.
-        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this memory resource.
-        Bytes GetMaxAllocationSize() const noexcept;
-
         /// \brief Swap this memory resource with the provided instance.
         void Swap(LinearMemoryResource& rhs) noexcept;
 
@@ -92,15 +87,7 @@ namespace syntropy
 
     private:
 
-        /// \brief A chunk in the allocation chain.
-        struct Chunk
-        {
-            /// \brief Pointer to the previous chunk.
-            Chunk* previous_;
-
-            /// \brief Pointer past the last allocable address in the chunk.
-            MemoryAddress end_;
-        };
+        struct Chunk;
 
         /// \brief Underlying memory resource.
         TMemoryResource memory_resource_;
@@ -115,6 +102,25 @@ namespace syntropy
         Chunk* chunk_{ nullptr };
 
     };
+
+    /************************************************************************/
+    /* LINEAR MEMORY RESOURCE <TMEMORY RESOURCE> :: CHUNK                   */
+    /************************************************************************/
+
+    /// \brief A chunk in the allocation chain.
+    template <typename TMemoryResource>
+    struct LinearMemoryResource<TMemoryResource>::Chunk
+    {
+        /// \brief Pointer to the previous chunk.
+        Chunk* previous_;
+
+        /// \brief Pointer past the last allocable address in the chunk.
+        MemoryAddress end_;
+    };
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
     /// \brief Swaps two SequentialMemoryResource.
     template <typename TMemoryResource>
@@ -167,6 +173,8 @@ namespace syntropy
     template <typename TMemoryResource>
     MemoryRange LinearMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
+        using namespace syntropy::literals;
+
         // Attempt to allocate on the current chunk. Fast-path.
 
         {
@@ -252,12 +260,6 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline Bytes LinearMemoryResource<TMemoryResource>::GetMaxAllocationSize() const noexcept
-    {
-        return memory_resource_.GetMaxAllocationSize();
-    }
-
-    template <typename TMemoryResource>
     inline void LinearMemoryResource<TMemoryResource>::Swap(LinearMemoryResource& rhs) noexcept
     {
         using std::swap;
@@ -290,6 +292,8 @@ namespace syntropy
 
         head_ = state;
     }
+
+    // Non-member functions.
 
     template <typename TMemoryResource>
     inline void swap(syntropy::LinearMemoryResource<TMemoryResource>& lhs, syntropy::LinearMemoryResource<TMemoryResource>& rhs) noexcept
