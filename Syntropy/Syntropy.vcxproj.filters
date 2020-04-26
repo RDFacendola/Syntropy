@@ -8,5 +8,6 @@
     <ClInclude Include="include\syntropy\core\range.h" />
     <ClInclude Include="include\syntropy\language\utility.h" />
     <ClInclude Include="include\syntropy\language\stream.h" />
+    <ClInclude Include="include\syntropy\memory\bytes.h" />
   </ItemGroup>
 </Project>
