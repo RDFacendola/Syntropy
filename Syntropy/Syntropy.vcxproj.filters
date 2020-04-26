@@ -12,5 +12,7 @@
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\math\arithmetic.h" />
     <ClInclude Include="include\syntropy\memory\alignment.h" />
+    <ClInclude Include="include\syntropy\memory\memory_address.h" />
+    <ClInclude Include="include\syntropy\language\iterator.h" />
   </ItemGroup>
 </Project>

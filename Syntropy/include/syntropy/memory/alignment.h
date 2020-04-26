@@ -122,6 +122,8 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
+    // Alignment.
+
     constexpr Alignment::Alignment(std::align_val_t alignment) noexcept
         : alignment_(std::int64_t(alignment))
     {
@@ -161,6 +163,8 @@ namespace syntropy
         alignment_ <<= rhs;
         return *this;
     }
+
+    // Non-member functions.
 
     constexpr bool operator==(const Alignment& lhs, const Alignment& rhs) noexcept
     {
