@@ -10,6 +10,7 @@
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/observer_ptr.h"
 #include "syntropy/memory/virtual_memory.h"
+#include "syntropy/memory/virtual_memory_range.h"
 
 #include "syntropy/allocators/memory_context.h"
 #include "syntropy/allocators/memory_resource.h"
@@ -36,9 +37,8 @@ int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-    auto page_size = syntropy::VirtualMemory::GetPageSize();
+    auto vmr = syntropy::VirtualMemoryRange(10_GiBytes);
 
-    auto vm = syntropy::VirtualMemory::Reserve(page_size * 10);
 
     return 0;
 }

@@ -30,6 +30,7 @@
     <ClInclude Include="include\syntropy\allocators\memory_context.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
     <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
+    <ClInclude Include="include\syntropy\memory\virtual_memory_range.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
