@@ -1,6 +1,6 @@
 
 /// \file chain_memory_resource.h
-/// \brief This header is part of the the Syntropy allocators module. It contains memory resources that attempt to perform allocation on different underlying memory resources.
+/// \brief This header is part of the Syntropy allocators module. It contains memory resources that attempt to perform allocation on different underlying memory resources.
 ///
 /// \author Raffaele D. Facendola - 2018
 

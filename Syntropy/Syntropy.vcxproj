@@ -19,6 +19,7 @@
     <ClInclude Include="include\syntropy\allocators\null_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\passthrough_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\pool_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\scope_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\stack_memory_resource.h" />
     <ClInclude Include="include\syntropy\core\range.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />

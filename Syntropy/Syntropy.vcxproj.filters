@@ -25,6 +25,7 @@
     <ClInclude Include="include\syntropy\allocators\pool_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\chain_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\counting_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\scope_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

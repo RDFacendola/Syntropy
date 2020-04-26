@@ -1,12 +1,12 @@
 
 /// \file scope_allocator.h
-/// \brief This header is part of the syntropy memory management system. It contains scope-based allocators used to automatically destruct objects on rewindable memory resources.
+/// \brief This header is part of the Syntropy allocators module. It contains scope-based allocators used to automatically destruct objects on rewindable memory resources.
 ///
 /// \author Raffaele D. Facendola - March 2017
 
 #pragma once
 
-#include <utility>
+#include "syntropy/language/utility.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -51,24 +51,7 @@ namespace syntropy
 
     private:
 
-        /// \brief Finalizer object used to destroy non-trivially-destructible objects.
-        struct Finalizer
-        {
-            /// \brief Type of a finalizer.
-            using TFinalizer = void(*)(void*);
-
-            /// \brief Destroy the object after this finalizer.
-            void operator()();
-
-            /// \brief Get the object bound to this finalizer.
-            void* GetObject();
-
-            /// \brief Concrete object destructor.
-            TFinalizer destructor_;
-
-            /// \brief Next finalizer.
-            Finalizer* next_{ nullptr };
-        };
+        struct Finalizer;
 
         /// \brief Destroy an object of type TObject.
         /// \param instance Pointer to the instance to destroy. Must be of type TObject, otherwise the behavior of this method is undefined..
@@ -96,6 +79,34 @@ namespace syntropy
         /// \brief Memory resource state to restore.
         TState state_;
     };
+
+    /************************************************************************/
+    /* SCOPE ALLOCATOR <TMEMORY RESOURCE> :: FINALIZER                      */
+    /************************************************************************/
+
+    /// \brief Finalizer object used to destroy non-trivially-destructible objects.
+    template <typename TMemoryResource>
+    struct ScopeAllocator<TMemoryResource>::Finalizer
+    {
+        /// \brief Type of a finalizer.
+        using TFinalizer = void(*)(void*);
+
+        /// \brief Destroy the object after this finalizer.
+        void operator()();
+
+        /// \brief Get the object bound to this finalizer.
+        void* GetObject();
+
+        /// \brief Concrete object destructor.
+        TFinalizer destructor_;
+
+        /// \brief Next finalizer.
+        Finalizer* next_{ nullptr };
+    };
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
     /// \brief Utility method used to make a new scope allocator.
     template <typename TMemoryResource>
@@ -210,6 +221,8 @@ namespace syntropy
         finalizers_ = &finalizer;
     }
 
+    //ScopeAllocator<TMemoryResource>::Finalizer.
+
     template <typename TMemoryResource>
     inline void ScopeAllocator<TMemoryResource>::Finalizer::operator()()
     {
@@ -221,6 +234,8 @@ namespace syntropy
     {
         return *(MemoryAddress(this) + BytesOf<Finalizer>());
     }
+
+    // Non-member functions.
 
     template <typename TMemoryResource>
     inline ScopeAllocator<TMemoryResource> MakeScopeAllocator(TMemoryResource& memory_resource)

@@ -22,6 +22,8 @@
 #include "syntropy/allocators/chain_memory_resource.h"
 #include "syntropy/allocators/counting_memory_resource.h"
 
+#include "syntropy/allocators/scope_allocator.h"
+
 #include "syntropy/diagnostics/assert.h"
 
 #include "syntropy/core/range.h"
@@ -33,8 +35,17 @@ int main(int argc, char **argv)
     auto nmr0 = syntropy::StackMemoryResource<1024>{};
     auto nmr1 = syntropy::StackMemoryResource<1024>{};
 
+
     auto lmr = syntropy::LinearMemoryResource<syntropy::StackMemoryResource<1024>>(1024_Bytes);
     auto pmr = syntropy::PoolMemoryResource<syntropy::StackMemoryResource<1024>>(syntropy::BytesOf<int>(), 1024_Bytes);
+
+    {
+        auto a = syntropy::MakeScopeAllocator(lmr);
+
+        auto i = a.New<int>(5);
+        auto v = a.New<std::vector<int>>();
+
+    }
 
     lmr.Allocate(15_Bytes);
     pmr.Allocate(4_Bytes);
