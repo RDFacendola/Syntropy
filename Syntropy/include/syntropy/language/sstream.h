@@ -1,8 +1,8 @@
 
 /// \file sstream.h
-/// \brief This header is part of syntropy types. It contains utility methods for string streams.
+/// \brief This header is part of Syntropy language module. It contains extensions to standard header <sstream>
 ///
-/// \author Raffaele D. Facendola - 2016
+/// \author Raffaele D. Facendola - 2020.
 
 #pragma once
 

@@ -7,6 +7,7 @@
 #include "syntropy/core/string.h"
 
 #include "syntropy/language/macro.h"
+#include "syntropy/language/sstream.h"
 
 #include "syntropy/containers/array.h"
 #include "syntropy/containers/vector.h"
