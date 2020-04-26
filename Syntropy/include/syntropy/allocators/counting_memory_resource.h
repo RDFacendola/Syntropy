@@ -1,6 +1,6 @@
 
 /// \file counting_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains definition for memory resources used to count allocations on another memory resource.
+/// \brief This header is part of the Syntropy allocators module. It contains definition for memory resources used to count allocations on another memory resource.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -66,26 +66,21 @@ namespace syntropy
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
-        /// \brief Get the maximum allocation size that can be handled by this memory resource.
-        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this memory resource.
-        Bytes GetMaxAllocationSize() const noexcept;
-
         /// \brief Get the amount of active allocations on the underlying memory resource.
         /// \return Returns the number of active allocations on the underlying memory resource.
-        std::size_t GetAllocationCount() const noexcept;
+        std::int64_t GetAllocationCount() const noexcept;
 
         /// \brief Get the total amount of allocations that were performed on the underlying memory resource, ignoring any deallocation.
         /// \return Returns the total amount of allocations that were performed on the underlying memory resource.
-        std::size_t GetProgressiveAllocationCount() const noexcept;
+        std::int64_t GetProgressiveAllocationCount() const noexcept;
 
     private:
 
         ///< \brief Number of allocations.
-        std::size_t allocation_count_{ 0u };
+        std::int64_t allocation_count_{ 0 };
 
         ///< \brief Number of deallocations.
-        std::size_t deallocation_count_{ 0u };
+        std::int64_t deallocation_count_{ 0 };
 
         ///< \brief Underlying memory resource.
         TMemoryResource memory_resource_;
@@ -155,19 +150,13 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline Bytes CountingMemoryResource<TMemoryResource>::GetMaxAllocationSize() const noexcept
-    {
-        return memory_resource_.GetMaxAllocationSize();
-    }
-
-    template <typename TMemoryResource>
-    inline std::size_t CountingMemoryResource<TMemoryResource>::GetAllocationCount() const noexcept
+    inline std::int64_t CountingMemoryResource<TMemoryResource>::GetAllocationCount() const noexcept
     {
         return allocation_count_ - deallocation_count_;
     }
 
     template <typename TMemoryResource>
-    inline std::size_t CountingMemoryResource<TMemoryResource>::GetProgressiveAllocationCount() const noexcept
+    inline std::int64_t CountingMemoryResource<TMemoryResource>::GetProgressiveAllocationCount() const noexcept
     {
         return allocation_count_;
     }

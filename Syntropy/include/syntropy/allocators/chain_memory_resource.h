@@ -1,12 +1,12 @@
 
 /// \file chain_memory_resource.h
-/// \brief This header is part of the syntropy memory management system. It contains memory resources that attempt to perform allocation on different underlying memory resources.
+/// \brief This header is part of the the Syntropy allocators module. It contains memory resources that attempt to perform allocation on different underlying memory resources.
 ///
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
 
-#include <type_traits>
+#include "syntropy/language/type_traits.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -18,7 +18,7 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* CHAIN MEMORY RESOURCE                                                */
+    /* CHAIN MEMORY RESOURCE <...>                                          */
     /************************************************************************/
 
     /// \brief Tier Omega memory resource that attempts to perform allocation on the primary memory resource and falls back to others upon failure.
@@ -104,11 +104,6 @@ namespace syntropy
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
         bool Owns(const MemoryRange& block) const noexcept;
 
-        /// \brief Get the maximum allocation size that can be handled by this memory resource.
-        /// The returned value shall not be used to determine whether a call to "Allocate" will fail.
-        /// \return Returns the maximum allocation size that can be handled by this memory resource.
-        Bytes GetMaxAllocationSize() const noexcept;
-
     private:
 
         ///< \brief Primary memory resource the requests will be attempted on.
@@ -118,6 +113,10 @@ namespace syntropy
         ChainMemoryResource<TMemoryResources...> memory_resources_;
 
     };
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
     /// \brief Create a new ChainMemoryResource by chaining together different memory resources.
     /// \param memory_resources List of memory resources to chain together.
@@ -129,7 +128,7 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // ChainMemoryResource<TMemoryResource, TMemoryResources>.
+    // ChainMemoryResource<TMemoryResource, TMemoryResources...>.
 
     template <typename TMemoryResource, typename... TMemoryResources>
     template <typename UMemoryResource, typename... UMemoryResources, typename>
@@ -191,13 +190,7 @@ namespace syntropy
         return memory_resource_.Owns(block) || memory_resources_.Owns(block);
     }
 
-    template <typename TMemoryResource, typename... TMemoryResources>
-    inline Bytes ChainMemoryResource<TMemoryResource, TMemoryResources...>::GetMaxAllocationSize() const noexcept
-    {
-        using std::max;
-
-        return max(memory_resource_.GetMaxAllocationSize(), memory_resources_.GetMaxAllocationSize());
-    }
+    // Non-member functions.
 
     template <typename... TMemoryResources>
     inline ChainMemoryResource<TMemoryResources...> MakeChainMemoryResource(TMemoryResources&&... memory_resources)

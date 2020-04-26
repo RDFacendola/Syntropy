@@ -14,11 +14,13 @@
 #include "syntropy/allocators/heap_memory_resource.h"
 #include "syntropy/allocators/stack_memory_resource.h"
 
+#include "syntropy/allocators/fixed_memory_resource.h"
 #include "syntropy/allocators/linear_memory_resource.h"
 #include "syntropy/allocators/pool_memory_resource.h"
 
 #include "syntropy/allocators/passthrough_memory_resource.h"
-#include "syntropy/allocators/fixed_memory_resource.h"
+#include "syntropy/allocators/chain_memory_resource.h"
+#include "syntropy/allocators/counting_memory_resource.h"
 
 #include "syntropy/diagnostics/assert.h"
 
