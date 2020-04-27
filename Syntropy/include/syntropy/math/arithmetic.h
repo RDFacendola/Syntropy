@@ -1,6 +1,6 @@
 
 /// \file arithmetic.h
-/// \brief This header is part of the syntropy math module. It contains generic arithmetic functions.
+/// \brief This header is part of the Syntropy math module. It contains generic arithmetic functions.
 ///
 /// \author Raffaele D. Facendola - 2017
 

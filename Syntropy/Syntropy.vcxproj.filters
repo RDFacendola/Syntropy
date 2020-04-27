@@ -43,6 +43,7 @@
     <ClInclude Include="include\syntropy\language\functional.h" />
     <ClInclude Include="include\syntropy\core\string.h" />
     <ClInclude Include="include\syntropy\language\sstream.h" />
+    <ClInclude Include="include\syntropy\language\numeric.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

@@ -46,22 +46,15 @@
 #include "syntropy/diagnostics/assert.h"
 
 #include "syntropy/math/constants.h"
+#include "syntropy/math/hash.h"
 
 int main(int argc, char **argv)
 {
     using namespace syntropy::literals;
 
-    auto hmr = syntropy::HeapMemoryResource{};
+    syntropy::String s = "Hello world!";
 
-    auto V = syntropy::Vector<syntropy::Vector<int>>{ {1, 2}, {3, 4, 5} };
-
-    auto ctx = syntropy::MakeMemoryContext(hmr);        // ERROR!!!! Containers will take a reference to the wrapper allocator, causing undefined behavior when the context goes out of scope.
-
-    auto S = syntropy::Map<int, syntropy::Vector<int>>{ {1, {1, 1, 1} }, {2, {2, 2}} };
-
-    {
-        S.insert(std::make_pair(3, syntropy::Vector<int>{3, 3, 3}));
-    }
+    auto hash = syntropy::FastHash64(syntropy::ConstMemoryRange(s.data(), s.data() + s.length()));
 
 
     return 0;

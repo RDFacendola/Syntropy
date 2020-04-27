@@ -36,6 +36,7 @@
     <ClInclude Include="include\syntropy\language\iterator.h" />
     <ClInclude Include="include\syntropy\language\macro.h" />
     <ClInclude Include="include\syntropy\language\new.h" />
+    <ClInclude Include="include\syntropy\language\numeric.h" />
     <ClInclude Include="include\syntropy\language\sstream.h" />
     <ClInclude Include="include\syntropy\language\tuple.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />

@@ -1,12 +1,12 @@
 
 /// \file hash.h
-/// \brief This header is part of the syntropy math system. It contains generic hash functions and definitions.
+/// \brief This header is part of the Syntropy math module. It contains generic hash functions and definitions.
 ///
 /// \author Raffaele D. Facendola - 2017
 
 #pragma once
 
-#include <numeric>
+#include "syntropy/language/numeric.h"
 
 #include "syntropy/memory/memory_range.h"
 
@@ -16,18 +16,11 @@ namespace syntropy
     /* HASH                                                                 */
     /************************************************************************/
 
-    /// \brief Exposes generic hash functions.
-    /// \author Raffaele D. Facendola - April 2020.
-    namespace Hash
-    {
+    /// \brief Get the non-cryptographic 64-bit hash of a buffer.
+    [[nodiscard]] int64_t FastHash64(const ConstMemoryRange& buffer);
 
-        /// \brief Get the non-cryptographic 64-bit hash of a buffer.
-        int64_t FastHash64(const ConstMemoryRange& buffer);
-
-        /// \brief Get the non-cryptographic 32-bit hash of a buffer.
-        int32_t FastHash32(const ConstMemoryRange& buffer);
-
-    }
+    /// \brief Get the non-cryptographic 32-bit hash of a buffer.
+    [[nodiscard]] int32_t FastHash32(const ConstMemoryRange& buffer);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -35,7 +28,7 @@ namespace syntropy
 
     // Hash.
 
-    inline int64_t Hash::FastHash64(const ConstMemoryRange& buffer)
+    inline int64_t FastHash64(const ConstMemoryRange& buffer)
     {
         // Uses FNV1a 64-bit with recommended constants by Landon Curt Noll - http://www.isthe.com/chongo/
 
@@ -47,7 +40,7 @@ namespace syntropy
         });
     }
 
-    inline int32_t Hash::FastHash32(const ConstMemoryRange& buffer)
+    inline int32_t FastHash32(const ConstMemoryRange& buffer)
     {
         // Uses FNV1a 32-bit with recommended constants by Landon Curt Noll - http://www.isthe.com/chongo/
 
