@@ -12,5 +12,19 @@
 
 namespace syntropy
 {
+    /************************************************************************/
+    /* DEFAULT CONSTRUCT T                                                  */
+    /************************************************************************/
+
+    /// \brief Empty tag type used to disambiguate between functions that forward tuples to construct objects.
+    /// \author Raffaele D. Facendola - April 2020.
+    struct DefaultConstructT
+    { 
+        /// \brief Default constructor.
+        explicit DefaultConstructT() = default;
+    };
+
+    /// \brief Constant of the tag type DefaultConstructT used to create objects via default-constructor.
+    inline constexpr DefaultConstructT kDefaultConstruct = DefaultConstructT();
 
 }

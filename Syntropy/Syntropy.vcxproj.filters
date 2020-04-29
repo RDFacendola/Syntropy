@@ -46,6 +46,7 @@
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\language\numeric.h" />
     <ClInclude Include="include\syntropy\math\metrics.h" />
+    <ClInclude Include="include\syntropy\allocators\fallback_memory_resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
