@@ -11,7 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\syntropy\allocators\chain_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\counting_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\fallback_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\fixed_memory_resource.h" />

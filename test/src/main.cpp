@@ -20,7 +20,6 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_address.h"
 #include "syntropy/memory/memory_range.h"
-#include "syntropy/memory/observer_ptr.h"
 #include "syntropy/memory/virtual_memory.h"
 #include "syntropy/memory/virtual_memory_range.h"
 
@@ -37,7 +36,7 @@
 #include "syntropy/allocators/pool_memory_resource.h"
 
 #include "syntropy/allocators/passthrough_memory_resource.h"
-#include "syntropy/allocators/chain_memory_resource.h"
+#include "syntropy/allocators/fallback_memory_resource.h"
 #include "syntropy/allocators/counting_memory_resource.h"
 
 #include "syntropy/allocators/polymorphic_allocator.h"
@@ -47,6 +46,7 @@
 
 #include "syntropy/math/constants.h"
 #include "syntropy/math/hash.h"
+#include "syntropy/math/metrics.h"
 
 int main(int argc, char **argv)
 {
