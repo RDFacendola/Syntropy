@@ -12,7 +12,7 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_range.h"
 
-#include "syntropy/allocators/heap_memory_resource.h"
+#include "syntropy/allocators/system_memory_resource.h"
 
 namespace syntropy
 {
@@ -23,7 +23,7 @@ namespace syntropy
     class MemoryResource;
 
     /// \brief Get a memory resource that uses the global operator new and operator delete to allocate memory.
-    MemoryResource& GetNewDeleteMemoryResource() noexcept;
+    MemoryResource& GetSystemMemoryResource() noexcept;
 
     /// \brief Get the thread-local default memory resource.
     /// \remarks The local default memory resource is used by certain facilities when an explicit memory resource is not supplied.
@@ -44,7 +44,7 @@ namespace syntropy
     /// \author Raffaele D. Facendola - April 2020.
     class MemoryResource
     {
-        friend MemoryResource& GetNewDeleteMemoryResource() noexcept;
+        friend MemoryResource& GetSystemMemoryResource() noexcept;
         friend MemoryResource& GetDefaultMemoryResource() noexcept;
         friend MemoryResource& SetDefaultMemoryResource(MemoryResource& memory_resource) noexcept;
 
@@ -83,7 +83,7 @@ namespace syntropy
     private:
 
         /// \brief Thread-local default memory resource.
-        static inline thread_local MemoryResource* default_memory_resource_ = &GetNewDeleteMemoryResource();
+        static inline thread_local MemoryResource* default_memory_resource_ = &GetSystemMemoryResource();
 
     };
 
@@ -134,11 +134,11 @@ namespace syntropy
 
     // Non-member functions.
 
-    inline MemoryResource& GetNewDeleteMemoryResource() noexcept
+    inline MemoryResource& GetSystemMemoryResource() noexcept
     {
-        static auto new_delete_resource = MemoryResourceT<HeapMemoryResource>{};
+        static auto system_memory_resource = MemoryResourceT<SystemMemoryResource>{};
 
-        return new_delete_resource;
+        return system_memory_resource;
     }
 
     inline MemoryResource& GetDefaultMemoryResource() noexcept

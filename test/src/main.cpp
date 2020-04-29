@@ -27,7 +27,7 @@
 #include "syntropy/allocators/memory_resource.h"
 
 #include "syntropy/allocators/null_memory_resource.h"
-#include "syntropy/allocators/heap_memory_resource.h"
+#include "syntropy/allocators/system_memory_resource.h"
 #include "syntropy/allocators/stack_memory_resource.h"
 #include "syntropy/allocators/virtual_memory_resource.h"
 

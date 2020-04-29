@@ -1,5 +1,5 @@
 
-/// \file heap_memory_resource.h
+/// \file system_memory_resource.h
 /// \brief This header is part of the Syntropy allocators module. It contains memory resources using system heap memory.
 ///
 /// \author Raffaele D. Facendola - 2017
@@ -16,29 +16,29 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* HEAP MEMORY RESOURCE                                                 */
+    /* SYSTEM MEMORY RESOURCE                                               */
     /************************************************************************/
 
     /// \brief Tier 0 memory resource used to allocate memory on system heap via new\delete calls.
     /// \author Raffaele D. Facendola - February 2017
-    class HeapMemoryResource
+    class SystemMemoryResource
     {
     public:
 
         /// \brief Default constructor.
-        HeapMemoryResource() noexcept = default;
+        SystemMemoryResource() noexcept = default;
 
         /// \brief Default copy constructor.
-        HeapMemoryResource(const HeapMemoryResource&) noexcept = default;
+        SystemMemoryResource(const SystemMemoryResource&) noexcept = default;
 
         /// \brief Default move constructor.
-        HeapMemoryResource(HeapMemoryResource&&) noexcept = default;
+        SystemMemoryResource(SystemMemoryResource&&) noexcept = default;
 
         /// \brief Default destructor.
-        ~HeapMemoryResource() noexcept = default;
+        ~SystemMemoryResource() noexcept = default;
 
         /// \brief Default assignment operator.
-        HeapMemoryResource& operator=(const HeapMemoryResource&) noexcept = default;
+        SystemMemoryResource& operator=(const SystemMemoryResource&) noexcept = default;
 
         /// \brief Allocate a new memory block.
         /// \param size Size of the memory block to allocate.
@@ -73,9 +73,9 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // HeapMemoryResource.
+    // SystemMemoryResource.
 
-    inline MemoryRange HeapMemoryResource::Allocate(Bytes size) noexcept
+    inline MemoryRange SystemMemoryResource::Allocate(Bytes size) noexcept
     {
         if (auto block = MemoryAddress{ ::operator new(*size, std::nothrow) })
         {
@@ -85,7 +85,7 @@ namespace syntropy
         return {};
     }
 
-    inline MemoryRange HeapMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemoryRange SystemMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto block = MemoryAddress{ ::operator new(*size, alignment, std::nothrow) })
         {
@@ -95,20 +95,20 @@ namespace syntropy
         return {};
     }
 
-    inline void HeapMemoryResource::Deallocate(const MemoryRange& block) noexcept
+    inline void SystemMemoryResource::Deallocate(const MemoryRange& block) noexcept
     {
         ::operator delete(block.Begin(), std::nothrow);
     }
 
-    inline void HeapMemoryResource::Deallocate(const MemoryRange& block, Alignment alignment) noexcept
+    inline void SystemMemoryResource::Deallocate(const MemoryRange& block, Alignment alignment) noexcept
     {
         ::operator delete(block.Begin(), alignment, std::nothrow);
     }
 
-    inline bool HeapMemoryResource::Owns(const MemoryRange& block) const noexcept
+    inline bool SystemMemoryResource::Owns(const MemoryRange& block) const noexcept
     {
-        // The heap memory resource is expected to be used as the single application memory resource or as a last resort fallback
-        // for other memory resources; assumes the system heap may contain any block.
+        // This is not correct, however system memory resource is expected to be used as last resort 
+        // to other memory resources or used as the single allocator for the application.
 
         return true;
     }
