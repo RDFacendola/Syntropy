@@ -52,7 +52,6 @@
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\memory\memory_address.h" />
     <ClInclude Include="include\syntropy\memory\memory_range.h" />
-    <ClInclude Include="include\syntropy\memory\observer_ptr.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory_range.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
