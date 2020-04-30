@@ -32,8 +32,8 @@ namespace syntropy
         /// \brief Value type.
         using TValue = std::remove_reference_t<TReference>;
 
-        /// \brief Difference type between two iterators.
-        using TDifference = decltype(std::declval<TIterator>() - std::declval<TIterator>());
+        /// \brief Distance type between two iterators.
+        using TDistance = decltype(std::declval<TIterator>() - std::declval<TIterator>());
 
         /// \brief Create an empty range.
         Range() = default;
@@ -45,8 +45,8 @@ namespace syntropy
 
         /// \brief Create a new range.
         /// \param begin First element in the range.
-        /// \param count Number of elements in the range.
-        Range(TIterator begin, TDifference count);
+        /// \param count Number of elements between the first and the last element in the range.
+        Range(TIterator begin, TDistance count);
 
         /// \brief Copy constructor.
         template <typename UIterator>
@@ -68,7 +68,7 @@ namespace syntropy
         TReference GetBack() const;
 
         /// \brief Access an element by offset from the first element in the range.
-        TReference operator[](TDifference offset) const;
+        TReference operator[](TDistance offset) const;
 
         /// \brief Get a pointer to the beginning of the range.
         TValue* GetData() const;
@@ -77,7 +77,7 @@ namespace syntropy
         operator bool() const;
 
         /// \brief Get the number of elements in the range.
-        TDifference GetSize() const;
+        TDistance GetSize() const;
 
         /// \brief Advance the range head forward by one element.
         /// This method results in undefined behavior is the range is empty.
@@ -128,20 +128,20 @@ namespace syntropy
     Range<TIterator> MakeRange(TIterator begin, TIterator end);
 
     /// \brief Create a new range from an iterator and a number of elements.
-    template <typename TIterator, typename TDifference>
-    Range<TIterator> MakeRange(TIterator begin, TDifference count);
+    template <typename TIterator, typename TDistance>
+    Range<TIterator> MakeRange(TIterator begin, TDistance count);
 
-    /// \brief Create a new range from a collection.
-    template <typename TCollection>
-    auto MakeRange(TCollection& collection);
+    /// \brief Create a new range defined between the iterators to the beginning and the end of a container.
+    template <typename TContainer>
+    auto MakeRange(TContainer& container);
 
-    /// \brief Create a new range from a collection.
-    template <typename TCollection>
-    auto MakeRange(const TCollection& collection);
+    /// \brief Create a new range defined between the iterators to the beginning and the end of a container.
+    template <typename TContainer>
+    auto MakeRange(const TContainer& container);
 
-    /// \brief Create a new range from a collection.
-    template <typename TCollection>
-    auto MakeConstRange(const TCollection& collection);
+    /// \brief Create a new range defined between the iterators to the beginning and the end of a container.
+    template <typename TContainer>
+    auto MakeConstRange(const TContainer& container);
 
     /// \brief Stream insertion for a range of elements.
     template <typename TIterator>
@@ -162,7 +162,7 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline Range<TIterator>::Range(TIterator begin, TDifference count)
+    inline Range<TIterator>::Range(TIterator begin, TDistance count)
         : Range(begin, begin + count)
     {
 
@@ -202,7 +202,7 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline typename Range<TIterator>::TReference Range<TIterator>::operator[](TDifference offset) const
+    inline typename Range<TIterator>::TReference Range<TIterator>::operator[](TDistance offset) const
     {
         return *(Begin() + offset);
     }
@@ -216,11 +216,11 @@ namespace syntropy
     template <typename TIterator>
     inline Range<TIterator>::operator bool() const
     {
-        return GetSize() > TDifference{ 0 };
+        return GetSize() > TDistance{ 0 };
     }
 
     template <typename TIterator>
-    inline typename Range<TIterator>::TDifference Range<TIterator>::GetSize() const
+    inline typename Range<TIterator>::TDistance Range<TIterator>::GetSize() const
     {
         using std::distance;
 
@@ -283,37 +283,37 @@ namespace syntropy
         return { begin, end };
     }
 
-    template <typename TIterator, typename TDifference>
-    inline Range<TIterator> MakeRange(TIterator begin, TDifference count)
+    template <typename TIterator, typename TDistance>
+    inline Range<TIterator> MakeRange(TIterator begin, TDistance count)
     {
         return { begin, count };
     }
 
-    template <typename TCollection>
-    inline auto MakeRange(TCollection& collection)
+    template <typename TContainer>
+    inline auto MakeRange(TContainer& container)
     {
         using std::begin;
         using std::end;
 
-        return MakeRange(begin(collection), end(collection));
+        return MakeRange(begin(container), end(container));
     }
 
-    template <typename TCollection>
-    inline auto MakeRange(const TCollection& collection)
+    template <typename TContainer>
+    inline auto MakeRange(const TContainer& container)
     {
         using std::begin;
         using std::end;
 
-        return MakeRange(begin(collection), end(collection));
+        return MakeRange(begin(container), end(container));
     }
 
-    template <typename TCollection>
-    inline auto MakeConstRange(const TCollection& collection)
+    template <typename TContainer>
+    inline auto MakeConstRange(const TContainer& container)
     {
         using std::cbegin;
         using std::cend;
 
-        return MakeRange(cbegin(collection), cend(collection));
+        return MakeRange(cbegin(container), cend(container));
     }
 
     template <typename TIterator>
