@@ -38,6 +38,10 @@ namespace syntropy
         /// \return Returns the number of bytes.
         constexpr std::int64_t operator*() const;
 
+        /// \brief Get the number of bytes.
+        /// \return Returns the number of bytes.
+        constexpr std::int64_t GetCount() const;
+
         /// \brief Add a bytes amount.
         /// \return Returns a reference to this element.
         constexpr Bytes& operator+=(const Bytes& rhs) noexcept;
@@ -212,6 +216,11 @@ namespace syntropy
     }
 
     constexpr std::int64_t Bytes::operator*() const
+    {
+        return bytes_;
+    }
+
+    constexpr std::int64_t Bytes::GetCount() const
     {
         return bytes_;
     }
