@@ -51,8 +51,8 @@ namespace syntropy
         constexpr MemoryAddressT(intptr_t address);
 
         /// \brief Default copy-constructor.
-        template <bool is_rhs_const>
-        constexpr MemoryAddressT(const MemoryAddressT<is_rhs_const>& rhs);
+        template <bool kIsRHSConst>
+        constexpr MemoryAddressT(const MemoryAddressT<kIsRHSConst>& rhs);
 
         /// \brief Default assignment operator.
         MemoryAddressT& operator=(const MemoryAddressT&) = default;
@@ -137,33 +137,33 @@ namespace syntropy
 
     /// \brief Equality comparison for MemoryAddress.
     /// \return Returns true if lhs and rhs refer to the same address, returns false otherwise.
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator==(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_lhs_const>& rhs) noexcept;
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator==(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsLHSConst>& rhs) noexcept;
 
     /// \brief Inequality comparison for MemoryAddress.
     /// \return Returns true if lhs and rhs refer to different address, returns false otherwise.
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator!=(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_lhs_const>& rhs) noexcept;
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator!=(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsLHSConst>& rhs) noexcept;
 
     /// \brief Greater-than comparison for MemoryAddress.
     /// \return Returns true if lhs refers to an address that is strictly greater than rhs, returns false otherwise.
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator>(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_lhs_const>& rhs) noexcept;
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator>(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsLHSConst>& rhs) noexcept;
 
     /// \brief Less-than comparison for MemoryAddress.
     /// \return Returns true if lhs refers to an address that is strictly less than rhs, returns false otherwise.
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator<(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_lhs_const>& rhs) noexcept;
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator<(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsLHSConst>& rhs) noexcept;
 
     /// \brief Greater-or-equal comparison for MemoryAddress.
     /// \return Returns true if lhs refers to an address that is equal or greater than rhs, returns false otherwise.
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator>=(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_lhs_const>& rhs) noexcept;
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator>=(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsLHSConst>& rhs) noexcept;
 
     /// \brief Less-or-equal comparison for MemoryAddress.
     /// \return Returns true if lhs refers to an address that is equal or less than rhs, returns false otherwise.
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator<=(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_lhs_const>& rhs) noexcept;
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator<=(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsLHSConst>& rhs) noexcept;
 
     /// \brief Move an address forward.
     /// \return Returns an address which is equal to lhs moved forward by rhs bytes.
@@ -177,8 +177,16 @@ namespace syntropy
 
     /// \brief Get the difference of two memory addresses.
     /// \return Returns a the signed difference between lhs and rhs.
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr Bytes operator-(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept;
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr Bytes operator-(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsRHSConst>& rhs) noexcept;
+
+    /// \brief Make a new memory address deducing its const-ness.
+    template <typename TPointer, bool kIsConst = std::is_const_v<TPointer>>
+    constexpr MemoryAddressT<kIsConst> MakeMemoryAddress(TPointer* pointer);
+
+    /// \brief Make a new constant memory address.
+    template <typename TPointer>
+    constexpr ConstMemoryAddress MakeConstMemoryAddress(TPointer* pointer);
 
     /// \brief Stream insertion for MemoryAddress.
     template <bool kIsConst>
@@ -212,8 +220,8 @@ namespace syntropy
     }
 
     template <bool kIsConst>
-    template <bool is_rhs_const>
-    constexpr MemoryAddressT<kIsConst>::MemoryAddressT(const MemoryAddressT<is_rhs_const>& rhs)
+    template <bool kIsRHSConst>
+    constexpr MemoryAddressT<kIsConst>::MemoryAddressT(const MemoryAddressT<kIsRHSConst>& rhs)
         : address_(*rhs)
     {
 
@@ -324,38 +332,38 @@ namespace syntropy
         return copy;
     }
 
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator==(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator==(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsRHSConst>& rhs) noexcept
     {
         return intptr_t(lhs) == intptr_t(rhs);
     }
 
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator!=(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator!=(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsRHSConst>& rhs) noexcept
     {
         return !(lhs == rhs);
     }
 
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator>(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator>(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsRHSConst>& rhs) noexcept
     {
         return intptr_t(lhs) > intptr_t(rhs);
     }
 
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator<(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator<(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsRHSConst>& rhs) noexcept
     {
         return intptr_t(lhs) < intptr_t(rhs);
     }
 
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator>=(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator>=(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsRHSConst>& rhs) noexcept
     {
         return intptr_t(lhs) >= intptr_t(rhs);
     }
 
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr bool operator<=(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr bool operator<=(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsRHSConst>& rhs) noexcept
     {
         return intptr_t(lhs) <= intptr_t(rhs);
     }
@@ -372,10 +380,22 @@ namespace syntropy
         return MemoryAddressT<kIsConst>(lhs) -= rhs;
     }
 
-    template <bool is_lhs_const, bool is_rhs_const>
-    constexpr Bytes operator-(const MemoryAddressT<is_lhs_const>& lhs, const MemoryAddressT<is_rhs_const>& rhs) noexcept
+    template <bool kIsLHSConst, bool kIsRHSConst>
+    constexpr Bytes operator-(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsRHSConst>& rhs) noexcept
     {
         return Bytes{ intptr_t(lhs) - intptr_t(rhs) };
+    }
+
+    template <typename TPointer, bool kIsConst>
+    constexpr MemoryAddressT<kIsConst> MakeMemoryAddress(TPointer* pointer)
+    {
+        return pointer;
+    }
+
+    template <typename TPointer>
+    constexpr ConstMemoryAddress MakeConstMemoryAddress(TPointer* pointer)
+    {
+        return pointer;
     }
 
     template <bool kIsConst>
