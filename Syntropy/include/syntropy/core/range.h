@@ -89,6 +89,10 @@ namespace syntropy
         /// \brief Check whether an iterator falls within this range.
         bool Contains(const TIterator& rhs) const;
 
+        /// \brief Check whether a range overlaps this range.
+        /// \remarks If Contains(rhs) is true Overlaps(rhs) is also true.
+        bool Overlaps(const Range& rhs) const;
+
     private:
 
         /// \brief Iterator to the first element in the range.
@@ -239,6 +243,12 @@ namespace syntropy
     inline bool Range<TIterator>::Contains(const TIterator& rhs) const
     {
         return (begin_ <= rhs) && (rhs < end_);
+    }
+
+    template <typename TIterator>
+    inline bool Range<TIterator>::Overlaps(const Range& rhs) const
+    {
+        return (rhs.Begin() < end_) && (rhs.End() > begin_);
     }
 
     // Non-member functions.
