@@ -107,7 +107,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Swaps two VirtualMemoryResources.
-    void swap(syntropy::VirtualMemoryResource& lhs, syntropy::VirtualMemoryResource& rhs) noexcept;
+    void swap(VirtualMemoryResource& lhs, VirtualMemoryResource& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -164,7 +164,7 @@ namespace syntropy
         return virtual_memory_.Contains(block);
     }
 
-    inline void swap(syntropy::VirtualMemoryResource& lhs, syntropy::VirtualMemoryResource& rhs) noexcept
+    inline void swap(VirtualMemoryResource& lhs, VirtualMemoryResource& rhs) noexcept
     {
         lhs.Swap(rhs);
     }
