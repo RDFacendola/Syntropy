@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <cstring>
 #include <string>
 #include <string_view>
 
@@ -44,27 +45,31 @@ namespace syntropy
     using StringView = BasicStringView<char>;
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* STRINGS                                                              */
     /************************************************************************/
 
-    /// \brief Check whether lhs is a prefix of rhs.
-    bool IsPrefix(const StringView& lhs, const StringView& rhs);
+    /// \brief Exposes utility functions used to manipulate strings.
+    namespace Strings
+    {
+        /// \brief Check whether lhs is a prefix of rhs.
+        bool IsPrefix(const StringView& lhs, const StringView& rhs);
 
-    /// \brief Check whether lhs is a suffix of rhs.
-    bool IsSuffix(const StringView& lhs, const StringView& rhs);
+        /// \brief Check whether lhs is a suffix of rhs.
+        bool IsSuffix(const StringView& lhs, const StringView& rhs);
+    }
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Non-member functions.
+    // Strings.
 
-    inline bool IsPrefix(const StringView& lhs, const StringView& rhs)
+    inline bool Strings::IsPrefix(const StringView& lhs, const StringView& rhs)
     {
         return (lhs.length() <= rhs.length()) && (rhs.compare(0, lhs.length(), lhs) == 0);
     }
 
-    inline bool IsSuffix(const StringView& lhs, const StringView& rhs)
+    inline bool Strings::IsSuffix(const StringView& lhs, const StringView& rhs)
     {
         return (lhs.length() <= rhs.length()) && (rhs.compare(rhs.length() - lhs.length(), lhs.length(), lhs) == 0);
     }
