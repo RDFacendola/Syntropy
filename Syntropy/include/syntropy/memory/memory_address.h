@@ -78,6 +78,10 @@ namespace syntropy
         template <typename TType>
         constexpr std::conditional_t<kIsConst, const TType*, TType*> As() const noexcept;
 
+        /// \brief Reinterpret the memory address and emplace a value at pointed location.
+        template <typename TType>
+        constexpr void Emplace(TType&& value);
+
         /// \brief Move the address forward.
         /// \return Returns a reference to this element.
         constexpr MemoryAddressT& operator+=(const Bytes& rhs) noexcept;
@@ -257,6 +261,13 @@ namespace syntropy
     {
         return reinterpret_cast<std::conditional_t<kIsConst, const TType*, TType*>>(address_);
     }
+
+     template <bool kIsConst>
+     template <typename TType>
+     constexpr void MemoryAddressT<kIsConst>::Emplace(TType&& value)
+     {
+         *As<TType>() = value;
+     }
 
     template <bool kIsConst>
     constexpr MemoryAddressT<kIsConst>& MemoryAddressT<kIsConst>::operator+=(const Bytes& rhs) noexcept
