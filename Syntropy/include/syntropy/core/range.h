@@ -93,6 +93,16 @@ namespace syntropy
         /// \return Returns a reference to this.
         Range& PopFront(TDistance elements);
 
+        /// \brief Recede the range tail backwards by one element.
+        /// This method results in undefined behavior is the range is empty.
+        /// \return Returns a reference to this.
+        Range& PopBack();
+
+        /// \brief Recede the range tail backwards by some elements.
+        /// This method results in undefined behavior is the range is empty or exceeded.
+        /// \return Returns a reference to this.
+        Range& PopBack(TDistance elements);
+
         /// \brief Check whether a range is contained entirely inside this range.
         bool Contains(const Range& rhs) const;
 
@@ -255,6 +265,22 @@ namespace syntropy
     inline Range<TIterator>& Range<TIterator>::PopFront(TDistance elements)
     {
         begin_ += elements;
+
+        return *this;
+    }
+
+    template <typename TIterator>
+    inline Range<TIterator>& Range<TIterator>::PopBack()
+    {
+        --end_;
+
+        return *this;
+    }
+
+    template <typename TIterator>
+    inline Range<TIterator>& Range<TIterator>::PopBack(TDistance elements)
+    {
+        end_ -= elements;
 
         return *this;
     }
