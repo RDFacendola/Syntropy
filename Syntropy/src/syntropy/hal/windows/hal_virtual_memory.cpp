@@ -50,18 +50,28 @@ namespace syntropy
     {
         // Allocate up to the next page boundary.
 
-        MemoryAddress address = VirtualAlloc(0, *size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+        if (size > Bytes{ 0 })
+        {
+            MemoryAddress address = VirtualAlloc(0, *size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-        return { address, address + size };
+            return { address, address + size };
+        }
+
+        return {};
     }
 
     MemoryRange HALVirtualMemory::Reserve(Bytes size)
     {
         // Reserve up to the next page boundary.
 
-        MemoryAddress address = VirtualAlloc(0, *size, MEM_RESERVE, PAGE_READWRITE);
+        if (size > Bytes{ 0 })
+        {
+            MemoryAddress address = VirtualAlloc(0, *size, MEM_RESERVE, PAGE_READWRITE);
 
-        return { address, address + size };
+            return { address, address + size };
+        }
+
+        return {};
     }
 
     bool HALVirtualMemory::Release(const MemoryRange& memory_range)
@@ -78,20 +88,30 @@ namespace syntropy
 
     bool HALVirtualMemory::Commit(const MemoryRange& memory_range)
     {
-        auto size = *memory_range.GetSize();
+        if (memory_range)
+        {
+            auto size = *memory_range.GetSize();
 
-        // Commit each page containing at least one byte in the range.
+            // Commit each page containing at least one byte in the range.
 
-        return VirtualAlloc(memory_range.Begin(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
+            return VirtualAlloc(memory_range.Begin(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
+        }
+
+        return true;
     }
 
     bool HALVirtualMemory::Decommit(const MemoryRange& memory_range)
     {
-        auto size = *memory_range.GetSize();
+        if (memory_range)
+        {
+            auto size = *memory_range.GetSize();
 
-        // Decommit each page containing at least one byte in the range.
+            // Decommit each page containing at least one byte in the range.
 
-        return VirtualFree(memory_range.Begin(), size, MEM_DECOMMIT) != 0;
+            return VirtualFree(memory_range.Begin(), size, MEM_DECOMMIT) != 0;
+        }
+
+        return true;
     }
 
 }
