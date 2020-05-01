@@ -40,11 +40,13 @@
     <ClInclude Include="include\syntropy\allocators\fallback_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\system_memory_resource.h" />
     <ClInclude Include="include\syntropy\memory\memory.h" />
+    <ClInclude Include="include\syntropy\allocators\linear_virtual_memory_resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
+    <ClCompile Include="src\syntropy\allocators\linear_virtual_memory_resource.cpp" />
   </ItemGroup>
 </Project>

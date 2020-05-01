@@ -14,6 +14,7 @@
     <ClInclude Include="include\syntropy\allocators\counting_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\fallback_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\fixed_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\linear_virtual_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\system_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\linear_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\memory_context.h" />
@@ -52,6 +53,7 @@
     <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\syntropy\allocators\linear_virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_virtual_memory.cpp" />
