@@ -462,22 +462,22 @@ namespace syntropy
 
         constexpr Bytes operator "" _KiBytes(std::size_t lhs)
         {
-            return Bytes(lhs * 0x400);
+            return Bytes(lhs * 0x400ull);
         }
 
         constexpr Bytes operator "" _MiBytes(std::size_t lhs)
         {
-            return Bytes(lhs * 0x400 * 0x400);
+            return Bytes(lhs * 0x400ull * 0x400ull);
         }
 
         constexpr Bytes operator "" _GiBytes(std::size_t lhs)
         {
-            return Bytes(lhs * 0x400 * 0x400 * 0x400);
+            return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull);
         }
 
         constexpr Bytes operator "" _TiBytes(std::size_t lhs)
         {
-            return Bytes(lhs * 0x400 * 0x400 * 0x400 * 0x400);
+            return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull * 0x400ull);
         }
     }
 
