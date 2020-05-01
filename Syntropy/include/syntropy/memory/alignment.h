@@ -6,15 +6,12 @@
 
 #pragma once
 
+#include <ostream>
+
 #include "syntropy/syntropy.h"
-
 #include "syntropy/math/arithmetic.h"
-
 #include "syntropy/diagnostics/assert.h"
-
 #include "syntropy/memory/bytes.h"
-
-#include "syntropy/language/stream.h"
 
 namespace syntropy
 {

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "syntropy/language/type_traits.h"
-#include "syntropy/language/iterator.h"
-#include "syntropy/language/stream.h"
+#include <iterator>
+#include <type_traits>
+#include <ostream>
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"

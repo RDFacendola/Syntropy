@@ -6,11 +6,12 @@
 
 #pragma once
 
+#include <ostream>
+#include <type_traits>
+
 #include "syntropy/syntropy.h"
 
-#include "syntropy/language/type_traits.h"
 #include "syntropy/language/utility.h"
-#include "syntropy/language/stream.h"
 
 namespace syntropy
 {

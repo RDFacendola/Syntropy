@@ -7,9 +7,9 @@
 #pragma once
 
 #include <unordered_set>
+#include <functional>
 
 #include "syntropy/language/utility.h"
-#include "syntropy/language/functional.h"
 
 #include "syntropy/allocators/polymorphic_allocator.h"
 

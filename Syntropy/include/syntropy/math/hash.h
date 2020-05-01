@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/numeric.h"
+#include <numeric>
 
 #include "syntropy/memory/memory_range.h"
 

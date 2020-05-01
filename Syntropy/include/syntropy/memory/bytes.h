@@ -8,7 +8,7 @@
 
 #include "syntropy/syntropy.h"
 
-#include "syntropy/language/stream.h"
+#include <ostream>
 
 namespace syntropy
 {
@@ -180,7 +180,8 @@ namespace syntropy
     /// \brief Stream insertion for Bytes.
     std::ostream& operator<<(std::ostream& lhs, const Bytes& rhs);
 
-    namespace literals
+    /// \brief Exposes memory unit literals.
+    namespace Literals
     {
         /// \brief User-defined literal used to convert a number from Bytes to Bytes.
         /// \param number Number to convert.
@@ -402,7 +403,7 @@ namespace syntropy
         return Bytes(sizeof(TType));
     }
 
-    namespace literals
+    namespace Literals
     {
         constexpr Bytes operator "" _Bytes(std::size_t lhs)
         {

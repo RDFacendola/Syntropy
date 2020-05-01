@@ -81,7 +81,7 @@ namespace syntropy
     template <typename TIterator>
     inline auto MakeMemoryRange(TIterator begin, Bytes size)
     {
-        using namespace literals;
+        using namespace Literals;
 
         // Compute range size since 'end' cannot be dereferenced.
 
@@ -105,7 +105,7 @@ namespace syntropy
     template <typename TIterator>
     inline ConstMemoryRange MakeConstMemoryRange(TIterator begin, Bytes size)
     {
-        using namespace literals;
+        using namespace Literals;
 
         // Compute range size since 'end' cannot be dereferenced.
 

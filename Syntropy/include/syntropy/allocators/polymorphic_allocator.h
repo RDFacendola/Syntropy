@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "syntropy/language/tuple.h"
-#include "syntropy/language/type_traits.h"
+#include <tuple>
 
+#include "syntropy/language/type_traits.h"
 #include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy
@@ -152,7 +152,7 @@ namespace syntropy
     template <typename UType, typename... UArguments>
     inline void PolymorphicAllocator<TType>::construct(UType* storage, UArguments&&... arguments)
     {
-        if constexpr (traits::IsSpecializationV<UType, std::pair>)
+        if constexpr (IsSpecializationV<UType, std::pair>)
         {
             ConstructPiecewise(storage, std::forward<UArguments>(arguments)...);
         }
@@ -176,7 +176,7 @@ namespace syntropy
         }
         else
         {
-            static_assert(traits::AlwaysFalseV<UType>, "Uses-allocator construction failed: UType is allocator-aware but doesn't use neither leading nor trailing allocator convention.");
+            static_assert(AlwaysFalseV<UType>, "Uses-allocator construction failed: UType is allocator-aware but doesn't use neither leading nor trailing allocator convention.");
         }
     }
 
@@ -246,7 +246,7 @@ namespace syntropy
         }
         else
         {
-            static_assert(traits::AlwaysFalseV<UType>, "Uses-allocator construction failed: UType is allocator-aware but doesn't use neither leading nor trailing allocator convention.");
+            static_assert(AlwaysFalseV<UType>, "Uses-allocator construction failed: UType is allocator-aware but doesn't use neither leading nor trailing allocator convention.");
         }
     }
 

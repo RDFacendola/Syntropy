@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "syntropy/language/tuple.h"
 #include "syntropy/language/utility.h"
 
 #include "syntropy/diagnostics/assert.h"

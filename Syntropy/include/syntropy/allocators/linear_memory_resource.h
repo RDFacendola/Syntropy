@@ -173,7 +173,7 @@ namespace syntropy
     template <typename TMemoryResource>
     MemoryRange LinearMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        using namespace syntropy::literals;
+        using namespace syntropy::Literals;
 
         // Attempt to allocate on the current chunk. Fast-path.
 

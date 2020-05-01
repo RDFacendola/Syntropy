@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-namespace syntropy::traits
+namespace syntropy
 {
     /************************************************************************/
     /* TYPE TRAITS                                                          */
