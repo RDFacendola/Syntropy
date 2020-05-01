@@ -89,6 +89,22 @@ namespace syntropy
 
     };
 
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Increment the value by one Byte. Prefix.
+    constexpr Bytes& operator++(Bytes& rhs);
+
+    /// \brief Increment the value by one Byte. Postfix.
+    constexpr Bytes operator++(Bytes& rhs, int);
+
+    /// \brief Decrement the value by one Byte. Prefix.
+    constexpr Bytes& operator--(Bytes& rhs);
+
+    /// \brief Decrement the value by one Byte. Postfix.
+    constexpr Bytes operator--(Bytes& rhs, int);
+
     /// \brief Equality comparison for Bytes.
     /// \return Returns true if lhs and rhs refer to the same amount of memory, returns false otherwise.
     constexpr bool operator==(const Bytes& lhs, const Bytes& rhs) noexcept;
@@ -284,6 +300,40 @@ namespace syntropy
     {
         bytes_ ^= rhs.bytes_;
         return *this;
+    }
+
+    // Non-member functions.
+
+    constexpr Bytes& operator++(Bytes& rhs)
+    {
+        rhs += Bytes{ 1 };
+
+        return rhs;
+    }
+
+    constexpr Bytes operator++(Bytes& rhs, int)
+    {
+        auto copy = rhs;
+
+        ++rhs;
+
+        return copy;
+    }
+
+    constexpr Bytes& operator--(Bytes& rhs)
+    {
+        rhs -= Bytes{ 1 };
+
+        return rhs;
+    }
+
+    constexpr Bytes operator--(Bytes& rhs, int)
+    {
+        auto copy = rhs;
+
+        --rhs;
+
+        return copy;
     }
 
     constexpr bool operator==(const Bytes& lhs, const Bytes& rhs) noexcept
