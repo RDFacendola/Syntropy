@@ -52,7 +52,7 @@ namespace syntropy
         template <typename UIterator>
         Range(const Range<UIterator>& rhs);
 
-        /// \brief DEFAULT assignment operator.
+        /// \brief Default assignment operator.
         Range& operator=(const Range&) = default;
 
         /// \brief Get an iterator to the first element in the range.
@@ -60,6 +60,9 @@ namespace syntropy
 
         /// \brief Get an iterator past the last element in the range.
         TIterator End() const;
+
+        /// \brief Get an iterator to the last element in the range.
+        TIterator Last() const;
 
         /// \brief Access the first element in the range.
         TReference GetFront() const;
@@ -81,7 +84,13 @@ namespace syntropy
 
         /// \brief Advance the range head forward by one element.
         /// This method results in undefined behavior is the range is empty.
-        void PopFront();
+        /// \return Returns a reference to this.
+        Range& PopFront();
+
+        /// \brief Advance the range head forward by some elements.
+        /// This method results in undefined behavior is the range is empty or exceeded.
+        /// \return Returns a reference to this.
+        Range& PopFront(TDistance elements);
 
         /// \brief Check whether a range is contained entirely inside this range.
         bool Contains(const Range& rhs) const;
@@ -190,6 +199,12 @@ namespace syntropy
     }
 
     template <typename TIterator>
+    inline TIterator Range<TIterator>::Last() const
+    {
+        return end_ - TDistance{ 1 };
+    }
+
+    template <typename TIterator>
     inline typename Range<TIterator>::TReference Range<TIterator>::GetFront() const
     {
         return *begin_;
@@ -198,7 +213,7 @@ namespace syntropy
     template <typename TIterator>
     inline typename Range<TIterator>::TReference Range<TIterator>::GetBack() const
     {
-        return *(end_ - 1);
+        return *Last();
     }
 
     template <typename TIterator>
@@ -228,9 +243,19 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline void Range<TIterator>::PopFront()
+    inline Range<TIterator>& Range<TIterator>::PopFront()
     {
         ++begin_;
+
+        return *this;
+    }
+
+    template <typename TIterator>
+    inline Range<TIterator>& Range<TIterator>::PopFront(TDistance elements)
+    {
+        begin_ += elements;
+
+        return *this;
     }
 
     template <typename TIterator>
