@@ -155,6 +155,8 @@ namespace syntropy
         if (memory_resource_.Owns(block))
         {
             memory_resource_.Deallocate(block);
+
+            return;
         }
 
         fallback_resource_.Deallocate(block);
@@ -168,6 +170,8 @@ namespace syntropy
         if (memory_resource_.Owns(block))
         {
             memory_resource_.Deallocate(block, alignment);
+
+            return;
         }
 
         fallback_resource_.Deallocate(block, alignment);
