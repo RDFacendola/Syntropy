@@ -45,6 +45,7 @@
     <ClInclude Include="include\syntropy\language\functional.h" />
     <ClInclude Include="include\syntropy\platform\endianness.h" />
     <ClInclude Include="src\syntropy\hal\hal_endianness.h" />
+    <ClInclude Include="include\syntropy\diagnostics\severity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

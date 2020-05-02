@@ -47,6 +47,7 @@
 #include "syntropy/allocators/scope_allocator.h"
 
 #include "syntropy/diagnostics/assert.h"
+#include "syntropy/diagnostics/severity.h"
 
 #include "syntropy/math/constants.h"
 #include "syntropy/math/hash.h"
@@ -58,6 +59,8 @@ int main(int argc, char **argv)
 
     auto k = syntropy::Endianness::ToBigEndian(0x0011223344556677ll);
     auto q = syntropy::Endianness::FromBigEndian(k);
+
+    std::cout << syntropy::Severity::kCritical;
 
     return 0;
 }
