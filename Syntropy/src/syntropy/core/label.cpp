@@ -81,7 +81,7 @@ namespace syntropy
 
         auto string_range = MakeMemoryRange(begin(string), end(string));
 
-        auto label_hash = FastHash64(string_range);
+        auto label_hash = Hash::FNV1a64(string_range);
 
         if (auto label_iterator = labels_.lower_bound(label_hash); label_iterator != labels_.end())
         {

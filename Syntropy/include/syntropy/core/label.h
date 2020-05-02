@@ -74,6 +74,9 @@ namespace syntropy
     /// \brief Inequality comparison.
     bool operator!=(const Label& lhs, const Label& rhs) noexcept;
 
+    /// \brief Get a label hash.
+    std::int64_t Hash64(const Label& rhs);
+
     /// \brief Swaps two labels.
     void swap(Label& lhs, Label& rhs) noexcept;
 
@@ -125,6 +128,13 @@ namespace syntropy
     inline bool operator!=(const Label& lhs, const Label& rhs) noexcept
     {
         return !(lhs == rhs);
+    }
+
+    inline std::int64_t Hash64(const Label& rhs)
+    {
+        // Labels are never deallocated, hence their memory location is unique.
+
+        return reinterpret_cast<std::intptr_t>(rhs.GetCharacters());
     }
 
     inline void swap(Label& lhs, Label& rhs) noexcept
