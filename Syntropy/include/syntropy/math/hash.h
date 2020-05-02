@@ -13,14 +13,19 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* HASH                                                                 */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Get the non-cryptographic 64-bit hash of a buffer.
-    [[nodiscard]] int64_t FastHash64(const ConstMemoryRange& buffer);
+    /// \brief Exposes generic hashing functionalities.
+    /// \author Raffaele D. Facendola - May 2020.
+    namespace Hash
+    {
+        /// \brief Get the non-cryptographic 64-bit FNV1a hash of a buffer.
+        std::int64_t FNV1a64(const ConstMemoryRange& buffer);
 
-    /// \brief Get the non-cryptographic 32-bit hash of a buffer.
-    [[nodiscard]] int32_t FastHash32(const ConstMemoryRange& buffer);
+        /// \brief Get the non-cryptographic 32-bit FNV1a hash of a buffer.
+        std::int32_t FNV1a32(const ConstMemoryRange& buffer);
+    }
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -28,7 +33,7 @@ namespace syntropy
 
     // Hash.
 
-    inline int64_t FastHash64(const ConstMemoryRange& buffer)
+    inline std::int64_t Hash::FNV1a64(const ConstMemoryRange& buffer)
     {
         // Uses FNV1a 64-bit with recommended constants by Landon Curt Noll - http://www.isthe.com/chongo/
 
@@ -40,7 +45,7 @@ namespace syntropy
         });
     }
 
-    inline int32_t FastHash32(const ConstMemoryRange& buffer)
+    inline std::int32_t Hash::FNV1a32(const ConstMemoryRange& buffer)
     {
         // Uses FNV1a 32-bit with recommended constants by Landon Curt Noll - http://www.isthe.com/chongo/
 
