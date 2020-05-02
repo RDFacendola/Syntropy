@@ -163,7 +163,7 @@ namespace syntropy
     template <typename TMemoryResource, typename TFallbackResource>
     inline void FallbackMemoryResource<TMemoryResource, TFallbackResource>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
-        SYNTROPY_ASSERT(Owns(block, alignment));
+        SYNTROPY_ASSERT(Owns(block));
 
         if (memory_resource_.Owns(block))
         {
