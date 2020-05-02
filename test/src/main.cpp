@@ -5,6 +5,7 @@
 
 #include "syntropy/core/range.h"
 #include "syntropy/core/string.h"
+#include "syntropy/core/label.h"
 
 #include "syntropy/language/macro.h"
 #include "syntropy/language/sstream.h"
@@ -30,6 +31,7 @@
 #include "syntropy/allocators/system_memory_resource.h"
 #include "syntropy/allocators/stack_memory_resource.h"
 #include "syntropy/allocators/virtual_memory_resource.h"
+#include "syntropy/allocators/linear_virtual_memory_resource.h"
 
 #include "syntropy/allocators/fixed_memory_resource.h"
 #include "syntropy/allocators/linear_memory_resource.h"
@@ -48,14 +50,24 @@
 #include "syntropy/math/hash.h"
 #include "syntropy/math/metrics.h"
 
+
 int main(int argc, char **argv)
 {
-    using namespace syntropy::literals;
+    using namespace syntropy::Literals;
 
-    syntropy::String s = "Hello world!";
+    auto l0 = syntropy::Label("First!");
+    auto l1 = syntropy::Label("Second!");
+    auto l2 = syntropy::Label("First!");
+    auto l3 = syntropy::Label("first!");
 
-    auto hash = syntropy::FastHash64(syntropy::ConstMemoryRange(s.data(), s.data() + s.length()));
+    for (auto i = 0; i < 10000; ++i)
+    {
+        auto x = std::to_string(i);
 
+        auto l2 = syntropy::Label(x.c_str());
+    }
+
+    auto l4 = syntropy::Label("nice!");
 
     return 0;
 }

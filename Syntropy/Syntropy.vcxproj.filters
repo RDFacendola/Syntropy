@@ -37,6 +37,7 @@
     <ClInclude Include="include\syntropy\language\sstream.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\math\metrics.h" />
+    <ClInclude Include="include\syntropy\core\label.h" />
     <ClInclude Include="include\syntropy\allocators\fallback_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\system_memory_resource.h" />
     <ClInclude Include="include\syntropy\memory\memory.h" />
@@ -47,6 +48,7 @@
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
+    <ClCompile Include="src\syntropy\core\label.cpp" />
     <ClCompile Include="src\syntropy\allocators\linear_virtual_memory_resource.cpp" />
   </ItemGroup>
 </Project>
