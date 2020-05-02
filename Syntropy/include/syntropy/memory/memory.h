@@ -33,16 +33,6 @@ namespace syntropy
         /// \return Returns the bytes copied as a result of this call.
         Bytes Move(const MemoryRange& destination, const ConstMemoryRange& source);
 
-        /// \brief Copy a source memory region to a destination memory region, appending a null terminator. Neither range is exceed during the process.
-        /// If source and destination overlap, the behavior of this function is undefined.
-        /// \return Returns the bytes copied as a result of this call, excluding the null terminator.
-        Bytes StringCopy(const MemoryRange& destination, const ConstMemoryRange& source);
-
-        /// \brief Copy a source memory region to a destination memory region, appending a null terminator. Neither range is exceed during the process.
-        /// Source and destination may overlap, in this case the function behaves as if source was copied to a temporary buffer and then copied from there to the destination.
-        /// \return Returns the bytes copied as a result of this call, excluding the null terminator.
-        Bytes StringMove(const MemoryRange& destination, const ConstMemoryRange& source);
-
         /// \brief Set a value to each byte in a destination range.
         void Set(const MemoryRange& destination, std::int8_t value);
 
@@ -80,36 +70,6 @@ namespace syntropy
         }
 
         return bytes;
-    }
-
-    inline Bytes Memory::StringCopy(const MemoryRange& destination, const ConstMemoryRange& source)
-    {
-        SYNTROPY_ASSERT(!source.Overlaps(destination));
-
-        if (destination)
-        {
-            auto bytes = Copy(MemoryRange(destination).PopBack(), source);
-
-            (destination.Begin() + bytes).Emplace(std::int8_t{ 0 });
-
-            return bytes;
-        }
-
-        return {};
-    }
-
-    inline Bytes Memory::StringMove(const MemoryRange& destination, const ConstMemoryRange& source)
-    {
-        if (destination)
-        {
-            auto bytes = Move(MemoryRange(destination).PopBack(), source);
-
-            (destination.Begin() + bytes).Emplace(std::int8_t{ 0 });
-
-            return bytes;
-        }
-
-        return {};
     }
 
     inline void Memory::Set(const MemoryRange& destination, std::int8_t value)
