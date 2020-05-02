@@ -7,9 +7,10 @@
 #pragma once
 
 #include <unordered_set>
-#include <functional>
 
+#include "syntropy/language/functional.h"
 #include "syntropy/language/utility.h"
+#include "syntropy/math/hash.h"
 
 #include "syntropy/allocators/polymorphic_allocator.h"
 
@@ -20,7 +21,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Alias type for std::unordered_set with polymorphic allocator type.
-    template <typename TKey, typename THash = std::hash<TKey>, typename TPred = std::equal_to<TKey>>
+    template <typename TKey, typename THash = HashFunctor64<TKey>, typename TPred = std::equal_to<TKey>>
     using Set = std::unordered_set<TKey, THash, TPred, PolymorphicAllocator<TKey>>;
 
     /************************************************************************/
@@ -28,7 +29,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Alias type for std::unordered_multiset with polymorphic allocator type.
-    template <typename TKey, typename THash = std::hash<TKey>, typename TPred = std::equal_to<TKey>>
+    template <typename TKey, typename THash = HashFunctor64<TKey>, typename TPred = std::equal_to<TKey>>
     using Multiset = std::unordered_multiset<TKey, THash, TPred, PolymorphicAllocator<TKey>>;
 
 }

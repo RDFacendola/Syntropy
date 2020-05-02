@@ -50,24 +50,18 @@
 #include "syntropy/math/hash.h"
 #include "syntropy/math/metrics.h"
 
-
 int main(int argc, char **argv)
 {
     using namespace syntropy::Literals;
 
-    auto l0 = syntropy::Label("First!");
-    auto l1 = syntropy::Label("Second!");
-    auto l2 = syntropy::Label("First!");
-    auto l3 = syntropy::Label("first!");
+    auto s = syntropy::Set<int>{};
+    auto t = syntropy::Set<syntropy::Label>{};
 
-    for (auto i = 0; i < 10000; ++i)
-    {
-        auto x = std::to_string(i);
-
-        auto l2 = syntropy::Label(x.c_str());
-    }
-
-    auto l4 = syntropy::Label("nice!");
+    t.insert("Hello world");
+    t.insert("hello World");
+    t.insert("Hello world");
+    t.insert("Hello world");
+    t.insert("Hello world");
 
     return 0;
 }

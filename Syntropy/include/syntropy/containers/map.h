@@ -7,9 +7,10 @@
 #pragma once
 
 #include <unordered_map>
-#include <functional>
 
+#include "syntropy/language/functional.h"
 #include "syntropy/language/utility.h"
+#include "syntropy/math/hash.h"
 
 #include "syntropy/allocators/polymorphic_allocator.h"
 
@@ -20,7 +21,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Alias type for std::unordered_map with polymorphic allocator type.
-    template <typename TKey, typename TValue, typename THash = std::hash<TKey>, typename TPred = std::equal_to<TKey>>
+    template <typename TKey, typename TValue, typename THash = HashFunctor64<TKey>, typename TPred = std::equal_to<TKey>>
     using Map = std::unordered_map<TKey, TValue, THash, TPred, PolymorphicAllocator<std::pair<const TKey, TValue>>>;
 
     /************************************************************************/
@@ -28,7 +29,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Alias type for std::unordered_multimap with polymorphic allocator type.
-    template <typename TKey, typename TValue, typename THash = std::hash<TKey>, typename TPred = std::equal_to<TKey>>
+    template <typename TKey, typename TValue, typename THash = HashFunctor64<TKey>, typename TPred = std::equal_to<TKey>>
     using Multimap = std::unordered_multimap<TKey, TValue, THash, TPred, PolymorphicAllocator<std::pair<const TKey, TValue>>>;
 
 }
