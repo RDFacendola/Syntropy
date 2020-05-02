@@ -43,6 +43,8 @@
     <ClInclude Include="include\syntropy\memory\memory.h" />
     <ClInclude Include="include\syntropy\allocators\linear_virtual_memory_resource.h" />
     <ClInclude Include="include\syntropy\language\functional.h" />
+    <ClInclude Include="include\syntropy\platform\endianness.h" />
+    <ClInclude Include="src\syntropy\hal\hal_endianness.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -51,5 +53,7 @@
     <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\core\label.cpp" />
     <ClCompile Include="src\syntropy\allocators\linear_virtual_memory_resource.cpp" />
+    <ClCompile Include="src\syntropy\platform\endianness.cpp" />
+    <ClCompile Include="src\syntropy\hal\x64\hal_endianness.cpp" />
   </ItemGroup>
 </Project>

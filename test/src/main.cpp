@@ -7,6 +7,8 @@
 #include "syntropy/core/string.h"
 #include "syntropy/core/label.h"
 
+#include "syntropy/platform/endianness.h"
+
 #include "syntropy/language/macro.h"
 #include "syntropy/language/sstream.h"
 
@@ -54,14 +56,8 @@ int main(int argc, char **argv)
 {
     using namespace syntropy::Literals;
 
-    auto s = syntropy::Set<int>{};
-    auto t = syntropy::Set<syntropy::Label>{};
-
-    t.insert("Hello world");
-    t.insert("hello World");
-    t.insert("Hello world");
-    t.insert("Hello world");
-    t.insert("Hello world");
+    auto k = syntropy::Endianness::ToBigEndian(0x0011223344556677ll);
+    auto q = syntropy::Endianness::FromBigEndian(k);
 
     return 0;
 }

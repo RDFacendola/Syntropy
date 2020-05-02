@@ -1,6 +1,6 @@
 
 /// \file hal_virtual_memory.h
-/// \brief This header is part of the Syntropy hardware abstraction layer. It exposes APIs needed to handle virtual memory.
+/// \brief This header is part of the Syntropy hardware abstraction layer module. It exposes APIs needed to handle virtual memory.
 ///
 /// \author Raffaele D. Facendola - 2017
 
