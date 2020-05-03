@@ -35,6 +35,7 @@
     <ClInclude Include="include\syntropy\core\string.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\diagnostics\severity.h" />
+    <ClInclude Include="include\syntropy\hal\hal_macro.h" />
     <ClInclude Include="include\syntropy\language\functional.h" />
     <ClInclude Include="include\syntropy\language\macro.h" />
     <ClInclude Include="include\syntropy\language\sstream.h" />
