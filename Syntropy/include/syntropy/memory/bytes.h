@@ -185,6 +185,10 @@ namespace syntropy
     /// \return Returns a memory amount which is equal to the bitwise xor between lhs and rhs.
     constexpr Bytes operator^(const Bytes& lhs, const Bytes& rhs) noexcept;
 
+    /// \brief Explicitly convert a number to a Bytes amount.
+    template <typename TType>
+    constexpr Bytes ToBytes(const TType& rhs) noexcept;
+
     /// \brief Get the size of rhs, in bytes.
     template <typename TType>
     constexpr Bytes BytesOf(const TType& rhs);
@@ -439,6 +443,12 @@ namespace syntropy
     inline std::ostream& operator<<(std::ostream& lhs, const Bytes& rhs)
     {
         return lhs << *rhs;
+    }
+
+    template <typename TType>
+    constexpr Bytes ToBytes(const TType& rhs) noexcept
+    {
+        return Bytes(static_cast<std::int64_t>(rhs));
     }
 
     template <typename TType>

@@ -1,6 +1,6 @@
 
 /// \file debugger.h
-/// \brief This header is part of the Syntropy diagnostics module. It contains debugger functionalities.
+/// \brief This header is part of the Syntropy diagnostic module. It contains debugger functionalities.
 ///
 /// \author Raffaele D. Facendola - 2019
 

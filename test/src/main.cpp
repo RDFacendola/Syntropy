@@ -8,6 +8,7 @@
 #include "syntropy/core/label.h"
 
 #include "syntropy/platform/endianness.h"
+#include "syntropy/platform/system.h"
 
 #include "syntropy/language/macro.h"
 #include "syntropy/language/sstream.h"
@@ -55,30 +56,15 @@
 #include "syntropy/math/hash.h"
 #include "syntropy/math/metrics.h"
 
-void foobar()
-{
-    auto st = syntropy::Debugger::GetStackTrace(SYNTROPY_HERE);
-
-    std::cout << st;
-}
-
-void bar()
-{
-    foobar();
-}
-
-void foo()
-{
-    bar();
-}
-
 int main(int argc, char **argv)
 {
     using namespace syntropy::Literals;
 
-    foo();
-
-    system("pause");
+    auto cpu_info = syntropy::System::GetCPUInfo();
+    auto storage_info = syntropy::System::GetStorageInfo();
+    auto memory_info = syntropy::System::GetMemoryInfo();
+    auto display_info = syntropy::System::GetDisplayInfo();
+    auto platform_info = syntropy::System::GetPlatformInfo();
 
     return 0;
 }

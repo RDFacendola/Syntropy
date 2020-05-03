@@ -50,6 +50,8 @@
     <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
     <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
+    <ClInclude Include="include\syntropy\platform\system.h" />
+    <ClInclude Include="src\syntropy\hal\hal_system.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -63,5 +65,7 @@
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_debugger.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_endianness.cpp" />
+    <ClCompile Include="src\syntropy\platform\system.cpp" />
+    <ClCompile Include="src\syntropy\hal\windows\hal_windows_system.cpp" />
   </ItemGroup>
 </Project>
