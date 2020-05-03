@@ -1,6 +1,6 @@
 
 /// \file hal_endianness.h
-/// \brief This header is part of the Syntropy hardware abstraction module. It contains methods to convert byte order.
+/// \brief This header is part of the Syntropy hardware abstraction layer module. It contains methods to convert byte order.
 ///
 /// \author Raffaele D. Facendola - 2019
 
