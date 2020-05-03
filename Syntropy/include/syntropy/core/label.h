@@ -33,6 +33,9 @@ namespace syntropy
         /// \brief Create an empty label.
         Label();
 
+        /// \brief Create an empty label.
+        Label(std::nullptr_t);
+
         /// \brief Copy constructor.
         Label(const Label& other) noexcept = default;
 
@@ -90,6 +93,12 @@ namespace syntropy
     // Label.
 
     inline Label::Label()
+        : Label("")
+    {
+
+    }
+
+    inline Label::Label(std::nullptr_t)
         : Label("")
     {
 
