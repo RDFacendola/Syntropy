@@ -62,9 +62,9 @@
     <ClCompile Include="src\syntropy\allocators\linear_virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\core\label.cpp" />
-    <ClCompile Include="src\syntropy\hal\x64\hal_endianness.cpp" />
+    <ClCompile Include="src\syntropy\hal\x64\hal_x64_endianness.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
-    <ClCompile Include="src\syntropy\hal\windows\hal_virtual_memory.cpp" />
+    <ClCompile Include="src\syntropy\hal\windows\hal_windows_virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\platform\endianness.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
   </ItemGroup>
