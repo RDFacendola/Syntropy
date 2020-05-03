@@ -48,19 +48,37 @@
 
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/diagnostics/severity.h"
+#include "syntropy/diagnostics/stack_trace.h"
+#include "syntropy/diagnostics/debugger.h"
 
 #include "syntropy/math/constants.h"
 #include "syntropy/math/hash.h"
 #include "syntropy/math/metrics.h"
 
+void foobar()
+{
+    auto st = syntropy::Debugger::GetStackTrace(SYNTROPY_HERE);
+
+    std::cout << st;
+}
+
+void bar()
+{
+    foobar();
+}
+
+void foo()
+{
+    bar();
+}
+
 int main(int argc, char **argv)
 {
     using namespace syntropy::Literals;
 
-    auto k = syntropy::Endianness::ToBigEndian(0x0011223344556677ll);
-    auto q = syntropy::Endianness::FromBigEndian(k);
+    foo();
 
-    std::cout << syntropy::Severity::kCritical;
+    system("pause");
 
     return 0;
 }

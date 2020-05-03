@@ -34,7 +34,9 @@
     <ClInclude Include="include\syntropy\core\range.h" />
     <ClInclude Include="include\syntropy\core\string.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
+    <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
     <ClInclude Include="include\syntropy\diagnostics\severity.h" />
+    <ClInclude Include="include\syntropy\diagnostics\stack_trace.h" />
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
     <ClInclude Include="include\syntropy\language\functional.h" />
     <ClInclude Include="include\syntropy\language\macro.h" />
@@ -55,6 +57,7 @@
     <ClInclude Include="include\syntropy\memory\virtual_memory_range.h" />
     <ClInclude Include="include\syntropy\platform\endianness.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
+    <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
     <ClInclude Include="src\syntropy\hal\hal_endianness.h" />
     <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
   </ItemGroup>
@@ -62,6 +65,9 @@
     <ClCompile Include="src\syntropy\allocators\linear_virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\core\label.cpp" />
+    <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />
+    <ClCompile Include="src\syntropy\diagnostics\stack_trace.cpp" />
+    <ClCompile Include="src\syntropy\hal\windows\hal_windows_debugger.cpp" />
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_endianness.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_virtual_memory.cpp" />
