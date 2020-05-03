@@ -52,6 +52,7 @@
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
     <ClInclude Include="include\syntropy\platform\system.h" />
     <ClInclude Include="src\syntropy\hal\hal_system.h" />
+    <ClInclude Include="include\syntropy\allocators\inline_memory_context.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
