@@ -52,6 +52,7 @@
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
     <ClInclude Include="include\syntropy\platform\system.h" />
     <ClInclude Include="src\syntropy\hal\hal_system.h" />
+    <ClInclude Include="include\syntropy\core\context.h" />
     <ClInclude Include="include\syntropy\allocators\inline_memory_context.h" />
   </ItemGroup>
   <ItemGroup>
@@ -68,5 +69,6 @@
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_endianness.cpp" />
     <ClCompile Include="src\syntropy\platform\system.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_system.cpp" />
+    <ClCompile Include="src\syntropy\core\context.cpp" />
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include "syntropy/core/range.h"
 #include "syntropy/core/string.h"
 #include "syntropy/core/label.h"
+#include "syntropy/core/context.h"
 
 #include "syntropy/platform/endianness.h"
 #include "syntropy/platform/system.h"
@@ -59,6 +60,15 @@
 int main(int argc, char **argv)
 {
     using namespace syntropy::Literals;
+
+    auto h = syntropy::Context("Foo/Bar/FooBar");
+    auto i = syntropy::Context("Foo/Bar/FooBar") / syntropy::Context("test");
+    auto j = syntropy::Context("/Foo/Bar/FooBar/qwert/");
+    auto k = syntropy::Context("Foo/Bar/Hello");
+
+    auto b = i.Matches(h);
+    auto c = h.Matches(i);
+    auto d = j.Matches(k);
 
     auto cpu_info = syntropy::System::GetCPUInfo();
     auto storage_info = syntropy::System::GetStorageInfo();

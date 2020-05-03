@@ -31,6 +31,7 @@
     <ClInclude Include="include\syntropy\containers\map.h" />
     <ClInclude Include="include\syntropy\containers\set.h" />
     <ClInclude Include="include\syntropy\containers\vector.h" />
+    <ClInclude Include="include\syntropy\core\context.h" />
     <ClInclude Include="include\syntropy\core\label.h" />
     <ClInclude Include="include\syntropy\core\range.h" />
     <ClInclude Include="include\syntropy\core\string.h" />
@@ -67,6 +68,7 @@
   <ItemGroup>
     <ClCompile Include="src\syntropy\allocators\linear_virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
+    <ClCompile Include="src\syntropy\core\context.cpp" />
     <ClCompile Include="src\syntropy\core\label.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\stack_trace.cpp" />
