@@ -6,30 +6,8 @@
 
 #pragma once
 
+#include "syntropy/diagnostics/debugger.h"
 
-/// \brief Causes the debugger to break or the application to crash.
-#define SYNTROPY_TRAP \
-    SYNTROPY_TRAP_IMPL
-
-/// \brief If the condition is not verified causes the debugger to break or the application to crash.
+/// \brief If the condition is not verified causes the debugger to break if attached or the application to terminate.
 #define SYNTROPY_ASSERT(condition) \
     if(!(condition)) { SYNTROPY_TRAP; }
-
-/************************************************************************/
-/* DETAILS                                                              */
-/************************************************************************/
-
-namespace syntropy::details
-{
-#ifdef _MSC_VER
-
-#include <intrin.h>
-
-#define SYNTROPY_TRAP_IMPL __debugbreak()
-
-#else
-
-#error "SYNTROPY_TRAP_IMPL is undefined!"
-
-#endif
-}
