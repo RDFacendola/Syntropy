@@ -56,6 +56,7 @@
     <ClInclude Include="include\syntropy\allocators\inline_memory_context.h" />
     <ClInclude Include="include\syntropy\application\command_line_argument.h" />
     <ClInclude Include="include\syntropy\application\command_line.h" />
+    <ClInclude Include="include\syntropy\time\timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

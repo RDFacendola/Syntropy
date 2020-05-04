@@ -58,8 +58,12 @@
 #include "syntropy/math/hash.h"
 #include "syntropy/math/metrics.h"
 
+#include "syntropy/time/timer.h"
+
 int main(int argc, char **argv)
 {
+    auto timer = syntropy::Timer{ true };
+
     auto cl = syntropy::CommandLine{ argc, argv };
 
     std::cout << cl;
@@ -80,6 +84,8 @@ int main(int argc, char **argv)
     auto memory_info = syntropy::System::GetMemoryInfo();
     auto display_info = syntropy::System::GetDisplayInfo();
     auto platform_info = syntropy::System::GetPlatformInfo();
+
+    std::cout << timer().count() << "ms \n";
 
     return 0;
 }
