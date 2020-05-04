@@ -1,14 +1,16 @@
 /// \file command_line_argument.h
-/// \brief This header is part of the syntropy application system. It contains classes used to represent command line arguments.
+/// \brief This header is part of the Syntropy application module. It contains classes used to represent command line arguments.
 ///
 /// \author Raffaele D. Facendola - 2020
 
 #pragma once
 
-#include "syntropy/types/string.h"
+#include <ostream>
+
+#include "syntropy/core/string.h"
+#include "syntropy/core/label.h"
 
 #include "syntropy/containers/vector.h"
-#include "syntropy/types/label.h"
 
 namespace syntropy
 {
@@ -41,13 +43,6 @@ namespace syntropy
         /// \param values Argument values.
         CommandLineArgument(const Label& name, Vector<String> values);
 
-        /// \brief Create a new command line argument from explicit name and values in a range.
-        /// \param name Name of the command line argument.
-        /// \param first Iterator to the first argument value.
-        /// \param last Iterator past the last argument value.
-        template <typename TInputIterator>
-        CommandLineArgument(const Label& name, TInputIterator first, TInputIterator last);
-
         /// \brief Default assignment operator.
         CommandLineArgument& operator=(const CommandLineArgument&) = default;
 
@@ -68,6 +63,10 @@ namespace syntropy
         /// \return Returns true if the argument has no value, returns false otherwise.
         bool IsEmpty() const;
 
+        /// \brief Append new values to the argument.
+        template <typename TBegin, typename TEnd>
+        void AppendValues(TBegin begin, TEnd end);
+
     private:
 
         /// \brief Argument name.
@@ -75,7 +74,15 @@ namespace syntropy
 
         /// \brief Argument values.
         Vector<String> values_;
+
     };
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+        /// \brief Stream insertion for command line arguments.
+    std::ostream& operator<<(std::ostream& out, const CommandLineArgument& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -86,14 +93,6 @@ namespace syntropy
     inline CommandLineArgument::CommandLineArgument(const Label& name, Vector<String> values)
         : name_(name)
         , values_(std::move(values))
-    {
-
-    }
-
-    template <typename TInputIterator>
-    inline CommandLineArgument::CommandLineArgument(const Label& name, TInputIterator first, TInputIterator last)
-        : name_(name)
-        , values_(first, last)
     {
 
     }
@@ -122,6 +121,36 @@ namespace syntropy
     inline bool CommandLineArgument::IsEmpty() const
     {
         return values_.empty();
+    }
+
+    template <typename TBegin, typename TEnd>
+    inline void CommandLineArgument::AppendValues(TBegin begin, TEnd end)
+    {
+        values_.insert(std::end(values_), begin, end);
+    }
+
+    // Non-member functions.
+
+    inline std::ostream& operator<<(std::ostream& out, const CommandLineArgument& rhs)
+    {
+        out << rhs.GetName() << " {";
+
+        auto current_it = std::begin(rhs.GetValues());
+        auto end_it = std::end(rhs.GetValues());
+
+        if (current_it != end_it)
+        {
+            out << *current_it;
+
+            for (++current_it; current_it != end_it; ++current_it)
+            {
+                out << ", " << *current_it;
+            }
+        }
+
+        out << "}";
+
+        return out;
     }
 
 }

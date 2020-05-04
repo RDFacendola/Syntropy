@@ -42,6 +42,10 @@ namespace syntropy
         /// \brief Create a new label from a string view.
         Label(const TStringView& string);
 
+        /// \brief Create a new label from a pair of iterators.
+        template <typename TIterator>
+        Label(TIterator begin, TIterator end);
+
         /// \brief Create a new label from a null-terminated string.
         Label(const TChar* characters);
 
@@ -104,8 +108,16 @@ namespace syntropy
 
     }
 
+    template <typename TIterator>
+    inline Label::Label(TIterator begin, TIterator /*end*/)
+        : Label(TStringView(&(*begin)))
+        // : Label(TStringView(*begin, end*))   // #TODO C++20
+    {
+
+    }
+
     inline Label::Label(const Label::TChar* characters)
-        : Label(Label::TStringView(characters))
+        : Label(TStringView(characters))
     {
 
     }

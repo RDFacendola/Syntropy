@@ -1,7 +1,5 @@
 
-#include <vector>
 #include <iostream>
-#include <string>
 
 #include "syntropy/core/range.h"
 #include "syntropy/core/string.h"
@@ -13,6 +11,9 @@
 
 #include "syntropy/language/macro.h"
 #include "syntropy/language/sstream.h"
+
+#include "syntropy/application/command_line.h"
+#include "syntropy/application/command_line_argument.h"
 
 #include "syntropy/containers/array.h"
 #include "syntropy/containers/vector.h"
@@ -59,6 +60,10 @@
 
 int main(int argc, char **argv)
 {
+    auto cl = syntropy::CommandLine{ argc, argv };
+
+    std::cout << cl;
+
     using namespace syntropy::Literals;
 
     auto h = syntropy::Context("Foo/Bar/FooBar");
