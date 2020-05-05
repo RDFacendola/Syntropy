@@ -9,6 +9,7 @@
 #include "syntropy/platform/endianness.h"
 #include "syntropy/platform/system.h"
 #include "syntropy/platform/threading.h"
+#include "syntropy/platform/intrinsics.h"
 
 #include "syntropy/language/macro.h"
 #include "syntropy/language/sstream.h"
@@ -63,42 +64,7 @@
 
 int main(int argc, char **argv)
 {
-    auto timer = syntropy::Timer{ true };
 
-    auto ci  = syntropy::Threading::GetCPUIndex();
-    auto sa = syntropy::Threading::GetSystemAffinity();
-    auto pa = syntropy::Threading::GetProcessAffinity();
-    auto ta = syntropy::Threading::GetThreadAffinity();
-    auto tp = syntropy::Threading::GetThreadPriority();
-
-    syntropy::Threading::SetProcessAffinity(pa);
-    syntropy::Threading::SetThreadAffinity(ta);
-    syntropy::Threading::SetThreadPriority(syntropy::ThreadPriority::kHigh);
-
-    auto tp2 = syntropy::Threading::GetThreadPriority();
-
-    auto cl = syntropy::CommandLine{ argc, argv };
-
-    std::cout << cl;
-
-    using namespace syntropy::Literals;
-
-    auto h = syntropy::Context("Foo/Bar/FooBar");
-    auto i = syntropy::Context("Foo/Bar/FooBar") / syntropy::Context("test");
-    auto j = syntropy::Context("/Foo/Bar/FooBar/qwert/");
-    auto k = syntropy::Context("Foo/Bar/Hello");
-
-    auto b = i.Matches(h);
-    auto c = h.Matches(i);
-    auto d = j.Matches(k);
-
-    auto cpu_info = syntropy::System::GetCPUInfo();
-    auto storage_info = syntropy::System::GetStorageInfo();
-    auto memory_info = syntropy::System::GetMemoryInfo();
-    auto display_info = syntropy::System::GetDisplayInfo();
-    auto platform_info = syntropy::System::GetPlatformInfo();
-
-    std::cout << timer().count() << "ms \n";
 
     return 0;
 }
