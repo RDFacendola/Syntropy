@@ -8,6 +8,7 @@
 
 #include "syntropy/platform/endianness.h"
 #include "syntropy/platform/system.h"
+#include "syntropy/platform/threading.h"
 
 #include "syntropy/language/macro.h"
 #include "syntropy/language/sstream.h"
@@ -63,6 +64,18 @@
 int main(int argc, char **argv)
 {
     auto timer = syntropy::Timer{ true };
+
+    auto ci  = syntropy::Threading::GetCPUIndex();
+    auto sa = syntropy::Threading::GetSystemAffinity();
+    auto pa = syntropy::Threading::GetProcessAffinity();
+    auto ta = syntropy::Threading::GetThreadAffinity();
+    auto tp = syntropy::Threading::GetThreadPriority();
+
+    syntropy::Threading::SetProcessAffinity(pa);
+    syntropy::Threading::SetThreadAffinity(ta);
+    syntropy::Threading::SetThreadPriority(syntropy::ThreadPriority::kHigh);
+
+    auto tp2 = syntropy::Threading::GetThreadPriority();
 
     auto cl = syntropy::CommandLine{ argc, argv };
 

@@ -57,6 +57,8 @@
     <ClInclude Include="include\syntropy\application\command_line_argument.h" />
     <ClInclude Include="include\syntropy\application\command_line.h" />
     <ClInclude Include="include\syntropy\time\timer.h" />
+    <ClInclude Include="include\syntropy\platform\threading.h" />
+    <ClInclude Include="src\syntropy\hal\hal_threading.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -74,5 +76,7 @@
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_system.cpp" />
     <ClCompile Include="src\syntropy\core\context.cpp" />
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
+    <ClCompile Include="src\syntropy\platform\threading.cpp" />
+    <ClCompile Include="src\syntropy\hal\windows\hal_windows_threading.cpp" />
   </ItemGroup>
 </Project>
