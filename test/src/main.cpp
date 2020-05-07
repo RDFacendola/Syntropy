@@ -67,9 +67,14 @@
 
 int main(int argc, char **argv)
 {
-    auto e = syntropy::MakeLogEvent(syntropy::Severity::kInformative, "messages/syntropy", syntropy::Debugger::GetStackTrace(SYNTROPY_HERE), "Message!");
+    auto ctx0 = syntropy::Context("test.syntropy.errors");
+    auto ctx3 = syntropy::Context("test.synchrony.errors");
 
-    std::cout << e;
+    auto ctx1 = syntropy::Context("error");
+    auto ctx2 = syntropy::Context("syntropy");
+
+    auto b = ctx0 + ctx1;
+    auto d = ctx2.Contains(ctx0);
 
     system("pause");
 

@@ -178,25 +178,6 @@ namespace syntropy
     {
 
         /************************************************************************/
-        /* LOG MESSAGE                                                          */
-        /************************************************************************/
-
-        template <typename... TMessage>
-        LogMessage::LogMessage(StackTrace stacktrace, Vector<Context> contexts, Severity severity, TMessage&&... message)
-            : time_(std::chrono::system_clock::now())
-            , severity_(severity)
-            , thread_id_(std::this_thread::get_id())
-            , contexts_(std::move(contexts))
-            , stacktrace_(std::move(stacktrace))
-        {
-            OStringStream builder;
-
-            (builder << ... << message);
-
-            message_ = builder.str();
-        }
-
-        /************************************************************************/
         /* LOG MANAGER                                                          */
         /************************************************************************/
 

@@ -27,7 +27,7 @@ namespace syntropy
         static Registry& GetSingleton();
 
         /// \brief Get a context by name.
-        const Context* GetParentContext(const Context::TStringView& context_name);
+        const Context* GetOuterContext(const Context::TStringView& context_name);
 
     private:
 
@@ -65,39 +65,39 @@ namespace syntropy
         // #TODO Configure memory resource from data.
     }
 
-    const Context* Context::Registry::GetParentContext(const Context::TStringView& context_name)
+    const Context* Context::Registry::GetOuterContext(const Context::TStringView& context_name)
     {
-        // Find or allocate a parent context.
+        // Find or allocate an outer context.
 
-        if (auto separator_index = context_name.find_last_of(Context::kSeparator); separator_index != Context::TStringView::npos)
+        if (auto separator_index = context_name.find_first_of(Context::kSeparator); separator_index != Context::TStringView::npos)
         {
-            // Parent name - discard until a separator is found.
+            // Outer name - discard until a separator is found.
 
-            auto parent_context_name = context_name;
+            auto outer_context_name = context_name;
 
-            parent_context_name.remove_suffix(parent_context_name.size() - separator_index);
+            outer_context_name.remove_prefix(separator_index + 1);
 
-            auto parent_context_label = Label(parent_context_name);
+            auto outer_context_label = Label(outer_context_name);
 
-            if (auto parent_context_iterator = contexts_.lower_bound(parent_context_label); parent_context_iterator != contexts_.end())
+            if (auto outer_context_iterator = contexts_.lower_bound(outer_context_label); outer_context_iterator != contexts_.end())
             {
-                // The parent context already exists.
+                // The outer context already exists.
 
-                return parent_context_iterator->second;
+                return outer_context_iterator->second;
             }
             else
             {
-                // The parent doesn't exist: add it now. Allocation will cause recursive parent allocation if necessary.
+                // The outer doesn't exist: add it now. Allocation will cause recursive outer allocation if necessary.
 
-                auto parent_context = Allocate(parent_context_name);
+                auto outer_context = Allocate(outer_context_name);
 
-                contexts_.insert(parent_context_iterator, std::make_pair(parent_context_name, parent_context));
+                contexts_.insert(outer_context_iterator, std::make_pair(outer_context_name, outer_context));
 
-                return parent_context;
+                return outer_context;
             }
         }
 
-        // Root contexts have no parent.
+        // Root contexts have no outer.
 
         return nullptr;
     }
@@ -117,7 +117,7 @@ namespace syntropy
 
     Context::Context(const TStringView& name)
         : name_(name)
-        , parent_(Registry::GetSingleton().GetParentContext(name))
+        , outer_(Registry::GetSingleton().GetOuterContext(name))
     {
 
     }
