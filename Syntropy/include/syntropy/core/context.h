@@ -41,6 +41,9 @@ namespace syntropy
         /// \brief Create a new context from a null-terminated string.
         Context(const TStringView& name);
 
+        /// \brief Create a new context from a null-terminated string.
+        Context(const Label::TChar* name);
+
         /// \brief Implicit conversion to label.
         operator const Label&() const;
 
@@ -87,6 +90,12 @@ namespace syntropy
     /************************************************************************/
 
     // Context.
+
+    inline Context::Context(const Label::TChar* name)
+        : Context(TStringView(name))
+    {
+
+    }
 
     inline Context::operator const Label&() const
     {
