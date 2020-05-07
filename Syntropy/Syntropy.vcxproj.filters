@@ -63,6 +63,7 @@
     <ClInclude Include="src\syntropy\hal\hal_intrinsics.h" />
     <ClInclude Include="include\syntropy\time\date.h" />
     <ClInclude Include="include\syntropy\time\time_of_day.h" />
+    <ClInclude Include="include\syntropy\diagnostics\log_event.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

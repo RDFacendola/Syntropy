@@ -55,6 +55,7 @@
 #include "syntropy/diagnostics/severity.h"
 #include "syntropy/diagnostics/stack_trace.h"
 #include "syntropy/diagnostics/debugger.h"
+#include "syntropy/diagnostics/log_event.h"
 
 #include "syntropy/math/constants.h"
 #include "syntropy/math/hash.h"
@@ -66,10 +67,9 @@
 
 int main(int argc, char **argv)
 {
-    auto d = syntropy::Date{};
-    auto tod = syntropy::TimeOfDay{};
+    auto e = syntropy::MakeLogEvent(syntropy::Severity::kInformative, "messages/syntropy", syntropy::Debugger::GetStackTrace(SYNTROPY_HERE), "Message!");
 
-    std::cout << tod;
+    std::cout << e;
 
     system("pause");
 

@@ -71,28 +71,7 @@ namespace syntropy
     namespace diagnostics
     {
 
-        /// \brief Represents a single log message.
-        /// \author Raffaele D. Facendola - November 2016
-        struct LogMessage
-        {
-            /// \brief Create a new log message.
-            /// \param stacktrace Callstack that caused the log. Can be either a full stack trace or the last function.
-            /// \param contexts Log contexts used to categorize the log message.
-            /// \param severity Severity of the log message.
-            /// \param message Actual log message parts.
-            template <typename... TMessage>
-            LogMessage(StackTrace stacktrace, Vector<Context> contexts, Severity severity, TMessage&&... message);
-
-            std::chrono::system_clock::time_point time_;                    ///< \brief Time point associated to the message creation.
-            Severity severity_;                                             ///< \brief Severity of the message.
-            std::thread::id thread_id_;                                     ///< \brief Id of the thread that issued the message.
-            Vector<Context> contexts_;                                 ///< \brief Contexts used to categorize the message.
-            StackTrace stacktrace_;                                         ///< \brief Stack trace.
-            String message_;                                           ///< \brief Log message.
-
-        };
-
-        /// \brief Channel used to collect incoming log messages.
+       /// \brief Channel used to collect incoming log messages.
         /// \author Raffaele D. Facendola - November 2016
         class LogChannel
         {
