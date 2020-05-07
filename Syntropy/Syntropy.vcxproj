@@ -65,6 +65,7 @@
     <ClInclude Include="include\syntropy\platform\threading.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
     <ClInclude Include="include\syntropy\time\date.h" />
+    <ClInclude Include="include\syntropy\time\time_of_day.h" />
     <ClInclude Include="include\syntropy\time\timer.h" />
     <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
     <ClInclude Include="src\syntropy\hal\hal_endianness.h" />
@@ -95,6 +96,7 @@
     <ClCompile Include="src\syntropy\platform\threading.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\time\date.cpp" />
+    <ClCompile Include="src\syntropy\time\time_of_day.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

@@ -62,6 +62,7 @@
     <ClInclude Include="include\syntropy\platform\intrinsics.h" />
     <ClInclude Include="src\syntropy\hal\hal_intrinsics.h" />
     <ClInclude Include="include\syntropy\time\date.h" />
+    <ClInclude Include="include\syntropy\time\time_of_day.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -85,5 +86,6 @@
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_intrinsics.cpp" />
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_intrinsics.cpp" />
     <ClCompile Include="src\syntropy\time\date.cpp" />
+    <ClCompile Include="src\syntropy\time\time_of_day.cpp" />
   </ItemGroup>
 </Project>

@@ -29,6 +29,7 @@ namespace syntropy
         using TTimePoint = TClock::time_point;
 
         /// \brief Create a new date from a point in time.
+        /// Default to current date.
         Date(TTimePoint time_point = TClock::now());
 
         /// \brief Get the day of the month.
@@ -57,7 +58,7 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-        /// \brief Stream insertion for dates..
+        /// \brief Stream insertion for dates.
     std::ostream& operator<<(std::ostream& lhs, const Date& rhs);
 
     /************************************************************************/

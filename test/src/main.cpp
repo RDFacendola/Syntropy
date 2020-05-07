@@ -62,13 +62,14 @@
 
 #include "syntropy/time/timer.h"
 #include "syntropy/time/date.h"
+#include "syntropy/time/time_of_day.h"
 
 int main(int argc, char **argv)
 {
-
     auto d = syntropy::Date{};
+    auto tod = syntropy::TimeOfDay{};
 
-    std::cout << d << "\n";
+    std::cout << tod;
 
     system("pause");
 
