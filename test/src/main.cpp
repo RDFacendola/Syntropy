@@ -61,10 +61,16 @@
 #include "syntropy/math/metrics.h"
 
 #include "syntropy/time/timer.h"
+#include "syntropy/time/date.h"
 
 int main(int argc, char **argv)
 {
 
+    auto d = syntropy::Date{};
+
+    std::cout << d << "\n";
+
+    system("pause");
 
     return 0;
 }
