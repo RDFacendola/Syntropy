@@ -24,6 +24,9 @@ namespace syntropy
         /// \brief Verbosity for all event severities.
         kAll = std::numeric_limits<int8_t>::min(),
 
+        /// \brief Verbosity for debugging events and above.
+        kDebug = -1,
+
         /// \brief Verbosity for infos and above.
         kInformative = 0,
 
@@ -33,8 +36,11 @@ namespace syntropy
         /// \brief Verbosity for errors and above.
         kError = 2,
 
-        /// \brief Verbosity for critical events only.
+        /// \brief Verbosity for critical events and above.
         kCritical = 3,
+
+        /// \brief Verbosity for fatal events only.
+        kFatal = 4,
 
         /// \brief Verbosity for no event severities at all.
         kNone = std::numeric_limits<int8_t>::max(),
