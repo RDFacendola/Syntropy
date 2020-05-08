@@ -70,54 +70,6 @@ namespace syntropy
 {
     namespace diagnostics
     {
-
-       /// \brief Channel used to collect incoming log messages.
-        /// \author Raffaele D. Facendola - November 2016
-        class LogChannel
-        {
-
-        public:
-
-            /// \brief Create a new channel.
-            /// \param context Contexts bound to this channel. Used to filter log messages by context.
-            /// \param verbosity Minimum required severity for which a message is processed.
-            LogChannel(Vector<Context> contexts, Severity verbosity = Severity::kInformative);
-
-            /// \brief Virtual destructor.
-            virtual ~LogChannel() = default;
-
-            /// \brief Send a message to the channel.
-            /// If the message context or verbosity do not match any of the ones specified by this channel, the message is ignored.
-            /// \param log Message to send.
-            LogChannel& operator<<(const LogMessage& log);
-
-            /// \brief Get the verbosity level of the channel.
-            /// This represents the minimum required severity for which a message is processed.
-            /// \return Returns the verbosity level of the channel.
-            Severity GetVerbosity() const;
-
-            /// \brief Get the contexts this channel reacts to.
-            /// Log messages must specify at least one of these contexts in order to be processed. Note that contexts are hierarchical.
-            /// \return Returns the list of contexts this channel reacts to.
-            const Vector<Context>& GetContexts() const;
-
-            /// \brief Flush any cached state.
-            virtual void Flush() = 0;
-
-        protected:
-
-            /// \brief Handle a message.
-            /// \param log Message to handle. The message is guaranteed to have severity equal or higher to the verbosity level and have at least one context matching at least one among the contexts bound to the stream. 
-            /// \param contexts List of contexts specified by the log message that match any of the channel contexts.
-            virtual void OnSendMessage(const LogMessage& log, const Vector<Context>& contexts) = 0;
-
-        private:
-
-            Vector<Context> contexts_;                 ///< \brief Contexts this channel reacts to.
-
-            Severity verbosity_;                            ///< \brief Minimum severity needed to process a message.
-        };
-
         /// \brief Singleton used to issue log messages and events.
         /// \author Raffaele D. Facendola - November 2016
         class LogManager

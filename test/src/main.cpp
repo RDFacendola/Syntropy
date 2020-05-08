@@ -53,9 +53,11 @@
 
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/diagnostics/severity.h"
+#include "syntropy/diagnostics/verbosity.h"
 #include "syntropy/diagnostics/stack_trace.h"
 #include "syntropy/diagnostics/debugger.h"
 #include "syntropy/diagnostics/log_event.h"
+#include "syntropy/diagnostics/log_channel.h"
 
 #include "syntropy/math/constants.h"
 #include "syntropy/math/hash.h"
@@ -65,16 +67,28 @@
 #include "syntropy/time/date.h"
 #include "syntropy/time/time_of_day.h"
 
+class LogChannel
+{
+public:
+
+    template <typename TLogEvent>
+    void Send(TLogEvent&& log_event)
+    {
+        std::cout << log_event << "\n";
+    }
+
+    void Flush()
+    {
+        std::cout << std::endl;
+    }
+
+};
+
 int main(int argc, char **argv)
 {
-    auto ctx0 = syntropy::Context("test.syntropy.errors");
-    auto ctx3 = syntropy::Context("test.synchrony.errors");
+    auto lc = syntropy::LogChannelT<LogChannel>(syntropy::Verbosity::kAll, syntropy::Context(""));
 
-    auto ctx1 = syntropy::Context("error");
-    auto ctx2 = syntropy::Context("syntropy");
-
-    auto b = ctx0 + ctx1;
-    auto d = ctx2.Contains(ctx0);
+    lc.Send(syntropy::LogEvent{ syntropy::Severity::kInformative, syntropy::Context("helloctx"), SYNTROPY_HERE, "hello world!" });
 
     system("pause");
 

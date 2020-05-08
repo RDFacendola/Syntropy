@@ -39,9 +39,11 @@
     <ClInclude Include="include\syntropy\core\string.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
+    <ClInclude Include="include\syntropy\diagnostics\log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event.h" />
     <ClInclude Include="include\syntropy\diagnostics\severity.h" />
     <ClInclude Include="include\syntropy\diagnostics\stack_trace.h" />
+    <ClInclude Include="include\syntropy\diagnostics\verbosity.h" />
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
     <ClInclude Include="include\syntropy\language\functional.h" />
     <ClInclude Include="include\syntropy\language\macro.h" />
