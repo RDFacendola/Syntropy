@@ -52,7 +52,7 @@
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\math\metrics.h" />
     <ClInclude Include="include\syntropy\memory\memory.h" />
-    <ClInclude Include="include\syntropy\patterns\scope_guard.h" />
+    <ClInclude Include="include\syntropy\language\scope_guard.h" />
     <ClInclude Include="include\syntropy\language\type_traits.h" />
     <ClInclude Include="include\syntropy\language\utility.h" />
     <ClInclude Include="include\syntropy\math\arithmetic.h" />

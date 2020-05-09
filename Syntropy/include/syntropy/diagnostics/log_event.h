@@ -9,13 +9,13 @@
 #include "syntropy/core/context.h"
 #include "syntropy/core/string.h"
 
+#include "syntropy/language/scope_guard.h"
+
 #include "syntropy/diagnostics/severity.h"
 #include "syntropy/diagnostics/stack_trace.h"
 
 #include "syntropy/time/date.h"
 #include "syntropy/time/time_of_day.h"
-
-#include "syntropy/patterns/scope_guard.h"
 
 #include <thread>
 #include <chrono>

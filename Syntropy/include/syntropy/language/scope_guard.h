@@ -1,6 +1,6 @@
 
 /// \file scope_guard.h
-/// \brief This header is part of the Syntropy patterns module. It contains definitions for scope-based guards.
+/// \brief This header is part of the Syntropy core module. It contains definitions for scope-based guards.
 ///
 /// \author Raffaele D. Facendola - 2016
 

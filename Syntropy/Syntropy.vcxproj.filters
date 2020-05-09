@@ -26,7 +26,6 @@
     <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory_range.h" />
     <ClInclude Include="include\syntropy\allocators\virtual_memory_resource.h" />
-    <ClInclude Include="include\syntropy\patterns\scope_guard.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
     <ClInclude Include="include\syntropy\containers\array.h" />
     <ClInclude Include="include\syntropy\containers\map.h" />
@@ -66,6 +65,7 @@
     <ClInclude Include="include\syntropy\diagnostics\log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\verbosity.h" />
     <ClInclude Include="include\syntropy\core\string_stream.h" />
+    <ClInclude Include="include\syntropy\language\scope_guard.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
