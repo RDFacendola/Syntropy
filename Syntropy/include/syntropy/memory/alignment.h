@@ -111,9 +111,12 @@ namespace syntropy
     template <typename TType>
     constexpr Alignment AlignmentOf(const TType& rhs);
 
-    /// \brief Get the size of TType.
+    /// \brief Get the alignment of TType.
     template <typename TType>
     constexpr Alignment AlignmentOf();
+
+    /// \brief Get an alignment which is at least as strict (as large) as that of every scalar type.
+    constexpr Alignment MaxAlignmentOf();
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -218,6 +221,11 @@ namespace syntropy
     constexpr Alignment AlignmentOf()
     {
         return Alignment(std::align_val_t{ alignof(TType) });
+    }
+
+    constexpr Alignment MaxAlignmentOf()
+    {
+        return Alignment(std::align_val_t{ alignof(std::max_align_t) });
     }
 }
 

@@ -54,26 +54,17 @@ namespace syntropy
         virtual ~MemoryResource() = default;
 
         /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \return Returns a range representing the requested memory block. If no allocation could be performed returns an empty range.
-        virtual MemoryRange Allocate(Bytes size) noexcept = 0;
-
-        /// \brief Allocate a new aligned memory block.
+        /// The returned storage, if any, is aligned to a specified amount if supported or to MaxAlignmentOf otherwise.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        virtual MemoryRange Allocate(Bytes size, Alignment alignment) noexcept = 0;
+        virtual MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept = 0;
 
         /// \brief Deallocate a memory block.
-        /// \param block Block to deallocate.
-        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size).
-        virtual void Deallocate(const MemoryRange& block) = 0;
-
-        /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
-        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        virtual void Deallocate(const MemoryRange& block, Alignment alignment) = 0;
+        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to Allocate(size, alignment).
+        virtual void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf()) = 0;
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
@@ -105,13 +96,9 @@ namespace syntropy
         /// \brief Default destructor.
         virtual ~MemoryResourceT() = default;
 
-        virtual MemoryRange Allocate(Bytes size) noexcept override;
+        virtual MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept override;
 
-        virtual MemoryRange Allocate(Bytes size, Alignment alignment) noexcept override;
-
-        virtual void Deallocate(const MemoryRange& block) override;
-
-        virtual void Deallocate(const MemoryRange& block, Alignment alignment) override;
+        virtual void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf()) override;
 
         virtual bool Owns(const MemoryRange& block) const noexcept override;
 
@@ -166,21 +153,9 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange MemoryResourceT<TMemoryResource>::Allocate(Bytes size) noexcept
-    {
-        return memory_resource_.Allocate(size);
-    }
-
-    template <typename TMemoryResource>
     inline MemoryRange MemoryResourceT<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         return memory_resource_.Allocate(size, alignment);
-    }
-
-    template <typename TMemoryResource>
-    inline void MemoryResourceT<TMemoryResource>::Deallocate(const MemoryRange& block)
-    {
-        memory_resource_.Deallocate(block);
     }
 
     template <typename TMemoryResource>

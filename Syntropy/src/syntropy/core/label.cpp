@@ -105,7 +105,7 @@ namespace syntropy
     {
         // One extra byte accounts for the null terminator.
 
-        auto label_storage = memory_resource_.Allocate(string_range.GetSize() + 1_Bytes);
+        auto label_storage = memory_resource_.Allocate(string_range.GetSize() + 1_Bytes, AlignmentOf<Label::TChar*>());
 
         auto label = label_storage.Begin().As<const TChar>();
 

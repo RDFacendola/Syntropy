@@ -46,25 +46,16 @@ namespace syntropy
         /// \brief Default assignment operator.
         PassthroughMemoryResource& operator=(const PassthroughMemoryResource&) noexcept = default;
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \return Returns an empty range.
-        MemoryRange Allocate(Bytes size) noexcept;
-
-        /// \brief Allocate a new aligned memory block.
+         /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment) noexcept;
-
-        /// \brief Deallocate a memory block.
-        /// \param block Block to deallocate. Expects an empty range.
-        void Deallocate(const MemoryRange& block);
+        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Expects an empty range.
         /// \param alignment Block alignment.
-        void Deallocate(const MemoryRange& block, Alignment alignment);
+        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
@@ -91,17 +82,6 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange PassthroughMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
-    {
-        if (memory_resource_)
-        {
-            return memory_resource_->Allocate(size);
-        }
-
-        return NullMemoryResource::Allocate(size);
-    }
-
-    template <typename TMemoryResource>
     inline MemoryRange PassthroughMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (memory_resource_)
@@ -110,19 +90,6 @@ namespace syntropy
         }
 
         return NullMemoryResource::Allocate(size);
-    }
-
-    template <typename TMemoryResource>
-    inline void PassthroughMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block)
-    {
-        if (memory_resource_)
-        {
-            memory_resource_->Deallocate(block);
-        }
-        else
-        {
-            NullMemoryResource::Deallocate(block);
-        }
     }
 
     template <typename TMemoryResource>

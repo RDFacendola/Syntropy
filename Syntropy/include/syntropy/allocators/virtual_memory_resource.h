@@ -47,27 +47,17 @@ namespace syntropy
         /// \brief Unified assignment operator.
         VirtualMemoryResource& operator=(VirtualMemoryResource rhs) noexcept;
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \return Returns a range representing the requested memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size) noexcept;
-
         /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment) noexcept;
-
-        /// \brief Deallocate a memory block.
-        /// \param block Block to deallocate.
-        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size).
-        void Deallocate(const MemoryRange& block);
+        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemoryRange& block, Alignment alignment);
+        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
@@ -138,25 +128,6 @@ namespace syntropy
     {
         rhs.Swap(*this);
         return *this;
-    }
-
-    inline MemoryRange VirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
-    {
-        if (alignment <= page_alignment_)
-        {
-            return Allocate(size);
-        }
-
-        return {};
-    }
-
-    inline void VirtualMemoryResource::Deallocate(const MemoryRange& block, Alignment alignment)
-    {
-        SYNTROPY_ASSERT(Owns(block));
-
-        SYNTROPY_ASSERT(alignment <= page_alignment_);
-
-        Deallocate(block);
     }
 
     inline bool VirtualMemoryResource::Owns(const MemoryRange& block) const noexcept

@@ -43,27 +43,17 @@ namespace syntropy
         /// \brief No assignment operator.
         FixedMemoryResource& operator=(FixedMemoryResource rhs) = delete;
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \return Returns a range representing the requested memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size) noexcept;
-
         /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment) noexcept;
-
-        /// \brief Deallocate a memory block.
-        /// \param block Block to deallocate.
-        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size).
-        void Deallocate(const MemoryRange& block);
+        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemoryRange& block, Alignment alignment);
+        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
@@ -106,22 +96,9 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange FixedMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
-    {
-        if (is_free_ && size <= max_size_ && (block_ = memory_resource_.Allocate(max_size_)))
-        {
-            is_free_ = false;
-
-            return { block_.Begin(), size };
-        }
-
-        return {};
-    }
-
-    template <typename TMemoryResource>
     inline MemoryRange FixedMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (is_free_ && size <= max_size_ && alignment <= max_alignment_ && (block_ = memory_resource_.Allocate(max_size_, alignment)))
+        if (is_free_ && (size <= max_size_) && (alignment <= max_alignment_) && (block_ = memory_resource_.Allocate(max_size_, alignment)))
         {
             is_free_ = false;
 
@@ -129,16 +106,6 @@ namespace syntropy
         }
 
         return {};
-    }
-
-    template <typename TMemoryResource>
-    inline void FixedMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block)
-    {
-        SYNTROPY_ASSERT(Owns(block));
-
-        memory_resource_.Deallocate(block_);
-
-        is_free_ = true;
     }
 
     template <typename TMemoryResource>

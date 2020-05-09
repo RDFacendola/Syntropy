@@ -47,27 +47,17 @@ namespace syntropy
         /// \brief Unified assignment operator.
         PoolMemoryResource& operator=(PoolMemoryResource rhs) noexcept;
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \return Returns a range representing the requested memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size) noexcept;
-
         /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment) noexcept;
-
-        /// \brief Deallocate a memory block.
-        /// \param block Block to deallocate.
-        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size).
-        void Deallocate(const MemoryRange& block);
+        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemoryRange& block, Alignment alignment);
+        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Deallocate every allocation performed so far.
         /// \remarks This method returns every allocation to the underlying memory resource.
@@ -154,7 +144,7 @@ namespace syntropy
         , chunk_size_(chunk_size)
         , block_size_(block_size)
     {
-
+        SYNTROPY_ASSERT(block_size >= MaxAlignmentOf());
     }
 
     template <typename TMemoryResource>
@@ -184,9 +174,9 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    MemoryRange PoolMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
+    MemoryRange PoolMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (size <= block_size_)
+        if ((size <= block_size_) && (alignment <= Alignment(block_size_)))
         {
             // Attempt to recycle a free block. Fast-path.
 
@@ -239,19 +229,9 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange PoolMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline void PoolMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
-        if (alignment <= Alignment(block_size_))
-        {
-            return Allocate(size);
-        }
-
-        return {};
-    }
-
-    template <typename TMemoryResource>
-    void PoolMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block)
-    {
+        SYNTROPY_ASSERT(alignment <= Alignment(block_size_));
         SYNTROPY_ASSERT(memory_resource_.Owns(block));
 
         // Send the block to the free list, making it eligible for recycling. Fast-path.
@@ -261,14 +241,6 @@ namespace syntropy
         free_ = block.Begin().As<FreeBlock>();
 
         free_->next_ = free;
-    }
-
-    template <typename TMemoryResource>
-    inline void PoolMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block, Alignment alignment)
-    {
-        SYNTROPY_ASSERT(alignment <= Alignment(block_size_));
-
-        Deallocate(block);
     }
 
     template <typename TMemoryResource>

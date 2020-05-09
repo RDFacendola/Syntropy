@@ -41,25 +41,16 @@ namespace syntropy
         /// \brief Default assignment operator.
         CountingMemoryResource& operator=(const CountingMemoryResource&) noexcept = default;
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \return Returns an empty range.
-        MemoryRange Allocate(Bytes size) noexcept;
-
         /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment) noexcept;
-
-        /// \brief Deallocate a memory block.
-        /// \param block Block to deallocate. Expects an empty range.
-        void Deallocate(const MemoryRange& block);
+        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Expects an empty range.
         /// \param alignment Block alignment.
-        void Deallocate(const MemoryRange& block, Alignment alignment);
+        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// The null memory resource only contains empty ranges.
@@ -102,19 +93,6 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange CountingMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
-    {
-        if (auto block = memory_resource_.Allocate(size))
-        {
-            ++allocation_count_;
-
-            return block;
-        }
-
-        return {};
-    }
-
-    template <typename TMemoryResource>
     inline MemoryRange CountingMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto block = memory_resource_.Allocate(size, alignment))
@@ -125,14 +103,6 @@ namespace syntropy
         }
 
         return {};
-    }
-
-    template <typename TMemoryResource>
-    inline void CountingMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block)
-    {
-        memory_resource_.Deallocate(block);
-
-        ++deallocation_count_;
     }
 
     template <typename TMemoryResource>

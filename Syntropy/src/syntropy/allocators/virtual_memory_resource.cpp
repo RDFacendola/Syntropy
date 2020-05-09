@@ -22,9 +22,9 @@ namespace syntropy
     /* VIRTUAL MEMORY RESOURCE                                              */
     /************************************************************************/
 
-    MemoryRange VirtualMemoryResource::Allocate(Bytes size) noexcept
+    MemoryRange VirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (size <= page_size_)
+        if ((size <= page_size_) && (alignment <= page_alignment_))
         {
             if (auto block = Allocate())
             {
@@ -37,9 +37,10 @@ namespace syntropy
         return {};
     }
 
-    void VirtualMemoryResource::Deallocate(const MemoryRange& block)
+    void VirtualMemoryResource::Deallocate(const MemoryRange& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(Owns(block));
+        SYNTROPY_ASSERT(alignment <= page_alignment_);
 
         if (!free_ || (MemoryAddress{ *free_->free_block_ } >= MemoryAddress(free_) + page_size_))
         {

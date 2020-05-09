@@ -41,25 +41,16 @@ namespace syntropy
         /// \brief Default assignment operator.
         NullMemoryResource& operator=(const NullMemoryResource&) noexcept = default;
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \return Returns an empty range.
-        MemoryRange Allocate(Bytes size) noexcept;
-
         /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment) noexcept;
-
-        /// \brief Deallocate a memory block.
-        /// \param block Block to deallocate. Expects an empty range.
-        void Deallocate(const MemoryRange& block);
+        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Expects an empty range.
         /// \param alignment Block alignment.
-        void Deallocate(const MemoryRange& block, Alignment alignment);
+        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// The null memory resource only contains empty ranges.
@@ -74,19 +65,9 @@ namespace syntropy
  
     // NullMemoryResource.
 
-    inline MemoryRange NullMemoryResource::Allocate(Bytes /*size*/) noexcept
-    {
-        return {};
-    }
-
     inline MemoryRange NullMemoryResource::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
     {
         return {};
-    }
-
-    inline void NullMemoryResource::Deallocate(const MemoryRange& block)
-    {
-        SYNTROPY_ASSERT(!block);        // Only empty ranges can be deallocated.
     }
 
     inline void NullMemoryResource::Deallocate(const MemoryRange& block, Alignment /*alignment*/)

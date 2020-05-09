@@ -24,6 +24,8 @@ namespace syntropy
     template <std::int64_t kSize, std::align_val_t kAlignment = std::align_val_t(alignof(void*))>
     class StackMemoryResource
     {
+        static_assert(kSize >= alignof(std::max_align_t));
+
     public:
 
         /// \brief Create a new memory resource.
@@ -41,27 +43,17 @@ namespace syntropy
         /// \brief No assignment operator.
         StackMemoryResource& operator=(StackMemoryResource rhs) = delete;
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \return Returns a range representing the requested memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size) noexcept;
-
         /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment) noexcept;
-
-        /// \brief Deallocate a memory block.
-        /// \param block Block to deallocate.
-        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size).
-        void Deallocate(const MemoryRange& block);
+        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemoryRange& block, Alignment alignment);
+        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
@@ -85,9 +77,9 @@ namespace syntropy
     // StackMemoryResource<kSize, kAlignment>.
 
     template <std::int64_t kSize, std::align_val_t kAlignment>
-    inline MemoryRange StackMemoryResource<kSize, kAlignment>::Allocate(Bytes size) noexcept
+    inline MemoryRange StackMemoryResource<kSize, kAlignment>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (is_free_ && size <= Bytes(kSize))
+        if (is_free_ && (size <= Bytes(kSize)) && (alignment <= Alignment(kAlignment)))
         {
             is_free_ = false;
 
@@ -98,30 +90,12 @@ namespace syntropy
     }
 
     template <std::int64_t kSize, std::align_val_t kAlignment>
-    inline MemoryRange StackMemoryResource<kSize, kAlignment>::Allocate(Bytes size, Alignment alignment) noexcept
-    {
-        if (alignment <= Alignment(kAlignment))
-        {
-            return Allocate(size);
-        }
-
-        return {};
-    }
-
-    template <std::int64_t kSize, std::align_val_t kAlignment>
-    inline void StackMemoryResource<kSize, kAlignment>::Deallocate(const MemoryRange& block)
-    {
-        SYNTROPY_ASSERT(Owns(block));
-
-        is_free_ = true;
-    }
-
-    template <std::int64_t kSize, std::align_val_t kAlignment>
     inline void StackMemoryResource<kSize, kAlignment>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(alignment <= Alignment(kAlignment));
+        SYNTROPY_ASSERT(Owns(block));
 
-        Deallocate(block);
+        is_free_ = true;
     }
 
     template <std::int64_t kSize, std::align_val_t kAlignment>

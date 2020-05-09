@@ -47,24 +47,15 @@ namespace syntropy
         /// \brief Unified assignment operator.
         LinearMemoryResource& operator=(LinearMemoryResource rhs) noexcept;
 
-        /// \brief Allocate a new memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \return Returns a range representing the requested memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size) noexcept;
-
         /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment) noexcept;
-
-        /// \brief Deallocate a memory block.
-        /// Pointer-level deallocations are not supported, therefore this method does nothing.
-        void Deallocate(const MemoryRange& block) noexcept;
+        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// Pointer-level deallocations are not supported, therefore this method does nothing.
-        void Deallocate(const MemoryRange& block, Alignment alignment) noexcept;
+        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate every allocation performed so far.
         void DeallocateAll() noexcept;
@@ -165,12 +156,6 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange LinearMemoryResource<TMemoryResource>::Allocate(Bytes size) noexcept
-    {
-        return Allocate(size, Alignment());
-    }
-
-    template <typename TMemoryResource>
     MemoryRange LinearMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         using namespace syntropy::Literals;
@@ -214,12 +199,6 @@ namespace syntropy
         }
 
         return {};              // Out-of-memory.
-    }
-
-    template <typename TMemoryResource>
-    inline void LinearMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block) noexcept
-    {
-        SYNTROPY_ASSERT(Owns(block));
     }
 
     template <typename TMemoryResource>
