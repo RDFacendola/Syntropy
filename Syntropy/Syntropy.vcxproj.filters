@@ -34,7 +34,6 @@
     <ClInclude Include="include\syntropy\containers\vector.h" />
     <ClInclude Include="include\syntropy\allocators\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\core\string.h" />
-    <ClInclude Include="include\syntropy\language\sstream.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\math\metrics.h" />
     <ClInclude Include="include\syntropy\core\label.h" />
@@ -66,6 +65,7 @@
     <ClInclude Include="include\syntropy\diagnostics\log_event.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\verbosity.h" />
+    <ClInclude Include="include\syntropy\core\string_stream.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

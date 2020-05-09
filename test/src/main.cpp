@@ -3,6 +3,7 @@
 
 #include "syntropy/core/range.h"
 #include "syntropy/core/string.h"
+#include "syntropy/core/string_stream.h"
 #include "syntropy/core/label.h"
 #include "syntropy/core/context.h"
 
@@ -12,7 +13,6 @@
 #include "syntropy/platform/intrinsics.h"
 
 #include "syntropy/language/macro.h"
-#include "syntropy/language/sstream.h"
 
 #include "syntropy/application/command_line.h"
 #include "syntropy/application/command_line_argument.h"

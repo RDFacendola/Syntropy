@@ -47,7 +47,7 @@
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
     <ClInclude Include="include\syntropy\language\functional.h" />
     <ClInclude Include="include\syntropy\language\macro.h" />
-    <ClInclude Include="include\syntropy\language\sstream.h" />
+    <ClInclude Include="include\syntropy\core\string_stream.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\math\metrics.h" />

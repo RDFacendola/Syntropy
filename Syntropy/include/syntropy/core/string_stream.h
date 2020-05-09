@@ -1,6 +1,6 @@
 
-/// \file sstream.h
-/// \brief This header is part of Syntropy language module. It contains extensions to standard header <sstream>
+/// \file string_stream.h
+/// \brief This header is part of Syntropy core module. It contains extensions to standard header <sstream> as well as functions to manipulate string streams.
 ///
 /// \author Raffaele D. Facendola - 2020.
 
