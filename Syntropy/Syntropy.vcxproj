@@ -52,6 +52,7 @@
     <ClInclude Include="include\syntropy\language\macro.h" />
     <ClInclude Include="include\syntropy\core\string_stream.h" />
     <ClInclude Include="include\syntropy\language\memory.h" />
+    <ClInclude Include="include\syntropy\language\tuple.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\math\metrics.h" />

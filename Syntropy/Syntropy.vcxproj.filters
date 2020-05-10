@@ -71,6 +71,7 @@
     <ClInclude Include="include\syntropy\language\memory.h" />
     <ClInclude Include="include\syntropy\core\smart_pointers.h" />
     <ClInclude Include="include\syntropy\memory\memory_buffer.h" />
+    <ClInclude Include="include\syntropy\language\tuple.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

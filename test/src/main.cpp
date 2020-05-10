@@ -16,6 +16,7 @@
 #include "syntropy/language/macro.h"
 #include "syntropy/language/scope_guard.h"
 #include "syntropy/language/utility.h"
+#include "syntropy/language/tuple.h"
 
 #include "syntropy/application/command_line.h"
 #include "syntropy/application/command_line_argument.h"
@@ -70,43 +71,18 @@
 #include "syntropy/time/date.h"
 #include "syntropy/time/time_of_day.h"
 
-class CoutLogChannel
-{
-public:
-
-    void Send(const syntropy::LogEvent& log_event)
-    {
-        std::cout << log_event << "\n";
-    }
-
-    void Send(syntropy::LogEvent&& log_event)
-    {
-        std::cout << log_event << "\n";
-    }
-
-    void Flush()
-    {
-        std::cout << std::endl;
-    }
-
-};
-
 int main(int argc, char **argv)
 {
     using namespace syntropy::Literals;
 
-    auto buf = syntropy::MemoryBuffer{ 16_KiBytes };
+    auto t0 = std::tuple<int, float, char, int>{ 1, 2.5f, 'k', 90 };
+    auto t1 = std::tuple<int, float, char>{ 2, 6.32f, 'o' };
 
-    *buf.To<int>() = 42;
+    auto r = syntropy::LockstepRankV<decltype(t0)>;
 
-    auto b = *buf.To<int>();
+    syntropy::LockstepApply([](auto& a, auto& b) { std::swap(a, b); }, t0, t1);
 
-    auto ctx = syntropy::Context("CONTEXT");
-
-    syntropy::LogManager::GetSingleton().CreateChannel<CoutLogChannel>(syntropy::Verbosity::kAll, { ctx });
-
-    SYNTROPY_INFO(ctx, "Hello World from ", ctx, "!");
-    SYNTROPY_CRITICAL(ctx, "Critical ", ctx, "!");
+    //syntropy::LockstepApply([](auto& a) { ++a; }, t1);
 
     return 0;
 }
