@@ -16,6 +16,7 @@
     <ClInclude Include="include\syntropy\allocators\fixed_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\inline_memory_context.h" />
     <ClInclude Include="include\syntropy\allocators\linear_virtual_memory_resource.h" />
+    <ClInclude Include="include\syntropy\allocators\polymorphic_deleter.h" />
     <ClInclude Include="include\syntropy\allocators\system_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\linear_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\memory_context.h" />
@@ -35,6 +36,7 @@
     <ClInclude Include="include\syntropy\containers\vector.h" />
     <ClInclude Include="include\syntropy\core\context.h" />
     <ClInclude Include="include\syntropy\core\label.h" />
+    <ClInclude Include="include\syntropy\core\smart_pointers.h" />
     <ClInclude Include="include\syntropy\core\range.h" />
     <ClInclude Include="include\syntropy\core\string.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />

@@ -25,6 +25,23 @@ namespace syntropy
     };
 
     /// \brief Constant of the tag type DefaultConstructT used to create objects via default-constructor.
-    inline constexpr DefaultConstructT kDefaultConstruct = DefaultConstructT();
+    inline constexpr DefaultConstructT kDefaultConstruct = DefaultConstructT{};
+
+    /************************************************************************/
+    /* TYPE TAG T                                                           */
+    /************************************************************************/
+
+    /// \brief Empty tag type used to propagate a type when explicit type is not supported (e.g. empty template constructors).
+    /// \author Raffaele D. Facendola - May 2020.
+    template <typename TType>
+    struct TypeT
+    {
+        /// \brief Default constructor.
+        explicit TypeT() = default;
+    };
+
+    /// \brief Constant of the tag type TypeT used to propagate types.
+    template <typename TType>
+    inline constexpr TypeT<TType> kType = TypeT<TType>{};
 
 }

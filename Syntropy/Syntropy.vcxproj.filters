@@ -66,7 +66,9 @@
     <ClInclude Include="include\syntropy\diagnostics\verbosity.h" />
     <ClInclude Include="include\syntropy\core\string_stream.h" />
     <ClInclude Include="include\syntropy\language\scope_guard.h" />
+    <ClInclude Include="include\syntropy\allocators\polymorphic_deleter.h" />
     <ClInclude Include="include\syntropy\language\memory.h" />
+    <ClInclude Include="include\syntropy\core\smart_pointers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
