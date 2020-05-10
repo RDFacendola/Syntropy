@@ -64,6 +64,7 @@
     <ClInclude Include="include\syntropy\diagnostics\log_event.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\verbosity.h" />
+    <ClInclude Include="include\syntropy\diagnostics\log_manager.h" />
     <ClInclude Include="include\syntropy\core\string_stream.h" />
     <ClInclude Include="include\syntropy\language\scope_guard.h" />
     <ClInclude Include="include\syntropy\allocators\polymorphic_deleter.h" />

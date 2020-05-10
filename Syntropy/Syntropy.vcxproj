@@ -43,6 +43,7 @@
     <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event.h" />
+    <ClInclude Include="include\syntropy\diagnostics\log_manager.h" />
     <ClInclude Include="include\syntropy\diagnostics\severity.h" />
     <ClInclude Include="include\syntropy\diagnostics\stack_trace.h" />
     <ClInclude Include="include\syntropy\diagnostics\verbosity.h" />

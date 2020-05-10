@@ -6,6 +6,7 @@
 #include "syntropy/core/string_stream.h"
 #include "syntropy/core/label.h"
 #include "syntropy/core/context.h"
+#include "syntropy/core/smart_pointers.h"
 
 #include "syntropy/platform/endianness.h"
 #include "syntropy/platform/system.h"
@@ -13,6 +14,7 @@
 #include "syntropy/platform/intrinsics.h"
 
 #include "syntropy/language/macro.h"
+#include "syntropy/language/scope_guard.h"
 
 #include "syntropy/application/command_line.h"
 #include "syntropy/application/command_line_argument.h"
@@ -21,8 +23,6 @@
 #include "syntropy/containers/vector.h"
 #include "syntropy/containers/map.h"
 #include "syntropy/containers/set.h"
-
-#include "syntropy/patterns/scope_guard.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -58,6 +58,7 @@
 #include "syntropy/diagnostics/debugger.h"
 #include "syntropy/diagnostics/log_event.h"
 #include "syntropy/diagnostics/log_channel.h"
+#include "syntropy/diagnostics/log_manager.h"
 
 #include "syntropy/math/constants.h"
 #include "syntropy/math/hash.h"
@@ -67,12 +68,16 @@
 #include "syntropy/time/date.h"
 #include "syntropy/time/time_of_day.h"
 
-class LogChannel
+class CoutLogChannel
 {
 public:
 
-    template <typename TLogEvent>
-    void Send(TLogEvent&& log_event)
+    void Send(const syntropy::LogEvent& log_event)
+    {
+        std::cout << log_event << "\n";
+    }
+
+    void Send(syntropy::LogEvent&& log_event)
     {
         std::cout << log_event << "\n";
     }
@@ -86,11 +91,14 @@ public:
 
 int main(int argc, char **argv)
 {
-    auto lc = syntropy::LogChannelT<LogChannel>(syntropy::Verbosity::kAll, syntropy::Context(""));
+    using namespace syntropy::Literals;
 
-    lc.Send(syntropy::LogEvent{ syntropy::Severity::kInformative, syntropy::Context("helloctx"), SYNTROPY_HERE, "hello world!" });
+    auto ctx = syntropy::Context("CONTEXT");
 
-    system("pause");
+    syntropy::LogManager::GetSingleton().CreateChannel<CoutLogChannel>(syntropy::Verbosity::kAll, { ctx });
+
+    SYNTROPY_INFO(ctx, "Hello World from ", ctx, "!");
+    SYNTROPY_CRITICAL(ctx, "Critical ", ctx, "!");
 
     return 0;
 }
