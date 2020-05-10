@@ -8,6 +8,7 @@
 
 #include "syntropy/syntropy.h"
 
+#include <type_traits>
 #include <utility>
 
 namespace syntropy
@@ -43,5 +44,26 @@ namespace syntropy
     /// \brief Constant of the tag type TypeT used to propagate types.
     template <typename TType>
     inline constexpr TypeT<TType> kType = TypeT<TType>{};
+
+    /************************************************************************/
+    /* DON'T CARE T                                                         */
+    /************************************************************************/
+
+    /// \brief Empty tag type which can be constructed or called with any number of arguments doing nothing.
+    /// Can be used with lambdas to discard any number of arguments.
+    /// \author Raffaele D. Facendola - September 2016.
+    struct DontCareT
+    {
+        /// \brief Construct from any argument number and types.
+        template <typename... TArguments>
+        constexpr DontCareT(TArguments&&...) {};
+
+        /// \brief Assign from any argument number and types.
+        template <typename... TArguments>
+        constexpr void operator=(TArguments&&...) const {};
+    };
+
+    /// \brief Constant of the tag type DontCareT used to discard any number of arguments.
+    inline constexpr DontCareT kDontCare = DontCareT{};
 
 }

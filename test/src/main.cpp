@@ -15,6 +15,7 @@
 
 #include "syntropy/language/macro.h"
 #include "syntropy/language/scope_guard.h"
+#include "syntropy/language/utility.h"
 
 #include "syntropy/application/command_line.h"
 #include "syntropy/application/command_line_argument.h"
