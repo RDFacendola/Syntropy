@@ -18,10 +18,6 @@
 
 namespace syntropy
 {
-    // #TODO Propagate memory resource in case of Vector<UniquePtr<T>>.
-    // #TODO PolymorphicDeleter, is the name correct?
-    // #TODO Alignment?
-
     /************************************************************************/
     /* UNIQUE PTR                                                           */
     /************************************************************************/
