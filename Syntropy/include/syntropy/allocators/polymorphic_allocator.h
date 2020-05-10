@@ -76,9 +76,11 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
+    /// \brief Equality comparison for PolymorphicAllocators.
     template <typename TType, typename UType>
     [[nodiscard]] bool operator==(const PolymorphicAllocator<TType>& lhs, const PolymorphicAllocator<UType>& rhs) noexcept;
 
+    /// \brief Inequality comparison for PolymorphicAllocators.
     template <typename TType, typename UType>
     [[nodiscard]] bool operator!=(const PolymorphicAllocator<TType>& lhs, const PolymorphicAllocator<UType>& rhs) noexcept;
 
