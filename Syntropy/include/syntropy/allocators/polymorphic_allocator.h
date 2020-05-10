@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "syntropy/language/type_traits.h"
+#include "syntropy/language/memory.h"
 #include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy
@@ -65,30 +66,6 @@ namespace syntropy
         [[nodiscard]] PolymorphicAllocator<TType> select_on_container_copy_construction() const noexcept;
 
     private:
-
-        /// \brief Construct a pair piecewise.
-        template <typename UType1, typename UType2, typename... UArguments1, typename... UArguments2>
-        void ConstructPiecewise(std::pair<UType1, UType2>* storage, std::piecewise_construct_t, std::tuple<UArguments1...> x, std::tuple<UArguments2...> y);
-
-        /// \brief Construct a pair piecewise.
-        template <typename UType1, typename UType2>
-        void ConstructPiecewise(std::pair<UType1, UType2>* storage);
-
-        /// \brief Construct a pair piecewise.
-        template <typename UType1, typename UType2, typename UType3, typename UType4>
-        void ConstructPiecewise(std::pair<UType1, UType2>* storage, UType3&& x, UType4&& y);
-
-        /// \brief Construct a pair piecewise.
-        template <typename UType1, typename UType2, typename UType3, typename UType4>
-        void ConstructPiecewise(std::pair<UType1, UType2>* storage, const std::pair<UType3, UType4>& xy);
-
-        /// \brief Construct a pair piecewise.
-        template <typename UType1, typename UType2, typename UType3, typename UType4>
-        void ConstructPiecewise(std::pair<UType1, UType2>* storage, std::pair<UType3, UType4>&& xy);
-
-        /// \brief Forward a tuple either by using this as additional element if UType is allocator-aware (as first or last tuple element) or by leaving the tuple unmodified.
-        template <typename UType, typename... UArguments>
-        auto ForwardTuple(std::tuple<UArguments...>&& tuple);
 
         /// \brief Underlying memory resource.
         MemoryResource* memory_resource_ = &GetDefaultMemoryResource();
@@ -152,102 +129,13 @@ namespace syntropy
     template <typename UType, typename... UArguments>
     inline void PolymorphicAllocator<TType>::construct(UType* storage, UArguments&&... arguments)
     {
-        if constexpr (IsSpecializationV<UType, std::pair>)
-        {
-            ConstructPiecewise(storage, std::forward<UArguments>(arguments)...);
-        }
-        else if constexpr(!std::uses_allocator_v<UType, PolymorphicAllocator<TType>>)
-        {
-            // UType doesn't use this allocator: proceed to object construction stopping this allocator from propagating.
-
-            ::new (static_cast<void*>(storage)) UType(std::forward<UArguments>(arguments)...);
-        }
-        else if constexpr (std::is_constructible_v<UType, std::allocator_arg_t, PolymorphicAllocator<TType>&, UArguments...>)
-        {
-            // Leading-allocator convention: propagate this as first argument of UType ctor (after the allocator_tag).
-
-            ::new (static_cast<void*>(storage)) UType(std::allocator_arg, *this, std::forward<UArguments>(arguments)...);
-        }
-        else if constexpr (std::is_constructible_v<UType, UArguments..., PolymorphicAllocator<TType>>)
-        {
-            // Trailing-allocator convention: pass this as last argument of UType ctor.
-
-            ::new (static_cast<void*>(storage)) UType(std::forward<UArguments>(arguments)..., *this);
-        }
-        else
-        {
-            static_assert(AlwaysFalseV<UType>, "Uses-allocator construction failed: UType is allocator-aware but doesn't use neither leading nor trailing allocator convention.");
-        }
+        UninitializedConstructUsingAllocator(storage, *this, std::forward<UArguments>(arguments)...);
     }
-
 
     template <typename TType>
     inline PolymorphicAllocator<TType> PolymorphicAllocator<TType>::select_on_container_copy_construction() const noexcept
     {
         return {};
-    }
-
-    template <typename TType>
-    template <typename UType1, typename UType2, typename... UArguments1, typename... UArguments2>
-    inline void PolymorphicAllocator<TType>::ConstructPiecewise(std::pair<UType1, UType2>* storage, std::piecewise_construct_t, std::tuple<UArguments1...> x, std::tuple<UArguments2...> y)
-    {
-        ::new (static_cast<void*>(storage)) std::pair<UType1, UType2>(std::piecewise_construct, ForwardTuple<UType1>(std::move(x)), ForwardTuple<UType2>(std::move(y)));
-    }
-
-    template <typename TType>
-    template <typename UType1, typename UType2>
-    inline void PolymorphicAllocator<TType>::ConstructPiecewise(std::pair<UType1, UType2>* storage)
-    {
-        ConstructPiecewise(storage, std::piecewise_construct, std::tuple<>(), std::tuple<>());
-    }
-
-    template <typename TType>
-    template <typename UType1, typename UType2, typename UType3, typename UType4>
-    inline void PolymorphicAllocator<TType>::ConstructPiecewise(std::pair<UType1, UType2>* storage, UType3&& x, UType4&& y)
-    {
-        ConstructPiecewise(storage, std::piecewise_construct, std::forward_as_tuple(std::forward<UType3>(x)), std::forward_as_tuple(std::forward<UType4>(y)));
-    }
-
-    template <typename TType>
-    template <typename UType1, typename UType2, typename UType3, typename UType4>
-    inline void PolymorphicAllocator<TType>::ConstructPiecewise(std::pair<UType1, UType2>* storage, const std::pair<UType3, UType4>& xy)
-    {
-        ConstructPiecewise(storage, std::piecewise_construct, std::forward_as_tuple(xy.first), std::forward_as_tuple(xy.second));
-    }
-
-    template <typename TType>
-    template <typename UType1, typename UType2, typename UType3, typename UType4>
-    inline void PolymorphicAllocator<TType>::ConstructPiecewise(std::pair<UType1, UType2>* storage, std::pair<UType3, UType4>&& xy)
-    {
-        ConstructPiecewise(storage, std::piecewise_construct, std::forward_as_tuple(std::forward<UType3>(xy.first)), std::forward_as_tuple<UType4>(std::forward<UType4>(xy.second)));
-    }
-
-    template <typename TType>
-    template <typename UType, typename... UArguments>
-    inline auto PolymorphicAllocator<TType>::ForwardTuple(std::tuple<UArguments...>&& tuple)
-    {
-        if constexpr (!std::uses_allocator_v<UType, PolymorphicAllocator<TType>>)
-        {
-            // UType doesn't use PolymorphicAllocator<TType> allocator.
-
-            return std::move(tuple);
-        }
-        else if constexpr (std::is_constructible_v<UType, std::allocator_arg_t, PolymorphicAllocator<TType>&, UArguments...>)
-        {
-            // Leading-allocator convention.
-
-            return std::tuple_cat(std::make_tuple(std::allocator_arg, *this), std::move(tuple));
-        }
-        else if constexpr (std::is_constructible_v<UType, UArguments..., PolymorphicAllocator<TType>>)
-        {
-            // Trailing-allocator convention.
-
-            return std::tuple_cat(std::move(tuple), std::make_tuple(*this));
-        }
-        else
-        {
-            static_assert(AlwaysFalseV<UType>, "Uses-allocator construction failed: UType is allocator-aware but doesn't use neither leading nor trailing allocator convention.");
-        }
     }
 
     // Non-member functions.
