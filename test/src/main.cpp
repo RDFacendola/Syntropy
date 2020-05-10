@@ -30,6 +30,7 @@
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/virtual_memory.h"
 #include "syntropy/memory/virtual_memory_range.h"
+#include "syntropy/memory/memory_buffer.h"
 
 #include "syntropy/allocators/memory_context.h"
 #include "syntropy/allocators/memory_resource.h"
@@ -92,6 +93,12 @@ public:
 int main(int argc, char **argv)
 {
     using namespace syntropy::Literals;
+
+    auto buf = syntropy::MemoryBuffer{ 16_KiBytes };
+
+    *buf.To<int>() = 42;
+
+    auto b = *buf.To<int>();
 
     auto ctx = syntropy::Context("CONTEXT");
 

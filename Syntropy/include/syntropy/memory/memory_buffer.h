@@ -1,11 +1,12 @@
 
 /// \file memory_buffer.h
-/// \brief This header is part of the syntropy memory management system. It contains classes and definitions for memory buffers.
+/// \brief This header is part of the Syntropy memory module. It contains classes and definitions for raw memory buffers.
 ///
 /// \author Raffaele D. Facendola - 2017
 
 #pragma once
 
+#include "syntropy/memory/memory.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_range.h"
@@ -19,8 +20,7 @@ namespace syntropy
     /* MEMORY BUFFER                                                        */
     /************************************************************************/
 
-    /// \brief Represents a raw memory buffer.
-    /// The buffer must be allocated via an explicit allocator.
+    /// \brief Represents a raw memory buffer allocated from a memory resource.
     /// \author Raffaele D. Facendola - February 2017
     class MemoryBuffer
     {
@@ -29,24 +29,16 @@ namespace syntropy
         /// \brief Create a new empty buffer.
         MemoryBuffer() = default;
 
-        /// \brief Create a new memory buffer using the default memory resource.
-        /// \param size Size of the buffer, in bytes.
-        MemoryBuffer(Bytes size);
-
-        /// \brief Create a new aligned memory buffer using the default memory resource.
-        /// \param size Size of the buffer, in bytes.
-        MemoryBuffer(Bytes size, Alignment alignment);
-
         /// \brief Create a new memory buffer.
         /// \param size Size of the buffer, in bytes.
         /// \param memory_resource Memory resource the buffer will be allocated from.
-        MemoryBuffer(Bytes size, MemoryResource& memory_resource);
+        MemoryBuffer(Bytes size, MemoryResource& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Create a new memory buffer.
         /// \param size Size of the buffer, in bytes.
         /// \param alignment Buffer alignment.
         /// \param memory_resource Memory resource the buffer will be allocated from.
-        MemoryBuffer(Bytes size, Alignment alignment, MemoryResource& memory_resource);
+        MemoryBuffer(Bytes size, Alignment alignment, MemoryResource& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Copy constructor.
         /// Copy the content of another buffer to this one.
@@ -64,33 +56,26 @@ namespace syntropy
         /// \brief Unified assignment operator.
         MemoryBuffer& operator=(MemoryBuffer other);
 
-        /// \brief Dereferencing operator. Access the base address of the buffer.
-        /// \return Returns the base address of the buffer.
-        MemoryAddress operator*();
-
-        /// \brief Dereferencing operator. Access the base address of the buffer.
-        /// \return Returns the base address of the buffer.
-        ConstMemoryAddress operator*() const;
-
-        /// \brief Access an element in the buffer.
-        /// \param offset Offset with respect to the first element of the buffer.
-        /// \return Returns a pointer to the element (buffer+offset).
-        MemoryAddress operator[](Bytes offset);
-
-        /// \brief Access an element in the buffer.
-        /// \param offset Offset with respect to the first element of the buffer.
-        /// \return Returns a pointer to the element (buffer+offset).
-        ConstMemoryAddress operator[](Bytes offset) const;
-
         /// \brief Get the size of the buffer, in bytes.
         /// \return Returns the size of the buffer, in bytes.
         Bytes GetSize() const;
 
         /// \brief Get the buffer memory range.
-        MemoryRange GetRange();
+        MemoryRange ToMemoryRange();
 
         /// \brief Get the buffer memory range.
-        ConstMemoryRange GetRange() const;
+        ConstMemoryRange ToMemoryRange() const;
+
+        /// \brief Get the buffer memory range.
+        ConstMemoryRange ToConstMemoryRange() const;
+
+        /// \brief Get the underlying strongly-typed pointer.
+        template <typename TType>
+        TType* To();
+
+        /// \brief Get the underlying strongly-typed pointer.
+        template <typename TType>
+        const TType* To() const;
 
         /// \brief Swap the content of this buffer with another one.
         void Swap(MemoryBuffer& other) noexcept;
@@ -108,6 +93,10 @@ namespace syntropy
 
     };
 
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
     /// \brief Swaps two memory buffers.
     void swap(syntropy::MemoryBuffer& lhs, syntropy::MemoryBuffer& rhs);
 
@@ -116,19 +105,6 @@ namespace syntropy
     /************************************************************************/
 
     // MemoryBuffer.
-
-    inline MemoryBuffer::MemoryBuffer(Bytes size)
-        : MemoryBuffer(size, Alignment{})
-    {
-
-    }
-
-    inline MemoryBuffer::MemoryBuffer(Bytes size, Alignment alignment)
-        : MemoryBuffer(size, alignment, GetDefaultMemoryResource())
-    {
-
-    }
-
 
     inline MemoryBuffer::MemoryBuffer(Bytes size, MemoryResource& memory_resource)
         : MemoryBuffer(size, Alignment{}, memory_resource)
@@ -150,7 +126,7 @@ namespace syntropy
         , buffer_(memory_resource_->Allocate(other.GetSize(), alignment_))
 
     {
-        std::memmove(buffer_.Begin(), other.buffer_.Begin(), *other.GetSize());
+        Memory::Move(buffer_, other.buffer_);       // Copy the buffer content.
     }
 
     inline MemoryBuffer::MemoryBuffer(MemoryBuffer&& other)
@@ -175,39 +151,36 @@ namespace syntropy
         return *this;
     }
 
-    inline MemoryAddress MemoryBuffer::operator*()
+    inline MemoryRange MemoryBuffer::ToMemoryRange()
     {
-        return buffer_.Begin();
+        return buffer_;
     }
 
-    inline ConstMemoryAddress MemoryBuffer::operator*() const
+    inline ConstMemoryRange MemoryBuffer::ToMemoryRange() const
     {
-        return buffer_.Begin();
+        return buffer_;
     }
 
-    inline MemoryAddress MemoryBuffer::operator[](Bytes offset)
+    inline ConstMemoryRange MemoryBuffer::ToConstMemoryRange() const
     {
-        return buffer_[offset];
+        return buffer_;
     }
 
-    inline ConstMemoryAddress MemoryBuffer::operator[](Bytes offset) const
+    template <typename TType>
+    inline TType* MemoryBuffer::To()
     {
-        return buffer_[offset];
+        return buffer_.Begin().As<TType>();
+    }
+
+    template <typename TType>
+    inline const TType* MemoryBuffer::To() const
+    {
+        return buffer_.Begin().As<const TType>();
     }
 
     inline Bytes MemoryBuffer::GetSize() const
     {
         return buffer_.GetSize();
-    }
-
-    inline MemoryRange MemoryBuffer::GetRange()
-    {
-        return buffer_;
-    }
-
-    inline ConstMemoryRange MemoryBuffer::GetRange() const
-    {
-        return buffer_;
     }
 
     inline void MemoryBuffer::Swap(MemoryBuffer& other) noexcept
