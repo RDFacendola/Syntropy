@@ -34,7 +34,6 @@
     <ClInclude Include="include\syntropy\allocators\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\core\string.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
-    <ClInclude Include="include\syntropy\math\metrics.h" />
     <ClInclude Include="include\syntropy\core\label.h" />
     <ClInclude Include="include\syntropy\allocators\fallback_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\system_memory_resource.h" />
@@ -72,6 +71,10 @@
     <ClInclude Include="include\syntropy\core\smart_pointers.h" />
     <ClInclude Include="include\syntropy\memory\memory_buffer.h" />
     <ClInclude Include="include\syntropy\language\tuple.h" />
+    <ClInclude Include="include\syntropy\math\approximations.h" />
+    <ClInclude Include="include\syntropy\math\interpolations.h" />
+    <ClInclude Include="include\syntropy\math\bit_arithmetic.h" />
+    <ClInclude Include="include\syntropy\math\numeric.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

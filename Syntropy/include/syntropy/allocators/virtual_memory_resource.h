@@ -14,6 +14,8 @@
 #include "syntropy/memory/virtual_memory.h"
 #include "syntropy/memory/virtual_memory_range.h"
 
+#include "syntropy/math/arithmetic.h"
+
 #include "syntropy/diagnostics/assert.h"
 
 namespace syntropy
@@ -108,7 +110,7 @@ namespace syntropy
     inline VirtualMemoryResource::VirtualMemoryResource(Bytes capacity, Bytes page_size) noexcept
         : virtual_memory_(capacity)
         , head_(virtual_memory_.Begin())
-        , page_size_(Ceil(page_size, VirtualMemory::GetPageSize()))
+        , page_size_(Math::Ceil(page_size, VirtualMemory::GetPageSize()))
         , page_alignment_(VirtualMemory::GetPageSize())
     {
 

@@ -6,83 +6,117 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace syntropy
 {
     /************************************************************************/
-    /* ARITHMETIC                                                           */
+    /* MATH                                                                 */
     /************************************************************************/
 
-    /// \brief Divide lhs by rhs and ceil the result to the next integer value.
-    /// \return Returns lhs divided by rhs, rounded up to the next integer value.
-    template <typename TNumber>
-    constexpr auto DivCeil(TNumber lhs, TNumber rhs);
+    /// \brief Exposes arithmetic functions.
+    /// \author Raffaele D. Facendola - May 2020.
+    namespace Math
+    {
+        /// \brief Divide lhs by rhs and ceil the result to the next integer value.
+        /// \return Returns lhs divided by rhs, rounded up to the next integer value.
+        template <typename TNumber>
+        constexpr auto DivCeil(TNumber lhs, TNumber rhs);
 
-    /// \brief Divide lhs by rhs and floor the result to the previous integer value.
-    /// \return Returns lhs divided by rhs, rounded down to the previous value.
-    template <typename TNumber>
-    constexpr auto DivFloor(TNumber lhs, TNumber rhs);
+        /// \brief Divide lhs by rhs and floor the result to the previous integer value.
+        /// \return Returns lhs divided by rhs, rounded down to the previous integer value.
+        template <typename TNumber>
+        constexpr auto DivFloor(TNumber lhs, TNumber rhs);
 
-    /// \brief Ceil a number to a multiple of another value.
-    /// \return Returns the first number equal or greater than number which is multiple of multiple.
-    template <typename TNumber>
-    constexpr TNumber Ceil(TNumber rhs, TNumber multiple);
+        /// \brief Ceil a number to a multiple of another value.
+        /// \return Returns the first number equal or greater than number which is multiple of multiple.
+        template <typename TNumber>
+        constexpr TNumber Ceil(TNumber rhs, TNumber multiple);
 
-    /// \brief Floor a number to a multiple.
-    /// \return Returns the first number equal or lesser than number which is multiple of multiple.
-    template <typename TNumber>
-    constexpr TNumber Floor(TNumber rhs, TNumber multiple);
+        /// \brief Floor a number to a multiple.
+        /// \return Returns the first number equal or lesser than number which is multiple of multiple.
+        template <typename TNumber>
+        constexpr TNumber Floor(TNumber rhs, TNumber multiple);
 
-    /// \brief Check whether rhs is a power of 2.
-    template <typename TNumber>
-    constexpr bool IsPow2(TNumber rhs);
+        /// \brief Get the remainder after the division of lhs by rhs.
+        /// \remarks The sign of the remainder is the same as lhs's.
+        template <typename TNumber>
+        constexpr TNumber Mod(TNumber lhs, TNumber rhs);
+
+        /// \brief Wrap lhs around in the range [0; rhs)
+        template <typename TNumber>
+        constexpr TNumber Wrap(TNumber lhs, TNumber rhs);
+
+        /// \brief Get the absolute value of number.
+        template <typename TNumber>
+        constexpr TNumber Abs(TNumber rhs);
+    }
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Arithmetic.
+    // Math.
 
     template <typename TNumber>
-    constexpr auto DivCeil(TNumber lhs, TNumber rhs)
+    constexpr auto Math::DivCeil(TNumber lhs, TNumber rhs)
     {
-        return DivFloor(lhs + rhs - TNumber(1), rhs);
+        return DivFloor(lhs + rhs - TNumber{ 1 }, rhs);
     }
 
     template <typename TNumber>
-    constexpr auto DivFloor(TNumber lhs, TNumber rhs)
+    constexpr auto Math::DivFloor(TNumber lhs, TNumber rhs)
     {
         auto quotient = lhs / rhs;
         auto remainder = lhs % rhs;
 
-        if (remainder != decltype(remainder){ 0 })
+        if ((remainder != decltype(remainder){ 0 }) && ((lhs < TNumber{ 0 }) ^ (rhs < TNumber{ 0 })))
         {
-            quotient -= (lhs < TNumber{ 0 }) ^ (rhs < TNumber{ 0 });
+            quotient -= decltype(quotient){ 1 };
         }
 
         return quotient;
     }
 
     template <typename TNumber>
-    constexpr TNumber Ceil(TNumber rhs, TNumber multiple)
+    constexpr TNumber Math::Ceil(TNumber rhs, TNumber multiple)
     {
         return DivCeil(rhs, multiple) * multiple;
     }
 
     template <typename TNumber>
-    constexpr TNumber Floor(TNumber rhs, TNumber multiple)
+    constexpr TNumber Math::Floor(TNumber rhs, TNumber multiple)
     {
         return DivFloor(rhs, multiple) * multiple;
     }
 
     template <typename TNumber>
-    constexpr bool IsPow2(TNumber rhs)
+    constexpr TNumber Math::Mod(TNumber lhs, TNumber rhs)
     {
-        if (rhs > TNumber{ 0 })
+        if constexpr (std::is_floating_point_v<TNumber>)
         {
-            return ((rhs & (rhs - TNumber(1))) == TNumber(0));
+            return std::fmod(lhs, rhs);
         }
-
-        return false;
+        else
+        {
+            return lhs % rhs;
+        }
     }
+
+    template <typename TNumber>
+    constexpr TNumber Math::Wrap(TNumber lhs, TNumber rhs)
+    {
+        lhs = Mod(lhs, rhs);
+        lhs = (lhs >= TNumber{ 0 }) ? lhs : (lhs + rhs);
+
+        return lhs;
+    }
+
+    template <typename TNumber>
+    constexpr TNumber Math::Abs(TNumber rhs)
+    {
+        return (rhs > TNumber{ 0 }) ? rhs : -rhs;
+    }
+
 
 }

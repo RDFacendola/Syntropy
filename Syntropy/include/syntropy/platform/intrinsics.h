@@ -23,7 +23,7 @@ namespace syntropy
         /// \brief Get the index of the least significant bit set or undefined if rhs is 0.
         std::int64_t GetLeastSignificantBit(std::int64_t rhs);
 
-        /// \brief Get the inverse square root of a number.
+        /// \brief Get the inverse square root approximation of a number.
         float GetFastInvSqrt(float rhs);
     };
 

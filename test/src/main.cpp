@@ -65,24 +65,26 @@
 
 #include "syntropy/math/constants.h"
 #include "syntropy/math/hash.h"
-#include "syntropy/math/metrics.h"
+#include "syntropy/math/numeric.h"
+#include "syntropy/math/arithmetic.h"
+#include "syntropy/math/bit_arithmetic.h"
+#include "syntropy/math/approximations.h"
+#include "syntropy/math/interpolations.h"
 
 #include "syntropy/time/timer.h"
 #include "syntropy/time/date.h"
 #include "syntropy/time/time_of_day.h"
 
+#include <cmath>
+
 int main(int argc, char **argv)
 {
-    using namespace syntropy::Literals;
+    auto e0 = int{};
+    auto f0 = std::frexp(0.0000001f, &e0);
+    auto c0 = std::ceil(f0);
+    auto t0 = std::scalbn(c0, e0);
 
-    auto t0 = std::tuple<int, float, char, int>{ 1, 2.5f, 'k', 90 };
-    auto t1 = std::tuple<int, float, char>{ 2, 6.32f, 'o' };
-
-    auto r = syntropy::LockstepRankV<decltype(t0)>;
-
-    syntropy::LockstepApply([](auto& a, auto& b) { std::swap(a, b); }, t0, t1);
-
-    //syntropy::LockstepApply([](auto& a) { ++a; }, t1);
+    auto b = syntropy::Math::IsPow2(0.2500001f);
 
     return 0;
 }

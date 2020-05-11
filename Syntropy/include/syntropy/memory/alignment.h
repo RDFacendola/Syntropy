@@ -9,7 +9,7 @@
 #include <ostream>
 
 #include "syntropy/syntropy.h"
-#include "syntropy/math/arithmetic.h"
+#include "syntropy/math/bit_arithmetic.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
 
@@ -134,7 +134,7 @@ namespace syntropy
         : alignment_(*alignment)
     {
         // Alignment are expected to be power-of-two.
-        SYNTROPY_ASSERT(IsPow2(alignment_));
+        SYNTROPY_ASSERT(Math::IsPow2(alignment_));
     }
 
     constexpr std::int64_t Alignment::operator*() const noexcept

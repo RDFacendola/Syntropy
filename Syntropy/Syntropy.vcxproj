@@ -53,9 +53,12 @@
     <ClInclude Include="include\syntropy\core\string_stream.h" />
     <ClInclude Include="include\syntropy\language\memory.h" />
     <ClInclude Include="include\syntropy\language\tuple.h" />
+    <ClInclude Include="include\syntropy\math\approximations.h" />
+    <ClInclude Include="include\syntropy\math\bit_arithmetic.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
-    <ClInclude Include="include\syntropy\math\metrics.h" />
+    <ClInclude Include="include\syntropy\math\interpolations.h" />
+    <ClInclude Include="include\syntropy\math\numeric.h" />
     <ClInclude Include="include\syntropy\memory\memory.h" />
     <ClInclude Include="include\syntropy\language\scope_guard.h" />
     <ClInclude Include="include\syntropy\language\type_traits.h" />
