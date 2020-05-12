@@ -155,7 +155,7 @@ namespace syntropy
         };
 
         /************************************************************************/
-        /* MATH :: VECTOR TYPE ALIAS                                            */
+        /* TYPE ALIAS                                                           */
         /************************************************************************/
 
         /// \brief Type alias for a generic 1-element vector.

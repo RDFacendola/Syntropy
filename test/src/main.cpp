@@ -64,12 +64,13 @@
 #include "syntropy/diagnostics/log_manager.h"
 
 #include "syntropy/math/constants.h"
-#include "syntropy/math/hash.h"
 #include "syntropy/math/numeric.h"
 #include "syntropy/math/math.h"
 #include "syntropy/math/bits.h"
 #include "syntropy/math/interpolations.h"
 #include "syntropy/math/vector.h"
+#include "syntropy/math/hash.h"
+#include "syntropy/math/codes.h"
 
 #include "syntropy/time/timer.h"
 #include "syntropy/time/date.h"
@@ -84,6 +85,8 @@ int main(int argc, char **argv)
     auto b = syntropy::Math::Float3{ 2.8f, 3.4f, -1.0f };
     auto c = Normalize(b);
     auto d = Cross(a, c);
+
+    auto x = syntropy::Codes::ToMortonCode(syntropy::Math::Int2(1, 5));
 
     return 0;
 }

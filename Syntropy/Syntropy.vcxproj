@@ -55,6 +55,7 @@
     <ClInclude Include="include\syntropy\language\tuple.h" />
     <ClInclude Include="include\syntropy\math\bits.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
+    <ClInclude Include="include\syntropy\math\codes.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\math\interpolations.h" />
     <ClInclude Include="include\syntropy\math\numeric.h" />
