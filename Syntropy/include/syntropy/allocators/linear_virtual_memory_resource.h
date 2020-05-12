@@ -14,7 +14,7 @@
 #include "syntropy/memory/virtual_memory.h"
 #include "syntropy/memory/virtual_memory_range.h"
 
-#include "syntropy/math/arithmetic.h"
+#include "syntropy/math/math.h"
 
 #include "syntropy/diagnostics/assert.h"
 

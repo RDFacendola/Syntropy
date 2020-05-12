@@ -9,7 +9,7 @@
 #include <ostream>
 
 #include "syntropy/syntropy.h"
-#include "syntropy/math/bit_arithmetic.h"
+#include "syntropy/math/bits.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
 

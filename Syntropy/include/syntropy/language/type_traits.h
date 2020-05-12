@@ -29,4 +29,20 @@ namespace syntropy
     template <typename...>
     inline constexpr bool AlwaysFalseV = false;
 
+    /// \brief If the sequence {Ints} is contiguous provides a member constant value equal to true, otherwise value is false.
+    template <std::int64_t... Ints>
+    struct IsContiguousSequence : std::true_type {};
+
+    /// \brief Specialization for two-element sequences or more.
+    template <std::int64_t Int1, std::int64_t Int2, std::int64_t... Ints>
+    struct IsContiguousSequence<Int1, Int2, Ints...>
+    {
+        static constexpr bool Value = (Int1 + 1 == Int2) && IsContiguousSequence<Int2, Ints...>::Value;
+    };
+
+    /// \brief Helper value for IsContiguousSequence<T, Ints...>.
+    template <std::int64_t... Ints>
+    constexpr bool IsContiguousSequenceV = IsContiguousSequence<Ints...>::Value;
+
+
 }

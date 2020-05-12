@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/math/arithmetic.h"
+#include "syntropy/math/math.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"

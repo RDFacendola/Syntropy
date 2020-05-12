@@ -13,7 +13,7 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* HASH                                                                 */
     /************************************************************************/
 
     /// \brief Exposes generic hashing functionalities.

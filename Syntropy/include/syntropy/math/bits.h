@@ -1,6 +1,6 @@
 
-/// \file bit_aritmetic.h
-/// \brief This header is part of the Syntropy math module. It contains generic arithmetic functions specific for binary numbers and powers of 2.
+/// \file bits.h
+/// \brief This header is part of the Syntropy math module. It contains mathematical functions specific for binary numbers and powers of 2.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -32,26 +32,22 @@ namespace syntropy
 
         /// \brief Get the base 2 logarithm of a number and floor the result to the previous integer value.
         /// If the provided number is 0 or less the result is undefined.
-        /// #TODO Equivalent to C++20 std::bit_width - 1.
         /// \return Returns the base 2 logarithm of the provided number rounded down to the previous integer value.
         template <typename TNumber>
         TNumber FloorLog2(TNumber rhs);
 
         /// \brief Round the argument up to the next power of 2.
-        /// #TODO Equal to C++20 std::bit_ceil.
         /// \return Returns the smallest power of 2 greater than or equal to rhs.
         template <typename TNumber>
         TNumber NextPow2(TNumber rhs);
 
         /// \brief Check whether rhs is a power of 2.
-        /// #TODO Equal to C++20 std::has_single_bit.
         template <typename TNumber>
         constexpr bool IsPow2(TNumber rhs);
 
         /// \brief Count the number of bits equal to 1 in the provided number.
-        /// #TODO Equal to C++20 std::popcount.
         /// \return Returns the number of bits equal to 1 in the provided number.
-        constexpr std::int64_t CountSetBits(std::int64_t rhs);
+        constexpr std::int64_t HammingWeight(std::int64_t rhs);
 
         /// \brief Get the Hamming distance between two numbers.
         /// \return Returns the Hamming distance between lhs and rhs, that is the number of different bits in both numbers.
@@ -65,7 +61,7 @@ namespace syntropy
     // Math.
 
     template <typename TNumber>
-    TNumber Math::CeilLog2(TNumber rhs)
+    inline TNumber Math::CeilLog2(TNumber rhs)
     {
         if constexpr (std::is_integral_v<TNumber>)
         {
@@ -84,7 +80,7 @@ namespace syntropy
     }
 
     template <typename TNumber>
-    TNumber Math::FloorLog2(TNumber rhs)
+    inline TNumber Math::FloorLog2(TNumber rhs)
     {
         if constexpr (std::is_integral_v<TNumber>)
         {
@@ -140,7 +136,7 @@ namespace syntropy
         }
     }
 
-    constexpr std::int64_t Math::CountSetBits(std::int64_t rhs)
+    constexpr std::int64_t Math::HammingWeight(std::int64_t rhs)
     {
         // Keringhan's algorithm, runs in O(log(bits)).
 
@@ -156,7 +152,7 @@ namespace syntropy
 
     constexpr std::int64_t Math::HammingDistance(std::int64_t lhs, std::int64_t rhs)
     {
-        return Math::CountSetBits(lhs ^ rhs);
+        return Math::HammingWeight(lhs ^ rhs);
     }
 
 }

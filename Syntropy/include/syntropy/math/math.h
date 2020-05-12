@@ -1,6 +1,6 @@
 
-/// \file arithmetic.h
-/// \brief This header is part of the Syntropy math module. It contains generic arithmetic functions.
+/// \file math.h
+/// \brief This header is part of the Syntropy math module. It contains generic mathematical functions.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -18,16 +18,6 @@ namespace syntropy
     /// \author Raffaele D. Facendola - May 2020.
     namespace Math
     {
-        /// \brief Divide lhs by rhs and ceil the result to the next integer value.
-        /// \return Returns lhs divided by rhs, rounded up to the next integer value.
-        template <typename TNumber>
-        constexpr auto DivCeil(TNumber lhs, TNumber rhs);
-
-        /// \brief Divide lhs by rhs and floor the result to the previous integer value.
-        /// \return Returns lhs divided by rhs, rounded down to the previous integer value.
-        template <typename TNumber>
-        constexpr auto DivFloor(TNumber lhs, TNumber rhs);
-
         /// \brief Ceil a number to a multiple of another value.
         /// \return Returns the first number equal or greater than number which is multiple of multiple.
         template <typename TNumber>
@@ -37,6 +27,16 @@ namespace syntropy
         /// \return Returns the first number equal or lesser than number which is multiple of multiple.
         template <typename TNumber>
         constexpr TNumber Floor(TNumber rhs, TNumber multiple);
+
+        /// \brief Divide lhs by rhs and ceil the result to the next integer value.
+        /// \return Returns lhs divided by rhs, rounded up to the next integer value.
+        template <typename TNumber>
+        constexpr auto DivCeil(TNumber lhs, TNumber rhs);
+
+        /// \brief Divide lhs by rhs and floor the result to the previous integer value.
+        /// \return Returns lhs divided by rhs, rounded down to the previous integer value.
+        template <typename TNumber>
+        constexpr auto DivFloor(TNumber lhs, TNumber rhs);
 
         /// \brief Get the remainder after the division of lhs by rhs.
         /// \remarks The sign of the remainder is the same as lhs's.
@@ -59,6 +59,18 @@ namespace syntropy
     // Math.
 
     template <typename TNumber>
+    constexpr TNumber Math::Ceil(TNumber rhs, TNumber multiple)
+    {
+        return DivCeil(rhs, multiple) * multiple;
+    }
+
+    template <typename TNumber>
+    constexpr TNumber Math::Floor(TNumber rhs, TNumber multiple)
+    {
+        return DivFloor(rhs, multiple) * multiple;
+    }
+
+    template <typename TNumber>
     constexpr auto Math::DivCeil(TNumber lhs, TNumber rhs)
     {
         return DivFloor(lhs + rhs - TNumber{ 1 }, rhs);
@@ -76,18 +88,6 @@ namespace syntropy
         }
 
         return quotient;
-    }
-
-    template <typename TNumber>
-    constexpr TNumber Math::Ceil(TNumber rhs, TNumber multiple)
-    {
-        return DivCeil(rhs, multiple) * multiple;
-    }
-
-    template <typename TNumber>
-    constexpr TNumber Math::Floor(TNumber rhs, TNumber multiple)
-    {
-        return DivFloor(rhs, multiple) * multiple;
     }
 
     template <typename TNumber>
@@ -117,6 +117,5 @@ namespace syntropy
     {
         return (rhs > TNumber{ 0 }) ? rhs : -rhs;
     }
-
 
 }

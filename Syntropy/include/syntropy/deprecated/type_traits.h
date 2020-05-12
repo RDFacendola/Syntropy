@@ -39,29 +39,6 @@ namespace syntropy
     template <typename TType>
     using strip_t = typename strip<TType>::type;
 
-    /// \brief If the sequence {Ints} is contiguous provides a member constant value equal to true, otherwise value is false.
-    template <typename T, T... Ints>
-    struct is_contiguous_sequence : std::true_type {};
-
-    /// \brief Specialization for two-element sequences or more.
-    template <typename T, T Int1, T Int2, T... Ints>
-    struct is_contiguous_sequence<T, Int1, Int2, Ints...>
-    {
-        static constexpr bool value = (Int1 + T(1) == Int2) && is_contiguous_sequence<T, Int2, Ints...>::value;
-    };
-
-    /// \brief Typedef of is_contiguous_sequence when T is std::size_t.
-    template <std::size_t... Ints>
-    struct is_contiguous_index_sequence : is_contiguous_sequence<std::size_t, Ints...> {};
-
-    /// \brief Helper value for is_contiguous_sequence<T, Ints...>.
-    template <typename T, T... Ints>
-    constexpr bool is_contiguous_sequence_v = is_contiguous_sequence<T, Ints...>::value;
-
-    /// \brief Helper value for is_contiguous_index_sequence<T, Ints...>.
-    template <std::size_t... Ints>
-    constexpr bool is_contiguous_index_sequence_v = is_contiguous_index_sequence<Ints...>::value;
-
     /// \brief Trait used to determine the type of the arguments of a callable object.
     template <typename TCallable>
     struct function_arguments : function_arguments<decltype(&std::decay_t<TCallable>::operator())> {};
@@ -95,8 +72,7 @@ namespace syntropy
     template <std::size_t kArgumentIndex, typename TFunction>
     using function_argument_t = typename function_argument<kArgumentIndex, TFunction>::type;
 
-    
-
+  
     /// \brief Provides a member constant value equal to the index of the first tuple element whose type is equal to TType.
     template <typename TType, typename TTuple>
     struct tuple_element_index;

@@ -12,7 +12,7 @@ namespace syntropy
     /* MATH                                                                 */
     /************************************************************************/
 
-    /// \brief Exposes interpolation functions.
+    /// \brief Exposes interpolating functions.
     /// \author Raffaele D. Facendola - May 2020.
     namespace Math
     {

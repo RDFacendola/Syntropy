@@ -66,10 +66,10 @@
 #include "syntropy/math/constants.h"
 #include "syntropy/math/hash.h"
 #include "syntropy/math/numeric.h"
-#include "syntropy/math/arithmetic.h"
-#include "syntropy/math/bit_arithmetic.h"
-#include "syntropy/math/approximations.h"
+#include "syntropy/math/math.h"
+#include "syntropy/math/bits.h"
 #include "syntropy/math/interpolations.h"
+#include "syntropy/math/vector.h"
 
 #include "syntropy/time/timer.h"
 #include "syntropy/time/date.h"
@@ -79,12 +79,11 @@
 
 int main(int argc, char **argv)
 {
-    auto e0 = int{};
-    auto f0 = std::frexp(0.0000001f, &e0);
-    auto c0 = std::ceil(f0);
-    auto t0 = std::scalbn(c0, e0);
 
-    auto b = syntropy::Math::IsPow2(0.2500001f);
+    auto a = syntropy::Math::Float3{ 1.5f, 2.67f, 5.9f };
+    auto b = syntropy::Math::Float3{ 2.8f, 3.4f, -1.0f };
+    auto c = Normalize(b);
+    auto d = Cross(a, c);
 
     return 0;
 }
