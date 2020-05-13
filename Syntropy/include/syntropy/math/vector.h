@@ -1,6 +1,6 @@
 
 /// \file vector.h
-/// \brief This header is part of the Syntropy math module. It contains classes used to handle vectors.
+/// \brief This header is part of the Syntropy math module. It contains definitions for n-ary vectors.
 ///
 /// \author Raffaele D. Facendola - 2018
 

@@ -76,6 +76,8 @@
     <ClInclude Include="include\syntropy\math\math.h" />
     <ClInclude Include="include\syntropy\math\bits.h" />
     <ClInclude Include="include\syntropy\math\codes.h" />
+    <ClInclude Include="include\syntropy\math\quaternion.h" />
+    <ClInclude Include="include\syntropy\math\rotation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

@@ -59,6 +59,8 @@
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\math\interpolations.h" />
     <ClInclude Include="include\syntropy\math\numeric.h" />
+    <ClInclude Include="include\syntropy\math\quaternion.h" />
+    <ClInclude Include="include\syntropy\math\rotation.h" />
     <ClInclude Include="include\syntropy\math\vector.h" />
     <ClInclude Include="include\syntropy\memory\memory.h" />
     <ClInclude Include="include\syntropy\language\scope_guard.h" />

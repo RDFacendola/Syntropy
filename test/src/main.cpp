@@ -69,6 +69,8 @@
 #include "syntropy/math/bits.h"
 #include "syntropy/math/interpolations.h"
 #include "syntropy/math/vector.h"
+#include "syntropy/math/quaternion.h"
+#include "syntropy/math/rotation.h"
 #include "syntropy/math/hash.h"
 #include "syntropy/math/codes.h"
 
