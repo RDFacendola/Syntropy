@@ -7,6 +7,8 @@
 #pragma once
 
 #include <cstdint>
+#include <cmath>
+#include <algorithm>
 
 namespace syntropy
 {
@@ -18,6 +20,22 @@ namespace syntropy
     /// \author Raffaele D. Facendola - May 2020.
     namespace Math
     {
+        /// \brief Get the minimum element.
+        template <typename TType, typename... TTypes>
+        const TType& Min(const TType& element, TTypes&&... elements);
+
+        /// \brief Get the maximum element.
+        template <typename TType, typename... TTypes>
+        const TType& Max(const TType& element, TTypes&&... elements);
+
+        /// \brief Get the smallest integral number greater than or equal to rhs.
+        template <typename TNumber>
+        constexpr TNumber Ceil(TNumber rhs);
+
+        /// \brief Get the largest integral number smaller than or equal to rhs.
+        template <typename TNumber>
+        constexpr TNumber Floor(TNumber rhs);
+
         /// \brief Ceil a number to a multiple of another value.
         /// \return Returns the first number equal or greater than number which is multiple of multiple.
         template <typename TNumber>
@@ -50,6 +68,11 @@ namespace syntropy
         /// \brief Get the absolute value of number.
         template <typename TNumber>
         constexpr TNumber Abs(TNumber rhs);
+
+        /// \brief Get the natural logarithm of rhs.
+        template <typename TNumber>
+        constexpr TNumber Ln(TNumber rhs);
+
     }
 
     /************************************************************************/
@@ -57,6 +80,44 @@ namespace syntropy
     /************************************************************************/
 
     // Math.
+
+    template <typename TType, typename... TTypes>
+    const TType& Math::Min(const TType& element, TTypes&&... elements)
+    {
+        if constexpr (sizeof...(elements) == 0)
+        {
+            return element;
+        }
+        else
+        {
+            return std::min(element, Min(std::forward<TType>(elements...)));
+        }
+    }
+
+    template <typename TType, typename... TTypes>
+    const TType& Math::Max(const TType& element, TTypes&&... elements)
+    {
+        if constexpr (sizeof...(elements) == 0)
+        {
+            return element;
+        }
+        else
+        {
+            return std::max(element, Max(std::forward<TType>(elements...)));
+        }
+    }
+
+    template <typename TNumber>
+    constexpr TNumber Ceil(TNumber rhs)
+    {
+        return std::ceil(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr TNumber Math::Floor(TNumber rhs)
+    {
+        return std::floor(rhs);
+    }
 
     template <typename TNumber>
     constexpr TNumber Math::Ceil(TNumber rhs, TNumber multiple)
@@ -116,6 +177,12 @@ namespace syntropy
     constexpr TNumber Math::Abs(TNumber rhs)
     {
         return (rhs > TNumber{ 0 }) ? rhs : -rhs;
+    }
+
+    template <typename TNumber>
+    constexpr TNumber Math::Ln(TNumber rhs)
+    {
+        return std::log(rhs);
     }
 
 }

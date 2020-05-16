@@ -74,6 +74,11 @@
 #include "syntropy/math/hash.h"
 #include "syntropy/math/codes.h"
 
+#include "syntropy/math/random.h"
+#include "syntropy/math/random_engine.h"
+#include "syntropy/math/random_context.h"
+#include "syntropy/math/pcg_random_engine.h"
+
 #include "syntropy/time/timer.h"
 #include "syntropy/time/date.h"
 #include "syntropy/time/time_of_day.h"
@@ -82,13 +87,16 @@
 
 int main(int argc, char **argv)
 {
+    using namespace std::chrono_literals;
 
-    auto a = syntropy::Math::Float3{ 1.5f, 2.67f, 5.9f };
-    auto b = syntropy::Math::Float3{ 2.8f, 3.4f, -1.0f };
-    auto c = Normalize(b);
-    auto d = Cross(a, c);
+    for (;;)
+    {
+        auto value = syntropy::Random::Gaussian(5.0f, 2.0f);
 
-    auto x = syntropy::Codes::ToMortonCode(syntropy::Math::Int2(1, 5));
+        std::cout << value << "\n";
+
+        std::this_thread::sleep_for(1s);
+    }
 
     return 0;
 }

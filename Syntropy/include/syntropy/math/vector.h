@@ -379,7 +379,7 @@ namespace syntropy
 
         /// \brief Get the squared euclidean length of a vector.
         template <typename T, std::int64_t kRank>
-        float SqrLength(const VectorN<T, kRank>& rhs);
+        float LengthSqr(const VectorN<T, kRank>& rhs);
 
         /// \brief Get the Manhattan length of a vector.
         template <typename T, std::int64_t kRank>
@@ -403,7 +403,7 @@ namespace syntropy
 
         /// \brief Get the squared euclidean distance between two vectors.
         template <typename T, typename U, std::int64_t kRank>
-        float SqrDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
+        float DistanceSqr(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
         /// \brief Get the Manhattan distance between two vectors.
         template <typename T, typename U, std::int64_t kRank>
@@ -866,11 +866,11 @@ namespace syntropy
     template <typename T, std::int64_t kRank>
     inline float Math::Length(const VectorN<T, kRank>& rhs)
     {
-        return FastSqrt(SqrLength(rhs));
+        return FastSqrt(LengthSqr(rhs));
     }
 
     template <typename T, std::int64_t kRank>
-    inline float Math::SqrLength(const VectorN<T, kRank>& rhs)
+    inline float Math::LengthSqr(const VectorN<T, kRank>& rhs)
     {
         return Dot(rhs, rhs);
     }
@@ -894,7 +894,7 @@ namespace syntropy
     template <typename T, std::int64_t kRank>
     inline bool Math::IsNormalized(const VectorN<T, kRank>& rhs, float epsilon)
     {
-        return Abs(SqrLength(rhs)) < epsilon;
+        return Abs(LengthSqr(rhs)) < epsilon;
     }
 
     template <typename T, std::int64_t kRank>
@@ -914,9 +914,9 @@ namespace syntropy
     }
 
     template <typename T, typename U, std::int64_t kRank>
-    inline float Math::SqrDistance(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    inline float Math::DistanceSqr(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
-        return SqrLength(lhs - rhs);
+        return LengthSqr(lhs - rhs);
     }
 
     template <typename T, typename U, std::int64_t kRank>

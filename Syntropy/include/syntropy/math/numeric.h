@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <cmath>
+
 #include "syntropy/platform/intrinsics.h"
 #include "syntropy/math/math.h"
 
@@ -28,6 +30,14 @@ namespace syntropy
         /// \param epsilon Error percentage relative to the absolute smaller number.
         template <typename TNumber>
         constexpr bool EssentiallyEqual(TNumber lhs, TNumber rhs, TNumber epsilon = TNumber( 0.01 ));
+
+        /// \brief Get the smaller value greater than rhs.
+        template <typename TNumber>
+        TNumber Next(TNumber rhs);
+
+        /// \brief Get the bigger value smaller than rhs.
+        template <typename TNumber>
+        TNumber Previous(TNumber rhs);
 
         /// \brief Get the approximated inverse square root of number.
         template <typename TNumber>
@@ -63,6 +73,18 @@ namespace syntropy
         auto abs_rhs = Abs(rhs);
 
         return Abs(lhs - rhs) <= ((abs_lhs > abs_rhs ? abs_rhs : abs_lhs) * epsilon);
+    }
+
+    template <typename TNumber>
+    inline TNumber Math::Next(TNumber rhs)
+    {
+        return std::nextafter(rhs, rhs + TNumber(1));
+    }
+
+    template <typename TNumber>
+    inline TNumber Math::Previous(TNumber rhs)
+    {
+        return std::nextafter(rhs, rhs - TNumber(1));
     }
 
     template <typename TNumber>
