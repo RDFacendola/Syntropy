@@ -85,9 +85,16 @@
 #include "syntropy/time/time_of_day.h"
 
 #include "syntropy/unit_test/test_result.h"
+#include "syntropy/unit_test/test_fixture.h"
 
 #include <cmath>
 #include <iostream>
+
+class AwesomeFixture : public syntropy::TestFixture
+{
+public:
+
+};
 
 struct Foo
 {
