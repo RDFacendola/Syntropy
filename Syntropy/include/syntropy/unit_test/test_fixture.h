@@ -24,12 +24,12 @@ namespace syntropy
     #define SYNTROPY_UNIT_ASSERT(expression) \
         if (bool result = (expression); !result) \
         { \
-            NotifyResult({syntropy::TestResult::kFailure, "ASSERT (" #expression ")", SYNTROPY_HERE}); \
+            ReportResult({syntropy::TestResult::kFailure, "ASSERT (" #expression ")", SYNTROPY_HERE}); \
             return; \
         } \
         else \
         { \
-            NotifyResult({ syntropy::TestResult::kSuccess, "ASSERT (" #expression ")", SYNTROPY_HERE }); \
+            ReportResult({ syntropy::TestResult::kSuccess, "ASSERT (" #expression ")", SYNTROPY_HERE }); \
         }
 
     /// \brief Unit test macro: report a success if "expression" is true, otherwise report a failure.
@@ -38,11 +38,11 @@ namespace syntropy
     #define SYNTROPY_UNIT_TEST(expression) \
         if (bool result = (expression); !result) \
         { \
-            NotifyResult({syntropy::TestResult::kFailure, "TEST (" #expression ")", SYNTROPY_HERE}); \
+            ReportResult({syntropy::TestResult::kFailure, "TEST (" #expression ")", SYNTROPY_HERE}); \
         } \
         else \
         { \
-            NotifyResult({ syntropy::TestResult::kSuccess, "TEST (" #expression ")", SYNTROPY_HERE }); \
+            ReportResult({ syntropy::TestResult::kSuccess, "TEST (" #expression ")", SYNTROPY_HERE }); \
         }
 
     /// \brief Unit test macro: the test is executed if "expression" is true, otherwise the test is skipped. If used, it must precede any other test.
@@ -50,19 +50,19 @@ namespace syntropy
     #define SYNTROPY_UNIT_EXPECT(expression) \
         if(bool result = (expression); !result) \
         { \
-            NotifyResult({ syntropy::TestResult::kSkipped, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
+            ReportResult({ syntropy::TestResult::kSkipped, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
             return; \
         } \
         else \
         { \
-            NotifyResult({ syntropy::TestResult::kSuccess, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
+            ReportResult({ syntropy::TestResult::kSuccess, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
         }
 
     /// \brief Unit test macro: macro used to manually skip a test case.
     /// \usage SYNTROPY_UNIT_SKIP("Work in progress");              // Inside a TestFixture.
     #define SYNTROPY_UNIT_SKIP(reason) \
         { \
-            NotifyResult({syntropy::TestResult::kSkipped, "SKIP (" #reason ")", SYNTROPY_HERE }); \
+            ReportResult({syntropy::TestResult::kSkipped, "SKIP (" #reason ")", SYNTROPY_HERE }); \
             return; \
         }
 
@@ -70,7 +70,7 @@ namespace syntropy
     /// \usage SYNTROPY_UNIT_MESSAGE("This is a message ", 2 + 3);   // Inside a TestFixture will output "This is a message 5".
     #define SYNTROPY_UNIT_MESSAGE(...) \
         { \
-            NotifyMessage(__VA_ARGS__) \
+            ReportMessage(__VA_ARGS__) \
         }
 
     /// \brief Unit test macro: execute "expression" and trace it as a message.
@@ -78,7 +78,7 @@ namespace syntropy
     #define SYNTROPY_UNIT_TRACE(expression) \
         { \
             (expression); \
-            NotifyMessage(#expression) \
+            ReportMessage(#expression) \
         }
 
     /************************************************************************/
