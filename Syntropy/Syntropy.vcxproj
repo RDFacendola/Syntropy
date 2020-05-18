@@ -48,7 +48,9 @@
     <ClInclude Include="include\syntropy\diagnostics\stack_trace.h" />
     <ClInclude Include="include\syntropy\diagnostics\verbosity.h" />
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
+    <ClInclude Include="include\syntropy\language\event.h" />
     <ClInclude Include="include\syntropy\language\functional.h" />
+    <ClInclude Include="include\syntropy\language\listener.h" />
     <ClInclude Include="include\syntropy\language\macro.h" />
     <ClInclude Include="include\syntropy\core\string_stream.h" />
     <ClInclude Include="include\syntropy\language\memory.h" />
@@ -108,6 +110,7 @@
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_threading.cpp" />
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_endianness.cpp" />
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_intrinsics.cpp" />
+    <ClCompile Include="src\syntropy\language\listener.cpp" />
     <ClCompile Include="src\syntropy\math\pcg_random_engine.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_virtual_memory.cpp" />

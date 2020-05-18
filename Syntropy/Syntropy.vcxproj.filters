@@ -83,6 +83,8 @@
     <ClInclude Include="include\syntropy\math\pcg_random_engine.h" />
     <ClInclude Include="include\syntropy\math\random_context.h" />
     <ClInclude Include="include\syntropy\math\random.h" />
+    <ClInclude Include="include\syntropy\language\event.h" />
+    <ClInclude Include="include\syntropy\language\listener.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -108,5 +110,6 @@
     <ClCompile Include="src\syntropy\time\date.cpp" />
     <ClCompile Include="src\syntropy\time\time_of_day.cpp" />
     <ClCompile Include="src\syntropy\math\pcg_random_engine.cpp" />
+    <ClCompile Include="src\syntropy\language\listener.cpp" />
   </ItemGroup>
 </Project>

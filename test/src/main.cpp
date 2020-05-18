@@ -17,6 +17,7 @@
 #include "syntropy/language/scope_guard.h"
 #include "syntropy/language/utility.h"
 #include "syntropy/language/tuple.h"
+#include "syntropy/language/event.h"
 
 #include "syntropy/application/command_line.h"
 #include "syntropy/application/command_line_argument.h"
@@ -84,19 +85,76 @@
 #include "syntropy/time/time_of_day.h"
 
 #include <cmath>
+#include <iostream>
+
+struct Foo
+{
+    template <typename TDelegate>
+    syntropy::Listener OnSuccess(TDelegate&& delegate)
+    {
+        return success_event_.Subscribe(std::move(delegate));
+    }
+
+    template <typename TDelegate>
+    syntropy::Listener OnFailure(TDelegate&& delegate)
+    {
+        return failure_event_.Subscribe(std::move(delegate));
+    }
+
+//     template <typename TDelegate>
+//     syntropy::ListenerOf<Foo> OnSuccessEx(TDelegate&& delegate)
+//     {
+//         return { this, success_event_.Subscribe(std::move(delegate)) };
+//     }
+// 
+//     template <typename TDelegate>
+//     syntropy::ListenerOf<Foo> OnFailureEx(TDelegate&& delegate)
+//     {
+//         return { this, failure_event_.Subscribe(std::move(delegate)) };
+//     }
+
+    void NotifySuccess(int x)
+    {
+        success_event_.Notify(this, x);
+    }
+
+    void NotifyFailure(int x)
+    {
+        failure_event_.Notify(this, x);
+
+    }
+
+    syntropy::Event<Foo*, int> success_event_;
+
+    syntropy::Event<Foo*, int> failure_event_;
+};
 
 int main(int argc, char **argv)
 {
-    using namespace std::chrono_literals;
+    auto foo = new Foo();
 
-    for (;;)
     {
-        auto value = syntropy::Random::Gaussian(5.0f, 2.0f);
+        syntropy::Listener listener00;
 
-        std::cout << value << "\n";
+//         syntropy::Observe(*foo, listener00)
+//             ->OnSuccessEx([](Foo* f, int x) { std::cout << f << ": 0 succeeded " << x << "\n"; })
+//             ->OnFailureEx([](Foo* f, int y) { std::cout << f << ": 0 failed " << y << "\n"; });
+// 
 
-        std::this_thread::sleep_for(1s);
+        syntropy::Listener listener1;
+
+        listener1 += foo->OnSuccess([](Foo* f, int x) { std::cout << f << ": 1 succeeded " << x << "\n"; });
+        listener1 += foo->OnFailure([](Foo* f, int y) { std::cout << f << ": 1 failed " << y << "\n"; });
+
+        foo->NotifySuccess(42);
+        foo->NotifyFailure(32);
+
     }
+
+    foo->NotifySuccess(42);
+    foo->NotifyFailure(32);
+
+    std::cout << "done!\n";
 
     return 0;
 }
