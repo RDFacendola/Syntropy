@@ -13,12 +13,16 @@
 
 #include "syntropy/language/macro.h"
 
-/// \brief Expands to an object representing the location of the current line of code.
-#define SYNTROPY_HERE \
-    syntropy::StackTraceElement{ SYNTROPY_FILE, SYNTROPY_FUNCTION, SYNTROPY_LINE }
-
 namespace syntropy
 {
+    /************************************************************************/
+    /* MACROS                                                               */
+    /************************************************************************/
+
+    /// \brief Expands to an object representing the location of the current line of code.
+    #define SYNTROPY_HERE \
+        SYNTROPY_MACRO_DECLARATION(empty)
+
     /************************************************************************/
     /* STACK TRACE                                                          */
     /************************************************************************/
@@ -129,6 +133,12 @@ namespace syntropy
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
+
+    // Macros.
+
+    #undef SYNTROPY_HERE
+    #define SYNTROPY_HERE \
+        syntropy::StackTraceElement{ SYNTROPY_FILE, SYNTROPY_FUNCTION, SYNTROPY_LINE }
 
     // StackTrace.
 

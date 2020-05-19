@@ -139,58 +139,58 @@ namespace syntropy
 
     #undef SYNTROPY_UNIT_ASSERT
     #define SYNTROPY_UNIT_ASSERT(expression) \
-    if (bool result = (expression); !result) \
-    { \
-        ReportResult({syntropy::TestResult::kFailure, "ASSERT (" #expression ")", SYNTROPY_HERE}); \
-        return; \
-    } \
-    else \
-    { \
-        ReportResult({ syntropy::TestResult::kSuccess, "ASSERT (" #expression ")", SYNTROPY_HERE }); \
-    }
+        if (bool result = (expression); !result) \
+        { \
+            ReportResult({syntropy::TestResult::kFailure, "ASSERT (" #expression ")", SYNTROPY_HERE}); \
+            return; \
+        } \
+        else \
+        { \
+            ReportResult({ syntropy::TestResult::kSuccess, "ASSERT (" #expression ")", SYNTROPY_HERE }); \
+        }
 
     #undef SYNTROPY_UNIT_TEST
     #define SYNTROPY_UNIT_TEST(expression) \
-    if (bool result = (expression); !result) \
-    { \
-        ReportResult({syntropy::TestResult::kFailure, "TEST (" #expression ")", SYNTROPY_HERE}); \
-    } \
-    else \
-    { \
-        ReportResult({ syntropy::TestResult::kSuccess, "TEST (" #expression ")", SYNTROPY_HERE }); \
-    }
+        if (bool result = (expression); !result) \
+        { \
+            ReportResult({syntropy::TestResult::kFailure, "TEST (" #expression ")", SYNTROPY_HERE}); \
+        } \
+        else \
+        { \
+            ReportResult({ syntropy::TestResult::kSuccess, "TEST (" #expression ")", SYNTROPY_HERE }); \
+        }
 
     #undef SYNTROPY_UNIT_EXPECT
     #define SYNTROPY_UNIT_EXPECT(expression) \
-    if(bool result = (expression); !result) \
-    { \
-        ReportResult({ syntropy::TestResult::kSkipped, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
-        return; \
-    } \
-    else \
-    { \
-        ReportResult({ syntropy::TestResult::kSuccess, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
-    }
+        if(bool result = (expression); !result) \
+        { \
+            ReportResult({ syntropy::TestResult::kSkipped, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
+            return; \
+        } \
+        else \
+        { \
+            ReportResult({ syntropy::TestResult::kSuccess, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
+        }
 
     #undef SYNTROPY_UNIT_SKIP
     #define SYNTROPY_UNIT_SKIP(reason) \
-    { \
-        ReportResult({syntropy::TestResult::kSkipped, "SKIP (" #reason ")", SYNTROPY_HERE }); \
-        return; \
-    }
+        { \
+            ReportResult({syntropy::TestResult::kSkipped, "SKIP (" #reason ")", SYNTROPY_HERE }); \
+            return; \
+        }
 
     #undef SYNTROPY_UNIT_MESSAGE
     #define SYNTROPY_UNIT_MESSAGE(...) \
-    { \
-        ReportMessage(__VA_ARGS__) \
-    }
+        { \
+            ReportMessage(__VA_ARGS__) \
+        }
 
     #undef SYNTROPY_UNIT_TRACE
     #define SYNTROPY_UNIT_TRACE(expression) \
-    { \
-        (expression); \
-        ReportMessage(#expression) \
-    }
+        { \
+            (expression); \
+            ReportMessage(#expression) \
+        }
 
     // TestFixture.
 

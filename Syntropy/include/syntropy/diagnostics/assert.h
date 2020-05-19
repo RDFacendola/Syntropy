@@ -6,8 +6,26 @@
 
 #pragma once
 
+#include "syntropy/language/macro.h"
 #include "syntropy/diagnostics/debugger.h"
 
-/// \brief If the condition is not verified causes the debugger to break if attached or the application to terminate.
-#define SYNTROPY_ASSERT(condition) \
-    if(!(condition)) { SYNTROPY_TRAP; }
+namespace syntropy
+{
+    /************************************************************************/
+    /* MACROS                                                               */
+    /************************************************************************/
+
+    /// \brief If the condition is not verified causes the debugger to break if attached or the application to terminate.
+    #define SYNTROPY_ASSERT(condition) \
+        SYNTROPY_MACRO_DECLARATION(condition)
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Macros.
+
+    #undef SYNTROPY_ASSERT
+    #define SYNTROPY_ASSERT(condition) \
+        if(!(condition)) { SYNTROPY_TRAP; }
+}

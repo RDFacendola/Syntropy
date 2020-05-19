@@ -137,6 +137,7 @@ int main(int argc, char **argv)
 
     f.Foo();
 
+    SYNTROPY_BREAK;
 
     system("pause");
 

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/language/macro.h"
 #include "syntropy/hal/hal_macro.h"
 
 namespace syntropy
@@ -16,11 +17,11 @@ namespace syntropy
 
     /// \brief Causes the debugger to break if attached, or the application to terminate otherwise.
     #define SYNTROPY_TRAP \
-        SYNTROPY_HAL_TRAP
+        SYNTROPY_MACRO_DECLARATION(empty)
 
     /// \brief Causes the debugger to break if attached.
     #define SYNTROPY_BREAK \
-        if(syntropy::Debugger::IsAttached()){ SYNTROPY_TRAP }
+        SYNTROPY_MACRO_DECLARATION(empty)
 
     /************************************************************************/
     /* DEBUGGER                                                             */
@@ -33,5 +34,19 @@ namespace syntropy
         /// \brief Check whether the debugger is attached.
         bool IsAttached();
     }
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Macros.
+
+    #undef SYNTROPY_TRAP
+    #define SYNTROPY_TRAP \
+        SYNTROPY_HAL_TRAP
+
+    #undef SYNTROPY_BREAK
+    #define SYNTROPY_BREAK \
+        if(syntropy::Debugger::IsAttached()){ SYNTROPY_TRAP }
 
 }
