@@ -7,12 +7,26 @@
 #pragma once
 
 #include "syntropy/hal/hal_macro.h"
+#include "syntropy/language/type_traits.h"
 
 namespace syntropy
 {
     /************************************************************************/
     /* MACROS                                                               */
     /************************************************************************/
+
+    /// \brief Special macro used to "forward-declare" a macro and move its definition somewhere else.
+    /// This macro is intended to separate macro declaration site from definition and to avoid clutter near the macro declaration site.
+    /// Declaration and definition site must exist in the same file!
+    /// \usage 
+    /// Declaration site. Forward declaration only. Any usage before definition will trigger a static assert.
+    ///  #define MY_MACRO(arg0, arg1) SYNTROPY_MACRO_DECLARATION(arg0, arg1)
+    /// 
+    /// Definition site. Undef previous forward declaration and provide actual definition.
+    ///  #undef MY_MACRO
+    ///  #define MY_MACRO(arg0, arg1) (arg0 + arg1)
+    #define SYNTROPY_MACRO_DECLARATION(...) \
+    []() { static_assert(AlwaysFalseV<#__VA_ARGS__>, "Undefined macro!"); }
 
     /// \brief Use x as part of an expression to suppress unused warning.
     #define SYNTROPY_UNUSED(x) \

@@ -11,6 +11,7 @@
 #include "syntropy/core/string.h"
 #include "syntropy/core/string_stream.h"
 #include "syntropy/language/event.h"
+#include "syntropy/language/macro.h"
 #include "syntropy/unit_test/test_result.h"
 
 namespace syntropy
@@ -19,67 +20,35 @@ namespace syntropy
     /* UNIT TEST MACROS                                                     */
     /************************************************************************/
 
-    /// \brief Unit test macro: report a success if "expression" is true, otherwise report a failure and return.
-    /// \usage SYNTROPY_UNIT_ASSERT(1 + 2 == 3);                // Inside a TestFixture.
+    /// \brief Unit test macro: report a success if "expression" is true, otherwise report a failure and return. Expected usage within a TestFixture.
+    /// \usage SYNTROPY_UNIT_ASSERT(1 + 2 == 3);
     #define SYNTROPY_UNIT_ASSERT(expression) \
-        if (bool result = (expression); !result) \
-        { \
-            ReportResult({syntropy::TestResult::kFailure, "ASSERT (" #expression ")", SYNTROPY_HERE}); \
-            return; \
-        } \
-        else \
-        { \
-            ReportResult({ syntropy::TestResult::kSuccess, "ASSERT (" #expression ")", SYNTROPY_HERE }); \
-        }
+        SYNTROPY_MACRO_DECLARATION(expression)
 
-    /// \brief Unit test macro: report a success if "expression" is true, otherwise report a failure.
+    /// \brief Unit test macro: report a success if "expression" is true, otherwise report a failure. Expected usage within a TestFixture.
     /// Similar to SYNTROPY_UNIT_ASSERT except it doesn't return on failure.
-    /// \usage SYNTROPY_UNIT_TEST(1 + 2 == 3);                  // Inside a TestFixture.
+    /// \usage SYNTROPY_UNIT_TEST(1 + 2 == 3);
     #define SYNTROPY_UNIT_TEST(expression) \
-        if (bool result = (expression); !result) \
-        { \
-            ReportResult({syntropy::TestResult::kFailure, "TEST (" #expression ")", SYNTROPY_HERE}); \
-        } \
-        else \
-        { \
-            ReportResult({ syntropy::TestResult::kSuccess, "TEST (" #expression ")", SYNTROPY_HERE }); \
-        }
+        SYNTROPY_MACRO_DECLARATION(expression)
 
-    /// \brief Unit test macro: the test is executed if "expression" is true, otherwise the test is skipped. If used, it must precede any other test.
-    /// \usage SYNTROPY_UNIT_EXPECT(!IsServer());                   // Inside a TestFixture
+    /// \brief Unit test macro: the test is executed if "expression" is true, otherwise the test is skipped. If used, it must precede any other test. Expected usage within a TestFixture.
+    /// \usage SYNTROPY_UNIT_EXPECT(!IsServer());
     #define SYNTROPY_UNIT_EXPECT(expression) \
-        if(bool result = (expression); !result) \
-        { \
-            ReportResult({ syntropy::TestResult::kSkipped, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
-            return; \
-        } \
-        else \
-        { \
-            ReportResult({ syntropy::TestResult::kSuccess, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
-        }
+        SYNTROPY_MACRO_DECLARATION(expression)
 
-    /// \brief Unit test macro: macro used to manually skip a test case.
-    /// \usage SYNTROPY_UNIT_SKIP("Work in progress");              // Inside a TestFixture.
+    /// \brief Unit test macro: macro used to manually skip a test case. Expected usage within a TestFixture.
+    /// \usage SYNTROPY_UNIT_SKIP("Work in progress");
     #define SYNTROPY_UNIT_SKIP(reason) \
-        { \
-            ReportResult({syntropy::TestResult::kSkipped, "SKIP (" #reason ")", SYNTROPY_HERE }); \
-            return; \
-        }
+        SYNTROPY_MACRO_DECLARATION(expression)
 
-    /// \brief Unit test macro: notify a message for the current test case being ran.
-    /// \usage SYNTROPY_UNIT_MESSAGE("This is a message ", 2 + 3);   // Inside a TestFixture will output "This is a message 5".
+    /// \brief Unit test macro: notify a message for the current test case being ran. Expected usage within a TestFixture.
+    /// \usage SYNTROPY_UNIT_MESSAGE("This is a message ", 2 + 3);
     #define SYNTROPY_UNIT_MESSAGE(...) \
-        { \
-            ReportMessage(__VA_ARGS__) \
-        }
+        SYNTROPY_MACRO_DECLARATION(expression)
 
-    /// \brief Unit test macro: execute "expression" and trace it as a message.
-    /// \usage SYNTROPY_UNIT_TRACE(auto x = y + z)                  // Inside a TestFixture, will output "auto x = y + z".
+    /// \brief Unit test macro: execute "expression" and trace it as a message. Expected usage within a TestFixture.
     #define SYNTROPY_UNIT_TRACE(expression) \
-        { \
-            (expression); \
-            ReportMessage(#expression) \
-        }
+        SYNTROPY_MACRO_DECLARATION(expression)
 
     /************************************************************************/
     /* ON TEST RESULT EVENT ARGS                                            */
@@ -165,6 +134,63 @@ namespace syntropy
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
+
+    // Unit-test macros.
+
+    #undef SYNTROPY_UNIT_ASSERT
+    #define SYNTROPY_UNIT_ASSERT(expression) \
+    if (bool result = (expression); !result) \
+    { \
+        ReportResult({syntropy::TestResult::kFailure, "ASSERT (" #expression ")", SYNTROPY_HERE}); \
+        return; \
+    } \
+    else \
+    { \
+        ReportResult({ syntropy::TestResult::kSuccess, "ASSERT (" #expression ")", SYNTROPY_HERE }); \
+    }
+
+    #undef SYNTROPY_UNIT_TEST
+    #define SYNTROPY_UNIT_TEST(expression) \
+    if (bool result = (expression); !result) \
+    { \
+        ReportResult({syntropy::TestResult::kFailure, "TEST (" #expression ")", SYNTROPY_HERE}); \
+    } \
+    else \
+    { \
+        ReportResult({ syntropy::TestResult::kSuccess, "TEST (" #expression ")", SYNTROPY_HERE }); \
+    }
+
+    #undef SYNTROPY_UNIT_EXPECT
+    #define SYNTROPY_UNIT_EXPECT(expression) \
+    if(bool result = (expression); !result) \
+    { \
+        ReportResult({ syntropy::TestResult::kSkipped, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
+        return; \
+    } \
+    else \
+    { \
+        ReportResult({ syntropy::TestResult::kSuccess, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
+    }
+
+    #undef SYNTROPY_UNIT_SKIP
+    #define SYNTROPY_UNIT_SKIP(reason) \
+    { \
+        ReportResult({syntropy::TestResult::kSkipped, "SKIP (" #reason ")", SYNTROPY_HERE }); \
+        return; \
+    }
+
+    #undef SYNTROPY_UNIT_MESSAGE
+    #define SYNTROPY_UNIT_MESSAGE(...) \
+    { \
+        ReportMessage(__VA_ARGS__) \
+    }
+
+    #undef SYNTROPY_UNIT_TRACE
+    #define SYNTROPY_UNIT_TRACE(expression) \
+    { \
+        (expression); \
+        ReportMessage(#expression) \
+    }
 
     // TestFixture.
 

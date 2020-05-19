@@ -94,6 +94,11 @@ class AwesomeFixture : public syntropy::TestFixture
 {
 public:
 
+    void Foo()
+    {
+        SYNTROPY_UNIT_ASSERT(1 == 1);
+    }
+
 };
 
 struct Foo
@@ -128,11 +133,9 @@ struct Foo
 
 int main(int argc, char **argv)
 {
-    std::cout << syntropy::TestResult::kSuccess << "\n";
+    auto f = AwesomeFixture();
 
-    std::cout << "done!\n";
-
-    //
+    f.Foo();
 
 
     system("pause");
