@@ -85,12 +85,14 @@
 #include "syntropy/time/time_of_day.h"
 
 #include "syntropy/unit_test/test_result.h"
+#include "syntropy/unit_test/test_report.h"
 #include "syntropy/unit_test/test_fixture.h"
+#include "syntropy/unit_test/test_case.h"
 
 #include <cmath>
 #include <iostream>
 
-class AwesomeFixture : public syntropy::TestFixture
+class MyFixture : public syntropy::TestFixture
 {
 public:
 
@@ -101,41 +103,13 @@ public:
 
 };
 
-struct Foo
-{
-    template <typename TDelegate>
-    syntropy::Listener OnSuccess(TDelegate&& delegate)
-    {
-        return success_event_.Subscribe(std::move(delegate));
-    }
-
-    template <typename TDelegate>
-    syntropy::Listener OnFailure(TDelegate&& delegate)
-    {
-        return failure_event_.Subscribe(std::move(delegate));
-    }
-
-    void NotifySuccess(int x)
-    {
-        success_event_.Notify(this, x);
-    }
-
-    void NotifyFailure(int x)
-    {
-        failure_event_.Notify(this, x);
-
-    }
-
-    syntropy::Event<Foo*, int> success_event_;
-
-    syntropy::Event<Foo*, int> failure_event_;
-};
-
 int main(int argc, char **argv)
 {
-    auto f = AwesomeFixture();
+    auto my_fixture = MyFixture();
 
-    f.Foo();
+    auto test_case = syntropy::MakeTestCase("foo", &MyFixture::Foo);
+
+    std::cout << test_case.Run(my_fixture);
 
     SYNTROPY_BREAK;
 

@@ -87,6 +87,8 @@
     <ClInclude Include="include\syntropy\language\listener.h" />
     <ClInclude Include="include\syntropy\unit_test\test_result.h" />
     <ClInclude Include="include\syntropy\unit_test\test_fixture.h" />
+    <ClInclude Include="include\syntropy\unit_test\test_case.h" />
+    <ClInclude Include="include\syntropy\unit_test\test_report.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

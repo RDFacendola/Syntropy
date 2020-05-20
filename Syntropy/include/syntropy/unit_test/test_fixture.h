@@ -1,6 +1,6 @@
 
 /// \file test_fixture.h
-/// \brief This header is part of the syntropy unit test system. It contains classes used to define test fixtures and unit test macros.
+/// \brief This header is part of the Syntropy unit test module. It contains classes used to define test fixtures and unit test macros.
 /// A test fixture is a stateful environment for multiple test cases.
 ///
 /// \author Raffaele D. Facendola - 2018
@@ -36,7 +36,7 @@ namespace syntropy
     #define SYNTROPY_UNIT_EXPECT(expression) \
         SYNTROPY_MACRO_DECLARATION(expression)
 
-    /// \brief Unit test macro: macro used to manually skip a test case. Expected usage within a TestFixture.
+    /// \brief Unit test macro: macro used to manually skip a test case. Expected usage within a TestFixture before any other test.
     /// \usage SYNTROPY_UNIT_SKIP("Work in progress");
     #define SYNTROPY_UNIT_SKIP(reason) \
         SYNTROPY_MACRO_DECLARATION(expression)
@@ -51,11 +51,11 @@ namespace syntropy
         SYNTROPY_MACRO_DECLARATION(expression)
 
     /************************************************************************/
-    /* ON TEST RESULT EVENT ARGS                                            */
+    /* ON TEST CASE RESULT EVENT ARGS                                       */
     /************************************************************************/
 
     /// \brief Arguments for the event notified whenever a test case result is reported.
-    struct OnTestResultEventArgs
+    struct OnTestCaseResultEventArgs
     {
         /// \brief Test result.
         TestResult result_;
@@ -68,11 +68,11 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* ON TEST MESSAGE EVENT ARGS                                           */
+    /* ON TEST CASE MESSAGE EVENT ARGS                                      */
     /************************************************************************/
 
     /// \brief Arguments for the event notified whenever a test message is reported.
-    struct OnTestMessageEventArgs
+    struct OnTestCaseMessageEventArgs
     {
         /// \brief Reported message.
         String message_;
@@ -102,19 +102,19 @@ namespace syntropy
         /// \brief Used to tear-down fixture state after each test case.
         virtual void After();
 
-        /// \brief Bind to the event notified whenever a test result is reported.
+        /// \brief Bind to the event notified whenever a test case result is reported.
         template <typename TDelegate>
-        Listener OnTestResult(TDelegate&& delegate);
+        Listener OnTestCaseResult(TDelegate&& delegate);
 
-        /// \brief Bind to the event notified whenever a test message is reported.
+        /// \brief Bind to the event notified whenever a test case message is reported.
         template <typename TDelegate>
-        Listener OnTestMessage(TDelegate&& delegate);
+        Listener OnTestCaseMessage(TDelegate&& delegate);
 
     protected:
 
         /// \brief Report a test case result.
         /// \brief This method is not expected to be called directly, only via unit test macros.
-        void ReportResult(const OnTestResultEventArgs& result);
+        void ReportResult(const OnTestCaseResultEventArgs& result);
 
         /// \brief Report a test case message.
         /// \brief This method is not expected to be called directly, only via unit test macros.
@@ -124,10 +124,10 @@ namespace syntropy
     private:
 
         /// \brief Event notified whenever a test result is reported.
-        Event<TestFixture*, OnTestResultEventArgs> test_result_event_;
+        Event<TestFixture*, OnTestCaseResultEventArgs> test_case_result_event_;
 
         /// \brief Event notified whenever a test message is reported.
-        Event<TestFixture*, OnTestMessageEventArgs> test_message_event_;
+        Event<TestFixture*, OnTestCaseMessageEventArgs> test_case_message_event_;
 
     };
 
@@ -205,20 +205,20 @@ namespace syntropy
     }
 
     template <typename TDelegate>
-    inline Listener TestFixture::OnTestResult(TDelegate&& delegate)
+    inline Listener TestFixture::OnTestCaseResult(TDelegate&& delegate)
     {
-        return test_result_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return test_case_result_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestFixture::OnTestMessage(TDelegate&& delegate)
+    inline Listener TestFixture::OnTestCaseMessage(TDelegate&& delegate)
     {
-        return test_message_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return test_case_message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    inline void TestFixture::ReportResult(const OnTestResultEventArgs& result)
+    inline void TestFixture::ReportResult(const OnTestCaseResultEventArgs& result)
     {
-        test_result_event_.Notify(this, result);
+        test_case_result_event_.Notify(this, result);
     }
 
     template <typename... TMessage>
@@ -228,7 +228,7 @@ namespace syntropy
 
         (builder << ... << message);
 
-        test_message_event_.Notify(this, OnTestMessageEventArgs{ builder.str() });
+        test_case_message_event_.Notify(this, OnTestCaseMessageEventArgs{ builder.str() });
     }
 
 }

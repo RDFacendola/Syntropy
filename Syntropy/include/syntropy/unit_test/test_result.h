@@ -1,6 +1,6 @@
 
 /// \file test_result.h
-/// \brief This header is part of the syntropy unit test system. It contains base definitions for unit test results.
+/// \brief This header is part of the Syntropy unit test module. It contains base definitions for unit test results.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -18,16 +18,19 @@ namespace syntropy
     enum class TestResult : int8_t
     {
         /// \brief The test was skipped.
-        kSkipped = 0u,
+        kSkipped = 0,
 
         /// \brief The test succeeded.
-        kSuccess = 1u,
+        kSuccess = 1,
 
         /// \brief The test failed.
-        kFailure = 2u,
+        kFailure = 2,
 
         /// \brief The test threw an unhandled exception.
-        kError = 3u,
+        kError = 3,
+
+        /// \brief The test is invalid.
+        kInvalid = 4,
     };
 
     /************************************************************************/
@@ -60,6 +63,10 @@ namespace syntropy
         else if (test_result == TestResult::kError)
         {
             out << "Error";
+        }
+        else if (test_result == TestResult::kInvalid)
+        {
+            out << "Invalid";
         }
 
         return out;
