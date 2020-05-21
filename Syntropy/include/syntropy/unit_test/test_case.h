@@ -37,9 +37,6 @@ namespace syntropy
     {
         /// \brief Synthetic test case report.
         TestReport test_report_;
-
-        /// \brief Overall test case result.
-        TestResult test_case_result_;
     };
 
     /************************************************************************/
@@ -130,15 +127,12 @@ namespace syntropy
     template <typename TTestFixture>
     TestReport TestCase<TTestFixture>::Run(TTestFixture& test_fixture)
     {
-        auto test_trace = StackTraceElement{};      // Last available test trace.
-
         auto test_report = MakeTestReport(name_);
 
-        auto notify_result_ = [this, &test_trace, &test_report](const OnTestCaseResultEventArgs& event_args)
+        auto notify_result_ = [this, &test_report](const OnTestCaseResultEventArgs& event_args)
         {
-            test_trace = event_args.location_;
-
             test_report += event_args.result_;
+            test_report += event_args.location_;
 
             test_case_result_event_.Notify(this, event_args);
         };
@@ -159,22 +153,26 @@ namespace syntropy
 
         // Test case environment.
 
-        test_case_started_event_.Notify(this, OnTestCaseStartedEventArgs{});
+        test_case_started_event_.Notify(this, {});
 
         test_fixture.Before();
 
         try
         {
+            // Actual test case.
+
             (test_fixture.*test_case_)();
         }
         catch (...)
         {
-            notify_result_({ TestResult::kError, "Unhandled exception", test_trace });     // Not the actual throw location, but the best estimate we have.
+            // Exceptions are considered "regular" test results, with the exception that it not possible to know the actual throw location.
+
+            notify_result_({ TestResult::kError, "Unhandled exception", test_report.end_trace_ });
         }
 
         test_fixture.After();
 
-        test_case_finished_event_.Notify(this, { test_report, UnitTest::GetResult(test_report) });
+        test_case_finished_event_.Notify(this, { test_report });
 
         return test_report;
     }

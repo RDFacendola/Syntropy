@@ -109,9 +109,7 @@ int main(int argc, char **argv)
 
     auto test_case = syntropy::MakeTestCase("foo", &MyFixture::Foo);
 
-    std::cout << test_case.Run(my_fixture);
-
-    SYNTROPY_BREAK;
+    std::cout << test_case.Run(my_fixture);;
 
     system("pause");
 

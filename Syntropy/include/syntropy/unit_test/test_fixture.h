@@ -39,12 +39,12 @@ namespace syntropy
     /// \brief Unit test macro: macro used to manually skip a test case. Expected usage within a TestFixture before any other test.
     /// \usage SYNTROPY_UNIT_SKIP("Work in progress");
     #define SYNTROPY_UNIT_SKIP(reason) \
-        SYNTROPY_MACRO_DECLARATION(expression)
+        SYNTROPY_MACRO_DECLARATION(reason)
 
     /// \brief Unit test macro: notify a message for the current test case being ran. Expected usage within a TestFixture.
     /// \usage SYNTROPY_UNIT_MESSAGE("This is a message ", 2 + 3);
     #define SYNTROPY_UNIT_MESSAGE(...) \
-        SYNTROPY_MACRO_DECLARATION(expression)
+        SYNTROPY_MACRO_DECLARATION(__VA_ARGS__)
 
     /// \brief Unit test macro: execute "expression" and trace it as a message. Expected usage within a TestFixture.
     #define SYNTROPY_UNIT_TRACE(expression) \
@@ -64,7 +64,7 @@ namespace syntropy
         String message_;
 
         /// \brief Code location that issued the result.
-        StackTraceElement location_;
+        StackTrace location_;
     };
 
     /************************************************************************/

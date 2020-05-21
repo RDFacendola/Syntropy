@@ -35,6 +35,9 @@ namespace syntropy
     {
     public:
 
+        /// \brief Create an empty stack trace.
+        StackTrace() = default;
+
         /// \brief Create a new stack trace from a single element.
         StackTrace(StackTraceElement stack_trace_element);
 
@@ -49,6 +52,9 @@ namespace syntropy
 
         /// \brief Unified assignment operator.
         StackTrace& operator=(StackTrace other) noexcept;
+
+        /// \brief Check whether the stack trace is non-empty.
+        operator bool() const noexcept;
 
         /// \brief Swap the content of two stack trace instances.
         void Swap(StackTrace& other) noexcept;
@@ -65,7 +71,10 @@ namespace syntropy
         /// \brief Elements in the stack trace, from the most recent one.
         Vector<StackTraceElement> stack_trace_;
 
-        /// \brief Whether the trace has symbols for the called.
+        /// \brief Whether the trace has symbols for the caller.
+        /// This value is intended to discard stack entries between the actual stack trace location and
+        /// the code that walked the stack (which is within the engine several calls deeper) when the application has symbols.
+        /// For stack traces that contain only the first element this value is irrelevant.
         bool has_symbols_{ false };
     };
 
@@ -174,6 +183,11 @@ namespace syntropy
         }
 
         return *this;
+    }
+
+    inline StackTrace::operator bool() const noexcept
+    {
+        return !stack_trace_.empty();
     }
 
     inline void StackTrace::Swap(StackTrace& other) noexcept

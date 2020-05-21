@@ -4,13 +4,14 @@
 ///
 /// \author Raffaele D. Facendola - 2020
 
+#pragma once
+
 #include <iostream>
 #include <ios>
 
-#pragma once
-
 #include "syntropy/core/label.h"
 #include "syntropy/unit_test/test_result.h"
+#include "syntropy/diagnostics/stack_trace.h"
 
 namespace syntropy
 {
@@ -24,6 +25,12 @@ namespace syntropy
     {
         /// \brief Synthetic test report name.
         Label name_;
+
+        /// \brief Stack trace at first test location.
+        StackTrace start_trace_;
+
+        /// \brief Stack trace at last test location.
+        StackTrace end_trace_;
 
         /// \brief Number of tests that were skipped.
         std::int64_t skipped_count_{ 0 };
@@ -61,6 +68,9 @@ namespace syntropy
 
     /// \brief Add a result to a test case.
     TestReport& operator+=(TestReport& lhs, TestResult rhs);
+
+    /// \bief Add a stack trace to a test case.
+    TestReport& operator+=(TestReport& lhs, const StackTrace& rhs);
 
     /// \brief Stream insertion for TestResult.
     std::ostream& operator<<(std::ostream& out, const TestReport& test_report);
@@ -128,6 +138,20 @@ namespace syntropy
         {
             ++lhs.invalid_count_;
         }
+
+        return lhs;
+    }
+
+    inline TestReport& operator+=(TestReport& lhs, const StackTrace& rhs)
+    {
+        // Only keep start trace location (if not already set) and the end trace.
+
+        if (!lhs.start_trace_)
+        {
+            lhs.start_trace_ = rhs;
+        }
+
+        lhs.end_trace_ = rhs;
 
         return lhs;
     }
