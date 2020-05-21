@@ -10,7 +10,6 @@
 
 #include "syntropy/core/string.h"
 #include "syntropy/core/label.h"
-#include "syntropy/language/event.h"
 #include "syntropy/diagnostics/stack_trace.h"
 #include "syntropy/unit_test/test_result.h"
 #include "syntropy/unit_test/test_report.h"
@@ -19,24 +18,23 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* ON TEST CASE STARTED EVENT ARGS                                      */
+    /* ON TEST CASE RESULT EVENT ARGS                                       */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test case starts.
-    struct OnTestCaseStartedEventArgs
+    /// \brief Arguments for the event notified whenever a result is reported.
+    struct OnTestCaseResultEventArgs : OnTestFixtureResultEventArgs
     {
 
     };
 
     /************************************************************************/
-    /* ON TEST CASE FINISHED EVENT ARGS                                     */
+    /* ON TEST CASE MESSAGE EVENT ARGS                                      */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test case ends.
-    struct OnTestCaseFinishedEventArgs
+    /// \brief Arguments for the event notified whenever a message is reported.
+    struct OnTestCaseMessageEventArgs : OnTestFixtureMessageEventArgs
     {
-        /// \brief Synthetic test case report.
-        TestReport test_report_;
+
     };
 
     /************************************************************************/
@@ -64,21 +62,13 @@ namespace syntropy
         /// \brief Get the test case name.
         const Label& GetName() const;
 
-        /// \brief Bind to the event notified whenever a test case starts. 
+        /// \brief Bind to the event notified whenever a result is reported. 
         template <typename TDelegate>
-        Listener OnTestCaseStarted(TDelegate&& delegate);
+        Listener OnResult(TDelegate&& delegate);
 
-        /// \brief Bind to the event notified whenever a test case starts. 
+        /// \brief Bind to the event notified whenever a message is reported. 
         template <typename TDelegate>
-        Listener OnTestCaseFinished(TDelegate&& delegate);
-
-        /// \brief Bind to the event notified whenever a test case starts. 
-        template <typename TDelegate>
-        Listener OnTestCaseResult(TDelegate&& delegate);
-
-        /// \brief Bind to the event notified whenever a test case starts. 
-        template <typename TDelegate>
-        Listener OnTestCaseMessage(TDelegate&& delegate);
+        Listener OnMessage(TDelegate&& delegate);
 
     private:
 
@@ -88,17 +78,11 @@ namespace syntropy
         /// \brief Test case method.
         TTestCase test_case_;
 
-        /// \brief Event notified whenever a test case starts.
-        Event<TestCase*, OnTestCaseStartedEventArgs> test_case_started_event_;
+        /// \brief Event notified whenever a result is reported.
+        Event<TestCase*, OnTestCaseResultEventArgs> result_event_;
 
-        /// \brief Event notified whenever a test case finishes.
-        Event<TestCase*, OnTestCaseFinishedEventArgs> test_case_finished_event_;
-
-        /// \brief Event notified whenever a test case result is reported.
-        Event<TestCase*, OnTestCaseResultEventArgs> test_case_result_event_;
-
-        /// \brief Event notified whenever a test case message is reported.
-        Event<TestCase*, OnTestCaseMessageEventArgs> test_case_message_event_;
+        /// \brief Event notified whenever a message is reported.
+        Event<TestCase*, OnTestCaseMessageEventArgs> message_event_;
 
     };
 
@@ -129,31 +113,29 @@ namespace syntropy
     {
         auto test_report = MakeTestReport(name_);
 
-        auto notify_result_ = [this, &test_report](const OnTestCaseResultEventArgs& event_args)
+        auto notify_result_ = [this, &test_report](const OnTestFixtureResultEventArgs& event_args)
         {
             test_report += event_args.result_;
             test_report += event_args.location_;
 
-            test_case_result_event_.Notify(this, event_args);
+            result_event_.Notify(this, { event_args.result_, event_args.message_, event_args.location_ });
         };
 
         // Test fixture events.
 
         auto fixture_listener = syntropy::Listener{};
 
-        fixture_listener += test_fixture.OnTestCaseResult([notify_result_, this](TestFixture* sender, const OnTestCaseResultEventArgs& event_args)
+        fixture_listener += test_fixture.OnResult([notify_result_, this](TestFixture* sender, const OnTestFixtureResultEventArgs& event_args)
         {
             notify_result_(event_args);
         });
 
-        fixture_listener += test_fixture.OnTestCaseMessage([this](TestFixture* sender, const OnTestCaseMessageEventArgs& event_args)
+        fixture_listener += test_fixture.OnMessage([this](TestFixture* sender, const OnTestFixtureMessageEventArgs& event_args)
         {
-            test_case_message_event_.Notify(this, event_args);
+            message_event_.Notify(this, { event_args.message_ });
         });
 
         // Test case environment.
-
-        test_case_started_event_.Notify(this, {});
 
         test_fixture.Before();
 
@@ -166,13 +148,12 @@ namespace syntropy
         catch (...)
         {
             // Exceptions are considered "regular" test results, with the exception that it not possible to know the actual throw location.
+            // #TODO It would be nice to have the actual throw location.
 
             notify_result_({ TestResult::kError, "Unhandled exception", test_report.end_trace_ });
         }
 
         test_fixture.After();
-
-        test_case_finished_event_.Notify(this, { test_report });
 
         return test_report;
     }
@@ -185,30 +166,16 @@ namespace syntropy
 
     template <typename TTestFixture>
     template <typename TDelegate>
-    inline Listener TestCase<TTestFixture>::OnTestCaseStarted(TDelegate&& delegate)
+    inline Listener TestCase<TTestFixture>::OnResult(TDelegate&& delegate)
     {
-        return test_case_started_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return result_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TTestFixture>
     template <typename TDelegate>
-    inline Listener TestCase<TTestFixture>::OnTestCaseFinished(TDelegate&& delegate)
+    inline Listener TestCase<TTestFixture>::OnMessage(TDelegate&& delegate)
     {
-        return test_case_finished_event_.Subscribe(std::forward<TDelegate>(delegate));
-    }
-
-    template <typename TTestFixture>
-    template <typename TDelegate>
-    inline Listener TestCase<TTestFixture>::OnTestCaseResult(TDelegate&& delegate)
-    {
-        return test_case_result_event_.Subscribe(std::forward<TDelegate>(delegate));
-    }
-
-    template <typename TTestFixture>
-    template <typename TDelegate>
-    inline Listener TestCase<TTestFixture>::OnTestCaseMessage(TDelegate&& delegate)
-    {
-        return test_case_message_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     // Non-member functions.

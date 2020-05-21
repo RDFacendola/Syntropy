@@ -51,11 +51,11 @@ namespace syntropy
         SYNTROPY_MACRO_DECLARATION(expression)
 
     /************************************************************************/
-    /* ON TEST CASE RESULT EVENT ARGS                                       */
+    /* ON TEST FIXTURE RESULT EVENT ARGS                                    */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test case result is reported.
-    struct OnTestCaseResultEventArgs
+    /// \brief Arguments for the event notified whenever a test result is reported in the fixture.
+    struct OnTestFixtureResultEventArgs
     {
         /// \brief Test result.
         TestResult result_;
@@ -68,11 +68,11 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* ON TEST CASE MESSAGE EVENT ARGS                                      */
+    /* ON TEST CASE FIXTURE EVENT ARGS                                      */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test message is reported.
-    struct OnTestCaseMessageEventArgs
+    /// \brief Arguments for the event notified whenever a test message is reported in the fixture.
+    struct OnTestFixtureMessageEventArgs
     {
         /// \brief Reported message.
         String message_;
@@ -102,21 +102,21 @@ namespace syntropy
         /// \brief Used to tear-down fixture state after each test case.
         virtual void After();
 
-        /// \brief Bind to the event notified whenever a test case result is reported.
+        /// \brief Bind to the event notified whenever a result is reported.
         template <typename TDelegate>
-        Listener OnTestCaseResult(TDelegate&& delegate);
+        Listener OnResult(TDelegate&& delegate);
 
-        /// \brief Bind to the event notified whenever a test case message is reported.
+        /// \brief Bind to the event notified whenever a message is reported.
         template <typename TDelegate>
-        Listener OnTestCaseMessage(TDelegate&& delegate);
+        Listener OnMessage(TDelegate&& delegate);
 
     protected:
 
-        /// \brief Report a test case result.
+        /// \brief Report a result.
         /// \brief This method is not expected to be called directly, only via unit test macros.
-        void ReportResult(const OnTestCaseResultEventArgs& result);
+        void ReportResult(const OnTestFixtureResultEventArgs& result);
 
-        /// \brief Report a test case message.
+        /// \brief Report a message.
         /// \brief This method is not expected to be called directly, only via unit test macros.
         template <typename... TMessage>
         void ReportMessage(TMessage&&... message);
@@ -124,10 +124,10 @@ namespace syntropy
     private:
 
         /// \brief Event notified whenever a test result is reported.
-        Event<TestFixture*, OnTestCaseResultEventArgs> test_case_result_event_;
+        Event<TestFixture*, OnTestFixtureResultEventArgs> result_event_;
 
         /// \brief Event notified whenever a test message is reported.
-        Event<TestFixture*, OnTestCaseMessageEventArgs> test_case_message_event_;
+        Event<TestFixture*, OnTestFixtureMessageEventArgs> message_event_;
 
     };
 
@@ -205,20 +205,20 @@ namespace syntropy
     }
 
     template <typename TDelegate>
-    inline Listener TestFixture::OnTestCaseResult(TDelegate&& delegate)
+    inline Listener TestFixture::OnResult(TDelegate&& delegate)
     {
-        return test_case_result_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return result_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestFixture::OnTestCaseMessage(TDelegate&& delegate)
+    inline Listener TestFixture::OnMessage(TDelegate&& delegate)
     {
-        return test_case_message_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    inline void TestFixture::ReportResult(const OnTestCaseResultEventArgs& result)
+    inline void TestFixture::ReportResult(const OnTestFixtureResultEventArgs& result)
     {
-        test_case_result_event_.Notify(this, result);
+        result_event_.Notify(this, result);
     }
 
     template <typename... TMessage>
@@ -228,7 +228,7 @@ namespace syntropy
 
         (builder << ... << message);
 
-        test_case_message_event_.Notify(this, OnTestCaseMessageEventArgs{ builder.str() });
+        message_event_.Notify(this, { builder.str() });
     }
 
 }
