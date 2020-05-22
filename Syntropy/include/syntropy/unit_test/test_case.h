@@ -91,7 +91,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Create a test case by deducing the fixture type from arguments.
-    template <typename TTestFixture, typename >
+    template <typename TTestFixture>
     TestCase<TTestFixture> MakeTestCase(const Label& name, void(TTestFixture::* test_case)());
 
     /************************************************************************/
@@ -181,7 +181,7 @@ namespace syntropy
     // Non-member functions.
 
     template <typename TTestFixture>
-    TestCase<TTestFixture> MakeTestCase(const Label& name, void(TTestFixture::* test_case)())
+    inline TestCase<TTestFixture> MakeTestCase(const Label& name, void(TTestFixture::* test_case)())
     {
         return { name, test_case };
     }
