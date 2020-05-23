@@ -25,8 +25,6 @@ namespace syntropy
     {
         // Run each suite and return the result with the highest severity.
 
-        on_started_.Notify(*this, OnStartedEventArgs{});
-
         TestResult result{ TestResult::kSuccess };
 
         for (auto&& test_suite : test_suites_)

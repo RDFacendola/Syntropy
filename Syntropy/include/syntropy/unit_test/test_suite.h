@@ -18,22 +18,22 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* ON TEST SUITE STARTED EVENT ARGS                                     */
+    /* ON TEST SUITE CASE STARTED EVENT ARGS                                */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test starts.
-    struct OnTestSuiteStartedEventArgs
+    /// \brief Arguments for the event notified whenever a test case starts.
+    struct OnTestSuiteCaseStartedEventArgs
     {
         /// \brief Test case name.
         Label test_case_;
     };
 
     /************************************************************************/
-    /* ON TEST SUITE FINISHED EVENT ARGS                                    */
+    /* ON TEST SUITE CASE FINISHED EVENT ARGS                               */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test ends.
-    struct OnTestSuiteFinishedEventArgs
+    /// \brief Arguments for the event notified whenever a test case ends.
+    struct OnTestSuiteCaseFinishedEventArgs
     {
         /// \brief Test case name.
         Label test_case_;
@@ -43,22 +43,22 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* ON TEST SUITE RESULT EVENT ARGS                                      */
+    /* ON TEST SUITE CASE RESULT EVENT ARGS                                 */
     /************************************************************************/
 
     /// \brief Arguments for the event notified whenever a test result is reported.
-    struct OnTestSuiteResultEventArgs : OnTestCaseResultEventArgs
+    struct OnTestSuiteCaseResultEventArgs : OnTestCaseResultEventArgs
     {
         /// \brief Test case name.
         Label test_case_;
     };
 
     /************************************************************************/
-    /* ON TEST SUITE MESSAGE EVENT ARGS                                     */
+    /* ON TEST SUITE CASE MESSAGE EVENT ARGS                                */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test is reported.
-    struct OnTestSuiteMessageEventArgs : OnTestCaseMessageEventArgs
+    /// \brief Arguments for the event notified whenever a test message is reported.
+    struct OnTestSuiteCaseMessageEventArgs : OnTestCaseMessageEventArgs
     {
         /// \brief Test case name.
         Label test_case_;
@@ -90,50 +90,50 @@ namespace syntropy
 
         /// \brief Bind to the event notified whenever a test starts. 
         template <typename TDelegate>
-        Listener OnStarted(TDelegate&& delegate);
+        Listener OnCaseStarted(TDelegate&& delegate);
 
         /// \brief Bind to the event notified whenever a test starts. 
         template <typename TDelegate>
-        Listener OnFinished(TDelegate&& delegate);
+        Listener OnCaseFinished(TDelegate&& delegate);
 
         /// \brief Bind to the event notified whenever a test result is reported. 
         template <typename TDelegate>
-        Listener OnResult(TDelegate&& delegate);
+        Listener OnCaseResult(TDelegate&& delegate);
 
         /// \brief Bind to the event notified whenever a test message is reported. 
         template <typename TDelegate>
-        Listener OnMessage(TDelegate&& delegate);
+        Listener OnCaseMessage(TDelegate&& delegate);
 
     protected:
 
-        /// \brief Notify the start of a test.
-        void NotifyStarted(const OnTestSuiteStartedEventArgs& event_args);
+        /// \brief Notify the start of a test case.
+        void NotifyCaseStarted(const OnTestSuiteCaseStartedEventArgs& event_args);
 
-        /// \brief Notify the end of a test.
-        void NotifyFinished(const OnTestSuiteFinishedEventArgs& event_args);
+        /// \brief Notify the end of a test case.
+        void NotifyCaseFinished(const OnTestSuiteCaseFinishedEventArgs& event_args);
 
         /// \brief Notify a result within a test case.
-        void NotifyResult(const OnTestSuiteResultEventArgs& event_args);
+        void NotifyCaseResult(const OnTestSuiteCaseResultEventArgs& event_args);
 
         /// \brief Notify a message within a test case.
-        void NotifyMessage(const OnTestSuiteMessageEventArgs& event_args);
+        void NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args);
 
     private:
 
         /// \brief Test suite name.
         Context name_;
 
-        /// \brief Event notified whenever a test starts.
-        Event<TestSuite*, OnTestSuiteStartedEventArgs> started_event_;
+        /// \brief Event notified whenever a test case starts.
+        Event<TestSuite*, OnTestSuiteCaseStartedEventArgs> case_started_event_;
 
-        /// \brief Event notified whenever a test finishes.
-        Event<TestSuite*, OnTestSuiteFinishedEventArgs> finished_event_;
+        /// \brief Event notified whenever a test case finishes.
+        Event<TestSuite*, OnTestSuiteCaseFinishedEventArgs> case_finished_event_;
 
         /// \brief Event notified whenever a test result is reported.
-        Event<TestSuite*, OnTestSuiteResultEventArgs> result_event_;
+        Event<TestSuite*, OnTestSuiteCaseResultEventArgs> case_result_event_;
 
         /// \brief Event notified whenever a test message is reported.
-        Event<TestSuite*, OnTestSuiteMessageEventArgs> message_event_;
+        Event<TestSuite*, OnTestSuiteCaseMessageEventArgs> case_message_event_;
     };
 
     /************************************************************************/
@@ -184,47 +184,47 @@ namespace syntropy
     }
 
     template <typename TDelegate>
-    inline Listener TestSuite::OnStarted(TDelegate&& delegate)
+    inline Listener TestSuite::OnCaseStarted(TDelegate&& delegate)
     {
-        return started_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_started_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestSuite::OnFinished(TDelegate&& delegate)
+    inline Listener TestSuite::OnCaseFinished(TDelegate&& delegate)
     {
-        return finished_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_finished_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestSuite::OnResult(TDelegate&& delegate)
+    inline Listener TestSuite::OnCaseResult(TDelegate&& delegate)
     {
-        return result_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_result_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestSuite::OnMessage(TDelegate&& delegate)
+    inline Listener TestSuite::OnCaseMessage(TDelegate&& delegate)
     {
-        return message_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    inline void TestSuite::NotifyStarted(const OnTestSuiteStartedEventArgs& event_args)
+    inline void TestSuite::NotifyCaseStarted(const OnTestSuiteCaseStartedEventArgs& event_args)
     {
-        started_event_.Notify(this, event_args);
+        case_started_event_.Notify(this, event_args);
     }
 
-    inline void TestSuite::NotifyFinished(const OnTestSuiteFinishedEventArgs& event_args)
+    inline void TestSuite::NotifyCaseFinished(const OnTestSuiteCaseFinishedEventArgs& event_args)
     {
-        finished_event_.Notify(this, event_args);
+        case_finished_event_.Notify(this, event_args);
     }
 
-    inline void TestSuite::NotifyResult(const OnTestSuiteResultEventArgs& event_args)
+    inline void TestSuite::NotifyCaseResult(const OnTestSuiteCaseResultEventArgs& event_args)
     {
-        result_event_.Notify(this, event_args);
+        case_result_event_.Notify(this, event_args);
     }
 
-    inline void TestSuite::NotifyMessage(const OnTestSuiteMessageEventArgs& event_args)
+    inline void TestSuite::NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args)
     {
-        message_event_.Notify(this, event_args);
+        case_message_event_.Notify(this, event_args);
     }
 
     // TestSuiteT<TTestFixture>.
@@ -243,9 +243,11 @@ namespace syntropy
     {
         auto test_report = MakeTestReport(GetName());
 
-        AutoTestCase<TTestFixture>::ForEach([this, &test_report](TestCase<TTestFixture>& test_case)
+        AutoTestCase<TTestFixture>::ForEach([this, &test_report](const AutoTestCase<TTestFixture>& auto_test_case)
         {
-            test_report += Run(test_case);
+            auto test_case = auto_test_case.CreateTestCase();
+
+            test_report += Run(*test_case);
         });
 
         return test_report;
@@ -260,21 +262,21 @@ namespace syntropy
 
         test_case_listener += test_case.OnResult([this](TestCase<TTestFixture>* sender, const OnTestCaseResultEventArgs& event_args)
         {
-            NotifyResult({ event_args.result_, event_args.message_, event_args.location_, sender->GetName() });
+            NotifyCaseResult({ event_args.result_, event_args.message_, event_args.location_, sender->GetName() });
         });
 
         test_case_listener += test_case.OnMessage([this](TestCase<TTestFixture>* sender, const OnTestCaseMessageEventArgs& event_args)
         {
-            NotifyMessage({ event_args.message_, sender->GetName() });
+            NotifyCaseMessage({ event_args.message_, sender->GetName() });
         });
 
-        // Run.
+        // Run the test case.
 
-        NotifyStarted({ test_case.GetName() });
+        NotifyCaseStarted({ test_case.GetName() });
 
         auto test_report = test_case.Run(test_fixture_);
 
-        NotifyFinished({ test_case.GetName(), test_report });
+        NotifyCaseFinished({ test_case.GetName(), test_report });
 
         // Report.
 

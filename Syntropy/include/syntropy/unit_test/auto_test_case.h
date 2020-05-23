@@ -50,6 +50,9 @@ namespace syntropy
         /// \brief Default destructor.
         ~AutoTestCase() = default;
 
+        /// \brief Create a new test case.
+        UniquePtr<TestCase<TTestFixture>> CreateTestCase() const;
+
     private:
 
         /// \brief Get the first element in a linked list to which every other self-registering test-case is linked to.
@@ -60,9 +63,6 @@ namespace syntropy
 
         /// \brief Link this test-case to the others and return the next test-case after this one.
         ObserverPtr<const AutoTestCase> LinkBefore();
-
-        /// \brief Create a new test case.
-        UniquePtr<TestCase<TTestFixture>> CreateTestCase() const;
 
         /// \brief Test case name.
         Label name_;
@@ -98,9 +98,7 @@ namespace syntropy
 
         for (auto auto_test_case = GetLinkedList().next_test_case_; auto_test_case; auto_test_case = auto_test_case->next_test_case_)
         {
-            auto test_case = auto_test_case->CreateTestCase();
-
-            function(*test_case);
+            function(*auto_test_case);
         }
     }
 

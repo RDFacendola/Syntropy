@@ -44,14 +44,17 @@ namespace syntropy
         /// \brief Default destructor.
         virtual ~AutoTestSuite() = default;
 
+        /// \brief Get the test suite name
+        const Label& GetName() const;
+
+        /// \brief Create a new test suite.
+        virtual UniquePtr<TestSuite> CreateTestSuite() const;
+
     protected:
 
         /// \brief Create a new self-registering test suite.
         /// Protected to prevent direct instantiation.
         AutoTestSuite(const Label& name);
-
-        /// \brief Get the test suite name
-        const Label& GetName() const;
 
     private:
 
@@ -62,16 +65,13 @@ namespace syntropy
         AutoTestSuite() = default;
 
         /// \brief Link this test-suite to the others and return the next test-suite after this one.
-        ObserverPtr<AutoTestSuite> LinkBefore();
-
-        /// \brief Create a new test suite.
-        virtual UniquePtr<TestSuite> CreateTestSuite() const;
+        ObserverPtr<const AutoTestSuite> LinkBefore();
 
         /// \brief Test suite name.
         Label name_;
 
         /// \brief Next auto test suite.
-        ObserverPtr<AutoTestSuite> next_test_suite_{ nullptr };
+        ObserverPtr<const AutoTestSuite> next_test_suite_{ nullptr };
 
     };
 
@@ -137,9 +137,7 @@ namespace syntropy
 
         for (auto auto_test_suite = GetLinkedList().next_test_suite_; auto_test_suite; auto_test_suite = auto_test_suite->next_test_suite_)
         {
-            auto test_suite = auto_test_suite->CreateTestSuite();
-
-            function(*test_suite);
+            function(*auto_test_suite);
         }
     }
 
@@ -162,7 +160,7 @@ namespace syntropy
         return linked_list;
     }
 
-    inline ObserverPtr<AutoTestSuite> AutoTestSuite::LinkBefore()
+    inline ObserverPtr<const AutoTestSuite> AutoTestSuite::LinkBefore()
     {
         auto& linked_list = GetLinkedList();
 

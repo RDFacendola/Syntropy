@@ -68,7 +68,7 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* ON TEST CASE FIXTURE EVENT ARGS                                      */
+    /* ON TEST FIXTURE MESSAGE EVENT ARGS                                   */
     /************************************************************************/
 
     /// \brief Arguments for the event notified whenever a test message is reported in the fixture.

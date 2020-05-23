@@ -91,6 +91,7 @@
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/test_suite.h"
 #include "syntropy/unit_test/auto_test_suite.h"
+#include "syntropy/unit_test/test_runner.h"
 
 #include <cmath>
 #include <iostream>
@@ -101,33 +102,52 @@ public:
 
     void Foo()
     {
-        SYNTROPY_UNIT_ASSERT(1 == 1);
+        SYNTROPY_UNIT_ASSERT((1 + 1) == 2);
     }
 
     void Bar()
     {
-        SYNTROPY_UNIT_ASSERT(1 == 1);
+        SYNTROPY_UNIT_EXPECT(1 == 1);
         SYNTROPY_UNIT_MESSAGE("hello!");
     }
 
     void FooBar()
     {
-        SYNTROPY_UNIT_ASSERT(1 == 1);
+        SYNTROPY_UNIT_ASSERT(60 * 0 == 0);
     }
 };
 
-const auto TC_A = syntropy::MakeAutoTestCase("Foo", &MyFixture::Foo);
-const auto TC_B = syntropy::MakeAutoTestCase("Bar", &MyFixture::Bar);
-const auto TC_C = syntropy::MakeAutoTestCase("FooBar", &MyFixture::FooBar);
+class YourFixture : public syntropy::TestFixture
+{
+public:
 
-auto TS_A = syntropy::MakeAutoTestSuite<MyFixture>("MyFixture");
+    void Foo()
+    {
+        SYNTROPY_UNIT_ASSERT((1 + 2) == 3);
+    }
+
+    void Bar()
+    {
+        SYNTROPY_UNIT_ASSERT((1 + 1) == 2);
+    }
+};
+
+auto MySuite = syntropy::MakeAutoTestSuite<MyFixture>("MyFixture.suite");
+
+const auto MyTestA = syntropy::MakeAutoTestCase("Foo", &MyFixture::Foo);
+const auto MyTestB = syntropy::MakeAutoTestCase("Bar", &MyFixture::Bar);
+const auto MyTestC = syntropy::MakeAutoTestCase("FooBar", &MyFixture::FooBar);
+
+auto YourSuite = syntropy::MakeAutoTestSuite<YourFixture>("YourFixture.suite");
+
+const auto YourTestA = syntropy::MakeAutoTestCase("Foo", &YourFixture::Foo);
+const auto YourTestB = syntropy::MakeAutoTestCase("Bar", &YourFixture::Bar);
 
 int main(int argc, char **argv)
 {
-    syntropy::AutoTestSuite::ForEach([](syntropy::TestSuite& test_suite)
-    {
-        std::cout << test_suite.Run();
-    });
+    auto test_runner = syntropy::TestRunner{};
+
+    std::cout << test_runner.Run("suite");
 
     system("pause");
 
