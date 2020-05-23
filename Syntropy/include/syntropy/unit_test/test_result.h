@@ -25,12 +25,6 @@ namespace syntropy
 
         /// \brief The test failed.
         kFailure = 2,
-
-        /// \brief The test threw an unhandled exception.
-        kError = 3,
-
-        /// \brief The test is invalid.
-        kInvalid = 4,
     };
 
     /************************************************************************/
@@ -59,14 +53,6 @@ namespace syntropy
         else if (test_result == TestResult::kFailure)
         {
             out << "Failure";
-        }
-        else if (test_result == TestResult::kError)
-        {
-            out << "Error";
-        }
-        else if (test_result == TestResult::kInvalid)
-        {
-            out << "Invalid";
         }
 
         return out;

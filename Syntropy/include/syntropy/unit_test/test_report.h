@@ -40,12 +40,6 @@ namespace syntropy
 
         /// \brief Number of tests that failed.
         std::int64_t fail_count_{ 0 };
-
-        /// \brief Number of tests that threw unhandled exceptions.
-        std::int64_t error_count_{ 0 };
-
-        /// \brief Number of formally-invalid tests.
-        std::int64_t invalid_count_{ 0 };
     };
 
     /************************************************************************/
@@ -86,25 +80,13 @@ namespace syntropy
 
     inline TestResult UnitTest::GetResult(const TestReport& test_report)
     {
-        if (test_report.invalid_count_ > 0)
-        {
-            return TestResult::kInvalid;    // A test was formally invalid; under normal circumstances the test could have had any other result, including throwing a unhandled exception.
-        }
-        else  if (test_report.error_count_ > 0)
-        {
-            return TestResult::kError;      // Unhandled exception prevented part of the test from being ever run.
-        }
-        else if (test_report.fail_count_ > 0)
+        if (test_report.fail_count_ > 0)
         {
             return TestResult::kFailure;    // At least one test failed.
         }
-        else if (test_report.skipped_count_ > 0)
+        else 
         {
-            return TestResult::kSkipped;    // No failure, however part of the test case was skipped.
-        }
-        else
-        {
-            return TestResult::kSuccess;    // Success! Empty test are considered successful as well.
+            return TestResult::kSuccess;    // Success! Empty and skipped test are implicitly considered successful.
         }
     }
 
@@ -133,15 +115,6 @@ namespace syntropy
         {
             ++lhs.fail_count_;
         }
-        else if (rhs == TestResult::kError)
-        {
-            ++lhs.error_count_;
-        }
-        else if (rhs == TestResult::kInvalid)
-        {
-            ++lhs.invalid_count_;
-        }
-
         return lhs;
     }
 
@@ -164,8 +137,6 @@ namespace syntropy
         lhs.skipped_count_ += rhs.skipped_count_;
         lhs.success_count_ += rhs.success_count_;
         lhs.fail_count_ += rhs.fail_count_;
-        lhs.error_count_ += rhs.error_count_;
-        lhs.invalid_count_ += rhs.invalid_count_;
 
         if (!lhs.start_trace_)
         {
@@ -180,8 +151,6 @@ namespace syntropy
     inline std::ostream& operator<<(std::ostream& out, const TestReport& test_report)
     {
         out << "Test report '" << test_report.name_ << "': \n";
-        out << "   Invalid: " << test_report.invalid_count_ << "\n";
-        out << "   Errors: " << test_report.error_count_ << "\n";
         out << "   Failures: " << test_report.fail_count_ << "\n";
         out << "   Skipped: " << test_report.skipped_count_ << "\n";
         out << "   Success: " << test_report.success_count_ << "\n";

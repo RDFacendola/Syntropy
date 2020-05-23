@@ -139,19 +139,7 @@ namespace syntropy
 
         test_fixture.Before();
 
-        try
-        {
-            // Actual test case.
-
-            (test_fixture.*test_case_)();
-        }
-        catch (...)
-        {
-            // Exceptions are considered "regular" test results, with the exception that it not possible to know the actual throw location.
-            // #TODO It would be nice to have the actual throw location.
-
-            notify_result_({ TestResult::kError, "Unhandled exception", test_report.end_trace_ });
-        }
+        (test_fixture.*test_case_)();
 
         test_fixture.After();
 
