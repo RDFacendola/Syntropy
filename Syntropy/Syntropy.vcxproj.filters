@@ -91,6 +91,7 @@
     <ClInclude Include="include\syntropy\unit_test\test_report.h" />
     <ClInclude Include="include\syntropy\unit_test\test_suite.h" />
     <ClInclude Include="include\syntropy\unit_test\auto_test_case.h" />
+    <ClInclude Include="include\syntropy\unit_test\auto_test_suite.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

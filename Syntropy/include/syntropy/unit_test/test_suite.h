@@ -1,7 +1,6 @@
 
 /// \file test_suite.h
 /// \brief This header is part of the Syntropy unit test module. It contains classes used to define test suites.
-/// A test fixture is a stateful environment for multiple test cases.
 ///
 /// \author Raffaele D. Facendola - 2018
 

@@ -90,6 +90,7 @@
     <ClInclude Include="include\syntropy\time\time_of_day.h" />
     <ClInclude Include="include\syntropy\time\timer.h" />
     <ClInclude Include="include\syntropy\unit_test\auto_test_case.h" />
+    <ClInclude Include="include\syntropy\unit_test\auto_test_suite.h" />
     <ClInclude Include="include\syntropy\unit_test\test_case.h" />
     <ClInclude Include="include\syntropy\unit_test\test_fixture.h" />
     <ClInclude Include="include\syntropy\unit_test\test_report.h" />

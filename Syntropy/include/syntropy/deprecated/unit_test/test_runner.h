@@ -102,18 +102,6 @@ namespace syntropy
         /// \return Returns the result of the tests. Won't return TestResult::kSkipped under any circumstance.
         TestResult Run(const Context& context = "") const;
 
-        /// \brief Get the test suites to run.
-        /// \return Returns the test suites to run.
-        const Vector<TestSuite>& GetTestSuites() const;
-
-        /// \brief Add a new test suite in-place.
-        /// \param arguments Arguments to pass to the test fixture constructor.
-        template <typename TTestFixture, typename... TArguments>
-        void EmplaceTestSuite(TArguments&&... arguments)
-        {
-            test_suites_.emplace_back(MakeTestSuite<TTestFixture>(std::forward<TArguments>(arguments)...));
-        }
-
         /// \brief Observable event called whenever this instance starts running tests.
         const Observable<const TestRunner&, const OnStartedEventArgs&>& OnStarted() const;
 
@@ -143,8 +131,6 @@ namespace syntropy
         /// \brief Private constructor to avoid instantiation.
         TestRunner() = default;
 
-        Vector<TestSuite> test_suites_;                                                                    ///< \brief Test suites to run.
-
         Event<const TestRunner&, const OnStartedEventArgs&> on_started_;                                        ///< \brief Event raised whenever this instance starts running tests.
 
         Event<const TestRunner&, const OnFinishedEventArgs&> on_finished_;                                      ///< \brief Event raised whenever this instance finished running tests.
@@ -160,30 +146,6 @@ namespace syntropy
         Event<const TestRunner&, const OnTestCaseResultNotifiedEventArgs&> on_test_case_result_notified_;       ///< \brief Event raised whenever a running test case notifies a result.
 
         Event<const TestRunner&, const OnTestCaseMessageNotifiedEventArgs&> on_test_case_message_notified_;     ///< \brief Event raised whenever a running test case notifies a message.
-    };
-
-    /************************************************************************/
-    /* AUTO TEST SUITE                                                      */
-    /************************************************************************/
-
-    /// \brief Automatically register a TestSuite to the TestRunner singleton.
-    /// 
-    /// Usage (my_test_suite.cpp):
-    ///
-    /// AutoTestSuite<MyTestFixture> auto_my_test_suite;                // The constructor will register MyTestSuite to the test runner.
-    /// 
-    /// \author Raffaele D. Facendola - December 2017
-    template <typename TTestFixture>
-    struct AutoTestSuite
-    {
-        /// \brief Register a test suite to the TestRunner singleton instance.
-        /// \param name Name of the test suite.
-        /// \param arguments Arguments to pass to TTestSuite constructor.
-        template <typename... TArguments>
-        AutoTestSuite(Context name, TArguments&&... arguments)
-        {
-            TestRunner::GetInstance().EmplaceTestSuite<TTestFixture>(std::move(name), std::forward<TArguments>(arguments)...);
-        }
     };
 
 }

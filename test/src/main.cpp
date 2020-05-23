@@ -90,6 +90,7 @@
 #include "syntropy/unit_test/test_case.h"
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/test_suite.h"
+#include "syntropy/unit_test/auto_test_suite.h"
 
 #include <cmath>
 #include <iostream>
@@ -119,11 +120,14 @@ const auto TC_A = syntropy::MakeAutoTestCase("Foo", &MyFixture::Foo);
 const auto TC_B = syntropy::MakeAutoTestCase("Bar", &MyFixture::Bar);
 const auto TC_C = syntropy::MakeAutoTestCase("FooBar", &MyFixture::FooBar);
 
+auto TS_A = syntropy::MakeAutoTestSuite<MyFixture>("MyFixture");
+
 int main(int argc, char **argv)
 {
-    auto foo_suite = syntropy::TestSuiteT<MyFixture>("foo_suite");
-
-    std::cout << foo_suite.Run();
+    syntropy::AutoTestSuite::ForEach([](syntropy::TestSuite& test_suite)
+    {
+        std::cout << test_suite.Run();
+    });
 
     system("pause");
 

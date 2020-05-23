@@ -1,9 +1,8 @@
 
 /// \file auto_test_case.h
 /// \brief This header is part of the Syntropy unit test module. It contains classes used to define self-registering test cases.
-/// A test fixture is a stateful environment for multiple test cases.
 ///
-/// \author Raffaele D. Facendola - 2018
+/// \author Raffaele D. Facendola - 2020
 
 #pragma once
 
@@ -33,7 +32,7 @@ namespace syntropy
         template <typename TFunction>
         static void ForEach(TFunction&& function);
 
-        /// \brief Create a new auto-registering test case.
+        /// \brief Create a new self-registering test case.
         AutoTestCase(const Label& name, TTestCase test_case);
 
         /// \brief No copy-constructor.
@@ -80,7 +79,7 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create an auto-registering test case by deducing the fixture type from arguments.
+    /// \brief Create an self-registering test case by deducing the fixture type from arguments.
     /// \usage const auto my_test_case = MakeAutoTestCase(name, &MyFixture::Foo).
     template <typename TTestFixture>
     AutoTestCase<TTestFixture> MakeAutoTestCase(const Label& name, void(TTestFixture::* test_case)());
