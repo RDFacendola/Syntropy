@@ -66,11 +66,14 @@ namespace syntropy
     /// \brief Create a new named test.
     TestReport MakeTestReport(const Label& name);
 
-    /// \brief Add a result to a test case.
+    /// \brief Add a result to a test report.
     TestReport& operator+=(TestReport& lhs, TestResult rhs);
 
-    /// \bief Add a stack trace to a test case.
+    /// \brief Add a stack trace to a test report.
     TestReport& operator+=(TestReport& lhs, const StackTrace& rhs);
+
+    /// \brief Add a test report to another test report.
+    TestReport& operator+=(TestReport& lhs, const TestReport& rhs);
 
     /// \brief Stream insertion for TestResult.
     std::ostream& operator<<(std::ostream& out, const TestReport& test_report);
@@ -152,6 +155,24 @@ namespace syntropy
         }
 
         lhs.end_trace_ = rhs;
+
+        return lhs;
+    }
+
+    inline TestReport& operator+=(TestReport& lhs, const TestReport& rhs)
+    {
+        lhs.skipped_count_ += rhs.skipped_count_;
+        lhs.success_count_ += rhs.success_count_;
+        lhs.fail_count_ += rhs.fail_count_;
+        lhs.error_count_ += rhs.error_count_;
+        lhs.invalid_count_ += rhs.invalid_count_;
+
+        if (!lhs.start_trace_)
+        {
+            lhs.start_trace_ = rhs.start_trace_;
+        }
+
+        lhs.end_trace_ = rhs.end_trace_;
 
         return lhs;
     }

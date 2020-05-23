@@ -94,6 +94,7 @@
     <ClInclude Include="include\syntropy\unit_test\test_fixture.h" />
     <ClInclude Include="include\syntropy\unit_test\test_report.h" />
     <ClInclude Include="include\syntropy\unit_test\test_result.h" />
+    <ClInclude Include="include\syntropy\unit_test\test_suite.h" />
     <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
     <ClInclude Include="src\syntropy\hal\hal_endianness.h" />
     <ClInclude Include="src\syntropy\hal\hal_intrinsics.h" />

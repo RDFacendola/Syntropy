@@ -88,6 +88,8 @@
 #include "syntropy/unit_test/test_report.h"
 #include "syntropy/unit_test/test_fixture.h"
 #include "syntropy/unit_test/test_case.h"
+#include "syntropy/unit_test/auto_test_case.h"
+#include "syntropy/unit_test/test_suite.h"
 
 #include <cmath>
 #include <iostream>
@@ -101,15 +103,26 @@ public:
         SYNTROPY_UNIT_ASSERT(1 == 1);
     }
 
+    void Bar()
+    {
+        SYNTROPY_UNIT_ASSERT(1 == 1);
+    }
+
+    void FooBar()
+    {
+        SYNTROPY_UNIT_ASSERT(1 == 1);
+    }
 };
+
+const auto TC_A = syntropy::MakeAutoTestCase("Foo", &MyFixture::Foo);
+const auto TC_B = syntropy::MakeAutoTestCase("Bar", &MyFixture::Bar);
+const auto TC_C = syntropy::MakeAutoTestCase("FooBar", &MyFixture::FooBar);
 
 int main(int argc, char **argv)
 {
-    auto my_fixture = MyFixture();
+    auto foo_suite = syntropy::TestSuiteT<MyFixture>("foo_suite");
 
-    auto test_case = syntropy::MakeTestCase("foo", &MyFixture::Foo);
-
-    std::cout << test_case.Run(my_fixture);;
+    std::cout << foo_suite.Run();
 
     system("pause");
 
