@@ -103,8 +103,8 @@ namespace syntropy
         /// \brief No move-assignment.
         AutoTestSuiteT& operator=(AutoTestSuiteT&&) = delete;
 
-        /// \brief Default destructor.
-        ~AutoTestSuiteT() = default;
+        /// \brief Default virtual destructor.
+        virtual ~AutoTestSuiteT() = default;
 
     private:
 

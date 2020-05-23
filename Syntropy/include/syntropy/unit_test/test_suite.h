@@ -79,6 +79,18 @@ namespace syntropy
         /// \brief Create a new named test suite.
         TestSuite(const Context& name);
 
+        /// \brief Default copy-constructor.
+        TestSuite(const TestSuite&) = default;
+
+        /// \brief Default move-constructor.
+        TestSuite(TestSuite&&) = default;
+
+        /// \brief Default copy-assignment.
+        TestSuite& operator=(const TestSuite&) = default;
+
+        /// \brief Default move-assignment.
+        TestSuite& operator=(TestSuite&&) = default;
+
         /// \brief Default virtual destructor.
         virtual ~TestSuite() = default;
 
@@ -150,6 +162,18 @@ namespace syntropy
         /// \brief Create a new test suite.
         template <typename... TArguments>
         TestSuiteT(const Context& name, TArguments&&... arguments);
+
+        /// \brief Default copy-constructor.
+        TestSuiteT(const TestSuiteT&) = default;
+
+        /// \brief Default move-constructor.
+        TestSuiteT(TestSuiteT&&) = default;
+
+        /// \brief Default copy-assignment.
+        TestSuiteT& operator=(const TestSuiteT&) = default;
+
+        /// \brief Default move-assignment.
+        TestSuiteT& operator=(TestSuiteT&&) = default;
 
         /// \brief Default virtual destructor.
         virtual ~TestSuiteT() = default;

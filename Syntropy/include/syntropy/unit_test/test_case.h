@@ -56,6 +56,21 @@ namespace syntropy
         /// \brief Create a named test case.
         TestCase(const Label& name, TTestCase test_case);
 
+        /// \brief Default copy-constructor.
+        TestCase(const TestCase&) = default;
+
+        /// \brief Default move-constructor.
+        TestCase(TestCase&&) = default;
+
+        /// \brief Default copy-assignment.
+        TestCase& operator=(const TestCase&) = default;
+
+        /// \brief Default move-assignment.
+        TestCase& operator=(TestCase&&) = default;
+
+        /// \brief Default destructor.
+        ~TestCase() = default;
+
         /// \brief Run the test case within a fixture and return a synthetic report.
         TestReport Run(TTestFixture& test_fixture);
 

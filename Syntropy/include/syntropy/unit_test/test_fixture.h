@@ -92,6 +92,18 @@ namespace syntropy
         /// Constructor is used to setup an fixture state before all test cases being run.
         TestFixture() = default;
 
+        /// \brief Default copy-constructor.
+        TestFixture(const TestFixture&) = default;
+
+        /// \brief Default move-constructor.
+        TestFixture(TestFixture&&) = default;
+
+        /// \brief Default copy-assignment.
+        TestFixture& operator=(const TestFixture&) = default;
+
+        /// \brief Default move-assignment.
+        TestFixture& operator=(TestFixture&&) = default;
+
         /// \brief Default virtual destructor.
         /// Destructor is used to tear-down any fixture state after all test cases being run.
         virtual ~TestFixture() = default;

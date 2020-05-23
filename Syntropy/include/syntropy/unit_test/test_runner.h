@@ -93,6 +93,24 @@ namespace syntropy
     {
     public:
 
+        /// \brief Default constructor.
+        TestRunner() = default;
+
+        /// \brief Default copy-constructor.
+        TestRunner(const TestRunner&) = default;
+
+        /// \brief Default move-constructor.
+        TestRunner(TestRunner&&) = default;
+
+        /// \brief Default copy-assignment.
+        TestRunner& operator=(const TestRunner&) = default;
+
+        /// \brief Default move-assignment.
+        TestRunner& operator=(TestRunner&&) = default;
+
+        /// \brief Default destructor.
+        ~TestRunner() = default;
+
         /// \brief Run all test suites with a matching context.
         TestReport Run(const Context& context);
 
