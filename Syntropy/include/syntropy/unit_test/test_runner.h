@@ -126,22 +126,22 @@ namespace syntropy
         TestReport Run(TestSuite& test_suite);
 
         /// \brief Event notified whenever a test suite starts.
-        Event<TestRunner*, OnTestRunnerSuiteStartedEventArgs> suite_started_event_;
+        Event<TestRunner&, OnTestRunnerSuiteStartedEventArgs> suite_started_event_;
 
         /// \brief Event notified whenever a test suite finishes.
-        Event<TestRunner*, OnTestRunnerSuiteFinishedEventArgs> suite_finished_event_;
+        Event<TestRunner&, OnTestRunnerSuiteFinishedEventArgs> suite_finished_event_;
 
         /// \brief Event notified whenever a test case starts.
-        Event<TestRunner*, OnTestRunnerCaseStartedEventArgs> case_started_event_;
+        Event<TestRunner&, OnTestRunnerCaseStartedEventArgs> case_started_event_;
 
         /// \brief Event notified whenever a test case finishes.
-        Event<TestRunner*, OnTestRunnerCaseFinishedEventArgs> case_finished_event_;
+        Event<TestRunner&, OnTestRunnerCaseFinishedEventArgs> case_finished_event_;
 
         /// \brief Event notified whenever a test case result is reported.
-        Event<TestRunner*, OnTestRunnerCaseResultEventArgs> case_result_event_;
+        Event<TestRunner&, OnTestRunnerCaseResultEventArgs> case_result_event_;
 
         /// \brief Event notified whenever a test case message is reported.
-        Event<TestRunner*, OnTestRunnerCaseMessageEventArgs> case_message_event_;
+        Event<TestRunner&, OnTestRunnerCaseMessageEventArgs> case_message_event_;
 
     };
 
@@ -210,33 +210,33 @@ namespace syntropy
 
         auto test_suite_listener = syntropy::Listener{};
 
-        test_suite_listener += test_suite.OnCaseStarted([this](TestSuite* sender, const OnTestSuiteCaseStartedEventArgs& event_args)
+        test_suite_listener += test_suite.OnCaseStarted([this](const auto& sender, const auto& event_args)
         {
-            case_started_event_.Notify(this, { event_args.test_case_, sender->GetName() });
+            case_started_event_.Notify(*this, { event_args.test_case_, sender.GetName() });
         });
 
-        test_suite_listener += test_suite.OnCaseFinished([this](TestSuite* sender, const OnTestSuiteCaseFinishedEventArgs& event_args)
+        test_suite_listener += test_suite.OnCaseFinished([this](const auto& sender, const auto& event_args)
         {
-            case_finished_event_.Notify(this, { event_args.test_case_, event_args.test_report_, sender->GetName() });
+            case_finished_event_.Notify(*this, { event_args.test_case_, event_args.test_report_, sender.GetName() });
         });
 
-        test_suite_listener += test_suite.OnCaseResult([this](TestSuite* sender, const OnTestSuiteCaseResultEventArgs& event_args)
+        test_suite_listener += test_suite.OnCaseResult([this](const auto& sender, const auto& event_args)
         {
-            case_result_event_.Notify(this, { event_args.result_, event_args.message_, event_args.location_, event_args.test_case_, sender->GetName() });
+            case_result_event_.Notify(*this, { event_args.result_, event_args.message_, event_args.location_, event_args.test_case_, sender.GetName() });
         });
 
-        test_suite_listener += test_suite.OnCaseMessage([this](TestSuite* sender, const OnTestSuiteCaseMessageEventArgs& event_args)
+        test_suite_listener += test_suite.OnCaseMessage([this](const auto& sender, const auto& event_args)
         {
-            case_message_event_.Notify(this, { event_args.message_, event_args.test_case_, sender->GetName() });
+            case_message_event_.Notify(*this, { event_args.message_, event_args.test_case_, sender.GetName() });
         });
 
         // Run the suite.
 
-        suite_started_event_.Notify(this, { test_suite.GetName() });
+        suite_started_event_.Notify(*this, { test_suite.GetName() });
 
         auto test_report = test_suite.Run();
 
-        suite_finished_event_.Notify(this, { test_suite.GetName(), test_report });
+        suite_finished_event_.Notify(*this, { test_suite.GetName(), test_report });
 
         // Report.
 

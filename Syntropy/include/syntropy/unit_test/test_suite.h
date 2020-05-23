@@ -124,16 +124,16 @@ namespace syntropy
         Context name_;
 
         /// \brief Event notified whenever a test case starts.
-        Event<TestSuite*, OnTestSuiteCaseStartedEventArgs> case_started_event_;
+        Event<TestSuite&, OnTestSuiteCaseStartedEventArgs> case_started_event_;
 
         /// \brief Event notified whenever a test case finishes.
-        Event<TestSuite*, OnTestSuiteCaseFinishedEventArgs> case_finished_event_;
+        Event<TestSuite&, OnTestSuiteCaseFinishedEventArgs> case_finished_event_;
 
         /// \brief Event notified whenever a test result is reported.
-        Event<TestSuite*, OnTestSuiteCaseResultEventArgs> case_result_event_;
+        Event<TestSuite&, OnTestSuiteCaseResultEventArgs> case_result_event_;
 
         /// \brief Event notified whenever a test message is reported.
-        Event<TestSuite*, OnTestSuiteCaseMessageEventArgs> case_message_event_;
+        Event<TestSuite&, OnTestSuiteCaseMessageEventArgs> case_message_event_;
     };
 
     /************************************************************************/
@@ -209,22 +209,22 @@ namespace syntropy
 
     inline void TestSuite::NotifyCaseStarted(const OnTestSuiteCaseStartedEventArgs& event_args)
     {
-        case_started_event_.Notify(this, event_args);
+        case_started_event_.Notify(*this, event_args);
     }
 
     inline void TestSuite::NotifyCaseFinished(const OnTestSuiteCaseFinishedEventArgs& event_args)
     {
-        case_finished_event_.Notify(this, event_args);
+        case_finished_event_.Notify(*this, event_args);
     }
 
     inline void TestSuite::NotifyCaseResult(const OnTestSuiteCaseResultEventArgs& event_args)
     {
-        case_result_event_.Notify(this, event_args);
+        case_result_event_.Notify(*this, event_args);
     }
 
     inline void TestSuite::NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args)
     {
-        case_message_event_.Notify(this, event_args);
+        case_message_event_.Notify(*this, event_args);
     }
 
     // TestSuiteT<TTestFixture>.
@@ -260,14 +260,14 @@ namespace syntropy
 
         auto test_case_listener = syntropy::Listener{};
 
-        test_case_listener += test_case.OnResult([this](TestCase<TTestFixture>* sender, const OnTestCaseResultEventArgs& event_args)
+        test_case_listener += test_case.OnResult([this](const auto& sender, const auto& event_args)
         {
-            NotifyCaseResult({ event_args.result_, event_args.message_, event_args.location_, sender->GetName() });
+            NotifyCaseResult({ event_args.result_, event_args.message_, event_args.location_, sender.GetName() });
         });
 
-        test_case_listener += test_case.OnMessage([this](TestCase<TTestFixture>* sender, const OnTestCaseMessageEventArgs& event_args)
+        test_case_listener += test_case.OnMessage([this](const auto& sender, const auto& event_args)
         {
-            NotifyCaseMessage({ event_args.message_, sender->GetName() });
+            NotifyCaseMessage({ event_args.message_, sender.GetName() });
         });
 
         // Run the test case.

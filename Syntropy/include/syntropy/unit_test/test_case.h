@@ -79,10 +79,10 @@ namespace syntropy
         TTestCase test_case_;
 
         /// \brief Event notified whenever a result is reported.
-        Event<TestCase*, OnTestCaseResultEventArgs> result_event_;
+        Event<TestCase&, OnTestCaseResultEventArgs> result_event_;
 
         /// \brief Event notified whenever a message is reported.
-        Event<TestCase*, OnTestCaseMessageEventArgs> message_event_;
+        Event<TestCase&, OnTestCaseMessageEventArgs> message_event_;
 
     };
 
@@ -118,21 +118,21 @@ namespace syntropy
             test_report += event_args.result_;
             test_report += event_args.location_;
 
-            result_event_.Notify(this, { event_args.result_, event_args.message_, event_args.location_ });
+            result_event_.Notify(*this, { event_args.result_, event_args.message_, event_args.location_ });
         };
 
         // Test fixture events.
 
         auto fixture_listener = syntropy::Listener{};
 
-        fixture_listener += test_fixture.OnResult([notify_result_, this](TestFixture* sender, const OnTestFixtureResultEventArgs& event_args)
+        fixture_listener += test_fixture.OnResult([notify_result_, this](const auto& sender, const auto& event_args)
         {
             notify_result_(event_args);
         });
 
-        fixture_listener += test_fixture.OnMessage([this](TestFixture* sender, const OnTestFixtureMessageEventArgs& event_args)
+        fixture_listener += test_fixture.OnMessage([this](const auto& sender, const auto& event_args)
         {
-            message_event_.Notify(this, { event_args.message_ });
+            message_event_.Notify(*this, { event_args.message_ });
         });
 
         // Test case environment.

@@ -124,10 +124,10 @@ namespace syntropy
     private:
 
         /// \brief Event notified whenever a test result is reported.
-        Event<TestFixture*, OnTestFixtureResultEventArgs> result_event_;
+        Event<TestFixture&, OnTestFixtureResultEventArgs> result_event_;
 
         /// \brief Event notified whenever a test message is reported.
-        Event<TestFixture*, OnTestFixtureMessageEventArgs> message_event_;
+        Event<TestFixture&, OnTestFixtureMessageEventArgs> message_event_;
 
     };
 
@@ -218,7 +218,7 @@ namespace syntropy
 
     inline void TestFixture::ReportResult(const OnTestFixtureResultEventArgs& result)
     {
-        result_event_.Notify(this, result);
+        result_event_.Notify(*this, result);
     }
 
     template <typename... TMessage>
@@ -228,7 +228,7 @@ namespace syntropy
 
         (builder << ... << message);
 
-        message_event_.Notify(this, { builder.str() });
+        message_event_.Notify(*this, { builder.str() });
     }
 
 }
