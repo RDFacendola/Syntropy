@@ -106,6 +106,7 @@ public:
     void Bar()
     {
         SYNTROPY_UNIT_ASSERT(1 == 1);
+        SYNTROPY_UNIT_MESSAGE("hello!");
     }
 
     void FooBar()

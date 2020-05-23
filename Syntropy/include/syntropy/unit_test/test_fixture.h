@@ -182,14 +182,14 @@ namespace syntropy
     #undef SYNTROPY_UNIT_MESSAGE
     #define SYNTROPY_UNIT_MESSAGE(...) \
         { \
-            ReportMessage(__VA_ARGS__) \
+            ReportMessage(__VA_ARGS__); \
         }
 
     #undef SYNTROPY_UNIT_TRACE
     #define SYNTROPY_UNIT_TRACE(expression) \
         { \
             (expression); \
-            ReportMessage(#expression) \
+            ReportMessage(#expression); \
         }
 
     // TestFixture.
