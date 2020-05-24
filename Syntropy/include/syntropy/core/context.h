@@ -17,10 +17,11 @@ namespace syntropy
     /* CONTEXT                                                              */
     /************************************************************************/
 
-    /// \brief Hierarchical level supporting inclusion tests.
-    /// A context is a label of the form "LayerN.LayerN-1.???.Layer1.Layer0". Similar to URL, innermost layers are written before outer ones.
-    /// Inclusion test can be used to check whether a given context is a subcontext of another one.
-    /// \remarks Contexts are case-sensitive and consider empty contexts as regular ones.
+    /// \brief Hierarchical label types supporting inclusion tests.
+    /// A context is a case-sensitive label of the form "LayerN.LayerN-1.???.Layer1.Layer0". Similar to URL, innermost layers are written before outer ones.
+    /// Inclusion test can be used to check whether a given context is a sub-context of another one.
+    /// A root context is either created from default constructor or from nullptr; empty contexts are considered regular (non-root) contexts.
+    /// All non-root contexts are implicitly sub-context of a root-context, therefore a root context contains every other context.
     /// \author Raffaele D. Facendola - November 2016
     class Context
     {
@@ -34,6 +35,9 @@ namespace syntropy
 
         /// \brief Create a root context.
         Context() = default;
+
+        /// \brief Create a root context.
+        Context(std::nullptr_t);
 
         /// \brief Default copy constructor.
         Context(const Context& other) = default;
@@ -96,6 +100,11 @@ namespace syntropy
 
     // Context.
 
+    inline Context::Context(std::nullptr_t)
+    {
+
+    }
+
     inline Context::Context(const Label::TString& name)
         : Context(TStringView(name))
     {
@@ -127,7 +136,9 @@ namespace syntropy
 
     inline bool Context::Contains(const Context& other) const
     {
-        return (name_ == other.name_) || (other.outer_ && Contains(*other.outer_));
+        // Checking context outers provide consistent behaviors when matching empty contexts against root contexts and vice-versa.
+
+        return ((name_ == other.name_) && (outer_ == other.outer_)) || (other.outer_ && Contains(*other.outer_));
     }
 
     // Non-member functions.

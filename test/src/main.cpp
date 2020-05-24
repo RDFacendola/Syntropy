@@ -66,6 +66,10 @@ auto YourSuite = syntropy::MakeAutoTestSuite<YourFixture>("YourFixture.suite");
 const auto YourTestA = syntropy::MakeAutoTestCase("Foo", &YourFixture::Foo);
 const auto YourTestB = syntropy::MakeAutoTestCase("Bar", &YourFixture::Bar);
 
+
+
+
+
 int main(int argc, char **argv)
 {
     auto command_line = syntropy::CommandLine{ argc, argv };
@@ -90,7 +94,7 @@ int main(int argc, char **argv)
 
     std::cout << "Running unit tests:\n\n";
 
-    auto test_report = test_runner.Run("suite");
+    auto test_report = test_runner.Run("");
 
     std::cout << "Result: " << syntropy::UnitTest::GetResult(test_report) << "\n";
 

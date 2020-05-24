@@ -44,6 +44,9 @@ namespace syntropy
         /// \brief Memory resource used for dynamic memory allocation.
         TMemoryResource memory_resource_;
 
+        /// \brief Root context.
+        Context root_context_;
+
         /// \brief Context registered so far, indexed by full name.
         Map<Label, const Context*> contexts_;
 
@@ -97,9 +100,9 @@ namespace syntropy
             }
         }
 
-        // Root contexts have no outer.
+        // The outermost context of any other context is the root.
 
-        return nullptr;
+        return &root_context_;
     }
 
     const Context* Context::Registry::Allocate(const Context::TStringView& context_name)
