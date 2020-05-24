@@ -107,7 +107,7 @@ namespace syntropy
 
         /// \brief Run a test case in a fixture.
         template <typename TTestFixture>
-        TestReport Run(TTestFixture& test_fixture, const TTestCase<TTestFixture>& test_case);
+        TestReport Run(TTestFixture& test_fixture, const TTestCase<TTestFixture>& test_case) const;
 
         /// \brief Bind to the event notified whenever a result is reported.
         template <typename TDelegate>
@@ -186,7 +186,7 @@ namespace syntropy
     }
 
     template <typename TTestFixture>
-    TestReport TestFixture::Run(TTestFixture& test_fixture, const TTestCase<TTestFixture>& test_case)
+    TestReport TestFixture::Run(TTestFixture& test_fixture, const TTestCase<TTestFixture>& test_case) const
     {
         test_report_ = MakeTestReport(test_report_.name_);
 
