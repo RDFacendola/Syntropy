@@ -8,8 +8,12 @@
 
 #include <type_traits>
 
+#include "syntropy/language/event.h"
+#include "syntropy/language/macro.h"
 #include "syntropy/core/string.h"
 #include "syntropy/core/label.h"
+#include "syntropy/core/string_stream.h"
+#include "syntropy/core/smart_pointers.h"
 #include "syntropy/diagnostics/stack_trace.h"
 #include "syntropy/unit_test/test_result.h"
 #include "syntropy/unit_test/test_report.h"
@@ -46,8 +50,6 @@ namespace syntropy
     template <typename TTestFixture>
     class TestCase
     {
-        static_assert(std::is_base_of_v<TestFixture, TTestFixture>, "TTestFixture must derive from TestFixture");
-
     public:
 
         /// \brief Type of a test case. Member function of TTestFixture.
@@ -86,6 +88,12 @@ namespace syntropy
         Listener OnMessage(TDelegate&& delegate);
 
     private:
+
+        /// \brief Active test fixture context.
+        static thread_local inline ObserverPtr<TestFixture> test_fixture_context_{ nullptr };
+
+        /// \brief Previous test fixture context to restore upon destruction.
+        ObserverPtr<TestFixture> previous_fixture_context_{ nullptr };
 
         /// \brief Test case name.
         Label name_;
@@ -126,39 +134,21 @@ namespace syntropy
     template <typename TTestFixture>
     TestReport TestCase<TTestFixture>::Run(TTestFixture& test_fixture)
     {
-        auto test_report = MakeTestReport(name_);
+        auto test_fixture_t = TestFixture{ name_ };
 
-        auto notify_result_ = [this, &test_report](const OnTestFixtureResultEventArgs& event_args)
+        auto test_fixture_listener = syntropy::Listener{};
+
+        test_fixture_listener += test_fixture_t.OnResult([this](const auto& sender, const auto& event_args)
         {
-            test_report += event_args.result_;
-            test_report += event_args.location_;
-
             result_event_.Notify(*this, { event_args.result_, event_args.message_, event_args.location_ });
-        };
-
-        // Test fixture events.
-
-        auto fixture_listener = syntropy::Listener{};
-
-        fixture_listener += test_fixture.OnResult([notify_result_, this](const auto& sender, const auto& event_args)
-        {
-            notify_result_(event_args);
         });
 
-        fixture_listener += test_fixture.OnMessage([this](const auto& sender, const auto& event_args)
+        test_fixture_listener += test_fixture_t.OnMessage([this](const auto& sender, const auto& event_args)
         {
             message_event_.Notify(*this, { event_args.message_ });
         });
 
-        // Test case environment.
-
-        test_fixture.Before();
-
-        (test_fixture.*test_case_)();
-
-        test_fixture.After();
-
-        return test_report;
+        return test_fixture_t.Run(test_fixture, test_case_);
     }
 
     template <typename TTestFixture>

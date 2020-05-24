@@ -1,104 +1,20 @@
 
 #include <iostream>
-
-#include "syntropy/core/range.h"
-#include "syntropy/core/string.h"
-#include "syntropy/core/string_stream.h"
-#include "syntropy/core/label.h"
-#include "syntropy/core/context.h"
-#include "syntropy/core/smart_pointers.h"
-
-#include "syntropy/platform/endianness.h"
-#include "syntropy/platform/system.h"
-#include "syntropy/platform/threading.h"
-#include "syntropy/platform/intrinsics.h"
-
-#include "syntropy/language/macro.h"
-#include "syntropy/language/scope_guard.h"
-#include "syntropy/language/utility.h"
-#include "syntropy/language/tuple.h"
-#include "syntropy/language/event.h"
-
+#include <iomanip>
+#include <type_traits>
 #include "syntropy/application/command_line.h"
 #include "syntropy/application/command_line_argument.h"
 
-#include "syntropy/containers/array.h"
-#include "syntropy/containers/vector.h"
-#include "syntropy/containers/map.h"
-#include "syntropy/containers/set.h"
-
-#include "syntropy/memory/bytes.h"
-#include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_address.h"
-#include "syntropy/memory/memory_range.h"
-#include "syntropy/memory/virtual_memory.h"
-#include "syntropy/memory/virtual_memory_range.h"
-#include "syntropy/memory/memory_buffer.h"
-
-#include "syntropy/allocators/memory_context.h"
-#include "syntropy/allocators/memory_resource.h"
-
-#include "syntropy/allocators/null_memory_resource.h"
-#include "syntropy/allocators/system_memory_resource.h"
-#include "syntropy/allocators/stack_memory_resource.h"
-#include "syntropy/allocators/virtual_memory_resource.h"
-#include "syntropy/allocators/linear_virtual_memory_resource.h"
-
-#include "syntropy/allocators/fixed_memory_resource.h"
-#include "syntropy/allocators/linear_memory_resource.h"
-#include "syntropy/allocators/pool_memory_resource.h"
-
-#include "syntropy/allocators/passthrough_memory_resource.h"
-#include "syntropy/allocators/fallback_memory_resource.h"
-#include "syntropy/allocators/counting_memory_resource.h"
-
-#include "syntropy/allocators/polymorphic_allocator.h"
-#include "syntropy/allocators/scope_allocator.h"
-
-#include "syntropy/diagnostics/assert.h"
-#include "syntropy/diagnostics/severity.h"
-#include "syntropy/diagnostics/verbosity.h"
-#include "syntropy/diagnostics/stack_trace.h"
-#include "syntropy/diagnostics/debugger.h"
-#include "syntropy/diagnostics/log_event.h"
-#include "syntropy/diagnostics/log_channel.h"
-#include "syntropy/diagnostics/log_manager.h"
-
-#include "syntropy/math/constants.h"
-#include "syntropy/math/numeric.h"
-#include "syntropy/math/math.h"
-#include "syntropy/math/bits.h"
-#include "syntropy/math/interpolations.h"
-#include "syntropy/math/vector.h"
-#include "syntropy/math/quaternion.h"
-#include "syntropy/math/rotation.h"
-#include "syntropy/math/hash.h"
-#include "syntropy/math/codes.h"
-
-#include "syntropy/math/random.h"
-#include "syntropy/math/random_engine.h"
-#include "syntropy/math/random_context.h"
-#include "syntropy/math/pcg_random_engine.h"
-
-#include "syntropy/time/timer.h"
-#include "syntropy/time/date.h"
-#include "syntropy/time/time_of_day.h"
-
-#include "syntropy/unit_test/test_result.h"
-#include "syntropy/unit_test/test_report.h"
-#include "syntropy/unit_test/test_fixture.h"
-#include "syntropy/unit_test/test_case.h"
-#include "syntropy/unit_test/auto_test_case.h"
-#include "syntropy/unit_test/test_suite.h"
-#include "syntropy/unit_test/auto_test_suite.h"
 #include "syntropy/unit_test/test_runner.h"
+#include "syntropy/unit_test/test_result.h"
+#include "syntropy/unit_test/test_macros.h"
 
-#include <cmath>
-#include <iostream>
-
-class MyFixture : public syntropy::TestFixture
+class MyFixture
 {
 public:
+
+    void After() { std::cout << "MyFixture::After\n"; }
+    void Before() { std::cout << "MyFixture::Before\n"; }
 
     void Foo()
     {
@@ -107,6 +23,11 @@ public:
 
     void Bar()
     {
+        SYNTROPY_UNIT_EXPECT(1 == 1);
+        SYNTROPY_UNIT_EXPECT(1 == 1);
+        SYNTROPY_UNIT_EXPECT(1 == 1);
+        SYNTROPY_UNIT_EXPECT(1 == 1);
+        SYNTROPY_UNIT_EXPECT(1 == 3);
         SYNTROPY_UNIT_EXPECT(1 == 1);
         SYNTROPY_UNIT_MESSAGE("hello!");
     }
@@ -117,9 +38,11 @@ public:
     }
 };
 
-class YourFixture : public syntropy::TestFixture
+class YourFixture
 {
 public:
+
+    void Before() { std::cout << "YourFixture::Before\n"; }
 
     void Foo()
     {
@@ -145,9 +68,31 @@ const auto YourTestB = syntropy::MakeAutoTestCase("Bar", &YourFixture::Bar);
 
 int main(int argc, char **argv)
 {
+    auto command_line = syntropy::CommandLine{ argc, argv };
+
     auto test_runner = syntropy::TestRunner{};
 
-    std::cout << test_runner.Run("suite");
+    // Setup runner listeners.
+
+    auto test_runner_listener = syntropy::Listener{};
+
+    test_runner_listener += test_runner.OnCaseFinished([](const auto& sender, const auto& event_args)
+    {
+        std::cout << "   " << std::setw(8) << syntropy::UnitTest::GetResult(event_args.test_report_) << " : " << (syntropy::Context(event_args.test_case_) + event_args.test_suite_) << "\n";
+    });
+
+    test_runner_listener += test_runner.OnSuiteFinished([](const auto& sender, const auto& event_args)
+    {
+        std::cout << "\n";
+    });
+
+    // Run.
+
+    std::cout << "Running unit tests:\n\n";
+
+    auto test_report = test_runner.Run("suite");
+
+    std::cout << "Result: " << syntropy::UnitTest::GetResult(test_report) << "\n";
 
     system("pause");
 

@@ -1,54 +1,43 @@
 
 /// \file test_fixture.h
-/// \brief This header is part of the Syntropy unit test module. It contains classes used to define test fixtures and unit test macros.
+/// \brief This header is part of the Syntropy unit test module. It contains classes used to define test fixtures.
 /// A test fixture is a stateful environment for multiple test cases.
 ///
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
 
+#include <type_traits>
+
 #include "syntropy/diagnostics/stack_trace.h"
 #include "syntropy/core/string.h"
 #include "syntropy/core/string_stream.h"
+#include "syntropy/core/smart_pointers.h"
 #include "syntropy/language/event.h"
-#include "syntropy/language/macro.h"
+#include "syntropy/language/type_traits.h"
+
 #include "syntropy/unit_test/test_result.h"
+#include "syntropy/unit_test/test_report.h"
 
 namespace syntropy
 {
     /************************************************************************/
-    /* UNIT TEST MACROS                                                     */
+    /* UNIT TEST                                                            */
     /************************************************************************/
 
-    /// \brief Unit test macro: report a success if "expression" is true, otherwise report a failure and return. Expected usage within a TestFixture.
-    /// \usage SYNTROPY_UNIT_ASSERT(1 + 2 == 3);
-    #define SYNTROPY_UNIT_ASSERT(expression) \
-        SYNTROPY_MACRO_DECLARATION(expression)
+    /// \brief Exposes test fixture-related functionalities used to notify results and messages from within a test fixture.
+    /// \author Raffaele D. Facendola - May 2020
+    namespace UnitTest
+    {
+        /// \brief Report a test case result in the current active test fixture.
+        /// If no fixture is active, the behavior of this method is undefined.
+        void ReportTestCaseResult(TestResult test_result, const String& test_message, const StackTrace& test_location);
 
-    /// \brief Unit test macro: report a success if "expression" is true, otherwise report a failure. Expected usage within a TestFixture.
-    /// Similar to SYNTROPY_UNIT_ASSERT except it doesn't return on failure.
-    /// \usage SYNTROPY_UNIT_TEST(1 + 2 == 3);
-    #define SYNTROPY_UNIT_TEST(expression) \
-        SYNTROPY_MACRO_DECLARATION(expression)
-
-    /// \brief Unit test macro: the test is executed if "expression" is true, otherwise the test is skipped. If used, it must precede any other test. Expected usage within a TestFixture.
-    /// \usage SYNTROPY_UNIT_EXPECT(!IsServer());
-    #define SYNTROPY_UNIT_EXPECT(expression) \
-        SYNTROPY_MACRO_DECLARATION(expression)
-
-    /// \brief Unit test macro: macro used to manually skip a test case. Expected usage within a TestFixture before any other test.
-    /// \usage SYNTROPY_UNIT_SKIP("Work in progress");
-    #define SYNTROPY_UNIT_SKIP(reason) \
-        SYNTROPY_MACRO_DECLARATION(reason)
-
-    /// \brief Unit test macro: notify a message for the current test case being ran. Expected usage within a TestFixture.
-    /// \usage SYNTROPY_UNIT_MESSAGE("This is a message ", 2 + 3);
-    #define SYNTROPY_UNIT_MESSAGE(...) \
-        SYNTROPY_MACRO_DECLARATION(__VA_ARGS__)
-
-    /// \brief Unit test macro: execute "expression" and trace it as a message. Expected usage within a TestFixture.
-    #define SYNTROPY_UNIT_TRACE(expression) \
-        SYNTROPY_MACRO_DECLARATION(expression)
+        /// \brief Report a test case message in the current active test fixture.
+        /// If no fixture is active, the behavior of this method is undefined.
+        template <typename... TMessage>
+        void ReportTestCaseMessage(TMessage&&... message);
+    }
 
     /************************************************************************/
     /* ON TEST FIXTURE RESULT EVENT ARGS                                    */
@@ -82,15 +71,24 @@ namespace syntropy
     /* TEST FIXTURE                                                         */
     /************************************************************************/
 
-    /// \brief Base class for test fixtures. Represents a stateful environment for multiple test cases.
+    /// \brief Represents a stateful environment for multiple test cases.
+    /// When a fixture is created it becomes active in the current scope. Fixtures can be nested but overlapping results in undefined behavior.
     /// \author Raffaele D. Facendola - January 2018
     class TestFixture
     {
+        friend void UnitTest::ReportTestCaseResult(TestResult test_result, const String& test_message, const StackTrace& test_location);
+
+        template <typename... TMessage>
+        friend void UnitTest::ReportTestCaseMessage(TMessage&&... message);
+
     public:
 
+        /// \brief Type of a test case. Member function of TTestFixture.
+        template <typename TTestFixture>
+        using TTestCase = void(TTestFixture::*)();
+
         /// \brief Create a new test fixture.
-        /// Constructor is used to setup an fixture state before all test cases being run.
-        TestFixture() = default;
+        TestFixture(const Label& name);
 
         /// \brief Default copy-constructor.
         TestFixture(const TestFixture&) = default;
@@ -105,14 +103,11 @@ namespace syntropy
         TestFixture& operator=(TestFixture&&) = default;
 
         /// \brief Default virtual destructor.
-        /// Destructor is used to tear-down any fixture state after all test cases being run.
-        virtual ~TestFixture() = default;
+        ~TestFixture();
 
-        /// \brief Used to setup fixture state before each test case.
-        virtual void Before();
-
-        /// \brief Used to tear-down fixture state after each test case.
-        virtual void After();
+        /// \brief Run a test case in a fixture.
+        template <typename TTestFixture>
+        TestReport Run(TTestFixture& test_fixture, const TTestCase<TTestFixture>& test_case);
 
         /// \brief Bind to the event notified whenever a result is reported.
         template <typename TDelegate>
@@ -122,18 +117,30 @@ namespace syntropy
         template <typename TDelegate>
         Listener OnMessage(TDelegate&& delegate);
 
-    protected:
+    private:
+
+        /// \brief Detector for TTestFixture::After() member function.
+        template <typename TTestFixture>
+        using HasAfter = decltype(&TTestFixture::After);
+
+        /// \brief Detector for TTestFixture::Before() member function.
+        template <typename TTestFixture>
+        using HasBefore = decltype(&TTestFixture::Before);
 
         /// \brief Report a result.
-        /// \brief This method is not expected to be called directly, only via unit test macros.
-        void ReportResult(const OnTestFixtureResultEventArgs& result);
+        void ReportResult(TestResult test_result, const String& test_message, const StackTrace& test_location);
 
         /// \brief Report a message.
-        /// \brief This method is not expected to be called directly, only via unit test macros.
-        template <typename... TMessage>
-        void ReportMessage(TMessage&&... message);
+        void ReportMessage(const String& test_message);
 
-    private:
+        /// \brief Active test fixture context.
+        static thread_local inline ObserverPtr<TestFixture> context_{ nullptr };
+
+        /// \brief Previous test fixture context to restore upon destruction.
+        ObserverPtr<TestFixture> previous_context_{ nullptr };
+
+        /// \brief Test report.
+        TestReport test_report_;
 
         /// \brief Event notified whenever a test result is reported.
         Event<TestFixture&, OnTestFixtureResultEventArgs> result_event_;
@@ -147,73 +154,55 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Unit-test macros.
+    // UnitTest.
 
-    #undef SYNTROPY_UNIT_ASSERT
-    #define SYNTROPY_UNIT_ASSERT(expression) \
-        if (bool result = (expression); !result) \
-        { \
-            ReportResult({syntropy::TestResult::kFailure, "ASSERT (" #expression ")", SYNTROPY_HERE}); \
-            return; \
-        } \
-        else \
-        { \
-            ReportResult({ syntropy::TestResult::kSuccess, "ASSERT (" #expression ")", SYNTROPY_HERE }); \
-        }
+    inline void UnitTest::ReportTestCaseResult(TestResult test_result, const String& test_message, const StackTrace& test_location)
+    {
+        TestFixture::context_->ReportResult(test_result, test_message, test_location);
+    }
 
-    #undef SYNTROPY_UNIT_TEST
-    #define SYNTROPY_UNIT_TEST(expression) \
-        if (bool result = (expression); !result) \
-        { \
-            ReportResult({syntropy::TestResult::kFailure, "TEST (" #expression ")", SYNTROPY_HERE}); \
-        } \
-        else \
-        { \
-            ReportResult({ syntropy::TestResult::kSuccess, "TEST (" #expression ")", SYNTROPY_HERE }); \
-        }
+    template <typename... TMessage>
+    inline void UnitTest::ReportTestCaseMessage(TMessage&&... message)
+    {
+        auto builder = OStringStream{};
 
-    #undef SYNTROPY_UNIT_EXPECT
-    #define SYNTROPY_UNIT_EXPECT(expression) \
-        if(bool result = (expression); !result) \
-        { \
-            ReportResult({ syntropy::TestResult::kSkipped, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
-            return; \
-        } \
-        else \
-        { \
-            ReportResult({ syntropy::TestResult::kSuccess, "EXPECT (" #expression ")", SYNTROPY_HERE }); \
-        }
+        (builder << ... << message);
 
-    #undef SYNTROPY_UNIT_SKIP
-    #define SYNTROPY_UNIT_SKIP(reason) \
-        { \
-            ReportResult({syntropy::TestResult::kSkipped, "SKIP (" #reason ")", SYNTROPY_HERE }); \
-            return; \
-        }
-
-    #undef SYNTROPY_UNIT_MESSAGE
-    #define SYNTROPY_UNIT_MESSAGE(...) \
-        { \
-            ReportMessage(__VA_ARGS__); \
-        }
-
-    #undef SYNTROPY_UNIT_TRACE
-    #define SYNTROPY_UNIT_TRACE(expression) \
-        { \
-            (expression); \
-            ReportMessage(#expression); \
-        }
+        TestFixture::context_->ReportMessage(builder.str());
+    }
 
     // TestFixture.
 
-    inline void TestFixture::Before()
+    inline TestFixture::TestFixture(const Label& name)
+        : previous_context_(context_)
+        , test_report_(MakeTestReport(name))
     {
-
+        context_ = this;
     }
 
-    inline void TestFixture::After()
+    inline TestFixture::~TestFixture()
     {
+        context_ = previous_context_;
+    }
 
+    template <typename TTestFixture>
+    TestReport TestFixture::Run(TTestFixture& test_fixture, const TTestCase<TTestFixture>& test_case)
+    {
+        test_report_ = MakeTestReport(test_report_.name_);
+
+        if constexpr (IsValidExpressionV<HasBefore, TTestFixture>)
+        {
+            test_fixture.Before();
+        }
+
+        (test_fixture.*test_case)();
+
+        if constexpr (IsValidExpressionV<HasAfter, TTestFixture>)
+        {
+            test_fixture.After();
+        }
+
+        return test_report_;
     }
 
     template <typename TDelegate>
@@ -228,19 +217,17 @@ namespace syntropy
         return message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    inline void TestFixture::ReportResult(const OnTestFixtureResultEventArgs& result)
+    inline void TestFixture::ReportResult(TestResult test_result, const String& test_message, const StackTrace& test_location)
     {
-        result_event_.Notify(*this, result);
+        test_report_ += test_result;
+        test_report_ += test_location;
+
+        result_event_.Notify(*this, { test_result, test_message, test_location });
     }
 
-    template <typename... TMessage>
-    inline void TestFixture::ReportMessage(TMessage&&... message)
+    inline void TestFixture::ReportMessage(const String& message)
     {
-        auto builder = OStringStream{};
-
-        (builder << ... << message);
-
-        message_event_.Notify(*this, { builder.str() });
+        message_event_.Notify(*this, { message });
     }
 
 }
