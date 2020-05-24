@@ -44,5 +44,25 @@ namespace syntropy
     template <std::int64_t... Ints>
     constexpr bool IsContiguousSequenceV = IsContiguousSequence<Ints...>::Value;
 
+    /************************************************************************/
+    /* IS VALID EXPRESSION                                                  */
+    /************************************************************************/
+
+    /// \brief If TExpression<TTypes...> is a valid expression, exposes a member value equal to true, otherwise exposes a member value equal to false.
+    /// Default trait for invalid expressions.
+    /// \see Based on std::experimental::is_detected.
+    template <typename TVoid, template<typename...> typename TExpression, typename... TTypes>
+    struct IsValidExpression : std::false_type {};
+
+    /// \brief Partial specialization for valid expressions.
+    template <template<typename...> typename TExpression, typename... TTypes>
+    struct IsValidExpression<std::void_t<TExpression<TTypes...>>, TExpression, TTypes...> : std::true_type {};
+
+    /// \brief Boolean value equal to true if TExpression<TTypes...> is a valid expression, false otherwise.
+    ///
+    /// \usage template<typename T> using HasFoo = decltype(&T::Foo);       // Expression type.
+    ///        auto b = IsValidExpressionV<HasFoo, MyType>;                 // true if MyType::Foo is valid, false otherwise.
+    template <template<typename...> typename TExpression, typename... TTypes>
+    inline constexpr bool IsValidExpressionV = IsValidExpression<void, TExpression, TTypes...>::value;
 
 }
