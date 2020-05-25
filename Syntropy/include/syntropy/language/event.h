@@ -113,15 +113,16 @@ namespace syntropy
         /// \brief Subscribe to the event.
         /// \return Return a listener object used to keep the relationship alive.
         template <typename TDelegate>
-        [[nodiscard]] Listener Subscribe(TDelegate&& delegate);
+        [[nodiscard]] Listener Subscribe(TDelegate&& delegate) const;
 
         /// \brief Notify subscribed listeners.
-        void Notify(const TArguments&... arguments);
+        void Notify(const TArguments&... arguments) const;
 
     private:
 
         /// \brief Dispatcher used to keep listener chain alive.
-        ListenerHandler<TArguments...> dispatcher_;
+        /// \remarks Events have no visible state and can be subscribed to and notify events from constant contexts.
+        mutable ListenerHandler<TArguments...> dispatcher_;
 
     };
 
@@ -247,7 +248,7 @@ namespace syntropy
 
     template <typename... TArguments>
     template <typename TDelegate>
-    inline Listener Event<TArguments...>::Subscribe(TDelegate&& delegate)
+    inline Listener Event<TArguments...>::Subscribe(TDelegate&& delegate) const
     {
         auto listener_handler_delegate = MakeListenerDelegate<TArguments...>(std::move(delegate));
 
@@ -257,7 +258,7 @@ namespace syntropy
     }
 
     template <typename... TArguments>
-    inline void Event<TArguments...>::Notify(const TArguments&... arguments)
+    inline void Event<TArguments...>::Notify(const TArguments&... arguments) const
     {
         dispatcher_.Notify(arguments...);
     }

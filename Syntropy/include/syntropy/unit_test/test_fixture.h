@@ -83,12 +83,8 @@ namespace syntropy
 
     public:
 
-        /// \brief Type of a test case. Member function of TTestFixture.
-        template <typename TTestFixture>
-        using TTestCase = void(TTestFixture::*)();
-
         /// \brief Create a new test fixture.
-        TestFixture(const Label& name);
+        TestFixture();
 
         /// \brief Default copy-constructor.
         TestFixture(const TestFixture&) = default;
@@ -106,16 +102,16 @@ namespace syntropy
         ~TestFixture();
 
         /// \brief Run a test case in a fixture.
-        template <typename TTestFixture>
-        TestReport Run(TTestFixture& test_fixture, const TTestCase<TTestFixture>& test_case) const;
+        template <typename TTestFixture, typename TTestCase>
+        TestReport Run(TTestFixture& test_fixture, const Label& test_name, TTestCase&& test_case) const;
 
         /// \brief Bind to the event notified whenever a result is reported.
         template <typename TDelegate>
-        Listener OnResult(TDelegate&& delegate);
+        Listener OnResult(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a message is reported.
         template <typename TDelegate>
-        Listener OnMessage(TDelegate&& delegate);
+        Listener OnMessage(TDelegate&& delegate) const;
 
     private:
 
@@ -128,10 +124,10 @@ namespace syntropy
         using HasBefore = decltype(&TTestFixture::Before);
 
         /// \brief Report a result.
-        void ReportResult(TestResult test_result, const String& test_message, const StackTrace& test_location);
+        void ReportResult(TestResult test_result, const String& test_message, const StackTrace& test_location) const;
 
         /// \brief Report a message.
-        void ReportMessage(const String& test_message);
+        void ReportMessage(const String& test_message) const;
 
         /// \brief Active test fixture context.
         static thread_local inline ObserverPtr<TestFixture> context_{ nullptr };
@@ -139,15 +135,14 @@ namespace syntropy
         /// \brief Previous test fixture context to restore upon destruction.
         ObserverPtr<TestFixture> previous_context_{ nullptr };
 
-        /// \brief Test report.
-        TestReport test_report_;
-
         /// \brief Event notified whenever a test result is reported.
-        Event<TestFixture&, OnTestFixtureResultEventArgs> result_event_;
+        Event<const TestFixture&, OnTestFixtureResultEventArgs> result_event_;
 
         /// \brief Event notified whenever a test message is reported.
-        Event<TestFixture&, OnTestFixtureMessageEventArgs> message_event_;
+        Event<const TestFixture&, OnTestFixtureMessageEventArgs> message_event_;
 
+        /// \brief Test 
+        Label name_;
     };
 
     /************************************************************************/
@@ -173,9 +168,8 @@ namespace syntropy
 
     // TestFixture.
 
-    inline TestFixture::TestFixture(const Label& name)
+    inline TestFixture::TestFixture()
         : previous_context_(context_)
-        , test_report_(MakeTestReport(name))
     {
         context_ = this;
     }
@@ -185,10 +179,20 @@ namespace syntropy
         context_ = previous_context_;
     }
 
-    template <typename TTestFixture>
-    TestReport TestFixture::Run(TTestFixture& test_fixture, const TTestCase<TTestFixture>& test_case) const
+    template <typename TTestFixture, typename TTestCase>
+    inline TestReport TestFixture::Run(TTestFixture& test_fixture, const Label& test_name, TTestCase&& test_case) const
     {
-        test_report_ = MakeTestReport(test_report_.name_);
+        // Trick: set a listener to self to generate the report inside the function.
+
+        auto test_report = MakeTestReport(test_name);
+
+        auto report_listener = OnResult([&test_report](const auto& sender, const auto& event_args)
+        {
+            test_report += event_args.result_;
+            test_report += event_args.location_;
+        });
+
+        // Run the test case.
 
         if constexpr (IsValidExpressionV<HasBefore, TTestFixture>)
         {
@@ -202,30 +206,28 @@ namespace syntropy
             test_fixture.After();
         }
 
-        return test_report_;
+        return test_report;
     }
 
+
     template <typename TDelegate>
-    inline Listener TestFixture::OnResult(TDelegate&& delegate)
+    inline Listener TestFixture::OnResult(TDelegate&& delegate) const
     {
         return result_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestFixture::OnMessage(TDelegate&& delegate)
+    inline Listener TestFixture::OnMessage(TDelegate&& delegate) const
     {
         return message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    inline void TestFixture::ReportResult(TestResult test_result, const String& test_message, const StackTrace& test_location)
+    inline void TestFixture::ReportResult(TestResult test_result, const String& test_message, const StackTrace& test_location) const
     {
-        test_report_ += test_result;
-        test_report_ += test_location;
-
         result_event_.Notify(*this, { test_result, test_message, test_location });
     }
 
-    inline void TestFixture::ReportMessage(const String& message)
+    inline void TestFixture::ReportMessage(const String& message) const
     {
         message_event_.Notify(*this, { message });
     }

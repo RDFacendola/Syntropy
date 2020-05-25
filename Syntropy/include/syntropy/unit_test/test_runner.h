@@ -112,54 +112,54 @@ namespace syntropy
         ~TestRunner() = default;
 
         /// \brief Run all test suites with a matching context.
-        TestReport Run(const Context& context);
+        TestReport Run(const Context& context) const;
 
         /// \brief Bind to the event notified whenever a test suite starts. 
         template <typename TDelegate>
-        Listener OnSuiteStarted(TDelegate&& delegate);
+        Listener OnSuiteStarted(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a test suite starts. 
         template <typename TDelegate>
-        Listener OnSuiteFinished(TDelegate&& delegate);
+        Listener OnSuiteFinished(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a test case starts. 
         template <typename TDelegate>
-        Listener OnCaseStarted(TDelegate&& delegate);
+        Listener OnCaseStarted(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a test case starts. 
         template <typename TDelegate>
-        Listener OnCaseFinished(TDelegate&& delegate);
+        Listener OnCaseFinished(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a test case result is reported. 
         template <typename TDelegate>
-        Listener OnCaseResult(TDelegate&& delegate);
+        Listener OnCaseResult(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a test case message is reported. 
         template <typename TDelegate>
-        Listener OnCaseMessage(TDelegate&& delegate);
+        Listener OnCaseMessage(TDelegate&& delegate) const;
 
     private:
 
         /// \brief Run a test suite.
-        TestReport Run(TestSuite& test_suite);
+        TestReport Run(TestSuite& test_suite) const;
 
         /// \brief Event notified whenever a test suite starts.
-        Event<TestRunner&, OnTestRunnerSuiteStartedEventArgs> suite_started_event_;
+        Event<const TestRunner&, OnTestRunnerSuiteStartedEventArgs> suite_started_event_;
 
         /// \brief Event notified whenever a test suite finishes.
-        Event<TestRunner&, OnTestRunnerSuiteFinishedEventArgs> suite_finished_event_;
+        Event<const TestRunner&, OnTestRunnerSuiteFinishedEventArgs> suite_finished_event_;
 
         /// \brief Event notified whenever a test case starts.
-        Event<TestRunner&, OnTestRunnerCaseStartedEventArgs> case_started_event_;
+        Event<const TestRunner&, OnTestRunnerCaseStartedEventArgs> case_started_event_;
 
         /// \brief Event notified whenever a test case finishes.
-        Event<TestRunner&, OnTestRunnerCaseFinishedEventArgs> case_finished_event_;
+        Event<const TestRunner&, OnTestRunnerCaseFinishedEventArgs> case_finished_event_;
 
         /// \brief Event notified whenever a test case result is reported.
-        Event<TestRunner&, OnTestRunnerCaseResultEventArgs> case_result_event_;
+        Event<const TestRunner&, OnTestRunnerCaseResultEventArgs> case_result_event_;
 
         /// \brief Event notified whenever a test case message is reported.
-        Event<TestRunner&, OnTestRunnerCaseMessageEventArgs> case_message_event_;
+        Event<const TestRunner&, OnTestRunnerCaseMessageEventArgs> case_message_event_;
 
     };
 
@@ -169,7 +169,7 @@ namespace syntropy
 
     // TestRunner.
 
-    inline TestReport TestRunner::Run(const Context& context)
+    inline TestReport TestRunner::Run(const Context& context) const
     {
         auto test_report = MakeTestReport(context);
 
@@ -187,42 +187,42 @@ namespace syntropy
     }
 
     template <typename TDelegate>
-    inline Listener TestRunner::OnSuiteStarted(TDelegate&& delegate)
+    inline Listener TestRunner::OnSuiteStarted(TDelegate&& delegate) const
     {
         return suite_started_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestRunner::OnSuiteFinished(TDelegate&& delegate)
+    inline Listener TestRunner::OnSuiteFinished(TDelegate&& delegate) const
     {
         return suite_finished_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestRunner::OnCaseStarted(TDelegate&& delegate)
+    inline Listener TestRunner::OnCaseStarted(TDelegate&& delegate) const
     {
         return case_started_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline  Listener TestRunner::OnCaseFinished(TDelegate&& delegate)
+    inline  Listener TestRunner::OnCaseFinished(TDelegate&& delegate) const
     {
         return case_finished_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestRunner::OnCaseResult(TDelegate&& delegate)
+    inline Listener TestRunner::OnCaseResult(TDelegate&& delegate) const
     {
         return case_result_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline  Listener TestRunner::OnCaseMessage(TDelegate&& delegate)
+    inline  Listener TestRunner::OnCaseMessage(TDelegate&& delegate) const
     {
         return case_message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    inline TestReport TestRunner::Run(TestSuite& test_suite)
+    inline TestReport TestRunner::Run(TestSuite& test_suite) const
     {
         // Setup listeners for the current test suite.
 

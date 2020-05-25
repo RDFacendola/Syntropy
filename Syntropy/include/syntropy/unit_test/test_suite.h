@@ -98,37 +98,37 @@ namespace syntropy
         const Context& GetName() const;
 
         /// \brief Run all test cases in the suite.
-        virtual TestReport Run() = 0;
+        virtual TestReport Run() const = 0;
 
         /// \brief Bind to the event notified whenever a test starts. 
         template <typename TDelegate>
-        Listener OnCaseStarted(TDelegate&& delegate);
+        Listener OnCaseStarted(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a test starts. 
         template <typename TDelegate>
-        Listener OnCaseFinished(TDelegate&& delegate);
+        Listener OnCaseFinished(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a test result is reported. 
         template <typename TDelegate>
-        Listener OnCaseResult(TDelegate&& delegate);
+        Listener OnCaseResult(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a test message is reported. 
         template <typename TDelegate>
-        Listener OnCaseMessage(TDelegate&& delegate);
+        Listener OnCaseMessage(TDelegate&& delegate) const;
 
     protected:
 
         /// \brief Notify the start of a test case.
-        void NotifyCaseStarted(const OnTestSuiteCaseStartedEventArgs& event_args);
+        void NotifyCaseStarted(const OnTestSuiteCaseStartedEventArgs& event_args) const;
 
         /// \brief Notify the end of a test case.
-        void NotifyCaseFinished(const OnTestSuiteCaseFinishedEventArgs& event_args);
+        void NotifyCaseFinished(const OnTestSuiteCaseFinishedEventArgs& event_args) const;
 
         /// \brief Notify a result within a test case.
-        void NotifyCaseResult(const OnTestSuiteCaseResultEventArgs& event_args);
+        void NotifyCaseResult(const OnTestSuiteCaseResultEventArgs& event_args) const;
 
         /// \brief Notify a message within a test case.
-        void NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args);
+        void NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args) const;
 
     private:
 
@@ -136,16 +136,16 @@ namespace syntropy
         Context name_;
 
         /// \brief Event notified whenever a test case starts.
-        Event<TestSuite&, OnTestSuiteCaseStartedEventArgs> case_started_event_;
+        Event<const TestSuite&, OnTestSuiteCaseStartedEventArgs> case_started_event_;
 
         /// \brief Event notified whenever a test case finishes.
-        Event<TestSuite&, OnTestSuiteCaseFinishedEventArgs> case_finished_event_;
+        Event<const TestSuite&, OnTestSuiteCaseFinishedEventArgs> case_finished_event_;
 
         /// \brief Event notified whenever a test result is reported.
-        Event<TestSuite&, OnTestSuiteCaseResultEventArgs> case_result_event_;
+        Event<const TestSuite&, OnTestSuiteCaseResultEventArgs> case_result_event_;
 
         /// \brief Event notified whenever a test message is reported.
-        Event<TestSuite&, OnTestSuiteCaseMessageEventArgs> case_message_event_;
+        Event<const TestSuite&, OnTestSuiteCaseMessageEventArgs> case_message_event_;
     };
 
     /************************************************************************/
@@ -178,15 +178,16 @@ namespace syntropy
         /// \brief Default virtual destructor.
         virtual ~TestSuiteT() = default;
 
-        virtual TestReport Run() override;
+        virtual TestReport Run() const override;
 
     private:
 
         /// \brief Run a test case.
-        TestReport Run(TestCase<TTestFixture>& test_case);
+        TestReport Run(TestCase<TTestFixture>& test_case) const;
 
         /// \brief Underlying test fixture.
-        TTestFixture test_fixture_;
+        /// The fixture is not considered part of the external interface: test cases are either const or have to preserve the immutable state of the fixture via After and Before methods (which are required to be non-const).
+        mutable TTestFixture test_fixture_;
 
     };
 
@@ -208,45 +209,45 @@ namespace syntropy
     }
 
     template <typename TDelegate>
-    inline Listener TestSuite::OnCaseStarted(TDelegate&& delegate)
+    inline Listener TestSuite::OnCaseStarted(TDelegate&& delegate) const
     {
         return case_started_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestSuite::OnCaseFinished(TDelegate&& delegate)
+    inline Listener TestSuite::OnCaseFinished(TDelegate&& delegate) const
     {
         return case_finished_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestSuite::OnCaseResult(TDelegate&& delegate)
+    inline Listener TestSuite::OnCaseResult(TDelegate&& delegate) const
     {
         return case_result_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
-    inline Listener TestSuite::OnCaseMessage(TDelegate&& delegate)
+    inline Listener TestSuite::OnCaseMessage(TDelegate&& delegate) const
     {
         return case_message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    inline void TestSuite::NotifyCaseStarted(const OnTestSuiteCaseStartedEventArgs& event_args)
+    inline void TestSuite::NotifyCaseStarted(const OnTestSuiteCaseStartedEventArgs& event_args) const
     {
         case_started_event_.Notify(*this, event_args);
     }
 
-    inline void TestSuite::NotifyCaseFinished(const OnTestSuiteCaseFinishedEventArgs& event_args)
+    inline void TestSuite::NotifyCaseFinished(const OnTestSuiteCaseFinishedEventArgs& event_args) const
     {
         case_finished_event_.Notify(*this, event_args);
     }
 
-    inline void TestSuite::NotifyCaseResult(const OnTestSuiteCaseResultEventArgs& event_args)
+    inline void TestSuite::NotifyCaseResult(const OnTestSuiteCaseResultEventArgs& event_args) const
     {
         case_result_event_.Notify(*this, event_args);
     }
 
-    inline void TestSuite::NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args)
+    inline void TestSuite::NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args) const
     {
         case_message_event_.Notify(*this, event_args);
     }
@@ -263,7 +264,7 @@ namespace syntropy
     }
 
     template <typename TTestFixture>
-    TestReport TestSuiteT<TTestFixture>::Run()
+    TestReport TestSuiteT<TTestFixture>::Run() const
     {
         auto test_report = MakeTestReport(GetName());
 
@@ -278,7 +279,7 @@ namespace syntropy
     }
 
     template <typename TTestFixture>
-    TestReport TestSuiteT<TTestFixture>::Run(TestCase<TTestFixture>& test_case)
+    TestReport TestSuiteT<TTestFixture>::Run(TestCase<TTestFixture>& test_case) const
     {
         // Setup listeners for the current test case.
 

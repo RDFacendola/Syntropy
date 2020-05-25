@@ -33,7 +33,8 @@ namespace syntropy
         static void ForEach(TFunction&& function);
 
         /// \brief Create a new self-registering test case.
-        AutoTestCase(const Label& name, TTestCase test_case);
+        template <typename UTestCase>
+        AutoTestCase(const Label& name, UTestCase&& test_case);
 
         /// \brief No copy-constructor.
         AutoTestCase(const AutoTestCase&) = delete;
@@ -68,7 +69,7 @@ namespace syntropy
         Label name_;
 
         /// \brief Test case function.
-        TTestCase test_case_{ nullptr };
+        TTestCase test_case_;
 
         /// \brief Next auto test case in the fixture.
         ObserverPtr<const AutoTestCase> next_test_case_{ nullptr };
@@ -83,6 +84,11 @@ namespace syntropy
     /// \usage const auto my_test_case = MakeAutoTestCase(name, &MyFixture::Foo).
     template <typename TTestFixture>
     AutoTestCase<TTestFixture> MakeAutoTestCase(const Label& name, void(TTestFixture::* test_case)());
+
+    /// \brief Create an self-registering test case by deducing the fixture type from arguments.
+/// \usage const auto my_test_case = MakeAutoTestCase(name, &MyFixture::Foo).
+    template <typename TTestFixture>
+    AutoTestCase<TTestFixture> MakeAutoTestCase(const Label& name, void(TTestFixture::* test_case)() const);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -103,9 +109,10 @@ namespace syntropy
     }
 
     template <typename TTestFixture>
-    inline AutoTestCase<TTestFixture>::AutoTestCase(const Label& name, TTestCase test_case)
+    template <typename UTestCase>
+    inline AutoTestCase<TTestFixture>::AutoTestCase(const Label& name, UTestCase&& test_case)
         : name_(name)
-        , test_case_(test_case)
+        , test_case_(std::forward<UTestCase>(test_case))
         , next_test_case_(LinkBefore())
     {
 
@@ -141,6 +148,12 @@ namespace syntropy
 
     template <typename TTestFixture>
     inline AutoTestCase<TTestFixture> MakeAutoTestCase(const Label& name, void(TTestFixture::* test_case)())
+    {
+        return { name, test_case };
+    }
+
+    template <typename TTestFixture>
+    inline AutoTestCase<TTestFixture> MakeAutoTestCase(const Label& name, void(TTestFixture::* test_case)() const)
     {
         return { name, test_case };
     }

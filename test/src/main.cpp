@@ -8,6 +8,10 @@
 #include "syntropy/unit_test/test_runner.h"
 #include "syntropy/unit_test/test_report.h"
 
+#include "syntropy/unit_test/test_macros.h"
+#include "syntropy/unit_test/auto_test_suite.h"
+#include "syntropy/unit_test/auto_test_case.h"
+
 int main(int argc, char **argv)
 {
     auto command_line = syntropy::CommandLine{ argc, argv };
