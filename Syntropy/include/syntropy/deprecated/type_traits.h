@@ -38,40 +38,6 @@ namespace syntropy
     /// \brief Helper type strip<TType>.
     template <typename TType>
     using strip_t = typename strip<TType>::type;
-
-    /// \brief Trait used to determine the type of the arguments of a callable object.
-    template <typename TCallable>
-    struct function_arguments : function_arguments<decltype(&std::decay_t<TCallable>::operator())> {};
-
-    /// \brief Specialization for member functions.
-    template <typename TCallable, typename TReturn, typename... TArguments>
-    struct function_arguments<TReturn(TCallable::*)(TArguments...)>
-    {
-        using type = std::tuple<TArguments...>;
-    };
-
-    /// \brief Specialization for const member functions.
-    template <typename TCallable, typename TReturn, typename... TArguments>
-    struct function_arguments<TReturn(TCallable::*)(TArguments...) const>
-    {
-        using type = std::tuple<TArguments...>;
-    };
-
-    /// \brief Helper type for FunctionArguments<TFunction>.
-    template <typename TFunction>
-    using function_arguments_t = typename function_arguments<TFunction>::type;
-
-    /// \brief Trait used to determine the type of the kArgumentIndex-th argument of a callable object.
-    template <std::size_t kArgumentIndex, typename TCallable>
-    struct function_argument
-    {
-        using type = std::tuple_element_t<kArgumentIndex, function_arguments_t<TCallable>>;
-    };
-
-    /// \brief Helper type for FunctionArgument<kArgumentIndex, TFunction>.
-    template <std::size_t kArgumentIndex, typename TFunction>
-    using function_argument_t = typename function_argument<kArgumentIndex, TFunction>::type;
-
   
     /// \brief Provides a member constant value equal to the index of the first tuple element whose type is equal to TType.
     template <typename TType, typename TTuple>

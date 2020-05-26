@@ -12,6 +12,13 @@
 #include "syntropy/unit_test/auto_test_suite.h"
 #include "syntropy/unit_test/auto_test_case.h"
 
+// #TODO Remove
+#include "test/syntropy/visitor.h"
+
+/************************************************************************/
+/* ENTRY POINT                                                          */
+/************************************************************************/
+
 int main(int argc, char **argv)
 {
     auto command_line = syntropy::CommandLine{ argc, argv };

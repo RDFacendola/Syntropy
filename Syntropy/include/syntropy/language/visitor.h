@@ -6,10 +6,24 @@
 
 #pragma once
 
-#include "syntropy/type_traits.h"
+#include <typeinfo>
+
+#include "syntropy/core/smart_pointers.h"
+#include "syntropy/core/smart_pointers.h"
+#include "syntropy/language/type_traits.h"
 
 namespace syntropy
 {
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Create a new visitor that responds to different types specified by a list of lambdas.
+    /// \usage auto visitor = MakeVistor([](int element){...}, [](float element){...}, [](char element){...});
+    ///        visitor.Visit(42).
+    template <typename... TFunctions>
+    auto MakeVisitor(TFunctions... functions);
+
     /************************************************************************/
     /* VISITOR                                                              */
     /************************************************************************/
@@ -34,58 +48,20 @@ namespace syntropy
         /// \brief Attempt to visit an element via a visitor functor.
         /// \return Returns true if the visit was successful, returns false otherwise.
         template <typename TFunction, typename TVisitor>
-        bool TryVisit(const TVisitor& visitor, void* visitable, const std::type_info& type) const;
+        bool TryVisit(const TVisitor& visitor, ObserverPtr<void> visitable, const std::type_info& type) const;
 
     private:
 
         /// \brief Visit an element.
-        virtual void Visit(void* visitable, const std::type_info& type) const = 0;
+        virtual void VirtualVisit(ObserverPtr<void> visitable, const std::type_info& type) const = 0;
 
     };
-
-    /// \brief Create a new visitor that responds to different types specified by a list of lambdas.
-    /// \usage auto visitor = MakeVistor([](int element){...}, [](float element){...}, [](char element){...});
-    ///        visitor.Visit(42).
-    template <typename... TFunctions>
-    auto MakeVisitor(TFunctions... functions);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Visitor.
-
-    template <typename TVisitable>
-    inline void Visitor::Visit(TVisitable visitable) const
-    {
-        if constexpr (!std::is_polymorphic_v<TVisitable> || std::is_final_v<TVisitable>)
-        {
-            Visit(&visitable, typeid(visitable));
-        }
-        else
-        {
-            Visit(dynamic_cast<void*>(&visitable), typeid(visitable));      // Downcast to the most derived class since typeid will return the dynamic type of visitable.
-        }
-    }
-
-    /// \brief Attempt to visit an element via a visitor functor.
-    /// \return Returns true if the visit was successful, returns false otherwise.
-    template <typename TFunction, typename TVisitor>
-    inline bool Visitor::TryVisit(const TVisitor& visitor, void* visitable, const std::type_info& type) const
-    {
-        using TArgument = syntropy::function_argument_t<0, TFunction>;
-        using TVisitable = std::remove_reference_t<TArgument>;
-
-        if (type == typeid(TVisitable))
-        {
-            visitor(*static_cast<TVisitable*>(visitable));
-            return true;
-        }
-
-        return false;
-    }
-
-    // MakeVisitor.
+    // Non-member functions.
 
     template <typename... TFunctions>
     inline auto MakeVisitor(TFunctions... functions)
@@ -103,13 +79,43 @@ namespace syntropy
             using TFunctions::operator()...;
 
             // Attempt to visit with each of the lambdas.
-            void Visit(void* visitable, const std::type_info& type) const override
+            void VirtualVisit(ObserverPtr<void> visitable, const std::type_info& type) const override
             {
                 (TryVisit<TFunctions>(*this, visitable, type) || ...);
             }
         };
 
         return LambdaVisitor(std::move(functions)...);
+    }
+
+    // Visitor.
+
+    template <typename TVisitable>
+    inline void Visitor::Visit(TVisitable visitable) const
+    {
+        if constexpr (!IsPolymorphicV<TVisitable> || IsFinalV<TVisitable>)
+        {
+            VirtualVisit(&visitable, typeid(visitable));
+        }
+        else
+        {
+            VirtualVisit(dynamic_cast<ObserverPtr<void>>(&visitable), typeid(visitable));      // Downcast to the most derived class since typeid will return the dynamic type of visitable.
+        }
+    }
+
+    template <typename TFunction, typename TVisitor>
+    inline bool Visitor::TryVisit(const TVisitor& visitor, ObserverPtr<void> visitable, const std::type_info& type) const
+    {
+        using TArgument = FunctionArgumentT<0, TFunction>;
+        using TVisitable = RemoveReferenceT<TArgument>;
+
+        if (type == typeid(TVisitable))
+        {
+            visitor(*static_cast<TVisitable*>(visitable));
+            return true;
+        }
+
+        return false;
     }
 
 }
