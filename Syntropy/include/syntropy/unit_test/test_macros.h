@@ -37,6 +37,16 @@ namespace syntropy
     #define SYNTROPY_UNIT_SKIP(reason) \
         SYNTROPY_MACRO_DECLARATION(reason)
 
+    /// \brief Unit test macro: macro used to report a success manually.
+    /// \usage SYNTROPY_UNIT_SUCCESS("reason");
+    #define SYNTROPY_UNIT_SUCCESS(reason) \
+            SYNTROPY_MACRO_DECLARATION(reason)
+
+    /// \brief Unit test macro: macro used to report a failure manually.
+    /// \usage SYNTROPY_UNIT_SUCCESS("reason");
+    #define SYNTROPY_UNIT_FAIL(reason) \
+            SYNTROPY_MACRO_DECLARATION(reason)
+
     /// \brief Unit test macro: notify a message for the current test case being ran. Expected usage within a TestFixture.
     /// \usage SYNTROPY_UNIT_MESSAGE("This is a message ", 2 + 3);
     #define SYNTROPY_UNIT_MESSAGE(...) \
@@ -94,17 +104,21 @@ namespace syntropy
             return; \
         }
 
+    #undef SYNTROPY_UNIT_SUCCESS
+    #define SYNTROPY_UNIT_SUCCESS(reason) \
+        syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kSuccess, "SUCCESS (" #reason ")", SYNTROPY_HERE )
+
+    #undef SYNTROPY_UNIT_FAIL
+    #define SYNTROPY_UNIT_FAIL(reason) \
+        syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kFailure, "FAIL (" #reason ")", SYNTROPY_HERE )
+
     #undef SYNTROPY_UNIT_MESSAGE
     #define SYNTROPY_UNIT_MESSAGE(...) \
-        { \
-            syntropy::UnitTest::ReportTestCaseMessage(__VA_ARGS__); \
-        }
+        syntropy::UnitTest::ReportTestCaseMessage(__VA_ARGS__)
 
     #undef SYNTROPY_UNIT_TRACE
     #define SYNTROPY_UNIT_TRACE(expression) \
-        { \
-            (expression); \
-            syntropy::UnitTest::ReportTestCaseMessage(#expression); \
-        }
+        syntropy::UnitTest::ReportTestCaseMessage(#expression) \
+        (expression);
 
 }
