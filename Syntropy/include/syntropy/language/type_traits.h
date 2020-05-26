@@ -15,7 +15,75 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* TYPE TRAITS                                                          */
+    /* TYPE MANIPULATION                                                    */
+    /************************************************************************/
+
+/// \brief Type equal to TType without top-most reference.
+    template <typename TType>
+    using RemoveReferenceT = std::remove_reference_t<TType>;
+
+    /// \brief Type equal to TType without top-most references and qualifiers.
+    template <typename TType>
+    using RemoveConstReferenceT = std::remove_cv_t<std::remove_reference_t<TType>>;
+
+    /// \brief Type equal to TType without top-most references, qualifiers and extents.
+    template <typename TType>
+    using RemoveExtentsConstReferenceT = std::remove_cv_t<std::remove_all_extents_t<std::remove_reference_t<TType>>>;
+
+    /************************************************************************/
+    /* POLYMORPHISM QUERY                                                   */
+    /************************************************************************/
+
+    /// \brief Wraps the standard type trait std::is_polymorphic_v.
+    template <typename TType>
+    inline constexpr bool IsPolymorphicV = std::is_polymorphic_v<TType>;
+
+    /// \brief Wraps the standard type trait std::is_final_v.
+    template <typename TType>
+    inline constexpr bool IsFinalV = std::is_final_v<TType>;
+
+    /************************************************************************/
+    /* STRIP                                                                */
+    /************************************************************************/
+
+    /// \brief Type equal to TType after being stripped of either all references or extents, an indirection level or all qualifiers (in this order).
+    template <typename TType>
+    struct Strip : std::conditional<std::is_array<TType>::value || std::is_reference<TType>::value,
+        std::remove_all_extents_t<std::remove_reference_t<TType>>,              // Remove references and extents from the outermost level (mutually exclusive)
+        std::conditional_t<std::is_pointer<TType>::value,
+        std::remove_pointer_t<TType>,                                           // Remove a pointer level (removes qualifiers as well)
+        std::remove_cv_t<TType>>> {};                                           // Remove const and volatile qualifiers from the innermost level
+
+    /// \brief Helper type Strip<TType>.
+    template <typename TType>
+    using StripT = typename Strip<TType>::type;
+
+    /************************************************************************/
+    /* CLASS NAMES                                                          */
+    /************************************************************************/
+
+    /// \brief Provides a member typedef which is the same as TType except that any pointer, qualifiers, references and extents are removed recursively.
+    /// For example: ClassName<int ** const *[1][3]> has a member Type 'int'.
+    template <typename TType, typename = void>
+    struct ClassName
+    {
+        using Type = TType;
+    };
+
+    /// \brief Recursive specialization which strips an indirection level \ qualifiers until the class name is reached.
+    template <typename TType>
+    struct ClassName<TType, std::enable_if_t<!std::is_same_v<StripT<TType>, TType>>> : ClassName<StripT<TType>> {};
+
+    /// \brief Helper type for ClassName<TType>.
+    template <typename TType>
+    using ClassNameT = typename ClassName<TType>::Type;
+
+    /// \brief Constant equal to true if TType is a class name without reference, qualifiers, extents and indirection levels, equal to false otherwise.
+    template <typename TType>
+    constexpr bool IsClassNameV = std::is_same<ClassNameT<TType>, TType>::value;
+
+    /************************************************************************/
+    /* IS SPECIALIZATION                                                    */
     /************************************************************************/
 
     /// \brief If TType is a specialization of TTemplate IsSpecializationV is true, false otherwise.
@@ -26,14 +94,18 @@ namespace syntropy
     template<template <typename...> typename TTemplate, typename... TTypes>
     constexpr bool IsSpecializationV<TTemplate<TTypes...>, TTemplate> = true;
 
-    //----------------------------------------------------------------------//
+    /************************************************************************/
+    /* ALWAYS FALSE                                                         */
+    /************************************************************************/
 
     /// \brief Evaluates to false.
     /// This value can be used to trigger static_assert that evaluates to false.
     template <typename...>
     inline constexpr bool AlwaysFalseV = false;
 
-    //----------------------------------------------------------------------//
+    /************************************************************************/
+    /* IS CONTIGUOUS SEQUENCE                                               */
+    /************************************************************************/
 
     /// \brief If the sequence {Ints} is contiguous provides a member constant value equal to true, otherwise value is false.
     template <std::int64_t... Ints>
@@ -50,7 +122,9 @@ namespace syntropy
     template <std::int64_t... Ints>
     constexpr bool IsContiguousSequenceV = IsContiguousSequence<Ints...>::Value;
 
-    //----------------------------------------------------------------------//
+    /************************************************************************/
+    /* FUNCTION ARGUMENTS                                                   */
+    /************************************************************************/
 
     /// \brief Trait used to determine the type of the arguments of a callable object.
     template <typename TCallable>
@@ -86,6 +160,32 @@ namespace syntropy
     using FunctionArgumentT = typename FunctionArgument<kArgumentIndex, TFunction>::Type;
 
     /************************************************************************/
+    /* TUPLE ELEMENT INDEX                                                  */
+    /************************************************************************/
+
+    /// \brief Provides a member constant value equal to the index of the first tuple element whose type is equal to TType.
+    template <typename TType, typename TTuple>
+    struct TupleElementIndex;
+
+    /// \brief Partial template specialization when the first element of the tuple is equal to TType.
+    template <typename TType, typename... TTypes>
+    struct TupleElementIndex<TType, std::tuple<TType, TTypes...>>
+    {
+        static constexpr std::int64_t Value = 0;
+    };
+
+    /// \brief Partial template specialization when the first element in the tuple is not equal to TType. Discard the element and increase the value by one.
+    template <typename TType, typename TDiscard, typename... TTypes>
+    struct TupleElementIndex<TType, std::tuple<TDiscard, TTypes...>>
+    {
+        static constexpr std::size_t Value = 1 + TupleElementIndex<TType, std::tuple<TTypes...>>::Value;
+    };
+
+    /// \brief Helper value for tuple_element_index<TType, TTuple>.
+    template <typename TType, typename TTuple>
+    constexpr std::size_t TupleElementIndexV = TupleElementIndex<TType, TTuple>::Value;
+
+    /************************************************************************/
     /* IS VALID EXPRESSION                                                  */
     /************************************************************************/
 
@@ -106,19 +206,6 @@ namespace syntropy
     template <template<typename...> typename TExpression, typename... TTypes>
     inline constexpr bool IsValidExpressionV = IsValidExpression<void, TExpression, TTypes...>::value;
 
-    /************************************************************************/
-    /* STANDARD ALIASES                                                     */
-    /************************************************************************/
 
-    /// \brief Wraps the standard type trait std::remove_reference_t<T>
-    template <typename TType>
-    using RemoveReferenceT = std::remove_reference_t<TType>;
 
-    /// \brief Wraps the standard type trait std::is_polymorphic_v.
-    template <typename TType>
-    inline constexpr bool IsPolymorphicV = std::is_polymorphic_v<TType>;
-
-    /// \brief Wraps the standard type trait std::is_final_v.
-    template <typename TType>
-    inline constexpr bool IsFinalV = std::is_final_v<TType>;
 }
