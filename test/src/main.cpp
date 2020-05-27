@@ -13,7 +13,7 @@
 #include "syntropy/unit_test/auto_test_case.h"
 
 // #TODO Remove
-#include "test/syntropy/visitor.h"
+#include "test/unit_tests.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */
