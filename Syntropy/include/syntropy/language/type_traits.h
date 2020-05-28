@@ -178,12 +178,12 @@ namespace syntropy
     template <typename TType, typename TDiscard, typename... TTypes>
     struct TupleElementIndex<TType, std::tuple<TDiscard, TTypes...>>
     {
-        static constexpr std::size_t Value = 1 + TupleElementIndex<TType, std::tuple<TTypes...>>::Value;
+        static constexpr std::int64_t Value = 1 + TupleElementIndex<TType, std::tuple<TTypes...>>::Value;
     };
 
     /// \brief Helper value for tuple_element_index<TType, TTuple>.
     template <typename TType, typename TTuple>
-    constexpr std::size_t TupleElementIndexV = TupleElementIndex<TType, TTuple>::Value;
+    constexpr std::int64_t TupleElementIndexV = TupleElementIndex<TType, TTuple>::Value;
 
     /************************************************************************/
     /* IS VALID EXPRESSION                                                  */
@@ -205,7 +205,5 @@ namespace syntropy
     ///        auto b = IsValidExpressionV<HasFoo, MyType>;                 // true if MyType::Foo is valid, false otherwise.
     template <template<typename...> typename TExpression, typename... TTypes>
     inline constexpr bool IsValidExpressionV = IsValidExpression<void, TExpression, TTypes...>::value;
-
-
 
 }
