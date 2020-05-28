@@ -20,13 +20,28 @@ namespace syntropy
 
     /// \brief A log channel that outputs log events to a file.
     /// Using the same file from two or more log channels results in undefined behavior.
-    /// \author Raffaele D. Facendola - MAY 2020.
+    /// \author Raffaele D. Facendola - May 2020.
     class FileLogChannel
     {
     public:
 
         /// \brief Create a new file log channel.
         FileLogChannel(const std::filesystem::path& file_path);
+
+        /// \brief No copy-constructor.
+        FileLogChannel(const FileLogChannel&) = delete;
+
+        /// \brief No move-constructor.
+        FileLogChannel(FileLogChannel&&) = delete;
+
+        /// \brief No copy-assignment.
+        FileLogChannel& operator=(const FileLogChannel&) = delete;
+
+        /// \brief No move-assignment.
+        FileLogChannel& operator=(FileLogChannel&&) = delete;
+
+        /// \brief Destructor.
+        ~FileLogChannel();
 
         /// \brief Send a log event to the channel.
         void Send(const LogEvent& log_event);
@@ -51,6 +66,11 @@ namespace syntropy
         : file_stream_(file_path)
     {
 
+    }
+
+    inline FileLogChannel::~FileLogChannel()
+    {
+        file_stream_.close();
     }
 
     inline void FileLogChannel::Send(const LogEvent& log_event)
