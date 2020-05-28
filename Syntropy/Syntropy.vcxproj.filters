@@ -94,6 +94,7 @@
     <ClInclude Include="include\syntropy\unit_test\test_runner.h" />
     <ClInclude Include="include\syntropy\unit_test\test_macros.h" />
     <ClInclude Include="include\syntropy\language\visitor.h" />
+    <ClInclude Include="include\syntropy\diagnostics\file_log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\auto_log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_macros.h" />
   </ItemGroup>
