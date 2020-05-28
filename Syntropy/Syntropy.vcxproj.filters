@@ -60,7 +60,6 @@
     <ClInclude Include="include\syntropy\time\date.h" />
     <ClInclude Include="include\syntropy\time\time_of_day.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event.h" />
-    <ClInclude Include="include\syntropy\diagnostics\log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\verbosity.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_manager.h" />
     <ClInclude Include="include\syntropy\core\string_stream.h" />
@@ -95,6 +94,8 @@
     <ClInclude Include="include\syntropy\unit_test\test_runner.h" />
     <ClInclude Include="include\syntropy\unit_test\test_macros.h" />
     <ClInclude Include="include\syntropy\language\visitor.h" />
+    <ClInclude Include="include\syntropy\diagnostics\auto_log_channel.h" />
+    <ClInclude Include="include\syntropy\diagnostics\log_macros.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
