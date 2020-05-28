@@ -148,7 +148,7 @@ namespace syntropy
 
     }
 
-    const Context& AutoTestSuite::GetName() const
+    inline const Context& AutoTestSuite::GetName() const
     {
         return name_;
     }
