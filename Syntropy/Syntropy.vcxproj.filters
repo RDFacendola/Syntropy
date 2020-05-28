@@ -97,6 +97,7 @@
     <ClInclude Include="include\syntropy\diagnostics\file_log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\auto_log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_macros.h" />
+    <ClInclude Include="include\syntropy\diagnostics\filter_log_channel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
