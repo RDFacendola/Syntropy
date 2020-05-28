@@ -73,8 +73,8 @@ namespace syntropy
 
     private:
 
-        /// \brief Thread-local default memory resource.
-        static inline thread_local MemoryResource* default_memory_resource_ = &GetSystemMemoryResource();
+        /// \brief Get the active memory resource in the current scope.
+        static MemoryResource*& GetScopeMemoryResource() noexcept;
 
     };
 
@@ -130,16 +130,25 @@ namespace syntropy
 
     inline MemoryResource& GetDefaultMemoryResource() noexcept
     {
-        return *MemoryResource::default_memory_resource_;
+        return *MemoryResource::GetScopeMemoryResource();
     }
 
     inline MemoryResource& SetDefaultMemoryResource(MemoryResource& memory_resource) noexcept
     {
         auto& previous_memory_resource = GetDefaultMemoryResource();
 
-        MemoryResource::default_memory_resource_ = &memory_resource;
+        MemoryResource::GetScopeMemoryResource() = &memory_resource;
 
         return previous_memory_resource;
+    }
+
+    // MemoryResource.
+
+    inline MemoryResource*& MemoryResource::GetScopeMemoryResource() noexcept
+    {
+        static thread_local MemoryResource* default_memory_resource_ = &GetSystemMemoryResource();
+
+        return default_memory_resource_;
     }
 
     // MemoryResourceT<TMemoryResource>.
