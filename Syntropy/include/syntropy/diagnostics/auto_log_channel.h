@@ -1,6 +1,6 @@
 
-/// \file log_channel.h
-/// \brief This header is part of the Syntropy diagnostic module. It contains definition for log channels.
+/// \file auto_log_channel.h
+/// \brief This header is part of the Syntropy diagnostic module. It contains definition for self-registering log channels.
 ///
 /// \author Raffaele D. Facendola - 2020
 
