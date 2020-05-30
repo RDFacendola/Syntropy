@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "syntropy/diagnostics/log_event.h"
+#include "syntropy/diagnostics/log_event_formatter.h"
 
 namespace syntropy
 {
@@ -26,7 +27,7 @@ namespace syntropy
     public:
 
         /// \brief Create a new file log channel.
-        FileLogChannel(const std::filesystem::path& file_path);
+        FileLogChannel(const std::filesystem::path& file_path, const String& format = "[%time][%context][%severity]: %message");
 
         /// \brief No copy-constructor.
         FileLogChannel(const FileLogChannel&) = delete;
@@ -54,6 +55,9 @@ namespace syntropy
         /// \brief Underlying file stream.
         std::ofstream file_stream_;
 
+        /// \brief Formatter used when writing a log event.
+        LogEventFormatter formatter_;
+
     };
 
     /************************************************************************/
@@ -62,8 +66,9 @@ namespace syntropy
 
     // LogChannelT<TLogChannel>.
 
-    inline FileLogChannel::FileLogChannel(const std::filesystem::path& file_path)
+    inline FileLogChannel::FileLogChannel(const std::filesystem::path& file_path, const String& format)
         : file_stream_(file_path)
+        , formatter_(format)
     {
 
     }
@@ -75,7 +80,7 @@ namespace syntropy
 
     inline void FileLogChannel::Send(const LogEvent& log_event)
     {
-        file_stream_ << log_event;
+        file_stream_ << formatter_(log_event) << '\n';
     }
 
     inline void FileLogChannel::Flush()
