@@ -98,6 +98,7 @@
     <ClInclude Include="include\syntropy\diagnostics\auto_log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_macros.h" />
     <ClInclude Include="include\syntropy\diagnostics\filter_log_channel.h" />
+    <ClInclude Include="include\syntropy\diagnostics\log_event_formatter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -124,5 +125,6 @@
     <ClCompile Include="src\syntropy\time\time_of_day.cpp" />
     <ClCompile Include="src\syntropy\math\pcg_random_engine.cpp" />
     <ClCompile Include="src\syntropy\language\listener.cpp" />
+    <ClCompile Include="src\syntropy\diagnostics\log_event_formatter.cpp" />
   </ItemGroup>
 </Project>

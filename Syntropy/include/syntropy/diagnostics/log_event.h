@@ -8,7 +8,7 @@
 
 #include "syntropy/core/context.h"
 #include "syntropy/core/string.h"
-
+#include "syntropy/core/string_stream.h"
 #include "syntropy/language/scope_guard.h"
 
 #include "syntropy/diagnostics/severity.h"

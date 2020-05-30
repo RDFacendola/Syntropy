@@ -59,6 +59,10 @@ namespace syntropy
         /// \brief Swap the content of two stack trace instances.
         void Swap(StackTrace& other) noexcept;
 
+        /// \brief Get the element on the head of the stack trace.
+        /// If the stack trace is empty, the behavior of this method is undefined.
+        const StackTraceElement& GetFunction() const;
+
         /// \brief Add a new stack trace element.
         template <typename TStackTraceElement>
         StackTrace& operator+=(TStackTraceElement&& stack_trace_element);
@@ -195,6 +199,11 @@ namespace syntropy
         using std::swap;
 
         swap(stack_trace_, other.stack_trace_);
+    }
+
+    inline const StackTraceElement& StackTrace::GetFunction() const
+    {
+        return stack_trace_.front();
     }
 
     inline Range<Vector<StackTraceElement>::const_iterator> StackTrace::GetRange() const
