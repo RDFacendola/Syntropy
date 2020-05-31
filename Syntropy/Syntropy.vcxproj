@@ -93,6 +93,11 @@
     <ClInclude Include="include\syntropy\platform\intrinsics.h" />
     <ClInclude Include="include\syntropy\platform\system.h" />
     <ClInclude Include="include\syntropy\platform\threading.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\decoding.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\encoding.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\format.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_stream.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\vector_extensions.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
     <ClInclude Include="include\syntropy\time\date.h" />
     <ClInclude Include="include\syntropy\time\time_of_day.h" />
@@ -136,6 +141,7 @@
     <ClCompile Include="src\syntropy\platform\intrinsics.cpp" />
     <ClCompile Include="src\syntropy\platform\system.cpp" />
     <ClCompile Include="src\syntropy\platform\threading.cpp" />
+    <ClCompile Include="src\syntropy\serialization\msgpack\msgpack_stream.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\time\date.cpp" />
     <ClCompile Include="src\syntropy\time\time_of_day.cpp" />

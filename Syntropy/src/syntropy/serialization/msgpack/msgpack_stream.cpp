@@ -70,86 +70,26 @@ namespace syntropy
         return *this;
     }
 
-    MsgpackStream& MsgpackStream::operator<<(std::uint8_t rhs)
-    {
-        if (Msgpack::IsPositiveFixInt(rhs))
-        {
-            Put(Msgpack::EncodePositiveFixInt(rhs));
-        }
-        else
-        {
-            Put(MsgpackFormat::kUInt8);
-            Put(Msgpack::Encode(rhs));
-        }
-
-        return *this;
-    }
-
-    MsgpackStream& MsgpackStream::operator<<(std::uint16_t rhs)
-    {
-        if (Msgpack::IsUInt8(rhs))
-        {
-            operator<<(std::uint8_t(rhs));
-        }
-        else
-        {
-            Put(MsgpackFormat::kUInt16);
-            Put(Msgpack::Encode(rhs));
-        }
-
-        return *this;
-    }
-
-    MsgpackStream& MsgpackStream::operator<<(std::uint32_t rhs)
-    {
-        if (Msgpack::IsUInt16(rhs))
-        {
-            operator<<(std::uint16_t(rhs));
-        }
-        else
-        {
-            Put(MsgpackFormat::kUInt32);
-            Put(Msgpack::Encode(rhs));
-        }
-
-        return *this;
-    }
-
-    MsgpackStream& MsgpackStream::operator<<(std::uint64_t rhs)
-    {
-        if (Msgpack::IsUInt32(rhs))
-        {
-            operator<<(std::uint32_t(rhs));
-        }
-        else
-        {
-            Put(MsgpackFormat::kUInt64);
-            Put(Msgpack::Encode(rhs));
-        }
-
-        return *this;
-    }
-
     MsgpackStream& MsgpackStream::operator<<(const String& rhs)
     {
         if (Msgpack::IsFixStr(rhs))
         {
-            Put(Msgpack::EncodeFixStrLength(std::uint8_t(rhs.size())));
+            Put(Msgpack::EncodeFixStrLength(static_cast<std::int8_t>(rhs.size())));
         }
         else if (Msgpack::IsStr8(rhs))
         {
             Put(MsgpackFormat::kStr8);
-            Put(Msgpack::Encode(std::uint8_t(rhs.size())));
+            Put(Msgpack::Encode(static_cast<std::int8_t>(rhs.size())));
         }
         else if (Msgpack::IsStr16(rhs))
         {
             Put(MsgpackFormat::kStr16);
-            Put(Msgpack::Encode(std::uint16_t(rhs.size())));
+            Put(Msgpack::Encode(static_cast<std::int16_t>(rhs.size())));
         }
         else if (Msgpack::IsStr32(rhs))
         {
             Put(MsgpackFormat::kStr32);
-            Put(Msgpack::Encode(std::uint32_t(rhs.size())));
+            Put(Msgpack::Encode(static_cast<std::int32_t>(rhs.size())));
         }
 
         Put(rhs.data(), rhs.size());
@@ -164,17 +104,17 @@ namespace syntropy
         if (Msgpack::IsBin8(rhs))
         {
             Put(MsgpackFormat::kBin8);
-            Put(Msgpack::Encode(static_cast<std::uint8_t>(rhs_size)));
+            Put(Msgpack::Encode(static_cast<std::int8_t>(rhs_size)));
         }
         else if (Msgpack::IsBin16(rhs))
         {
             Put(MsgpackFormat::kBin16);
-            Put(Msgpack::Encode(static_cast<std::uint16_t>(rhs_size)));
+            Put(Msgpack::Encode(static_cast<std::int16_t>(rhs_size)));
         }
         else if (Msgpack::IsBin32(rhs))
         {
             Put(MsgpackFormat::kBin32);
-            Put(Msgpack::Encode(static_cast<std::uint32_t>(rhs_size)));
+            Put(Msgpack::Encode(static_cast<std::int32_t>(rhs_size)));
         }
 
         Put(rhs.Begin().As<void>(), rhs_size);
@@ -289,12 +229,12 @@ namespace syntropy
 
         if (Msgpack::IsPositiveFixIntFormat(Peek()))
         {
-            rhs = Msgpack::DecodePositiveFixUInt(Get<std::int8_t>());
+            rhs = static_cast<std::uint8_t>(Msgpack::DecodePositiveFixUInt(Get<std::int8_t>()));
             sentry.Dismiss();
         }
         else if (Test(MsgpackFormat::kUInt8))
         {
-            rhs = Msgpack::Decode<std::uint8_t>(Get<std::int8_t>());
+            rhs = static_cast<std::uint8_t>(Msgpack::Decode<std::int8_t>(Get<std::int8_t>()));
             sentry.Dismiss();
         }
 
@@ -307,7 +247,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kUInt16))
         {
-            rhs = Msgpack::Decode<std::uint16_t>(Get<std::int16_t>());
+            rhs = static_cast<std::uint16_t>(Msgpack::Decode<std::int16_t>(Get<std::int16_t>()));
             sentry.Dismiss();
         }
         else
@@ -327,7 +267,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kUInt32))
         {
-            rhs = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
+            rhs = static_cast<std::uint32_t>(Msgpack::Decode<std::int32_t>(Get<std::int32_t>()));
             sentry.Dismiss();
         }
         else
@@ -347,7 +287,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kUInt64))
         {
-            rhs = Msgpack::Decode<std::uint64_t>(Get<std::int64_t>());
+            rhs = static_cast<std::int64_t>(Msgpack::Decode<std::int64_t>(Get<std::int64_t>()));
             sentry.Dismiss();
         }
         else

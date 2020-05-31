@@ -102,6 +102,11 @@
     <ClInclude Include="include\syntropy\containers\vector_view.h" />
     <ClInclude Include="include\syntropy\containers\stream_vector.h" />
     <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\format.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\encoding.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\decoding.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_stream.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\vector_extensions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -129,5 +134,6 @@
     <ClCompile Include="src\syntropy\math\pcg_random_engine.cpp" />
     <ClCompile Include="src\syntropy\language\listener.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\log_event_formatter.cpp" />
+    <ClCompile Include="src\syntropy\serialization\msgpack\msgpack_stream.cpp" />
   </ItemGroup>
 </Project>

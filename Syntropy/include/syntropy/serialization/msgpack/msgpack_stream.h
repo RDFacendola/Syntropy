@@ -1,21 +1,22 @@
 
 /// \file msgpack_stream.h
-/// \brief This header is part of the syntropy serialization system. It contains definition for streams encoding data using the msgpack specification.
+/// \brief This header is part of the Syntropy serialization module. It contains definition for streams encoding data using the Msgpack specification.
 ///
 /// \author Raffaele D. Facendola - 2019
 
 #pragma once
 
 #include <cstdint>
-#include "syntropy/containers/vector.h"
 #include <limits>
-#include "syntropy/types/string.h"
-#include "syntropy/containers/map.h"
 #include <optional>
 
-#include "syntropy/serialization/msgpack/msgpack.h"
+#include "syntropy/containers/vector.h"
+#include "syntropy/containers/map.h"
+#include "syntropy/core/string.h"
+#include "syntropy/serialization/msgpack/encoding.h"
+#include "syntropy/serialization/msgpack/decoding.h"
 #include "syntropy/memory/memory_range.h"
-#include "syntropy/types/sstream.h"
+#include "syntropy/core/string_stream.h"
 
 namespace syntropy
 {
@@ -23,7 +24,7 @@ namespace syntropy
     /* MSGPACK STREAM                                                       */
     /************************************************************************/
 
-    /// \brief Stream whose data are encoded via msgpack specification.
+    /// \brief Stream whose data are encoded via Msgpack specification.
     /// \author Raffaele D. Facendola - November 2019.
     /// \see https://github.com/msgpack/msgpack/blob/master/spec.md
     class MsgpackStream
@@ -65,18 +66,6 @@ namespace syntropy
 
         /// \brief Insert a 64-bit integer value.
         MsgpackStream& operator<<(std::int64_t rhs);
-
-        /// \brief Insert an 8-bit unsigned integer value.
-        MsgpackStream& operator<<(std::uint8_t rhs);
-
-        /// \brief Insert a 16-bit unsigned integer value.
-        MsgpackStream& operator<<(std::uint16_t rhs);
-
-        /// \brief Insert a 32-bit unsigned integer value.
-        MsgpackStream& operator<<(std::uint32_t rhs);
-
-        /// \brief Insert a 64-bit unsigned integer value.
-        MsgpackStream& operator<<(std::uint64_t rhs);
 
         /// \brief Insert a single precision floating point value.
         MsgpackStream& operator<<(float rhs);
@@ -124,15 +113,19 @@ namespace syntropy
         MsgpackStream& operator>>(std::int64_t& rhs);
 
         /// \brief Extract a 8-bit unsigned integer value.
+        /// Unsigned variant provided for external compatibility.
         MsgpackStream& operator>>(std::uint8_t& rhs);
 
         /// \brief Extract a 16-bit unsigned integer value.
+        /// Unsigned variant provided for external compatibility.
         MsgpackStream& operator>>(std::uint16_t& rhs);
 
         /// \brief Extract a 32-bit unsigned integer value.
+        /// Unsigned variant provided for external compatibility.
         MsgpackStream& operator>>(std::uint32_t& rhs);
 
         /// \brief Extract a 64-bit unsigned integer value.
+        /// Unsigned variant provided for external compatibility.
         MsgpackStream& operator>>(std::uint64_t& rhs);
 
         /// \brief Extract a single precision floating point value.
@@ -171,7 +164,7 @@ namespace syntropy
         void Recover();
 
         /// \brief Get the index of the next byte to read.
-        std::size_t GetReadPosition() const;
+        std::int64_t GetReadPosition() const;
 
         /// \brief Clear the underlying stream.
         void Clear();
@@ -214,7 +207,7 @@ namespace syntropy
         void Put(TType value);
 
         /// \brief Put a buffer inside the underlying stream.
-        void Put(const void* data, std::size_t size);
+        void Put(const void* data, std::int64_t size);
 
         /// \brief Peek a single byte from the underlying stream.
         std::int8_t Peek();
@@ -228,7 +221,7 @@ namespace syntropy
         TType Get();
 
         /// \brief Read data from the underlying stream.
-        void Get(void* buffer, std::size_t length);
+        void Get(void* buffer, std::int64_t length);
 
         /// \brief Underlying stream.
         TStream stream_;
@@ -293,17 +286,17 @@ namespace syntropy
     {
         if (Msgpack::IsFixArray(rhs))
         {
-            Put(Msgpack::EncodeFixArrayLength(std::uint8_t(rhs.size())));
+            Put(Msgpack::EncodeFixArrayLength(static_cast<std::int8_t>(rhs.size())));
         }
         else if (Msgpack::IsArray16(rhs))
         {
             Put(MsgpackFormat::kArray16);
-            Put(Msgpack::Encode(std::uint16_t(rhs.size())));
+            Put(Msgpack::Encode(static_cast<std::int16_t>(rhs.size())));
         }
         else if (Msgpack::IsArray32(rhs))
         {
             Put(MsgpackFormat::kArray32);
-            Put(Msgpack::Encode(std::uint32_t(rhs.size())));
+            Put(Msgpack::Encode(static_cast<std::int32_t>(rhs.size())));
         }
 
         for (auto&& element : rhs)
@@ -319,17 +312,17 @@ namespace syntropy
     {
         if (Msgpack::IsFixMap(rhs))
         {
-            Put(Msgpack::EncodeFixMapLength(std::uint8_t(rhs.size())));
+            Put(Msgpack::EncodeFixMapLength(static_cast<std::int8_t>(rhs.size())));
         }
         else if (Msgpack::IsMap16(rhs))
         {
             Put(MsgpackFormat::kMap16);
-            Put(Msgpack::Encode(std::uint16_t(rhs.size())));
+            Put(Msgpack::Encode(static_cast<std::int16_t>(rhs.size())));
         }
         else if (Msgpack::IsMap32(rhs))
         {
             Put(MsgpackFormat::kMap32);
-            Put(Msgpack::Encode(std::uint32_t(rhs.size())));
+            Put(Msgpack::Encode(static_cast<std::int32_t>(rhs.size())));
         }
 
         for (auto&& element : rhs)
@@ -346,7 +339,7 @@ namespace syntropy
     {
         using TMsgpackExtensionType = MsgpackExtensionType<TExtension>;
 
-        auto size = std::size_t(TMsgpackExtensionType::GetSize(rhs));
+        auto size = *TMsgpackExtensionType::GetSize(rhs);
 
         // Format | (size) | Type | Data...
 
@@ -373,17 +366,17 @@ namespace syntropy
         else if (Msgpack::IsExt8(rhs))
         {
             Put(MsgpackFormat::kExt8);
-            Put(Msgpack::Encode(std::uint8_t(size)));
+            Put(Msgpack::Encode(static_cast<std::int8_t>(size)));
         }
         else if (Msgpack::IsExt16(rhs))
         {
             Put(MsgpackFormat::kExt16);
-            Put(Msgpack::Encode(std::uint16_t(size)));
+            Put(Msgpack::Encode(static_cast<std::int16_t>(size)));
         }
         else if (Msgpack::IsExt32(rhs))
         {
             Put(MsgpackFormat::kExt32);
-            Put(Msgpack::Encode(std::uint32_t(size)));
+            Put(Msgpack::Encode(static_cast<std::int32_t>(size)));
         }
 
         Put(std::int8_t(TMsgpackExtensionType::GetType()));
@@ -398,7 +391,7 @@ namespace syntropy
     {
         auto sentry = Sentry(*this);
 
-        auto length = std::optional<std::size_t>{};
+        auto length = std::optional<std::int64_t>{};
 
         if (Msgpack::IsFixArrayFormat(Peek()))
         {
@@ -406,11 +399,11 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kArray16))
         {
-            length = Msgpack::Decode<std::uint16_t>(Get<std::int16_t>());
+            length = Msgpack::Decode<std::int16_t>(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kArray32))
         {
-            length = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
+            length = Msgpack::Decode<std::int32_t>(Get<std::int32_t>());
         }
 
         if (length)
@@ -438,7 +431,7 @@ namespace syntropy
     {
         auto sentry = Sentry(*this);
 
-        auto length = std::optional<std::size_t>{};
+        auto length = std::optional<std::int64_t>{};
 
         if (Msgpack::IsFixMapFormat(Peek()))
         {
@@ -446,11 +439,11 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kMap16))
         {
-            length = Msgpack::Decode<std::uint16_t>(Get<std::int16_t>());
+            length = Msgpack::Decode<std::int16_t>(Get<std::int16_t>());
         }
         else if (Test(MsgpackFormat::kMap32))
         {
-            length = Msgpack::Decode<std::uint32_t>(Get<std::int32_t>());
+            length = Msgpack::Decode<std::int32_t>(Get<std::int32_t>());
         }
 
         if (length)
@@ -506,15 +499,15 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kExt8))
         {
-            size = Bytes(Msgpack::Decode<std::uint8_t>(Get<std::int8_t>()));
+            size = Bytes(Msgpack::Decode<std::int8_t>(Get<std::int8_t>()));
         }
         else if (Test(MsgpackFormat::kExt16))
         {
-            size = Bytes(Msgpack::Decode<std::uint16_t>(Get<std::int16_t>()));
+            size = Bytes(Msgpack::Decode<std::int16_t>(Get<std::int16_t>()));
         }
         else if (Test(MsgpackFormat::kExt32))
         {
-            size = Bytes(Msgpack::Decode<std::uint32_t>(Get<std::int32_t>()));
+            size = Bytes(Msgpack::Decode<std::int32_t>(Get<std::int32_t>()));
         }
 
         if (size && std::int8_t(TMsgpackExtensionType::GetType()) == Get<std::int8_t>())
@@ -547,9 +540,9 @@ namespace syntropy
         stream_.str({});
     }
 
-    inline std::size_t MsgpackStream::GetReadPosition() const
+    inline std::int64_t MsgpackStream::GetReadPosition() const
     {
-        return stream_.rdbuf()->pubseekoff(0, std::ios::cur, std::ios::in);
+        return static_cast<std::int64_t>(stream_.rdbuf()->pubseekoff(0, std::ios::cur, std::ios::in));
     }
 
     inline MsgpackStream::TString MsgpackStream::ToString() const
@@ -562,7 +555,7 @@ namespace syntropy
     {
         if constexpr (sizeof(TType) == sizeof(std::int8_t))
         {
-            stream_.put(std::int8_t(value));
+            stream_.put(static_cast<std::int8_t>(value));
         }
         else
         {
@@ -570,7 +563,7 @@ namespace syntropy
         }
     }
 
-    inline void MsgpackStream::Put(const void* data, std::size_t size)
+    inline void MsgpackStream::Put(const void* data, std::int64_t size)
     {
         stream_.write(reinterpret_cast<const std::int8_t*>(data), size);
     }
@@ -610,7 +603,7 @@ namespace syntropy
         }
     }
 
-    inline void MsgpackStream::Get(void* buffer, std::size_t length)
+    inline void MsgpackStream::Get(void* buffer, std::int64_t length)
     {
         stream_.read(reinterpret_cast<std::int8_t*>(buffer), length);
     }
