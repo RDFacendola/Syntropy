@@ -33,6 +33,7 @@
     <ClInclude Include="include\syntropy\containers\array.h" />
     <ClInclude Include="include\syntropy\containers\map.h" />
     <ClInclude Include="include\syntropy\containers\set.h" />
+    <ClInclude Include="include\syntropy\containers\stream_vector.h" />
     <ClInclude Include="include\syntropy\containers\vector.h" />
     <ClInclude Include="include\syntropy\containers\vector_view.h" />
     <ClInclude Include="include\syntropy\core\context.h" />

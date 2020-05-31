@@ -1,19 +1,17 @@
 
 /// \file stream_vector.h
-/// \brief This header is part of the syntropy containers. It contains classes used to handle structure-of-arrays.
+/// \brief This header is part of the Syntropy containers module. It contains classes used to handle structure-of-arrays.
 ///
-/// \author Raffaele D. Facendola - 2016
+/// \author Raffaele D. Facendola - 2018
 
 #pragma once
 
 #include <cstdint>
 #include <tuple>
+
 #include "syntropy/containers/vector.h"
-#include <type_traits>
-
 #include "syntropy/containers/vector_view.h"
-
-#include "syntropy/type_traits.h"
+#include "syntropy/language/type_traits.h"
 
 namespace syntropy
 {
@@ -21,8 +19,8 @@ namespace syntropy
     /* STREAM VECTOR                                                        */
     /************************************************************************/
 
-    /// \brief Packs together multiple parallel vectors, each referring to a single attribute of an element.
-    /// This vector is used to quickly iterate through an element attribute, allowing the data to be organized according to the structure-of-arrays paradigm.
+    /// \brief Packs together multiple parallel vectors (streams).
+    /// This vector is used to quickly iterate through streams, organizing data according to structure-of-arrays paradigm.
     /// \author Raffaele D. Facendola - December 2018
     template <typename... TStreams>
     class StreamVector
@@ -66,12 +64,12 @@ namespace syntropy
         template <typename TElement>
         const TElement& GetElementAt(std::int64_t index) const;
 
-        /// \brief Returns a reference to the first element of a given stream.
+        /// \brief Returns a reference to the first element of a given stream, by stream index.
         /// \return Returns the reference to the first element in the specified stream.
         template <std::int64_t kStream>
         auto& GetFront();
 
-        /// \brief Returns a reference to the first element of a given stream.
+        /// \brief Returns a reference to the first element of a given stream, by stream index.
         /// \return Returns the reference to the first element in the specified stream.
         template <std::int64_t kStream>
         const auto& GetFront() const;
@@ -138,11 +136,11 @@ namespace syntropy
         /// /// \param index Index of the element to remove.
         void EraseSwap(std::int64_t index);
 
-        /// \brief Execute an operation on each element of the given streams.
+        /// \brief Execute an operation on each element of the given streams, by stream index.
         template <std::int64_t... kStreams, typename TOperation>
         void ForEach(TOperation&& operation);
 
-        /// \brief Execute an operation on each element of the given streams.
+        /// \brief Execute an operation on each element of the given streams, by stream index.
         template <std::int64_t... kStreams, typename TOperation>
         void ForEach(TOperation&& operation) const;
 
@@ -202,7 +200,7 @@ namespace syntropy
 
         /// \brief Vector streams.
         /// \remarks Constness is removed to cope with standard requirements. The stream is immutable from outside perspective, though.
-        std::tuple<Vector<std::remove_const_t<TStreams>>...> streams_;
+        std::tuple<Vector<RemoveConstT<TStreams>>...> streams_;
     };
 
     /************************************************************************/
@@ -231,14 +229,14 @@ namespace syntropy
     template <typename TElement>
     inline TElement& StreamVector<TStreams...>::GetElementAt(std::int64_t index)
     {
-        return GetElementAt<tuple_element_index_v<TElement, std::tuple<TStreams...>>>(index);
+        return GetElementAt<TupleElementIndexV<TElement, std::tuple<TStreams...>>>(index);
     }
 
     template <typename... TStreams>
     template <typename TElement>
     inline const TElement& StreamVector<TStreams...>::GetElementAt(std::int64_t index) const
     {
-        return GetElementAt<tuple_element_index_v<TElement, std::tuple<TStreams...>>>(index);
+        return GetElementAt<TupleElementIndexV<TElement, std::tuple<TStreams...>>>(index);
     }
 
     template <typename... TStreams>
@@ -261,14 +259,14 @@ namespace syntropy
     template <typename TElement>
     inline TElement& StreamVector<TStreams...>::GetFront()
     {
-        return GetFront<tuple_element_index_v<TElement, std::tuple<TStreams...>>>();
+        return GetFront<TupleElementIndexV<TElement, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
     template <typename TElement>
     inline const TElement& StreamVector<TStreams...>::GetFront() const
     {
-        return GetFront<tuple_element_index_v<TElement, std::tuple<TStreams...>>>();
+        return GetFront<TupleElementIndexV<TElement, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
@@ -291,14 +289,14 @@ namespace syntropy
     template <typename TElement>
     inline TElement& StreamVector<TStreams...>::GetBack()
     {
-        return GetBack<tuple_element_index_v<TElement, std::tuple<TStreams...>>>();
+        return GetBack<TupleElementIndexV<TElement, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
     template <typename TElement>
     inline const TElement& StreamVector<TStreams...>::GetBack() const
     {
-        return GetBack<tuple_element_index_v<TElement, std::tuple<TStreams...>>>();
+        return GetBack<TupleElementIndexV<TElement, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
@@ -402,14 +400,14 @@ namespace syntropy
     template <typename... TStreamTypes, typename TOperation>
     inline void StreamVector<TStreams...>::ForEach(TOperation&& operation)
     {
-        ForEach<tuple_element_index_v<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
+        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
     }
 
     template <typename... TStreams>
     template <typename... TStreamTypes, typename TOperation>
     inline void StreamVector<TStreams...>::ForEach(TOperation&& operation) const
     {
-        ForEach<tuple_element_index_v<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
+        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
     }
 
     template <typename... TStreams>
@@ -439,7 +437,7 @@ namespace syntropy
     template <typename TStream>
     inline VectorView<TStream> StreamVector<TStreams...>::GetStream()
     {
-        return GetStream<tuple_element_index_v<TStream, std::tuple<TStreams...>>>();
+        return GetStream<TupleElementIndexV<TStream, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
@@ -453,7 +451,7 @@ namespace syntropy
     template <typename TStream>
     inline VectorView<const TStream> StreamVector<TStreams...>::GetConstStream() const
     {
-        return GetConstStream<tuple_element_index_v<TStream, std::tuple<TStreams...>>>();
+        return GetConstStream<TupleElementIndexV<TStream, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
