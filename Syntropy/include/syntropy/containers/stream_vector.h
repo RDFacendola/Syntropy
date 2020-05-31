@@ -191,12 +191,8 @@ namespace syntropy
         void ForEachStream(TOperation&& operation);
 
         /// \brief Execute an operation on each indexed stream.
-        template <typename TOperation, std::int64_t kStreamIndex, std::int64_t... kStreamIndexes>
-        void ForEachStream(TOperation&& operation, std::index_sequence<kStreamIndex, kStreamIndexes...>);
-
-        /// \brief Execute an operation on each indexed stream.
-        template <typename TOperation>
-        void ForEachStream(TOperation&& operation, std::index_sequence<>);
+        template <typename TOperation, std::int64_t... kStreamIndexes>
+        void ForEachStream(TOperation&& operation, std::index_sequence<kStreamIndexes...>);
 
         /// \brief Vector streams.
         /// \remarks Constness is removed to cope with standard requirements. The stream is immutable from outside perspective, though.
@@ -478,19 +474,10 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <typename TOperation, std::int64_t kStreamIndex, std::int64_t... kStreamIndexes>
-    inline void StreamVector<TStreams...>::ForEachStream(TOperation&& operation, std::index_sequence<kStreamIndex, kStreamIndexes...>)
+    template <typename TOperation, std::int64_t... kStreamIndexes>
+    inline void StreamVector<TStreams...>::ForEachStream(TOperation&& operation, std::index_sequence<kStreamIndexes...>)
     {
-        operation(std::get<kStreamIndex>(streams_));
-
-        ForEachStream(std::forward<TOperation>(operation), std::index_sequence<kStreamIndexes...>{});
-    }
-
-    template <typename... TStreams>
-    template <typename TOperation>
-    inline void StreamVector<TStreams...>::ForEachStream(TOperation&& operation, std::index_sequence<>)
-    {
-
+        (operation(std::get<kStreamIndexes>(streams_)), ...);
     }
 
 }
