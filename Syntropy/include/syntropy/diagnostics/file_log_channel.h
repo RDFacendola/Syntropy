@@ -13,6 +13,7 @@
 #include "syntropy/diagnostics/log_event.h"
 #include "syntropy/diagnostics/log_event_formatter.h"
 #include "syntropy/diagnostics/log_event_filter.h"
+#include "syntropy/diagnostics/auto_log_channel.h"
 
 namespace syntropy
 {
@@ -31,16 +32,18 @@ namespace syntropy
         FileLogChannel(const std::filesystem::path& file_path, const LogEventFilter& filter = LogEventFilter{}, const String& format = "[%time][%context][%severity]: %message");
 
         /// \brief No copy-constructor.
+        /// \remarks Opening the same file more than once results in undefined behavior.
         FileLogChannel(const FileLogChannel&) = delete;
 
-        /// \brief No move-constructor.
-        FileLogChannel(FileLogChannel&&) = delete;
+        /// \brief Default move-constructor.
+        FileLogChannel(FileLogChannel&&) = default;
 
         /// \brief No copy-assignment.
+        /// \remarks Opening the same file more than once results in undefined behavior.
         FileLogChannel& operator=(const FileLogChannel&) = delete;
 
-        /// \brief No move-assignment.
-        FileLogChannel& operator=(FileLogChannel&&) = delete;
+        /// \brief Default move-assignment.
+        FileLogChannel& operator=(FileLogChannel&&) = default;
 
         /// \brief Destructor.
         ~FileLogChannel();
@@ -63,6 +66,21 @@ namespace syntropy
         LogEventFormatter formatter_;
 
     };
+
+    /************************************************************************/
+    /* TYPE ALIAS                                                           */
+    /************************************************************************/
+
+    /// \brief Type alias for a self-registering log file channel.
+    using AutoLogFile = AutoLogChannelT<FileLogChannel>;
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Create a self-registering file log channel.
+    template <typename... TArguments>
+    AutoLogFile MakeAutoLogFile(TArguments&&... arguments);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -94,6 +112,14 @@ namespace syntropy
     inline void FileLogChannel::Flush()
     {
         file_stream_.flush();
+    }
+
+    // Non-member functions.
+
+    template <typename... TArguments>
+    inline AutoLogFile MakeAutoLogFile(TArguments&&... arguments)
+    {
+        return { std::forward<TArguments>(arguments)... };
     }
 
 }

@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include "syntropy/diagnostics/auto_log_channel.h"
 #include "syntropy/diagnostics/log_event.h"
+#include "syntropy/diagnostics/auto_log_channel.h"
+#include "syntropy/diagnostics/file_log_channel.h"
 
 namespace syntropy
 {
@@ -34,8 +35,8 @@ namespace syntropy
 
     private:
 
-        /// \brief Private default constructor.
-        LogManager() = default;
+        /// \brief Private constructor.
+        LogManager();
 
     };
 
@@ -51,6 +52,11 @@ namespace syntropy
     /************************************************************************/
 
     // LogManager.
+
+    inline LogManager::LogManager()
+    {
+        static auto global_log_ = MakeAutoLogFile("log.txt");       // Global log file which accepts all log events. #TODO Use data-driven log file name.
+    }
 
     inline LogManager& LogManager::GetSingleton()
     {

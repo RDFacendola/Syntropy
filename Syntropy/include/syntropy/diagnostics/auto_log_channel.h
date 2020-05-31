@@ -123,7 +123,7 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create an self-registering log channel.
+    /// \brief Create a self-registering log channel.
     /// \usage const auto auto_log_channel = MakeAutoLogChannel<ChannelType>(arg0, arg1, ...).
     template <typename TLogChannel, typename... TArguments>
     AutoLogChannelT<TLogChannel> MakeAutoLogChannel(TArguments&&... arguments);
