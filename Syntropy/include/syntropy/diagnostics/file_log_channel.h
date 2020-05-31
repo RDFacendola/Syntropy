@@ -12,6 +12,7 @@
 
 #include "syntropy/diagnostics/log_event.h"
 #include "syntropy/diagnostics/log_event_formatter.h"
+#include "syntropy/diagnostics/log_event_filter.h"
 
 namespace syntropy
 {
@@ -27,7 +28,7 @@ namespace syntropy
     public:
 
         /// \brief Create a new file log channel.
-        FileLogChannel(const std::filesystem::path& file_path, const String& format = "[%time][%context][%severity]: %message");
+        FileLogChannel(const std::filesystem::path& file_path, const LogEventFilter& filter = LogEventFilter{}, const String& format = "[%time][%context][%severity]: %message");
 
         /// \brief No copy-constructor.
         FileLogChannel(const FileLogChannel&) = delete;
@@ -55,6 +56,9 @@ namespace syntropy
         /// \brief Underlying file stream.
         std::ofstream file_stream_;
 
+        /// \brief Filter to match against incoming log messages.
+        LogEventFilter filter_;
+
         /// \brief Formatter used when writing a log event.
         LogEventFormatter formatter_;
 
@@ -66,8 +70,9 @@ namespace syntropy
 
     // LogChannelT<TLogChannel>.
 
-    inline FileLogChannel::FileLogChannel(const std::filesystem::path& file_path, const String& format)
+    inline FileLogChannel::FileLogChannel(const std::filesystem::path& file_path, const LogEventFilter& filter, const String& format)
         : file_stream_(file_path)
+        , filter_(filter)
         , formatter_(format)
     {
 
@@ -80,7 +85,10 @@ namespace syntropy
 
     inline void FileLogChannel::Send(const LogEvent& log_event)
     {
-        file_stream_ << formatter_(log_event) << '\n';
+        if (filter_(log_event))
+        {
+            file_stream_ << formatter_(log_event) << '\n';
+        }
     }
 
     inline void FileLogChannel::Flush()
