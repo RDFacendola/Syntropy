@@ -1,6 +1,6 @@
 
 /// \file vector.h
-/// \brief This header is part of the syntropy containers. It contains wrappers for vectors.
+/// \brief This header is part of the Syntropy containers module. It contains wrappers for vectors.
 ///
 /// \author Raffaele D. Facendola - 2020
 

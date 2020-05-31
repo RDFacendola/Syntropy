@@ -1,6 +1,6 @@
 
 /// \file map.h
-/// \brief This header is part of the Syntropy container module. It contains wrappers for maps and multimaps.
+/// \brief This header is part of the Syntropy containers module. It contains wrappers for maps and multimaps.
 ///
 /// \author Raffaele D. Facendola - 2020
 

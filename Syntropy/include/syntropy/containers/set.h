@@ -1,6 +1,6 @@
 
 /// \file set.h
-/// \brief This header is part of the Syntropy container module. It contains wrappers for sets and multisets.
+/// \brief This header is part of the Syntropy containers module. It contains wrappers for sets and multisets.
 ///
 /// \author Raffaele D. Facendola - 2020
 

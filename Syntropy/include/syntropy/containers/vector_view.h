@@ -1,6 +1,6 @@
 
 /// \file vector_view.h
-/// \brief This header is part of the syntropy containers. It contains non-owning views to vectors.
+/// \brief This header is part of the Syntropy containers module. It contains non-owning views to vectors.
 ///
 /// \author Raffaele D. Facendola - 2020
 
