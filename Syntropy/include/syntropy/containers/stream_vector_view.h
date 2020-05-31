@@ -1,6 +1,6 @@
 
 /// \file stream_vector_view.h
-/// \brief This header is part of the syntropy containers. It contains classes used to handle views to stream vectors.
+/// \brief This header is part of the Syntropy containers module. It contains classes used to handle views into stream vectors.
 ///
 /// \author Raffaele D. Facendola - 2020
 
@@ -8,14 +8,13 @@
 
 #include <cstdint>
 #include <tuple>
-#include "syntropy/containers/vector.h"
-#include <type_traits>
 #include <algorithm>
 
+#include "syntropy/containers/vector.h"
 #include "syntropy/containers/stream_vector.h"
 #include "syntropy/containers/vector_view.h"
 
-#include "syntropy/type_traits.h"
+#include "syntropy/language/type_traits.h"
 
 namespace syntropy
 {
@@ -23,8 +22,8 @@ namespace syntropy
     /* STREAM VECTOR VIEW                                                   */
     /************************************************************************/
 
-    /// \brief Packs together multiple parallel vectors views, each referring to a single attribute of an element.
-    /// This vector is used to quickly iterate through an element attribute, allowing the data to be organized according to the structure-of-arrays paradigm.
+    /// \brief Packs together multiple parallel vectors views, each referring to a stream of data.
+    /// Stream are not required to refer to the same number of elements.
     /// \author Raffaele D. Facendola - January 2020.
     template <typename... TStreams>
     class StreamVectorView
@@ -221,14 +220,14 @@ namespace syntropy
     template <typename TElement>
     inline TElement& StreamVectorView<TStreams...>::GetElementAt(std::int64_t index)
     {
-        return GetElementAt<tuple_element_index_v<TElement, std::tuple<TStreams...>>>(index);
+        return GetElementAt<TupleElementIndexV<TElement, std::tuple<TStreams...>>>(index);
     }
 
     template <typename... TStreams>
     template <typename TElement>
     inline const TElement& StreamVectorView<TStreams...>::GetElementAt(std::int64_t index) const
     {
-        return GetElementAt<tuple_element_index_v<TElement, std::tuple<TStreams...>>>(index);
+        return GetElementAt<TupleElementIndexV<TElement, std::tuple<TStreams...>>>(index);
     }
 
     template <typename... TStreams>
@@ -249,14 +248,14 @@ namespace syntropy
     template <typename TElement>
     inline TElement& StreamVectorView<TStreams...>::GetFront()
     {
-        return GetFront<tuple_element_index_v<TElement, std::tuple<TStreams...>>>();
+        return GetFront<TupleElementIndexV<TElement, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
     template <typename TElement>
     inline const TElement& StreamVectorView<TStreams...>::GetFront() const
     {
-        return GetFront<tuple_element_index_v<TElement, std::tuple<TStreams...>>>();
+        return GetFront<TupleElementIndexV<TElement, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
@@ -277,14 +276,14 @@ namespace syntropy
     template <typename TElement>
     inline TElement& StreamVectorView<TStreams...>::GetBack()
     {
-        return GetBack<tuple_element_index_v<TElement, std::tuple<TStreams...>>>();
+        return GetBack<TupleElementIndexV<TElement, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
     template <typename TElement>
     inline const TElement& StreamVectorView<TStreams...>::GetBack() const
     {
-        return GetBack<tuple_element_index_v<TElement, std::tuple<TStreams...>>>();
+        return GetBack<TupleElementIndexV<TElement, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
@@ -304,7 +303,7 @@ namespace syntropy
     template <typename... UStreams>
     inline std::int64_t StreamVectorView<TStreams...>::GetSize() const noexcept
     {
-        return GetSize<tuple_element_index_v<UStreams, std::tuple<TStreams...>>...>();
+        return GetSize<TupleElementIndexV<UStreams, std::tuple<TStreams...>>...>();
     }
 
     template <typename... TStreams>
@@ -341,14 +340,14 @@ namespace syntropy
     template <typename... TStreamTypes, typename TOperation>
     inline void StreamVectorView<TStreams...>::ForEach(TOperation&& operation)
     {
-        ForEach<tuple_element_index_v<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
+        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
     }
 
     template <typename... TStreams>
     template <typename... TStreamTypes, typename TOperation>
     inline void StreamVectorView<TStreams...>::ForEach(TOperation&& operation) const
     {
-        ForEach<tuple_element_index_v<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
+        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
     }
 
     template <typename... TStreams>
@@ -369,14 +368,14 @@ namespace syntropy
     template <typename TStream>
     inline VectorView<TStream> StreamVectorView<TStreams...>::GetStream() const
     {
-        return GetStream<tuple_element_index_v<TStream, std::tuple<TStreams...>>>();
+        return GetStream<TupleElementIndexV<TStream, std::tuple<TStreams...>>>();
     }
 
     template <typename... TStreams>
     template <typename TStream>
     inline VectorView<const TStream> StreamVectorView<TStreams...>::GetConstStream() const
     {
-        return GetConstStream<tuple_element_index_v<TStream, std::tuple<TStreams...>>>();
+        return GetConstStream<TupleElementIndexV<TStream, std::tuple<TStreams...>>>();
     }
 
     // Non-member functions.
