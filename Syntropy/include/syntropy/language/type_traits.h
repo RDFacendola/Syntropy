@@ -15,12 +15,24 @@
 namespace syntropy
 {
     /************************************************************************/
+    /* META                                                                 */
+    /************************************************************************/
+
+    /// \brief Type equal to TTrue if condition is true, equal to TFalse otherwise.
+    template <bool Condition, typename TTrue, typename TFalse>
+    using ConditionalT = std::conditional_t<Condition, TTrue, TFalse>;
+
+    /************************************************************************/
     /* TYPE MANIPULATION                                                    */
     /************************************************************************/
 
-/// \brief Type equal to TType without top-most reference.
+    /// \brief Type equal to TType without top-most reference.
     template <typename TType>
     using RemoveReferenceT = std::remove_reference_t<TType>;
+
+    /// \brief Type equal to TType without const qualifier.
+    template <typename TType>
+    using RemoveConstT = std::remove_const_t<TType>;
 
     /// \brief Type equal to TType without top-most references and qualifiers.
     template <typename TType>
@@ -29,6 +41,14 @@ namespace syntropy
     /// \brief Type equal to TType without top-most references, qualifiers and extents.
     template <typename TType>
     using RemoveExtentsConstReferenceT = std::remove_cv_t<std::remove_all_extents_t<std::remove_reference_t<TType>>>;
+
+    /************************************************************************/
+    /* TYPE QUERY                                                           */
+    /************************************************************************/
+
+        /// \brief Constant equal to true if TType is constant, equal to false otherwise.
+    template <typename TType>
+    inline constexpr bool IsConstV = std::is_const_v<TType>;
 
     /************************************************************************/
     /* POLYMORPHISM QUERY                                                   */

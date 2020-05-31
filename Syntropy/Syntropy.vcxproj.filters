@@ -99,6 +99,7 @@
     <ClInclude Include="include\syntropy\diagnostics\log_macros.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event_formatter.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event_filter.h" />
+    <ClInclude Include="include\syntropy\containers\vector_view.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
