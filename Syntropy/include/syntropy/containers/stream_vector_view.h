@@ -10,10 +10,10 @@
 #include <tuple>
 #include <algorithm>
 
+#include "syntropy/core/types.h"
 #include "syntropy/containers/vector.h"
 #include "syntropy/containers/stream_vector.h"
 #include "syntropy/containers/vector_view.h"
-
 #include "syntropy/language/type_traits.h"
 
 namespace syntropy
@@ -50,32 +50,32 @@ namespace syntropy
 
         /// \brief Returns a reference to the element at specified index in a given stream.
         /// \return Returns the reference to the requested element in the specified stream.
-        template <std::int64_t kStream>
-        auto& GetElementAt(std::int64_t index);
+        template <Int kStream>
+        auto& GetElementAt(Int index);
 
         /// \brief Returns a reference to the element at specified index in a given stream.
         /// \return Returns the reference to the requested element in the specified stream.
-        template <std::int64_t kStream>
-        const auto& GetElementAt(std::int64_t index) const;
+        template <Int kStream>
+        const auto& GetElementAt(Int index) const;
 
         /// \brief Returns a reference to the element at specified index in a given stream type.
         /// \return Returns the reference to the requested element in the specified stream.
         template <typename TElement>
-        TElement& GetElementAt(std::int64_t index);
+        TElement& GetElementAt(Int index);
 
         /// \brief Returns a reference to the element at specified index in a given stream type.
         /// \return Returns the reference to the requested element in the specified stream.
         template <typename TElement>
-        const TElement& GetElementAt(std::int64_t index) const;
+        const TElement& GetElementAt(Int index) const;
 
         /// \brief Returns a reference to the first element of a given stream.
         /// \return Returns the reference to the first element in the specified stream.
-        template <std::int64_t kStream>
+        template <Int kStream>
         auto& GetFront();
 
         /// \brief Returns a reference to the first element of a given stream.
         /// \return Returns the reference to the first element in the specified stream.
-        template <std::int64_t kStream>
+        template <Int kStream>
         const auto& GetFront() const;
 
         /// \brief Returns a reference to the first element of a given stream, by stream type.
@@ -90,12 +90,12 @@ namespace syntropy
 
         /// \brief Returns a reference to the last element of a given stream.
         /// \return Returns the reference to the last element in the specified stream.
-        template <std::int64_t kStream>
+        template <Int kStream>
         auto& GetBack();
 
         /// \brief Returns a reference to the last element of a given stream.
         /// \return Returns the reference to the last element in the specified stream.
-        template <std::int64_t kStream>
+        template <Int kStream>
         const auto& GetBack() const;
 
         /// \brief Returns a reference to the last element of a given stream, by stream type.
@@ -114,24 +114,24 @@ namespace syntropy
 
         /// \brief Get the number of elements in the shortest stream among those with the specified indices.
         /// \return Returns the number of elements in the shortest stream among those with the specified indices.
-        template <std::int64_t... kStreams>
-        std::int64_t GetSize() const noexcept;
+        template <Int... kStreams>
+        Int GetSize() const noexcept;
 
         /// \brief Get the number of elements in the shortest stream among those with the specified indices.
         /// \return Returns the number of elements in the shortest stream among those with the specified indices.
         template <typename... UStreams>
-        std::int64_t GetSize() const noexcept;
+        Int GetSize() const noexcept;
 
         /// \brief Get the number of elements in the shortest stream.
         /// \return Returns the number of elements in the shortest stream.
-        std::int64_t GetSize() const noexcept;
+        Int GetSize() const noexcept;
 
         /// \brief Execute an operation on each element of the given streams.
-        template <std::int64_t... kStreams, typename TOperation>
+        template <Int... kStreams, typename TOperation>
         void ForEach(TOperation&& operation);
 
         /// \brief Execute an operation on each element of the given streams.
-        template <std::int64_t... kStreams, typename TOperation>
+        template <Int... kStreams, typename TOperation>
         void ForEach(TOperation&& operation) const;
 
         /// \brief Execute an operation on each element of the given streams, by stream type.
@@ -143,11 +143,11 @@ namespace syntropy
         void ForEach(TOperation&& operation) const;
 
         /// \brief Get a view into a stream by index.
-        template <std::int64_t kStream>
+        template <Int kStream>
         auto GetStream() const;
 
         /// \brief Get a view into a constant stream by index.
-        template <std::int64_t kStream>
+        template <Int kStream>
         auto GetConstStream() const;
 
         /// \brief Get a view into a stream by type.
@@ -203,42 +203,42 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
-    inline auto& StreamVectorView<TStreams...>::GetElementAt(std::int64_t index)
+    template <Int kStream>
+    inline auto& StreamVectorView<TStreams...>::GetElementAt(Int index)
     {
         return std::get<kStream>(streams_)[index];
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
-    inline const auto& StreamVectorView<TStreams...>::GetElementAt(std::int64_t index) const
+    template <Int kStream>
+    inline const auto& StreamVectorView<TStreams...>::GetElementAt(Int index) const
     {
         return std::get<kStream>(streams_)[index];
     }
 
     template <typename... TStreams>
     template <typename TElement>
-    inline TElement& StreamVectorView<TStreams...>::GetElementAt(std::int64_t index)
+    inline TElement& StreamVectorView<TStreams...>::GetElementAt(Int index)
     {
         return GetElementAt<TupleElementIndexV<TElement, std::tuple<TStreams...>>>(index);
     }
 
     template <typename... TStreams>
     template <typename TElement>
-    inline const TElement& StreamVectorView<TStreams...>::GetElementAt(std::int64_t index) const
+    inline const TElement& StreamVectorView<TStreams...>::GetElementAt(Int index) const
     {
         return GetElementAt<TupleElementIndexV<TElement, std::tuple<TStreams...>>>(index);
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline auto& StreamVectorView<TStreams...>::GetFront()
     {
         return std::get<kStream>(streams_).GetFront();
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline const auto& StreamVectorView<TStreams...>::GetFront() const
     {
         return std::get<kStream>(streams_).GetFront();
@@ -259,14 +259,14 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline auto& StreamVectorView<TStreams...>::GetBack()
     {
         return std::get<kStream>(streams_).GetBack();
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline const auto& StreamVectorView<TStreams...>::GetBack() const
     {
         return std::get<kStream>(streams_).GetBack();
@@ -293,27 +293,27 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t... kStreams>
-    inline std::int64_t StreamVectorView<TStreams...>::GetSize() const noexcept
+    template <Int... kStreams>
+    inline Int StreamVectorView<TStreams...>::GetSize() const noexcept
     {
         return std::min({ std::get<kStreams>(streams_).GetSize()... });
     }
 
     template <typename... TStreams>
     template <typename... UStreams>
-    inline std::int64_t StreamVectorView<TStreams...>::GetSize() const noexcept
+    inline Int StreamVectorView<TStreams...>::GetSize() const noexcept
     {
         return GetSize<TupleElementIndexV<UStreams, std::tuple<TStreams...>>...>();
     }
 
     template <typename... TStreams>
-    inline std::int64_t StreamVectorView<TStreams...>::GetSize() const noexcept
+    inline Int StreamVectorView<TStreams...>::GetSize() const noexcept
     {
         return GetSize<TStreams...>();
     }
 
     template <typename... TStreams>
-    template <std::int64_t... kStreams, typename TOperation>
+    template <Int... kStreams, typename TOperation>
     inline void StreamVectorView<TStreams...>::ForEach(TOperation&& operation)
     {
         auto size = GetSize<kStreams...>();
@@ -325,7 +325,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t... kStreams, typename TOperation>
+    template <Int... kStreams, typename TOperation>
     inline void StreamVectorView<TStreams...>::ForEach(TOperation&& operation) const
     {
         auto size = GetSize<kStreams>();
@@ -351,14 +351,14 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline auto StreamVectorView<TStreams...>::GetStream() const
     {
         return std::get<kStream>(streams_);
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline auto StreamVectorView<TStreams...>::GetConstStream() const
     {
         return MakeConstVectorView(std::get<kStream>(streams_));

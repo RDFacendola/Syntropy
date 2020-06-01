@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -18,7 +20,7 @@ namespace syntropy
     {
         /// \brief Linearly interpolate lhs and rhs using alpha as blending factor.
         template <typename TType>
-        constexpr TType Lerp(const TType& lhs, const TType& rhs, float alpha);
+        constexpr TType Lerp(const TType& lhs, const TType& rhs, Float alpha);
     }
 
     /************************************************************************/
@@ -26,7 +28,7 @@ namespace syntropy
     /************************************************************************/
 
     template <typename TType>
-    constexpr TType Math::Lerp(const TType& lhs, const TType& rhs, float alpha)
+    constexpr TType Math::Lerp(const TType& lhs, const TType& rhs, Float alpha)
     {
         return lhs + (rhs - lhs) * alpha;
     }

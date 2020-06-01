@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <cmath>
 
+#include "syntropy/core/types.h"
 #include "syntropy/math/vector.h"
 #include "syntropy/math/random_engine.h"
 #include "syntropy/math/numeric.h"
@@ -26,47 +27,47 @@ namespace syntropy
     {
         /// \brief Generate a random number uniformly distributed in [0; 1).
         /// \return Returns a random number uniformly distributed in [0; 1).
-        float Uniform();
+        Float Uniform();
 
         /// \brief Generate a random number uniformly distributed in [min; max).
         /// \param max Maximum value to generate (exclusive).
         /// \return Returns a random number uniformly distributed in [0; max).
-        float Uniform(float max);
+        Float Uniform(Float max);
 
         /// \brief Generate a random number distributed in [min; max).
         /// \param min Minimum value to generate (inclusive).
         /// \param max Maximum value to generate (exclusive).
-        float Uniform(float min, float max);
+        Float Uniform(Float min, Float max);
 
         /// \brief Generate a random number uniformly distributed in [0; max).
         /// \param max Maximum value to generate (exclusive).
         /// \return Returns a random number uniformly distributed in [0; max).
-        std::int32_t Uniform(std::int32_t max);
+        Int Uniform(std::int32_t max);
 
         /// \brief Generate a random number uniformly distributed in [min; max).
         /// \param min Minimum value to generate (inclusive).
         /// \param max Maximum value to generate (exclusive).
-        std::int32_t Uniform(std::int32_t min, std::int32_t max);
+        Int Uniform(std::int32_t min, std::int32_t max);
 
         /// \brief Generate a random boolean value.
         /// \param probability Probability of getting 'true' as result. Range [0; 1].
         /// \return Returns a random boolean value, where P(true) is equal to probability.
-        bool Bernoulli(float probability);
+        bool Bernoulli(Float probability);
 
         /// \brief Generate a random number distributed according to a Normal distribution.
         /// \return Returns a random number distributed according to a Normal distribution N(0, 1).
-        float Normal();
+        Float Normal();
 
         /// \brief Generate a random number distributed according to a Gaussian distribution.
         /// \param mean Expected value of the distribution.
         /// \param standard_deviation Standard deviation of the distribution.
         /// \return Returns a random number distributed according to a Gaussian distribution N(mean, std^2).
-        float Gaussian(float mean, float standard_deviation);
+        Float Gaussian(Float mean, Float standard_deviation);
 
         /// \brief Generate a random number distributed according to an Exponential distribution.
         /// \param lambda Expected occurrences per unit of time.
         /// \return Returns the time at which the next event happens according to the exponential distribution.
-        float Exponential(float lambda);
+        Float Exponential(Float lambda);
 
         /// \brief Generate a random point in a unit box (-1; +1) x (-1; +1).
         /// \return Returns a random point in a unit box (-1; +1) x (-1; +1).
@@ -84,37 +85,37 @@ namespace syntropy
 
     // Random.
 
-    inline float Random::Uniform()
+    inline Float Random::Uniform()
     {
         return GetRandomEngine()();
     }
 
-    inline float Random::Uniform(float max)
+    inline Float Random::Uniform(Float max)
     {
         return Uniform() * max;
     }
 
-    inline float Random::Uniform(float min, float max)
+    inline Float Random::Uniform(Float min, Float max)
     {
         return Uniform() * (max - min) + min;
     }
 
-    inline std::int32_t Random::Uniform(std::int32_t max)
+    inline Int Random::Uniform(std::int32_t max)
     {
         return static_cast<std::int32_t>(Math::Floor(Uniform() * max));
     }
 
-    inline std::int32_t Random::Uniform(std::int32_t min, std::int32_t max)
+    inline Int Random::Uniform(std::int32_t min, std::int32_t max)
     {
         return Uniform(max - min) + min;
     }
 
-    inline bool Random::Bernoulli(float probability)
+    inline bool Random::Bernoulli(Float probability)
     {
         return Uniform() < probability;
     }
 
-    inline float Random::Normal()
+    inline Float Random::Normal()
     {
         // Marsaglia polar method.
 
@@ -127,12 +128,12 @@ namespace syntropy
         return point.x_ * Math::FastSqrt((-2.0f * Math::Ln(length_sqr)) / length_sqr);      // point.y_ is a valid sample as well.
     }
 
-    inline float Random::Gaussian(float mean, float standard_deviation)
+    inline Float Random::Gaussian(Float mean, Float standard_deviation)
     {
         return Normal() * standard_deviation + mean;
     }
 
-    inline float Random::Exponential(float lambda)
+    inline Float Random::Exponential(Float lambda)
     {
         return -Math::Ln(Uniform()) / lambda;
     }

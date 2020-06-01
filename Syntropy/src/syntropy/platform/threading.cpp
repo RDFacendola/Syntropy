@@ -8,7 +8,7 @@ namespace syntropy
     /* THREADING                                                            */
     /************************************************************************/
 
-    std::int64_t Threading::GetCPUIndex()
+    Int Threading::GetCPUIndex()
     {
         return HALThreading::GetCPUIndex();
     }

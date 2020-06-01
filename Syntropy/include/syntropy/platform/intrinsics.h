@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include "syntropy/core/types.h"
 
 namespace syntropy
 {
@@ -18,13 +18,13 @@ namespace syntropy
     namespace Intrinsics
     {
         /// \brief Get the index of the most significant bit set or undefined if rhs is 0.
-        std::int64_t GetMostSignificantBit(std::int64_t rhs);
+        Int GetMostSignificantBit(Int rhs);
 
         /// \brief Get the index of the least significant bit set or undefined if rhs is 0.
-        std::int64_t GetLeastSignificantBit(std::int64_t rhs);
+        Int GetLeastSignificantBit(Int rhs);
 
         /// \brief Get the inverse square root approximation of a number.
-        float GetFastInvSqrt(float rhs);
+        Float GetFastInvSqrt(Float rhs);
     };
 
 }

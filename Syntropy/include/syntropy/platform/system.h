@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
 #include "syntropy/containers/vector.h"
 #include "syntropy/memory/bytes.h"
@@ -42,10 +43,10 @@ namespace syntropy
     struct CPUInfo
     {
         /// \brief Core frequency, in Hz.
-        std::int64_t frequency_;
+        Int frequency_;
 
         /// \brief Number of logical cores.
-        std::int64_t cores_;
+        Int cores_;
 
         /// \brief Underlying architecture.
         CPUArchitecture architecture_;
@@ -123,13 +124,13 @@ namespace syntropy
         String adapter_name_;
 
         /// \brief Horizontal resolution.
-        std::int64_t width_;
+        Int width_;
 
         /// \brief Vertical resolution.
-        std::int64_t height_;
+        Int height_;
 
         /// \brief Refresh rate, in Hz.
-        float refresh_rate_;
+        Float refresh_rate_;
 
         /// \brief Whether the monitor is the primary one.
         bool is_primary_;

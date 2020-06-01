@@ -9,6 +9,7 @@
 #include <cstring>
 #include <algorithm>
 
+#include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_range.h"
 
@@ -34,7 +35,7 @@ namespace syntropy
         Bytes Move(const MemoryRange& destination, const ConstMemoryRange& source);
 
         /// \brief Set a value to each byte in a destination range.
-        void Set(const MemoryRange& destination, std::int8_t value);
+        void Set(const MemoryRange& destination, Byte value);
 
         /// \brief Zero-out a memory region.
         void Zero(const MemoryRange& destination);
@@ -72,7 +73,7 @@ namespace syntropy
         return bytes;
     }
 
-    inline void Memory::Set(const MemoryRange& destination, std::int8_t value)
+    inline void Memory::Set(const MemoryRange& destination, Byte value)
     {
         std::memset(*destination.Begin(), value, destination.GetSize().GetCount());
     }

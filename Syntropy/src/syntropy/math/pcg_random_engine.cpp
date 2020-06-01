@@ -34,7 +34,7 @@ namespace syntropy
         engine_ = new (&engine_storage_) PCG32();
     }
 
-    void PCGRandomEngine::Seed(std::int64_t seed, std::int64_t stream) noexcept
+    void PCGRandomEngine::Seed(Int seed, Int stream) noexcept
     {
         engine_->seed(seed, stream);
     }
@@ -48,12 +48,12 @@ namespace syntropy
         engine_->seed(seeder);
     }
 
-    void PCGRandomEngine::Advance(std::int64_t steps) noexcept
+    void PCGRandomEngine::Advance(Int steps) noexcept
     {
         engine_->advance(steps);
     }
 
-    float PCGRandomEngine::operator()() noexcept
+    Float PCGRandomEngine::operator()() noexcept
     {
         return distribution_(*engine_);
     }

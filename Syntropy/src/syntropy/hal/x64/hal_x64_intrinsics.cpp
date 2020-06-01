@@ -14,7 +14,7 @@ namespace syntropy
     /* HAL INTRINSICS                                                       */
     /************************************************************************/
 
-    float HALIntrinsics::GetFastInvSqrt(float rhs)
+    Float HALIntrinsics::GetFastInvSqrt(Float rhs)
     {
         auto mm_number = _mm_load_ss(&rhs);
 

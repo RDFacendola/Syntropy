@@ -17,7 +17,7 @@ namespace syntropy
 
     /// \brief Represents the severity of an event.
     /// \author Raffaele D. Facendola - November 2016
-    enum class Severity : int8_t
+    enum class Severity : Byte
     {
         /// \brief Severity used for debugging and tracing messages.
         kDebug = -1,

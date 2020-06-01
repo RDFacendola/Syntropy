@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/core/range.h"
 #include "syntropy/core/string.h"
 
@@ -97,7 +98,7 @@ namespace syntropy
         String function_;
 
         /// \brief Line index inside the source file.
-        std::int64_t line_{ 0 };
+        Int line_{ 0 };
     };
 
     /************************************************************************/

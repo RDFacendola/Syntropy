@@ -8,17 +8,17 @@ namespace syntropy
     /* INTRINSICS                                                           */
     /************************************************************************/
 
-    std::int64_t Intrinsics::GetMostSignificantBit(std::int64_t rhs)
+    Int Intrinsics::GetMostSignificantBit(Int rhs)
     {
         return HALIntrinsics::GetMostSignificantBit(rhs);
     }
 
-    std::int64_t Intrinsics::GetLeastSignificantBit(std::int64_t rhs)
+    Int Intrinsics::GetLeastSignificantBit(Int rhs)
     {
         return HALIntrinsics::GetLeastSignificantBit(rhs);
     }
 
-    float Intrinsics::GetFastInvSqrt(float rhs)
+    Float Intrinsics::GetFastInvSqrt(Float rhs)
     {
         return HALIntrinsics::GetFastInvSqrt(rhs);
     }

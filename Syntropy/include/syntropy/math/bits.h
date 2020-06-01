@@ -11,7 +11,7 @@
 #include <limits>
 
 #include "syntropy/math/numeric.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/platform/intrinsics.h"
 
 namespace syntropy
@@ -47,11 +47,11 @@ namespace syntropy
 
         /// \brief Count the number of bits equal to 1 in the provided number.
         /// \return Returns the number of bits equal to 1 in the provided number.
-        constexpr std::int64_t HammingWeight(std::int64_t rhs);
+        constexpr Int HammingWeight(Int rhs);
 
         /// \brief Get the Hamming distance between two numbers.
         /// \return Returns the Hamming distance between lhs and rhs, that is the number of different bits in both numbers.
-        constexpr std::int64_t HammingDistance(std::int64_t lhs, std::int64_t rhs);
+        constexpr Int HammingDistance(Int lhs, Int rhs);
     }
 
     /************************************************************************/
@@ -136,11 +136,11 @@ namespace syntropy
         }
     }
 
-    constexpr std::int64_t Math::HammingWeight(std::int64_t rhs)
+    constexpr Int Math::HammingWeight(Int rhs)
     {
         // Keringhan's algorithm, runs in O(log(bits)).
 
-        auto count = std::int64_t{ 0 };
+        auto count = Int{ 0 };
 
         for (; rhs != 0; rhs &= (rhs - 1))
         {
@@ -150,7 +150,7 @@ namespace syntropy
         return count;
     }
 
-    constexpr std::int64_t Math::HammingDistance(std::int64_t lhs, std::int64_t rhs)
+    constexpr Int Math::HammingDistance(Int lhs, Int rhs)
     {
         return Math::HammingWeight(lhs ^ rhs);
     }

@@ -8,7 +8,7 @@
 
 #include <typeinfo>
 
-#include "syntropy/core/smart_pointers.h"
+#include "syntropy/core/types.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/language/type_traits.h"
 
@@ -19,7 +19,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Create a new visitor that responds to different types specified by a list of lambdas.
-    /// \usage auto visitor = MakeVistor([](int element){...}, [](float element){...}, [](char element){...});
+    /// \usage auto visitor = MakeVistor([](int element){...}, [](Float element){...}, [](char element){...});
     ///        visitor.Visit(42).
     template <typename... TFunctions>
     auto MakeVisitor(TFunctions... functions);

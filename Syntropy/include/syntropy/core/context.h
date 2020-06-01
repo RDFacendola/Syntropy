@@ -8,6 +8,7 @@
 
 #include <ostream>
 
+#include "syntropy/core/types.h"
 #include "syntropy/core/label.h"
 #include "syntropy/core/string.h"
 
@@ -89,7 +90,7 @@ namespace syntropy
     Context operator+(const Context& lhs, const Context& rhs);
 
     /// \brief Get the non-cryptographic 64-bit hash associated to a context.
-    std::int64_t Hash64(const Context& lhs);
+    Int Hash64(const Context& lhs);
 
     /// \brief Stream insertion for Context.
     std::ostream& operator<<(std::ostream& out, const Context& context);
@@ -162,7 +163,7 @@ namespace syntropy
         return Context(context);
     }
 
-    inline std::int64_t Hash64(const Context& lhs)
+    inline Int Hash64(const Context& lhs)
     {
         return Hash64(lhs.GetName());
     }

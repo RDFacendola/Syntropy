@@ -26,7 +26,7 @@ namespace syntropy
         return std::int32_t((b3 << 24) | (b2 << 16) | (b1 << 8) | (b0 << 0));
     }
 
-    std::int64_t HALEndianness::ToBigEndian(std::int64_t rhs)
+    Int HALEndianness::ToBigEndian(Int rhs)
     {
         auto b0 = (rhs & 0xFF00000000000000ll) >> 56;
         auto b1 = (rhs & 0x00FF000000000000ll) >> 48;
@@ -37,7 +37,7 @@ namespace syntropy
         auto b6 = (rhs & 0x000000000000FF00ll) >> 8;
         auto b7 = (rhs & 0x00000000000000FFll) >> 0;
 
-        return std::int64_t((b7 << 56) | (b6 << 48) | (b5 << 40) | (b4 << 32) | (b3 << 24) | (b2 << 16) | (b1 << 8) | (b0 << 0));
+        return Int((b7 << 56) | (b6 << 48) | (b5 << 40) | (b4 << 32) | (b3 << 24) | (b2 << 16) | (b1 << 8) | (b0 << 0));
     }
 
     std::int16_t HALEndianness::FromBigEndian(std::int16_t rhs)
@@ -50,7 +50,7 @@ namespace syntropy
         return ToBigEndian(rhs);
     }
 
-    std::int64_t HALEndianness::FromBigEndian(std::int64_t rhs)
+    Int HALEndianness::FromBigEndian(Int rhs)
     {
         return ToBigEndian(rhs);
     }
@@ -65,7 +65,7 @@ namespace syntropy
         return rhs;
     }
 
-    std::int64_t HALEndianness::ToLittleEndian(std::int64_t rhs)
+    Int HALEndianness::ToLittleEndian(Int rhs)
     {
         return rhs;
     }
@@ -80,7 +80,7 @@ namespace syntropy
         return rhs;
     }
 
-    std::int64_t HALEndianness::FromLittleEndian(std::int64_t rhs)
+    Int HALEndianness::FromLittleEndian(Int rhs)
     {
         return rhs;
     }

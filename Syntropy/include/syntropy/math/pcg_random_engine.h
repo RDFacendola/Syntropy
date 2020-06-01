@@ -10,6 +10,8 @@
 #include <random>
 #include <type_traits>
 
+#include "syntropy/core/types.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -40,22 +42,22 @@ namespace syntropy
         /// \brief Create a new random number generator with explicit values for the seed and the stream to use.
         /// \param seed Seed for the random sequence. Identifies how far in the sequence the samples are taken from.
         /// \param stream Index of the stream to use. Identifies which sequence the samples are taken from.
-        PCGRandomEngine(std::int64_t seed, std::int64_t stream) noexcept;
+        PCGRandomEngine(Int seed, Int stream) noexcept;
 
         /// \brief Reset the status of the random number generator.
         /// \param seed Seed for the random sequence. Identifies how far in the sequence the samples are taken from.
         /// \param stream Index of the stream to use. Identifies which sequence the samples are taken from.
-        void Seed(std::int64_t seed, std::int64_t stream) noexcept;
+        void Seed(Int seed, Int stream) noexcept;
 
         /// \brief Randomize the status of the engine.
         void Randomize() noexcept;
 
         /// \brief Advances the state of the engine.
         /// \param steps Amount of states to advance.
-        void Advance(std::int64_t steps) noexcept;
+        void Advance(Int steps) noexcept;
 
         /// \brief Generate a random number uniformly distributed in the range [0; +1).
-        float operator()() noexcept;
+        Float operator()() noexcept;
 
     private:
 
@@ -69,10 +71,10 @@ namespace syntropy
         PCG32* engine_{ nullptr };
 
         /// \brief Underlying uniform distribution.
-        std::uniform_real_distribution<float> distribution_;
+        std::uniform_real_distribution<Float> distribution_;
 
         /// \brief Engine state storage.
-        std::aligned_storage_t<sizeof(std::int64_t), alignof(std::int64_t)> engine_storage_;
+        std::aligned_storage_t<sizeof(Int), alignof(Int)> engine_storage_;
 
     };
 
@@ -88,7 +90,7 @@ namespace syntropy
         Randomize();
     }
 
-    inline PCGRandomEngine::PCGRandomEngine(std::int64_t seed, std::int64_t stream) noexcept
+    inline PCGRandomEngine::PCGRandomEngine(Int seed, Int stream) noexcept
     {
         InitializeEngine();
         Seed(seed, stream);

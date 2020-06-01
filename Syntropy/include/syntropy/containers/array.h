@@ -8,6 +8,8 @@
 
 #include <array>
 
+#include "syntropy/core/types.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -15,7 +17,7 @@ namespace syntropy
     /************************************************************************/
 
         /// \brief Alias type for std::array.
-    template <typename TType, std::int64_t kSize>
+    template <typename TType, Int kSize>
     using Array = std::array<TType, static_cast<std::size_t>(kSize)>;
 
 }

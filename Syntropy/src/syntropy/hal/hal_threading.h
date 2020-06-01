@@ -8,7 +8,7 @@
 #include <thread>
 
 #include "syntropy/containers/vector.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/platform/threading.h"
 
 namespace syntropy
@@ -23,7 +23,7 @@ namespace syntropy
     {
         /// \brief Get the index of the CPU on which the calling thread is running.
         /// \return Returns the index of the CPU on which the calling thread is running.
-        std::int64_t GetCPUIndex();
+        Int GetCPUIndex();
 
         /// \brief Get the cores the calling process is allowed to run on.
         /// This method returns the cores a process can specify an affinity for. To get the actual affinity use GetProcessAffinity().

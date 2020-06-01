@@ -22,7 +22,7 @@ namespace syntropy
     /* HAL INTRINSICS                                                       */
     /************************************************************************/
 
-    std::int64_t HALIntrinsics::GetMostSignificantBit(std::int64_t rhs)
+    Int HALIntrinsics::GetMostSignificantBit(Int rhs)
     {
         auto index = DWORD{};
 
@@ -31,7 +31,7 @@ namespace syntropy
         return static_cast<int64_t>(index);
     }
 
-    std::int64_t HALIntrinsics::GetLeastSignificantBit(std::int64_t rhs)
+    Int HALIntrinsics::GetLeastSignificantBit(Int rhs)
     {
         auto index = DWORD{};
 

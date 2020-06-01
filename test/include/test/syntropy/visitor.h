@@ -40,7 +40,7 @@ namespace syntropy::unit_test
     inline void VisitorUnitTest::Visit() const
     {
         auto accept_int = [](int x) { SYNTROPY_UNIT_SUCCESS("visitor.Visit(int)"); };
-        auto accept_float = [](float x) { SYNTROPY_UNIT_FAIL("visitor.Visit(float)"); };
+        auto accept_float = [](Float x) { SYNTROPY_UNIT_FAIL("visitor.Visit(Float)"); };
 
         auto visitor = MakeVisitor(accept_int, accept_float);
 

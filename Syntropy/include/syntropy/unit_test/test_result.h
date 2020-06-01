@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -15,7 +17,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Result of a test.
-    enum class TestResult : int8_t
+    enum class TestResult : Byte
     {
         /// \brief The test was skipped.
         kSkipped = 0,

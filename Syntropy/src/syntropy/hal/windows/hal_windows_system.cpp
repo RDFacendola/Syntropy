@@ -31,8 +31,8 @@ namespace syntropy
         GetSystemInfo(&system_info);
         auto b  = QueryPerformanceFrequency(&frequency);
 
-        cpu_info.cores_ = static_cast<std::int64_t>(system_info.dwNumberOfProcessors);      // Accounts for logical processors.
-        cpu_info.frequency_ = static_cast<std::int64_t>(frequency.QuadPart) * 1000ll;       // MHz -> Hz.
+        cpu_info.cores_ = static_cast<Int>(system_info.dwNumberOfProcessors);      // Accounts for logical processors.
+        cpu_info.frequency_ = static_cast<Int>(frequency.QuadPart) * 1000ll;       // MHz -> Hz.
 
         if (system_info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
         {
@@ -131,9 +131,9 @@ namespace syntropy
                     EnumDisplayDevicesA(adapter_device.DeviceName, 0, &monitor_device, 0);
 
                     monitor_info.is_primary_ = (adapter_device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE) != 0;
-                    monitor_info.width_ = static_cast<std::int64_t>(dev_mode.dmPelsWidth);
-                    monitor_info.height_ = static_cast<std::int64_t>(dev_mode.dmPelsHeight);
-                    monitor_info.refresh_rate_ = static_cast<float>(dev_mode.dmDisplayFrequency);
+                    monitor_info.width_ = static_cast<Int>(dev_mode.dmPelsWidth);
+                    monitor_info.height_ = static_cast<Int>(dev_mode.dmPelsHeight);
+                    monitor_info.refresh_rate_ = static_cast<Float>(dev_mode.dmDisplayFrequency);
                     monitor_info.device_name_ = monitor_device.DeviceString;
 
                     display_info.monitors_.emplace_back(std::move(monitor_info));

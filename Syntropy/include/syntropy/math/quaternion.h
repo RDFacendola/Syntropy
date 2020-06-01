@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/math/math.h"
 #include "syntropy/math/numeric.h"
@@ -33,16 +34,16 @@ namespace syntropy
             Float3 xyz_;
 
             /// \brief Real part of the quaternion.
-            float w_{};
+            Float w_{};
 
             /// \brief Create an identity quaternion.
             Quaternion() = default;
 
             /// \brief Create a quaternion from explicit values.
-            Quaternion(float x, float y, float z, float w);
+            Quaternion(Float x, Float y, Float z, Float w);
 
             /// \brief Create a quaternion from explicit values.
-            Quaternion(const Float3& xyz, float w);
+            Quaternion(const Float3& xyz, Float w);
 
             /// \brief Sum a quaternion to this one.
             Quaternion& operator+=(const Quaternion& rhs);
@@ -51,13 +52,13 @@ namespace syntropy
             Quaternion& operator-=(const Quaternion& rhs);
 
             /// \brief Member-wise multiplication of this quaternion by a scalar.
-            Quaternion& operator*=(float rhs);
+            Quaternion& operator*=(Float rhs);
 
             /// \brief Multiply this quaternion by another one.
             Quaternion& operator*=(const Quaternion& rhs);
 
             /// \brief Member-wise division of this quaternion by a scalar.
-            Quaternion& operator/=(float rhs);
+            Quaternion& operator/=(Float rhs);
 
         };
 
@@ -75,13 +76,13 @@ namespace syntropy
         Quaternion operator*(const Quaternion& lhs, const Quaternion& rhs);
 
         /// \brief Multiply a quaternion by a scalar.
-        Quaternion operator*(const Quaternion& lhs, float rhs);
+        Quaternion operator*(const Quaternion& lhs, Float rhs);
 
         /// \brief Divide a quaternion by a scalar.
-        Quaternion operator/(const Quaternion& lhs, float rhs);
+        Quaternion operator/(const Quaternion& lhs, Float rhs);
 
         /// \brief Multiply a scalar by a quaternion.
-        Quaternion operator*(float lhs, const Quaternion& rhs);
+        Quaternion operator*(Float lhs, const Quaternion& rhs);
 
         /// \brief Get the conjugate of a quaternion.
         Quaternion Conjugate(const Quaternion& rhs);
@@ -90,16 +91,16 @@ namespace syntropy
         Quaternion Inverse(const Quaternion& rhs);
 
         /// \brief Get the norm of a quaternion.
-        float Norm(const Quaternion& rhs);
+        Float Norm(const Quaternion& rhs);
 
         /// \brief Get the squared norm of a quaternion.
-        float SqrNorm(const Quaternion& rhs);
+        Float SqrNorm(const Quaternion& rhs);
 
         /// \brief Get a normalized quaternion.
         Quaternion Normalize(const Quaternion& rhs);
 
         /// \brief Check whether a quaternion is a unit quaternion.
-        bool IsNormalized(const Quaternion& rhs, float epsilon = 0.01f);
+        bool IsNormalized(const Quaternion& rhs, Float epsilon = 0.01f);
 
     }
 
@@ -109,13 +110,13 @@ namespace syntropy
 
     // Quaternion.
 
-    inline Math::Quaternion::Quaternion(float x, float y, float z, float w)
+    inline Math::Quaternion::Quaternion(Float x, Float y, Float z, Float w)
         : Quaternion({ x, y, z }, w)
     {
 
     }
 
-    inline Math::Quaternion::Quaternion(const Float3& xyz, float w)
+    inline Math::Quaternion::Quaternion(const Float3& xyz, Float w)
         : xyz_(xyz)
         , w_(w)
     {
@@ -138,7 +139,7 @@ namespace syntropy
         return *this;
     }
 
-    inline Math::Quaternion& Math::Quaternion::operator*=(float rhs)
+    inline Math::Quaternion& Math::Quaternion::operator*=(Float rhs)
     {
         xyz_ *= rhs;
         w_ *= rhs;
@@ -154,7 +155,7 @@ namespace syntropy
         return *this;
     }
 
-    inline Math::Quaternion& Math::Quaternion::operator/=(float rhs)
+    inline Math::Quaternion& Math::Quaternion::operator/=(Float rhs)
     {
         xyz_ /= rhs;
         w_ /= rhs;
@@ -179,17 +180,17 @@ namespace syntropy
         return Quaternion(lhs) *= rhs;
     }
 
-    inline Math::Quaternion Math::operator*(const Quaternion& lhs, float rhs)
+    inline Math::Quaternion Math::operator*(const Quaternion& lhs, Float rhs)
     {
         return Quaternion(lhs) *= rhs;
     }
 
-    inline Math::Quaternion Math::operator*(float lhs, const Quaternion& rhs)
+    inline Math::Quaternion Math::operator*(Float lhs, const Quaternion& rhs)
     {
         return Quaternion(rhs) *= lhs;
     }
 
-    inline Math::Quaternion Math::operator/(const Quaternion& lhs, float rhs)
+    inline Math::Quaternion Math::operator/(const Quaternion& lhs, Float rhs)
     {
         return Quaternion(lhs) /= rhs;
     }
@@ -204,12 +205,12 @@ namespace syntropy
         return Conjugate(rhs) / SqrNorm(rhs);
     }
 
-    inline float Math::Norm(const Quaternion& rhs)
+    inline Float Math::Norm(const Quaternion& rhs)
     {
         return Math::FastSqrt(SqrNorm(rhs));
     }
 
-   inline float Math::SqrNorm(const Quaternion& rhs)
+   inline Float Math::SqrNorm(const Quaternion& rhs)
     {
         return Dot(rhs.xyz_, rhs.xyz_) + rhs.w_ * rhs.w_;
     }
@@ -219,7 +220,7 @@ namespace syntropy
        return rhs / Norm(rhs);
    }
 
-   inline bool Math::IsNormalized(const Quaternion& rhs, float epsilon)
+   inline bool Math::IsNormalized(const Quaternion& rhs, Float epsilon)
    {
        return SqrNorm(rhs) > (1.0f - epsilon);
    }

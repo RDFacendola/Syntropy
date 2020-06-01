@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/math/pcg_random_engine.h"
 
 namespace syntropy
@@ -44,7 +45,7 @@ namespace syntropy
         virtual ~RandomEngine() = default;
 
         /// \brief Generate a random number uniformly distributed in the range [0; +1).
-        virtual float operator()() noexcept = 0;
+        virtual Float operator()() noexcept = 0;
 
     private:
 
@@ -74,7 +75,7 @@ namespace syntropy
         virtual ~RandomEngineT() = default;
 
         /// \brief Generate a random number uniformly distributed in the range [0; +1).
-        virtual float operator()() noexcept override;
+        virtual Float operator()() noexcept override;
 
         /// \brief Access the underlying random engine.
         TRandomEngine& GetRandomEngine() const noexcept;
@@ -125,7 +126,7 @@ namespace syntropy
     }
 
     template <typename TRandomEngine>
-    inline float RandomEngineT<TRandomEngine>::operator()() noexcept
+    inline Float RandomEngineT<TRandomEngine>::operator()() noexcept
     {
         return (*random_engine_)();
     }

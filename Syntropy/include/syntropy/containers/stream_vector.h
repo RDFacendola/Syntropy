@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <tuple>
 
+#include "syntropy/core/types.h"
 #include "syntropy/containers/vector.h"
 #include "syntropy/containers/vector_view.h"
 #include "syntropy/language/type_traits.h"
@@ -46,32 +47,32 @@ namespace syntropy
 
         /// \brief Returns a reference to the element at specified index in a given stream.
         /// \return Returns the reference to the requested element in the specified stream.
-        template <std::int64_t kStream>
-        auto& GetElementAt(std::int64_t index);
+        template <Int kStream>
+        auto& GetElementAt(Int index);
 
         /// \brief Returns a reference to the element at specified index in a given stream.
         /// \return Returns the reference to the requested element in the specified stream.
-        template <std::int64_t kStream>
-        const auto& GetElementAt(std::int64_t index) const;
+        template <Int kStream>
+        const auto& GetElementAt(Int index) const;
 
         /// \brief Returns a reference to the element at specified index in a given stream type.
         /// \return Returns the reference to the requested element in the specified stream.
         template <typename TElement>
-        TElement& GetElementAt(std::int64_t index);
+        TElement& GetElementAt(Int index);
 
         /// \brief Returns a reference to the element at specified index in a given stream type.
         /// \return Returns the reference to the requested element in the specified stream.
         template <typename TElement>
-        const TElement& GetElementAt(std::int64_t index) const;
+        const TElement& GetElementAt(Int index) const;
 
         /// \brief Returns a reference to the first element of a given stream, by stream index.
         /// \return Returns the reference to the first element in the specified stream.
-        template <std::int64_t kStream>
+        template <Int kStream>
         auto& GetFront();
 
         /// \brief Returns a reference to the first element of a given stream, by stream index.
         /// \return Returns the reference to the first element in the specified stream.
-        template <std::int64_t kStream>
+        template <Int kStream>
         const auto& GetFront() const;
 
         /// \brief Returns a reference to the first element of a given stream, by stream type.
@@ -86,12 +87,12 @@ namespace syntropy
 
         /// \brief Returns a reference to the last element of a given stream.
         /// \return Returns the reference to the last element in the specified stream.
-        template <std::int64_t kStream>
+        template <Int kStream>
         auto& GetBack();
 
         /// \brief Returns a reference to the last element of a given stream.
         /// \return Returns the reference to the last element in the specified stream.
-        template <std::int64_t kStream>
+        template <Int kStream>
         const auto& GetBack() const;
 
         /// \brief Returns a reference to the last element of a given stream, by stream type.
@@ -110,13 +111,13 @@ namespace syntropy
 
         /// \brief Get the number of elements in the container.
         /// \return Returns the number of elements in the container.
-        std::int64_t GetSize() const noexcept;
+        Int GetSize() const noexcept;
 
         /// \brief Increase the capacity of the vector to a value that's greater or equal to capacity. If capacity is greater than the current GetCapacity(), new storage is allocated, otherwise the method does nothing.
-        void Reserve(std::int64_t capacity);
+        void Reserve(Int capacity);
 
         /// \brief Get the number of elements that can be contained in the current allocation storage.
-        std::int64_t GetCapacity() const noexcept;
+        Int GetCapacity() const noexcept;
 
         /// \brief Reduce memory usage by reducing unused memory.
         void ShrinkToFit();
@@ -134,14 +135,14 @@ namespace syntropy
         /// \brief Remove the index-th element of the container and replaces it with the last element in the container.
         /// The order of the container is not preserved as a result of this call.
         /// /// \param index Index of the element to remove.
-        void EraseSwap(std::int64_t index);
+        void EraseSwap(Int index);
 
         /// \brief Execute an operation on each element of the given streams, by stream index.
-        template <std::int64_t... kStreams, typename TOperation>
+        template <Int... kStreams, typename TOperation>
         void ForEach(TOperation&& operation);
 
         /// \brief Execute an operation on each element of the given streams, by stream index.
-        template <std::int64_t... kStreams, typename TOperation>
+        template <Int... kStreams, typename TOperation>
         void ForEach(TOperation&& operation) const;
 
         /// \brief Execute an operation on each element of the given streams, by stream type.
@@ -153,15 +154,15 @@ namespace syntropy
         void ForEach(TOperation&& operation) const;
 
         /// \brief Get a view into a stream by index.
-        template <std::int64_t kStream>
+        template <Int kStream>
         auto GetStream();
 
         /// \brief Get a view into a constant stream by index.
-        template <std::int64_t kStream>
+        template <Int kStream>
         auto GetStream() const;
 
         /// \brief Get a view into a constant stream by index.
-        template <std::int64_t kStream>
+        template <Int kStream>
         auto GetConstStream() const;
 
         /// \brief Get a view into a stream by type.
@@ -179,11 +180,11 @@ namespace syntropy
     private:
 
         /// \brief Appends the given element values to the end of a given stream.
-        template <std::int64_t kStream, typename TValue, typename... TValues>
+        template <Int kStream, typename TValue, typename... TValues>
         void PushBack(TValue&& value, TValues&&... values);
 
         /// \brief Appends the given element value to the end of a given stream.
-        template <std::int64_t kStream>
+        template <Int kStream>
         void PushBack();
 
         /// \brief Execute an operation on each stream.
@@ -191,7 +192,7 @@ namespace syntropy
         void ForEachStream(TOperation&& operation);
 
         /// \brief Execute an operation on each indexed stream.
-        template <typename TOperation, std::int64_t... kStreamIndexes>
+        template <typename TOperation, Int... kStreamIndexes>
         void ForEachStream(TOperation&& operation, std::index_sequence<kStreamIndexes...>);
 
         /// \brief Vector streams.
@@ -206,8 +207,8 @@ namespace syntropy
     // StreamVector<T...>.
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
-    inline auto& StreamVector<TStreams...>::GetElementAt(std::int64_t index)
+    template <Int kStream>
+    inline auto& StreamVector<TStreams...>::GetElementAt(Int index)
     {
         using TElement = std::tuple_element_t<kStream, std::tuple<TStreams...>>;
 
@@ -215,28 +216,28 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
-    inline const auto& StreamVector<TStreams...>::GetElementAt(std::int64_t index) const
+    template <Int kStream>
+    inline const auto& StreamVector<TStreams...>::GetElementAt(Int index) const
     {
         return std::get<kStream>(streams_)[index];
     }
 
     template <typename... TStreams>
     template <typename TElement>
-    inline TElement& StreamVector<TStreams...>::GetElementAt(std::int64_t index)
+    inline TElement& StreamVector<TStreams...>::GetElementAt(Int index)
     {
         return GetElementAt<TupleElementIndexV<TElement, std::tuple<TStreams...>>>(index);
     }
 
     template <typename... TStreams>
     template <typename TElement>
-    inline const TElement& StreamVector<TStreams...>::GetElementAt(std::int64_t index) const
+    inline const TElement& StreamVector<TStreams...>::GetElementAt(Int index) const
     {
         return GetElementAt<TupleElementIndexV<TElement, std::tuple<TStreams...>>>(index);
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline auto& StreamVector<TStreams...>::GetFront()
     {
         using TElement = std::tuple_element_t<kStream, std::tuple<TStreams...>>;
@@ -245,7 +246,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline const auto& StreamVector<TStreams...>::GetFront() const
     {
         return std::get<kStream>(streams_).front();
@@ -266,7 +267,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline auto& StreamVector<TStreams...>::GetBack()
     {
         using TElement = std::tuple_element_t<kStream, std::tuple<TStreams...>>;
@@ -275,7 +276,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline const auto& StreamVector<TStreams...>::GetBack() const
     {
         return std::get<kStream>(streams_).back();
@@ -302,13 +303,13 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    inline std::int64_t StreamVector<TStreams...>::GetSize() const noexcept
+    inline Int StreamVector<TStreams...>::GetSize() const noexcept
     {
         return std::get<0>(streams_).size();
     }
 
     template <typename... TStreams>
-    inline void StreamVector<TStreams...>::Reserve(std::int64_t capacity)
+    inline void StreamVector<TStreams...>::Reserve(Int capacity)
     {
         ForEachStream([capacity](auto& stream)
         {
@@ -317,7 +318,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    inline std::int64_t StreamVector<TStreams...>::GetCapacity() const noexcept
+    inline Int StreamVector<TStreams...>::GetCapacity() const noexcept
     {
         return std::get<0>(streams_).capacity();
     }
@@ -359,11 +360,11 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    inline void StreamVector<TStreams...>::EraseSwap(std::int64_t index)
+    inline void StreamVector<TStreams...>::EraseSwap(Int index)
     {
         ForEachStream([index](auto& stream)
         {
-            if (index < static_cast<std::int64_t>(stream.size()) - 1)
+            if (index < static_cast<Int>(stream.size()) - 1)
             {
                 stream[index] = std::move(stream.back());
             }
@@ -373,7 +374,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t... kStreams, typename TOperation>
+    template <Int... kStreams, typename TOperation>
     inline void StreamVector<TStreams...>::ForEach(TOperation&& operation)
     {
         for (auto index = 0; index < GetSize(); ++index)
@@ -383,7 +384,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t... kStreams, typename TOperation>
+    template <Int... kStreams, typename TOperation>
     inline void StreamVector<TStreams...>::ForEach(TOperation&& operation) const
     {
         for (auto index = 0; index < GetSize(); ++index)
@@ -407,7 +408,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline auto StreamVector<TStreams...>::GetStream()
     {
         using TElement = std::tuple_element_t<kStream, std::tuple<TStreams...>>;
@@ -416,14 +417,14 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline auto StreamVector<TStreams...>::GetStream() const
     {
         return GetConstStream<kStream>();
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline auto StreamVector<TStreams...>::GetConstStream() const
     {
         return MakeConstVectorView(std::get<kStream>(streams_));
@@ -451,7 +452,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream, typename TValue, typename... TValues>
+    template <Int kStream, typename TValue, typename... TValues>
     inline void StreamVector<TStreams...>::PushBack(TValue&& value, TValues&&... values)
     {
         std::get<kStream>(streams_).emplace_back(std::forward<TValue>(value));
@@ -460,7 +461,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <std::int64_t kStream>
+    template <Int kStream>
     inline void StreamVector<TStreams...>::PushBack()
     {
 
@@ -474,7 +475,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    template <typename TOperation, std::int64_t... kStreamIndexes>
+    template <typename TOperation, Int... kStreamIndexes>
     inline void StreamVector<TStreams...>::ForEachStream(TOperation&& operation, std::index_sequence<kStreamIndexes...>)
     {
         (operation(std::get<kStreamIndexes>(streams_)), ...);

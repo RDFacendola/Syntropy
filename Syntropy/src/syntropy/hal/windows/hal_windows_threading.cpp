@@ -70,7 +70,7 @@ namespace syntropy
     /* HAL THREADING                                                        */
     /************************************************************************/
 
-    std::int64_t HALThreading::GetCPUIndex()
+    Int HALThreading::GetCPUIndex()
     {
         auto processor_number = PROCESSOR_NUMBER{};
 

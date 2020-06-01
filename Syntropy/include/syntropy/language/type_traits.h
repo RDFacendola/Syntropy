@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "syntropy/syntropy.h"
-
 #include <cstdint>
 #include <type_traits>
 #include <tuple>
+
+#include "syntropy/core/types.h"
 
 namespace syntropy
 {
@@ -128,18 +128,18 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief If the sequence {Ints} is contiguous provides a member constant value equal to true, otherwise value is false.
-    template <std::int64_t... Ints>
+    template <Int... Ints>
     struct IsContiguousSequence : std::true_type {};
 
     /// \brief Specialization for two-element sequences or more.
-    template <std::int64_t Int1, std::int64_t Int2, std::int64_t... Ints>
+    template <Int Int1, Int Int2, Int... Ints>
     struct IsContiguousSequence<Int1, Int2, Ints...>
     {
         static constexpr bool Value = (Int1 + 1 == Int2) && IsContiguousSequence<Int2, Ints...>::Value;
     };
 
     /// \brief Helper value for IsContiguousSequence<T, Ints...>.
-    template <std::int64_t... Ints>
+    template <Int... Ints>
     constexpr bool IsContiguousSequenceV = IsContiguousSequence<Ints...>::Value;
 
     /************************************************************************/
@@ -169,14 +169,14 @@ namespace syntropy
     using FunctionArgumentsT = typename FunctionArguments<TFunction>::Type;
 
     /// \brief Trait used to determine the type of the kArgumentIndex-th argument of a callable object.
-    template <std::int64_t kArgumentIndex, typename TCallable>
+    template <Int kArgumentIndex, typename TCallable>
     struct FunctionArgument
     {
         using Type = std::tuple_element_t<kArgumentIndex, FunctionArgumentsT<TCallable>>;
     };
 
     /// \brief Helper type for FunctionArgument<kArgumentIndex, TFunction>.
-    template <std::int64_t kArgumentIndex, typename TFunction>
+    template <Int kArgumentIndex, typename TFunction>
     using FunctionArgumentT = typename FunctionArgument<kArgumentIndex, TFunction>::Type;
 
     /************************************************************************/
@@ -191,19 +191,19 @@ namespace syntropy
     template <typename TType, typename... TTypes>
     struct TupleElementIndex<TType, std::tuple<TType, TTypes...>>
     {
-        static constexpr std::int64_t Value = 0;
+        static constexpr Int Value = 0;
     };
 
     /// \brief Partial template specialization when the first element in the tuple is not equal to TType. Discard the element and increase the value by one.
     template <typename TType, typename TDiscard, typename... TTypes>
     struct TupleElementIndex<TType, std::tuple<TDiscard, TTypes...>>
     {
-        static constexpr std::int64_t Value = 1 + TupleElementIndex<TType, std::tuple<TTypes...>>::Value;
+        static constexpr Int Value = 1 + TupleElementIndex<TType, std::tuple<TTypes...>>::Value;
     };
 
     /// \brief Helper value for tuple_element_index<TType, TTuple>.
     template <typename TType, typename TTuple>
-    constexpr std::int64_t TupleElementIndexV = TupleElementIndex<TType, TTuple>::Value;
+    constexpr Int TupleElementIndexV = TupleElementIndex<TType, TTuple>::Value;
 
     /************************************************************************/
     /* IS VALID EXPRESSION                                                  */

@@ -8,9 +8,9 @@
 
 #pragma once
 
-#include <cstdint>
 #include <limits>
 
+#include "syntropy/core/types.h"
 #include "syntropy/serialization/msgpack/format.h"
 #include "syntropy/platform/endianness.h"
 #include "syntropy/language/type_traits.h"
@@ -27,34 +27,34 @@ namespace syntropy
     {
         /// \brief Encode a positive fix int.
         /// The behavior of this method is undefined if rhs is incompatible with the positive fix int specification.
-        std::int8_t EncodePositiveFixInt(std::int8_t rhs);
+        Byte EncodePositiveFixInt(Byte rhs);
 
         /// \brief Encode the length of a fixed-length map.
         /// The behavior of this method is undefined if rhs is incompatible with the fixed-length map specification.
-        std::int8_t EncodeFixMapLength(std::int8_t rhs);
+        Byte EncodeFixMapLength(Byte rhs);
 
         /// \brief Encode the length of a fixed-length array.
         /// The behavior of this method is undefined if rhs is incompatible with the fixed-length array specification.
-        std::int8_t EncodeFixArrayLength(std::int8_t rhs);
+        Byte EncodeFixArrayLength(Byte rhs);
 
         /// \brief Encode the length of a fixed-length string.
         /// The behavior of this method is undefined if rhs is incompatible with the fixed-length string specification.
-        std::int8_t EncodeFixStrLength(std::int8_t rhs);
+        Byte EncodeFixStrLength(Byte rhs);
 
         /// \brief Encode a null value.
-        std::int8_t Encode(std::nullptr_t rhs);
+        Byte Encode(std::nullptr_t rhs);
 
         /// \brief Encode a boolean value.
-        std::int8_t Encode(bool rhs);
+        Byte Encode(bool rhs);
 
         /// \brief Encode a 32-bit floating point number.
-        std::int32_t Encode(float rhs);
+        std::int32_t Encode(Float rhs);
 
         /// \brief Encode a 64-bit floating point number.
-        std::int64_t Encode(double rhs);
+        Int Encode(double rhs);
 
         /// \brief Encode a 8-bit signed int.
-        std::int8_t Encode(std::int8_t rhs);
+        Byte Encode(Byte rhs);
 
         /// \brief Encode a 16-bit signed int.
         std::int16_t Encode(std::int16_t rhs);
@@ -63,11 +63,11 @@ namespace syntropy
         std::int32_t Encode(std::int32_t rhs);
 
         /// \brief Encode a 64-bit signed int.
-        std::int64_t Encode(std::int64_t rhs);
+        Int Encode(Int rhs);
 
         /// \brief Encode a negative fix int.
         /// The behavior of this method is undefined if rhs is incompatible with the negative fix int specification.
-        std::int8_t EncodeNegativeFixInt(std::int8_t rhs);
+        Byte EncodeNegativeFixInt(Byte rhs);
     }
 
     /************************************************************************/
@@ -79,7 +79,7 @@ namespace syntropy
     namespace Msgpack
     {
         /// \brief Check whether rhs can be encoded using a positive fix int.
-        bool IsPositiveFixInt(std::int8_t rhs);
+        bool IsPositiveFixInt(Byte rhs);
 
         /// \brief Check whether rhs can be encoded using a fixed-length map.
         template <typename TMap>
@@ -114,13 +114,13 @@ namespace syntropy
         bool IsExt32(const TExtension& rhs);
 
         /// \brief Check whether rhs can be encoded using a 8-bit signed int.
-        bool IsInt8(std::int64_t rhs);
+        bool IsInt8(Int rhs);
 
         /// \brief Check whether rhs can be encoded using a 16-bit signed int.
-        bool IsInt16(std::int64_t rhs);
+        bool IsInt16(Int rhs);
 
         /// \brief Check whether rhs can be encoded using a 32-bit signed int.
-        bool IsInt32(std::int64_t rhs);
+        bool IsInt32(Int rhs);
 
         /// \brief Check whether rhs can be encoded using a 1-byte fixed extension type.
         template <typename TExtension>
@@ -168,7 +168,7 @@ namespace syntropy
         bool IsMap32(const TMap& rhs);
 
         /// \brief Check whether rhs can be encoded using a negative fix int.
-        bool IsNegativeFixInt(std::int8_t rhs);
+        bool IsNegativeFixInt(Byte rhs);
     }
 
     /************************************************************************/
@@ -178,10 +178,10 @@ namespace syntropy
     /// \brief Trait used to associate each type with an encoded data type.
     /// \author Raffaele D. Facendola - December 2019.
     template <typename TType>
-    using MsgpackSelectEncodedTypeT = ConditionalT<sizeof(TType) == sizeof(std::int8_t), std::int8_t,
+    using MsgpackSelectEncodedTypeT = ConditionalT<sizeof(TType) == sizeof(Byte), Byte,
         ConditionalT<sizeof(TType) == sizeof(std::int16_t), std::int16_t,
         ConditionalT<sizeof(TType) == sizeof(std::int32_t), std::int32_t,
-        ConditionalT<sizeof(TType) == sizeof(std::int64_t), std::int64_t,
+        ConditionalT<sizeof(TType) == sizeof(Int), Int,
         void>>>>;
 
     /************************************************************************/
@@ -190,55 +190,55 @@ namespace syntropy
 
      // Msgpack
 
-    inline std::int8_t Msgpack::EncodePositiveFixInt(std::int8_t rhs)
+    inline Byte Msgpack::EncodePositiveFixInt(Byte rhs)
     {
-        return std::int8_t(MsgpackFormat::kPositiveFixInt) | (rhs & 0b01111111);
+        return Byte(MsgpackFormat::kPositiveFixInt) | (rhs & 0b01111111);
     }
 
-    inline std::int8_t Msgpack::EncodeFixMapLength(std::int8_t rhs)
+    inline Byte Msgpack::EncodeFixMapLength(Byte rhs)
     {
-        return std::int8_t(MsgpackFormat::kFixMap) | (rhs & 0b00001111);
+        return Byte(MsgpackFormat::kFixMap) | (rhs & 0b00001111);
     }
 
-    inline std::int8_t Msgpack::EncodeFixArrayLength(std::int8_t rhs)
+    inline Byte Msgpack::EncodeFixArrayLength(Byte rhs)
     {
-        return std::int8_t(MsgpackFormat::kFixArray) | (rhs & 0b00001111);
+        return Byte(MsgpackFormat::kFixArray) | (rhs & 0b00001111);
     }
 
-    inline std::int8_t Msgpack::EncodeFixStrLength(std::int8_t rhs)
+    inline Byte Msgpack::EncodeFixStrLength(Byte rhs)
     {
-        return std::int8_t(MsgpackFormat::kFixStr) | (rhs & 0b00011111);
+        return Byte(MsgpackFormat::kFixStr) | (rhs & 0b00011111);
     }
 
-    inline std::int8_t Msgpack::Encode(std::nullptr_t rhs)
+    inline Byte Msgpack::Encode(std::nullptr_t rhs)
     {
-        return std::int8_t(MsgpackFormat::kNil);
+        return Byte(MsgpackFormat::kNil);
     }
 
-    inline std::int8_t Msgpack::Encode(bool rhs)
+    inline Byte Msgpack::Encode(bool rhs)
     {
-        return std::int8_t(rhs ? MsgpackFormat::kTrue : MsgpackFormat::kFalse);
+        return Byte(rhs ? MsgpackFormat::kTrue : MsgpackFormat::kFalse);
     }
 
-    inline std::int32_t Msgpack::Encode(float rhs)
+    inline std::int32_t Msgpack::Encode(Float rhs)
     {
         auto bytes = std::int32_t{};
 
-        std::memcpy(&bytes, &rhs, sizeof(float));
+        std::memcpy(&bytes, &rhs, sizeof(Float));
 
         return Endianness::ToBigEndian(bytes);
     }
 
-    inline std::int64_t Msgpack::Encode(double rhs)
+    inline Int Msgpack::Encode(double rhs)
     {
-        auto bytes = std::int64_t{};
+        auto bytes = Int{};
 
         std::memcpy(&bytes, &rhs, sizeof(double));
 
         return Endianness::ToBigEndian(bytes);
     }
 
-    inline std::int8_t Msgpack::Encode(std::int8_t rhs)
+    inline Byte Msgpack::Encode(Byte rhs)
     {
         return Endianness::ToBigEndian(rhs);
     }
@@ -253,19 +253,19 @@ namespace syntropy
         return Endianness::ToBigEndian(rhs);
     }
 
-    inline std::int64_t Msgpack::Encode(std::int64_t rhs)
+    inline Int Msgpack::Encode(Int rhs)
     {
         return Endianness::ToBigEndian(rhs);
     }
 
-    inline std::int8_t Msgpack::EncodeNegativeFixInt(std::int8_t rhs)
+    inline Byte Msgpack::EncodeNegativeFixInt(Byte rhs)
     {
-        return std::int8_t(MsgpackFormat::kNegativeFixInt) | ((-rhs) & 0b00011111);
+        return Byte(MsgpackFormat::kNegativeFixInt) | ((-rhs) & 0b00011111);
     }
 
     // Msgpack.
 
-    inline bool Msgpack::IsPositiveFixInt(std::int8_t rhs)
+    inline bool Msgpack::IsPositiveFixInt(Byte rhs)
     {
         return rhs >= 0 && rhs <= 127;
     }
@@ -320,17 +320,17 @@ namespace syntropy
         return MsgpackExtensionType<TExtension>::GetSize(rhs) <= 0xFFFFFFFF_Bytes;
     }
 
-    inline bool Msgpack::IsInt8(std::int64_t rhs)
+    inline bool Msgpack::IsInt8(Int rhs)
     {
-        return rhs >= std::numeric_limits<std::int8_t>::min() && rhs <= std::numeric_limits<std::int8_t>::max();
+        return rhs >= std::numeric_limits<Byte>::min() && rhs <= std::numeric_limits<Byte>::max();
     }
 
-    inline bool Msgpack::IsInt16(std::int64_t rhs)
+    inline bool Msgpack::IsInt16(Int rhs)
     {
         return rhs >= std::numeric_limits<std::int16_t>::min() && rhs <= std::numeric_limits<std::int16_t>::max();
     }
 
-    inline bool Msgpack::IsInt32(std::int64_t rhs)
+    inline bool Msgpack::IsInt32(Int rhs)
     {
         return rhs >= std::numeric_limits<std::int32_t>::min() && rhs <= std::numeric_limits<std::int32_t>::max();
     }
@@ -404,7 +404,7 @@ namespace syntropy
         return rhs.size() <= 0xFFFFFFFF;
     }
 
-    inline bool Msgpack::IsNegativeFixInt(std::int8_t rhs)
+    inline bool Msgpack::IsNegativeFixInt(Byte rhs)
     {
         return rhs >= -63 && rhs <= 0;
     }

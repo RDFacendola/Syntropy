@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/syntropy.h"
 
 #include <functional>
@@ -22,7 +23,7 @@ namespace syntropy
     struct HashFunctor64
     {
         /// \brief Get the non-cryptographic 64-bit hash of rhs.
-        std::int64_t operator()(const TType& rhs) const;
+        Int operator()(const TType& rhs) const;
     };
 
     /************************************************************************/
@@ -35,7 +36,7 @@ namespace syntropy
     struct HashFunctor32
     {
         /// \brief Get the non-cryptographic 32-bit hash of rhs.
-        std::int32_t operator()(const TType& rhs) const;
+        Int operator()(const TType& rhs) const;
     };
 
     /************************************************************************/
@@ -44,11 +45,11 @@ namespace syntropy
 
     /// \brief Get the non-cryptographic 64-bit hash of an instance.
     template <typename TType>
-    std::int64_t Hash64(const TType& rhs);
+    Int Hash64(const TType& rhs);
 
     /// \brief Get the non-cryptographic 32-bit hash of an instance.
     template <typename TType>
-    std::int64_t Hash32(const TType& rhs);
+    Int Hash32(const TType& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -57,7 +58,7 @@ namespace syntropy
     // HashFunctor64<TType>.
 
     template <typename TType>
-    inline std::int64_t HashFunctor64<TType>::operator()(const TType& rhs) const
+    inline Int HashFunctor64<TType>::operator()(const TType& rhs) const
     {
         return Hash64(rhs);
     }
@@ -65,7 +66,7 @@ namespace syntropy
     // HashFunctor32<TType>.
 
     template <typename TType>
-    inline std::int32_t HashFunctor32<TType>::operator()(const TType& rhs) const
+    inline Int HashFunctor32<TType>::operator()(const TType& rhs) const
     {
         return Hash32(rhs);
     }
@@ -73,13 +74,13 @@ namespace syntropy
     // Non-member functions.
 
     template <typename TType>
-    inline std::int64_t Hash64(const TType& rhs)
+    inline Int Hash64(const TType& rhs)
     {
-        return static_cast<std::int64_t>(std::hash<TType>{}(rhs));
+        return static_cast<Int>(std::hash<TType>{}(rhs));
     }
 
     template <typename TType>
-    inline std::int32_t Hash32(const TType& rhs)
+    inline Int Hash32(const TType& rhs)
     {
         using syntropy::Hash64;
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include "syntropy/core/types.h"
 
 namespace syntropy
 {
@@ -25,7 +25,7 @@ namespace syntropy
         std::int32_t ToBigEndian(std::int32_t rhs);
 
         /// \brief Convert a number from platform-endian to big-endian.
-        std::int64_t ToBigEndian(std::int64_t rhs);
+        Int ToBigEndian(Int rhs);
 
         /// \brief Convert a number from big-endian to platform-endian.
         std::int16_t FromBigEndian(std::int16_t rhs);
@@ -34,7 +34,7 @@ namespace syntropy
         std::int32_t FromBigEndian(std::int32_t rhs);
 
         /// \brief Convert a number from big-endian to platform-endian.
-        std::int64_t FromBigEndian(std::int64_t rhs);
+        Int FromBigEndian(Int rhs);
 
         /// \brief Convert a number from platform-endian to little-endian.
         std::int16_t ToLittleEndian(std::int16_t rhs);
@@ -43,7 +43,7 @@ namespace syntropy
         std::int32_t ToLittleEndian(std::int32_t rhs);
 
         /// \brief Convert a number from platform-endian to little-endian.
-        std::int64_t ToLittleEndian(std::int64_t rhs);
+        Int ToLittleEndian(Int rhs);
 
         /// \brief Convert a number from little-endian to platform-endian.
         std::int16_t FromLittleEndian(std::int16_t rhs);
@@ -52,7 +52,7 @@ namespace syntropy
         std::int32_t FromLittleEndian(std::int32_t rhs);
 
         /// \brief Convert a number from little-endian to platform-endian.
-        std::int64_t FromLittleEndian(std::int64_t rhs);
+        Int FromLittleEndian(Int rhs);
     }
 
 }

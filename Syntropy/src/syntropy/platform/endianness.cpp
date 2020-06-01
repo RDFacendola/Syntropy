@@ -18,7 +18,7 @@ namespace syntropy
         return HALEndianness::ToBigEndian(rhs);
     }
 
-    std::int64_t Endianness::ToBigEndian(std::int64_t rhs)
+    Int Endianness::ToBigEndian(Int rhs)
     {
         return HALEndianness::ToBigEndian(rhs);
     }
@@ -33,7 +33,7 @@ namespace syntropy
         return HALEndianness::FromBigEndian(rhs);
     }
 
-    std::int64_t Endianness::FromBigEndian(std::int64_t rhs)
+    Int Endianness::FromBigEndian(Int rhs)
     {
         return HALEndianness::FromBigEndian(rhs);
     }
@@ -48,7 +48,7 @@ namespace syntropy
         return HALEndianness::ToLittleEndian(rhs);
     }
 
-    std::int64_t Endianness::ToLittleEndian(std::int64_t rhs)
+    Int Endianness::ToLittleEndian(Int rhs)
     {
         return HALEndianness::ToLittleEndian(rhs);
     }
@@ -63,7 +63,7 @@ namespace syntropy
         return HALEndianness::FromLittleEndian(rhs);
     }
 
-    std::int64_t Endianness::FromLittleEndian(std::int64_t rhs)
+    Int Endianness::FromLittleEndian(Int rhs)
     {
         return HALEndianness::FromLittleEndian(rhs);
     }

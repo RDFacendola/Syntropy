@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_address.h"
@@ -59,19 +60,19 @@ namespace syntropy
 
         /// \brief Get the amount of active allocations on the underlying memory resource.
         /// \return Returns the number of active allocations on the underlying memory resource.
-        std::int64_t GetAllocationCount() const noexcept;
+        Int GetAllocationCount() const noexcept;
 
         /// \brief Get the total amount of allocations that were performed on the underlying memory resource, ignoring any deallocation.
         /// \return Returns the total amount of allocations that were performed on the underlying memory resource.
-        std::int64_t GetProgressiveAllocationCount() const noexcept;
+        Int GetProgressiveAllocationCount() const noexcept;
 
     private:
 
         ///< \brief Number of allocations.
-        std::int64_t allocation_count_{ 0 };
+        Int allocation_count_{ 0 };
 
         ///< \brief Number of deallocations.
-        std::int64_t deallocation_count_{ 0 };
+        Int deallocation_count_{ 0 };
 
         ///< \brief Underlying memory resource.
         TMemoryResource memory_resource_;
@@ -120,13 +121,13 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline std::int64_t CountingMemoryResource<TMemoryResource>::GetAllocationCount() const noexcept
+    inline Int CountingMemoryResource<TMemoryResource>::GetAllocationCount() const noexcept
     {
         return allocation_count_ - deallocation_count_;
     }
 
     template <typename TMemoryResource>
-    inline std::int64_t CountingMemoryResource<TMemoryResource>::GetProgressiveAllocationCount() const noexcept
+    inline Int CountingMemoryResource<TMemoryResource>::GetProgressiveAllocationCount() const noexcept
     {
         return allocation_count_;
     }

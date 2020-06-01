@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <ostream>
 
+#include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 
@@ -272,14 +273,14 @@ namespace syntropy
     template <bool kIsConst>
     constexpr MemoryAddressT<kIsConst>& MemoryAddressT<kIsConst>::operator+=(const Bytes& rhs) noexcept
     {
-        address_ = reinterpret_cast<std::conditional_t<kIsConst, const int8_t*, int8_t*>>(address_) + *rhs;
+        address_ = reinterpret_cast<std::conditional_t<kIsConst, const Byte*, Byte*>>(address_) + *rhs;
         return *this;
     }
 
     template <bool kIsConst>
     constexpr MemoryAddressT<kIsConst>& MemoryAddressT<kIsConst>::operator-=(const Bytes& rhs) noexcept
     {
-        address_ = reinterpret_cast<std::conditional_t<kIsConst, const int8_t*, int8_t*>>(address_) - *rhs;
+        address_ = reinterpret_cast<std::conditional_t<kIsConst, const Byte*, Byte*>>(address_) - *rhs;
         return *this;
     }
 

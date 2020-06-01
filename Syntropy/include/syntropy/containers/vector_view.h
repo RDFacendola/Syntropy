@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include "syntropy/containers/vector.h"
+#include "syntropy/core/types.h"
 #include "syntropy/core/range.h"
+#include "syntropy/containers/vector.h"
 #include "syntropy/language/type_traits.h"
 #include "syntropy/language/utility.h"
 
@@ -62,10 +63,10 @@ namespace syntropy
         ~VectorView() = default;
 
         /// \brief Access an element by index.
-        TElement& operator[](std::int64_t index);
+        TElement& operator[](Int index);
 
         /// \brief Access an element by index.
-        const TElement& operator[](std::int64_t index) const;
+        const TElement& operator[](Int index) const;
 
         /// \brief Get a reference to the first element in the vector.
         TElement& GetFront();
@@ -85,7 +86,7 @@ namespace syntropy
 
         /// \brief Get the number of elements in the container.
         /// \return Returns the number of elements in the container.
-        std::int64_t GetSize() const noexcept;
+        Int GetSize() const noexcept;
 
         /// \brief Get the underlying range.
         TRange GetRange();
@@ -158,13 +159,13 @@ namespace syntropy
     }
 
     template <typename TElement>
-    inline TElement& VectorView<TElement>::operator[](std::int64_t index)
+    inline TElement& VectorView<TElement>::operator[](Int index)
     {
         return (*vector_)[index];
     }
 
     template <typename TElement>
-    inline const TElement& VectorView<TElement>::operator[](std::int64_t index) const
+    inline const TElement& VectorView<TElement>::operator[](Int index) const
     {
         return (*vector_)[index];
     }
@@ -200,7 +201,7 @@ namespace syntropy
     }
 
     template <typename TElement>
-    inline std::int64_t VectorView<TElement>::GetSize() const noexcept
+    inline Int VectorView<TElement>::GetSize() const noexcept
     {
         return (*vector_).size();
     }

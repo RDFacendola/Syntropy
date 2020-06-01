@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <cstdint>
-
+#include "syntropy/core/types.h"
 #include "syntropy/diagnostics/stack_trace.h"
 
 namespace syntropy

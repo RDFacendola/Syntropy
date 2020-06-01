@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <cstdint>
 #include <limits>
 #include <optional>
 
+#include <cstdint>
 #include "syntropy/containers/vector.h"
 #include "syntropy/containers/map.h"
 #include "syntropy/core/string.h"
@@ -32,16 +32,16 @@ namespace syntropy
     public:
 
         /// \brief Type of the underlying string.
-        using TString = BasicString<std::int8_t>;
+        using TString = BasicString<Byte>;
 
         /// \brief Type of the underlying stream.
-        using TStream = BasicStringStream<std::int8_t>;
+        using TStream = BasicStringStream<Byte>;
 
         /// \brief Type of the underlying input stream.
-        using TInputStream = std::basic_ostream<std::int8_t>;
+        using TInputStream = std::basic_ostream<Byte>;
 
         /// \brief Type of the underlying output stream.
-        using TOutputStream = std::basic_ostream<std::int8_t>;
+        using TOutputStream = std::basic_ostream<Byte>;
 
         /// \brief Create an empty stream.
         MsgpackStream() = default;
@@ -56,7 +56,7 @@ namespace syntropy
         MsgpackStream& operator<<(bool rhs);
 
         /// \brief Insert an 8-bit integer value.
-        MsgpackStream& operator<<(std::int8_t rhs);
+        MsgpackStream& operator<<(Byte rhs);
 
         /// \brief Insert a 16-bit integer value.
         MsgpackStream& operator<<(std::int16_t rhs);
@@ -65,10 +65,10 @@ namespace syntropy
         MsgpackStream& operator<<(std::int32_t rhs);
 
         /// \brief Insert a 64-bit integer value.
-        MsgpackStream& operator<<(std::int64_t rhs);
+        MsgpackStream& operator<<(Int rhs);
 
         /// \brief Insert a single precision floating point value.
-        MsgpackStream& operator<<(float rhs);
+        MsgpackStream& operator<<(Float rhs);
 
         /// \brief Insert a double precision floating point value.
         MsgpackStream& operator<<(double rhs);
@@ -101,7 +101,7 @@ namespace syntropy
         MsgpackStream& operator>>(bool& rhs);
 
         /// \brief Extract an 8-bit integer value.
-        MsgpackStream& operator>>(std::int8_t& rhs);
+        MsgpackStream& operator>>(Byte& rhs);
 
         /// \brief Extract a 16-bit integer value.
         MsgpackStream& operator>>(std::int16_t& rhs);
@@ -110,7 +110,7 @@ namespace syntropy
         MsgpackStream& operator>>(std::int32_t& rhs);
 
         /// \brief Extract a 64-bit integer value.
-        MsgpackStream& operator>>(std::int64_t& rhs);
+        MsgpackStream& operator>>(Int& rhs);
 
         /// \brief Extract a 8-bit unsigned integer value.
         /// Unsigned variant provided for external compatibility.
@@ -129,7 +129,7 @@ namespace syntropy
         MsgpackStream& operator>>(std::uint64_t& rhs);
 
         /// \brief Extract a single precision floating point value.
-        MsgpackStream& operator>>(float& rhs);
+        MsgpackStream& operator>>(Float& rhs);
 
         /// \brief Extract a double precision floating point value.
         MsgpackStream& operator>>(double& rhs);
@@ -164,7 +164,7 @@ namespace syntropy
         void Recover();
 
         /// \brief Get the index of the next byte to read.
-        std::int64_t GetReadPosition() const;
+        Int GetReadPosition() const;
 
         /// \brief Clear the underlying stream.
         void Clear();
@@ -207,10 +207,10 @@ namespace syntropy
         void Put(TType value);
 
         /// \brief Put a buffer inside the underlying stream.
-        void Put(const void* data, std::int64_t size);
+        void Put(const void* data, Int size);
 
         /// \brief Peek a single byte from the underlying stream.
-        std::int8_t Peek();
+        Byte Peek();
 
         /// \brief Peek a single byte from the underlying stream and test it with the provided type.
         /// \return If the peeked byte matches the provided type, consume the byte and returns true, otherwise returns false.
@@ -221,7 +221,7 @@ namespace syntropy
         TType Get();
 
         /// \brief Read data from the underlying stream.
-        void Get(void* buffer, std::int64_t length);
+        void Get(void* buffer, Int length);
 
         /// \brief Underlying stream.
         TStream stream_;
@@ -260,7 +260,7 @@ namespace syntropy
         return *this;
     }
 
-    inline MsgpackStream& MsgpackStream::operator<<(float rhs)
+    inline MsgpackStream& MsgpackStream::operator<<(Float rhs)
     {
         Put(MsgpackFormat::kFloat32);
         Put(Msgpack::Encode(rhs));
@@ -286,7 +286,7 @@ namespace syntropy
     {
         if (Msgpack::IsFixArray(rhs))
         {
-            Put(Msgpack::EncodeFixArrayLength(static_cast<std::int8_t>(rhs.size())));
+            Put(Msgpack::EncodeFixArrayLength(static_cast<Byte>(rhs.size())));
         }
         else if (Msgpack::IsArray16(rhs))
         {
@@ -312,7 +312,7 @@ namespace syntropy
     {
         if (Msgpack::IsFixMap(rhs))
         {
-            Put(Msgpack::EncodeFixMapLength(static_cast<std::int8_t>(rhs.size())));
+            Put(Msgpack::EncodeFixMapLength(static_cast<Byte>(rhs.size())));
         }
         else if (Msgpack::IsMap16(rhs))
         {
@@ -366,7 +366,7 @@ namespace syntropy
         else if (Msgpack::IsExt8(rhs))
         {
             Put(MsgpackFormat::kExt8);
-            Put(Msgpack::Encode(static_cast<std::int8_t>(size)));
+            Put(Msgpack::Encode(static_cast<Byte>(size)));
         }
         else if (Msgpack::IsExt16(rhs))
         {
@@ -379,7 +379,7 @@ namespace syntropy
             Put(Msgpack::Encode(static_cast<std::int32_t>(size)));
         }
 
-        Put(std::int8_t(TMsgpackExtensionType::GetType()));
+        Put(Byte(TMsgpackExtensionType::GetType()));
 
         TMsgpackExtensionType::Encode(static_cast<TOutputStream&>(stream_), rhs);
 
@@ -391,11 +391,11 @@ namespace syntropy
     {
         auto sentry = Sentry(*this);
 
-        auto length = std::optional<std::int64_t>{};
+        auto length = std::optional<Int>{};
 
         if (Msgpack::IsFixArrayFormat(Peek()))
         {
-            length = Msgpack::DecodeFixArrayLength(Get<std::int8_t>());
+            length = Msgpack::DecodeFixArrayLength(Get<Byte>());
         }
         else if (Test(MsgpackFormat::kArray16))
         {
@@ -431,11 +431,11 @@ namespace syntropy
     {
         auto sentry = Sentry(*this);
 
-        auto length = std::optional<std::int64_t>{};
+        auto length = std::optional<Int>{};
 
         if (Msgpack::IsFixMapFormat(Peek()))
         {
-            length = Msgpack::DecodeFixMapLength(Get<std::int8_t>());
+            length = Msgpack::DecodeFixMapLength(Get<Byte>());
         }
         else if (Test(MsgpackFormat::kMap16))
         {
@@ -499,7 +499,7 @@ namespace syntropy
         }
         else if (Test(MsgpackFormat::kExt8))
         {
-            size = Bytes(Msgpack::Decode<std::int8_t>(Get<std::int8_t>()));
+            size = Bytes(Msgpack::Decode<Byte>(Get<Byte>()));
         }
         else if (Test(MsgpackFormat::kExt16))
         {
@@ -510,7 +510,7 @@ namespace syntropy
             size = Bytes(Msgpack::Decode<std::int32_t>(Get<std::int32_t>()));
         }
 
-        if (size && std::int8_t(TMsgpackExtensionType::GetType()) == Get<std::int8_t>())
+        if (size && Byte(TMsgpackExtensionType::GetType()) == Get<Byte>())
         {
             TMsgpackExtensionType::Decode(static_cast<TInputStream&>(stream_), *size, rhs);
 
@@ -540,9 +540,9 @@ namespace syntropy
         stream_.str({});
     }
 
-    inline std::int64_t MsgpackStream::GetReadPosition() const
+    inline Int MsgpackStream::GetReadPosition() const
     {
-        return static_cast<std::int64_t>(stream_.rdbuf()->pubseekoff(0, std::ios::cur, std::ios::in));
+        return static_cast<Int>(stream_.rdbuf()->pubseekoff(0, std::ios::cur, std::ios::in));
     }
 
     inline MsgpackStream::TString MsgpackStream::ToString() const
@@ -553,31 +553,31 @@ namespace syntropy
     template <typename TType>
     inline void MsgpackStream::Put(TType value)
     {
-        if constexpr (sizeof(TType) == sizeof(std::int8_t))
+        if constexpr (sizeof(TType) == sizeof(Byte))
         {
-            stream_.put(static_cast<std::int8_t>(value));
+            stream_.put(static_cast<Byte>(value));
         }
         else
         {
-            stream_.write(reinterpret_cast<std::int8_t*>(&value), sizeof(TType));
+            stream_.write(reinterpret_cast<Byte*>(&value), sizeof(TType));
         }
     }
 
-    inline void MsgpackStream::Put(const void* data, std::int64_t size)
+    inline void MsgpackStream::Put(const void* data, Int size)
     {
-        stream_.write(reinterpret_cast<const std::int8_t*>(data), size);
+        stream_.write(reinterpret_cast<const Byte*>(data), size);
     }
 
-    inline std::int8_t MsgpackStream::Peek()
+    inline Byte MsgpackStream::Peek()
     {
-        return std::int8_t(stream_.peek());
+        return Byte(stream_.peek());
     }
 
     inline bool MsgpackStream::Test(MsgpackFormat type)
     {
-        if (Peek() == std::int8_t(type))
+        if (Peek() == Byte(type))
         {
-            Get<std::int8_t>();
+            Get<Byte>();
             return true;
         }
         else
@@ -589,7 +589,7 @@ namespace syntropy
     template <typename TType>
     inline TType MsgpackStream::Get()
     {
-        if constexpr (sizeof(TType) == sizeof(std::int8_t))
+        if constexpr (sizeof(TType) == sizeof(Byte))
         {
             return TType(stream_.get());
         }
@@ -597,15 +597,15 @@ namespace syntropy
         {
             auto buffer = TType{};
 
-            stream_.read(reinterpret_cast<std::int8_t*>(&buffer), sizeof(TType));
+            stream_.read(reinterpret_cast<Byte*>(&buffer), sizeof(TType));
 
             return buffer;
         }
     }
 
-    inline void MsgpackStream::Get(void* buffer, std::int64_t length)
+    inline void MsgpackStream::Get(void* buffer, Int length)
     {
-        stream_.read(reinterpret_cast<std::int8_t*>(buffer), length);
+        stream_.read(reinterpret_cast<Byte*>(buffer), length);
     }
 
     // MsgpackStream :: Sentry.

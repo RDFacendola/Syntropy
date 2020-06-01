@@ -10,6 +10,7 @@
 
 #include "syntropy/platform/intrinsics.h"
 #include "syntropy/math/math.h"
+#include "syntropy/core/types.h"
 
 namespace syntropy
 {
@@ -48,7 +49,7 @@ namespace syntropy
         TNumber FastSqrt(TNumber rhs);
 
         /// \brief Get the approximated hyperbolic tangent of rhs.
-        constexpr float FastTanh(float rhs);
+        constexpr Float FastTanh(Float rhs);
     }
 
 	/************************************************************************/
@@ -90,16 +91,16 @@ namespace syntropy
     template <typename TNumber>
     inline TNumber Math::FastInvSqrt(TNumber rhs)
     {
-        return static_cast<TNumber>(Intrinsics::GetFastInvSqrt(static_cast<float>(rhs)));
+        return static_cast<TNumber>(Intrinsics::GetFastInvSqrt(static_cast<Float>(rhs)));
     }
 
     template <typename TNumber>
     inline TNumber Math::FastSqrt(TNumber rhs)
     {
-        return static_cast<TNumber>(1.0f / Intrinsics::GetFastInvSqrt(static_cast<float>(rhs)));
+        return static_cast<TNumber>(1.0f / Intrinsics::GetFastInvSqrt(static_cast<Float>(rhs)));
     }
 
-    constexpr float Math::FastTanh(float rhs)
+    constexpr Float Math::FastTanh(Float rhs)
     {
         // Pade approximation.
 
@@ -113,7 +114,7 @@ namespace syntropy
         }
         else
         {
-            float rhs2 = rhs * rhs;
+            Float rhs2 = rhs * rhs;
 
             return rhs * (27.0f + rhs2) / (27.0f + 9.0f * rhs2);
         }

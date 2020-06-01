@@ -9,6 +9,7 @@
 #include <iostream>
 #include <ios>
 
+#include "syntropy/core/types.h"
 #include "syntropy/core/label.h"
 #include "syntropy/unit_test/test_result.h"
 #include "syntropy/diagnostics/stack_trace.h"
@@ -33,13 +34,13 @@ namespace syntropy
         StackTrace end_trace_;
 
         /// \brief Number of tests that were skipped.
-        std::int64_t skipped_count_{ 0 };
+        Int skipped_count_{ 0 };
 
         /// \brief Number of tests that succeeded.
-        std::int64_t success_count_{ 0 };
+        Int success_count_{ 0 };
 
         /// \brief Number of tests that failed.
-        std::int64_t fail_count_{ 0 };
+        Int fail_count_{ 0 };
     };
 
     /************************************************************************/

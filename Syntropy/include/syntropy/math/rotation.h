@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/math/math.h"
 #include "syntropy/math/vector.h"
 #include "syntropy/math/quaternion.h"
@@ -32,7 +33,7 @@ namespace syntropy
             Rotation() = default;
 
             /// \brief Create a rotation from an axis and an angle.
-            Rotation(const Float3& axis, float angle);
+            Rotation(const Float3& axis, Float angle);
 
             /// \brief Create a rotation from a quaternion.
             Rotation(const Quaternion& rhs);
@@ -50,10 +51,10 @@ namespace syntropy
             Rotation operator-() const;
 
             /// \brief Check whether this rotation is an identity rotation.
-            bool IsIdentity(float epsilon = 0.01f) const;
+            bool IsIdentity(Float epsilon = 0.01f) const;
 
             /// \brief Get the angle of rotation.
-            float GetAngle() const;
+            Float GetAngle() const;
 
             /// \brief Get the axis of rotation.
             /// The behavior of this method is undefined if this rotation is an identity rotation.
@@ -85,7 +86,7 @@ namespace syntropy
 
     // Rotation.
 
-    inline Math::Rotation::Rotation(const Float3& axis, float angle)
+    inline Math::Rotation::Rotation(const Float3& axis, Float angle)
         : quaternion_(std::sin(angle * 0.5f) * Normalize(axis), std::cos(angle * 0.5f))
     {
 
@@ -123,7 +124,7 @@ namespace syntropy
         return inverse;
     }
 
-    inline float Math::Rotation::GetAngle() const
+    inline Float Math::Rotation::GetAngle() const
     {
         return 2.0f * std::acosf(quaternion_.w_);
     }
@@ -133,7 +134,7 @@ namespace syntropy
         return quaternion_.xyz_ * FastInvSqrt(1.0f - quaternion_.w_ * quaternion_.w_);      // sin(theta) = sqrt(1 - cos(theta)^2)
     }
 
-    inline bool Math::Rotation::IsIdentity(float epsilon) const
+    inline bool Math::Rotation::IsIdentity(Float epsilon) const
     {
         return Abs(quaternion_.w_) > (1.0f - epsilon);
     }

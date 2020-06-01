@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
+
 #include "syntropy/language/type_traits.h"
 
 #include "syntropy/memory/bytes.h"
@@ -21,7 +23,7 @@ namespace syntropy
 
     /// \brief Tier 0 memory resource used to allocate a single block of memory on system stack.
     /// \author Raffaele D. Facendola - August 2018
-    template <std::int64_t kSize, std::align_val_t kAlignment = std::align_val_t(alignof(void*))>
+    template <Int kSize, std::align_val_t kAlignment = std::align_val_t(alignof(void*))>
     class StackMemoryResource
     {
         static_assert(kSize >= alignof(std::max_align_t));
@@ -76,7 +78,7 @@ namespace syntropy
 
     // StackMemoryResource<kSize, kAlignment>.
 
-    template <std::int64_t kSize, std::align_val_t kAlignment>
+    template <Int kSize, std::align_val_t kAlignment>
     inline MemoryRange StackMemoryResource<kSize, kAlignment>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (is_free_ && (size <= Bytes(kSize)) && (alignment <= Alignment(kAlignment)))
@@ -89,7 +91,7 @@ namespace syntropy
         return {};
     }
 
-    template <std::int64_t kSize, std::align_val_t kAlignment>
+    template <Int kSize, std::align_val_t kAlignment>
     inline void StackMemoryResource<kSize, kAlignment>::Deallocate(const MemoryRange& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(alignment <= Alignment(kAlignment));
@@ -98,7 +100,7 @@ namespace syntropy
         is_free_ = true;
     }
 
-    template <std::int64_t kSize, std::align_val_t kAlignment>
+    template <Int kSize, std::align_val_t kAlignment>
     inline bool StackMemoryResource<kSize, kAlignment>::Owns(const MemoryRange& block) const noexcept
     {
         return ConstMemoryRange{ &storage_, Bytes{kSize} }.Contains(block);

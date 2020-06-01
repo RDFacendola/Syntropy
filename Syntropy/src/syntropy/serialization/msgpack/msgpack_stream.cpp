@@ -6,7 +6,7 @@ namespace syntropy
     /* MSGPACK STREAM                                                       */
     /************************************************************************/
 
-    MsgpackStream& MsgpackStream::operator<<(std::int8_t rhs)
+    MsgpackStream& MsgpackStream::operator<<(Byte rhs)
     {
         if (Msgpack::IsPositiveFixInt(rhs))
         {
@@ -29,7 +29,7 @@ namespace syntropy
     {
         if (Msgpack::IsInt8(rhs))
         {
-            operator<<(std::int8_t(rhs));
+            operator<<(Byte(rhs));
         }
         else
         {
@@ -55,7 +55,7 @@ namespace syntropy
         return *this;
     }
 
-    MsgpackStream& MsgpackStream::operator<<(std::int64_t rhs)
+    MsgpackStream& MsgpackStream::operator<<(Int rhs)
     {
         if (Msgpack::IsInt32(rhs))
         {
@@ -74,12 +74,12 @@ namespace syntropy
     {
         if (Msgpack::IsFixStr(rhs))
         {
-            Put(Msgpack::EncodeFixStrLength(static_cast<std::int8_t>(rhs.size())));
+            Put(Msgpack::EncodeFixStrLength(static_cast<Byte>(rhs.size())));
         }
         else if (Msgpack::IsStr8(rhs))
         {
             Put(MsgpackFormat::kStr8);
-            Put(Msgpack::Encode(static_cast<std::int8_t>(rhs.size())));
+            Put(Msgpack::Encode(static_cast<Byte>(rhs.size())));
         }
         else if (Msgpack::IsStr16(rhs))
         {
@@ -104,7 +104,7 @@ namespace syntropy
         if (Msgpack::IsBin8(rhs))
         {
             Put(MsgpackFormat::kBin8);
-            Put(Msgpack::Encode(static_cast<std::int8_t>(rhs_size)));
+            Put(Msgpack::Encode(static_cast<Byte>(rhs_size)));
         }
         else if (Msgpack::IsBin16(rhs))
         {
@@ -140,23 +140,23 @@ namespace syntropy
         return *this;
     }
 
-    MsgpackStream& MsgpackStream::operator>>(std::int8_t& rhs)
+    MsgpackStream& MsgpackStream::operator>>(Byte& rhs)
     {
         auto sentry = Sentry(*this);
 
         if (Msgpack::IsPositiveFixIntFormat(Peek()))
         {
-            rhs = Msgpack::DecodePositiveFixInt(Get<std::int8_t>());
+            rhs = Msgpack::DecodePositiveFixInt(Get<Byte>());
             sentry.Dismiss();
         }
         else if (Msgpack::IsNegativeFixIntFormat(Peek()))
         {
-            rhs = Msgpack::DecodeNegativeFixInt(Get<std::int8_t>());
+            rhs = Msgpack::DecodeNegativeFixInt(Get<Byte>());
             sentry.Dismiss();
         }
         else if (Test(MsgpackFormat::kInt8))
         {
-            rhs = Msgpack::Decode<std::int8_t>(Get<std::int8_t>());
+            rhs = Msgpack::Decode<Byte>(Get<Byte>());
             sentry.Dismiss();
         }
 
@@ -174,7 +174,7 @@ namespace syntropy
         }
         else
         {
-            auto rhs_low = std::int8_t{};
+            auto rhs_low = Byte{};
             operator>>(rhs_low);
             rhs = rhs_low;
             sentry.Dismiss();
@@ -203,13 +203,13 @@ namespace syntropy
         return *this;
     }
 
-    MsgpackStream& MsgpackStream::operator>>(std::int64_t& rhs)
+    MsgpackStream& MsgpackStream::operator>>(Int& rhs)
     {
         auto sentry = Sentry(*this);
 
         if (Test(MsgpackFormat::kInt64))
         {
-            rhs = Msgpack::Decode<std::int64_t>(Get<std::int64_t>());
+            rhs = Msgpack::Decode<Int>(Get<Int>());
             sentry.Dismiss();
         }
         else
@@ -229,12 +229,12 @@ namespace syntropy
 
         if (Msgpack::IsPositiveFixIntFormat(Peek()))
         {
-            rhs = static_cast<std::uint8_t>(Msgpack::DecodePositiveFixUInt(Get<std::int8_t>()));
+            rhs = static_cast<std::uint8_t>(Msgpack::DecodePositiveFixUInt(Get<Byte>()));
             sentry.Dismiss();
         }
         else if (Test(MsgpackFormat::kUInt8))
         {
-            rhs = static_cast<std::uint8_t>(Msgpack::Decode<std::int8_t>(Get<std::int8_t>()));
+            rhs = static_cast<std::uint8_t>(Msgpack::Decode<Byte>(Get<Byte>()));
             sentry.Dismiss();
         }
 
@@ -287,7 +287,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kUInt64))
         {
-            rhs = static_cast<std::int64_t>(Msgpack::Decode<std::int64_t>(Get<std::int64_t>()));
+            rhs = static_cast<Int>(Msgpack::Decode<Int>(Get<Int>()));
             sentry.Dismiss();
         }
         else
@@ -301,13 +301,13 @@ namespace syntropy
         return *this;
     }
 
-    MsgpackStream& MsgpackStream::operator>>(float& rhs)
+    MsgpackStream& MsgpackStream::operator>>(Float& rhs)
     {
         auto sentry = Sentry(*this);
 
         if (Test(MsgpackFormat::kFloat32))
         {
-            rhs = Msgpack::Decode<float>(Get<std::int32_t>());
+            rhs = Msgpack::Decode<Float>(Get<std::int32_t>());
             sentry.Dismiss();
         }
 
@@ -320,7 +320,7 @@ namespace syntropy
 
         if (Test(MsgpackFormat::kFloat64))
         {
-            rhs = Msgpack::Decode<double>(Get<std::int64_t>());
+            rhs = Msgpack::Decode<double>(Get<Int>());
             sentry.Dismiss();
         }
 
@@ -331,15 +331,15 @@ namespace syntropy
     {
         auto sentry = Sentry(*this);
 
-        auto length = std::optional<std::int64_t>{};
+        auto length = std::optional<Int>{};
 
         if (Msgpack::IsFixStrFormat(Peek()))
         {
-            length = static_cast<std::int64_t>(Msgpack::DecodeFixStrLength(Get<std::int8_t>()));
+            length = static_cast<Int>(Msgpack::DecodeFixStrLength(Get<Byte>()));
         }
         else if (Test(MsgpackFormat::kStr8))
         {
-            length = Msgpack::Decode<std::int8_t>(Get<std::int8_t>());
+            length = Msgpack::Decode<Byte>(Get<Byte>());
         }
         else if (Test(MsgpackFormat::kStr16))
         {
@@ -366,11 +366,11 @@ namespace syntropy
     {
         auto sentry = Sentry(*this);
 
-        auto size = std::optional<std::int64_t>{};
+        auto size = std::optional<Int>{};
 
         if (Test(MsgpackFormat::kBin8))
         {
-            size = Msgpack::Decode<std::int8_t>(Get<std::int8_t>());
+            size = Msgpack::Decode<Byte>(Get<Byte>());
         }
         else if (Test(MsgpackFormat::kBin16))
         {

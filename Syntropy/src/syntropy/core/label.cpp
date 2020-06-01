@@ -42,7 +42,7 @@ namespace syntropy
         using TMemoryResource = MemoryResourceT<FallbackMemoryResource<LinearVirtualMemoryResource, SystemMemoryResource>>;
 
         /// \brief Type of a label hash.
-        using THash = std::int64_t;
+        using THash = Int;
 
         /// \brief Private constructor.
         Registry();

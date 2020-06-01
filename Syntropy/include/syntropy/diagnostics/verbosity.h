@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <limits>
 
+#include "syntropy/core/types.h"
 #include "syntropy/diagnostics/severity.h"
 
 namespace syntropy
@@ -19,10 +20,10 @@ namespace syntropy
 
     /// \brief Represents the verbosity of a channel, which is used to filter events based on their severity.
     /// \author Raffaele D. Facendola - May 2020.
-    enum class Verbosity : int8_t
+    enum class Verbosity : Byte
     {
         /// \brief Verbosity for all event severities.
-        kAll = std::numeric_limits<int8_t>::min(),
+        kAll = std::numeric_limits<Byte>::min(),
 
         /// \brief Verbosity for debugging events and above.
         kDebug = -1,
@@ -43,7 +44,7 @@ namespace syntropy
         kFatal = 4,
 
         /// \brief Verbosity for no event severities at all.
-        kNone = std::numeric_limits<int8_t>::max(),
+        kNone = std::numeric_limits<Byte>::max(),
     };
 
     /************************************************************************/
@@ -76,7 +77,7 @@ namespace syntropy
 
     constexpr bool operator==(Severity lhs, Verbosity rhs)
     {
-        return static_cast<std::int8_t>(lhs) == static_cast<std::int8_t>(rhs);
+        return static_cast<Byte>(lhs) == static_cast<Byte>(rhs);
     }
 
     constexpr bool operator!=(Severity lhs, Verbosity rhs)
@@ -86,12 +87,12 @@ namespace syntropy
 
     constexpr bool operator>(Severity lhs, Verbosity rhs)
     {
-        return static_cast<std::int8_t>(lhs) > static_cast<std::int8_t>(rhs);
+        return static_cast<Byte>(lhs) > static_cast<Byte>(rhs);
     }
 
     constexpr bool operator<(Severity lhs, Verbosity rhs)
     {
-        return static_cast<std::int8_t>(lhs) < static_cast<std::int8_t>(rhs);
+        return static_cast<Byte>(lhs) < static_cast<Byte>(rhs);
     }
 
     constexpr bool operator>=(Severity lhs, Verbosity rhs)

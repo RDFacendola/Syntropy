@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include <cstdint>
-
+#include "syntropy/core/types.h"
 #include "syntropy/serialization/msgpack/format.h"
 #include "syntropy/platform/endianness.h"
 
@@ -25,24 +24,24 @@ namespace syntropy
     {
         /// \brief Decode a positive fix int.
         /// The behavior of this method is undefined if rhs is incompatible with the positive fix int specification.
-        std::int8_t DecodePositiveFixUInt(std::int8_t rhs);
+        Byte DecodePositiveFixUInt(Byte rhs);
 
         /// \brief Decode a positive fix int.
         /// The behavior of this method is undefined if rhs is incompatible with the positive fix int specification.
-        std::int8_t DecodePositiveFixInt(std::int8_t rhs);
+        Byte DecodePositiveFixInt(Byte rhs);
 
         /// \brief Decode the length of a fixed-length map.
-        std::int8_t DecodeFixMapLength(std::int8_t rhs);
+        Byte DecodeFixMapLength(Byte rhs);
 
         /// \brief Decode the length of a fixed-length array.
-        std::int8_t DecodeFixArrayLength(std::int8_t rhs);
+        Byte DecodeFixArrayLength(Byte rhs);
 
         /// \brief Decode the length of a fixed-length string.
-        std::int8_t DecodeFixStrLength(std::int8_t rhs);
+        Byte DecodeFixStrLength(Byte rhs);
 
         /// \brief Decode an 8-bit value.
         template <typename TDecoded>
-        TDecoded Decode(std::int8_t rhs);
+        TDecoded Decode(Byte rhs);
 
         /// \brief Decode a 16-bit value.
         template <typename TDecoded>
@@ -54,11 +53,11 @@ namespace syntropy
 
         /// \brief Decode a 64-bit value.
         template <typename TDecoded>
-        TDecoded Decode(std::int64_t rhs);
+        TDecoded Decode(Int rhs);
 
         /// \brief Decode a negative fix int.
         /// The behavior of this method is undefined if rhs is incompatible with the negative fix int specification.
-        std::int8_t DecodeNegativeFixInt(std::int8_t rhs);
+        Byte DecodeNegativeFixInt(Byte rhs);
     }
 
     /************************************************************************/
@@ -70,19 +69,19 @@ namespace syntropy
     namespace Msgpack
     {
         /// \brief Check whether rhs represents a positive fix int type format.
-        bool IsPositiveFixIntFormat(std::int8_t rhs);
+        bool IsPositiveFixIntFormat(Byte rhs);
 
         /// \brief Check whether rhs represents a fixed-length map type format.
-        bool IsFixMapFormat(std::int8_t rhs);
+        bool IsFixMapFormat(Byte rhs);
 
         /// \brief Check whether rhs represents a fixed-length array type format.
-        bool IsFixArrayFormat(std::int8_t rhs);
+        bool IsFixArrayFormat(Byte rhs);
 
         /// \brief Check whether rhs represents a fixed-length string type format.
-        bool IsFixStrFormat(std::int8_t rhs);
+        bool IsFixStrFormat(Byte rhs);
 
         /// \brief Check whether rhs represents a negative fix int type format.
-        bool IsNegativeFixIntFormat(std::int8_t rhs);
+        bool IsNegativeFixIntFormat(Byte rhs);
     }
 
     /************************************************************************/
@@ -91,33 +90,33 @@ namespace syntropy
 
     // Msgpack.
 
-    inline std::int8_t Msgpack::DecodePositiveFixUInt(std::int8_t rhs)
+    inline Byte Msgpack::DecodePositiveFixUInt(Byte rhs)
     {
         return rhs & 0b01111111;
     }
 
-    inline std::int8_t Msgpack::DecodePositiveFixInt(std::int8_t rhs)
+    inline Byte Msgpack::DecodePositiveFixInt(Byte rhs)
     {
         return rhs & 0b01111111;
     }
 
-    inline std::int8_t Msgpack::DecodeFixMapLength(std::int8_t rhs)
+    inline Byte Msgpack::DecodeFixMapLength(Byte rhs)
     {
         return rhs & 0b00001111;
     }
 
-    inline std::int8_t Msgpack::DecodeFixArrayLength(std::int8_t rhs)
+    inline Byte Msgpack::DecodeFixArrayLength(Byte rhs)
     {
         return rhs & 0b00001111;
     }
 
-    inline std::int8_t Msgpack::DecodeFixStrLength(std::int8_t rhs)
+    inline Byte Msgpack::DecodeFixStrLength(Byte rhs)
     {
         return rhs & 0b00011111;
     }
 
     template <>
-    inline std::int8_t Msgpack::Decode<std::int8_t>(std::int8_t rhs)
+    inline Byte Msgpack::Decode<Byte>(Byte rhs)
     {
         return Endianness::FromBigEndian(rhs);
     }
@@ -129,13 +128,13 @@ namespace syntropy
     }
 
     template <>
-    inline float Msgpack::Decode<float>(std::int32_t rhs)
+    inline Float Msgpack::Decode<Float>(std::int32_t rhs)
     {
-        auto value = float{};
+        auto value = Float{};
 
         rhs = Endianness::FromBigEndian(rhs);
 
-        std::memcpy(&value, &rhs, sizeof(float));
+        std::memcpy(&value, &rhs, sizeof(Float));
 
         return value;
     }
@@ -147,7 +146,7 @@ namespace syntropy
     }
 
     template <>
-    inline double Msgpack::Decode<double>(std::int64_t rhs)
+    inline double Msgpack::Decode<double>(Int rhs)
     {
         auto value = double{};
 
@@ -159,41 +158,41 @@ namespace syntropy
     }
 
     template <>
-    inline std::int64_t Msgpack::Decode<std::int64_t>(std::int64_t rhs)
+    inline Int Msgpack::Decode<Int>(Int rhs)
     {
         return Endianness::FromBigEndian(rhs);
     }
 
-    inline std::int8_t Msgpack::DecodeNegativeFixInt(std::int8_t rhs)
+    inline Byte Msgpack::DecodeNegativeFixInt(Byte rhs)
     {
         return -(rhs & 0b00011111);
     }
 
     // Msgpack.
 
-    inline bool Msgpack::IsPositiveFixIntFormat(std::int8_t rhs)
+    inline bool Msgpack::IsPositiveFixIntFormat(Byte rhs)
     {
-        return std::int8_t(MsgpackFormat::kPositiveFixInt) == std::int8_t(rhs & 0b10000000);
+        return Byte(MsgpackFormat::kPositiveFixInt) == Byte(rhs & 0b10000000);
     }
 
-    inline bool Msgpack::IsFixMapFormat(std::int8_t rhs)
+    inline bool Msgpack::IsFixMapFormat(Byte rhs)
     {
-        return std::int8_t(MsgpackFormat::kFixMap) == std::int8_t(rhs & 0b11110000);
+        return Byte(MsgpackFormat::kFixMap) == Byte(rhs & 0b11110000);
     }
 
-    inline bool Msgpack::IsFixArrayFormat(std::int8_t rhs)
+    inline bool Msgpack::IsFixArrayFormat(Byte rhs)
     {
-        return std::int8_t(MsgpackFormat::kFixArray) == std::int8_t(rhs & 0b11110000);
+        return Byte(MsgpackFormat::kFixArray) == Byte(rhs & 0b11110000);
     }
 
-    inline bool Msgpack::IsFixStrFormat(std::int8_t rhs)
+    inline bool Msgpack::IsFixStrFormat(Byte rhs)
     {
-        return std::int8_t(MsgpackFormat::kFixStr) == std::int8_t(rhs & 0b11100000);
+        return Byte(MsgpackFormat::kFixStr) == Byte(rhs & 0b11100000);
     }
 
-    inline bool Msgpack::IsNegativeFixIntFormat(std::int8_t rhs)
+    inline bool Msgpack::IsNegativeFixIntFormat(Byte rhs)
     {
-        return std::int8_t(MsgpackFormat::kNegativeFixInt) == std::int8_t(rhs & 0b11100000);
+        return Byte(MsgpackFormat::kNegativeFixInt) == Byte(rhs & 0b11100000);
     }
 
 }

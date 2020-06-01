@@ -6,9 +6,10 @@
 
 #pragma once
 
-#include <cstdint>
 #include <chrono>
 #include <ostream>
+
+#include "syntropy/core/types.h"
 
 namespace syntropy
 {
@@ -33,21 +34,21 @@ namespace syntropy
         Date(TTimePoint time_point = TClock::now());
 
         /// \brief Get the day of the month.
-        std::int64_t GetDay() const;
+        Int GetDay() const;
 
         /// \brief Get the month of the year.
-        std::int64_t GetMonth() const;
+        Int GetMonth() const;
 
         /// \brief Get the year.
-        std::int64_t GetYear() const;
+        Int GetYear() const;
 
     private:
 
         /// \brief Day of the month.
-        std::int8_t day_{ 1 };
+        Byte day_{ 1 };
 
         /// \brief Month of the year.
-        std::int8_t month_{ 1 };
+        Byte month_{ 1 };
 
         /// \brief Year.
         std::int16_t year_{ 0 };
@@ -67,17 +68,17 @@ namespace syntropy
 
     // Date.
 
-    inline std::int64_t Date::GetDay() const
+    inline Int Date::GetDay() const
     {
         return day_;
     }
 
-    inline std::int64_t Date::GetMonth() const
+    inline Int Date::GetMonth() const
     {
         return month_;
     }
 
-    inline std::int64_t Date::GetYear() const
+    inline Int Date::GetYear() const
     {
         return year_;
     }

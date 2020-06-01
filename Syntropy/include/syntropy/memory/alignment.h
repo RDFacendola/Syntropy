@@ -8,7 +8,7 @@
 
 #include <ostream>
 
-#include "syntropy/syntropy.h"
+#include "syntropy/core/types.h"
 #include "syntropy/math/bits.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
@@ -43,7 +43,7 @@ namespace syntropy
 
         /// \brief Get the alignment value, in bytes.
         /// \return Returns the alignment value, in bytes.
-        constexpr std::int64_t operator*() const noexcept;
+        constexpr Int operator*() const noexcept;
 
         /// \brief Get the alignment value, in bytes.
         /// \return Returns the alignment value, in bytes.
@@ -55,16 +55,16 @@ namespace syntropy
 
         /// \brief Right shift operator.
         /// \return Returns a reference to this element.
-        constexpr Alignment& operator>>=(std::int64_t rhs) noexcept;
+        constexpr Alignment& operator>>=(Int rhs) noexcept;
 
         /// \brief Left shift operator.
         /// \return Returns a reference to this element.
-        constexpr Alignment& operator<<=(std::int64_t rhs) noexcept;
+        constexpr Alignment& operator<<=(Int rhs) noexcept;
 
     private:
 
         ///< \brief Alignment, in bytes.
-        std::int64_t alignment_ = 1u;
+        Int alignment_ = 1u;
 
     };
 
@@ -98,11 +98,11 @@ namespace syntropy
 
     /// \brief Right-shift an alignment.
     /// \return Returns an alignment which is equal to lhs right-shifted by rhs.
-    constexpr Alignment operator>>(const Alignment& lhs, std::int64_t rhs) noexcept;
+    constexpr Alignment operator>>(const Alignment& lhs, Int rhs) noexcept;
 
     /// \brief Left-shift an alignment.
     /// \return Returns an alignment which is equal to lhs left-shifted by rhs.
-    constexpr Alignment operator<<(const Alignment& lhs, std::int64_t rhs) noexcept;
+    constexpr Alignment operator<<(const Alignment& lhs, Int rhs) noexcept;
 
     /// \brief Stream insertion for Alignment.
     std::ostream& operator<<(std::ostream& lhs, const Alignment& rhs);
@@ -125,7 +125,7 @@ namespace syntropy
     // Alignment.
 
     constexpr Alignment::Alignment(std::align_val_t alignment) noexcept
-        : alignment_(std::int64_t(alignment))
+        : alignment_(Int(alignment))
     {
 
     }
@@ -137,7 +137,7 @@ namespace syntropy
         SYNTROPY_ASSERT(Math::IsPow2(alignment_));
     }
 
-    constexpr std::int64_t Alignment::operator*() const noexcept
+    constexpr Int Alignment::operator*() const noexcept
     {
         return alignment_;
     }
@@ -152,13 +152,13 @@ namespace syntropy
         return std::align_val_t(alignment_);
     }
 
-    constexpr Alignment& Alignment::operator>>=(std::int64_t rhs) noexcept
+    constexpr Alignment& Alignment::operator>>=(Int rhs) noexcept
     {
         alignment_ >>= rhs;
         return *this;
     }
 
-    constexpr Alignment& Alignment::operator<<=(std::int64_t rhs) noexcept
+    constexpr Alignment& Alignment::operator<<=(Int rhs) noexcept
     {
         alignment_ <<= rhs;
         return *this;
@@ -196,12 +196,12 @@ namespace syntropy
         return *lhs <= *rhs;
     }
 
-    constexpr Alignment operator>>(const Alignment& lhs, std::int64_t rhs) noexcept
+    constexpr Alignment operator>>(const Alignment& lhs, Int rhs) noexcept
     {
         return Alignment(lhs) >>= rhs;
     }
 
-    constexpr Alignment operator<<(const Alignment& lhs, std::int64_t rhs) noexcept
+    constexpr Alignment operator<<(const Alignment& lhs, Int rhs) noexcept
     {
         return Alignment(lhs) <<= rhs;
     }

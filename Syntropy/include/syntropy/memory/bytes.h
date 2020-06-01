@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "syntropy/syntropy.h"
-
 #include <ostream>
+
+#include "syntropy/core/types.h"
 
 namespace syntropy
 {
@@ -26,7 +26,7 @@ namespace syntropy
         constexpr Bytes() = default;
 
         /// \brief Create a new bytes count.
-        constexpr explicit Bytes(std::int64_t bytes);
+        constexpr explicit Bytes(Int bytes);
 
         /// \brief Default copy-constructor.
         constexpr Bytes(const Bytes&) = default;
@@ -36,11 +36,11 @@ namespace syntropy
 
         /// \brief Get the number of bytes.
         /// \return Returns the number of bytes.
-        constexpr std::int64_t operator*() const;
+        constexpr Int operator*() const;
 
         /// \brief Get the number of bytes.
         /// \return Returns the number of bytes.
-        constexpr std::int64_t GetCount() const;
+        constexpr Int GetCount() const;
 
         /// \brief Add a bytes amount.
         /// \return Returns a reference to this element.
@@ -52,23 +52,23 @@ namespace syntropy
 
         /// \brief Multiply this element by a number.
         /// \return Returns a reference to this element.
-        constexpr Bytes& operator*=(std::int64_t rhs) noexcept;
+        constexpr Bytes& operator*=(Int rhs) noexcept;
 
         /// \brief Divides this element by a number.
         /// \return Returns a reference to this element.
-        constexpr Bytes& operator/=(std::int64_t rhs) noexcept;
+        constexpr Bytes& operator/=(Int rhs) noexcept;
 
         /// \brief Division remainder of this element by a number.
         /// \return Returns a reference to this element.
-        constexpr Bytes& operator%=(std::int64_t rhs) noexcept;
+        constexpr Bytes& operator%=(Int rhs) noexcept;
 
         /// \brief Right shift operator.
         /// \return Returns a reference to this element.
-        constexpr Bytes& operator>>=(std::int64_t rhs) noexcept;
+        constexpr Bytes& operator>>=(Int rhs) noexcept;
 
         /// \brief Left shift operator.
         /// \return Returns a reference to this element.
-        constexpr Bytes& operator<<=(std::int64_t rhs) noexcept;
+        constexpr Bytes& operator<<=(Int rhs) noexcept;
 
         /// \brief Bitwise-and operator.
         /// \return Returns a reference to this element.
@@ -85,7 +85,7 @@ namespace syntropy
     private:
 
         ///< \brief Number of bytes. Can be negative.
-        std::int64_t bytes_ = 0;
+        Int bytes_ = 0;
 
     };
 
@@ -139,35 +139,35 @@ namespace syntropy
 
     /// \brief Multiply a byte amount by a number.
     /// \return Returns a memory amount which is equal to lhs times rhs.
-    constexpr Bytes operator*(const Bytes& lhs, std::int64_t rhs) noexcept;
+    constexpr Bytes operator*(const Bytes& lhs, Int rhs) noexcept;
 
     /// \brief Multiply a byte amount by a number.
     /// \return Returns a memory amount which is equal to rhs times lhs.
-    constexpr Bytes operator*(std::int64_t lhs, const Bytes& rhs) noexcept;
+    constexpr Bytes operator*(Int lhs, const Bytes& rhs) noexcept;
 
     /// \brief Divide a byte amount by a number.
     /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
-    constexpr Bytes operator/(const Bytes& lhs, std::int64_t rhs) noexcept;
+    constexpr Bytes operator/(const Bytes& lhs, Int rhs) noexcept;
 
     /// \brief Divide a byte amount by another byte amount.
     /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
-    constexpr std::int64_t operator/(const Bytes& lhs, const Bytes& rhs) noexcept;
+    constexpr Int operator/(const Bytes& lhs, const Bytes& rhs) noexcept;
 
     /// \brief Get the remainder of a byte amount divided by a number.
     /// \return Returns a memory amount which is equal to lhs modulus rhs.
-    constexpr Bytes operator%(const Bytes& lhs, std::int64_t rhs) noexcept;
+    constexpr Bytes operator%(const Bytes& lhs, Int rhs) noexcept;
 
     /// \brief Get the remainder of a byte amount divided by another byte amount.
     /// \return Returns a memory amount which is equal to lhs modulus rhs.
-    constexpr std::int64_t operator%(const Bytes& lhs, const Bytes& rhs) noexcept;
+    constexpr Int operator%(const Bytes& lhs, const Bytes& rhs) noexcept;
 
     /// \brief Right-shift a bytes amount.
     /// \return Returns a memory amount which is equal to lhs right-shifted by rhs.
-    constexpr Bytes operator>>(const Bytes& lhs, std::int64_t rhs) noexcept;
+    constexpr Bytes operator>>(const Bytes& lhs, Int rhs) noexcept;
 
     /// \brief Left-shift a bytes amount.
     /// \return Returns a memory amount which is equal to lhs left-shifted by rhs.
-    constexpr Bytes operator<<(const Bytes& lhs, std::int64_t rhs) noexcept;
+    constexpr Bytes operator<<(const Bytes& lhs, Int rhs) noexcept;
 
     /// \brief Bitwise not of a byte quantity.
     /// \return Returns a memory amount which is the bitwise not of rhs.
@@ -230,18 +230,18 @@ namespace syntropy
 
     // Bytes.
 
-    constexpr Bytes::Bytes(std::int64_t bytes)
+    constexpr Bytes::Bytes(Int bytes)
         : bytes_(bytes)
     {
 
     }
 
-    constexpr std::int64_t Bytes::operator*() const
+    constexpr Int Bytes::operator*() const
     {
         return bytes_;
     }
 
-    constexpr std::int64_t Bytes::GetCount() const
+    constexpr Int Bytes::GetCount() const
     {
         return bytes_;
     }
@@ -258,31 +258,31 @@ namespace syntropy
         return *this;
     }
 
-    constexpr Bytes& Bytes::operator*=(std::int64_t rhs) noexcept
+    constexpr Bytes& Bytes::operator*=(Int rhs) noexcept
     {
         bytes_ *= rhs;
         return *this;
     }
 
-    constexpr Bytes& Bytes::operator/=(std::int64_t rhs) noexcept
+    constexpr Bytes& Bytes::operator/=(Int rhs) noexcept
     {
         bytes_ /= rhs;
         return *this;
     }
 
-    constexpr Bytes& Bytes::operator%=(std::int64_t rhs) noexcept
+    constexpr Bytes& Bytes::operator%=(Int rhs) noexcept
     {
         bytes_ %= rhs;
         return *this;
     }
 
-    constexpr Bytes& Bytes::operator>>=(std::int64_t rhs) noexcept
+    constexpr Bytes& Bytes::operator>>=(Int rhs) noexcept
     {
         bytes_ >>= rhs;
         return *this;
     }
 
-    constexpr Bytes& Bytes::operator<<=(std::int64_t rhs) noexcept
+    constexpr Bytes& Bytes::operator<<=(Int rhs) noexcept
     {
         bytes_ <<= rhs;
         return *this;
@@ -380,42 +380,42 @@ namespace syntropy
         return Bytes(lhs) -= rhs;
     }
 
-    constexpr Bytes operator*(const Bytes& lhs, std::int64_t rhs) noexcept
+    constexpr Bytes operator*(const Bytes& lhs, Int rhs) noexcept
     {
         return Bytes(lhs) *= rhs;
     }
 
-    constexpr Bytes operator*(std::int64_t lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator*(Int lhs, const Bytes& rhs) noexcept
     {
         return Bytes(rhs) *= lhs;
     }
 
-    constexpr Bytes operator/(const Bytes& lhs, std::int64_t rhs) noexcept
+    constexpr Bytes operator/(const Bytes& lhs, Int rhs) noexcept
     {
         return Bytes(lhs) /= rhs;
     }
 
-    constexpr std::int64_t operator/(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Int operator/(const Bytes& lhs, const Bytes& rhs) noexcept
     {
         return *lhs / *rhs;
     }
 
-    constexpr Bytes operator%(const Bytes& lhs, std::int64_t rhs) noexcept
+    constexpr Bytes operator%(const Bytes& lhs, Int rhs) noexcept
     {
         return Bytes(lhs) %= rhs;
     }
 
-    constexpr std::int64_t operator%(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Int operator%(const Bytes& lhs, const Bytes& rhs) noexcept
     {
         return *lhs % *rhs;
     }
 
-    constexpr Bytes operator>>(const Bytes& lhs, std::int64_t rhs) noexcept
+    constexpr Bytes operator>>(const Bytes& lhs, Int rhs) noexcept
     {
         return Bytes(lhs) >>= rhs;
     }
 
-    constexpr Bytes operator<<(const Bytes& lhs, std::int64_t rhs) noexcept
+    constexpr Bytes operator<<(const Bytes& lhs, Int rhs) noexcept
     {
         return Bytes(lhs) <<= rhs;
     }
@@ -448,7 +448,7 @@ namespace syntropy
     template <typename TType>
     constexpr Bytes ToBytes(const TType& rhs) noexcept
     {
-        return Bytes(static_cast<std::int64_t>(rhs));
+        return Bytes(static_cast<Int>(rhs));
     }
 
     template <typename TType>

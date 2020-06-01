@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -17,13 +19,13 @@ namespace syntropy
     namespace Math
     {
         /// \brief Archimedes' constant.
-        constexpr float kPi = 3.14159f;
+        constexpr Float kPi = 3.14159f;
 
         /// \brief Two times the Archimedes' constant.
-        constexpr float kTau = 2.0f * kPi;
+        constexpr Float kTau = 2.0f * kPi;
 
         /// \brief Euler's number.
-        constexpr float kE = 2.71828f;
+        constexpr Float kE = 2.71828f;
     }
 
 }

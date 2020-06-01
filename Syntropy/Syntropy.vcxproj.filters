@@ -107,6 +107,7 @@
     <ClInclude Include="include\syntropy\serialization\msgpack\decoding.h" />
     <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_stream.h" />
     <ClInclude Include="include\syntropy\serialization\msgpack\vector_extensions.h" />
+    <ClInclude Include="include\syntropy\core\types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

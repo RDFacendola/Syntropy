@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include "syntropy/core/types.h"
 
 namespace syntropy
 {
@@ -19,7 +19,7 @@ namespace syntropy
     namespace Endianness
     {
         /// \brief Convert a number from platform-endian to big-endian.
-        std::int8_t ToBigEndian(std::int8_t rhs);
+        Byte ToBigEndian(Byte rhs);
 
         /// \brief Convert a number from platform-endian to big-endian.
         std::int16_t ToBigEndian(std::int16_t rhs);
@@ -28,10 +28,10 @@ namespace syntropy
         std::int32_t ToBigEndian(std::int32_t rhs);
 
         /// \brief Convert a number from platform-endian to big-endian.
-        std::int64_t ToBigEndian(std::int64_t rhs);
+        Int ToBigEndian(Int rhs);
 
         /// \brief Convert a number from big-endian to platform-endian.
-        std::int8_t FromBigEndian(std::int8_t rhs);
+        Byte FromBigEndian(Byte rhs);
 
         /// \brief Convert a number from big-endian to platform-endian.
         std::int16_t FromBigEndian(std::int16_t rhs);
@@ -40,10 +40,10 @@ namespace syntropy
         std::int32_t FromBigEndian(std::int32_t rhs);
 
         /// \brief Convert a number from big-endian to platform-endian.
-        std::int64_t FromBigEndian(std::int64_t rhs);
+        Int FromBigEndian(Int rhs);
 
         /// \brief Convert a number from platform-endian to little-endian.
-        std::int8_t ToLittleEndian(std::int8_t rhs);
+        Byte ToLittleEndian(Byte rhs);
 
         /// \brief Convert a number from platform-endian to little-endian.
         std::int16_t ToLittleEndian(std::int16_t rhs);
@@ -52,10 +52,10 @@ namespace syntropy
         std::int32_t ToLittleEndian(std::int32_t rhs);
 
         /// \brief Convert a number from platform-endian to little-endian.
-        std::int64_t ToLittleEndian(std::int64_t rhs);
+        Int ToLittleEndian(Int rhs);
 
         /// \brief Convert a number from little-endian to platform-endian.
-        std::int8_t FromLittleEndian(std::int8_t rhs);
+        Byte FromLittleEndian(Byte rhs);
 
         /// \brief Convert a number from little-endian to platform-endian.
         std::int16_t FromLittleEndian(std::int16_t rhs);
@@ -64,7 +64,7 @@ namespace syntropy
         std::int32_t FromLittleEndian(std::int32_t rhs);
 
         /// \brief Convert a number from little-endian to platform-endian.
-        std::int64_t FromLittleEndian(std::int64_t rhs);
+        Int FromLittleEndian(Int rhs);
 
     }
 
@@ -74,22 +74,22 @@ namespace syntropy
 
     // Endianness.
 
-    inline std::int8_t Endianness::ToBigEndian(std::int8_t rhs)
+    inline Byte Endianness::ToBigEndian(Byte rhs)
     {
         return rhs;
     }
 
-    inline std::int8_t Endianness::FromBigEndian(std::int8_t rhs)
+    inline Byte Endianness::FromBigEndian(Byte rhs)
     {
         return rhs;
     }
 
-    inline std::int8_t Endianness::ToLittleEndian(std::int8_t rhs)
+    inline Byte Endianness::ToLittleEndian(Byte rhs)
     {
         return rhs;
     }
 
-    inline std::int8_t Endianness::FromLittleEndian(std::int8_t rhs)
+    inline Byte Endianness::FromLittleEndian(Byte rhs)
     {
         return rhs;
     }
