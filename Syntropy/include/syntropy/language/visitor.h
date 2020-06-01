@@ -48,7 +48,7 @@ namespace syntropy
         /// \brief Attempt to visit an element via a visitor functor.
         /// \return Returns true if the visit was successful, returns false otherwise.
         template <typename TFunction, typename TVisitor>
-        bool TryVisit(const TVisitor& visitor, ObserverPtr<void> visitable, const std::type_info& type) const;
+        Bool TryVisit(const TVisitor& visitor, ObserverPtr<void> visitable, const std::type_info& type) const;
 
     private:
 
@@ -104,7 +104,7 @@ namespace syntropy
     }
 
     template <typename TFunction, typename TVisitor>
-    inline bool Visitor::TryVisit(const TVisitor& visitor, ObserverPtr<void> visitable, const std::type_info& type) const
+    inline Bool Visitor::TryVisit(const TVisitor& visitor, ObserverPtr<void> visitable, const std::type_info& type) const
     {
         using TArgument = FunctionArgumentT<0, TFunction>;
         using TVisitable = RemoveReferenceT<TArgument>;

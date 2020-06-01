@@ -6,12 +6,10 @@
 
 #pragma once
 
-#include "syntropy/syntropy.h"
-
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_range.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/diagnostics/assert.h"
 
 namespace syntropy
@@ -55,7 +53,7 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// The null memory resource only contains empty ranges.
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
-        bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemoryRange& block) const noexcept;
 
     };
 
@@ -75,7 +73,7 @@ namespace syntropy
         SYNTROPY_ASSERT(!block);        // Only empty ranges can be deallocated.
     }
 
-    inline bool NullMemoryResource::Owns(const MemoryRange& block) const noexcept
+    inline Bool NullMemoryResource::Owns(const MemoryRange& block) const noexcept
     {
         return !block;                  // This memory resource owns only empty ranges.
     }

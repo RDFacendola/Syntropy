@@ -133,7 +133,7 @@ namespace syntropy
         Float refresh_rate_;
 
         /// \brief Whether the monitor is the primary one.
-        bool is_primary_;
+        Bool is_primary_;
     };
 
     /************************************************************************/

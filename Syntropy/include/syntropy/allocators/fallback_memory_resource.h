@@ -7,9 +7,8 @@
 #pragma once
 
 #include "syntropy/language/utility.h"
-
 #include "syntropy/diagnostics/assert.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_range.h"
@@ -73,7 +72,7 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemoryRange& block) const noexcept;
 
     private:
 
@@ -142,7 +141,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource, typename TFallbackResource>
-    inline bool FallbackMemoryResource<TMemoryResource, TFallbackResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool FallbackMemoryResource<TMemoryResource, TFallbackResource>::Owns(const MemoryRange& block) const noexcept
     {
         return memory_resource_.Owns(block) || fallback_resource_.Owns(block);
     }

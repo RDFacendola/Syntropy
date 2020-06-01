@@ -7,11 +7,10 @@
 #pragma once
 
 #include "syntropy/syntropy.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_range.h"
-
 #include "syntropy/allocators/system_memory_resource.h"
 
 namespace syntropy
@@ -69,7 +68,7 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        virtual bool Owns(const MemoryRange& block) const noexcept = 0;
+        virtual Bool Owns(const MemoryRange& block) const noexcept = 0;
 
     private:
 
@@ -100,7 +99,7 @@ namespace syntropy
 
         virtual void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf()) override;
 
-        virtual bool Owns(const MemoryRange& block) const noexcept override;
+        virtual Bool Owns(const MemoryRange& block) const noexcept override;
 
         /// \brief Get the underlying memory resource.
         TMemoryResource& GetMemoryResource();
@@ -174,7 +173,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline bool MemoryResourceT<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool MemoryResourceT<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
         return memory_resource_.Owns(block);
     }

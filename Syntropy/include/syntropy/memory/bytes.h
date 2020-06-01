@@ -107,27 +107,27 @@ namespace syntropy
 
     /// \brief Equality comparison for Bytes.
     /// \return Returns true if lhs and rhs refer to the same amount of memory, returns false otherwise.
-    constexpr bool operator==(const Bytes& lhs, const Bytes& rhs) noexcept;
+    constexpr Bool operator==(const Bytes& lhs, const Bytes& rhs) noexcept;
 
     /// \brief Inequality comparison for Bytes.
     /// \return Returns true if lhs and rhs refer to different amounts of memory, returns false otherwise.
-    constexpr bool operator!=(const Bytes& lhs, const Bytes& rhs) noexcept;
+    constexpr Bool operator!=(const Bytes& lhs, const Bytes& rhs) noexcept;
 
     /// \brief Greater-than comparison for Bytes.
     /// \return Returns true if lhs refers to a memory amount that is strictly greater than rhs, returns false otherwise.
-    constexpr bool operator>(const Bytes& lhs, const Bytes& rhs) noexcept;
+    constexpr Bool operator>(const Bytes& lhs, const Bytes& rhs) noexcept;
 
     /// \brief Less-than comparison for Bytes.
     /// \return Returns true if lhs refers to a memory amount that is strictly less than rhs, returns false otherwise.
-    constexpr bool operator<(const Bytes& lhs, const Bytes& rhs) noexcept;
+    constexpr Bool operator<(const Bytes& lhs, const Bytes& rhs) noexcept;
 
     /// \brief Greater-or-equal comparison for Bytes.
     /// \return Returns true if lhs refers to a memory amount that is equal or greater than rhs, returns false otherwise.
-    constexpr bool operator>=(const Bytes& lhs, const Bytes& rhs) noexcept;
+    constexpr Bool operator>=(const Bytes& lhs, const Bytes& rhs) noexcept;
 
     /// \brief Less-or-equal comparison for Bytes.
     /// \return Returns true if lhs refers to a memory amount that is equal or less than rhs, returns false otherwise.
-    constexpr bool operator<=(const Bytes& lhs, const Bytes& rhs) noexcept;
+    constexpr Bool operator<=(const Bytes& lhs, const Bytes& rhs) noexcept;
 
     /// \brief Sum two bytes amount.
     /// \return Returns a memory amount which is the sum of lhs and rhs.
@@ -340,32 +340,32 @@ namespace syntropy
         return copy;
     }
 
-    constexpr bool operator==(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bool operator==(const Bytes& lhs, const Bytes& rhs) noexcept
     {
         return *lhs == *rhs;
     }
 
-    constexpr bool operator!=(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bool operator!=(const Bytes& lhs, const Bytes& rhs) noexcept
     {
         return !(lhs == rhs);
     }
 
-    constexpr bool operator>(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bool operator>(const Bytes& lhs, const Bytes& rhs) noexcept
     {
         return *lhs > *rhs;
     }
 
-    constexpr bool operator<(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bool operator<(const Bytes& lhs, const Bytes& rhs) noexcept
     {
         return *lhs < *rhs;
     }
 
-    constexpr bool operator>=(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bool operator>=(const Bytes& lhs, const Bytes& rhs) noexcept
     {
         return *lhs >= *rhs;
     }
 
-    constexpr bool operator<=(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bool operator<=(const Bytes& lhs, const Bytes& rhs) noexcept
     {
         return *lhs <= *rhs;
     }

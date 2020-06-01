@@ -28,17 +28,17 @@ namespace syntropy
         return HALVirtualMemory::Allocate(size);
     }
 
-    bool VirtualMemory::Release(const MemoryRange& memory_range)
+    Bool VirtualMemory::Release(const MemoryRange& memory_range)
     {
         return HALVirtualMemory::Release(memory_range);
     }
 
-    bool VirtualMemory::Commit(const MemoryRange& memory_range)
+    Bool VirtualMemory::Commit(const MemoryRange& memory_range)
     {
         return HALVirtualMemory::Commit(memory_range);
     }
 
-    bool VirtualMemory::Decommit(const MemoryRange& memory_range)
+    Bool VirtualMemory::Decommit(const MemoryRange& memory_range)
     {
         return HALVirtualMemory::Decommit(memory_range);
     }

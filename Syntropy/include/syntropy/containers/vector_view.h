@@ -82,7 +82,7 @@ namespace syntropy
 
         /// \brief Check whether the vector is empty.
         /// \return Returns true if the container is empty, returns false otherwise.
-        bool IsEmpty() const noexcept;
+        Bool IsEmpty() const noexcept;
 
         /// \brief Get the number of elements in the container.
         /// \return Returns the number of elements in the container.
@@ -195,7 +195,7 @@ namespace syntropy
     }
 
     template <typename TElement>
-    inline bool VectorView<TElement>::IsEmpty() const noexcept
+    inline Bool VectorView<TElement>::IsEmpty() const noexcept
     {
         return (*vector_).empty();
     }

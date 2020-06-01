@@ -52,7 +52,7 @@ namespace syntropy
         /// \brief Generate a random boolean value.
         /// \param probability Probability of getting 'true' as result. Range [0; 1].
         /// \return Returns a random boolean value, where P(true) is equal to probability.
-        bool Bernoulli(Float probability);
+        Bool Bernoulli(Float probability);
 
         /// \brief Generate a random number distributed according to a Normal distribution.
         /// \return Returns a random number distributed according to a Normal distribution N(0, 1).
@@ -110,7 +110,7 @@ namespace syntropy
         return Uniform(max - min) + min;
     }
 
-    inline bool Random::Bernoulli(Float probability)
+    inline Bool Random::Bernoulli(Float probability)
     {
         return Uniform() < probability;
     }

@@ -92,7 +92,7 @@ namespace syntropy
         return {};
     }
 
-    bool HALThreading::SetProcessAffinity(const AffinityMask& affinity_mask)
+    Bool HALThreading::SetProcessAffinity(const AffinityMask& affinity_mask)
     {
         auto process_handle = GetCurrentProcess();
 
@@ -114,7 +114,7 @@ namespace syntropy
         return {};
     }
 
-    bool HALThreading::SetThreadAffinity(const AffinityMask& affinity_mask, std::thread* thread)
+    Bool HALThreading::SetThreadAffinity(const AffinityMask& affinity_mask, std::thread* thread)
     {
         auto thread_handle = thread ? thread->native_handle() : GetCurrentThread();
 
@@ -139,7 +139,7 @@ namespace syntropy
         return WindowsThreading::ToAffinityMask(affinity_mask);
     }
 
-    bool HALThreading::SetThreadPriority(ThreadPriority priority, std::thread* thread)
+    Bool HALThreading::SetThreadPriority(ThreadPriority priority, std::thread* thread)
     {
         auto thread_priority = int{};
 

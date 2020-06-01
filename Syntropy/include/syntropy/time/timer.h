@@ -7,6 +7,8 @@
 
 #include <chrono>
 
+#include "syntropy/core/types.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -25,7 +27,7 @@ namespace syntropy
 
         /// \brief Create a new timer.
         /// \param ticking Whether the timer automatically starts after being created.
-        Timer(bool ticking = true);
+        Timer(Bool ticking = true);
 
         /// \brief Start counting.
         void Start();
@@ -43,12 +45,12 @@ namespace syntropy
         TDuration operator()() const;
 
         /// \brief Get whether the timer is currently ticking.
-        bool IsTicking() const;
+        Bool IsTicking() const;
 
     private:
 
         /// \brief Whether the timer is currently ticking.
-        bool is_ticking_{ false };
+        Bool is_ticking_{ false };
 
         /// \brief Time point to start counting from.
         TClock::time_point base_time_point_ = TClock::now();
@@ -65,7 +67,7 @@ namespace syntropy
     // Timer<TDuration>.
 
     template <typename TDuration>
-    inline Timer<TDuration>::Timer(bool is_ticking)
+    inline Timer<TDuration>::Timer(Bool is_ticking)
         : is_ticking_(is_ticking)
     {
         if (is_ticking_)
@@ -112,7 +114,7 @@ namespace syntropy
     }
 
     template <typename TDuration>
-    inline bool Timer<TDuration>::IsTicking() const
+    inline Bool Timer<TDuration>::IsTicking() const
     {
         return is_ticking_;
     }

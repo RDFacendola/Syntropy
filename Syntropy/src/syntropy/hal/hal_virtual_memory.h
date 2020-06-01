@@ -43,19 +43,19 @@ namespace syntropy
         /// \brief Release a range of virtual memory addresses.
         /// \param address First address of the range to release. Must match any return value of a previous Reserve() / Allocate(), otherwise the behaviour is unspecified.
         /// \return Returns true if the range could be released, returns false otherwise.
-        bool Release(const MemoryRange& memory_range);
+        Bool Release(const MemoryRange& memory_range);
 
         /// \brief Commit a reserved virtual memory block.
         /// This method allocates all the pages containing at least one byte in the provided range and makes them accessible by the application.
         /// \param memory_range Memory range to commit.
         /// \return Returns true if the memory could be committed, returns false otherwise.
         /// \remarks The provided memory range must refer to a memory region that was previously reserved via Reserve().
-        bool Commit(const MemoryRange& memory_range);
+        Bool Commit(const MemoryRange& memory_range);
 
         /// \brief Decommit a virtual memory block.
         /// This method decommits all the pages containing at least one byte in the provided range.
         /// \param memory_range Memory range to decommit.
-        bool Decommit(const MemoryRange& memory_range);
+        Bool Decommit(const MemoryRange& memory_range);
 
     };
 

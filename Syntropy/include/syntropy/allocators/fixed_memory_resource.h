@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_address.h"
@@ -58,7 +59,7 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemoryRange& block) const noexcept;
 
     private:
 
@@ -75,7 +76,7 @@ namespace syntropy
         MemoryRange block_;
 
         /// \brief Whether the memory resource is free and can be used for allocation.
-        bool is_free_{ true };
+        Bool is_free_{ true };
 
     };
 
@@ -120,7 +121,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline bool FixedMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool FixedMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
         return !is_free_ && block_.Contains(block);
     }

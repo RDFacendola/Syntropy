@@ -9,9 +9,8 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/range.h"
 #include "syntropy/core/string.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/containers/vector.h"
-
 #include "syntropy/language/macro.h"
 
 namespace syntropy
@@ -55,7 +54,7 @@ namespace syntropy
         StackTrace& operator=(StackTrace other) noexcept;
 
         /// \brief Check whether the stack trace is non-empty.
-        operator bool() const noexcept;
+        operator Bool() const noexcept;
 
         /// \brief Swap the content of two stack trace instances.
         void Swap(StackTrace& other) noexcept;
@@ -80,7 +79,7 @@ namespace syntropy
         /// This value is intended to discard stack entries between the actual stack trace location and
         /// the code that walked the stack (which is within the engine several calls deeper) when the application has symbols.
         /// For stack traces that contain only the first element this value is irrelevant.
-        bool has_symbols_{ false };
+        Bool has_symbols_{ false };
     };
 
     /************************************************************************/
@@ -136,10 +135,10 @@ namespace syntropy
     void swap(StackTrace& lhs, StackTrace& rhs);
 
     /// \brief Equality comparison for StackTraceElement.
-    bool operator==(const StackTraceElement& lhs, const StackTraceElement& rhs);
+    Bool operator==(const StackTraceElement& lhs, const StackTraceElement& rhs);
 
     /// \brief Equality comparison for StackTraceElement.
-    bool operator!=(const StackTraceElement& lhs, const StackTraceElement& rhs);
+    Bool operator!=(const StackTraceElement& lhs, const StackTraceElement& rhs);
 
     /// \brief Output a stack trace element inside a stream.
     std::ostream& operator<< (std::ostream &out, const StackTraceElement& element);
@@ -190,7 +189,7 @@ namespace syntropy
         return *this;
     }
 
-    inline StackTrace::operator bool() const noexcept
+    inline StackTrace::operator Bool() const noexcept
     {
         return !stack_trace_.empty();
     }
@@ -234,12 +233,12 @@ namespace syntropy
         return end(stack_trace);
     }
 
-    inline bool operator==(const StackTraceElement& lhs, const StackTraceElement& rhs)
+    inline Bool operator==(const StackTraceElement& lhs, const StackTraceElement& rhs)
     {
         return (lhs.file_ == rhs.file_) && (lhs.function_ == rhs.function_) && (lhs.line_ == rhs.line_);
     }
 
-    inline bool operator!=(const StackTraceElement& lhs, const StackTraceElement& rhs)
+    inline Bool operator!=(const StackTraceElement& lhs, const StackTraceElement& rhs)
     {
         return !(lhs == rhs);
     }

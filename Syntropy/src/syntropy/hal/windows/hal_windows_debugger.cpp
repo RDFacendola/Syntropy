@@ -64,7 +64,7 @@ namespace syntropy
         HANDLE process_{ nullptr };
 
         /// \brief Whether symbols for this process exists and are loaded.
-        bool has_symbols_{ false };
+        Bool has_symbols_{ false };
 
     };
 
@@ -179,7 +179,7 @@ namespace syntropy
     /* HAL DEBUGGER                                                         */
     /************************************************************************/
 
-    bool HALDebugger::IsAttached()
+    Bool HALDebugger::IsAttached()
     {
         return IsDebuggerPresent() != 0;
     }

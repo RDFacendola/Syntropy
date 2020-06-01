@@ -10,7 +10,7 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_address.h"
 #include "syntropy/memory/memory_range.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/diagnostics/assert.h"
 
 namespace syntropy
@@ -66,7 +66,7 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemoryRange& block) const noexcept;
 
         /// \brief Swap this memory resource with the provided instance.
         void Swap(PoolMemoryResource& rhs) noexcept;
@@ -260,7 +260,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline bool PoolMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool PoolMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
         // Can't query the underlying memory resource directly since it might be shared with other allocators.
 

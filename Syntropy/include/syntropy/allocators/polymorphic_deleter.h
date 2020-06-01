@@ -8,6 +8,7 @@
 
 #include "syntropy/language/utility.h"
 #include "syntropy/allocators/memory_resource.h"
+#include "syntropy/core/types.h"
 
 namespace syntropy
 {

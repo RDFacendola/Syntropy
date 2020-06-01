@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/virtual_memory.h"
@@ -55,7 +56,7 @@ namespace syntropy
         /// \brief Check whether a memory range is contained entirely inside this buffer.
         /// \param memory_range Memory range to check.
         /// \return Returns true if memory_range is contained inside this virtual memory buffer, returns false otherwise.
-        bool Contains(const MemoryRange& memory_range) const noexcept;
+        Bool Contains(const MemoryRange& memory_range) const noexcept;
 
         /// \brief Get the size of the buffer, in bytes.
         /// \return Returns the size of the buffer, in bytes.
@@ -122,7 +123,7 @@ namespace syntropy
         return range_.End();
     }
 
-    inline bool VirtualMemoryRange::Contains(const MemoryRange& memory_range) const noexcept
+    inline Bool VirtualMemoryRange::Contains(const MemoryRange& memory_range) const noexcept
     {
         return range_.Contains(memory_range);
     }

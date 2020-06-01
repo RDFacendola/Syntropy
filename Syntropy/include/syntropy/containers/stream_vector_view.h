@@ -110,7 +110,7 @@ namespace syntropy
 
         /// \brief Check whether the container is empty.
         /// \return Returns true if the container is empty, returns false otherwise.
-        bool IsEmpty() const noexcept;
+        Bool IsEmpty() const noexcept;
 
         /// \brief Get the number of elements in the shortest stream among those with the specified indices.
         /// \return Returns the number of elements in the shortest stream among those with the specified indices.
@@ -287,7 +287,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    inline bool StreamVectorView<TStreams...>::IsEmpty() const noexcept
+    inline Bool StreamVectorView<TStreams...>::IsEmpty() const noexcept
     {
         return GetSize() == 0;
     }

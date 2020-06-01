@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/language/macro.h"
 #include "syntropy/unit_test/test_fixture.h"
 
@@ -64,7 +65,7 @@ namespace syntropy
 
     #undef SYNTROPY_UNIT_ASSERT
     #define SYNTROPY_UNIT_ASSERT(expression) \
-        if (bool result = (expression); !result) \
+        if (Bool result = (expression); !result) \
         { \
             syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kFailure, "ASSERT (" #expression ")", SYNTROPY_HERE ); \
             return; \
@@ -76,7 +77,7 @@ namespace syntropy
 
     #undef SYNTROPY_UNIT_TEST
     #define SYNTROPY_UNIT_TEST(expression) \
-        if (bool result = (expression); !result) \
+        if (Bool result = (expression); !result) \
         { \
             syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kFailure, "TEST (" #expression ")", SYNTROPY_HERE ); \
         } \
@@ -87,7 +88,7 @@ namespace syntropy
 
     #undef SYNTROPY_UNIT_EXPECT
     #define SYNTROPY_UNIT_EXPECT(expression) \
-        if(bool result = (expression); !result) \
+        if(Bool result = (expression); !result) \
         { \
             syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kSkipped, "EXPECT (" #expression ")", SYNTROPY_HERE ); \
             return; \

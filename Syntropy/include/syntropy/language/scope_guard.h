@@ -7,6 +7,7 @@
 #pragma once
 
 #include "syntropy/language/utility.h"
+#include "syntropy/core/types.h"
 
 namespace syntropy
 {
@@ -50,7 +51,7 @@ namespace syntropy
         TFunctor functor_;
 
         ///< \brief Whether the scope guard was dismissed.
-        bool dismissed_{ false };
+        Bool dismissed_{ false };
 
     };
 

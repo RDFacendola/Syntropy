@@ -122,7 +122,7 @@ namespace syntropy
         return *this;
     }
 
-    MsgpackStream& MsgpackStream::operator>>(bool& rhs)
+    MsgpackStream& MsgpackStream::operator>>(Bool& rhs)
     {
         auto sentry = Sentry(*this);
 

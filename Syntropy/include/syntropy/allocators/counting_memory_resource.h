@@ -56,7 +56,7 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// The null memory resource only contains empty ranges.
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
-        bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemoryRange& block) const noexcept;
 
         /// \brief Get the amount of active allocations on the underlying memory resource.
         /// \return Returns the number of active allocations on the underlying memory resource.
@@ -115,7 +115,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline bool CountingMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool CountingMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
         return memory_resource_.Owns(block);
     }

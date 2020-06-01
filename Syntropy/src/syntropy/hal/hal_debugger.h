@@ -20,7 +20,7 @@ namespace syntropy
     namespace HALDebugger
     {
         /// \brief Check whether the debugger is attached.
-        bool IsAttached();
+        Bool IsAttached();
 
         /// \brief Get the stack trace on the current thread.
         StackTrace GetStackTrace(StackTraceElement here);

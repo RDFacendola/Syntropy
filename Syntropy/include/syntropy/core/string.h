@@ -11,6 +11,7 @@
 #include <string_view>
 #include <iterator>
 
+#include "syntropy/core/types.h"
 #include "syntropy/allocators/polymorphic_allocator.h"
 
 namespace syntropy
@@ -54,10 +55,10 @@ namespace syntropy
     namespace Strings
     {
         /// \brief Check whether lhs is a prefix of rhs.
-        bool IsPrefix(const StringView& lhs, const StringView& rhs);
+        Bool IsPrefix(const StringView& lhs, const StringView& rhs);
 
         /// \brief Check whether lhs is a suffix of rhs.
-        bool IsSuffix(const StringView& lhs, const StringView& rhs);
+        Bool IsSuffix(const StringView& lhs, const StringView& rhs);
 
         /// \brief Create a string view from a pair of iterators.
         /// \remarks BasicStringView can only constructor from a pair since C++20.
@@ -70,12 +71,12 @@ namespace syntropy
 
     // Strings.
 
-    inline bool Strings::IsPrefix(const StringView& lhs, const StringView& rhs)
+    inline Bool Strings::IsPrefix(const StringView& lhs, const StringView& rhs)
     {
         return (lhs.length() <= rhs.length()) && (rhs.compare(0, lhs.length(), lhs) == 0);
     }
 
-    inline bool Strings::IsSuffix(const StringView& lhs, const StringView& rhs)
+    inline Bool Strings::IsSuffix(const StringView& lhs, const StringView& rhs)
     {
         return (lhs.length() <= rhs.length()) && (rhs.compare(rhs.length() - lhs.length(), lhs.length(), lhs) == 0);
     }

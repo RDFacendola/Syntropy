@@ -6,16 +6,14 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_address.h"
 #include "syntropy/memory/memory_range.h"
-
 #include "syntropy/memory/virtual_memory.h"
 #include "syntropy/memory/virtual_memory_range.h"
-
 #include "syntropy/math/math.h"
-
 #include "syntropy/diagnostics/assert.h"
 
 namespace syntropy
@@ -64,7 +62,7 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemoryRange& block) const noexcept;
 
         /// \brief Swap this allocator with the provided instance.
         void Swap(VirtualMemoryResource& rhs) noexcept;
@@ -132,7 +130,7 @@ namespace syntropy
         return *this;
     }
 
-    inline bool VirtualMemoryResource::Owns(const MemoryRange& block) const noexcept
+    inline Bool VirtualMemoryResource::Owns(const MemoryRange& block) const noexcept
     {
         return virtual_memory_.Contains(block);
     }

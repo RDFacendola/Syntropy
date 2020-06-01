@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include "syntropy/syntropy.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_address.h"
@@ -55,7 +54,7 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemoryRange& block) const noexcept;
 
     };
 
@@ -80,7 +79,7 @@ namespace syntropy
         ::operator delete(block.Begin(), alignment, std::nothrow);
     }
 
-    inline bool SystemMemoryResource::Owns(const MemoryRange& block) const noexcept
+    inline Bool SystemMemoryResource::Owns(const MemoryRange& block) const noexcept
     {
         // This is not correct, however system memory resource is expected to be used as last resort 
         // to other memory resources or used as the single allocator for the application.

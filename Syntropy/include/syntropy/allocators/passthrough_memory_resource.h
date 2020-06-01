@@ -10,7 +10,7 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory_address.h"
 #include "syntropy/memory/memory_range.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/allocators/null_memory_resource.h"
 
 namespace syntropy
@@ -59,7 +59,7 @@ namespace syntropy
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
-        bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemoryRange& block) const noexcept;
 
     private:
 
@@ -106,7 +106,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline bool PassthroughMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool PassthroughMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
     {
         return memory_resource_ ? memory_resource_->Owns(block) : NullMemoryResource::Owns(block);
     }

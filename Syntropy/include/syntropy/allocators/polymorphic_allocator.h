@@ -8,6 +8,7 @@
 
 #include <tuple>
 
+#include "syntropy/core/types.h"
 #include "syntropy/language/type_traits.h"
 #include "syntropy/language/memory.h"
 #include "syntropy/allocators/memory_resource.h"
@@ -78,11 +79,11 @@ namespace syntropy
 
     /// \brief Equality comparison for PolymorphicAllocators.
     template <typename TType, typename UType>
-    [[nodiscard]] bool operator==(const PolymorphicAllocator<TType>& lhs, const PolymorphicAllocator<UType>& rhs) noexcept;
+    [[nodiscard]] Bool operator==(const PolymorphicAllocator<TType>& lhs, const PolymorphicAllocator<UType>& rhs) noexcept;
 
     /// \brief Inequality comparison for PolymorphicAllocators.
     template <typename TType, typename UType>
-    [[nodiscard]] bool operator!=(const PolymorphicAllocator<TType>& lhs, const PolymorphicAllocator<UType>& rhs) noexcept;
+    [[nodiscard]] Bool operator!=(const PolymorphicAllocator<TType>& lhs, const PolymorphicAllocator<UType>& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -143,13 +144,13 @@ namespace syntropy
     // Non-member functions.
 
     template <typename TType, typename UType>
-    inline bool operator==(const PolymorphicAllocator<TType>& lhs, const PolymorphicAllocator<UType>& rhs) noexcept
+    inline Bool operator==(const PolymorphicAllocator<TType>& lhs, const PolymorphicAllocator<UType>& rhs) noexcept
     {
         return (&lhs.GetMemoryResource() == &rhs.GetMemoryResource());
     }
 
     template <typename TType, typename UType>
-    inline bool operator!=(const PolymorphicAllocator<TType>& lhs, const PolymorphicAllocator<UType>& rhs) noexcept
+    inline Bool operator!=(const PolymorphicAllocator<TType>& lhs, const PolymorphicAllocator<UType>& rhs) noexcept
     {
         return !(lhs == rhs);
     }

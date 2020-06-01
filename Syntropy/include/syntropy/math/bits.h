@@ -10,6 +10,7 @@
 #include <cmath>
 #include <limits>
 
+#include "syntropy/core/types.h"
 #include "syntropy/math/numeric.h"
 #include "syntropy/core/types.h"
 #include "syntropy/platform/intrinsics.h"
@@ -43,7 +44,7 @@ namespace syntropy
 
         /// \brief Check whether rhs is a power of 2.
         template <typename TNumber>
-        constexpr bool IsPow2(TNumber rhs);
+        constexpr Bool IsPow2(TNumber rhs);
 
         /// \brief Count the number of bits equal to 1 in the provided number.
         /// \return Returns the number of bits equal to 1 in the provided number.
@@ -122,7 +123,7 @@ namespace syntropy
     }
 
     template <typename TNumber>
-    constexpr bool Math::IsPow2(TNumber rhs)
+    constexpr Bool Math::IsPow2(TNumber rhs)
     {
         if constexpr (std::is_integral_v<TNumber>)
         {

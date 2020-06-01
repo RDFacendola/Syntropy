@@ -10,9 +10,8 @@
 #include "syntropy/core/range.h"
 #include "syntropy/core/string.h"
 #include "syntropy/core/label.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/containers/vector.h"
-
 #include "syntropy/application/command_line_argument.h"
 
 namespace syntropy
@@ -51,7 +50,7 @@ namespace syntropy
         /// \brief Check whether the command line defines an argument.
         /// \param argument_name Name of the argument to test.
         /// \return Returns true if the requested argument was defined, returns false otherwise.
-        bool HasArgument(const Label& argument_name) const;
+        Bool HasArgument(const Label& argument_name) const;
 
         /// \brief Get the arguments in this command line.
         /// \return Returns the arguments in this command line, as key-value pairs.
@@ -106,7 +105,7 @@ namespace syntropy
         return it != std::end(arguments_) ? &(*it) : nullptr;
     }
 
-    inline bool CommandLine::HasArgument(const Label& argument_name) const
+    inline Bool CommandLine::HasArgument(const Label& argument_name) const
     {
         return GetArgument(argument_name) != nullptr;
     }

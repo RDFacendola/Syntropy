@@ -74,27 +74,27 @@ namespace syntropy
 
     /// \brief Equality comparison for Alignment.
     /// \return Returns true if lhs and rhs refer to the same alignment, returns false otherwise.
-    constexpr bool operator==(const Alignment& lhs, const Alignment& rhs) noexcept;
+    constexpr Bool operator==(const Alignment& lhs, const Alignment& rhs) noexcept;
 
     /// \brief Inequality comparison for Alignment.
     /// \return Returns true if lhs and rhs refer to different alignments, returns false otherwise.
-    constexpr bool operator!=(const Alignment& lhs, const Alignment& rhs) noexcept;
+    constexpr Bool operator!=(const Alignment& lhs, const Alignment& rhs) noexcept;
 
     /// \brief Greater-than comparison for Alignment.
     /// \return Returns true if lhs refers to an alignment that is strictly greater than rhs, returns false otherwise.
-    constexpr bool operator>(const Alignment& lhs, const Alignment& rhs) noexcept;
+    constexpr Bool operator>(const Alignment& lhs, const Alignment& rhs) noexcept;
 
     /// \brief Less-than comparison for Alignment.
     /// \return Returns true if lhs refers to an alignment that is strictly less than rhs, returns false otherwise.
-    constexpr bool operator<(const Alignment& lhs, const Alignment& rhs) noexcept;
+    constexpr Bool operator<(const Alignment& lhs, const Alignment& rhs) noexcept;
 
     /// \brief Greater-or-equal comparison for Alignment.
     /// \return Returns true if lhs refers to an alignment that is equal or greater than rhs, returns false otherwise.
-    constexpr bool operator>=(const Alignment& lhs, const Alignment& rhs) noexcept;
+    constexpr Bool operator>=(const Alignment& lhs, const Alignment& rhs) noexcept;
 
     /// \brief Less-or-equal comparison for Alignment.
     /// \return Returns true if lhs refers to an alignment that is equal or less than rhs, returns false otherwise.
-    constexpr bool operator<=(const Alignment& lhs, const Alignment& rhs) noexcept;
+    constexpr Bool operator<=(const Alignment& lhs, const Alignment& rhs) noexcept;
 
     /// \brief Right-shift an alignment.
     /// \return Returns an alignment which is equal to lhs right-shifted by rhs.
@@ -166,32 +166,32 @@ namespace syntropy
 
     // Non-member functions.
 
-    constexpr bool operator==(const Alignment& lhs, const Alignment& rhs) noexcept
+    constexpr Bool operator==(const Alignment& lhs, const Alignment& rhs) noexcept
     {
         return *lhs == *rhs;
     }
 
-    constexpr bool operator!=(const Alignment& lhs, const Alignment& rhs) noexcept
+    constexpr Bool operator!=(const Alignment& lhs, const Alignment& rhs) noexcept
     {
         return !(lhs == rhs);
     }
 
-    constexpr bool operator>(const Alignment& lhs, const Alignment& rhs) noexcept
+    constexpr Bool operator>(const Alignment& lhs, const Alignment& rhs) noexcept
     {
         return *lhs > *rhs;
     }
 
-    constexpr bool operator<(const Alignment& lhs, const Alignment& rhs) noexcept
+    constexpr Bool operator<(const Alignment& lhs, const Alignment& rhs) noexcept
     {
         return *lhs < *rhs;
     }
 
-    constexpr bool operator>=(const Alignment& lhs, const Alignment& rhs) noexcept
+    constexpr Bool operator>=(const Alignment& lhs, const Alignment& rhs) noexcept
     {
         return *lhs >= *rhs;
     }
 
-    constexpr bool operator<=(const Alignment& lhs, const Alignment& rhs) noexcept
+    constexpr Bool operator<=(const Alignment& lhs, const Alignment& rhs) noexcept
     {
         return *lhs <= *rhs;
     }

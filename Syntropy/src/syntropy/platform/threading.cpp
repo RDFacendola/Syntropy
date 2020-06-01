@@ -18,7 +18,7 @@ namespace syntropy
         return HALThreading::GetSystemAffinity();
     }
 
-    bool Threading::SetProcessAffinity(const AffinityMask& affinity_mask)
+    Bool Threading::SetProcessAffinity(const AffinityMask& affinity_mask)
     {
         return HALThreading::SetProcessAffinity(affinity_mask);
     }
@@ -28,7 +28,7 @@ namespace syntropy
         return HALThreading::GetProcessAffinity();
     }
 
-    bool Threading::SetThreadAffinity(const AffinityMask& affinity_mask, std::thread* thread)
+    Bool Threading::SetThreadAffinity(const AffinityMask& affinity_mask, std::thread* thread)
     {
         return HALThreading::SetThreadAffinity(affinity_mask, thread);
     }
@@ -38,7 +38,7 @@ namespace syntropy
         return HALThreading::GetThreadAffinity(thread);
     }
 
-    bool Threading::SetThreadPriority(ThreadPriority priority, std::thread* thread)
+    Bool Threading::SetThreadPriority(ThreadPriority priority, std::thread* thread)
     {
         return HALThreading::SetThreadPriority(priority, thread);
     }

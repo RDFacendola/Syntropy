@@ -52,22 +52,22 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Check whether a severity is equal to a verbosity level.
-    constexpr bool operator==(Severity lhs, Verbosity rhs);
+    constexpr Bool operator==(Severity lhs, Verbosity rhs);
 
     /// \brief Check whether a severity is not-equal to a verbosity level.
-    constexpr bool operator!=(Severity lhs, Verbosity rhs);
+    constexpr Bool operator!=(Severity lhs, Verbosity rhs);
 
     /// \brief Check whether a severity is strictly greater than a verbosity level.
-    constexpr bool operator>(Severity lhs, Verbosity rhs);
+    constexpr Bool operator>(Severity lhs, Verbosity rhs);
 
     /// \brief Check whether a severity is strictly less than a verbosity level.
-    constexpr bool operator<(Severity lhs, Verbosity rhs);
+    constexpr Bool operator<(Severity lhs, Verbosity rhs);
 
     /// \brief Check whether a severity is equal or greater than a verbosity level.
-    constexpr bool operator>=(Severity lhs, Verbosity rhs);
+    constexpr Bool operator>=(Severity lhs, Verbosity rhs);
 
     /// \brief Check whether a severity is equal or less than a verbosity level.
-    constexpr bool operator<=(Severity lhs, Verbosity rhs);
+    constexpr Bool operator<=(Severity lhs, Verbosity rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -75,32 +75,32 @@ namespace syntropy
 
     // Non-member functions.
 
-    constexpr bool operator==(Severity lhs, Verbosity rhs)
+    constexpr Bool operator==(Severity lhs, Verbosity rhs)
     {
         return static_cast<Byte>(lhs) == static_cast<Byte>(rhs);
     }
 
-    constexpr bool operator!=(Severity lhs, Verbosity rhs)
+    constexpr Bool operator!=(Severity lhs, Verbosity rhs)
     {
         return !(lhs == rhs);
     }
 
-    constexpr bool operator>(Severity lhs, Verbosity rhs)
+    constexpr Bool operator>(Severity lhs, Verbosity rhs)
     {
         return static_cast<Byte>(lhs) > static_cast<Byte>(rhs);
     }
 
-    constexpr bool operator<(Severity lhs, Verbosity rhs)
+    constexpr Bool operator<(Severity lhs, Verbosity rhs)
     {
         return static_cast<Byte>(lhs) < static_cast<Byte>(rhs);
     }
 
-    constexpr bool operator>=(Severity lhs, Verbosity rhs)
+    constexpr Bool operator>=(Severity lhs, Verbosity rhs)
     {
         return !(lhs < rhs);
     }
 
-    constexpr bool operator<=(Severity lhs, Verbosity rhs)
+    constexpr Bool operator<=(Severity lhs, Verbosity rhs)
     {
         return !(lhs > rhs);
     }

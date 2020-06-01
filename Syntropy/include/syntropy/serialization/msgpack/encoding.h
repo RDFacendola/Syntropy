@@ -45,7 +45,7 @@ namespace syntropy
         Byte Encode(std::nullptr_t rhs);
 
         /// \brief Encode a boolean value.
-        Byte Encode(bool rhs);
+        Byte Encode(Bool rhs);
 
         /// \brief Encode a 32-bit floating point number.
         std::int32_t Encode(Float rhs);
@@ -79,96 +79,96 @@ namespace syntropy
     namespace Msgpack
     {
         /// \brief Check whether rhs can be encoded using a positive fix int.
-        bool IsPositiveFixInt(Byte rhs);
+        Bool IsPositiveFixInt(Byte rhs);
 
         /// \brief Check whether rhs can be encoded using a fixed-length map.
         template <typename TMap>
-        bool IsFixMap(const TMap& rhs);
+        Bool IsFixMap(const TMap& rhs);
 
         /// \brief Check whether rhs can be encoded using a fixed-length array.
         template <typename TArray>
-        bool IsFixArray(const TArray& rhs);
+        Bool IsFixArray(const TArray& rhs);
 
         /// \brief Check whether rhs can be encoded using a fixed-length string.
-        bool IsFixStr(const String& rhs);
+        Bool IsFixStr(const String& rhs);
 
         /// \brief Check whether rhs can be encoded using a 8-bit long byte-array.
-        bool IsBin8(const ConstMemoryRange& rhs);
+        Bool IsBin8(const ConstMemoryRange& rhs);
 
         /// \brief Check whether rhs can be encoded using a 16-bit long byte-array.
-        bool IsBin16(const ConstMemoryRange& rhs);
+        Bool IsBin16(const ConstMemoryRange& rhs);
 
         /// \brief Check whether rhs can be encoded using a 32-bit long byte-array.
-        bool IsBin32(const ConstMemoryRange& rhs);
+        Bool IsBin32(const ConstMemoryRange& rhs);
 
         /// \brief Check whether rhs can be encoded using an extension type whose size is up to (2^8)-1 bytes.
         template <typename TExtension>
-        bool IsExt8(const TExtension& rhs);
+        Bool IsExt8(const TExtension& rhs);
 
         /// \brief Check whether rhs can be encoded using an extension type whose size is up to (2^16)-1 bytes.
         template <typename TExtension>
-        bool IsExt16(const TExtension& rhs);
+        Bool IsExt16(const TExtension& rhs);
 
         /// \brief Check whether rhs can be encoded using an extension type whose size is up to (2^32)-1 bytes.
         template <typename TExtension>
-        bool IsExt32(const TExtension& rhs);
+        Bool IsExt32(const TExtension& rhs);
 
         /// \brief Check whether rhs can be encoded using a 8-bit signed int.
-        bool IsInt8(Int rhs);
+        Bool IsInt8(Int rhs);
 
         /// \brief Check whether rhs can be encoded using a 16-bit signed int.
-        bool IsInt16(Int rhs);
+        Bool IsInt16(Int rhs);
 
         /// \brief Check whether rhs can be encoded using a 32-bit signed int.
-        bool IsInt32(Int rhs);
+        Bool IsInt32(Int rhs);
 
         /// \brief Check whether rhs can be encoded using a 1-byte fixed extension type.
         template <typename TExtension>
-        bool IsFixExt1(const TExtension& rhs);
+        Bool IsFixExt1(const TExtension& rhs);
 
         /// \brief Check whether rhs can be encoded using a 2-bytes fixed extension type.
         template <typename TExtension>
-        bool IsFixExt2(const TExtension& rhs);
+        Bool IsFixExt2(const TExtension& rhs);
 
         /// \brief Check whether rhs can be encoded using a 4-bytes fixed extension type.
         template <typename TExtension>
-        bool IsFixExt4(const TExtension& rhs);
+        Bool IsFixExt4(const TExtension& rhs);
 
         /// \brief Check whether rhs can be encoded using a 8-bytes fixed extension type.
         template <typename TExtension>
-        bool IsFixExt8(const TExtension& rhs);
+        Bool IsFixExt8(const TExtension& rhs);
 
         /// \brief Check whether rhs can be encoded using a 16-bytes fixed extension type.
         template <typename TExtension>
-        bool IsFixExt16(const TExtension& rhs);
+        Bool IsFixExt16(const TExtension& rhs);
 
         /// \brief Check whether rhs can be encoded using a 8-bit long string.
-        bool IsStr8(const String& rhs);
+        Bool IsStr8(const String& rhs);
 
         /// \brief Check whether rhs can be encoded using a 16-bit long string.
-        bool IsStr16(const String& rhs);
+        Bool IsStr16(const String& rhs);
 
         /// \brief Check whether rhs can be encoded using a 32-bit long string.
-        bool IsStr32(const String& rhs);
+        Bool IsStr32(const String& rhs);
 
         /// \brief Check whether rhs can be encoded using a 16-bit long array.
         template <typename TArray>
-        bool IsArray16(const TArray& rhs);
+        Bool IsArray16(const TArray& rhs);
 
         /// \brief Check whether rhs can be encoded using a 32-bit long array.
         template <typename TArray>
-        bool IsArray32(const TArray& rhs);
+        Bool IsArray32(const TArray& rhs);
 
         /// \brief Check whether rhs can be encoded using a 16-bit long map.
         template <typename TMap>
-        bool IsMap16(const TMap& rhs);
+        Bool IsMap16(const TMap& rhs);
 
         /// \brief Check whether rhs can be encoded using a 32-bit long map.
         template <typename TMap>
-        bool IsMap32(const TMap& rhs);
+        Bool IsMap32(const TMap& rhs);
 
         /// \brief Check whether rhs can be encoded using a negative fix int.
-        bool IsNegativeFixInt(Byte rhs);
+        Bool IsNegativeFixInt(Byte rhs);
     }
 
     /************************************************************************/
@@ -215,7 +215,7 @@ namespace syntropy
         return Byte(MsgpackFormat::kNil);
     }
 
-    inline Byte Msgpack::Encode(bool rhs)
+    inline Byte Msgpack::Encode(Bool rhs)
     {
         return Byte(rhs ? MsgpackFormat::kTrue : MsgpackFormat::kFalse);
     }
@@ -265,146 +265,146 @@ namespace syntropy
 
     // Msgpack.
 
-    inline bool Msgpack::IsPositiveFixInt(Byte rhs)
+    inline Bool Msgpack::IsPositiveFixInt(Byte rhs)
     {
         return rhs >= 0 && rhs <= 127;
     }
 
     template <typename TMap>
-    inline bool Msgpack::IsFixMap(const TMap& rhs)
+    inline Bool Msgpack::IsFixMap(const TMap& rhs)
     {
         return rhs.size() <= 0xF;
     }
 
     template <typename TArray>
-    inline bool Msgpack::IsFixArray(const TArray& rhs)
+    inline Bool Msgpack::IsFixArray(const TArray& rhs)
     {
         return rhs.size() <= 0xF;
     }
 
-    inline bool Msgpack::IsFixStr(const String& rhs)
+    inline Bool Msgpack::IsFixStr(const String& rhs)
     {
         return rhs.size() <= 0b11111;
     }
 
-    inline bool Msgpack::IsBin8(const ConstMemoryRange& rhs)
+    inline Bool Msgpack::IsBin8(const ConstMemoryRange& rhs)
     {
         return *rhs.GetSize() <= 0xF;
     }
 
-    inline bool Msgpack::IsBin16(const ConstMemoryRange& rhs)
+    inline Bool Msgpack::IsBin16(const ConstMemoryRange& rhs)
     {
         return *rhs.GetSize() <= 0xFFFF;
     }
 
-    inline bool Msgpack::IsBin32(const ConstMemoryRange& rhs)
+    inline Bool Msgpack::IsBin32(const ConstMemoryRange& rhs)
     {
         return *rhs.GetSize() <= 0xFFFFFFFF;
     }
 
     template <typename TExtension>
-    inline bool Msgpack::IsExt8(const TExtension& rhs)
+    inline Bool Msgpack::IsExt8(const TExtension& rhs)
     {
         return MsgpackExtensionType<TExtension>::GetSize(rhs) <= 0xFF_Bytes;
     }
 
     template <typename TExtension>
-    inline bool Msgpack::IsExt16(const TExtension& rhs)
+    inline Bool Msgpack::IsExt16(const TExtension& rhs)
     {
         return MsgpackExtensionType<TExtension>::GetSize(rhs) <= 0xFFFF_Bytes;
     }
 
     template <typename TExtension>
-    inline bool Msgpack::IsExt32(const TExtension& rhs)
+    inline Bool Msgpack::IsExt32(const TExtension& rhs)
     {
         return MsgpackExtensionType<TExtension>::GetSize(rhs) <= 0xFFFFFFFF_Bytes;
     }
 
-    inline bool Msgpack::IsInt8(Int rhs)
+    inline Bool Msgpack::IsInt8(Int rhs)
     {
         return rhs >= std::numeric_limits<Byte>::min() && rhs <= std::numeric_limits<Byte>::max();
     }
 
-    inline bool Msgpack::IsInt16(Int rhs)
+    inline Bool Msgpack::IsInt16(Int rhs)
     {
         return rhs >= std::numeric_limits<std::int16_t>::min() && rhs <= std::numeric_limits<std::int16_t>::max();
     }
 
-    inline bool Msgpack::IsInt32(Int rhs)
+    inline Bool Msgpack::IsInt32(Int rhs)
     {
         return rhs >= std::numeric_limits<std::int32_t>::min() && rhs <= std::numeric_limits<std::int32_t>::max();
     }
 
     template <typename TExtension>
-    inline bool Msgpack::IsFixExt1(const TExtension& rhs)
+    inline Bool Msgpack::IsFixExt1(const TExtension& rhs)
     {
         return MsgpackExtensionType<TExtension>::GetSize(rhs) == 1_Bytes;
     }
 
     template <typename TExtension>
-    inline bool Msgpack::IsFixExt2(const TExtension& rhs)
+    inline Bool Msgpack::IsFixExt2(const TExtension& rhs)
     {
         return MsgpackExtensionType<TExtension>::GetSize(rhs) == 2_Bytes;
     }
 
     template <typename TExtension>
-    inline bool Msgpack::IsFixExt4(const TExtension& rhs)
+    inline Bool Msgpack::IsFixExt4(const TExtension& rhs)
     {
         return MsgpackExtensionType<TExtension>::GetSize(rhs) == 4_Bytes;
     }
 
     template <typename TExtension>
-    inline bool Msgpack::IsFixExt8(const TExtension& rhs)
+    inline Bool Msgpack::IsFixExt8(const TExtension& rhs)
     {
         return MsgpackExtensionType<TExtension>::GetSize(rhs) == 8_Bytes;
     }
 
     template <typename TExtension>
-    inline bool Msgpack::IsFixExt16(const TExtension& rhs)
+    inline Bool Msgpack::IsFixExt16(const TExtension& rhs)
     {
         return MsgpackExtensionType<TExtension>::GetSize(rhs) == 16_Bytes;
     }
 
-    inline bool Msgpack::IsStr8(const String& rhs)
+    inline Bool Msgpack::IsStr8(const String& rhs)
     {
         return rhs.size() <= 0xFF;
     }
 
-    inline bool Msgpack::IsStr16(const String& rhs)
+    inline Bool Msgpack::IsStr16(const String& rhs)
     {
         return rhs.size() <= 0xFFFF;
     }
 
-    inline bool Msgpack::IsStr32(const String& rhs)
+    inline Bool Msgpack::IsStr32(const String& rhs)
     {
         return rhs.size() <= 0xFFFFFFFF;
     }
 
     template <typename TArray>
-    inline bool Msgpack::IsArray16(const TArray& rhs)
+    inline Bool Msgpack::IsArray16(const TArray& rhs)
     {
         return rhs.size() <= 0xFFFF;
     }
 
     template <typename TArray>
-    inline bool Msgpack::IsArray32(const TArray& rhs)
+    inline Bool Msgpack::IsArray32(const TArray& rhs)
     {
         return rhs.size() <= 0xFFFFFFFF;
     }
 
     template <typename TMap>
-    inline bool Msgpack::IsMap16(const TMap& rhs)
+    inline Bool Msgpack::IsMap16(const TMap& rhs)
     {
         return rhs.size() <= 0xFFFF;
     }
 
     template <typename TMap>
-    inline bool Msgpack::IsMap32(const TMap& rhs)
+    inline Bool Msgpack::IsMap32(const TMap& rhs)
     {
         return rhs.size() <= 0xFFFFFFFF;
     }
 
-    inline bool Msgpack::IsNegativeFixInt(Byte rhs)
+    inline Bool Msgpack::IsNegativeFixInt(Byte rhs)
     {
         return rhs >= -63 && rhs <= 0;
     }

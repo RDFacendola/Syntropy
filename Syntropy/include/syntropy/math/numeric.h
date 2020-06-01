@@ -25,12 +25,12 @@ namespace syntropy
         /// \brief Check whether two numbers are approximately equal.
         /// \param epsilon Error percentage relative to the absolute larger number.
         template <typename TNumber>
-        constexpr bool ApproximatelyEqual(TNumber lhs, TNumber rhs, TNumber epsilon = TNumber( 0.01 ));
+        constexpr Bool ApproximatelyEqual(TNumber lhs, TNumber rhs, TNumber epsilon = TNumber( 0.01 ));
 
         /// \brief Check whether two numbers are essentially equal.
         /// \param epsilon Error percentage relative to the absolute smaller number.
         template <typename TNumber>
-        constexpr bool EssentiallyEqual(TNumber lhs, TNumber rhs, TNumber epsilon = TNumber( 0.01 ));
+        constexpr Bool EssentiallyEqual(TNumber lhs, TNumber rhs, TNumber epsilon = TNumber( 0.01 ));
 
         /// \brief Get the smaller value greater than rhs.
         template <typename TNumber>
@@ -59,7 +59,7 @@ namespace syntropy
     // Math.
 
     template <typename TNumber>
-    constexpr bool Math::ApproximatelyEqual(TNumber lhs, TNumber rhs, TNumber epsilon)
+    constexpr Bool Math::ApproximatelyEqual(TNumber lhs, TNumber rhs, TNumber epsilon)
     {
         auto abs_lhs = Abs(lhs);
         auto abs_rhs = Abs(rhs);
@@ -68,7 +68,7 @@ namespace syntropy
     }
 
     template <typename TNumber>
-    constexpr bool Math::EssentiallyEqual(TNumber lhs, TNumber rhs, TNumber epsilon)
+    constexpr Bool Math::EssentiallyEqual(TNumber lhs, TNumber rhs, TNumber epsilon)
     {
         auto abs_lhs = Abs(lhs);
         auto abs_rhs = Abs(rhs);

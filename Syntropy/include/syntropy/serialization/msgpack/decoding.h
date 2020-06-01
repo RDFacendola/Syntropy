@@ -69,19 +69,19 @@ namespace syntropy
     namespace Msgpack
     {
         /// \brief Check whether rhs represents a positive fix int type format.
-        bool IsPositiveFixIntFormat(Byte rhs);
+        Bool IsPositiveFixIntFormat(Byte rhs);
 
         /// \brief Check whether rhs represents a fixed-length map type format.
-        bool IsFixMapFormat(Byte rhs);
+        Bool IsFixMapFormat(Byte rhs);
 
         /// \brief Check whether rhs represents a fixed-length array type format.
-        bool IsFixArrayFormat(Byte rhs);
+        Bool IsFixArrayFormat(Byte rhs);
 
         /// \brief Check whether rhs represents a fixed-length string type format.
-        bool IsFixStrFormat(Byte rhs);
+        Bool IsFixStrFormat(Byte rhs);
 
         /// \brief Check whether rhs represents a negative fix int type format.
-        bool IsNegativeFixIntFormat(Byte rhs);
+        Bool IsNegativeFixIntFormat(Byte rhs);
     }
 
     /************************************************************************/
@@ -170,27 +170,27 @@ namespace syntropy
 
     // Msgpack.
 
-    inline bool Msgpack::IsPositiveFixIntFormat(Byte rhs)
+    inline Bool Msgpack::IsPositiveFixIntFormat(Byte rhs)
     {
         return Byte(MsgpackFormat::kPositiveFixInt) == Byte(rhs & 0b10000000);
     }
 
-    inline bool Msgpack::IsFixMapFormat(Byte rhs)
+    inline Bool Msgpack::IsFixMapFormat(Byte rhs)
     {
         return Byte(MsgpackFormat::kFixMap) == Byte(rhs & 0b11110000);
     }
 
-    inline bool Msgpack::IsFixArrayFormat(Byte rhs)
+    inline Bool Msgpack::IsFixArrayFormat(Byte rhs)
     {
         return Byte(MsgpackFormat::kFixArray) == Byte(rhs & 0b11110000);
     }
 
-    inline bool Msgpack::IsFixStrFormat(Byte rhs)
+    inline Bool Msgpack::IsFixStrFormat(Byte rhs)
     {
         return Byte(MsgpackFormat::kFixStr) == Byte(rhs & 0b11100000);
     }
 
-    inline bool Msgpack::IsNegativeFixIntFormat(Byte rhs)
+    inline Bool Msgpack::IsNegativeFixIntFormat(Byte rhs)
     {
         return Byte(MsgpackFormat::kNegativeFixInt) == Byte(rhs & 0b11100000);
     }

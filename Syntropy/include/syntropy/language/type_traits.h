@@ -19,7 +19,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Type equal to TTrue if condition is true, equal to TFalse otherwise.
-    template <bool Condition, typename TTrue, typename TFalse>
+    template <Bool Condition, typename TTrue, typename TFalse>
     using ConditionalT = std::conditional_t<Condition, TTrue, TFalse>;
 
     /************************************************************************/
@@ -48,7 +48,7 @@ namespace syntropy
 
         /// \brief Constant equal to true if TType is constant, equal to false otherwise.
     template <typename TType>
-    inline constexpr bool IsConstV = std::is_const_v<TType>;
+    inline constexpr Bool IsConstV = std::is_const_v<TType>;
 
     /************************************************************************/
     /* POLYMORPHISM QUERY                                                   */
@@ -56,11 +56,11 @@ namespace syntropy
 
     /// \brief Wraps the standard type trait std::is_polymorphic_v.
     template <typename TType>
-    inline constexpr bool IsPolymorphicV = std::is_polymorphic_v<TType>;
+    inline constexpr Bool IsPolymorphicV = std::is_polymorphic_v<TType>;
 
     /// \brief Wraps the standard type trait std::is_final_v.
     template <typename TType>
-    inline constexpr bool IsFinalV = std::is_final_v<TType>;
+    inline constexpr Bool IsFinalV = std::is_final_v<TType>;
 
     /************************************************************************/
     /* STRIP                                                                */
@@ -100,7 +100,7 @@ namespace syntropy
 
     /// \brief Constant equal to true if TType is a class name without reference, qualifiers, extents and indirection levels, equal to false otherwise.
     template <typename TType>
-    constexpr bool IsClassNameV = std::is_same<ClassNameT<TType>, TType>::value;
+    constexpr Bool IsClassNameV = std::is_same<ClassNameT<TType>, TType>::value;
 
     /************************************************************************/
     /* IS SPECIALIZATION                                                    */
@@ -108,11 +108,11 @@ namespace syntropy
 
     /// \brief If TType is a specialization of TTemplate IsSpecializationV is true, false otherwise.
     template<typename TType, template <typename...> typename TTemplate>
-    constexpr bool IsSpecializationV = false;
+    constexpr Bool IsSpecializationV = false;
 
     /// \brief If TType is a specialization of TTemplate IsSpecializationV is true, false otherwise.
     template<template <typename...> typename TTemplate, typename... TTypes>
-    constexpr bool IsSpecializationV<TTemplate<TTypes...>, TTemplate> = true;
+    constexpr Bool IsSpecializationV<TTemplate<TTypes...>, TTemplate> = true;
 
     /************************************************************************/
     /* ALWAYS FALSE                                                         */
@@ -121,7 +121,7 @@ namespace syntropy
     /// \brief Evaluates to false.
     /// This value can be used to trigger static_assert that evaluates to false.
     template <typename...>
-    inline constexpr bool AlwaysFalseV = false;
+    inline constexpr Bool AlwaysFalseV = false;
 
     /************************************************************************/
     /* IS CONTIGUOUS SEQUENCE                                               */
@@ -135,12 +135,12 @@ namespace syntropy
     template <Int Int1, Int Int2, Int... Ints>
     struct IsContiguousSequence<Int1, Int2, Ints...>
     {
-        static constexpr bool Value = (Int1 + 1 == Int2) && IsContiguousSequence<Int2, Ints...>::Value;
+        static constexpr Bool Value = (Int1 + 1 == Int2) && IsContiguousSequence<Int2, Ints...>::Value;
     };
 
     /// \brief Helper value for IsContiguousSequence<T, Ints...>.
     template <Int... Ints>
-    constexpr bool IsContiguousSequenceV = IsContiguousSequence<Ints...>::Value;
+    constexpr Bool IsContiguousSequenceV = IsContiguousSequence<Ints...>::Value;
 
     /************************************************************************/
     /* FUNCTION ARGUMENTS                                                   */
@@ -224,6 +224,6 @@ namespace syntropy
     /// \usage template<typename T> using HasFoo = decltype(&T::Foo);       // Expression type.
     ///        auto b = IsValidExpressionV<HasFoo, MyType>;                 // true if MyType::Foo is valid, false otherwise.
     template <template<typename...> typename TExpression, typename... TTypes>
-    inline constexpr bool IsValidExpressionV = IsValidExpression<void, TExpression, TTypes...>::value;
+    inline constexpr Bool IsValidExpressionV = IsValidExpression<void, TExpression, TTypes...>::value;
 
 }

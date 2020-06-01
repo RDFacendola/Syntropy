@@ -62,7 +62,7 @@ namespace syntropy
         const Label& GetName() const;
 
         /// \brief Check whether this context contains another one.
-        bool Contains(const Context& other) const;
+        Bool Contains(const Context& other) const;
 
     private:
 
@@ -81,10 +81,10 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Equality comparison for Context.
-    bool operator==(const Context& lhs, const Context& rhs);
+    Bool operator==(const Context& lhs, const Context& rhs);
 
     /// \brief Inequality comparison for Context.
-    bool operator!=(const Context& lhs, const Context& rhs);
+    Bool operator!=(const Context& lhs, const Context& rhs);
 
     /// \brief Append an outer context rhs to lhs.
     Context operator+(const Context& lhs, const Context& rhs);
@@ -135,7 +135,7 @@ namespace syntropy
         return name_;
     }
 
-    inline bool Context::Contains(const Context& other) const
+    inline Bool Context::Contains(const Context& other) const
     {
         // Checking context outers provide consistent behaviors when matching empty contexts against root contexts and vice-versa.
 
@@ -144,12 +144,12 @@ namespace syntropy
 
     // Non-member functions.
 
-    inline bool operator==(const Context& lhs, const Context& rhs)
+    inline Bool operator==(const Context& lhs, const Context& rhs)
     {
         return lhs.GetName() == rhs.GetName();
     }
 
-    inline bool operator!=(const Context& lhs, const Context& rhs)
+    inline Bool operator!=(const Context& lhs, const Context& rhs)
     {
         return !(lhs == rhs);
     }

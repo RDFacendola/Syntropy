@@ -55,7 +55,7 @@ namespace syntropy
 
         /// \brief Check whether the label is non-empty.
         /// \return Returns true if the string is non-empty, returns false otherwise.
-        operator bool() const noexcept;
+        operator Bool() const noexcept;
 
         /// \brief Get the underlying characters.
         const TChar* GetCharacters() const noexcept;
@@ -77,10 +77,10 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Equality comparison.
-    bool operator==(const Label& lhs, const Label& rhs) noexcept;
+    Bool operator==(const Label& lhs, const Label& rhs) noexcept;
 
     /// \brief Inequality comparison.
-    bool operator!=(const Label& lhs, const Label& rhs) noexcept;
+    Bool operator!=(const Label& lhs, const Label& rhs) noexcept;
 
     /// \brief Get a label hash.
     Int Hash64(const Label& rhs);
@@ -123,7 +123,7 @@ namespace syntropy
 
     }
 
-    inline Label::operator bool() const noexcept
+    inline Label::operator Bool() const noexcept
     {
         return (*this) != Label{};
     }
@@ -142,12 +142,12 @@ namespace syntropy
 
     // Non-member functions.
 
-    inline bool operator==(const Label& lhs, const Label& rhs) noexcept
+    inline Bool operator==(const Label& lhs, const Label& rhs) noexcept
     {
         return lhs.GetCharacters() == rhs.GetCharacters();
     }
 
-    inline bool operator!=(const Label& lhs, const Label& rhs) noexcept
+    inline Bool operator!=(const Label& lhs, const Label& rhs) noexcept
     {
         return !(lhs == rhs);
     }

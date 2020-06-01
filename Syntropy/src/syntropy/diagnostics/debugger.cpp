@@ -8,7 +8,7 @@ namespace syntropy
     /* DEBUGGER                                                             */
     /************************************************************************/
 
-    bool Debugger::IsAttached()
+    Bool Debugger::IsAttached()
     {
         return HALDebugger::IsAttached();
     }

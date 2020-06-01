@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/language/macro.h"
 #include "syntropy/hal/hal_macro.h"
 
@@ -32,7 +33,7 @@ namespace syntropy
     namespace Debugger
     {
         /// \brief Check whether the debugger is attached.
-        bool IsAttached();
+        Bool IsAttached();
     }
 
     /************************************************************************/

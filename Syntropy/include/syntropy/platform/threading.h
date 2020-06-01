@@ -48,7 +48,7 @@ namespace syntropy
 
     /// \brief Type used to specify an affinity mask for both threads and processes.
     /// Each element represents the affinity for a particular core.
-    using AffinityMask = Vector<bool>;
+    using AffinityMask = Vector<Bool>;
 
     /************************************************************************/
     /* THREADING                                                            */
@@ -70,7 +70,7 @@ namespace syntropy
         /// \brief Set the cores the calling process can be run on.
         /// \param affinity_mask New process affinity. Must be a subset of the affinity returned by GetSystemAffinity().
         /// \return Returns true if the method succeeded, returns false otherwise.
-        bool SetProcessAffinity(const AffinityMask& affinity_mask);
+        Bool SetProcessAffinity(const AffinityMask& affinity_mask);
 
         /// \brief Get the cores the calling process can be run on.
         /// \return Returns the cores the calling process can be run on.
@@ -80,7 +80,7 @@ namespace syntropy
         /// \param affinity_mask New thread affinity. Must be a subset of the affinity returned by GetProcessAffinity().
         /// \param thread Thread to change the affinity of. If this parameter is nullptr, the calling thread will be used.
         /// \return Returns true if the method succeeded, returns false otherwise.
-        bool SetThreadAffinity(const AffinityMask& affinity_mask, std::thread* thread = nullptr);
+        Bool SetThreadAffinity(const AffinityMask& affinity_mask, std::thread* thread = nullptr);
 
         /// \brief Get the cores a thread can be run on.
         /// \param thread Thread to get the affinity of. If this parameter is nullptr, the calling thread will be used.
@@ -91,7 +91,7 @@ namespace syntropy
         /// \param priority New priority for the thread.
         /// \param thread Thread to change the priority of. If this parameter is nullptr, the calling thread will be used.
         /// \return Returns true if the method succeeded, returns false otherwise.
-        bool SetThreadPriority(ThreadPriority priority, std::thread* thread = nullptr);
+        Bool SetThreadPriority(ThreadPriority priority, std::thread* thread = nullptr);
 
         /// \brief Get the priority of a thread.
         /// \param thread Thread to get the priority of. If this parameter is nullptr, the calling thread will be used.

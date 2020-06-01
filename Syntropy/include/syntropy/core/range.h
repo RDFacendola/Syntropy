@@ -9,8 +9,7 @@
 #include <ostream>
 #include <type_traits>
 
-#include "syntropy/syntropy.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/language/utility.h"
 
 namespace syntropy
@@ -78,7 +77,7 @@ namespace syntropy
         TValue* GetData() const;
 
         /// \brief Check whether the range is empty.
-        operator bool() const;
+        operator Bool() const;
 
         /// \brief Get the number of elements in the range.
         TDistance GetSize() const;
@@ -124,14 +123,14 @@ namespace syntropy
         Range& PopBack(TDistance elements) &&;
 
         /// \brief Check whether a range is contained entirely inside this range.
-        bool Contains(const Range& rhs) const;
+        Bool Contains(const Range& rhs) const;
 
         /// \brief Check whether an iterator falls within this range.
-        bool Contains(const TIterator& rhs) const;
+        Bool Contains(const TIterator& rhs) const;
 
         /// \brief Check whether a range overlaps this range.
         /// \remarks If Contains(rhs) is true Overlaps(rhs) is also true.
-        bool Overlaps(const Range& rhs) const;
+        Bool Overlaps(const Range& rhs) const;
 
     private:
 
@@ -157,11 +156,11 @@ namespace syntropy
 
     /// \brief Equality comparison for Ranges.
     template <typename TIterator>
-    bool operator==(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
+    Bool operator==(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
 
     /// \brief Inequality comparison for Ranges.
     template <typename TIterator>
-    bool operator==(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
+    Bool operator==(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
 
     /// \brief Create a new range from a pair of iterators.
     template <typename TIterator>
@@ -260,7 +259,7 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline Range<TIterator>::operator bool() const
+    inline Range<TIterator>::operator Bool() const
     {
         return GetSize() > TDistance{ 0 };
     }
@@ -330,19 +329,19 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline bool Range<TIterator>::Contains(const Range& rhs) const
+    inline Bool Range<TIterator>::Contains(const Range& rhs) const
     {
         return (begin_ <= rhs.Begin()) && (rhs.End() <= end_);
     }
 
     template <typename TIterator>
-    inline bool Range<TIterator>::Contains(const TIterator& rhs) const
+    inline Bool Range<TIterator>::Contains(const TIterator& rhs) const
     {
         return (begin_ <= rhs) && (rhs < end_);
     }
 
     template <typename TIterator>
-    inline bool Range<TIterator>::Overlaps(const Range& rhs) const
+    inline Bool Range<TIterator>::Overlaps(const Range& rhs) const
     {
         return (rhs.Begin() < end_) && (rhs.End() > begin_);
     }
@@ -362,13 +361,13 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline bool operator==(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
+    inline Bool operator==(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
     {
         return (lhs.Begin() == rhs.Begin()) && (lhs.End() == rhs.End());
     }
 
     template <typename TIterator>
-    inline bool operator!=(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
+    inline Bool operator!=(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
     {
         return !(lhs == rhs);
     }

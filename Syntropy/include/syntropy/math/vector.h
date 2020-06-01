@@ -244,11 +244,11 @@ namespace syntropy
 
         /// \brief Equality comparison.
         template <typename T, typename U, Int kRank>
-        bool operator==(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
+        Bool operator==(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
         /// \brief Inequality comparison.
         template <typename T, typename U, Int kRank>
-        bool operator!=(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
+        Bool operator!=(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs);
 
         /// \brief Sum a value to a vector.
         template <typename T, Int kRank>
@@ -395,7 +395,7 @@ namespace syntropy
 
         /// \brief Check whether a vector is normalized.
         template <typename T, Int kRank>
-        bool IsNormalized(const VectorN<T, kRank>& rhs, Float epsilon = 0.01f);
+        Bool IsNormalized(const VectorN<T, kRank>& rhs, Float epsilon = 0.01f);
 
         /// \brief Get the euclidean distance between two vectors.
         template <typename T, typename U, Int kRank>
@@ -634,7 +634,7 @@ namespace syntropy
     }
 
     template <typename T, typename U, Int kRank>
-    bool Math::operator==(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    Bool Math::operator==(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         auto result = true;
 
@@ -644,7 +644,7 @@ namespace syntropy
     }
 
     template <typename T, typename U, Int kRank>
-    inline bool Math::operator!=(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
+    inline Bool Math::operator!=(const VectorN<T, kRank>& lhs, const VectorN<U, kRank>& rhs)
     {
         return !(lhs == rhs);
     }
@@ -892,7 +892,7 @@ namespace syntropy
     }
 
     template <typename T, Int kRank>
-    inline bool Math::IsNormalized(const VectorN<T, kRank>& rhs, Float epsilon)
+    inline Bool Math::IsNormalized(const VectorN<T, kRank>& rhs, Float epsilon)
     {
         return Abs(LengthSqr(rhs)) < epsilon;
     }

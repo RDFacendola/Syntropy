@@ -100,7 +100,7 @@ namespace syntropy
         Quaternion Normalize(const Quaternion& rhs);
 
         /// \brief Check whether a quaternion is a unit quaternion.
-        bool IsNormalized(const Quaternion& rhs, Float epsilon = 0.01f);
+        Bool IsNormalized(const Quaternion& rhs, Float epsilon = 0.01f);
 
     }
 
@@ -220,7 +220,7 @@ namespace syntropy
        return rhs / Norm(rhs);
    }
 
-   inline bool Math::IsNormalized(const Quaternion& rhs, Float epsilon)
+   inline Bool Math::IsNormalized(const Quaternion& rhs, Float epsilon)
    {
        return SqrNorm(rhs) > (1.0f - epsilon);
    }

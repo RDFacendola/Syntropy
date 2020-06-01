@@ -74,7 +74,7 @@ namespace syntropy
         return {};
     }
 
-    bool HALVirtualMemory::Release(const MemoryRange& memory_range)
+    Bool HALVirtualMemory::Release(const MemoryRange& memory_range)
     {
         if (memory_range)
         {
@@ -86,7 +86,7 @@ namespace syntropy
         return true;
     }
 
-    bool HALVirtualMemory::Commit(const MemoryRange& memory_range)
+    Bool HALVirtualMemory::Commit(const MemoryRange& memory_range)
     {
         if (memory_range)
         {
@@ -100,7 +100,7 @@ namespace syntropy
         return true;
     }
 
-    bool HALVirtualMemory::Decommit(const MemoryRange& memory_range)
+    Bool HALVirtualMemory::Decommit(const MemoryRange& memory_range)
     {
         if (memory_range)
         {

@@ -107,7 +107,7 @@ namespace syntropy
 
         /// \brief Check whether the container is empty.
         /// \return Returns true if the container is empty, returns false otherwise.
-        bool IsEmpty() const noexcept;
+        Bool IsEmpty() const noexcept;
 
         /// \brief Get the number of elements in the container.
         /// \return Returns the number of elements in the container.
@@ -297,7 +297,7 @@ namespace syntropy
     }
 
     template <typename... TStreams>
-    inline bool StreamVector<TStreams...>::IsEmpty() const noexcept
+    inline Bool StreamVector<TStreams...>::IsEmpty() const noexcept
     {
         return std::get<0>(streams_).empty();
     }

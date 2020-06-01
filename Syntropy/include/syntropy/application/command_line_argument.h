@@ -9,7 +9,7 @@
 
 #include "syntropy/core/string.h"
 #include "syntropy/core/label.h"
-
+#include "syntropy/core/types.h"
 #include "syntropy/containers/vector.h"
 
 namespace syntropy
@@ -61,7 +61,7 @@ namespace syntropy
 
         /// \brief Check whether the argument has at least one value.
         /// \return Returns true if the argument has no value, returns false otherwise.
-        bool IsEmpty() const;
+        Bool IsEmpty() const;
 
         /// \brief Append new values to the argument.
         template <typename TBegin, typename TEnd>
@@ -118,7 +118,7 @@ namespace syntropy
         return values_;
     }
 
-    inline bool CommandLineArgument::IsEmpty() const
+    inline Bool CommandLineArgument::IsEmpty() const
     {
         return values_.empty();
     }

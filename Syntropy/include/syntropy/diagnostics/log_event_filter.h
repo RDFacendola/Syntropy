@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/diagnostics/log_event.h"
 #include "syntropy/diagnostics/verbosity.h"
 #include "syntropy/core/context.h"
@@ -52,7 +53,7 @@ namespace syntropy
 
         /// \brief Test a log event against this filter.
         /// \return Returns true if the log event meets the filter requirements, returns false otherwise.
-        bool operator()(const LogEvent& log_event) const;
+        Bool operator()(const LogEvent& log_event) const;
 
     private:
 
@@ -89,7 +90,7 @@ namespace syntropy
 
     }
 
-    inline bool LogEventFilter::operator()(const LogEvent& log_event) const
+    inline Bool LogEventFilter::operator()(const LogEvent& log_event) const
     {
         auto filter_by_context = [this, &log_event](const auto& context)
         {

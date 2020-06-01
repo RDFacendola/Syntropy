@@ -53,7 +53,7 @@ namespace syntropy
         MsgpackStream& operator<<(std::nullptr_t rhs);
 
         /// \brief Insert a boolean value.
-        MsgpackStream& operator<<(bool rhs);
+        MsgpackStream& operator<<(Bool rhs);
 
         /// \brief Insert an 8-bit integer value.
         MsgpackStream& operator<<(Byte rhs);
@@ -98,7 +98,7 @@ namespace syntropy
         MsgpackStream& operator<<(const TExtension& rhs);
 
         /// \brief Extract a boolean value.
-        MsgpackStream& operator>>(bool& rhs);
+        MsgpackStream& operator>>(Bool& rhs);
 
         /// \brief Extract an 8-bit integer value.
         MsgpackStream& operator>>(Byte& rhs);
@@ -154,11 +154,11 @@ namespace syntropy
 
         /// \brief Check whether the fail bit of the underlying stream is set.
         /// \return Returns true if the fail bit is set, returns false otherwise
-        bool IsFail() const;
+        Bool IsFail() const;
 
         /// \brief Check whether the last byte in the stream was read.
         /// \return Returns true if the last byte in the stream was read, returns false otherwise.
-        bool IsEndOfStream() const;
+        Bool IsEndOfStream() const;
 
         /// \brief Clear the status of the stream after a reading error.
         void Recover();
@@ -198,7 +198,7 @@ namespace syntropy
             std::optional<std::streampos> position_;
 
             /// \brief Whether the sentry was dismissed.
-            bool dismissed_{ false };
+            Bool dismissed_{ false };
 
         };
 
@@ -214,7 +214,7 @@ namespace syntropy
 
         /// \brief Peek a single byte from the underlying stream and test it with the provided type.
         /// \return If the peeked byte matches the provided type, consume the byte and returns true, otherwise returns false.
-        bool Test(MsgpackFormat type);
+        Bool Test(MsgpackFormat type);
 
         /// \brief Get a value from the underlying stream.
         template <typename TType>
@@ -246,7 +246,7 @@ namespace syntropy
         return *this;
     }
 
-    inline MsgpackStream& MsgpackStream::operator<<(bool rhs)
+    inline MsgpackStream& MsgpackStream::operator<<(Bool rhs)
     {
         Put(Msgpack::Encode(rhs));
 
@@ -520,12 +520,12 @@ namespace syntropy
         return *this;
     }
 
-    inline bool MsgpackStream::IsFail() const
+    inline Bool MsgpackStream::IsFail() const
     {
         return stream_.fail();
     }
 
-    inline bool MsgpackStream::IsEndOfStream() const
+    inline Bool MsgpackStream::IsEndOfStream() const
     {
         return stream_.eof();
     }
@@ -573,7 +573,7 @@ namespace syntropy
         return Byte(stream_.peek());
     }
 
-    inline bool MsgpackStream::Test(MsgpackFormat type)
+    inline Bool MsgpackStream::Test(MsgpackFormat type)
     {
         if (Peek() == Byte(type))
         {
