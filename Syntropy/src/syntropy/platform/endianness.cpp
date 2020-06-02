@@ -8,62 +8,62 @@ namespace syntropy
     /* ENDIANNESS                                                           */
     /************************************************************************/
 
-    std::int16_t Endianness::ToBigEndian(std::int16_t rhs)
+    Fix16 Endianness::ToBigEndian(Fix16 rhs)
     {
         return HALEndianness::ToBigEndian(rhs);
     }
 
-    std::int32_t Endianness::ToBigEndian(std::int32_t rhs)
+    Fix32 Endianness::ToBigEndian(Fix32 rhs)
     {
         return HALEndianness::ToBigEndian(rhs);
     }
 
-    Int Endianness::ToBigEndian(Int rhs)
+    Fix64 Endianness::ToBigEndian(Fix64 rhs)
     {
         return HALEndianness::ToBigEndian(rhs);
     }
 
-    std::int16_t Endianness::FromBigEndian(std::int16_t rhs)
+    Fix16 Endianness::FromBigEndian(Fix16 rhs)
     {
         return HALEndianness::FromBigEndian(rhs);
     }
 
-    std::int32_t Endianness::FromBigEndian(std::int32_t rhs)
+    Fix32 Endianness::FromBigEndian(Fix32 rhs)
     {
         return HALEndianness::FromBigEndian(rhs);
     }
 
-    Int Endianness::FromBigEndian(Int rhs)
+    Fix64 Endianness::FromBigEndian(Fix64 rhs)
     {
         return HALEndianness::FromBigEndian(rhs);
     }
 
-    std::int16_t Endianness::ToLittleEndian(std::int16_t rhs)
+    Fix16 Endianness::ToLittleEndian(Fix16 rhs)
     {
         return HALEndianness::ToLittleEndian(rhs);
     }
 
-    std::int32_t Endianness::ToLittleEndian(std::int32_t rhs)
+    Fix32 Endianness::ToLittleEndian(Fix32 rhs)
     {
         return HALEndianness::ToLittleEndian(rhs);
     }
 
-    Int Endianness::ToLittleEndian(Int rhs)
+    Fix64 Endianness::ToLittleEndian(Fix64 rhs)
     {
         return HALEndianness::ToLittleEndian(rhs);
     }
 
-    std::int16_t Endianness::FromLittleEndian(std::int16_t rhs)
+    Fix16 Endianness::FromLittleEndian(Fix16 rhs)
     {
         return HALEndianness::FromLittleEndian(rhs);
     }
 
-    std::int32_t Endianness::FromLittleEndian(std::int32_t rhs)
+    Fix32 Endianness::FromLittleEndian(Fix32 rhs)
     {
         return HALEndianness::FromLittleEndian(rhs);
     }
 
-    Int Endianness::FromLittleEndian(Int rhs)
+    Fix64 Endianness::FromLittleEndian(Fix64 rhs)
     {
         return HALEndianness::FromLittleEndian(rhs);
     }

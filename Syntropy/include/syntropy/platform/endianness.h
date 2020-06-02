@@ -19,52 +19,52 @@ namespace syntropy
     namespace Endianness
     {
         /// \brief Convert a number from platform-endian to big-endian.
-        Byte ToBigEndian(Byte rhs);
+        Fix8 ToBigEndian(Fix8 rhs);
 
         /// \brief Convert a number from platform-endian to big-endian.
-        std::int16_t ToBigEndian(std::int16_t rhs);
+        Fix16 ToBigEndian(Fix16 rhs);
 
         /// \brief Convert a number from platform-endian to big-endian.
-        std::int32_t ToBigEndian(std::int32_t rhs);
+        Fix32 ToBigEndian(Fix32 rhs);
 
         /// \brief Convert a number from platform-endian to big-endian.
-        Int ToBigEndian(Int rhs);
+        Fix64 ToBigEndian(Fix64 rhs);
 
         /// \brief Convert a number from big-endian to platform-endian.
-        Byte FromBigEndian(Byte rhs);
+        Fix8 FromBigEndian(Fix8 rhs);
 
         /// \brief Convert a number from big-endian to platform-endian.
-        std::int16_t FromBigEndian(std::int16_t rhs);
+        Fix16 FromBigEndian(Fix16 rhs);
 
         /// \brief Convert a number from big-endian to platform-endian.
-        std::int32_t FromBigEndian(std::int32_t rhs);
+        Fix32 FromBigEndian(Fix32 rhs);
 
         /// \brief Convert a number from big-endian to platform-endian.
-        Int FromBigEndian(Int rhs);
+        Fix64 FromBigEndian(Fix64 rhs);
 
         /// \brief Convert a number from platform-endian to little-endian.
-        Byte ToLittleEndian(Byte rhs);
+        Fix8 ToLittleEndian(Fix8 rhs);
 
         /// \brief Convert a number from platform-endian to little-endian.
-        std::int16_t ToLittleEndian(std::int16_t rhs);
+        Fix16 ToLittleEndian(Fix16 rhs);
 
         /// \brief Convert a number from platform-endian to little-endian.
-        std::int32_t ToLittleEndian(std::int32_t rhs);
+        Fix32 ToLittleEndian(Fix32 rhs);
 
         /// \brief Convert a number from platform-endian to little-endian.
-        Int ToLittleEndian(Int rhs);
+        Fix64 ToLittleEndian(Fix64 rhs);
 
         /// \brief Convert a number from little-endian to platform-endian.
-        Byte FromLittleEndian(Byte rhs);
+        Fix8 FromLittleEndian(Fix8 rhs);
 
         /// \brief Convert a number from little-endian to platform-endian.
-        std::int16_t FromLittleEndian(std::int16_t rhs);
+        Fix16 FromLittleEndian(Fix16 rhs);
 
         /// \brief Convert a number from little-endian to platform-endian.
-        std::int32_t FromLittleEndian(std::int32_t rhs);
+        Fix32 FromLittleEndian(Fix32 rhs);
 
         /// \brief Convert a number from little-endian to platform-endian.
-        Int FromLittleEndian(Int rhs);
+        Fix64 FromLittleEndian(Fix64 rhs);
 
     }
 
@@ -74,22 +74,22 @@ namespace syntropy
 
     // Endianness.
 
-    inline Byte Endianness::ToBigEndian(Byte rhs)
+    inline Fix8 Endianness::ToBigEndian(Fix8 rhs)
     {
         return rhs;
     }
 
-    inline Byte Endianness::FromBigEndian(Byte rhs)
+    inline Fix8 Endianness::FromBigEndian(Fix8 rhs)
     {
         return rhs;
     }
 
-    inline Byte Endianness::ToLittleEndian(Byte rhs)
+    inline Fix8 Endianness::ToLittleEndian(Fix8 rhs)
     {
         return rhs;
     }
 
-    inline Byte Endianness::FromLittleEndian(Byte rhs)
+    inline Fix8 Endianness::FromLittleEndian(Fix8 rhs)
     {
         return rhs;
     }

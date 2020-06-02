@@ -8,7 +8,7 @@ namespace syntropy
     /* HAL ENDIANNESS                                                       */
     /************************************************************************/
 
-    std::int16_t HALEndianness::ToBigEndian(std::int16_t rhs)
+    Fix16 HALEndianness::ToBigEndian(Fix16 rhs)
     {
         auto b0 = (rhs & 0xFF00) >> 8u;
         auto b1 = (rhs & 0x00FF) >> 0u;
@@ -16,7 +16,7 @@ namespace syntropy
         return std::int16_t((b1 << 8u) | (b0 << 0u));
     }
 
-    std::int32_t HALEndianness::ToBigEndian(std::int32_t rhs)
+    Fix32 HALEndianness::ToBigEndian(Fix32 rhs)
     {
         auto b0 = (rhs & 0xFF000000) >> 24;
         auto b1 = (rhs & 0x00FF0000) >> 16;
@@ -26,7 +26,7 @@ namespace syntropy
         return std::int32_t((b3 << 24) | (b2 << 16) | (b1 << 8) | (b0 << 0));
     }
 
-    Int HALEndianness::ToBigEndian(Int rhs)
+    Fix64 HALEndianness::ToBigEndian(Fix64 rhs)
     {
         auto b0 = (rhs & 0xFF00000000000000ll) >> 56;
         auto b1 = (rhs & 0x00FF000000000000ll) >> 48;
@@ -37,50 +37,50 @@ namespace syntropy
         auto b6 = (rhs & 0x000000000000FF00ll) >> 8;
         auto b7 = (rhs & 0x00000000000000FFll) >> 0;
 
-        return Int((b7 << 56) | (b6 << 48) | (b5 << 40) | (b4 << 32) | (b3 << 24) | (b2 << 16) | (b1 << 8) | (b0 << 0));
+        return Fix64((b7 << 56) | (b6 << 48) | (b5 << 40) | (b4 << 32) | (b3 << 24) | (b2 << 16) | (b1 << 8) | (b0 << 0));
     }
 
-    std::int16_t HALEndianness::FromBigEndian(std::int16_t rhs)
+    Fix16 HALEndianness::FromBigEndian(Fix16 rhs)
     {
         return ToBigEndian(rhs);
     }
 
-    std::int32_t HALEndianness::FromBigEndian(std::int32_t rhs)
+    Fix32 HALEndianness::FromBigEndian(Fix32 rhs)
     {
         return ToBigEndian(rhs);
     }
 
-    Int HALEndianness::FromBigEndian(Int rhs)
+    Fix64 HALEndianness::FromBigEndian(Fix64 rhs)
     {
         return ToBigEndian(rhs);
     }
 
-    std::int16_t HALEndianness::ToLittleEndian(std::int16_t rhs)
+    Fix16 HALEndianness::ToLittleEndian(Fix16 rhs)
     {
         return rhs;
     }
 
-    std::int32_t HALEndianness::ToLittleEndian(std::int32_t rhs)
+    Fix32 HALEndianness::ToLittleEndian(Fix32 rhs)
     {
         return rhs;
     }
 
-    Int HALEndianness::ToLittleEndian(Int rhs)
+    Fix64 HALEndianness::ToLittleEndian(Fix64 rhs)
     {
         return rhs;
     }
 
-    std::int16_t HALEndianness::FromLittleEndian(std::int16_t rhs)
+    Fix16 HALEndianness::FromLittleEndian(Fix16 rhs)
     {
         return rhs;
     }
 
-    std::int32_t HALEndianness::FromLittleEndian(std::int32_t rhs)
+    Fix32 HALEndianness::FromLittleEndian(Fix32 rhs)
     {
         return rhs;
     }
 
-    Int HALEndianness::FromLittleEndian(Int rhs)
+    Fix64 HALEndianness::FromLittleEndian(Fix64 rhs)
     {
         return rhs;
     }
