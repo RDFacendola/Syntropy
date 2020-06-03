@@ -21,16 +21,16 @@ namespace syntropy
 
     /// \brief Vector types supported by the vector extension type.
     /// \author Raffaele D. Facendola - November 2019.
-    enum class MsgpackVectorExtensionFormat : Int
+    enum class MsgpackVectorExtensionFormat : Fix8
     {
         /// \brief 32-bit big-endian single precision floating point vector.
-        kFloat32 = 0x00,
+        kFloat32 = ToFix8(0x00),
 
         /// \brief 32-bit big-endian signed integer vector.
-        kInt32 = 0x10,
+        kInt32 = ToFix8(0x10),
 
         /// \brief 64-bit big-endian signed integer vector.
-        kInt64 = 0x20,
+        kInt64 = ToFix8(0x20),
     };
 
     /************************************************************************/

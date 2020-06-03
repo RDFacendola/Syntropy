@@ -20,10 +20,10 @@ namespace syntropy
 
     /// \brief Represents the verbosity of a channel, which is used to filter events based on their severity.
     /// \author Raffaele D. Facendola - May 2020.
-    enum class Verbosity : Int
+    enum class Verbosity : Fix8
     {
         /// \brief Verbosity for all event severities.
-        kAll = std::numeric_limits<Int>::min(),
+        kAll = std::numeric_limits<Fix8>::min(),
 
         /// \brief Verbosity for debugging events and above.
         kDebug = -1,
@@ -44,7 +44,7 @@ namespace syntropy
         kFatal = 4,
 
         /// \brief Verbosity for no event severities at all.
-        kNone = std::numeric_limits<Int>::max(),
+        kNone = std::numeric_limits<Fix8>::max(),
     };
 
     /************************************************************************/

@@ -17,7 +17,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Result of a test.
-    enum class TestResult : Int
+    enum class TestResult : Fix8
     {
         /// \brief The test was skipped.
         kSkipped = 0,
