@@ -45,13 +45,13 @@ namespace syntropy
     private:
 
         /// \brief Day of the month.
-        Int day_{ 1 };
+        Fix8 day_{ 1 };
 
         /// \brief Month of the year.
-        Int month_{ 1 };
+        Fix8 month_{ 1 };
 
         /// \brief Year.
-        Int year_{ 0 };
+        Fix16 year_{ 0 };
 
     };
 
