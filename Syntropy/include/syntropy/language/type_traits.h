@@ -46,9 +46,43 @@ namespace syntropy
     /* TYPE QUERY                                                           */
     /************************************************************************/
 
-        /// \brief Constant equal to true if TType is constant, equal to false otherwise.
+    /// \brief Constant equal to true if TType is equal to UType, equal to false otherwise.
+    template <typename TType, typename UType>
+    inline constexpr Bool IsSameV = std::is_same_v<TType, UType>;
+
+    /// \brief Constant equal to true if TType is constant, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsConstV = std::is_const_v<TType>;
+
+    /// \brief Constant equal to true if TType is trivial, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsTrivialV = std::is_trivial_v<TType>;
+
+    /// \brief Constant equal to true if TType is trivially copyable, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsTriviallyCopyableV = std::is_trivially_copyable_v<TType>;
+
+    /// \brief Constant equal to true if TType is copy-constructible, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsCopyConstructibleV = std::is_copy_constructible_v<TType>;
+
+    /// \brief Constant equal to true if TType is move-constructible, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsMoveConstructibleV = std::is_move_constructible_v<TType>;
+
+    /// \brief Constant equal to true if TType is trivially default constructible, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsTriviallyDefaultConstructibleV = std::is_trivially_default_constructible_v<TType>;
+
+    /************************************************************************/
+    /* TYPE CATEGORIES                                                      */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is integral, equal to false otherwise.
+    /// \remarks Differently from std::is_integral_v, booleans are not considered integral types.
+    template <typename TType>
+    inline constexpr Bool IsIntegralV = (std::is_integral_v<TType> && !IsSameV<TType, Bool>);
+
 
     /************************************************************************/
     /* POLYMORPHISM QUERY                                                   */
@@ -225,5 +259,21 @@ namespace syntropy
     ///        auto b = IsValidExpressionV<HasFoo, MyType>;                 // true if MyType::Foo is valid, false otherwise.
     template <template<typename...> typename TExpression, typename... TTypes>
     inline constexpr Bool IsValidExpressionV = IsValidExpression<void, TExpression, TTypes...>::value;
+
+    /************************************************************************/
+    /* ENABLE IF                                                            */
+    /************************************************************************/
+
+    /// \brief If kEnable is true exposes a member typedef equal to TType, otherwise there's no member typedef.
+    template <Bool kEnable, typename TType = void>
+    using EnableIfT = std::enable_if_t<kEnable, TType>;
+
+    /************************************************************************/
+    /* ENABLE IF VALID EXPRESSION                                           */
+    /************************************************************************/
+
+    /// \brief If TExpression<TTypes> is a valid expression, exposes a member typedef equal to void, otherwise there's no member typedef.
+    template <template<typename...> typename TExpression, typename... TTypes>
+    using EnableIfValidExpressionT = EnableIfT<IsValidExpressionV<TExpression, TTypes...>>;
 
 }

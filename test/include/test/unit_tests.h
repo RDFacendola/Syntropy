@@ -7,3 +7,5 @@
 #pragma once
 
 #include "test/syntropy/visitor.h"
+
+#include "test/syntropy/msgpack.h"

@@ -9,6 +9,7 @@
 #include <cstring>
 #include <algorithm>
 
+#include "syntropy/language/type_traits.h"
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_range.h"
@@ -39,6 +40,10 @@ namespace syntropy
 
         /// \brief Zero-out a memory region.
         void Zero(const MemoryRange& destination);
+
+        /// \brief Reinterpret an object representation from a type to another type.
+        template <typename TTo, typename TFrom>
+        TTo BitCast(const TFrom& rhs);
     };
 
     /************************************************************************/
@@ -82,6 +87,21 @@ namespace syntropy
     {
         Set(destination, Byte{ 0 });
     }
+
+    template <typename TTo, typename TFrom>
+    inline TTo Memory::BitCast(const TFrom& rhs)
+    {
+        static_assert(sizeof(TTo) == sizeof(TFrom), "TTo and TFrom must have the same size.");
+        static_assert(IsTriviallyCopyableV<TFrom>, "TFrom must be trivially copyable.");
+        static_assert(IsTrivialV<TTo>, "TTo must be trivial.");
+        static_assert(IsCopyConstructibleV<TTo> || IsMoveConstructibleV<TTo>, "TTo must either be copy constructible or move constructible.");
+        static_assert(IsTriviallyDefaultConstructibleV<TTo>, "TTo must be trivially default constructible.");
+
+        auto lhs = TTo{};
+
+        std::memcpy(&lhs, &rhs, sizeof(TTo));
+
+        return lhs;
     }
 
 }

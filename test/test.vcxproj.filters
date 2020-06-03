@@ -6,5 +6,6 @@
   <ItemGroup>
     <ClInclude Include="include\test\syntropy\visitor.h" />
     <ClInclude Include="include\test\unit_tests.h" />
+    <ClInclude Include="include\test\syntropy\msgpack.h" />
   </ItemGroup>
 </Project>

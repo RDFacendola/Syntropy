@@ -9,9 +9,9 @@
 #include "syntropy/core/types.h"
 #include "syntropy/math/vector.h"
 #include "syntropy/memory/bytes.h"
-#include "syntropy/serialization/msgpack/encoding.h"
-#include "syntropy/serialization/msgpack/decoding.h"
-#include "syntropy/serialization/msgpack/msgpack_stream.h"
+#include "syntropy/serialization/msgpack/msgpack_format.h"
+#include "syntropy/serialization/msgpack/msgpack_reader.h"
+#include "syntropy/serialization/msgpack/msgpack_writer.h"
 
 namespace syntropy
 {
@@ -21,23 +21,36 @@ namespace syntropy
 
     /// \brief Vector types supported by the vector extension type.
     /// \author Raffaele D. Facendola - November 2019.
-    enum class MsgpackVectorExtensionFormat : std::uint8_t
+    enum class MsgpackVectorExtensionFormat : Int
     {
         /// \brief 32-bit big-endian single precision floating point vector.
-        kFloat32 = 0x00u,
+        kFloat32 = 0x00,
 
         /// \brief 32-bit big-endian signed integer vector.
-        kInt32 = 0x10u,
+        kInt32 = 0x10,
 
         /// \brief 64-bit big-endian signed integer vector.
-        kInt64 = 0x20u,
+        kInt64 = 0x20,
     };
+
+    /************************************************************************/
+    /* MSGPACK SELECT ENCODED TYPE                                          */
+    /************************************************************************/
+
+    /// \brief Trait used to associate each type with an encoded data type.
+    /// \author Raffaele D. Facendola - December 2019.
+    template <typename TType>
+    using MsgpackSelectEncodedTypeT = ConditionalT<sizeof(TType) == sizeof(Byte), Byte,
+        ConditionalT<sizeof(TType) == sizeof(std::int16_t), std::int16_t,
+        ConditionalT<sizeof(TType) == sizeof(std::int32_t), std::int32_t,
+        ConditionalT<sizeof(TType) == sizeof(Int), Int,
+        void>>>>;
 
     /************************************************************************/
     /* MSGPACK VECTOR EXTENSION TYPE                                        */
     /************************************************************************/
 
-    /// \brief Base class for vector extension types.
+    /// \brief Base class for vector extension types up to rank 15.
     template <typename T, Int kRank, MsgpackVectorExtensionFormat kFormat>
     struct MsgpackVectorExtensionType
     {
@@ -46,17 +59,17 @@ namespace syntropy
         /// \brief Get the memory footprint of rhs, in bytes.
         static constexpr Bytes GetSize(const Math::VectorN<T, kRank>& rhs);
 
-        /// \brief Get the extension type value.
+        /// \brief Get the extension type id.
         static constexpr Byte GetType();
 
         /// \brief Get the format associated to this vector extension type.
         static constexpr Byte GetFormat();
 
         /// \brief Encode rhs inside the provided stream.
-        static void Encode(MsgpackStream::TOutputStream& stream, const Math::VectorN<T, kRank>& rhs);
+        static void Encode(MsgpackWriter::TOutputStream& stream, const Math::VectorN<T, kRank>& rhs);
 
         /// \brief Decode rhs from the provided stream.
-        static void Decode(MsgpackStream::TInputStream& stream, Bytes size, Math::VectorN<T, kRank>& rhs);
+        static void Decode(MsgpackReader::TInputStream& stream, Bytes size, Math::VectorN<T, kRank>& rhs);
     };
 
     /************************************************************************/
@@ -69,7 +82,7 @@ namespace syntropy
 
     /// \brief Template specialization for 32-bit signed integer vectors.
     template <Int kRank>
-    struct MsgpackExtensionType<Math::VectorN<std::int32_t, kRank>> : MsgpackVectorExtensionType<std::int32_t, kRank, MsgpackVectorExtensionFormat::kInt32> {};
+    struct MsgpackExtensionType<Math::VectorN<Fix32, kRank>> : MsgpackVectorExtensionType<Fix32, kRank, MsgpackVectorExtensionFormat::kInt32> {};
 
     /// \brief Template specialization for 64-bit signed integer vectors.
     template <Int kRank>
@@ -100,7 +113,7 @@ namespace syntropy
     }
 
     template <typename T, Int kRank, MsgpackVectorExtensionFormat kFormat>
-    void MsgpackVectorExtensionType<T, kRank, kFormat>::Encode(MsgpackStream::TOutputStream& stream, const Math::VectorN<T, kRank>& rhs)
+    void MsgpackVectorExtensionType<T, kRank, kFormat>::Encode(MsgpackWriter::TOutputStream& stream, const Math::VectorN<T, kRank>& rhs)
     {
         stream.put(GetFormat());
 
@@ -113,7 +126,7 @@ namespace syntropy
     }
 
     template <typename T, Int kRank, MsgpackVectorExtensionFormat kFormat>
-    void MsgpackVectorExtensionType<T, kRank, kFormat>::Decode(MsgpackStream::TInputStream& stream, Bytes size, Math::VectorN<T, kRank>& rhs)
+    void MsgpackVectorExtensionType<T, kRank, kFormat>::Decode(MsgpackReader::TInputStream& stream, Bytes size, Math::VectorN<T, kRank>& rhs)
     {
         auto format = Byte(stream.get());
 

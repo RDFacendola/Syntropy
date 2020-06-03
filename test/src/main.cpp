@@ -2,6 +2,8 @@
 #include <iostream>
 #include <iomanip>
 
+#include "syntropy/core/types.h"
+
 #include "syntropy/application/command_line.h"
 #include "syntropy/application/command_line_argument.h"
 
@@ -18,6 +20,9 @@
 /************************************************************************/
 /* ENTRY POINT                                                          */
 /************************************************************************/
+
+using syntropy::Int;
+using syntropy::Float;
 
 int main(int argc, char **argv)
 {
