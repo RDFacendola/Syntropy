@@ -7,6 +7,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 
 namespace syntropy
 {
@@ -26,8 +27,9 @@ namespace syntropy
     /// \brief 32-bit floating point value.
     using Float = float;
 
-    /// \brief 8-bit integer value.
-    using Byte = std::int8_t;
+    /// \brief 8-bit value
+    /// \remarks This type represents a collection of bits, therefore it is neither a character type nor an arithmetic type.
+    using Byte = std::byte;
 
     /************************************************************************/
     /* FIXED-WIDTH INTEGER TYPES                                            */
@@ -53,11 +55,33 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Truncate a floating point value to integer.
-    constexpr Int ToInt(Float rhs);
+    /// \brief Truncate a value to integer.
+    template <typename TNumber>
+    constexpr Int ToInt(TNumber rhs);
 
-    /// \brief Convert an integer value to a floating point value.
-    constexpr Float ToFloat(Int rhs);
+    /// \brief Convert a numeric to a floating point value.
+    template <typename TNumber>
+    constexpr Float ToFloat(TNumber rhs);
+
+    /// \brief Convert a value to a byte value.
+    template <typename TNumber>
+    constexpr Byte ToByte(TNumber rhs);
+
+    /// \brief Cast a value to a 8-bit integer value.
+    template <typename TNumber>
+    constexpr Fix8 ToFix8(TNumber rhs);
+
+    /// \brief Cast a value to a 8-bit integer value.
+    template <typename TNumber>
+    constexpr Fix16 ToFix16(TNumber rhs);
+
+    /// \brief Cast a value to a 8-bit integer value.
+    template <typename TNumber>
+    constexpr Fix32 ToFix32(TNumber rhs);
+
+    /// \brief Cast a value to a 8-bit integer value.
+    template <typename TNumber>
+    constexpr Fix64 ToFix64(TNumber rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -65,14 +89,46 @@ namespace syntropy
 
     // Non-member functions.
 
-    constexpr Int ToInt(Float rhs)
+    template <typename TNumber>
+    constexpr Int ToInt(TNumber rhs)
     {
         return static_cast<Int>(rhs);
     }
 
-    constexpr Float ToFloat(Int rhs)
+    template <typename TNumber>
+    constexpr Float ToFloat(TNumber rhs)
     {
         return static_cast<Float>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Byte ToByte(TNumber rhs)
+    {
+        return static_cast<Byte>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Fix8 ToFix8(TNumber rhs)
+    {
+        return static_cast<Fix8>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Fix16 ToFix16(TNumber rhs)
+    {
+        return static_cast<Fix16>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Fix32 ToFix32(TNumber rhs)
+    {
+        return static_cast<Fix32>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Fix64 ToFix64(TNumber rhs)
+    {
+        return static_cast<Fix64>(rhs);
     }
 
 }

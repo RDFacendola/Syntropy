@@ -7,6 +7,7 @@
 #pragma once
 
 #include <type_traits>
+#include <ostream>
 
 #include "syntropy/core/range.h"
 
@@ -60,6 +61,10 @@ namespace syntropy
     template <typename TType>
     ConstMemoryRange MakeConstMemoryRange(const TType& data) noexcept;
 
+    /// \brief Stream insertion for ConstMemoryRange.
+    template <typename TElement, typename TElementTraits>
+    std::basic_ostream<TElement, TElementTraits>& operator<<(std::basic_ostream<TElement, TElementTraits>& lhs, const ConstMemoryRange& rhs);
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -111,7 +116,7 @@ namespace syntropy
 
         auto address = (size > 0_Bytes) ? MakeConstMemoryAddress(&(*begin)) : nullptr;      // Enforce const-ness.
 
-        return MakeConstRange(address, size);
+        return MakeRange(address, size);
     }
 
     template <typename TType>
@@ -130,6 +135,14 @@ namespace syntropy
     inline ConstMemoryRange MakeConstMemoryRange(const TType& data) noexcept
     {
         return MakeMemoryRange(data);
+    }
+
+    template <typename TElement, typename TElementTraits>
+    std::basic_ostream<TElement, TElementTraits>& operator<<(std::basic_ostream<TElement, TElementTraits>& lhs, const ConstMemoryRange& rhs)
+    {
+        lhs.write(rhs.Begin().As<Byte>(), *rhs.GetSize());
+
+        return lhs;
     }
 
 }

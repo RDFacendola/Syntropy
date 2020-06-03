@@ -45,13 +45,13 @@ namespace syntropy
     private:
 
         /// \brief Day of the month.
-        Byte day_{ 1 };
+        Int day_{ 1 };
 
         /// \brief Month of the year.
-        Byte month_{ 1 };
+        Int month_{ 1 };
 
         /// \brief Year.
-        std::int16_t year_{ 0 };
+        Int year_{ 0 };
 
     };
 

@@ -19,7 +19,7 @@ namespace syntropy
 
     /// \brief CPU architectures.
     /// \author Raffaele D. Facendola - December 2016.
-    enum class CPUArchitecture
+    enum class CPUArchitecture : Int
     {
         /// \brief x86 architecture.
         kx86,
@@ -154,7 +154,7 @@ namespace syntropy
 
     /// \brief Operating system.
     /// \author Raffaele D. Facendola - December 2016
-    enum class OperatingSystem 
+    enum class OperatingSystem : Int
     {
         /// \brief Windows OS.
         kWindows,

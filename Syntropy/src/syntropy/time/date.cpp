@@ -12,9 +12,9 @@ namespace syntropy
     {
         auto year_month_day = date::year_month_day{ date::floor<date::days>(time_point) };
 
-        day_ = static_cast<unsigned>(year_month_day.day());
-        month_ = static_cast<unsigned>(year_month_day.month());
-        year_ = static_cast<int>(year_month_day.year());
+        day_ = ToInt(static_cast<unsigned>(year_month_day.day()));
+        month_ = ToInt(static_cast<unsigned>(year_month_day.month()));
+        year_ = ToInt(static_cast<int>(year_month_day.year()));
     }
 
 }

@@ -75,12 +75,13 @@ namespace syntropy
 
     inline void Memory::Set(const MemoryRange& destination, Byte value)
     {
-        std::memset(*destination.Begin(), value, destination.GetSize().GetCount());
+        std::memset(*destination.Begin(), ToFix8(value), destination.GetSize().GetCount());
     }
 
     inline void Memory::Zero(const MemoryRange& destination)
     {
-        Set(destination, 0);
+        Set(destination, Byte{ 0 });
+    }
     }
 
 }

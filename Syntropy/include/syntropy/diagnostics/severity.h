@@ -9,6 +9,8 @@
 #include <cstdint>
 #include <ostream>
 
+#include "syntropy/core/types.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -17,7 +19,7 @@ namespace syntropy
 
     /// \brief Represents the severity of an event.
     /// \author Raffaele D. Facendola - November 2016
-    enum class Severity : Byte
+    enum class Severity : Int
     {
         /// \brief Severity used for debugging and tracing messages.
         kDebug = -1,

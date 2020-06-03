@@ -18,7 +18,7 @@ namespace syntropy
 
     /// \brief Define the priority of a thread.
     /// \author Raffaele D. Facendola - November 2017
-    enum class ThreadPriority
+    enum class ThreadPriority : Int
     {
         /// \brief Lowest priority. May only run when the process is idling.
         kLowest,

@@ -40,7 +40,7 @@ namespace syntropy
 
         return std::accumulate(buffer.Begin(), buffer.End(), Int(0xcbf29ce484222325), [](Int hash, const ConstMemoryAddress& address)
         {
-            hash ^= *address.As<Byte>();
+            hash ^= ToInt(*address.As<Byte>());
 
             return (hash << 0) + (hash << 1) + (hash << 4) + (hash << 5) + (hash << 7) + (hash << 8) + (hash << 40);
         });
@@ -52,7 +52,7 @@ namespace syntropy
 
         return std::accumulate(buffer.Begin(), buffer.End(), Int(0x811c9dc5), [](Int hash, const ConstMemoryAddress& address)
         {
-            hash ^= *address.As<Byte>();
+            hash ^= ToInt(*address.As<Byte>());
 
             return (hash << 0) + (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
         }) & 0xFFFFFFFF;
