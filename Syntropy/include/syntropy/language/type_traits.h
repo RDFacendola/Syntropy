@@ -78,11 +78,18 @@ namespace syntropy
     /* TYPE CATEGORIES                                                      */
     /************************************************************************/
 
-    /// \brief Constant equal to true if TType is integral, equal to false otherwise.
-    /// \remarks Differently from std::is_integral_v, booleans are not considered integral types.
+    /// \brief Constant equal to true if TType is boolean, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsIntegralV = (std::is_integral_v<TType> && !IsSameV<TType, Bool>);
+    inline constexpr Bool IsBooleanV = IsSameV<TType, Bool>;
 
+    /// \brief Constant equal to true if TType is integral, equal to false otherwise.
+    /// Differently from standard's std::is_integral, booleans and chars are not considered integral types.
+    template <typename TType>
+    inline constexpr Bool IsIntegralV = IsSameV<TType, Int> || IsSameV<TType, Fix8> || IsSameV<TType, Fix16> || IsSameV<TType, Fix32> || IsSameV<TType, Fix64>;
+
+    /// \brief Constant equal to true if TType is a floating point, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsFloatingPointV = std::is_floating_point_v<TType>;
 
     /************************************************************************/
     /* POLYMORPHISM QUERY                                                   */

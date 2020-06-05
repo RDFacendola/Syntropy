@@ -6,10 +6,9 @@
 
 #pragma once
 
-#include "syntropy/syntropy.h"
-
-#include <type_traits>
 #include <utility>
+
+#include "syntropy/language/type_traits.h"
 
 namespace syntropy
 {
@@ -67,6 +66,84 @@ namespace syntropy
     inline constexpr DontCareT kDontCare = DontCareT{};
 
     /************************************************************************/
+    /* BOOLEAN                                                              */
+    /************************************************************************/
+
+    /// \brief Wraps a boolean value.
+    /// This class is constructible from boolean values only and is meant to
+    /// be used to prevent ambiguities in function overload resolution.
+    /// \author Raffaele D. Facendola - June 2020.
+    class Boolean
+    {
+    public:
+
+        /// \brief Create a new boolean wrapper.
+        template <typename TBool, typename = EnableIfT<IsSameV<TBool, Bool>>>
+        Boolean(TBool value);
+
+        /// \brief Unwrap the underlying value.
+        operator Bool() const;
+
+    private:
+
+        /// \brief Underlying value.
+        Bool value_{ false };
+
+    };
+
+    /************************************************************************/
+    /* INTEGER                                                              */
+    /************************************************************************/
+
+    /// \brief Wraps an integer value.
+    /// This class is constructible from integer values only and is meant to
+    /// be used to prevent ambiguities in function overload resolution.
+    /// \author Raffaele D. Facendola - June 2020.
+    class Integer
+    {
+    public:
+
+        /// \brief Create a new integer wrapper.
+        template <typename TInt, typename = EnableIfT<IsIntegralV<TInt>>>
+        Integer(TInt value);
+
+        /// \brief Unwrap the underlying value.
+        operator Int() const;
+
+    private:
+
+        /// \brief Underlying value.
+        Int value_{ false };
+
+    };
+
+    /************************************************************************/
+    /* FLOATING                                                             */
+    /************************************************************************/
+
+    /// \brief Wraps a floating-point value.
+    /// This class is constructible from float values only and is meant to
+    /// be used to prevent ambiguities in function overload resolution.
+    /// \author Raffaele D. Facendola - June 2020.
+    class Floating
+    {
+    public:
+
+        /// \brief Create a new floating-point wrapper.
+        template <typename TFloat, typename = EnableIfT<IsFloatingPointV<TFloat>>>
+        Floating(TFloat value);
+
+        /// \brief Unwrap the underlying value.
+        operator Float() const;
+
+    private:
+
+        /// \brief Underlying value.
+        Float value_{ false };
+
+    };
+
+    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
@@ -87,6 +164,50 @@ namespace syntropy
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
+
+    // Boolean.
+
+    template <typename TBool, typename>
+    inline Boolean::Boolean(TBool value)
+        : value_(value)
+    {
+
+    }
+
+    inline Boolean::operator Bool() const
+    {
+        return value_;
+    }
+
+    // Integer.
+
+    template <typename TInt, typename>
+    inline Integer::Integer(TInt value)
+        : value_(value)
+    {
+
+    }
+
+    inline Integer::operator Int() const
+    {
+        return value_;
+    }
+
+    // Floating.
+
+    template <typename TFloat, typename>
+    inline Floating::Floating(TFloat value)
+        : value_(value)
+    {
+
+    }
+
+    inline Floating::operator Float() const
+    {
+        return value_;
+    }
+
+    // Non-member functions.
 
     template <typename TType>
     constexpr std::add_const_t<TType>& AsConst(TType& rhs) noexcept
