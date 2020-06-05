@@ -8,17 +8,18 @@
 
 #include <ostream>
 
+#include "syntropy/language/type_traits.h"
+#include "syntropy/language/utility.h"
+#include "syntropy/containers/vector.h"
+#include "syntropy/containers/map.h"
 #include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
 #include "syntropy/core/string_stream.h"
 #include "syntropy/platform/endianness.h"
-#include "syntropy/containers/vector.h"
-#include "syntropy/containers/map.h"
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory.h"
 #include "syntropy/math/math.h"
-#include "syntropy/language/type_traits.h"
 
 #include "syntropy/serialization/msgpack/msgpack_format.h"
 
@@ -55,13 +56,13 @@ namespace syntropy
         MsgpackWriter& operator<<(Null rhs);
 
         /// \brief Insert a boolean value.
-        MsgpackWriter& operator<<(Bool rhs);
+        MsgpackWriter& operator<<(Boolean rhs);
 
         /// \brief Insert an integer value.
-        MsgpackWriter& operator<<(Int rhs);
+        MsgpackWriter& operator<<(Integer rhs);
 
         /// \brief Insert a floating point value.
-        MsgpackWriter& operator<<(Float rhs);
+        MsgpackWriter& operator<<(Floating rhs);
 
         /// \brief Insert a string.
         MsgpackWriter& operator<<(const String& rhs);
@@ -115,54 +116,12 @@ namespace syntropy
         return Write(MsgpackFormat::kNil);
     }
 
-    inline MsgpackWriter& MsgpackWriter::operator<<(Bool rhs)
+    inline MsgpackWriter& MsgpackWriter::operator<<(Boolean rhs)
     {
         return Write(rhs ? MsgpackFormat::kTrue : MsgpackFormat::kFalse);
     }
 
-    inline MsgpackWriter& MsgpackWriter::operator<<(Int rhs)
-    {
-        if (Msgpack::IsPositiveFixInt(rhs))
-        {
-            auto bytes = Endianness::ToBigEndian(ToFix8(rhs));
-
-            Pack(MsgpackFormat::kPositiveFixInt, bytes);
-        }
-        else if (Msgpack::IsNegativeFixInt(rhs))
-        {
-            auto bytes = Endianness::ToBigEndian(ToFix8(-rhs));
-
-            Pack(MsgpackFormat::kNegativeFixInt, bytes);
-        }
-        else if (Msgpack::IsInt8(rhs))
-        {
-            auto bytes = Endianness::ToBigEndian(ToFix8(rhs));
-
-            Write(MsgpackFormat::kInt8, bytes);
-        }
-        else if (Msgpack::IsInt16(rhs))
-        {
-            auto bytes = Endianness::ToBigEndian(ToFix16(rhs));
-
-            Write(MsgpackFormat::kInt16, bytes);
-        }
-        else if (Msgpack::IsInt32(rhs))
-        {
-            auto bytes = Endianness::ToBigEndian(ToFix32(rhs));
-
-            Write(MsgpackFormat::kInt32, bytes);
-        }
-        else
-        {
-            auto bytes = Endianness::ToBigEndian(ToFix64(rhs));
-
-            Write(MsgpackFormat::kInt64, bytes);
-        }
-
-        return *this;
-    }
-
-    inline MsgpackWriter& MsgpackWriter::operator<<(Float rhs)
+    inline MsgpackWriter& MsgpackWriter::operator<<(Floating rhs)
     {
         auto bytes = Endianness::ToBigEndian(Memory::BitCast<Fix32>(rhs));
 

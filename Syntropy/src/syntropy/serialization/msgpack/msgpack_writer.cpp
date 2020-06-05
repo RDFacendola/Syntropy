@@ -6,6 +6,48 @@ namespace syntropy
     /* MSGPACK WRITER                                                       */
     /************************************************************************/
 
+    MsgpackWriter& MsgpackWriter::operator<<(Integer rhs)
+    {
+        if (Msgpack::IsPositiveFixInt(rhs))
+        {
+            auto bytes = Endianness::ToBigEndian(ToFix8(rhs));
+
+            Pack(MsgpackFormat::kPositiveFixInt, bytes);
+        }
+        else if (Msgpack::IsNegativeFixInt(rhs))
+        {
+            auto bytes = Endianness::ToBigEndian(ToFix8(-rhs));
+
+            Pack(MsgpackFormat::kNegativeFixInt, bytes);
+        }
+        else if (Msgpack::IsInt8(rhs))
+        {
+            auto bytes = Endianness::ToBigEndian(ToFix8(rhs));
+
+            Write(MsgpackFormat::kInt8, bytes);
+        }
+        else if (Msgpack::IsInt16(rhs))
+        {
+            auto bytes = Endianness::ToBigEndian(ToFix16(rhs));
+
+            Write(MsgpackFormat::kInt16, bytes);
+        }
+        else if (Msgpack::IsInt32(rhs))
+        {
+            auto bytes = Endianness::ToBigEndian(ToFix32(rhs));
+
+            Write(MsgpackFormat::kInt32, bytes);
+        }
+        else
+        {
+            auto bytes = Endianness::ToBigEndian(ToFix64(rhs));
+
+            Write(MsgpackFormat::kInt64, bytes);
+        }
+
+        return *this;
+    }
+
     MsgpackWriter& MsgpackWriter::operator<<(const String& rhs)
     {
         // Type format and size.
