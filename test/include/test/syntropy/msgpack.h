@@ -19,7 +19,7 @@ namespace syntropy::unit_test
     /* MSGPACK UNIT TEST                                                    */
     /************************************************************************/
 
-    /// \brief Unit test for syntropy::Visitor
+    /// \brief Unit test for Msgpack serialization.
     struct MsgpackUnitTest
     {
         /// \brief Msgpack serialization\deserialization test.

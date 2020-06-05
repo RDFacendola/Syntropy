@@ -44,6 +44,10 @@ namespace syntropy
         /// \brief Reinterpret an object representation from a type to another type.
         template <typename TTo, typename TFrom>
         TTo BitCast(const TFrom& rhs);
+
+        /// \brief Reinterpret an address as an integer value.
+        template <typename TType>
+        constexpr Int ToIntAddress(const TType* rhs);
     };
 
     /************************************************************************/
@@ -102,6 +106,14 @@ namespace syntropy
         std::memcpy(&lhs, &rhs, sizeof(TTo));
 
         return lhs;
+    }
+
+    template <typename TType>
+    constexpr Int Memory::ToIntAddress(const TType* rhs)
+    {
+        static_assert(sizeof(Int) >= sizeof(std::intptr_t));
+
+        return reinterpret_cast<Int>(rhs);
     }
 
 }

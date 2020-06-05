@@ -13,7 +13,7 @@ namespace syntropy
         auto b0 = (rhs & 0xFF00) >> 8u;
         auto b1 = (rhs & 0x00FF) >> 0u;
 
-        return std::int16_t((b1 << 8u) | (b0 << 0u));
+        return Fix16((b1 << 8u) | (b0 << 0u));
     }
 
     Fix32 HALEndianness::ToBigEndian(Fix32 rhs)
@@ -23,7 +23,7 @@ namespace syntropy
         auto b2 = (rhs & 0x0000FF00) >> 8;
         auto b3 = (rhs & 0x000000FF) >> 0;
 
-        return std::int32_t((b3 << 24) | (b2 << 16) | (b1 << 8) | (b0 << 0));
+        return Fix32((b3 << 24) | (b2 << 16) | (b1 << 8) | (b0 << 0));
     }
 
     Fix64 HALEndianness::ToBigEndian(Fix64 rhs)
