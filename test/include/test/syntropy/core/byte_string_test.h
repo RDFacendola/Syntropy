@@ -6,7 +6,7 @@
 /// \author Raffaele D. Facendola - May 2020.
 
 #include "syntropy/memory/bytes.h"
-#include "syntropy/memory/memory_buffer.h"
+#include "syntropy/core/byte_string.h"
 
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/auto_test_suite.h"
@@ -15,13 +15,13 @@
 namespace syntropy::unit_test
 {
     /************************************************************************/
-    /* MEMORY BUFFER UNIT TEST                                              */
+    /* BYTE STRING UNIT TEST                                                */
     /************************************************************************/
 
-    /// \brief Unit test for MemoryBuffer.
-    struct MemoryBufferUnitTest
+    /// \brief Unit test for ByteString.
+    struct ByteStringUnitTest
     {
-        /// \brief Basic operations on MemoryBuffer.
+        /// \brief Basic operations on ByteString.
         void BasicOperations() const;
     };
 
@@ -29,22 +29,35 @@ namespace syntropy::unit_test
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline const auto MemoryBufferTestSuite = MakeAutoTestSuite<MemoryBufferUnitTest>("MemoryBufferUnityTest");
+    inline const auto ByteStringTestSuite = MakeAutoTestSuite<ByteStringUnitTest>("ByteStringUnityTest");
 
-    inline const auto MemoryBufferSerializationTestCase = MakeAutoTestCase("BasicOperations", &MemoryBufferUnitTest::BasicOperations);
+    inline const auto ByteStringSerializationTestCase = MakeAutoTestCase("BasicOperations", &ByteStringUnitTest::BasicOperations);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // MemoryBufferUnitTest.
+    // ByteStringUnitTest.
 
-    inline void MemoryBufferUnitTest::BasicOperations() const
+    inline void ByteStringUnitTest::BasicOperations() const
     {
         using namespace syntropy::Literals;
 
-        auto buffer = MemoryBuffer(10_Bytes, 8_Align, GetDefaultMemoryResource());
+        auto byte_string = ByteString{};
 
+        Int five = 5;
+        Int fortytwo = 42;
+
+        byte_string.Append(MakeConstMemoryRange(five));
+        byte_string.Append(MakeConstMemoryRange(fortytwo));
+
+        Int fiver = 1000;
+        Int fortytwor = 1000;
+
+        byte_string.Read(0, MakeMemoryRange(fiver));
+        byte_string.Read(108, MakeMemoryRange(fortytwo));
+
+        auto x = byte_string[2];
 
     }
 

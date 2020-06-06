@@ -6,4 +6,6 @@
 
 #pragma once
 
+#include "test/syntropy/core/byte_string_test.h"
+
 #include "test/syntropy/memory/memory_buffer_test.h"
