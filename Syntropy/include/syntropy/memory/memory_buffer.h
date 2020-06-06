@@ -8,8 +8,11 @@
 
 #include <utility>
 
+#include "syntropy/core/range.h"
+#include "syntropy/core/smart_pointers.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
+#include "syntropy/memory/memory.h"
 #include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy
@@ -26,14 +29,17 @@ namespace syntropy
     public:
 
         /// \brief Create a new empty buffer.
+        /// The buffer is zero-filled.
         MemoryBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Create a new memory buffer.
+        /// The buffer is zero-filled.
         /// \param size Size of the buffer, in bytes.
         /// \param memory_resource Memory resource the buffer will be allocated from.
         MemoryBuffer(Bytes size, MemoryResource& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Create a new memory buffer.
+        /// The buffer is zero-filled.
         /// \param size Size of the buffer, in bytes.
         /// \param alignment Buffer alignment.
         /// \param memory_resource Memory resource the buffer will be allocated from.
@@ -54,6 +60,27 @@ namespace syntropy
 
         /// \brief Destructor.
         ~MemoryBuffer();
+
+        /// \brief Get an iterator to the first element in the range.
+        auto Begin();
+
+        /// \brief Get an iterator past the last element in the range.
+        auto Ebd();
+
+        /// \brief Get an iterator to the first element in the range.
+        auto Begin() const;
+
+        /// \brief Get an iterator past the last element in the range.
+        auto Ebd() const;
+
+        /// \brief Get the underlying data range.
+        MemoryRange GetData();
+
+        /// \brief Get the underlying const data range.
+        ConstMemoryRange GetData() const;
+
+        /// \brief Get the underlying const data range.
+        ConstMemoryRange GetConstData() const;
 
         /// \brief Get the size of the buffer, in bytes.
         /// \return Returns the size of the buffer, in bytes.
@@ -76,7 +103,7 @@ namespace syntropy
         MemoryRange buffer_;
 
         ///< \brief Memory resource the buffer was allocated on.
-        MemoryResource* memory_resource_{ nullptr };
+        ObserverPtr<MemoryResource> memory_resource_{ nullptr };
 
         /// \brief Buffer alignment.
         Alignment alignment_;
@@ -113,7 +140,7 @@ namespace syntropy
         , alignment_(alignment)
         , buffer_(memory_resource.Allocate(size, alignment))
     {
-
+        Memory::Zero(buffer_);
     }
 
     inline MemoryBuffer::MemoryBuffer(const MemoryBuffer& other)
@@ -142,6 +169,41 @@ namespace syntropy
         {
             memory_resource_->Deallocate(buffer_, alignment_);
         }
+    }
+
+    inline auto MemoryBuffer::Begin()
+    {
+        return buffer_.Begin();
+    }
+
+    inline auto MemoryBuffer::Ebd()
+    {
+        return buffer_.End();
+    }
+
+    inline auto MemoryBuffer::Begin() const
+    {
+        return buffer_.Begin();
+    }
+
+    inline auto MemoryBuffer::Ebd() const
+    {
+        return buffer_.End();
+    }
+
+    inline MemoryRange MemoryBuffer::GetData()
+    {
+        return buffer_;
+    }
+
+    inline ConstMemoryRange MemoryBuffer::GetData() const
+    {
+        return buffer_;
+    }
+
+    inline ConstMemoryRange MemoryBuffer::GetConstData() const
+    {
+        return buffer_;
     }
 
     inline Bytes MemoryBuffer::GetSize() const
