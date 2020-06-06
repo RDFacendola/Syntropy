@@ -69,6 +69,17 @@ namespace syntropy
     };
 
     /************************************************************************/
+    /* LITERALS                                                             */
+    /************************************************************************/
+
+    /// \brief Exposes alignment unit literals.
+    namespace Literals
+    {
+        /// \brief User-defined literal used to convert a number to Alignment type.
+        constexpr Alignment operator "" _Align(std::size_t lhs);
+    }
+
+    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
@@ -162,6 +173,13 @@ namespace syntropy
     {
         alignment_ <<= rhs;
         return *this;
+    }
+
+    // Literals.
+    
+    constexpr Alignment Literals::operator "" _Align(std::size_t lhs)
+    {
+        return Alignment{ Bytes{ ToInt(lhs) } };
     }
 
     // Non-member functions.
