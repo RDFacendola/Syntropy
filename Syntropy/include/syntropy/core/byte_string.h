@@ -2,7 +2,7 @@
 /// \file byte_string.h
 /// \brief This header is part of the Syntropy core module. It contains definition for byte strings.
 ///
-/// \author Raffaele D. Facendola - 2017
+/// \author Raffaele D. Facendola - 2020
 
 #pragma once
 
