@@ -74,6 +74,10 @@ namespace syntropy
     template <typename TType>
     inline constexpr Bool IsTriviallyDefaultConstructibleV = std::is_trivially_default_constructible_v<TType>;
 
+    /// \brief Constant equal to true if TFrom is implicitly convertible to TTo, equal to false otherwise.
+    template <typename TFrom, typename TTo>
+    inline constexpr Bool IsConvertibleV = std::is_convertible_v<TFrom, TTo>;
+
     /************************************************************************/
     /* TYPE CATEGORIES                                                      */
     /************************************************************************/
@@ -90,6 +94,14 @@ namespace syntropy
     /// \brief Constant equal to true if TType is a floating point, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsFloatingPointV = std::is_floating_point_v<TType>;
+
+    /************************************************************************/
+    /* TYPE TRANSFORMATIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Determine the common type among all types TTypes, that is the type to which all TTypes... can be converted to.
+    template <typename... TTypes>
+    using CommonTypeT = std::common_type_t<TTypes...>;
 
     /************************************************************************/
     /* POLYMORPHISM QUERY                                                   */
