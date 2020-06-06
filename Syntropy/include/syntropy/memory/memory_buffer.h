@@ -65,13 +65,13 @@ namespace syntropy
         auto Begin();
 
         /// \brief Get an iterator past the last element in the range.
-        auto Ebd();
+        auto End();
 
         /// \brief Get an iterator to the first element in the range.
         auto Begin() const;
 
         /// \brief Get an iterator past the last element in the range.
-        auto Ebd() const;
+        auto End() const;
 
         /// \brief Get the underlying data range.
         MemoryRange GetData();
@@ -176,7 +176,7 @@ namespace syntropy
         return buffer_.Begin();
     }
 
-    inline auto MemoryBuffer::Ebd()
+    inline auto MemoryBuffer::End()
     {
         return buffer_.End();
     }
@@ -186,7 +186,7 @@ namespace syntropy
         return buffer_.Begin();
     }
 
-    inline auto MemoryBuffer::Ebd() const
+    inline auto MemoryBuffer::End() const
     {
         return buffer_.End();
     }
