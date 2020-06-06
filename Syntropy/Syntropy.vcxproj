@@ -131,6 +131,7 @@
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_intrinsics.cpp" />
     <ClCompile Include="src\syntropy\language\listener.cpp" />
     <ClCompile Include="src\syntropy\math\pcg_random_engine.cpp" />
+    <ClCompile Include="src\syntropy\memory\memory.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\platform\endianness.cpp" />

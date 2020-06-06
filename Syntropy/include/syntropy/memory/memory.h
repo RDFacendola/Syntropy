@@ -26,14 +26,8 @@ namespace syntropy
     namespace Memory
     {
         /// \brief Copy a source memory region to a destination memory region. Neither range is exceed during the process.
-        /// If source and destination overlap, the behavior of this function is undefined.
         /// \return Returns the bytes copied as a result of this call.
         Bytes Copy(const MemoryRange& destination, const ConstMemoryRange& source);
-
-        /// \brief Copy a source memory region to a destination memory region. Neither range is exceed during the process.
-        /// Source and destination may overlap, in this case the function behaves as if source was copied to a temporary buffer and then copied from there to the destination.
-        /// \return Returns the bytes copied as a result of this call.
-        Bytes Move(const MemoryRange& destination, const ConstMemoryRange& source);
 
         /// \brief Set a value to each byte in a destination range.
         void Set(const MemoryRange& destination, Byte value);
@@ -55,32 +49,6 @@ namespace syntropy
     /************************************************************************/
 
     // Memory.
-
-    inline Bytes Memory::Copy(const MemoryRange& destination, const ConstMemoryRange& source)
-    {
-        SYNTROPY_ASSERT(!source.Overlaps(destination));
-
-        auto bytes = std::min(source.GetSize(), destination.GetSize());
-
-        if (bytes > Bytes{ 0 })
-        {
-            std::memcpy(*destination.Begin(), *source.Begin(), bytes.GetCount());
-        }
-
-        return bytes;
-    }
-
-    inline Bytes Memory::Move(const MemoryRange& destination, const ConstMemoryRange& source)
-    {
-        auto bytes = std::min(source.GetSize(), destination.GetSize());
-
-        if (bytes > Bytes{ 0 })
-        {
-            std::memmove(*destination.Begin(), *source.Begin(), bytes.GetCount());
-        }
-
-        return bytes;
-    }
 
     inline void Memory::Set(const MemoryRange& destination, Byte value)
     {
