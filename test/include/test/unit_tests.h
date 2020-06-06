@@ -6,6 +6,4 @@
 
 #pragma once
 
-#include "test/syntropy/visitor.h"
-
-#include "test/syntropy/msgpack.h"
+#include "test/syntropy/memory/memory_buffer_test.h"

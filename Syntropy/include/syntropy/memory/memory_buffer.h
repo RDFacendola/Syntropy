@@ -6,12 +6,10 @@
 
 #pragma once
 
-#include "syntropy/memory/memory.h"
+#include <utility>
+
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_range.h"
-#include "syntropy/memory/memory_address.h"
-
 #include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy
@@ -21,13 +19,14 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents a raw memory buffer allocated from a memory resource.
+    /// Buffer size is immutable and decided during construction.
     /// \author Raffaele D. Facendola - February 2017
     class MemoryBuffer
     {
     public:
 
         /// \brief Create a new empty buffer.
-        MemoryBuffer() = default;
+        MemoryBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Create a new memory buffer.
         /// \param size Size of the buffer, in bytes.
@@ -41,55 +40,46 @@ namespace syntropy
         MemoryBuffer(Bytes size, Alignment alignment, MemoryResource& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Copy constructor.
-        /// Copy the content of another buffer to this one.
+        /// This method allocates a new buffer and copy the content of the other instance.
         /// \param other Buffer to copy.
         MemoryBuffer(const MemoryBuffer& other);
 
         /// \brief Move constructor.
-        /// Assign the memory buffer of another instance to this one.
+        /// This method moves the other buffer to this instance.
         /// \param other Buffer to move.
         MemoryBuffer(MemoryBuffer&& other);
 
-        /// \brief Destructor.
-        ~MemoryBuffer();
-
         /// \brief Unified assignment operator.
         MemoryBuffer& operator=(MemoryBuffer other);
+
+        /// \brief Destructor.
+        ~MemoryBuffer();
 
         /// \brief Get the size of the buffer, in bytes.
         /// \return Returns the size of the buffer, in bytes.
         Bytes GetSize() const;
 
-        /// \brief Get the buffer memory range.
-        MemoryRange ToMemoryRange();
+        /// \brief Get the buffer alignment.
+        /// \return Returns the buffer alignment.
+        Alignment GetAlignment() const;
 
-        /// \brief Get the buffer memory range.
-        ConstMemoryRange ToMemoryRange() const;
-
-        /// \brief Get the buffer memory range.
-        ConstMemoryRange ToConstMemoryRange() const;
-
-        /// \brief Get the underlying strongly-typed pointer.
-        template <typename TType>
-        TType* To();
-
-        /// \brief Get the underlying strongly-typed pointer.
-        template <typename TType>
-        const TType* To() const;
+        /// \brief Access the memory resource this buffer is allocated on.
+        MemoryResource& GetMemoryResource() const;
 
         /// \brief Swap the content of this buffer with another one.
+        /// \remarks This method swaps underlying memory resources as well.
         void Swap(MemoryBuffer& other) noexcept;
 
     private:
+
+        ///< \brief Buffer memory range.
+        MemoryRange buffer_;
 
         ///< \brief Memory resource the buffer was allocated on.
         MemoryResource* memory_resource_{ nullptr };
 
         /// \brief Buffer alignment.
         Alignment alignment_;
-
-        ///< \brief Buffer memory range.
-        MemoryRange buffer_;
 
     };
 
@@ -98,13 +88,19 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Swaps two memory buffers.
-    void swap(syntropy::MemoryBuffer& lhs, syntropy::MemoryBuffer& rhs);
+    void swap(MemoryBuffer& lhs, MemoryBuffer& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
     // MemoryBuffer.
+
+    inline MemoryBuffer::MemoryBuffer(MemoryResource& memory_resource)
+        : MemoryBuffer(Bytes{}, Alignment{}, memory_resource)
+    {
+
+    }
 
     inline MemoryBuffer::MemoryBuffer(Bytes size, MemoryResource& memory_resource)
         : MemoryBuffer(size, Alignment{}, memory_resource)
@@ -113,7 +109,7 @@ namespace syntropy
     }
 
     inline MemoryBuffer::MemoryBuffer(Bytes size, Alignment alignment, MemoryResource& memory_resource)
-        : memory_resource_(std::addressof(memory_resource))
+        : memory_resource_(&memory_resource)
         , alignment_(alignment)
         , buffer_(memory_resource.Allocate(size, alignment))
     {
@@ -121,12 +117,9 @@ namespace syntropy
     }
 
     inline MemoryBuffer::MemoryBuffer(const MemoryBuffer& other)
-        : memory_resource_(other.memory_resource_)
-        , alignment_(other.alignment_)
-        , buffer_(memory_resource_->Allocate(other.GetSize(), alignment_))
-
+        : MemoryBuffer(other.GetSize(), other.alignment_, *other.memory_resource_)
     {
-        Memory::Move(buffer_, other.buffer_);       // Copy the buffer content.
+        Memory::Copy(buffer_, other.buffer_);
     }
 
     inline MemoryBuffer::MemoryBuffer(MemoryBuffer&& other)
@@ -134,7 +127,13 @@ namespace syntropy
         , alignment_(other.alignment_)
         , buffer_(other.buffer_)
     {
-        other.buffer_ = {};
+        other.buffer_ = {}; // Null-out other's buffer.
+    }
+
+    inline MemoryBuffer& MemoryBuffer::operator=(MemoryBuffer other)
+    {
+        Swap(other);
+        return *this;
     }
 
     inline MemoryBuffer::~MemoryBuffer()
@@ -145,42 +144,19 @@ namespace syntropy
         }
     }
 
-    inline MemoryBuffer& MemoryBuffer::operator=(MemoryBuffer other)
-    {
-        Swap(other);
-        return *this;
-    }
-
-    inline MemoryRange MemoryBuffer::ToMemoryRange()
-    {
-        return buffer_;
-    }
-
-    inline ConstMemoryRange MemoryBuffer::ToMemoryRange() const
-    {
-        return buffer_;
-    }
-
-    inline ConstMemoryRange MemoryBuffer::ToConstMemoryRange() const
-    {
-        return buffer_;
-    }
-
-    template <typename TType>
-    inline TType* MemoryBuffer::To()
-    {
-        return buffer_.Begin().As<TType>();
-    }
-
-    template <typename TType>
-    inline const TType* MemoryBuffer::To() const
-    {
-        return buffer_.Begin().As<const TType>();
-    }
-
     inline Bytes MemoryBuffer::GetSize() const
     {
         return buffer_.GetSize();
+    }
+
+    inline Alignment MemoryBuffer::GetAlignment() const
+    {
+        return alignment_;
+    }
+
+    inline MemoryResource& MemoryBuffer::GetMemoryResource() const
+    {
+        return *memory_resource_;
     }
 
     inline void MemoryBuffer::Swap(MemoryBuffer& other) noexcept
@@ -190,7 +166,7 @@ namespace syntropy
         std::swap(buffer_, other.buffer_);
     }
 
-    inline void swap(syntropy::MemoryBuffer& lhs, syntropy::MemoryBuffer& rhs)
+    inline void swap(MemoryBuffer& lhs, MemoryBuffer& rhs)
     {
         lhs.Swap(rhs);
     }

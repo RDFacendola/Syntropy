@@ -152,6 +152,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\test\syntropy\memory\memory_buffer_test.h" />
     <ClInclude Include="include\test\syntropy\msgpack.h" />
     <ClInclude Include="include\test\syntropy\visitor.h" />
     <ClInclude Include="include\test\unit_tests.h" />
