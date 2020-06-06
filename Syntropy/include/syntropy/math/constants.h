@@ -26,6 +26,9 @@ namespace syntropy
 
         /// \brief Euler's number.
         constexpr Float kE = 2.71828f;
+
+        /// \brief Golden ratio.
+        constexpr Float kPhi = 1.61803f;
     }
 
 }
