@@ -79,10 +79,10 @@ namespace syntropy
 
         /// \brief Create a new boolean wrapper.
         template <typename TBool, typename = EnableIfT<IsSameV<TBool, Bool>>>
-        Boolean(TBool value);
+        constexpr Boolean(TBool value);
 
         /// \brief Unwrap the underlying value.
-        operator Bool() const;
+        constexpr operator Bool() const;
 
     private:
 
@@ -105,10 +105,10 @@ namespace syntropy
 
         /// \brief Create a new integer wrapper.
         template <typename TInt, typename = EnableIfT<IsIntegralV<TInt>>>
-        Integer(TInt value);
+        constexpr Integer(TInt value);
 
         /// \brief Unwrap the underlying value.
-        operator Int() const;
+        constexpr operator Int() const;
 
     private:
 
@@ -131,10 +131,10 @@ namespace syntropy
 
         /// \brief Create a new floating-point wrapper.
         template <typename TFloat, typename = EnableIfT<IsFloatingPointV<TFloat>>>
-        Floating(TFloat value);
+        constexpr Floating(TFloat value);
 
         /// \brief Unwrap the underlying value.
-        operator Float() const;
+        constexpr operator Float() const;
 
     private:
 
@@ -168,13 +168,13 @@ namespace syntropy
     // Boolean.
 
     template <typename TBool, typename>
-    inline Boolean::Boolean(TBool value)
+    constexpr Boolean::Boolean(TBool value)
         : value_(value)
     {
 
     }
 
-    inline Boolean::operator Bool() const
+    constexpr Boolean::operator Bool() const
     {
         return value_;
     }
@@ -182,13 +182,13 @@ namespace syntropy
     // Integer.
 
     template <typename TInt, typename>
-    inline Integer::Integer(TInt value)
+    constexpr Integer::Integer(TInt value)
         : value_(value)
     {
 
     }
 
-    inline Integer::operator Int() const
+    constexpr Integer::operator Int() const
     {
         return value_;
     }
@@ -196,13 +196,13 @@ namespace syntropy
     // Floating.
 
     template <typename TFloat, typename>
-    inline Floating::Floating(TFloat value)
+    constexpr Floating::Floating(TFloat value)
         : value_(value)
     {
 
     }
 
-    inline Floating::operator Float() const
+    constexpr Floating::operator Float() const
     {
         return value_;
     }
