@@ -1,61 +1,48 @@
 
-/// \file byte_string.h
-/// \brief This header is part of the Syntropy core module. It contains definition for byte strings.
+/// \file stream_buffer.h
+/// \brief This header is part of the Syntropy core module. It contains definition for a memory stream buffer.
 ///
 /// \author Raffaele D. Facendola - 2020
 
 #pragma once
 
-#include "syntropy/core/range.h"
 #include "syntropy/language/utility.h"
+#include "syntropy/core/types.h"
+#include "syntropy/memory/bytes.h"
+#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_buffer.h"
 #include "syntropy/allocators/memory_resource.h"
 #include "syntropy/math/constants.h"
-#include "syntropy/math/math.h"
-#include "syntropy/memory/memory_buffer.h"
-#include "syntropy/memory/memory_address.h"
-#include "syntropy/memory/bytes.h"
-#include "syntropy/memory/alignment.h"
 
 namespace syntropy
 {
     /************************************************************************/
-    /* BYTE STRING                                                          */
+    /* STREAM BUFFER                                                        */
     /************************************************************************/
 
-    /// \brief Represents a raw string of bytes.
+    /// \brief Represents a raw stream of bytes.
     /// \author Raffaele D. Facendola - June 2020
-    class ByteString
+    class StreamBuffer
     {
     public:
 
-        /// \brief Create a new empty string.
-        ByteString(MemoryResource& memory_resource = GetDefaultMemoryResource());
-
-        /// \brief Create a new zero-filled string
-        /// \param size Size of the string, in bytes.
-        /// \param memory_resource Memory resource the string will be allocated from.
-        ByteString(Bytes size, MemoryResource& memory_resource = GetDefaultMemoryResource());
-
-        /// \brief Create a new zero-filled aligned string.
-        /// \param size Size of the string, in bytes.
-        /// \param alignment String alignment.
-        /// \param memory_resource Memory resource the string will be allocated from.
-        ByteString(Bytes size, Alignment alignment, MemoryResource& memory_resource = GetDefaultMemoryResource());
+        /// \brief Create a new empty stream.
+        StreamBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Default copy constructor.
-        ByteString(const ByteString& other) = default;
+        StreamBuffer(const StreamBuffer& other) = default;
 
         /// \brief Default move constructor.
-        ByteString(ByteString&& other) = default;
+        StreamBuffer(StreamBuffer&& other) = default;
 
         /// \brief Default copy-assignment operator.
-        ByteString& operator=(const ByteString& other) = default;
+        StreamBuffer& operator=(const StreamBuffer& other) = default;
 
         /// \brief Default move-assignment operator.
-        ByteString& operator=(ByteString&& other) = default;
+        StreamBuffer& operator=(StreamBuffer&& other) = default;
 
         /// \brief Default destructor.
-        ~ByteString() = default;
+        ~StreamBuffer() = default;
 
         /// \brief Access a byte on the underlying buffer.
         Byte& operator[](Int index);
@@ -107,16 +94,12 @@ namespace syntropy
         /// \return Returns the effective memory footprint of the string, in bytes.
         Bytes GetCapacity() const;
 
-        /// \brief Get the string alignment.
-        /// \return Returns the string alignment.
-        Alignment GetAlignment() const;
-
         /// \brief Access the memory resource this string is allocated on.
         MemoryResource& GetMemoryResource() const;
 
         /// \brief Swap the content of this string with another one.
         /// \remarks This method swaps underlying memory resources as well.
-        void Swap(ByteString& other) noexcept;
+        void Swap(StreamBuffer& other) noexcept;
 
     private:
 
@@ -143,7 +126,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Swaps two byte string.
-    void swap(ByteString& lhs, ByteString& rhs);
+    void swap(StreamBuffer& lhs, StreamBuffer& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -151,55 +134,43 @@ namespace syntropy
 
     // ByteString.
 
-    inline ByteString::ByteString(MemoryResource& memory_resource)
-        : ByteString(Bytes{}, memory_resource)
+    inline StreamBuffer::StreamBuffer(MemoryResource& memory_resource)
+        : buffer_(memory_resource)
     {
 
     }
 
-    inline ByteString::ByteString(Bytes size, MemoryResource& memory_resource)
-        : ByteString(size, Alignment{}, memory_resource)
-    {
-
-    }
-
-    inline ByteString::ByteString(Bytes size, Alignment alignment, MemoryResource& memory_resource)
-        : buffer_(size, alignment, memory_resource)
-    {
-
-    }
-
-    inline Byte& ByteString::operator[](Int index)
+    inline Byte& StreamBuffer::operator[](Int index)
     {
         return const_cast<Byte&>(AsConst(*this)[index]);
     }
 
-    inline const Byte& ByteString::operator[](Int index) const
+    inline const Byte& StreamBuffer::operator[](Int index) const
     {
         auto byte_address = ConstMemoryAddress{ buffer_.GetData()[ToBytes(index)] };     // operator[] resolves the MemoryAddress to a Int pointer type.
 
         return *byte_address.As<Byte>();
     }
 
-    inline void ByteString::Append(const ConstMemoryRange& data)
+    inline void StreamBuffer::Append(const ConstMemoryRange& data)
     {
         Write(*size_, data);
     }
 
-    inline void ByteString::Clear()
+    inline void StreamBuffer::Clear()
     {
         using namespace Literals;
 
         size_ = 0_Bytes;
     }
 
-    inline void ByteString::Resize(Bytes size)
+    inline void StreamBuffer::Resize(Bytes size)
     {
         Realloc(size);
         size_ = size;
     }
 
-    inline void ByteString::Reserve(Bytes capacity)
+    inline void StreamBuffer::Reserve(Bytes capacity)
     {
         if (capacity > GetCapacity())
         {
@@ -207,7 +178,7 @@ namespace syntropy
         }
     }
 
-    inline void ByteString::Shrink()
+    inline void StreamBuffer::Shrink()
     {
         if (GetCapacity() > size_)
         {
@@ -215,44 +186,39 @@ namespace syntropy
         }
     }
 
-    inline Bool ByteString::IsEmpty() const
+    inline Bool StreamBuffer::IsEmpty() const
     {
         using namespace Literals;
 
         return size_ == 0_Bytes;
     }
 
-    inline MemoryRange ByteString::GetData()
+    inline MemoryRange StreamBuffer::GetData()
     {
         return { buffer_.GetData().Begin(), size_ };    // Shall not exceed string size.
     }
 
-    inline ConstMemoryRange ByteString::GetData() const
+    inline ConstMemoryRange StreamBuffer::GetData() const
     {
         return { buffer_.GetData().Begin(), size_ };    // Shall not exceed string size.
     }
 
-    inline Bytes ByteString::GetSize() const
+    inline Bytes StreamBuffer::GetSize() const
     {
         return size_;
     }
 
-    inline Bytes ByteString::GetCapacity() const
+    inline Bytes StreamBuffer::GetCapacity() const
     {
         return buffer_.GetSize();
     }
 
-    inline Alignment ByteString::GetAlignment() const
-    {
-        return buffer_.GetAlignment();
-    }
-
-    inline MemoryResource& ByteString::GetMemoryResource() const
+    inline MemoryResource& StreamBuffer::GetMemoryResource() const
     {
         return buffer_.GetMemoryResource();
     }
 
-    inline void ByteString::Swap(ByteString& other) noexcept
+    inline void StreamBuffer::Swap(StreamBuffer& other) noexcept
     {
         using std::swap;
 
@@ -261,7 +227,7 @@ namespace syntropy
 
     }
 
-    inline void swap(ByteString& lhs, ByteString& rhs)
+    inline void swap(StreamBuffer& lhs, StreamBuffer& rhs)
     {
         lhs.Swap(rhs);
     }

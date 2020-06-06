@@ -8,6 +8,6 @@
     <ClInclude Include="include\test\unit_tests.h" />
     <ClInclude Include="include\test\syntropy\msgpack.h" />
     <ClInclude Include="include\test\syntropy\memory\memory_buffer_test.h" />
-    <ClInclude Include="include\test\syntropy\core\byte_string_test.h" />
+    <ClInclude Include="include\test\syntropy\core\stream_buffer_test.h" />
   </ItemGroup>
 </Project>

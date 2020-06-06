@@ -1,46 +1,41 @@
 
-/// \file stream_writer.h
-/// \brief This header is part of the Syntropy serialization module. It contains definitions for classes used to write on streams.
+/// \file byte_writer.h
+/// \brief This header is part of the Syntropy core module. It contains definition for byte-string writers.
 ///
-/// \author Raffaele D. Facendola - June 2020.
+/// \author Raffaele D. Facendola - 2020
 
 #include "syntropy/core/types.h"
+#include "syntropy/core/byte_string.h"
 
 namespace syntropy
 {
     /************************************************************************/
-    /* STREAM WRITER                                                        */
+    /* BYTE WRITER                                                          */
     /************************************************************************/
 
     /// \brief Exposes methods to write to a stream.
     /// \author Raffaele D. Facendola - June 2020.
-    class StreamWriter
+    class ByteWriter
     {
     public:
 
-        /// \brief Type of the underlying output stream.
-        using TStream = BasicStringStream<Byte>;
-
-        /// \brief Type of the underlying output string.
-        using TString = BasicString<Byte>;
-
-        /// \brief Create a new stream writer bound to a stream.
-        StreamWriter(TStream& stream);
+        /// \brief Create a new writer bound to a buffer.
+        ByteWriter(ByteString& buffer);
 
         /// \brief Default copy constructor.
-        StreamWriter(const StreamWriter&) = default;
+        ByteWriter(const ByteWriter&) = default;
 
         /// \brief Default move constructor.
-        StreamWriter(StreamWriter&&) = default;
+        ByteWriter(ByteWriter&&) = default;
 
         /// \brief Default copy-assignment constructor.
-        StreamWriter& operator=(const StreamWriter&) = default;
+        ByteWriter& operator=(const ByteWriter&) = default;
 
         /// \brief Default move-assignment constructor.
-        StreamWriter& operator=(StreamWriter&&) = default;
+        ByteWriter& operator=(ByteWriter&&) = default;
 
         /// \brief Default destructor.
-        ~StreamWriter() = default;
+        ~ByteWriter() = default;
 
         /// \ brief Write a packed byte formed by a format and a payload.
         /// Both format and payload are expected to be convertible to Byte. If payload and format overlap the behavior of this method is undefined
@@ -67,7 +62,7 @@ namespace syntropy
     private:
 
         /// \brief Underlying stream.
-        TStream stream_;
+        ByteString* buffer_;
 
         /// \brief Number of written bytes.
         Bytes written_count_;

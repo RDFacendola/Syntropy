@@ -1,12 +1,12 @@
-#include "syntropy/core/byte_string.h"
+#include "syntropy/core/stream_buffer.h"
 
 namespace syntropy
 {
     /************************************************************************/
-    /* BYTE STRING                                                          */
+    /* STREAM BUFFER                                                        */
     /************************************************************************/
 
-    void ByteString::Write(Int position, const ConstMemoryRange& data)
+    void StreamBuffer::Write(Int position, const ConstMemoryRange& data)
     {
         auto capacity = data.GetSize() + Bytes{ position };                             // Capacity needed to perform the copy.
 
@@ -24,7 +24,7 @@ namespace syntropy
         Memory::Copy(destination, data);
     }
 
-    MemoryRange ByteString::Read(Int position, const MemoryRange& data)
+    MemoryRange StreamBuffer::Read(Int position, const MemoryRange& data)
     {
         auto source = ConstMemoryRange{ buffer_.Begin() + Bytes{position}, data.GetSize() };
 
@@ -39,7 +39,7 @@ namespace syntropy
         return { data.Begin(), bytes };
     }
 
-    void ByteString::Realloc(Bytes size)
+    void StreamBuffer::Realloc(Bytes size)
     {
         if (size != buffer_.GetSize())
         {

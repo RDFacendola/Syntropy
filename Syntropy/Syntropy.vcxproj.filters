@@ -103,7 +103,7 @@
     <ClInclude Include="include\syntropy\containers\stream_vector.h" />
     <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\core\types.h" />
-    <ClInclude Include="include\syntropy\core\byte_string.h" />
+    <ClInclude Include="include\syntropy\core\stream_buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -131,7 +131,7 @@
     <ClCompile Include="src\syntropy\math\pcg_random_engine.cpp" />
     <ClCompile Include="src\syntropy\language\listener.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\log_event_formatter.cpp" />
-    <ClCompile Include="src\syntropy\core\byte_string.cpp" />
     <ClCompile Include="src\syntropy\memory\memory.cpp" />
+    <ClCompile Include="src\syntropy\core\stream_buffer.cpp" />
   </ItemGroup>
 </Project>

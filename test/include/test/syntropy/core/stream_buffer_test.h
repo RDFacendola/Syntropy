@@ -6,7 +6,7 @@
 /// \author Raffaele D. Facendola - May 2020.
 
 #include "syntropy/memory/bytes.h"
-#include "syntropy/core/byte_string.h"
+#include "syntropy/core/stream_buffer.h"
 
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/auto_test_suite.h"
@@ -43,21 +43,21 @@ namespace syntropy::unit_test
     {
         using namespace syntropy::Literals;
 
-        auto byte_string = ByteString{};
+        auto stream = StreamBuffer{};
 
         Int five = 5;
         Int fortytwo = 42;
 
-        byte_string.Append(MakeConstMemoryRange(five));
-        byte_string.Append(MakeConstMemoryRange(fortytwo));
-
         Int fiver = 1000;
         Int fortytwor = 1000;
 
-        byte_string.Read(0, MakeMemoryRange(fiver));
-        byte_string.Read(108, MakeMemoryRange(fortytwo));
+        stream.Append(MakeConstMemoryRange(five));
+        stream.Append(MakeConstMemoryRange(fortytwo));
 
-        auto x = byte_string[2];
+        stream.Read(0, MakeMemoryRange(fiver));
+        stream.Read(108, MakeMemoryRange(fortytwor));
+
+        auto c = stream.GetCapacity();
 
     }
 
