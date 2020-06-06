@@ -14,7 +14,7 @@ namespace syntropy
     /* ENDIANNESS                                                           */
     /************************************************************************/
 
-    /// \brief Contains methods used to convert values to and from little-endian, big-endian and platform-endian.
+    /// \brief Exposes methods used to convert values to and from little-endian, big-endian and platform-endian.
     /// \author Raffaele D. Facendola - November 2019.
     namespace Endianness
     {

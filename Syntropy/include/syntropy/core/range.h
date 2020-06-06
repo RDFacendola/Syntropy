@@ -130,10 +130,6 @@ namespace syntropy
         /// \brief Check whether an iterator falls within this range.
         Bool Contains(const TIterator& rhs) const;
 
-        /// \brief Check whether a range overlaps this range.
-        /// \remarks If Contains(rhs) is true Overlaps(rhs) is also true.
-        Bool Overlaps(const Range& rhs) const;
-
     private:
 
         /// \brief Iterator to the first element in the range.
@@ -352,12 +348,6 @@ namespace syntropy
     inline Bool Range<TIterator>::Contains(const TIterator& rhs) const
     {
         return (begin_ <= rhs) && (rhs < end_);
-    }
-
-    template <typename TIterator>
-    inline Bool Range<TIterator>::Overlaps(const Range& rhs) const
-    {
-        return (Intersection(*this, rhs).GetSize() > TDistance{ 0 });
     }
 
     // Non-member functions.
