@@ -21,7 +21,7 @@
 #include "syntropy/memory/memory.h"
 #include "syntropy/math/math.h"
 
-#include "syntropy/serialization/msgpack/msgpack_format.h"
+#include "syntropy/serialization/msgpack/msgpack.h"
 
 namespace syntropy
 {
@@ -34,21 +34,11 @@ namespace syntropy
     /// \see https://github.com/msgpack/msgpack/blob/master/spec.md
     class MsgpackWriter
     {
-        /// \brief Predicate used to determine whether TType is a valid extension type for Msgpack.
-        template <typename TType>
-        using IsMsgpackExtension = decltype(MsgpackExtensionType<TType>);
-
     public:
 
         /// \brief Type of the underlying string.
-        using TString = BasicString<Byte>;
-
-        /// \brief Type of the underlying stream.
-        using TStream = BasicStringStream<Byte>;
+        using TString = MsgpackStreamWriter::TString;
         
-        /// \brief Type of the underlying output stream.
-        using TOutputStream = BasicOStringStream<Byte>;
-
         /// \brief Create a writer.
         MsgpackWriter() = default;
 
@@ -90,19 +80,9 @@ namespace syntropy
 
     private:
 
-        /// \ brief Write a packed byte formed by a format and a payload.
-        /// If payload bits spill into format's the behavior of this method is undefined.
-        MsgpackWriter& Pack(MsgpackFormat format, Fix8 payload);
+        /// \brief Underlying stream writer.
+        MsgpackStreamWriter stream_writer_;
 
-        /// \brief Write one or more values inside the underlying stream.
-        template <typename... TTypes>
-        MsgpackWriter& Write(TTypes&&... values);
-
-        /// \brief Write data inside the underlying stream.
-        MsgpackWriter& Write(const ConstMemoryRange& data);
-
-        /// \brief Underlying stream.
-        TStream stream_;
     };
 
     /************************************************************************/
@@ -110,22 +90,28 @@ namespace syntropy
     /************************************************************************/
 
     // MsgpackWriter.
-
+    
     inline MsgpackWriter& MsgpackWriter::operator<<(Null rhs)
     {
-        return Write(MsgpackFormat::kNil);
+        stream_writer_.Write(MsgpackFormat::kNil);
+
+        return *this;
     }
 
     inline MsgpackWriter& MsgpackWriter::operator<<(Boolean rhs)
     {
-        return Write(rhs ? MsgpackFormat::kTrue : MsgpackFormat::kFalse);
+        stream_writer_.Write(rhs ? MsgpackFormat::kTrue : MsgpackFormat::kFalse);
+
+        return *this;
     }
 
     inline MsgpackWriter& MsgpackWriter::operator<<(Floating rhs)
     {
         auto bytes = Endianness::ToBigEndian(Memory::BitCast<Fix32>(rhs));
 
-        return Write(MsgpackFormat::kFloat32, bytes);
+        stream_writer_.Write(MsgpackFormat::kFloat32, bytes);
+
+        return *this;
     }
 
     template <typename TElement>
@@ -137,19 +123,19 @@ namespace syntropy
         {
             auto size = Endianness::ToBigEndian(ToFix8(rhs.size()));
 
-            Pack(MsgpackFormat::kFixArray, size);
+            stream_writer_.Pack(MsgpackFormat::kFixArray, size);
         }
         else if (Msgpack::IsArray16(rhs))
         {
             auto size = Endianness::ToBigEndian(ToFix16(rhs.size()));
 
-            Write(MsgpackFormat::kArray16, size);
+            stream_writer_.Write(MsgpackFormat::kArray16, size);
         }
         else if (Msgpack::IsArray32(rhs))
         {
             auto size = Endianness::ToBigEndian(ToFix32(rhs.size()));
 
-            Write(MsgpackFormat::kArray32, size);
+            stream_writer_.Write(MsgpackFormat::kArray32, size);
         }
 
         // Payload.
@@ -171,19 +157,19 @@ namespace syntropy
         {
             auto size = Endianness::ToBigEndian(ToFix8(rhs.size()));
 
-            Pack(MsgpackFormat::kFixMap, size);
+            stream_writer_.Pack(MsgpackFormat::kFixMap, size);
         }
         else if (Msgpack::IsMap16(rhs))
         {
             auto size = Endianness::ToBigEndian(ToFix16(rhs.size()));
 
-            Write(MsgpackFormat::kMap16, size);
+            stream_writer_.Write(MsgpackFormat::kMap16, size);
         }
         else if (Msgpack::IsMap32(rhs))
         {
             auto size = Endianness::ToBigEndian(ToFix32(rhs.size()));
 
-            Put(MsgpackFormat::kMap32, size);
+            stream_writer_.Write(MsgpackFormat::kMap32, size);
         }
 
         // Payload.
@@ -200,91 +186,78 @@ namespace syntropy
     template <typename TExtension, typename>
     MsgpackWriter& MsgpackWriter::operator<<(const TExtension& rhs)
     {
-        using TMsgpackExtensionType = MsgpackExtensionType<TExtension>;
+        using namespace Literals;
 
-        auto type_id = TMsgpackExtensionType::GetType();
-        auto payload_size = MsgpackExtensionType<TExtension>::GetSize(rhs);
+        using TMsgpackExtension = MsgpackExtension<TExtension>;
 
-        static_assert(sizeof(type_id) == sizeof(Fix8), "Extension type-id must be 8-bit wide.");
+        // Serialize the extension on a temporary buffer.
 
-        // Type format, payload size and type-id.
+        auto payload_writer = MsgpackStreamWriter();
 
-        if (Msgpack::IsFixExt1(rhs))
+        auto extension_type = MsgpackExtensionType{ TMsgpackExtension::Serialize(payload_writer, rhs) };
+
+        auto payload_size = payload_writer.GetWrittenCount();
+
+        // Extension format, payload size and extension type.
+
+        if (payload_size == 1_Bytes)
         {
-            Write(MsgpackFormat::kFixExt1, type_id);
+            stream_writer_.Write(MsgpackFormat::kFixExt1, extension_type);
         }
-        else if (Msgpack::IsFixExt2(rhs))
+        else if (payload_size == 2_Bytes)
         {
-            Write(MsgpackFormat::kFixExt2, type_id);
+            stream_writer_.Write(MsgpackFormat::kFixExt2, extension_type);
         }
-        else if (Msgpack::IsFixExt4(rhs))
+        else if (payload_size == 4_Bytes)
         {
-            Write(MsgpackFormat::kFixExt4, type_id);
+            stream_writer_.Write(MsgpackFormat::kFixExt4, extension_type);
         }
-        else if (Msgpack::IsFixExt8(rhs))
+        else if (payload_size == 8_Bytes)
         {
-            Write(MsgpackFormat::kFixExt8, type_id);
+            stream_writer_.Write(MsgpackFormat::kFixExt8, extension_type);
         }
-        else if (Msgpack::IsFixExt16(rhs))
+        else if (payload_size == 16_Bytes)
         {
-            Write(MsgpackFormat::kFixExt16, type_id);
+            stream_writer_.Write(MsgpackFormat::kFixExt16, extension_type);
         }
-        else if (Msgpack::IsExt8(rhs))
+        else if (payload_size <= 0xFF_Bytes)
         {
             auto size = Endianness::ToBigEndian(ToFix8(*payload_size));
 
-            Write(MsgpackFormat::kExt8, size, type_id);
+            stream_writer_.Write(MsgpackFormat::kExt8, size, extension_type);
         }
-        else if (Msgpack::IsExt16(rhs))
+        else if (payload_size <= 0xFFFF_Bytes)
         {
             auto size = Endianness::ToBigEndian(ToFix16(*payload_size));
 
-            Write(MsgpackFormat::kExt16, size, type_id);
+            stream_writer_.Write(MsgpackFormat::kExt16, size, extension_type);
         }
-        else if (Msgpack::IsExt32(rhs))
+        else if (payload_size <= 0xFFFFFFFF_Bytes)
         {
             auto size = Endianness::ToBigEndian(ToFix32(*payload_size));
 
-            Write(MsgpackFormat::kExt32, size, type_id);
+            stream_writer_.Write(MsgpackFormat::kExt32, size, extension_type);
         }
 
         // Payload.
 
-        TMsgpackExtensionType::Encode(static_cast<TOutputStream&>(stream_), rhs);
+        auto payload = payload_writer.ToString();
+
+        auto payload_data = MakeConstMemoryRange(payload.data(), Bytes(payload.size()));
+
+        stream_writer_.WriteRaw(payload_data);
 
         return *this;
     }
 
     inline void MsgpackWriter::Clear()
     {
-        stream_.str({});
+        stream_writer_.Clear();
     }
 
     inline MsgpackWriter::TString MsgpackWriter::ToString() const
     {
-        return stream_.str();
-    }
-
-    inline MsgpackWriter& MsgpackWriter::Pack(MsgpackFormat format, Fix8 payload)
-    {
-        Write(ToFix8(format) | payload);
-
-        return *this;
-    }
-
-    template <typename... TTypes>
-    inline MsgpackWriter& MsgpackWriter::Write(TTypes&&... values)
-    {
-        ((stream_ << MakeConstMemoryRange(values)), ...);
-
-        return *this;
-    }
-
-    inline MsgpackWriter& MsgpackWriter::Write(const ConstMemoryRange& data)
-    {
-        stream_ << data;
-
-        return *this;
+        return stream_writer_.ToString();
     }
 
 }

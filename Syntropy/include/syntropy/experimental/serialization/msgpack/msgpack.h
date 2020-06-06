@@ -1,6 +1,6 @@
 
-/// \file msgpack_format.h
-/// \brief This header is part of the Syntropy serialization module. It contains Msgpack supported types.
+/// \file msgpack.h
+/// \brief This header is part of the Syntropy serialization module. It contains Msgpack type, formats and utility methods..
 ///
 /// Specification found here: https://github.com/msgpack/msgpack/blob/master/spec.md
 ///
@@ -146,6 +146,9 @@ namespace syntropy
     /// \author Raffaele D. Facendola - May 2020.
     enum class MsgpackFormatMask : Fix8
     {
+        /// \brief No bit set.
+        kNone = ToFix8(0b00000000),
+
         /// \brief 7-bit positive integer value.
         kPositiveFixInt = ToFix8(0b10000000),
 
@@ -159,17 +162,29 @@ namespace syntropy
         kFixStr = ToFix8(0b11100000),
 
         /// \brief 5-bit negative integer value.
-        kNegativeFixInt = ToFix8(0b11100000)
+        kNegativeFixInt = ToFix8(0b11100000),
+
+        /// \brief All bit set.
+        kAll = ToFix8(0b11111111)
     };
 
     /************************************************************************/
     /* MSGPACK EXTENSION TYPE                                               */
     /************************************************************************/
 
-    /// \brief Exposes methods used to handle extension types encoded using Msgpack specification.
+    /// \brief Type of a Msgpack extension.
+    /// \author Raffaele D. Facendola - June 2020.
+    enum class MsgpackExtensionType : Fix8 {};
+
+    /// \brief Exposes methods used to handle Msgpack extension types.
     /// \author Raffaele D. Facendola - November 2019.
     template <typename TType>
-    struct MsgpackExtensionType {};
+    struct MsgpackExtension {};
+
+    /// \brief Predicate used to determine whether TType is a valid extension type for Msgpack.
+        /// \author Raffaele D. Facendola - June 2020.
+    template <typename TType>
+    using IsMsgpackExtension = decltype(MsgpackExtension<TType>{});
 
     /************************************************************************/
     /* MSGPACK                                                              */
@@ -205,18 +220,6 @@ namespace syntropy
         /// \brief Check whether rhs can be encoded using a 32-bit long byte-array.
         Bool IsBin32(const ConstMemoryRange& rhs);
 
-        /// \brief Check whether rhs can be encoded using an extension type whose size is up to (2^8)-1 bytes.
-        template <typename TExtension>
-        Bool IsExt8(const TExtension& rhs);
-
-        /// \brief Check whether rhs can be encoded using an extension type whose size is up to (2^16)-1 bytes.
-        template <typename TExtension>
-        Bool IsExt16(const TExtension& rhs);
-
-        /// \brief Check whether rhs can be encoded using an extension type whose size is up to (2^32)-1 bytes.
-        template <typename TExtension>
-        Bool IsExt32(const TExtension& rhs);
-
         /// \brief Check whether rhs can be encoded using a 8-bit signed int.
         Bool IsInt8(Int rhs);
 
@@ -225,26 +228,6 @@ namespace syntropy
 
         /// \brief Check whether rhs can be encoded using a 32-bit signed int.
         Bool IsInt32(Int rhs);
-
-        /// \brief Check whether rhs can be encoded using a 1-byte fixed extension type.
-        template <typename TExtension>
-        Bool IsFixExt1(const TExtension& rhs);
-
-        /// \brief Check whether rhs can be encoded using a 2-bytes fixed extension type.
-        template <typename TExtension>
-        Bool IsFixExt2(const TExtension& rhs);
-
-        /// \brief Check whether rhs can be encoded using a 4-bytes fixed extension type.
-        template <typename TExtension>
-        Bool IsFixExt4(const TExtension& rhs);
-
-        /// \brief Check whether rhs can be encoded using a 8-bytes fixed extension type.
-        template <typename TExtension>
-        Bool IsFixExt8(const TExtension& rhs);
-
-        /// \brief Check whether rhs can be encoded using a 16-bytes fixed extension type.
-        template <typename TExtension>
-        Bool IsFixExt16(const TExtension& rhs);
 
         /// \brief Check whether rhs can be encoded using a 8-bit long string.
         Bool IsStr8(const String& rhs);
@@ -321,30 +304,6 @@ namespace syntropy
         return *rhs.GetSize() <= 0xFFFFFFFF;
     }
 
-    template <typename TExtension>
-    inline Bool Msgpack::IsExt8(const TExtension& rhs)
-    {
-        using namespace Literals;
-
-        return MsgpackExtensionType<TExtension>::GetSize(rhs) <= 0xFF_Bytes;
-    }
-
-    template <typename TExtension>
-    inline Bool Msgpack::IsExt16(const TExtension& rhs)
-    {
-        using namespace Literals;
-
-        return MsgpackExtensionType<TExtension>::GetSize(rhs) <= 0xFFFF_Bytes;
-    }
-
-    template <typename TExtension>
-    inline Bool Msgpack::IsExt32(const TExtension& rhs)
-    {
-        using namespace Literals;
-
-        return MsgpackExtensionType<TExtension>::GetSize(rhs) <= 0xFFFFFFFF_Bytes;
-    }
-
     inline Bool Msgpack::IsInt8(Int rhs)
     {
         return rhs >= std::numeric_limits<Fix8>::min() && rhs <= std::numeric_limits<Fix8>::max();
@@ -358,46 +317,6 @@ namespace syntropy
     inline Bool Msgpack::IsInt32(Int rhs)
     {
         return rhs >= std::numeric_limits<Fix32>::min() && rhs <= std::numeric_limits<Fix32>::max();
-    }
-
-    template <typename TExtension>
-    inline Bool Msgpack::IsFixExt1(const TExtension& rhs)
-    {
-        using namespace Literals;
-
-        return MsgpackExtensionType<TExtension>::GetSize(rhs) == 1_Bytes;
-    }
-
-    template <typename TExtension>
-    inline Bool Msgpack::IsFixExt2(const TExtension& rhs)
-    {
-        using namespace Literals;
-
-        return MsgpackExtensionType<TExtension>::GetSize(rhs) == 2_Bytes;
-    }
-
-    template <typename TExtension>
-    inline Bool Msgpack::IsFixExt4(const TExtension& rhs)
-    {
-        using namespace Literals;
-
-        return MsgpackExtensionType<TExtension>::GetSize(rhs) == 4_Bytes;
-    }
-
-    template <typename TExtension>
-    inline Bool Msgpack::IsFixExt8(const TExtension& rhs)
-    {
-        using namespace Literals;
-
-        return MsgpackExtensionType<TExtension>::GetSize(rhs) == 8_Bytes;
-    }
-
-    template <typename TExtension>
-    inline Bool Msgpack::IsFixExt16(const TExtension& rhs)
-    {
-        using namespace Literals;
-
-        return MsgpackExtensionType<TExtension>::GetSize(rhs) == 16_Bytes;
     }
 
     inline Bool Msgpack::IsStr8(const String& rhs)

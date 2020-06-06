@@ -4,10 +4,13 @@
 ///
 /// \author Raffaele D. Facendola - May 2020.
 
-#include "syntropy/serialization/msgpack/msgpack_format.h"
-#include "syntropy/serialization/msgpack/msgpack_reader.h"
-#include "syntropy/serialization/msgpack/msgpack_writer.h"
-#include "syntropy/serialization/msgpack/msgpack_vector_extensions.h"
+// #include "syntropy/serialization/msgpack/msgpack.h"
+// #include "syntropy/serialization/msgpack/msgpack_reader.h"
+// #include "syntropy/serialization/msgpack/msgpack_writer.h"
+// 
+// #include "syntropy/serialization/msgpack/msgpack_vector_extensions.h"
+
+// #include "syntropy/serialization/stream_writer.h"
 
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/auto_test_suite.h"
@@ -42,10 +45,7 @@ namespace syntropy::unit_test
 
     inline void MsgpackUnitTest::Serialization() const
     {
-        auto writer = MsgpackWriter();
 
-
-        auto reader = MsgpackReader();
     }
 
 }

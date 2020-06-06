@@ -7,6 +7,7 @@
 #pragma once
 
 #include <ostream>
+#include <optional>
 
 #include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
@@ -20,107 +21,92 @@
 #include "syntropy/math/math.h"
 #include "syntropy/language/type_traits.h"
 
-#include "syntropy/serialization/msgpack/msgpack_format.h"
+#include "syntropy/serialization/msgpack/msgpack.h"
 
 namespace syntropy
 {
+
+
     /************************************************************************/
-    /* MSGPACK READER                                                       */
+    /* MSGPACK STREAM READER                                                */
     /************************************************************************/
 
-    /// \brief Reader for data streams encoded via Msgpack specification.
-    /// \author Raffaele D. Facendola - May 2020.
-    /// \see https://github.com/msgpack/msgpack/blob/master/spec.md
-    class MsgpackReader
+    /// \brief Exposes methods to read from a Msgpack stream.
+    /// \author Raffaele D. Facendola - June 2020.
+    class MsgpackStreamReader
     {
     public:
+
+        /// \brief Type of the underlying output stream.
+        using TStream = BasicStringStream<Byte>;
 
         /// \brief Type of the underlying string.
         using TString = BasicString<Byte>;
 
-        /// \brief Type of the underlying stream.
-        using TStream = BasicStringStream<Byte>;
-
-        /// \brief Type of the underlying input stream.
-        using TInputStream = BasicIStringStream<Byte>;
-
         /// \brief Create an empty reader.
-        MsgpackReader() = default;
+        MsgpackStreamReader() = default;
 
-        /// \brief Create a reader from a string.
-        MsgpackReader(TString stream);
+        /// \brief Create a reader from string.
+        MsgpackStreamReader(TString stream);
 
-        /// \brief Extract a null value.
-        MsgpackReader& operator>>(Null& rhs);
+        /// \brief No copy constructor.
+        MsgpackStreamReader(const MsgpackStreamReader&) = delete;
 
-        /// \brief Extract a boolean value.
-        MsgpackReader& operator>>(Bool& rhs);
+        /// \brief No move constructor.
+        MsgpackStreamReader(MsgpackStreamReader&&) = delete;
 
-        /// \brief Extract an integer value.
-        MsgpackReader& operator>>(Int& rhs);
+        /// \brief No copy-assignment constructor.
+        MsgpackStreamReader& operator=(const MsgpackStreamReader&) = delete;
 
-        /// \brief Extract a floating point value.
-        MsgpackReader& operator>>(Float& rhs);
+        /// \brief No move-assignment constructor.
+        MsgpackStreamReader& operator=(MsgpackStreamReader&&) = delete;
 
-        /// \brief Extract a string.
-        MsgpackReader& operator>>(String& rhs);
+        /// \brief Default destructor.
+        ~MsgpackStreamReader() = default;
 
-        /// \brief Extract a byte-array.
-        MsgpackReader& operator>>(MemoryRange& rhs);
+        /// \brief Peek a single byte from the underlying stream and test it against a format using a mask as per (byte & mask == format).
+        /// Both format and mask are expected to be convertible to Byte, otherwise the behavior of this method is undefined.
+        /// \return If the masked byte matches the provided format returns true, otherwise returns false.
+        template <typename TFormat, typename TMask = Byte>
+        Bool Test(TFormat format, TMask mask = Byte{ 0b11111111 });
 
-        /// \brief Extract an array.
-        template <typename TElement>
-        MsgpackReader& operator>>(Vector<TElement>& rhs);
-
-        /// \brief Extract a map.
-        template <typename TKey, typename TValue>
-        MsgpackReader& operator>>(Map<TKey, TValue>& rhs);
-
-        /// \brief Extract an extension-type value.
-        template <typename TExtension>
-        MsgpackReader& operator>>(TExtension& rhs);
-
-        /// \brief Check whether the fail bit of the underlying stream is set.
-        /// \return Returns true if the fail bit is set, returns false otherwise
-        Bool IsFail() const;
-
-        /// \brief Check whether the last byte in the stream was read.
-        /// \return Returns true if the last byte in the stream was read, returns false otherwise.
-        Bool IsEndOfStream() const;
-
-        /// \brief Clear the status of the stream after a reading error.
-        void Recover();
-
-        /// \brief Get the index of the next byte to read.
-        Int GetReadPosition() const;
-
-    private:
-
-        /// \brief Peek a single byte from the underlying stream and test it with the provided type.
-        /// \return If the peeked byte matches the provided type, consume the byte and returns true, otherwise returns false.
-        Bool Test(MsgpackFormat format);
-
-        /// \brief Peek a single byte from the underlying stream and test it with the provided type using a mask.
-        /// \return If the peeked byte matches the provided type, consume the byte and returns true, otherwise returns false.
-        Bool Test(MsgpackFormat format, MsgpackFormatMask mask);
+        /// \brief Peek a single byte from the underlying stream and test it against a format, eventually consuming the byte.
+        /// Format type is expected to be convertible to Byte, otherwise the behavior of this method is undefined.
+        /// \return If the peeked byte matches the provided format, consume the byte and returns true, otherwise returns false.
+        template <typename TFormat>
+        Bool Consume(TFormat format);
 
         /// \brief Read a packed value from the underlying stream.
-        template <typename TType>
-        TType Unpack(MsgpackFormat format);
+        /// \brief Both format and payload are expected to be convertible to Byte.
+        /// \return Returns the unpacked payload.
+        template <typename TPayload, typename TFormat>
+        TPayload Unpack(TFormat format);
 
         /// \brief Read a value from the underlying stream.
         template <typename TType>
         TType Read();
 
-        /// \brief Read a value from the underlying stream.
-        void Read(const MemoryRange& memory_range);
+        /// \brief Read data from the underlying stream.
+        void ReadRaw(const MemoryRange& data);
+
+        /// \brief Set the underlying string and reset the read count.
+        void FromString(const TString& stream);
+
+        /// \brief Get the total amount of bytes read from the stream.
+        Bytes GetReadCount() const;
+
+    private:
 
         /// \brief Underlying stream.
         TStream stream_;
+
+        /// \brief Number of written bytes.
+        Bytes read_count_;
+
     };
 
     /************************************************************************/
-    /* MSGPACK READER SENTRY                                                */
+    /* MSGPACK READ TRANSACTION                                             */
     /************************************************************************/
 
     /// \brief Sentry object used to rollback the status of the owning stream upon destruction unless dismissed.
@@ -157,13 +143,140 @@ namespace syntropy
     };
 
     /************************************************************************/
+    /* MSGPACK READER                                                       */
+    /************************************************************************/
+
+    /// \brief Reader for data streams encoded via Msgpack specification.
+    /// \author Raffaele D. Facendola - May 2020.
+    /// \see https://github.com/msgpack/msgpack/blob/master/spec.md
+    class MsgpackReader
+    {
+    public:
+
+        /// \brief Type of the underlying string.
+        using TString = MsgpackStreamReader::TString;
+
+        /// \brief Create a reader from a string.
+        MsgpackReader(TString stream);
+
+        /// \brief Extract a null value.
+        MsgpackReader& operator>>(Null& rhs);
+
+        /// \brief Extract a boolean value.
+        MsgpackReader& operator>>(Bool& rhs);
+
+        /// \brief Extract an integer value.
+        MsgpackReader& operator>>(Int& rhs);
+
+        /// \brief Extract a floating point value.
+        MsgpackReader& operator>>(Float& rhs);
+
+        /// \brief Extract a string.
+        MsgpackReader& operator>>(String& rhs);
+
+        /// \brief Extract a byte-array.
+        MsgpackReader& operator>>(MemoryRange& rhs);
+
+        /// \brief Extract an array.
+        template <typename TElement>
+        MsgpackReader& operator>>(Vector<TElement>& rhs);
+
+        /// \brief Extract a map.
+        template <typename TKey, typename TValue>
+        MsgpackReader& operator>>(Map<TKey, TValue>& rhs);
+
+        /// \brief Extract an extension-type value.
+        template <typename TExtension, typename = EnableIfValidExpressionT<IsMsgpackExtension, TExtension>>
+        MsgpackReader& operator>>(TExtension& rhs);
+
+        /// \brief Get the index of the next byte to read.
+        Int GetReadPosition() const;
+
+    private:
+
+        /// \brief Underlying stream reader.
+        MsgpackStreamReader stream_reader_;
+
+    };
+
+
+
+    /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
+
+    // MsgpackStreamReader.
+
+    inline MsgpackStreamReader::MsgpackStreamReader(TString stream)
+        : stream_(std::move(stream))
+    {
+
+    }
+
+    template <typename TFormat, typename TMask>
+    inline Bool MsgpackStreamReader::Test(TFormat format, TMask mask)
+    {
+        return (ToByte(stream_.peek()) & ToByte(mask)) == ToByte(format);
+    }
+
+    template <typename TFormat>
+    inline Bool MsgpackStreamReader::Consume(TFormat format)
+    {
+        if (Test(format))
+        {
+            Read<Byte>();
+            return true;
+        }
+
+        return false;
+    }
+
+    template <typename TPayload, typename TFormat>
+    inline TPayload MsgpackStreamReader::Unpack(TFormat format)
+    {
+        static_assert(sizeof(TPayload) == sizeof(Byte), "Payload type must be 8-bit wide.");
+        static_assert(sizeof(TFormat) == sizeof(Byte), "Format type must be 8-bit wide.");
+
+        auto unpack = Read<Byte>() & ~ToByte(format);
+
+        static_assert(sizeof(unpack) == sizeof(Byte));
+
+        return Memory::BitCast<TPayload>(unpack);
+    }
+
+    template <typename TType>
+    inline TType MsgpackStreamReader::Read()
+    {
+        auto buffer = TType{};
+
+        ReadRaw(MakeMemoryRange(buffer));
+
+        return buffer;
+    }
+
+    inline void MsgpackStreamReader::ReadRaw(const MemoryRange& data)
+    {
+        stream_.read(data.Begin().As<Byte>(), *data.GetSize());
+
+        read_count_ += data.GetSize();
+    }
+
+    inline void MsgpackStreamReader::FromString(const TString& stream)
+    {
+        stream_.str(stream);
+
+        read_count_ = Bytes{ 0 };
+    }
+
+    inline Bytes MsgpackStreamReader::GetReadCount() const
+    {
+        return read_count_;
+    }
 
     // MsgpackReader.
 
     inline MsgpackReader::MsgpackReader(TString stream)
-        : stream_(std::move(stream))
+        : stream_reader_(std::move(stream))
     {
 
     }
@@ -260,16 +373,14 @@ namespace syntropy
         return *this;
     }
 
-    template <typename TExtension>
+    template <typename TExtension, typename>
     MsgpackReader& MsgpackReader::operator>>(TExtension& rhs)
     {
         using namespace Literals;
 
-        using TMsgpackExtensionType = MsgpackExtensionType<TExtension>;
+        using TMsgpackExtension = MsgpackExtension<TExtension>;
 
         auto sentry = MsgpackReaderSentry(stream_);
-
-        // Type format, count and type-id.
 
         auto size = Bytes{};
 
@@ -312,9 +423,9 @@ namespace syntropy
 
         // Payload.
 
-        if (Test(TMsgpackExtensionType::GetType()))
+        if (Test(TMsgpackExtension::GetFormat()))
         {
-            TMsgpackExtensionType::Decode(static_cast<TInputStream&>(stream_), size, rhs);
+            TMsgpackExtension::Decode(static_cast<TInputStream&>(stream_), size, rhs);
 
             sentry.Dismiss();
         }
@@ -340,59 +451,6 @@ namespace syntropy
     inline Int MsgpackReader::GetReadPosition() const
     {
         return static_cast<Int>(stream_.rdbuf()->pubseekoff(0, std::ios::cur, std::ios::in));
-    }
-
-    inline Bool MsgpackReader::Test(MsgpackFormat format)
-    {
-        if (ToByte(stream_.peek()) == ToByte(format))
-        {
-            Read<Fix8>();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    inline Bool MsgpackReader::Test(MsgpackFormat format, MsgpackFormatMask mask)
-    {
-        if ((ToByte(stream_.peek()) & ToByte(mask)) == ToByte(format))
-        {
-            Read<Fix8>();
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    template <typename TType>
-    inline TType MsgpackReader::Unpack(MsgpackFormat format)
-    {
-        static_assert(sizeof(TType) == sizeof(Fix8), "Packed value require an 8-bit type");
-
-        auto byte = Read<Fix8>();
-
-        byte &= ~ToFix8(format);
-
-        return static_cast<TType>(byte);
-    }
-
-    template <typename TType>
-    inline TType MsgpackReader::Read()
-    {
-        auto buffer = TType{};
-
-        stream_.read(reinterpret_cast<Byte*>(&buffer), sizeof(TType));
-
-        return buffer;
-    }
-
-    inline void MsgpackReader::Read(const MemoryRange& rhs)
-    {
-        stream_.read(rhs.Begin().As<Byte>(), *rhs.GetSize());
     }
 
     // MsgpackReadSentry.

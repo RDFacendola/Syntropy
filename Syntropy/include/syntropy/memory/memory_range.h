@@ -46,10 +46,6 @@ namespace syntropy
     ConstMemoryRange MakeConstMemoryRange(TIterator begin, Bytes size);
 
     /// \brief Create a memory range containing the provided object.
-    template <typename TCollection>
-    MemoryRange MakeMemoryRange(TCollection& data) noexcept;
-
-    /// \brief Create a memory range containing the provided object.
     template <typename TType>
     MemoryRange MakeMemoryRange(TType& data) noexcept;
 
