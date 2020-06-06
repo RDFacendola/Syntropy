@@ -10,6 +10,8 @@
 #include <type_traits>
 
 #include "syntropy/core/types.h"
+#include "syntropy/math/math.h"
+#include "syntropy/diagnostics/assert.h"
 #include "syntropy/language/utility.h"
 
 namespace syntropy
@@ -182,6 +184,16 @@ namespace syntropy
     template <typename TContainer>
     auto MakeConstRange(const TContainer& container);
 
+    /// \brief Get the intersection of two ranges.
+    /// \return If the two ranges do not overlap returns the empty range, otherwise return the range which is common to both lhs and rhs.
+    template <typename TIterator>
+    Range<TIterator> Intersection(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
+
+    /// \brief Get the union of two ranges.
+    /// \return If a range is completely contained in the other, returns the larger range, otherwise return the range which encloses both lhs and rhs.
+    template <typename TIterator>
+    Range<TIterator> Union(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
+
     /// \brief Stream insertion for a range of elements.
     template <typename TIterator>
     std::ostream& operator<<(std::ostream& out, const Range<TIterator>& range);
@@ -197,7 +209,7 @@ namespace syntropy
         : begin_(begin)
         , end_(end)
     {
-    
+        SYNTROPY_ASSERT(begin_ <= end_);
     }
 
     template <typename TIterator>
@@ -313,7 +325,9 @@ namespace syntropy
     template <typename TIterator>
     inline Range<TIterator>& Range<TIterator>::PopFront(TDistance elements) &&
     {
-        return { begin_ + elements, end_ };
+        begin_ += elements;
+
+        return *this;
     }
 
     template <typename TIterator>
@@ -331,7 +345,7 @@ namespace syntropy
     template <typename TIterator>
     inline Bool Range<TIterator>::Contains(const Range& rhs) const
     {
-        return (begin_ <= rhs.Begin()) && (rhs.End() <= end_);
+        return (Union(*this, rhs) == *this);
     }
 
     template <typename TIterator>
@@ -343,7 +357,7 @@ namespace syntropy
     template <typename TIterator>
     inline Bool Range<TIterator>::Overlaps(const Range& rhs) const
     {
-        return (rhs.Begin() < end_) && (rhs.End() > begin_);
+        return (Intersection(*this, rhs).GetSize() > TDistance{ 0 });
     }
 
     // Non-member functions.
@@ -409,6 +423,29 @@ namespace syntropy
         using std::cend;
 
         return MakeRange(cbegin(container), cend(container));
+    }
+
+    template <typename TIterator>
+    inline Range<TIterator> Intersection(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
+    {
+        auto begin = Math::Max(lhs.Begin(), rhs.Begin());
+        auto end = Math::Min(lhs.End(), rhs.End());
+
+        if (begin <= end)
+        {
+            return { begin, end };
+        }
+
+        return {};
+    }
+
+    template <typename TIterator>
+    inline Range<TIterator> Union(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
+    {
+        auto begin = Math::Min(lhs.Begin(), rhs.Begin());
+        auto end = Math::Max(lhs.End(), rhs.End());
+
+        return { begin, end };
     }
 
     template <typename TIterator>
