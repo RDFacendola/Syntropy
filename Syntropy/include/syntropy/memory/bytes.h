@@ -90,6 +90,34 @@ namespace syntropy
     };
 
     /************************************************************************/
+    /* LITERALS                                                             */
+    /************************************************************************/
+
+    /// \brief Exposes memory unit literals.
+    namespace Literals
+    {
+        /// \brief User-defined literal used to convert a number from Bytes to Bytes.
+        /// \param number Number to convert.
+        constexpr Bytes operator "" _Bytes(std::size_t lhs);
+
+        /// \brief User-defined literal used to convert a number from KibiBytes to Bytes.
+        /// \param number Number to convert.
+        constexpr Bytes operator "" _KiBytes(std::size_t lhs);
+
+        /// \brief User-defined literal used to convert a number from MebiBytes to Bytes.
+        /// \param number Number to convert.
+        constexpr Bytes operator "" _MiBytes(std::size_t lhs);
+
+        /// \brief User-defined literal used to convert a number from GibiBytes to Bytes.
+        /// \param number Number to convert.
+        constexpr Bytes operator "" _GiBytes(std::size_t lhs);
+
+        /// \brief User-defined literal used to convert a number from TebiBytes to Bytes.
+        /// \param number Number to convert.
+        constexpr Bytes operator "" _TiBytes(std::size_t lhs);
+    }
+
+    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
@@ -200,30 +228,6 @@ namespace syntropy
     /// \brief Stream insertion for Bytes.
     std::ostream& operator<<(std::ostream& lhs, const Bytes& rhs);
 
-    /// \brief Exposes memory unit literals.
-    namespace Literals
-    {
-        /// \brief User-defined literal used to convert a number from Bytes to Bytes.
-        /// \param number Number to convert.
-        constexpr Bytes operator "" _Bytes(std::size_t lhs);
-
-        /// \brief User-defined literal used to convert a number from KibiBytes to Bytes.
-        /// \param number Number to convert.
-        constexpr Bytes operator "" _KiBytes(std::size_t lhs);
-
-        /// \brief User-defined literal used to convert a number from MebiBytes to Bytes.
-        /// \param number Number to convert.
-        constexpr Bytes operator "" _MiBytes(std::size_t lhs);
-
-        /// \brief User-defined literal used to convert a number from GibiBytes to Bytes.
-        /// \param number Number to convert.
-        constexpr Bytes operator "" _GiBytes(std::size_t lhs);
-
-        /// \brief User-defined literal used to convert a number from TebiBytes to Bytes.
-        /// \param number Number to convert.
-        constexpr Bytes operator "" _TiBytes(std::size_t lhs);
-    }
-
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -304,6 +308,33 @@ namespace syntropy
     {
         bytes_ ^= rhs.bytes_;
         return *this;
+    }
+
+    // Literals.
+
+    constexpr Bytes Literals::operator "" _Bytes(std::size_t lhs)
+    {
+        return Bytes(lhs);
+    }
+
+    constexpr Bytes Literals::operator "" _KiBytes(std::size_t lhs)
+    {
+        return Bytes(lhs * 0x400ull);
+    }
+
+    constexpr Bytes Literals::operator "" _MiBytes(std::size_t lhs)
+    {
+        return Bytes(lhs * 0x400ull * 0x400ull);
+    }
+
+    constexpr Bytes Literals::operator "" _GiBytes(std::size_t lhs)
+    {
+        return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull);
+    }
+
+    constexpr Bytes Literals::operator "" _TiBytes(std::size_t lhs)
+    {
+        return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull * 0x400ull);
     }
 
     // Non-member functions.
@@ -461,34 +492,6 @@ namespace syntropy
     constexpr Bytes BytesOf()
     {
         return Bytes(sizeof(TType));
-    }
-
-    namespace Literals
-    {
-        constexpr Bytes operator "" _Bytes(std::size_t lhs)
-        {
-            return Bytes(lhs);
-        }
-
-        constexpr Bytes operator "" _KiBytes(std::size_t lhs)
-        {
-            return Bytes(lhs * 0x400ull);
-        }
-
-        constexpr Bytes operator "" _MiBytes(std::size_t lhs)
-        {
-            return Bytes(lhs * 0x400ull * 0x400ull);
-        }
-
-        constexpr Bytes operator "" _GiBytes(std::size_t lhs)
-        {
-            return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull);
-        }
-
-        constexpr Bytes operator "" _TiBytes(std::size_t lhs)
-        {
-            return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull * 0x400ull);
-        }
     }
 
 }
