@@ -125,9 +125,11 @@ namespace syntropy
         Range& PopBack(TDistance elements) &&;
 
         /// \brief Check whether a range is contained entirely inside this range.
+        /// #DEPRECATED Use non-member function Contains.
         Bool Contains(const Range& rhs) const;
 
         /// \brief Check whether an iterator falls within this range.
+        /// #DEPRECATED Use non-member function Contains.
         Bool Contains(const TIterator& rhs) const;
 
     private:
@@ -189,6 +191,21 @@ namespace syntropy
     /// \return If a range is completely contained in the other, returns the larger range, otherwise return the range which encloses both lhs and rhs.
     template <typename TIterator>
     Range<TIterator> Union(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
+
+    /// \brief Check whether a range is contained entirely in another range.
+    /// \return Returns true if rhs is contained in lhs, returns false otherwise.
+    template <typename TIterator>
+    Bool Contains(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
+
+    /// \brief Check whether an iterator is contained in another range.
+/// \return Returns true if rhs is contained in lhs, returns false otherwise.
+    template <typename TIterator>
+    Bool Contains(const Range<TIterator>& lhs, const TIterator& rhs);
+
+    /// \brief Check whether a range overlaps another range.
+    /// \return Returns true if the intersection of both lhs and rhs is non-empty.
+    template <typename TIterator>
+    Bool Overlaps(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
 
     /// \brief Stream insertion for a range of elements.
     template <typename TIterator>
@@ -436,6 +453,24 @@ namespace syntropy
         auto end = Math::Max(lhs.End(), rhs.End());
 
         return { begin, end };
+    }
+
+    template <typename TIterator>
+    inline Bool Contains(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
+    {
+        return Intersection(lhs, rhs) == rhs;
+    }
+
+    template <typename TIterator>
+    inline Bool Contains(const Range<TIterator>& lhs, const TIterator& rhs)
+    {
+        return (lhs.Begin() <= rhs) && (rhs < lhs.End());
+    }
+
+    template <typename TIterator>
+    inline Bool Overlaps(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
+    {
+        return !!Intersection(lhs, rhs);
     }
 
     template <typename TIterator>
