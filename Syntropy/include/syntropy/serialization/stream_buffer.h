@@ -119,7 +119,7 @@ namespace syntropy
         /// Exceeding the current buffer size causes reallocation: content is preserved.
         MemoryBuffer buffer_;
 
-        /// \brief String size.
+        /// \brief Stream size.
         Bytes size_;
 
         /// \brief Index of the first element in the circular buffer.
