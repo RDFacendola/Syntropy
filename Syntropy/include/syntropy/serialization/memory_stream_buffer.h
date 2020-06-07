@@ -19,33 +19,33 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* STREAM BUFFER                                                        */
+    /* MEMORY STREAM BUFFER                                                 */
     /************************************************************************/
 
     /// \brief Represents a raw stream of bytes.
     /// Stream buffer supports both FIFO and random I\O operations.
     /// \author Raffaele D. Facendola - June 2020
-    class StreamBuffer
+    class MemoryStreamBuffer
     {
     public:
 
         /// \brief Create a new empty stream.
-        StreamBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource());
+        MemoryStreamBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Default copy constructor.
-        StreamBuffer(const StreamBuffer& other) = default;
+        MemoryStreamBuffer(const MemoryStreamBuffer& other) = default;
 
         /// \brief Default move constructor.
-        StreamBuffer(StreamBuffer&& other) = default;
+        MemoryStreamBuffer(MemoryStreamBuffer&& other) = default;
 
         /// \brief Default copy-assignment operator.
-        StreamBuffer& operator=(const StreamBuffer& other) = default;
+        MemoryStreamBuffer& operator=(const MemoryStreamBuffer& other) = default;
 
         /// \brief Default move-assignment operator.
-        StreamBuffer& operator=(StreamBuffer&& other) = default;
+        MemoryStreamBuffer& operator=(MemoryStreamBuffer&& other) = default;
 
         /// \brief Default destructor.
-        ~StreamBuffer() = default;
+        ~MemoryStreamBuffer() = default;
 
         /// \brief Write data sequentially to the stream, causing it to grow.
         /// \return Returns the range containing unwritten data.
@@ -91,7 +91,7 @@ namespace syntropy
 
         /// \brief Swap the content of this stream with another one.
         /// \remarks This method swaps underlying memory resources as well.
-        void Swap(StreamBuffer& other) noexcept;
+        void Swap(MemoryStreamBuffer& other) noexcept;
 
     private:
 
@@ -131,22 +131,22 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Swaps two byte string.
-    void swap(StreamBuffer& lhs, StreamBuffer& rhs);
+    /// \brief Swaps two memory stream buffer.
+    void swap(MemoryStreamBuffer& lhs, MemoryStreamBuffer& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // StreamBuffer.
+    // MemoryStreamBuffer.
 
-    inline StreamBuffer::StreamBuffer(MemoryResource& memory_resource)
+    inline MemoryStreamBuffer::MemoryStreamBuffer(MemoryResource& memory_resource)
         : buffer_(memory_resource)
     {
 
     }
 
-    inline ConstMemoryRange StreamBuffer::WriteSequential(const ConstMemoryRange& data)
+    inline ConstMemoryRange MemoryStreamBuffer::WriteSequential(const ConstMemoryRange& data)
     {
         auto write_position = size_;
 
@@ -157,7 +157,7 @@ namespace syntropy
         return WriteRandom(write_position, data);                                           // Returned range is expected to be empty.
     }
 
-    inline MemoryRange StreamBuffer::ReadSequential(const MemoryRange& data)
+    inline MemoryRange MemoryStreamBuffer::ReadSequential(const MemoryRange& data)
     {
         auto range = ReadRandom(Bytes{ 0 }, data);                                          // Read from the buffer begin, wrapping around.
 
@@ -168,7 +168,7 @@ namespace syntropy
         return range;
     }
 
-    inline ConstMemoryRange StreamBuffer::WriteRandom(Bytes position, const ConstMemoryRange& data)
+    inline ConstMemoryRange MemoryStreamBuffer::WriteRandom(Bytes position, const ConstMemoryRange& data)
     {
         auto write_position = GetBufferPosition(position);
 
@@ -179,7 +179,7 @@ namespace syntropy
         return { source.End(), data.End() };
     }
 
-    inline MemoryRange StreamBuffer::ReadRandom(Bytes position, const MemoryRange& data)
+    inline MemoryRange MemoryStreamBuffer::ReadRandom(Bytes position, const MemoryRange& data)
     {
         auto read_position = GetBufferPosition(position);
 
@@ -190,14 +190,14 @@ namespace syntropy
         return { data.Begin(), bytes };
     }
 
-    inline void StreamBuffer::Discard()
+    inline void MemoryStreamBuffer::Discard()
     {
         Memory::Zero(buffer_.GetData());
 
         start_position_ = Bytes{ 0 };
     }
 
-    inline void StreamBuffer::Reserve(Bytes capacity)
+    inline void MemoryStreamBuffer::Reserve(Bytes capacity)
     {
         if (capacity > GetCapacity())
         {
@@ -205,7 +205,7 @@ namespace syntropy
         }
     }
 
-    inline void StreamBuffer::Shrink()
+    inline void MemoryStreamBuffer::Shrink()
     {
         if (size_ < GetCapacity())
         {
@@ -213,27 +213,27 @@ namespace syntropy
         }
     }
 
-    inline Bool StreamBuffer::IsEmpty() const
+    inline Bool MemoryStreamBuffer::IsEmpty() const
     {
         return size_ == Bytes{ 0 };
     }
 
-    inline Bytes StreamBuffer::GetSize() const
+    inline Bytes MemoryStreamBuffer::GetSize() const
     {
         return size_;
     }
 
-    inline Bytes StreamBuffer::GetCapacity() const
+    inline Bytes MemoryStreamBuffer::GetCapacity() const
     {
         return buffer_.GetSize();
     }
 
-    inline MemoryResource& StreamBuffer::GetMemoryResource() const
+    inline MemoryResource& MemoryStreamBuffer::GetMemoryResource() const
     {
         return buffer_.GetMemoryResource();
     }
 
-    inline void StreamBuffer::Swap(StreamBuffer& other) noexcept
+    inline void MemoryStreamBuffer::Swap(MemoryStreamBuffer& other) noexcept
     {
         using std::swap;
 
@@ -242,7 +242,7 @@ namespace syntropy
         swap(start_position_, other.start_position_);
     }
 
-    inline void StreamBuffer::Grow(Bytes capacity)
+    inline void MemoryStreamBuffer::Grow(Bytes capacity)
     {
         if (capacity > GetCapacity())
         {
@@ -252,12 +252,12 @@ namespace syntropy
         }
     }
 
-    inline Bytes StreamBuffer::GetBufferPosition(Bytes position) const
+    inline Bytes MemoryStreamBuffer::GetBufferPosition(Bytes position) const
     {
         return Bytes{ (start_position_ + position) % GetCapacity() };
     }
 
-    inline void StreamBuffer::Realloc(Bytes capacity)
+    inline void MemoryStreamBuffer::Realloc(Bytes capacity)
     {
         SYNTROPY_ASSERT(capacity > size_);
 
@@ -272,7 +272,7 @@ namespace syntropy
 
     // Non-member functions.
 
-    inline void swap(StreamBuffer& lhs, StreamBuffer& rhs)
+    inline void swap(MemoryStreamBuffer& lhs, MemoryStreamBuffer& rhs)
     {
         lhs.Swap(rhs);
     }
