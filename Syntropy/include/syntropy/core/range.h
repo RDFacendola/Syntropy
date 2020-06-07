@@ -207,6 +207,11 @@ namespace syntropy
     template <typename TIterator>
     Bool Overlaps(const Range<TIterator>& lhs, const Range<TIterator>& rhs);
 
+    /// \brief Truncate a range size up to a given upper bound.
+    /// \return Returns a range which is equal to lhs but with size is limited up to upper_bound.
+    template <typename TIterator>
+    Range<TIterator> UpperBound(const Range<TIterator>& lhs, const typename Range<TIterator>::TDistance& upper_bound);
+
     /// \brief Stream insertion for a range of elements.
     template <typename TIterator>
     std::ostream& operator<<(std::ostream& out, const Range<TIterator>& range);
@@ -471,6 +476,14 @@ namespace syntropy
     inline Bool Overlaps(const Range<TIterator>& lhs, const Range<TIterator>& rhs)
     {
         return !!Intersection(lhs, rhs);
+    }
+
+    template <typename TIterator>
+    inline Range<TIterator> UpperBound(const Range<TIterator>& lhs, const typename Range<TIterator>::TDistance& upper_bound)
+    {
+        auto range_size = Math::Min(lhs.GetSize(), upper_bound);
+
+        return Range<TIterator>{ lhs.Begin(), range_size };
     }
 
     template <typename TIterator>
