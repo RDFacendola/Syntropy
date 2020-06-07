@@ -97,6 +97,7 @@
     <ClInclude Include="include\syntropy\platform\intrinsics.h" />
     <ClInclude Include="include\syntropy\platform\system.h" />
     <ClInclude Include="include\syntropy\platform\threading.h" />
+    <ClInclude Include="include\syntropy\serialization\stream_writer.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
     <ClInclude Include="include\syntropy\time\date.h" />
     <ClInclude Include="include\syntropy\time\time_of_day.h" />
