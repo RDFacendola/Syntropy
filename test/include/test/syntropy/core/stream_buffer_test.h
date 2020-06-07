@@ -9,8 +9,8 @@
 
 #include "syntropy/serialization/memory_stream_buffer.h"
 
-#include "syntropy/serialization/output_stream_buffer.h"
-#include "syntropy/serialization/input_stream_buffer.h"
+#include "syntropy/serialization/output_stream.h"
+#include "syntropy/serialization/input_stream.h"
 
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/auto_test_suite.h"
@@ -49,11 +49,11 @@ namespace syntropy::unit_test
 
         auto stream = MemoryStreamBuffer{};
 
-        auto osbb = OutputStreamBufferT<MemoryStreamBuffer>(stream);
-        auto isbb = InputStreamBufferT<MemoryStreamBuffer>(stream);
+        auto osbb = MakeOutputStream<MemoryStreamBuffer>(stream);
+        auto isbb = MakeInputStream<MemoryStreamBuffer>(stream);
         
-        OutputStreamBuffer& osb = osbb;
-        InputStreamBuffer& isb = isbb;
+        OutputStream& osb = osbb;
+        InputStream& isb = isbb;
 
         Int ar = 5;
         Float br = 42.01f;
