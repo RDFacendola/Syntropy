@@ -98,7 +98,9 @@ namespace syntropy
         }
         else
         {
-            return std::min(element, Min(std::forward<TType>(elements...)));
+            using std::min;
+
+            return min(element, Min(std::forward<TTypes>(elements)...));
         }
     }
 
@@ -111,7 +113,9 @@ namespace syntropy
         }
         else
         {
-            return std::max(element, Max(std::forward<TType>(elements...)));
+            using std::max;
+
+            return max(element, Max(std::forward<TTypes>(elements)...));
         }
     }
 
