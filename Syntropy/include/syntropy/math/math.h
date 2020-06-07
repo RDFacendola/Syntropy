@@ -36,6 +36,14 @@ namespace syntropy
         template <typename TNumber>
         constexpr TNumber Floor(TNumber rhs);
 
+        /// \brief Get the smallest integral number greater than or equal to rhs and convert the result.
+        template <typename TNumber, typename UNumber>
+        constexpr TNumber CeilTo(UNumber rhs);
+
+        /// \brief Get the largest integral number smaller than or equal to rhs and convert the result.
+        template <typename TNumber, typename UNumber>
+        constexpr TNumber FloorTo(UNumber rhs);
+
         /// \brief Ceil a number to a multiple of another value.
         /// \return Returns the first number equal or greater than number which is multiple of multiple.
         template <typename TNumber>
@@ -108,7 +116,7 @@ namespace syntropy
     }
 
     template <typename TNumber>
-    constexpr TNumber Ceil(TNumber rhs)
+    constexpr TNumber Math::Ceil(TNumber rhs)
     {
         return std::ceil(rhs);
     }
@@ -129,6 +137,18 @@ namespace syntropy
     constexpr TNumber Math::Floor(TNumber rhs, TNumber multiple)
     {
         return DivFloor(rhs, multiple) * multiple;
+    }
+
+    template <typename TNumber, typename UNumber>
+    constexpr TNumber Math::CeilTo(UNumber rhs)
+    {
+        return static_cast<TNumber>(Ceil(rhs));
+    }
+
+    template <typename TNumber, typename UNumber>
+    constexpr TNumber Math::FloorTo(UNumber rhs)
+    {
+        return static_cast<TNumber>(Floor(rhs));
     }
 
     template <typename TNumber>
