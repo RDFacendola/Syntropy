@@ -29,6 +29,14 @@ namespace syntropy
         /// \return Returns the bytes copied as a result of this call.
         Bytes Copy(const MemoryRange& destination, const ConstMemoryRange& source);
 
+        /// \brief Copy a circular source memory region to a linear destination memory region, unfolding the content. Neither range is exceeded.
+        /// \return Returns the bytes copied as a result of this call.
+        Bytes CopyUnfold(const MemoryRange& destination, const ConstMemoryRange& source, Bytes source_offset);
+
+        /// \brief Copy a source memory region to a circular destination memory region, folding the content. Neither range is exceeded.
+        /// \return Returns the bytes copied as a result of this call.
+        Bytes CopyFold(const MemoryRange& destination, const ConstMemoryRange& source, Bytes destination_offset);
+
         /// \brief Set a value to each byte in a destination range.
         void Set(const MemoryRange& destination, Byte value);
 

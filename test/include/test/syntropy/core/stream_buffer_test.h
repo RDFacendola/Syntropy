@@ -45,19 +45,30 @@ namespace syntropy::unit_test
 
         auto stream = StreamBuffer{};
 
-        Int five = 5;
-        Int fortytwo = 42;
+        Int ar = 5;
+        Float br = 42.01f;
+        Int cr = 1000;
+        Float dr = 1000.87f;
 
-        Int fiver = 1000;
-        Int fortytwor = 1000;
+        Int aw = 0;
+        Float bw = 0.0f;
+        Int cw = 0;
+        Float dw = 0.0f;
 
-        stream.Append(MakeConstMemoryRange(five));
-        stream.Append(MakeConstMemoryRange(fortytwo));
+        stream.WriteSequential(MakeConstMemoryRange(ar));
+        stream.WriteSequential(MakeConstMemoryRange(br));
 
-        stream.Read(0, MakeMemoryRange(fiver));
-        stream.Read(108, MakeMemoryRange(fortytwor));
+        stream.ReadSequential(MakeMemoryRange(aw));
+        stream.ReadSequential(MakeMemoryRange(bw));
 
-        auto c = stream.GetCapacity();
+        stream.WriteSequential(MakeConstMemoryRange(cr));
+        stream.WriteSequential(MakeConstMemoryRange(dr));
+
+        stream.ReadSequential(MakeMemoryRange(cw));
+        stream.ReadSequential(MakeMemoryRange(dw));
+
+        auto size = stream.GetSize();
+
 
     }
 

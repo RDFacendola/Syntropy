@@ -119,7 +119,6 @@
     <ClCompile Include="src\syntropy\allocators\linear_virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
-    <ClCompile Include="src\syntropy\core\stream_buffer.cpp" />
     <ClCompile Include="src\syntropy\core\context.cpp" />
     <ClCompile Include="src\syntropy\core\label.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />

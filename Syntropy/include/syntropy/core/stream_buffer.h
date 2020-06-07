@@ -8,11 +8,13 @@
 
 #include "syntropy/language/utility.h"
 #include "syntropy/core/types.h"
+#include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/memory_buffer.h"
 #include "syntropy/allocators/memory_resource.h"
 #include "syntropy/math/constants.h"
+#include "syntropy/math/math.h"
 
 namespace syntropy
 {
@@ -21,6 +23,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents a raw stream of bytes.
+    /// Stream buffer supports FIFO and random I\O operations.
     /// \author Raffaele D. Facendola - June 2020
     class StreamBuffer
     {
@@ -44,60 +47,49 @@ namespace syntropy
         /// \brief Default destructor.
         ~StreamBuffer() = default;
 
-        /// \brief Access a byte on the underlying buffer.
-        Byte& operator[](Int index);
+        /// \brief Write data sequentially to the stream, causing it to grow.
+        /// \return Returns the range containing unwritten data.
+        ConstMemoryRange WriteSequential(const ConstMemoryRange& data);
 
-        /// \brief Access a byte on the underlying buffer.
-        const Byte& operator[](Int index) const;
+        /// \brief Read data sequentially from the stream, causing it to shrink.
+        /// \return Returns the range containing read data.
+        MemoryRange ReadSequential(const MemoryRange& data);
 
-        /// \brief Append data at the end of the stream.
-        void Append(const ConstMemoryRange& data);
+        /// \brief Write data at given position from buffer start.
+        /// Writes past the end of the stream are no-ops. This method does not change stream allocation.
+        /// \return Returns the range containing unwritten data.
+        ConstMemoryRange WriteRandom(Bytes position, const ConstMemoryRange& data);
 
-        /// \brief Write data at given position.
-        /// Writing past the end of the buffer causes the underlying stream to grow. Bytes not being written to are zero-filled.
-        /// Additional bytes that are not copied over are zero-initialized.
-        void Write(Int position, const ConstMemoryRange& data);
+        /// \brief Read data at given position from buffer start.
+        /// Reads past the end of the stream are no-ops. This method does not change stream allocation.
+        /// \return Returns the range containing read data.
+        MemoryRange ReadRandom(Bytes position, const MemoryRange& data);
 
-        /// \brief Read data at given position.
-        /// Reading past the end of the buffer behave as if the underlying buffer continued with a sequence of bytes equal to zero.
-        /// \return Returns the range containing read data. This range is expected to be contained inside the provided range.
-        MemoryRange Read(Int position, const MemoryRange& data);
+        /// \brief Flush the underlying buffer, discarding its content.
+        void Flush();
 
-        /// \brief Clear the byte string.
-        void Clear();
-
-        /// \brief Resize the byte string up to an exact given size.
-        /// Eventual additional memory is zero-initialized.
-        void Resize(Bytes size);
-
-        /// \brief Change the underlying allocation size.
-        /// If a capacity lower than the current amount causes this method to behave as no-op.
+        /// \brief Increase the underlying buffer allocation size.
+        /// This method preserve the buffer content, therefore it behaves as no-op if the specified capacity is lower than the current one.
+        /// This method may cause buffer reallocation.
         void Reserve(Bytes capacity);
 
-        /// \brief Shrink the allocation size up to the current string size.
+        /// \brief Shrink the allocation size up to the current buffer size.
+        /// This method preserve the buffer content and may reallocate the underlying buffer.
         void Shrink();
 
-        /// \brief Check whether the string is empty.
+        /// \brief Check whether the underlying buffer is empty.
         Bool IsEmpty() const;
 
-        /// \brief Get the underlying data range.
-        MemoryRange GetData();
-
-        /// \brief Get the underlying const data range.
-        ConstMemoryRange GetData() const;
-
-        /// \brief Get the size of the string, in bytes.
-        /// \return Returns the size of the string, in bytes.
+        /// \brief Get the stream content size, in bytes.
         Bytes GetSize() const;
 
-        /// \brief Get the effective memory footprint of the string, in bytes.
-        /// \return Returns the effective memory footprint of the string, in bytes.
+        /// \brief Get the effective memory footprint of the underlying buffer, in bytes.
         Bytes GetCapacity() const;
 
-        /// \brief Access the memory resource this string is allocated on.
+        /// \brief Access the memory resource the underlying buffer is allocated on.
         MemoryResource& GetMemoryResource() const;
 
-        /// \brief Swap the content of this string with another one.
+        /// \brief Swap the content of this stream with another one.
         /// \remarks This method swaps underlying memory resources as well.
         void Swap(StreamBuffer& other) noexcept;
 
@@ -109,15 +101,29 @@ namespace syntropy
         /// \brief Growth bias added to each reallocation.
         static constexpr auto kGrowthBias = Int{ 8 };
 
-        /// \brief Reallocate the underlying buffer. Additional bytes allocated by this method are zero-initialized.
-        /// This method affects only buffer capacity, not size.
-        void Realloc(Bytes size);
+        /// \brief Increase the underlying buffer allocation size.
+        /// This method preserve the buffer content, therefore it behaves as no-op if the specified capacity is lower than the current one.
+        /// This method over-allocates to reduce frequent reallocations.
+        void Grow(Bytes capacity);
 
-        /// \brief Underlying memory buffer. May be larger than actual size.
+        /// \brief Get the physical position inside the underlying buffer.
+        Bytes GetBufferPosition(Bytes position) const;
+
+        /// \brief Reallocate the underlying buffer, filling additional bytes with zeros.
+        /// This method affects only buffer capacity, not stream size.
+        /// This method unfolds the previous circular content into the new buffer.
+        void Realloc(Bytes capacity);
+
+        /// \brief Underlying memory buffer, may be larger than current stream size.
+        /// This buffer is circular to prevent reallocations from sequential reads.
+        /// Exceeding the current buffer size causes reallocation: content is preserved.
         MemoryBuffer buffer_;
 
         /// \brief String size.
         Bytes size_;
+
+        /// \brief Index of the first element in the circular buffer.
+        Bytes start_position_;
 
     };
 
@@ -132,7 +138,7 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // ByteString.
+    // StreamBuffer.
 
     inline StreamBuffer::StreamBuffer(MemoryResource& memory_resource)
         : buffer_(memory_resource)
@@ -140,34 +146,55 @@ namespace syntropy
 
     }
 
-    inline Byte& StreamBuffer::operator[](Int index)
+    inline ConstMemoryRange StreamBuffer::WriteSequential(const ConstMemoryRange& data)
     {
-        return const_cast<Byte&>(AsConst(*this)[index]);
+        auto write_position = size_;
+
+        size_ += data.GetSize();                                                            // Size after writing additional data.
+
+        Grow(size_);                                                                        // Allocate space to fit new data, if necessary.
+
+        return WriteRandom(write_position, data);                                           // Returned range is expected to be empty.
     }
 
-    inline const Byte& StreamBuffer::operator[](Int index) const
+    inline MemoryRange StreamBuffer::ReadSequential(const MemoryRange& data)
     {
-        auto byte_address = ConstMemoryAddress{ buffer_.GetData()[ToBytes(index)] };     // operator[] resolves the MemoryAddress to a Int pointer type.
+        auto range = ReadRandom(Bytes{ 0 }, data);                                          // Read from the buffer begin, wrapping around.
 
-        return *byte_address.As<Byte>();
+        start_position_ = GetBufferPosition(range.GetSize());                               // Consume read data and move the start forward, wrapping around.
+
+        size_ -= range.GetSize();
+
+        return range;
     }
 
-    inline void StreamBuffer::Append(const ConstMemoryRange& data)
+    inline ConstMemoryRange StreamBuffer::WriteRandom(Bytes position, const ConstMemoryRange& data)
     {
-        Write(*size_, data);
+        auto write_position = GetBufferPosition(position);
+
+        auto source = UpperBound(data, size_);
+
+        auto bytes = Memory::CopyFold(buffer_.GetData(), source, write_position);
+
+        return { source.End(), data.End() };
     }
 
-    inline void StreamBuffer::Clear()
+    inline MemoryRange StreamBuffer::ReadRandom(Bytes position, const MemoryRange& data)
     {
-        using namespace Literals;
+        auto read_position = GetBufferPosition(position);
 
-        size_ = 0_Bytes;
+        auto destination = UpperBound(data, size_);
+
+        auto bytes = Memory::CopyUnfold(destination, buffer_.GetConstData(), read_position);
+
+        return { data.Begin(), bytes };
     }
 
-    inline void StreamBuffer::Resize(Bytes size)
+    inline void StreamBuffer::Flush()
     {
-        Realloc(size);
-        size_ = size;
+        Memory::Zero(buffer_.GetData());
+
+        start_position_ = Bytes{ 0 };
     }
 
     inline void StreamBuffer::Reserve(Bytes capacity)
@@ -180,7 +207,7 @@ namespace syntropy
 
     inline void StreamBuffer::Shrink()
     {
-        if (GetCapacity() > size_)
+        if (size_ < GetCapacity())
         {
             Realloc(size_);
         }
@@ -188,19 +215,7 @@ namespace syntropy
 
     inline Bool StreamBuffer::IsEmpty() const
     {
-        using namespace Literals;
-
-        return size_ == 0_Bytes;
-    }
-
-    inline MemoryRange StreamBuffer::GetData()
-    {
-        return { buffer_.GetData().Begin(), size_ };    // Shall not exceed string size.
-    }
-
-    inline ConstMemoryRange StreamBuffer::GetData() const
-    {
-        return { buffer_.GetData().Begin(), size_ };    // Shall not exceed string size.
+        return size_ == Bytes{ 0 };
     }
 
     inline Bytes StreamBuffer::GetSize() const
@@ -224,8 +239,37 @@ namespace syntropy
 
         swap(buffer_, other.buffer_);
         swap(size_, other.size_);
-
     }
+
+    inline void StreamBuffer::Grow(Bytes capacity)
+    {
+        if (capacity > GetCapacity())
+        {
+            capacity = ToBytes(Math::CeilTo<Int>((*capacity) * kGrowthFactor + kGrowthBias));
+
+            Realloc(capacity);
+        }
+    }
+
+    inline Bytes StreamBuffer::GetBufferPosition(Bytes position) const
+    {
+        return Bytes{ (start_position_ + position) % GetCapacity() };
+    }
+
+    inline void StreamBuffer::Realloc(Bytes capacity)
+    {
+        SYNTROPY_ASSERT(capacity > size_);
+
+        auto buffer = MemoryBuffer{ capacity, buffer_.GetMemoryResource() };
+
+        Memory::CopyUnfold(buffer.GetData(), buffer_.GetConstData(), start_position_);
+
+        buffer_.Swap(buffer);
+
+        start_position_ = Bytes{ 0 };
+    }
+
+    // Non-member functions.
 
     inline void swap(StreamBuffer& lhs, StreamBuffer& rhs)
     {

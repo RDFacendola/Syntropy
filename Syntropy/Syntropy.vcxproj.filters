@@ -132,6 +132,5 @@
     <ClCompile Include="src\syntropy\language\listener.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\log_event_formatter.cpp" />
     <ClCompile Include="src\syntropy\memory\memory.cpp" />
-    <ClCompile Include="src\syntropy\core\stream_buffer.cpp" />
   </ItemGroup>
 </Project>
