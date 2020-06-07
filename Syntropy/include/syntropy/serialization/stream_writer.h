@@ -16,7 +16,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Exposes methods to sequentially write structured data to an output stream.
-    /// \tparam Type of an encoder used to encode data before writing them to the output stream.
+    /// \tparam TEncoder Type of an encoder used to encode data before writing them to the output stream.
     /// \author Raffaele D. Facendola - June 2020.
     template <template <typename> typename TEncoder>
     class StreamWriterT

@@ -16,7 +16,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Exposes methods to sequentially read structured data from an input stream.
-    /// \tparam Type of a decoder used to decode data after being read from the input stream.
+    /// \tparam TDecoder Type of a decoder used to decode data after being read from the input stream.
     /// \author Raffaele D. Facendola - June 2020.
     template <template <typename> typename TDecoder>
     class StreamReaderT
