@@ -40,11 +40,9 @@ namespace syntropy
         /// If the underlying buffer doesn't support this operation, this method behaves as no-op.
         virtual void Shrink() = 0;
 
-        /// \brief Check whether the underlying buffer is empty.
-        virtual Bool IsEmpty() const = 0;
-
-        /// \brief Get the stream content size, in bytes.
-        virtual Bytes GetSize() const = 0;
+        /// \brief Discard buffer content.
+        /// If the underlying buffer doesn't support this operation, this method behaves as no-op.
+        virtual void Discard() = 0;
 
     };
 
@@ -84,9 +82,7 @@ namespace syntropy
 
         virtual void Shrink() override;
 
-        virtual Bool IsEmpty() const override;
-
-        virtual Bytes GetSize() const override;
+        virtual void Discard() override;
 
     private:
 
@@ -97,6 +93,10 @@ namespace syntropy
         /// \brief Predicate used to detect whether the underlying stream buffer supports the "Shrink()" method.
         template <typename TStreamBuffer>
         using IsShrinkSupported = decltype(std::declval<TStreamBuffer>().Shrink());
+
+        /// \brief Predicate used to detect whether the underlying stream buffer supports the "Discard()" method.
+        template <typename TStreamBuffer>
+        using IsDiscardSupported = decltype(std::declval<TStreamBuffer>().Discard());
 
         /// \brief Underlying stream buffer.
         ObserverPtr<TStreamBuffer> stream_buffer_{ nullptr };
@@ -141,16 +141,14 @@ namespace syntropy
     }
 
     template <typename TStreamBuffer>
-    inline Bool OutputStreamBufferT<TStreamBuffer>::IsEmpty() const
+    inline void OutputStreamBufferT<TStreamBuffer>::Discard()
     {
-        return stream_buffer_->IsEmpty();
+        if constexpr (IsValidExpressionV<IsDiscardSupported, TStreamBuffer>)
+        {
+            stream_buffer_->Discard();
+        }
     }
 
-    template <typename TStreamBuffer>
-    inline Bytes OutputStreamBufferT<TStreamBuffer>::GetSize() const
-    {
-        return stream_buffer_->GetSize();
-    }
 
 }
 
