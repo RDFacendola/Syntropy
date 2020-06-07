@@ -9,11 +9,20 @@
 #include <cstdint>
 #include <utility>
 #include <type_traits>
+#include <tuple>
 
 #include "syntropy/core/types.h"
 
 namespace syntropy
 {
+    /************************************************************************/
+    /* TUPLE <T...>                                                         */
+    /************************************************************************/
+
+    /// \brief Type alias for a tuple.
+    template <typename... TElements>
+    using Tuple = std::tuple<TElements...>;
+
     /************************************************************************/
     /* LOCKSTEP                                                             */
     /************************************************************************/

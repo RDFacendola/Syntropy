@@ -45,13 +45,11 @@ namespace syntropy
         {
             source_offset %= (*source_size);
 
-            auto source_head = ConstMemoryRange{ source.Begin() + source_offset, source.End() };
-            auto source_tail = ConstMemoryRange{ source.Begin(), source_head.Begin() };
+            auto [source_tail, source_head] = Split(source, source_offset);
 
             auto source_head_size = Math::Min(source_head.GetSize(), destination.GetSize());        // Prevent buffer overruns if the source is larger than the destination.
 
-            auto destination_head = MemoryRange{ destination.Begin(), source_head_size };
-            auto destination_tail = MemoryRange{ destination_head.End(), destination.End() };
+            auto [destination_head, destination_tail] = Split(destination, source_head_size);
 
             Memory::Copy(destination_head, source_head);
             Memory::Copy(destination_tail, source_tail);
@@ -71,13 +69,11 @@ namespace syntropy
         {
             destination_offset %= (*destination_size);
 
-            auto destination_head = MemoryRange{ destination.Begin() + destination_offset, destination.End() };
-            auto destination_tail = MemoryRange{ destination.Begin(), destination_head.Begin() };
+            auto [destination_tail, destination_head] = Split(destination, destination_offset);
 
-            auto destination_head_size = Math::Min(destination_head.GetSize(), source.GetSize());       // Prevent buffer overruns if the source is larger than the destination.
+            auto destination_head_size = Math::Min(destination_head.GetSize(), source.GetSize());   // Prevent buffer overruns if the source is larger than the destination.
 
-            auto source_head = ConstMemoryRange{ source.Begin(), destination_head_size };
-            auto source_tail = ConstMemoryRange{ source_head.End(), source.End() };
+            auto [source_head, source_tail] = Split(source, destination_head_size);
 
             Memory::Copy(destination_head, source_head);
             Memory::Copy(destination_tail, source_tail);

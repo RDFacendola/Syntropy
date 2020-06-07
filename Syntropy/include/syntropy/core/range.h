@@ -13,6 +13,7 @@
 #include "syntropy/math/math.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/language/utility.h"
+#include "syntropy/language/tuple.h"
 
 namespace syntropy
 {
@@ -211,6 +212,11 @@ namespace syntropy
     /// \return Returns a range which is equal to lhs but with size is limited up to upper_bound.
     template <typename TIterator>
     Range<TIterator> UpperBound(const Range<TIterator>& lhs, const typename Range<TIterator>::TDistance& upper_bound);
+
+    /// \brief Split a range into two subranges, given the distance from the range begin.
+    /// If the provided split point exceeds lhs range, the behavior of this method is undefined.
+    template <typename TIterator>
+    Tuple<Range<TIterator>, Range<TIterator>> Split(const Range<TIterator>& lhs, const typename Range<TIterator>::TDistance& split);
 
     /// \brief Stream insertion for a range of elements.
     template <typename TIterator>
@@ -484,6 +490,15 @@ namespace syntropy
         auto range_size = Math::Min(lhs.GetSize(), upper_bound);
 
         return Range<TIterator>{ lhs.Begin(), range_size };
+    }
+
+    template <typename TIterator>
+    inline Tuple<Range<TIterator>, Range<TIterator>> Split(const Range<TIterator>& lhs, const typename Range<TIterator>::TDistance& split)
+    {
+        auto right = Range<TIterator>{ lhs.Begin() + split, lhs.End() };
+        auto left = Range<TIterator>{ lhs.Begin(), right.Begin() };
+
+        return { left, right };
     }
 
     template <typename TIterator>
