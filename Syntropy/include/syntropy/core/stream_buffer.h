@@ -65,8 +65,8 @@ namespace syntropy
         /// \return Returns the range containing read data.
         MemoryRange ReadRandom(Bytes position, const MemoryRange& data);
 
-        /// \brief Flush the underlying buffer, discarding its content.
-        void Flush();
+        /// \brief Discard buffer content.
+        void Discard();
 
         /// \brief Increase the underlying buffer allocation size.
         /// This method preserve the buffer content, therefore it behaves as no-op if the specified capacity is lower than the current one.
@@ -190,7 +190,7 @@ namespace syntropy
         return { data.Begin(), bytes };
     }
 
-    inline void StreamBuffer::Flush()
+    inline void StreamBuffer::Discard()
     {
         Memory::Zero(buffer_.GetData());
 
