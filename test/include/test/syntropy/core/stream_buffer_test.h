@@ -6,7 +6,8 @@
 /// \author Raffaele D. Facendola - May 2020.
 
 #include "syntropy/memory/bytes.h"
-#include "syntropy/core/stream_buffer.h"
+
+#include "syntropy/serialization/stream_buffer.h"
 
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/auto_test_suite.h"

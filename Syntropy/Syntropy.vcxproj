@@ -37,7 +37,7 @@
     <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\containers\vector.h" />
     <ClInclude Include="include\syntropy\containers\vector_view.h" />
-    <ClInclude Include="include\syntropy\core\stream_buffer.h" />
+    <ClInclude Include="include\syntropy\serialization\stream_buffer.h" />
     <ClInclude Include="include\syntropy\core\context.h" />
     <ClInclude Include="include\syntropy\core\label.h" />
     <ClInclude Include="include\syntropy\core\smart_pointers.h" />

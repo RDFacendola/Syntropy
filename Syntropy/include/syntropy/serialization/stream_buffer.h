@@ -1,6 +1,6 @@
 
 /// \file stream_buffer.h
-/// \brief This header is part of the Syntropy core module. It contains definition for a memory stream buffer.
+/// \brief This header is part of the Syntropy serialization module. It contains definition for a memory stream buffer.
 ///
 /// \author Raffaele D. Facendola - 2020
 
