@@ -7,7 +7,10 @@
 
 #include "syntropy/memory/bytes.h"
 
-#include "syntropy/serialization/stream_buffer.h"
+#include "syntropy/serialization/memory_stream_buffer.h"
+
+#include "syntropy/serialization/output_stream_buffer.h"
+#include "syntropy/serialization/input_stream_buffer.h"
 
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/auto_test_suite.h"
@@ -44,7 +47,13 @@ namespace syntropy::unit_test
     {
         using namespace syntropy::Literals;
 
-        auto stream = StreamBuffer{};
+        auto stream = MemoryStreamBuffer{};
+
+        auto osbb = OutputStreamBufferT<MemoryStreamBuffer>(stream);
+        auto isbb = InputStreamBufferT<MemoryStreamBuffer>(stream);
+        
+        OutputStreamBuffer& osb = osbb;
+        InputStreamBuffer& isb = isbb;
 
         Int ar = 5;
         Float br = 42.01f;
@@ -56,14 +65,16 @@ namespace syntropy::unit_test
         Int cw = 0;
         Float dw = 0.0f;
 
-        stream.WriteSequential(MakeConstMemoryRange(ar));
-        stream.WriteSequential(MakeConstMemoryRange(br));
+        osb.Reserve(Bytes{ 100 });
+
+        osb.WriteSequential(MakeConstMemoryRange(ar));
+        osb.WriteSequential(MakeConstMemoryRange(br));
 
         stream.ReadSequential(MakeMemoryRange(aw));
         stream.ReadSequential(MakeMemoryRange(bw));
 
-        stream.WriteSequential(MakeConstMemoryRange(cr));
-        stream.WriteSequential(MakeConstMemoryRange(dr));
+        osb.WriteSequential(MakeConstMemoryRange(cr));
+        osb.WriteSequential(MakeConstMemoryRange(dr));
 
         stream.ReadSequential(MakeMemoryRange(cw));
         stream.ReadSequential(MakeMemoryRange(dw));

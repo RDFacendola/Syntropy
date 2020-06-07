@@ -103,7 +103,9 @@
     <ClInclude Include="include\syntropy\containers\stream_vector.h" />
     <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\core\types.h" />
+    <ClInclude Include="include\syntropy\serialization\output_stream_buffer.h" />
     <ClInclude Include="include\syntropy\serialization\memory_stream_buffer.h" />
+    <ClInclude Include="include\syntropy\serialization\input_stream_buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

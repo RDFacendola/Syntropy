@@ -1,5 +1,5 @@
 
-/// \file stream_buffer.h
+/// \file memory_stream_buffer.h
 /// \brief This header is part of the Syntropy serialization module. It contains definition for a memory stream buffer.
 ///
 /// \author Raffaele D. Facendola - 2020
