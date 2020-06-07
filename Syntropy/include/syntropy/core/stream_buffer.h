@@ -239,6 +239,7 @@ namespace syntropy
 
         swap(buffer_, other.buffer_);
         swap(size_, other.size_);
+        swap(start_position_, other.start_position_);
     }
 
     inline void StreamBuffer::Grow(Bytes capacity)
