@@ -23,7 +23,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents a raw stream of bytes.
-    /// Stream buffer supports FIFO and random I\O operations.
+    /// Stream buffer supports both FIFO and random I\O operations.
     /// \author Raffaele D. Facendola - June 2020
     class StreamBuffer
     {
