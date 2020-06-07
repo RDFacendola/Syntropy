@@ -107,6 +107,7 @@
     <ClInclude Include="include\syntropy\serialization\output_stream.h" />
     <ClInclude Include="include\syntropy\serialization\input_stream.h" />
     <ClInclude Include="include\syntropy\serialization\stream_writer.h" />
+    <ClInclude Include="include\syntropy\serialization\stream_reader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

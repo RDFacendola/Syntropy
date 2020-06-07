@@ -26,7 +26,7 @@ namespace syntropy
         /// \brief Default virtual destructor.
         virtual ~InputStream() = default;
 
-        /// \brief Read data sequentially from the stream, causing it to shrink.
+        /// \brief Read and consume data sequentially from the stream, causing it to shrink.
         /// \return Returns the range containing read data.
         virtual MemoryRange ReadSequential(const MemoryRange& data) = 0;
 
