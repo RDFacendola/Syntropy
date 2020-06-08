@@ -108,6 +108,8 @@
     <ClInclude Include="include\syntropy\serialization\input_stream.h" />
     <ClInclude Include="include\syntropy\serialization\stream_writer.h" />
     <ClInclude Include="include\syntropy\serialization\stream_reader.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_writer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -136,5 +138,6 @@
     <ClCompile Include="src\syntropy\language\listener.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\log_event_formatter.cpp" />
     <ClCompile Include="src\syntropy\memory\memory.cpp" />
+    <ClCompile Include="src\syntropy\serialization\msgpack\msgpack_writer.cpp" />
   </ItemGroup>
 </Project>

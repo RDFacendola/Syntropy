@@ -5,13 +5,18 @@
 ///
 /// \author Raffaele D. Facendola - May 2020.
 
+#pragma once
+
 #include "syntropy/memory/bytes.h"
 
 #include "syntropy/serialization/output_stream.h"
 #include "syntropy/serialization/input_stream.h"
 #include "syntropy/serialization/memory_stream_buffer.h"
+
 #include "syntropy/serialization/stream_writer.h"
 #include "syntropy/serialization/stream_reader.h"
+
+#include "syntropy/serialization/msgpack/msgpack_writer.h"
 
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/auto_test_suite.h"
@@ -50,8 +55,12 @@ namespace syntropy::unit_test
 
         auto stream = MemoryStreamBuffer{};
 
-        auto out_stream = MakeOutputStream<MemoryStreamBuffer>(stream);
-        auto in_stream = MakeInputStream<MemoryStreamBuffer>(stream);
+        auto out_stream = MakeOutputStream(stream);
+        auto in_stream = MakeInputStream(stream);
+
+        auto msgpack_writer = MsgpackWriter{ out_stream };
+
+        msgpack_writer << 4 << 5 << 42.0f;
 
         auto writer = StreamWriter{ out_stream };
         auto reader = StreamReader{ in_stream };

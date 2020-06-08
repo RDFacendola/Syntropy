@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="dbg|x64">
@@ -38,6 +38,8 @@
     <ClInclude Include="include\syntropy\containers\vector.h" />
     <ClInclude Include="include\syntropy\containers\vector_view.h" />
     <ClInclude Include="include\syntropy\serialization\input_stream.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_writer.h" />
     <ClInclude Include="include\syntropy\serialization\output_stream.h" />
     <ClInclude Include="include\syntropy\serialization\memory_stream_buffer.h" />
     <ClInclude Include="include\syntropy\core\context.h" />
@@ -143,6 +145,7 @@
     <ClCompile Include="src\syntropy\platform\intrinsics.cpp" />
     <ClCompile Include="src\syntropy\platform\system.cpp" />
     <ClCompile Include="src\syntropy\platform\threading.cpp" />
+    <ClCompile Include="src\syntropy\serialization\msgpack\msgpack_writer.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\time\date.cpp" />
     <ClCompile Include="src\syntropy\time\time_of_day.cpp" />
