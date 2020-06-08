@@ -102,7 +102,7 @@ namespace syntropy
     template <typename TType>
     inline void RawStreamEncoder::operator()(OutputStream& lhs, const TType& rhs) const
     {
-        lhs.WriteSequential(MakeConstMemoryRange(rhs));
+        lhs << rhs;
     }
 
 }

@@ -1,5 +1,5 @@
 
-/// \file output_stream_buffer.h
+/// \file output_stream.h
 /// \brief This header is part of the Syntropy serialization module. It contains definition for output streams.
 ///
 /// \author Raffaele D. Facendola - 2020
@@ -26,9 +26,12 @@ namespace syntropy
         /// \brief Default virtual destructor.
         virtual ~OutputStream() = default;
 
-        /// \brief Write data sequentially to the stream, causing it to grow.
-        /// \return Returns the range containing unwritten data.
-        virtual ConstMemoryRange WriteSequential(const ConstMemoryRange& data) = 0;
+        /// \brief Append data to the output stream.
+        template <typename TData>
+        OutputStream& operator<<(const TData& data);
+
+        /// \brief Append data to the output stream.
+        OutputStream& operator<<(const ConstMemoryRange& data);
 
         /// \brief Increase the underlying buffer allocation size.
         /// This method may cause buffer reallocation.
@@ -43,6 +46,12 @@ namespace syntropy
         /// \brief Discard stream content.
         /// If the underlying stream doesn't support this operation, this method behaves as no-op.
         virtual void Discard() = 0;
+
+    private:
+
+        /// \brief Write data sequentially to the stream, causing it to grow.
+        /// \return Returns the range containing unwritten data.
+        virtual ConstMemoryRange WriteSequential(const ConstMemoryRange& data) = 0;
 
     };
 
@@ -114,6 +123,22 @@ namespace syntropy
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
+
+    // OutputStream.
+
+            /// \brief Append data to the output stream.
+    template <typename TData>
+    inline OutputStream& OutputStream::operator<<(const TData& data)
+    {
+        return (*this) << MakeConstMemoryRange(data);
+    }
+
+    inline OutputStream& OutputStream::operator<<(const ConstMemoryRange& data)
+    {
+        WriteSequential(data);
+
+        return *this;
+    }
 
     // OutputStreamT<TStreamBuffer>.
 
