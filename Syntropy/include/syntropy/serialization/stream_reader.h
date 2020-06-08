@@ -4,6 +4,8 @@
 ///
 /// \author Raffaele D. Facendola - 2020
 
+#pragma once
+
 #include "syntropy/core/types.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/memory/memory_range.h"
@@ -12,13 +14,13 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* STREAM READER T <T DECODER <>>                                       */
+    /* STREAM READER T <T DECODER>                                          */
     /************************************************************************/
 
     /// \brief Exposes methods to sequentially read structured data from an input stream.
     /// \tparam TDecoder Type of a decoder used to decode data after being read from the input stream.
     /// \author Raffaele D. Facendola - June 2020.
-    template <template <typename> typename TDecoder>
+    template <typename TDecoder>
     class StreamReaderT
     {
     public:
@@ -42,8 +44,8 @@ namespace syntropy
         ~StreamReaderT() = default;
 
         /// \brief Read data sequentially from the underlying stream.
-        template <typename UType>
-        StreamReaderT& operator>>(UType& data);
+        template <typename TType>
+        StreamReaderT& operator>>(TType& data);
 
     private:
 
@@ -59,11 +61,11 @@ namespace syntropy
     /// \brief Represents a simple decoder that decodes values from their raw object-representation.
     /// Decoders are used to decode data read from an input stream.
     /// \author Raffaele D. Facendola - June 2020.
-    template <typename TType>
     struct RawStreamDecoder
     {
         /// \brief Decode bytes from lhs and write the result to rhs.
         /// If the data were encoded using an encoder different than RawStreamEncoder, the behavior of this method is undefined.
+        template <typename TType>
         void operator()(InputStream& lhs, TType& rhs) const;
     };
 
@@ -80,18 +82,18 @@ namespace syntropy
 
     // StreamReaderT.
 
-    template <template <typename> typename TDecoder>
+    template <typename TDecoder>
     inline StreamReaderT<TDecoder>::StreamReaderT(InputStream& input_stream)
         : input_stream_(&input_stream)
     {
 
     }
 
-    template <template <typename> typename TDecoder>
-    template <typename UType>
-    inline StreamReaderT<TDecoder>& StreamReaderT<TDecoder>::operator>>(UType& data)
+    template <typename TDecoder>
+    template <typename TType>
+    inline StreamReaderT<TDecoder>& StreamReaderT<TDecoder>::operator>>(TType& data)
     {
-        TDecoder<UType>{}(*input_stream_, data);
+        TDecoder{}(*input_stream_, data);
 
         return *this;
     }
@@ -99,7 +101,7 @@ namespace syntropy
     // RawStreamDecoder.
 
     template <typename TType>
-    inline void RawStreamDecoder<TType>::operator()(InputStream& lhs, TType& rhs) const
+    inline void RawStreamDecoder::operator()(InputStream& lhs, TType& rhs) const
     {
         lhs.ReadSequential(MakeMemoryRange(rhs));
     }
