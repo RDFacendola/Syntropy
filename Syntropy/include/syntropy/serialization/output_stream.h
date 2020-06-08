@@ -107,9 +107,9 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create an output stream.
-    template <typename TStream, typename... TArguments>
-    OutputStreamT<TStream> MakeOutputStream(TArguments&&... arguments);
+    /// \brief Create an output stream deducing templates from arguments.
+    template <typename TStream>
+    OutputStreamT<TStream> MakeOutputStream(TStream& stream);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -159,10 +159,10 @@ namespace syntropy
 
     // Non-member functions.
 
-    template <typename TStream, typename... TArguments>
-    inline OutputStreamT<TStream> MakeOutputStream(TArguments&&... arguments)
+    template <typename TStream>
+    inline OutputStreamT<TStream> MakeOutputStream(TStream& stream)
     {
-        return OutputStreamT<TStream>(std::forward<TArguments>(arguments)...);
+        return OutputStreamT<TStream>(stream);
     }
 
 }
