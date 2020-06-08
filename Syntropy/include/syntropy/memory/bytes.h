@@ -479,19 +479,19 @@ namespace syntropy
     template <typename TType>
     constexpr Bytes ToBytes(const TType& rhs) noexcept
     {
-        return Bytes(static_cast<Int>(rhs));
+        return Bytes{ static_cast<Int>(rhs) };
     }
 
     template <typename TType>
     constexpr Bytes BytesOf(const TType& rhs)
     {
-        return Bytes(sizeof(rhs));
+        return Bytes{ sizeof(rhs) };
     }
 
     template <typename TType>
     constexpr Bytes BytesOf()
     {
-        return Bytes(sizeof(TType));
+        return Bytes{ sizeof(TType) };
     }
 
 }
