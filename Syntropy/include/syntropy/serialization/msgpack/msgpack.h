@@ -1,6 +1,6 @@
 
 /// \file msgpack.h
-/// \brief This header is part of the Syntropy serialization module. It contains Msgpack type, formats and utility methods..
+/// \brief This header is part of the Syntropy serialization module. It contains Msgpack type, formats and utility methods.
 ///
 /// Specification found here: https://github.com/msgpack/msgpack/blob/master/spec.md
 ///
@@ -14,6 +14,8 @@
 #include "syntropy/core/string.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_range.h"
+#include "syntropy/serialization/output_stream.h"
+#include "syntropy/serialization/input_stream.h"
 
 namespace syntropy
 {
@@ -112,25 +114,25 @@ namespace syntropy
         /// \brief Integer and a byte array whose length is 16 Bytes.
         kFixExt16 = ToFix8(0xD8),
 
-        /// \brief Byte array whose length is up to (ToFix8(0x2^8), - 1 Bytes.
+        /// \brief Byte array whose length is up to 2^8 - 1 Bytes.
         kStr8 = ToFix8(0xD9),
 
-        /// \brief Byte array whose length is up to (ToFix8(0x2^16), - 1 Bytes.
+        /// \brief Byte array whose length is up to 2^16 - 1 Bytes.
         kStr16 = ToFix8(0xDA),
 
-        /// \brief Byte array whose length is up to (ToFix8(0x2^32), - 1 Bytes.
+        /// \brief Byte array whose length is up to 2^32 - 1 Bytes.
         kStr32 = ToFix8(0xDB),
 
-        /// \brief Array whose length is up to (ToFix8(0x2^16), - 1 elements.
+        /// \brief Array whose length is up to 2^16 - 1 elements.
         kArray16 = ToFix8(0xDC),
 
-        /// \brief Array whose length is up to (ToFix8(0x2^32), - 1 elements.
+        /// \brief Array whose length is up to 2^32 - 1 elements.
         kArray32 = ToFix8(0xDD),
 
-        /// \brief Map whose length is up to (ToFix8(0x2^16), - 1 elements.
+        /// \brief Map whose length is up to 2^16 - 1 elements.
         kMap16 = ToFix8(0xDE),
 
-        /// \brief Map whose length is up to (ToFix8(0x2^32), - 1 elements.
+        /// \brief Map whose length is up to 2^32 - 1 elements.
         kMap32 = ToFix8(0xDF),
 
         /// \brief 5-bit negative integer value.
@@ -142,7 +144,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Masks for packed type formats supported by Msgpack.
-    /// Some formats pack together both the type format and the size. This enumeration provides the bit-masks used to unpack the two.
+    /// Some formats pack together both the type format and the size. This enumeration provides the bit-masks used to unpack the two apart.
     /// \author Raffaele D. Facendola - May 2020.
     enum class MsgpackFormatMask : Fix8
     {
@@ -176,15 +178,25 @@ namespace syntropy
     /// \author Raffaele D. Facendola - June 2020.
     enum class MsgpackExtensionType : Fix8 {};
 
-    /// \brief Exposes methods used to handle Msgpack extension types.
+    /// \brief Encoder for a Msgoack extension type.
     /// \author Raffaele D. Facendola - November 2019.
     template <typename TType>
-    struct MsgpackExtension {};
+    struct MsgpackExtensionEncoder {};
+
+    /// \brief Decoder for a Msgoack extension type.
+    /// \author Raffaele D. Facendola - November 2019.
+    template <typename TType>
+    struct MsgpackExtensionDecoder {};
 
     /// \brief Predicate used to determine whether TType is a valid extension type for Msgpack.
-        /// \author Raffaele D. Facendola - June 2020.
+    /// \author Raffaele D. Facendola - June 2020.
     template <typename TType>
-    using IsMsgpackExtension = decltype(MsgpackExtension<TType>{});
+    using HasMsgpackExtensionEncoder = decltype(MsgpackExtensionEncoder<TType>{}(std::declval<OutputStream&>(), std::declval<const TType&>()));
+
+    /// \brief Predicate used to determine whether TType is a valid extension type for Msgpack.
+    /// \author Raffaele D. Facendola - June 2020.
+    template <typename TType>
+    using HasMsgpackExtensionDecoder = decltype(MsgpackExtensionDecoder<TType>{}(std::declval<InputStream&>(), std::declval<TType&>()));
 
     /************************************************************************/
     /* MSGPACK                                                              */
