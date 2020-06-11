@@ -113,17 +113,17 @@ namespace syntropy
         /// \brief Create a new range whose head is advanced forward by some elements.
         /// This method results in undefined behavior is the range is empty or exceeded.
         /// \return Returns a new range.
-        Range& PopFront(TDistance elements) &&;
+        Range PopFront(TDistance elements) &&;
 
         /// \brief Create a new range whose tail is receded backwards by one element.
         /// This method results in undefined behavior is the range is empty.
          /// \return Returns a new range.
-        Range& PopBack() && ;
+        Range PopBack() && ;
 
         /// \brief Create a new range whose tail is receded backwards by some elements.
         /// This method results in undefined behavior is the range is empty.
          /// \return Returns a new range.
-        Range& PopBack(TDistance elements) &&;
+        Range PopBack(TDistance elements) &&;
 
         /// \brief Check whether a range is contained entirely inside this range.
         /// #DEPRECATED Use non-member function Contains.
@@ -347,7 +347,7 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline Range<TIterator>& Range<TIterator>::PopFront(TDistance elements) &&
+    inline Range<TIterator> Range<TIterator>::PopFront(TDistance elements) &&
     {
         begin_ += elements;
 
@@ -355,13 +355,13 @@ namespace syntropy
     }
 
     template <typename TIterator>
-    inline Range<TIterator>& Range<TIterator>::PopBack() &&
+    inline Range<TIterator> Range<TIterator>::PopBack() &&
     {
         return { begin_, --end_ };
     }
 
     template <typename TIterator>
-    inline Range<TIterator>& Range<TIterator>::PopBack(TDistance elements) &&
+    inline Range<TIterator> Range<TIterator>::PopBack(TDistance elements) &&
     {
         return { begin_, end_ - elements };
     }
