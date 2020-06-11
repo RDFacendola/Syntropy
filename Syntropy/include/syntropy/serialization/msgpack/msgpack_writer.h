@@ -118,6 +118,10 @@ namespace syntropy
 
             lhs << MsgpackFormat::kArray32 << encoded_size;
         }
+        else
+        {
+            SYNTROPY_ASSERT(false);     // #TODO Signal error on the output stream.
+        }
 
         // Encode each element individually.
 
@@ -150,6 +154,10 @@ namespace syntropy
 
             lhs << MsgpackFormat::kMap32 << encoded_size;
         }
+        else
+        {
+            SYNTROPY_ASSERT(false);     // #TODO Signal error on the output stream.
+        }
 
         // Encode each key-value pair individually.
 
@@ -165,7 +173,7 @@ namespace syntropy
     {
         using namespace Literals;
 
-        // Serialize the extension on a temporary buffer. #TODO Allocate on thread-local stack memory resource.
+        // Serialize the extension on a temporary buffer so that total size is known in advance. #TODO Allocate on thread-local stack memory resource.
 
         auto payload = MemoryStreamBuffer{};
 
@@ -220,9 +228,9 @@ namespace syntropy
             SYNTROPY_ASSERT(false);     // #TODO Signal error on the output stream.
         }
 
-        // Payload.
+        // Extension type and payload.
 
-        //lhs << extension_type << payload.;
+        lhs << extension_type << payload;
 
     }
 

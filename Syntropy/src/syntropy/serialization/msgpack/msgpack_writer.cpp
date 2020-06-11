@@ -74,6 +74,10 @@ namespace syntropy
 
             lhs << MsgpackFormat::kStr32 << encoded_size;
         }
+        else
+        {
+            SYNTROPY_ASSERT(false);     // #TODO Signal error on the output stream.
+        }
 
         // Payload.
 
@@ -102,6 +106,10 @@ namespace syntropy
             auto encoded_size = Endianness::ToBigEndian(ToFix32(*rhs.GetSize()));
 
             lhs << MsgpackFormat::kBin32 << encoded_size;
+        }
+        else
+        {
+            SYNTROPY_ASSERT(false);     // #TODO Signal error on the output stream.
         }
 
         // Payload.
