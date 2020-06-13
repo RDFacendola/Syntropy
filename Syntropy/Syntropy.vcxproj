@@ -40,7 +40,6 @@
     <ClInclude Include="include\syntropy\language\initializer_list.h" />
     <ClInclude Include="include\syntropy\serialization\input_stream.h" />
     <ClInclude Include="include\syntropy\serialization\msgpack\msgpack.h" />
-    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_writer.h" />
     <ClInclude Include="include\syntropy\serialization\output_stream.h" />
     <ClInclude Include="include\syntropy\serialization\memory_stream_buffer.h" />
     <ClInclude Include="include\syntropy\core\context.h" />
@@ -146,7 +145,7 @@
     <ClCompile Include="src\syntropy\platform\intrinsics.cpp" />
     <ClCompile Include="src\syntropy\platform\system.cpp" />
     <ClCompile Include="src\syntropy\platform\threading.cpp" />
-    <ClCompile Include="src\syntropy\serialization\msgpack\msgpack_writer.cpp" />
+    <ClCompile Include="src\syntropy\serialization\memory_stream_buffer.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\time\date.cpp" />
     <ClCompile Include="src\syntropy\time\time_of_day.cpp" />

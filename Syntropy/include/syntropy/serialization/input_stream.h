@@ -17,7 +17,7 @@ namespace syntropy
     /* INPUT STREAM                                                         */
     /************************************************************************/
 
-    /// \brief Interface for a class which binds to a input stream-like object and exposes sequential input functionalities only.
+    /// \brief Interface for a class which binds to a input stream-like object and exposes sequential input functionalities.
     /// \author Raffaele D. Facendola - June 2020
     class InputStream
     {
@@ -26,15 +26,24 @@ namespace syntropy
         /// \brief Default virtual destructor.
         virtual ~InputStream() = default;
 
-        /// \brief Read and consume data sequentially from the stream, causing it to shrink.
-        /// \return Returns the range containing read data.
-        virtual MemoryRange ReadSequential(const MemoryRange& data) = 0;
+        /// \brief Read data from the input stream.
+        template <typename TData>
+        InputStream& operator>>(TData& data);
+
+        /// \brief Consume data from the input stream.
+        InputStream& operator>>(const MemoryRange& data);
 
         /// \brief Check whether the underlying stream is empty.
         virtual Bool IsEmpty() const = 0;
 
         /// \brief Get the stream content size, in bytes.
         virtual Bytes GetSize() const = 0;
+
+    private:
+
+        /// \brief Read and consume data sequentially from the stream.
+        /// \return Returns the range containing read data.
+        virtual MemoryRange Consume(const MemoryRange& data) = 0;
 
     };
 
@@ -68,13 +77,13 @@ namespace syntropy
         /// \brief Default destructor.
         virtual ~InputStreamT() = default;
 
-        virtual MemoryRange ReadSequential(const MemoryRange& data) override;
-
         virtual Bool IsEmpty() const override;
 
         virtual Bytes GetSize() const override;
 
     private:
+
+        virtual MemoryRange Consume(const MemoryRange& data) override;
 
         /// \brief Underlying stream.
         ObserverPtr<TStream> stream_{ nullptr };
@@ -93,6 +102,21 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
+    // InputStream.
+
+    template <typename TData>
+    inline InputStream& InputStream::operator>>(TData& data)
+    {
+        return (*this) >> MakeMemoryRange(data);
+    }
+
+    inline InputStream& InputStream::operator>>(const MemoryRange& data)
+    {
+        Consume(data);
+
+        return *this;
+    }
+
     // InputStreamT<TStream>.
 
     template <typename TStream>
@@ -103,9 +127,9 @@ namespace syntropy
     }
 
     template <typename TStream>
-    inline MemoryRange InputStreamT<TStream>::ReadSequential(const MemoryRange& data)
+    inline MemoryRange InputStreamT<TStream>::Consume(const MemoryRange& data)
     {
-        return stream_->ReadSequential(data);
+        return stream_->Consume(data);
     }
 
     template <typename TStream>

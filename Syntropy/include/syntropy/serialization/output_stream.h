@@ -17,7 +17,7 @@ namespace syntropy
     /* OUTPUT STREAM                                                        */
     /************************************************************************/
 
-    /// \brief Interface for a class which binds to an output stream-like object and exposes sequential output functionalities only.
+    /// \brief Interface for a class which binds to an output stream-like object and exposes sequential output functionalities.
     /// \author Raffaele D. Facendola - June 2020
     class OutputStream
     {
@@ -34,24 +34,16 @@ namespace syntropy
         OutputStream& operator<<(const ConstMemoryRange& data);
 
         /// \brief Increase the underlying buffer allocation size.
-        /// This method may cause buffer reallocation.
-        /// If the underlying stream doesn't support this operation, this method behaves as no-op.
-        virtual void Reserve(Bytes capacity) = 0;
-
-        /// \brief Shrink the allocation size up to the current buffer size.
-        /// This method preserve the stream content and may reallocate the underlying buffer.
-        /// If the underlying stream doesn't support this operation, this method behaves as no-op.
-        virtual void Shrink() = 0;
-
-        /// \brief Discard stream content.
-        /// If the underlying stream doesn't support this operation, this method behaves as no-op.
-        virtual void Discard() = 0;
+        /// \param size Amount of bytes to reserve.
+        /// \return Returns true if the reservation request was successful, returns false otherwise.
+        /// \remark Streams are not required to provide this interface, if that's the case this method is no-op.
+        virtual bool Reserve(Bytes size) = 0;
 
     private:
 
-        /// \brief Write data sequentially to the stream, causing it to grow.
+        /// \brief Write data sequentially to the stream.
         /// \return Returns the range containing unwritten data.
-        virtual ConstMemoryRange WriteSequential(const ConstMemoryRange& data) = 0;
+        virtual ConstMemoryRange Append(const ConstMemoryRange& data) = 0;
 
     };
 
@@ -85,27 +77,15 @@ namespace syntropy
         /// \brief Default destructor.
         virtual ~OutputStreamT() = default;
 
-        virtual ConstMemoryRange WriteSequential(const ConstMemoryRange& data) override;
-
-        virtual void Reserve(Bytes capacity) override;
-
-        virtual void Shrink() override;
-
-        virtual void Discard() override;
-
     private:
 
-        /// \brief Predicate used to detect whether the underlying stream supports the "Reserve(Byte)" method.
+        /// \brief Predicate used to detect whether the underlying stream supports the "Reserve(Byte)" and "GetSize()" methods.
         template <typename TStream>
-        using IsReserveSupported = decltype(std::declval<TStream>().Reserve(Bytes{}));
+        using IsReserveSupported = decltype(std::declval<TStream>().Reserve(std::declval<TStream>().GetSize() + Bytes{}));
 
-        /// \brief Predicate used to detect whether the underlying stream supports the "Shrink()" method.
-        template <typename TStream>
-        using IsShrinkSupported = decltype(std::declval<TStream>().Shrink());
+        virtual ConstMemoryRange Append(const ConstMemoryRange& data) override;
 
-        /// \brief Predicate used to detect whether the underlying stream supports the "Discard()" method.
-        template <typename TStream>
-        using IsDiscardSupported = decltype(std::declval<TStream>().Discard());
+        virtual bool Reserve(Bytes size) override;
 
         /// \brief Underlying stream.
         ObserverPtr<TStream> stream_{ nullptr };
@@ -116,7 +96,7 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create an output stream deducing templates from arguments.
+    /// \brief Create an output stream wrapping a given stream-like object.
     template <typename TStream>
     OutputStreamT<TStream> MakeOutputStream(TStream& stream);
 
@@ -135,12 +115,12 @@ namespace syntropy
 
     inline OutputStream& OutputStream::operator<<(const ConstMemoryRange& data)
     {
-        WriteSequential(data);
+        Append(data);
 
         return *this;
     }
 
-    // OutputStreamT<TStreamBuffer>.
+    // OutputStreamT<TStream>.
 
     template <typename TStream>
     inline OutputStreamT<TStream>::OutputStreamT(TStream& stream)
@@ -150,36 +130,21 @@ namespace syntropy
     }
 
     template <typename TStream>
-    inline ConstMemoryRange OutputStreamT<TStream>::WriteSequential(const ConstMemoryRange& data)
+    inline ConstMemoryRange OutputStreamT<TStream>::Append(const ConstMemoryRange& data)
     {
-        return stream_->WriteSequential(data);
+        return stream_->Append(data);
     }
 
     template <typename TStream>
-    inline void OutputStreamT<TStream>::Reserve(Bytes capacity)
+    inline bool OutputStreamT<TStream>::Reserve(Bytes capacity)
     {
         if constexpr (IsValidExpressionV<IsReserveSupported, TStream>)
         {
-            stream_->Reserve(capacity);
+            stream_->Reserve(stream_->GetSize() + capacity);
+            return true;
         }
-    }
 
-    template <typename TStream>
-    inline void OutputStreamT<TStream>::Shrink()
-    {
-        if constexpr (IsValidExpressionV<IsShrinkSupported, TStream>)
-        {
-            stream_->Shrink();
-        }
-    }
-
-    template <typename TStream>
-    inline void OutputStreamT<TStream>::Discard()
-    {
-        if constexpr (IsValidExpressionV<IsDiscardSupported, TStream>)
-        {
-            stream_->Discard();
-        }
+        return false;
     }
 
     // Non-member functions.

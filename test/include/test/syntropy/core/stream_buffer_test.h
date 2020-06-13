@@ -16,7 +16,7 @@
 #include "syntropy/serialization/stream_writer.h"
 #include "syntropy/serialization/stream_reader.h"
 
-#include "syntropy/serialization/msgpack/msgpack_writer.h"
+//#include "syntropy/serialization/msgpack/msgpack_writer.h"
 
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/auto_test_suite.h"
@@ -58,20 +58,27 @@ namespace syntropy::unit_test
         auto out_stream = MakeOutputStream(stream);
         auto in_stream = MakeInputStream(stream);
 
-        auto msgpack_writer = MsgpackWriter{ out_stream };
+        Fix32 a, b, c;
+        Float d;
 
-        msgpack_writer << 4 << 5 << 42.0f;
+        out_stream << 4 << 56 << 42 << 3.4f;
 
-        auto writer = StreamWriter{ out_stream };
-        auto reader = StreamReader{ in_stream };
+        in_stream >> a >> b >> c >> d;
 
-        writer << 4 << 5 << 42.30f;
+        //auto msgpack_writer = MsgpackWriter{ out_stream };
 
-        Fix32 a = 0;
-        Fix32 b = 0;
-        Float c = 0.0f;
+        //msgpack_writer << 4 << 5 << 42.0f;
 
-        reader >> a >> b >> c;
+        //auto writer = StreamWriter{ out_stream };
+        //auto reader = StreamReader{ in_stream };
+
+        //writer << 4 << 5 << 42.30f;
+
+        //Fix32 a = 0;
+        //Fix32 b = 0;
+        //Float c = 0.0f;
+
+        //reader >> a >> b >> c;
 
         auto size = stream.GetSize();
 

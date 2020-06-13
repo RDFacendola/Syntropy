@@ -6,9 +6,8 @@
 
 #pragma once
 
-#include "syntropy/language/utility.h"
 #include "syntropy/core/types.h"
-#include "syntropy/diagnostics/assert.h"
+#include "syntropy/language/initializer_list.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/memory_buffer.h"
@@ -49,28 +48,27 @@ namespace syntropy
 
         /// \brief Write data sequentially to the stream, causing it to grow.
         /// \return Returns the range containing unwritten data.
-        ConstMemoryRange WriteSequential(const ConstMemoryRange& data);
+        ConstMemoryRange Append(const ConstMemoryRange& data);
 
         /// \brief Read data sequentially from the stream, causing it to shrink.
         /// \return Returns the range containing read data.
-        MemoryRange ReadSequential(const MemoryRange& data);
+        MemoryRange Consume(const MemoryRange& data);
 
         /// \brief Write data at given position from buffer start.
         /// Writes past the end of the stream are no-ops. This method does not change stream allocation.
         /// \return Returns the range containing unwritten data.
-        ConstMemoryRange WriteRandom(Bytes position, const ConstMemoryRange& data);
+        ConstMemoryRange Write(Bytes position, const ConstMemoryRange& data);
 
         /// \brief Read data at given position from buffer start.
         /// Reads past the end of the stream are no-ops. This method does not change stream allocation.
         /// \return Returns the range containing read data.
-        MemoryRange ReadRandom(Bytes position, const MemoryRange& data);
+        MemoryRange Read(Bytes position, const MemoryRange& data);
 
-        /// \brief Discard buffer content.
-        void Discard();
+        /// \brief Clear buffer content.
+        void Clear();
 
-        /// \brief Increase the underlying buffer allocation size.
-        /// This method preserve the buffer content, therefore it behaves as no-op if the specified capacity is lower than the current one.
-        /// This method may cause buffer reallocation.
+        /// \brief Increase the underlying buffer allocation to a given size.
+        /// This method reallocates only if the provided capacity exceeds the current allocation size, otherwise it behaves as no-op.
         void Reserve(Bytes capacity);
 
         /// \brief Shrink the allocation size up to the current buffer size.
@@ -101,29 +99,26 @@ namespace syntropy
         /// \brief Growth bias added to each reallocation.
         static constexpr auto kGrowthBias = Int{ 8 };
 
-        /// \brief Increase the underlying buffer allocation size.
-        /// This method preserve the buffer content, therefore it behaves as no-op if the specified capacity is lower than the current one.
-        /// This method over-allocates to reduce frequent reallocations.
-        void Grow(Bytes capacity);
-
-        /// \brief Get the physical position inside the underlying buffer.
-        Bytes GetBufferPosition(Bytes position) const;
+        /// \brief Increase the underlying buffer allocation size by a given amount.
+        void Grow(Bytes size);
 
         /// \brief Reallocate the underlying buffer, filling additional bytes with zeros.
         /// This method affects only buffer capacity, not stream size.
         /// This method unfolds the previous circular content into the new buffer.
         void Realloc(Bytes capacity);
 
+        /// \brief Get the address of a byte at given offset from the base pointer, wrapping around.
+        MemoryAddress GetAddress(Bytes offset);
+
         /// \brief Underlying memory buffer, may be larger than current stream size.
-        /// This buffer is circular to prevent reallocations from sequential reads.
-        /// Exceeding the current buffer size causes reallocation: content is preserved.
+        /// This buffer is circular to prevent reallocations from consume operations.
         MemoryBuffer buffer_;
 
-        /// \brief Stream size.
-        Bytes size_;
+        /// \brief Offset within the buffer data start from (inclusive).
+        MemoryAddress base_pointer_;
 
-        /// \brief Index of the first element in the circular buffer.
-        Bytes start_position_;
+        /// \brief Current data size, can be lower than buffer's capacity.
+        Bytes size_;
 
     };
 
@@ -142,59 +137,17 @@ namespace syntropy
 
     inline MemoryStreamBuffer::MemoryStreamBuffer(MemoryResource& memory_resource)
         : buffer_(memory_resource)
+        , base_pointer_(buffer_.GetData().Begin())
     {
 
     }
 
-    inline ConstMemoryRange MemoryStreamBuffer::WriteSequential(const ConstMemoryRange& data)
-    {
-        auto write_position = size_;
-
-        size_ += data.GetSize();                                                            // Size after writing additional data.
-
-        Grow(size_);                                                                        // Allocate space to fit new data, if necessary.
-
-        return WriteRandom(write_position, data);                                           // Returned range is expected to be empty.
-    }
-
-    inline MemoryRange MemoryStreamBuffer::ReadSequential(const MemoryRange& data)
-    {
-        auto range = ReadRandom(Bytes{ 0 }, data);                                          // Read from the buffer begin, wrapping around.
-
-        start_position_ = GetBufferPosition(range.GetSize());                               // Consume read data and move the start forward, wrapping around.
-
-        size_ -= range.GetSize();
-
-        return range;
-    }
-
-    inline ConstMemoryRange MemoryStreamBuffer::WriteRandom(Bytes position, const ConstMemoryRange& data)
-    {
-        auto write_position = GetBufferPosition(position);
-
-        auto source = UpperBound(data, size_);
-
-        auto bytes = Memory::CopyFold(buffer_.GetData(), source, write_position);
-
-        return { source.End(), data.End() };
-    }
-
-    inline MemoryRange MemoryStreamBuffer::ReadRandom(Bytes position, const MemoryRange& data)
-    {
-        auto read_position = GetBufferPosition(position);
-
-        auto destination = UpperBound(data, size_);
-
-        auto bytes = Memory::CopyUnfold(destination, buffer_.GetConstData(), read_position);
-
-        return { data.Begin(), bytes };
-    }
-
-    inline void MemoryStreamBuffer::Discard()
+    inline void MemoryStreamBuffer::Clear()
     {
         Memory::Zero(buffer_.GetData());
 
-        start_position_ = Bytes{ 0 };
+        base_pointer_ = buffer_.GetData().Begin();
+        size_ = Bytes{ 0 };
     }
 
     inline void MemoryStreamBuffer::Reserve(Bytes capacity)
@@ -207,15 +160,15 @@ namespace syntropy
 
     inline void MemoryStreamBuffer::Shrink()
     {
-        if (size_ < GetCapacity())
+        if (auto size = GetSize(); size < GetCapacity())
         {
-            Realloc(size_);
+            Realloc(size);
         }
     }
 
     inline Bool MemoryStreamBuffer::IsEmpty() const
     {
-        return size_ == Bytes{ 0 };
+        return GetSize() == Bytes{ 0 };
     }
 
     inline Bytes MemoryStreamBuffer::GetSize() const
@@ -238,36 +191,8 @@ namespace syntropy
         using std::swap;
 
         swap(buffer_, other.buffer_);
+        swap(base_pointer_, other.base_pointer_);
         swap(size_, other.size_);
-        swap(start_position_, other.start_position_);
-    }
-
-    inline void MemoryStreamBuffer::Grow(Bytes capacity)
-    {
-        if (capacity > GetCapacity())
-        {
-            capacity = ToBytes(Math::CeilTo<Int>((*capacity) * kGrowthFactor + kGrowthBias));
-
-            Realloc(capacity);
-        }
-    }
-
-    inline Bytes MemoryStreamBuffer::GetBufferPosition(Bytes position) const
-    {
-        return Bytes{ (start_position_ + position) % GetCapacity() };
-    }
-
-    inline void MemoryStreamBuffer::Realloc(Bytes capacity)
-    {
-        SYNTROPY_ASSERT(capacity > size_);
-
-        auto buffer = MemoryBuffer{ capacity, buffer_.GetMemoryResource() };
-
-        Memory::CopyUnfold(buffer.GetData(), buffer_.GetConstData(), start_position_);
-
-        buffer_.Swap(buffer);
-
-        start_position_ = Bytes{ 0 };
     }
 
     // Non-member functions.

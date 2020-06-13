@@ -59,7 +59,6 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents a simple decoder that decodes values from their raw object-representation.
-    /// Decoders are used to decode data read from an input stream.
     /// \author Raffaele D. Facendola - June 2020.
     struct RawStreamDecoder
     {
@@ -103,7 +102,7 @@ namespace syntropy
     template <typename TType>
     inline void RawStreamDecoder::operator()(InputStream& lhs, TType& rhs) const
     {
-        lhs.ReadSequential(MakeMemoryRange(rhs));
+        lhs >> rhs;
     }
 
 }

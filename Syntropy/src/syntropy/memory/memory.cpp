@@ -34,51 +34,32 @@ namespace syntropy
         return copy_size;
     }
 
-    Bytes Memory::CopyUnfold(const MemoryRange& destination, const ConstMemoryRange& source, Bytes source_offset)
+    Bytes Memory::Gather(const MemoryRange& destination, InitializerList<ConstMemoryRange> sources)
     {
-        auto source_size = source.GetSize();
-        auto destination_size = destination.GetSize();
+        auto gather = destination;
 
-        auto copy_size = Math::Min(source_size, destination_size);
-
-        if (copy_size > Bytes{ 0 })
+        for (auto&& source : sources)
         {
-            source_offset %= (*source_size);
+            auto count = Copy(gather, source);
 
-            auto [source_tail, source_head] = Split(source, source_offset);
-
-            auto source_head_size = Math::Min(source_head.GetSize(), destination.GetSize());        // Prevent buffer overruns if the source is larger than the destination.
-
-            auto [destination_head, destination_tail] = Split(destination, source_head_size);
-
-            Memory::Copy(destination_head, source_head);
-            Memory::Copy(destination_tail, source_tail);
+            gather.PopFront(count);
         }
 
-        return copy_size;
+        return MemoryRange{ destination.Begin(), gather.Begin() }.GetSize();
     }
 
-    Bytes Memory::CopyFold(const MemoryRange& destination, const ConstMemoryRange& source, Bytes destination_offset)
+    Bytes Memory::Scatter(InitializerList<MemoryRange> destinations, const ConstMemoryRange& source)
     {
-        auto source_size = source.GetSize();
-        auto destination_size = destination.GetSize();
+        auto scatter = source;
 
-        auto copy_size = Math::Min(source_size, destination_size);
-
-        if (copy_size > Bytes{ 0 })
+        for (auto&& destination : destinations)
         {
-            destination_offset %= (*destination_size);
+            auto count = Copy(destination, scatter);
 
-            auto [destination_tail, destination_head] = Split(destination, destination_offset);
-
-            auto destination_head_size = Math::Min(destination_head.GetSize(), source.GetSize());   // Prevent buffer overruns if the source is larger than the destination.
-
-            auto [source_head, source_tail] = Split(source, destination_head_size);
-
-            Memory::Copy(destination_head, source_head);
-            Memory::Copy(destination_tail, source_tail);
+            scatter.PopFront(count);
         }
 
-        return copy_size;
+        return ConstMemoryRange{ source.Begin(), scatter.Begin() }.GetSize();
     }
+
 }

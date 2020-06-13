@@ -59,7 +59,6 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents a simple encoder that encodes values to their raw object-representation.
-    /// Encoders are used to encode data before sending them to an output stream.
     /// \author Raffaele D. Facendola - June 2020.
     struct RawStreamEncoder
     {

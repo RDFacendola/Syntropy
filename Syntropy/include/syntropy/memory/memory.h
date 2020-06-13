@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "syntropy/language/type_traits.h"
+#include "syntropy/language/initializer_list.h"
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_range.h"
@@ -29,13 +30,13 @@ namespace syntropy
         /// \return Returns the bytes copied as a result of this call.
         Bytes Copy(const MemoryRange& destination, const ConstMemoryRange& source);
 
-        /// \brief Copy a circular source memory region to a linear destination memory region, unfolding the content. Neither range is exceeded.
+        /// \brief Gather data from one or more memory regions to fill a contiguous memory region sequentially. Neither range is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes CopyUnfold(const MemoryRange& destination, const ConstMemoryRange& source, Bytes source_offset);
+        Bytes Gather(const MemoryRange& destination, InitializerList<ConstMemoryRange> sources);
 
-        /// \brief Copy a source memory region to a circular destination memory region, folding the content. Neither range is exceeded.
+        /// \brief Scatter a contiguous memory region to one or more memory regions sequentially. Neither range is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes CopyFold(const MemoryRange& destination, const ConstMemoryRange& source, Bytes destination_offset);
+        Bytes Scatter(InitializerList<MemoryRange> destinations, const ConstMemoryRange& source);
 
         /// \brief Set a value to each byte in a destination range.
         void Set(const MemoryRange& destination, Byte value);
