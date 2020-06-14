@@ -186,16 +186,16 @@ namespace syntropy
         /// \brief Type alias for 4-elements Float vector.
         using Float4 = Vector4<Float>;
 
-        /// \brief Type alias for 1-element int64 vector.
+        /// \brief Type alias for 1-element integer vector.
         using Int1 = Vector1<Int>;
 
-        /// \brief Type alias for 2-elements int64 vector.
+        /// \brief Type alias for 2-elements integer vector.
         using Int2 = Vector2<Int>;
 
-        /// \brief Type alias for 3-elements int64 vector.
+        /// \brief Type alias for 3-elements integer vector.
         using Int3 = Vector3<Int>;
 
-        /// \brief Type alias for 4-elements int64 vector.
+        /// \brief Type alias for 4-elements integer vector.
         using Int4 = Vector4<Int>;
 
         /************************************************************************/

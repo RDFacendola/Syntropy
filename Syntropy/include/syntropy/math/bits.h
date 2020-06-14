@@ -68,7 +68,7 @@ namespace syntropy
         {
             // Bit magic for integral numbers.
 
-            auto msb = Intrinsics::GetMostSignificantBit(static_cast<int64_t>(rhs));
+            auto msb = Intrinsics::GetMostSignificantBit(ToInt(rhs));
 
             return static_cast<TNumber>(msb + ((rhs & (rhs - TNumber(1))) >> msb));
         }
@@ -87,7 +87,7 @@ namespace syntropy
         {
             // Bit magic for integral numbers.
 
-            return Intrinsics::GetMostSignificantBit(static_cast<int64_t>(rhs));
+            return Intrinsics::GetMostSignificantBit(ToInt(rhs));
         }
         else
         {
@@ -106,7 +106,7 @@ namespace syntropy
 
             if (rhs > TNumber{ 0 })
             {
-                return IsPow2(rhs) ? rhs : TNumber(2 << Intrinsics::GetMostSignificantBit(static_cast<int64_t>(rhs)));
+                return IsPow2(rhs) ? rhs : TNumber(2 << Intrinsics::GetMostSignificantBit(ToInt(rhs)));
             }
 
             return TNumber{ 0 };

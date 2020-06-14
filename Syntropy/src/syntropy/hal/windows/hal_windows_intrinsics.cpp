@@ -28,7 +28,7 @@ namespace syntropy
 
         _BitScanReverse64(&index, rhs);
 
-        return static_cast<int64_t>(index);
+        return ToInt(index);
     }
 
     Int HALIntrinsics::GetLeastSignificantBit(Int rhs)
@@ -37,7 +37,7 @@ namespace syntropy
 
         _BitScanForward64(&index, rhs);
 
-        return static_cast<int64_t>(index);
+        return ToInt(index);
     }
 }
 
