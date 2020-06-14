@@ -20,7 +20,7 @@ namespace syntropy
 
     /// \brief Wraps a PCG random number generator, using the multiple-stream version of the generator.
     /// Each stream yields a different, independent, sequence: samples from different streams are guaranteed to be uncorrelated.
-    /// A 32-bit output 64-bit state generator is preferred over a 64-bit output 128-bit state generator since 128-bit numbers implementations are slower on certain platforms.
+    /// This engine uses 128-bit state and outputs 64-bits numbers.
     /// \see http://www.pcg-random.org/
     /// \author Raffaele D. Facendola - November 2017
     class PCGRandomEngine
@@ -61,20 +61,20 @@ namespace syntropy
 
     private:
 
-        /// \brief Concrete type of a 64-bit state 32-bit output random number engine.
-        struct PCG32;
+        /// \brief Concrete type of a 128-bit state 64-bit output random number engine.
+        struct PCG64;
 
         /// \brief Initialize the underlying random number engine.
         void InitializeEngine();
 
         /// \brief Pointer to the actual engine.
-        PCG32* engine_{ nullptr };
+        PCG64* engine_{ nullptr };
 
         /// \brief Underlying uniform distribution.
         std::uniform_real_distribution<Float> distribution_;
 
         /// \brief Engine state storage.
-        std::aligned_storage_t<sizeof(Int), alignof(Int)> engine_storage_;
+        std::aligned_storage_t<sizeof(Fix64) * 2, alignof(Fix64)> engine_storage_;
 
     };
 

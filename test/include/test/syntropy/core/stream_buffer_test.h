@@ -22,6 +22,8 @@
 #include "syntropy/unit_test/auto_test_suite.h"
 #include "syntropy/unit_test/test_macros.h"
 
+#include "syntropy/math/random.h"
+
 namespace syntropy::unit_test
 {
     /************************************************************************/
@@ -74,6 +76,11 @@ namespace syntropy::unit_test
         auto reader = ConsumeStream(in_stream);
 
         reader >> a >> b >> c >> d;
+
+        auto rng0 = Random::Uniform();
+        auto rng1 = Random::Uniform();
+        auto rng2 = Random::Uniform();
+        auto rng3 = Random::Uniform();
 
         //auto msgpack_writer = MsgpackWriter{ out_stream };
 
