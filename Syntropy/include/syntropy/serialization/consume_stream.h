@@ -1,6 +1,6 @@
 
-/// \file input_stream.h
-/// \brief This header is part of the Syntropy serialization module. It contains definition for input stream.
+/// \file consume_stream.h
+/// \brief This header is part of the Syntropy serialization module. It contains definition for sequential input streams.
 ///
 /// \author Raffaele D. Facendola - 2020
 
@@ -14,24 +14,24 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* INPUT STREAM                                                         */
+    /* CONSUME STREAM                                                       */
     /************************************************************************/
 
     /// \brief Interface for a class which binds to a input stream-like object and exposes sequential input functionalities.
     /// \author Raffaele D. Facendola - June 2020
-    class InputStream
+    class ConsumeStream
     {
     public:
 
         /// \brief Default virtual destructor.
-        virtual ~InputStream() = default;
+        virtual ~ConsumeStream() = default;
 
-        /// \brief Read data from the input stream.
+        /// \brief Consume stream data.
         template <typename TData>
-        InputStream& operator>>(TData& data);
+        ConsumeStream& operator>>(TData& data);
 
-        /// \brief Consume data from the input stream.
-        InputStream& operator>>(const MemoryRange& data);
+        /// \brief Consume stream data.
+        ConsumeStream& operator>>(const MemoryRange& data);
 
         /// \brief Check whether the underlying stream is empty.
         virtual Bool IsEmpty() const = 0;
@@ -41,41 +41,41 @@ namespace syntropy
 
     private:
 
-        /// \brief Read and consume data sequentially from the stream.
+        /// \brief Consume data sequentially from the stream.
         /// \return Returns the range containing read data.
         virtual MemoryRange Consume(const MemoryRange& data) = 0;
 
     };
 
     /************************************************************************/
-    /* INPUT STREAM T <T STREAM>                                            */
+    /* CONSUME STREAM T <T STREAM>                                          */
     /************************************************************************/
 
-    /// \brief Adapter class which binds to a input stream-like object and exposes input functionalities only.
+    /// \brief Adapter class which binds to a input stream-like object and exposes sequential input functionalities.
+    /// Bound streams must outlive instances of this class.
     /// \author Raffaele D. Facendola - June 2020
     template <typename TStream>
-    class InputStreamT : public InputStream
+    class ConsumeStreamT : public ConsumeStream
     {
     public:
 
-        /// \brief Create a new output stream bound to a input stream object.
-        /// The provided stream must outlive this object, otherwise the behavior of the class is undefined.
-        InputStreamT(TStream& stream);
+        /// \brief Create a new stream bound to a input stream object.
+        ConsumeStreamT(TStream& stream);
 
         /// \brief Default copy constructor.
-        InputStreamT(const InputStreamT& other) = default;
+        ConsumeStreamT(const ConsumeStreamT& other) = default;
 
         /// \brief Default move constructor.
-        InputStreamT(InputStreamT&& other) = default;
+        ConsumeStreamT(ConsumeStreamT&& other) = default;
 
         /// \brief Default copy-assignment operator.
-        InputStreamT& operator=(const InputStreamT& other) = default;
+        ConsumeStreamT& operator=(const ConsumeStreamT& other) = default;
 
         /// \brief Default move-assignment operator.
-        InputStreamT& operator=(InputStreamT&& other) = default;
+        ConsumeStreamT& operator=(ConsumeStreamT&& other) = default;
 
         /// \brief Default destructor.
-        virtual ~InputStreamT() = default;
+        virtual ~ConsumeStreamT() = default;
 
         virtual Bool IsEmpty() const override;
 
@@ -94,52 +94,52 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create an input stream deducing templates from arguments.
+    /// \brief Create a consume stream deducing templates from arguments.
     template <typename TStream>
-    InputStreamT<TStream> MakeInputStream(TStream& stream);
+    ConsumeStreamT<TStream> MakeConsumeStream(TStream& stream);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // InputStream.
+    // ConsumeStream.
 
     template <typename TData>
-    inline InputStream& InputStream::operator>>(TData& data)
+    inline ConsumeStream& ConsumeStream::operator>>(TData& data)
     {
         return (*this) >> MakeMemoryRange(data);
     }
 
-    inline InputStream& InputStream::operator>>(const MemoryRange& data)
+    inline ConsumeStream& ConsumeStream::operator>>(const MemoryRange& data)
     {
         Consume(data);
 
         return *this;
     }
 
-    // InputStreamT<TStream>.
+    // ConsumeStreamT<TStream>.
 
     template <typename TStream>
-    inline InputStreamT<TStream>::InputStreamT(TStream& stream)
+    inline ConsumeStreamT<TStream>::ConsumeStreamT(TStream& stream)
         : stream_(&stream)
     {
 
     }
 
     template <typename TStream>
-    inline MemoryRange InputStreamT<TStream>::Consume(const MemoryRange& data)
+    inline MemoryRange ConsumeStreamT<TStream>::Consume(const MemoryRange& data)
     {
         return stream_->Consume(data);
     }
 
     template <typename TStream>
-    inline Bool InputStreamT<TStream>::IsEmpty() const
+    inline Bool ConsumeStreamT<TStream>::IsEmpty() const
     {
         return stream_->IsEmpty();
     }
 
     template <typename TStream>
-    inline Bytes InputStreamT<TStream>::GetSize() const
+    inline Bytes ConsumeStreamT<TStream>::GetSize() const
     {
         return stream_->GetSize();
     }
@@ -147,9 +147,9 @@ namespace syntropy
     // Non-member functions.
 
     template <typename TStream>
-    inline InputStreamT<TStream> MakeInputStream(TStream& stream)
+    inline ConsumeStreamT<TStream> MakeConsumeStream(TStream& stream)
     {
-        return InputStreamT<TStream>(stream);
+        return ConsumeStreamT<TStream>(stream);
     }
 
 }

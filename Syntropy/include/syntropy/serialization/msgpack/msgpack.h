@@ -191,12 +191,12 @@ namespace syntropy
     /// \brief Predicate used to determine whether TType is a valid extension type for Msgpack.
     /// \author Raffaele D. Facendola - June 2020.
     template <typename TType>
-    using HasMsgpackExtensionEncoder = decltype(MsgpackExtensionEncoder<TType>{}(std::declval<OutputStream&>(), std::declval<const TType&>()));
+    using HasMsgpackExtensionEncoder = decltype(MsgpackExtensionEncoder<TType>{}(std::declval<AppendStream&>(), std::declval<const TType&>()));
 
     /// \brief Predicate used to determine whether TType is a valid extension type for Msgpack.
     /// \author Raffaele D. Facendola - June 2020.
     template <typename TType>
-    using HasMsgpackExtensionDecoder = decltype(MsgpackExtensionDecoder<TType>{}(std::declval<InputStream&>(), std::declval<TType&>()));
+    using HasMsgpackExtensionDecoder = decltype(MsgpackExtensionDecoder<TType>{}(std::declval<ConsumeStream&>(), std::declval<TType&>()));
 
     /************************************************************************/
     /* MSGPACK                                                              */

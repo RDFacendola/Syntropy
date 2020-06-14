@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/memory/memory_range.h"
-#include "syntropy/serialization/output_stream.h"
+#include "syntropy/serialization/append_stream.h"
 
 namespace syntropy
 {
@@ -17,16 +17,16 @@ namespace syntropy
     /* STREAM WRITER T <T ENCODER>                                          */
     /************************************************************************/
 
-    /// \brief Exposes methods to sequentially write structured data to an output stream.
-    /// \tparam TEncoder Type of an encoder used to encode data before writing them to the output stream.
+    /// \brief Exposes methods to sequentially write structured data to a stream.
+    /// \tparam TEncoder Type of an encoder used to encode data prior to append operation.
     /// \author Raffaele D. Facendola - June 2020.
     template <typename TEncoder>
     class StreamWriterT
     {
     public:
 
-        /// \brief Create a new writer bound to an output stream.
-        StreamWriterT(OutputStream& output_stream);
+        /// \brief Create a new writer bound to a stream.
+        StreamWriterT(AppendStream& stream);
 
         /// \brief Default copy constructor.
         StreamWriterT(const StreamWriterT&) = default;
@@ -49,8 +49,8 @@ namespace syntropy
 
     private:
 
-        /// \brief Underlying output stream.
-        ObserverPtr<OutputStream> output_stream_;
+        /// \brief Underlying stream.
+        ObserverPtr<AppendStream> stream_{ nullptr };
 
     };
 
@@ -62,9 +62,9 @@ namespace syntropy
     /// \author Raffaele D. Facendola - June 2020.
     struct RawStreamEncoder
     {
-        /// \brief Encode rhs and write the result to an output stream.
+        /// \brief Encode rhs and write the result to an stream.
         template <typename TType>
-        void operator()(OutputStream& lhs, const TType& rhs) const;
+        void operator()(AppendStream& lhs, const TType& rhs) const;
     };
 
     /************************************************************************/
@@ -81,8 +81,8 @@ namespace syntropy
     // StreamWriterT.
 
     template <typename TEncoder>
-    inline StreamWriterT<TEncoder>::StreamWriterT(OutputStream& output_stream)
-        : output_stream_(&output_stream)
+    inline StreamWriterT<TEncoder>::StreamWriterT(AppendStream& stream)
+        : stream_(&stream)
     {
 
     }
@@ -91,7 +91,7 @@ namespace syntropy
     template <typename TType>
     inline StreamWriterT<TEncoder>& StreamWriterT<TEncoder>::operator<<(const TType& data)
     {
-        TEncoder{}(*output_stream_, data);
+        TEncoder{}(*stream_, data);
 
         return *this;
     }
@@ -99,7 +99,7 @@ namespace syntropy
     // RawStreamEncoder.
 
     template <typename TType>
-    inline void RawStreamEncoder::operator()(OutputStream& lhs, const TType& rhs) const
+    inline void RawStreamEncoder::operator()(AppendStream& lhs, const TType& rhs) const
     {
         lhs << rhs;
     }

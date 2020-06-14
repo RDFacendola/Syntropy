@@ -81,6 +81,9 @@ namespace syntropy
         /// This method reallocates only if the provided capacity exceeds the current allocation size, otherwise it behaves as no-op.
         void Reserve(Bytes capacity);
 
+        /// \brief Increase the underlying buffer allocation size by a given amount.
+        void Grow(Bytes capacity);
+
         /// \brief Shrink the allocation size up to the current buffer size.
         /// This method preserve the buffer content and may reallocate the underlying buffer.
         void Shrink();
@@ -108,9 +111,6 @@ namespace syntropy
 
         /// \brief Growth bias added to each reallocation.
         static constexpr auto kGrowthBias = Int{ 8 };
-
-        /// \brief Increase the underlying buffer allocation size by a given amount.
-        void Grow(Bytes size);
 
         /// \brief Reallocate the underlying buffer, filling additional bytes with zeros.
         /// This method affects only buffer capacity, not stream size.
@@ -182,6 +182,11 @@ namespace syntropy
         {
             Realloc(capacity);
         }
+    }
+
+    inline void MemoryStreamBuffer::Grow(Bytes capacity)
+    {
+        Reserve(GetCapacity() + capacity);
     }
 
     inline void MemoryStreamBuffer::Shrink()

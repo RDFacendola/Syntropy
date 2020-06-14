@@ -8,7 +8,12 @@ namespace syntropy
 
     ConstMemoryRange MemoryStreamBuffer::Append(const ConstMemoryRange& data)
     {
-        Grow(data.GetSize());
+        if (auto size = size_ + data.GetSize(); size > GetCapacity())
+        {
+            size = ToBytes(Math::CeilTo<Int>((*size) * kGrowthFactor + kGrowthBias));                                                            // Exponential growth to avoid continuous reallocations.
+
+            Reserve(size);
+        }
 
         auto write_position = size_;
 
@@ -70,16 +75,6 @@ namespace syntropy
         }();
 
         return { data.Begin(), read_data };
-    }
-
-    void MemoryStreamBuffer::Grow(Bytes size)
-    {
-        if (auto capacity = GetSize() + size; capacity > GetCapacity())
-        {
-            capacity = ToBytes(Math::CeilTo<Int>((*capacity) * kGrowthFactor + kGrowthBias));                                                   // Exponential growth to avoid continuous reallocations.
-
-            Realloc(capacity);
-        }
     }
 
     void MemoryStreamBuffer::Realloc(Bytes capacity)

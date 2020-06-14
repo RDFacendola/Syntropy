@@ -1,5 +1,5 @@
 
-/// \file output_stream.h
+/// \file append_stream.h
 /// \brief This header is part of the Syntropy serialization module. It contains definition for output streams.
 ///
 /// \author Raffaele D. Facendola - 2020
@@ -19,73 +19,72 @@ namespace syntropy
 
     /// \brief Interface for a class which binds to an output stream-like object and exposes sequential output functionalities.
     /// \author Raffaele D. Facendola - June 2020
-    class OutputStream
+    class AppendStream
     {
     public:
 
         /// \brief Default virtual destructor.
-        virtual ~OutputStream() = default;
+        virtual ~AppendStream() = default;
 
-        /// \brief Append data to the output stream.
+        /// \brief Append data to the stream.
         template <typename TData>
-        OutputStream& operator<<(const TData& data);
+        AppendStream& operator<<(const TData& data);
 
-        /// \brief Append data to the output stream.
-        OutputStream& operator<<(const ConstMemoryRange& data);
+        /// \brief Append data to the stream.
+        AppendStream& operator<<(const ConstMemoryRange& data);
 
         /// \brief Increase the underlying buffer allocation size.
         /// \param size Amount of bytes to reserve.
-        /// \return Returns true if the reservation request was successful, returns false otherwise.
-        /// \remark Streams are not required to provide this interface, if that's the case this method is no-op.
-        virtual bool Reserve(Bytes size) = 0;
+        /// \remark If the underlying stream doesn't provide this interface this method does nothing.
+        virtual void Grow(Bytes size) = 0;
 
     private:
 
-        /// \brief Write data sequentially to the stream.
+        /// \brief Append data sequentially to the stream.
         /// \return Returns the range containing unwritten data.
         virtual ConstMemoryRange Append(const ConstMemoryRange& data) = 0;
 
     };
 
     /************************************************************************/
-    /* OUTPUT STREAM T <T STREAM>                                           */
+    /* APPEND STREAM T <T STREAM>                                           */
     /************************************************************************/
 
-    /// \brief Adapter class which binds to an output stream-like object and exposes output functionalities only.
+    /// \brief Adapter class which binds to an output stream-like object and exposes sequential output functionalities.
+    /// Bound streams must outlive instances of this class.
     /// \author Raffaele D. Facendola - June 2020
     template <typename TStream>
-    class OutputStreamT : public OutputStream
+    class AppendStreamT : public AppendStream
     {
     public:
 
-        /// \brief Create a new output stream bound to a stream object.
-        /// The provided stream must outlive this object, otherwise the behavior of the class is undefined.
-        OutputStreamT(TStream& stream);
+        /// \brief Create a new stream bound to an output stream object.
+        AppendStreamT(TStream& stream);
 
         /// \brief Default copy constructor.
-        OutputStreamT(const OutputStreamT& other) = default;
+        AppendStreamT(const AppendStreamT& other) = default;
 
         /// \brief Default move constructor.
-        OutputStreamT(OutputStreamT&& other) = default;
+        AppendStreamT(AppendStreamT&& other) = default;
 
         /// \brief Default copy-assignment operator.
-        OutputStreamT& operator=(const OutputStreamT& other) = default;
+        AppendStreamT& operator=(const AppendStreamT& other) = default;
 
         /// \brief Default move-assignment operator.
-        OutputStreamT& operator=(OutputStreamT&& other) = default;
+        AppendStreamT& operator=(AppendStreamT&& other) = default;
 
         /// \brief Default destructor.
-        virtual ~OutputStreamT() = default;
+        virtual ~AppendStreamT() = default;
+
+        virtual void Grow(Bytes size) override;
 
     private:
 
-        /// \brief Predicate used to detect whether the underlying stream supports the "Reserve(Byte)" and "GetSize()" methods.
+        /// \brief Predicate used to detect whether the underlying stream supports the "Grow(Byte)" interface.
         template <typename TStream>
-        using IsReserveSupported = decltype(std::declval<TStream>().Reserve(std::declval<TStream>().GetSize() + Bytes{}));
+        using IsGrowSupported = decltype(std::declval<TStream>().Grow(Bytes{}));
 
         virtual ConstMemoryRange Append(const ConstMemoryRange& data) override;
-
-        virtual bool Reserve(Bytes size) override;
 
         /// \brief Underlying stream.
         ObserverPtr<TStream> stream_{ nullptr };
@@ -96,63 +95,59 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create an output stream wrapping a given stream-like object.
+    /// \brief Create an append stream wrapping a given stream-like object.
     template <typename TStream>
-    OutputStreamT<TStream> MakeOutputStream(TStream& stream);
+    AppendStreamT<TStream> MakeAppendStream(TStream& stream);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // OutputStream.
+    // AppendStream.
 
-            /// \brief Append data to the output stream.
     template <typename TData>
-    inline OutputStream& OutputStream::operator<<(const TData& data)
+    inline AppendStream& AppendStream::operator<<(const TData& data)
     {
         return (*this) << MakeConstMemoryRange(data);
     }
 
-    inline OutputStream& OutputStream::operator<<(const ConstMemoryRange& data)
+    inline AppendStream& AppendStream::operator<<(const ConstMemoryRange& data)
     {
         Append(data);
 
         return *this;
     }
 
-    // OutputStreamT<TStream>.
+    // AppendStreamT<TStream>.
 
     template <typename TStream>
-    inline OutputStreamT<TStream>::OutputStreamT(TStream& stream)
+    inline AppendStreamT<TStream>::AppendStreamT(TStream& stream)
         : stream_(&stream)
     {
 
     }
 
     template <typename TStream>
-    inline ConstMemoryRange OutputStreamT<TStream>::Append(const ConstMemoryRange& data)
+    inline ConstMemoryRange AppendStreamT<TStream>::Append(const ConstMemoryRange& data)
     {
         return stream_->Append(data);
     }
 
     template <typename TStream>
-    inline bool OutputStreamT<TStream>::Reserve(Bytes capacity)
+    inline void AppendStreamT<TStream>::Grow(Bytes capacity)
     {
-        if constexpr (IsValidExpressionV<IsReserveSupported, TStream>)
+        if constexpr (IsValidExpressionV<IsGrowSupported, TStream>)
         {
-            stream_->Reserve(stream_->GetSize() + capacity);
-            return true;
+            stream_->Grow(capacity);
         }
-
-        return false;
     }
 
     // Non-member functions.
 
     template <typename TStream>
-    inline OutputStreamT<TStream> MakeOutputStream(TStream& stream)
+    inline AppendStreamT<TStream> MakeAppendStream(TStream& stream)
     {
-        return OutputStreamT<TStream>(stream);
+        return AppendStreamT<TStream>(stream);
     }
 
 }

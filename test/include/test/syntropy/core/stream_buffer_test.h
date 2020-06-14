@@ -9,8 +9,8 @@
 
 #include "syntropy/memory/bytes.h"
 
-#include "syntropy/serialization/output_stream.h"
-#include "syntropy/serialization/input_stream.h"
+#include "syntropy/serialization/append_stream.h"
+#include "syntropy/serialization/consume_stream.h"
 #include "syntropy/serialization/memory_stream_buffer.h"
 
 #include "syntropy/serialization/stream_writer.h"
@@ -60,14 +60,14 @@ namespace syntropy::unit_test
 
         auto out_buffer = MemoryStreamBuffer{};
 
-        auto out_stream = MakeOutputStream(out_buffer);
+        auto out_stream = MakeAppendStream(out_buffer);
 
         out_stream << 4 << 56 << 42 << 3.4f;
 
 
         auto in_buffer = MemoryStreamBuffer(out_buffer.Release());
 
-        auto in_stream = MakeInputStream(in_buffer);
+        auto in_stream = MakeConsumeStream(in_buffer);
 
         in_stream >> a >> b >> c >> d;
 

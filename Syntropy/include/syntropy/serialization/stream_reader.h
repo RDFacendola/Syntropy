@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/memory/memory_range.h"
-#include "syntropy/serialization/input_stream.h"
+#include "syntropy/serialization/consume_stream.h"
 
 namespace syntropy
 {
@@ -17,16 +17,16 @@ namespace syntropy
     /* STREAM READER T <T DECODER>                                          */
     /************************************************************************/
 
-    /// \brief Exposes methods to sequentially read structured data from an input stream.
-    /// \tparam TDecoder Type of a decoder used to decode data after being read from the input stream.
+    /// \brief Exposes methods to sequentially read structured data from a  stream.
+    /// \tparam TDecoder Type of a decoder used to decode data after being read from the stream.
     /// \author Raffaele D. Facendola - June 2020.
     template <typename TDecoder>
     class StreamReaderT
     {
     public:
 
-        /// \brief Create a new writer bound to an input stream.
-        StreamReaderT(InputStream& input_stream);
+        /// \brief Create a new writer bound to a stream.
+        StreamReaderT(ConsumeStream& stream);
 
         /// \brief Default copy constructor.
         StreamReaderT(const StreamReaderT&) = default;
@@ -49,8 +49,8 @@ namespace syntropy
 
     private:
 
-        /// \brief Underlying input stream.
-        ObserverPtr<InputStream> input_stream_;
+        /// \brief Underlying stream.
+        ObserverPtr<ConsumeStream> stream_;
 
     };
 
@@ -65,7 +65,7 @@ namespace syntropy
         /// \brief Decode bytes from lhs and write the result to rhs.
         /// If the data were encoded using an encoder different than RawStreamEncoder, the behavior of this method is undefined.
         template <typename TType>
-        void operator()(InputStream& lhs, TType& rhs) const;
+        void operator()(ConsumeStream& lhs, TType& rhs) const;
     };
 
     /************************************************************************/
@@ -82,8 +82,8 @@ namespace syntropy
     // StreamReaderT.
 
     template <typename TDecoder>
-    inline StreamReaderT<TDecoder>::StreamReaderT(InputStream& input_stream)
-        : input_stream_(&input_stream)
+    inline StreamReaderT<TDecoder>::StreamReaderT(ConsumeStream& stream)
+        : stream_(&stream)
     {
 
     }
@@ -92,7 +92,7 @@ namespace syntropy
     template <typename TType>
     inline StreamReaderT<TDecoder>& StreamReaderT<TDecoder>::operator>>(TType& data)
     {
-        TDecoder{}(*input_stream_, data);
+        TDecoder{}(*stream_, data);
 
         return *this;
     }
@@ -100,7 +100,7 @@ namespace syntropy
     // RawStreamDecoder.
 
     template <typename TType>
-    inline void RawStreamDecoder::operator()(InputStream& lhs, TType& rhs) const
+    inline void RawStreamDecoder::operator()(ConsumeStream& lhs, TType& rhs) const
     {
         lhs >> rhs;
     }
