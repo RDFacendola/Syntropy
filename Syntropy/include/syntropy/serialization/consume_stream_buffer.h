@@ -1,6 +1,6 @@
 
 /// \file consume_stream_buffer.h
-/// \brief This header is part of the Syntropy serialization module. It contains definition for sequential input streams buffers.
+/// \brief This header is part of the Syntropy serialization module. It contains definitions for low-level sequential input streams buffers.
 ///
 /// \author Raffaele D. Facendola - 2020
 

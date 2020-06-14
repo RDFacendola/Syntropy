@@ -1,6 +1,6 @@
 
-/// \file stream_reader.h
-/// \brief This header is part of the Syntropy serialization module. It contains for stream reader classes.
+/// \file consume_stream.h
+/// \brief This header is part of the Syntropy serialization module. It contains definitions for high-level sequential input streams.
 ///
 /// \author Raffaele D. Facendola - 2020
 
@@ -14,43 +14,43 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* STREAM READER T <T DECODER>                                          */
+    /* CONSUME STREAM T <T DECODER>                                         */
     /************************************************************************/
 
-    /// \brief Exposes methods to sequentially read structured data from a  stream.
-    /// \tparam TDecoder Type of a decoder used to decode data after being read from the stream.
+    /// \brief Exposes methods to sequentially read structured data from a stream buffer.
+    /// \tparam TDecoder Type of a decoder used to decode data after being read.
     /// \author Raffaele D. Facendola - June 2020.
     template <typename TDecoder>
-    class StreamReaderT
+    class ConsumeStreamT
     {
     public:
 
-        /// \brief Create a new writer bound to a stream.
-        StreamReaderT(ConsumeStreamBuffer& stream);
+        /// \brief Create a new stream bound to a stream buffer.
+        ConsumeStreamT(ConsumeStreamBuffer& stream_buffer);
 
         /// \brief Default copy constructor.
-        StreamReaderT(const StreamReaderT&) = default;
+        ConsumeStreamT(const ConsumeStreamT&) = default;
 
         /// \brief Default move constructor.
-        StreamReaderT(StreamReaderT&&) = default;
+        ConsumeStreamT(ConsumeStreamT&&) = default;
 
         /// \brief Default copy-assignment constructor.
-        StreamReaderT& operator=(const StreamReaderT&) = default;
+        ConsumeStreamT& operator=(const ConsumeStreamT&) = default;
 
         /// \brief Default move-assignment constructor.
-        StreamReaderT& operator=(StreamReaderT&&) = default;
+        ConsumeStreamT& operator=(ConsumeStreamT&&) = default;
 
         /// \brief Default destructor.
-        ~StreamReaderT() = default;
+        ~ConsumeStreamT() = default;
 
-        /// \brief Read data sequentially from the underlying stream.
+        /// \brief Read data sequentially from the underlying stream buffer.
         template <typename TType>
-        StreamReaderT& operator>>(TType& data);
+        ConsumeStreamT& operator>>(TType& data);
 
     private:
 
-        /// \brief Underlying stream.
-        ObserverPtr<ConsumeStreamBuffer> stream_{ nullptr };
+        /// \brief Underlying stream buffer.
+        ObserverPtr<ConsumeStreamBuffer> stream_buffer_{ nullptr };
 
     };
 
@@ -63,7 +63,6 @@ namespace syntropy
     struct RawStreamDecoder
     {
         /// \brief Decode bytes from lhs and write the result to rhs.
-        /// If the data were encoded using an encoder different than RawStreamEncoder, the behavior of this method is undefined.
         template <typename TType>
         void operator()(ConsumeStreamBuffer& lhs, TType& rhs) const;
     };
@@ -72,27 +71,27 @@ namespace syntropy
     /* TYPE ALIASES                                                         */
     /************************************************************************/
 
-    /// \brief Type alias for a raw stream reader.
-    using StreamReader = StreamReaderT<RawStreamDecoder>;
+    /// \brief Type alias for a raw consume stream.
+    using ConsumeStream = ConsumeStreamT<RawStreamDecoder>;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // StreamReaderT.
+    // ConsumeStreamT<TDecoder>.
 
     template <typename TDecoder>
-    inline StreamReaderT<TDecoder>::StreamReaderT(ConsumeStreamBuffer& stream)
-        : stream_(&stream)
+    inline ConsumeStreamT<TDecoder>::ConsumeStreamT(ConsumeStreamBuffer& stream_buffer)
+        : stream_buffer_(&stream_buffer)
     {
 
     }
 
     template <typename TDecoder>
     template <typename TType>
-    inline StreamReaderT<TDecoder>& StreamReaderT<TDecoder>::operator>>(TType& data)
+    inline ConsumeStreamT<TDecoder>& ConsumeStreamT<TDecoder>::operator>>(TType& data)
     {
-        TDecoder{}(*stream_, data);
+        TDecoder{}(*stream_buffer_, data);
 
         return *this;
     }

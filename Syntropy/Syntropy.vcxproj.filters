@@ -104,13 +104,13 @@
     <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\core\types.h" />
     <ClInclude Include="include\syntropy\serialization\memory_stream_buffer.h" />
-    <ClInclude Include="include\syntropy\serialization\stream_writer.h" />
-    <ClInclude Include="include\syntropy\serialization\stream_reader.h" />
     <ClInclude Include="include\syntropy\serialization\msgpack\msgpack.h" />
     <ClInclude Include="include\syntropy\language\initializer_list.h" />
     <ClInclude Include="include\syntropy\language\algorithm.h" />
     <ClInclude Include="include\syntropy\serialization\append_stream_buffer.h" />
     <ClInclude Include="include\syntropy\serialization\consume_stream_buffer.h" />
+    <ClInclude Include="include\syntropy\serialization\consume_stream.h" />
+    <ClInclude Include="include\syntropy\serialization\append_stream.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

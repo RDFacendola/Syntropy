@@ -1,6 +1,6 @@
 
-/// \file stream_writer.h
-/// \brief This header is part of the Syntropy serialization module. It contains for stream writer classes.
+/// \file append_stream.h
+/// \brief This header is part of the Syntropy serialization module. It contains definitions for high-level sequential output streams.
 ///
 /// \author Raffaele D. Facendola - 2020
 
@@ -14,43 +14,43 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* STREAM WRITER T <T ENCODER>                                          */
+    /* APPEND STREAM T <T ENCODER>                                          */
     /************************************************************************/
 
-    /// \brief Exposes methods to sequentially write structured data to a stream.
-    /// \tparam TEncoder Type of an encoder used to encode data prior to append operation.
+    /// \brief Exposes methods to sequentially write structured data to a stream buffer.
+    /// \tparam TDecoder Type of a decoder used to encode data before being written.
     /// \author Raffaele D. Facendola - June 2020.
     template <typename TEncoder>
-    class StreamWriterT
+    class AppendStreamT
     {
     public:
 
-        /// \brief Create a new writer bound to a stream.
-        StreamWriterT(AppendStreamBuffer& stream);
+        /// \brief Create a new stream bound to a stream buffer.
+        AppendStreamT(AppendStreamBuffer& stream_buffer);
 
         /// \brief Default copy constructor.
-        StreamWriterT(const StreamWriterT&) = default;
+        AppendStreamT(const AppendStreamT&) = default;
 
         /// \brief Default move constructor.
-        StreamWriterT(StreamWriterT&&) = default;
+        AppendStreamT(AppendStreamT&&) = default;
 
         /// \brief Default copy-assignment constructor.
-        StreamWriterT& operator=(const StreamWriterT&) = default;
+        AppendStreamT& operator=(const AppendStreamT&) = default;
 
         /// \brief Default move-assignment constructor.
-        StreamWriterT& operator=(StreamWriterT&&) = default;
+        AppendStreamT& operator=(AppendStreamT&&) = default;
 
         /// \brief Default destructor.
-        ~StreamWriterT() = default;
+        ~AppendStreamT() = default;
 
-        /// \brief Write data sequentially to the underlying stream.
+        /// \brief Write data sequentially to the underlying stream buffer.
         template <typename TType>
-        StreamWriterT& operator<<(const TType& data);
+        AppendStreamT& operator<<(const TType& data);
 
     private:
 
-        /// \brief Underlying stream.
-        ObserverPtr<AppendStreamBuffer> stream_{ nullptr };
+        /// \brief Underlying stream buffer.
+        ObserverPtr<AppendStreamBuffer> stream_buffer_{ nullptr };
 
     };
 
@@ -62,7 +62,7 @@ namespace syntropy
     /// \author Raffaele D. Facendola - June 2020.
     struct RawStreamEncoder
     {
-        /// \brief Encode rhs and write the result to an stream.
+        /// \brief Encode bytes from rhs and write the result to lhs.
         template <typename TType>
         void operator()(AppendStreamBuffer& lhs, const TType& rhs) const;
     };
@@ -72,26 +72,26 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Type alias for a raw stream writer.
-    using StreamWriter = StreamWriterT<RawStreamEncoder>;
+    using AppendStream = AppendStreamT<RawStreamEncoder>;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // StreamWriterT.
+    // AppendStreamT.
 
     template <typename TEncoder>
-    inline StreamWriterT<TEncoder>::StreamWriterT(AppendStreamBuffer& stream)
-        : stream_(&stream)
+    inline AppendStreamT<TEncoder>::AppendStreamT(AppendStreamBuffer& stream_buffer)
+        : stream_buffer_(&stream_buffer)
     {
 
     }
 
     template <typename TEncoder>
     template <typename TType>
-    inline StreamWriterT<TEncoder>& StreamWriterT<TEncoder>::operator<<(const TType& data)
+    inline AppendStreamT<TEncoder>& AppendStreamT<TEncoder>::operator<<(const TType& data)
     {
-        TEncoder{}(*stream_, data);
+        TEncoder{}(*stream_buffer_, data);
 
         return *this;
     }

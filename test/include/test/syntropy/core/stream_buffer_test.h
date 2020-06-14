@@ -13,8 +13,8 @@
 #include "syntropy/serialization/append_stream_buffer.h"
 #include "syntropy/serialization/consume_stream_buffer.h"
 
-#include "syntropy/serialization/stream_writer.h"
-#include "syntropy/serialization/stream_reader.h"
+#include "syntropy/serialization/append_stream.h"
+#include "syntropy/serialization/consume_stream.h"
 
 //#include "syntropy/serialization/msgpack/msgpack_writer.h"
 
@@ -62,7 +62,7 @@ namespace syntropy::unit_test
 
         auto out_stream = MakeAppendStreamBuffer(out_buffer);
 
-        auto writer = StreamWriter(out_stream);
+        auto writer = AppendStream(out_stream);
 
         writer << 4 << 56 << 42 << 3.4f;
 
@@ -71,7 +71,7 @@ namespace syntropy::unit_test
 
         auto in_stream = MakeConsumeStreamBuffer(in_buffer);
 
-        auto reader = StreamReader(in_stream);
+        auto reader = ConsumeStream(in_stream);
 
         reader >> a >> b >> c >> d;
 
