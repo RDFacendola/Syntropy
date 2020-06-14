@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/memory/memory_range.h"
-#include "syntropy/serialization/consume_stream.h"
+#include "syntropy/serialization/consume_stream_buffer.h"
 
 namespace syntropy
 {
@@ -26,7 +26,7 @@ namespace syntropy
     public:
 
         /// \brief Create a new writer bound to a stream.
-        StreamReaderT(ConsumeStream& stream);
+        StreamReaderT(ConsumeStreamBuffer& stream);
 
         /// \brief Default copy constructor.
         StreamReaderT(const StreamReaderT&) = default;
@@ -50,7 +50,7 @@ namespace syntropy
     private:
 
         /// \brief Underlying stream.
-        ObserverPtr<ConsumeStream> stream_;
+        ObserverPtr<ConsumeStreamBuffer> stream_{ nullptr };
 
     };
 
@@ -65,7 +65,7 @@ namespace syntropy
         /// \brief Decode bytes from lhs and write the result to rhs.
         /// If the data were encoded using an encoder different than RawStreamEncoder, the behavior of this method is undefined.
         template <typename TType>
-        void operator()(ConsumeStream& lhs, TType& rhs) const;
+        void operator()(ConsumeStreamBuffer& lhs, TType& rhs) const;
     };
 
     /************************************************************************/
@@ -82,7 +82,7 @@ namespace syntropy
     // StreamReaderT.
 
     template <typename TDecoder>
-    inline StreamReaderT<TDecoder>::StreamReaderT(ConsumeStream& stream)
+    inline StreamReaderT<TDecoder>::StreamReaderT(ConsumeStreamBuffer& stream)
         : stream_(&stream)
     {
 
@@ -100,9 +100,9 @@ namespace syntropy
     // RawStreamDecoder.
 
     template <typename TType>
-    inline void RawStreamDecoder::operator()(ConsumeStream& lhs, TType& rhs) const
+    inline void RawStreamDecoder::operator()(ConsumeStreamBuffer& lhs, TType& rhs) const
     {
-        lhs >> rhs;
+        lhs.Consume(MakeMemoryRange(rhs));
     }
 
 }

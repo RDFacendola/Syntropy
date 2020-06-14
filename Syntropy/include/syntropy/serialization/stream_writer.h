@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/memory/memory_range.h"
-#include "syntropy/serialization/append_stream.h"
+#include "syntropy/serialization/append_stream_buffer.h"
 
 namespace syntropy
 {
@@ -26,7 +26,7 @@ namespace syntropy
     public:
 
         /// \brief Create a new writer bound to a stream.
-        StreamWriterT(AppendStream& stream);
+        StreamWriterT(AppendStreamBuffer& stream);
 
         /// \brief Default copy constructor.
         StreamWriterT(const StreamWriterT&) = default;
@@ -50,7 +50,7 @@ namespace syntropy
     private:
 
         /// \brief Underlying stream.
-        ObserverPtr<AppendStream> stream_{ nullptr };
+        ObserverPtr<AppendStreamBuffer> stream_{ nullptr };
 
     };
 
@@ -64,7 +64,7 @@ namespace syntropy
     {
         /// \brief Encode rhs and write the result to an stream.
         template <typename TType>
-        void operator()(AppendStream& lhs, const TType& rhs) const;
+        void operator()(AppendStreamBuffer& lhs, const TType& rhs) const;
     };
 
     /************************************************************************/
@@ -81,7 +81,7 @@ namespace syntropy
     // StreamWriterT.
 
     template <typename TEncoder>
-    inline StreamWriterT<TEncoder>::StreamWriterT(AppendStream& stream)
+    inline StreamWriterT<TEncoder>::StreamWriterT(AppendStreamBuffer& stream)
         : stream_(&stream)
     {
 
@@ -99,9 +99,9 @@ namespace syntropy
     // RawStreamEncoder.
 
     template <typename TType>
-    inline void RawStreamEncoder::operator()(AppendStream& lhs, const TType& rhs) const
+    inline void RawStreamEncoder::operator()(AppendStreamBuffer& lhs, const TType& rhs) const
     {
-        lhs << rhs;
+        lhs.Append(MakeConstMemoryRange(rhs));
     }
 
 }

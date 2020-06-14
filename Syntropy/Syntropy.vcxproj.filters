@@ -109,8 +109,8 @@
     <ClInclude Include="include\syntropy\serialization\msgpack\msgpack.h" />
     <ClInclude Include="include\syntropy\language\initializer_list.h" />
     <ClInclude Include="include\syntropy\language\algorithm.h" />
-    <ClInclude Include="include\syntropy\serialization\append_stream.h" />
-    <ClInclude Include="include\syntropy\serialization\consume_stream.h" />
+    <ClInclude Include="include\syntropy\serialization\append_stream_buffer.h" />
+    <ClInclude Include="include\syntropy\serialization\consume_stream_buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
