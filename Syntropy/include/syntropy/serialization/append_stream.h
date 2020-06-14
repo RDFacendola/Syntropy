@@ -14,48 +14,48 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* APPEND STREAM T <T ENCODER, T APPEND STREAM BUFFER>                  */
+    /* APPEND STREAM <T ENCODER, T STREAM BUFFER>                           */
     /************************************************************************/
 
     /// \brief Exposes methods to sequentially write structured data to a stream buffer.
     /// \tparam TDecoder Type of a decoder used to encode data before being written.
     /// \author Raffaele D. Facendola - June 2020.
-    template <typename TEncoder, typename TAppendStreamBuffer = AppendStreamBuffer>
-    class AppendStreamT
+    template <typename TEncoder, typename TStreamBuffer>
+    class AppendStream
     {
     public:
 
         /// \brief Create a new stream bound to a stream buffer.
-        AppendStreamT(TAppendStreamBuffer& stream_buffer);
+        AppendStream(TStreamBuffer& stream_buffer);
 
         /// \brief Default copy constructor.
-        AppendStreamT(const AppendStreamT&) = default;
+        AppendStream(const AppendStream&) = default;
 
         /// \brief Default move constructor.
-        AppendStreamT(AppendStreamT&&) = default;
+        AppendStream(AppendStream&&) = default;
 
         /// \brief Default copy-assignment constructor.
-        AppendStreamT& operator=(const AppendStreamT&) = default;
+        AppendStream& operator=(const AppendStream&) = default;
 
         /// \brief Default move-assignment constructor.
-        AppendStreamT& operator=(AppendStreamT&&) = default;
+        AppendStream& operator=(AppendStream&&) = default;
 
         /// \brief Default destructor.
-        ~AppendStreamT() = default;
+        ~AppendStream() = default;
 
         /// \brief Write data sequentially to the underlying stream buffer.
         template <typename TType>
-        AppendStreamT& operator<<(const TType& data);
+        AppendStream& operator<<(const TType& data);
 
     private:
 
         /// \brief Underlying stream buffer.
-        ObserverPtr<TAppendStreamBuffer> stream_buffer_{ nullptr };
+        ObserverPtr<TStreamBuffer> stream_buffer_{ nullptr };
 
     };
 
     /************************************************************************/
-    /* RAW STREAM ENCODER                                                   */
+    /* RAW APPEND STREAM ENCODER                                            */
     /************************************************************************/
 
     /// \brief Represents a simple encoder that encodes values to their raw object-representation.
@@ -63,41 +63,34 @@ namespace syntropy
     struct RawAppendStreamEncoder
     {
         /// \brief Encode bytes from rhs and write the result to lhs.
-        template <typename TAppendStreamBuffer, typename TType>
-        void operator()(TAppendStreamBuffer& lhs, const TType& rhs) const;
+        template <typename TStreamBuffer, typename TType>
+        void operator()(TStreamBuffer& lhs, const TType& rhs) const;
     };
-
-    /************************************************************************/
-    /* TYPE ALIASES                                                         */
-    /************************************************************************/
-
-    /// \brief Type alias for a raw stream writer.
-    using AppendStream = AppendStreamT<RawAppendStreamEncoder>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create a new AppendStreamT by deducing template types from arguments.
-    template <typename TEncoder, typename TAppendStreamBuffer>
-    AppendStreamT<TEncoder, TAppendStreamBuffer> MakeAppendStream(TAppendStreamBuffer& stream_buffer);
+    /// \brief Create a new AppendStream by deducing template types from arguments.
+    template <typename TEncoder, typename TStreamBuffer>
+    AppendStream<TEncoder, TStreamBuffer> MakeAppendStream(TStreamBuffer& stream_buffer);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // AppendStreamT<TEncoder, TAppendStreamBuffer>.
+    // AppendStream<TEncoder, TStreamBuffer>.
 
-    template <typename TEncoder, typename TAppendStreamBuffer>
-    inline AppendStreamT<TEncoder, TAppendStreamBuffer>::AppendStreamT(TAppendStreamBuffer& stream_buffer)
+    template <typename TEncoder, typename TStreamBuffer>
+    inline AppendStream<TEncoder, TStreamBuffer>::AppendStream(TStreamBuffer& stream_buffer)
         : stream_buffer_(&stream_buffer)
     {
 
     }
 
-    template <typename TEncoder, typename TAppendStreamBuffer>
+    template <typename TEncoder, typename TStreamBuffer>
     template <typename TType>
-    inline AppendStreamT<TEncoder, TAppendStreamBuffer>& AppendStreamT<TEncoder, TAppendStreamBuffer>::operator<<(const TType& data)
+    inline AppendStream<TEncoder, TStreamBuffer>& AppendStream<TEncoder, TStreamBuffer>::operator<<(const TType& data)
     {
         TEncoder{}(*stream_buffer_, data);
 
@@ -106,18 +99,18 @@ namespace syntropy
 
     // RawAppendStreamEncoder.
 
-    template <typename TAppendStreamBuffer, typename TType>
-    inline void RawAppendStreamEncoder::operator()(TAppendStreamBuffer& lhs, const TType& rhs) const
+    template <typename TStreamBuffer, typename TType>
+    inline void RawAppendStreamEncoder::operator()(TStreamBuffer& lhs, const TType& rhs) const
     {
         lhs.Append(MakeConstMemoryRange(rhs));
     }
 
     // Non-member functions.
 
-    template <typename TEncoder, typename TAppendStreamBuffer>
-    inline AppendStreamT<TEncoder, TAppendStreamBuffer> MakeAppendStream(TAppendStreamBuffer& stream_buffer)
+    template <typename TEncoder, typename TStreamBuffer>
+    inline AppendStream<TEncoder, TStreamBuffer> MakeAppendStream(TStreamBuffer& stream_buffer)
     {
-        return AppendStreamT<TEncoder, TAppendStreamBuffer>(stream_buffer);
+        return AppendStream<TEncoder, TStreamBuffer>(stream_buffer);
     }
 
 }

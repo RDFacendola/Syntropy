@@ -69,7 +69,7 @@ namespace syntropy
         /// \brief Read data at given position from buffer start.
         /// Reads past the end of the stream are no-ops. This method does not change stream allocation.
         /// \return Returns the range containing read data.
-        MemoryRange Read(Bytes position, const MemoryRange& data);
+        MemoryRange Read(Bytes position, const MemoryRange& data) const;
 
         /// \brief Discard data content and clear the underlying buffer.
         void Clear();
@@ -119,6 +119,9 @@ namespace syntropy
 
         /// \brief Get the address of a byte at given offset from the base pointer, wrapping around.
         MemoryAddress GetAddress(Bytes offset);
+
+        /// \brief Get the address of a byte at given offset from the base pointer, wrapping around.
+        ConstMemoryAddress GetAddress(Bytes offset) const;
 
         /// \brief Underlying memory buffer, may be larger than current stream size.
         /// This buffer is circular to prevent reallocations from consume operations.

@@ -14,94 +14,103 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* CONSUME STREAM T <T DECODER>                                         */
+    /* CONSUME STREAM T <T DECODER, T STREAM BUFFER>                        */
     /************************************************************************/
 
     /// \brief Exposes methods to sequentially read structured data from a stream buffer.
     /// \tparam TDecoder Type of a decoder used to decode data after being read.
     /// \author Raffaele D. Facendola - June 2020.
-    template <typename TDecoder>
-    class ConsumeStreamT
+    template <typename TDecoder, typename TStreamBuffer>
+    class ConsumeStream
     {
     public:
 
         /// \brief Create a new stream bound to a stream buffer.
-        ConsumeStreamT(ConsumeStreamBuffer& stream_buffer);
+        ConsumeStream(TStreamBuffer& stream_buffer);
 
         /// \brief Default copy constructor.
-        ConsumeStreamT(const ConsumeStreamT&) = default;
+        ConsumeStream(const ConsumeStream&) = default;
 
         /// \brief Default move constructor.
-        ConsumeStreamT(ConsumeStreamT&&) = default;
+        ConsumeStream(ConsumeStream&&) = default;
 
         /// \brief Default copy-assignment constructor.
-        ConsumeStreamT& operator=(const ConsumeStreamT&) = default;
+        ConsumeStream& operator=(const ConsumeStream&) = default;
 
         /// \brief Default move-assignment constructor.
-        ConsumeStreamT& operator=(ConsumeStreamT&&) = default;
+        ConsumeStream& operator=(ConsumeStream&&) = default;
 
         /// \brief Default destructor.
-        ~ConsumeStreamT() = default;
+        ~ConsumeStream() = default;
 
         /// \brief Read data sequentially from the underlying stream buffer.
         template <typename TType>
-        ConsumeStreamT& operator>>(TType& data);
+        ConsumeStream& operator>>(TType& data);
 
     private:
 
         /// \brief Underlying stream buffer.
-        ObserverPtr<ConsumeStreamBuffer> stream_buffer_{ nullptr };
+        ObserverPtr<TStreamBuffer> stream_buffer_{ nullptr };
 
     };
 
     /************************************************************************/
-    /* RAW STREAM DECODER                                                   */
+    /* RAW APPEND STREAM DECODER                                            */
     /************************************************************************/
 
     /// \brief Represents a simple decoder that decodes values from their raw object-representation.
     /// \author Raffaele D. Facendola - June 2020.
-    struct RawStreamDecoder
+    struct RawAppendStreamDecoder
     {
         /// \brief Decode bytes from lhs and write the result to rhs.
-        template <typename TType>
-        void operator()(ConsumeStreamBuffer& lhs, TType& rhs) const;
+        template <typename TStreamBuffer, typename TType>
+        void operator()(TStreamBuffer& lhs, TType& rhs) const;
     };
 
     /************************************************************************/
-    /* TYPE ALIASES                                                         */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Type alias for a raw consume stream.
-    using ConsumeStream = ConsumeStreamT<RawStreamDecoder>;
+    /// \brief Create a new AppendStream by deducing template types from arguments.
+    template <typename TDecoder, typename TStreamBuffer>
+    ConsumeStream<TDecoder, TStreamBuffer> MakeConstumeStream(TStreamBuffer& stream_buffer);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // ConsumeStreamT<TDecoder>.
+    // ConsumeStream<TDecoder>.
 
-    template <typename TDecoder>
-    inline ConsumeStreamT<TDecoder>::ConsumeStreamT(ConsumeStreamBuffer& stream_buffer)
+    template <typename TDecoder, typename TStreamBuffer>
+    inline ConsumeStream<TDecoder, TStreamBuffer>::ConsumeStream(TStreamBuffer& stream_buffer)
         : stream_buffer_(&stream_buffer)
     {
 
     }
 
-    template <typename TDecoder>
+    template <typename TDecoder, typename TStreamBuffer>
     template <typename TType>
-    inline ConsumeStreamT<TDecoder>& ConsumeStreamT<TDecoder>::operator>>(TType& data)
+    inline ConsumeStream<TDecoder, TStreamBuffer>& ConsumeStream<TDecoder, TStreamBuffer>::operator>>(TType& data)
     {
         TDecoder{}(*stream_buffer_, data);
 
         return *this;
     }
 
-    // RawStreamDecoder.
+    // RawAppendStreamDecoder.
 
-    template <typename TType>
-    inline void RawStreamDecoder::operator()(ConsumeStreamBuffer& lhs, TType& rhs) const
+    template <typename TStreamBuffer, typename TType>
+    inline void RawAppendStreamDecoder::operator()(TStreamBuffer& lhs, TType& rhs) const
     {
         lhs.Consume(MakeMemoryRange(rhs));
+    }
+
+    // Non-member functions.
+
+    template <typename TDecoder, typename TStreamBuffer>
+    inline ConsumeStream<TDecoder, TStreamBuffer> MakeConstumeStream(TStreamBuffer& stream_buffer)
+    {
+        return ConsumeStream<TDecoder, TStreamBuffer>(stream_buffer);
     }
 
 }

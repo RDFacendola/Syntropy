@@ -60,9 +60,7 @@ namespace syntropy::unit_test
 
         auto out_buffer = MemoryStreamBuffer{};
 
-        auto out_polymorphic = MakeAppendStreamBuffer(out_buffer);
-
-        auto msgpack_writer = MakeMsgpackAppendStream(out_polymorphic);
+        auto msgpack_writer = MakeAppendStream<MsgpackStreamEncoder>(out_buffer);
 
         msgpack_writer << 4 << 5 << 42.0f;
 

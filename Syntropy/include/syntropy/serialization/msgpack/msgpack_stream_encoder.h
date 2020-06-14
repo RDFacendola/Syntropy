@@ -30,63 +30,51 @@ namespace syntropy
     /// \brief Represents a functor that encodes values using the Msgpack format.
     /// \see https://github.com/msgpack/msgpack/blob/master/spec.md
     /// \author Raffaele D. Facendola - June 2020.
-    template <typename TAppendStreamBuffer>
     struct MsgpackStreamEncoder
     {
         /// \brief Encode rhs and write the result to an output stream.
-        void operator()(TAppendStreamBuffer& lhs, Null rhs) const;
+        template <typename TAppendStreamBuffer>
+        void operator()(TAppendStreamBuffer&& lhs, Null rhs) const;
 
         /// \brief Encode rhs and write the result to an output stream.
-        void operator()(TAppendStreamBuffer& lhs, Boolean rhs) const;
+        template <typename TAppendStreamBuffer>
+        void operator()(TAppendStreamBuffer&& lhs, Boolean rhs) const;
 
         /// \brief Encode rhs and write the result to an output stream.Integer
-        void operator()(TAppendStreamBuffer& lhs, Integer rhs) const;
+        template <typename TAppendStreamBuffer>
+        void operator()(TAppendStreamBuffer&& lhs, Integer rhs) const;
 
         /// \brief Encode rhs and write the result to an output stream.
-        void operator()(TAppendStreamBuffer& lhs, Floating rhs) const;
+        template <typename TAppendStreamBuffer>
+        void operator()(TAppendStreamBuffer&& lhs, Floating rhs) const;
 
         /// \brief Encode rhs and write the result to an output stream.
-        void operator()(TAppendStreamBuffer& lhs, const String& rhs) const;
+        template <typename TAppendStreamBuffer>
+        void operator()(TAppendStreamBuffer&& lhs, const String& rhs) const;
 
         /// \brief Encode rhs and write the result to an output stream.
-        void operator()(TAppendStreamBuffer& lhs, const ConstMemoryRange& rhs) const;
+        template <typename TAppendStreamBuffer>
+        void operator()(TAppendStreamBuffer&& lhs, const ConstMemoryRange& rhs) const;
 
         /// \brief Encode rhs and write the result to an output stream.
-        template <typename TElement>
-        void operator()(TAppendStreamBuffer& lhs, const Vector<TElement>& rhs) const;
+        template <typename TAppendStreamBuffer, typename TElement>
+        void operator()(TAppendStreamBuffer&& lhs, const Vector<TElement>& rhs) const;
 
-        template <typename TKey, typename TValue>
-        void operator()(TAppendStreamBuffer& lhs, const Map<TKey, TValue>& rhs) const;
+        template <typename TAppendStreamBuffer, typename TKey, typename TValue>
+        void operator()(TAppendStreamBuffer&& lhs, const Map<TKey, TValue>& rhs) const;
 
         /// \brief Encode rhs and write the result to an output stream.
-        template <typename TExtension, typename = EnableIfValidExpressionT<HasMsgpackExtensionEncoder, TExtension>>
-        void operator()(TAppendStreamBuffer& lhs, const TExtension& rhs) const;
+        template <typename TAppendStreamBuffer, typename TExtension, typename = EnableIfValidExpressionT<HasMsgpackExtensionEncoder, TExtension>>
+        void operator()(TAppendStreamBuffer&& lhs, const TExtension& rhs) const;
 
         /// \brief Append a value rhs to lhs using its object-representation.
-        template <typename TType>
-        void Append(TAppendStreamBuffer& lhs, const TType& rhs) const;
+        template <typename TAppendStreamBuffer, typename TType>
+        void Append(TAppendStreamBuffer&& lhs, const TType& rhs) const;
 
         /// \brief Pack together a fixed format and a 8-bit size using a mask.
         Byte Pack(MsgpackFormat format, Fix8 value, MsgpackFormatMask mask) const;
 
     };
-
-    /************************************************************************/
-    /* TYPE ALIASES                                                         */
-    /************************************************************************/
-
-    /// \brief Append stream for data streams encoded via Msgpack specification.
-    /// \author Raffaele D. Facendola - May 2020.
-    template <typename TAppendStreamBuffer = AppendStreamBuffer>
-    using MsgpackAppendStream = AppendStreamT<MsgpackStreamEncoder<TAppendStreamBuffer>, TAppendStreamBuffer>;
-
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Create a Msgpack append stream by deducing template types from arguments.
-    template <typename TAppendStreamBuffer>
-    MsgpackAppendStream<TAppendStreamBuffer> MakeMsgpackAppendStream(TAppendStreamBuffer& stream_buffer);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -95,19 +83,19 @@ namespace syntropy
     // MsgpackStreamEncoder.
 
     template <typename TAppendStreamBuffer>
-    inline void MsgpackStreamEncoder<TAppendStreamBuffer>::operator()(TAppendStreamBuffer& lhs, Null rhs) const
+    inline void MsgpackStreamEncoder::operator()(TAppendStreamBuffer&& lhs, Null rhs) const
     {
         Append(lhs, MsgpackFormat::kNil);
     }
 
     template <typename TAppendStreamBuffer>
-    inline void MsgpackStreamEncoder<TAppendStreamBuffer>::operator()(TAppendStreamBuffer& lhs, Boolean rhs) const
+    inline void MsgpackStreamEncoder::operator()(TAppendStreamBuffer&& lhs, Boolean rhs) const
     {
         Append(lhs, rhs ? MsgpackFormat::kTrue : MsgpackFormat::kFalse);
     }
 
     template <typename TAppendStreamBuffer>
-    void MsgpackStreamEncoder<TAppendStreamBuffer>::operator()(TAppendStreamBuffer& lhs, Integer rhs) const
+    void MsgpackStreamEncoder::operator()(TAppendStreamBuffer&& lhs, Integer rhs) const
     {
         if (Msgpack::IsPositiveFixInt(rhs))
         {
@@ -156,7 +144,7 @@ namespace syntropy
     }
 
     template <typename TAppendStreamBuffer>
-    inline void MsgpackStreamEncoder<TAppendStreamBuffer>::operator()(TAppendStreamBuffer& lhs, Floating rhs) const
+    inline void MsgpackStreamEncoder::operator()(TAppendStreamBuffer&& lhs, Floating rhs) const
     {
         auto bytes = Endianness::ToBigEndian(Memory::BitCast<Fix32>(rhs));
 
@@ -165,7 +153,7 @@ namespace syntropy
     }
 
     template <typename TAppendStreamBuffer>
-    void MsgpackStreamEncoder<TAppendStreamBuffer>::operator()(TAppendStreamBuffer& lhs, const String& rhs) const
+    void MsgpackStreamEncoder::operator()(TAppendStreamBuffer&& lhs, const String& rhs) const
     {
         // Type format and size.
 
@@ -211,7 +199,7 @@ namespace syntropy
     }
 
     template <typename TAppendStreamBuffer>
-    void MsgpackStreamEncoder<TAppendStreamBuffer>::operator()(TAppendStreamBuffer& lhs, const ConstMemoryRange& rhs) const
+    void MsgpackStreamEncoder::operator()(TAppendStreamBuffer&& lhs, const ConstMemoryRange& rhs) const
     {
         // Type format and size.
 
@@ -248,9 +236,8 @@ namespace syntropy
         lhs.Append(rhs);
     }
 
-    template <typename TAppendStreamBuffer>
-    template <typename TElement>
-    inline void MsgpackStreamEncoder<TAppendStreamBuffer>::operator()(TAppendStreamBuffer& lhs, const Vector<TElement>& rhs) const
+    template <typename TAppendStreamBuffer,typename TElement>
+    inline void MsgpackStreamEncoder::operator()(TAppendStreamBuffer&& lhs, const Vector<TElement>& rhs) const
     {
         // Type format and size.
 
@@ -289,9 +276,8 @@ namespace syntropy
         }
     }
 
-    template <typename TAppendStreamBuffer>
-    template <typename TKey, typename TValue>
-    inline void MsgpackStreamEncoder<TAppendStreamBuffer>::operator()(TAppendStreamBuffer& lhs, const Map<TKey, TValue>& rhs) const
+    template <typename TAppendStreamBuffer, typename TKey, typename TValue>
+    inline void MsgpackStreamEncoder::operator()(TAppendStreamBuffer&& lhs, const Map<TKey, TValue>& rhs) const
     {
         // Type format and size.
 
@@ -331,9 +317,8 @@ namespace syntropy
         }
     }
 
-    template <typename TAppendStreamBuffer>
-    template <typename TExtension, typename>
-    inline void MsgpackStreamEncoder<TAppendStreamBuffer>::operator()(TAppendStreamBuffer& lhs, const TExtension& rhs) const
+    template <typename TAppendStreamBuffer, typename TExtension, typename>
+    inline void MsgpackStreamEncoder::operator()(TAppendStreamBuffer&& lhs, const TExtension& rhs) const
     {
         using namespace Literals;
 
@@ -403,25 +388,15 @@ namespace syntropy
 
     }
 
-    template <typename TAppendStreamBuffer>
-    template <typename TType>
-    inline void MsgpackStreamEncoder<TAppendStreamBuffer>::Append(TAppendStreamBuffer& lhs, const TType& rhs) const
+    template <typename TAppendStreamBuffer, typename TType>
+    inline void MsgpackStreamEncoder::Append(TAppendStreamBuffer&& lhs, const TType& rhs) const
     {
         lhs.Append(MakeConstMemoryRange(rhs));
     }
 
-    template <typename TAppendStreamBuffer>
-    inline Byte MsgpackStreamEncoder<TAppendStreamBuffer>::Pack(MsgpackFormat format, Fix8 value, MsgpackFormatMask mask) const
+    inline Byte MsgpackStreamEncoder::Pack(MsgpackFormat format, Fix8 value, MsgpackFormatMask mask) const
     {
         return ToByte(format) | (ToByte(value) & ~ToByte(mask));
-    }
-
-    // Non-member functions.
-
-    template <typename TAppendStreamBuffer>
-    inline MsgpackAppendStream<TAppendStreamBuffer> MakeMsgpackAppendStream(TAppendStreamBuffer& stream_buffer)
-    {
-        return MsgpackAppendStream<TAppendStreamBuffer>(stream_buffer);
     }
 
 }

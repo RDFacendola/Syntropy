@@ -1,5 +1,7 @@
 #include "syntropy/serialization/memory_stream_buffer.h"
 
+#include "syntropy/language/utility.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -55,7 +57,7 @@ namespace syntropy
         return { data.Begin() + written_data, data.End() };
     }
 
-    MemoryRange MemoryStreamBuffer::Read(Bytes position, const MemoryRange& data)
+    MemoryRange MemoryStreamBuffer::Read(Bytes position, const MemoryRange& data) const
     {
         auto read_data = [this, position, &data]()
         {
@@ -102,6 +104,13 @@ namespace syntropy
     }
 
     MemoryAddress MemoryStreamBuffer::GetAddress(Bytes offset)
+    {
+        auto address = AsConst(*this).GetAddress(offset).As<void>();
+
+        return const_cast<void*>(address);
+    }
+
+    ConstMemoryAddress MemoryStreamBuffer::GetAddress(Bytes offset) const
     {
         offset = (base_pointer_ + offset - buffer_.Begin());        // Advance.
 
