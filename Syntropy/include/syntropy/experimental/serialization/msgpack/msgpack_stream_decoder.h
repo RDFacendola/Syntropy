@@ -1,47 +1,180 @@
 
-/// \file msgpack_reader.h
-/// \brief This header is part of the Syntropy serialization module. It contains definition for Msgpack stream readers.
+/// \file msgpack_stream_decoder.h
+/// \brief This header is part of the Syntropy serialization module. It contains definitions for Msgpack decoders.
 ///
 /// \author Raffaele D. Facendola - 2020
 
 #pragma once
 
-#include <ostream>
-#include <optional>
-
+#include "syntropy/language/type_traits.h"
 #include "syntropy/core/types.h"
+#include "syntropy/memory/memory_range.h"
 #include "syntropy/core/string.h"
-#include "syntropy/core/string_stream.h"
-#include "syntropy/platform/endianness.h"
 #include "syntropy/containers/vector.h"
 #include "syntropy/containers/map.h"
-#include "syntropy/memory/memory_range.h"
-#include "syntropy/memory/bytes.h"
-#include "syntropy/memory/memory.h"
-#include "syntropy/math/math.h"
-#include "syntropy/language/type_traits.h"
-
 #include "syntropy/serialization/msgpack/msgpack.h"
+#include "syntropy/serialization/memory_stream_buffer.h"
+
+#include "syntropy/language/utility.h"
+#include "syntropy/memory/memory.h"
+#include "syntropy/platform/endianness.h"
 
 namespace syntropy
 {
+    /************************************************************************/
+    /* MSGPACK STREAM DECODER                                               */
+    /************************************************************************/
+
+    /// \brief Represents a functor that decodes values using the Msgpack format.
+    /// \see https://github.com/msgpack/msgpack/blob/master/spec.md
+    /// \author Raffaele D. Facendola - June 2020.
+    struct MsgpackStreamDecoder
+    {
+        /// \brief Decode rhs and write the result to rhs.
+        template <typename TConsumeStreamBuffer>
+        void operator()(TConsumeStreamBuffer&& lhs, Null rhs) const;
+
+        /// \brief Decode rhs and write the result to rhs
+        template <typename TConsumeStreamBuffer>
+        void operator()(TConsumeStreamBuffer&& lhs, Boolean rhs) const;
+
+        /// \brief Decode rhs and write the result to rhs
+        template <typename TConsumeStreamBuffer>
+        void operator()(TConsumeStreamBuffer&& lhs, Integer rhs) const;
+
+        /// \brief Decode rhs and write the result to rhs
+        template <typename TConsumeStreamBuffer>
+        void operator()(TConsumeStreamBuffer&& lhs, Floating rhs) const;
+
+        /// \brief Decode rhs and write the result to rhs
+        template <typename TConsumeStreamBuffer>
+        void operator()(TConsumeStreamBuffer&& lhs, const String& rhs) const;
+
+        /// \brief Decode rhs and write the result to rhs
+        template <typename TConsumeStreamBuffer>
+        void operator()(TConsumeStreamBuffer&& lhs, const ConstMemoryRange& rhs) const;
+
+        /// \brief Decode rhs and write the result to rhs
+        template <typename TConsumeStreamBuffer, typename TElement>
+        void operator()(TConsumeStreamBuffer&& lhs, const Vector<TElement>& rhs) const;
+
+        /// \brief Decode rhs and write the result to rhs
+        template <typename TConsumeStreamBuffer, typename TKey, typename TValue>
+        void operator()(TConsumeStreamBuffer&& lhs, const Map<TKey, TValue>& rhs) const;
+
+        /// \brief Decode rhs and write the result to rhs
+        template <typename TConsumeStreamBuffer, typename TExtension, typename = EnableIfValidExpressionT<HasMsgpackExtensionDecoder, TExtension>>
+        void operator()(TConsumeStreamBuffer&& lhs, const TExtension& rhs) const;
+
+        /// \brief Append a value rhs to lhs using its object-representation.
+        template <typename TConsumeStreamBuffer, typename TType>
+        void Append(TConsumeStreamBuffer&& lhs, const TType& rhs) const;
+
+        /// \brief Pack together a fixed format and a 8-bit size using a mask.
+        Byte Unpack(MsgpackFormat format, Fix8 value, MsgpackFormatMask mask) const;
+
+    };
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // MsgpackStreamDecoder.
+
+    template <typename TConsumeStreamBuffer>
+    inline void MsgpackStreamDecoder::operator()(TConsumeStreamBuffer&& lhs, Null rhs) const
+    {
+
+    }
+
+    template <typename TConsumeStreamBuffer>
+    inline void MsgpackStreamDecoder::operator()(TConsumeStreamBuffer&& lhs, Boolean rhs) const
+    {
+
+    }
+
+    template <typename TConsumeStreamBuffer>
+    inline void MsgpackStreamDecoder::operator()(TConsumeStreamBuffer&& lhs, Integer rhs) const
+    {
+
+    }
+
+    template <typename TConsumeStreamBuffer>
+    inline void MsgpackStreamDecoder::operator()(TConsumeStreamBuffer&& lhs, Floating rhs) const
+    {
+
+    }
+
+    template <typename TConsumeStreamBuffer>
+    inline void MsgpackStreamDecoder::operator()(TConsumeStreamBuffer&& lhs, const String& rhs) const
+    {
+
+    }
+
+    template <typename TConsumeStreamBuffer>
+    inline void MsgpackStreamDecoder::operator()(TConsumeStreamBuffer&& lhs, const ConstMemoryRange& rhs) const
+    {
+
+    }
+
+    template <typename TConsumeStreamBuffer, typename TElement>
+    inline void MsgpackStreamDecoder::operator()(TConsumeStreamBuffer&& lhs, const Vector<TElement>& rhs) const
+    {
+
+    }
+
+    template <typename TConsumeStreamBuffer, typename TKey, typename TValue>
+    inline void MsgpackStreamDecoder::operator()(TConsumeStreamBuffer&& lhs, const Map<TKey, TValue>& rhs) const
+    {
+
+    }
+
+    template <typename TConsumeStreamBuffer, typename TExtension, typename = EnableIfValidExpressionT<HasMsgpackExtensionEncoder, TExtension>>
+    inline void MsgpackStreamDecoder::operator()(TConsumeStreamBuffer&& lhs, const TExtension& rhs) const
+    {
+
+    }
+
+    template <typename TConsumeStreamBuffer, typename TType>
+    inline void MsgpackStreamDecoder::Append(TConsumeStreamBuffer&& lhs, const TType& rhs) const
+    {
+
+    }
+
+    inline Byte MsgpackStreamDecoder::Unpack(MsgpackFormat format, Fix8 value, MsgpackFormatMask mask) const
+    {
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /************************************************************************/
-    /* MSGPACK STREAM READER                                                */
+    /* MSGPACK STREAM DECODER                                               */
     /************************************************************************/
 
     /// \brief Exposes methods to read from a Msgpack stream.
     /// \author Raffaele D. Facendola - June 2020.
-    class MsgpackStreamReader
+    class MsgpackStreamDecoder
     {
     public:
-
-        /// \brief Type of the underlying output stream.
-        using TStream = BasicStringStream<Byte>;
-
-        /// \brief Type of the underlying string.
-        using TString = BasicString<Byte>;
 
         /// \brief Create an empty reader.
         MsgpackStreamReader() = default;

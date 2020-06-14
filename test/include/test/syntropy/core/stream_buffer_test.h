@@ -9,14 +9,14 @@
 
 #include "syntropy/memory/bytes.h"
 
-#include "syntropy/serialization/memory_stream_buffer.h"
-#include "syntropy/serialization/append_stream_buffer.h"
-#include "syntropy/serialization/consume_stream_buffer.h"
+#include "syntropy/experimental/serialization/memory_stream_buffer.h"
+#include "syntropy/experimental/serialization/append_stream_buffer.h"
+#include "syntropy/experimental/serialization/consume_stream_buffer.h"
 
-#include "syntropy/serialization/append_stream.h"
-#include "syntropy/serialization/consume_stream.h"
+#include "syntropy/experimental/serialization/append_stream.h"
+#include "syntropy/experimental/serialization/consume_stream.h"
 
-#include "syntropy/serialization/msgpack/msgpack_stream_encoder.h"
+#include "syntropy/experimental/serialization/msgpack/msgpack_stream_encoder.h"
 
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/auto_test_suite.h"

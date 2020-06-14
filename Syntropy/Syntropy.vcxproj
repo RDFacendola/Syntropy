@@ -39,10 +39,10 @@
     <ClInclude Include="include\syntropy\containers\vector_view.h" />
     <ClInclude Include="include\syntropy\language\algorithm.h" />
     <ClInclude Include="include\syntropy\language\initializer_list.h" />
-    <ClInclude Include="include\syntropy\serialization\consume_stream_buffer.h" />
-    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack.h" />
-    <ClInclude Include="include\syntropy\serialization\append_stream_buffer.h" />
-    <ClInclude Include="include\syntropy\serialization\memory_stream_buffer.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\consume_stream_buffer.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\msgpack\msgpack.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\append_stream_buffer.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\memory_stream_buffer.h" />
     <ClInclude Include="include\syntropy\core\context.h" />
     <ClInclude Include="include\syntropy\core\label.h" />
     <ClInclude Include="include\syntropy\core\smart_pointers.h" />
@@ -100,9 +100,9 @@
     <ClInclude Include="include\syntropy\platform\intrinsics.h" />
     <ClInclude Include="include\syntropy\platform\system.h" />
     <ClInclude Include="include\syntropy\platform\threading.h" />
-    <ClInclude Include="include\syntropy\serialization\consume_stream.h" />
-    <ClInclude Include="include\syntropy\serialization\append_stream.h" />
-    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_stream_encoder.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\consume_stream.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\append_stream.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\msgpack\msgpack_stream_encoder.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
     <ClInclude Include="include\syntropy\time\date.h" />
     <ClInclude Include="include\syntropy\time\time_of_day.h" />
@@ -147,7 +147,7 @@
     <ClCompile Include="src\syntropy\platform\intrinsics.cpp" />
     <ClCompile Include="src\syntropy\platform\system.cpp" />
     <ClCompile Include="src\syntropy\platform\threading.cpp" />
-    <ClCompile Include="src\syntropy\serialization\memory_stream_buffer.cpp" />
+    <ClCompile Include="src\syntropy\experimental\serialization\memory_stream_buffer.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\time\date.cpp" />
     <ClCompile Include="src\syntropy\time\time_of_day.cpp" />

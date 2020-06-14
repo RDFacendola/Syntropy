@@ -1,4 +1,4 @@
-#include "syntropy/serialization/memory_stream_buffer.h"
+#include "syntropy/experimental/serialization/memory_stream_buffer.h"
 
 #include "syntropy/language/utility.h"
 

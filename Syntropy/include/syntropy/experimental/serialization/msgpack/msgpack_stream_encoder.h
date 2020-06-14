@@ -1,6 +1,6 @@
 
-/// \file msgpack_stream.h
-/// \brief This header is part of the Syntropy serialization module. It contains definition for streams encoding data using the Msgpack specification.
+/// \file msgpack_stream_encoder.h
+/// \brief This header is part of the Syntropy serialization module. It contains definitions for Msgpack stream encoders.
 ///
 /// \author Raffaele D. Facendola - 2019
 
@@ -8,14 +8,12 @@
 
 #include "syntropy/language/type_traits.h"
 #include "syntropy/core/types.h"
-#include "syntropy/serialization/append_stream.h"
-#include "syntropy/serialization/append_stream_buffer.h"
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/core/string.h"
 #include "syntropy/containers/vector.h"
 #include "syntropy/containers/map.h"
-#include "syntropy/serialization/msgpack/msgpack.h"
-#include "syntropy/serialization/memory_stream_buffer.h"
+#include "syntropy/experimental/serialization/msgpack/msgpack.h"
+#include "syntropy/experimental/serialization/memory_stream_buffer.h"
 
 #include "syntropy/language/utility.h"
 #include "syntropy/memory/memory.h"
@@ -24,7 +22,7 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* MSGPACK ENCODER                                                      */
+    /* MSGPACK STREAM ENCODER                                               */
     /************************************************************************/
 
     /// \brief Represents a functor that encodes values using the Msgpack format.

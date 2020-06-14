@@ -6,8 +6,8 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/language/type_traits.h"
-#include "syntropy/serialization/memory_stream_buffer.h"
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/bytes.h"
 

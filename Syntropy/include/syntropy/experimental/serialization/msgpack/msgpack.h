@@ -14,8 +14,8 @@
 #include "syntropy/core/string.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_range.h"
-#include "syntropy/serialization/append_stream_buffer.h"
-#include "syntropy/serialization/consume_stream_buffer.h"
+#include "syntropy/experimental/serialization/append_stream_buffer.h"
+#include "syntropy/experimental/serialization/consume_stream_buffer.h"
 
 namespace syntropy
 {
