@@ -10,6 +10,7 @@
 #include <cmath>
 
 #include "syntropy/core/types.h"
+#include "syntropy/diagnostics/assert.h"
 #include "syntropy/math/vector.h"
 #include "syntropy/math/numeric.h"
 #include "syntropy/math/math.h"
@@ -39,14 +40,14 @@ namespace syntropy
         /// \param max Maximum value to generate (exclusive).
         Float Uniform(Float min, Float max);
 
-        /// \brief Generate a random number uniformly distributed in [0; max).
-        /// \param max Maximum value to generate (exclusive).
+        /// \brief Generate a 32-bit  number uniformly distributed in [0; max).
+        /// \param max Maximum value to generate (exclusive). Shall not be greater than 2^32 + 1.
         /// \return Returns a random number uniformly distributed in [0; max).
         Int Uniform(Int max);
 
-        /// \brief Generate a random number uniformly distributed in [min; max).
-        /// \param min Minimum value to generate (inclusive).
-        /// \param max Maximum value to generate (exclusive).
+        /// \brief Generate a 32-bit random number uniformly distributed in [min; max).
+        /// \param min Minimum value to generate (inclusive). Shall not be greater than 2^32.
+        /// \param max Maximum value to generate (exclusive). Shall not be greater than 2^32 + 1.
         Int Uniform(Int min, Int max);
 
         /// \brief Generate a random boolean value.
@@ -102,11 +103,17 @@ namespace syntropy
 
     inline Int Random::Uniform(Int max)
     {
+        SYNTROPY_ASSERT(max <= ToInt(0xFFFFFFFF) + 0x1);
+
         return ToInt(Math::Floor(Uniform() * max));
     }
 
     inline Int Random::Uniform(Int min, Int max)
     {
+        SYNTROPY_ASSERT(min <= ToInt(0xFFFFFFFF));
+        SYNTROPY_ASSERT(max <= ToInt(0xFFFFFFFF) + 0x1);
+        SYNTROPY_ASSERT(min <= max);
+
         return Uniform(max - min) + min;
     }
 

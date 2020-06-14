@@ -62,20 +62,20 @@ namespace syntropy
 
     private:
 
-        /// \brief Concrete type of a 128-bit state 64-bit output random number engine.
-        struct PCG64;
+        /// \brief Concrete type of a 64-bit state 32-bit output random number engine.
+        struct PCG32;
 
         /// \brief Initialize the underlying random number engine.
         void InitializeEngine();
 
         /// \brief Pointer to the actual engine.
-        PCG64* engine_{ nullptr };
+        PCG32* engine_{ nullptr };
 
         /// \brief Underlying uniform distribution.
         std::uniform_real_distribution<Float> distribution_;
 
         /// \brief Engine state storage.
-        std::aligned_storage_t<sizeof(Fix64) * 2, alignof(Fix64)> engine_storage_;
+        std::aligned_storage_t<sizeof(Fix64), alignof(Fix64)> engine_storage_;
 
     };
 

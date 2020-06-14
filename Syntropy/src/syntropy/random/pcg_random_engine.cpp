@@ -5,11 +5,11 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* PCG RANDOM ENIGNE :: PCG64                                           */
+    /* PCG RANDOM ENIGNE :: PCG32                                           */
     /************************************************************************/
 
     /// \brief Concrete implementation of the PCG random engine.
-    struct PCGRandomEngine::PCG64 : pcg64 {};
+    struct PCGRandomEngine::PCG32 : pcg32 {};
 
     /************************************************************************/
     /* RANDOM                                                               */
@@ -31,7 +31,7 @@ namespace syntropy
 
     void PCGRandomEngine::InitializeEngine()
     {
-        engine_ = new (&engine_storage_) PCG64();
+        engine_ = new (&engine_storage_) PCG32();
     }
 
     void PCGRandomEngine::Seed(Int seed, Int stream) noexcept
@@ -43,7 +43,7 @@ namespace syntropy
     {
         auto random_device = std::random_device{};
 
-        auto seeder = std::seed_seq{ random_device(), random_device(), random_device(), random_device(), random_device(), random_device(), random_device(), random_device() };
+        auto seeder = std::seed_seq{ random_device(), random_device(), random_device(), random_device() };
 
         engine_->seed(seeder);
     }
