@@ -8,6 +8,7 @@
 
 #include "syntropy/core/types.h"
 #include "syntropy/language/initializer_list.h"
+#include "syntropy/language/algorithm.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/memory_buffer.h"
@@ -30,6 +31,12 @@ namespace syntropy
 
         /// \brief Create a new empty stream.
         MemoryStreamBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource());
+
+        /// \brief Create a new stream by moving an existing memory buffer.
+        MemoryStreamBuffer(MemoryBuffer&& buffer);
+
+        /// \brief Create a new stream by copying a memory buffer.
+        MemoryStreamBuffer(const MemoryBuffer& buffer, MemoryResource& memory_resource);
 
         /// \brief Default copy constructor.
         MemoryStreamBuffer(const MemoryStreamBuffer& other) = default;
@@ -64,8 +71,11 @@ namespace syntropy
         /// \return Returns the range containing read data.
         MemoryRange Read(Bytes position, const MemoryRange& data);
 
-        /// \brief Clear buffer content.
+        /// \brief Discard data content and clear the underlying buffer.
         void Clear();
+
+        /// \brief Release and return underlying memory buffer and clear stream buffer state.
+        MemoryBuffer Release();
 
         /// \brief Increase the underlying buffer allocation to a given size.
         /// This method reallocates only if the provided capacity exceeds the current allocation size, otherwise it behaves as no-op.
@@ -142,6 +152,22 @@ namespace syntropy
 
     }
 
+    inline MemoryStreamBuffer::MemoryStreamBuffer(MemoryBuffer&& buffer)
+        : buffer_(std::move(buffer))
+        , base_pointer_(buffer_.GetData().Begin())
+        , size_(buffer_.GetSize())
+    {
+
+    }
+
+    inline MemoryStreamBuffer::MemoryStreamBuffer(const MemoryBuffer& buffer, MemoryResource& memory_resource)
+        : buffer_(buffer.GetSize(), memory_resource)
+        , base_pointer_(buffer_.GetData().Begin())
+        , size_(buffer_.GetSize())
+    {
+        Memory::Copy(buffer_.GetData(), buffer.GetData());
+    }
+
     inline void MemoryStreamBuffer::Clear()
     {
         Memory::Zero(buffer_.GetData());
@@ -184,6 +210,23 @@ namespace syntropy
     inline MemoryResource& MemoryStreamBuffer::GetMemoryResource() const
     {
         return buffer_.GetMemoryResource();
+    }
+
+    inline MemoryBuffer MemoryStreamBuffer::Release()
+    {
+        // Rotate the underlying buffer such that base pointer is shifted in first position.
+
+        Rotate(buffer_.GetData(), base_pointer_);
+
+        // Clear.
+
+        auto buffer = MemoryBuffer(buffer_.GetMemoryResource());
+
+        buffer.Swap(buffer_);
+        base_pointer_ = buffer_.Begin();
+        size_ = Bytes{};
+
+        return buffer;
     }
 
     inline void MemoryStreamBuffer::Swap(MemoryStreamBuffer& other) noexcept

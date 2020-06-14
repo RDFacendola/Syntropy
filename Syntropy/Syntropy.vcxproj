@@ -37,6 +37,7 @@
     <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\containers\vector.h" />
     <ClInclude Include="include\syntropy\containers\vector_view.h" />
+    <ClInclude Include="include\syntropy\language\algorithm.h" />
     <ClInclude Include="include\syntropy\language\initializer_list.h" />
     <ClInclude Include="include\syntropy\serialization\input_stream.h" />
     <ClInclude Include="include\syntropy\serialization\msgpack\msgpack.h" />

@@ -53,15 +53,21 @@ namespace syntropy::unit_test
     {
         using namespace syntropy::Literals;
 
-        auto stream = MemoryStreamBuffer{};
+        Fix32 a = 0;
+        Fix32 b = 0;
+        Fix32 c = 0;
+        Float d = 0;
 
-        auto out_stream = MakeOutputStream(stream);
-        auto in_stream = MakeInputStream(stream);
+        auto out_buffer = MemoryStreamBuffer{};
 
-        Fix32 a, b, c;
-        Float d;
+        auto out_stream = MakeOutputStream(out_buffer);
 
         out_stream << 4 << 56 << 42 << 3.4f;
+
+
+        auto in_buffer = MemoryStreamBuffer(out_buffer.Release());
+
+        auto in_stream = MakeInputStream(in_buffer);
 
         in_stream >> a >> b >> c >> d;
 
@@ -79,9 +85,6 @@ namespace syntropy::unit_test
         //Float c = 0.0f;
 
         //reader >> a >> b >> c;
-
-        auto size = stream.GetSize();
-
 
     }
 
