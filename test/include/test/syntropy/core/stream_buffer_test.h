@@ -16,7 +16,7 @@
 #include "syntropy/serialization/append_stream.h"
 #include "syntropy/serialization/consume_stream.h"
 
-//#include "syntropy/serialization/msgpack/msgpack_writer.h"
+#include "syntropy/serialization/msgpack/msgpack_stream_encoder.h"
 
 #include "syntropy/unit_test/auto_test_case.h"
 #include "syntropy/unit_test/auto_test_suite.h"
@@ -60,20 +60,13 @@ namespace syntropy::unit_test
 
         auto out_buffer = MemoryStreamBuffer{};
 
-        auto out_stream = MakeAppendStreamBuffer(out_buffer);
+        auto out_polymorphic = MakeAppendStreamBuffer(out_buffer);
 
-        auto writer = AppendStream(out_stream);
+        auto msgpack_writer = MakeMsgpackAppendStream(out_polymorphic);
 
-        writer << 4 << 56 << 42 << 3.4f;
+        msgpack_writer << 4 << 5 << 42.0f;
 
 
-        auto in_buffer = MemoryStreamBuffer(out_buffer.Release());
-
-        auto in_stream = MakeConsumeStreamBuffer(in_buffer);
-
-        auto reader = ConsumeStream(in_stream);
-
-        reader >> a >> b >> c >> d;
 
         //auto msgpack_writer = MsgpackWriter{ out_stream };
 

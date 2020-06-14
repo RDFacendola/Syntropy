@@ -111,6 +111,7 @@
     <ClInclude Include="include\syntropy\random\random_engine.h" />
     <ClInclude Include="include\syntropy\math\rotation.h" />
     <ClInclude Include="include\syntropy\random\random.h" />
+    <ClInclude Include="include\syntropy\serialization\msgpack\msgpack_stream_encoder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
