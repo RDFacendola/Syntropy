@@ -86,7 +86,7 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create an append stream buffer wrapping a generic stream buffer-like object.
+    /// \brief Create an append stream buffer wrapping a generic stream buffer-like object whose type is deduced by arguments.
     template <typename TStreamBuffer>
     AppendStreamBufferT<TStreamBuffer> MakeAppendStreamBuffer(TStreamBuffer& stream_buffer);
 
