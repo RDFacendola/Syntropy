@@ -7,10 +7,10 @@
 #pragma once
 
 #include <iterator>
-#include <type_traits>
 #include <ostream>
 
 #include "syntropy/core/types.h"
+#include "syntropy/language/type_traits.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 
@@ -22,28 +22,38 @@ namespace syntropy
 
     /// \brief Represents a memory address.
     /// This type is meant to be a strongly-typed replacement for void* and intptr_t.
-    /// \tparam kIsConst Whether the memory address is constant or not.
+    /// \tparam kIsConst Whether the memory address points to a constant location or not.
     /// \author Raffaele D. Facendola - August 2018
     template <Bool kIsConst>
     class MemoryAddressT
     {
     public:
 
+        /// \brief Select either a const or non-const type according to kIsConst.
+        template <typename TType>
+        using TSelect = ConditionalT<kIsConst, const TType, TType>;
+
+        /// \brief Type alias for the typeless underlying value.
+        using TRawPointer = TSelect<void>*;
+
+        /// \brief Type alias for the underlying value type.
+        using TValue = TSelect<Byte>;
+
         /// \brief Type alias for the underlying pointer type.
-        using TPointer = std::conditional_t<kIsConst, const void*, void *>;
+        using TPointer = TSelect<Byte>*;
 
         /// \brief  STL defines.
         using difference_type = Bytes;
-        using value_type = TPointer;
-        using pointer = TPointer*;
-        using reference = TPointer&;
+        using value_type = TValue;
+        using pointer = TValue*;
+        using reference = TValue&;
         using iterator_category = std::random_access_iterator_tag;
 
         /// \brief Create a en empty address.
         constexpr MemoryAddressT() = default;
 
         /// \brief Create a new address.
-        constexpr MemoryAddressT(TPointer address);
+        constexpr MemoryAddressT(TRawPointer address);
 
         /// \brief Create a en empty address.
         constexpr MemoryAddressT(std::nullptr_t);
@@ -60,7 +70,7 @@ namespace syntropy
 
         /// \brief Get the underlying pointer.
         /// \return Returns the underlying pointer.
-        constexpr operator TPointer() const noexcept;
+        constexpr operator TRawPointer() const noexcept;
 
         /// \brief Convert the address to an signed numeric value.
         /// \return Returns an signed number that represents the underlying address.
@@ -72,12 +82,16 @@ namespace syntropy
 
         /// \brief Get the underlying pointer.
         /// \return Returns the underlying pointer.
-        constexpr TPointer operator*() const noexcept;
+        constexpr TValue& operator*() const noexcept;
+
+        /// \brief Get the underlying pointer.
+        /// \return Returns the underlying pointer.
+        constexpr TPointer operator->() const noexcept;
 
         /// \brief Get the underlying strongly-type pointer.
         /// \return Returns the underlying strongly-type pointer.
         template <typename TType>
-        constexpr std::conditional_t<kIsConst, const TType*, TType*> As() const noexcept;
+        constexpr TSelect<TType>* As() const noexcept;
 
         /// \brief Reinterpret the memory address and emplace a value at pointed location.
         template <typename TType>
@@ -185,7 +199,7 @@ namespace syntropy
     template <Bool kIsLHSConst, Bool kIsRHSConst>
     constexpr Bytes operator-(const MemoryAddressT<kIsLHSConst>& lhs, const MemoryAddressT<kIsRHSConst>& rhs) noexcept;
 
-    /// \brief Make a new memory address deducing its const-ness.
+    /// \brief Make a new memory address deducing its constness.
     template <typename TPointer, Bool kIsConst = std::is_const_v<TPointer>>
     constexpr MemoryAddressT<kIsConst> MakeMemoryAddress(TPointer* pointer);
 
@@ -204,8 +218,8 @@ namespace syntropy
     // MemoryAddressT<kIsConst>.
 
     template <Bool kIsConst>
-    constexpr MemoryAddressT<kIsConst>::MemoryAddressT(MemoryAddressT::TPointer address)
-        : address_(address)
+    constexpr MemoryAddressT<kIsConst>::MemoryAddressT(MemoryAddressT::TRawPointer address)
+        : address_(reinterpret_cast<TPointer>(address))
     {
 
     }
@@ -227,13 +241,13 @@ namespace syntropy
     template <Bool kIsConst>
     template <Bool kIsRHSConst>
     constexpr MemoryAddressT<kIsConst>::MemoryAddressT(const MemoryAddressT<kIsRHSConst>& rhs)
-        : address_(*rhs)
+        : address_(&(*rhs))
     {
 
     }
 
     template <Bool kIsConst>
-    constexpr MemoryAddressT<kIsConst>::operator typename MemoryAddressT<kIsConst>::TPointer() const noexcept
+    constexpr MemoryAddressT<kIsConst>::operator typename MemoryAddressT<kIsConst>::TRawPointer() const noexcept
     {
         return address_;
     }
@@ -251,16 +265,22 @@ namespace syntropy
     }
 
     template <Bool kIsConst>
-    constexpr typename MemoryAddressT<kIsConst>::TPointer MemoryAddressT<kIsConst>::operator*() const noexcept
+    constexpr typename MemoryAddressT<kIsConst>::TValue& MemoryAddressT<kIsConst>::operator*() const noexcept
+    {
+        return *address_;
+    }
+
+    template <Bool kIsConst>
+    constexpr typename MemoryAddressT<kIsConst>::TPointer MemoryAddressT<kIsConst>::operator->() const noexcept
     {
         return address_;
     }
 
     template <Bool kIsConst>
     template <typename TType>
-    constexpr std::conditional_t<kIsConst, const TType*, TType*> MemoryAddressT<kIsConst>::As() const noexcept
+    constexpr MemoryAddressT<kIsConst>::TSelect<TType>* MemoryAddressT<kIsConst>::As() const noexcept
     {
-        return reinterpret_cast<std::conditional_t<kIsConst, const TType*, TType*>>(address_);
+        return reinterpret_cast<TSelect<TType>*>(address_);
     }
 
      template <Bool kIsConst>
@@ -273,14 +293,14 @@ namespace syntropy
     template <Bool kIsConst>
     constexpr MemoryAddressT<kIsConst>& MemoryAddressT<kIsConst>::operator+=(const Bytes& rhs) noexcept
     {
-        address_ = reinterpret_cast<std::conditional_t<kIsConst, const Byte*, Byte*>>(address_) + *rhs;
+        address_ = address_ + *rhs;
         return *this;
     }
 
     template <Bool kIsConst>
     constexpr MemoryAddressT<kIsConst>& MemoryAddressT<kIsConst>::operator-=(const Bytes& rhs) noexcept
     {
-        address_ = reinterpret_cast<std::conditional_t<kIsConst, const Byte*, Byte*>>(address_) - *rhs;
+        address_ = address_ - *rhs;
         return *this;
     }
 

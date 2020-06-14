@@ -56,6 +56,7 @@ namespace syntropy
         MemoryBuffer(MemoryBuffer&& other);
 
         /// \brief Unified assignment operator.
+        /// This method propagates underlying memory resource as well.
         MemoryBuffer& operator=(MemoryBuffer other);
 
         /// \brief Destructor.

@@ -38,9 +38,9 @@ namespace syntropy
     {
         // Uses FNV1a 64-bit with recommended constants by Landon Curt Noll - http://www.isthe.com/chongo/
 
-        return std::accumulate(buffer.Begin(), buffer.End(), Int(0xcbf29ce484222325), [](Int hash, const ConstMemoryAddress& address)
+        return std::accumulate(buffer.Begin(), buffer.End(), Int(0xcbf29ce484222325), [](Int hash, Byte byte)
         {
-            hash ^= ToInt(*address.As<Byte>());
+            hash ^= ToInt(byte);
 
             return (hash << 0) + (hash << 1) + (hash << 4) + (hash << 5) + (hash << 7) + (hash << 8) + (hash << 40);
         });
@@ -50,9 +50,9 @@ namespace syntropy
     {
         // Uses FNV1a 32-bit with recommended constants by Landon Curt Noll - http://www.isthe.com/chongo/
 
-        return std::accumulate(buffer.Begin(), buffer.End(), Int(0x811c9dc5), [](Int hash, const ConstMemoryAddress& address)
+        return std::accumulate(buffer.Begin(), buffer.End(), Int(0x811c9dc5), [](Int hash, Byte byte)
         {
-            hash ^= ToInt(*address.As<Byte>());
+            hash ^= ToInt(byte);
 
             return (hash << 0) + (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
         }) & 0xFFFFFFFF;

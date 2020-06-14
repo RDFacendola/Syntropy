@@ -30,6 +30,12 @@ namespace syntropy
         /// \return Returns the bytes copied as a result of this call.
         Bytes Copy(const MemoryRange& destination, const ConstMemoryRange& source);
 
+        /// \brief Set a value to each byte in a destination range.
+        void Set(const MemoryRange& destination, Byte value);
+
+        /// \brief Zero-out a memory region.
+        void Zero(const MemoryRange& destination);
+
         /// \brief Gather data from one or more memory regions to fill a contiguous memory region sequentially. Neither range is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
         Bytes Gather(const MemoryRange& destination, InitializerList<ConstMemoryRange> sources);
@@ -37,12 +43,6 @@ namespace syntropy
         /// \brief Scatter a contiguous memory region to one or more memory regions sequentially. Neither range is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
         Bytes Scatter(InitializerList<MemoryRange> destinations, const ConstMemoryRange& source);
-
-        /// \brief Set a value to each byte in a destination range.
-        void Set(const MemoryRange& destination, Byte value);
-
-        /// \brief Zero-out a memory region.
-        void Zero(const MemoryRange& destination);
 
         /// \brief Reinterpret an object representation from a type to another type.
         template <typename TTo, typename TFrom>
@@ -61,7 +61,7 @@ namespace syntropy
 
     inline void Memory::Set(const MemoryRange& destination, Byte value)
     {
-        std::memset(*destination.Begin(), ToFix8(value), destination.GetSize().GetCount());
+        std::memset(destination.Begin(), ToFix8(value), destination.GetSize().GetCount());
     }
 
     inline void Memory::Zero(const MemoryRange& destination)
