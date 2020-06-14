@@ -1,6 +1,6 @@
 
 /// \file pcg_random engine.h
-/// \brief This header is part of the Syntropy math module. It contains the implementation of the PCG random number generator.
+/// \brief This header is part of the Syntropy random numbers generation module. It contains the implementation of the PCG random number generator.
 ///
 /// \author Raffaele D. Facendola - 2020
 
@@ -23,6 +23,7 @@ namespace syntropy
     /// This engine uses 128-bit state and outputs 64-bits numbers.
     /// \see http://www.pcg-random.org/
     /// \author Raffaele D. Facendola - November 2017
+    /// \remarks This engine is not cryptographically secure.
     class PCGRandomEngine
     {
     public:

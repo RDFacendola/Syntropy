@@ -1,6 +1,6 @@
 
 /// \file random.h
-/// \brief This header is part of the Syntropy math module. It contains methods to generate random samples.
+/// \brief This header is part of the Syntropy random numbers generation module. It contains methods to generate random samples.
 ///
 /// \author Raffaele D. Facendola - 2020
 
@@ -11,9 +11,9 @@
 
 #include "syntropy/core/types.h"
 #include "syntropy/math/vector.h"
-#include "syntropy/math/random_engine.h"
 #include "syntropy/math/numeric.h"
 #include "syntropy/math/math.h"
+#include "syntropy/random/random_engine.h"
 
 namespace syntropy
 {
@@ -42,12 +42,12 @@ namespace syntropy
         /// \brief Generate a random number uniformly distributed in [0; max).
         /// \param max Maximum value to generate (exclusive).
         /// \return Returns a random number uniformly distributed in [0; max).
-        Int Uniform(std::int32_t max);
+        Int Uniform(Int max);
 
         /// \brief Generate a random number uniformly distributed in [min; max).
         /// \param min Minimum value to generate (inclusive).
         /// \param max Maximum value to generate (exclusive).
-        Int Uniform(std::int32_t min, std::int32_t max);
+        Int Uniform(Int min, Int max);
 
         /// \brief Generate a random boolean value.
         /// \param probability Probability of getting 'true' as result. Range [0; 1].
@@ -100,12 +100,12 @@ namespace syntropy
         return Uniform() * (max - min) + min;
     }
 
-    inline Int Random::Uniform(std::int32_t max)
+    inline Int Random::Uniform(Int max)
     {
-        return static_cast<std::int32_t>(Math::Floor(Uniform() * max));
+        return ToInt(Math::Floor(Uniform() * max));
     }
 
-    inline Int Random::Uniform(std::int32_t min, std::int32_t max)
+    inline Int Random::Uniform(Int min, Int max)
     {
         return Uniform(max - min) + min;
     }

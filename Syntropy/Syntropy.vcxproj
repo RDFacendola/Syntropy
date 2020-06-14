@@ -74,14 +74,14 @@
     <ClInclude Include="include\syntropy\math\combinatorics.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
     <ClInclude Include="include\syntropy\math\codes.h" />
-    <ClInclude Include="include\syntropy\math\pcg_random_engine.h" />
-    <ClInclude Include="include\syntropy\math\random_context.h" />
-    <ClInclude Include="include\syntropy\math\random.h" />
+    <ClInclude Include="include\syntropy\random\pcg_random_engine.h" />
+    <ClInclude Include="include\syntropy\random\random_context.h" />
+    <ClInclude Include="include\syntropy\random\random.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\math\interpolations.h" />
     <ClInclude Include="include\syntropy\math\numeric.h" />
     <ClInclude Include="include\syntropy\math\quaternion.h" />
-    <ClInclude Include="include\syntropy\math\random_engine.h" />
+    <ClInclude Include="include\syntropy\random\random_engine.h" />
     <ClInclude Include="include\syntropy\math\rotation.h" />
     <ClInclude Include="include\syntropy\math\vector.h" />
     <ClInclude Include="include\syntropy\memory\memory.h" />
@@ -138,7 +138,7 @@
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_endianness.cpp" />
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_intrinsics.cpp" />
     <ClCompile Include="src\syntropy\language\listener.cpp" />
-    <ClCompile Include="src\syntropy\math\pcg_random_engine.cpp" />
+    <ClCompile Include="src\syntropy\random\pcg_random_engine.cpp" />
     <ClCompile Include="src\syntropy\memory\memory.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_virtual_memory.cpp" />

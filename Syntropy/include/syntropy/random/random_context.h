@@ -1,12 +1,12 @@
 
 /// \file random_context.h
-/// \brief This header is part of the Syntropy math module. It contains definitions for scope-based random number generators.
+/// \brief This header is part of the Syntropy random numbers generation module. It contains definitions for scope-based random number generators.
 ///
 /// \author Raffaele D. Facendola - 2020
 
 #pragma once
 
-#include "syntropy/math/random_engine.h"
+#include "syntropy/random/random_engine.h"
 
 namespace syntropy
 {
@@ -15,7 +15,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents a RAII guard to change the random engine in the current scope and restore the previous one upon destruction.
-    /// Random contexts can be nested but overlapping results in undefined behavior.
+    /// Random contexts can be nested but overlapping them results in undefined behavior.
     /// \author Raffaele D. Facendola - May 2020.
     template <typename TRandomEngine>
     class RandomContext

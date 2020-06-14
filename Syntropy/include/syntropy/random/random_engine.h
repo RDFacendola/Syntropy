@@ -1,13 +1,13 @@
 
 /// \file random_engine.h
-/// \brief This header is part of the Syntropy math module. It contains random number engine interfaces and classes.
+/// \brief This header is part of the Syntropy random numbers generation module. It contains random number engine interfaces and classes.
 ///
 /// \author Raffaele D. Facendola - 2017
 
 #pragma once
 
 #include "syntropy/core/types.h"
-#include "syntropy/math/pcg_random_engine.h"
+#include "syntropy/random/pcg_random_engine.h"
 
 namespace syntropy
 {
@@ -17,7 +17,7 @@ namespace syntropy
 
     class RandomEngine;
 
-/// \brief Get the thread-local default random number generator.
+    /// \brief Get the thread-local default random number generator.
     RandomEngine& GetDefaultRandomEngine() noexcept;
 
     /// \brief Get the thread-local random number generator.

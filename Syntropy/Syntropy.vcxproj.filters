@@ -76,12 +76,7 @@
     <ClInclude Include="include\syntropy\math\bits.h" />
     <ClInclude Include="include\syntropy\math\codes.h" />
     <ClInclude Include="include\syntropy\math\quaternion.h" />
-    <ClInclude Include="include\syntropy\math\rotation.h" />
-    <ClInclude Include="include\syntropy\math\random_engine.h" />
     <ClInclude Include="include\syntropy\math\combinatorics.h" />
-    <ClInclude Include="include\syntropy\math\pcg_random_engine.h" />
-    <ClInclude Include="include\syntropy\math\random_context.h" />
-    <ClInclude Include="include\syntropy\math\random.h" />
     <ClInclude Include="include\syntropy\language\event.h" />
     <ClInclude Include="include\syntropy\language\listener.h" />
     <ClInclude Include="include\syntropy\unit_test\test_result.h" />
@@ -111,6 +106,11 @@
     <ClInclude Include="include\syntropy\serialization\consume_stream_buffer.h" />
     <ClInclude Include="include\syntropy\serialization\consume_stream.h" />
     <ClInclude Include="include\syntropy\serialization\append_stream.h" />
+    <ClInclude Include="include\syntropy\random\pcg_random_engine.h" />
+    <ClInclude Include="include\syntropy\random\random_context.h" />
+    <ClInclude Include="include\syntropy\random\random_engine.h" />
+    <ClInclude Include="include\syntropy\math\rotation.h" />
+    <ClInclude Include="include\syntropy\random\random.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -135,10 +135,10 @@
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_intrinsics.cpp" />
     <ClCompile Include="src\syntropy\time\date.cpp" />
     <ClCompile Include="src\syntropy\time\time_of_day.cpp" />
-    <ClCompile Include="src\syntropy\math\pcg_random_engine.cpp" />
     <ClCompile Include="src\syntropy\language\listener.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\log_event_formatter.cpp" />
     <ClCompile Include="src\syntropy\memory\memory.cpp" />
     <ClCompile Include="src\syntropy\serialization\memory_stream_buffer.cpp" />
+    <ClCompile Include="src\syntropy\random\pcg_random_engine.cpp" />
   </ItemGroup>
 </Project>

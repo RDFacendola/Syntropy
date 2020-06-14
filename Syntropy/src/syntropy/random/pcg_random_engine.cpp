@@ -1,4 +1,4 @@
-#include "syntropy/math/pcg_random_engine.h"
+#include "syntropy/random/pcg_random_engine.h"
 
 #include "pcg/include/pcg_random.hpp"
 
