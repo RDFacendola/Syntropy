@@ -119,7 +119,7 @@ namespace syntropy
 
     #undef SYNTROPY_UNIT_TRACE
     #define SYNTROPY_UNIT_TRACE(expression) \
-        syntropy::UnitTest::ReportTestCaseMessage(#expression) \
+        syntropy::UnitTest::ReportTestCaseMessage(#expression); \
         (expression);
 
 }

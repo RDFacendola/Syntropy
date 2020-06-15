@@ -29,7 +29,7 @@ namespace syntropy::unit_test
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline const auto MemoryBufferTestSuite = MakeAutoTestSuite<MemoryBufferUnitTest>("MemoryBufferUnityTest");
+    inline const auto MemoryBufferTestSuite = MakeAutoTestSuite<MemoryBufferUnitTest>("MemoryBufferUnitTest");
 
     inline const auto MemoryBufferSerializationTestCase = MakeAutoTestCase("BasicOperations", &MemoryBufferUnitTest::BasicOperations);
 
