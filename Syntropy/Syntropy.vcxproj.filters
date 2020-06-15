@@ -105,13 +105,12 @@
     <ClInclude Include="include\syntropy\random\random_engine.h" />
     <ClInclude Include="include\syntropy\math\rotation.h" />
     <ClInclude Include="include\syntropy\random\random.h" />
-    <ClInclude Include="include\syntropy\experimental\serialization\msgpack\msgpack.h" />
-    <ClInclude Include="include\syntropy\experimental\serialization\msgpack\msgpack_stream_encoder.h" />
-    <ClInclude Include="include\syntropy\experimental\serialization\memory_stream_buffer.h" />
-    <ClInclude Include="include\syntropy\experimental\serialization\append_stream.h" />
-    <ClInclude Include="include\syntropy\experimental\serialization\append_stream_buffer.h" />
-    <ClInclude Include="include\syntropy\experimental\serialization\consume_stream.h" />
-    <ClInclude Include="include\syntropy\experimental\serialization\consume_stream_buffer.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\streams\append_stream.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\streams\append_stream_buffer.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\streams\consume_stream.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\streams\consume_stream_buffer.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\streams\stream_buffer.h" />
+    <ClInclude Include="include\syntropy\experimental\serialization\streams\stream_buffer_transaction.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -140,6 +139,6 @@
     <ClCompile Include="src\syntropy\diagnostics\log_event_formatter.cpp" />
     <ClCompile Include="src\syntropy\memory\memory.cpp" />
     <ClCompile Include="src\syntropy\random\pcg_random_engine.cpp" />
-    <ClCompile Include="src\syntropy\experimental\serialization\memory_stream_buffer.cpp" />
+    <ClCompile Include="src\syntropy\experimental\serialization\stream_buffer.cpp" />
   </ItemGroup>
 </Project>

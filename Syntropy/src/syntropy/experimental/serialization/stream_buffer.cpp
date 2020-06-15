@@ -1,41 +1,55 @@
-#include "syntropy/experimental/serialization/memory_stream_buffer.h"
+#include "syntropy/experimental/serialization/streams/stream_buffer.h"
 
 #include "syntropy/language/utility.h"
 
 namespace syntropy
 {
     /************************************************************************/
-    /* MEMORY STREAM BUFFER                                                 */
+    /* STREAM BUFFER                                                        */
     /************************************************************************/
 
-    ConstMemoryRange MemoryStreamBuffer::Append(const ConstMemoryRange& data)
+    ConstMemoryRange StreamBuffer::Append(const ConstMemoryRange& data)
     {
-        if (auto size = size_ + data.GetSize(); size > GetCapacity())
+        auto data_size = data.GetSize();
+
+        if (auto size = append_size_ + data_size; size > GetCapacity())
         {
-            size = ToBytes(Math::CeilTo<Int>((*size) * kGrowthFactor + kGrowthBias));                                                            // Exponential growth to avoid continuous reallocations.
+            size = ToBytes(Math::CeilTo<Int>((*size) * kGrowthFactor + kGrowthBias));                                                           // Exponential growth to avoid continuous reallocations.
 
             Reserve(size);
         }
 
-        auto write_position = size_;
+        auto append_position = append_size_;
 
-        size_ += data.GetSize();
+        append_size_ += data_size;
 
-        return Write(write_position, data);                                                                                                     // Returned range is always empty.
+        if (!transaction_)
+        {
+            size_ += data_size;                                                                                                                 // Commit immediately if there's no pending transaction.
+        }
+
+        return Write(append_position, data);                                                                                                    // Returned range is always empty.
     }
 
-    MemoryRange MemoryStreamBuffer::Consume(const MemoryRange& data)
+    MemoryRange StreamBuffer::Consume(const MemoryRange& data)
     {
         auto read_range = Read(Bytes{ 0 }, data);
 
-        base_pointer_ = GetAddress(read_range.GetSize());
+        auto data_size = read_range.GetSize();
 
-        size_ -= read_range.GetSize();
+        base_pointer_ = GetAddress(data_size);
+
+        consume_size_ -= data_size;
+
+        if (!transaction_)
+        {
+            size_ -= data_size;
+        }
 
         return read_range;
     }
 
-    ConstMemoryRange MemoryStreamBuffer::Write(Bytes position, const ConstMemoryRange& data)
+    ConstMemoryRange StreamBuffer::Write(Bytes position, const ConstMemoryRange& data)
     {
         auto written_data = [this, position, &data]()
         {
@@ -57,7 +71,7 @@ namespace syntropy
         return { data.Begin() + written_data, data.End() };
     }
 
-    MemoryRange MemoryStreamBuffer::Read(Bytes position, const MemoryRange& data) const
+    MemoryRange StreamBuffer::Read(Bytes position, const MemoryRange& data) const
     {
         auto read_data = [this, position, &data]()
         {
@@ -79,7 +93,7 @@ namespace syntropy
         return { data.Begin(), read_data };
     }
 
-    void MemoryStreamBuffer::Realloc(Bytes capacity)
+    void StreamBuffer::Realloc(Bytes capacity)
     {
         auto buffer = MemoryBuffer{ capacity, buffer_.GetMemoryResource() };
 
@@ -103,20 +117,30 @@ namespace syntropy
         base_pointer_ = buffer_.Begin();
     }
 
-    MemoryAddress MemoryStreamBuffer::GetAddress(Bytes offset)
+    MemoryAddress StreamBuffer::GetAddress(Bytes offset)
     {
         auto address = AsConst(*this).GetAddress(offset).As<void>();
 
         return const_cast<void*>(address);
     }
 
-    ConstMemoryAddress MemoryStreamBuffer::GetAddress(Bytes offset) const
+    ConstMemoryAddress StreamBuffer::GetAddress(Bytes offset) const
     {
         offset = (base_pointer_ + offset - buffer_.Begin());        // Advance.
 
         offset = ToBytes(offset % buffer_.GetSize());               // Wrap-around.
 
         return buffer_.Begin() + offset;                            // Offset in buffer-space.
+    }
+
+    void StreamBuffer::Commit(Bytes append_size, Bytes consume_size)
+    {
+
+    }
+
+    void StreamBuffer::Rollback(Bytes append_size, Bytes consume_size)
+    {
+
     }
 
 }

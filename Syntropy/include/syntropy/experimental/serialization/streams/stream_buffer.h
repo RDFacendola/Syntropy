@@ -1,14 +1,16 @@
 
-/// \file memory_stream_buffer.h
-/// \brief This header is part of the Syntropy serialization module. It contains definition for a memory stream buffer.
+/// \file stream_buffer.h
+/// \brief This header is part of the Syntropy serialization module. It contains definitions for a stream buffer.
 ///
 /// \author Raffaele D. Facendola - 2020
 
 #pragma once
 
 #include "syntropy/core/types.h"
+#include "syntropy/core/smart_pointers.h"
 #include "syntropy/language/initializer_list.h"
 #include "syntropy/language/algorithm.h"
+#include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory_range.h"
 #include "syntropy/memory/memory_buffer.h"
@@ -19,45 +21,51 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* MEMORY STREAM BUFFER                                                 */
+    /* STREAM BUFFER                                                        */
     /************************************************************************/
+
+    class StreamBufferTransaction;
 
     /// \brief Represents a raw stream of bytes.
     /// Stream buffer supports both FIFO and random I\O operations.
     /// \author Raffaele D. Facendola - June 2020
-    class MemoryStreamBuffer
+    class StreamBuffer
     {
+        friend class StreamBufferTransaction;
+
     public:
 
         /// \brief Create a new empty stream.
-        MemoryStreamBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource());
+        StreamBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Create a new stream by moving an existing memory buffer.
-        MemoryStreamBuffer(MemoryBuffer&& buffer);
+        StreamBuffer(MemoryBuffer&& buffer);
 
         /// \brief Create a new stream by copying a memory buffer.
-        MemoryStreamBuffer(const MemoryBuffer& buffer, MemoryResource& memory_resource);
+        StreamBuffer(const MemoryBuffer& buffer, MemoryResource& memory_resource);
 
         /// \brief Default copy constructor.
-        MemoryStreamBuffer(const MemoryStreamBuffer& other) = default;
+        StreamBuffer(const StreamBuffer& other) = default;
 
         /// \brief Default move constructor.
-        MemoryStreamBuffer(MemoryStreamBuffer&& other) = default;
+        StreamBuffer(StreamBuffer&& other) = default;
 
         /// \brief Default copy-assignment operator.
-        MemoryStreamBuffer& operator=(const MemoryStreamBuffer& other) = default;
+        StreamBuffer& operator=(const StreamBuffer& other) = default;
 
         /// \brief Default move-assignment operator.
-        MemoryStreamBuffer& operator=(MemoryStreamBuffer&& other) = default;
+        StreamBuffer& operator=(StreamBuffer&& other) = default;
 
         /// \brief Default destructor.
-        ~MemoryStreamBuffer() = default;
+        ~StreamBuffer() = default;
 
         /// \brief Write data sequentially to the stream, causing it to grow.
+        /// Append operations are performed tentatively if there's an active transaction.
         /// \return Returns the range containing unwritten data.
         ConstMemoryRange Append(const ConstMemoryRange& data);
 
         /// \brief Read data sequentially from the stream, causing it to shrink.
+        /// Consume operations are performed tentatively if there's an active transaction.
         /// \return Returns the range containing read data.
         MemoryRange Consume(const MemoryRange& data);
 
@@ -72,20 +80,18 @@ namespace syntropy
         MemoryRange Read(Bytes position, const MemoryRange& data) const;
 
         /// \brief Discard data content and clear the underlying buffer.
-        void Clear();
+        void Discard();
 
-        /// \brief Release and return underlying memory buffer and clear stream buffer state.
+        /// \brief Release and return underlying memory buffer and clear the stream buffer.
         MemoryBuffer Release();
 
-        /// \brief Increase the underlying buffer allocation to a given size.
-        /// This method reallocates only if the provided capacity exceeds the current allocation size, otherwise it behaves as no-op.
+        /// \brief Increase the underlying buffer allocation up to a given size.
         void Reserve(Bytes capacity);
 
         /// \brief Increase the underlying buffer allocation size by a given amount.
         void Grow(Bytes capacity);
 
-        /// \brief Shrink the allocation size up to the current buffer size.
-        /// This method preserve the buffer content and may reallocate the underlying buffer.
+        /// \brief Shrink the allocation size up to the current content size.
         void Shrink();
 
         /// \brief Check whether the underlying buffer is empty.
@@ -102,7 +108,7 @@ namespace syntropy
 
         /// \brief Swap the content of this stream with another one.
         /// \remarks This method swaps underlying memory resources as well.
-        void Swap(MemoryStreamBuffer& other) noexcept;
+        void Swap(StreamBuffer& other) noexcept;
 
     private:
 
@@ -123,6 +129,11 @@ namespace syntropy
         /// \brief Get the address of a byte at given offset from the base pointer, wrapping around.
         ConstMemoryAddress GetAddress(Bytes offset) const;
 
+        /// \brief 
+        void Commit(Bytes append_size, Bytes consume_size);
+
+        void Rollback(Bytes append_size, Bytes consume_size);
+
         /// \brief Underlying memory buffer, may be larger than current stream size.
         /// This buffer is circular to prevent reallocations from consume operations.
         MemoryBuffer buffer_;
@@ -130,8 +141,17 @@ namespace syntropy
         /// \brief Offset within the buffer data start from (inclusive).
         MemoryAddress base_pointer_;
 
-        /// \brief Current data size, can be lower than buffer's capacity.
+        /// \brief Number of committed bytes in the underlying buffer.
         Bytes size_;
+
+        /// \brief Size of appended bytes, including pending ones. This value is always greater or equal to the committed size.
+        Bytes append_size_;
+
+        /// \brief Size of consumed bytes, including pending ones. This value is always less or equal to the committed size.
+        Bytes consume_size_;
+
+        /// \brief Current active transaction.
+        ObserverPtr<StreamBufferTransaction> transaction_{ nullptr };
 
     };
 
@@ -140,30 +160,32 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Swaps two memory stream buffer.
-    void swap(MemoryStreamBuffer& lhs, MemoryStreamBuffer& rhs);
+    void swap(StreamBuffer& lhs, StreamBuffer& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // MemoryStreamBuffer.
+    // StreamBuffer.
 
-    inline MemoryStreamBuffer::MemoryStreamBuffer(MemoryResource& memory_resource)
+    inline StreamBuffer::StreamBuffer(MemoryResource& memory_resource)
         : buffer_(memory_resource)
         , base_pointer_(buffer_.GetData().Begin())
     {
 
     }
 
-    inline MemoryStreamBuffer::MemoryStreamBuffer(MemoryBuffer&& buffer)
+    inline StreamBuffer::StreamBuffer(MemoryBuffer&& buffer)
         : buffer_(std::move(buffer))
         , base_pointer_(buffer_.GetData().Begin())
         , size_(buffer_.GetSize())
+        , append_size_(size_)
+        , consume_size_(size_)
     {
 
     }
 
-    inline MemoryStreamBuffer::MemoryStreamBuffer(const MemoryBuffer& buffer, MemoryResource& memory_resource)
+    inline StreamBuffer::StreamBuffer(const MemoryBuffer& buffer, MemoryResource& memory_resource)
         : buffer_(buffer.GetSize(), memory_resource)
         , base_pointer_(buffer_.GetData().Begin())
         , size_(buffer_.GetSize())
@@ -171,7 +193,7 @@ namespace syntropy
         Memory::Copy(buffer_.GetData(), buffer.GetData());
     }
 
-    inline void MemoryStreamBuffer::Clear()
+    inline void StreamBuffer::Discard()
     {
         Memory::Zero(buffer_.GetData());
 
@@ -179,7 +201,7 @@ namespace syntropy
         size_ = Bytes{ 0 };
     }
 
-    inline void MemoryStreamBuffer::Reserve(Bytes capacity)
+    inline void StreamBuffer::Reserve(Bytes capacity)
     {
         if (capacity > GetCapacity())
         {
@@ -187,12 +209,12 @@ namespace syntropy
         }
     }
 
-    inline void MemoryStreamBuffer::Grow(Bytes capacity)
+    inline void StreamBuffer::Grow(Bytes capacity)
     {
         Reserve(GetCapacity() + capacity);
     }
 
-    inline void MemoryStreamBuffer::Shrink()
+    inline void StreamBuffer::Shrink()
     {
         if (auto size = GetSize(); size < GetCapacity())
         {
@@ -200,27 +222,27 @@ namespace syntropy
         }
     }
 
-    inline Bool MemoryStreamBuffer::IsEmpty() const
+    inline Bool StreamBuffer::IsEmpty() const
     {
         return GetSize() == Bytes{ 0 };
     }
 
-    inline Bytes MemoryStreamBuffer::GetSize() const
+    inline Bytes StreamBuffer::GetSize() const
     {
         return size_;
     }
 
-    inline Bytes MemoryStreamBuffer::GetCapacity() const
+    inline Bytes StreamBuffer::GetCapacity() const
     {
         return buffer_.GetSize();
     }
 
-    inline MemoryResource& MemoryStreamBuffer::GetMemoryResource() const
+    inline MemoryResource& StreamBuffer::GetMemoryResource() const
     {
         return buffer_.GetMemoryResource();
     }
 
-    inline MemoryBuffer MemoryStreamBuffer::Release()
+    inline MemoryBuffer StreamBuffer::Release()
     {
         // Rotate the underlying buffer such that base pointer is shifted in first position.
 
@@ -237,7 +259,7 @@ namespace syntropy
         return buffer;
     }
 
-    inline void MemoryStreamBuffer::Swap(MemoryStreamBuffer& other) noexcept
+    inline void StreamBuffer::Swap(StreamBuffer& other) noexcept
     {
         using std::swap;
 
@@ -248,7 +270,7 @@ namespace syntropy
 
     // Non-member functions.
 
-    inline void swap(MemoryStreamBuffer& lhs, MemoryStreamBuffer& rhs)
+    inline void swap(StreamBuffer& lhs, StreamBuffer& rhs)
     {
         lhs.Swap(rhs);
     }
