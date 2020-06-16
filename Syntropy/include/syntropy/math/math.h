@@ -28,6 +28,10 @@ namespace syntropy
         template <typename TType, typename... TTypes>
         const TType& Max(const TType& element, TTypes&&... elements);
 
+        /// \brief Clamp an element between a minimum and a maximum.
+        template <typename TType>
+        const TType& Clamp(const TType& element, const TType& min, const TType& max);
+
         /// \brief Get the smallest integral number greater than or equal to rhs.
         template <typename TNumber>
         constexpr TNumber Ceil(TNumber rhs);
@@ -117,6 +121,12 @@ namespace syntropy
 
             return max(element, Max(std::forward<TTypes>(elements)...));
         }
+    }
+
+    template <typename TType>
+    const TType& Math::Clamp(const TType& element, const TType& min, const TType& max)
+    {
+        return Math::Min(Math::Max(element, min), max);
     }
 
     template <typename TNumber>

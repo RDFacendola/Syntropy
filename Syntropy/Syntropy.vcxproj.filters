@@ -111,6 +111,9 @@
     <ClInclude Include="include\syntropy\experimental\serialization\streams\consume_stream_buffer.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\stream_buffer.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\stream_buffer_transaction.h" />
+    <ClInclude Include="include\syntropy\experimental\application\cli.h" />
+    <ClInclude Include="include\syntropy\experimental\application\default_cli_style.h" />
+    <ClInclude Include="include\syntropy\experimental\application\cli_line_builder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

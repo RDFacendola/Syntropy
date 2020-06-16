@@ -30,6 +30,9 @@ namespace syntropy
         /// \return Returns the bytes copied as a result of this call.
         Bytes Copy(const MemoryRange& destination, const ConstMemoryRange& source);
 
+        /// \brief Copy a source memory region to a destination memory region repeating the source until destination range is exhausted. Neither range is exceed during the process.
+        void Repeat(const MemoryRange& destination, const ConstMemoryRange& source);
+
         /// \brief Set a value to each byte in a destination range.
         void Set(const MemoryRange& destination, Byte value);
 
@@ -58,6 +61,14 @@ namespace syntropy
     /************************************************************************/
 
     // Memory.
+
+    inline void Memory::Repeat(const MemoryRange& destination, const ConstMemoryRange& source)
+    {
+        for (auto range = destination; range.GetSize() != Bytes{ 0 };)
+        {
+            range.PopFront(Copy(range, source));
+        }
+    }
 
     inline void Memory::Set(const MemoryRange& destination, Byte value)
     {

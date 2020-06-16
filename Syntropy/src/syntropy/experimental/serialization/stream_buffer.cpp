@@ -12,23 +12,28 @@ namespace syntropy
     {
         auto data_size = data.GetSize();
 
-        if (auto size = append_size_ + data_size; size > GetCapacity())
+        if (data_size > Bytes{ 0 })
         {
-            size = ToBytes(Math::CeilTo<Int>((*size) * kGrowthFactor + kGrowthBias));                                                           // Exponential growth to avoid continuous reallocations.
+            if (auto size = append_size_ + data_size; size > GetCapacity())
+            {
+                size = ToBytes(Math::CeilTo<Int>((*size) * kGrowthFactor + kGrowthBias));                                                       // Exponential growth to avoid continuous reallocations.
 
-            Reserve(size);
+                Reserve(size);
+            }
+
+            auto append_position = append_size_;
+
+            append_size_ += data_size;
+
+            if (!transaction_)
+            {
+                size_ += data_size;                                                                                                             // Commit immediately if there's no pending transaction.
+            }
+
+            return Write(append_position, data);                                                                                                // Returned range is always empty.
         }
 
-        auto append_position = append_size_;
-
-        append_size_ += data_size;
-
-        if (!transaction_)
-        {
-            size_ += data_size;                                                                                                                 // Commit immediately if there's no pending transaction.
-        }
-
-        return Write(append_position, data);                                                                                                    // Returned range is always empty.
+        return {};
     }
 
     MemoryRange StreamBuffer::Consume(const MemoryRange& data)
@@ -131,6 +136,8 @@ namespace syntropy
         offset = ToBytes(offset % buffer_.GetSize());               // Wrap-around.
 
         return buffer_.Begin() + offset;                            // Offset in buffer-space.
+
+        return nullptr;
     }
 
     void StreamBuffer::Commit(Bytes append_size, Bytes consume_size)

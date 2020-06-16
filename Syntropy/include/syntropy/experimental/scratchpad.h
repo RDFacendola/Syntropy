@@ -43,3 +43,84 @@ inline void StreamWriter::Clear()
 {
     buffer_->Discard();
 }
+
+/************************************************************************/
+/* CLI TEXT ALIGNMENT                                                   */
+/************************************************************************/
+
+/// \brief Alignment of a CLI text line.
+enum class CLITextAlignment : Fix8
+{
+    /// \brief Left alignment.
+    kLeft = 0,
+
+    /// \brief Center alignment.
+    kCenter = 1,
+
+    /// \brief Right alignment.
+    kRight = 2,
+};
+
+
+inline String DefaultCLIStyle::PrintCenter(const String& text, char fill) const
+{
+    LineOut([&](auto& line)
+    {
+        auto text_size = text.size();
+
+        auto left_pad = (line_size_ - text_size) / 2;
+
+        auto right_pad = (line_size_ - text_size - left_pad);
+
+        line << String(left_pad, fill) << text << String(right_pad, fill);
+    });
+}
+
+inline String DefaultCLIStyle::PrintLeft(const String& text, char fill) const
+{
+    LineOut([&](auto& line)
+    {
+        auto text_size = text.size();
+
+        auto right_pad = line_size_ - text_size;
+
+        line << text << String(right_pad, fill);
+    });
+}
+
+inline String DefaultCLIStyle::PrintRight(const String& text, char fill) const
+{
+    LineOut([&](auto& line)
+    {
+        auto text_size = text.size();
+
+        auto left_pad = line_size_ - text_size;
+
+        line << String(left_pad, fill) << text;
+    });
+}
+
+inline String DefaultCLIStyle::PrintLine(char fill) const
+{
+    PrintLine(fill, line_size_);
+}
+
+inline String DefaultCLIStyle::PrintLine(char fill, Int count) const
+{
+    LineOut([&](auto& line)
+    {
+        line << String(count, fill);
+    });
+}
+
+template <typename TLineFunction>
+inline String DefaultCLIStyle::LineOut(TLineFunction line_function) const
+{
+    auto line = StringStream{};
+
+    line_function(line);
+
+    line << '\n';
+
+    std::cout << line.str();
+}
