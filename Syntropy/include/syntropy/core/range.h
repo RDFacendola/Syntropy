@@ -9,10 +9,14 @@
 #include <ostream>
 #include <type_traits>
 
+#include "syntropy/language/utility.h"
+
 #include "syntropy/core/types.h"
+
+
+
 #include "syntropy/math/math.h"
 #include "syntropy/diagnostics/assert.h"
-#include "syntropy/language/utility.h"
 #include "syntropy/language/tuple.h"
 
 namespace syntropy
@@ -30,13 +34,13 @@ namespace syntropy
     public:
 
         /// \brief Reference type.
-        using TReference = decltype(*std::declval<TIterator>());
+        using TReference = decltype(*Declval<TIterator>());
 
         /// \brief Value type.
-        using TValue = std::remove_reference_t<TReference>;
+        using TValue = RemoveReferenceT<TReference>;
 
         /// \brief Distance type between two iterators.
-        using TDistance = decltype(std::declval<TIterator>() - std::declval<TIterator>());
+        using TDistance = decltype(Declval<TIterator>() - Declval<TIterator>());
 
         /// \brief Create an empty range.
         Range() = default;

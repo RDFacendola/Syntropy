@@ -147,6 +147,10 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
+    /// \brief Converts any type TType to a reference type, making it possible to use member functions in decltype expressions without the need to go through constructors.
+    template<class TType>
+    typename AddRValueReferenceT<TType> Declval() noexcept;
+
     /// \brief Forms lvalue reference to const type of rhs.
     /// \remarks Identical to C++17 std::as_const, wrapped for better consistency with AsNonConst.
     template <typename TType>
@@ -208,6 +212,12 @@ namespace syntropy
     }
 
     // Non-member functions.
+
+    template<class TType>
+    typename AddRValueReferenceT<TType> Declval() noexcept
+    {
+        return std::declval<TType>();
+    }
 
     template <typename TType>
     constexpr std::add_const_t<TType>& AsConst(TType& rhs) noexcept

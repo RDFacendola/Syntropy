@@ -42,6 +42,10 @@ namespace syntropy
     template <typename TType>
     using RemoveExtentsConstReferenceT = std::remove_cv_t<std::remove_all_extents_t<std::remove_reference_t<TType>>>;
 
+    /// \brief Create a lvalue or rvalue reference type of TType.
+    template <typename TType>
+    using AddRValueReferenceT = std::add_rvalue_reference_t<TType>;
+
     /************************************************************************/
     /* TYPE QUERY                                                           */
     /************************************************************************/
