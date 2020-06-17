@@ -12,6 +12,7 @@
 #include <iterator>
 
 #include "syntropy/core/types.h"
+#include "syntropy/core/range.h"
 #include "syntropy/allocators/polymorphic_allocator.h"
 
 namespace syntropy
@@ -66,6 +67,25 @@ namespace syntropy
     }
 
     /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Get the memory range associated to a string.
+    MemoryRange GetRange(String& string);
+
+    /// \brief Get the memory range associated to a string.
+    ConstMemoryRange GetRange(const String& string);
+
+    /// \brief R-values cannot be safely wrapped in a range.
+    MemoryRange GetRange(const String&& string) = delete;
+
+    /// \brief Get the const memory range associated to a string.
+    ConstMemoryRange GetConstRange(const String& string);
+
+    /// \brief R-values cannot be safely wrapped in a const range.
+    ConstMemoryRange GetConstRange(const String&& string) = delete;
+
+    /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
@@ -84,6 +104,27 @@ namespace syntropy
     inline StringView Strings::MakeView(String::iterator begin, String::iterator end)
     {
         return { &(*begin), static_cast<std::size_t>(std::distance(begin, end)) };
+    }
+
+    // Non-member functions.
+
+    inline MemoryRange GetRange(String& string)
+    {
+        auto length = ToBytes(string.size());
+
+        return MakeMemoryRange(string.data(), length);
+    }
+
+    inline ConstMemoryRange GetRange(const String& string)
+    {
+        return GetConstRange(string);
+    }
+
+    inline ConstMemoryRange GetConstRange(const String& string)
+    {
+        auto length = ToBytes(string.size());
+
+        return MakeConstMemoryRange(string.data(), length);
     }
 
 }
