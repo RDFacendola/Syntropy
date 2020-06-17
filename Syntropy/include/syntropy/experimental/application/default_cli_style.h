@@ -111,7 +111,6 @@ namespace syntropy
             .Center(text)
             .Blank()
             .Fill("=")
-
             .Build();
     }
 

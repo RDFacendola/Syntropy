@@ -56,7 +56,7 @@ namespace syntropy
         CLILineBuilder& Blank();
 
         /// \brief Print zero or more empty lines.
-        CLILineBuilder& Blank(Int repeat);
+        CLILineBuilder& Blank(Int count);
 
         /// \brief Build the CLI line and clear the builder status.
         String Build();
@@ -64,7 +64,7 @@ namespace syntropy
     private:
 
         /// \brief Token for the end of a line (carriage return and line feed).
-        static constexpr auto kCrLf = "\n";
+        static constexpr auto kNewLine = "\n";
         
         /// \brief Token for a blank character.
         static constexpr auto kBlank = " ";
@@ -73,10 +73,6 @@ namespace syntropy
         String NewLine(const String& fill) const;
 
         String& Copy(String& destination, const String& source, Int padding);
-
-        MemoryRange GetRange(String& line) const;
-
-        ConstMemoryRange GetRange(const String& line) const;
 
         /// \brief Line stream.
         StringStream line_;
@@ -103,7 +99,7 @@ namespace syntropy
     {
         auto line = NewLine(fill);
 
-        line_ << line << kCrLf;
+        line_ << line << kNewLine;
 
         return *this;
     }
@@ -118,17 +114,17 @@ namespace syntropy
         return *this;
     }
 
-    CLILineBuilder& CLILineBuilder::Left(const String& text)
+    inline CLILineBuilder& CLILineBuilder::Left(const String& text)
     {
         return Left(text, kBlank);
     }
 
-    CLILineBuilder& CLILineBuilder::Right(const String& text)
+    inline CLILineBuilder& CLILineBuilder::Right(const String& text)
     {
         return Right(text, kBlank);
     }
 
-    CLILineBuilder& CLILineBuilder::Center(const String& text)
+    inline CLILineBuilder& CLILineBuilder::Center(const String& text)
     {
         return Center(text, kBlank);
     }
@@ -139,7 +135,7 @@ namespace syntropy
 
         auto padding = 0;
 
-        line_ << Copy(line, text, padding) << kCrLf;
+        line_ << Copy(line, text, padding) << kNewLine;
 
         return *this;
     }
@@ -150,13 +146,17 @@ namespace syntropy
 
         auto padding = line_size_ - text.size();
 
-        line_ << Copy(line, text, padding) << kCrLf;
+        line_ << Copy(line, text, padding) << kNewLine;
 
         return *this;
     }
 
     inline CLILineBuilder& CLILineBuilder::Center(const String& text, const String& fill)
     {
+        auto text_range = GetRange(text);
+
+
+
         // #TODO StringView instead of String.
 
         // #TODO Chop the text for each '\n' found.
@@ -167,21 +167,21 @@ namespace syntropy
 
         auto padding = (line_size_ - text.size()) / 2;
 
-        line_ << Copy(line, text, padding) << kCrLf;
+        line_ << Copy(line, text, padding) << kNewLine;
 
         return *this;
     }
 
     inline CLILineBuilder& CLILineBuilder::Blank()
     {
-        line_ << kCrLf;
+        line_ << kNewLine;
 
         return *this;
     }
 
-    inline CLILineBuilder& CLILineBuilder::Blank(Int repeat)
+    inline CLILineBuilder& CLILineBuilder::Blank(Int count)
     {
-        for (; repeat > 0; --repeat)
+        for (; count > 0; --count)
         {
             Blank();
         }
@@ -214,20 +214,6 @@ namespace syntropy
         Memory::Copy(GetRange(destination).PopFront(ToBytes(padding)), GetRange(source));
 
         return destination;
-    }
-
-    inline MemoryRange CLILineBuilder::GetRange(String& line) const
-    {
-        auto line_size = ToBytes(line.size());
-
-        return MakeMemoryRange(line.data(), line_size);
-    }
-
-    inline ConstMemoryRange CLILineBuilder::GetRange(const String& line) const
-    {
-        auto line_size = ToBytes(line.size());
-
-        return MakeConstMemoryRange(line.data(), line_size);
     }
 
 }
