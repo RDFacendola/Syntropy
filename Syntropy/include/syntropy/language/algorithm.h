@@ -22,6 +22,9 @@ namespace syntropy
     template <typename TIterator>
     void Rotate(Range<TIterator> range, TIterator middle);
 
+    /// \brief Reduce the source range from the front until the first element is equal to the provided element or the range is exhausted.
+    template <typename TIterator, typename TElement>
+    Range<TIterator> Find(const Range<TIterator> source, const TElement& element);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -31,6 +34,16 @@ namespace syntropy
     inline void Rotate(Range<TIterator> range, TIterator middle)
     {
         std::rotate(range.Begin(), middle, range.End());
+    }
+
+    template <typename TIterator, typename TElement>
+    inline Range<TIterator> Find(const Range<TIterator> source, const TElement& element)
+    {
+        auto range = source;
+
+        for (; range && (range.GetFront() != element); range.PopFront());
+
+        return range;
     }
 
 }
