@@ -90,7 +90,6 @@
     <ClInclude Include="include\syntropy\diagnostics\log_macros.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event_formatter.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event_filter.h" />
-    <ClInclude Include="include\syntropy\core\types.h" />
     <ClInclude Include="include\syntropy\language\initializer_list.h" />
     <ClInclude Include="include\syntropy\language\algorithm.h" />
     <ClInclude Include="include\syntropy\random\pcg_random_engine.h" />
@@ -112,6 +111,7 @@
     <ClInclude Include="include\syntropy\core\stream_vector.h" />
     <ClInclude Include="include\syntropy\core\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\core\vector.h" />
+    <ClInclude Include="include\syntropy\core\types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

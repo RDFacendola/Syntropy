@@ -1,6 +1,8 @@
 
 /// \file types.h
-/// \brief This header is part of Syntropy core module. It contains definitions for primitive data types.
+/// \brief This header is part of Syntropy core module. It contains definitions for fundamental data types.
+///
+/// \remarks This file shall not have dependency on any other header than standard ones.
 ///
 /// \author Raffaele D. Facendola - 2020
 
@@ -15,9 +17,6 @@ namespace syntropy
     /* FUNDAMENTAL TYPES                                                    */
     /************************************************************************/
 
-    /// \brief Type of the null pointer literal, nullptr.
-    using Null = std::nullptr_t;
-
     /// \brief Boolean value.
     using Bool = bool;
 
@@ -27,12 +26,23 @@ namespace syntropy
     /// \brief 32-bit floating point value.
     using Float = float;
 
+    /// \brief Type alias for a non-owning pointer which doesn't participate to pointee life-time.
+    template <typename TType>
+    using ObserverPtr = TType*;
+
+    /************************************************************************/
+    /* AUXILIARY TYPES                                                      */
+    /************************************************************************/
+
+    /// \brief Type of the null pointer literal, nullptr.
+    using Null = std::nullptr_t;
+
     /// \brief 8-bit value
     /// \remarks This type represents a collection of bits, therefore it is neither a character type nor an arithmetic type.
     using Byte = std::byte;
 
     /************************************************************************/
-    /* FIXED-WIDTH INTEGER TYPES                                            */
+    /* FIXED INTEGER TYPES                                                  */
     /************************************************************************/
 
     /// \brief 8-bit integer value.
@@ -52,16 +62,7 @@ namespace syntropy
     using Fix64 = std::int64_t;
 
     /************************************************************************/
-    /* POINTERS                                                             */
-    /************************************************************************/
-
-    /// \brief Type alias for an observer pointer.
-    /// An observer pointer is a raw pointer to an object which does not participate to pointee life-time.
-    template <typename TType>
-    using ObserverPtr = TType*;
-
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* CAST FUNCTIONS                                                       */
     /************************************************************************/
 
     /// \brief Truncate a value to integer.
@@ -96,7 +97,7 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Non-member functions.
+    // Cast functions.
 
     template <typename TNumber>
     constexpr Int ToInt(TNumber rhs)
