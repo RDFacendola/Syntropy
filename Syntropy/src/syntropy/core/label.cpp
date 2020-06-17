@@ -1,6 +1,6 @@
 #include "syntropy/core/label.h"
 
-#include "syntropy/containers/map.h"
+#include "syntropy/core/map.h"
 
 #include "syntropy/allocators/linear_virtual_memory_resource.h"
 #include "syntropy/allocators/fallback_memory_resource.h"

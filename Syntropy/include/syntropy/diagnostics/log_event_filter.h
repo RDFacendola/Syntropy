@@ -10,7 +10,7 @@
 #include "syntropy/diagnostics/log_event.h"
 #include "syntropy/diagnostics/verbosity.h"
 #include "syntropy/core/context.h"
-#include "syntropy/containers/vector.h"
+#include "syntropy/core/vector.h"
 
 namespace syntropy
 {

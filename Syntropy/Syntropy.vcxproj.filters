@@ -26,8 +26,6 @@
     <ClInclude Include="include\syntropy\memory\virtual_memory_range.h" />
     <ClInclude Include="include\syntropy\allocators\virtual_memory_resource.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
-    <ClInclude Include="include\syntropy\containers\map.h" />
-    <ClInclude Include="include\syntropy\containers\vector.h" />
     <ClInclude Include="include\syntropy\allocators\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\core\string.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
@@ -92,9 +90,6 @@
     <ClInclude Include="include\syntropy\diagnostics\log_macros.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event_formatter.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event_filter.h" />
-    <ClInclude Include="include\syntropy\containers\vector_view.h" />
-    <ClInclude Include="include\syntropy\containers\stream_vector.h" />
-    <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\core\types.h" />
     <ClInclude Include="include\syntropy\language\initializer_list.h" />
     <ClInclude Include="include\syntropy\language\algorithm.h" />
@@ -112,6 +107,11 @@
     <ClInclude Include="include\syntropy\experimental\application\cli.h" />
     <ClInclude Include="include\syntropy\experimental\application\default_cli_style.h" />
     <ClInclude Include="include\syntropy\experimental\application\cli_line_builder.h" />
+    <ClInclude Include="include\syntropy\core\vector_view.h" />
+    <ClInclude Include="include\syntropy\core\map.h" />
+    <ClInclude Include="include\syntropy\core\stream_vector.h" />
+    <ClInclude Include="include\syntropy\core\stream_vector_view.h" />
+    <ClInclude Include="include\syntropy\core\vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

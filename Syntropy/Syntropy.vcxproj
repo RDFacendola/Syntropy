@@ -30,11 +30,11 @@
     <ClInclude Include="include\syntropy\allocators\virtual_memory_resource.h" />
     <ClInclude Include="include\syntropy\application\command_line.h" />
     <ClInclude Include="include\syntropy\application\command_line_argument.h" />
-    <ClInclude Include="include\syntropy\containers\map.h" />
-    <ClInclude Include="include\syntropy\containers\stream_vector.h" />
-    <ClInclude Include="include\syntropy\containers\stream_vector_view.h" />
-    <ClInclude Include="include\syntropy\containers\vector.h" />
-    <ClInclude Include="include\syntropy\containers\vector_view.h" />
+    <ClInclude Include="include\syntropy\core\map.h" />
+    <ClInclude Include="include\syntropy\core\stream_vector.h" />
+    <ClInclude Include="include\syntropy\core\stream_vector_view.h" />
+    <ClInclude Include="include\syntropy\core\vector.h" />
+    <ClInclude Include="include\syntropy\core\vector_view.h" />
     <ClInclude Include="include\syntropy\experimental\application\cli.h" />
     <ClInclude Include="include\syntropy\experimental\application\cli_line_builder.h" />
     <ClInclude Include="include\syntropy\experimental\application\default_cli_style.h" />
