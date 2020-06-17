@@ -24,12 +24,4 @@ namespace syntropy
     template <typename TKey, typename TValue, typename THash = HashFunctor64<TKey>, typename TPred = std::equal_to<TKey>>
     using Map = std::unordered_map<TKey, TValue, THash, TPred, PolymorphicAllocator<std::pair<const TKey, TValue>>>;
 
-    /************************************************************************/
-    /* MULTIMAP <TKEY, TVALUE, THASH, TPRED>                                */
-    /************************************************************************/
-
-    /// \brief Alias type for std::unordered_multimap with polymorphic allocator type.
-    template <typename TKey, typename TValue, typename THash = HashFunctor64<TKey>, typename TPred = std::equal_to<TKey>>
-    using Multimap = std::unordered_multimap<TKey, TValue, THash, TPred, PolymorphicAllocator<std::pair<const TKey, TValue>>>;
-
 }
