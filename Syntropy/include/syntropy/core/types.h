@@ -12,7 +12,7 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* TYPE ALIASES                                                         */
+    /* FUNDAMENTAL TYPES                                                    */
     /************************************************************************/
 
     /// \brief Type of the null pointer literal, nullptr.
@@ -50,6 +50,15 @@ namespace syntropy
     /// \brief 64-bit integer value.
     /// Fixed-width types are meant to be used with low-level IO and network systems.
     using Fix64 = std::int64_t;
+
+    /************************************************************************/
+    /* POINTERS                                                             */
+    /************************************************************************/
+
+    /// \brief Type alias for an observer pointer.
+    /// An observer pointer is a raw pointer to an object which does not participate to pointee life-time.
+    template <typename TType>
+    using ObserverPtr = TType*;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
