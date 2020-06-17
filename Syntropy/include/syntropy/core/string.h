@@ -34,18 +34,26 @@ namespace syntropy
     using BasicStringView = std::basic_string_view<TCharacter, TTraits>;
 
     /************************************************************************/
-    /* STRING                                                               */
+    /* TYPE ALIASES                                                         */
     /************************************************************************/
 
     /// \brief Alias type for std::basic_string<char> with polymorphic allocator type.
     using String = BasicString<char>;
 
-    /************************************************************************/
-    /* STRING VIEW                                                          */
-    /************************************************************************/
-
     /// \brief Alias type for std::basic_string_view<char>.
     using StringView = BasicStringView<char>;
+
+    /// \brief Type alias for a range of characters.
+    using StringRange = Range<String::iterator>;
+
+    /// \brief Type alias for a range of const characters.
+    using ConstStringRange = Range<String::const_iterator>;
+
+    /// \brief Type alias for a range of characters.
+    using StringViewRange = Range<StringView::iterator>;
+
+    /// \brief Type alias for a range of const characters.
+    using ConstStringViewRange = Range<StringView::const_iterator>;
 
     /************************************************************************/
     /* STRINGS                                                              */
@@ -71,19 +79,34 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Get the memory range associated to a string.
-    MemoryRange GetRange(String& string);
+    StringRange GetRange(String& string);
 
     /// \brief Get the memory range associated to a string.
-    ConstMemoryRange GetRange(const String& string);
+    ConstStringRange GetRange(const String& string);
 
     /// \brief R-values cannot be safely wrapped in a range.
-    MemoryRange GetRange(const String&& string) = delete;
+    void GetRange(const String&& string) = delete;
 
     /// \brief Get the const memory range associated to a string.
-    ConstMemoryRange GetConstRange(const String& string);
+    ConstStringRange GetConstRange(const String& string);
 
     /// \brief R-values cannot be safely wrapped in a const range.
-    ConstMemoryRange GetConstRange(const String&& string) = delete;
+    void GetConstRange(const String&& string) = delete;
+
+    /// \brief Get the memory range associated to a string view.
+    StringViewRange GetRange(StringView& string);
+
+    /// \brief Get the memory range associated to a string view.
+    ConstStringViewRange GetRange(const StringView& string);
+
+    /// \brief R-values cannot be safely wrapped in a range.
+    void GetRange(const StringView&& string) = delete;
+
+    /// \brief Get the const memory range associated to a string view.
+    ConstStringViewRange GetConstRange(const StringView& string);
+
+    /// \brief R-values cannot be safely wrapped in a const range.
+    void GetConstRange(const StringView&& string) = delete;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -108,23 +131,36 @@ namespace syntropy
 
     // Non-member functions.
 
-    inline MemoryRange GetRange(String& string)
+    inline StringRange GetRange(String& string)
     {
         auto length = ToBytes(string.size());
 
-        return MakeMemoryRange(string.data(), length);
+        return { string.begin(), string.end() };
     }
 
-    inline ConstMemoryRange GetRange(const String& string)
+    inline ConstStringRange GetRange(const String& string)
     {
         return GetConstRange(string);
     }
 
-    inline ConstMemoryRange GetConstRange(const String& string)
+    inline ConstStringRange GetConstRange(const String& string)
     {
-        auto length = ToBytes(string.size());
+        return { string.cbegin(), string.cend() };
+    }
 
-        return MakeConstMemoryRange(string.data(), length);
+    inline StringViewRange GetRange(StringView& string)
+    {
+        return { string.begin(), string.end() };
+    }
+
+    inline ConstStringViewRange GetRange(const StringView& string)
+    {
+        return GetConstRange(string);
+    }
+
+    inline ConstStringViewRange GetConstRange(const StringView& string)
+    {
+        return { string.cbegin(), string.cend() };
     }
 
 }
