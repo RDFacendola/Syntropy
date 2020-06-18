@@ -17,16 +17,16 @@ namespace syntropy
     /* UNIT TEST MACROS                                                     */
     /************************************************************************/
 
-    /// \brief Unit test macro: report a success if "expression" is true, otherwise report a failure and return. Expected usage within a TestFixture.
+    /// \brief Unit test macro: report a success if "expression" is equal to expected, otherwise report a failure and return. Expected usage within a TestFixture.
     /// \usage SYNTROPY_UNIT_ASSERT(1 + 2 == 3);
-    #define SYNTROPY_UNIT_ASSERT(expression) \
-        SYNTROPY_MACRO_DECLARATION(expression)
+    #define SYNTROPY_UNIT_ASSERT_EQUAL(expression, expected) \
+        SYNTROPY_MACRO_DECLARATION(expression, expected)
 
-    /// \brief Unit test macro: report a success if "expression" is true, otherwise report a failure. Expected usage within a TestFixture.
+    /// \brief Unit test macro: report a success if "expression" is equal to expected, otherwise report a failure and continue. Expected usage within a TestFixture.
     /// Similar to SYNTROPY_UNIT_ASSERT except it doesn't return on failure.
     /// \usage SYNTROPY_UNIT_TEST(1 + 2 == 3);
-    #define SYNTROPY_UNIT_TEST(expression) \
-        SYNTROPY_MACRO_DECLARATION(expression)
+    #define SYNTROPY_UNIT_EQUAL(expression, expected) \
+        SYNTROPY_MACRO_DECLARATION(expression, expected)
 
     /// \brief Unit test macro: the test is executed if "expression" is true, otherwise the test is skipped. If used, it must precede any other test. Expected usage within a TestFixture.
     /// \usage SYNTROPY_UNIT_EXPECT(!IsServer());
@@ -63,27 +63,27 @@ namespace syntropy
 
     // Unit-test macros.
 
-    #undef SYNTROPY_UNIT_ASSERT
-    #define SYNTROPY_UNIT_ASSERT(expression) \
-        if (Bool result = (expression); !result) \
+    #undef SYNTROPY_UNIT_ASSERT_EQUAL
+    #define SYNTROPY_UNIT_ASSERT_EQUAL(expression, expected) \
+        if (auto&& result = (expression); result != expected) \
         { \
-            syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kFailure, "ASSERT (" #expression ")", SYNTROPY_HERE ); \
+            syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kFailure, SYNTROPY_HERE, #expression, " returned ", result, " but ", expected, " was expected."); \
             return; \
         } \
         else \
         { \
-            syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kSuccess, "ASSERT (" #expression ")", SYNTROPY_HERE ); \
+            syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kFailure, SYNTROPY_HERE, #expression, " returned expected result ", result); \
         }
 
-    #undef SYNTROPY_UNIT_TEST
-    #define SYNTROPY_UNIT_TEST(expression) \
-        if (Bool result = (expression); !result) \
+    #undef SYNTROPY_UNIT_EQUAL
+    #define SYNTROPY_UNIT_EQUAL(expression, expected) \
+        if (auto&& result = (expression); result != expected) \
         { \
-            syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kFailure, "TEST (" #expression ")", SYNTROPY_HERE ); \
+            syntropy::UnitTest::ReportTestCaseResult(syntropy::TestResult::kFailure, SYNTROPY_HERE, #expression, " returned ", result, " but ", expected, " was expected."); \
         } \
         else \
         { \
-            syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kSuccess, "TEST (" #expression ")", SYNTROPY_HERE ); \
+            syntropy::UnitTest::ReportTestCaseResult(syntropy::TestResult::kFailure, SYNTROPY_HERE, #expression, " returned expected result ", result); \
         }
 
     #undef SYNTROPY_UNIT_EXPECT

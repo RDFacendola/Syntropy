@@ -1,38 +1,35 @@
-/// \file foo_test_suite.h
-/// \brief Contains empty templates for a test suite and many test cases.
+/// \file span_unit_test.h
 ///
-/// \author Raffaele D. Facendola - June 2020.
+/// \author Raffaele D. Facendola - 2020.
 
 #pragma once
+
+#include "syntropy/core/types.h"
+#include "syntropy/unit_test/auto_test_suite.h"
+#include "syntropy/unit_test/auto_test_case.h"
+#include "syntropy/unit_test/test_macros.h"
+
+#include "syntropy/experimental/core/span.h"
 
 namespace syntropy::unit_test
 {
     /************************************************************************/
-    /* FOO TEST SUITE                                                       */
+    /* SPAN TEST SUITE                                                      */
     /************************************************************************/
 
-    /// \brief Foo test suite.
-    struct FooTestSuite
+    /// \brief Test suite for ???
+    struct SpanTestSuite
     {
-        /// \brief Setup the fixture before each test case. Can be omitted.
-        void Before();
-
-        /// \brief Tear down the fixture after each test case. Can be omitted.
-        void After();
-
-        /// \brief Test case
-        void FooTestCase();
+        void EmptySpanHasZeroElements();
     };
 
     /************************************************************************/
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    /// IMPORTANT! This file must be added to "unit_tests.h" otherwise it won't be run.
+    inline const auto AutoSpanTestSuite = MakeAutoTestSuite<SpanTestSuite>("SpanTestSuite");
 
-    inline const auto AutoFooTestSuite = MakeAutoTestSuite<FooTestSuite>("FooTestSuite");
-
-    inline const auto AutoFooTestCase = MakeAutoTestCase("FooTestCase", &FooTestSuite::FooTestCase);
+    inline const auto AutoEmptySpanHasZeroElements = MakeAutoTestCase("SpanTestSuite", &SpanTestSuite::EmptySpanHasZeroElements);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -40,19 +37,9 @@ namespace syntropy::unit_test
 
     // FooTestSuite.
     
-    inline void FooTestSuite::Before()
+    inline void SpanTestSuite::EmptySpanHasZeroElements()
     {
-
+        SYNTROPY_UNIT_EQUAL(1 + 1, 2);
     }
-
-    inline void FooTestSuite::After()
-    {
-
-    }
-
-    inline void FooTestSuite::FooTestCase()
-    {
-
-    }
-
+    
 }

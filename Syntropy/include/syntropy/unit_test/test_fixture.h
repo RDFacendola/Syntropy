@@ -31,7 +31,8 @@ namespace syntropy
     {
         /// \brief Report a test case result in the current active test fixture.
         /// If no fixture is active, the behavior of this method is undefined.
-        void ReportTestCaseResult(TestResult test_result, const String& test_message, const StackTrace& test_location);
+        template <typename... TMessage>
+        void ReportTestCaseResult(TestResult test_result, const StackTrace& test_location, TMessage&&... message);
 
         /// \brief Report a test case message in the current active test fixture.
         /// If no fixture is active, the behavior of this method is undefined.
@@ -76,7 +77,8 @@ namespace syntropy
     /// \author Raffaele D. Facendola - January 2018
     class TestFixture
     {
-        friend void UnitTest::ReportTestCaseResult(TestResult test_result, const String& test_message, const StackTrace& test_location);
+        template <typename... TMessage>
+        friend void UnitTest::ReportTestCaseResult(TestResult test_result, const StackTrace& test_location, TMessage&&... message);
 
         template <typename... TMessage>
         friend void UnitTest::ReportTestCaseMessage(TMessage&&... message);
@@ -151,9 +153,14 @@ namespace syntropy
 
     // UnitTest.
 
-    inline void UnitTest::ReportTestCaseResult(TestResult test_result, const String& test_message, const StackTrace& test_location)
+    template <typename... TMessage>
+    inline void UnitTest::ReportTestCaseResult(TestResult test_result, const StackTrace& test_location, TMessage&&... message)
     {
-        TestFixture::context_->ReportResult(test_result, test_message, test_location);
+        auto builder = OStringStream{};
+
+        (builder << ... << message);
+
+        TestFixture::context_->ReportResult(test_result, builder.str(), test_location);
     }
 
     template <typename... TMessage>

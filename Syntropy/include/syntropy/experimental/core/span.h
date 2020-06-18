@@ -149,7 +149,7 @@ namespace syntropy
     template <typename TElement>
     inline TElement& Span<TElement>::GetBack() const
     {
-        return *(begin_ + count - 1);
+        return *(begin_ + count_ - 1);
     }
 
     template <typename TElement>

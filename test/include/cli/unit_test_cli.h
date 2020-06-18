@@ -126,7 +126,7 @@ namespace syntropy
 
     inline void UnitTestCLI::OnCaseResult(const TestRunner& sender, const syntropy::OnTestRunnerCaseResultEventArgs& e)
     {
-
+        std::cout << e.message_ << "\n";
     }
 
     inline void UnitTestCLI::OnCaseFinished(const TestRunner& sender, const syntropy::OnTestRunnerCaseFinishedEventArgs& e)
