@@ -31,7 +31,7 @@ namespace syntropy
     using ObserverPtr = TType*;
 
     /************************************************************************/
-    /* AUXILIARY TYPES                                                      */
+    /* ADDITIONAL TYPES                                                     */
     /************************************************************************/
 
     /// \brief Type of the null pointer literal, nullptr.
@@ -81,15 +81,15 @@ namespace syntropy
     template <typename TNumber>
     constexpr Fix8 ToFix8(TNumber rhs);
 
-    /// \brief Cast a value to a 8-bit integer value.
+    /// \brief Cast a value to a 16-bit integer value.
     template <typename TNumber>
     constexpr Fix16 ToFix16(TNumber rhs);
 
-    /// \brief Cast a value to a 8-bit integer value.
+    /// \brief Cast a value to a 43-bit integer value.
     template <typename TNumber>
     constexpr Fix32 ToFix32(TNumber rhs);
 
-    /// \brief Cast a value to a 8-bit integer value.
+    /// \brief Cast a value to a 64-bit integer value.
     template <typename TNumber>
     constexpr Fix64 ToFix64(TNumber rhs);
 
