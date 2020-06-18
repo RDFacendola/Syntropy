@@ -6,6 +6,4 @@
 
 #pragma once
 
-#include "test/syntropy/core/stream_buffer_test.h"
-
-#include "test/syntropy/memory/memory_buffer_test.h"
+#include "unit_tests/syntropy/core/span_unit_test.h"

@@ -4,11 +4,8 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\test\syntropy\visitor.h" />
-    <ClInclude Include="include\test\unit_tests.h" />
-    <ClInclude Include="include\test\syntropy\msgpack.h" />
-    <ClInclude Include="include\test\syntropy\memory\memory_buffer_test.h" />
-    <ClInclude Include="include\test\syntropy\core\stream_buffer_test.h" />
     <ClInclude Include="include\cli\unit_test_cli.h" />
+    <ClInclude Include="include\unit_tests\syntropy\core\span_unit_test.h" />
+    <ClInclude Include="include\unit_tests\unit_tests.h" />
   </ItemGroup>
 </Project>

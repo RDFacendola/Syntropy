@@ -9,7 +9,7 @@
 #include "cli/unit_test_cli.h"
 
 // #TODO Remove
-#include "test/unit_tests.h"
+#include "unit_tests/unit_tests.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */
