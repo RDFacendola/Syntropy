@@ -7,7 +7,6 @@
 #pragma once
 
 #include <type_traits>
-#include <variant>
 
 #include "syntropy/language/event.h"
 #include "syntropy/language/macro.h"
@@ -18,7 +17,7 @@
 #include "syntropy/diagnostics/stack_trace.h"
 #include "syntropy/unit_test/test_result.h"
 #include "syntropy/unit_test/test_report.h"
-#include "syntropy/unit_test/test_fixture.h"
+#include "syntropy/unit_test/test_context.h"
 
 namespace syntropy
 {
@@ -27,7 +26,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Arguments for the event notified whenever a result is reported.
-    struct OnTestCaseResultEventArgs : OnTestFixtureResultEventArgs
+    struct OnTestCaseResultEventArgs : OnTestContextResultEventArgs
     {
 
     };
@@ -37,34 +36,24 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Arguments for the event notified whenever a message is reported.
-    struct OnTestCaseMessageEventArgs : OnTestFixtureMessageEventArgs
+    struct OnTestCaseMessageEventArgs : OnTestContextMessageEventArgs
     {
 
     };
 
     /************************************************************************/
-    /* TEST CASE <TTEST FIXTURE>                                            */
+    /* TEST CASE <TEST FIXTURE>                                             */
     /************************************************************************/
 
     /// \brief Represents an environment for a single test case.
-    /// A test case may bind either to a const function or to a non-const member function.
     /// \author Raffaele D. Facendola - December 2017
     template <typename TTestFixture>
     class TestCase
     {
     public:
 
-        /// \brief Type of a non-const member function.
-        using TMember = void(TTestFixture::*)() const;
-
-        /// \brief Type of a const member function.
-        using TMemberConst = void(TTestFixture::*)();
-
-        /// \brief Either a const or non-const test case.
-        using TTestCase = std::variant<TMember, TMemberConst>;
-
         /// \brief Create a named test case.
-        TestCase(const Label& name, const TTestCase& test_case);
+        TestCase(const Label& name);
 
         /// \brief Default copy-constructor.
         TestCase(const TestCase&) = default;
@@ -78,8 +67,8 @@ namespace syntropy
         /// \brief Default move-assignment.
         TestCase& operator=(TestCase&&) = default;
 
-        /// \brief Default destructor.
-        ~TestCase() = default;
+        /// \brief Default virtual destructor.
+        virtual ~TestCase() = default;
 
         /// \brief Run the test case within a fixture and return a synthetic report.
         TestReport Run(TTestFixture& test_fixture) const;
@@ -97,17 +86,11 @@ namespace syntropy
 
     private:
 
-        /// \brief Active test fixture context.
-        static thread_local inline ObserverPtr<TestFixture> test_fixture_context_{ nullptr };
-
-        /// \brief Previous test fixture context to restore upon destruction.
-        ObserverPtr<TestFixture> previous_fixture_context_{ nullptr };
+        /// \brief Run the concrete test case.
+        virtual void RunTestCase(TTestFixture& test_fixture) const = 0;
 
         /// \brief Test case name.
         Label name_;
-
-        /// \brief Test case method.
-        TTestCase test_case_;
 
         /// \brief Event notified whenever a result is reported.
         Event<const TestCase&, OnTestCaseResultEventArgs> result_event_;
@@ -118,16 +101,86 @@ namespace syntropy
     };
 
     /************************************************************************/
+    /* TEST CASE T <TEST FIXTURE, TEST CASE>                                */
+    /************************************************************************/
+
+    /// \brief Wraps a concrete test case method.
+    /// \author Raffaele D. Facendola - December 2017
+    template <typename TTestFixture, typename TTestCase>
+    class TestCaseT : public TestCase<TTestFixture>
+    {
+    public:
+
+        /// \brief Create a named test case.
+        template <typename UTestCase>
+        TestCaseT(const Label& name, UTestCase&& test_case);
+
+        /// \brief Default copy-constructor.
+        TestCaseT(const TestCaseT&) = default;
+
+        /// \brief Default move-constructor.
+        TestCaseT(TestCaseT&&) = default;
+
+        /// \brief Default copy-assignment.
+        TestCaseT& operator=(const TestCaseT&) = default;
+
+        /// \brief Default move-assignment.
+        TestCaseT& operator=(TestCaseT&&) = default;
+
+        /// \brief Default virtual destructor.
+        virtual ~TestCaseT() = default;
+
+    private:
+
+        virtual void RunTestCase(TTestFixture& test_fixture) const override;
+
+        /// \brief Test case method.
+        TTestCase test_case_;
+
+    };
+
+    /************************************************************************/
+    /* TEST CASE T <TEST FIXTURE, VOID>                                     */
+    /************************************************************************/
+
+    /// \brief Partial template specialization for empty test cases.
+    /// \author Raffaele D. Facendola - December 2017
+    template <typename TTestFixture>
+    class TestCaseT<TTestFixture, void> : public TestCase<TTestFixture>
+    {
+    public:
+
+        /// \brief Create a named test case.
+        TestCaseT(const Label& name);
+
+        /// \brief Default copy-constructor.
+        TestCaseT(const TestCaseT&) = default;
+
+        /// \brief Default move-constructor.
+        TestCaseT(TestCaseT&&) = default;
+
+        /// \brief Default copy-assignment.
+        TestCaseT& operator=(const TestCaseT&) = default;
+
+        /// \brief Default move-assignment.
+        TestCaseT& operator=(TestCaseT&&) = default;
+
+        /// \brief Default virtual destructor.
+        virtual ~TestCaseT() = default;
+
+    private:
+
+        virtual void RunTestCase(TTestFixture& test_fixture) const override;
+
+    };
+
+    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create a test case by deducing the fixture type from arguments.
-    template <typename TTestFixture>
-    TestCase<TTestFixture> MakeTestCase(const Label& name, void(TTestFixture::* test_case)());
-
-    /// \brief Create a test case by deducing the fixture type from arguments.
-    template <typename TTestFixture>
-    TestCase<TTestFixture> MakeTestCase(const Label& name, void(TTestFixture::* test_case)() const);
+    /// \brief Create a new test case.
+    template <typename TTestFixture, typename TTestCase>
+    TestCaseT<TTestFixture, TTestCase> MakeTestCase(const Label& name, TTestCase&& test_case);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -136,9 +189,8 @@ namespace syntropy
     // TestCase<TTestFixture>.
 
     template <typename TTestFixture>
-    inline TestCase<TTestFixture>::TestCase(const Label& name, const TTestCase& test_case)
+    inline TestCase<TTestFixture>::TestCase(const Label& name)
         : name_(name)
-        , test_case_(test_case)
     {
 
     }
@@ -146,28 +198,25 @@ namespace syntropy
     template <typename TTestFixture>
     TestReport TestCase<TTestFixture>::Run(TTestFixture& test_fixture) const
     {
-        auto fixture_runner = TestFixture{};
+        auto test_context = TestContext{};
 
-        auto test_fixture_listener = syntropy::Listener{};
+        auto test_report = MakeTestReport(name_);
 
-        test_fixture_listener += fixture_runner.OnResult([this](const auto& sender, const auto& event_args)
+        auto context_listener = syntropy::Listener{};
+
+        context_listener += test_context.OnResult([&test_report, this](const auto& sender, const auto& event_args)
         {
             result_event_.Notify(*this, { event_args.result_, event_args.message_, event_args.location_ });
         });
 
-        test_fixture_listener += fixture_runner.OnMessage([this](const auto& sender, const auto& event_args)
+        context_listener += test_context.OnMessage([&test_report, this](const auto& sender, const auto& event_args)
         {
             message_event_.Notify(*this, { event_args.message_ });
         });
 
-        if (std::holds_alternative<TMember>(test_case_))
-        {
-            return fixture_runner.Run(test_fixture, name_, std::get<TMember>(test_case_));
-        }
-        else
-        {
-            return fixture_runner.Run(test_fixture, name_, std::get<TMemberConst>(test_case_));
-        }
+        RunTestCase(test_fixture);
+
+        return test_report;
     }
 
     template <typename TTestFixture>
@@ -190,18 +239,44 @@ namespace syntropy
         return message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    // Non-member functions.
+    // TestCaseT<TTestFixture, TTestCase>.
+    
+    template <typename TTestFixture, typename TTestCase>
+    template <typename UTestCase>
+    inline TestCaseT<TTestFixture, TTestCase>::TestCaseT(const Label& name, UTestCase&& test_case)
+        : TestCase<TTestFixture>(name)
+        , test_case_(std::forward<UTestCase>(test_case))
+    {
+
+    }
+
+    template <typename TTestFixture, typename TTestCase>
+    inline void TestCaseT<TTestFixture, TTestCase>::RunTestCase(TTestFixture& test_fixture) const
+    {
+        test_case_(test_fixture);
+    }
+
+    // TestCaseT<TTestFixture, void>.
 
     template <typename TTestFixture>
-    inline TestCase<TTestFixture> MakeTestCase(const Label& name, void(TTestFixture::* test_case)())
+    TestCaseT<TTestFixture, void>::TestCaseT(const Label& name)
+        : TestCase(name)
     {
-        return { name, test_case };
+
     }
 
     template <typename TTestFixture>
-    inline TestCase<TTestFixture> MakeTestCase(const Label& name, void(TTestFixture::* test_case)() const)
+    void TestCaseT<TTestFixture, void>::RunTestCase(TTestFixture& test_fixture) const
     {
-        return { name, test_case };
+        // Do nothing.
+    }
+
+    // Non-member functions.
+
+    template <typename TTestFixture, typename TTestCase>
+    inline TestCaseT<TTestFixture, TTestCase> MakeTestCase(const Label& name, TTestCase&& test_case)
+    {
+        return TestCaseT<TTestFixture, TTestCase>(name, std::forward<TTestCase>(test_case));
     }
 
 }

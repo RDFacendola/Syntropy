@@ -1,7 +1,6 @@
 
 /// \file test_macros.h
 /// \brief This header is part of the Syntropy unit test module. It contains unit test macros.
-/// A test fixture is a stateful environment for multiple test cases.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -9,18 +8,13 @@
 
 #include "syntropy/core/types.h"
 #include "syntropy/language/macro.h"
-#include "syntropy/unit_test/test_fixture.h"
+#include "syntropy/unit_test/test_context.h"
 
 namespace syntropy
 {
     /************************************************************************/
     /* UNIT TEST MACROS                                                     */
     /************************************************************************/
-
-    /// \brief Unit test macro: report a success if "expression" is equal to expected, otherwise report a failure and return. Expected usage within a TestFixture.
-    /// \usage SYNTROPY_UNIT_ASSERT(1 + 2 == 3);
-    #define SYNTROPY_UNIT_ASSERT_EQUAL(expression, expected) \
-        SYNTROPY_MACRO_DECLARATION(expression, expected)
 
     /// \brief Unit test macro: report a success if "expression" is equal to expected, otherwise report a failure and continue. Expected usage within a TestFixture.
     /// Similar to SYNTROPY_UNIT_ASSERT except it doesn't return on failure.
@@ -62,18 +56,6 @@ namespace syntropy
     /************************************************************************/
 
     // Unit-test macros.
-
-    #undef SYNTROPY_UNIT_ASSERT_EQUAL
-    #define SYNTROPY_UNIT_ASSERT_EQUAL(expression, expected) \
-        if (auto&& result = (expression); result != expected) \
-        { \
-            syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kFailure, SYNTROPY_HERE, #expression, " returned ", result, " but ", expected, " was expected."); \
-            return; \
-        } \
-        else \
-        { \
-            syntropy::UnitTest::ReportTestCaseResult( syntropy::TestResult::kFailure, SYNTROPY_HERE, #expression, " returned expected result ", result); \
-        }
 
     #undef SYNTROPY_UNIT_EQUAL
     #define SYNTROPY_UNIT_EQUAL(expression, expected) \

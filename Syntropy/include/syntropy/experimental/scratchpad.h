@@ -124,3 +124,27 @@ inline String DefaultCLIStyle::LineOut(TLineFunction line_function) const
 
     std::cout << line.str();
 }
+
+
+//     struct SpanTestFixture
+//     {
+// 
+//     };
+// 
+//     auto SpanTestSuite2 = MakeInlineTestSuite<SpanTestFixture>("SpanTestSuite")
+//         .After([](auto& ctx)
+//         {
+//     
+//         })
+//         .Before([](auto& ctx)
+//         {
+//         
+//         })
+//         .TestCase("DefaultSpanIsEmpty", [](auto& ctx)
+//         {
+//             
+//         })
+//         .TestCase("Another", [](auto& ctx)
+//         {
+// 
+//         });

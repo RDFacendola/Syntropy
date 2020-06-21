@@ -76,7 +76,6 @@
     <ClInclude Include="include\syntropy\language\event.h" />
     <ClInclude Include="include\syntropy\language\listener.h" />
     <ClInclude Include="include\syntropy\unit_test\test_result.h" />
-    <ClInclude Include="include\syntropy\unit_test\test_fixture.h" />
     <ClInclude Include="include\syntropy\unit_test\test_case.h" />
     <ClInclude Include="include\syntropy\unit_test\test_report.h" />
     <ClInclude Include="include\syntropy\unit_test\test_suite.h" />
@@ -113,6 +112,7 @@
     <ClInclude Include="include\syntropy\core\vector.h" />
     <ClInclude Include="include\syntropy\core\types.h" />
     <ClInclude Include="include\syntropy\experimental\core\span.h" />
+    <ClInclude Include="include\syntropy\unit_test\test_context.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/core/label.h"
 #include "syntropy/core/smart_pointers.h"
 
@@ -18,23 +19,19 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Represents a self-registering test case for a test fixture.
-    /// \usage const auto my_test_case = AutoTestCase<MyFixture>("foo", &MyFixture::Foo);
+    /// \usage const auto my_test_case = AutoTestCase<MyFixture>("foo", callable(MyFixture));
     /// \author Raffaele D. Facendola - May 2020.
     template <typename TTestFixture>
     class AutoTestCase
     {
     public:
 
-        /// \brief Type of a test case.
-        using TTestCase = typename TestCase<TTestFixture>::TTestCase;
-
         /// \ brief Apply a function to each self-registering test case.
         template <typename TFunction>
         static void ForEach(TFunction&& function);
 
         /// \brief Create a new self-registering test case.
-        template <typename UTestCase>
-        AutoTestCase(const Label& name, UTestCase&& test_case);
+        AutoTestCase();
 
         /// \brief No copy-constructor.
         AutoTestCase(const AutoTestCase&) = delete;
@@ -48,31 +45,61 @@ namespace syntropy
         /// \brief No move-assignment.
         AutoTestCase& operator=(AutoTestCase&&) = delete;
 
-        /// \brief Default destructor.
-        ~AutoTestCase() = default;
+        /// \brief Default virtual destructor.
+        virtual ~AutoTestCase() = default;
 
-        /// \brief Create a new test case.
-        UniquePtr<TestCase<TTestFixture>> CreateTestCase() const;
+        /// \brief Access the underlying test case.
+        virtual const TestCase<TTestFixture>& GetTestCase() const = 0;
 
     private:
 
         /// \brief Get the first element in a linked list to which every other self-registering test-case is linked to.
-        static AutoTestCase& GetLinkedList();
-
-        /// \brief Create an empty test case.
-        AutoTestCase() = default;
+        static ObserverPtr<const AutoTestCase>& GetLinkedList();
 
         /// \brief Link this test-case to the others and return the next test-case after this one.
         ObserverPtr<const AutoTestCase> LinkBefore();
 
-        /// \brief Test case name.
-        Label name_;
-
-        /// \brief Test case function.
-        TTestCase test_case_;
-
         /// \brief Next auto test case in the fixture.
         ObserverPtr<const AutoTestCase> next_test_case_{ nullptr };
+
+    };
+
+    /************************************************************************/
+    /* AUTO TEST CASE T <TEST FIXTURE, TEST CASE>                           */
+    /************************************************************************/
+
+    /// \brief Represents a concrete self-registering test case for a test fixture.
+    /// \author Raffaele D. Facendola - June 2020.
+    template <typename TTestFixture, typename TTestCase>
+    class AutoTestCaseT : public AutoTestCase<TTestFixture>
+    {
+    public:
+
+        /// \brief Create a new self-registering test case.
+        template <typename UTestCase>
+        AutoTestCaseT(const Label& name, UTestCase&& test_case);
+
+        /// \brief No copy-constructor.
+        AutoTestCaseT(const AutoTestCaseT&) = delete;
+
+        /// \brief No move-constructor.
+        AutoTestCaseT(AutoTestCaseT&&) = delete;
+
+        /// \brief No copy-assignment.
+        AutoTestCaseT& operator=(const AutoTestCaseT&) = delete;
+
+        /// \brief No move-assignment.
+        AutoTestCaseT& operator=(AutoTestCaseT&&) = delete;
+
+        /// \brief Default destructor.
+        virtual ~AutoTestCaseT() = default;
+
+    private:
+
+        virtual const TestCase<TTestFixture>& GetTestCase() const override;
+
+        /// \brief Underlying test case function.
+        TestCaseT<TTestFixture, TTestCase> test_case_;
 
     };
 
@@ -82,13 +109,8 @@ namespace syntropy
 
     /// \brief Create an self-registering test case by deducing the fixture type from arguments.
     /// \usage const auto my_test_case = MakeAutoTestCase(name, &MyFixture::Foo).
-    template <typename TTestFixture>
-    AutoTestCase<TTestFixture> MakeAutoTestCase(const Label& name, void(TTestFixture::* test_case)());
-
-    /// \brief Create an self-registering test case by deducing the fixture type from arguments.
-/// \usage const auto my_test_case = MakeAutoTestCase(name, &MyFixture::Foo).
-    template <typename TTestFixture>
-    AutoTestCase<TTestFixture> MakeAutoTestCase(const Label& name, void(TTestFixture::* test_case)() const);
+    template <typename TTestFixture, typename TTestCase>
+    AutoTestCaseT<TTestFixture, TTestCase> MakeAutoTestCase(const Label& name, TTestCase&& test_case);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -102,32 +124,23 @@ namespace syntropy
     {
         // Skip the very first test case as it is the sentinel to which every other test case is linked to.
 
-        for (auto auto_test_case = GetLinkedList().next_test_case_; auto_test_case; auto_test_case = auto_test_case->next_test_case_)
+        for (auto auto_test_case = GetLinkedList(); auto_test_case; auto_test_case = auto_test_case->next_test_case_)
         {
-            function(*auto_test_case);
+            function(AsConst(*auto_test_case));
         }
     }
 
     template <typename TTestFixture>
-    template <typename UTestCase>
-    inline AutoTestCase<TTestFixture>::AutoTestCase(const Label& name, UTestCase&& test_case)
-        : name_(name)
-        , test_case_(std::forward<UTestCase>(test_case))
-        , next_test_case_(LinkBefore())
+    inline AutoTestCase<TTestFixture>::AutoTestCase()
+        : next_test_case_(LinkBefore())
     {
 
     }
 
     template <typename TTestFixture>
-    inline UniquePtr<TestCase<TTestFixture>> AutoTestCase<TTestFixture>::CreateTestCase() const
+    inline ObserverPtr<const AutoTestCase<TTestFixture>>& AutoTestCase<TTestFixture>::GetLinkedList()
     {
-        return MakeUnique<TestCase<TTestFixture>>(name_, test_case_);
-    }
-
-    template <typename TTestFixture>
-    inline AutoTestCase<TTestFixture>& AutoTestCase<TTestFixture>::GetLinkedList()
-    {
-        static auto linked_list = AutoTestCase{};
+        static auto linked_list = ObserverPtr<const AutoTestCase<TTestFixture>>{ nullptr };
 
         return linked_list;
     }
@@ -137,25 +150,35 @@ namespace syntropy
     {
         auto& linked_list = GetLinkedList();
 
-        auto next = linked_list.next_test_case_;
+        auto next_test_case = linked_list;
 
-        linked_list.next_test_case_ = this;
+        linked_list = this;
 
-        return next;
+        return next_test_case;
+    }
+
+    // AutoTestCaseT<TTestFixture, TTestCase>.
+
+    template <typename TTestFixture, typename TTestCase>
+    template <typename UTestCase>
+    inline AutoTestCaseT<TTestFixture, TTestCase>::AutoTestCaseT(const Label& name, UTestCase&& test_case)
+        : test_case_(MakeTestCase<TTestFixture>(name, std::forward<TTestCase>(test_case)))
+    {
+
+    }
+
+    template <typename TTestFixture, typename TTestCase>
+    inline const TestCase<TTestFixture>& AutoTestCaseT<TTestFixture, TTestCase>::GetTestCase() const
+    {
+        return test_case_;
     }
 
     // Non-member functions.
 
-    template <typename TTestFixture>
-    inline AutoTestCase<TTestFixture> MakeAutoTestCase(const Label& name, void(TTestFixture::* test_case)())
+    template <typename TTestFixture, typename TTestCase>
+    inline AutoTestCaseT<TTestFixture, TTestCase> MakeAutoTestCase(const Label& name, TTestCase&& test_case)
     {
-        return { name, test_case };
-    }
-
-    template <typename TTestFixture>
-    inline AutoTestCase<TTestFixture> MakeAutoTestCase(const Label& name, void(TTestFixture::* test_case)() const)
-    {
-        return { name, test_case };
+        return { name, std::forward<TTestCase>(test_case) };
     }
 
 }

@@ -141,7 +141,7 @@ namespace syntropy
     private:
 
         /// \brief Run a test suite.
-        TestReport Run(TestSuite& test_suite) const;
+        TestReport Run(const TestSuite& test_suite) const;
 
         /// \brief Event notified whenever a test suite starts.
         Event<const TestRunner&, OnTestRunnerSuiteStartedEventArgs> suite_started_event_;
@@ -175,11 +175,11 @@ namespace syntropy
 
         AutoTestSuite::ForEach([this, &test_report, context](const AutoTestSuite& auto_test_suite)
         {
-            if (context.Contains(auto_test_suite.GetName()))
-            {
-                auto test_suite = auto_test_suite.CreateTestSuite();
+            auto& test_suite = auto_test_suite.GetTestSuite();
 
-                test_report += Run(*test_suite);
+            if (context.Contains(test_suite.GetName()))
+            {
+                test_report += Run(test_suite);
             }
         });
 
@@ -222,7 +222,7 @@ namespace syntropy
         return case_message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    inline TestReport TestRunner::Run(TestSuite& test_suite) const
+    inline TestReport TestRunner::Run(const TestSuite& test_suite) const
     {
         // Setup listeners for the current test suite.
 

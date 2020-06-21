@@ -13,7 +13,6 @@
 #include "syntropy/unit_test/test_report.h"
 #include "syntropy/unit_test/test_case.h"
 #include "syntropy/unit_test/auto_test_case.h"
-#include "syntropy/unit_test/test_fixture.h"
 
 namespace syntropy
 {
@@ -47,7 +46,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Arguments for the event notified whenever a test result is reported.
-    struct OnTestSuiteCaseResultEventArgs : OnTestCaseResultEventArgs
+    struct OnTestSuiteCaseResultEventArgs : OnTestContextResultEventArgs
     {
         /// \brief Test case name.
         Label test_case_;
@@ -58,7 +57,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Arguments for the event notified whenever a test message is reported.
-    struct OnTestSuiteCaseMessageEventArgs : OnTestCaseMessageEventArgs
+    struct OnTestSuiteCaseMessageEventArgs : OnTestContextMessageEventArgs
     {
         /// \brief Test case name.
         Label test_case_;
@@ -183,7 +182,7 @@ namespace syntropy
     private:
 
         /// \brief Run a test case.
-        TestReport Run(TestCase<TTestFixture>& test_case) const;
+        TestReport Run(const TestCase<TTestFixture>& test_case) const;
 
         /// \brief Underlying test fixture.
         /// The fixture is not considered part of the external interface: test cases are either const or have to preserve the immutable state of the fixture via After and Before methods (which are required to be non-const).
@@ -268,18 +267,16 @@ namespace syntropy
     {
         auto test_report = MakeTestReport(GetName());
 
-        AutoTestCase<TTestFixture>::ForEach([this, &test_report](const AutoTestCase<TTestFixture>& auto_test_case)
+        AutoTestCase<TTestFixture>::ForEach([this, &test_report](const auto& auto_test_case)
         {
-            auto test_case = auto_test_case.CreateTestCase();
-
-            test_report += Run(*test_case);
+            Run(auto_test_case.GetTestCase());
         });
 
         return test_report;
     }
 
     template <typename TTestFixture>
-    TestReport TestSuiteT<TTestFixture>::Run(TestCase<TTestFixture>& test_case) const
+    TestReport TestSuiteT<TTestFixture>::Run(const TestCase<TTestFixture>& test_case) const
     {
         // Setup listeners for the current test case.
 

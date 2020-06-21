@@ -8,6 +8,7 @@
 
 #include <tuple>
 
+#include "syntropy/core/types.h"
 #include "syntropy/core/label.h"
 #include "syntropy/core/smart_pointers.h"
 
@@ -29,6 +30,9 @@ namespace syntropy
         template <typename TFunction>
         static void ForEach(TFunction&& function);
 
+        /// \brief Create a new self-registering test suite.
+        AutoTestSuite();
+
         /// \brief No copy-constructor.
         AutoTestSuite(const AutoTestSuite&) = delete;
 
@@ -44,31 +48,16 @@ namespace syntropy
         /// \brief Default destructor.
         virtual ~AutoTestSuite() = default;
 
-        /// \brief Get the test suite name
-        const Context& GetName() const;
-
-        /// \brief Create a new test suite.
-        virtual UniquePtr<TestSuite> CreateTestSuite() const;
-
-    protected:
-
-        /// \brief Create a new self-registering test suite.
-        /// Protected to prevent direct instantiation.
-        AutoTestSuite(const Context& name);
+        /// \brief Run the test suite.
+        virtual const TestSuite& GetTestSuite() const = 0;
 
     private:
 
         /// \brief Get the first element in a linked list to which every other self-registering test-suite is linked to.
-        static AutoTestSuite& GetLinkedList();
-
-        /// \brief Create an empty test suite.
-        AutoTestSuite() = default;
+        static ObserverPtr<const AutoTestSuite>& GetLinkedList();
 
         /// \brief Link this test-suite to the others and return the next test-suite after this one.
         ObserverPtr<const AutoTestSuite> LinkBefore();
-
-        /// \brief Test suite name.
-        Context name_;
 
         /// \brief Next auto test suite.
         ObserverPtr<const AutoTestSuite> next_test_suite_{ nullptr };
@@ -82,14 +71,14 @@ namespace syntropy
     /// \brief Represents a self-registering test suite for a test fixture.
     /// \tparam TFixtureArguments Type of the arguments used to construct the test fixture.
     /// \author Raffaele D. Facendola - May 2020.
-    template <typename TTestFixture, typename... TFixtureArguments>
+    template <typename TTestFixture>
     class AutoTestSuiteT : public AutoTestSuite
     {
     public:
 
         /// \brief Create a new self-registering test suite.
-        template <typename... UFixtureArguments>
-        AutoTestSuiteT(const Context& name, UFixtureArguments&&... fixture_arguments);
+        template <typename... TFixtureArguments>
+        AutoTestSuiteT(const Context& name, TFixtureArguments&&... fixture_arguments);
 
         /// \brief No copy-constructor.
         AutoTestSuiteT(const AutoTestSuiteT&) = delete;
@@ -108,11 +97,11 @@ namespace syntropy
 
     private:
 
-        /// \brief Create a new test suite.
-        virtual UniquePtr<TestSuite> CreateTestSuite() const override;
+        virtual const TestSuite& GetTestSuite() const override;
 
-        /// \brief Construction arguments for the test suite.
-        std::tuple<TFixtureArguments...> fixture_arguments_;
+        /// \brief Underlying test_suite.
+        TestSuiteT<TTestFixture> test_suite_;
+
     };
 
     /************************************************************************/
@@ -122,7 +111,7 @@ namespace syntropy
     /// \brief Create an self-registering test suite by deducing the fixture type from arguments.
     /// \usage const auto auto_test_suite = MakeAutoTestSuite(name, arg0, arg1, ...).
     template <typename TTestFixture, typename... TFixtureArguments>
-    AutoTestSuiteT<TTestFixture, TFixtureArguments...> MakeAutoTestSuite(const Context& name, TFixtureArguments&&... arguments);
+    AutoTestSuiteT<TTestFixture> MakeAutoTestSuite(const Context& name, TFixtureArguments&&... arguments);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -135,27 +124,21 @@ namespace syntropy
     {
         // Skip the very first test suite as it is the sentinel to which every other test suite is linked to.
 
-        for (auto auto_test_suite = GetLinkedList().next_test_suite_; auto_test_suite; auto_test_suite = auto_test_suite->next_test_suite_)
+        for (auto auto_test_suite = GetLinkedList(); auto_test_suite; auto_test_suite = auto_test_suite->next_test_suite_)
         {
-            function(*auto_test_suite);
+            function(AsConst(*auto_test_suite));
         }
     }
 
-    inline AutoTestSuite::AutoTestSuite(const Context& name)
-        : name_(name)
-        , next_test_suite_(LinkBefore())
+    inline AutoTestSuite::AutoTestSuite()
+        : next_test_suite_(LinkBefore())
     {
 
     }
 
-    inline const Context& AutoTestSuite::GetName() const
+    inline ObserverPtr<const AutoTestSuite>& AutoTestSuite::GetLinkedList()
     {
-        return name_;
-    }
-
-    inline AutoTestSuite& AutoTestSuite::GetLinkedList()
-    {
-        static auto linked_list = AutoTestSuite{};
+        static auto linked_list = ObserverPtr<const AutoTestSuite>{ nullptr };
 
         return linked_list;
     }
@@ -164,46 +147,35 @@ namespace syntropy
     {
         auto& linked_list = GetLinkedList();
 
-        auto next = linked_list.next_test_suite_;
+        auto next_test_suite = linked_list;
 
-        linked_list.next_test_suite_ = this;
+        linked_list = this;
 
-        return next;
-    }
-
-    inline UniquePtr<TestSuite> AutoTestSuite::CreateTestSuite() const
-    {
-        return nullptr;
+        return next_test_suite;
     }
 
     // AutoTestSuiteT<TTestFixture>.
 
-    template <typename TTestFixture, typename... TFixtureArguments>
-    template <typename... UFixtureArguments>
-    inline AutoTestSuiteT<TTestFixture, TFixtureArguments...>::AutoTestSuiteT(const Context& name, UFixtureArguments&&... fixture_arguments)
-        : AutoTestSuite(name)
-        , fixture_arguments_(fixture_arguments...)
+    template <typename TTestFixture>
+    template <typename... TFixtureArguments>
+    inline AutoTestSuiteT<TTestFixture>::AutoTestSuiteT(const Context& name, TFixtureArguments&&... fixture_arguments)
+        : test_suite_(name, std::forward<TFixtureArguments>(fixture_arguments)...)
     {
 
     }
 
-    template <typename TTestFixture, typename... TFixtureArguments>
-    inline UniquePtr<TestSuite> AutoTestSuiteT<TTestFixture, TFixtureArguments...>::CreateTestSuite() const
+    template <typename TTestFixture>
+    inline const TestSuite& AutoTestSuiteT<TTestFixture>::GetTestSuite() const
     {
-        auto make_unique_test_suite = [this](const TFixtureArguments&... arguments)
-        {
-            return MakeUnique<TestSuiteT<TTestFixture, TFixtureArguments...>>(GetName(), arguments...);
-        };
-
-        return std::apply(make_unique_test_suite, fixture_arguments_);
+        return test_suite_;
     }
 
     // Non-member functions.
 
     template <typename TTestFixture, typename... TFixtureArguments>
-    inline AutoTestSuiteT<TTestFixture, TFixtureArguments...> MakeAutoTestSuite(const Context& name, TFixtureArguments&&... arguments)
+    inline AutoTestSuiteT<TTestFixture> MakeAutoTestSuite(const Context& name, TFixtureArguments&&... arguments)
     {
-        return AutoTestSuiteT<TTestFixture, TFixtureArguments...>(name, std::forward<TFixtureArguments>(arguments)...);
+        return { name, std::forward<TFixtureArguments>(arguments)... };
     }
 
 }
