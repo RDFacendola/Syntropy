@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/language/type_traits.h"
 #include "syntropy/core/types.h"
 
 namespace syntropy
@@ -23,6 +24,9 @@ namespace syntropy
         friend ObserverPtr<TElement> begin(const Span<TElement>& span);
         friend ObserverPtr<TElement> end(const Span<TElement>& span);
 
+        template <typename UElement>
+        friend class Span;
+
     public:
 
         /// \brief Create an empty span.
@@ -33,7 +37,7 @@ namespace syntropy
         Span(TFirst first, Int count);
 
         /// \brief Create a spawn given the first and one past the last element in the span.
-        template <typename TFirst, typename TLast>
+        template <typename TFirst, typename TLast, typename = EnableIfT<!IsConvertibleV<TLast, Int>>>
         Span(TFirst first, TLast last);
 
         /// \brief Copy constructor.
@@ -109,7 +113,7 @@ namespace syntropy
     }
 
     template <typename TElement>
-    template <typename TFirst, typename TLast>
+    template <typename TFirst, typename TLast, typename>
     inline Span<TElement>::Span(TFirst first, TLast last)
         : begin_(first)
         , count_(ToInt(last - first))
