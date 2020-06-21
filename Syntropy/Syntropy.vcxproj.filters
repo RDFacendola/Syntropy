@@ -113,6 +113,7 @@
     <ClInclude Include="include\syntropy\core\types.h" />
     <ClInclude Include="include\syntropy\experimental\core\span.h" />
     <ClInclude Include="include\syntropy\unit_test\test_context.h" />
+    <ClInclude Include="include\syntropy\unit_test\auto_unit_test.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
