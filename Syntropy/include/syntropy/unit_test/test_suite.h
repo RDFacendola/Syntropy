@@ -181,6 +181,14 @@ namespace syntropy
 
     private:
 
+        /// \brief Detector for UTestFixture::After() member function.
+        template <typename UTestFixture>
+        using HasAfter = decltype(std::declval<UTestFixture>().After());
+
+        /// \brief Detector for UTestFixture::Before() member function.
+        template <typename UTestFixture>
+        using HasBefore = decltype(std::declval<UTestFixture>().Before());
+
         /// \brief Run a test case.
         TestReport Run(const TestCase<TTestFixture>& test_case) const;
 
@@ -296,7 +304,17 @@ namespace syntropy
 
         NotifyCaseStarted({ test_case.GetName() });
 
+        if constexpr (IsValidExpressionV<HasBefore, TTestFixture>)
+        {
+            test_fixture_.Before();         // Setup the test fixture. Optional.
+        }
+
         auto test_report = test_case.Run(test_fixture_);
+
+        if constexpr (IsValidExpressionV<HasAfter, TTestFixture>)
+        {
+            test_fixture_.After();          // Cleanup the test fixture. Optional.
+        }
 
         NotifyCaseFinished({ test_case.GetName(), test_report });
 
