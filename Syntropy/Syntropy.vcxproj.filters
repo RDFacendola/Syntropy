@@ -111,9 +111,9 @@
     <ClInclude Include="include\syntropy\core\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\core\vector.h" />
     <ClInclude Include="include\syntropy\core\types.h" />
-    <ClInclude Include="include\syntropy\experimental\core\span.h" />
     <ClInclude Include="include\syntropy\unit_test\test_context.h" />
     <ClInclude Include="include\syntropy\unit_test\auto_unit_test.h" />
+    <ClInclude Include="include\syntropy\core\span.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

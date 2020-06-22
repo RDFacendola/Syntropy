@@ -5,8 +5,7 @@
 #pragma once
 
 #include "syntropy/core/types.h"
-
-#include "syntropy/experimental/core/span.h"
+#include "syntropy/core/span.h"
 
 #include "syntropy/unit_test/test_macros.h"
 #include "syntropy/unit_test/auto_unit_test.h"
