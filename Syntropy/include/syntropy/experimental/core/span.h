@@ -20,9 +20,11 @@ namespace syntropy
     template <typename TElement>
     class Span
     {
+        template <typename UElement>
+        friend ObserverPtr<UElement> begin(const Span<UElement>& span);
 
-        friend ObserverPtr<TElement> begin(const Span<TElement>& span);
-        friend ObserverPtr<TElement> end(const Span<TElement>& span);
+        template <typename UElement>
+        friend ObserverPtr<UElement> end(const Span<UElement>& span);
 
         template <typename UElement>
         friend class Span;
@@ -80,22 +82,20 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* ITERATORS                                                            */
-    /************************************************************************/
-
-    /// \brief Get an iterator to the first element in the span.
-    template <typename TElement>
-    ObserverPtr<TElement> begin(const Span<TElement>& span);
-
-    /// \brief Get an iterator past the last element in the span.
-    template <typename TElement>
-    ObserverPtr<TElement> end(const Span<TElement>& span);
-
-    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
+    template <typename TElement>
+    inline ObserverPtr<TElement> begin(const Span<TElement>& span)
+    {
+        return span.begin_;
+    }
 
+    template <typename TElement>
+    inline ObserverPtr<TElement> end(const Span<TElement>& span)
+    {
+        return span.begin_ + span.count_;
+    }
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -166,20 +166,6 @@ namespace syntropy
     inline Int Span<TElement>::GetCount() const
     {
         return count_;
-    }
-
-    // Iterators.
-
-    template <typename TElement>
-    inline TElement* begin(const Span<TElement>& span)
-    {
-        return span.begin_;
-    }
-
-    template <typename TElement>
-    inline TElement* end(const Span<TElement>& span)
-    {
-        return span.begin_ + span.count_;
     }
 
 }
