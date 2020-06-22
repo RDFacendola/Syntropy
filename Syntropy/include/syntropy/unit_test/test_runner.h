@@ -64,11 +64,33 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* ON TEST RUNNER SUITE RESULT EVENT ARGS                               */
+    /* ON TEST RUNNER SUITE SUCCESS EVENT ARGS                              */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test result is reported.
-    struct OnTestRunnerCaseResultEventArgs : OnTestSuiteCaseResultEventArgs
+    /// \brief Arguments for the event notified whenever a test case success is reported.
+    struct OnTestRunnerCaseSuccessEventArgs : OnTestSuiteCaseSuccessEventArgs
+    {
+        /// \brief Test suite name.
+        Context test_suite_;
+    };
+
+    /************************************************************************/
+    /* ON TEST RUNNER SUITE FAILURE EVENT ARGS                              */
+    /************************************************************************/
+
+    /// \brief Arguments for the event notified whenever a test case failure is reported.
+    struct OnTestRunnerCaseFailureEventArgs : OnTestSuiteCaseFailureEventArgs
+    {
+        /// \brief Test suite name.
+        Context test_suite_;
+    };
+
+    /************************************************************************/
+    /* ON TEST RUNNER SUITE SKIPPED EVENT ARGS                              */
+    /************************************************************************/
+
+    /// \brief Arguments for the event notified whenever a test case is skipped.
+    struct OnTestRunnerCaseSkippedEventArgs : OnTestSuiteCaseSkippedEventArgs
     {
         /// \brief Test suite name.
         Context test_suite_;
@@ -130,9 +152,17 @@ namespace syntropy
         template <typename TDelegate>
         Listener OnCaseFinished(TDelegate&& delegate) const;
 
-        /// \brief Bind to the event notified whenever a test case result is reported. 
+        /// \brief Bind to the event notified whenever a test case success is reported.
         template <typename TDelegate>
-        Listener OnCaseResult(TDelegate&& delegate) const;
+        Listener OnCaseSuccess(TDelegate&& delegate) const;
+
+        /// \brief Bind to the event notified whenever a test case failure is reported.
+        template <typename TDelegate>
+        Listener OnCaseFailure(TDelegate&& delegate) const;
+
+        /// \brief Bind to the event notified whenever a test case is skipped.
+        template <typename TDelegate>
+        Listener OnCaseSkipped(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a test case message is reported. 
         template <typename TDelegate>
@@ -155,8 +185,14 @@ namespace syntropy
         /// \brief Event notified whenever a test case finishes.
         Event<const TestRunner&, OnTestRunnerCaseFinishedEventArgs> case_finished_event_;
 
-        /// \brief Event notified whenever a test case result is reported.
-        Event<const TestRunner&, OnTestRunnerCaseResultEventArgs> case_result_event_;
+        /// \brief Event notified whenever a success is reported.
+        Event<const TestRunner&, OnTestRunnerCaseSuccessEventArgs> case_success_event_;
+
+        /// \brief Event notified whenever a failure is reported.
+        Event<const TestRunner&, OnTestRunnerCaseFailureEventArgs> case_failure_event_;
+
+        /// \brief Event notified whenever a test case is skipped.
+        Event<const TestRunner&, OnTestRunnerCaseSkippedEventArgs> case_skipped_event_;
 
         /// \brief Event notified whenever a test case message is reported.
         Event<const TestRunner&, OnTestRunnerCaseMessageEventArgs> case_message_event_;
@@ -211,54 +247,27 @@ namespace syntropy
     }
 
     template <typename TDelegate>
-    inline Listener TestRunner::OnCaseResult(TDelegate&& delegate) const
+    inline Listener TestRunner::OnCaseSuccess(TDelegate&& delegate) const
     {
-        return case_result_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_success_event_.Subscribe(std::forward<TDelegate>(delegate));
+    }
+
+    template <typename TDelegate>
+    inline Listener TestRunner::OnCaseFailure(TDelegate&& delegate) const
+    {
+        return case_failure_event_.Subscribe(std::forward<TDelegate>(delegate));
+    }
+
+    template <typename TDelegate>
+    inline Listener TestRunner::OnCaseSkipped(TDelegate&& delegate) const
+    {
+        return case_skipped_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
     inline  Listener TestRunner::OnCaseMessage(TDelegate&& delegate) const
     {
         return case_message_event_.Subscribe(std::forward<TDelegate>(delegate));
-    }
-
-    inline TestReport TestRunner::Run(const TestSuite& test_suite) const
-    {
-        // Setup listeners for the current test suite.
-
-        auto test_suite_listener = syntropy::Listener{};
-
-        test_suite_listener += test_suite.OnCaseStarted([this](const auto& sender, const auto& event_args)
-        {
-            case_started_event_.Notify(*this, { event_args.test_case_, sender.GetName() });
-        });
-
-        test_suite_listener += test_suite.OnCaseFinished([this](const auto& sender, const auto& event_args)
-        {
-            case_finished_event_.Notify(*this, { event_args.test_case_, event_args.test_report_, sender.GetName() });
-        });
-
-        test_suite_listener += test_suite.OnCaseResult([this](const auto& sender, const auto& event_args)
-        {
-            case_result_event_.Notify(*this, { event_args.result_, event_args.message_, event_args.location_, event_args.test_case_, sender.GetName() });
-        });
-
-        test_suite_listener += test_suite.OnCaseMessage([this](const auto& sender, const auto& event_args)
-        {
-            case_message_event_.Notify(*this, { event_args.message_, event_args.test_case_, sender.GetName() });
-        });
-
-        // Run the suite.
-
-        suite_started_event_.Notify(*this, { test_suite.GetName() });
-
-        auto test_report = test_suite.Run();
-
-        suite_finished_event_.Notify(*this, { test_suite.GetName(), test_report });
-
-        // Report.
-
-        return test_report;
     }
 
 }

@@ -28,33 +28,78 @@ namespace syntropy
     /// \author Raffaele D. Facendola - May 2020
     namespace UnitTest
     {
-        /// \brief Report a test case result in the current active test context.
+        /// \brief Report a test case success in the current active test context.
         /// If no context is active, the behavior of this method is undefined.
-        template <typename... TMessage>
-        void ReportTestCaseResult(TestResult test_result, const StackTrace& test_location, TMessage&&... message);
+        template <typename TExpression, typename TResult>
+        void ReportSuccess(const StackTrace& test_location, TExpression&& expression, TResult&& result);
+
+        /// \brief Report a test case failure in the current active test context.
+        /// If no context is active, the behavior of this method is undefined.
+        template <typename TExpression, typename TResult, typename TExpected>
+        void ReportFailure(const StackTrace& test_location, TExpression&& expression, TResult&& result, TExpected&& expected);
+
+        /// \brief Report a test case skip in the current active test context.
+        /// If no context is active, the behavior of this method is undefined.
+        template <typename TReason>
+        void ReportSkipped(const StackTrace& test_location, TReason&& reason);
 
         /// \brief Report a test case message in the current active test context.
         /// If no context is active, the behavior of this method is undefined.
         template <typename... TMessage>
-        void ReportTestCaseMessage(TMessage&&... message);
+        void ReportMessage(TMessage&&... message);
     }
 
     /************************************************************************/
-    /* ON TEST CONTEXT RESULT EVENT ARGS                                    */
+    /* ON TEST CONTEXT SUCCESS EVENT ARGS                                   */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test result is reported in a test context.
-    struct OnTestContextResultEventArgs
+    /// \brief Arguments for the event notified whenever a test success is reported in a test context.
+    struct OnTestContextSuccessEventArgs
     {
-        /// \brief Test result.
-        TestResult result_;
-
-        /// \brief Message.
-        String message_;
-
         /// \brief Code location that issued the result.
         StackTrace location_;
+
+        /// \brief Tested expression.
+        String expression_;
+
+        /// \brief Actual result.
+        String result_;
     };
+
+    /************************************************************************/
+    /* ON TEST CONTEXT FAILURE EVENT ARGS                                   */
+    /************************************************************************/
+
+    /// \brief Arguments for the event notified whenever a test failure is reported in a test context.
+    struct OnTestContextFailureEventArgs
+    {
+        /// \brief Code location that issued the result.
+        StackTrace location_;
+
+        /// \brief Tested expression.
+        String expression_;
+
+        /// \brief Actual result.
+        String result_;
+
+        /// \brief Expected result.
+        String expected_;
+    };
+
+    /************************************************************************/
+    /* ON TEST CONTEXT SKIPPED EVENT ARGS                                   */
+    /************************************************************************/
+
+    /// \brief Arguments for the event notified whenever a test is skipped in a test context.
+    struct OnTestContextSkippedEventArgs
+    {
+        /// \brief Code location that issued the result.
+        StackTrace location_;
+
+        /// \brief Skip reason.
+        String reason_;
+    };
+
 
     /************************************************************************/
     /* ON TEST CONTEXT MESSAGE EVENT ARGS                                   */
@@ -76,11 +121,17 @@ namespace syntropy
     /// \author Raffaele D. Facendola - January 2018
     class TestContext
     {
-        template <typename... TMessage>
-        friend void UnitTest::ReportTestCaseResult(TestResult test_result, const StackTrace& test_location, TMessage&&... message);
+        template <typename TExpression, typename TResult>
+        friend void UnitTest::ReportSuccess(const StackTrace& test_location, TExpression&& expression, TResult&& result);
+
+        template <typename TExpression, typename TResult, typename TExpected>
+        friend void UnitTest::ReportFailure(const StackTrace& test_location, TExpression&& expression, TResult&& result, TExpected&& expected);
+
+        template <typename TReason>
+        friend void UnitTest::ReportSkipped(const StackTrace& test_location, TReason&& reason);
 
         template <typename... TMessage>
-        friend void UnitTest::ReportTestCaseMessage(TMessage&&... message);
+        friend void UnitTest::ReportMessage(TMessage&&... message);
 
     public:
 
@@ -102,9 +153,17 @@ namespace syntropy
         /// \brief Default virtual destructor.
         ~TestContext();
 
-        /// \brief Bind to the event notified whenever a result is reported.
+        /// \brief Bind to the event notified whenever a success is reported.
         template <typename TDelegate>
-        Listener OnResult(TDelegate&& delegate) const;
+        Listener OnSuccess(TDelegate&& delegate) const;
+
+        /// \brief Bind to the event notified whenever a failure is reported.
+        template <typename TDelegate>
+        Listener OnFailure(TDelegate&& delegate) const;
+
+        /// \brief Bind to the event notified whenever a skip is reported.
+        template <typename TDelegate>
+        Listener OnSkipped(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a message is reported.
         template <typename TDelegate>
@@ -112,8 +171,14 @@ namespace syntropy
 
     private:
 
-        /// \brief Report a result.
-        void ReportResult(TestResult test_result, const String& test_message, const StackTrace& test_location) const;
+        /// \brief Report a test case success.
+        void ReportSuccess(const StackTrace& location, const String& expression, const String& result) const;
+
+        /// \brief Report a test case failure.
+        void ReportFailure(const StackTrace& location, const String& expression, const String& result, const String& expected) const;
+
+        /// \brief Report a skipped test case.
+        void ReportSkipped(const StackTrace& location, const String& reason) const;
 
         /// \brief Report a message.
         void ReportMessage(const String& test_message) const;
@@ -124,8 +189,14 @@ namespace syntropy
         /// \brief Previous test context to restore upon destruction.
         ObserverPtr<TestContext> previous_context_{ nullptr };
 
-        /// \brief Event notified whenever a test result is reported.
-        Event<const TestContext&, OnTestContextResultEventArgs> result_event_;
+        /// \brief Event notified whenever a test success is reported.
+        Event<const TestContext&, OnTestContextSuccessEventArgs> success_event_;
+
+        /// \brief Event notified whenever a test failure is reported.
+        Event<const TestContext&, OnTestContextFailureEventArgs> failure_event_;
+
+        /// \brief Event notified whenever a test skip is reported.
+        Event<const TestContext&, OnTestContextSkippedEventArgs> skipped_event_;
 
         /// \brief Event notified whenever a test message is reported.
         Event<const TestContext&, OnTestContextMessageEventArgs> message_event_;
@@ -140,24 +211,50 @@ namespace syntropy
 
     // UnitTest.
 
-    template <typename... TMessage>
-    inline void UnitTest::ReportTestCaseResult(TestResult test_result, const StackTrace& test_location, TMessage&&... message)
+    template <typename TExpression, typename TResult>
+    void UnitTest::ReportSuccess(const StackTrace& test_location, TExpression&& expression, TResult&& result)
     {
-        auto builder = OStringStream{};
+        auto expression_stream = OStringStream{};
+        auto result_stream = OStringStream{};
 
-        (builder << ... << message);
+        expression_stream << expression;
+        result_stream << result;
 
-        TestContext::context_->ReportResult(test_result, builder.str(), test_location);
+        TestContext::context_->ReportSuccess(test_location, expression_stream.str(), result_stream.str());
+    }
+
+    template <typename TExpression, typename TResult, typename TExpected>
+    void UnitTest::ReportFailure(const StackTrace& test_location, TExpression&& expression, TResult&& result, TExpected&& expected)
+    {
+        auto expression_stream = OStringStream{};
+        auto result_stream = OStringStream{};
+        auto expected_stream = OStringStream{};
+
+        expression_stream << expression;
+        result_stream << result;
+        expected_stream << expected;
+
+        TestContext::context_->ReportFailure(test_location, expression_stream.str(), result_stream.str(), expected_stream.str());
+    }
+
+    template <typename TReason>
+    inline void UnitTest::ReportSkipped(const StackTrace& test_location, TReason&& reason)
+    {
+        auto reason_stream = OStringStream{};
+
+        reason_stream << reason;
+
+        TestContext::context_->ReportSkipped(test_location, reason_stream.str());
     }
 
     template <typename... TMessage>
-    inline void UnitTest::ReportTestCaseMessage(TMessage&&... message)
+    inline void UnitTest::ReportMessage(TMessage&&... message)
     {
-        auto builder = OStringStream{};
+        auto stream = OStringStream{};
 
-        (builder << ... << message);
+        (stream << ... << message);
 
-        TestContext::context_->ReportMessage(builder.str());
+        TestContext::context_->ReportMessage(stream.str());
     }
 
     // TestContext.
@@ -174,9 +271,21 @@ namespace syntropy
     }
 
     template <typename TDelegate>
-    inline Listener TestContext::OnResult(TDelegate&& delegate) const
+    inline Listener TestContext::OnSuccess(TDelegate&& delegate) const
     {
-        return result_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return success_event_.Subscribe(std::forward<TDelegate>(delegate));
+    }
+
+    template <typename TDelegate>
+    inline Listener TestContext::OnFailure(TDelegate&& delegate) const
+    {
+        return failure_event_.Subscribe(std::forward<TDelegate>(delegate));
+    }
+
+    template <typename TDelegate>
+    inline Listener TestContext::OnSkipped(TDelegate&& delegate) const
+    {
+        return skipped_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
@@ -185,9 +294,19 @@ namespace syntropy
         return message_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    inline void TestContext::ReportResult(TestResult test_result, const String& test_message, const StackTrace& test_location) const
+    inline void TestContext::ReportSuccess(const StackTrace& location, const String& expression, const String& result) const
     {
-        result_event_.Notify(*this, { test_result, test_message, test_location });
+        success_event_.Notify(*this, { location, expression, result });
+    }
+
+    inline void TestContext::ReportFailure(const StackTrace& location, const String& expression, const String& result, const String& expected) const
+    {
+        failure_event_.Notify(*this, { location, expression, result, expected });
+    }
+
+    inline void TestContext::ReportSkipped(const StackTrace& location, const String& reason) const
+    {
+        skipped_event_.Notify(*this, { location, reason });
     }
 
     inline void TestContext::ReportMessage(const String& message) const

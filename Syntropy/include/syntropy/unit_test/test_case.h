@@ -22,11 +22,31 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* ON TEST CASE RESULT EVENT ARGS                                       */
+    /* ON TEST CASE SUCCESS EVENT ARGS                                      */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a result is reported.
-    struct OnTestCaseResultEventArgs : OnTestContextResultEventArgs
+    /// \brief Arguments for the event notified whenever a success is reported.
+    struct OnTestCaseSuccessEventArgs : OnTestContextSuccessEventArgs
+    {
+
+    };
+
+    /************************************************************************/
+    /* ON TEST CASE FAILURE EVENT ARGS                                      */
+    /************************************************************************/
+
+    /// \brief Arguments for the event notified whenever a failure is reported.
+    struct OnTestCaseFailureEventArgs : OnTestContextFailureEventArgs
+    {
+
+    };
+
+    /************************************************************************/
+    /* ON TEST CASE SKIPPED EVENT ARGS                                      */
+    /************************************************************************/
+
+    /// \brief Arguments for the event notified whenever a test case is skipped.
+    struct OnTestCaseSkippedEventArgs : OnTestContextSkippedEventArgs
     {
 
     };
@@ -76,11 +96,19 @@ namespace syntropy
         /// \brief Get the test case name.
         const Label& GetName() const;
 
-        /// \brief Bind to the event notified whenever a result is reported. 
+        /// \brief Bind to the event notified whenever a success is reported.
         template <typename TDelegate>
-        Listener OnResult(TDelegate&& delegate) const;
+        Listener OnSuccess(TDelegate&& delegate) const;
 
-        /// \brief Bind to the event notified whenever a message is reported. 
+        /// \brief Bind to the event notified whenever a failure is reported.
+        template <typename TDelegate>
+        Listener OnFailure(TDelegate&& delegate) const;
+
+        /// \brief Bind to the event notified whenever a test is skipped.
+        template <typename TDelegate>
+        Listener OnSkipped(TDelegate&& delegate) const;
+
+        /// \brief Bind to the event notified whenever a message is reported.
         template <typename TDelegate>
         Listener OnMessage(TDelegate&& delegate) const;
 
@@ -92,8 +120,14 @@ namespace syntropy
         /// \brief Test case name.
         Label name_;
 
-        /// \brief Event notified whenever a result is reported.
-        Event<const TestCase&, OnTestCaseResultEventArgs> result_event_;
+        /// \brief Event notified whenever a success is reported.
+        Event<const TestCase&, OnTestCaseSuccessEventArgs> success_event_;
+
+        /// \brief Event notified whenever a failure is reported.
+        Event<const TestCase&, OnTestCaseFailureEventArgs> failure_event_;
+
+        /// \brief Event notified whenever a test case is skipped.
+        Event<const TestCase&, OnTestCaseSkippedEventArgs> skipped_event_;
 
         /// \brief Event notified whenever a message is reported.
         Event<const TestCase&, OnTestCaseMessageEventArgs> message_event_;
@@ -204,9 +238,19 @@ namespace syntropy
 
         auto context_listener = syntropy::Listener{};
 
-        context_listener += test_context.OnResult([&test_report, this](const auto& sender, const auto& event_args)
+        context_listener += test_context.OnSuccess([&test_report, this](const auto& sender, const auto& event_args)
         {
-            result_event_.Notify(*this, { event_args.result_, event_args.message_, event_args.location_ });
+            success_event_.Notify(*this, { event_args.location_, event_args.expression_, event_args.result_ });
+        });
+
+        context_listener += test_context.OnFailure([&test_report, this](const auto& sender, const auto& event_args)
+        {
+            failure_event_.Notify(*this, { event_args.location_, event_args.expression_, event_args.result_, event_args.expected_ });
+        });
+
+        context_listener += test_context.OnSkipped([&test_report, this](const auto& sender, const auto& event_args)
+        {
+            skipped_event_.Notify(*this, { event_args.location_, event_args.reason_ });
         });
 
         context_listener += test_context.OnMessage([&test_report, this](const auto& sender, const auto& event_args)
@@ -227,9 +271,23 @@ namespace syntropy
 
     template <typename TTestFixture>
     template <typename TDelegate>
-    inline Listener TestCase<TTestFixture>::OnResult(TDelegate&& delegate) const
+    inline Listener TestCase<TTestFixture>::OnSuccess(TDelegate&& delegate) const
     {
-        return result_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return success_event_.Subscribe(std::forward<TDelegate>(delegate));
+    }
+
+    template <typename TTestFixture>
+    template <typename TDelegate>
+    inline Listener TestCase<TTestFixture>::OnFailure(TDelegate&& delegate) const
+    {
+        return failure_event_.Subscribe(std::forward<TDelegate>(delegate));
+    }
+
+    template <typename TTestFixture>
+    template <typename TDelegate>
+    inline Listener TestCase<TTestFixture>::OnSkipped(TDelegate&& delegate) const
+    {
+        return skipped_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TTestFixture>

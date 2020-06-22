@@ -43,11 +43,17 @@ namespace syntropy
         /// \brief Called whenever a test case starts.
         void OnCaseStarted(const TestRunner& sender, const syntropy::OnTestRunnerCaseStartedEventArgs& e);
 
-        /// \brief Called whenever a message is notified.
-        void OnCaseMessage(const TestRunner& sender, const syntropy::OnTestRunnerCaseMessageEventArgs& e);
+        /// \brief Called whenever a test case result is notified.
+        void OnCaseSuccess(const TestRunner& sender, const syntropy::OnTestRunnerCaseSuccessEventArgs& e);
 
         /// \brief Called whenever a test case result is notified.
-        void OnCaseResult(const TestRunner& sender, const syntropy::OnTestRunnerCaseResultEventArgs& e);
+        void OnCaseFailure(const TestRunner& sender, const syntropy::OnTestRunnerCaseFailureEventArgs& e);
+
+        /// \brief Called whenever a test case result is notified.
+        void OnCaseSkipped(const TestRunner& sender, const syntropy::OnTestRunnerCaseSkippedEventArgs& e);
+
+        /// \brief Called whenever a message is notified.
+        void OnCaseMessage(const TestRunner& sender, const syntropy::OnTestRunnerCaseMessageEventArgs& e);
 
         /// \brief Called whenever a test case finishes.
         void OnCaseFinished(const TestRunner& sender, const syntropy::OnTestRunnerCaseFinishedEventArgs& e);
@@ -58,10 +64,7 @@ namespace syntropy
         /// \brief Listener for the test runner events.
         Listener test_runner_listener_;
 
-        /// \brief Current indentation amount.
-        Int indentation_amount_{ 0 };
-
-        /// \brief Maximum line size.
+           /// \brief Maximum line size.
         Int line_size_{ 120 };
     };
 
@@ -75,15 +78,15 @@ namespace syntropy
     {
         auto& cli = CLI::GetStyle();
 
-        std::cout << cli.Title("SYNTROPY UNIT TEST\nVersion 0.0.1\nAll these lines should be centered.");
-        std::cout << cli.Line("Hello world! This is the Syntropy unit test application. If I write a long-ass message it should automatically wrap-around. Let's see if that works, kay?");
-        std::cout << cli.Break1();
-        
-        std::cout << cli.Heading2("Test Suite");
-        std::cout << cli.Break2();
-
-        std::cout << cli.Heading1("Results");
-        std::cout << cli.End();
+//         std::cout << cli.Title("SYNTROPY UNIT TEST\nVersion 0.0.1\nAll these lines should be centered.");
+//         std::cout << cli.Line("Hello world! This is the Syntropy unit test application. If I write a long-ass message it should automatically wrap-around. Let's see if that works, kay?");
+//         std::cout << cli.Break1();
+//         
+//         std::cout << cli.Heading2("Test Suite");
+//         std::cout << cli.Break2();
+// 
+//         std::cout << cli.Heading1("Results");
+//         std::cout << cli.End();
 
 
 
@@ -96,27 +99,49 @@ namespace syntropy
 
         test_runner_listener_ += runner.OnSuiteStarted(BindMemberFunction(&UnitTestCLI::OnSuiteStarted));
         test_runner_listener_ += runner.OnCaseStarted(BindMemberFunction(&UnitTestCLI::OnCaseStarted));
+        test_runner_listener_ += runner.OnCaseSuccess(BindMemberFunction(&UnitTestCLI::OnCaseSuccess));
+        test_runner_listener_ += runner.OnCaseFailure(BindMemberFunction(&UnitTestCLI::OnCaseFailure));
+        test_runner_listener_ += runner.OnCaseSkipped(BindMemberFunction(&UnitTestCLI::OnCaseSkipped));
         test_runner_listener_ += runner.OnCaseMessage(BindMemberFunction(&UnitTestCLI::OnCaseMessage));
-        test_runner_listener_ += runner.OnCaseResult(BindMemberFunction(&UnitTestCLI::OnCaseResult));
         test_runner_listener_ += runner.OnCaseFinished(BindMemberFunction(&UnitTestCLI::OnCaseFinished));
         test_runner_listener_ += runner.OnSuiteFinished(BindMemberFunction(&UnitTestCLI::OnSuiteFinished));
     }
 
     inline void UnitTestCLI::Report(const TestReport& test_report)
     {
-        std::cout << "Result: " << UnitTest::GetResult(test_report) << "\n";
+
     }
 
     inline void UnitTestCLI::OnSuiteStarted(const TestRunner& sender, const syntropy::OnTestRunnerSuiteStartedEventArgs& e)
     {
 
-        ++indentation_amount_;
     }
 
 
     inline void UnitTestCLI::OnCaseStarted(const TestRunner& sender, const syntropy::OnTestRunnerCaseStartedEventArgs& e)
     {
-        ++indentation_amount_;
+
+    }
+
+    inline void UnitTestCLI::OnCaseSuccess(const TestRunner& sender, const syntropy::OnTestRunnerCaseSuccessEventArgs& e)
+    {
+        auto& cli = CLI::GetStyle();
+
+        std::cout << "SUCCESS " << e.test_suite_.GetName() << " " << e.test_case_.GetCharacters() << " : " << e.expression_ << "\n";
+    }
+
+    inline void UnitTestCLI::OnCaseFailure(const TestRunner& sender, const syntropy::OnTestRunnerCaseFailureEventArgs& e)
+    {
+        auto& cli = CLI::GetStyle();
+
+        std::cout << "FAILURE " << e.test_suite_.GetName() << " " << e.test_case_.GetCharacters() << " : " << e.expression_ << " returned " << e.result_ << " where " << e.expected_ << " was expected.\n";
+    }
+
+    inline void UnitTestCLI::OnCaseSkipped(const TestRunner& sender, const syntropy::OnTestRunnerCaseSkippedEventArgs& e)
+    {
+        auto& cli = CLI::GetStyle();
+
+        std::cout << "SKIPPED " << e.test_suite_.GetName() << " " << e.test_case_.GetCharacters() << " : " << e.reason_ << "\n";
     }
 
     inline void UnitTestCLI::OnCaseMessage(const TestRunner& sender, const syntropy::OnTestRunnerCaseMessageEventArgs& e)
@@ -124,22 +149,14 @@ namespace syntropy
 
     }
 
-    inline void UnitTestCLI::OnCaseResult(const TestRunner& sender, const syntropy::OnTestRunnerCaseResultEventArgs& e)
-    {
-        std::cout << e.message_ << "\n";
-    }
-
     inline void UnitTestCLI::OnCaseFinished(const TestRunner& sender, const syntropy::OnTestRunnerCaseFinishedEventArgs& e)
     {
-        --indentation_amount_;
 
     }
 
     inline void UnitTestCLI::OnSuiteFinished(const TestRunner& sender, const syntropy::OnTestRunnerSuiteFinishedEventArgs& e)
     {
-        --indentation_amount_;
-
-
+        std::cout << "\n";
     }
 
 }

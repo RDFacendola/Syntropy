@@ -42,11 +42,33 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* ON TEST SUITE CASE RESULT EVENT ARGS                                 */
+    /* ON TEST SUITE CASE SUCCESS EVENT ARGS                                */
     /************************************************************************/
 
-    /// \brief Arguments for the event notified whenever a test result is reported.
-    struct OnTestSuiteCaseResultEventArgs : OnTestContextResultEventArgs
+    /// \brief Arguments for the event notified whenever a test case success is reported.
+    struct OnTestSuiteCaseSuccessEventArgs : OnTestCaseSuccessEventArgs
+    {
+        /// \brief Test case name.
+        Label test_case_;
+    };
+
+    /************************************************************************/
+    /* ON TEST SUITE CASE FAILURE EVENT ARGS                                */
+    /************************************************************************/
+
+    /// \brief Arguments for the event notified whenever a test case success is reported.
+    struct OnTestSuiteCaseFailureEventArgs : OnTestCaseFailureEventArgs
+    {
+        /// \brief Test case name.
+        Label test_case_;
+    };
+
+    /************************************************************************/
+    /* ON TEST SUITE CASE SKIPPED EVENT ARGS                                */
+    /************************************************************************/
+
+    /// \brief Arguments for the event notified whenever a test case success is reported.
+    struct OnTestSuiteCaseSkippedEventArgs : OnTestCaseSkippedEventArgs
     {
         /// \brief Test case name.
         Label test_case_;
@@ -57,7 +79,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Arguments for the event notified whenever a test message is reported.
-    struct OnTestSuiteCaseMessageEventArgs : OnTestContextMessageEventArgs
+    struct OnTestSuiteCaseMessageEventArgs : OnTestCaseMessageEventArgs
     {
         /// \brief Test case name.
         Label test_case_;
@@ -107,9 +129,17 @@ namespace syntropy
         template <typename TDelegate>
         Listener OnCaseFinished(TDelegate&& delegate) const;
 
-        /// \brief Bind to the event notified whenever a test result is reported. 
+        /// \brief Bind to the event notified whenever a test case success is reported.
         template <typename TDelegate>
-        Listener OnCaseResult(TDelegate&& delegate) const;
+        Listener OnCaseSuccess(TDelegate&& delegate) const;
+
+        /// \brief Bind to the event notified whenever a test case failure is reported.
+        template <typename TDelegate>
+        Listener OnCaseFailure(TDelegate&& delegate) const;
+
+        /// \brief Bind to the event notified whenever a test case is skipped.
+        template <typename TDelegate>
+        Listener OnCaseSkipped(TDelegate&& delegate) const;
 
         /// \brief Bind to the event notified whenever a test message is reported. 
         template <typename TDelegate>
@@ -123,8 +153,14 @@ namespace syntropy
         /// \brief Notify the end of a test case.
         void NotifyCaseFinished(const OnTestSuiteCaseFinishedEventArgs& event_args) const;
 
-        /// \brief Notify a result within a test case.
-        void NotifyCaseResult(const OnTestSuiteCaseResultEventArgs& event_args) const;
+        /// \brief Notify a success within a test case.
+        void NotifyCaseSuccess(const OnTestSuiteCaseSuccessEventArgs& event_args) const;
+
+        /// \brief Notify a failure within a test case.
+        void NotifyCaseFailure(const OnTestSuiteCaseFailureEventArgs& event_args) const;
+
+        /// \brief Notify a test case was skipped.
+        void NotifyCaseSkip(const OnTestSuiteCaseSkippedEventArgs& event_args) const;
 
         /// \brief Notify a message within a test case.
         void NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args) const;
@@ -140,8 +176,14 @@ namespace syntropy
         /// \brief Event notified whenever a test case finishes.
         Event<const TestSuite&, OnTestSuiteCaseFinishedEventArgs> case_finished_event_;
 
-        /// \brief Event notified whenever a test result is reported.
-        Event<const TestSuite&, OnTestSuiteCaseResultEventArgs> case_result_event_;
+        /// \brief Event notified whenever a success is reported.
+        Event<const TestSuite&, OnTestSuiteCaseSuccessEventArgs> case_success_event_;
+
+        /// \brief Event notified whenever a failure is reported.
+        Event<const TestSuite&, OnTestSuiteCaseFailureEventArgs> case_failure_event_;
+
+        /// \brief Event notified whenever a test case is skipped.
+        Event<const TestSuite&, OnTestSuiteCaseSkippedEventArgs> case_skipped_event_;
 
         /// \brief Event notified whenever a test message is reported.
         Event<const TestSuite&, OnTestSuiteCaseMessageEventArgs> case_message_event_;
@@ -228,9 +270,21 @@ namespace syntropy
     }
 
     template <typename TDelegate>
-    inline Listener TestSuite::OnCaseResult(TDelegate&& delegate) const
+    inline Listener TestSuite::OnCaseSuccess(TDelegate&& delegate) const
     {
-        return case_result_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_success_event_.Subscribe(std::forward<TDelegate>(delegate));
+    }
+
+    template <typename TDelegate>
+    inline Listener TestSuite::OnCaseFailure(TDelegate&& delegate) const
+    {
+        return case_failure_event_.Subscribe(std::forward<TDelegate>(delegate));
+    }
+
+    template <typename TDelegate>
+    inline Listener TestSuite::OnCaseSkipped(TDelegate&& delegate) const
+    {
+        return case_skipped_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
@@ -249,9 +303,19 @@ namespace syntropy
         case_finished_event_.Notify(*this, event_args);
     }
 
-    inline void TestSuite::NotifyCaseResult(const OnTestSuiteCaseResultEventArgs& event_args) const
+    inline void TestSuite::NotifyCaseSuccess(const OnTestSuiteCaseSuccessEventArgs& event_args) const
     {
-        case_result_event_.Notify(*this, event_args);
+        case_success_event_.Notify(*this, event_args);
+    }
+
+    inline void TestSuite::NotifyCaseFailure(const OnTestSuiteCaseFailureEventArgs& event_args) const
+    {
+        case_failure_event_.Notify(*this, event_args);
+    }
+
+    inline void TestSuite::NotifyCaseSkip(const OnTestSuiteCaseSkippedEventArgs& event_args) const
+    {
+        case_skipped_event_.Notify(*this, event_args);
     }
 
     inline void TestSuite::NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args) const
@@ -290,9 +354,19 @@ namespace syntropy
 
         auto test_case_listener = syntropy::Listener{};
 
-        test_case_listener += test_case.OnResult([this](const auto& sender, const auto& event_args)
+        test_case_listener += test_case.OnSuccess([this](const auto& sender, const auto& event_args)
         {
-            NotifyCaseResult({ event_args.result_, event_args.message_, event_args.location_, sender.GetName() });
+            NotifyCaseSuccess({ event_args.location_, event_args.expression_, event_args.result_, sender.GetName() });
+        });
+
+        test_case_listener += test_case.OnFailure([this](const auto& sender, const auto& event_args)
+        {
+            NotifyCaseFailure({ event_args.location_, event_args.expression_, event_args.result_, event_args.expected_, sender.GetName() });
+        });
+
+        test_case_listener += test_case.OnSkipped([this](const auto& sender, const auto& event_args)
+        {
+            NotifyCaseSkip({ event_args.location_, event_args.reason_, sender.GetName() });
         });
 
         test_case_listener += test_case.OnMessage([this](const auto& sender, const auto& event_args)

@@ -137,6 +137,7 @@
     <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\log_event_formatter.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\stack_trace.cpp" />
+    <ClCompile Include="src\syntropy\unit_test\test_runner.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_debugger.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_intrinsics.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_system.cpp" />

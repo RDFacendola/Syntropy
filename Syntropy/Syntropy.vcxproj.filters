@@ -143,5 +143,6 @@
     <ClCompile Include="src\syntropy\memory\memory.cpp" />
     <ClCompile Include="src\syntropy\random\pcg_random_engine.cpp" />
     <ClCompile Include="src\syntropy\experimental\serialization\stream_buffer.cpp" />
+    <ClCompile Include="src\syntropy\unit_test\test_runner.cpp" />
   </ItemGroup>
 </Project>
