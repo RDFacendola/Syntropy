@@ -240,7 +240,7 @@ namespace syntropy
         : begin_(first)
         , count_(count)
     {
-        static_assert(!IsConvertibleV<TFirst, TElement>, "TFirst and TElement are uncorrelated.");
+
     }
 
     template <typename TElement>
@@ -249,7 +249,7 @@ namespace syntropy
         : begin_(first)
         , count_(ToInt(last - first))
     {
-        static_assert(!IsConvertibleV<TFirst, TElement>, "TFirst and TElement are uncorrelated.");
+
     }
 
     template <typename TElement>
@@ -397,7 +397,7 @@ namespace syntropy
     template <typename TElement>
     inline Bool ContainsStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
     {
-        return (Begin(lhs) <= Begin(rhs)) && (End(rhs) <= End(lhs));
+        return (!rhs) || ((Begin(lhs) <= Begin(rhs)) && (End(rhs) <= End(lhs)));
     }
 
     template <typename TElement>
@@ -443,7 +443,7 @@ namespace syntropy
     template <typename TElement, typename UElement>
     inline Bool ContainsWeak(const Span<TElement>& lhs, const Span<UElement>& rhs)
     {
-        return !IsEmpty(SearchWeak(lhs, rhs));
+        return (!rhs) || !IsEmpty(SearchWeak(lhs, rhs));
     }
 
     template <typename TElement, typename UElement>
