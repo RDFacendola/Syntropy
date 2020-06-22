@@ -65,7 +65,7 @@ namespace syntropy
         } \
         else \
         { \
-            syntropy::UnitTest::ReportTestCaseResult(syntropy::TestResult::kFailure, SYNTROPY_HERE, #expression, " returned expected result ", result); \
+            syntropy::UnitTest::ReportTestCaseResult(syntropy::TestResult::kSuccess, SYNTROPY_HERE, #expression, " returned expected result ", result); \
         }
 
     #undef SYNTROPY_UNIT_EXPECT
