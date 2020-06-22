@@ -160,28 +160,28 @@ namespace syntropy
 
     /// \brief Check whether two spans are identical.
     /// \return Returns true if both lhs and rhs refer to the same memory region, returns false otherwise.
-    template <typename TElement, typename UElement>
-    Bool EqualsStrong(const Span<TElement>& lhs, const Span<UElement>& rhs);
+    template <typename TElement>
+    Bool EqualsStrong(const Span<TElement>& lhs, const Span<TElement>& rhs);
 
     /// \brief Check whether rhs is a a member-wise prefix of lhs, using a strongly equivalence metric between elements of both spans.
-    template <typename TElement, typename UElement>
-    Bool HasPrefixStrong(const Span<TElement>& lhs, const Span<UElement>& rhs);
+    template <typename TElement>
+    Bool HasPrefixStrong(const Span<TElement>& lhs, const Span<TElement>& rhs);
 
     /// \brief Check whether rhs is a a member-wise suffix of lhs, using a strongly equivalence metric between elements of both spans.
-    template <typename TElement, typename UElement>
-    Bool HasSuffixStrong(const Span<TElement>& lhs, const Span<UElement>& rhs);
+    template <typename TElement>
+    Bool HasSuffixStrong(const Span<TElement>& lhs, const Span<TElement>& rhs);
 
     /// \brief Check whether exists a subset in lhs which strongly compares equal to rhs.
     /// \return Returns true if lhs has a subset which strongly compares equal to rhs, returns false otherwise.
-    template <typename TElement, typename UElement>
-    Bool ContainsStrong(const Span<TElement>& lhs, const Span<UElement>& rhs);
+    template <typename TElement>
+    Bool ContainsStrong(const Span<TElement>& lhs, const Span<TElement>& rhs);
 
     /// \brief Reduce lhs until rhs becomes a strong prefix for lhs or lhs is exhausted.
     /// \return Returns the reduced range starting from the first occurrence of rhs in lhs or an empty range if no occurrence was found.
-    template <typename TElement, typename UElement>
-    Span<TElement> SearchStrong(const Span<TElement>& lhs, const Span<UElement>& rhs);
+    template <typename TElement>
+    Span<TElement> SearchStrong(const Span<TElement>& lhs, const Span<TElement>& rhs);
 
-    /// \brief Check whether two spans are equivalent.
+    /// \brief Check whether two spans are equivalent, converting elements in rhs if necessary.
     /// \remarks This method comes with additional overhead, prefer EqualsStrong where possible.
     /// \return Returns true if each element in lhs weakly compares equal to the element in the same position in rhs, returns false otherwise.
     template <typename TElement, typename UElement>
@@ -357,73 +357,38 @@ namespace syntropy
         return { End(span) - count, End(span) };
     }
 
-    template <typename TElement, typename UElement>
-    inline Bool EqualsStrong(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    template <typename TElement>
+    inline Bool EqualsStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
     {
-        if constexpr (IsSameV<RemoveConstT<TElement>, RemoveConstT<UElement>>)
-        {
-            return (!lhs && !rhs) || (Begin(lhs) == Begin(rhs)) && (End(lhs) == End(rhs));
-        }
-        else
-        {
-            return false;       // If the underlying types are different, lhs and rhs cannot be identical.
-        }
+        return (!lhs && !rhs) || (Begin(lhs) == Begin(rhs)) && (End(lhs) == End(rhs));
     }
 
-    template <typename TElement, typename UElement>
-    inline Bool HasPrefixStrong(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    template <typename TElement>
+    inline Bool HasPrefixStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
     {
-        if constexpr (IsSameV<RemoveConstT<TElement>, RemoveConstT<UElement>>)
-        {
-            return (Count(lhs) >= Count(rhs)) && EqualsStrong(First(lhs, Count(rhs)), rhs);
-        }
-        else
-        {
-            return false;       // If the underlying types are different, lhs cannot have rhs as strong prefix.
-        }
+        return (Count(lhs) >= Count(rhs)) && EqualsStrong(First(lhs, Count(rhs)), rhs);
     }
 
-    template <typename TElement, typename UElement>
-    inline Bool HasSuffixStrong(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    template <typename TElement>
+    inline Bool HasSuffixStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
     {
-        if constexpr (IsSameV<RemoveConstT<TElement>, RemoveConstT<UElement>>)
-        {
-            return (Count(lhs) >= Count(rhs)) && EqualsStrong(Last(lhs, Count(rhs)), rhs);
-        }
-        else
-        {
-            return false;       // If the underlying types are different, lhs cannot have rhs as strong prefix.
-        }
+        return (Count(lhs) >= Count(rhs)) && EqualsStrong(Last(lhs, Count(rhs)), rhs);
     }
 
-    template <typename TElement, typename UElement>
-    inline Bool ContainsStrong(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    template <typename TElement>
+    inline Bool ContainsStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
     {
-        if constexpr (IsSameV<RemoveConstT<TElement>, RemoveConstT<UElement>>)
-        {
-            return (Begin(lhs) <= Begin(rhs)) && (End(rhs) <= End(lhs));
-        }
-        else
-        {
-            return false;       // If the underlying types are different, lhs cannot contain rhs.
-        }
+        return (Begin(lhs) <= Begin(rhs)) && (End(rhs) <= End(lhs));
     }
 
-    template <typename TElement, typename UElement>
-    inline Span<TElement> SearchStrong(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    template <typename TElement>
+    inline Span<TElement> SearchStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
     {
-        if constexpr (IsSameV<RemoveConstT<TElement>, RemoveConstT<UElement>>)
-        {
-            auto span = lhs;
+        auto span = lhs;
 
-            for (; span && !HasPrefixStrong(span, rhs); span = PopFront(span));
+        for (; span && !HasPrefixStrong(span, rhs); span = PopFront(span));
 
-            return span;
-        }
-        else
-        {
-            return {};          // If the underlying types are different, lhs cannot contain rhs.
-        }
+        return span;
     }
 
     template <typename TElement, typename UElement>

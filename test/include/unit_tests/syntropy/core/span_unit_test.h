@@ -190,7 +190,6 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(EqualsStrong(span1, span3), false);
         SYNTROPY_UNIT_EQUAL(EqualsWeak(span1, span3), false);
 
-        SYNTROPY_UNIT_EQUAL(EqualsStrong(span1, spanf), false);
         SYNTROPY_UNIT_EQUAL(EqualsWeak(span1, spanf), true);
     })
 
@@ -207,7 +206,6 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(HasPrefixStrong(span1, span3), false);
         SYNTROPY_UNIT_EQUAL(HasPrefixWeak(span1, span3), false);
 
-        SYNTROPY_UNIT_EQUAL(HasPrefixStrong(span1, spanf), false);
         SYNTROPY_UNIT_EQUAL(HasPrefixWeak(span1, spanf), true);
     })
 
@@ -224,7 +222,6 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(HasSuffixStrong(span1, span3), false);
         SYNTROPY_UNIT_EQUAL(HasSuffixWeak(span1, span3), false);
 
-        SYNTROPY_UNIT_EQUAL(HasSuffixStrong(span1, spanf), false);
         SYNTROPY_UNIT_EQUAL(HasSuffixWeak(span1, spanf), true);
     })
 
@@ -241,7 +238,6 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(ContainsStrong(span1, span3), false);
         SYNTROPY_UNIT_EQUAL(ContainsWeak(span1, span3), false);
 
-        SYNTROPY_UNIT_EQUAL(ContainsStrong(span1, spanf), false);
         SYNTROPY_UNIT_EQUAL(ContainsWeak(span1, spanf), true);
     })
 
@@ -262,7 +258,6 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(IsEmpty(SearchStrong(span1, span3)), true);
         SYNTROPY_UNIT_EQUAL(IsEmpty(SearchWeak(span1, span3)), true);
 
-        SYNTROPY_UNIT_EQUAL(IsEmpty(SearchStrong(span1, spanf)), true);
         SYNTROPY_UNIT_EQUAL(EqualsWeak(SearchWeak(span1, spanf), span12f), true);
     })
 
