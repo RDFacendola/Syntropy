@@ -88,15 +88,7 @@ namespace syntropy
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
-
-    /// \brief Check whether two spans are element-wise equivalent.
-    template <typename TElement, typename UElement>
-    bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs);
-
-    /// \brief Check whether two spans are not element-wise equivalent.
-    template <typename TElement, typename UElement>
-    bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs);
-
+    
     /// \brief Check whether a span is empty.
     template <typename TElement>
     Bool IsEmpty(const Span<TElement>& span);
@@ -122,6 +114,9 @@ namespace syntropy
     /// If the span is empty the behavior of this method is undefined.
     template <typename TElement>
     TElement& Back(const Span<TElement>& span);
+
+    //======================================================================//
+    // Span manipulation.
 
     /// \brief Obtain a sub-span given an offset and a number of elements.
     /// If the sub-span would exceed original span bounds, the behavior of this method is undefined.
@@ -157,6 +152,17 @@ namespace syntropy
     /// If this method would cause the end to exceed the span range, the behavior of this method is undefined.
     template <typename TElement>
     Span<TElement> Last(const Span<TElement>& span, Int count);
+
+    //======================================================================//
+    // Span comparison.
+
+    /// \brief Check whether two spans are element-wise equivalent.
+    template <typename TElement, typename UElement>
+    bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs);
+
+    /// \brief Check whether two spans are not element-wise equivalent.
+    template <typename TElement, typename UElement>
+    bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs);
 
     /// \brief Check whether two spans are identical.
     /// \return Returns true if both lhs and rhs refer to the same memory region, returns false otherwise.
@@ -208,6 +214,19 @@ namespace syntropy
     /// \return Returns the reduced range starting from the first occurrence of rhs in lhs or an empty range if no occurrence was found.
     template <typename TElement, typename UElement>
     Span<TElement> SearchWeak(const Span<TElement>& lhs, const Span<UElement>& rhs);
+
+    //======================================================================//
+    // Set operations.
+
+    /// \brief Check whether rhs overlaps lhs.
+    /// Empty spans are not considered to be overlapping with any other span.
+    template <typename TElement>
+    Bool IsOverlapping(const Span<TElement>& lhs, const Span<TElement>& rhs);
+
+    /// \brief Check whether rhs is contiguous to lhs.
+    /// Empty spans are not considered to be contiguous to any other span.
+    template <typename TElement>
+    Bool IsContiguous(const Span<TElement>& lhs, const Span<TElement>& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -266,18 +285,6 @@ namespace syntropy
     }
 
     // Non-member functions.
-
-    template <typename TElement, typename UElement>
-    inline bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs)
-    {
-        return EqualsWeak(lhs, rhs);
-    }
-
-    template <typename TElement, typename UElement>
-    inline bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs)
-    {
-        return !(lhs == rhs);
-    }
 
     template <typename TElement>
     inline Bool IsEmpty(const Span<TElement>& span)
@@ -355,6 +362,18 @@ namespace syntropy
     inline Span<TElement> Last(const Span<TElement>& span, Int count)
     {
         return { End(span) - count, End(span) };
+    }
+
+    template <typename TElement, typename UElement>
+    inline bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    {
+        return EqualsWeak(lhs, rhs);
+    }
+
+    template <typename TElement, typename UElement>
+    inline bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    {
+        return !(lhs == rhs);
     }
 
     template <typename TElement>
@@ -435,6 +454,18 @@ namespace syntropy
         for (; span && !HasPrefixWeak(span, rhs); span = PopFront(span));
 
         return span;
+    }
+
+    template <typename TElement>
+    inline Bool IsOverlapping(const Span<TElement>& lhs, const Span<TElement>& rhs)
+    {
+        return (lhs) && (rhs) && (Begin(lhs) < End(rhs)) && (Begin(rhs) < End(lhs));
+    }
+
+    template <typename TElement>
+    inline Bool IsContiguous(const Span<TElement>& lhs, const Span<TElement>& rhs)
+    {
+        return (lhs) && (rhs) && (End(lhs) == Begin(rhs));
     }
 
 }

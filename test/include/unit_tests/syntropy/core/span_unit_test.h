@@ -270,7 +270,67 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(EqualsStrong(SearchWeak(haystack, needle), haystack), true);
     })
 
-        ;
+    .TestCase("Span overlap with themselves.", [](auto& fixture)
+    {
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
+
+        SYNTROPY_UNIT_EQUAL(IsOverlapping(span, span), true);
+    })
+
+    .TestCase("Disjoint spans do not overlap.", [](auto& fixture)
+    {
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
+        auto disjoint = Span<Int>{ &fixture.int_sequence_[5], 4 };
+        auto contiguous = Span<Int>{ &fixture.int_sequence_[4], 4 };
+
+        SYNTROPY_UNIT_EQUAL(IsOverlapping(span, disjoint), false);
+        SYNTROPY_UNIT_EQUAL(IsOverlapping(span, contiguous), false);
+    })
+
+    .TestCase("Empty spans do not overlap with any other span.", [](auto& fixture)
+    {
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
+        auto empty = Span<Int>{};
+
+        SYNTROPY_UNIT_EQUAL(IsOverlapping(empty, empty), false);
+        SYNTROPY_UNIT_EQUAL(IsOverlapping(span, empty), false);
+        SYNTROPY_UNIT_EQUAL(IsOverlapping(empty, span), false);
+    })
+
+    .TestCase("Overlapping test is commutative.", [](auto& fixture)
+    {
+        auto left = Span<Int>{ &fixture.int_sequence_[0], 4 };
+        auto right = Span<Int>{ &fixture.int_sequence_[2], 4 };
+
+        SYNTROPY_UNIT_EQUAL(IsOverlapping(left, right), true);
+        SYNTROPY_UNIT_EQUAL(IsOverlapping(right, left), true);
+    })
+
+    .TestCase("A span is not contiguous to itself.", [](auto& fixture)
+    {
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
+
+        SYNTROPY_UNIT_EQUAL(IsContiguous(span, span), false);
+    })
+
+    .TestCase("Empty spans are not contiguous to any other span.", [](auto& fixture)
+    {
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
+        auto empty = Span<Int>{};
+
+        SYNTROPY_UNIT_EQUAL(IsContiguous(empty, empty), false);
+        SYNTROPY_UNIT_EQUAL(IsContiguous(span, empty), false);
+        SYNTROPY_UNIT_EQUAL(IsContiguous(empty, span), false);
+    })
+
+    .TestCase("Overlapping test is antisymmetric.", [](auto& fixture)
+    {
+        auto left = Span<Int>{ &fixture.int_sequence_[0], 4 };
+        auto right = Span<Int>{ &fixture.int_sequence_[4], 4 };
+
+        SYNTROPY_UNIT_EQUAL(IsContiguous(left, right), true);
+        SYNTROPY_UNIT_EQUAL(IsContiguous(right, left), false);
+    });
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
