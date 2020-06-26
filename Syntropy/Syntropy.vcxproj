@@ -35,9 +35,6 @@
     <ClInclude Include="include\syntropy\core\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\core\vector.h" />
     <ClInclude Include="include\syntropy\core\vector_view.h" />
-    <ClInclude Include="include\syntropy\experimental\application\cli.h" />
-    <ClInclude Include="include\syntropy\experimental\application\cli_line_builder.h" />
-    <ClInclude Include="include\syntropy\experimental\application\default_cli_style.h" />
     <ClInclude Include="include\syntropy\core\span.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\stream_buffer_transaction.h" />
     <ClInclude Include="include\syntropy\language\algorithm.h" />
@@ -162,7 +159,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B970D1B5-1F2A-495A-BF7E-3DBBBEE1F33A}</ProjectGuid>
     <RootNamespace>syntropy</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='dbg|x64'" Label="Configuration">
@@ -174,14 +171,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='rel|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='dbg|x64'">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">

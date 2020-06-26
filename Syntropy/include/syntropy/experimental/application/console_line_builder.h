@@ -1,6 +1,6 @@
 
-/// \file cli_line_builder.h
-/// \brief This header is part of Syntropy application module. It contains definitions for classes used to construct lines.
+/// \file console_line_builder.h
+/// \brief This header is part of Syntropy application module. It contains definitions for classes used to construct text lines.
 ///
 /// \author Raffaele D. Facendola - June 2020.
 
@@ -17,49 +17,52 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* CLI LINE BUILDER                                                     */
+    /* CONSOLE LINE BUILDER                                                 */
     /************************************************************************/
 
-    /// \brief Builder object used to construct CLI text lines.
+    /// \brief Builder object used to construct command line interface text lines.
     /// \author Raffaele D. Facendola - June 2020.
-    class CLILineBuilder
+    class ConsoleLineBuilder
     {
     public:
 
         /// \brief Set the fixed length of a line.
-        CLILineBuilder& LineSize(Int size);
+        ConsoleLineBuilder& LineSize(Int size);
 
-        /// \brief Repeat a filler text.
-        CLILineBuilder& Fill(const StringView& fill);
+        /// \brief Fill a line with a repeating text.
+        ConsoleLineBuilder& Fill(const StringView& fill);
 
-        /// \brief Print zero or more lines filled with a filler text.
-        CLILineBuilder& Fill(const StringView& fill, Int lines);
+        /// \brief Fill zero or more lines with a repeating text.
+        ConsoleLineBuilder& Fill(const StringView& fill, Int lines);
 
-        /// \brief Print a left-aligned text.
-        CLILineBuilder& Left(const StringView& text);
+        /// \brief Print a left-aligned text, wrapping exceeding text to new lines.
+        ConsoleLineBuilder& Left(const StringView& text);
 
-        /// \brief Print a right-aligned text.
-        CLILineBuilder& Right(const StringView& text);
+        /// \brief Print a right-aligned text, wrapping exceeding text to new lines.
+        ConsoleLineBuilder& Right(const StringView& text);
 
-        /// \brief Print a center-aligned text.
-        CLILineBuilder& Center(const StringView& text);
+        /// \brief Print a center-aligned text, wrapping exceeding text to new lines.
+        ConsoleLineBuilder& Center(const StringView& text);
 
         /// \brief Print a left-aligned text and fill the remaining space with a filler sequence.
-        CLILineBuilder& Left(const StringView& text, const StringView& fill);
+        /// If the provided text exceeds the length of a line, it gets truncated.
+        ConsoleLineBuilder& Left(const StringView& text, const StringView& fill);
 
         /// \brief Print a right-aligned text and fill the remaining space with a filler sequence.
-        CLILineBuilder& Right(const StringView& text, const StringView& fill);
+        /// If the provided text exceeds the length of a line, it gets truncated.
+        ConsoleLineBuilder& Right(const StringView& text, const StringView& fill);
 
         /// \brief Print a center-aligned text and fill the remaining space with a filler sequence.
-        CLILineBuilder& Center(const StringView& text, const StringView& fill);
+        /// If the provided text exceeds the length of a line, it gets truncated.
+        ConsoleLineBuilder& Center(const StringView& text, const StringView& fill);
 
         /// \brief Print am empty line.
-        CLILineBuilder& Blank();
+        ConsoleLineBuilder& Blank();
 
         /// \brief Print zero or more empty lines.
-        CLILineBuilder& Blank(Int count);
+        ConsoleLineBuilder& Blank(Int count);
 
-        /// \brief Build the CLI line and clear the builder status.
+        /// \brief Build the text line and clear the builder status.
         String Build();
 
     private:
@@ -70,7 +73,7 @@ namespace syntropy
         /// \brief Token for a blank character.
         static constexpr auto kBlank = " ";
 
-        /// \brief Create a fixed-width line with a fill.
+        /// \brief Create a fixed-width line filled with a repeating text.
         String NewLine(const StringView& fill) const;
 
         String& Copy(String& destination, const StringView& source, Int padding);
@@ -87,16 +90,16 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // CLILineBuilder.
+    // ConsoleLineBuilder.
 
-    inline CLILineBuilder& CLILineBuilder::LineSize(Int size)
+    inline ConsoleLineBuilder& ConsoleLineBuilder::LineSize(Int size)
     {
         line_size_ = size;
 
         return *this;
     }
 
-    inline CLILineBuilder& CLILineBuilder::Fill(const StringView& fill)
+    inline ConsoleLineBuilder& ConsoleLineBuilder::Fill(const StringView& fill)
     {
         auto line = NewLine(fill);
 
@@ -105,7 +108,7 @@ namespace syntropy
         return *this;
     }
 
-    inline CLILineBuilder& CLILineBuilder::Fill(const StringView& fill, Int lines)
+    inline ConsoleLineBuilder& ConsoleLineBuilder::Fill(const StringView& fill, Int lines)
     {
         for (; lines > 0; --lines)
         {
@@ -115,22 +118,22 @@ namespace syntropy
         return *this;
     }
 
-    inline CLILineBuilder& CLILineBuilder::Left(const StringView& text)
+    inline ConsoleLineBuilder& ConsoleLineBuilder::Left(const StringView& text)
     {
         return Left(text, kBlank);
     }
 
-    inline CLILineBuilder& CLILineBuilder::Right(const StringView& text)
+    inline ConsoleLineBuilder& ConsoleLineBuilder::Right(const StringView& text)
     {
         return Right(text, kBlank);
     }
 
-    inline CLILineBuilder& CLILineBuilder::Center(const StringView& text)
+    inline ConsoleLineBuilder& ConsoleLineBuilder::Center(const StringView& text)
     {
         return Center(text, kBlank);
     }
 
-    inline CLILineBuilder& CLILineBuilder::Left(const StringView& text, const StringView& fill)
+    inline ConsoleLineBuilder& ConsoleLineBuilder::Left(const StringView& text, const StringView& fill)
     {
         auto line = NewLine(fill);
 
@@ -141,7 +144,7 @@ namespace syntropy
         return *this;
     }
 
-    inline CLILineBuilder& CLILineBuilder::Right(const StringView& text, const StringView& fill)
+    inline ConsoleLineBuilder& ConsoleLineBuilder::Right(const StringView& text, const StringView& fill)
     {
         auto line = NewLine(fill);
 
@@ -152,14 +155,14 @@ namespace syntropy
         return *this;
     }
 
-    inline CLILineBuilder& CLILineBuilder::Center(const StringView& text, const StringView& fill)
+    inline ConsoleLineBuilder& ConsoleLineBuilder::Center(const StringView& text, const StringView& fill)
     {
-//         for (auto text_range = GetConstRange(text); text_range;)
-//         {
-//             auto next = text_range = Find(text_range, kNewLine);
-// 
-//             auto line_range = MakeConstRange(text_range.Begin(), next.End());
-//         }
+        //         for (auto text_range = GetConstRange(text); text_range;)
+        //         {
+        //             auto next = text_range = Find(text_range, kNewLine);
+        // 
+        //             auto line_range = MakeConstRange(text_range.Begin(), next.End());
+        //         }
 
         // #TODO StringView instead of String.
 
@@ -176,14 +179,14 @@ namespace syntropy
         return *this;
     }
 
-    inline CLILineBuilder& CLILineBuilder::Blank()
+    inline ConsoleLineBuilder& ConsoleLineBuilder::Blank()
     {
         line_ << kNewLine;
 
         return *this;
     }
 
-    inline CLILineBuilder& CLILineBuilder::Blank(Int count)
+    inline ConsoleLineBuilder& ConsoleLineBuilder::Blank(Int count)
     {
         for (; count > 0; --count)
         {
@@ -193,7 +196,7 @@ namespace syntropy
         return *this;
     }
 
-    inline String CLILineBuilder::Build()
+    inline String ConsoleLineBuilder::Build()
     {
         auto line = line_.str();
 
@@ -202,7 +205,7 @@ namespace syntropy
         return line;
     }
 
-    inline String CLILineBuilder::NewLine(const StringView& fill) const
+    inline String ConsoleLineBuilder::NewLine(const StringView& fill) const
     {
         auto line = String(line_size_, ' ');
 
@@ -211,7 +214,7 @@ namespace syntropy
         return line;
     }
 
-    inline String& CLILineBuilder::Copy(String& destination, const StringView& source, Int padding)
+    inline String& ConsoleLineBuilder::Copy(String& destination, const StringView& source, Int padding)
     {
         padding = Math::Clamp(padding, ToInt(0), ToInt(destination.size()));
 

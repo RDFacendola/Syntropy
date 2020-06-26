@@ -83,7 +83,7 @@ namespace syntropy
 
         auto label_hash = Hash::FNV1a64(string_range);
 
-        if (auto label_iterator = labels_.lower_bound(label_hash); label_iterator != labels_.end())
+        if(auto label_iterator = labels_.find(label_hash); label_iterator != labels_.end())
         {
             // The label already exists.
 
@@ -95,7 +95,7 @@ namespace syntropy
 
             auto label = Allocate(string_range);
 
-            labels_.insert(label_iterator, std::make_pair(label_hash, label));
+            labels_.insert(std::make_pair(label_hash, label));
 
             return label;
         }

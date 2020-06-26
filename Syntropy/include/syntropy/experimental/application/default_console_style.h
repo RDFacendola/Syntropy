@@ -1,6 +1,6 @@
 
-/// \file default_cli_style.h
-/// \brief This header is part of Syntropy application module. It contains definition for a default CLI output style.
+/// \file default_console_style.h
+/// \brief This header is part of Syntropy application module. It contains definitions for default console interface style.
 ///
 /// \author Raffaele D. Facendola - June 2020.
 
@@ -8,31 +8,35 @@
 
 #include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
-#include "syntropy/core/string_stream.h"
-#include "syntropy/core/smart_pointers.h"
 
-#include "syntropy/experimental/application/cli_line_builder.h"
+#include "syntropy/experimental/application/console_line_builder.h"
 
 namespace syntropy
 {
     /************************************************************************/
-    /* DEFAULT CLI STYLE                                                    */
+    /* DEFAULT CONSOLE STYLE                                                */
     /************************************************************************/
 
-    /// \brief Default style for CLI applications.
+    /// \brief Default style for command line applications.
     /// \author Raffaele D. Facendola - June 2020.
-    class DefaultCLIStyle
+    class DefaultConsoleStyle
     {
     public:
 
         /// \brief Default constructor.
-        DefaultCLIStyle() = default;
+        DefaultConsoleStyle() = default;
+
+        /// \brief Default copy constructor.
+        DefaultConsoleStyle(const DefaultConsoleStyle&) = default;
 
         /// \brief Create a new default CLI style.
-        DefaultCLIStyle(Int line_size);
+        DefaultConsoleStyle(Int line_size);
 
         /// \brief Default destructor.
-        ~DefaultCLIStyle() = default;
+        ~DefaultConsoleStyle() = default;
+
+        /// \brief Default assignment operator.
+        DefaultConsoleStyle& operator=(const DefaultConsoleStyle&) = default;
 
         /// \brief Get a title string.
         String Title(const String& title) const;
@@ -72,7 +76,7 @@ namespace syntropy
 
     private:
 
-        /// \brief Size of each line.
+        /// \brief Size of each line, in characters.
         Int line_size_{ 80 };
 
     };
@@ -81,17 +85,17 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // DefaultCLIStyle.
+    // DefaultConsoleStyle.
 
-    inline DefaultCLIStyle::DefaultCLIStyle(Int line_size)
+    inline DefaultConsoleStyle::DefaultConsoleStyle(Int line_size)
         : line_size_(line_size)
     {
 
     }
 
-    inline String DefaultCLIStyle::Title(const String& text) const
+    inline String DefaultConsoleStyle::Title(const String& text) const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Center("/\\", "_")
             .Fill("=")
             .Blank(2)
@@ -102,21 +106,22 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultCLIStyle::Heading1(const String& text) const
+    inline String DefaultConsoleStyle::Heading1(const String& text) const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Center("/\\", "_")
             .Fill("=")
             .Blank()
             .Center(text)
             .Blank()
             .Fill("=")
+            .Blank()
             .Build();
     }
 
-    inline String DefaultCLIStyle::Heading2(const String& text) const
+    inline String DefaultConsoleStyle::Heading2(const String& text) const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Center("/\\", "_")
             .Fill("=")
             .Center(text)
@@ -125,18 +130,19 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultCLIStyle::Heading3(const String& text) const
+    inline String DefaultConsoleStyle::Heading3(const String& text) const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Left(text)
             .LineSize(text.size())
             .Fill("=")
+            .Blank()
             .Build();
     }
 
-    inline String DefaultCLIStyle::Heading4(const String& text) const
+    inline String DefaultConsoleStyle::Heading4(const String& text) const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Left(text)
             .LineSize(text.size())
             .Fill("-")
@@ -144,60 +150,61 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultCLIStyle::Line(const String& message) const
+    inline String DefaultConsoleStyle::Line(const String& message) const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Left(message)
             .Build();
     }
 
-    inline String DefaultCLIStyle::End() const
+    inline String DefaultConsoleStyle::End() const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Blank()
             .Fill("/", 6)
             .Blank()
             .Build();
     }
 
-    inline String DefaultCLIStyle::Break1() const
+    inline String DefaultConsoleStyle::Break1() const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Blank()
             .Fill("/", 4)
             .Blank()
             .Build();
     }
 
-    inline String DefaultCLIStyle::Break2() const
+    inline String DefaultConsoleStyle::Break2() const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Blank()
             .Fill("/", 2)
             .Blank()
             .Build();
     }
 
-    inline String DefaultCLIStyle::Break3() const
+    inline String DefaultConsoleStyle::Break3() const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
-            .Blank()
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Blank()
             .Fill("=")
             .Blank()
             .Build();
     }
 
-    inline String DefaultCLIStyle::Break4() const
+    inline String DefaultConsoleStyle::Break4() const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
+            .Blank()
             .Fill("-")
+            .Blank()
             .Build();
     }
 
-    inline String DefaultCLIStyle::LineFeed() const
+    inline String DefaultConsoleStyle::LineFeed() const
     {
-        return CLILineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{}.LineSize(line_size_)
             .Blank()
             .Build();
     }

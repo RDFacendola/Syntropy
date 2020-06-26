@@ -124,3 +124,52 @@ inline String DefaultCLIStyle::LineOut(TLineFunction line_function) const
 
     std::cout << line.str();
 }
+
+
+
+
+
+/************************************************************************/
+/* COMMAND LINE INTERFACE                                               */
+/************************************************************************/
+
+class CommadLineStyle;
+
+/// \brief Exposes formatting methods to write text on a command line interface.
+namespace CommandLineInterface
+{
+    /// \brief Get the thread-local default command line interface style.
+    CommadLineStyle& GetDefaultStyle();
+
+    /// \brief Get the thread-local command line interface style.
+    CommadLineStyle& GetStyle();
+
+    /// \brief Set the thread-local command line interface style.
+    /// \return Returns the previous value of the thread-local command line interface style.
+    CommadLineStyle& SetStyle(CommadLineStyle& cli_style);
+};
+
+// CommandLineInterface.
+
+inline CommadLineStyle& CommandLineInterface::GetDefaultStyle() noexcept
+{
+    static auto default_style = DefaultCommandLineInterfaceStyle{};
+
+    static auto style = MakeCommandLineInterfaceStyle(default_style);
+
+    return style;
+}
+
+inline CommadLineStyle& CommandLineInterface::GetStyle() noexcept
+{
+    return *CommadLineStyle::style_;
+}
+
+inline CommadLineStyle& CommandLineInterface::SetStyle(CommadLineStyle& cli_style) noexcept
+{
+    auto& previous_cli_style = GetStyle();
+
+    CommadLineStyle::style_ = &cli_style;
+
+    return previous_cli_style;
+}

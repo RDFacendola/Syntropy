@@ -82,7 +82,7 @@ namespace syntropy
 
             auto outer_context_label = Label(outer_context_name);
 
-            if (auto outer_context_iterator = contexts_.lower_bound(outer_context_label); outer_context_iterator != contexts_.end())
+            if (auto outer_context_iterator = contexts_.find(outer_context_label); outer_context_iterator != contexts_.end())
             {
                 // The outer context already exists.
 
@@ -94,7 +94,7 @@ namespace syntropy
 
                 auto outer_context = Allocate(outer_context_name);
 
-                contexts_.insert(outer_context_iterator, std::make_pair(outer_context_name, outer_context));
+                contexts_.insert(std::make_pair(outer_context_name, outer_context));
 
                 return outer_context;
             }

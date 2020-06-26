@@ -14,8 +14,7 @@
 #include "syntropy/language/listener.h"
 #include "syntropy/unit_test/test_runner.h"
 
-#include "syntropy/experimental/application/cli.h"
-#include "syntropy/experimental/application/default_cli_style.h"
+#include "syntropy/experimental/application/console_output.h"
 
 namespace syntropy
 {
@@ -74,9 +73,18 @@ namespace syntropy
 
     // UnitTestCLI.
 
+    namespace Tags
+    {
+
+    }
+
     inline UnitTestCLI::UnitTestCLI(const syntropy::TestRunner& runner)
     {
-        auto& cli = CLI::GetStyle();
+        //auto& out = CommandLineOutput::GetSingleton();
+
+        //out.PushSection<TitleSection>("Syntropy application power!");       // Push title optional indentation.
+        //out.Print("ciaone");
+        //out.PopSection();                                                   // Pop title optional indentation.
 
 //         std::cout << cli.Title("SYNTROPY UNIT TEST\nVersion 0.0.1\nAll these lines should be centered.");
 //         std::cout << cli.Line("Hello world! This is the Syntropy unit test application. If I write a long-ass message it should automatically wrap-around. Let's see if that works, kay?");
@@ -125,22 +133,16 @@ namespace syntropy
 
     inline void UnitTestCLI::OnCaseSuccess(const TestRunner& sender, const syntropy::OnTestRunnerCaseSuccessEventArgs& e)
     {
-        auto& cli = CLI::GetStyle();
-
         std::cout << "SUCCESS " << e.test_suite_.GetName() << " " << e.test_case_.GetCharacters() << " : " << e.expression_ << "\n";
     }
 
     inline void UnitTestCLI::OnCaseFailure(const TestRunner& sender, const syntropy::OnTestRunnerCaseFailureEventArgs& e)
     {
-        auto& cli = CLI::GetStyle();
-
         std::cout << "FAILURE " << e.test_suite_.GetName() << " " << e.test_case_.GetCharacters() << " : " << e.expression_ << " returned " << e.result_ << " where " << e.expected_ << " was expected.\n";
     }
 
     inline void UnitTestCLI::OnCaseSkipped(const TestRunner& sender, const syntropy::OnTestRunnerCaseSkippedEventArgs& e)
     {
-        auto& cli = CLI::GetStyle();
-
         std::cout << "SKIPPED " << e.test_suite_.GetName() << " " << e.test_case_.GetCharacters() << " : " << e.reason_ << "\n";
     }
 
