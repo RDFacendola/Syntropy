@@ -212,7 +212,7 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create a new test case.
+    /// \brief Create a new test case by deducing templates from arguments.
     template <typename TTestFixture, typename TTestCase>
     TestCaseT<TTestFixture, TTestCase> MakeTestCase(const Label& name, TTestCase&& test_case);
 
