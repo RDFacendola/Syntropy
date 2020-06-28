@@ -108,7 +108,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Create an self-registering test case by deducing the fixture type from arguments.
-    /// \usage const auto my_test_case = MakeAutoTestCase(name, &MyFixture::Foo).
+    /// \usage const auto my_test_case = MakeAutoTestCase(name, LambdaTestCase).
     template <typename TTestFixture, typename TTestCase>
     AutoTestCaseT<TTestFixture, TTestCase> MakeAutoTestCase(const Label& name, TTestCase&& test_case);
 
