@@ -31,22 +31,22 @@ namespace syntropy
         virtual ~ConsoleStyle() = default;
 
         /// \brief Get a title string.
-        virtual String Title(const String& title) const = 0;
+        virtual String Title(const StringView& title) const = 0;
 
         /// \brief Get a heading string.
-        virtual String Heading1(const String& heading) const = 0;
+        virtual String Heading1(const StringView& heading) const = 0;
 
         /// \brief Get a heading string.
-        virtual String Heading2(const String& heading) const = 0;
+        virtual String Heading2(const StringView& heading) const = 0;
 
         /// \brief Get a heading string.
-        virtual String Heading3(const String& heading) const = 0;
+        virtual String Heading3(const StringView& heading) const = 0;
 
         /// \brief Get a heading string.
-        virtual String Heading4(const String& heading) const = 0;
+        virtual String Heading4(const StringView& heading) const = 0;
 
         /// \brief Get a normal line.
-        virtual String Line(const String& message) const = 0;
+        virtual String Line(const StringView& message) const = 0;
 
         /// \brief Get an ending string.
         virtual String End() const = 0;
@@ -91,17 +91,17 @@ namespace syntropy
         /// \brief Default copy-assignment operator.
         ConsoleStyleT& operator=(const ConsoleStyleT&) = default;
 
-        virtual String Title(const String& title) const override;
+        virtual String Title(const StringView& title) const override;
 
-        virtual String Heading1(const String& heading) const override;
+        virtual String Heading1(const StringView& heading) const override;
 
-        virtual String Heading2(const String& heading) const override;
+        virtual String Heading2(const StringView& heading) const override;
 
-        virtual String Heading3(const String& heading) const override;
+        virtual String Heading3(const StringView& heading) const override;
 
-        virtual String Heading4(const String& heading) const override;
+        virtual String Heading4(const StringView& heading) const override;
 
-        virtual String Line(const String& message) const override;
+        virtual String Line(const StringView& message) const override;
 
         virtual String End() const override;
 
@@ -144,37 +144,37 @@ namespace syntropy
     }
 
     template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Title(const String& title) const
+    inline String ConsoleStyleT<TStyle>::Title(const StringView& title) const
     {
         return style_->Title(title);
     }
 
     template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Heading1(const String& heading) const
+    inline String ConsoleStyleT<TStyle>::Heading1(const StringView& heading) const
     {
         return style_->Heading1(heading);
     }
 
     template <typename TStyle> 
-    inline String ConsoleStyleT<TStyle>::Heading2(const String& heading) const
+    inline String ConsoleStyleT<TStyle>::Heading2(const StringView& heading) const
     {
         return style_->Heading2(heading);
     }
 
     template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Heading3(const String& heading) const
+    inline String ConsoleStyleT<TStyle>::Heading3(const StringView& heading) const
     {
         return style_->Heading3(heading);
     }
 
     template <typename TStyle> 
-    inline String ConsoleStyleT<TStyle>::Heading4(const String& heading) const
+    inline String ConsoleStyleT<TStyle>::Heading4(const StringView& heading) const
     {
         return style_->Heading4(heading);
     }
 
     template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Line(const String& message) const
+    inline String ConsoleStyleT<TStyle>::Line(const StringView& message) const
     {
         return style_->Line(message);
     }

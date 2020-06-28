@@ -39,22 +39,22 @@ namespace syntropy
         DefaultConsoleStyle& operator=(const DefaultConsoleStyle&) = default;
 
         /// \brief Get a title string.
-        String Title(const String& title) const;
+        String Title(const StringView& title) const;
 
         /// \brief Get a heading string.
-        String Heading1(const String& heading) const;
+        String Heading1(const StringView& heading) const;
 
         /// \brief Get a heading string.
-        String Heading2(const String& heading) const;
+        String Heading2(const StringView& heading) const;
 
         /// \brief Get a heading string.
-        String Heading3(const String& heading) const;
+        String Heading3(const StringView& heading) const;
 
         /// \brief Get a heading string.
-        String Heading4(const String& heading) const;
+        String Heading4(const StringView& heading) const;
 
         /// \brief Get a normal line.
-        String Line(const String& message) const;
+        String Line(const StringView& message) const;
 
         /// \brief Get an ending string.
         String End() const;
@@ -93,7 +93,7 @@ namespace syntropy
 
     }
 
-    inline String DefaultConsoleStyle::Title(const String& text) const
+    inline String DefaultConsoleStyle::Title(const StringView& text) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Center("/\\", "_")
@@ -106,7 +106,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Heading1(const String& text) const
+    inline String DefaultConsoleStyle::Heading1(const StringView& text) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Center("/\\", "_")
@@ -119,7 +119,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Heading2(const String& text) const
+    inline String DefaultConsoleStyle::Heading2(const StringView& text) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Center("/\\", "_")
@@ -130,7 +130,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Heading3(const String& text) const
+    inline String DefaultConsoleStyle::Heading3(const StringView& text) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Left(text)
@@ -140,7 +140,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Heading4(const String& text) const
+    inline String DefaultConsoleStyle::Heading4(const StringView& text) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Left(text)
@@ -150,7 +150,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Line(const String& message) const
+    inline String DefaultConsoleStyle::Line(const StringView& message) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Left(message)
