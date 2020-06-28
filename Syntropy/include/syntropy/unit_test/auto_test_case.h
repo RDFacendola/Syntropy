@@ -122,8 +122,6 @@ namespace syntropy
     template <typename TFunction>
     inline void AutoTestCase<TTestFixture>::ForEach(TFunction&& function)
     {
-        // Skip the very first test case as it is the sentinel to which every other test case is linked to.
-
         for (auto auto_test_case = GetLinkedList(); auto_test_case; auto_test_case = auto_test_case->next_test_case_)
         {
             function(AsConst(*auto_test_case));

@@ -174,41 +174,6 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* TEST CASE T <TEST FIXTURE, VOID>                                     */
-    /************************************************************************/
-
-    /// \brief Partial template specialization for empty test cases.
-    /// \author Raffaele D. Facendola - December 2017
-    template <typename TTestFixture>
-    class TestCaseT<TTestFixture, void> : public TestCase<TTestFixture>
-    {
-    public:
-
-        /// \brief Create a named test case.
-        TestCaseT(const Label& name);
-
-        /// \brief Default copy-constructor.
-        TestCaseT(const TestCaseT&) = default;
-
-        /// \brief Default move-constructor.
-        TestCaseT(TestCaseT&&) = default;
-
-        /// \brief Default copy-assignment.
-        TestCaseT& operator=(const TestCaseT&) = default;
-
-        /// \brief Default move-assignment.
-        TestCaseT& operator=(TestCaseT&&) = default;
-
-        /// \brief Default virtual destructor.
-        virtual ~TestCaseT() = default;
-
-    private:
-
-        virtual void RunTestCase(TTestFixture& test_fixture) const override;
-
-    };
-
-    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
@@ -312,21 +277,6 @@ namespace syntropy
     inline void TestCaseT<TTestFixture, TTestCase>::RunTestCase(TTestFixture& test_fixture) const
     {
         test_case_(test_fixture);
-    }
-
-    // TestCaseT<TTestFixture, void>.
-
-    template <typename TTestFixture>
-    TestCaseT<TTestFixture, void>::TestCaseT(const Label& name)
-        : TestCase(name)
-    {
-
-    }
-
-    template <typename TTestFixture>
-    void TestCaseT<TTestFixture, void>::RunTestCase(TTestFixture& test_fixture) const
-    {
-        // Do nothing.
     }
 
     // Non-member functions.
