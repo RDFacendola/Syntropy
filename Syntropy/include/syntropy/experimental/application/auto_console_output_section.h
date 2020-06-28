@@ -1,0 +1,179 @@
+
+/// \file auto_console_output_section.h
+/// \brief This header is part of the Syntropy application module. It contains classes used to define self-registering console output sections.
+///
+/// \author Raffaele D. Facendola - 2020
+
+#pragma once
+
+#include "syntropy/core/smart_pointers.h"
+
+#include "syntropy/experimental/application/console_output_section.h"
+
+namespace syntropy
+{
+    /************************************************************************/
+    /* AUTO CONSOLE OUTPUT SECTION <STYLE>                                  */
+    /************************************************************************/
+
+    /// \brief Represents a self-registering console output section for a given console style.
+    /// \author Raffaele D. Facendola - June 2020.
+    template <typename TStyle>
+    class AutoConsoleOutputSection
+    {
+    public:
+
+        /// \ brief Apply a function to each self-registering console output section.
+        template <typename TFunction>
+        static void ForEach(TFunction&& function);
+
+        /// \brief Create a new self-registering console output.
+        AutoConsoleOutputSection();
+
+        /// \brief No copy-constructor.
+        AutoConsoleOutputSection(const AutoConsoleOutputSection&) = delete;
+
+        /// \brief No move-constructor.
+        AutoConsoleOutputSection(AutoConsoleOutputSection&&) = delete;
+
+        /// \brief No copy-assignment.
+        AutoConsoleOutputSection& operator=(const AutoConsoleOutputSection&) = delete;
+
+        /// \brief No move-assignment.
+        AutoConsoleOutputSection& operator=(AutoConsoleOutputSection&&) = delete;
+
+        /// \brief Default virtual destructor.
+        virtual ~AutoConsoleOutputSection() = default;
+
+        /// \brief Access the underlying console output section.
+        virtual const ConsoleOutputSection<TStyle>& GetConsoleOutputSection() const = 0;
+
+    private:
+
+        /// \brief Get the first element in a linked list to which every other self-registering console output section is linked to.
+        static ObserverPtr<const AutoConsoleOutputSection>& GetLinkedList();
+
+        /// \brief Link this console output section to the others and return the next after this one.
+        ObserverPtr<const AutoConsoleOutputSection> LinkBefore();
+
+        /// \brief Next auto console output section relative to the style.
+        ObserverPtr<const AutoConsoleOutputSection> next_console_output_section_{ nullptr };
+
+    };
+
+    /************************************************************************/
+    /* AUTO CONSOLE OUTPUT SECTION <STYLE, SECTION, PUSH OP, POP OP>        */
+    /************************************************************************/
+
+    /// \brief Represents a concrete self-registering console output style for a console style.
+    /// \author Raffaele D. Facendola - June 2020.
+    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
+    class AutoConsoleOutputSectionT : public AutoConsoleOutputSection<TStyle>
+    {
+    public:
+
+        /// \brief Create a new self-registering console output style.
+        template <typename UPushOp, typename UPopOp>
+        AutoConsoleOutputSectionT(UPushOp&& push_implementation, UPopOp&& pop_implementation);
+
+        /// \brief No copy-constructor.
+        AutoConsoleOutputSectionT(const AutoConsoleOutputSectionT&) = delete;
+
+        /// \brief No move-constructor.
+        AutoConsoleOutputSectionT(AutoConsoleOutputSectionT&&) = delete;
+
+        /// \brief No copy-assignment.
+        AutoConsoleOutputSectionT& operator=(const AutoConsoleOutputSectionT&) = delete;
+
+        /// \brief No move-assignment.
+        AutoConsoleOutputSectionT& operator=(AutoConsoleOutputSectionT&&) = delete;
+
+        /// \brief Default destructor.
+        virtual ~AutoConsoleOutputSectionT() = default;
+
+    private:
+
+        virtual const ConsoleOutputSection<TStyle>& GetConsoleOutputSection() const override;
+
+        /// \brief Underlying console output section.
+        ConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp> console_output_section_;
+
+    };
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Create an self-registering console output section by deducing templates from arguments.
+    /// \usage const auto my_console_output_section = MakeAutoConsoleOutputSection(LambdaPush, LambdaPop).
+    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
+    AutoConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp> MakeAutoConsoleOutputSection(TPushOp&& push_implementation, TPopOp&& pop_implementation);
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // AutoConsoleOutputSection<TStyle>.
+
+    template <typename TStyle>
+    template <typename TFunction>
+    inline void AutoConsoleOutputSection<TStyle>::ForEach(TFunction&& function)
+    {
+        for (auto auto_console_output_section = GetLinkedList(); auto_console_output_section; auto_console_output_section = auto_console_output_section->next_console_output_section_)
+        {
+            function(AsConst(*auto_console_output_section));
+        }
+    }
+
+    template <typename TStyle>
+    inline AutoConsoleOutputSection<TStyle>::AutoConsoleOutputSection()
+        : next_console_output_section_(LinkBefore())
+    {
+
+    }
+
+    template <typename TStyle>
+    inline ObserverPtr<const AutoConsoleOutputSection<TStyle>>& AutoConsoleOutputSection<TStyle>::GetLinkedList()
+    {
+        static auto linked_list = ObserverPtr<const AutoConsoleOutputSection<TStyle>>{ nullptr };
+
+        return linked_list;
+    }
+
+    template <typename TStyle>
+    inline ObserverPtr<const AutoConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::LinkBefore()
+    {
+        auto& linked_list = GetLinkedList();
+
+        auto next_console_output_section = linked_list;
+
+        linked_list = this;
+
+        return next_console_output_section;
+    }
+
+    // AutoConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp>.
+
+    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
+    template <typename UPushOp, typename UPopOp>
+    inline AutoConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp>::AutoConsoleOutputSectionT(UPushOp&& push_implementation, UPopOp&& pop_implementation)
+        : console_output_section_(MakeConsoleOutputSection<TStyle, TSection>(std::forward<UPushOp>(push_implementation), std::forward<UPopOp>(pop_implementation)))
+    {
+
+    }
+
+    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
+    inline const ConsoleOutputSection<TStyle>& AutoConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp>::GetConsoleOutputSection() const
+    {
+        return console_output_section_;
+    }
+
+    // Non-member functions.
+
+    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
+    inline AutoConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp> MakeAutoConsoleOutputSection(TPushOp&& push_implementation, TPopOp&& pop_implementation)
+    {
+        return { std::forward<TPushOp>(push_implementation), std::forward<TPopOp>(pop_implementation) };
+    }
+
+}
