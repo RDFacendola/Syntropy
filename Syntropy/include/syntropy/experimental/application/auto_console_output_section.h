@@ -23,7 +23,12 @@ namespace syntropy
     {
     public:
 
-        /// \ brief Apply a function to each self-registering console output section.
+        /// \brief Find a console output section matching the provided section type.
+        /// If more than one section matches the provided type, which returned element among those is unspecified.
+        template <typename TSection>
+        static ObserverPtr<const ConsoleOutputSection<TStyle>> Find();
+
+        /// \brief Apply a function to each self-registering console output section.
         template <typename TFunction>
         static void ForEach(TFunction&& function);
 
@@ -114,6 +119,23 @@ namespace syntropy
     /************************************************************************/
 
     // AutoConsoleOutputSection<TStyle>.
+
+    template <typename TStyle>
+    template <typename TSection>
+    inline ObserverPtr<const ConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::Find()
+    {
+        for (auto auto_console_output_section = GetLinkedList(); auto_console_output_section; auto_console_output_section = auto_console_output_section->next_console_output_section_)
+        {
+            auto& console_output_section = auto_console_output_section->GetConsoleOutputSection();
+
+            if (console_output_section.IsA<TSection>())
+            {
+                return &console_output_section;
+            }
+        }
+
+        return nullptr;
+    }
 
     template <typename TStyle>
     template <typename TFunction>

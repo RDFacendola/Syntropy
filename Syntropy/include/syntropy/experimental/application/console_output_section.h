@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <typeinfo>
+
+#include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
 
 namespace syntropy
@@ -39,11 +42,24 @@ namespace syntropy
         /// \brief Default virtual destructor.
         virtual ~ConsoleOutputSection() = default;
 
+        /// \brief Check whether the underlying section type matches the provided type.
+        /// Note that this method doesn't support polymorphism.
+        template <typename TSection>
+        Bool IsA() const;
+
         /// \brief Called when entering an active section.
         virtual String Push(TStyle& style, const StringView& text) const = 0;
 
+
         /// \brief Called when leaving an active section.
         virtual String Pop(TStyle& style) const = 0;
+
+    protected:
+
+        /// \brief Check whether the underlying section type matches the provided type.
+        /// Note that this method is not required to support polymorphism.
+        virtual Bool IsA(const std::type_info& type) const = 0;
+
     };
 
     /************************************************************************/
@@ -81,6 +97,8 @@ namespace syntropy
         virtual String Pop(TStyle& style) const override;
 
     private:
+
+        virtual Bool IsA(const std::type_info& type) const override;
 
         /// \brief Executed when entering the section.
         TPushOp push_implementation_;
@@ -158,6 +176,15 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
+    // ConsoleOutputSection<TStyle>.
+
+    template <typename TStyle>
+    template <typename TSection>
+    inline Bool ConsoleOutputSection<TStyle>::IsA() const
+    {
+        return IsA(typeid(TSection));
+    }
+
     // ConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp>.
 
     template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
@@ -179,6 +206,12 @@ namespace syntropy
     inline String ConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp>::Pop(TStyle& style) const
     {
         return pop_implementation_(style);
+    }
+
+    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
+    inline Bool ConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp>::IsA(const std::type_info& type) const
+    {
+        return typeid(TSection) == type;
     }
 
     // Non-member functions.
