@@ -15,6 +15,7 @@
 #include "syntropy/unit_test/test_runner.h"
 
 #include "syntropy/experimental/application/console_output.h"
+#include "syntropy/experimental/application/console_line_builder.h"
 
 namespace syntropy
 {
@@ -95,8 +96,6 @@ namespace syntropy
 // 
 //         std::cout << cli.Heading1("Results");
 //         std::cout << cli.End();
-
-
 
         using namespace std::placeholders;
 

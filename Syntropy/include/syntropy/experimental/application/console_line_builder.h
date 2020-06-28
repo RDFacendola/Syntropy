@@ -20,14 +20,17 @@ namespace syntropy
     /* CONSOLE LINE BUILDER                                                 */
     /************************************************************************/
 
-    /// \brief Builder object used to construct command line interface text lines.
+    /// \brief Builder object used to build fixed-length console lines.
     /// \author Raffaele D. Facendola - June 2020.
     class ConsoleLineBuilder
     {
     public:
 
-        /// \brief Set the fixed length of a line.
-        ConsoleLineBuilder& LineSize(Int size);
+        /// \brief Create a new fixed-length console line builder.
+        ConsoleLineBuilder(Int max_line_size);
+
+        /// \brief Set a new line size.
+        ConsoleLineBuilder& LineSize(Int line_size);
 
         /// \brief Fill a line with a repeating text.
         ConsoleLineBuilder& Fill(const StringView& fill);
@@ -73,16 +76,24 @@ namespace syntropy
         /// \brief Token for a blank character.
         static constexpr auto kBlank = " ";
 
+        /// \brief Execute an operation on each sentence in the provided text.
+        template <typename TOperation>
+        ConsoleLineBuilder& ForEachLine(const StringView& text, const TOperation& operation);
+
         /// \brief Create a fixed-width line filled with a repeating text.
         String NewLine(const StringView& fill) const;
 
-        String& Copy(String& destination, const StringView& source, Int padding);
+        /// \brief Copy a source string onto a destination after being padded left to right.
+        String& Copy(String& destination, const StringView& source, Int padding) const;
 
         /// \brief Line stream.
         StringStream line_;
 
-        /// \brief Line size.
+        /// \brief Current line size.
         Int line_size_{ 80 };
+
+        /// \brief Maximum line size.
+        Int max_line_size_{ line_size_ };
 
     };
 
@@ -92,9 +103,16 @@ namespace syntropy
 
     // ConsoleLineBuilder.
 
-    inline ConsoleLineBuilder& ConsoleLineBuilder::LineSize(Int size)
+    inline ConsoleLineBuilder::ConsoleLineBuilder(Int max_line_size)
+        : line_size_(max_line_size)
+        , max_line_size_(max_line_size)
     {
-        line_size_ = size;
+
+    }
+
+    inline ConsoleLineBuilder& ConsoleLineBuilder::LineSize(Int line_size)
+    {
+        line_size_ = Math::Min(line_size_, max_line_size_);
 
         return *this;
     }
@@ -135,48 +153,38 @@ namespace syntropy
 
     inline ConsoleLineBuilder& ConsoleLineBuilder::Left(const StringView& text, const StringView& fill)
     {
-        auto line = NewLine(fill);
+        return ForEachLine(text, [&fill, this](const StringView& text_line)
+        {
+            auto out_line = NewLine(fill);
 
-        auto padding = 0;
+            constexpr auto padding = ToInt(0);
 
-        line_ << Copy(line, text, padding) << kNewLine;
-
-        return *this;
+            line_ << Copy(out_line, text_line, padding) << kNewLine;
+        });
     }
 
     inline ConsoleLineBuilder& ConsoleLineBuilder::Right(const StringView& text, const StringView& fill)
     {
-        auto line = NewLine(fill);
+        return ForEachLine(text, [&fill, this](const StringView& text_line)
+        {
+            auto out_line = NewLine(fill);
 
-        auto padding = line_size_ - text.size();
+            auto padding = line_size_ - text_line.size();
 
-        line_ << Copy(line, text, padding) << kNewLine;
-
-        return *this;
+            line_ << Copy(out_line, text_line, padding) << kNewLine;
+        });
     }
 
     inline ConsoleLineBuilder& ConsoleLineBuilder::Center(const StringView& text, const StringView& fill)
     {
-        //         for (auto text_range = GetConstRange(text); text_range;)
-        //         {
-        //             auto next = text_range = Find(text_range, kNewLine);
-        // 
-        //             auto line_range = MakeConstRange(text_range.Begin(), next.End());
-        //         }
+        return ForEachLine(text, [&fill, this](const StringView& text_line)
+        {
+            auto out_line = NewLine(fill);
 
-        // #TODO StringView instead of String.
+            auto padding = (line_size_ - text_line.size()) / 2;
 
-        // #TODO Chop the text for each '\n' found.
-        //  Chop each line found this way every "line_size_" positions (actually find a blank space before line size to avoid chopping words). When a single world is more than line_size, kill the last one and chop.
-        //  Handle each line independently.
-
-        auto line = NewLine(fill);
-
-        auto padding = (line_size_ - text.size()) / 2;
-
-        line_ << Copy(line, text, padding) << kNewLine;
-
-        return *this;
+            line_ << Copy(out_line, text_line, padding) << kNewLine;
+        });
     }
 
     inline ConsoleLineBuilder& ConsoleLineBuilder::Blank()
@@ -205,20 +213,57 @@ namespace syntropy
         return line;
     }
 
+    template <typename TOperation>
+    ConsoleLineBuilder& ConsoleLineBuilder::ForEachLine(const StringView& text, const TOperation& operation)
+    {
+        for (auto source_text = text; source_text.size() > 0;)
+        {
+            auto line_size = source_text.find_first_of(kNewLine);                       // Terminate the sentence on the first new-line character found, up to maximum line size.
+
+            auto consume_size = line_size + 1;                                          // Consume the new-line character.
+
+            if ((ToInt(line_size) > line_size_) || (line_size == String::npos))
+            {
+                line_size = source_text.find_last_of(kBlank, line_size_ + 1);           // Terminate the sentence on the first blank-character found, up to maximum line size.
+
+                consume_size = line_size + 1;                                           // Consume the blank character.
+            }
+
+            if ((ToInt(line_size) > line_size_) || (line_size == String::npos))
+            {
+                line_size = line_size_;                                                 // Terminate the sentence to maximum line size.
+
+                consume_size = line_size_;                                              // The sentence was forcibly terminated at maximum line size.
+            }
+
+            operation(source_text.substr(0, line_size));                                // Process line.
+
+            consume_size = Math::Min(consume_size, source_text.size());
+
+            source_text = source_text.substr(consume_size);                             // Consume.
+        }
+
+        return *this;
+    }
+
     inline String ConsoleLineBuilder::NewLine(const StringView& fill) const
     {
         auto line = String(line_size_, ' ');
 
-        //Memory::Repeat(GetRange(line), GetRange(fill));
+        auto destination_range = MemoryRange(line.data(), ToBytes(line.size()));
+        auto source_range = ConstMemoryRange(fill.data(), ToBytes(fill.size()));
+
+        Memory::Repeat(destination_range, source_range);
 
         return line;
     }
 
-    inline String& ConsoleLineBuilder::Copy(String& destination, const StringView& source, Int padding)
+    inline String& ConsoleLineBuilder::Copy(String& destination, const StringView& source, Int padding) const
     {
-        padding = Math::Clamp(padding, ToInt(0), ToInt(destination.size()));
+        auto destination_range = MemoryRange(destination.data(), ToBytes(destination.size())).PopFront(ToBytes(padding));
+        auto source_range = ConstMemoryRange(source.data(), ToBytes(source.size()));
 
-        //Memory::Copy(GetRange(destination).PopFront(padding), GetRange(source));
+        Memory::Copy(destination_range, source_range);
 
         return destination;
     }

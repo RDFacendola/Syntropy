@@ -72,6 +72,9 @@ namespace syntropy
         /// \brief Create a string view from a pair of iterators.
         /// \remarks BasicStringView can only constructor from a pair since C++20.
         StringView MakeView(String::iterator begin, String::iterator end);
+
+        /// \brief Removes initial white-spaces from lhs.
+        StringView TrimLeft(const StringView& lhs);
     }
 
     /************************************************************************/
@@ -127,6 +130,15 @@ namespace syntropy
     inline StringView Strings::MakeView(String::iterator begin, String::iterator end)
     {
         return { &(*begin), static_cast<std::size_t>(std::distance(begin, end)) };
+    }
+
+    inline StringView Strings::TrimLeft(const StringView& lhs)
+    {
+        auto result = lhs;
+
+        for (; result.find_first_of(' ') == 0; result = result.substr(1));
+
+        return result;
     }
 
     // Non-member functions.

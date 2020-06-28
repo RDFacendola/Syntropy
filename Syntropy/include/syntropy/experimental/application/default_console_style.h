@@ -95,7 +95,7 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::Title(const String& text) const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Center("/\\", "_")
             .Fill("=")
             .Blank(2)
@@ -108,7 +108,7 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::Heading1(const String& text) const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Center("/\\", "_")
             .Fill("=")
             .Blank()
@@ -121,7 +121,7 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::Heading2(const String& text) const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Center("/\\", "_")
             .Fill("=")
             .Center(text)
@@ -132,7 +132,7 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::Heading3(const String& text) const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Left(text)
             .LineSize(text.size())
             .Fill("=")
@@ -142,7 +142,7 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::Heading4(const String& text) const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Left(text)
             .LineSize(text.size())
             .Fill("-")
@@ -152,14 +152,14 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::Line(const String& message) const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Left(message)
             .Build();
     }
 
     inline String DefaultConsoleStyle::End() const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Blank()
             .Fill("/", 6)
             .Blank()
@@ -168,7 +168,7 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::Break1() const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Blank()
             .Fill("/", 4)
             .Blank()
@@ -177,7 +177,7 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::Break2() const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Blank()
             .Fill("/", 2)
             .Blank()
@@ -186,7 +186,7 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::Break3() const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Blank()
             .Fill("=")
             .Blank()
@@ -195,7 +195,7 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::Break4() const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Blank()
             .Fill("-")
             .Blank()
@@ -204,7 +204,7 @@ namespace syntropy
 
     inline String DefaultConsoleStyle::LineFeed() const
     {
-        return ConsoleLineBuilder{}.LineSize(line_size_)
+        return ConsoleLineBuilder{ line_size_ }
             .Blank()
             .Build();
     }

@@ -36,6 +36,10 @@
     <ClInclude Include="include\syntropy\core\vector.h" />
     <ClInclude Include="include\syntropy\core\vector_view.h" />
     <ClInclude Include="include\syntropy\core\span.h" />
+    <ClInclude Include="include\syntropy\experimental\application\console_line_builder.h" />
+    <ClInclude Include="include\syntropy\experimental\application\console_output.h" />
+    <ClInclude Include="include\syntropy\experimental\application\console_style.h" />
+    <ClInclude Include="include\syntropy\experimental\application\default_console_style.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\stream_buffer_transaction.h" />
     <ClInclude Include="include\syntropy\language\algorithm.h" />
     <ClInclude Include="include\syntropy\language\initializer_list.h" />
