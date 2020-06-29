@@ -15,10 +15,7 @@
 #include "syntropy/unit_test/test_runner.h"
 
 #include "syntropy/application/console/console_output.h"
-#include "syntropy/application/console/console_output_section.h"
-#include "syntropy/application/console/console_output_section_scope.h"
-#include "syntropy/application/console/default_console_style.h"
-#include "syntropy/application/console/plain_console_style.h"
+#include "syntropy/application/console/console_output_sections.h"
 
 namespace syntropy
 {
@@ -34,6 +31,9 @@ namespace syntropy
 
         /// \brief Create a new CLI bound to a test runner.
         UnitTestCLI(const TestRunner& runner);
+
+        /// \brief Destructor.
+        ~UnitTestCLI();
 
         /// \brief Report the final outcome of the test runner.
         void Report(const TestReport& test_report);
@@ -67,8 +67,9 @@ namespace syntropy
         /// \brief Listener for the test runner events.
         Listener test_runner_listener_;
 
-           /// \brief Maximum line size.
-        Int line_size_{ 120 };
+        /// \brief Console output stream.
+        ConsoleOutput& out = ConsoleOutput::GetSingleton();
+
     };
 
     /************************************************************************/
@@ -79,17 +80,7 @@ namespace syntropy
 
     inline UnitTestCLI::UnitTestCLI(const syntropy::TestRunner& runner)
     {
-        auto& out = ConsoleOutput::GetSingleton();
-
-        {
-            auto title_section = MakeConsoleOutputSectionScope<ConsoleTitleSection>("Syntropy Unit Test Application\n(version 0.0.1)");
-
-            {
-                auto heading_section = MakeConsoleOutputSectionScope<ConsoleHeading1Section>("Main menu");
-
-                out.Print("What you want to do?");
-            }
-        }
+        out.PushSection<ConsoleTitleSection>("Syntropy Unit Test Application\n(version 0.0.1)");
 
         using namespace std::placeholders;
 
@@ -108,6 +99,11 @@ namespace syntropy
         test_runner_listener_ += runner.OnSuiteFinished(BindMemberFunction(&UnitTestCLI::OnSuiteFinished));
     }
 
+    inline UnitTestCLI::~UnitTestCLI()
+    {
+        out.PopSection();
+    }
+
     inline void UnitTestCLI::Report(const TestReport& test_report)
     {
 
@@ -115,28 +111,30 @@ namespace syntropy
 
     inline void UnitTestCLI::OnSuiteStarted(const TestRunner& sender, const syntropy::OnTestRunnerSuiteStartedEventArgs& e)
     {
-
+        out.PushSection<ConsoleHeading1Section>("Testing\n", e.test_suite_.GetName());
     }
 
 
     inline void UnitTestCLI::OnCaseStarted(const TestRunner& sender, const syntropy::OnTestRunnerCaseStartedEventArgs& e)
     {
-
+        out.PushSection<ConsoleHeading3Section>(e.test_case_);
     }
 
     inline void UnitTestCLI::OnCaseSuccess(const TestRunner& sender, const syntropy::OnTestRunnerCaseSuccessEventArgs& e)
     {
-        std::cout << "SUCCESS " << e.test_suite_.GetName() << " " << e.test_case_.GetCharacters() << " : " << e.expression_ << "\n";
+        out.Print("SUCCESS - ", e.expression_, " returned ", e.result_);
     }
 
     inline void UnitTestCLI::OnCaseFailure(const TestRunner& sender, const syntropy::OnTestRunnerCaseFailureEventArgs& e)
     {
-        std::cout << "FAILURE " << e.test_suite_.GetName() << " " << e.test_case_.GetCharacters() << " : " << e.expression_ << " returned " << e.result_ << " where " << e.expected_ << " was expected.\n";
+        out.Print("FAILURE - ", e.expression_);
+        out.Print(" Result: ", e.result_);
+        out.Print(" Expected: ", e.expected_);
     }
 
     inline void UnitTestCLI::OnCaseSkipped(const TestRunner& sender, const syntropy::OnTestRunnerCaseSkippedEventArgs& e)
     {
-        std::cout << "SKIPPED " << e.test_suite_.GetName() << " " << e.test_case_.GetCharacters() << " : " << e.reason_ << "\n";
+        out.Print("SKIP - ", e.reason_);
     }
 
     inline void UnitTestCLI::OnCaseMessage(const TestRunner& sender, const syntropy::OnTestRunnerCaseMessageEventArgs& e)
@@ -146,12 +144,12 @@ namespace syntropy
 
     inline void UnitTestCLI::OnCaseFinished(const TestRunner& sender, const syntropy::OnTestRunnerCaseFinishedEventArgs& e)
     {
-
+        out.PopSection();
     }
 
     inline void UnitTestCLI::OnSuiteFinished(const TestRunner& sender, const syntropy::OnTestRunnerSuiteFinishedEventArgs& e)
     {
-        std::cout << "\n";
+        out.PopSection();
     }
 
 }

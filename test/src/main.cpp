@@ -25,11 +25,13 @@ int main(int argc, char **argv)
 
     auto test_runner = syntropy::TestRunner{};
 
-    auto CLI = syntropy::UnitTestCLI{ test_runner };
+    {
+        auto CLI = syntropy::UnitTestCLI{ test_runner };
 
-    auto test_report = test_runner.Run(context);
+        auto test_report = test_runner.Run(context);
 
-    CLI.Report(test_report);
+        CLI.Report(test_report);
+    }
     
     system("pause");
 
