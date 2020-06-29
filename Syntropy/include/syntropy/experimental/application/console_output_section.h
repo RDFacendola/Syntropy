@@ -207,46 +207,6 @@ namespace syntropy
     ConsoleOutputSectionT<TStyle, TSection> MakeConsoleOutputSection();
 
     /************************************************************************/
-    /* TITLE SECTION                                                        */
-    /************************************************************************/
-
-    /// \brief Represents a title section type tag.
-    /// \author Raffaele D. Facendola - June 2020.
-    struct ConsoleTitleSection {};
-
-    /************************************************************************/
-    /* HEADING 1 SECTION                                                    */
-    /************************************************************************/
-
-    /// \brief Represents a heading section type tag.
-    /// \author Raffaele D. Facendola - June 2020.
-    struct ConsoleHeading1Section {};
-
-    /************************************************************************/
-    /* HEADING 2 SECTION                                                    */
-    /************************************************************************/
-
-    /// \brief Represents a heading section type tag.
-    /// \author Raffaele D. Facendola - June 2020.
-    struct ConsoleHeading2Section {};
-
-    /************************************************************************/
-    /* HEADING 3 SECTION                                                    */
-    /************************************************************************/
-
-    /// \brief Represents a heading section type tag.
-    /// \author Raffaele D. Facendola - June 2020.
-    struct ConsoleHeading3Section {};
-
-    /************************************************************************/
-    /* HEADING 4 SECTION                                                    */
-    /************************************************************************/
-
-    /// \brief Represents a heading section type tag.
-    /// \author Raffaele D. Facendola - June 2020.
-    struct ConsoleHeading4Section {};
-
-    /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 

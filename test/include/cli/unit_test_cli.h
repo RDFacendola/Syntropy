@@ -71,7 +71,10 @@ namespace syntropy
         Int line_size_{ 120 };
     };
 
-    struct PlainConsoleStyle {};
+    struct PlainConsoleStyle
+    {
+
+    };
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -87,8 +90,6 @@ namespace syntropy
     inline UnitTestCLI::UnitTestCLI(const syntropy::TestRunner& runner)
     {
         auto& out = ConsoleOutput::GetSingleton();
-
-        out.SetStyle<PlainConsoleStyle>();
 
         out.PushSection<ConsoleTitleSection>("Syntropy Unit Test Application\nVersion 0.0.1");
 

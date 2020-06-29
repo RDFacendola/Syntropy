@@ -10,7 +10,7 @@
 #include "syntropy/core/string.h"
 
 #include "syntropy/experimental/application/auto_console_style.h"
-#include "syntropy/experimental/application/console_output_section.h"
+#include "syntropy/experimental/application/console_output_sections.h"
 #include "syntropy/experimental/application/console_line_builder.h"
 
 namespace syntropy
@@ -26,7 +26,7 @@ namespace syntropy
     public:
 
         /// \brief Default line style.
-        static constexpr Int kDefaultLineSize = 80;
+        static constexpr Int kDefaultLineSize = 110;
 
         /// \brief Default constructor.
         DefaultConsoleStyle() = default;
