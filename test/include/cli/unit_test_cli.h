@@ -16,6 +16,7 @@
 
 #include "syntropy/experimental/application/console_output.h"
 #include "syntropy/experimental/application/console_output_section.h"
+#include "syntropy/experimental/application/console_output_section_scope.h"
 #include "syntropy/experimental/application/default_console_style.h"
 #include "syntropy/experimental/application/plain_console_style.h"
 
@@ -87,15 +88,15 @@ namespace syntropy
     {
         auto& out = ConsoleOutput::GetSingleton();
 
-        out.PushSection<ConsoleTitleSection>("Syntropy Unit Test Application\n(version 0.0.1)");
+        {
+            auto title_section = MakeConsoleOutputSectionScope<ConsoleTitleSection>("Syntropy Unit Test Application\n(version 0.0.1)");
 
-        out.PushSection<ConsoleHeading1Section>("Main menu");
+            {
+                auto heading_section = MakeConsoleOutputSectionScope<ConsoleHeading1Section>("Main menu");
 
-        out.Print("What you want to do?");
-
-        out.PopSection();
-
-        out.PopSection();
+                out.Print("What you want to do?");
+            }
+        }
 
         using namespace std::placeholders;
 
