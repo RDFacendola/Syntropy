@@ -17,6 +17,7 @@
 #include "syntropy/experimental/application/console_output.h"
 #include "syntropy/experimental/application/console_output_section.h"
 #include "syntropy/experimental/application/default_console_style.h"
+#include "syntropy/experimental/application/plain_console_style.h"
 
 namespace syntropy
 {
@@ -71,11 +72,6 @@ namespace syntropy
         Int line_size_{ 120 };
     };
 
-    struct PlainConsoleStyle
-    {
-
-    };
-
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -91,7 +87,7 @@ namespace syntropy
     {
         auto& out = ConsoleOutput::GetSingleton();
 
-        out.PushSection<ConsoleTitleSection>("Syntropy Unit Test Application\nVersion 0.0.1");
+        out.PushSection<ConsoleTitleSection>("Syntropy Unit Test Application\n(version 0.0.1)");
 
         out.PushSection<ConsoleHeading1Section>("Main menu");
 
@@ -100,22 +96,6 @@ namespace syntropy
         out.PopSection();
 
         out.PopSection();
-
-        //auto& out = CommandLineOutput::GetSingleton();
-
-        //out.PushSection<TitleSection>("Syntropy application power!");       // Push title optional indentation.
-        //out.Print("ciaone");
-        //out.PopSection();                                                   // Pop title optional indentation.
-
-//         std::cout << cli.Title("SYNTROPY UNIT TEST\nVersion 0.0.1\nAll these lines should be centered.");
-//         std::cout << cli.Line("Hello world! This is the Syntropy unit test application. If I write a long-ass message it should automatically wrap-around. Let's see if that works, kay?");
-//         std::cout << cli.Break1();
-//         
-//         std::cout << cli.Heading2("Test Suite");
-//         std::cout << cli.Break2();
-// 
-//         std::cout << cli.Heading1("Results");
-//         std::cout << cli.End();
 
         using namespace std::placeholders;
 

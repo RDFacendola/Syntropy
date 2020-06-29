@@ -153,7 +153,7 @@ namespace syntropy
 
         active_section->outer_section_ = std::move(active_section_);
 
-        active_section->section_ = AutoConsoleOutputSection<TStyle>::Find(section_type);
+        active_section->section_ = AutoConsoleOutputSection<TStyle>::FindSection(section_type);
 
         active_section_ = std::move(active_section);
 
@@ -181,7 +181,7 @@ namespace syntropy
         }
         else
         {
-            return AutoConsoleOutputSection<TStyle>::GetFallback()->Print(style_, text);
+            return AutoConsoleOutputSection<TStyle>::GetFallbackSection()->Print(style_, text);
         }
     }
 
@@ -194,7 +194,7 @@ namespace syntropy
         }
         else
         {
-            return AutoConsoleOutputSection<TStyle>::GetFallback()->LineFeed(style_);
+            return AutoConsoleOutputSection<TStyle>::GetFallbackSection()->LineFeed(style_);
         }
     }
 

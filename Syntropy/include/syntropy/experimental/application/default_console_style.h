@@ -19,7 +19,7 @@ namespace syntropy
     /* DEFAULT CONSOLE STYLE                                                */
     /************************************************************************/
 
-    /// \brief Default console style for Syntropy applications.
+    /// \brief Default console style.
     /// \author Raffaele D. Facendola - June 2020.
     class DefaultConsoleStyle
     {
@@ -34,14 +34,20 @@ namespace syntropy
         /// \brief Default copy constructor.
         DefaultConsoleStyle(const DefaultConsoleStyle&) = default;
 
+        /// \brief Default move constructor.
+        DefaultConsoleStyle(DefaultConsoleStyle&&) = default;
+
         /// \brief Create a new default CLI style.
         DefaultConsoleStyle(Int line_size);
 
         /// \brief Default destructor.
         ~DefaultConsoleStyle() = default;
 
-        /// \brief Default assignment operator.
+        /// \brief Default copy-assignment operator.
         DefaultConsoleStyle& operator=(const DefaultConsoleStyle&) = default;
+
+        /// \brief Default move-assignment operator.
+        DefaultConsoleStyle& operator=(DefaultConsoleStyle&&) = default;
 
         /// \brief Push a title section.
         String PushSection(ConsoleTitleSection, const StringView& text) const;

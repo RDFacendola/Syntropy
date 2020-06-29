@@ -146,59 +146,6 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* FALLBACK CONSOLE OUTPUT SECTION                                      */
-    /************************************************************************/
-
-    /// \brief Fallback console output section when no other console output section was found.
-    /// Note that even if a console style doesn't support a given section, generic Print
-    /// and LineFeed methods, if defined, are still preferred over plain text.
-    /// \author Raffaele D. Facendola - June 2020.
-    template <typename TStyle>
-    class FallbackConsoleOutputSection : public ConsoleOutputSection<TStyle>
-    {
-    public:
-
-        /// \brief Create a fallback console output section implementation
-        FallbackConsoleOutputSection() = default;
-
-        /// \brief Default copy-constructor.
-        FallbackConsoleOutputSection(const FallbackConsoleOutputSection&) = default;
-
-        /// \brief Default move-constructor.
-        FallbackConsoleOutputSection(FallbackConsoleOutputSection&&) = default;
-
-        /// \brief Default copy-assignment.
-        FallbackConsoleOutputSection& operator=(const FallbackConsoleOutputSection&) = default;
-
-        /// \brief Default move-assignment.
-        FallbackConsoleOutputSection& operator=(FallbackConsoleOutputSection&&) = default;
-
-        /// \brief Default virtual destructor.
-        virtual ~FallbackConsoleOutputSection() = default;
-
-        virtual Bool IsA(const std::type_info& section_type) const override;
-
-        virtual String Push(TStyle& style, const StringView & text) const override;
-
-        virtual String Pop(TStyle& style) const override;
-
-        virtual String Print(TStyle& style, const StringView & text) const override;
-
-        virtual String LineFeed(TStyle& style) const override;
-
-    private:
-
-        /// \brief Check if the style defines a method Print(StringView{}) (either const or non-const).
-        template <typename UStyle>
-        using HasGenericPrint = decltype(std::declval<UStyle>().Print(StringView{}));
-
-        /// \brief Check if the style defines a method LineFeed() (either const or non-const).
-        template <typename UStyle>
-        using HasGenericLineFeed = decltype(std::declval<UStyle>().LineFeed());
-
-    };
-
-    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
@@ -248,7 +195,7 @@ namespace syntropy
         }
         else
         {
-            return LineFeed();
+            return LineFeed(style);
         }
     }
 
@@ -265,7 +212,7 @@ namespace syntropy
         }
         else
         {
-            return String{ text };
+            return String{ text } + "\n";
         }
     }
 
@@ -277,52 +224,6 @@ namespace syntropy
             return style.LineFeed(TSection{});
         }
         else if constexpr (IsValidExpressionV<HasGenericLineFeed, TStyle>)
-        {
-            return style.LineFeed();
-        }
-        else
-        {
-            return "\n";
-        }
-    }
-
-    // FallbackConsoleOutputSection<TStyle>.
-
-    template <typename TStyle>
-    inline Bool FallbackConsoleOutputSection<TStyle>::IsA(const std::type_info& section_type) const
-    {
-        return false;
-    }
-
-    template <typename TStyle>
-    inline String FallbackConsoleOutputSection<TStyle>::Push(TStyle& style, const StringView& text) const
-    {
-        return Print(style, text);
-    }
-
-    template <typename TStyle>
-    inline String FallbackConsoleOutputSection<TStyle>::Pop(TStyle& style) const
-    {
-        return LineFeed(style);
-    }
-
-    template <typename TStyle>
-    inline String FallbackConsoleOutputSection<TStyle>::Print(TStyle& style, const StringView& text) const
-    {
-        if constexpr (IsValidExpressionV<HasGenericPrint, TStyle>)
-        {
-            return style.Print(text);
-        }
-        else
-        {
-            return String{ text } + "\n";
-        }
-    }
-
-    template <typename TStyle>
-    inline String FallbackConsoleOutputSection<TStyle>::LineFeed(TStyle& style) const
-    {
-        if constexpr (IsValidExpressionV<HasGenericLineFeed, TStyle>)
         {
             return style.LineFeed();
         }
