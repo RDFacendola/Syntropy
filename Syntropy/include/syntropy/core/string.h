@@ -15,6 +15,8 @@
 #include "syntropy/core/range.h"
 #include "syntropy/allocators/polymorphic_allocator.h"
 
+#include "syntropy/core/string_stream.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -75,6 +77,10 @@ namespace syntropy
 
         /// \brief Removes initial white-spaces from lhs.
         StringView TrimLeft(const StringView& lhs);
+
+        /// \brief Build a string by merging together different elements.
+        template <typename... TArguments>
+        String Build(TArguments&&... arguments);
     }
 
     /************************************************************************/
@@ -139,6 +145,18 @@ namespace syntropy
         for (; result.find_first_of(' ') == 0; result = result.substr(1));
 
         return result;
+    }
+
+    template <typename... TArguments>
+    inline String Strings::Build(TArguments&&... arguments)
+    {
+        static thread_local auto string_builder = OStringStream{};
+
+        string_builder.str("");
+
+        ((string_builder << arguments), ...);
+
+        return string_builder.str();
     }
 
     // Non-member functions.

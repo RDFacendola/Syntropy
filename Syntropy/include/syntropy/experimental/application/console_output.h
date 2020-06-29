@@ -6,10 +6,14 @@
 
 #pragma once
 
+#include <iostream>
+
+#include "syntropy/core/string.h"
+#include "syntropy/core/string_stream.h"
 #include "syntropy/core/smart_pointers.h"
 
-#include "syntropy/experimental/application/console_style.h"
 #include "syntropy/experimental/application/default_console_style.h"
+#include "syntropy/experimental/application/console_style.h"
 
 namespace syntropy
 {
@@ -49,8 +53,8 @@ namespace syntropy
         /// \brief Private constructor to avoid direct instantiation of the class.
         ConsoleOutput() = default;
 
-        /// \brief Style used to format output.
-        UniquePtr<ConsoleStyle> style_;
+        /// \brief Style used to format the output strings.
+        UniquePtr<ConsoleStyle> style_ = NewConsoleStyle<DefaultConsoleStyle>();
 
     };
 
@@ -70,29 +74,33 @@ namespace syntropy
     template <typename TStyle, typename... TArguments>
     inline void ConsoleOutput::SetStyle(TArguments&&... arguments)
     {
-        style_ = MakeUnique<TStyle>(std::forward<TArguments>(arguments)...);
+        style_ = NewConsoleStyle<TStyle>(std::forward<TArguments>(arguments)...);
     }
 
     template <typename TSection, typename... TArguments>
     inline void ConsoleOutput::PushSection(TArguments&&... arguments)
     {
+        auto text = Strings::Build(std::forward<TArguments>(arguments)...);
 
+        std::cout << style_->PushSection(typeid(TSection), text);
     }
 
     inline void ConsoleOutput::PopSection()
     {
-
+        std::cout << style_->PopSection();
     }
 
     template <typename... TArguments>
     inline void ConsoleOutput::Print(TArguments&&... arguments)
     {
+        auto text = Strings::Build(std::forward<TArguments>(arguments)...);
 
+        std::cout << style_->Print(text);
     }
 
     inline void ConsoleOutput::LineFeed()
     {
-
+        std::cout << style_->LineFeed();
     }
 
 }

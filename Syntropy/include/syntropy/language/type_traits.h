@@ -278,7 +278,7 @@ namespace syntropy
 
     /// \brief Boolean value equal to true if TExpression<TTypes...> is a valid expression, false otherwise.
     ///
-    /// \usage template<typename T> using HasFoo = decltype(&T::Foo);       // Expression type.
+    /// \usage template<typename T> using HasFoo = decltype(&T::Foo());     // Expression type.
     ///        auto b = IsValidExpressionV<HasFoo, MyType>;                 // true if MyType::Foo is valid, false otherwise.
     template <template<typename...> typename TExpression, typename... TTypes>
     inline constexpr Bool IsValidExpressionV = IsValidExpression<void, TExpression, TTypes...>::value;

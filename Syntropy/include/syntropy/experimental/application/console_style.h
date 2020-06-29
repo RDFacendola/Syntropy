@@ -6,10 +6,13 @@
 
 #pragma once
 
+#include <typeinfo>
+
 #include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
 
-#include "syntropy/experimental/application/default_console_style.h"
+#include "syntropy/experimental/application/console_output_section.h"
+#include "syntropy/experimental/application/auto_console_output_section.h"
 
 namespace syntropy
 {
@@ -17,8 +20,7 @@ namespace syntropy
     /* CONSOLE STYLE                                                        */
     /************************************************************************/
 
-    /// \brief Base interface for styles used to format command line outputs.
-    /// This interface contains primitives used to print lines.
+    /// \brief Base interface for stateful styles used to format command line outputs.
     /// \author Raffaele D. Facendola - June 2020.
     class ConsoleStyle
     {
@@ -27,44 +29,32 @@ namespace syntropy
         /// \brief Default constructor.
         ConsoleStyle() = default;
 
+        /// \brief No copy constructor.
+        ConsoleStyle(const ConsoleStyle&) = delete;
+
+        /// \brief No move constructor.
+        ConsoleStyle(ConsoleStyle&&) = delete;
+
         /// \brief Default virtual destructor.
         virtual ~ConsoleStyle() = default;
 
-        /// \brief Get a title string.
-        virtual String Title(const StringView& title) const = 0;
+        /// \brief No copy-assignment operator.
+        ConsoleStyle& operator=(const ConsoleStyle&) = delete;
 
-        /// \brief Get a heading string.
-        virtual String Heading1(const StringView& heading) const = 0;
+        /// \brief No move-assignment operator.
+        ConsoleStyle& operator=(ConsoleStyle&&) = delete;
 
-        /// \brief Get a heading string.
-        virtual String Heading2(const StringView& heading) const = 0;
+        /// \brief Push a new section, making it the active one.
+        virtual String PushSection(const std::type_info& section_type, const StringView& text) = 0;
 
-        /// \brief Get a heading string.
-        virtual String Heading3(const StringView& heading) const = 0;
+        /// \brief Pop the current section, activating the previous one.
+        virtual String PopSection() = 0;
 
-        /// \brief Get a heading string.
-        virtual String Heading4(const StringView& heading) const = 0;
+        /// \brief Print a text.
+        virtual String Print(const StringView& text) = 0;
 
-        /// \brief Get a normal line.
-        virtual String Line(const StringView& message) const = 0;
-
-        /// \brief Get an ending string.
-        virtual String End() const = 0;
-
-        /// \brief Get a line break string.
-        virtual String Break1() const = 0;
-
-        /// \brief Get a line break string.
-        virtual String Break2() const = 0;
-
-        /// \brief Get a line break string.
-        virtual String Break3() const = 0;
-
-        /// \brief Get a line break string.
-        virtual String Break4() const = 0;
-
-        /// \brief Get a new empty line.
-        virtual String LineFeed() const = 0;
+        /// \brief Insert a new line.
+        virtual String LineFeed() = 0;
 
     };
 
@@ -72,63 +62,75 @@ namespace syntropy
     /* CONSOLE STYLE <STYLE>                                                */
     /************************************************************************/
 
-    /// \brief Wrapper for styles used to format console outputs.
+    /// \brief Polymorphic class used to type-erase instances of ConsoleStyle.
     /// \author Raffaele D. Facendola - June 2020.
     template <typename TStyle>
     class ConsoleStyleT : public ConsoleStyle
     {
     public:
 
-        /// \brief Create a new wrapper.
-        ConsoleStyleT(TStyle& cli_style);
+        /// \brief Create a new console style.
+        template <typename... TArguments>
+        ConsoleStyleT(TArguments&&... arguments);
 
-        /// \brief Copy constructor.
-        ConsoleStyleT(const ConsoleStyleT&) = default;
+        /// \brief No copy constructor.
+        ConsoleStyleT(const ConsoleStyleT&) = delete;
+
+        /// \brief No move constructor.
+        ConsoleStyleT(ConsoleStyleT&&) = delete;
 
         /// \brief Default virtual destructor.
         virtual ~ConsoleStyleT() = default;
 
-        /// \brief Default copy-assignment operator.
-        ConsoleStyleT& operator=(const ConsoleStyleT&) = default;
+        /// \brief No copy-assignment operator.
+        ConsoleStyleT& operator=(const ConsoleStyleT&) = delete;
 
-        virtual String Title(const StringView& title) const override;
+        /// \brief No move-assignment operator.
+        ConsoleStyleT& operator=(ConsoleStyleT&&) = delete;
 
-        virtual String Heading1(const StringView& heading) const override;
+        virtual String PushSection(const std::type_info& section_type, const StringView& text) override;
 
-        virtual String Heading2(const StringView& heading) const override;
+        virtual String PopSection() override;
 
-        virtual String Heading3(const StringView& heading) const override;
+        virtual String Print(const StringView& text) override;
 
-        virtual String Heading4(const StringView& heading) const override;
-
-        virtual String Line(const StringView& message) const override;
-
-        virtual String End() const override;
-
-        virtual String Break1() const override;
-
-        virtual String Break2() const override;
-
-        virtual String Break3() const override;
-
-        virtual String Break4() const override;
-
-        virtual String LineFeed() const override;
+        virtual String LineFeed() override;
 
     private:
 
-        /// \brief Underlying style.
-        ObserverPtr<TStyle> style_{ nullptr };
+        struct NestedSection;
 
+        /// \brief Underlying style.
+        TStyle style_;
+
+        /// \brief Current active section.
+        UniquePtr<NestedSection> active_section_;
+
+    };
+
+    /************************************************************************/
+    /* CONSOLE STYLE <STYLE> :: NESTED SECTION                              */
+    /************************************************************************/
+
+    /// \brief Represents a console output section nested within another section.
+    /// \author Raffaele D. Facendola - June 2020.
+    template <typename TStyle>
+    struct ConsoleStyleT<TStyle>::NestedSection
+    {
+        /// \brief Outer section, this section is nested into.
+        UniquePtr<NestedSection> outer_section_;
+
+        /// \brief Concrete section.
+        ObserverPtr<const ConsoleOutputSection<TStyle>> section_;
     };
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create a ConsoleStyleT by deducing template from arguments.
-    template <typename TStyle>
-    ConsoleStyleT<TStyle> MakeConsoleStyle(TStyle& style);
+    /// \brief Create a ConsoleStyleT<TStyle> unique pointer by deducing template from arguments.
+    template <typename TStyle, typename... TArguments>
+    UniquePtr<ConsoleStyleT<TStyle>> NewConsoleStyle(TArguments&&... arguments);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -137,90 +139,57 @@ namespace syntropy
     // ConsoleStyleT<TStyle>.
 
     template <typename TStyle>
-    inline ConsoleStyleT<TStyle>::ConsoleStyleT(TStyle& cli_style)
-        : style_(&cli_style)
+    template <typename... TArguments>
+    inline ConsoleStyleT<TStyle>::ConsoleStyleT(TArguments&&... arguments)
+        : style_(std::forward<TArguments>(arguments)...)
     {
 
     }
 
     template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Title(const StringView& title) const
+    inline String ConsoleStyleT<TStyle>::PushSection(const std::type_info& section_type, const StringView& text)
     {
-        return style_->Title(title);
+        auto active_section = MakeUnique<NestedSection>();
+
+        active_section->outer_section_ = std::move(active_section_);
+
+        active_section->section_ = AutoConsoleOutputSection<TStyle>::Find(section_type);
+
+        active_section_ = std::move(active_section);
+
+        return active_section_->section_->Push(style_, text);
     }
 
     template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Heading1(const StringView& heading) const
+    inline String ConsoleStyleT<TStyle>::PopSection()
     {
-        return style_->Heading1(heading);
-    }
+        auto outer_section = std::move(active_section_->outer_section_);
 
-    template <typename TStyle> 
-    inline String ConsoleStyleT<TStyle>::Heading2(const StringView& heading) const
-    {
-        return style_->Heading2(heading);
-    }
+        auto result = active_section_->section_->Pop(style_);
 
-    template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Heading3(const StringView& heading) const
-    {
-        return style_->Heading3(heading);
-    }
+        active_section_ = std::move(outer_section);
 
-    template <typename TStyle> 
-    inline String ConsoleStyleT<TStyle>::Heading4(const StringView& heading) const
-    {
-        return style_->Heading4(heading);
+        return result;
     }
 
     template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Line(const StringView& message) const
+    inline String ConsoleStyleT<TStyle>::Print(const StringView& text)
     {
-        return style_->Line(message);
+        return active_section_->section_->Print(style_, text);
     }
 
     template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::End() const
+    inline String ConsoleStyleT<TStyle>::LineFeed()
     {
-        return style_->End();
-    }
-
-    template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Break1() const
-    {
-        return style_->Break1();
-    }
-
-    template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Break2() const
-    {
-        return style_->Break2();
-    }
-
-    template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Break3() const
-    {
-        return style_->Break3();
-    }
-
-    template <typename TStyle>
-    inline String ConsoleStyleT<TStyle>::Break4() const
-    {
-        return style_->Break4();
-    }
-
-    template <typename TStyle> 
-    inline String ConsoleStyleT<TStyle>::LineFeed() const
-    {
-        return style_->LineFeed();
+        return active_section_->section_->LineFeed(style_);
     }
 
     // Non-member functions.
 
-    template <typename TStyle>
-    inline ConsoleStyleT<TStyle> MakeConsoleStyle(TStyle& style)
+    template <typename TStyle, typename... TArguments>
+    inline UniquePtr<ConsoleStyleT<TStyle>> NewConsoleStyle(TArguments&&... arguments)
     {
-        return { style };
+        return MakeUnique<ConsoleStyleT<TStyle>>(std::forward<TArguments>(arguments)...);
     }
 
 }

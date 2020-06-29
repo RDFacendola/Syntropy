@@ -111,10 +111,13 @@
     <ClInclude Include="include\syntropy\unit_test\test_context.h" />
     <ClInclude Include="include\syntropy\unit_test\auto_unit_test.h" />
     <ClInclude Include="include\syntropy\core\span.h" />
-    <ClInclude Include="include\syntropy\experimental\application\console_line_builder.h" />
+    <ClInclude Include="include\syntropy\experimental\application\auto_console_output_section.h" />
+    <ClInclude Include="include\syntropy\experimental\application\console_output_section.h" />
     <ClInclude Include="include\syntropy\experimental\application\console_output.h" />
+    <ClInclude Include="include\syntropy\experimental\application\console_line_builder.h" />
     <ClInclude Include="include\syntropy\experimental\application\console_style.h" />
     <ClInclude Include="include\syntropy\experimental\application\default_console_style.h" />
+    <ClInclude Include="include\syntropy\experimental\application\auto_console_style.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

@@ -112,7 +112,7 @@ namespace syntropy
 
     inline ConsoleLineBuilder& ConsoleLineBuilder::LineSize(Int line_size)
     {
-        line_size_ = Math::Min(line_size_, max_line_size_);
+        line_size_ = Math::Min(line_size, max_line_size_);
 
         return *this;
     }
@@ -220,11 +220,15 @@ namespace syntropy
         {
             auto line_size = source_text.find_first_of(kNewLine);                       // Terminate the sentence on the first new-line character found, up to maximum line size.
 
+            line_size = Math::Min(line_size, source_text.size());                       // Behaves as if the new-line was found past the end of the source text.
+
             auto consume_size = line_size + 1;                                          // Consume the new-line character.
 
-            if ((ToInt(line_size) > line_size_) || (line_size == String::npos))
+            if (ToInt(line_size) > line_size_)
             {
                 line_size = source_text.find_last_of(kBlank, line_size_ + 1);           // Terminate the sentence on the first blank-character found, up to maximum line size.
+
+                line_size = Math::Min(line_size, source_text.size());                   // Behaves as if the first blank-character was found past the end of the source text.
 
                 consume_size = line_size + 1;                                           // Consume the blank character.
             }

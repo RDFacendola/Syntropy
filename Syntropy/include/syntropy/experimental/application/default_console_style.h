@@ -1,6 +1,6 @@
 
 /// \file default_console_style.h
-/// \brief This header is part of Syntropy application module. It contains definitions for default console interface style.
+/// \brief This header is part of Syntropy application module. It contains definitions for default console style.
 ///
 /// \author Raffaele D. Facendola - June 2020.
 
@@ -9,6 +9,8 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
 
+#include "syntropy/experimental/application/auto_console_style.h"
+#include "syntropy/experimental/application/console_output_section.h"
 #include "syntropy/experimental/application/console_line_builder.h"
 
 namespace syntropy
@@ -17,11 +19,14 @@ namespace syntropy
     /* DEFAULT CONSOLE STYLE                                                */
     /************************************************************************/
 
-    /// \brief Default style for command line applications.
+    /// \brief Default console style for Syntropy applications.
     /// \author Raffaele D. Facendola - June 2020.
     class DefaultConsoleStyle
     {
     public:
+
+        /// \brief Default line style.
+        static constexpr Int kDefaultLineSize = 80;
 
         /// \brief Default constructor.
         DefaultConsoleStyle() = default;
@@ -38,48 +43,60 @@ namespace syntropy
         /// \brief Default assignment operator.
         DefaultConsoleStyle& operator=(const DefaultConsoleStyle&) = default;
 
-        /// \brief Get a title string.
-        String Title(const StringView& title) const;
+        /// \brief Push a title section.
+        String PushSection(ConsoleTitleSection, const StringView& text) const;
 
-        /// \brief Get a heading string.
-        String Heading1(const StringView& heading) const;
+        /// \brief Push a heading section.
+        String PushSection(ConsoleHeading1Section, const StringView& text) const;
 
-        /// \brief Get a heading string.
-        String Heading2(const StringView& heading) const;
+        /// \brief Push a heading section.
+        String PushSection(ConsoleHeading2Section, const StringView& text) const;
 
-        /// \brief Get a heading string.
-        String Heading3(const StringView& heading) const;
+        /// \brief Push a heading section.
+        String PushSection(ConsoleHeading3Section, const StringView& text) const;
 
-        /// \brief Get a heading string.
-        String Heading4(const StringView& heading) const;
+        /// \brief Push a heading section.
+        String PushSection(ConsoleHeading4Section, const StringView& text) const;
 
-        /// \brief Get a normal line.
-        String Line(const StringView& message) const;
+        /// \brief Pop a title section.
+        String PopSection(ConsoleTitleSection) const;
 
-        /// \brief Get an ending string.
-        String End() const;
+        /// \brief Push a heading section.
+        String PopSection(ConsoleHeading1Section) const;
 
-        /// \brief Get a line break string.
-        String Break1() const;
+        /// \brief Push a heading section.
+        String PopSection(ConsoleHeading2Section) const;
 
-        /// \brief Get a line break string.
-        String Break2() const;
+        /// \brief Pop a heading section.
+        String PopSection(ConsoleHeading3Section) const;
 
-        /// \brief Get a line break string.
-        String Break3() const;
+        /// \brief Push a heading section.
+        String PopSection(ConsoleHeading4Section) const;
 
-        /// \brief Get a line break string.
-        String Break4() const;
+        /// \brief Print a string in any active section.
+        String Print(const StringView& text) const;
 
-        /// \brief Get a new empty line.
+        /// \brief Insert a new line in any active section.
         String LineFeed() const;
 
     private:
 
         /// \brief Size of each line, in characters.
-        Int line_size_{ 80 };
+        Int line_size_{ kDefaultLineSize };
 
     };
+
+    /************************************************************************/
+    /* REGISTRATION                                                         */
+    /************************************************************************/
+
+    /// \brief Define sections accepted by DefaultConsoleStyle.
+    inline const auto& kAutoDefaultConsoleStyle = MakeAutoConsoleStyle<DefaultConsoleStyle>()
+        .Section<ConsoleTitleSection>()
+        .Section<ConsoleHeading1Section>()
+        .Section<ConsoleHeading2Section>()
+        .Section<ConsoleHeading3Section>()
+        .Section<ConsoleHeading4Section>();
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -93,7 +110,7 @@ namespace syntropy
 
     }
 
-    inline String DefaultConsoleStyle::Title(const StringView& text) const
+    inline String DefaultConsoleStyle::PushSection(ConsoleTitleSection, const StringView& text) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Center("/\\", "_")
@@ -106,7 +123,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Heading1(const StringView& text) const
+    inline String DefaultConsoleStyle::PushSection(ConsoleHeading1Section, const StringView& text) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Center("/\\", "_")
@@ -119,7 +136,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Heading2(const StringView& text) const
+    inline String DefaultConsoleStyle::PushSection(ConsoleHeading2Section, const StringView& text) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Center("/\\", "_")
@@ -130,7 +147,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Heading3(const StringView& text) const
+    inline String DefaultConsoleStyle::PushSection(ConsoleHeading3Section, const StringView& text) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Left(text)
@@ -140,7 +157,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Heading4(const StringView& text) const
+    inline String DefaultConsoleStyle::PushSection(ConsoleHeading4Section, const StringView& text) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Left(text)
@@ -150,14 +167,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Line(const StringView& message) const
-    {
-        return ConsoleLineBuilder{ line_size_ }
-            .Left(message)
-            .Build();
-    }
-
-    inline String DefaultConsoleStyle::End() const
+    inline String DefaultConsoleStyle::PopSection(ConsoleTitleSection) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Blank()
@@ -166,7 +176,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Break1() const
+    inline String DefaultConsoleStyle::PopSection(ConsoleHeading1Section) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Blank()
@@ -175,7 +185,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Break2() const
+    inline String DefaultConsoleStyle::PopSection(ConsoleHeading2Section) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Blank()
@@ -184,7 +194,7 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Break3() const
+    inline String DefaultConsoleStyle::PopSection(ConsoleHeading3Section) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Blank()
@@ -193,12 +203,19 @@ namespace syntropy
             .Build();
     }
 
-    inline String DefaultConsoleStyle::Break4() const
+    inline String DefaultConsoleStyle::PopSection(ConsoleHeading4Section) const
     {
         return ConsoleLineBuilder{ line_size_ }
             .Blank()
             .Fill("-")
             .Blank()
+            .Build();
+    }
+
+    inline String DefaultConsoleStyle::Print(const StringView& text) const
+    {
+        return ConsoleLineBuilder{ line_size_ }
+            .Left(text)
             .Build();
     }
 

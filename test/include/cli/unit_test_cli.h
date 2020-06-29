@@ -15,10 +15,13 @@
 #include "syntropy/unit_test/test_runner.h"
 
 #include "syntropy/experimental/application/console_output.h"
-#include "syntropy/experimental/application/console_line_builder.h"
+#include "syntropy/experimental/application/console_output_section.h"
+#include "syntropy/experimental/application/default_console_style.h"
 
 namespace syntropy
 {
+    struct MyStyle {};
+
     /************************************************************************/
     /* UNIT TEST CLI                                                        */
     /************************************************************************/
@@ -68,6 +71,8 @@ namespace syntropy
         Int line_size_{ 120 };
     };
 
+    struct PlainConsoleStyle {};
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -81,6 +86,20 @@ namespace syntropy
 
     inline UnitTestCLI::UnitTestCLI(const syntropy::TestRunner& runner)
     {
+        auto& out = ConsoleOutput::GetSingleton();
+
+        out.SetStyle<PlainConsoleStyle>();
+
+        out.PushSection<ConsoleTitleSection>("Syntropy Unit Test Application\nVersion 0.0.1");
+
+        out.PushSection<ConsoleHeading1Section>("Main menu");
+
+        out.Print("What you want to do?");
+
+        out.PopSection();
+
+        out.PopSection();
+
         //auto& out = CommandLineOutput::GetSingleton();
 
         //out.PushSection<TitleSection>("Syntropy application power!");       // Push title optional indentation.

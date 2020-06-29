@@ -25,12 +25,7 @@ namespace syntropy
 
         /// \brief Find a console output section matching the provided section type.
         /// If more than one section matches the provided type, which returned element among those is unspecified.
-        template <typename TSection>
-        static ObserverPtr<const ConsoleOutputSection<TStyle>> Find();
-
-        /// \brief Apply a function to each self-registering console output section.
-        template <typename TFunction>
-        static void ForEach(TFunction&& function);
+        static ObserverPtr<const ConsoleOutputSection<TStyle>> Find(const std::type_info& section_type);
 
         /// \brief Create a new self-registering console output.
         AutoConsoleOutputSection();
@@ -50,10 +45,10 @@ namespace syntropy
         /// \brief Default virtual destructor.
         virtual ~AutoConsoleOutputSection() = default;
 
+    private:
+
         /// \brief Access the underlying console output section.
         virtual const ConsoleOutputSection<TStyle>& GetConsoleOutputSection() const = 0;
-
-    private:
 
         /// \brief Get the first element in a linked list to which every other self-registering console output section is linked to.
         static ObserverPtr<const AutoConsoleOutputSection>& GetLinkedList();
@@ -67,19 +62,18 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* AUTO CONSOLE OUTPUT SECTION <STYLE, SECTION, PUSH OP, POP OP>        */
+    /* AUTO CONSOLE OUTPUT SECTION <STYLE, SECTION>                         */
     /************************************************************************/
 
-    /// \brief Represents a concrete self-registering console output style for a console style.
+    /// \brief Represents a concrete self-registering console output section for a given console style.
     /// \author Raffaele D. Facendola - June 2020.
-    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
+    template <typename TStyle, typename TSection>
     class AutoConsoleOutputSectionT : public AutoConsoleOutputSection<TStyle>
     {
     public:
 
-        /// \brief Create a new self-registering console output style.
-        template <typename UPushOp, typename UPopOp>
-        AutoConsoleOutputSectionT(UPushOp&& push_implementation, UPopOp&& pop_implementation);
+        /// \brief Create a new self-registering console output section.
+        AutoConsoleOutputSectionT();
 
         /// \brief No copy-constructor.
         AutoConsoleOutputSectionT(const AutoConsoleOutputSectionT&) = delete;
@@ -101,7 +95,7 @@ namespace syntropy
         virtual const ConsoleOutputSection<TStyle>& GetConsoleOutputSection() const override;
 
         /// \brief Underlying console output section.
-        ConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp> console_output_section_;
+        ConsoleOutputSectionT<TStyle, TSection> console_output_section_;
 
     };
 
@@ -109,10 +103,9 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create an self-registering console output section by deducing templates from arguments.
-    /// \usage const auto my_console_output_section = MakeAutoConsoleOutputSection(LambdaPush, LambdaPop).
-    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
-    AutoConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp> MakeAutoConsoleOutputSection(TPushOp&& push_implementation, TPopOp&& pop_implementation);
+    /// \brief Create an self-registering console output section.
+    template <typename TStyle, typename TSection>
+    AutoConsoleOutputSectionT<TStyle, TSection> MakeAutoConsoleOutputSection();
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -121,30 +114,21 @@ namespace syntropy
     // AutoConsoleOutputSection<TStyle>.
 
     template <typename TStyle>
-    template <typename TSection>
-    inline ObserverPtr<const ConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::Find()
+    inline ObserverPtr<const ConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::Find(const std::type_info& section_type)
     {
+        static auto fallback_output_section = FallbackConsoleOutputSection<TStyle>{};
+
         for (auto auto_console_output_section = GetLinkedList(); auto_console_output_section; auto_console_output_section = auto_console_output_section->next_console_output_section_)
         {
             auto& console_output_section = auto_console_output_section->GetConsoleOutputSection();
 
-            if (console_output_section.IsA<TSection>())
+            if (console_output_section.IsA(section_type))
             {
                 return &console_output_section;
             }
         }
 
-        return nullptr;
-    }
-
-    template <typename TStyle>
-    template <typename TFunction>
-    inline void AutoConsoleOutputSection<TStyle>::ForEach(TFunction&& function)
-    {
-        for (auto auto_console_output_section = GetLinkedList(); auto_console_output_section; auto_console_output_section = auto_console_output_section->next_console_output_section_)
-        {
-            function(AsConst(*auto_console_output_section));
-        }
+        return &fallback_output_section;
     }
 
     template <typename TStyle>
@@ -174,28 +158,27 @@ namespace syntropy
         return next_console_output_section;
     }
 
-    // AutoConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp>.
+    // AutoConsoleOutputSectionT<TStyle, TSection>
 
-    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
-    template <typename UPushOp, typename UPopOp>
-    inline AutoConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp>::AutoConsoleOutputSectionT(UPushOp&& push_implementation, UPopOp&& pop_implementation)
-        : console_output_section_(MakeConsoleOutputSection<TStyle, TSection>(std::forward<UPushOp>(push_implementation), std::forward<UPopOp>(pop_implementation)))
+    template <typename TStyle, typename TSection>
+    inline AutoConsoleOutputSectionT<TStyle, TSection>::AutoConsoleOutputSectionT()
+        : console_output_section_(MakeConsoleOutputSection<TStyle, TSection>())
     {
 
     }
 
-    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
-    inline const ConsoleOutputSection<TStyle>& AutoConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp>::GetConsoleOutputSection() const
+    template <typename TStyle, typename TSection>
+    inline const ConsoleOutputSection<TStyle>& AutoConsoleOutputSectionT<TStyle, TSection>::GetConsoleOutputSection() const
     {
         return console_output_section_;
     }
 
     // Non-member functions.
 
-    template <typename TStyle, typename TSection, typename TPushOp, typename TPopOp>
-    inline AutoConsoleOutputSectionT<TStyle, TSection, TPushOp, TPopOp> MakeAutoConsoleOutputSection(TPushOp&& push_implementation, TPopOp&& pop_implementation)
+    template <typename TStyle, typename TSection>
+    inline AutoConsoleOutputSectionT<TStyle, TSection> MakeAutoConsoleOutputSection()
     {
-        return { std::forward<TPushOp>(push_implementation), std::forward<TPopOp>(pop_implementation) };
+        return {};
     }
 
 }
