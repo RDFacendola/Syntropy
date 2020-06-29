@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/experimental/application/auto_console_output_section.h"
+#include "syntropy/application/console/auto_console_output_section.h"
 
 namespace syntropy
 {

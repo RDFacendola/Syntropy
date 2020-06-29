@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/experimental/application/console_output.h"
+#include "syntropy/application/console/console_output.h"
 
 namespace syntropy
 {
@@ -81,6 +81,5 @@ namespace syntropy
     {
         return ConsoleOutputSectionScope<TSection>(std::forward<TArguments>(arguments)...);
     }
-
 
 }

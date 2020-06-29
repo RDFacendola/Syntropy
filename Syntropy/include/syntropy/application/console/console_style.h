@@ -11,8 +11,8 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
 
-#include "syntropy/experimental/application/console_output_section.h"
-#include "syntropy/experimental/application/auto_console_output_section.h"
+#include "syntropy/application/console/console_output_section.h"
+#include "syntropy/application/console/auto_console_output_section.h"
 
 namespace syntropy
 {

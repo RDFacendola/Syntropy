@@ -9,9 +9,9 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
 
-#include "syntropy/experimental/application/auto_console_style.h"
-#include "syntropy/experimental/application/console_output_sections.h"
-#include "syntropy/experimental/application/console_line_builder.h"
+#include "syntropy/application/console/auto_console_style.h"
+#include "syntropy/application/console/console_output_sections.h"
+#include "syntropy/application/console/console_line_builder.h"
 
 namespace syntropy
 {

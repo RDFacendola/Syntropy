@@ -14,11 +14,11 @@
 #include "syntropy/language/listener.h"
 #include "syntropy/unit_test/test_runner.h"
 
-#include "syntropy/experimental/application/console_output.h"
-#include "syntropy/experimental/application/console_output_section.h"
-#include "syntropy/experimental/application/console_output_section_scope.h"
-#include "syntropy/experimental/application/default_console_style.h"
-#include "syntropy/experimental/application/plain_console_style.h"
+#include "syntropy/application/console/console_output.h"
+#include "syntropy/application/console/console_output_section.h"
+#include "syntropy/application/console/console_output_section_scope.h"
+#include "syntropy/application/console/default_console_style.h"
+#include "syntropy/application/console/plain_console_style.h"
 
 namespace syntropy
 {

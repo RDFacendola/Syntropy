@@ -8,7 +8,7 @@
 
 #include "syntropy/core/smart_pointers.h"
 
-#include "syntropy/experimental/application/console_output_section.h"
+#include "syntropy/application/console/console_output_section.h"
 
 namespace syntropy
 {
@@ -26,7 +26,7 @@ namespace syntropy
         /// \brief Find a console output section matching the provided section type.
         /// If more than one section matches the provided type, which returned element among those is unspecified.
         /// If no section matches the provided type, returns a fallback output section.
-        /// \see GetFallback().
+        /// \see GetFallbackSection().
         static ObserverPtr<const ConsoleOutputSection<TStyle>> FindSection(const std::type_info& section_type);
 
         /// \brief Get a generic, fallback, output section.

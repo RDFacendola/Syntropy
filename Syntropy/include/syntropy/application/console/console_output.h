@@ -12,8 +12,8 @@
 #include "syntropy/core/string_stream.h"
 #include "syntropy/core/smart_pointers.h"
 
-#include "syntropy/experimental/application/default_console_style.h"
-#include "syntropy/experimental/application/console_style.h"
+#include "syntropy/application/console/default_console_style.h"
+#include "syntropy/application/console/console_style.h"
 
 namespace syntropy
 {
