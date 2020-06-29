@@ -25,7 +25,12 @@ namespace syntropy
 
         /// \brief Find a console output section matching the provided section type.
         /// If more than one section matches the provided type, which returned element among those is unspecified.
+        /// If no section matches the provided type, returns a fallback output section.
+        /// \see GetFallback().
         static ObserverPtr<const ConsoleOutputSection<TStyle>> Find(const std::type_info& section_type);
+
+        /// \brief Get a generic, fallback, output section.
+        static ObserverPtr<const ConsoleOutputSection<TStyle>> GetFallback();
 
         /// \brief Create a new self-registering console output.
         AutoConsoleOutputSection();
@@ -116,8 +121,6 @@ namespace syntropy
     template <typename TStyle>
     inline ObserverPtr<const ConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::Find(const std::type_info& section_type)
     {
-        static auto fallback_output_section = FallbackConsoleOutputSection<TStyle>{};
-
         for (auto auto_console_output_section = GetLinkedList(); auto_console_output_section; auto_console_output_section = auto_console_output_section->next_console_output_section_)
         {
             auto& console_output_section = auto_console_output_section->GetConsoleOutputSection();
@@ -127,6 +130,14 @@ namespace syntropy
                 return &console_output_section;
             }
         }
+
+        return GetFallback();
+    }
+
+    template <typename TStyle>
+    inline ObserverPtr<const ConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::GetFallback()
+    {
+        static auto fallback_output_section = FallbackConsoleOutputSection<TStyle>{};
 
         return &fallback_output_section;
     }

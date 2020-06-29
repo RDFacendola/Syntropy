@@ -178,13 +178,13 @@ namespace syntropy
 
         virtual Bool IsA(const std::type_info& section_type) const override;
 
-        virtual String Push(TStyle & style, const StringView & text) const override;
+        virtual String Push(TStyle& style, const StringView & text) const override;
 
-        virtual String Pop(TStyle & style) const override;
+        virtual String Pop(TStyle& style) const override;
 
-        virtual String Print(TStyle & style, const StringView & text) const override;
+        virtual String Print(TStyle& style, const StringView & text) const override;
 
-        virtual String LineFeed(TStyle & style) const override;
+        virtual String LineFeed(TStyle& style) const override;
 
     private:
 

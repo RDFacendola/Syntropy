@@ -175,13 +175,27 @@ namespace syntropy
     template <typename TStyle>
     inline String ConsoleStyleT<TStyle>::Print(const StringView& text)
     {
-        return active_section_->section_->Print(style_, text);
+        if (active_section_)
+        {
+            return active_section_->section_->Print(style_, text);
+        }
+        else
+        {
+            return AutoConsoleOutputSection<TStyle>::GetFallback()->Print(style_, text);
+        }
     }
 
     template <typename TStyle>
     inline String ConsoleStyleT<TStyle>::LineFeed()
     {
-        return active_section_->section_->LineFeed(style_);
+        if (active_section_)
+        {
+            return active_section_->section_->LineFeed(style_);
+        }
+        else
+        {
+            return AutoConsoleOutputSection<TStyle>::GetFallback()->LineFeed(style_);
+        }
     }
 
     // Non-member functions.
