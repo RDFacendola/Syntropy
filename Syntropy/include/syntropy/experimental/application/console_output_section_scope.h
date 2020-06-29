@@ -11,7 +11,7 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* DEFAULT CONSOLE STYLE                                                */
+    /* CONSOLE OUTPUT SECTION SCOPE <SECTION>                               */
     /************************************************************************/
 
     /// \brief Represents a scope-based output section scope.

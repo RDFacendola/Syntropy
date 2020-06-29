@@ -22,8 +22,6 @@
 
 namespace syntropy
 {
-    struct MyStyle {};
-
     /************************************************************************/
     /* UNIT TEST CLI                                                        */
     /************************************************************************/
@@ -78,11 +76,6 @@ namespace syntropy
     /************************************************************************/
 
     // UnitTestCLI.
-
-    namespace Tags
-    {
-
-    }
 
     inline UnitTestCLI::UnitTestCLI(const syntropy::TestRunner& runner)
     {
