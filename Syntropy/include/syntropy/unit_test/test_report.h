@@ -52,6 +52,9 @@ namespace syntropy
     {
         /// \brief Determine the overall result of a report.
         TestResult GetResult(const TestReport& test_report);
+
+        /// \brief Get the total number of test cases in a report.
+        Int GetTestCaseCount(const TestReport& test_report);
     }
 
     /************************************************************************/
@@ -89,6 +92,11 @@ namespace syntropy
         {
             return TestResult::kSuccess;    // Success! Empty and skipped test are implicitly considered successful.
         }
+    }
+
+    inline Int UnitTest::GetTestCaseCount(const TestReport& test_report)
+    {
+        return test_report.success_count_ + test_report.fail_count_;
     }
 
     // Non-member functions.

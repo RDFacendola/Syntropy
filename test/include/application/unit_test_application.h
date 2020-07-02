@@ -18,6 +18,7 @@
 
 #include "syntropy/application/console/console_output.h"
 #include "syntropy/application/console/console_output_sections.h"
+#include "syntropy/application/console/console_output_section_scope.h"
 
 // #TODO Remove
 
@@ -140,7 +141,16 @@ namespace syntropy
 
         auto test_report = test_runner.Run(context);
 
-        system("pause");
+        // Final report.
+
+        {
+            auto final_report_section = MakeConsoleOutputSectionScope<ConsoleHeading1Section>("Final report");
+
+            out.Print("Total test cases: ", UnitTest::GetTestCaseCount(test_report));
+            out.Print(" - Success: ", test_report.success_count_);
+            out.Print(" - Fail: ", test_report.fail_count_);
+            out.Print(" - Skipped: ", test_report.skipped_count_);
+        }
 
         return 0;
     }

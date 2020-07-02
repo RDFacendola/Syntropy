@@ -108,7 +108,7 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create an self-registering test suite by deducing the fixture type from arguments.
+    /// \brief Create a self-registering test suite by deducing the fixture type from arguments.
     /// \usage const auto auto_test_suite = MakeAutoTestSuite(name, arg0, arg1, ...).
     template <typename TTestFixture, typename... TFixtureArguments>
     AutoTestSuiteT<TTestFixture> MakeAutoTestSuite(const Context& name, TFixtureArguments&&... arguments);

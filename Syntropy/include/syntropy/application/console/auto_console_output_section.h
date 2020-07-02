@@ -108,7 +108,7 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Create an self-registering console output section.
+    /// \brief Create a self-registering console output section.
     template <typename TStyle, typename TSection>
     AutoConsoleOutputSectionT<TStyle, TSection> MakeAutoConsoleOutputSection();
 
