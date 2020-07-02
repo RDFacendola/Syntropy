@@ -4,8 +4,8 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\cli\unit_test_cli.h" />
     <ClInclude Include="include\unit_tests\unit_tests.h" />
     <ClInclude Include="include\unit_tests\syntropy\core\span_unit_test.h" />
+    <ClInclude Include="include\application\unit_test_application.h" />
   </ItemGroup>
 </Project>
