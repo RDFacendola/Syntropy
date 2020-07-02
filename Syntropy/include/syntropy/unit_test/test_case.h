@@ -205,22 +205,33 @@ namespace syntropy
 
         context_listener += test_context.OnSuccess([&test_report, this](const auto& sender, const auto& event_args)
         {
+            test_report += TestResult::kSuccess;
+            test_report += event_args.location_;
+
             success_event_.Notify(*this, { event_args.location_, event_args.expression_, event_args.result_ });
         });
 
         context_listener += test_context.OnFailure([&test_report, this](const auto& sender, const auto& event_args)
         {
+            test_report += TestResult::kFailure;
+            test_report += event_args.location_;
+
             failure_event_.Notify(*this, { event_args.location_, event_args.expression_, event_args.result_, event_args.expected_ });
         });
 
         context_listener += test_context.OnSkipped([&test_report, this](const auto& sender, const auto& event_args)
         {
+            test_report += TestResult::kSkipped;
+            test_report += event_args.location_;
+
             skipped_event_.Notify(*this, { event_args.location_, event_args.reason_ });
         });
 
         context_listener += test_context.OnMessage([&test_report, this](const auto& sender, const auto& event_args)
         {
-            message_event_.Notify(*this, { event_args.message_ });
+            test_report += event_args.location_;
+
+            message_event_.Notify(*this, { event_args.location_, event_args.message_ });
         });
 
         RunTestCase(test_fixture);

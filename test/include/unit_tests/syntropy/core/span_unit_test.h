@@ -33,7 +33,6 @@ namespace syntropy::unit_test
 
         /// \brief Executed before each test case.
         void Before();
-
     };
 
     /************************************************************************/

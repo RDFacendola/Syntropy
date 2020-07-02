@@ -39,7 +39,7 @@ namespace syntropy
 
         test_suite_listener += test_suite.OnCaseMessage([this](const auto& sender, const auto& event_args)
         {
-            case_message_event_.Notify(*this, { event_args.message_, event_args.test_case_, sender.GetName() });
+            case_message_event_.Notify(*this, { event_args.location_, event_args.message_, event_args.test_case_, sender.GetName() });
         });
 
         // Run the suite.

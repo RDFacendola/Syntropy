@@ -46,7 +46,7 @@ namespace syntropy
         /// \brief Report a test case message in the current active test context.
         /// If no context is active, the behavior of this method is undefined.
         template <typename... TMessage>
-        void ReportMessage(TMessage&&... message);
+        void ReportMessage(const StackTrace& test_location, TMessage&&... message);
     }
 
     /************************************************************************/
@@ -108,6 +108,9 @@ namespace syntropy
     /// \brief Arguments for the event notified whenever a test message is reported in a test context.
     struct OnTestContextMessageEventArgs
     {
+        /// \brief Code location generated the message.
+        StackTrace location_;
+
         /// \brief Reported message.
         String message_;
     };
@@ -131,7 +134,7 @@ namespace syntropy
         friend void UnitTest::ReportSkipped(const StackTrace& test_location, TReason&& reason);
 
         template <typename... TMessage>
-        friend void UnitTest::ReportMessage(TMessage&&... message);
+        friend void UnitTest::ReportMessage(const StackTrace& test_location, TMessage&&... message);
 
     public:
 
@@ -181,7 +184,7 @@ namespace syntropy
         void ReportSkipped(const StackTrace& location, const String& reason) const;
 
         /// \brief Report a message.
-        void ReportMessage(const String& test_message) const;
+        void ReportMessage(const StackTrace& location, const String& message) const;
 
         /// \brief Active test context.
         static thread_local inline ObserverPtr<TestContext> context_{ nullptr };
@@ -248,13 +251,13 @@ namespace syntropy
     }
 
     template <typename... TMessage>
-    inline void UnitTest::ReportMessage(TMessage&&... message)
+    inline void UnitTest::ReportMessage(const StackTrace& test_location, TMessage&&... message)
     {
         auto stream = OStringStream{};
 
         (stream << ... << message);
 
-        TestContext::context_->ReportMessage(stream.str());
+        TestContext::context_->ReportMessage(test_location, stream.str());
     }
 
     // TestContext.
@@ -309,9 +312,9 @@ namespace syntropy
         skipped_event_.Notify(*this, { location, reason });
     }
 
-    inline void TestContext::ReportMessage(const String& message) const
+    inline void TestContext::ReportMessage(const StackTrace& location, const String& message) const
     {
-        message_event_.Notify(*this, { message });
+        message_event_.Notify(*this, { location, message });
     }
 
 }

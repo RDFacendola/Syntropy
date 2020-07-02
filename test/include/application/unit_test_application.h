@@ -179,11 +179,15 @@ namespace syntropy
 
     inline void UnitTestApplication::OnCaseFinished(const TestRunner& sender, const syntropy::OnTestRunnerCaseFinishedEventArgs& e)
     {
+        auto tr = e.test_report_;
+
         out.PopSection();
     }
 
     inline void UnitTestApplication::OnSuiteFinished(const TestRunner& sender, const syntropy::OnTestRunnerSuiteFinishedEventArgs& e)
     {
+        auto tr = e.test_report_;
+
         out.PopSection();
     }
 

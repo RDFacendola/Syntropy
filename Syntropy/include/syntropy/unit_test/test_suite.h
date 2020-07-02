@@ -341,7 +341,7 @@ namespace syntropy
 
         AutoTestCase<TTestFixture>::ForEach([this, &test_report](const auto& auto_test_case)
         {
-            Run(auto_test_case.GetTestCase());
+            test_report += Run(auto_test_case.GetTestCase());
         });
 
         return test_report;
@@ -371,7 +371,7 @@ namespace syntropy
 
         test_case_listener += test_case.OnMessage([this](const auto& sender, const auto& event_args)
         {
-            NotifyCaseMessage({ event_args.message_, sender.GetName() });
+            NotifyCaseMessage({ event_args.location_, event_args.message_, sender.GetName() });
         });
 
         // Run the test case.
