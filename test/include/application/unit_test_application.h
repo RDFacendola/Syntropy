@@ -36,9 +36,6 @@ namespace syntropy
     {
     public:
 
-        /// \brief Argument used to filter test suites by name.
-        static constexpr auto kContextArgument = "ctx";
-
         /// \brief No default constructor.
         UnitTestApplication() = delete;
 
@@ -72,9 +69,6 @@ namespace syntropy
         void OnCaseStarted(const TestRunner& sender, const syntropy::OnTestRunnerCaseStartedEventArgs& e);
 
         /// \brief Called whenever a test case result is notified.
-        void OnCaseSuccess(const TestRunner& sender, const syntropy::OnTestRunnerCaseSuccessEventArgs& e);
-
-        /// \brief Called whenever a test case result is notified.
         void OnCaseFailure(const TestRunner& sender, const syntropy::OnTestRunnerCaseFailureEventArgs& e);
 
         /// \brief Called whenever a test case result is notified.
@@ -89,6 +83,12 @@ namespace syntropy
         /// \brief Called whenever a test suite finishes.
         void OnSuiteFinished(const TestRunner& sender, const syntropy::OnTestRunnerSuiteFinishedEventArgs& e);
 
+        /// \brief Push a test suite to the console output.
+        void ConditionalTestSuiteTrigger(const Label& test_suite);
+
+        /// \brief Push a test case to the console output.
+        void ConditionalTestCaseTrigger(const Label& test_case);
+
         /// \brief Console output stream.
         ConsoleOutput& out = ConsoleOutput::GetSingleton();
 
@@ -100,6 +100,17 @@ namespace syntropy
 
         /// \brief Listener for the test runner events.
         Listener test_listener_;
+
+        /// \brief Whether the current test suite was already triggered.
+        /// A test suite gets triggered when a test case fails or is skipped.
+        /// Untriggered test suites are hidden from the report to avoid clutter.
+        bool test_suite_triggered_{ false };
+
+        /// \brief Whether the current test case was already triggered.
+        /// A test case gets triggered when it gets skipped or a fail is reported.
+        /// Untriggered test cases are hidden from the report to avoid clutter.
+        bool test_case_triggered_{ false };
+
     };
 
     /************************************************************************/
@@ -118,7 +129,6 @@ namespace syntropy
 
         test_listener_ += test_runner.OnSuiteStarted(BindMemberFunction(&UnitTestApplication::OnSuiteStarted));
         test_listener_ += test_runner.OnCaseStarted(BindMemberFunction(&UnitTestApplication::OnCaseStarted));
-        test_listener_ += test_runner.OnCaseSuccess(BindMemberFunction(&UnitTestApplication::OnCaseSuccess));
         test_listener_ += test_runner.OnCaseFailure(BindMemberFunction(&UnitTestApplication::OnCaseFailure));
         test_listener_ += test_runner.OnCaseSkipped(BindMemberFunction(&UnitTestApplication::OnCaseSkipped));
         test_listener_ += test_runner.OnCaseMessage(BindMemberFunction(&UnitTestApplication::OnCaseMessage));
@@ -135,70 +145,99 @@ namespace syntropy
     {
         out.PushSection<ConsoleTitleSection>("Syntropy Unit Test Application\n(version 0.0.1)");
 
-        auto context_argument = command_line_.GetArgument(kContextArgument);
+        // Run.
 
-        auto context = context_argument ? syntropy::Context{ context_argument->GetValue() } : syntropy::Context{};
+        auto test_report = test_runner.Run({});
 
-        auto test_report = test_runner.Run(context);
+        auto success = (test_report.fail_count_ == 0);
 
         // Final report.
 
-        {
-            auto final_report_section = MakeConsoleOutputSectionScope<ConsoleHeading1Section>("Final report");
+        auto final_report_section = MakeConsoleOutputSectionScope<ConsoleHeading1Section>("Final report");
 
-            out.Print("Total test cases: ", UnitTest::GetTestCaseCount(test_report));
-            out.Print(" - Success: ", test_report.success_count_);
-            out.Print(" - Fail: ", test_report.fail_count_);
-            out.Print(" - Skipped: ", test_report.skipped_count_);
-        }
+        out.Print("Test cases: ", UnitTest::GetTestCaseCount(test_report));
 
-        return 0;
+        out.LineFeed();
+
+        out.Print(" - Success: ", test_report.success_count_);
+        out.Print(" - Failed: ", test_report.fail_count_);
+        out.Print(" - Skipped: ", test_report.skipped_count_);
+
+        out.LineFeed();
+
+        out.Print("Result: ", success ? "SUCCESS" : "FAIL");
+
+        return (success ? 0 : 1);
     }
 
     inline void UnitTestApplication::OnSuiteStarted(const TestRunner& sender, const syntropy::OnTestRunnerSuiteStartedEventArgs& e)
     {
-        out.PushSection<ConsoleHeading1Section>("Testing\n", e.test_suite_.GetName());
+        test_suite_triggered_ = false;
     }
 
     inline void UnitTestApplication::OnCaseStarted(const TestRunner& sender, const syntropy::OnTestRunnerCaseStartedEventArgs& e)
     {
-        out.PushSection<ConsoleHeading3Section>(e.test_case_);
-    }
-
-    inline void UnitTestApplication::OnCaseSuccess(const TestRunner& sender, const syntropy::OnTestRunnerCaseSuccessEventArgs& e)
-    {
-        out.Print("SUCCESS - ", e.expression_, " returned ", e.result_);
+        test_case_triggered_ = false;
     }
 
     inline void UnitTestApplication::OnCaseFailure(const TestRunner& sender, const syntropy::OnTestRunnerCaseFailureEventArgs& e)
     {
-        out.Print("FAILURE - ", e.expression_);
-        out.Print(" Result: ", e.result_);
-        out.Print(" Expected: ", e.expected_);
+        ConditionalTestSuiteTrigger(e.test_suite_);
+        ConditionalTestCaseTrigger(e.test_case_);
+
+        out.Print("FAILURE - ", e.expression_, " returned '", e.result_, "' but '", e.expected_, "' was expected.");
     }
 
     inline void UnitTestApplication::OnCaseSkipped(const TestRunner& sender, const syntropy::OnTestRunnerCaseSkippedEventArgs& e)
     {
+        ConditionalTestSuiteTrigger(e.test_suite_);
+        ConditionalTestCaseTrigger(e.test_case_);
+
         out.Print("SKIP - ", e.reason_);
     }
 
     inline void UnitTestApplication::OnCaseMessage(const TestRunner& sender, const syntropy::OnTestRunnerCaseMessageEventArgs& e)
     {
+        ConditionalTestSuiteTrigger(e.test_suite_);
+        ConditionalTestCaseTrigger(e.test_case_);
 
+        out.Print(e.message_);
     }
 
     inline void UnitTestApplication::OnCaseFinished(const TestRunner& sender, const syntropy::OnTestRunnerCaseFinishedEventArgs& e)
     {
-        auto tr = e.test_report_;
-
-        out.PopSection();
+        if (test_suite_triggered_)
+        {
+            out.PopSection();
+        }
     }
 
     inline void UnitTestApplication::OnSuiteFinished(const TestRunner& sender, const syntropy::OnTestRunnerSuiteFinishedEventArgs& e)
     {
-        auto tr = e.test_report_;
+        if (test_case_triggered_)
+        {
+            out.PopSection();
+        }
+    }
 
-        out.PopSection();
+    inline void UnitTestApplication::ConditionalTestSuiteTrigger(const Label& test_suite)
+    {
+        if (!test_suite_triggered_)
+        {
+            test_suite_triggered_ = true;
+
+            out.PushSection<ConsoleHeading1Section>(test_suite);
+        }
+    }
+
+    inline void UnitTestApplication::ConditionalTestCaseTrigger(const Label& test_case)
+    {
+        if (!test_case_triggered_)
+        {
+            test_case_triggered_ = true;
+
+            out.PushSection<ConsoleHeading4Section>(test_case);
+        }
     }
 
 }
