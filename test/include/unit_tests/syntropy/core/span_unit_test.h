@@ -7,8 +7,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/span.h"
 
-#include "syntropy/unit_test/test_macros.h"
-#include "syntropy/unit_test/auto_unit_test.h"
+#include "syntropy/unit_test/unit_test.h"
 
 namespace syntropy::unit_test
 {

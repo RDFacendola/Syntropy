@@ -15,11 +15,17 @@
 #include "syntropy/language/event.h"
 #include "syntropy/language/type_traits.h"
 
-#include "syntropy/unit_test/test_result.h"
-#include "syntropy/unit_test/test_report.h"
-
 namespace syntropy
 {
+    /************************************************************************/
+    /* UNIT TEST MACROS                                                     */
+    /************************************************************************/
+
+    /// \brief Unit test macro: report a success if "expression" is equal to expected, otherwise report a failure and continue.
+    /// \usage SYNTROPY_UNIT_EQUAL(1 + 2, 3);
+    #define SYNTROPY_UNIT_EQUAL(expression, expected) \
+        SYNTROPY_MACRO_DECLARATION(expression, expected)
+
     /************************************************************************/
     /* UNIT TEST                                                            */
     /************************************************************************/
@@ -30,23 +36,13 @@ namespace syntropy
     {
         /// \brief Report a test case success in the current active test context.
         /// If no context is active, the behavior of this method is undefined.
-        template <typename TExpression, typename TResult>
-        void ReportSuccess(const StackTrace& test_location, TExpression&& expression, TResult&& result);
+        template <typename TExpression>
+        void ReportSuccess(const StackTrace& test_location, TExpression&& expression);
 
         /// \brief Report a test case failure in the current active test context.
         /// If no context is active, the behavior of this method is undefined.
         template <typename TExpression, typename TResult, typename TExpected>
         void ReportFailure(const StackTrace& test_location, TExpression&& expression, TResult&& result, TExpected&& expected);
-
-        /// \brief Report a test case skip in the current active test context.
-        /// If no context is active, the behavior of this method is undefined.
-        template <typename TReason>
-        void ReportSkipped(const StackTrace& test_location, TReason&& reason);
-
-        /// \brief Report a test case message in the current active test context.
-        /// If no context is active, the behavior of this method is undefined.
-        template <typename... TMessage>
-        void ReportMessage(const StackTrace& test_location, TMessage&&... message);
     }
 
     /************************************************************************/
@@ -61,9 +57,6 @@ namespace syntropy
 
         /// \brief Tested expression.
         String expression_;
-
-        /// \brief Actual result.
-        String result_;
     };
 
     /************************************************************************/
@@ -79,40 +72,11 @@ namespace syntropy
         /// \brief Tested expression.
         String expression_;
 
-        /// \brief Actual result.
+        /// \brief Expression result.
         String result_;
 
         /// \brief Expected result.
         String expected_;
-    };
-
-    /************************************************************************/
-    /* ON TEST CONTEXT SKIPPED EVENT ARGS                                   */
-    /************************************************************************/
-
-    /// \brief Arguments for the event notified whenever a test is skipped in a test context.
-    struct OnTestContextSkippedEventArgs
-    {
-        /// \brief Code location that issued the result.
-        StackTrace location_;
-
-        /// \brief Skip reason.
-        String reason_;
-    };
-
-
-    /************************************************************************/
-    /* ON TEST CONTEXT MESSAGE EVENT ARGS                                   */
-    /************************************************************************/
-
-    /// \brief Arguments for the event notified whenever a test message is reported in a test context.
-    struct OnTestContextMessageEventArgs
-    {
-        /// \brief Code location generated the message.
-        StackTrace location_;
-
-        /// \brief Reported message.
-        String message_;
     };
 
     /************************************************************************/
@@ -124,17 +88,11 @@ namespace syntropy
     /// \author Raffaele D. Facendola - January 2018
     class TestContext
     {
-        template <typename TExpression, typename TResult>
-        friend void UnitTest::ReportSuccess(const StackTrace& test_location, TExpression&& expression, TResult&& result);
+        template <typename TExpression>
+        friend void UnitTest::ReportSuccess(const StackTrace& test_location, TExpression&& expression);
 
         template <typename TExpression, typename TResult, typename TExpected>
         friend void UnitTest::ReportFailure(const StackTrace& test_location, TExpression&& expression, TResult&& result, TExpected&& expected);
-
-        template <typename TReason>
-        friend void UnitTest::ReportSkipped(const StackTrace& test_location, TReason&& reason);
-
-        template <typename... TMessage>
-        friend void UnitTest::ReportMessage(const StackTrace& test_location, TMessage&&... message);
 
     public:
 
@@ -164,27 +122,13 @@ namespace syntropy
         template <typename TDelegate>
         Listener OnFailure(TDelegate&& delegate) const;
 
-        /// \brief Bind to the event notified whenever a skip is reported.
-        template <typename TDelegate>
-        Listener OnSkipped(TDelegate&& delegate) const;
-
-        /// \brief Bind to the event notified whenever a message is reported.
-        template <typename TDelegate>
-        Listener OnMessage(TDelegate&& delegate) const;
-
     private:
 
         /// \brief Report a test case success.
-        void ReportSuccess(const StackTrace& location, const String& expression, const String& result) const;
+        void ReportSuccess(const StackTrace& location, const String& expression) const;
 
         /// \brief Report a test case failure.
         void ReportFailure(const StackTrace& location, const String& expression, const String& result, const String& expected) const;
-
-        /// \brief Report a skipped test case.
-        void ReportSkipped(const StackTrace& location, const String& reason) const;
-
-        /// \brief Report a message.
-        void ReportMessage(const StackTrace& location, const String& message) const;
 
         /// \brief Active test context.
         static thread_local inline ObserverPtr<TestContext> context_{ nullptr };
@@ -198,32 +142,35 @@ namespace syntropy
         /// \brief Event notified whenever a test failure is reported.
         Event<const TestContext&, OnTestContextFailureEventArgs> failure_event_;
 
-        /// \brief Event notified whenever a test skip is reported.
-        Event<const TestContext&, OnTestContextSkippedEventArgs> skipped_event_;
-
-        /// \brief Event notified whenever a test message is reported.
-        Event<const TestContext&, OnTestContextMessageEventArgs> message_event_;
-
-        /// \brief Test 
-        Label name_;
     };
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
+    // Unit-test macros.
+
+    #undef SYNTROPY_UNIT_EQUAL
+    #define SYNTROPY_UNIT_EQUAL(expression, expected) \
+        if (auto&& result = (expression); result != expected) \
+        { \
+            syntropy::UnitTest::ReportFailure( SYNTROPY_HERE, #expression, result, expected ); \
+        } \
+        else \
+        { \
+            syntropy::UnitTest::ReportSuccess( SYNTROPY_HERE, #expression ); \
+        }
+
     // UnitTest.
 
-    template <typename TExpression, typename TResult>
-    void UnitTest::ReportSuccess(const StackTrace& test_location, TExpression&& expression, TResult&& result)
+    template <typename TExpression>
+    void UnitTest::ReportSuccess(const StackTrace& test_location, TExpression&& expression)
     {
         auto expression_stream = OStringStream{};
-        auto result_stream = OStringStream{};
 
         expression_stream << expression;
-        result_stream << result;
 
-        TestContext::context_->ReportSuccess(test_location, expression_stream.str(), result_stream.str());
+        TestContext::context_->ReportSuccess(test_location, expression_stream.str());
     }
 
     template <typename TExpression, typename TResult, typename TExpected>
@@ -238,26 +185,6 @@ namespace syntropy
         expected_stream << expected;
 
         TestContext::context_->ReportFailure(test_location, expression_stream.str(), result_stream.str(), expected_stream.str());
-    }
-
-    template <typename TReason>
-    inline void UnitTest::ReportSkipped(const StackTrace& test_location, TReason&& reason)
-    {
-        auto reason_stream = OStringStream{};
-
-        reason_stream << reason;
-
-        TestContext::context_->ReportSkipped(test_location, reason_stream.str());
-    }
-
-    template <typename... TMessage>
-    inline void UnitTest::ReportMessage(const StackTrace& test_location, TMessage&&... message)
-    {
-        auto stream = OStringStream{};
-
-        (stream << ... << message);
-
-        TestContext::context_->ReportMessage(test_location, stream.str());
     }
 
     // TestContext.
@@ -285,36 +212,14 @@ namespace syntropy
         return failure_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    template <typename TDelegate>
-    inline Listener TestContext::OnSkipped(TDelegate&& delegate) const
+    inline void TestContext::ReportSuccess(const StackTrace& location, const String& expression) const
     {
-        return skipped_event_.Subscribe(std::forward<TDelegate>(delegate));
-    }
-
-    template <typename TDelegate>
-    inline Listener TestContext::OnMessage(TDelegate&& delegate) const
-    {
-        return message_event_.Subscribe(std::forward<TDelegate>(delegate));
-    }
-
-    inline void TestContext::ReportSuccess(const StackTrace& location, const String& expression, const String& result) const
-    {
-        success_event_.Notify(*this, { location, expression, result });
+        success_event_.Notify(*this, { location, expression });
     }
 
     inline void TestContext::ReportFailure(const StackTrace& location, const String& expression, const String& result, const String& expected) const
     {
         failure_event_.Notify(*this, { location, expression, result, expected });
-    }
-
-    inline void TestContext::ReportSkipped(const StackTrace& location, const String& reason) const
-    {
-        skipped_event_.Notify(*this, { location, reason });
-    }
-
-    inline void TestContext::ReportMessage(const StackTrace& location, const String& message) const
-    {
-        message_event_.Notify(*this, { location, message });
     }
 
 }

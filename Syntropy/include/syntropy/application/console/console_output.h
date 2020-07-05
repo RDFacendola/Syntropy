@@ -32,21 +32,21 @@ namespace syntropy
 
         /// \brief Set the output style.
         template <typename TStyle, typename... TArguments>
-        void SetStyle(TArguments&&... arguments);
+        ConsoleOutput& SetStyle(TArguments&&... arguments);
 
         /// \brief Push a new section with provided arguments.
         template <typename TSection, typename... TArguments>
-        void PushSection(TArguments&&... arguments);
+        ConsoleOutput& PushSection(TArguments&&... arguments);
 
         /// \brief Pop the current active section.
-        void PopSection();
+        ConsoleOutput& PopSection();
 
         /// \brief Print one or more lines according to the current section and style.
         template <typename... TArguments>
-        void Print(TArguments&&... arguments);
+        ConsoleOutput& Print(TArguments&&... arguments);
 
         /// \brief Insert a new line.
-        void LineFeed();
+        ConsoleOutput& LineFeed();
 
     private:
 
@@ -72,35 +72,45 @@ namespace syntropy
     }
 
     template <typename TStyle, typename... TArguments>
-    inline void ConsoleOutput::SetStyle(TArguments&&... arguments)
+    inline ConsoleOutput& ConsoleOutput::SetStyle(TArguments&&... arguments)
     {
         style_ = NewConsoleStyle<TStyle>(std::forward<TArguments>(arguments)...);
+
+        return *this;
     }
 
     template <typename TSection, typename... TArguments>
-    inline void ConsoleOutput::PushSection(TArguments&&... arguments)
+    inline ConsoleOutput& ConsoleOutput::PushSection(TArguments&&... arguments)
     {
         auto text = Strings::Build(std::forward<TArguments>(arguments)...);
 
         std::cout << style_->PushSection(typeid(TSection), text);
+
+        return *this;
     }
 
-    inline void ConsoleOutput::PopSection()
+    inline ConsoleOutput& ConsoleOutput::PopSection()
     {
         std::cout << style_->PopSection();
+
+        return *this;
     }
 
     template <typename... TArguments>
-    inline void ConsoleOutput::Print(TArguments&&... arguments)
+    inline ConsoleOutput& ConsoleOutput::Print(TArguments&&... arguments)
     {
         auto text = Strings::Build(std::forward<TArguments>(arguments)...);
 
         std::cout << style_->Print(text);
+
+        return *this;
     }
 
-    inline void ConsoleOutput::LineFeed()
+    inline ConsoleOutput& ConsoleOutput::LineFeed()
     {
         std::cout << style_->LineFeed();
+
+        return *this;
     }
 
 }

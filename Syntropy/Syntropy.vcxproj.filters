@@ -75,14 +75,11 @@
     <ClInclude Include="include\syntropy\math\combinatorics.h" />
     <ClInclude Include="include\syntropy\language\event.h" />
     <ClInclude Include="include\syntropy\language\listener.h" />
-    <ClInclude Include="include\syntropy\unit_test\test_result.h" />
     <ClInclude Include="include\syntropy\unit_test\test_case.h" />
-    <ClInclude Include="include\syntropy\unit_test\test_report.h" />
     <ClInclude Include="include\syntropy\unit_test\test_suite.h" />
     <ClInclude Include="include\syntropy\unit_test\auto_test_case.h" />
     <ClInclude Include="include\syntropy\unit_test\auto_test_suite.h" />
     <ClInclude Include="include\syntropy\unit_test\test_runner.h" />
-    <ClInclude Include="include\syntropy\unit_test\test_macros.h" />
     <ClInclude Include="include\syntropy\language\visitor.h" />
     <ClInclude Include="include\syntropy\diagnostics\file_log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\auto_log_channel.h" />
@@ -121,6 +118,7 @@
     <ClInclude Include="include\syntropy\application\console\console_style.h" />
     <ClInclude Include="include\syntropy\application\console\default_console_style.h" />
     <ClInclude Include="include\syntropy\application\console\plain_console_style.h" />
+    <ClInclude Include="include\syntropy\unit_test\unit_test.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

@@ -10,7 +10,6 @@
 #include "syntropy/core/label.h"
 #include "syntropy/language/event.h"
 
-#include "syntropy/unit_test/test_report.h"
 #include "syntropy/unit_test/test_case.h"
 #include "syntropy/unit_test/auto_test_case.h"
 
@@ -36,9 +35,6 @@ namespace syntropy
     {
         /// \brief Test case name.
         Label test_case_;
-
-        /// \brief Synthetic test case report.
-        TestReport test_report_;
     };
 
     /************************************************************************/
@@ -58,28 +54,6 @@ namespace syntropy
 
     /// \brief Arguments for the event notified whenever a test case success is reported.
     struct OnTestSuiteCaseFailureEventArgs : OnTestCaseFailureEventArgs
-    {
-        /// \brief Test case name.
-        Label test_case_;
-    };
-
-    /************************************************************************/
-    /* ON TEST SUITE CASE SKIPPED EVENT ARGS                                */
-    /************************************************************************/
-
-    /// \brief Arguments for the event notified whenever a test case success is reported.
-    struct OnTestSuiteCaseSkippedEventArgs : OnTestCaseSkippedEventArgs
-    {
-        /// \brief Test case name.
-        Label test_case_;
-    };
-
-    /************************************************************************/
-    /* ON TEST SUITE CASE MESSAGE EVENT ARGS                                */
-    /************************************************************************/
-
-    /// \brief Arguments for the event notified whenever a test message is reported.
-    struct OnTestSuiteCaseMessageEventArgs : OnTestCaseMessageEventArgs
     {
         /// \brief Test case name.
         Label test_case_;
@@ -119,7 +93,7 @@ namespace syntropy
         const Context& GetName() const;
 
         /// \brief Run all test cases in the suite.
-        virtual TestReport Run() const = 0;
+        virtual void Run() const = 0;
 
         /// \brief Bind to the event notified whenever a test starts. 
         template <typename TDelegate>
@@ -137,14 +111,6 @@ namespace syntropy
         template <typename TDelegate>
         Listener OnCaseFailure(TDelegate&& delegate) const;
 
-        /// \brief Bind to the event notified whenever a test case is skipped.
-        template <typename TDelegate>
-        Listener OnCaseSkipped(TDelegate&& delegate) const;
-
-        /// \brief Bind to the event notified whenever a test message is reported. 
-        template <typename TDelegate>
-        Listener OnCaseMessage(TDelegate&& delegate) const;
-
     protected:
 
         /// \brief Notify the start of a test case.
@@ -158,12 +124,6 @@ namespace syntropy
 
         /// \brief Notify a failure within a test case.
         void NotifyCaseFailure(const OnTestSuiteCaseFailureEventArgs& event_args) const;
-
-        /// \brief Notify a test case was skipped.
-        void NotifyCaseSkip(const OnTestSuiteCaseSkippedEventArgs& event_args) const;
-
-        /// \brief Notify a message within a test case.
-        void NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args) const;
 
     private:
 
@@ -182,11 +142,6 @@ namespace syntropy
         /// \brief Event notified whenever a failure is reported.
         Event<const TestSuite&, OnTestSuiteCaseFailureEventArgs> case_failure_event_;
 
-        /// \brief Event notified whenever a test case is skipped.
-        Event<const TestSuite&, OnTestSuiteCaseSkippedEventArgs> case_skipped_event_;
-
-        /// \brief Event notified whenever a test message is reported.
-        Event<const TestSuite&, OnTestSuiteCaseMessageEventArgs> case_message_event_;
     };
 
     /************************************************************************/
@@ -219,7 +174,7 @@ namespace syntropy
         /// \brief Default virtual destructor.
         virtual ~TestSuiteT() = default;
 
-        virtual TestReport Run() const override;
+        virtual void Run() const override;
 
     private:
 
@@ -232,7 +187,7 @@ namespace syntropy
         using HasBefore = decltype(std::declval<UTestFixture>().Before());
 
         /// \brief Run a test case.
-        TestReport Run(const TestCase<TTestFixture>& test_case) const;
+        void Run(const TestCase<TTestFixture>& test_case) const;
 
         /// \brief Underlying test fixture.
         /// The fixture is not considered part of the external interface: test cases are either const or have to preserve the immutable state of the fixture via After and Before methods (which are required to be non-const).
@@ -281,18 +236,6 @@ namespace syntropy
         return case_failure_event_.Subscribe(std::forward<TDelegate>(delegate));
     }
 
-    template <typename TDelegate>
-    inline Listener TestSuite::OnCaseSkipped(TDelegate&& delegate) const
-    {
-        return case_skipped_event_.Subscribe(std::forward<TDelegate>(delegate));
-    }
-
-    template <typename TDelegate>
-    inline Listener TestSuite::OnCaseMessage(TDelegate&& delegate) const
-    {
-        return case_message_event_.Subscribe(std::forward<TDelegate>(delegate));
-    }
-
     inline void TestSuite::NotifyCaseStarted(const OnTestSuiteCaseStartedEventArgs& event_args) const
     {
         case_started_event_.Notify(*this, event_args);
@@ -313,16 +256,6 @@ namespace syntropy
         case_failure_event_.Notify(*this, event_args);
     }
 
-    inline void TestSuite::NotifyCaseSkip(const OnTestSuiteCaseSkippedEventArgs& event_args) const
-    {
-        case_skipped_event_.Notify(*this, event_args);
-    }
-
-    inline void TestSuite::NotifyCaseMessage(const OnTestSuiteCaseMessageEventArgs& event_args) const
-    {
-        case_message_event_.Notify(*this, event_args);
-    }
-
     // TestSuiteT<TTestFixture>.
 
     template <typename TTestFixture>
@@ -335,20 +268,16 @@ namespace syntropy
     }
 
     template <typename TTestFixture>
-    TestReport TestSuiteT<TTestFixture>::Run() const
+    void TestSuiteT<TTestFixture>::Run() const
     {
-        auto test_report = MakeTestReport(GetName());
-
-        AutoTestCase<TTestFixture>::ForEach([this, &test_report](const auto& auto_test_case)
+        AutoTestCase<TTestFixture>::ForEach([this](const auto& auto_test_case)
         {
-            test_report += Run(auto_test_case.GetTestCase());
+            Run(auto_test_case.GetTestCase());
         });
-
-        return test_report;
     }
 
     template <typename TTestFixture>
-    TestReport TestSuiteT<TTestFixture>::Run(const TestCase<TTestFixture>& test_case) const
+    void TestSuiteT<TTestFixture>::Run(const TestCase<TTestFixture>& test_case) const
     {
         // Setup listeners for the current test case.
 
@@ -356,22 +285,12 @@ namespace syntropy
 
         test_case_listener += test_case.OnSuccess([this](const auto& sender, const auto& event_args)
         {
-            NotifyCaseSuccess({ event_args.location_, event_args.expression_, event_args.result_, sender.GetName() });
+            NotifyCaseSuccess({ event_args.location_, event_args.expression_, sender.GetName() });
         });
 
         test_case_listener += test_case.OnFailure([this](const auto& sender, const auto& event_args)
         {
             NotifyCaseFailure({ event_args.location_, event_args.expression_, event_args.result_, event_args.expected_, sender.GetName() });
-        });
-
-        test_case_listener += test_case.OnSkipped([this](const auto& sender, const auto& event_args)
-        {
-            NotifyCaseSkip({ event_args.location_, event_args.reason_, sender.GetName() });
-        });
-
-        test_case_listener += test_case.OnMessage([this](const auto& sender, const auto& event_args)
-        {
-            NotifyCaseMessage({ event_args.location_, event_args.message_, sender.GetName() });
         });
 
         // Run the test case.
@@ -383,18 +302,14 @@ namespace syntropy
             test_fixture_.Before();         // Setup the test fixture. Optional.
         }
 
-        auto test_report = test_case.Run(test_fixture_);
+        test_case.Run(test_fixture_);
 
         if constexpr (IsValidExpressionV<HasAfter, TTestFixture>)
         {
             test_fixture_.After();          // Cleanup the test fixture. Optional.
         }
 
-        NotifyCaseFinished({ test_case.GetName(), test_report });
-
-        // Report.
-
-        return test_report;
+        NotifyCaseFinished({ test_case.GetName() });
     }
 
 }
