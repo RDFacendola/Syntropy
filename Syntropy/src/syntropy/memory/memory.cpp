@@ -23,11 +23,11 @@ namespace syntropy
 
             if (!Intersection(destination_range, source_range))
             {
-                std::memcpy(destination.Begin(), source.Begin(), *copy_size);                     // Faster copy for non-overlapping ranges.
+                std::memcpy(destination.Begin(), source.Begin(), ToInt(copy_size));             // Faster copy for non-overlapping ranges.
             }
             else
             {
-                std::memmove(destination.Begin(), source.Begin(), *copy_size);                    // Slower copy for overlapping ranges.
+                std::memmove(destination.Begin(), source.Begin(), ToInt(copy_size));            // Slower copy for overlapping ranges.
             }
         }
 

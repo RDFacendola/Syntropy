@@ -16,85 +16,134 @@ namespace syntropy
     /* BYTES                                                                */
     /************************************************************************/
 
-    /// \brief Represents a number of bytes.
-    /// \author Raffaele D. Facendola - July 2018
-    class Bytes
-    {
-    public:
+    /// \brief Represents a bytes amount.
+    enum class Bytes : Int {};
 
-        /// \brief Create a new bytes count equal to zero.
-        constexpr Bytes() = default;
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
-        /// \brief Create a new bytes count.
-        constexpr explicit Bytes(Int bytes);
+    /// \brief Convert an amount of bytes to integer.
+    constexpr Int ToInt(Bytes lhs) noexcept;
 
-        /// \brief Default copy-constructor.
-        constexpr Bytes(const Bytes&) = default;
+    /// \brief Convert an integer number to a bytes amount.
+    constexpr Bytes ToBytes(Int lhs) noexcept;
 
-        /// \brief Default assignment operator.
-        Bytes& operator=(const Bytes&) = default;
+    /// \brief Get the size of rhs, in bytes.
+    template <typename TType>
+    constexpr Bytes BytesOf(const TType& rhs) noexcept;
 
-        /// \brief Get the number of bytes.
-        /// \return Returns the number of bytes.
-        constexpr Int operator*() const;
+    /// \brief Get the size of TType, in bytes.
+    template <typename TType>
+    constexpr Bytes BytesOf() noexcept;
 
-        /// \brief Get the number of bytes.
-        /// \return Returns the number of bytes.
-        constexpr Int GetCount() const;
+    /// \brief Sum a byte amount to an existing value.
+    constexpr Bytes& operator+=(Bytes& lhs, Bytes rhs) noexcept;
 
-        /// \brief Add a bytes amount.
-        /// \return Returns a reference to this element.
-        constexpr Bytes& operator+=(const Bytes& rhs) noexcept;
+    /// \brief Subtract a byte amount from an existing value.
+    constexpr Bytes& operator-=(Bytes& lhs, Bytes rhs) noexcept;
 
-        /// \brief Subtract a bytes amount.
-        /// \return Returns a reference to this element.
-        constexpr Bytes& operator-=(const Bytes& rhs) noexcept;
+    /// \brief Multiply a byte amount by a integer number.
+    constexpr Bytes& operator*=(Bytes& lhs, Int rhs) noexcept;
 
-        /// \brief Multiply this element by a number.
-        /// \return Returns a reference to this element.
-        constexpr Bytes& operator*=(Int rhs) noexcept;
+    /// \brief Divide a byte amount by an integer value and round the result towards zero.
+    constexpr Bytes& operator/=(Bytes& lhs, Int rhs) noexcept;
 
-        /// \brief Divides this element by a number.
-        /// \return Returns a reference to this element.
-        constexpr Bytes& operator/=(Int rhs) noexcept;
+    /// \brief Division remainder of a bytes amount by an integer value.
+    constexpr Bytes& operator%=(Bytes& lhs, Int rhs) noexcept;
 
-        /// \brief Division remainder of this element by a number.
-        /// \return Returns a reference to this element.
-        constexpr Bytes& operator%=(Int rhs) noexcept;
+    /// \brief Shift a byte amount right.
+    constexpr Bytes& operator>>=(Bytes& lhs, Int rhs) noexcept;
 
-        /// \brief Right shift operator.
-        /// \return Returns a reference to this element.
-        constexpr Bytes& operator>>=(Int rhs) noexcept;
+    /// \brief Shift a bytes amount left.
+    constexpr Bytes& operator<<=(Bytes& lhs, Int rhs) noexcept;
 
-        /// \brief Left shift operator.
-        /// \return Returns a reference to this element.
-        constexpr Bytes& operator<<=(Int rhs) noexcept;
+    /// \brief Bitwise-and operator.
+    constexpr Bytes& operator&=(Bytes& lhs, Bytes rhs) noexcept;
 
-        /// \brief Bitwise-and operator.
-        /// \return Returns a reference to this element.
-        constexpr Bytes& operator&=(const Bytes& rhs) noexcept;
+    /// \brief Bitwise-or operator.
+    constexpr Bytes& operator|=(Bytes& lhs, Bytes rhs) noexcept;
 
-        /// \brief Bitwise-or operator.
-        /// \return Returns a reference to this element.
-        constexpr Bytes& operator|=(const Bytes& rhs) noexcept;
+    /// \brief Bitwise-xor operator.
+    constexpr Bytes& operator^=(Bytes& lhs, Bytes rhs) noexcept;
 
-        /// \brief Bitwise-xor operator.
-        /// \return Returns a reference to this element.
-        constexpr Bytes& operator^=(const Bytes& rhs) noexcept;
+    /// \brief Pre-increment a bytes amount by one.
+    constexpr Bytes& operator++(Bytes& rhs) noexcept;
 
-    private:
+    /// \brief Post-increment a bytes amount by one.
+    constexpr Bytes operator++(Bytes& rhs, int) noexcept;
 
-        ///< \brief Number of bytes. Can be negative.
-        Int bytes_ = 0;
+    /// \brief Pre-decrement a bytes amount by one.
+    constexpr Bytes& operator--(Bytes& rhs) noexcept;
 
-    };
+    /// \brief Post-decrement a bytes amount by one.
+    constexpr Bytes operator--(Bytes& rhs, int) noexcept;
+
+    /// \brief Sum two bytes amount.
+    /// \return Returns a memory amount which is the sum of lhs and rhs.
+    constexpr Bytes operator+(Bytes lhs, Bytes rhs) noexcept;
+
+    /// \brief Subtract two bytes amount.
+    /// \return Returns a memory amount which is the difference of lhs and rhs.
+    constexpr Bytes operator-(Bytes lhs, Bytes rhs) noexcept;
+
+    /// \brief Multiply a byte amount by a number.
+    /// \return Returns a memory amount which is equal to lhs times rhs.
+    constexpr Bytes operator*(Bytes lhs, Int rhs) noexcept;
+
+    /// \brief Multiply a byte amount by a number.
+    /// \return Returns a memory amount which is equal to rhs times lhs.
+    constexpr Bytes operator*(Int lhs, Bytes rhs) noexcept;
+
+    /// \brief Divide a byte amount by a number.
+    /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
+    constexpr Bytes operator/(Bytes lhs, Int rhs) noexcept;
+
+    /// \brief Divide a byte amount by another byte amount.
+    /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
+    constexpr Int operator/(Bytes lhs, Bytes rhs) noexcept;
+
+    /// \brief Get the remainder of a byte amount divided by a number.
+    /// \return Returns a memory amount which is equal to lhs modulus rhs.
+    constexpr Bytes operator%(Bytes lhs, Int rhs) noexcept;
+
+    /// \brief Get the remainder of a byte amount divided by another byte amount.
+    /// \return Returns a memory amount which is equal to lhs modulus rhs.
+    constexpr Int operator%(Bytes lhs, Bytes rhs) noexcept;
+
+    /// \brief Right-shift a bytes amount.
+    /// \return Returns a memory amount which is equal to lhs right-shifted by rhs.
+    constexpr Bytes operator>>(Bytes lhs, Int rhs) noexcept;
+
+    /// \brief Left-shift a bytes amount.
+    /// \return Returns a memory amount which is equal to lhs left-shifted by rhs.
+    constexpr Bytes operator<<(Bytes lhs, Int rhs) noexcept;
+
+    /// \brief Bitwise not of a byte quantity.
+    /// \return Returns a memory amount which is the bitwise not of rhs.
+    constexpr Bytes operator~(Bytes rhs) noexcept;
+
+    /// \brief Bitwise and between two bytes quantities.
+    /// \return Returns a memory amount which is equal to the bitwise and between lhs and rhs.
+    constexpr Bytes operator&(Bytes lhs, Bytes rhs) noexcept;
+
+    /// \brief Bitwise or between two bytes quantities.
+    /// \return Returns a memory amount which is equal to the bitwise or between lhs and rhs.
+    constexpr Bytes operator|(Bytes lhs, Bytes rhs) noexcept;
+
+    /// \brief Bitwise xor between two bytes quantities.
+    /// \return Returns a memory amount which is equal to the bitwise xor between lhs and rhs.
+    constexpr Bytes operator^(Bytes lhs, Bytes rhs) noexcept;
+
+    /// \brief Stream insertion for Bytes.
+    std::ostream& operator<<(std::ostream& lhs, Bytes rhs);
 
     /************************************************************************/
     /* LITERALS                                                             */
     /************************************************************************/
 
     /// \brief Exposes memory unit literals.
-    namespace Literals
+    namespace literals
     {
         /// \brief User-defined literal used to convert a number from Bytes to Bytes.
         /// \param number Number to convert.
@@ -118,235 +167,113 @@ namespace syntropy
     }
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Increment the value by one Byte. Prefix.
-    constexpr Bytes& operator++(Bytes& rhs);
-
-    /// \brief Increment the value by one Byte. Postfix.
-    constexpr Bytes operator++(Bytes& rhs, int);
-
-    /// \brief Decrement the value by one Byte. Prefix.
-    constexpr Bytes& operator--(Bytes& rhs);
-
-    /// \brief Decrement the value by one Byte. Postfix.
-    constexpr Bytes operator--(Bytes& rhs, int);
-
-    /// \brief Equality comparison for Bytes.
-    /// \return Returns true if lhs and rhs refer to the same amount of memory, returns false otherwise.
-    constexpr Bool operator==(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Inequality comparison for Bytes.
-    /// \return Returns true if lhs and rhs refer to different amounts of memory, returns false otherwise.
-    constexpr Bool operator!=(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Greater-than comparison for Bytes.
-    /// \return Returns true if lhs refers to a memory amount that is strictly greater than rhs, returns false otherwise.
-    constexpr Bool operator>(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Less-than comparison for Bytes.
-    /// \return Returns true if lhs refers to a memory amount that is strictly less than rhs, returns false otherwise.
-    constexpr Bool operator<(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Greater-or-equal comparison for Bytes.
-    /// \return Returns true if lhs refers to a memory amount that is equal or greater than rhs, returns false otherwise.
-    constexpr Bool operator>=(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Less-or-equal comparison for Bytes.
-    /// \return Returns true if lhs refers to a memory amount that is equal or less than rhs, returns false otherwise.
-    constexpr Bool operator<=(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Sum two bytes amount.
-    /// \return Returns a memory amount which is the sum of lhs and rhs.
-    constexpr Bytes operator+(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Subtract two bytes amount.
-    /// \return Returns a memory amount which is the difference of lhs and rhs.
-    constexpr Bytes operator-(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Multiply a byte amount by a number.
-    /// \return Returns a memory amount which is equal to lhs times rhs.
-    constexpr Bytes operator*(const Bytes& lhs, Int rhs) noexcept;
-
-    /// \brief Multiply a byte amount by a number.
-    /// \return Returns a memory amount which is equal to rhs times lhs.
-    constexpr Bytes operator*(Int lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Divide a byte amount by a number.
-    /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
-    constexpr Bytes operator/(const Bytes& lhs, Int rhs) noexcept;
-
-    /// \brief Divide a byte amount by another byte amount.
-    /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
-    constexpr Int operator/(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Get the remainder of a byte amount divided by a number.
-    /// \return Returns a memory amount which is equal to lhs modulus rhs.
-    constexpr Bytes operator%(const Bytes& lhs, Int rhs) noexcept;
-
-    /// \brief Get the remainder of a byte amount divided by another byte amount.
-    /// \return Returns a memory amount which is equal to lhs modulus rhs.
-    constexpr Int operator%(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Right-shift a bytes amount.
-    /// \return Returns a memory amount which is equal to lhs right-shifted by rhs.
-    constexpr Bytes operator>>(const Bytes& lhs, Int rhs) noexcept;
-
-    /// \brief Left-shift a bytes amount.
-    /// \return Returns a memory amount which is equal to lhs left-shifted by rhs.
-    constexpr Bytes operator<<(const Bytes& lhs, Int rhs) noexcept;
-
-    /// \brief Bitwise not of a byte quantity.
-    /// \return Returns a memory amount which is the bitwise not of rhs.
-    constexpr Bytes operator~(const Bytes& rhs) noexcept;
-
-    /// \brief Bitwise and between two bytes quantities.
-    /// \return Returns a memory amount which is equal to the bitwise and between lhs and rhs.
-    constexpr Bytes operator&(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Bitwise or between two bytes quantities.
-    /// \return Returns a memory amount which is equal to the bitwise or between lhs and rhs.
-    constexpr Bytes operator|(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Bitwise xor between two bytes quantities.
-    /// \return Returns a memory amount which is equal to the bitwise xor between lhs and rhs.
-    constexpr Bytes operator^(const Bytes& lhs, const Bytes& rhs) noexcept;
-
-    /// \brief Explicitly convert a number to a Bytes amount.
-    template <typename TType>
-    constexpr Bytes ToBytes(const TType& rhs) noexcept;
-
-    /// \brief Get the size of rhs, in bytes.
-    template <typename TType>
-    constexpr Bytes BytesOf(const TType& rhs);
-
-    /// \brief Get the size of TType, in bytes.
-    template <typename TType>
-    constexpr Bytes BytesOf();
-
-    /// \brief Stream insertion for Bytes.
-    std::ostream& operator<<(std::ostream& lhs, const Bytes& rhs);
-
-    /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Bytes.
-
-    constexpr Bytes::Bytes(Int bytes)
-        : bytes_(bytes)
-    {
-
-    }
-
-    constexpr Int Bytes::operator*() const
-    {
-        return bytes_;
-    }
-
-    constexpr Int Bytes::GetCount() const
-    {
-        return bytes_;
-    }
-
-    constexpr Bytes& Bytes::operator+=(const Bytes& rhs) noexcept
-    {
-        bytes_ += rhs.bytes_;
-        return *this;
-    }
-
-    constexpr Bytes& Bytes::operator-=(const Bytes& rhs) noexcept
-    {
-        bytes_ -= rhs.bytes_;
-        return *this;
-    }
-
-    constexpr Bytes& Bytes::operator*=(Int rhs) noexcept
-    {
-        bytes_ *= rhs;
-        return *this;
-    }
-
-    constexpr Bytes& Bytes::operator/=(Int rhs) noexcept
-    {
-        bytes_ /= rhs;
-        return *this;
-    }
-
-    constexpr Bytes& Bytes::operator%=(Int rhs) noexcept
-    {
-        bytes_ %= rhs;
-        return *this;
-    }
-
-    constexpr Bytes& Bytes::operator>>=(Int rhs) noexcept
-    {
-        bytes_ >>= rhs;
-        return *this;
-    }
-
-    constexpr Bytes& Bytes::operator<<=(Int rhs) noexcept
-    {
-        bytes_ <<= rhs;
-        return *this;
-    }
-
-    constexpr Bytes& Bytes::operator&=(const Bytes& rhs) noexcept
-    {
-        bytes_ &= rhs.bytes_;
-        return *this;
-    }
-
-    constexpr Bytes& Bytes::operator|=(const Bytes& rhs) noexcept
-    {
-        bytes_ |= rhs.bytes_;
-        return *this;
-    }
-
-    constexpr Bytes& Bytes::operator^=(const Bytes& rhs) noexcept
-    {
-        bytes_ ^= rhs.bytes_;
-        return *this;
-    }
-
-    // Literals.
-
-    constexpr Bytes Literals::operator "" _Bytes(std::size_t lhs)
-    {
-        return Bytes(lhs);
-    }
-
-    constexpr Bytes Literals::operator "" _KiBytes(std::size_t lhs)
-    {
-        return Bytes(lhs * 0x400ull);
-    }
-
-    constexpr Bytes Literals::operator "" _MiBytes(std::size_t lhs)
-    {
-        return Bytes(lhs * 0x400ull * 0x400ull);
-    }
-
-    constexpr Bytes Literals::operator "" _GiBytes(std::size_t lhs)
-    {
-        return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull);
-    }
-
-    constexpr Bytes Literals::operator "" _TiBytes(std::size_t lhs)
-    {
-        return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull * 0x400ull);
-    }
-
     // Non-member functions.
 
-    constexpr Bytes& operator++(Bytes& rhs)
+    constexpr Int ToInt(Bytes lhs) noexcept
     {
-        rhs += Bytes{ 1 };
+        return static_cast<Int>(lhs);
+    }
+
+    constexpr Bytes ToBytes(Int lhs) noexcept
+    {
+        return Bytes{ lhs };
+    }
+
+    template <typename TType>
+    constexpr Bytes BytesOf(const TType& rhs) noexcept
+    {
+        return Bytes{ sizeof(rhs) };
+    }
+
+    template <typename TType>
+    constexpr Bytes BytesOf() noexcept
+    {
+        return Bytes{ sizeof(TType) };
+    }
+
+    constexpr Bytes& operator+=(Bytes& lhs, Bytes rhs) noexcept
+    {
+        lhs = lhs + rhs;
+
+        return lhs;
+    }
+
+    constexpr Bytes& operator-=(Bytes& lhs, Bytes rhs) noexcept
+    {
+        lhs = lhs - rhs;
+
+        return lhs;
+    }
+
+    constexpr Bytes& operator*=(Bytes& lhs, Int rhs) noexcept
+    {
+        lhs = lhs * rhs;
+
+        return lhs;
+    }
+
+    constexpr Bytes& operator/=(Bytes& lhs, Int rhs) noexcept
+    {
+        lhs = lhs / rhs;
+
+        return lhs;
+    }
+
+    constexpr Bytes& operator%=(Bytes& lhs, Int rhs) noexcept
+    {
+        lhs = lhs % rhs;
+
+        return lhs;
+    }
+
+    constexpr Bytes& operator>>=(Bytes& lhs, Int rhs) noexcept
+    {
+        lhs = lhs >> rhs;
+
+        return lhs;
+    }
+
+    constexpr Bytes& operator<<=(Bytes& lhs, Int rhs) noexcept
+    {
+        lhs = lhs << rhs;
+
+        return lhs;
+    }
+
+    constexpr Bytes& operator&=(Bytes& lhs, Bytes rhs) noexcept
+    {
+        lhs = lhs & rhs;
+
+        return lhs;
+    }
+
+    constexpr Bytes& operator|=(Bytes& lhs, Bytes rhs) noexcept
+    {
+        lhs = lhs | rhs;
 
         return rhs;
     }
 
-    constexpr Bytes operator++(Bytes& rhs, int)
+    constexpr Bytes& operator^=(Bytes& lhs, Bytes rhs) noexcept
+    {
+        lhs = lhs ^ rhs;
+
+        return lhs;
+    }
+
+    constexpr Bytes& operator++(Bytes& rhs) noexcept
+    {
+        using namespace literals;
+
+        rhs += 1_Bytes;
+
+        return rhs;
+    }
+
+    constexpr Bytes operator++(Bytes& rhs, int) noexcept
     {
         auto copy = rhs;
 
@@ -355,14 +282,16 @@ namespace syntropy
         return copy;
     }
 
-    constexpr Bytes& operator--(Bytes& rhs)
+    constexpr Bytes& operator--(Bytes& rhs) noexcept
     {
-        rhs -= Bytes{ 1 };
+        using namespace literals;
+
+        rhs -= 1_Bytes;
 
         return rhs;
     }
 
-    constexpr Bytes operator--(Bytes& rhs, int)
+    constexpr Bytes operator--(Bytes& rhs, int) noexcept
     {
         auto copy = rhs;
 
@@ -371,127 +300,106 @@ namespace syntropy
         return copy;
     }
 
-    constexpr Bool operator==(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator+(Bytes lhs, Bytes rhs) noexcept
     {
-        return *lhs == *rhs;
+        return ToBytes(ToInt(lhs) + ToInt(rhs));
     }
 
-    constexpr Bool operator!=(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator-(Bytes lhs, Bytes rhs) noexcept
     {
-        return !(lhs == rhs);
+        return ToBytes(ToInt(lhs) - ToInt(rhs));
     }
 
-    constexpr Bool operator>(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator*(Bytes lhs, Int rhs) noexcept
     {
-        return *lhs > *rhs;
+        return ToBytes(ToInt(lhs) * rhs);
     }
 
-    constexpr Bool operator<(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator*(Int lhs, Bytes rhs) noexcept
     {
-        return *lhs < *rhs;
+        return ToBytes(lhs * ToInt(rhs));
     }
 
-    constexpr Bool operator>=(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator/(Bytes lhs, Int rhs) noexcept
     {
-        return *lhs >= *rhs;
+        return ToBytes(ToInt(lhs) / rhs);
     }
 
-    constexpr Bool operator<=(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Int operator/(Bytes lhs, Bytes rhs) noexcept
     {
-        return *lhs <= *rhs;
+        return ToInt(lhs) / ToInt(rhs);
     }
 
-    constexpr Bytes operator+(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator%(Bytes lhs, Int rhs) noexcept
     {
-        return Bytes(lhs) += rhs;
+        return ToBytes(ToInt(lhs) % rhs);
     }
 
-    constexpr Bytes operator-(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Int operator%(Bytes lhs, Bytes rhs) noexcept
     {
-        return Bytes(lhs) -= rhs;
+        return ToInt(lhs) % ToInt(rhs);
     }
 
-    constexpr Bytes operator*(const Bytes& lhs, Int rhs) noexcept
+    constexpr Bytes operator>>(Bytes lhs, Int rhs) noexcept
     {
-        return Bytes(lhs) *= rhs;
+        return (rhs >= 0) ? ToBytes(ToInt(lhs) >> rhs) : (lhs << rhs);
     }
 
-    constexpr Bytes operator*(Int lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator<<(Bytes lhs, Int rhs) noexcept
     {
-        return Bytes(rhs) *= lhs;
+        return (rhs <= 0) ? ToBytes(ToInt(lhs) << rhs) : (lhs >> rhs);
     }
 
-    constexpr Bytes operator/(const Bytes& lhs, Int rhs) noexcept
+    constexpr Bytes operator~(Bytes rhs) noexcept
     {
-        return Bytes(lhs) /= rhs;
+        return ToBytes(~ToInt(rhs));
     }
 
-    constexpr Int operator/(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator&(Bytes lhs, Bytes rhs) noexcept
     {
-        return *lhs / *rhs;
+        return ToBytes(ToInt(lhs) & ToInt(rhs));
     }
 
-    constexpr Bytes operator%(const Bytes& lhs, Int rhs) noexcept
+    constexpr Bytes operator|(Bytes lhs, Bytes rhs) noexcept
     {
-        return Bytes(lhs) %= rhs;
+        return ToBytes(ToInt(lhs) | ToInt(rhs));
     }
 
-    constexpr Int operator%(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes operator^(Bytes lhs, Bytes rhs) noexcept
     {
-        return *lhs % *rhs;
+        return ToBytes(ToInt(lhs) ^ ToInt(rhs));
     }
 
-    constexpr Bytes operator>>(const Bytes& lhs, Int rhs) noexcept
+    inline std::ostream& operator<<(std::ostream& lhs, Bytes rhs)
     {
-        return Bytes(lhs) >>= rhs;
+        return lhs << ToInt(rhs);
     }
 
-    constexpr Bytes operator<<(const Bytes& lhs, Int rhs) noexcept
+    // Literals.
+
+    constexpr Bytes literals::operator "" _Bytes(std::size_t lhs)
     {
-        return Bytes(lhs) <<= rhs;
+        return Bytes(lhs);
     }
 
-    constexpr Bytes operator~(const Bytes& rhs) noexcept
+    constexpr Bytes literals::operator "" _KiBytes(std::size_t lhs)
     {
-        return Bytes(~(*rhs));
+        return Bytes(lhs * 0x400ull);
     }
 
-    constexpr Bytes operator&(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes literals::operator "" _MiBytes(std::size_t lhs)
     {
-        return Bytes(lhs) &= rhs;
+        return Bytes(lhs * 0x400ull * 0x400ull);
     }
 
-    constexpr Bytes operator|(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes literals::operator "" _GiBytes(std::size_t lhs)
     {
-        return Bytes(lhs) |= rhs;
+        return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull);
     }
 
-    constexpr Bytes operator^(const Bytes& lhs, const Bytes& rhs) noexcept
+    constexpr Bytes literals::operator "" _TiBytes(std::size_t lhs)
     {
-        return Bytes(lhs) ^= rhs;
-    }
-
-    inline std::ostream& operator<<(std::ostream& lhs, const Bytes& rhs)
-    {
-        return lhs << *rhs;
-    }
-
-    template <typename TType>
-    constexpr Bytes ToBytes(const TType& rhs) noexcept
-    {
-        return Bytes{ static_cast<Int>(rhs) };
-    }
-
-    template <typename TType>
-    constexpr Bytes BytesOf(const TType& rhs)
-    {
-        return Bytes{ sizeof(rhs) };
-    }
-
-    template <typename TType>
-    constexpr Bytes BytesOf()
-    {
-        return Bytes{ sizeof(TType) };
+        return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull * 0x400ull);
     }
 
 }

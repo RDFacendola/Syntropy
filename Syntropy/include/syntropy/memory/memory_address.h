@@ -293,14 +293,14 @@ namespace syntropy
     template <Bool kIsConst>
     constexpr MemoryAddressT<kIsConst>& MemoryAddressT<kIsConst>::operator+=(const Bytes& rhs) noexcept
     {
-        address_ = address_ + *rhs;
+        address_ = address_ + ToInt(rhs);
         return *this;
     }
 
     template <Bool kIsConst>
     constexpr MemoryAddressT<kIsConst>& MemoryAddressT<kIsConst>::operator-=(const Bytes& rhs) noexcept
     {
-        address_ = address_ - *rhs;
+        address_ = address_ - ToInt(rhs);
         return *this;
     }
 

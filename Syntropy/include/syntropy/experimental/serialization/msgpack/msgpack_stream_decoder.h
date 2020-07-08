@@ -509,7 +509,7 @@ namespace syntropy
     template <typename TExtension, typename>
     MsgpackReader& MsgpackReader::operator>>(TExtension& rhs)
     {
-        using namespace Literals;
+        using namespace literals;
 
         using TMsgpackExtension = MsgpackExtension<TExtension>;
 

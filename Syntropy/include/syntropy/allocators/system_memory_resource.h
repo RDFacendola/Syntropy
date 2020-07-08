@@ -66,7 +66,7 @@ namespace syntropy
 
     inline MemoryRange SystemMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (auto block = MemoryAddress{ ::operator new(*size, alignment, std::nothrow) })
+        if (auto block = MemoryAddress{ ::operator new(ToInt(size), alignment, std::nothrow) })
         {
             return { block, block + size };
         }

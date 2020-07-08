@@ -52,7 +52,7 @@ namespace syntropy
 
         if (size > Bytes{ 0 })
         {
-            MemoryAddress address = VirtualAlloc(0, *size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+            MemoryAddress address = VirtualAlloc(0, ToInt(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
             return { address, address + size };
         }
@@ -66,7 +66,7 @@ namespace syntropy
 
         if (size > Bytes{ 0 })
         {
-            MemoryAddress address = VirtualAlloc(0, *size, MEM_RESERVE, PAGE_READWRITE);
+            MemoryAddress address = VirtualAlloc(0, ToInt(size), MEM_RESERVE, PAGE_READWRITE);
 
             return { address, address + size };
         }
@@ -90,7 +90,7 @@ namespace syntropy
     {
         if (memory_range)
         {
-            auto size = *memory_range.GetSize();
+            auto size = ToInt(memory_range.GetSize());
 
             // Commit each page containing at least one byte in the range.
 
@@ -104,7 +104,7 @@ namespace syntropy
     {
         if (memory_range)
         {
-            auto size = *memory_range.GetSize();
+            auto size = ToInt(memory_range.GetSize());
 
             // Decommit each page containing at least one byte in the range.
 

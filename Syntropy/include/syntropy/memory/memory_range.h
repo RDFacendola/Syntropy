@@ -10,7 +10,6 @@
 #include <ostream>
 
 #include "syntropy/core/range.h"
-
 #include "syntropy/memory/memory_address.h"
 
 namespace syntropy
@@ -82,7 +81,7 @@ namespace syntropy
     template <typename TIterator>
     inline auto MakeMemoryRange(TIterator begin, Bytes size)
     {
-        using namespace Literals;
+        using namespace literals;
 
         // Compute range size since 'end' cannot be dereferenced.
 
@@ -106,7 +105,7 @@ namespace syntropy
     template <typename TIterator>
     inline ConstMemoryRange MakeConstMemoryRange(TIterator begin, Bytes size)
     {
-        using namespace Literals;
+        using namespace literals;
 
         // Compute range size since 'end' cannot be dereferenced.
 
@@ -136,7 +135,7 @@ namespace syntropy
     template <typename TElement, typename TElementTraits>
     std::basic_ostream<TElement, TElementTraits>& operator<<(std::basic_ostream<TElement, TElementTraits>& lhs, const ConstMemoryRange& rhs)
     {
-        lhs.write(rhs.Begin().As<Byte>(), *rhs.GetSize());
+        lhs.write(rhs.Begin().As<Byte>(), ToInt(rhs.GetSize()));
 
         return lhs;
     }

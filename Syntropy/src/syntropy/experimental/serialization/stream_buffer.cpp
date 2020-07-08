@@ -16,7 +16,7 @@ namespace syntropy
         {
             if (auto size = append_size_ + data_size; size > GetCapacity())
             {
-                size = ToBytes(Math::CeilTo<Int>((*size) * kGrowthFactor + kGrowthBias));                                                       // Exponential growth to avoid continuous reallocations.
+                size = ToBytes(Math::CeilTo<Int>(ToInt(size) * kGrowthFactor + kGrowthBias));                                                   // Exponential growth to avoid continuous reallocations.
 
                 Reserve(size);
             }

@@ -318,7 +318,7 @@ namespace syntropy
     template <typename TAppendStreamBuffer, typename TExtension, typename>
     inline void MsgpackStreamEncoder::operator()(TAppendStreamBuffer&& lhs, const TExtension& rhs) const
     {
-        using namespace Literals;
+        using namespace literals;
 
         // Serialize the extension on a temporary buffer so that total size is known in advance. #TODO Allocate on thread-local stack memory resource.
 

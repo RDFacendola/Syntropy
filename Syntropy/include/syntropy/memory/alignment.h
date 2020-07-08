@@ -73,7 +73,7 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Exposes alignment unit literals.
-    namespace Literals
+    namespace literals
     {
         /// \brief User-defined literal used to convert a number to Alignment type.
         constexpr Alignment operator "" _Align(std::size_t lhs);
@@ -142,9 +142,10 @@ namespace syntropy
     }
 
     constexpr Alignment::Alignment(Bytes alignment)
-        : alignment_(*alignment)
+        : alignment_(ToInt(alignment))
     {
         // Alignment are expected to be power-of-two.
+
         SYNTROPY_ASSERT(Math::IsPow2(alignment_));
     }
 
@@ -177,7 +178,7 @@ namespace syntropy
 
     // Literals.
     
-    constexpr Alignment Literals::operator "" _Align(std::size_t lhs)
+    constexpr Alignment literals::operator "" _Align(std::size_t lhs)
     {
         return Alignment{ Bytes{ ToInt(lhs) } };
     }
