@@ -7,3 +7,5 @@
 #pragma once
 
 #include "unit_tests/syntropy/core/span_unit_test.h"
+
+#include "unit_tests/syntropy/memory/bytes_unit_test.h"
