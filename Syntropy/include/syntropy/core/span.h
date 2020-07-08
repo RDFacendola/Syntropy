@@ -15,41 +15,38 @@ namespace syntropy
     /* SPAN <ELEMENT>                                                       */
     /************************************************************************/
 
-    /// \brief Represents a contiguous range of elements.
+    /// \brief Represents a contiguous, non-owning, range of elements.
     /// \author Raffaele D. Facendola - June 2020.
     template <typename TElement>
     class Span
     {
-        template <typename UElement>
-        friend ObserverPtr<UElement> Begin(const Span<UElement>& span);
-
-        template <typename UElement>
-        friend ObserverPtr<UElement> End(const Span<UElement>& span);
-
-        template <typename UElement>
-        friend class Span;
-
     public:
 
         /// \brief Create an empty span.
         Span() = default;
 
-        /// \brief Create a span given the first element and the span size.
-        template <typename TFirst>
-        Span(TFirst first, Int count);
+        /// \brief Create a span given an iterator to the first element and the span size.
+        template <typename TBegin>
+        Span(TBegin begin, Int count);
 
-        /// \brief Create a spawn given a pointer to both the first and past the last element in the span.
-        template <typename TFirst, typename TLast, typename = EnableIfT<!IsConvertibleV<TLast, Int>>>
-        Span(TFirst first, TLast last);
+        /// \brief Create a span given an iterator to the first element and an iterator past the last element.
+        template <typename TBegin, typename TEnd, typename = EnableIfT<!IsConvertibleV<TEnd, Int>>>
+        Span(TBegin begin, TEnd end);
 
         /// \brief Default copy constructor.
         Span(const Span<TElement>& rhs) = default;
+
+        /// \brief Default move constructor.
+        Span(Span<TElement>&& rhs) = default;
 
         /// \brief Default destructor.
         ~Span() = default;
 
         /// \brief Default copy assignment operator.
         Span& operator=(const Span<TElement>& rhs) = default;
+
+        /// \brief Default move assignment operator.
+        Span& operator=(Span<TElement>&& rhs) = default;
 
         /// \brief Check whether the span is non-empty.
         operator Bool() const;
@@ -61,10 +58,13 @@ namespace syntropy
         /// \brief Get the number of elements in the span.
         Int GetCount() const;
 
+        /// \brief Access the underlying buffer or nullptr if the span is empty.
+        ObserverPtr<TElement> GetData() const;
+
     private:
 
         /// \brief Pointer to the first element in the rage.
-        ObserverPtr<TElement> begin_{ nullptr };
+        ObserverPtr<TElement> data_{ nullptr };
 
         /// \brief Number of elements in the span.
         Int count_{ 0 };
@@ -72,38 +72,32 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* ITERATORS                                                            */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Get an iterator to the first element in the span.
-    /// Function needed for range-based loops.
+    /// \brief Get an iterator to the first element in a span.
     template <typename TElement>
     inline ObserverPtr<TElement> begin(const Span<TElement>& span);
 
-    /// \brief Get an iterator past the last element in the span.
-    /// Function needed for range-based loops.
+    /// \brief Get an iterator past the last element in a span.
     template <typename TElement>
     inline ObserverPtr<TElement> end(const Span<TElement>& span);
 
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-    
+    /// \brief Check whether two spans are element-wise equivalent.
+    template <typename TElement, typename UElement>
+    bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs);
+
+    /// \brief Check whether two spans are not element-wise equivalent.
+    template <typename TElement, typename UElement>
+    bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs);
+
     /// \brief Check whether a span is empty.
     template <typename TElement>
     Bool IsEmpty(const Span<TElement>& span);
 
-    /// \brief Get the number of elements in the span.
+    /// \brief Get the number of elements in a span.
     template <typename TElement>
     Int Count(const Span<TElement>& span);
-
-    /// \brief Get an iterator to the first element of a span.
-    template <typename TElement>
-    TElement* Begin(const Span<TElement>& span);
-
-    /// \brief Get an iterator past the last element of a span.
-    template <typename TElement>
-    TElement* End(const Span<TElement>& span);
 
     /// \brief Access the first element in a span.
     /// If the span is empty the behavior of this method is undefined.
@@ -115,118 +109,75 @@ namespace syntropy
     template <typename TElement>
     TElement& Back(const Span<TElement>& span);
 
-    //======================================================================//
-    // Span manipulation.
-
     /// \brief Obtain a sub-span given an offset and a number of elements.
     /// If the sub-span would exceed original span bounds, the behavior of this method is undefined.
     template <typename TElement>
     Span<TElement> Subspan(const Span<TElement>& span, Int offset, Int count);
 
-    /// \brief Shrink a span by moving its start forward by one element.
+    /// \brief Discard the first element in a span and return the resulting subspan.
     /// If the span is empty the behavior of this method is undefined.
     template <typename TElement>
     Span<TElement> PopFront(const Span<TElement>& span);
 
-    /// \brief Shrink a span by moving its start forward by some elements.
-    /// If this method would cause the start to exceed the span range, the behavior of this method is undefined.
+    /// \brief Discard the first count-elements in a span and return the resulting subspan.
+    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TElement>
     Span<TElement> PopFront(const Span<TElement>& span, Int count);
 
-    /// \brief Shrink a span by moving its end backward by one element.
+    /// \brief Discard the last element in a span and return the resulting subspan.
     /// If the span is empty the behavior of this method is undefined.
     template <typename TElement>
     Span<TElement> PopBack(const Span<TElement>& span);
 
-    /// \brief Shrink a span by moving its end backward by some elements.
-    /// If this method would cause the end to exceed the span range, the behavior of this method is undefined.
+    /// \brief Discard the last count-elements in a span and return the resulting subspan.
+    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TElement>
     Span<TElement> PopBack(const Span<TElement>& span, Int count);
 
     /// \brief Obtain a span consisting of the first elements of another span.
-    /// If this method would cause the end to exceed the span range, the behavior of this method is undefined.
+    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TElement>
     Span<TElement> First(const Span<TElement>& span, Int count);
 
     /// \brief Obtain a span consisting of the last elements of another span.
-    /// If this method would cause the end to exceed the span range, the behavior of this method is undefined.
+    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TElement>
     Span<TElement> Last(const Span<TElement>& span, Int count);
 
-    //======================================================================//
-    // Span comparison.
+    /// \brief Check whether two spans are identical (ie: they both refer to the same memory).
+    template <typename TElement>
+    Bool AreIdentical(const Span<TElement>& lhs, const Span<TElement>& rhs);
 
     /// \brief Check whether two spans are element-wise equivalent.
     template <typename TElement, typename UElement>
-    bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs);
+    Bool AreEquivalent(const Span<TElement>& lhs, const Span<UElement>& rhs);
 
-    /// \brief Check whether two spans are not element-wise equivalent.
+    /// \brief Check whether rhs is a a member-wise prefix of lhs.
     template <typename TElement, typename UElement>
-    bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs);
+    Bool HasPrefix(const Span<TElement>& lhs, const Span<UElement>& rhs);
 
-    /// \brief Check whether two spans are identical.
-    /// \return Returns true if both lhs and rhs refer to the same memory region, returns false otherwise.
-    template <typename TElement>
-    Bool EqualsStrong(const Span<TElement>& lhs, const Span<TElement>& rhs);
-
-    /// \brief Check whether rhs is a a member-wise prefix of lhs, using a strongly equivalence metric between elements of both spans.
-    template <typename TElement>
-    Bool HasPrefixStrong(const Span<TElement>& lhs, const Span<TElement>& rhs);
-
-    /// \brief Check whether rhs is a a member-wise suffix of lhs, using a strongly equivalence metric between elements of both spans.
-    template <typename TElement>
-    Bool HasSuffixStrong(const Span<TElement>& lhs, const Span<TElement>& rhs);
-
-    /// \brief Check whether exists a subset in lhs which strongly compares equal to rhs.
-    /// \return Returns true if lhs has a subset which strongly compares equal to rhs, returns false otherwise.
-    template <typename TElement>
-    Bool ContainsStrong(const Span<TElement>& lhs, const Span<TElement>& rhs);
-
-    /// \brief Reduce lhs until rhs becomes a strong prefix for lhs or lhs is exhausted.
-    /// \return Returns the reduced range starting from the first occurrence of rhs in lhs or an empty range if no occurrence was found.
-    template <typename TElement>
-    Span<TElement> SearchStrong(const Span<TElement>& lhs, const Span<TElement>& rhs);
-
-    /// \brief Check whether two spans are equivalent, converting elements in rhs if necessary.
-    /// \remarks This method comes with additional overhead, prefer EqualsStrong where possible.
-    /// \return Returns true if each element in lhs weakly compares equal to the element in the same position in rhs, returns false otherwise.
+    /// \brief Check whether rhs is a a member-wise suffix of lhs.
     template <typename TElement, typename UElement>
-    Bool EqualsWeak(const Span<TElement>& lhs, const Span<UElement>& rhs);
+    Bool HasSuffix(const Span<TElement>& lhs, const Span<UElement>& rhs);
 
-    /// \brief Check whether rhs is a a member-wise prefix of lhs, using a weak equivalence metric between elements of both spans.
-    /// \remarks This method comes with additional overhead, prefer HasPrefixStrong where possible.
+    /// \brief Check whether exists a subspan in lhs which compares equivalent to rhs.
+    /// \return Returns true if lhs has a subset which compares equivalent to rhs, returns false otherwise.
     template <typename TElement, typename UElement>
-    Bool HasPrefixWeak(const Span<TElement>& lhs, const Span<UElement>& rhs);
+    Bool HasSubspan(const Span<TElement>& lhs, const Span<UElement>& rhs);
 
-    /// \brief Check whether rhs is a a member-wise suffix of lhs, using a weak equivalence metric between elements of both spans.
-    /// \remarks This method comes with additional overhead, prefer HasSuffixStrong where possible.
-    template <typename TElement, typename UElement>
-    Bool HasSuffixWeak(const Span<TElement>& lhs, const Span<UElement>& rhs);
-
-    /// \brief Check whether exists a subset in lhs which weakly compares equal to rhs.
-    /// \remarks This method comes with additional overhead, prefer ContainsStrong where possible.
-    /// \return Returns true if lhs has a subset which weakly compares equal to rhs, returns false otherwise.
-    template <typename TElement, typename UElement>
-    Bool ContainsWeak(const Span<TElement>& lhs, const Span<UElement>& rhs);
-
-    /// \brief Reduce lhs until rhs becomes a weak prefix for lhs or lhs is exhausted.
-    /// \remarks This method comes with additional overhead, prefer SearchStrong where possible.
+    /// \brief Reduce lhs until rhs becomes a member-wise prefix for lhs or lhs is exhausted.
     /// \return Returns the reduced range starting from the first occurrence of rhs in lhs or an empty range if no occurrence was found.
     template <typename TElement, typename UElement>
-    Span<TElement> SearchWeak(const Span<TElement>& lhs, const Span<UElement>& rhs);
+    Span<TElement> Search(const Span<TElement>& lhs, const Span<UElement>& rhs);
 
-    //======================================================================//
-    // Set operations.
+    /// \brief Check whether rhs refers to a memory location identical or contained inside lhs.
+    template <typename TElement>
+    Bool Contains(const Span<TElement>& lhs, const Span<TElement>& rhs);
 
-    /// \brief Check whether rhs overlaps lhs.
+    /// \brief Check whether lhs and lhs overlaps the same memory location.
     /// Empty spans are not considered to be overlapping with any other span.
     template <typename TElement>
     Bool IsOverlapping(const Span<TElement>& lhs, const Span<TElement>& rhs);
-
-    /// \brief Check whether rhs is contiguous to lhs.
-    /// Empty spans are not considered to be contiguous to any other span.
-    template <typename TElement>
-    Bool IsContiguous(const Span<TElement>& lhs, const Span<TElement>& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -235,19 +186,18 @@ namespace syntropy
     // Span<TElement>.
 
     template <typename TElement>
-    template <typename TFirst>
-    inline Span<TElement>::Span(TFirst first, Int count)
-        : begin_(first)
+    template <typename TBegin>
+    inline Span<TElement>::Span(TBegin begin, Int count)
+        : data_((count > 0) ? &(*begin) : nullptr)
         , count_(count)
     {
 
     }
 
     template <typename TElement>
-    template <typename TFirst, typename TLast, typename>
-    inline Span<TElement>::Span(TFirst first, TLast last)
-        : begin_(first)
-        , count_(ToInt(last - first))
+    template <typename TBegin, typename TEnd, typename>
+    inline Span<TElement>::Span(TBegin begin, TEnd end)
+        : Span(begin, ToInt(end - begin))
     {
 
     }
@@ -261,7 +211,7 @@ namespace syntropy
     template <typename TElement>
     inline  TElement& Span<TElement>::operator[](Int index) const
     {
-        return begin_[index];
+        return data_[index];
     }
 
     template <typename TElement>
@@ -270,21 +220,37 @@ namespace syntropy
         return count_;
     }
 
-    // Iterators.
+    template <typename TElement>
+    inline ObserverPtr<TElement> Span<TElement>::GetData() const
+    {
+        return data_;
+    }
 
     template <typename TElement>
     inline ObserverPtr<TElement> begin(const Span<TElement>& span)
     {
-        return Begin(span);
+        return span.GetData();
     }
 
     template <typename TElement>
     inline ObserverPtr<TElement> end(const Span<TElement>& span)
     {
-        return End(span);
+        return span.GetData() + span.count_;
     }
 
     // Non-member functions.
+
+    template <typename TElement, typename UElement>
+    inline bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    {
+        return AreEquivalent(lhs, rhs);
+    }
+
+    template <typename TElement, typename UElement>
+    inline bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    {
+        return !(lhs == rhs);
+    }
 
     template <typename TElement>
     inline Bool IsEmpty(const Span<TElement>& span)
@@ -296,18 +262,6 @@ namespace syntropy
     inline Int Count(const Span<TElement>& span)
     {
         return span.GetCount();
-    }
-
-    template <typename TElement>
-    inline TElement* Begin(const Span<TElement>& span)
-    {
-        return span.begin_;
-    }
-
-    template <typename TElement>
-    inline TElement* End(const Span<TElement>& span)
-    {
-        return span.begin_ + span.count_;
     }
 
     template <typename TElement>
@@ -325,7 +279,7 @@ namespace syntropy
     template <typename TElement>
     inline Span<TElement> Subspan(const Span<TElement>& span, Int offset, Int count)
     {
-        return { Begin(span) + offset, count };
+        return { &span[offset], count };
     }
 
     template <typename TElement>
@@ -337,7 +291,7 @@ namespace syntropy
     template <typename TElement>
     inline Span<TElement> PopFront(const Span<TElement>& span, Int count)
     {
-        return { Begin(span) + count, End(span) };
+        return { &span[count], span.GetCount() - count };
     }
 
     template <typename TElement>
@@ -349,123 +303,119 @@ namespace syntropy
     template <typename TElement>
     inline Span<TElement> PopBack(const Span<TElement>& span, Int count)
     {
-        return { Begin(span), End(span) - count };
+        return { &span[0], span.GetCount() - count };
     }
 
     template <typename TElement>
     inline Span<TElement> First(const Span<TElement>& span, Int count)
     {
-        return { Begin(span), count };
+        return { &span[0], count };
     }
 
     template <typename TElement>
     inline Span<TElement> Last(const Span<TElement>& span, Int count)
     {
-        return { End(span) - count, End(span) };
+        return { &span[span.GetCount() - count], count };
+    }
+
+    template <typename TElement>
+    inline Bool AreIdentical(const Span<TElement>& lhs, const Span<TElement>& rhs)
+    {
+        return (lhs.GetData() == rhs.GetData()) && (lhs.GetCount() == rhs.GetCount());
     }
 
     template <typename TElement, typename UElement>
-    inline bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    Bool AreEquivalent(const Span<TElement>& lhs, const Span<UElement>& rhs)
     {
-        return EqualsWeak(lhs, rhs);
-    }
+        // Early out if the number of elements is different.
 
-    template <typename TElement, typename UElement>
-    inline bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs)
-    {
-        return !(lhs == rhs);
-    }
-
-    template <typename TElement>
-    inline Bool EqualsStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
-    {
-        return (!lhs && !rhs) || (Begin(lhs) == Begin(rhs)) && (End(lhs) == End(rhs));
-    }
-
-    template <typename TElement>
-    inline Bool HasPrefixStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
-    {
-        return (Count(lhs) >= Count(rhs)) && EqualsStrong(First(lhs, Count(rhs)), rhs);
-    }
-
-    template <typename TElement>
-    inline Bool HasSuffixStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
-    {
-        return (Count(lhs) >= Count(rhs)) && EqualsStrong(Last(lhs, Count(rhs)), rhs);
-    }
-
-    template <typename TElement>
-    inline Bool ContainsStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
-    {
-        return (!rhs) || ((Begin(lhs) <= Begin(rhs)) && (End(rhs) <= End(lhs)));
-    }
-
-    template <typename TElement>
-    inline Span<TElement> SearchStrong(const Span<TElement>& lhs, const Span<TElement>& rhs)
-    {
-        auto span = lhs;
-
-        for (; span && !HasPrefixStrong(span, rhs); span = PopFront(span));
-
-        return span;
-    }
-
-    template <typename TElement, typename UElement>
-    Bool EqualsWeak(const Span<TElement>& lhs, const Span<UElement>& rhs)
-    {
-        auto lhs_copy = lhs;
-        auto rhs_copy = rhs;
-
-        if (lhs_copy.GetCount() == rhs_copy.GetCount())
+        if (Count(lhs) != Count(rhs))
         {
-            for (; (lhs_copy) && (rhs_copy) && (Front(lhs_copy) == Front(rhs_copy));)
+            return false;
+        }
+
+        // Early out if the underlying data is the same.
+
+        auto lhs_data = lhs.GetData();
+        auto rhs_data = rhs.GetData();
+
+        if constexpr (IsSameV<TElement, UElement>)
+        {
+            if (lhs_data == rhs_data)
             {
-                lhs_copy = PopFront(lhs_copy);
-                rhs_copy = PopFront(rhs_copy);
+                return true;
             }
         }
 
-        return IsEmpty(lhs_copy) && IsEmpty(rhs_copy);
+        // Consume both spans looking for differences.
+
+        for (auto lhs_end = lhs_data + Count(lhs); lhs_data != lhs_end; ++lhs_data, ++rhs_data)
+        {
+            if (*lhs_data != *rhs_data)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     template <typename TElement, typename UElement>
-    inline Bool HasPrefixWeak(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    inline Bool HasPrefix(const Span<TElement>& lhs, const Span<UElement>& rhs)
     {
-        return (Count(lhs) >= Count(rhs)) && EqualsWeak(First(lhs, Count(rhs)), rhs);
+        auto lhs_count = Count(lhs);
+        auto rhs_count = Count(rhs);
+
+        return (lhs_count >= rhs_count) && (First(lhs, rhs_count) == rhs);
     }
 
     template <typename TElement, typename UElement>
-    inline Bool HasSuffixWeak(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    inline Bool HasSuffix(const Span<TElement>& lhs, const Span<UElement>& rhs)
     {
-        return (Count(lhs) >= Count(rhs)) && EqualsWeak(Last(lhs, Count(rhs)), rhs);
+        auto lhs_count = Count(lhs);
+        auto rhs_count = Count(rhs);
+
+        return (lhs_count >= rhs_count) && (Last(lhs, rhs_count) == rhs);
     }
 
     template <typename TElement, typename UElement>
-    inline Bool ContainsWeak(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    inline Bool HasSubspan(const Span<TElement>& lhs, const Span<UElement>& rhs)
     {
-        return (!rhs) || !IsEmpty(SearchWeak(lhs, rhs));
+        return Count(Search(lhs, rhs)) >= Count(rhs);
     }
 
     template <typename TElement, typename UElement>
-    inline Span<TElement> SearchWeak(const Span<TElement>& lhs, const Span<UElement>& rhs)
+    inline Span<TElement> Search(const Span<TElement>& lhs, const Span<UElement>& rhs)
     {
-        auto span = lhs;
+        auto result = lhs;
 
-        for (; span && !HasPrefixWeak(span, rhs); span = PopFront(span));
+        for (; result && !HasPrefix(result, rhs); result = PopFront(result));
 
-        return span;
+        return result;
+    }
+
+    template <typename TElement>
+    inline Bool Contains(const Span<TElement>& lhs, const Span<TElement>& rhs)
+    {
+        auto lhs_begin = lhs.GetData();
+        auto lhs_end = lhs_begin + Count(lhs);
+
+        auto rhs_begin = rhs.GetData();
+        auto rhs_end = rhs_begin + Count(rhs);
+
+        return (!rhs) || ((lhs_begin <= rhs_begin) && (lhs_end >= rhs_end));
     }
 
     template <typename TElement>
     inline Bool IsOverlapping(const Span<TElement>& lhs, const Span<TElement>& rhs)
     {
-        return (lhs) && (rhs) && (Begin(lhs) < End(rhs)) && (Begin(rhs) < End(lhs));
-    }
+        auto lhs_begin = lhs.GetData();
+        auto lhs_end = lhs_begin + Count(lhs);
 
-    template <typename TElement>
-    inline Bool IsContiguous(const Span<TElement>& lhs, const Span<TElement>& rhs)
-    {
-        return (lhs) && (rhs) && (End(lhs) == Begin(rhs));
+        auto rhs_begin = rhs.GetData();
+        auto rhs_end = rhs_begin + Count(rhs);
+
+        return (lhs_begin < rhs_end) && (rhs_begin < lhs_end);
     }
 
 }

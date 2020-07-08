@@ -42,78 +42,70 @@ namespace syntropy::unit_test
 
     .TestCase("Default constructed spans are empty.", [](auto& fixture)
     {
-        auto span_default = Span<Int>{};
-        auto empty = Span<Int>{ &fixture.int_sequence_[0], 0 };
+        auto span = Span<Int>{};
 
-        SYNTROPY_UNIT_EQUAL(span_default.GetCount(), 0);
-        SYNTROPY_UNIT_EQUAL(Count(span_default), 0);
-        SYNTROPY_UNIT_EQUAL(!span_default, true);
-        SYNTROPY_UNIT_EQUAL(IsEmpty(span_default), true);
-
-        SYNTROPY_UNIT_EQUAL(empty.GetCount(), 0);
-        SYNTROPY_UNIT_EQUAL(Count(empty), 0);
-        SYNTROPY_UNIT_EQUAL(!empty, true);
-        SYNTROPY_UNIT_EQUAL(IsEmpty(empty), true);
-    })
-
-    .TestCase("Spans constructed from a pair of non-equal iterator are non-empty.", [](auto& fixture)
-    {
-        auto nempty = Span<Int>{ &fixture.int_sequence_[0], &fixture.int_sequence_[9] + 1 };
-
-        SYNTROPY_UNIT_EQUAL(nempty.GetCount(), 10);
-        SYNTROPY_UNIT_EQUAL(Count(nempty), 10);
-        SYNTROPY_UNIT_EQUAL(!!nempty, true);
-        SYNTROPY_UNIT_EQUAL(IsEmpty(nempty), false);
+        SYNTROPY_UNIT_EQUAL(!span, true);
+        SYNTROPY_UNIT_EQUAL(span.GetCount(), 0);
+        SYNTROPY_UNIT_EQUAL(span.GetData(), nullptr);
     })
 
     .TestCase("Spans constructed from an iterator and a non-zero number of elements are non-empty.", [](auto& fixture)
     {
-        auto nempty = Span<Int>{ &fixture.int_sequence_[0], 10 };
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
 
-        SYNTROPY_UNIT_EQUAL(nempty.GetCount(), 10);
-        SYNTROPY_UNIT_EQUAL(!!nempty, true);
-        SYNTROPY_UNIT_EQUAL(IsEmpty(nempty), false);
+        SYNTROPY_UNIT_EQUAL(!!span, true);
+        SYNTROPY_UNIT_EQUAL(span.GetCount(), 10);
+        SYNTROPY_UNIT_EQUAL(span.GetData(), &fixture.int_sequence_[0]);
     })
 
-    .TestCase("Spans provide random read-only access to both const and non-const elements.", [](auto& fixture)
+    .TestCase("Spans constructed from a pair of non-equal iterator are non-empty.", [](auto& fixture)
     {
-        auto span_c = Span<const Int>{ &fixture.int_sequence_[0], 10 };
-        auto span_nc = Span<Int>{ &fixture.int_sequence_[0], 10 };
+        auto span = Span<Int>{ &fixture.int_sequence_[0], &fixture.int_sequence_[0] + 10 };
 
-        SYNTROPY_UNIT_EQUAL(span_c[5], 5);
-        SYNTROPY_UNIT_EQUAL(span_nc[4], 4);
+        SYNTROPY_UNIT_EQUAL(!!span, true);
+        SYNTROPY_UNIT_EQUAL(span.GetCount(), 10);
+        SYNTROPY_UNIT_EQUAL(span.GetData(), &fixture.int_sequence_[0]);
     })
 
-    .TestCase("Spans provide random read-write access to non-const elements.", [](auto& fixture)
+    .TestCase("Spans provide read-only access to elements.", [](auto& fixture)
     {
-        auto span_nc = Span<Int>{ &fixture.int_sequence_[0], 10 };
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
 
-        span_nc[5] = 42;
-
-        SYNTROPY_UNIT_EQUAL(span_nc[5], 42);
+        SYNTROPY_UNIT_EQUAL(span[5], 5);
     })
 
-    .TestCase("Spans are always equal to themselves.", [](auto& fixture)
+    .TestCase("Non-constant spans provide read-write access to elements.", [](auto& fixture)
+    {
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
+        
+        span[5] = 42;
+
+        SYNTROPY_UNIT_EQUAL(span[5], 42);
+    })
+
+    .TestCase("Spans are always equivalent to themselves.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
 
         SYNTROPY_UNIT_EQUAL(span == span, true);
         SYNTROPY_UNIT_EQUAL(span != span, false);
+
+        SYNTROPY_UNIT_EQUAL(AreEquivalent(span, span), true);
     })
 
-    .TestCase("Spans are equal only to other spans containing the same elements in the same order.", [](auto& fixture)
+    .TestCase("Spans are equivalent to spans whose values compare equivalent.", [](auto& fixture)
     {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 9 };
-        auto span_id = Span<Int>{ &fixture.int_sequence_[0], 9 };
-        auto span_neq = Span<Int>{ &fixture.int_sequence_[3], 7 };
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
+        auto span_equivalent = Span<Int>{ &fixture.int_sequence_alt_[0], 10 };
+        auto span_different = Span<Int>{ &fixture.int_sequence_[3], 7 };
 
-        SYNTROPY_UNIT_EQUAL(span == span_id, true);
-        SYNTROPY_UNIT_EQUAL(span != span_id, false);
-        SYNTROPY_UNIT_EQUAL(span == span_neq, false);
-        SYNTROPY_UNIT_EQUAL(span != span_neq, true);
+        SYNTROPY_UNIT_EQUAL(span == span_equivalent, true);
+        SYNTROPY_UNIT_EQUAL(span != span_equivalent, false);
+        SYNTROPY_UNIT_EQUAL(span == span_different, false);
+        SYNTROPY_UNIT_EQUAL(span != span_different, true);
     })
 
-     .TestCase("Spans are equal to other spans with a different type if the elements are implicitly convertible and compare equal.", [](auto& fixture)
+    .TestCase("Spans are equal to spans with a different type if the elements are implicitly convertible and compare equal.", [](auto& fixture)
     {
         auto span_int = Span<Int>{ &fixture.int_sequence_[0], 3 };
         auto span_float = Span<Float>{ &fixture.float_sequence_[0], 3 };
@@ -121,44 +113,63 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(span_int == span_float, true);
     })
 
-    .TestCase("Span front elements are both readable and writable.", [](auto& fixture)
+    .TestCase("Spans are not identical to other spans, even if they compare equivalent.", [](auto& fixture)
+    {
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
+        auto span_equivalent = Span<Int>{ &fixture.int_sequence_alt_[0], 10 };
+        auto span_identical = Span<Int>{ &fixture.int_sequence_[0], 10 };
+
+        SYNTROPY_UNIT_EQUAL(AreIdentical(span, span_equivalent), false);
+        SYNTROPY_UNIT_EQUAL(AreIdentical(span, span_identical), true);
+    })
+
+    .TestCase("Span front elements are readable.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
 
         SYNTROPY_UNIT_EQUAL(Front(span), 0);
+    })
+
+    .TestCase("Span front elements are writable.", [](auto& fixture)
+    {
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
 
         Front(span) = 42;
 
         SYNTROPY_UNIT_EQUAL(Front(span), 42);
     })
 
-    .TestCase("Back elements are both readable and writable.", [](auto& fixture)
+    .TestCase("Span back elements are readable.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
 
         SYNTROPY_UNIT_EQUAL(Back(span), 9);
+    })
+
+    .TestCase("Span back elements are writable.", [](auto& fixture)
+    {
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
 
         Back(span) = 42;
 
         SYNTROPY_UNIT_EQUAL(Back(span), 42);
     })
 
-    .TestCase("Sub-spans that encompass the entire source span are equal to the latter.", [](auto& fixture)
+    .TestCase("Sub-spans that encompass the entire source span is equivalent to the latter.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
 
-        SYNTROPY_UNIT_EQUAL(Subspan(span, 0, span.GetCount()), span);
+        SYNTROPY_UNIT_EQUAL(Subspan(span, 0, Count(span)), span);
     })
 
     .TestCase("Sub-spans with zero elements are empty.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto empty = Span<Int>{};
 
-        SYNTROPY_UNIT_EQUAL(Subspan(span, 0, 0), empty);
+        SYNTROPY_UNIT_EQUAL(Subspan(span, 0, 0), Span<Int>{});
     })
 
-    .TestCase("Sub-spans are equal to spans constructed with the same elements.", [](auto& fixture)
+    .TestCase("Sub-spans are equal to spans constructed from the same sequence.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
         auto subspan = Span<Int>{ &fixture.int_sequence_[3], 5 };
@@ -189,235 +200,131 @@ namespace syntropy::unit_test
     .TestCase("Selecting the first elements of a span yields a sub-span which has the selected elements only.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto first = Span<Int>{ &fixture.int_sequence_[0], 4 };
+        auto first4 = Span<Int>{ &fixture.int_sequence_[0], 4 };
 
-        SYNTROPY_UNIT_EQUAL(First(span, 4), first);
+        SYNTROPY_UNIT_EQUAL(First(span, 4), first4);
     })
 
     .TestCase("Selecting the last elements of a span yields a sub-span which has the selected elements only.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto last = Span<Int>{ &fixture.int_sequence_[6], 4 };
+        auto last4 = Span<Int>{ &fixture.int_sequence_[6], 4 };
 
-        SYNTROPY_UNIT_EQUAL(Last(span, 4), last);
+        SYNTROPY_UNIT_EQUAL(Last(span, 4), last4);
     })
 
-    .TestCase("Spans are strongly equal to themselves.", [](auto& fixture)
+    .TestCase("Spans have prefixes when they refer to a sequence whose elements compare equivalent.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
 
-        SYNTROPY_UNIT_EQUAL(EqualsStrong(span, span), true);
+        auto prefix_same = Span<Int>{ &fixture.int_sequence_[0], 3 };
+        auto prefix_equivalent = Span<Int>{ &fixture.int_sequence_alt_[0], 3 };
+        auto prefix_different = Span<Int>{ &fixture.int_sequence_[2], 4 };
+        auto prefix_convertible = Span<Float>{ &fixture.float_sequence_[0], 3 };
+
+        SYNTROPY_UNIT_EQUAL(HasPrefix(span, prefix_same), true);
+        SYNTROPY_UNIT_EQUAL(HasPrefix(span, prefix_equivalent), true);
+        SYNTROPY_UNIT_EQUAL(HasPrefix(span, prefix_different), false);
+        SYNTROPY_UNIT_EQUAL(HasPrefix(span, prefix_convertible), true);
     })
 
-    .TestCase("Spans are weakly equal to themselves.", [](auto& fixture)
+    .TestCase("Spans have suffixes when they refer to a sequence whose elements compare equivalent.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
 
-        SYNTROPY_UNIT_EQUAL(EqualsWeak(span, span), true);
+        auto suffix_same = Span<Int>{ &fixture.int_sequence_[7], 3 };
+        auto suffix_equivalent = Span<Int>{ &fixture.int_sequence_alt_[7], 3 };
+        auto suffix_different = Span<Int>{ &fixture.int_sequence_[1], 3 };
+        auto suffix_convertible = Span<Float>{ &fixture.float_sequence_[7], 3 };
+
+        SYNTROPY_UNIT_EQUAL(HasSuffix(span, suffix_same), true);
+        SYNTROPY_UNIT_EQUAL(HasSuffix(span, suffix_equivalent), true);
+        SYNTROPY_UNIT_EQUAL(HasSuffix(span, suffix_different), false);
+        SYNTROPY_UNIT_EQUAL(HasSuffix(span, suffix_convertible), true);
     })
 
-    .TestCase("Spans are strongly equal to spans referring to the same memory location.", [](auto& fixture)
+    .TestCase("Spans have sub-spans when they refer to a sequence whose elements compare equivalent.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto span_id = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto span_eq = Span<Int>{ &fixture.int_sequence_alt_[0], 10 };
-        auto span_neq = Span<Int>{ &fixture.int_sequence_[2], 8 };
 
-        SYNTROPY_UNIT_EQUAL(EqualsStrong(span, span_id), true);
-        SYNTROPY_UNIT_EQUAL(EqualsStrong(span, span_eq), false);
-        SYNTROPY_UNIT_EQUAL(EqualsStrong(span, span_neq), false);
+        auto span_same = Span<Int>{ &fixture.int_sequence_[4], 3 };
+        auto span_equivalent = Span<Int>{ &fixture.int_sequence_alt_[4], 3 };
+        auto span_different = Span<Int>{ &fixture.const_sequence_[3], 2 };
+        auto span_convertible = Span<Float>{ &fixture.float_sequence_[4], 3 };
+
+        SYNTROPY_UNIT_EQUAL(HasSubspan(span, span_same), true);
+        SYNTROPY_UNIT_EQUAL(HasSubspan(span, span_equivalent), true);
+        SYNTROPY_UNIT_EQUAL(HasSubspan(span, span_different), false);
+        SYNTROPY_UNIT_EQUAL(HasSubspan(span, span_convertible), true);
     })
-    
-    .TestCase("Spans are weakly equal to spans whose values compares equivalent.", [](auto& fixture)
+
+    .TestCase("Empty spans are contained in any other span.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto span_id = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto span_eq = Span<Int>{ &fixture.int_sequence_alt_[0], 10 };
-        auto span_neq = Span<Int>{ &fixture.int_sequence_[2], 8 };
-        auto span_feq = Span<Float>{ &fixture.float_sequence_[0], 10 };
 
-        SYNTROPY_UNIT_EQUAL(EqualsWeak(span, span_id), true);
-        SYNTROPY_UNIT_EQUAL(EqualsWeak(span, span_eq), true);
-        SYNTROPY_UNIT_EQUAL(EqualsWeak(span, span_neq), false);
-        SYNTROPY_UNIT_EQUAL(EqualsWeak(span, span_feq), true);
+        auto empty_int = Span<Int>{};
+        auto empty_float = Span<Float>{};
+
+        SYNTROPY_UNIT_EQUAL(HasSubspan(span, empty_int), true);
+        SYNTROPY_UNIT_EQUAL(HasSubspan(span, empty_float), true);
     })
 
-    .TestCase("Empty spans are all strongly and weakly equivalent.", [](auto& fixture)
-    {
-        auto empty_1 = Span<Int>{};
-        auto empty_2 = Span<Int>{ &fixture.int_sequence_[0], 0 };
-        auto empty_f = Span<Float>{};
-
-        SYNTROPY_UNIT_EQUAL(EqualsStrong(empty_1, empty_2), true);
-        SYNTROPY_UNIT_EQUAL(EqualsStrong(empty_2, empty_1), true);
-        SYNTROPY_UNIT_EQUAL(EqualsWeak(empty_1, empty_2), true);
-        SYNTROPY_UNIT_EQUAL(EqualsWeak(empty_2, empty_1), true);
-        SYNTROPY_UNIT_EQUAL(EqualsWeak(empty_1, empty_f), true);
-        SYNTROPY_UNIT_EQUAL(EqualsWeak(empty_f, empty_1), true);
-    })
-
-    .TestCase("Spans have strong prefixes when they refer to the same memory region.", [](auto& fixture)
+    .TestCase("Searching for subspan returns a sequence which has that subspan as prefix.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto prefix_id = Span<Int>{ &fixture.int_sequence_[0], 3 };
-        auto prefix_eq = Span<Int>{ &fixture.int_sequence_alt_[0], 3 };
-        auto prefix_neq = Span<Int>{ &fixture.int_sequence_[1], 3 };
 
-        SYNTROPY_UNIT_EQUAL(HasPrefixStrong(span, prefix_id), true);
-        SYNTROPY_UNIT_EQUAL(HasPrefixStrong(span, prefix_eq), false);
-        SYNTROPY_UNIT_EQUAL(HasPrefixStrong(span, prefix_neq), false);
+        auto span_same = Span<Int>{ &fixture.int_sequence_[4], 3 };
+        auto span_equivalent = Span<Int>{ &fixture.int_sequence_alt_[4], 3 };
+        auto span_different = Span<Int>{ &fixture.const_sequence_[3], 2 };
+        auto span_convertible = Span<Float>{ &fixture.float_sequence_[4], 3 };
+
+        auto search_same = Span<Int>{ &fixture.int_sequence_[4], 6 };
+        auto search_equivalent = Span<Int>{ &fixture.int_sequence_[4], 6 };
+        auto search_different = Span<Int>{};
+        auto search_convertible = Span<Int>{ &fixture.int_sequence_[4], 6 };
+
+        SYNTROPY_UNIT_EQUAL(Search(span, span_same), search_same);
+        SYNTROPY_UNIT_EQUAL(Search(span, span_equivalent), search_equivalent);
+        SYNTROPY_UNIT_EQUAL(Search(span, span_different), search_different);
+        SYNTROPY_UNIT_EQUAL(Search(span, span_convertible), search_convertible);
     })
 
-    .TestCase("Spans have weak prefixes when they refer to a sequence whose elements compare equivalent.", [](auto& fixture)
+    .TestCase("Searching for a subspan returns an empty sequence if the search fails.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto prefix_id = Span<Int>{ &fixture.int_sequence_[0], 3 };
-        auto prefix_eq = Span<Int>{ &fixture.int_sequence_alt_[0], 3 };
-        auto prefix_neq = Span<Int>{ &fixture.int_sequence_[2], 4 };
-        auto prefix_feq = Span<Float>{ &fixture.float_sequence_[0], 3 };
 
-        SYNTROPY_UNIT_EQUAL(HasPrefixWeak(span, prefix_id), true);
-        SYNTROPY_UNIT_EQUAL(HasPrefixWeak(span, prefix_eq), true);
-        SYNTROPY_UNIT_EQUAL(HasPrefixWeak(span, prefix_neq), false);
-        SYNTROPY_UNIT_EQUAL(HasPrefixWeak(span, prefix_feq), true);
+        auto span_different = Span<Int>{ &fixture.const_sequence_[3], 2 };
+
+        SYNTROPY_UNIT_EQUAL(Search(span, span_different), Span<Int>{});
     })
 
-    .TestCase("Empty spans are strong and weak prefix of any other span.", [](auto& fixture)
+    .TestCase("Searching for an empty span in another span returns the original span.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto empty = Span<Int>{};
-        auto empty_f = Span<Float>{};
 
-        SYNTROPY_UNIT_EQUAL(HasPrefixStrong(span, empty), true);
-        SYNTROPY_UNIT_EQUAL(HasPrefixStrong(empty, empty), true);
-        SYNTROPY_UNIT_EQUAL(HasPrefixWeak(span, empty), true);
-        SYNTROPY_UNIT_EQUAL(HasPrefixWeak(span, empty_f), true);
-        SYNTROPY_UNIT_EQUAL(HasPrefixWeak(empty, empty_f), true);
-        SYNTROPY_UNIT_EQUAL(HasPrefixWeak(empty_f, empty), true);
+        SYNTROPY_UNIT_EQUAL(Search(span, Span<Int>{}), span);
     })
 
-    .TestCase("Spans have strong suffixes when they refer to the same memory region.", [](auto& fixture)
+    .TestCase("Span contain themselves.", [](auto& fixture)
     {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto suffix_id = Span<Int>{ &fixture.int_sequence_[7], 3 };
-        auto suffix_eq = Span<Int>{ &fixture.int_sequence_alt_[7], 3 };
-        auto suffix_neq = Span<Int>{ &fixture.int_sequence_[2], 5 };
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
 
-        SYNTROPY_UNIT_EQUAL(HasSuffixStrong(span, suffix_id), true);
-        SYNTROPY_UNIT_EQUAL(HasSuffixStrong(span, suffix_eq), false);
-        SYNTROPY_UNIT_EQUAL(HasSuffixStrong(span, suffix_neq), false);
+        SYNTROPY_UNIT_EQUAL(Contains(span, span), true);
     })
 
-    .TestCase("Spans have weak suffixes when they refer to a sequence whose elements compare equivalent.", [](auto& fixture)
+    .TestCase("Span contains a subspan if the first refers to a memory location inside the first.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto suffix_id = Span<Int>{ &fixture.int_sequence_[7], 3 };
-        auto suffix_eq = Span<Int>{ &fixture.int_sequence_alt_[7], 3 };
-        auto suffix_neq = Span<Int>{ &fixture.int_sequence_[1], 3 };
-        auto suffix_feq = Span<Float>{ &fixture.float_sequence_[7], 3 };
+        auto subspan = Span<Int>{ &fixture.int_sequence_[2], 4 };
 
-        SYNTROPY_UNIT_EQUAL(HasSuffixWeak(span, suffix_id), true);
-        SYNTROPY_UNIT_EQUAL(HasSuffixWeak(span, suffix_eq), true);
-        SYNTROPY_UNIT_EQUAL(HasSuffixWeak(span, suffix_neq), false);
-        SYNTROPY_UNIT_EQUAL(HasSuffixWeak(span, suffix_feq), true);
+        SYNTROPY_UNIT_EQUAL(Contains(span, subspan), true);
     })
 
-    .TestCase("Empty spans are strong and weak suffix of any other span.", [](auto& fixture)
+    .TestCase("Empty spans are contained in any other span.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto empty = Span<Int>{};
-        auto empty_f = Span<Float>{};
 
-        SYNTROPY_UNIT_EQUAL(HasSuffixStrong(span, empty), true);
-        SYNTROPY_UNIT_EQUAL(HasSuffixStrong(empty, empty), true);
-        SYNTROPY_UNIT_EQUAL(HasSuffixWeak(span, empty), true);
-        SYNTROPY_UNIT_EQUAL(HasSuffixWeak(span, empty_f), true);
-        SYNTROPY_UNIT_EQUAL(HasSuffixWeak(empty, empty_f), true);
-        SYNTROPY_UNIT_EQUAL(HasSuffixWeak(empty_f, empty), true);
-    })
-
-    .TestCase("Spans have strong sub-spans when they refer to the same memory region.", [](auto& fixture)
-    {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto span_id = Span<Int>{ &fixture.int_sequence_[4], 3 };
-        auto span_eq = Span<Int>{ &fixture.int_sequence_alt_[4], 3 };
-        auto span_neq = Span<Int>{ &fixture.const_sequence_[3], 2 };
-
-        SYNTROPY_UNIT_EQUAL(ContainsStrong(span, span_id), true);
-        SYNTROPY_UNIT_EQUAL(ContainsStrong(span, span_eq), false);
-        SYNTROPY_UNIT_EQUAL(ContainsStrong(span, span_neq), false);
-    })
-
-    .TestCase("Spans have weak sub-spans when they refer to a sequence whose elements compare equivalent.", [](auto& fixture)
-    {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto span_id = Span<Int>{ &fixture.int_sequence_[4], 3 };
-        auto span_eq = Span<Int>{ &fixture.int_sequence_alt_[4], 3 };
-        auto span_neq = Span<Int>{ &fixture.const_sequence_[3], 2 };
-        auto span_f = Span<Float>{ &fixture.float_sequence_[4], 3 };
-
-        SYNTROPY_UNIT_EQUAL(ContainsWeak(span, span_id), true);
-        SYNTROPY_UNIT_EQUAL(ContainsWeak(span, span_eq), true);
-        SYNTROPY_UNIT_EQUAL(ContainsWeak(span, span_neq), false);
-        SYNTROPY_UNIT_EQUAL(ContainsWeak(span, span_f), true);
-    })
-
-    .TestCase("Empty spans are strongly and weakly contained in any other span.", [](auto& fixture)
-    {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto empty = Span<Int>{};
-        auto empty_f = Span<Float>{};
-
-        SYNTROPY_UNIT_EQUAL(ContainsStrong(span, empty), true);
-        SYNTROPY_UNIT_EQUAL(ContainsStrong(empty, empty), true);
-        SYNTROPY_UNIT_EQUAL(ContainsWeak(span, empty), true);
-        SYNTROPY_UNIT_EQUAL(ContainsWeak(span, empty_f), true);
-        SYNTROPY_UNIT_EQUAL(ContainsWeak(empty, empty_f), true);
-        SYNTROPY_UNIT_EQUAL(ContainsWeak(empty_f, empty), true);
-    })
-
-    .TestCase("Spans have strong sub-spans when they refer to the same memory region.", [](auto& fixture)
-    {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto span_id = Span<Int>{ &fixture.int_sequence_[4], 3 };
-        auto span_eq = Span<Int>{ &fixture.int_sequence_alt_[4], 3 };
-        auto span_neq = Span<Int>{ &fixture.const_sequence_[3], 2 };
-
-        auto search_id = Span<Int>{ &fixture.int_sequence_[4], 6 };
-        auto search_eq = Span<Int>{};
-        auto search_neq = Span<Int>{};
-
-        SYNTROPY_UNIT_EQUAL(SearchStrong(span, span_id), search_id);
-        SYNTROPY_UNIT_EQUAL(SearchStrong(span, span_eq), search_eq);
-        SYNTROPY_UNIT_EQUAL(SearchStrong(span, span_neq), search_neq);
-    })
-
-    .TestCase("Spans have weak sub-spans when they refer to a sequence whose elements compare equivalent.", [](auto& fixture)
-    {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto span_id = Span<Int>{ &fixture.int_sequence_[4], 3 };
-        auto span_eq = Span<Int>{ &fixture.int_sequence_alt_[4], 3 };
-        auto span_neq = Span<Int>{ &fixture.const_sequence_[3], 2 };
-        auto span_f = Span<Float>{ &fixture.float_sequence_[4], 3 };
-
-        auto search_id = Span<Int>{ &fixture.int_sequence_[4], 6 };
-        auto search_eq = Span<Int>{ &fixture.int_sequence_[4], 6 };
-        auto search_neq = Span<Int>{};
-        auto search_f = Span<Int>{ &fixture.int_sequence_[4], 6 };
-
-        SYNTROPY_UNIT_EQUAL(SearchWeak(span, span_id), search_id);
-        SYNTROPY_UNIT_EQUAL(SearchWeak(span, span_eq), search_eq);
-        SYNTROPY_UNIT_EQUAL(SearchWeak(span, span_neq), search_neq);
-        SYNTROPY_UNIT_EQUAL(SearchWeak(span, span_f), search_f);
-    })
-
-    .TestCase("Searching for an empty span in another span returns the latter.", [](auto& fixture)
-    {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto empty = Span<Int>{};
-
-        SYNTROPY_UNIT_EQUAL(SearchStrong(span, empty), span);
-        SYNTROPY_UNIT_EQUAL(SearchWeak(span, empty), span);
+        SYNTROPY_UNIT_EQUAL(Contains(span, Span<Int>{}), true);
     })
 
     .TestCase("Span overlap with themselves.", [](auto& fixture)
@@ -427,13 +334,19 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(IsOverlapping(span, span), true);
     })
 
-    .TestCase("Disjoint and contiguous spans do not overlap.", [](auto& fixture)
+    .TestCase("Disjoint spans do not overlap.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
         auto disjoint = Span<Int>{ &fixture.int_sequence_[6], 4 };
-        auto contiguous = Span<Int>{ &fixture.int_sequence_[4], 3 };
 
         SYNTROPY_UNIT_EQUAL(IsOverlapping(span, disjoint), false);
+    })
+
+    .TestCase("Contiguous spans do not overlap.", [](auto& fixture)
+    {
+        auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
+        auto contiguous = Span<Int>{ &fixture.int_sequence_[4], 3 };
+
         SYNTROPY_UNIT_EQUAL(IsOverlapping(span, contiguous), false);
     })
 
@@ -454,32 +367,6 @@ namespace syntropy::unit_test
 
         SYNTROPY_UNIT_EQUAL(IsOverlapping(left, right), true);
         SYNTROPY_UNIT_EQUAL(IsOverlapping(right, left), true);
-    })
-
-    .TestCase("A span is not contiguous to itself.", [](auto& fixture)
-    {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
-
-        SYNTROPY_UNIT_EQUAL(IsContiguous(span, span), false);
-    })
-
-    .TestCase("Empty spans are not contiguous to any other span.", [](auto& fixture)
-    {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
-        auto empty = Span<Int>{};
-
-        SYNTROPY_UNIT_EQUAL(IsContiguous(empty, empty), false);
-        SYNTROPY_UNIT_EQUAL(IsContiguous(span, empty), false);
-        SYNTROPY_UNIT_EQUAL(IsContiguous(empty, span), false);
-    })
-
-    .TestCase("Contiguous relationship is antisymmetric.", [](auto& fixture)
-    {
-        auto left = Span<Int>{ &fixture.int_sequence_[0], 4 };
-        auto right = Span<Int>{ &fixture.int_sequence_[4], 4 };
-
-        SYNTROPY_UNIT_EQUAL(IsContiguous(left, right), true);
-        SYNTROPY_UNIT_EQUAL(IsContiguous(right, left), false);
     });
 
     /************************************************************************/
