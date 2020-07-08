@@ -38,7 +38,7 @@ namespace syntropy::unit_test
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline const auto& span_unit_test = MakeAutoUnitTest<SpanTestFixture>("Span")
+    inline const auto& span_unit_test = MakeAutoUnitTest<SpanTestFixture>("span.core.syntropy")
 
     .TestCase("Default constructed spans are empty.", [](auto& fixture)
     {
