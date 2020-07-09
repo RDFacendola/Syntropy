@@ -147,23 +147,23 @@ namespace syntropy
     {
         /// \brief User-defined literal used to convert a number from Bytes to Bytes.
         /// \param number Number to convert.
-        constexpr Bytes operator "" _Bytes(std::size_t lhs);
+        constexpr Bytes operator "" _Bytes(std::size_t lhs) noexcept;
 
         /// \brief User-defined literal used to convert a number from KibiBytes to Bytes.
         /// \param number Number to convert.
-        constexpr Bytes operator "" _KiBytes(std::size_t lhs);
+        constexpr Bytes operator "" _KiBytes(std::size_t lhs) noexcept;
 
         /// \brief User-defined literal used to convert a number from MebiBytes to Bytes.
         /// \param number Number to convert.
-        constexpr Bytes operator "" _MiBytes(std::size_t lhs);
+        constexpr Bytes operator "" _MiBytes(std::size_t lhs) noexcept;
 
         /// \brief User-defined literal used to convert a number from GibiBytes to Bytes.
         /// \param number Number to convert.
-        constexpr Bytes operator "" _GiBytes(std::size_t lhs);
+        constexpr Bytes operator "" _GiBytes(std::size_t lhs) noexcept;
 
         /// \brief User-defined literal used to convert a number from TebiBytes to Bytes.
         /// \param number Number to convert.
-        constexpr Bytes operator "" _TiBytes(std::size_t lhs);
+        constexpr Bytes operator "" _TiBytes(std::size_t lhs) noexcept;
     }
 
     /************************************************************************/
@@ -377,27 +377,27 @@ namespace syntropy
 
     // Literals.
 
-    constexpr Bytes literals::operator "" _Bytes(std::size_t lhs)
+    constexpr Bytes literals::operator "" _Bytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs);
     }
 
-    constexpr Bytes literals::operator "" _KiBytes(std::size_t lhs)
+    constexpr Bytes literals::operator "" _KiBytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs * 0x400ull);
     }
 
-    constexpr Bytes literals::operator "" _MiBytes(std::size_t lhs)
+    constexpr Bytes literals::operator "" _MiBytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs * 0x400ull * 0x400ull);
     }
 
-    constexpr Bytes literals::operator "" _GiBytes(std::size_t lhs)
+    constexpr Bytes literals::operator "" _GiBytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull);
     }
 
-    constexpr Bytes literals::operator "" _TiBytes(std::size_t lhs)
+    constexpr Bytes literals::operator "" _TiBytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull * 0x400ull);
     }

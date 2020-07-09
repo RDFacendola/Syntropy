@@ -42,6 +42,20 @@ namespace syntropy::unit_test
 
     inline const auto& bytes_unit_test = MakeAutoUnitTest<BytesTestFixture>("bytes.memory.syntropy")
 
+    .TestCase("Bytes are convertible to and from integers.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL(ToInt(fixture.bytes2_), 2);
+        SYNTROPY_UNIT_EQUAL(ToBytes(2), fixture.bytes2_);
+    })
+
+    .TestCase("BytesOf return a bytes amount equal to the size of a type, converted to a bytes amount.", [](auto& fixture)
+    {
+        using namespace literals;
+
+        SYNTROPY_UNIT_EQUAL(BytesOf<Fix32>(), 4_Bytes);
+        SYNTROPY_UNIT_EQUAL(BytesOf(Fix64{}), 8_Bytes);
+    })
+
     .TestCase("Default initialized Bytes are empty.", [](auto& fixture)
     {
         SYNTROPY_UNIT_EQUAL(fixture.bytes_default_, fixture.bytes0_);
