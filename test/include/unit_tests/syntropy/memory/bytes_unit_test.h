@@ -114,6 +114,18 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(fixture.bytes_lhs_ << 1, Bytes{ 10 });
     })
 
+    .TestCase("Shifting left a bytes amount by a negative value produces a result equal to right-shifting the same bytes amount by the absolute shifting value.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL(fixture.bytes4_ >> -1, Bytes{ 8 });
+        SYNTROPY_UNIT_EQUAL(fixture.bytes_lhs_ >> -1, Bytes{ 10 });
+    })
+
+    .TestCase("Shifting right an alignment by a negative amount produces a result equal to left-shifting the same alignment by the absolute shifting value.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL(fixture.bytes4_ << -1, Bytes{ 2 });
+        SYNTROPY_UNIT_EQUAL(fixture.bytes_lhs_ << -1, Bytes{ 2 });
+    })
+
     .TestCase("Pre-incrementing a byte amount produces a byte amount which is equal to the integer value pre-incremented by one.", [](auto& fixture)
     {
         SYNTROPY_UNIT_EQUAL(++fixture.bytes_lhs_, Bytes{ 6 });
@@ -159,7 +171,7 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(~fixture.bytes_lhs_, Bytes{ 0xFFFFFFFFFFFFFFFAll });
     })
 
-    .TestCase("Bytes literals behaves as per binary metric prefixes equivalent.", [](auto& fixture)
+    .TestCase("Bytes literals behaves as binary metric prefixes equivalent.", [](auto& fixture)
     {
         using namespace literals;
 
