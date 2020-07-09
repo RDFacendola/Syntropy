@@ -74,7 +74,7 @@ namespace syntropy
     namespace literals
     {
         /// \brief User-defined literal used to convert a number to Alignment type.
-        constexpr Alignment operator "" _Align(std::size_t lhs) noexcept;
+        constexpr Alignment operator "" _Alignment(std::size_t lhs) noexcept;
     }
 
     /************************************************************************/
@@ -138,12 +138,12 @@ namespace syntropy
 
     constexpr Alignment operator>>(const Alignment& lhs, Int rhs) noexcept
     {
-        return (rhs >= 0) ? ToAlignment(ToInt(lhs) >> rhs) : (lhs << rhs);
+        return (rhs >= 0) ? ToAlignment(ToInt(lhs) >> rhs) : (lhs << -rhs);
     }
 
     constexpr Alignment operator<<(const Alignment& lhs, Int rhs) noexcept
     {
-        return (rhs >= 0) ? ToAlignment(ToInt(lhs) << rhs) : (lhs >> rhs);
+        return (rhs >= 0) ? ToAlignment(ToInt(lhs) << rhs) : (lhs >> -rhs);
     }
 
     inline std::ostream& operator<<(std::ostream& lhs, const Alignment& rhs)
@@ -153,7 +153,7 @@ namespace syntropy
 
     // Literals.
     
-    constexpr Alignment literals::operator "" _Align(std::size_t lhs) noexcept
+    constexpr Alignment literals::operator "" _Alignment(std::size_t lhs) noexcept
     {
         return Alignment(lhs);
     }

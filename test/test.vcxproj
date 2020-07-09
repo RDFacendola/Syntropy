@@ -157,6 +157,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\unit_tests\syntropy\memory\alignment_unit_test.h" />
     <ClInclude Include="include\unit_tests\syntropy\memory\bytes_unit_test.h" />
     <ClInclude Include="include\unit_tests\unit_tests.h" />
   </ItemGroup>
