@@ -104,7 +104,7 @@ namespace syntropy
     inline LinearVirtualMemoryResource::LinearVirtualMemoryResource(Bytes capacity, Bytes granularity) noexcept
         : virtual_memory_(capacity)
         , head_(virtual_memory_.Begin())
-        , granularity_(Math::Ceil(granularity, VirtualMemory::GetPageSize()))
+        , granularity_(ToAlignment(Math::Ceil(granularity, VirtualMemory::GetPageSize())))
     {
         auto commit_head = head_;
         auto commit_tail = head_.GetAligned(granularity_);

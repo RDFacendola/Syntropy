@@ -43,7 +43,7 @@ namespace syntropy
 
         // Virtual memory pages are aligned to page-size boundaries.
 
-        return static_cast<std::align_val_t>(system_info.dwPageSize);
+        return ToAlignment(system_info.dwPageSize);
     }
 
     MemoryRange HALVirtualMemory::Allocate(Bytes size)

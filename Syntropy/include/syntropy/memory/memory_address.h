@@ -307,13 +307,13 @@ namespace syntropy
     template <Bool kIsConst>
     constexpr Bool MemoryAddressT<kIsConst>::IsAlignedTo(Alignment alignment) const noexcept
     {
-        return (intptr_t(*this) & (*alignment - 1)) == 0;
+        return (intptr_t(*this) & (ToInt(alignment) - 1)) == 0;
     }
 
     template <Bool kIsConst>
     constexpr MemoryAddressT<kIsConst> MemoryAddressT<kIsConst>::GetAligned(Alignment alignment) const noexcept
     {
-        auto alignment_mask = *alignment - 1;
+        auto alignment_mask = ToInt(alignment) - 1;
 
         return (intptr_t(*this) + alignment_mask) & ~alignment_mask;
     }
@@ -321,7 +321,7 @@ namespace syntropy
     template <Bool kIsConst>
     constexpr MemoryAddressT<kIsConst> MemoryAddressT<kIsConst>::GetAlignedDown(Alignment alignment) const noexcept
     {
-        auto alignment_mask = *alignment - 1u;
+        auto alignment_mask = ToInt(alignment) - 1;
 
         return intptr_t(*this) & ~alignment_mask;
     }

@@ -109,7 +109,7 @@ namespace syntropy
         : virtual_memory_(capacity)
         , head_(virtual_memory_.Begin())
         , page_size_(Math::Ceil(page_size, VirtualMemory::GetPageSize()))
-        , page_alignment_(VirtualMemory::GetPageSize())
+        , page_alignment_(ToAlignment(VirtualMemory::GetPageSize()))
     {
 
     }

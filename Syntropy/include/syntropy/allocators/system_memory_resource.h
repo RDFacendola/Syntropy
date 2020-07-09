@@ -66,7 +66,10 @@ namespace syntropy
 
     inline MemoryRange SystemMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (auto block = MemoryAddress{ ::operator new(ToInt(size), alignment, std::nothrow) })
+        auto size_value = static_cast<std::size_t>(ToInt(size));
+        auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
+
+        if (auto block = MemoryAddress{ ::operator new(size_value, alignment_value, std::nothrow) })
         {
             return { block, block + size };
         }
@@ -76,7 +79,9 @@ namespace syntropy
 
     inline void SystemMemoryResource::Deallocate(const MemoryRange& block, Alignment alignment) noexcept
     {
-        ::operator delete(block.Begin(), alignment, std::nothrow);
+        auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
+
+        ::operator delete(block.Begin(), alignment_value, std::nothrow);
     }
 
     inline Bool SystemMemoryResource::Owns(const MemoryRange& block) const noexcept
