@@ -254,7 +254,7 @@ namespace syntropy
     {
         lhs = lhs | rhs;
 
-        return rhs;
+        return lhs;
     }
 
     constexpr Bytes& operator^=(Bytes& lhs, Bytes rhs) noexcept
@@ -347,7 +347,7 @@ namespace syntropy
 
     constexpr Bytes operator<<(Bytes lhs, Int rhs) noexcept
     {
-        return (rhs <= 0) ? ToBytes(ToInt(lhs) << rhs) : (lhs >> rhs);
+        return (rhs >= 0) ? ToBytes(ToInt(lhs) << rhs) : (lhs >> rhs);
     }
 
     constexpr Bytes operator~(Bytes rhs) noexcept
