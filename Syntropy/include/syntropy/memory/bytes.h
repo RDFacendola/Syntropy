@@ -135,6 +135,30 @@ namespace syntropy
     /// \return Returns a memory amount which is equal to the bitwise xor between lhs and rhs.
     constexpr Bytes operator^(Bytes lhs, Bytes rhs) noexcept;
 
+    /// \brief Move a byte pointer forward by a given byte amount.
+    constexpr ObserverPtr<Byte>& operator+=(ObserverPtr<Byte>& lhs, Bytes rhs) noexcept;
+
+    /// \brief Move a byte pointer backward by a given byte amount.
+    constexpr ObserverPtr<Byte>& operator-=(ObserverPtr<Byte>& lhs, Bytes rhs) noexcept;
+
+    /// \brief Move a byte pointer forward by a given byte amount.
+    constexpr ObserverPtr<Byte> operator+(ObserverPtr<Byte> lhs, Bytes rhs) noexcept;
+
+    /// \brief Move a byte pointer backward by a given byte amount.
+    constexpr ObserverPtr<Byte> operator-(ObserverPtr<Byte> lhs, Bytes rhs) noexcept;
+
+    /// \brief Move a byte pointer forward by a given byte amount.
+    constexpr ObserverPtr<const Byte>& operator+=(ObserverPtr<const Byte>& lhs, Bytes rhs) noexcept;
+
+    /// \brief Move a byte pointer backward by a given byte amount.
+    constexpr ObserverPtr<const Byte>& operator-=(ObserverPtr<const Byte>& lhs, Bytes rhs) noexcept;
+
+    /// \brief Move a byte pointer forward by a given byte amount.
+    constexpr ObserverPtr<const Byte> operator+(ObserverPtr<const Byte> lhs, Bytes rhs) noexcept;
+
+    /// \brief Move a byte pointer backward by a given byte amount.
+    constexpr ObserverPtr<const Byte> operator-(ObserverPtr<const Byte> lhs, Bytes rhs) noexcept;
+
     /// \brief Stream insertion for Bytes.
     std::ostream& operator<<(std::ostream& lhs, Bytes rhs);
 
@@ -368,6 +392,54 @@ namespace syntropy
     constexpr Bytes operator^(Bytes lhs, Bytes rhs) noexcept
     {
         return ToBytes(ToInt(lhs) ^ ToInt(rhs));
+    }
+
+    constexpr ObserverPtr<Byte>& operator+=(ObserverPtr<Byte>& lhs, Bytes rhs) noexcept
+    {
+        lhs = lhs + rhs;
+
+        return lhs;
+    }
+
+    constexpr ObserverPtr<Byte>& operator-=(ObserverPtr<Byte>& lhs, Bytes rhs) noexcept
+    {
+        lhs = lhs - rhs;
+
+        return lhs;
+    }
+
+    constexpr ObserverPtr<Byte> operator+(ObserverPtr<Byte> lhs, Bytes rhs) noexcept
+    {
+        return lhs + ToInt(rhs);
+    }
+
+    constexpr ObserverPtr<Byte> operator-(ObserverPtr<Byte> lhs, Bytes rhs) noexcept
+    {
+        return lhs - ToInt(rhs);
+    }
+
+    constexpr ObserverPtr<const Byte>& operator+=(ObserverPtr<const Byte>& lhs, Bytes rhs) noexcept
+    {
+        lhs = lhs + rhs;
+
+        return lhs;
+    }
+
+    constexpr ObserverPtr<const Byte>& operator-=(ObserverPtr<const Byte>& lhs, Bytes rhs) noexcept
+    {
+        lhs = lhs - rhs;
+
+        return lhs;
+    }
+
+    constexpr ObserverPtr<const Byte> operator+(ObserverPtr<const Byte> lhs, Bytes rhs) noexcept
+    {
+        return lhs + ToInt(rhs);
+    }
+
+    constexpr ObserverPtr<const Byte> operator-(ObserverPtr<const Byte> lhs, Bytes rhs) noexcept
+    {
+        return lhs - ToInt(rhs);
     }
 
     inline std::ostream& operator<<(std::ostream& lhs, Bytes rhs)
