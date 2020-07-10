@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <ostream>
 
 namespace syntropy
 {
@@ -94,6 +95,13 @@ namespace syntropy
     constexpr Fix64 ToFix64(TNumber rhs);
 
     /************************************************************************/
+    /* STREAM INSERTION                                                     */
+    /************************************************************************/
+
+    /// \brief Stream insertion for byte types.
+    std::ostream& operator<<(std::ostream& out, Byte byte) noexcept;
+
+    /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
@@ -139,6 +147,15 @@ namespace syntropy
     constexpr Fix64 ToFix64(TNumber rhs)
     {
         return static_cast<Fix64>(rhs);
+    }
+
+    // Stream insertion.
+
+    inline std::ostream& operator<<(std::ostream& out, Byte byte) noexcept
+    {
+        out << ToInt(byte);
+
+        return out;
     }
 
 }
