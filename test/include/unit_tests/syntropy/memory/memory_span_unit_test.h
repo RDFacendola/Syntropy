@@ -117,10 +117,24 @@ namespace syntropy::unit_test
 
     .TestCase("Removing front elements from a memory span yields another memory span which is equal to the remaining elements.", [](auto& fixture)
     {
-        auto memory_span = MemorySpan{ &fixture.buffer_[0], Bytes{ 10 } };
-        auto popfront = MemorySpan{ &fixture.buffer_[1], Bytes{ 9 } };
+        using namespace literals;
 
-        SYNTROPY_UNIT_EQUAL(PopFront(memory_span), popfront);
+        auto memory_span = MemorySpan{ &fixture.buffer_[0], 10_Bytes };
+        auto popfront1 = MemorySpan{ &fixture.buffer_[1], 9_Bytes };
+        auto popfront3 = MemorySpan{ &fixture.buffer_[3], 7_Bytes };
+
+        SYNTROPY_UNIT_EQUAL(PopFront(memory_span), popfront1);
+        SYNTROPY_UNIT_EQUAL(PopFront(memory_span, 3_Bytes), popfront3);
+    })
+
+    .TestCase("Selecting the first elements of a memory span yields a sub-span which has the selected elements only.", [](auto& fixture)
+    {
+        using namespace literals;
+
+        auto memory_span = MemorySpan{ &fixture.buffer_[0],  10_Bytes };
+        auto first4 = MemorySpan{ &fixture.buffer_[0], 4_Bytes };
+
+        SYNTROPY_UNIT_EQUAL(First(memory_span, 4_Bytes), first4);
     })
 
     .TestCase("Memory spans contain themselves.", [](auto& fixture)

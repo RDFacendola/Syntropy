@@ -107,21 +107,21 @@ namespace syntropy
     /* MEMORY SPAN ALIAS                                                    */
     /************************************************************************/
 
-    /// \brief Type alias for a memory memory span to a read-write memory region.
+    /// \brief Type alias for a memory span to a read-write memory region.
     using MemorySpan = MemorySpanT<MemorySpanTraits>;
 
-    /// \brief Type alias for a memory memory span to a read-only memory region.
+    /// \brief Type alias for a memory span to a read-only memory region.
     using ReadOnlyMemorySpan = MemorySpanT<ReadOnlyMemorySpanTag>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Get a pointer to the first byte in a memory memory span.
+    /// \brief Get a pointer to the first byte in a memory span.
     template <typename TTraits>
     constexpr typename MemorySpanT<TTraits>::TPointer begin(const MemorySpanT<TTraits>& memory_span) noexcept;
 
-    /// \brief Get a pointer past the last byte in a memory memory span.
+    /// \brief Get a pointer past the last byte in a memory span.
     template <typename TTraits>
     constexpr typename MemorySpanT<TTraits>::TPointer end(const MemorySpanT<TTraits>& memory_span) noexcept;
 
@@ -133,15 +133,15 @@ namespace syntropy
     template <typename TTraits, typename UTraits>
     constexpr Bool operator!=(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept;
 
-    /// \brief Check whether a memory memory span is empty.
+    /// \brief Check whether a memory span is empty.
     template <typename TTraits>
     constexpr Bool IsEmpty(const MemorySpanT<TTraits>& memory_span) noexcept;
 
-    /// \brief Get the size of a memory memory span.
+    /// \brief Get the size of a memory span.
     template <typename TTraits>
     constexpr Bytes Size(const MemorySpanT<TTraits>& memory_span) noexcept;
 
-    /// \brief Access the first byte in a memory memory span.
+    /// \brief Access the first byte in a memory span.
     /// If the memory span is empty the behavior of this method is undefined.
     template <typename TTraits>
     constexpr typename MemorySpanT<TTraits>::TReference& Front(const MemorySpanT<TTraits>& memory_span) noexcept;
@@ -151,7 +151,17 @@ namespace syntropy
     template <typename TTraits>
     constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span) noexcept;
 
-    /// \brief Check whether two spans are identical (ie: they both refer to the same memory).
+    /// \brief Discard some bytes in memory span and return the resulting memory span.
+    /// If this method would cause the new span to exceed the original one, the behavior of this method is undefined.
+    template <typename TTraits>
+    constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span, Bytes bytes) noexcept;
+
+    /// \brief Obtain a memory span consisting of the first elements of a memory span.
+    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+    template <typename TTraits>
+    constexpr MemorySpanT<TTraits> First(const MemorySpanT<TTraits>& memory_span, Bytes bytes) noexcept;
+
+    /// \brief Check whether two spans are identical (ie: they both refer to the same memory region).
     template <typename TTraits, typename UTraits>
     constexpr Bool AreIdentical(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept;
 
@@ -258,7 +268,9 @@ namespace syntropy
     template <typename TTraits>
     constexpr Bool IsEmpty(const MemorySpanT<TTraits>& memory_span) noexcept
     {
-        return Size(memory_span) <= Bytes{ 0 };
+        using namespace literals;
+
+        return Size(memory_span) <= 0_Bytes;
     }
 
     template <typename TTraits>
@@ -276,7 +288,21 @@ namespace syntropy
     template <typename TTraits>
     constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span) noexcept
     {
-        return { memory_span.GetData() + 1, Size(memory_span) - Bytes{ 1 } };
+        using namespace literals;
+
+        return PopFront(memory_span, 1_Bytes);
+    }
+
+    template <typename TTraits>
+    constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span, Bytes bytes) noexcept
+    {
+        return { memory_span.GetData() + bytes, Size(memory_span) - bytes };
+    }
+
+    template <typename TTraits>
+    constexpr MemorySpanT<TTraits> First(const MemorySpanT<TTraits>& memory_span, Bytes bytes) noexcept
+    {
+        return { memory_span.GetData(), bytes };
     }
 
     template <typename TTraits, typename UTraits>
