@@ -81,11 +81,11 @@ namespace syntropy
 
     /// \brief Check whether two spans are element-wise equivalent.
     template <typename TElement, typename UElement>
-    constexpr bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept;
+    constexpr Bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept;
 
     /// \brief Check whether two spans are not element-wise equivalent.
     template <typename TElement, typename UElement>
-    constexpr bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept;
+    constexpr Bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept;
 
     /// \brief Check whether a span is empty.
     template <typename TElement>
@@ -241,6 +241,8 @@ namespace syntropy
         return data_;
     }
 
+    // Non-member functions.
+
     template <typename TElement>
     constexpr ObserverPtr<TElement> begin(const Span<TElement>& span) noexcept
     {
@@ -253,16 +255,14 @@ namespace syntropy
         return span.GetData() + span.count_;
     }
 
-    // Non-member functions.
-
     template <typename TElement, typename UElement>
-    constexpr bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept
+    constexpr Bool operator==(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept
     {
         return AreEquivalent(lhs, rhs);
     }
 
     template <typename TElement, typename UElement>
-    constexpr bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept
+    constexpr Bool operator!=(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept
     {
         return !(lhs == rhs);
     }
