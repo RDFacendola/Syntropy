@@ -6,8 +6,11 @@
 
 #pragma once
 
+#include "syntropy/language/type_traits.h"
 #include "syntropy/core/types.h"
+#include "syntropy/core/span.h"
 #include "syntropy/memory/bytes.h"
+#include "syntropy/memory/alignment.h"
 
 namespace syntropy
 {
@@ -94,7 +97,7 @@ namespace syntropy
     };
 
     /// \brief Traits for a memory span in a read only memory region.
-    struct ReadOnlyMemorySpanTag
+    struct ReadOnlyMemorySpanTraits
     {
         /// \brief Address of the underlying memory region.
         using TPointer = ReadOnlyBytePtr;
@@ -111,7 +114,11 @@ namespace syntropy
     using MemorySpan = MemorySpanT<MemorySpanTraits>;
 
     /// \brief Type alias for a memory span to a read-only memory region.
-    using ReadOnlyMemorySpan = MemorySpanT<ReadOnlyMemorySpanTag>;
+    using ReadOnlyMemorySpan = MemorySpanT<ReadOnlyMemorySpanTraits>;
+
+    /// \brief Type of a memory span which may contain elements of type TElement.
+    template <typename TElement>
+    using SelectMemorySpanT = ConditionalT<IsConstV<TElement>, ReadOnlyMemorySpan, MemorySpan>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -177,6 +184,28 @@ namespace syntropy
     /// Empty spans are not considered to be overlapping with any other memory_span.
     template <typename TTraits, typename UTraits>
     constexpr Bool Overlaps(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept;
+
+    /// \brief Check whether a memory span is aligned to a given alignment value.
+    /// This method only accounts for the first element in the span.
+    template <typename TTraits>
+    constexpr Bool IsAlignedTo(const MemorySpanT<TTraits>& memory_span, Alignment alignment) noexcept;
+
+    /// \brief Consume a memory span until its first byte is aligned to a given boundary or the span is exhausted.
+    template <typename TTraits>
+    constexpr MemorySpanT<TTraits> Align(const MemorySpanT<TTraits>& memory_span, Alignment alignment) noexcept;
+
+    /// \brief Convert a memory span to a strongly-typed span.
+    /// If the underlying memory span doesn't refer to TElements or it has non-integer number of elements, the behavior of this method is undefined.
+    template <typename TElement, typename TTraits>
+    constexpr Span<TElement> ToSpan(const MemorySpanT<TTraits>& memory_span) noexcept;
+
+    /// \brief Convert a strongly-typed span to a memory span.
+    template <typename TElement>
+    constexpr SelectMemorySpanT<TElement> ToMemorySpan(const Span<TElement>& rhs) noexcept;
+
+    /// \brief Convert a strongly-typed span to a read-only memory span.
+    template <typename TElement>
+    constexpr ReadOnlyMemorySpan ToReadOnlyMemorySpan(const Span<TElement>& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -341,6 +370,61 @@ namespace syntropy
         auto rhs_end = rhs_begin + Size(rhs);
 
         return (lhs_begin < rhs_end) && (rhs_begin < lhs_end);
+    }
+
+    template <typename TTraits>
+    constexpr Bool IsAlignedTo(const MemorySpanT<TTraits>& memory_span, Alignment alignment) noexcept
+    {
+        auto address = reinterpret_cast<Int>(memory_span.GetData());
+
+        return (address & (ToInt(alignment) - 1)) == 0;
+    }
+
+    template <typename TTraits>
+    constexpr MemorySpanT<TTraits> Align(const MemorySpanT<TTraits>& memory_span, Alignment alignment) noexcept
+    {
+        using TPointer = typename MemorySpanT<TTraits>::TPointer;
+
+        auto begin_address = reinterpret_cast<Int>(memory_span.GetData());
+        auto end_address = begin_address + ToInt(Size(memory_span));
+
+        auto alignment_mask = ToInt(alignment) - 1;
+
+        begin_address = Math::Min((begin_address + alignment_mask) & ~alignment_mask, end_address);
+
+        auto begin_ptr = reinterpret_cast<TPointer>(begin_address);
+        auto end_ptr = reinterpret_cast<TPointer>(end_address);
+
+        return { begin_ptr, end_ptr };
+    }
+
+    template <typename TElement, typename TTraits>
+    constexpr Span<TElement> ToSpan(const MemorySpanT<TTraits>& rhs) noexcept
+    {
+        auto begin = reinterpret_cast<ObserverPtr<TElement>>(rhs.GetData());
+        auto size = Size(rhs) / BytesOf<TElement>();
+
+        return { begin, size };
+    }
+
+    template <typename TElement>
+    constexpr SelectMemorySpanT<TElement> ToMemorySpan(const Span<TElement>& rhs) noexcept
+    {
+        auto begin = reinterpret_cast<typename SelectMemorySpanT<TElement>::TPointer>(rhs.GetData());
+
+        auto size = rhs.GetCount() * BytesOf<TElement>();
+
+        return { begin, size };
+    }
+
+    template <typename TElement>
+    constexpr ReadOnlyMemorySpan ToReadOnlyMemorySpan(const Span<TElement>& rhs) noexcept
+    {
+        auto begin = reinterpret_cast<const Byte*>(rhs.GetData());
+
+        auto size = rhs.GetCount() * BytesOf<TElement>();
+
+        return { begin, size };
     }
 
 }
