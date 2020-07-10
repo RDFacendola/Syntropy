@@ -312,7 +312,7 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(Contains(span, span), true);
     })
 
-    .TestCase("Span contains a subspan if the first refers to a memory location inside the first.", [](auto& fixture)
+    .TestCase("Span contains a subspan if the latter refers to a memory location inside the first.", [](auto& fixture)
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
         auto subspan = Span<Int>{ &fixture.int_sequence_[2], 4 };
