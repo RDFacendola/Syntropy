@@ -33,8 +33,10 @@ namespace syntropy
     public:
 
         /// \brief Underlying pointer type.
-        template <typename TType>
-        using TPointer = TTraits::TPointer;
+        using TPointer = typename TTraits::TPointer;
+
+        /// \brief Underlying reference type.
+        using TReference = typename TTraits::TReference;
 
         /// \brief Create an empty memory span.
         constexpr MemorySpanT() noexcept = default;
@@ -65,12 +67,12 @@ namespace syntropy
         constexpr Bytes GetSize() const noexcept;
 
         /// \brief Access the underlying buffer.
-        constexpr TTraits::TPointer GetData() const noexcept;
+        constexpr typename TTraits::TPointer GetData() const noexcept;
 
     private:
 
         /// \brief Pointer to the first element in the memory region.
-        TTraits::TPointer data_{ nullptr };
+        typename TTraits::TPointer data_{ nullptr };
 
         /// \brief Span size.
         Bytes size_ = Bytes{ 0 };
@@ -86,6 +88,9 @@ namespace syntropy
     {
         /// \brief Address of the underlying memory region.
         using TPointer = BytePtr;
+
+        /// \brief Reference to a byte.
+        using TReference = Byte&;
     };
 
     /// \brief Traits for a memory span in a read only memory region.
@@ -93,6 +98,9 @@ namespace syntropy
     {
         /// \brief Address of the underlying memory region.
         using TPointer = ReadOnlyBytePtr;
+
+        /// \brief Reference to a byte.
+        using TReference = const Byte&;
     };
 
     /************************************************************************/
@@ -136,7 +144,7 @@ namespace syntropy
     /// \brief Access the first byte in a memory memory span.
     /// If the memory span is empty the behavior of this method is undefined.
     template <typename TTraits>
-    constexpr typename MemorySpanT<TTraits>::TPointer& Front(const MemorySpanT<TTraits>& memory_span) noexcept;
+    constexpr typename MemorySpanT<TTraits>::TReference& Front(const MemorySpanT<TTraits>& memory_span) noexcept;
 
     /// \brief Discard the first element in a memory span and return the resulting subspan.
     /// If the memory span is empty the behavior of this method is undefined.
@@ -260,7 +268,7 @@ namespace syntropy
     }
 
     template <typename TTraits>
-    constexpr typename MemorySpanT<TTraits>::TPointer& Front(const MemorySpanT<TTraits>& memory_span) noexcept
+    constexpr typename MemorySpanT<TTraits>::TReference& Front(const MemorySpanT<TTraits>& memory_span) noexcept
     {
         return *memory_span.GetData();
     }
@@ -268,7 +276,7 @@ namespace syntropy
     template <typename TTraits>
     constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span) noexcept
     {
-        return { memory_span.GetData() + 1, Size(memory_span) - 1 };
+        return { memory_span.GetData() + 1, Size(memory_span) - Bytes{ 1 } };
     }
 
     template <typename TTraits, typename UTraits>
@@ -289,10 +297,10 @@ namespace syntropy
     constexpr Bool Contains(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
     {
         auto lhs_begin = lhs.GetData();
-        auto lhs_end = lhs_begin + Count(lhs);
+        auto lhs_end = lhs_begin + Size(lhs);
 
         auto rhs_begin = rhs.GetData();
-        auto rhs_end = rhs_begin + Count(rhs);
+        auto rhs_end = rhs_begin + Size(rhs);
 
         return (!rhs) || ((lhs_begin <= rhs_begin) && (lhs_end >= rhs_end));
     }
@@ -301,10 +309,10 @@ namespace syntropy
     constexpr Bool Overlaps(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
     {
         auto lhs_begin = lhs.GetData();
-        auto lhs_end = lhs_begin + Count(lhs);
+        auto lhs_end = lhs_begin + Size(lhs);
 
         auto rhs_begin = rhs.GetData();
-        auto rhs_end = rhs_begin + Count(rhs);
+        auto rhs_end = rhs_begin + Size(rhs);
 
         return (lhs_begin < rhs_end) && (rhs_begin < lhs_end);
     }

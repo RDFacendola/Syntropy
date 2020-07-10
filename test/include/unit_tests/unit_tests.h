@@ -10,3 +10,4 @@
 
 #include "unit_tests/syntropy/memory/bytes_unit_test.h"
 #include "unit_tests/syntropy/memory/alignment_unit_test.h"
+#include "unit_tests/syntropy/memory/memory_span_unit_test.h"
