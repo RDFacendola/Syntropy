@@ -173,7 +173,7 @@ namespace syntropy
     /// \brief Check whether lhs and lhs overlaps the same memory location.
     /// Empty spans are not considered to be overlapping with any other span.
     template <typename TElement, typename UElement>
-    constexpr Bool IsOverlapping(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept;
+    constexpr Bool Overlaps(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -424,7 +424,7 @@ namespace syntropy
     }
 
     template <typename TElement, typename UElement>
-    constexpr Bool IsOverlapping(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept
+    constexpr Bool Overlaps(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept
     {
         static_assert(IsSameV<std::decay<TElement>, std::decay<UElement>>, "TElement and UElement must refer to the same underlying type");
 

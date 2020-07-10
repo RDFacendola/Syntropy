@@ -331,7 +331,7 @@ namespace syntropy::unit_test
     {
         auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
 
-        SYNTROPY_UNIT_EQUAL(IsOverlapping(span, span), true);
+        SYNTROPY_UNIT_EQUAL(Overlaps(span, span), true);
     })
 
     .TestCase("Disjoint spans do not overlap.", [](auto& fixture)
@@ -339,7 +339,7 @@ namespace syntropy::unit_test
         auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
         auto disjoint = Span<Int>{ &fixture.int_sequence_[6], 4 };
 
-        SYNTROPY_UNIT_EQUAL(IsOverlapping(span, disjoint), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(span, disjoint), false);
     })
 
     .TestCase("Contiguous spans do not overlap.", [](auto& fixture)
@@ -347,7 +347,7 @@ namespace syntropy::unit_test
         auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
         auto contiguous = Span<Int>{ &fixture.int_sequence_[4], 3 };
 
-        SYNTROPY_UNIT_EQUAL(IsOverlapping(span, contiguous), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(span, contiguous), false);
     })
 
     .TestCase("Empty spans do not overlap with any other span.", [](auto& fixture)
@@ -355,9 +355,9 @@ namespace syntropy::unit_test
         auto span = Span<Int>{ &fixture.int_sequence_[0], 4 };
         auto empty = Span<Int>{};
 
-        SYNTROPY_UNIT_EQUAL(IsOverlapping(empty, empty), false);
-        SYNTROPY_UNIT_EQUAL(IsOverlapping(span, empty), false);
-        SYNTROPY_UNIT_EQUAL(IsOverlapping(empty, span), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(empty, empty), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(span, empty), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(empty, span), false);
     })
 
     .TestCase("Overlapping test is commutative.", [](auto& fixture)
@@ -365,8 +365,8 @@ namespace syntropy::unit_test
         auto left = Span<Int>{ &fixture.int_sequence_[0], 4 };
         auto right = Span<Int>{ &fixture.int_sequence_[2], 4 };
 
-        SYNTROPY_UNIT_EQUAL(IsOverlapping(left, right), true);
-        SYNTROPY_UNIT_EQUAL(IsOverlapping(right, left), true);
+        SYNTROPY_UNIT_EQUAL(Overlaps(left, right), true);
+        SYNTROPY_UNIT_EQUAL(Overlaps(right, left), true);
     });
 
     /************************************************************************/
