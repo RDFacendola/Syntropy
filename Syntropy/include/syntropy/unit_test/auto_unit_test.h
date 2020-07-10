@@ -86,7 +86,7 @@ namespace syntropy
     template <typename TTestFixture, typename... TArguments>
     inline AutoUnitTest<TTestFixture>& MakeAutoUnitTest(const Context& name, TArguments&&... arguments)
     {
-        static auto auto_unit_test = AutoUnitTest<TTestFixture>(name, std::forward<TArguments>(arguments)...);
+        static auto auto_unit_test = AutoUnitTest<TTestFixture>{ name, std::forward<TArguments>(arguments)... };
 
         return auto_unit_test;
     }

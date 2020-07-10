@@ -18,7 +18,19 @@ namespace syntropy::unit_test
     /// \brief Bytes test fixture.
     struct BytesTestFixture
     {
+        /// \brief Memory buffer.
+        Byte buffer_[10];
+
+        /// \brief Read-write pointer to a buffer.
+        ObserverPtr<Byte> read_write_ptr_;
+
+        /// \brief Read-only pointer to a buffer.
+        ObserverPtr<const Byte> read_only_ptr_;
+
+        /// \brief Default constructed bytes object.
         const Bytes bytes_default_ = Bytes{};
+
+        /// \brief Numeric constants.
 
         const Bytes bytes0_ = Bytes{ 0 };
         const Bytes bytes1_ = Bytes{ 1 };
@@ -31,6 +43,7 @@ namespace syntropy::unit_test
         const Bytes bytes8_ = Bytes{ 8 };
         const Bytes bytes10_ = Bytes{ 10 };
 
+        /// \brief Modifiable bytes object.
         Bytes bytes_lhs_ = Bytes{ 5 };
 
         void Before();
@@ -180,6 +193,34 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(3_MiBytes, Bytes{ 0x0000000000300000ll });
         SYNTROPY_UNIT_EQUAL(4_GiBytes, Bytes{ 0x0000000100000000ll });
         SYNTROPY_UNIT_EQUAL(5_TiBytes, Bytes{ 0x0000050000000000ll });
+    })
+
+    .TestCase("Byte pointers can be moved forward by Bytes amount.", [](auto& fixture)
+    {
+        using namespace literals;
+
+        auto read_write_ptr8 = ObserverPtr<Byte>{ &fixture.buffer_[8] };
+        auto read_only_ptr8 = ObserverPtr<const Byte>{ &fixture.buffer_[8] };
+
+        SYNTROPY_UNIT_EQUAL(fixture.read_write_ptr_ + 4_Bytes, read_write_ptr8);
+        SYNTROPY_UNIT_EQUAL(fixture.read_only_ptr_ + 4_Bytes, read_only_ptr8);
+
+        SYNTROPY_UNIT_EQUAL(fixture.read_write_ptr_ += 4_Bytes, read_write_ptr8);
+        SYNTROPY_UNIT_EQUAL(fixture.read_only_ptr_ += 4_Bytes, read_only_ptr8);
+    })
+
+    .TestCase("Byte pointers can be moved backwards by Bytes amount.", [](auto& fixture)
+    {
+        using namespace literals;
+
+        auto read_write_ptr0 = ObserverPtr<Byte>{ &fixture.buffer_[0] };
+        auto read_only_ptr0 = ObserverPtr<const Byte>{ &fixture.buffer_[0] };
+
+        SYNTROPY_UNIT_EQUAL(fixture.read_write_ptr_ - 4_Bytes, read_write_ptr0);
+        SYNTROPY_UNIT_EQUAL(fixture.read_only_ptr_ - 4_Bytes, read_only_ptr0);
+
+        SYNTROPY_UNIT_EQUAL(fixture.read_write_ptr_ -= 4_Bytes, read_write_ptr0);
+        SYNTROPY_UNIT_EQUAL(fixture.read_only_ptr_ -= 4_Bytes, read_only_ptr0);
     });
 
     /************************************************************************/
@@ -189,6 +230,9 @@ namespace syntropy::unit_test
     inline void BytesTestFixture::Before()
     {
         bytes_lhs_ = Bytes{ 5 };
+
+        read_write_ptr_ = &buffer_[4];
+        read_only_ptr_ = &buffer_[4];
     }
 
 }
