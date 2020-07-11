@@ -351,13 +351,29 @@ namespace syntropy
     template <typename TTraits, typename UTraits>
     constexpr Bool Contains(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
     {
+        // Empty spans do not contain any other set.
+
+        if (!lhs)
+        {
+            return false;
+        }
+
+        // Empty spans are contained in any other set, except empty sets.
+
+        if (!rhs)
+        {
+            return true;
+        }
+
+        // Test span boundaries.
+
         auto lhs_begin = lhs.GetData();
         auto lhs_end = lhs_begin + Size(lhs);
 
         auto rhs_begin = rhs.GetData();
         auto rhs_end = rhs_begin + Size(rhs);
 
-        return (!rhs) || ((lhs_begin <= rhs_begin) && (lhs_end >= rhs_end));
+        return (lhs_begin <= rhs_begin) && (lhs_end >= rhs_end);
     }
 
     template <typename TTraits, typename UTraits>
