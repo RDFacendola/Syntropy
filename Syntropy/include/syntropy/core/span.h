@@ -354,7 +354,7 @@ namespace syntropy
         auto lhs_data = lhs.GetData();
         auto rhs_data = rhs.GetData();
 
-        if constexpr (IsSameV<std::decay<TElement>, std::decay<UElement>>)
+        if constexpr (IsSameV<StripT<TElement>, StripT<UElement>>)
         {
             if (lhs_data == rhs_data)
             {
@@ -412,7 +412,23 @@ namespace syntropy
     template <typename TElement, typename UElement>
     constexpr Bool Contains(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept
     {
-        static_assert(IsSameV<std::decay<TElement>, std::decay<UElement>>, "TElement and UElement must refer to the same underlying type");
+        static_assert(IsSameV<StripT<TElement>, StripT<UElement>>, "TElement and UElement must refer to the same underlying type");
+
+        // Empty spans do not contain any other span.
+
+        if (!lhs)
+        {
+            return false;
+        }
+
+        // Empty spans are contained in any other span, except empty spans.
+
+        if (!rhs)
+        {
+            return true;
+        }
+
+        // Test span boundaries.
 
         auto lhs_begin = lhs.GetData();
         auto lhs_end = lhs_begin + Count(lhs);
@@ -420,13 +436,13 @@ namespace syntropy
         auto rhs_begin = rhs.GetData();
         auto rhs_end = rhs_begin + Count(rhs);
 
-        return (!rhs) || ((lhs_begin <= rhs_begin) && (lhs_end >= rhs_end));
+        return ((lhs_begin <= rhs_begin) && (lhs_end >= rhs_end));
     }
 
     template <typename TElement, typename UElement>
     constexpr Bool Overlaps(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept
     {
-        static_assert(IsSameV<std::decay<TElement>, std::decay<UElement>>, "TElement and UElement must refer to the same underlying type");
+        static_assert(IsSameV<StripT<TElement>, StripT<UElement>>, "TElement and UElement must refer to the same underlying type");
 
         auto lhs_begin = lhs.GetData();
         auto lhs_end = lhs_begin + Count(lhs);

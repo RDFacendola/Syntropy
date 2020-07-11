@@ -351,14 +351,14 @@ namespace syntropy
     template <typename TTraits, typename UTraits>
     constexpr Bool Contains(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
     {
-        // Empty spans do not contain any other set.
+        // Empty spans do not contain any other span.
 
         if (!lhs)
         {
             return false;
         }
 
-        // Empty spans are contained in any other set, except empty sets.
+        // Empty spans are contained in any other set, except empty spans.
 
         if (!rhs)
         {
