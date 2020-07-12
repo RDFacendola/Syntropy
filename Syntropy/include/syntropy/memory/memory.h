@@ -72,7 +72,7 @@ namespace syntropy
 
     inline void Memory::Set(const MemoryRange& destination, Byte value)
     {
-        std::memset(destination.Begin(), ToFix8(value), ToInt(destination.GetSize()));
+        std::memset(destination.Begin(), static_cast<int>(value), ToInt(destination.GetSize()));
     }
 
     inline void Memory::Zero(const MemoryRange& destination)

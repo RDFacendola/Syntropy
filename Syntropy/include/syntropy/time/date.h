@@ -70,17 +70,17 @@ namespace syntropy
 
     inline Int Date::GetDay() const
     {
-        return day_;
+        return ToInt(day_);
     }
 
     inline Int Date::GetMonth() const
     {
-        return month_;
+        return ToInt(month_);
     }
 
     inline Int Date::GetYear() const
     {
-        return year_;
+        return ToInt(year_);
     }
 
     // Non-member functions.
