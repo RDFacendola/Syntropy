@@ -175,6 +175,10 @@ namespace syntropy
     template <typename TElement, typename UElement>
     constexpr Bool Overlaps(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept;
 
+    /// \brief Stream insertion for Spans.
+    template <typename TElement>
+    std::ostream& operator<<(std::ostream& lhs, const Span<TElement>& rhs);
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -252,7 +256,7 @@ namespace syntropy
     template <typename TElement>
     constexpr ObserverPtr<TElement> end(const Span<TElement>& span) noexcept
     {
-        return span.GetData() + span.count_;
+        return span.GetData() + span.GetCount();
     }
 
     template <typename TElement, typename UElement>
@@ -453,4 +457,18 @@ namespace syntropy
         return (lhs_begin < rhs_end) && (rhs_begin < lhs_end);
     }
 
+    template <typename TElement>
+    std::ostream& operator<<(std::ostream& lhs, const Span<TElement>& rhs)
+    {
+        lhs << "{";
+
+        for (auto&& element : rhs)
+        {
+            lhs << element << ((&element != &Back(rhs)) ? ", " : "");
+        }
+
+        lhs << "}";
+
+        return lhs;
+    }
 }

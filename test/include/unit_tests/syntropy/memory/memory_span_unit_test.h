@@ -19,6 +19,9 @@ namespace syntropy::unit_test
     /// \brief Span test fixture.
     struct MemorySpanTestFixture
     {
+        /// \brief Buffer aligned to 16 Bytes.
+        alignas(16) Byte aligned_buffer16_[10];
+
         /// \brief Buffer of random bytes.
         Byte buffer_[10];
 
@@ -27,6 +30,15 @@ namespace syntropy::unit_test
 
         /// \brief Different buffer of random bytes.
         Byte buffer_different_[10];
+
+        union
+        {
+            /// \brief Raw buffer.
+            Byte raw_[32];
+
+            /// \brief Typed elements span.
+            Fix64 elements_[4];
+        } union_;
 
         /// \brief Setup the fixture before each test case.
         void Before();
@@ -108,28 +120,38 @@ namespace syntropy::unit_test
     .TestCase("Memory spans are equivalent to spans whose values compare equivalent.", [](auto& fixture)
     {
         auto memory_span = MemorySpan{ &fixture.buffer_[0], Bytes{ 10 } };
+        auto memory_span_short = MemorySpan{ &fixture.buffer_[0], Bytes{ 9 } };
         auto memory_span_equivalent = MemorySpan{ &fixture.buffer_equivalent_[0], Bytes{ 10 } };
         auto memory_span_different = MemorySpan{ &fixture.buffer_different_[3], Bytes{ 7 } };
 
         auto cmemory_span = ReadOnlyMemorySpan{ &fixture.buffer_[0], Bytes{ 10 } };
+        auto cmemory_span_short = MemorySpan{ &fixture.buffer_[0], Bytes{ 9 } };
         auto cmemory_span_equivalent = ReadOnlyMemorySpan{ &fixture.buffer_equivalent_[0], Bytes{ 10 } };
         auto cmemory_span_different = ReadOnlyMemorySpan{ &fixture.buffer_different_[3], Bytes{ 7 } };
 
+        SYNTROPY_UNIT_EQUAL(memory_span == memory_span_short, false);
+        SYNTROPY_UNIT_EQUAL(memory_span != memory_span_short, true);
         SYNTROPY_UNIT_EQUAL(memory_span == memory_span_equivalent, true);
         SYNTROPY_UNIT_EQUAL(memory_span != memory_span_equivalent, false);
         SYNTROPY_UNIT_EQUAL(memory_span == memory_span_different, false);
         SYNTROPY_UNIT_EQUAL(memory_span != memory_span_different, true);
 
+        SYNTROPY_UNIT_EQUAL(cmemory_span == cmemory_span_short, false);
+        SYNTROPY_UNIT_EQUAL(cmemory_span != cmemory_span_short, true);
         SYNTROPY_UNIT_EQUAL(cmemory_span == cmemory_span_equivalent, true);
         SYNTROPY_UNIT_EQUAL(cmemory_span != cmemory_span_equivalent, false);
         SYNTROPY_UNIT_EQUAL(cmemory_span == cmemory_span_different, false);
         SYNTROPY_UNIT_EQUAL(cmemory_span != cmemory_span_different, true);
 
+        SYNTROPY_UNIT_EQUAL(memory_span == cmemory_span_short, false);
+        SYNTROPY_UNIT_EQUAL(memory_span != cmemory_span_short, true);
         SYNTROPY_UNIT_EQUAL(memory_span == cmemory_span_equivalent, true);
         SYNTROPY_UNIT_EQUAL(memory_span != cmemory_span_equivalent, false);
         SYNTROPY_UNIT_EQUAL(memory_span == cmemory_span_different, false);
         SYNTROPY_UNIT_EQUAL(memory_span != cmemory_span_different, true);
 
+        SYNTROPY_UNIT_EQUAL(cmemory_span == memory_span_short, false);
+        SYNTROPY_UNIT_EQUAL(cmemory_span != memory_span_short, true);
         SYNTROPY_UNIT_EQUAL(cmemory_span == memory_span_equivalent, true);
         SYNTROPY_UNIT_EQUAL(cmemory_span != memory_span_equivalent, false);
         SYNTROPY_UNIT_EQUAL(cmemory_span == memory_span_different, false);
@@ -292,33 +314,33 @@ namespace syntropy::unit_test
 
     .TestCase("Contiguous spans do not overlap.", [](auto& fixture)
     {
-        auto span_memory_span = MemorySpan{ &fixture.buffer_[0], Bytes{ 4 } };
+        auto memory_span = MemorySpan{ &fixture.buffer_[0], Bytes{ 4 } };
         auto contiguous = MemorySpan{ &fixture.buffer_[4], Bytes{ 3 } };
 
-        auto cspan_memory_span = ReadOnlyMemorySpan{ &fixture.buffer_[0], Bytes{ 4 } };
+        auto cmemory_span = ReadOnlyMemorySpan{ &fixture.buffer_[0], Bytes{ 4 } };
         auto ccontiguous = ReadOnlyMemorySpan{ &fixture.buffer_[4], Bytes{ 3 } };
 
-        SYNTROPY_UNIT_EQUAL(Overlaps(span_memory_span, contiguous), false);
-        SYNTROPY_UNIT_EQUAL(Overlaps(cspan_memory_span, ccontiguous), false);
-        SYNTROPY_UNIT_EQUAL(Overlaps(span_memory_span, ccontiguous), false);
-        SYNTROPY_UNIT_EQUAL(Overlaps(cspan_memory_span, contiguous), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(memory_span, contiguous), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(cmemory_span, ccontiguous), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(memory_span, ccontiguous), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(cmemory_span, contiguous), false);
     })
 
     .TestCase("Empty spans do not overlap with any other span.", [](auto& fixture)
     {
-        auto span_memory_span = MemorySpan{ &fixture.buffer_[0], Bytes{ 4 } };
+        auto span = MemorySpan{ &fixture.buffer_[0], Bytes{ 4 } };
         auto empty = MemorySpan{};
 
-        auto cspan_memory_span = ReadOnlyMemorySpan{ &fixture.buffer_[0], Bytes{ 4 } };
+        auto cspan = ReadOnlyMemorySpan{ &fixture.buffer_[0], Bytes{ 4 } };
         auto cempty = ReadOnlyMemorySpan{};
 
         SYNTROPY_UNIT_EQUAL(Overlaps(empty, empty), false);
-        SYNTROPY_UNIT_EQUAL(Overlaps(span_memory_span, empty), false);
-        SYNTROPY_UNIT_EQUAL(Overlaps(empty, span_memory_span), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(span, empty), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(empty, span), false);
 
         SYNTROPY_UNIT_EQUAL(Overlaps(cempty, cempty), false);
-        SYNTROPY_UNIT_EQUAL(Overlaps(cspan_memory_span, cempty), false);
-        SYNTROPY_UNIT_EQUAL(Overlaps(cempty, cspan_memory_span), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(cspan, cempty), false);
+        SYNTROPY_UNIT_EQUAL(Overlaps(cempty, cspan), false);
     })
 
     .TestCase("Overlapping test is commutative.", [](auto& fixture)
@@ -340,6 +362,80 @@ namespace syntropy::unit_test
 
         SYNTROPY_UNIT_EQUAL(Overlaps(cleft, right), true);
         SYNTROPY_UNIT_EQUAL(Overlaps(cright, left), true);
+    })
+
+    .TestCase("Memory spans are aligned to the same alignment requirement of the memory region they refer to.", [](auto& fixture)
+    {
+        using namespace literals;
+
+        auto memory_span = MemorySpan{ &fixture.aligned_buffer16_[0], Bytes{ 4 } };
+        auto cmemory_span = ReadOnlyMemorySpan{ &fixture.aligned_buffer16_[0], Bytes{ 4 } };
+
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(memory_span, 128_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(memory_span, 64_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(memory_span, 32_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(memory_span, 16_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(memory_span, 8_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(memory_span, 4_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(memory_span, 2_Alignment), true);
+
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(cmemory_span, 128_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(cmemory_span, 64_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(cmemory_span, 32_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(cmemory_span, 16_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(cmemory_span, 8_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(cmemory_span, 4_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(IsAlignedTo(cmemory_span, 2_Alignment), true);
+    })
+
+    .TestCase("Aligning a memory span to a value less than the original alignment returns the same span.", [](auto& fixture)
+    {
+        using namespace literals;
+
+        auto memory_span = MemorySpan{ &fixture.aligned_buffer16_[0], Bytes{ 4 } };
+
+        SYNTROPY_UNIT_EQUAL(Align(memory_span, 16_Alignment), memory_span);
+    })
+
+    .TestCase("Aligning an unaligned memory span reduces the span size by the difference between the original alignment and the requested one.", [](auto& fixture)
+    {
+        using namespace literals;
+
+        auto memory_span = MemorySpan{ &fixture.aligned_buffer16_[1], Bytes{ 9 } };
+        auto memory_span_aligned = MemorySpan{ &fixture.aligned_buffer16_[8], Bytes{ 2 } };
+
+        SYNTROPY_UNIT_EQUAL(Align(memory_span, 8_Alignment), memory_span_aligned);
+    })
+
+    .TestCase("Over-aligning a memory span returns an empty span.", [](auto& fixture)
+    {
+        using namespace literals;
+
+        auto memory_span = MemorySpan{ &fixture.aligned_buffer16_[8], Bytes{ 2 } };
+
+        SYNTROPY_UNIT_EQUAL(Align(memory_span, 16_Alignment), MemorySpan{});
+    })
+
+    .TestCase("Memory spans can be converted to strongly-typed spans", [](auto& fixture)
+    {
+        using namespace literals;
+
+        auto span = Span<Fix64>{ fixture.union_.elements_, 4 };
+        auto memory_span = MemorySpan{ fixture.union_.raw_, 32_Bytes };
+
+        SYNTROPY_UNIT_EQUAL(ToSpan<Fix64>(memory_span), span);
+    })
+
+    .TestCase("Strongly-typed spans can be converted to memory spans and read-only memory spans.", [](auto& fixture)
+    {
+        using namespace literals;
+
+        auto span = Span<Fix64>{ fixture.union_.elements_, 4 };
+        auto memory_span = MemorySpan{ fixture.union_.raw_, 32_Bytes };
+        auto read_only_memory_span = ReadOnlyMemorySpan{ fixture.union_.raw_, 32_Bytes };
+
+        SYNTROPY_UNIT_EQUAL(ToMemorySpan(span), memory_span);
+        SYNTROPY_UNIT_EQUAL(ToReadOnlyMemorySpan(span), read_only_memory_span);
     });
 
     /************************************************************************/
@@ -355,6 +451,11 @@ namespace syntropy::unit_test
             buffer_[index] = Byte{ index };
             buffer_equivalent_[index] = buffer_[index];
             buffer_different_[index] = Byte{ index * 2 };
+        }
+
+        for (auto index = 0; index < 4; ++index)
+        {
+            union_.elements_[index] = Fix64{ index * index };
         }
     }
 

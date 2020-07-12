@@ -66,6 +66,10 @@ namespace syntropy
         /// \brief Check whether the memory span is non-empty.
         constexpr operator Bool() const noexcept;
 
+        /// \brief Access a byte by offset from the first byte.
+        /// If the provided offset exceeds the span boundaries behavior of this method is undefined.
+        constexpr typename TTraits::TReference& operator[](Bytes offset) const noexcept;
+
         /// \brief Get the size of the memory span.
         constexpr Bytes GetSize() const noexcept;
 
@@ -153,6 +157,11 @@ namespace syntropy
     template <typename TTraits>
     constexpr typename MemorySpanT<TTraits>::TReference& Front(const MemorySpanT<TTraits>& memory_span) noexcept;
 
+    /// \brief Access the last byte in a memory span.
+    /// If the memory span is empty the behavior of this method is undefined.
+    template <typename TTraits>
+    constexpr typename MemorySpanT<TTraits>::TReference& Back(const MemorySpanT<TTraits>& memory_span) noexcept;
+
     /// \brief Discard the first element in a memory span and return the resulting subspan.
     /// If the memory span is empty the behavior of this method is undefined.
     template <typename TTraits>
@@ -207,6 +216,10 @@ namespace syntropy
     template <typename TElement>
     constexpr ReadOnlyMemorySpan ToReadOnlyMemorySpan(const Span<TElement>& rhs) noexcept;
 
+    /// \brief Stream insertion for MemorySpans.
+    template <typename TTraits>
+    std::ostream& operator<<(std::ostream& lhs, const MemorySpanT<TTraits>& rhs);
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -254,6 +267,12 @@ namespace syntropy
     constexpr MemorySpanT<TTraits>::operator Bool() const noexcept
     {
         return size_ > Bytes{ 0 };
+    }
+
+    template <typename TTraits>
+    constexpr typename TTraits::TReference& MemorySpanT<TTraits>::operator[](Bytes offset) const noexcept
+    {
+        return data_[ToInt(offset)];
     }
 
     template <typename TTraits>
@@ -311,7 +330,13 @@ namespace syntropy
     template <typename TTraits>
     constexpr typename MemorySpanT<TTraits>::TReference& Front(const MemorySpanT<TTraits>& memory_span) noexcept
     {
-        return *memory_span.GetData();
+        return memory_span[Bytes{ 0 }];
+    }
+
+    template <typename TTraits>
+    constexpr typename MemorySpanT<TTraits>::TReference& Back(const MemorySpanT<TTraits>& memory_span) noexcept
+    {
+        return memory_span[memory_span.GetSize() - Bytes{ 1 }];
     }
 
     template <typename TTraits>
@@ -343,9 +368,10 @@ namespace syntropy
     template <typename TTraits, typename UTraits>
     constexpr Bool AreEquivalent(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
     {
-        auto count = ToInt(Math::Min(Size(lhs), Size(rhs)));
+        auto lhs_count = Size(lhs);
+        auto rhs_count = Size(rhs);
 
-        return std::memcmp(lhs.GetData(), rhs.GetData(), count) == 0;
+        return (lhs_count == rhs_count) && std::memcmp(lhs.GetData(), rhs.GetData(), ToInt(lhs_count)) == 0;
     }
 
     template <typename TTraits, typename UTraits>
@@ -418,6 +444,7 @@ namespace syntropy
     constexpr Span<TElement> ToSpan(const MemorySpanT<TTraits>& rhs) noexcept
     {
         auto begin = reinterpret_cast<ObserverPtr<TElement>>(rhs.GetData());
+
         auto size = Size(rhs) / BytesOf<TElement>();
 
         return { begin, size };
@@ -428,7 +455,7 @@ namespace syntropy
     {
         auto begin = reinterpret_cast<typename SelectMemorySpanT<TElement>::TPointer>(rhs.GetData());
 
-        auto size = rhs.GetCount() * BytesOf<TElement>();
+        auto size = Count(rhs) * BytesOf<TElement>();
 
         return { begin, size };
     }
@@ -438,9 +465,24 @@ namespace syntropy
     {
         auto begin = reinterpret_cast<const Byte*>(rhs.GetData());
 
-        auto size = rhs.GetCount() * BytesOf<TElement>();
+        auto size = Count(rhs) * BytesOf<TElement>();
 
         return { begin, size };
+    }
+
+    template <typename TTraits>
+    std::ostream& operator<<(std::ostream& lhs, const MemorySpanT<TTraits>& rhs)
+    {
+        lhs << "{";
+
+        for (auto&& element : rhs)
+        {
+            lhs << element << ((&element != &Back(rhs)) ? ", " : "");
+        }
+
+        lhs << "}";
+
+        return lhs;
     }
 
 }
