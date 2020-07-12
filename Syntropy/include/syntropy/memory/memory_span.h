@@ -19,10 +19,10 @@ namespace syntropy
     /************************************************************************/
 
     /// \brief Type alias for a pointer to a read-write memory region.
-    using BytePtr = ObserverPtr<Byte>;
+    using BytePtr = Pointer<Byte>;
 
     /// \brief Type alias for a pointer to a read-only memory region.
-    using ReadOnlyBytePtr = ObserverPtr<const Byte>;
+    using ReadOnlyBytePtr = Pointer<const Byte>;
 
     /************************************************************************/
     /* MEMORY SPAN                                                          */
@@ -443,7 +443,7 @@ namespace syntropy
     template <typename TElement, typename TTraits>
     constexpr Span<TElement> ToSpan(const MemorySpanT<TTraits>& rhs) noexcept
     {
-        auto begin = reinterpret_cast<ObserverPtr<TElement>>(rhs.GetData());
+        auto begin = reinterpret_cast<Pointer<TElement>>(rhs.GetData());
 
         auto size = Size(rhs) / BytesOf<TElement>();
 

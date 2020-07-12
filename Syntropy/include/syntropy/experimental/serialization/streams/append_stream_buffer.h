@@ -78,7 +78,7 @@ namespace syntropy
         using IsGrowSupported = decltype(std::declval<UStreamBuffer>().Grow(Bytes{}));
 
         /// \brief Underlying stream buffer.
-        ObserverPtr<TStreamBuffer> stream_buffer_{ nullptr };
+        Pointer<TStreamBuffer> stream_buffer_{ nullptr };
 
     };
 

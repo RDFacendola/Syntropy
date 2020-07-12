@@ -151,7 +151,7 @@ namespace syntropy
         Bytes consume_size_;
 
         /// \brief Current active transaction.
-        ObserverPtr<StreamBufferTransaction> transaction_{ nullptr };
+        Pointer<StreamBufferTransaction> transaction_{ nullptr };
 
     };
 

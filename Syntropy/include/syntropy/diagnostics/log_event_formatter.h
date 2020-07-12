@@ -68,7 +68,7 @@ namespace syntropy
             TTranslationFunction translation_function_;
 
             /// \brief Next translation rule.
-            ObserverPtr<const TranslationRule> next_;
+            Pointer<const TranslationRule> next_;
         };
 
         /// \brief Represents a tokenized part of the format string which can be translated to an output stream.
@@ -78,7 +78,7 @@ namespace syntropy
             StringView token_;
 
             /// \brief Translation rule.
-            ObserverPtr<const TranslationRule> translation_rule_;
+            Pointer<const TranslationRule> translation_rule_;
         };
 
         /// \brief Translate an unformatted token to a stream.

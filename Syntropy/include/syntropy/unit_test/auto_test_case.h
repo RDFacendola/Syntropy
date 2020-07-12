@@ -54,13 +54,13 @@ namespace syntropy
     private:
 
         /// \brief Get the first element in a linked list to which every other self-registering test-case is linked to.
-        static ObserverPtr<const AutoTestCase>& GetLinkedList();
+        static Pointer<const AutoTestCase>& GetLinkedList();
 
         /// \brief Link this test-case to the others and return the next test-case after this one.
-        ObserverPtr<const AutoTestCase> LinkBefore();
+        Pointer<const AutoTestCase> LinkBefore();
 
         /// \brief Next auto test case in the fixture.
-        ObserverPtr<const AutoTestCase> next_test_case_{ nullptr };
+        Pointer<const AutoTestCase> next_test_case_{ nullptr };
 
     };
 
@@ -136,15 +136,15 @@ namespace syntropy
     }
 
     template <typename TTestFixture>
-    inline ObserverPtr<const AutoTestCase<TTestFixture>>& AutoTestCase<TTestFixture>::GetLinkedList()
+    inline Pointer<const AutoTestCase<TTestFixture>>& AutoTestCase<TTestFixture>::GetLinkedList()
     {
-        static auto linked_list = ObserverPtr<const AutoTestCase<TTestFixture>>{ nullptr };
+        static auto linked_list = Pointer<const AutoTestCase<TTestFixture>>{ nullptr };
 
         return linked_list;
     }
 
     template <typename TTestFixture>
-    inline ObserverPtr<const AutoTestCase<TTestFixture>> AutoTestCase<TTestFixture>::LinkBefore()
+    inline Pointer<const AutoTestCase<TTestFixture>> AutoTestCase<TTestFixture>::LinkBefore()
     {
         auto& linked_list = GetLinkedList();
 

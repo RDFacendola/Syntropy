@@ -48,10 +48,10 @@ namespace syntropy
     private:
 
         /// \brief Stream buffer. This variable is nullptr if the transaction is invalidated.
-        ObserverPtr<StreamBuffer> stream_buffer_{ nullptr };
+        Pointer<StreamBuffer> stream_buffer_{ nullptr };
 
         /// \brief Parent transaction.
-        ObserverPtr<StreamBufferTransaction> parent_{ nullptr };
+        Pointer<StreamBufferTransaction> parent_{ nullptr };
 
         /// \brief Whether the transaction was rollback'd.
         Bool rollback_{ false };

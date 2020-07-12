@@ -104,7 +104,7 @@ namespace syntropy
         MemoryRange buffer_;
 
         ///< \brief Memory resource the buffer was allocated on.
-        ObserverPtr<MemoryResource> memory_resource_{ nullptr };
+        Pointer<MemoryResource> memory_resource_{ nullptr };
 
         /// \brief Buffer alignment.
         Alignment alignment_;

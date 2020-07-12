@@ -50,7 +50,7 @@ namespace syntropy
     private:
 
         /// \brief Underlying stream buffer.
-        ObserverPtr<TStreamBuffer> stream_buffer_{ nullptr };
+        Pointer<TStreamBuffer> stream_buffer_{ nullptr };
 
     };
 

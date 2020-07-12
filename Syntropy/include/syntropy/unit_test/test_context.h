@@ -131,10 +131,10 @@ namespace syntropy
         void ReportFailure(const StackTrace& location, const String& expression, const String& result, const String& expected) const;
 
         /// \brief Active test context.
-        static thread_local inline ObserverPtr<TestContext> context_{ nullptr };
+        static thread_local inline Pointer<TestContext> context_{ nullptr };
 
         /// \brief Previous test context to restore upon destruction.
-        ObserverPtr<TestContext> previous_context_{ nullptr };
+        Pointer<TestContext> previous_context_{ nullptr };
 
         /// \brief Event notified whenever a test success is reported.
         Event<const TestContext&, OnTestContextSuccessEventArgs> success_event_;

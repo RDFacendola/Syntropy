@@ -55,12 +55,12 @@ namespace syntropy
         constexpr Int GetCount() const noexcept;
 
         /// \brief Access the underlying buffer or nullptr if the span is empty.
-        constexpr ObserverPtr<TElement> GetData() const noexcept;
+        constexpr Pointer<TElement> GetData() const noexcept;
 
     private:
 
         /// \brief Pointer to the first element in the range.
-        ObserverPtr<TElement> data_{ nullptr };
+        Pointer<TElement> data_{ nullptr };
 
         /// \brief Number of elements in the span.
         Int count_{ 0 };
@@ -73,11 +73,11 @@ namespace syntropy
 
     /// \brief Get an iterator to the first element in a span.
     template <typename TElement>
-    constexpr  ObserverPtr<TElement> begin(const Span<TElement>& span) noexcept;
+    constexpr  Pointer<TElement> begin(const Span<TElement>& span) noexcept;
 
     /// \brief Get an iterator past the last element in a span.
     template <typename TElement>
-    constexpr  ObserverPtr<TElement> end(const Span<TElement>& span) noexcept;
+    constexpr  Pointer<TElement> end(const Span<TElement>& span) noexcept;
 
     /// \brief Check whether two spans are element-wise equivalent.
     template <typename TElement, typename UElement>
@@ -240,7 +240,7 @@ namespace syntropy
     }
 
     template <typename TElement>
-    constexpr ObserverPtr<TElement> Span<TElement>::GetData() const noexcept
+    constexpr Pointer<TElement> Span<TElement>::GetData() const noexcept
     {
         return data_;
     }
@@ -248,13 +248,13 @@ namespace syntropy
     // Non-member functions.
 
     template <typename TElement>
-    constexpr ObserverPtr<TElement> begin(const Span<TElement>& span) noexcept
+    constexpr Pointer<TElement> begin(const Span<TElement>& span) noexcept
     {
         return span.GetData();
     }
 
     template <typename TElement>
-    constexpr ObserverPtr<TElement> end(const Span<TElement>& span) noexcept
+    constexpr Pointer<TElement> end(const Span<TElement>& span) noexcept
     {
         return span.GetData() + span.GetCount();
     }

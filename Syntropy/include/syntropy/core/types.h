@@ -29,7 +29,7 @@ namespace syntropy
 
     /// \brief Type alias for a non-owning pointer which doesn't participate to pointee life-time.
     template <typename TType>
-    using ObserverPtr = TType*;
+    using Pointer = TType*;
 
     /************************************************************************/
     /* ADDITIONAL TYPES                                                     */

@@ -49,7 +49,7 @@ namespace syntropy
         UniquePtr<EventHandler> next_event_{ nullptr };
 
         /// \brief Pointer to the previous event.
-        ObserverPtr<EventHandler> previous_event_{ nullptr };
+        Pointer<EventHandler> previous_event_{ nullptr };
 
     };
 

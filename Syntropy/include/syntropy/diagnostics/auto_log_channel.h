@@ -71,10 +71,10 @@ namespace syntropy
         AutoLogChannel(HeadTag);
 
         /// \brief Link this channel to the others and return the next log channel after this one.
-        ObserverPtr<AutoLogChannel> LinkBefore();
+        Pointer<AutoLogChannel> LinkBefore();
 
         /// \brief Next log channel.
-        ObserverPtr<AutoLogChannel> next_log_channel_{ nullptr };
+        Pointer<AutoLogChannel> next_log_channel_{ nullptr };
 
     };
 
@@ -173,7 +173,7 @@ namespace syntropy
         return linked_list;
     }
 
-    inline ObserverPtr<AutoLogChannel> AutoLogChannel::LinkBefore()
+    inline Pointer<AutoLogChannel> AutoLogChannel::LinkBefore()
     {
         auto& linked_list = GetLinkedList();
 

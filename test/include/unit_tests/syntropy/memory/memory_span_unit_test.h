@@ -38,6 +38,7 @@ namespace syntropy::unit_test
 
             /// \brief Typed elements span.
             Fix64 elements_[4];
+
         } union_;
 
         /// \brief Setup the fixture before each test case.

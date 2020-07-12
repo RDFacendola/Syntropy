@@ -121,7 +121,7 @@ namespace syntropy
         UniquePtr<NestedSection> outer_section_;
 
         /// \brief Concrete section.
-        ObserverPtr<const ConsoleOutputSection<TStyle>> section_;
+        Pointer<const ConsoleOutputSection<TStyle>> section_;
     };
 
     /************************************************************************/

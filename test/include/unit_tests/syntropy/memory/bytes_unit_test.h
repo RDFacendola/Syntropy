@@ -22,10 +22,10 @@ namespace syntropy::unit_test
         Byte buffer_[10];
 
         /// \brief Read-write pointer to a buffer.
-        ObserverPtr<Byte> read_write_ptr_;
+        Pointer<Byte> read_write_ptr_;
 
         /// \brief Read-only pointer to a buffer.
-        ObserverPtr<const Byte> read_only_ptr_;
+        Pointer<const Byte> read_only_ptr_;
 
         /// \brief Default constructed bytes object.
         const Bytes bytes_default_ = Bytes{};
@@ -199,8 +199,8 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto read_write_ptr8 = ObserverPtr<Byte>{ &fixture.buffer_[8] };
-        auto read_only_ptr8 = ObserverPtr<const Byte>{ &fixture.buffer_[8] };
+        auto read_write_ptr8 = Pointer<Byte>{ &fixture.buffer_[8] };
+        auto read_only_ptr8 = Pointer<const Byte>{ &fixture.buffer_[8] };
 
         SYNTROPY_UNIT_EQUAL(fixture.read_write_ptr_ + 4_Bytes, read_write_ptr8);
         SYNTROPY_UNIT_EQUAL(fixture.read_only_ptr_ + 4_Bytes, read_only_ptr8);
@@ -213,8 +213,8 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto read_write_ptr0 = ObserverPtr<Byte>{ &fixture.buffer_[0] };
-        auto read_only_ptr0 = ObserverPtr<const Byte>{ &fixture.buffer_[0] };
+        auto read_write_ptr0 = Pointer<Byte>{ &fixture.buffer_[0] };
+        auto read_only_ptr0 = Pointer<const Byte>{ &fixture.buffer_[0] };
 
         SYNTROPY_UNIT_EQUAL(fixture.read_write_ptr_ - 4_Bytes, read_write_ptr0);
         SYNTROPY_UNIT_EQUAL(fixture.read_only_ptr_ - 4_Bytes, read_only_ptr0);

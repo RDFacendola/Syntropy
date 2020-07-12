@@ -54,13 +54,13 @@ namespace syntropy
     private:
 
         /// \brief Get the first element in a linked list to which every other self-registering test-suite is linked to.
-        static ObserverPtr<const AutoTestSuite>& GetLinkedList();
+        static Pointer<const AutoTestSuite>& GetLinkedList();
 
         /// \brief Link this test-suite to the others and return the next test-suite after this one.
-        ObserverPtr<const AutoTestSuite> LinkBefore();
+        Pointer<const AutoTestSuite> LinkBefore();
 
         /// \brief Next auto test suite.
-        ObserverPtr<const AutoTestSuite> next_test_suite_{ nullptr };
+        Pointer<const AutoTestSuite> next_test_suite_{ nullptr };
 
     };
 
@@ -136,14 +136,14 @@ namespace syntropy
 
     }
 
-    inline ObserverPtr<const AutoTestSuite>& AutoTestSuite::GetLinkedList()
+    inline Pointer<const AutoTestSuite>& AutoTestSuite::GetLinkedList()
     {
-        static auto linked_list = ObserverPtr<const AutoTestSuite>{ nullptr };
+        static auto linked_list = Pointer<const AutoTestSuite>{ nullptr };
 
         return linked_list;
     }
 
-    inline ObserverPtr<const AutoTestSuite> AutoTestSuite::LinkBefore()
+    inline Pointer<const AutoTestSuite> AutoTestSuite::LinkBefore()
     {
         auto& linked_list = GetLinkedList();
 
