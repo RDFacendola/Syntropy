@@ -124,7 +124,7 @@ namespace syntropy
     {
         for (auto auto_test_case = GetLinkedList(); auto_test_case; auto_test_case = auto_test_case->next_test_case_)
         {
-            function(AsConst(*auto_test_case));
+            function(ReadOnly(*auto_test_case));
         }
     }
 

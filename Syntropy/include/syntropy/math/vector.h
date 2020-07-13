@@ -766,7 +766,7 @@ namespace syntropy
     template <Int kOutRank, Int kIndex, typename T, Int kInRank>
     inline Math::VectorN<T, kOutRank>& Math::AsVector(VectorN<T, kInRank>& rhs)
     {
-        return AsNonConst(AsVector<kOutRank, kIndex>(AsConst(rhs)));
+        return ReadWrite(AsVector<kOutRank, kIndex>(ReadOnly(rhs)));
     }
 
     template <Int I, Int... Is, typename T, Int kRank>
@@ -789,7 +789,7 @@ namespace syntropy
     template <Int I, Int... Is, typename T, Int kRank>
     inline decltype(auto) Math::Shuffle(VectorN<T, kRank>& rhs)
     {
-        return AsNonConst(Shuffle<I, Is...>(AsConst(rhs)));
+        return ReadWrite(Shuffle<I, Is...>(ReadOnly(rhs)));
     }
 
     template <typename T, Int kTRank, typename U, Int kURank>

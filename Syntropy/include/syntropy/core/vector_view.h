@@ -179,7 +179,7 @@ namespace syntropy
     template <typename TElement>
     inline const TElement& VectorView<TElement>::GetFront() const
     {
-        return AsConst(*vector_).front();
+        return ReadOnly(*vector_).front();
     }
 
     template <typename TElement>

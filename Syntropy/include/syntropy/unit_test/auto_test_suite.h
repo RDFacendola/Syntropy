@@ -126,7 +126,7 @@ namespace syntropy
 
         for (auto auto_test_suite = GetLinkedList(); auto_test_suite; auto_test_suite = auto_test_suite->next_test_suite_)
         {
-            function(AsConst(*auto_test_suite));
+            function(ReadOnly(*auto_test_suite));
         }
     }
 
