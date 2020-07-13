@@ -1,6 +1,6 @@
 
 /// \file utility.h
-/// \brief This header is part of Syntropy language module. It contains extensions to standard header <utility>
+/// \brief This header is part of Syntropy language module. It contains support and utility definitions.
 ///
 /// \author Raffaele D. Facendola - 2020.
 
@@ -66,102 +66,62 @@ namespace syntropy
     inline constexpr DontCareT kDontCare = DontCareT{};
 
     /************************************************************************/
-    /* BOOLEAN                                                              */
+    /* EXPLICIT <TO, FROM...>                                               */
     /************************************************************************/
 
-    /// \brief Wraps a boolean value.
-    /// This class is constructible from boolean values only and is meant to
-    /// be used to prevent ambiguities in function overload resolution.
-    /// \author Raffaele D. Facendola - June 2020.
-    class Boolean
+    /// \brief Type that bounds to an explicit type only.
+    /// This type is meant to be used when implicit type conversion would
+    /// cause overload resolution to be ambiguous.
+    template <typename TTo, typename... TFrom>
+    class Explicit
     {
     public:
 
-        /// \brief Create a new boolean wrapper.
-        template <typename TBool, typename = EnableIfT<IsSameV<TBool, Bool>>>
-        constexpr Boolean(TBool value);
+        /// \brief Create a new explicit wrapper.
+        template <typename UTo, typename = EnableIfT<(IsSameV<UTo, TFrom> || ...)>>
+        constexpr Explicit(const UTo& value) noexcept;
 
-        /// \brief Unwrap the underlying value.
-        constexpr operator Bool() const;
-
-    private:
-
-        /// \brief Underlying value.
-        Bool value_{ false };
-
-    };
-
-    /************************************************************************/
-    /* INTEGER                                                              */
-    /************************************************************************/
-
-    /// \brief Wraps an integer value.
-    /// This class is constructible from integer values only and is meant to
-    /// be used to prevent ambiguities in function overload resolution.
-    /// \author Raffaele D. Facendola - June 2020.
-    class Integer
-    {
-    public:
-
-        /// \brief Create a new integer wrapper.
-        template <typename TInt, typename = EnableIfT<IsIntegralV<TInt>>>
-        constexpr Integer(TInt value);
-
-        /// \brief Unwrap the underlying value.
-        constexpr operator Int() const;
+        /// \brief Implicitly convert the wrapper to its underlying type.
+        constexpr operator TTo() const noexcept;
 
     private:
 
-        /// \brief Underlying value.
-        Int value_{ false };
+        /// \brief Actual value.
+        TTo value_{};
 
     };
 
-    /************************************************************************/
-    /* FLOATING                                                             */
-    /************************************************************************/
+    /// \brief Explicit boolean value.
+    using ExplicitBool = Explicit<Bool, Bool>;
 
-    /// \brief Wraps a floating-point value.
-    /// This class is constructible from float values only and is meant to
-    /// be used to prevent ambiguities in function overload resolution.
-    /// \author Raffaele D. Facendola - June 2020.
-    class Floating
-    {
-    public:
+    /// \brief Explicit integer type.
+    using ExplicitInt = Explicit<Int, Int, int>;
 
-        /// \brief Create a new floating-point wrapper.
-        template <typename TFloat, typename = EnableIfT<IsFloatingPointV<TFloat>>>
-        constexpr Floating(TFloat value);
-
-        /// \brief Unwrap the underlying value.
-        constexpr operator Float() const;
-
-    private:
-
-        /// \brief Underlying value.
-        Float value_{ false };
-
-    };
+    /// \brief Explicit floating-point type.
+    using ExplicitFloat = Explicit<Float, Float>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Converts any type TType to a reference type, making it possible to use member functions in decltype expressions without the need to go through constructors.
+    /// \brief Converts any type TType to a reference type, making it
+    /// possible to use member functions in decltype expressions without 
+    /// the need to go through constructors.
     template<class TType>
     typename AddRValueReferenceT<TType> Declval() noexcept;
 
     /// \brief Forms lvalue reference to const type of rhs.
     /// \remarks Identical to C++17 std::as_const, wrapped for better consistency with AsNonConst.
     template <typename TType>
-    constexpr std::add_const_t<TType>& AsConst(TType& rhs) noexcept;
+    constexpr AddConstT<TType>& AsConst(TType& rhs) noexcept;
 
     /// \brief Const rvalue reference deleted to disallow rvalue arguments.
     template <typename TType>
     constexpr void AsConst(const TType&&) = delete;
 
     /// \brief Forms lvalue reference to non-const type of rhs.
-    /// \remarks Useful to write non-const getters from const ones without duplicating the implementation. Other usages are discouraged.
+    /// \remarks Useful to write non-const getters from const ones without 
+    ///          duplicating implementations. Other usages are discouraged.
     template <typename TType>
     constexpr TType& AsNonConst(const TType& rhs) noexcept;
 
@@ -169,44 +129,18 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Boolean.
+    // Explicit<TTo, TFrom...>.
 
-    template <typename TBool, typename>
-    constexpr Boolean::Boolean(TBool value)
-        : value_(value)
+    template <typename TTo, typename... TFrom>
+    template <typename UTo, typename>
+    constexpr Explicit<TTo, TFrom...>::Explicit(const UTo& value) noexcept
+        : value_(static_cast<TTo>(value))
     {
 
     }
 
-    constexpr Boolean::operator Bool() const
-    {
-        return value_;
-    }
-
-    // Integer.
-
-    template <typename TInt, typename>
-    constexpr Integer::Integer(TInt value)
-        : value_(value)
-    {
-
-    }
-
-    constexpr Integer::operator Int() const
-    {
-        return value_;
-    }
-
-    // Floating.
-
-    template <typename TFloat, typename>
-    constexpr Floating::Floating(TFloat value)
-        : value_(value)
-    {
-
-    }
-
-    constexpr Floating::operator Float() const
+    template <typename TTo, typename... TFrom>
+    constexpr Explicit<TTo, TFrom...>::operator TTo() const noexcept
     {
         return value_;
     }

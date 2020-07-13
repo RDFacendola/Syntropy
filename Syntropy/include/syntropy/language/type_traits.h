@@ -42,6 +42,10 @@ namespace syntropy
     template <typename TType>
     using RemoveExtentsConstReferenceT = std::remove_cv_t<std::remove_all_extents_t<std::remove_reference_t<TType>>>;
 
+    /// \brief Add a const qualifier to a type.
+    template <typename TType>
+    using AddConstT = std::add_const_t<TType>;
+
     /// \brief Create a lvalue or rvalue reference type of TType.
     template <typename TType>
     using AddRValueReferenceT = std::add_rvalue_reference_t<TType>;
@@ -97,7 +101,7 @@ namespace syntropy
 
     /// \brief Constant equal to true if TType is a floating point, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsFloatingPointV = std::is_floating_point_v<TType>;
+    inline constexpr Bool IsFloatingPointV = IsSameV<TType, Float>;
 
     /************************************************************************/
     /* TYPE TRANSFORMATIONS                                                 */

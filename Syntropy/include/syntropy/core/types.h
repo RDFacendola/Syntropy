@@ -2,21 +2,25 @@
 /// \file types.h
 /// \brief This header is part of Syntropy core module. It contains definitions for fundamental data types.
 ///
-/// \remarks This file shall not have dependency on any other header than standard ones.
-///
 /// \author Raffaele D. Facendola - 2020
 
 #pragma once
 
+#include <ostream>
 #include <cstdint>
 #include <cstddef>
-#include <ostream>
 
 namespace syntropy
 {
     /************************************************************************/
     /* FUNDAMENTAL TYPES                                                    */
     /************************************************************************/
+
+    // Fundamental types. Support for types other than these is neither 
+    // guaranteed nor recommended.
+
+    /// \brief Type of the null pointer literal (nullptr).
+    using Null = std::nullptr_t;
 
     /// \brief Boolean value.
     using Bool = bool;
@@ -35,38 +39,30 @@ namespace syntropy
     using Byte = std::byte;
 
     /************************************************************************/
-    /* FIXED SIZE TYPES                                                     */
+    /* FIXED-SIZE TYPES                                                     */
     /************************************************************************/
 
     // Fixed-size types used by low-level I/O operations and to reduce
     // memory footprint of structures. Those types are not expected to be used
-    // during evaluation and shall never be exposed through public interfaces.
+    // during evaluation and shall not be exposed through public interfaces.
 
     /// \brief 8-bit integer value.
     enum class Fix8 : std::int8_t {};
 
     /// \brief 16-bit integer value.
-    enum class Fix16 : std::int16_t{};
+    enum class Fix16 : std::int16_t {};
 
     /// \brief 32-bit integer value.
     enum class Fix32 : std::int32_t {};
 
     /// \brief 64-bit integer value.
-    enum class Fix64 : std::int64_t{};
-
-    /************************************************************************/
-    /* OTHER TYPES                                                          */
-    /************************************************************************/
-
-    // Those are the fundamental types used by Syntropy.
-    // Support for types other than these is not guaranteed.
-
-    /// \brief Type of the null pointer literal, nullptr.
-    using Null = std::nullptr_t;
+    enum class Fix64 : std::int64_t {};
 
     /************************************************************************/
     /* TYPE CAST                                                            */
     /************************************************************************/
+
+    // Convenient casts to convert to fundamental types.
 
     /// \brief Truncate a value to integer.
     template <typename TNumber>
@@ -75,7 +71,7 @@ namespace syntropy
     /// \brief Convert a numeric to a floating point value.
     template <typename TNumber>
     constexpr Float ToFloat(TNumber rhs) noexcept;
-    
+
     /// \brief Convert a pointer to another related pointer type.
     template <typename TType, typename UType>
     constexpr Pointer<TType> ToPointer(Pointer<UType> rhs) noexcept;
