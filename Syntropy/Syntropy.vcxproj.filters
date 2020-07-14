@@ -4,7 +4,6 @@
     <ClInclude Include="include\syntropy\language\macro.h" />
     <ClInclude Include="include\syntropy\language\type_traits.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
-    <ClInclude Include="include\syntropy\core\range.h" />
     <ClInclude Include="include\syntropy\language\utility.h" />
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />

@@ -7,7 +7,6 @@
 
 #include <algorithm>
 
-#include "syntropy/core/range.h"
 #include "syntropy/core/string.h"
 #include "syntropy/core/label.h"
 #include "syntropy/core/types.h"

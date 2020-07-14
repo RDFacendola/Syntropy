@@ -12,7 +12,6 @@
 #include <iterator>
 
 #include "syntropy/core/types.h"
-#include "syntropy/core/range.h"
 #include "syntropy/allocators/polymorphic_allocator.h"
 
 #include "syntropy/core/string_stream.h"
@@ -45,18 +44,6 @@ namespace syntropy
     /// \brief Alias type for std::basic_string_view<char>.
     using StringView = BasicStringView<char>;
 
-    /// \brief Type alias for a range of characters.
-    using StringRange = Range<String::iterator>;
-
-    /// \brief Type alias for a range of const characters.
-    using ConstStringRange = Range<String::const_iterator>;
-
-    /// \brief Type alias for a range of characters.
-    using StringViewRange = Range<StringView::iterator>;
-
-    /// \brief Type alias for a range of const characters.
-    using ConstStringViewRange = Range<StringView::const_iterator>;
-
     /************************************************************************/
     /* STRINGS                                                              */
     /************************************************************************/
@@ -82,40 +69,6 @@ namespace syntropy
         template <typename... TArguments>
         String Build(TArguments&&... arguments);
     }
-
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Get the memory range associated to a string.
-    StringRange GetRange(String& string);
-
-    /// \brief Get the memory range associated to a string.
-    ConstStringRange GetRange(const String& string);
-
-    /// \brief R-values cannot be safely wrapped in a range.
-    void GetRange(const String&& string) = delete;
-
-    /// \brief Get the const memory range associated to a string.
-    ConstStringRange GetConstRange(const String& string);
-
-    /// \brief R-values cannot be safely wrapped in a const range.
-    void GetConstRange(const String&& string) = delete;
-
-    /// \brief Get the memory range associated to a string view.
-    StringViewRange GetRange(StringView& string);
-
-    /// \brief Get the memory range associated to a string view.
-    ConstStringViewRange GetRange(const StringView& string);
-
-    /// \brief R-values cannot be safely wrapped in a range.
-    void GetRange(const StringView&& string) = delete;
-
-    /// \brief Get the const memory range associated to a string view.
-    ConstStringViewRange GetConstRange(const StringView& string);
-
-    /// \brief R-values cannot be safely wrapped in a const range.
-    void GetConstRange(const StringView&& string) = delete;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -157,40 +110,6 @@ namespace syntropy
         ((string_builder << arguments), ...);
 
         return string_builder.str();
-    }
-
-    // Non-member functions.
-
-    inline StringRange GetRange(String& string)
-    {
-        auto length = ToBytes(string.size());
-
-        return { string.begin(), string.end() };
-    }
-
-    inline ConstStringRange GetRange(const String& string)
-    {
-        return GetConstRange(string);
-    }
-
-    inline ConstStringRange GetConstRange(const String& string)
-    {
-        return { string.cbegin(), string.cend() };
-    }
-
-    inline StringViewRange GetRange(StringView& string)
-    {
-        return { string.begin(), string.end() };
-    }
-
-    inline ConstStringViewRange GetRange(const StringView& string)
-    {
-        return GetConstRange(string);
-    }
-
-    inline ConstStringViewRange GetConstRange(const StringView& string)
-    {
-        return { string.cbegin(), string.cend() };
     }
 
 }
