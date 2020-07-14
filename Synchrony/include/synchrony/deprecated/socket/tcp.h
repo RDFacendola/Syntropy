@@ -8,7 +8,7 @@
 
 #include <chrono>
 
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 #include "syntropy/types/string.h"
 
 #include "synchrony/network/network_endpoint.h"

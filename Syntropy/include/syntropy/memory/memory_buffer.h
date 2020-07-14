@@ -62,26 +62,8 @@ namespace syntropy
         /// \brief Destructor.
         ~MemoryBuffer();
 
-        /// \brief Get an iterator to the first element in the range.
-        auto Begin();
-
-        /// \brief Get an iterator past the last element in the range.
-        auto End();
-
-        /// \brief Get an iterator to the first element in the range.
-        auto Begin() const;
-
-        /// \brief Get an iterator past the last element in the range.
-        auto End() const;
-
-        /// \brief Get the underlying data range.
-        MemoryRange GetData();
-
-        /// \brief Get the underlying const data range.
-        ConstMemoryRange GetData() const;
-
-        /// \brief Get the underlying const data range.
-        ConstMemoryRange GetConstData() const;
+        /// \brief Access the underlying memory span.
+        MemorySpan GetData() const;
 
         /// \brief Get the size of the buffer, in bytes.
         /// \return Returns the size of the buffer, in bytes.
@@ -100,8 +82,8 @@ namespace syntropy
 
     private:
 
-        ///< \brief Buffer memory range.
-        MemoryRange buffer_;
+        ///< \brief Memory buffer.
+        MemorySpan buffer_;
 
         ///< \brief Memory resource the buffer was allocated on.
         Pointer<MemoryResource> memory_resource_{ nullptr };
@@ -172,37 +154,7 @@ namespace syntropy
         }
     }
 
-    inline auto MemoryBuffer::Begin()
-    {
-        return buffer_.Begin();
-    }
-
-    inline auto MemoryBuffer::End()
-    {
-        return buffer_.End();
-    }
-
-    inline auto MemoryBuffer::Begin() const
-    {
-        return buffer_.Begin();
-    }
-
-    inline auto MemoryBuffer::End() const
-    {
-        return buffer_.End();
-    }
-
-    inline MemoryRange MemoryBuffer::GetData()
-    {
-        return buffer_;
-    }
-
-    inline ConstMemoryRange MemoryBuffer::GetData() const
-    {
-        return buffer_;
-    }
-
-    inline ConstMemoryRange MemoryBuffer::GetConstData() const
+    inline MemorySpan MemoryBuffer::GetData() const
     {
         return buffer_;
     }

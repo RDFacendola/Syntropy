@@ -8,7 +8,7 @@
 
 #include "syntropy/core/types.h"
 #include "syntropy/core/smart_pointers.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 #include "syntropy/experimental/serialization/consume_stream_buffer.h"
 
 namespace syntropy

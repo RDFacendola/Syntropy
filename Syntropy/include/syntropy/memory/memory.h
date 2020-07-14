@@ -13,7 +13,7 @@
 #include "syntropy/language/initializer_list.h"
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 
 #include "syntropy/diagnostics/assert.h"
 
@@ -28,24 +28,24 @@ namespace syntropy
     {
         /// \brief Copy a source memory region to a destination memory region. Neither range is exceed during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes Copy(const MemoryRange& destination, const ConstMemoryRange& source);
+        Bytes Copy(const MemorySpan& destination, const ReadOnlyMemorySpan& source);
 
         /// \brief Copy a source memory region to a destination memory region repeating the source until destination range is exhausted. Neither range is exceed during the process.
-        void Repeat(const MemoryRange& destination, const ConstMemoryRange& source);
+        void Repeat(const MemorySpan& destination, const ReadOnlyMemorySpan& source);
 
         /// \brief Set a value to each byte in a destination range.
-        void Set(const MemoryRange& destination, Byte value);
+        void Set(const MemorySpan& destination, Byte value);
 
         /// \brief Zero-out a memory region.
-        void Zero(const MemoryRange& destination);
+        void Zero(const MemorySpan& destination);
 
         /// \brief Gather data from one or more memory regions to fill a contiguous memory region sequentially. Neither range is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes Gather(const MemoryRange& destination, InitializerList<ConstMemoryRange> sources);
+        Bytes Gather(const MemorySpan& destination, InitializerList<ReadOnlyMemorySpan> sources);
 
         /// \brief Scatter a contiguous memory region to one or more memory regions sequentially. Neither range is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes Scatter(InitializerList<MemoryRange> destinations, const ConstMemoryRange& source);
+        Bytes Scatter(InitializerList<MemorySpan> destinations, const ReadOnlyMemorySpan& source);
 
         /// \brief Reinterpret an object representation from a type to another type.
         template <typename TTo, typename TFrom>
@@ -62,20 +62,22 @@ namespace syntropy
 
     // Memory.
 
-    inline void Memory::Repeat(const MemoryRange& destination, const ConstMemoryRange& source)
+    inline void Memory::Repeat(const MemorySpan& destination, const ReadOnlyMemorySpan& source)
     {
-        for (auto range = destination; range.GetSize() != Bytes{ 0 };)
+        for (auto range = destination; !IsEmpty(range);)
         {
-            range.PopFront(Copy(range, source));
+            auto count = Copy(range, source);
+
+            range = PopFront(range, count);
         }
     }
 
-    inline void Memory::Set(const MemoryRange& destination, Byte value)
+    inline void Memory::Set(const MemorySpan& destination, Byte value)
     {
-        std::memset(destination.Begin(), static_cast<int>(value), ToInt(destination.GetSize()));
+        std::memset(destination.GetData(), static_cast<int>(value), ToInt(destination.GetSize()));
     }
 
-    inline void Memory::Zero(const MemoryRange& destination)
+    inline void Memory::Zero(const MemorySpan& destination)
     {
         Set(destination, Byte{ 0 });
     }

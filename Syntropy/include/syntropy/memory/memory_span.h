@@ -130,11 +130,19 @@ namespace syntropy
 
     /// \brief Get a pointer to the first byte in a memory span.
     template <typename TTraits>
-    constexpr typename MemorySpanT<TTraits>::TPointer begin(const MemorySpanT<TTraits>& memory_span) noexcept;
+    constexpr auto begin(const MemorySpanT<TTraits>& memory_span) noexcept;
 
     /// \brief Get a pointer past the last byte in a memory span.
     template <typename TTraits>
-    constexpr typename MemorySpanT<TTraits>::TPointer end(const MemorySpanT<TTraits>& memory_span) noexcept;
+    constexpr auto end(const MemorySpanT<TTraits>& memory_span) noexcept;
+
+    /// \brief Get a pointer to the first byte in a memory span.
+    template <typename TTraits>
+    constexpr auto Begin(const MemorySpanT<TTraits>& span) noexcept;
+
+    /// \brief Get a pointer past the last byte in a memory span.
+    template <typename TTraits>
+    constexpr auto End(const MemorySpanT<TTraits>& span) noexcept;
 
     /// \brief Check whether two memory spans' contents are equivalent.
     template <typename TTraits, typename UTraits>
@@ -171,6 +179,16 @@ namespace syntropy
     /// If this method would cause the new span to exceed the original one, the behavior of this method is undefined.
     template <typename TTraits>
     constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span, Bytes bytes) noexcept;
+
+    /// \brief Discard the last element in a memory span and return the resulting subspan.
+    /// If the span is empty the behavior of this method is undefined.
+    template <typename TTraits>
+    constexpr MemorySpanT<TTraits> PopBack(const MemorySpanT<TTraits>& span) noexcept;
+
+    /// \brief Discard the last count-elements in a span and return the resulting subspan.
+    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+    template <typename TTraits>
+    constexpr MemorySpanT<TTraits> PopBack(const MemorySpanT<TTraits>& span, Bytes bytes) noexcept;
 
     /// \brief Obtain a memory span consisting of the first elements of a memory span.
     /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
@@ -229,7 +247,7 @@ namespace syntropy
     template <typename TTraits>
     template <typename UPointer>
     constexpr MemorySpanT<TTraits>::MemorySpanT(UPointer begin, Bytes size) noexcept
-        : data_(begin)
+        : data_(reinterpret_cast<TPointer>(begin))
         , size_(size)
     {
 
@@ -238,8 +256,8 @@ namespace syntropy
     template <typename TTraits>
     template <typename UPointer>
     constexpr MemorySpanT<TTraits>::MemorySpanT(UPointer begin, UPointer end) noexcept
-        : data_(begin)
-        , size_(ToBytes(end - begin))
+        : data_(reinterpret_cast<TPointer>(begin))
+        , size_(ToBytes(reinterpret_cast<TPointer>(end) - reinterpret_cast<TPointer>(begin)))
     {
 
     }
@@ -290,13 +308,25 @@ namespace syntropy
     // Non-member functions.
 
     template <typename TTraits>
-    constexpr typename MemorySpanT<TTraits>::TPointer begin(const MemorySpanT<TTraits>& memory_span) noexcept
+    constexpr auto begin(const MemorySpanT<TTraits>& memory_span) noexcept
+    {
+        return Begin(memory_span);
+    }
+
+    template <typename TTraits>
+    constexpr auto end(const MemorySpanT<TTraits>& memory_span) noexcept
+    {
+        return End(memory_span);
+    }
+
+    template <typename TTraits>
+    constexpr auto Begin(const MemorySpanT<TTraits>& memory_span) noexcept
     {
         return memory_span.GetData();
     }
 
     template <typename TTraits>
-    constexpr typename MemorySpanT<TTraits>::TPointer end(const MemorySpanT<TTraits>& memory_span) noexcept
+    constexpr auto End(const MemorySpanT<TTraits>& memory_span) noexcept
     {
         return memory_span.GetData() + memory_span.GetSize();
     }
@@ -351,6 +381,18 @@ namespace syntropy
     constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span, Bytes bytes) noexcept
     {
         return { memory_span.GetData() + bytes, Size(memory_span) - bytes };
+    }
+
+    template <typename TTraits>
+    constexpr MemorySpanT<TTraits> PopBack(const MemorySpanT<TTraits>& span) noexcept
+    {
+        return PopBack(span, ToBytes(1));
+    }
+
+    template <typename TTraits>
+    constexpr MemorySpanT<TTraits> PopBack(const MemorySpanT<TTraits>& span, Bytes bytes) noexcept
+    {
+        return { span.GetData(), span.GetSize() - bytes };
     }
 
     template <typename TTraits>

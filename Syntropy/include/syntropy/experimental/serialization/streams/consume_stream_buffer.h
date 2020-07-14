@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/core/types.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 #include "syntropy/language/type_traits.h"
 #include "syntropy/memory/bytes.h"
 

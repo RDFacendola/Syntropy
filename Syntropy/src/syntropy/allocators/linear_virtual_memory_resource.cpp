@@ -6,21 +6,18 @@ namespace syntropy
     /* LINEAR VIRTUAL MEMORY RESOURCE                                       */
     /************************************************************************/
 
-    MemoryRange LinearVirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
+    MemorySpan LinearVirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        auto block_head = head_.GetAligned(alignment);
-        auto block_tail = block_head + size;
-
-        if (block_tail <= virtual_memory_.End())
+        if (auto aligned_free = Align(free_, alignment); Size(aligned_free) >= size)
         {
-            auto block = MemoryRange{ block_head, block_tail };
+            auto block = First(aligned_free, size);
 
-            auto commit_head = head_.GetAligned(granularity_);
-            auto commit_tail = block_tail.GetAligned(granularity_);
+            free_ = PopFront(aligned_free, size);
+
+            auto commit_head = Align(block, granularity_).GetData();
+            auto commit_tail = Align(free_, granularity_).GetData();
 
             VirtualMemory::Commit({ commit_head, commit_tail });
-
-            head_ = block_tail;
 
             return block;
         }

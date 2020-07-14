@@ -10,7 +10,7 @@
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 
 #include "syntropy/allocators/memory_resource.h"
 

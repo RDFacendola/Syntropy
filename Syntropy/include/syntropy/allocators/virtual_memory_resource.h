@@ -9,8 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_address.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 #include "syntropy/memory/virtual_memory.h"
 #include "syntropy/memory/virtual_memory_range.h"
 #include "syntropy/math/math.h"
@@ -51,18 +50,18 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        Bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemorySpan& block) const noexcept;
 
         /// \brief Swap this allocator with the provided instance.
         void Swap(VirtualMemoryResource& rhs) noexcept;
@@ -70,16 +69,16 @@ namespace syntropy
     private:
 
         /// \brief Allocate a block and return its range.
-        MemoryRange Allocate();
+        MemorySpan Allocate();
 
-        /// \brief Represents a list used to track free pages.
+        /// \brief Type of a linked list used to track free pages.
         struct FreeList;
 
         /// \brief Virtual memory range reserved for this resource.
         VirtualMemoryRange virtual_memory_;
 
-        /// \brief Pointer past the last allocated address.
-        MemoryAddress head_;
+        /// \brief Range of memory yet to allocate.
+        MemorySpan unallocated_;
 
         /// \brief Size of each allocation. This value is a multiple of the system virtual memory page size.
         Bytes page_size_;
@@ -88,7 +87,7 @@ namespace syntropy
         Alignment page_alignment_;
 
         /// \brief Current free list.
-        FreeList* free_{ nullptr };
+        Pointer<FreeList> free_{ nullptr };
 
     };
 
@@ -107,7 +106,7 @@ namespace syntropy
 
     inline VirtualMemoryResource::VirtualMemoryResource(Bytes capacity, Bytes page_size) noexcept
         : virtual_memory_(capacity)
-        , head_(virtual_memory_.Begin())
+        , unallocated_(virtual_memory_.GetData())
         , page_size_(Math::Ceil(page_size, VirtualMemory::GetPageSize()))
         , page_alignment_(ToAlignment(VirtualMemory::GetPageSize()))
     {
@@ -116,7 +115,7 @@ namespace syntropy
 
     inline VirtualMemoryResource::VirtualMemoryResource(VirtualMemoryResource&& rhs) noexcept
         : virtual_memory_(std::move(rhs.virtual_memory_))
-        , head_(rhs.head_)
+        , unallocated_(rhs.unallocated_)
         , page_size_(rhs.page_size_)
         , page_alignment_(rhs.page_alignment_)
         , free_(rhs.free_)
@@ -127,12 +126,13 @@ namespace syntropy
     inline VirtualMemoryResource& VirtualMemoryResource::operator=(VirtualMemoryResource rhs) noexcept
     {
         rhs.Swap(*this);
+
         return *this;
     }
 
-    inline Bool VirtualMemoryResource::Owns(const MemoryRange& block) const noexcept
+    inline Bool VirtualMemoryResource::Owns(const MemorySpan& block) const noexcept
     {
-        return virtual_memory_.Contains(block);
+        return Contains(virtual_memory_.GetData(), block);
     }
 
     inline void swap(VirtualMemoryResource& lhs, VirtualMemoryResource& rhs) noexcept

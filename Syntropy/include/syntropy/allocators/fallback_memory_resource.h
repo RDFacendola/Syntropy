@@ -11,7 +11,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 
 namespace syntropy
 {
@@ -40,15 +40,15 @@ namespace syntropy
 
         /// \brief Create a new memory resource by initializing the memory resource and the fallback memory resource explicitly.
         template <typename TArguments, typename TFallbackArguments>
-        FallbackMemoryResource(TArguments&& arguments, TFallbackArguments&& fallback_arguments);
+        FallbackMemoryResource(TArguments&& arguments, TFallbackArguments&& fallback_arguments) noexcept;
 
         /// \brief Create a new memory resource by initializing the memory resource explicitly and default-constructing the fallback one.
          template <typename TArguments>
-         FallbackMemoryResource(TArguments&& arguments, DefaultConstructT);
+         FallbackMemoryResource(TArguments&& arguments, DefaultConstructT) noexcept;
 
          /// \brief Create a new memory resource by initializing the fallback memory resource explicitly and default-constructing the primary one.
          template <typename TFallbackArguments>
-         FallbackMemoryResource(DefaultConstructT, TFallbackArguments&& fallback_arguments);
+         FallbackMemoryResource(DefaultConstructT, TFallbackArguments&& fallback_arguments) noexcept;
 
         /// \brief Default destructor.
         ~FallbackMemoryResource() noexcept = default;
@@ -61,18 +61,18 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        Bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemorySpan& block) const noexcept;
 
     private:
 
@@ -92,7 +92,7 @@ namespace syntropy
 
     template <typename TMemoryResource, typename TFallbackResource>
     template <typename TArguments, typename TFallbackArguments>
-    inline FallbackMemoryResource<TMemoryResource, TFallbackResource>::FallbackMemoryResource(TArguments&& arguments, TFallbackArguments&& fallback_arguments)
+    inline FallbackMemoryResource<TMemoryResource, TFallbackResource>::FallbackMemoryResource(TArguments&& arguments, TFallbackArguments&& fallback_arguments) noexcept
         : memory_resource_(std::make_from_tuple<TMemoryResource>(std::forward<TArguments>(arguments)))
         , fallback_resource_(std::make_from_tuple<TFallbackResource>(std::forward<TFallbackArguments>(fallback_arguments)))
     {
@@ -100,7 +100,7 @@ namespace syntropy
     }
     template <typename TMemoryResource, typename TFallbackResource>
     template <typename TArguments>
-    inline FallbackMemoryResource<TMemoryResource, TFallbackResource>::FallbackMemoryResource(TArguments&& arguments, DefaultConstructT)
+    inline FallbackMemoryResource<TMemoryResource, TFallbackResource>::FallbackMemoryResource(TArguments&& arguments, DefaultConstructT) noexcept
         : memory_resource_(std::make_from_tuple<TMemoryResource>(std::forward<TArguments>(arguments)))
     {
 
@@ -108,14 +108,14 @@ namespace syntropy
 
     template <typename TMemoryResource, typename TFallbackResource>
     template <typename TFallbackArguments>
-    inline FallbackMemoryResource<TMemoryResource, TFallbackResource>::FallbackMemoryResource(DefaultConstructT, TFallbackArguments&& fallback_arguments)
+    inline FallbackMemoryResource<TMemoryResource, TFallbackResource>::FallbackMemoryResource(DefaultConstructT, TFallbackArguments&& fallback_arguments) noexcept
         : fallback_resource_(std::make_from_tuple<TFallbackResource>(std::forward<TFallbackArguments>(fallback_arguments)))
     {
 
     }
 
     template <typename TMemoryResource, typename TFallbackResource>
-    inline MemoryRange FallbackMemoryResource<TMemoryResource, TFallbackResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemorySpan FallbackMemoryResource<TMemoryResource, TFallbackResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto block = memory_resource_.Allocate(size, alignment))
         {
@@ -126,7 +126,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource, typename TFallbackResource>
-    inline void FallbackMemoryResource<TMemoryResource, TFallbackResource>::Deallocate(const MemoryRange& block, Alignment alignment)
+    inline void FallbackMemoryResource<TMemoryResource, TFallbackResource>::Deallocate(const MemorySpan& block, Alignment alignment) noexcept
     {
         SYNTROPY_ASSERT(Owns(block));
 
@@ -141,7 +141,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource, typename TFallbackResource>
-    inline Bool FallbackMemoryResource<TMemoryResource, TFallbackResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool FallbackMemoryResource<TMemoryResource, TFallbackResource>::Owns(const MemorySpan& block) const noexcept
     {
         return memory_resource_.Owns(block) || fallback_resource_.Owns(block);
     }

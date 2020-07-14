@@ -8,7 +8,7 @@
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 #include "syntropy/core/types.h"
 #include "syntropy/diagnostics/assert.h"
 
@@ -43,17 +43,17 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Expects an empty range.
         /// \param alignment Block alignment.
-        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// The null memory resource only contains empty ranges.
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
-        Bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemorySpan& block) const noexcept;
 
     };
 
@@ -63,17 +63,17 @@ namespace syntropy
  
     // NullMemoryResource.
 
-    inline MemoryRange NullMemoryResource::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
+    inline MemorySpan NullMemoryResource::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
     {
         return {};
     }
 
-    inline void NullMemoryResource::Deallocate(const MemoryRange& block, Alignment /*alignment*/)
+    inline void NullMemoryResource::Deallocate(const MemorySpan& block, Alignment /*alignment*/)
     {
         SYNTROPY_ASSERT(!block);        // Only empty ranges can be deallocated.
     }
 
-    inline Bool NullMemoryResource::Owns(const MemoryRange& block) const noexcept
+    inline Bool NullMemoryResource::Owns(const MemorySpan& block) const noexcept
     {
         return !block;                  // This memory resource owns only empty ranges.
     }

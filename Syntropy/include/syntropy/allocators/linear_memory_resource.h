@@ -10,8 +10,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_address.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 #include "syntropy/diagnostics/assert.h"
 
 namespace syntropy
@@ -50,11 +49,11 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// Pointer-level deallocations are not supported, therefore this method does nothing.
-        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate every allocation performed so far.
         void DeallocateAll() noexcept;
@@ -62,18 +61,18 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        Bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemorySpan& block) const noexcept;
 
         /// \brief Swap this memory resource with the provided instance.
         void Swap(LinearMemoryResource& rhs) noexcept;
 
         /// \brief Get the current state of the allocator.
-        MemoryAddress SaveState() const;
+        MemorySpan SaveState() const noexcept;
 
         /// \brief Restore the allocator to a previous state.
         /// If the provided state wasn't obtained by means of ::SaveState(), the behavior of this method is undefined.
         /// RestoreState invalidates all states obtained after the state being provided. Restoring an invalid state results in undefined behavior.
-        void RestoreState(MemoryAddress state);
+        void RestoreState(MemorySpan state) noexcept;
 
     private:
 
@@ -155,9 +154,9 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    MemoryRange LinearMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    MemorySpan LinearMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        using namespace syntropy::Literals;
+        using namespace syntropy::literals;
 
         // Attempt to allocate on the current chunk. Fast-path.
 
@@ -201,7 +200,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void LinearMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block, Alignment /*alignment*/) noexcept
+    inline void LinearMemoryResource<TMemoryResource>::Deallocate(const MemorySpan& block, Alignment /*alignment*/) noexcept
     {
         SYNTROPY_ASSERT(Owns(block));
     }
@@ -222,13 +221,13 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline Bool LinearMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool LinearMemoryResource<TMemoryResource>::Owns(const MemorySpan& block) const noexcept
     {
         // Can't query the underlying memory resource directly since it might be shared with other allocators.
 
         for (auto chunk = chunk_; chunk; chunk = chunk->previous_)
         {
-            if (MemoryRange{ chunk, chunk->end_ }.Contains(block))
+            if (MemorySpan{ chunk, chunk->end_ }.Contains(block))
             {
                 return true;
             }
@@ -249,13 +248,13 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryAddress LinearMemoryResource<TMemoryResource>::SaveState() const
+    inline MemorySpan LinearMemoryResource<TMemoryResource>::SaveState() const
     {
         return head_;
     }
 
     template <typename TMemoryResource>
-    inline void LinearMemoryResource<TMemoryResource>::RestoreState(MemoryAddress state)
+    inline void LinearMemoryResource<TMemoryResource>::RestoreState(MemorySpan state)
     {
         // Start deallocating until the current chunk contains the state to restore and then set that as the new state.
 

@@ -68,7 +68,7 @@ namespace syntropy
         StackTrace& operator+=(TStackTraceElement&& stack_trace_element);
 
         /// \brief Access the range of stack trace elements, from the most recent one.
-        Range<Vector<StackTraceElement>::const_iterator> GetRange() const;
+        ReadOnlySpan<StackTraceElement> GetData() const;
 
     private:
 
@@ -122,13 +122,7 @@ namespace syntropy
     /// \brief Get the iterator past the last element in a stack trace.
     auto end(const StackTrace& stack_trace);
 
-    /// \brief Get the iterator to the first element in the stack trace.
-    auto cbegin(const StackTrace& stack_trace);
-
-    /// \brief Get the iterator past the last element in a stack trace.
-    auto cend(const StackTrace& stack_trace);
-
-        /// \brief Output a stack trace inside a stream.
+    /// \brief Output a stack trace inside a stream.
     std::ostream& operator<< (std::ostream &out, const StackTrace& stack_trace);
 
     /// \brief Swaps two stack traces.
@@ -206,31 +200,25 @@ namespace syntropy
         return stack_trace_.front();
     }
 
-    inline Range<Vector<StackTraceElement>::const_iterator> StackTrace::GetRange() const
+    inline ReadOnlySpan<StackTraceElement> StackTrace::GetData() const
     {
-        return MakeConstRange(stack_trace_);
+        return { stack_trace_.data(), ToInt(stack_trace_.size()) };
     }
 
     // Non-member functions.
 
     inline auto begin(const StackTrace& stack_trace)
     {
-        return stack_trace.GetRange().Begin();
+        using std::begin;
+
+        return begin(stack_trace.GetData());
     }
 
     inline auto end(const StackTrace& stack_trace)
     {
-        return stack_trace.GetRange().End();
-    }
+        using std::end;
 
-    inline auto cbegin(const StackTrace& stack_trace)
-    {
-        return begin(stack_trace);
-    }
-
-    inline auto cend(const StackTrace& stack_trace)
-    {
-        return end(stack_trace);
+        return end(stack_trace.GetData());
     }
 
     inline Bool operator==(const StackTraceElement& lhs, const StackTraceElement& rhs)

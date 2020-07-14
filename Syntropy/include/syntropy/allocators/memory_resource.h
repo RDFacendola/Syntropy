@@ -10,7 +10,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 #include "syntropy/allocators/system_memory_resource.h"
 
 namespace syntropy
@@ -57,18 +57,18 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        virtual MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept = 0;
+        virtual MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept = 0;
 
         /// \brief Deallocate a memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to Allocate(size, alignment).
-        virtual void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf()) = 0;
+        virtual void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf()) = 0;
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        virtual Bool Owns(const MemoryRange& block) const noexcept = 0;
+        virtual Bool Owns(const MemorySpan& block) const noexcept = 0;
 
     private:
 
@@ -95,11 +95,11 @@ namespace syntropy
         /// \brief Default destructor.
         virtual ~MemoryResourceT() = default;
 
-        virtual MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept override;
+        virtual MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept override;
 
-        virtual void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf()) override;
+        virtual void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf()) override;
 
-        virtual Bool Owns(const MemoryRange& block) const noexcept override;
+        virtual Bool Owns(const MemorySpan& block) const noexcept override;
 
         /// \brief Get the underlying memory resource.
         TMemoryResource& GetMemoryResource();
@@ -161,19 +161,19 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange MemoryResourceT<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemorySpan MemoryResourceT<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         return memory_resource_.Allocate(size, alignment);
     }
 
     template <typename TMemoryResource>
-    inline void MemoryResourceT<TMemoryResource>::Deallocate(const MemoryRange& block, Alignment alignment)
+    inline void MemoryResourceT<TMemoryResource>::Deallocate(const MemorySpan& block, Alignment alignment)
     {
         memory_resource_.Deallocate(block, alignment);
     }
 
     template <typename TMemoryResource>
-    inline Bool MemoryResourceT<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool MemoryResourceT<TMemoryResource>::Owns(const MemorySpan& block) const noexcept
     {
         return memory_resource_.Owns(block);
     }

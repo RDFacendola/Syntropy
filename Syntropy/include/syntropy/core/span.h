@@ -6,8 +6,10 @@
 
 #pragma once
 
+#include "syntropy/diagnostics/assert.h"
 #include "syntropy/language/type_traits.h"
 #include "syntropy/core/types.h"
+#include "syntropy/math/math.h"
 
 namespace syntropy
 {
@@ -68,6 +70,14 @@ namespace syntropy
     };
 
     /************************************************************************/
+    /* TYPE ALIASES                                                         */
+    /************************************************************************/
+
+    /// \brief Alias for a span of constant elements.
+    template <typename TType>
+    using ReadOnlySpan = Span<const TType>;
+
+    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
@@ -78,6 +88,14 @@ namespace syntropy
     /// \brief Get an iterator past the last element in a span.
     template <typename TElement>
     constexpr  Pointer<TElement> end(const Span<TElement>& span) noexcept;
+
+    /// \brief Get an iterator to the first element in a span.
+    template <typename TElement>
+    constexpr Pointer<TElement> Begin(const Span<TElement>& span) noexcept;
+
+    /// \brief Get an iterator past the last element in a span.
+    template <typename TElement>
+    constexpr Pointer<TElement> End(const Span<TElement>& span) noexcept;
 
     /// \brief Check whether two spans are element-wise equivalent.
     template <typename TElement, typename UElement>
@@ -175,6 +193,23 @@ namespace syntropy
     template <typename TElement, typename UElement>
     constexpr Bool Overlaps(const Span<TElement>& lhs, const Span<UElement>& rhs) noexcept;
 
+    /// \brief Obtain the smallest span which includes all the elements in both lhs and rhs.
+    /// If lhs and rhs are not contiguous the behavior of this method is undefined.
+    template <typename TElement>
+    constexpr Span<TElement> Union(const Span<TElement>& lhs, const Span<TElement>& rhs) noexcept;
+
+    /// \brief Obtain the smallest span which includes all the elements of lhs which are also contained in rhs and vice-versa.
+    template <typename TElement>
+    constexpr Span<TElement> Intersection(const Span<TElement>& lhs, const Span<TElement>& rhs) noexcept;
+
+    /// \brief Reduce lhs from the back until no element of lhs is contained in rhs or lhs is exhausted.
+    template <typename TElement>
+    constexpr Span<TElement> LeftDifference(const Span<TElement>& lhs, const Span<TElement>& rhs) noexcept;
+
+    /// \brief Reduce lhs from the front until no element of lhs is contained in rhs or lhs is exhausted.
+    template <typename TElement>
+    constexpr Span<TElement> RightDifference(const Span<TElement>& lhs, const Span<TElement>& rhs) noexcept;
+
     /// \brief Stream insertion for Spans.
     template <typename TElement>
     std::ostream& operator<<(std::ostream& lhs, const Span<TElement>& rhs);
@@ -188,7 +223,7 @@ namespace syntropy
     template <typename TElement>
     template <typename TBegin>
     constexpr Span<TElement>::Span(TBegin begin, Int count) noexcept
-        : data_((count > 0) ? &(*begin) : nullptr)
+        : data_(begin)
         , count_(count)
     {
 
@@ -250,11 +285,23 @@ namespace syntropy
     template <typename TElement>
     constexpr Pointer<TElement> begin(const Span<TElement>& span) noexcept
     {
-        return span.GetData();
+        return Begin(span);
     }
 
     template <typename TElement>
     constexpr Pointer<TElement> end(const Span<TElement>& span) noexcept
+    {
+        return End(span);
+    }
+
+    template <typename TElement>
+    constexpr Pointer<TElement> Begin(const Span<TElement>& span) noexcept
+    {
+        return span.GetData();
+    }
+
+    template <typename TElement>
+    constexpr Pointer<TElement> End(const Span<TElement>& span) noexcept
     {
         return span.GetData() + span.GetCount();
     }
@@ -455,6 +502,61 @@ namespace syntropy
         auto rhs_end = rhs_begin + Count(rhs);
 
         return (lhs_begin < rhs_end) && (rhs_begin < lhs_end);
+    }
+
+    template <typename TElement>
+    constexpr Span<TElement> Union(const Span<TElement>& lhs, const Span<TElement>& rhs) noexcept
+    {
+        auto begin = Math::Min(Begin(lhs), Begin(rhs));
+        auto end = Math::Max(End(lhs),End(rhs));
+
+        auto union_span = Span<TElement>(begin, end);
+
+        SYNTROPY_PRECONDITION(union_span.GetCount() <= (lhs.GetCount() + rhs.GetCount()));
+
+        return union_span;
+    }
+
+    template <typename TElement>
+    constexpr Span<TElement> Intersection(const Span<TElement>& lhs, const Span<TElement>& rhs) noexcept
+    {
+        auto begin = Math::Max(Begin(lhs), Begin(rhs));
+        auto end = Math::Min(End(lhs), End(rhs));
+
+        if (begin <= end)
+        {
+            return { begin, end };
+        }
+        
+        return {};
+    }
+
+    template <typename TElement>
+    constexpr Span<TElement> LeftDifference(const Span<TElement>& lhs, const Span<TElement>& rhs) noexcept
+    {
+        auto begin = Begin(lhs);
+        auto end = Math::Min(End(lhs),Begin(rhs));
+
+        if (begin <= end)
+        {
+            return { begin, end };
+        }
+
+        return {};
+    }
+
+    template <typename TElement>
+    constexpr Span<TElement> RightDifference(const Span<TElement>& lhs, const Span<TElement>& rhs) noexcept
+    {
+        auto begin = Math::Max(Begin(lhs), End(rhs));
+        auto end = End(lhs);
+
+        if (begin <= end)
+        {
+            return { begin, end };
+        }
+
+        return {};
     }
 
     template <typename TElement>

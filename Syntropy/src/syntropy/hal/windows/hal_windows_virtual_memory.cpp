@@ -4,7 +4,7 @@
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 
 /************************************************************************/
 /* HEADERS & LIBRARIES                                                  */
@@ -46,69 +46,69 @@ namespace syntropy
         return ToAlignment(system_info.dwPageSize);
     }
 
-    MemoryRange HALVirtualMemory::Allocate(Bytes size)
+    MemorySpan HALVirtualMemory::Allocate(Bytes size)
     {
         // Allocate up to the next page boundary.
 
         if (size > Bytes{ 0 })
         {
-            MemoryAddress address = VirtualAlloc(0, ToInt(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+            auto data = VirtualAlloc(0, ToInt(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-            return { address, address + size };
+            return { data, size };
         }
 
         return {};
     }
 
-    MemoryRange HALVirtualMemory::Reserve(Bytes size)
+    MemorySpan HALVirtualMemory::Reserve(Bytes size)
     {
         // Reserve up to the next page boundary.
 
         if (size > Bytes{ 0 })
         {
-            MemoryAddress address = VirtualAlloc(0, ToInt(size), MEM_RESERVE, PAGE_READWRITE);
+            auto data = VirtualAlloc(0, ToInt(size), MEM_RESERVE, PAGE_READWRITE);
 
-            return { address, address + size };
+            return { data, size };
         }
 
         return {};
     }
 
-    Bool HALVirtualMemory::Release(const MemoryRange& memory_range)
+    Bool HALVirtualMemory::Release(const MemorySpan& memory_span)
     {
-        if (memory_range)
+        if (memory_span)
         {
             // Deallocate the entire previously-allocated range.
 
-            return VirtualFree(memory_range.Begin(), 0, MEM_RELEASE) != 0;
+            return VirtualFree(memory_span.GetData(), 0, MEM_RELEASE) != 0;
         }
 
         return true;
     }
 
-    Bool HALVirtualMemory::Commit(const MemoryRange& memory_range)
+    Bool HALVirtualMemory::Commit(const MemorySpan& memory_span)
     {
-        if (memory_range)
+        if (memory_span)
         {
-            auto size = ToInt(memory_range.GetSize());
+            auto size = ToInt(memory_span.GetSize());
 
             // Commit each page containing at least one byte in the range.
 
-            return VirtualAlloc(memory_range.Begin(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
+            return VirtualAlloc(memory_span.GetData(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
         }
 
         return true;
     }
 
-    Bool HALVirtualMemory::Decommit(const MemoryRange& memory_range)
+    Bool HALVirtualMemory::Decommit(const MemorySpan& memory_span)
     {
-        if (memory_range)
+        if (memory_span)
         {
-            auto size = ToInt(memory_range.GetSize());
+            auto size = ToInt(memory_span.GetSize());
 
             // Decommit each page containing at least one byte in the range.
 
-            return VirtualFree(memory_range.Begin(), size, MEM_DECOMMIT) != 0;
+            return VirtualFree(memory_span.GetData(), size, MEM_DECOMMIT) != 0;
         }
 
         return true;

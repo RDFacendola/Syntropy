@@ -254,20 +254,22 @@ namespace syntropy
     {
         auto line = String(line_size_, ' ');
 
-        auto destination_range = MemoryRange(line.data(), ToBytes(line.size()));
-        auto source_range = ConstMemoryRange(fill.data(), ToBytes(fill.size()));
+        auto destination_span = MemorySpan(reinterpret_cast<Pointer<Byte>>(line.data()), ToBytes(line.size()));
+        auto source_span = ReadOnlyMemorySpan(reinterpret_cast<Pointer<const Byte>>(fill.data()), ToBytes(fill.size()));
 
-        Memory::Repeat(destination_range, source_range);
+        Memory::Repeat(destination_span, source_span);
 
         return line;
     }
 
     inline String& ConsoleLineBuilder::Copy(String& destination, const StringView& source, Int padding) const
     {
-        auto destination_range = MemoryRange(destination.data(), ToBytes(destination.size())).PopFront(ToBytes(padding));
-        auto source_range = ConstMemoryRange(source.data(), ToBytes(source.size()));
+        auto destination_span = MemorySpan(reinterpret_cast<Pointer<Byte>>(destination.data()), ToBytes(destination.size()));
+        auto source_span = ReadOnlyMemorySpan(reinterpret_cast<Pointer<const Byte>>(source.data()), ToBytes(source.size()));
 
-        Memory::Copy(destination_range, source_range);
+        destination_span = PopFront(destination_span, ToBytes(padding));
+
+        Memory::Copy(destination_span, source_span);
 
         return destination;
     }

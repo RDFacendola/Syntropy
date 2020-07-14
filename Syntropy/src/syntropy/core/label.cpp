@@ -9,8 +9,7 @@
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/memory.h"
-#include "syntropy/memory/memory_range.h"
-#include "syntropy/memory/memory_address.h"
+#include "syntropy/memory/memory_span.h"
 
 #include "syntropy/math/hash.h"
 
@@ -48,7 +47,7 @@ namespace syntropy
         Registry();
 
         /// \brief Allocate a new entry.
-        const TChar* Allocate(const ConstMemoryRange& string_range);
+        const TChar* Allocate(const ReadOnlyMemorySpan& string_range);
 
         /// \brief Memory resource used for dynamic memory allocation.
         TMemoryResource memory_resource_;
@@ -79,7 +78,7 @@ namespace syntropy
         using std::begin;
         using std::end;
 
-        auto string_range = MakeMemoryRange(begin(string), end(string));
+        auto string_range = ReadOnlyMemorySpan(string.data(), string.length() * BytesOf<TChar>());
 
         auto label_hash = Hash::FNV1a64(string_range);
 
@@ -101,16 +100,17 @@ namespace syntropy
         }
     }
 
-    const Label::TChar* Label::Registry::Allocate(const ConstMemoryRange& string_range)
+    const Label::TChar* Label::Registry::Allocate(const ReadOnlyMemorySpan& string_range)
     {
         // One extra byte accounts for the null terminator.
 
         auto label_storage = memory_resource_.Allocate(string_range.GetSize() + 1_Bytes, AlignmentOf<Label::TChar*>());
 
-        auto label = label_storage.Begin().As<const TChar>();
+        auto label = reinterpret_cast<Pointer<const TChar>>(label_storage.GetData());
 
         Memory::Zero(label_storage);
-        Memory::Copy(label_storage.PopBack(), string_range);
+
+        Memory::Copy(PopBack(label_storage), string_range);
 
         return label;
     }

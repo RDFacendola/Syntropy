@@ -10,8 +10,7 @@
 #include "syntropy/language/type_traits.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_address.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 
 namespace syntropy
 {
@@ -47,18 +46,18 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        Bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemorySpan& block) const noexcept;
 
     private:
 
@@ -77,7 +76,7 @@ namespace syntropy
     // StackMemoryResource<kSize, kAlignment>.
 
     template <Int kSize, std::align_val_t kAlignment>
-    inline MemoryRange StackMemoryResource<kSize, kAlignment>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemorySpan StackMemoryResource<kSize, kAlignment>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (is_free_ && (size <= Bytes(kSize)) && (alignment <= Alignment(kAlignment)))
         {
@@ -90,7 +89,7 @@ namespace syntropy
     }
 
     template <Int kSize, std::align_val_t kAlignment>
-    inline void StackMemoryResource<kSize, kAlignment>::Deallocate(const MemoryRange& block, Alignment alignment)
+    inline void StackMemoryResource<kSize, kAlignment>::Deallocate(const MemorySpan& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(alignment <= Alignment(kAlignment));
         SYNTROPY_ASSERT(Owns(block));
@@ -99,9 +98,9 @@ namespace syntropy
     }
 
     template <Int kSize, std::align_val_t kAlignment>
-    inline Bool StackMemoryResource<kSize, kAlignment>::Owns(const MemoryRange& block) const noexcept
+    inline Bool StackMemoryResource<kSize, kAlignment>::Owns(const MemorySpan& block) const noexcept
     {
-        return ConstMemoryRange{ &storage_, Bytes{kSize} }.Contains(block);
+        return ReadOnlyMemorySpan{ &storage_, Bytes{kSize} }.Contains(block);
     }
 
 }

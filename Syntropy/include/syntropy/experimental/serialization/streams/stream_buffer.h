@@ -12,7 +12,7 @@
 #include "syntropy/language/algorithm.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 #include "syntropy/memory/memory_buffer.h"
 #include "syntropy/allocators/memory_resource.h"
 #include "syntropy/math/constants.h"
@@ -62,22 +62,22 @@ namespace syntropy
         /// \brief Write data sequentially to the stream, causing it to grow.
         /// Append operations are performed tentatively if there's an active transaction.
         /// \return Returns the range containing unwritten data.
-        ConstMemoryRange Append(const ConstMemoryRange& data);
+        ReadOnlyMemorySpan Append(const ReadOnlyMemorySpan& data);
 
         /// \brief Read data sequentially from the stream, causing it to shrink.
         /// Consume operations are performed tentatively if there's an active transaction.
         /// \return Returns the range containing read data.
-        MemoryRange Consume(const MemoryRange& data);
+        MemorySpan Consume(const MemorySpan& data);
 
         /// \brief Write data at given position from buffer start.
         /// Writes past the end of the stream are no-ops. This method does not change stream allocation.
         /// \return Returns the range containing unwritten data.
-        ConstMemoryRange Write(Bytes position, const ConstMemoryRange& data);
+        ReadOnlyMemorySpan Write(Bytes position, const ReadOnlyMemorySpan& data);
 
         /// \brief Read data at given position from buffer start.
         /// Reads past the end of the stream are no-ops. This method does not change stream allocation.
         /// \return Returns the range containing read data.
-        MemoryRange Read(Bytes position, const MemoryRange& data) const;
+        MemorySpan Read(Bytes position, const MemorySpan& data) const;
 
         /// \brief Discard data content and clear the underlying buffer.
         void Discard();
@@ -124,10 +124,10 @@ namespace syntropy
         void Realloc(Bytes capacity);
 
         /// \brief Get the address of a byte at given offset from the base pointer, wrapping around.
-        MemoryAddress GetAddress(Bytes offset);
+        BytePtr GetAddress(Bytes offset);
 
         /// \brief Get the address of a byte at given offset from the base pointer, wrapping around.
-        ConstMemoryAddress GetAddress(Bytes offset) const;
+        ReadOnlyBytePtr GetAddress(Bytes offset) const;
 
         /// \brief 
         void Commit(Bytes append_size, Bytes consume_size);
@@ -139,7 +139,7 @@ namespace syntropy
         MemoryBuffer buffer_;
 
         /// \brief Offset within the buffer data start from (inclusive).
-        MemoryAddress base_pointer_;
+        BytePtr base_pointer_;
 
         /// \brief Number of committed bytes in the underlying buffer.
         Bytes size_;
@@ -170,14 +170,14 @@ namespace syntropy
 
     inline StreamBuffer::StreamBuffer(MemoryResource& memory_resource)
         : buffer_(memory_resource)
-        , base_pointer_(buffer_.GetData().Begin())
+        , base_pointer_(Begin(buffer_.GetData()))
     {
 
     }
 
     inline StreamBuffer::StreamBuffer(MemoryBuffer&& buffer)
         : buffer_(std::move(buffer))
-        , base_pointer_(buffer_.GetData().Begin())
+        , base_pointer_(Begin(buffer_.GetData()))
         , size_(buffer_.GetSize())
         , append_size_(size_)
         , consume_size_(size_)
@@ -187,7 +187,7 @@ namespace syntropy
 
     inline StreamBuffer::StreamBuffer(const MemoryBuffer& buffer, MemoryResource& memory_resource)
         : buffer_(buffer.GetSize(), memory_resource)
-        , base_pointer_(buffer_.GetData().Begin())
+        , base_pointer_(Begin(buffer_.GetData()))
         , size_(buffer_.GetSize())
     {
         Memory::Copy(buffer_.GetData(), buffer.GetData());
@@ -197,7 +197,7 @@ namespace syntropy
     {
         Memory::Zero(buffer_.GetData());
 
-        base_pointer_ = buffer_.GetData().Begin();
+        base_pointer_ = Begin(buffer_.GetData());
         size_ = Bytes{ 0 };
     }
 
@@ -253,7 +253,7 @@ namespace syntropy
         auto buffer = MemoryBuffer(buffer_.GetMemoryResource());
 
         buffer.Swap(buffer_);
-        base_pointer_ = buffer_.Begin();
+        base_pointer_ = Begin(buffer_.GetData());
         size_ = Bytes{};
 
         return buffer;

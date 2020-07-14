@@ -35,11 +35,11 @@ namespace syntropy
 
         // Dump the first symbol.
 
-        out << "> " << stack_trace.GetRange().GetFront() << "\n";
+        out << "> " << Front(stack_trace.GetData()) << "\n";
 
         // Dump a line for each remaining stack trace element.
 
-        for (auto&& stack_trace_element : stack_trace.GetRange().PopFront())
+        for (auto&& stack_trace_element : PopFront(stack_trace.GetData()))
         {
             if (stack_trace_element.file_.size() > 0 && stack_trace_element.function_.size() > 0)
             {

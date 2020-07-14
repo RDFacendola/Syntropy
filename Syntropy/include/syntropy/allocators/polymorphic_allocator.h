@@ -117,13 +117,13 @@ namespace syntropy
     {
         auto block = memory_resource_->Allocate(BytesOf<TType>() * count, AlignmentOf<TType>());
 
-        return block.Begin().As<TType>();
+        return reinterpret_cast<TType*>(block.GetData());
     }
 
     template <typename TType>
     inline void PolymorphicAllocator<TType>::deallocate(TType* storage, size_t count) noexcept
     {
-        auto block = MemoryRange{ storage, BytesOf<TType>() * count };
+        auto block = MemorySpan{ storage, BytesOf<TType>() * count };
 
         memory_resource_->Deallocate(block, AlignmentOf<TType>());
     }

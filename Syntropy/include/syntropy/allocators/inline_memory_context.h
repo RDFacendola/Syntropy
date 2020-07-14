@@ -25,7 +25,7 @@ namespace syntropy
 
         /// \brief Set a new memory resource for the current scope.
         template <typename... TArguments>
-        InlineMemoryContext(TArguments&&... arguments);
+        InlineMemoryContext(TArguments&&... arguments) noexcept;
 
         /// \brief Restore the previous memory resource.
         ~InlineMemoryContext();
@@ -54,7 +54,7 @@ namespace syntropy
 
     template <typename TMemoryResource>
     template <typename... TArguments>
-    inline InlineMemoryContext<TMemoryResource>::InlineMemoryContext(TArguments&&... arguments)
+    inline InlineMemoryContext<TMemoryResource>::InlineMemoryContext(TArguments&&... arguments) noexcept
         : memory_resource_(std::forward<TArguments>(arguments)...)
         , previous_memory_resource_(&SetDefaultMemoryResource(memory_resource_))
     {

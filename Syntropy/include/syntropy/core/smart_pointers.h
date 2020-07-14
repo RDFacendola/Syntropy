@@ -69,7 +69,7 @@ namespace syntropy
     {
         auto& memory_resource = GetDefaultMemoryResource();
 
-        auto object = memory_resource.Allocate(BytesOf<TType>(), AlignmentOf<TType>()).Begin().As<TType>();
+        auto object = reinterpret_cast<Pointer<TType>>(memory_resource.Allocate(BytesOf<TType>(), AlignmentOf<TType>()).GetData());
 
         ConstructAt(object, std::forward<TArguments>(arguments)...);
 

@@ -9,8 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_address.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 
 namespace syntropy
 {
@@ -30,7 +29,7 @@ namespace syntropy
         /// \param max_size Maximum size for an allocated block.
         /// \param max_alignment Maximum alignment for an allocated block.
         template <typename... TArguments>
-        FixedMemoryResource(Bytes max_size, Alignment max_alignment, TArguments&&... arguments);
+        FixedMemoryResource(Bytes max_size, Alignment max_alignment, TArguments&&... arguments) noexcept;
 
         /// \brief No copy constructor.
         FixedMemoryResource(const FixedMemoryResource&) = delete;
@@ -48,18 +47,18 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        Bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemorySpan& block) const noexcept;
 
     private:
 
@@ -73,7 +72,7 @@ namespace syntropy
         Alignment max_alignment_;
 
         /// \brief Allocated memory block. Empty if no allocation was performed.
-        MemoryRange block_;
+        MemorySpan block_;
 
         /// \brief Whether the memory resource is free and can be used for allocation.
         Bool is_free_{ true };
@@ -88,7 +87,7 @@ namespace syntropy
 
     template <typename TMemoryResource>
     template <typename... TArguments>
-    inline FixedMemoryResource<TMemoryResource>::FixedMemoryResource(Bytes max_size, Alignment max_alignment, TArguments&&... arguments)
+    inline FixedMemoryResource<TMemoryResource>::FixedMemoryResource(Bytes max_size, Alignment max_alignment, TArguments&&... arguments) noexcept
         : memory_resource_(std::forward<TArguments>(arguments)...)
         , max_size_(max_size)
         , max_alignment_(max_alignment)
@@ -97,7 +96,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange FixedMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemorySpan FixedMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (is_free_ && (size <= max_size_) && (alignment <= max_alignment_) && (block_ = memory_resource_.Allocate(max_size_, alignment)))
         {
@@ -110,7 +109,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void FixedMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block, Alignment alignment)
+    inline void FixedMemoryResource<TMemoryResource>::Deallocate(const MemorySpan& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(Owns(block));
         SYNTROPY_ASSERT(alignment <= max_alignment_);
@@ -121,7 +120,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline Bool FixedMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool FixedMemoryResource<TMemoryResource>::Owns(const MemorySpan& block) const noexcept
     {
         return !is_free_ && block_.Contains(block);
     }

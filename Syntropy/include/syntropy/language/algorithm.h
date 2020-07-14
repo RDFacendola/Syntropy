@@ -9,7 +9,7 @@
 #include <initializer_list>
 #include <algorithm>
 
-#include "syntropy/core/range.h"
+#include "syntropy/memory/memory_span.h"
 
 namespace syntropy
 {
@@ -19,31 +19,27 @@ namespace syntropy
 
     /// \brief Rotate the order of the element in a range, in such a way that the element pointed by middle becomes the new first element.
     /// If middle doesn't belong to range, the result of this method is undefined.
-    template <typename TIterator>
-    void Rotate(Range<TIterator> range, TIterator middle);
+    void Rotate(const MemorySpan& span, BytePtr middle);
 
     /// \brief Reduce the source range from the front until the first element is equal to the provided element or the range is exhausted.
-    template <typename TIterator, typename TElement>
-    Range<TIterator> Find(const Range<TIterator> source, const TElement& element);
+    MemorySpan Find(const MemorySpan& source, Byte element);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    template <typename TIterator>
-    inline void Rotate(Range<TIterator> range, TIterator middle)
+    inline void Rotate(const MemorySpan& span, BytePtr middle)
     {
-        std::rotate(range.Begin(), middle, range.End());
+        std::rotate(Begin(span), middle, End(span));
     }
 
-    template <typename TIterator, typename TElement>
-    inline Range<TIterator> Find(const Range<TIterator> source, const TElement& element)
+    inline MemorySpan Find(const MemorySpan& span, Byte element)
     {
-        auto range = source;
+        auto result = span;
 
-        for (; range && (range.GetFront() != element); range.PopFront());
+        for (; result && (Front(result) != element); result = PopFront(result));
 
-        return range;
+        return result;
     }
 
 }

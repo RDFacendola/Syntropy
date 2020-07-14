@@ -9,7 +9,7 @@ namespace syntropy
     /* MEMORY                                                               */
     /************************************************************************/
 
-    Bytes Memory::Copy(const MemoryRange& destination, const ConstMemoryRange& source)
+    Bytes Memory::Copy(const MemorySpan& destination, const ReadOnlyMemorySpan& source)
     {
         auto source_size = source.GetSize();
         auto destination_size = destination.GetSize();
@@ -18,23 +18,23 @@ namespace syntropy
 
         if (copy_size > Bytes{ 0 })
         {
-            auto destination_range = ConstMemoryRange(destination.Begin(), copy_size);
-            auto source_range = ConstMemoryRange(source.Begin(), copy_size);
+            auto destination_span = ReadOnlyMemorySpan(destination.GetData(), copy_size);
+            auto source_span = ReadOnlyMemorySpan(source.GetData(), copy_size);
 
-            if (!Intersection(destination_range, source_range))
+            if (!Overlaps(destination_span, source_span))
             {
-                std::memcpy(destination.Begin(), source.Begin(), ToInt(copy_size));             // Faster copy for non-overlapping ranges.
+                std::memcpy(destination.GetData(), source.GetData(), ToInt(copy_size));         // Faster copy for non-overlapping ranges.
             }
             else
             {
-                std::memmove(destination.Begin(), source.Begin(), ToInt(copy_size));            // Slower copy for overlapping ranges.
+                std::memmove(destination.GetData(), source.GetData(), ToInt(copy_size));        // Slower copy for overlapping ranges.
             }
         }
 
         return copy_size;
     }
 
-    Bytes Memory::Gather(const MemoryRange& destination, InitializerList<ConstMemoryRange> sources)
+    Bytes Memory::Gather(const MemorySpan& destination, InitializerList<ReadOnlyMemorySpan> sources)
     {
         auto gather = destination;
 
@@ -42,13 +42,13 @@ namespace syntropy
         {
             auto count = Copy(gather, source);
 
-            gather.PopFront(count);
+            PopFront(gather, count);
         }
 
-        return MemoryRange{ destination.Begin(), gather.Begin() }.GetSize();
+        return MemorySpan{ destination.GetData(), gather.GetData() }.GetSize();
     }
 
-    Bytes Memory::Scatter(InitializerList<MemoryRange> destinations, const ConstMemoryRange& source)
+    Bytes Memory::Scatter(InitializerList<MemorySpan> destinations, const ReadOnlyMemorySpan& source)
     {
         auto scatter = source;
 
@@ -56,10 +56,10 @@ namespace syntropy
         {
             auto count = Copy(destination, scatter);
 
-            scatter.PopFront(count);
+            PopFront(scatter, count);
         }
 
-        return ConstMemoryRange{ source.Begin(), scatter.Begin() }.GetSize();
+        return ReadOnlyMemorySpan{ source.GetData(), scatter.GetData() }.GetSize();
     }
 
 }

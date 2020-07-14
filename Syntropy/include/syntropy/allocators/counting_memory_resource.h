@@ -9,8 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_address.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 
 namespace syntropy
 {
@@ -28,7 +27,7 @@ namespace syntropy
         /// \brief Create a new counting memory resource.
         /// \param Arguments used to construct the underlying memory resource.
         template <typename... TArguments>
-        CountingMemoryResource(TArguments&&... arguments);
+        CountingMemoryResource(TArguments&&... arguments) noexcept;
 
         /// \brief Default copy constructor.
         CountingMemoryResource(const CountingMemoryResource&) noexcept = default;
@@ -46,17 +45,17 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns an empty range.
-        MemoryRange Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Expects an empty range.
         /// \param alignment Block alignment.
-        void Deallocate(const MemoryRange& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// The null memory resource only contains empty ranges.
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
-        Bool Owns(const MemoryRange& block) const noexcept;
+        Bool Owns(const MemorySpan& block) const noexcept;
 
         /// \brief Get the amount of active allocations on the underlying memory resource.
         /// \return Returns the number of active allocations on the underlying memory resource.
@@ -87,14 +86,14 @@ namespace syntropy
 
     template <typename TMemoryResource>
     template <typename... TArguments>
-    CountingMemoryResource<TMemoryResource>::CountingMemoryResource(TArguments&&... arguments)
+    CountingMemoryResource<TMemoryResource>::CountingMemoryResource(TArguments&&... arguments) noexcept
         : memory_resource_(std::forward<TArguments>(arguments)...)
     {
 
     }
 
     template <typename TMemoryResource>
-    inline MemoryRange CountingMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline MemorySpan CountingMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto block = memory_resource_.Allocate(size, alignment))
         {
@@ -107,7 +106,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void CountingMemoryResource<TMemoryResource>::Deallocate(const MemoryRange& block, Alignment alignment)
+    inline void CountingMemoryResource<TMemoryResource>::Deallocate(const MemorySpan& block, Alignment alignment) noexcept
     {
         memory_resource_.Deallocate(block, alignment);
 
@@ -115,7 +114,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline Bool CountingMemoryResource<TMemoryResource>::Owns(const MemoryRange& block) const noexcept
+    inline Bool CountingMemoryResource<TMemoryResource>::Owns(const MemorySpan& block) const noexcept
     {
         return memory_resource_.Owns(block);
     }

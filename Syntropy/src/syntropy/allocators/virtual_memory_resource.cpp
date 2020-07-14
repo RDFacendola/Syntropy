@@ -9,20 +9,20 @@ namespace syntropy
     struct VirtualMemoryResource::FreeList
     {
         /// \brief Next free list.
-        FreeList* next_{ nullptr };
+        Pointer<FreeList> next_{ nullptr };
 
-        /// \brief Next free block.
-        MemoryAddress* free_block_{ nullptr };
+        /// \brief Available memory in the free list.
+        Span<BytePtr> span_;
 
-        /// \brief First free block in the list.
-        MemoryAddress first_block_{ nullptr };
+        /// \brief Unallocated space in the free list.
+        Span<BytePtr> unallocated_;
     };
 
     /************************************************************************/
     /* VIRTUAL MEMORY RESOURCE                                              */
     /************************************************************************/
 
-    MemoryRange VirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
+    MemorySpan VirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if ((size <= page_size_) && (alignment <= page_alignment_))
         {
@@ -30,41 +30,41 @@ namespace syntropy
             {
                 VirtualMemory::Commit(block);           // Kernel call: commit the entire block.
 
-                return { block.Begin(), block.Begin() + size };
+                return First(block, size);
             }
         }
 
         return {};
     }
 
-    void VirtualMemoryResource::Deallocate(const MemoryRange& block, Alignment alignment)
+    void VirtualMemoryResource::Deallocate(const MemorySpan& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(Owns(block));
         SYNTROPY_ASSERT(alignment <= page_alignment_);
 
-        if (!free_ || (MemoryAddress{ *free_->free_block_ } >= MemoryAddress(free_) + page_size_))
+        if (!free_ || IsEmpty(free_->unallocated_))
         {
             // The current free list is full: the block is recycled as a new free list linked to the current one.
 
             auto next_free = free_;
 
-            free_ = block.Begin().As<FreeList>();
+            free_ = reinterpret_cast<Pointer<FreeList>>(block.GetData());
 
             free_->next_ = next_free;
-            free_->first_block_ = block.Begin();
-            free_->free_block_ = (&free_->first_block_) + 1;
+            free_->span_ = ToSpan<BytePtr>(PopFront(block, BytesOf<FreeList>()));
+            free_->unallocated_ = free_->span_;
         }
         else
         {
             // Append to the existing free list.
 
-            *(free_->free_block_) = block.Begin();
+            Front(free_->unallocated_) = block.GetData();
 
-            ++(free_->free_block_);
+            free_->unallocated_ = PopFront(free_->unallocated_);
 
             // Kernel call: decommit the entire block.
 
-            auto virtual_block = MemoryRange(block.Begin(), block.Begin() + page_size_);
+            auto virtual_block = MemorySpan(block.GetData(), page_size_);
 
             VirtualMemory::Decommit(virtual_block);
         }
@@ -75,41 +75,47 @@ namespace syntropy
         using std::swap;
 
         swap(virtual_memory_, rhs.virtual_memory_);
-        swap(head_, rhs.head_);
+        swap(unallocated_, rhs.unallocated_);
         swap(page_size_, rhs.page_size_);
         swap(page_alignment_, rhs.page_alignment_);
         swap(free_, rhs.free_);
     }
 
-    MemoryRange VirtualMemoryResource::Allocate()
+    MemorySpan VirtualMemoryResource::Allocate()
     {
         // Attempt to recycle a free block from the current free list. The last block causes the list itself to be recycled.
 
         if (free_)
         {
-            --(free_->free_block_);
-
-            auto block = MemoryRange{ *free_->free_block_, page_size_ };
-
-            if (block.Begin() == free_)
+            if (free_->unallocated_.GetCount() != free_->span_.GetCount())
             {
-                free_ = free_->next_;
-            }
+                auto free_blocks = LeftDifference(free_->span_, free_->unallocated_);
 
-            return block;
+                auto block = MemorySpan(Back(free_blocks), page_size_);
+
+                free_->unallocated_ = Intersection(free_->span_, PopBack(free_blocks));
+
+                return block;
+            }
+            else
+            {
+                auto block = MemorySpan(free_, page_size_);
+
+                free_ = free_->next_;
+
+                return block;
+            }
         }
 
         // Allocate directly from the underlying virtual memory range.
 
-        auto block = head_;
-
-        auto head = block + page_size_;
-
-        if (head <= virtual_memory_.End())
+        if (Size(unallocated_) <= page_size_)
         {
-            head_ = head;
+            auto block = First(unallocated_, page_size_);
 
-            return { block, head_ };
+            unallocated_ = PopFront(unallocated_, page_size_);
+
+            return block;
         }
 
         return {};           // Out of memory!

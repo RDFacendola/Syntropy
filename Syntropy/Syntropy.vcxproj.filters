@@ -9,8 +9,6 @@
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\memory\alignment.h" />
-    <ClInclude Include="include\syntropy\memory\memory_address.h" />
-    <ClInclude Include="include\syntropy\memory\memory_range.h" />
     <ClInclude Include="include\syntropy\allocators\null_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\stack_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\passthrough_memory_resource.h" />

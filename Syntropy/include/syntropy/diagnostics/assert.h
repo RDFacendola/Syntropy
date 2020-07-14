@@ -19,6 +19,11 @@ namespace syntropy
     #define SYNTROPY_ASSERT(condition) \
         SYNTROPY_MACRO_DECLARATION(condition)
 
+    /// \brief Macro used to enforce preconditions which may cause undefined behaviors.
+    /// If the provided condition is not verified causes the debugger to break if attached or the application to terminate.
+    #define SYNTROPY_PRECONDITION(condition) \
+        SYNTROPY_MACRO_DECLARATION(condition)
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -27,5 +32,9 @@ namespace syntropy
 
     #undef SYNTROPY_ASSERT
     #define SYNTROPY_ASSERT(condition) \
+        if(!(condition)) { SYNTROPY_TRAP; }
+
+    #undef SYNTROPY_PRECONDITION
+    #define SYNTROPY_PRECONDITION(condition) \
         if(!(condition)) { SYNTROPY_TRAP; }
 }

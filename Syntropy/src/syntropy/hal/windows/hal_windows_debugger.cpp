@@ -120,7 +120,7 @@ namespace syntropy
     {
         auto stack_frame = STACKFRAME64{};
 
-        Memory::Zero(MakeMemoryRange(stack_frame));
+        Memory::Zero(MemorySpan{ &stack_frame, BytesOf(stack_frame) });
 
         // https://msdn.microsoft.com/it-it/library/windows/desktop/ms680646(v=vs.85).aspx
 

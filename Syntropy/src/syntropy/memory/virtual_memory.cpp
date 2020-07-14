@@ -18,29 +18,29 @@ namespace syntropy
         return HALVirtualMemory::GetPageAlignment();
     }
 
-    MemoryRange VirtualMemory::Reserve(Bytes size)
+    MemorySpan VirtualMemory::Reserve(Bytes size)
     {
         return HALVirtualMemory::Reserve(size);
     }
 
-    MemoryRange VirtualMemory::Allocate(Bytes size)
+    MemorySpan VirtualMemory::Allocate(Bytes size)
     {
         return HALVirtualMemory::Allocate(size);
     }
 
-    Bool VirtualMemory::Release(const MemoryRange& memory_range)
+    Bool VirtualMemory::Release(const MemorySpan& memory_span)
     {
-        return HALVirtualMemory::Release(memory_range);
+        return HALVirtualMemory::Release(memory_span);
     }
 
-    Bool VirtualMemory::Commit(const MemoryRange& memory_range)
+    Bool VirtualMemory::Commit(const MemorySpan& memory_span)
     {
-        return HALVirtualMemory::Commit(memory_range);
+        return HALVirtualMemory::Commit(memory_span);
     }
 
-    Bool VirtualMemory::Decommit(const MemoryRange& memory_range)
+    Bool VirtualMemory::Decommit(const MemorySpan& memory_span)
     {
-        return HALVirtualMemory::Decommit(memory_range);
+        return HALVirtualMemory::Decommit(memory_span);
     }
 
 }

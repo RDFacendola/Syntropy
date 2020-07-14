@@ -8,7 +8,7 @@
 
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
-#include "syntropy/memory/memory_range.h"
+#include "syntropy/memory/memory_span.h"
 #include "syntropy/memory/virtual_memory.h"
 
 namespace syntropy
@@ -24,14 +24,14 @@ namespace syntropy
     public:
 
         /// \brief Create a new empty virtual memory buffer.
-        VirtualMemoryRange() = default;
+        VirtualMemoryRange() noexcept = default;
 
         /// \brief Create a new virtual memory buffer.
         /// \param size Size of the buffer, in bytes. Must be a multiple of the system virtual page size.
-        VirtualMemoryRange(Bytes size);
+        VirtualMemoryRange(Bytes size) noexcept;
 
-        /// \brief Take ownership of the provided memory range.
-        explicit VirtualMemoryRange(const MemoryRange& range);
+        /// \brief Take ownership of the provided memory span.
+        explicit VirtualMemoryRange(const MemorySpan& memory_span) noexcept;
 
         /// \brief No copy constructor.
         VirtualMemoryRange(const VirtualMemoryRange&) = delete;
@@ -39,7 +39,7 @@ namespace syntropy
         /// \brief Move constructor.
         /// Assign the virtual memory buffer of another instance to this one.
         /// \param rhs Virtual memory buffer to move.
-        VirtualMemoryRange(VirtualMemoryRange&& rhs);
+        VirtualMemoryRange(VirtualMemoryRange&& rhs) noexcept;
 
         /// \brief Release reserved virtual memory.
         ~VirtualMemoryRange();
@@ -47,34 +47,16 @@ namespace syntropy
         /// \brief Unified assignment operator.
         VirtualMemoryRange& operator=(VirtualMemoryRange rhs) noexcept;
 
-        /// \brief Get the first address in the range.
-        MemoryAddress Begin() const;
-
-        /// \brief Get one past the last address in the range.
-        MemoryAddress End() const;
-
-        /// \brief Check whether a memory range is contained entirely inside this buffer.
-        /// \param memory_range Memory range to check.
-        /// \return Returns true if memory_range is contained inside this virtual memory buffer, returns false otherwise.
-        Bool Contains(const MemoryRange& memory_range) const noexcept;
-
-        /// \brief Get the size of the buffer, in bytes.
-        /// \return Returns the size of the buffer, in bytes.
-        Bytes GetSize() const noexcept;
-
         /// \brief Swap the content of this buffer with another one.
         void Swap(VirtualMemoryRange& rhs) noexcept;
 
-        /// \brief Get the underlying memory range.
-        operator MemoryRange() const noexcept;
-
-        /// \brief Access the underlying memory range
-        MemoryRange GetRange() const noexcept;
+        /// \brief Access the underlying memory.
+        MemorySpan GetData() const noexcept;
 
     private:
 
         /// \brief Underlying memory range.
-        MemoryRange range_;
+        MemorySpan memory_span_;
 
     };
 
@@ -84,68 +66,44 @@ namespace syntropy
 
     // VirtualMemoryRange.
 
-    inline VirtualMemoryRange::VirtualMemoryRange(Bytes size)
-        : range_(VirtualMemory::Reserve(size))
+    inline VirtualMemoryRange::VirtualMemoryRange(Bytes size) noexcept
+        : memory_span_(VirtualMemory::Reserve(size))
     {
 
     }
 
-    inline VirtualMemoryRange::VirtualMemoryRange(const MemoryRange& range)
-        : range_(range)
+    inline VirtualMemoryRange::VirtualMemoryRange(const MemorySpan& memory_span) noexcept
+        : memory_span_(memory_span)
     {
 
     }
 
-    inline VirtualMemoryRange::VirtualMemoryRange(VirtualMemoryRange&& rhs)
-        : range_(rhs.range_)
+    inline VirtualMemoryRange::VirtualMemoryRange(VirtualMemoryRange&& rhs) noexcept
+        : memory_span_(rhs.memory_span_)
     {
-        rhs.range_ = {};
+        rhs.memory_span_ = {};
     }
 
     inline VirtualMemoryRange::~VirtualMemoryRange()
     {
-        VirtualMemory::Release(range_);
+        VirtualMemory::Release(memory_span_);
     }
 
     inline VirtualMemoryRange& VirtualMemoryRange::operator=(VirtualMemoryRange rhs) noexcept
     {
         rhs.Swap(*this);
+
         return *this;
-    }
-
-    inline MemoryAddress VirtualMemoryRange::Begin() const
-    {
-        return range_.Begin();
-    }
-
-    inline MemoryAddress VirtualMemoryRange::End() const
-    {
-        return range_.End();
-    }
-
-    inline Bool VirtualMemoryRange::Contains(const MemoryRange& memory_range) const noexcept
-    {
-        return range_.Contains(memory_range);
-    }
-
-    inline Bytes VirtualMemoryRange::GetSize() const noexcept
-    {
-        return range_.GetSize();
     }
 
     inline void VirtualMemoryRange::Swap(VirtualMemoryRange& rhs) noexcept
     {
-        std::swap(range_, rhs.range_);
+        std::swap(memory_span_, rhs.memory_span_);
     }
 
-    inline VirtualMemoryRange::operator MemoryRange() const noexcept
+    inline MemorySpan VirtualMemoryRange::GetData() const noexcept
     {
-        return  range_;
-    }
-
-    inline MemoryRange VirtualMemoryRange::GetRange() const noexcept
-    {
-        return range_;
+        return memory_span_;
     }
 }
 
