@@ -108,22 +108,22 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(span == span, true);
         SYNTROPY_UNIT_EQUAL(span != span, false);
 
-        SYNTROPY_UNIT_EQUAL(AreEquivalent(span, span), true);
+        SYNTROPY_UNIT_EQUAL(Equals(span, span), true);
 
         SYNTROPY_UNIT_EQUAL(cspan == cspan, true);
         SYNTROPY_UNIT_EQUAL(cspan != cspan, false);
 
-        SYNTROPY_UNIT_EQUAL(AreEquivalent(cspan, cspan), true);
+        SYNTROPY_UNIT_EQUAL(Equals(cspan, cspan), true);
 
         SYNTROPY_UNIT_EQUAL(cspan == span, true);
         SYNTROPY_UNIT_EQUAL(cspan != span, false);
 
-        SYNTROPY_UNIT_EQUAL(AreEquivalent(cspan, span), true);
+        SYNTROPY_UNIT_EQUAL(Equals(cspan, span), true);
 
         SYNTROPY_UNIT_EQUAL(span == cspan, true);
         SYNTROPY_UNIT_EQUAL(span != cspan, false);
 
-        SYNTROPY_UNIT_EQUAL(AreEquivalent(span, cspan), true);
+        SYNTROPY_UNIT_EQUAL(Equals(span, cspan), true);
     })
 
     .TestCase("Spans are equivalent to spans whose values compare equivalent.", [](auto& fixture)
@@ -165,33 +165,10 @@ namespace syntropy::unit_test
         auto cspan_int = Span<const Int>{ &fixture.int_sequence_[0], 3 };
         auto cspan_float = Span<const Float>{ &fixture.float_sequence_[0], 3 };
 
-        SYNTROPY_UNIT_EQUAL(span_int == span_float, true);
-        SYNTROPY_UNIT_EQUAL(cspan_int == cspan_float, true);
-        SYNTROPY_UNIT_EQUAL(span_int == cspan_float, true);
-        SYNTROPY_UNIT_EQUAL(cspan_int == span_float, true);
-    })
-
-    .TestCase("Spans are not identical to other spans, even if they compare equivalent.", [](auto& fixture)
-    {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
-        auto span_equivalent = Span<Int>{ &fixture.int_sequence_alt_[0], 10 };
-        auto span_identical = Span<Int>{ &fixture.int_sequence_[0], 10 };
-
-        auto cspan = Span<const Int>{ &fixture.int_sequence_[0], 10 };
-        auto cspan_equivalent = Span<const Int>{ &fixture.int_sequence_alt_[0], 10 };
-        auto cspan_identical = Span<const Int>{ &fixture.int_sequence_[0], 10 };
-
-        SYNTROPY_UNIT_EQUAL(AreIdentical(span, span_equivalent), false);
-        SYNTROPY_UNIT_EQUAL(AreIdentical(span, span_identical), true);
-
-        SYNTROPY_UNIT_EQUAL(AreIdentical(cspan, cspan_equivalent), false);
-        SYNTROPY_UNIT_EQUAL(AreIdentical(cspan, cspan_identical), true);
-
-        SYNTROPY_UNIT_EQUAL(AreIdentical(span, cspan_equivalent), false);
-        SYNTROPY_UNIT_EQUAL(AreIdentical(span, cspan_identical), true);
-
-        SYNTROPY_UNIT_EQUAL(AreIdentical(cspan, span_equivalent), false);
-        SYNTROPY_UNIT_EQUAL(AreIdentical(cspan, span_identical), true);
+        SYNTROPY_UNIT_EQUAL(Equals(span_int, span_float), true);
+        SYNTROPY_UNIT_EQUAL(Equals(cspan_int, cspan_float), true);
+        SYNTROPY_UNIT_EQUAL(Equals(span_int, cspan_float), true);
+        SYNTROPY_UNIT_EQUAL(Equals(cspan_int, span_float), true);
     })
 
     .TestCase("Span front elements are readable.", [](auto& fixture)
