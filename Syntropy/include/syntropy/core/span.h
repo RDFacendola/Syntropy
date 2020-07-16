@@ -229,6 +229,15 @@ namespace syntropy
 
     // Utilities.
 
+    /// \brief Create a new span by deducing type from templates.
+    template <typename TElement, typename UElement>
+    auto MakeSpan(Pointer<TElement> begin, Pointer<UElement> end) noexcept;
+
+    /// \brief Create a new span by deducing type from templates.
+    /// If the two iterators do not represent a valid span, returns an empty span.
+    template <typename TElement, typename UElement>
+    auto MakeSafeSpan(Pointer<TElement> begin, Pointer<UElement> end) noexcept;
+
     /// \brief Convert a span to its read-only equivalent.
     template <typename TElement>
     [[nodiscard]] constexpr Span<RemoveConstT<TElement>> ReadOnly(const SpanT<TElement>& rhs);
@@ -256,7 +265,7 @@ namespace syntropy
     template <typename TElement>
     template <typename TIterator>
     constexpr SpanT<TElement>::SpanT(TIterator begin, Int count) noexcept
-        : data_(begin)
+        : data_((count > 0) ? begin : nullptr)
         , count_(count)
     {
 
@@ -435,12 +444,7 @@ namespace syntropy
 
         auto end = Math::Min(End(lhs), End(rhs));
 
-        if (begin <= end)
-        {
-            return { begin, end };
-        }
-
-        return {};
+        return MakeSpan(begin, end);
     }
 
     template <typename TElement>
@@ -450,12 +454,7 @@ namespace syntropy
 
         auto end = Math::Min(End(lhs), Begin(rhs));
 
-        if (begin <= end)
-        {
-            return { begin, end };
-        }
-
-        return {};
+        return MakeSpan(begin, end);
     }
 
     template <typename TElement>
@@ -465,12 +464,7 @@ namespace syntropy
 
         auto end = End(lhs);
 
-        if (begin <= end)
-        {
-            return { begin, end };
-        }
-
-        return {};
+        return MakeSpan(begin, end);
     }
 
     template <typename TElement, typename UElement>
@@ -575,6 +569,23 @@ namespace syntropy
     }
 
     // Utilities.
+
+    template <typename TElement, typename UElement>
+    auto MakeSpan(Pointer<TElement> begin, Pointer<UElement> end) noexcept
+    {
+        return SpanT<CommonTypeT<TElement, UElement>>{ begin, end };
+    }
+
+    template <typename TElement, typename UElement>
+    auto MakeSafeSpan(Pointer<TElement> begin, Pointer<UElement> end) noexcept
+    {
+        if (begin <= end)
+        {
+            return MakeSpan(begin, end);
+        }
+
+        return {};
+    }
 
     template <typename TElement>
     constexpr Span<RemoveConstT<TElement>> ReadOnly(const SpanT<TElement>& rhs)

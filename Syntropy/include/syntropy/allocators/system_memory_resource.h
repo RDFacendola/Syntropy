@@ -41,7 +41,7 @@ namespace syntropy
         /// \brief Allocate a new aligned memory block.
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
-        /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
+        /// \return Returns a span representing the requested aligned memory block. If no allocation could be performed returns an empty span.
         RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.

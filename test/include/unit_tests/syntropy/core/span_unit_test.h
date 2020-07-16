@@ -70,8 +70,8 @@ namespace syntropy::unit_test
 
     .TestCase("Spans constructed from a pair of non-equal iterator are non-empty.", [](auto& fixture)
     {
-        auto span = RWSpan<Int>{ &fixture.int_sequence_[0], 10 };
-        auto cspan = Span<Int>{ &fixture.int_sequence_[0], 10 };
+        auto span = RWSpan<Int>{ &fixture.int_sequence_[0], &fixture.int_sequence_[0] + 10 };
+        auto cspan = Span<Int>{ &fixture.int_sequence_[0], &fixture.int_sequence_[0] + 10 };
 
         SYNTROPY_UNIT_EQUAL(!!span, true);
         SYNTROPY_UNIT_EQUAL(span.GetCount(), 10);
