@@ -6,7 +6,7 @@
 
 #include "syntropy/core/types.h"
 
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 
 #include "syntropy/unit_test/unit_test.h"
 
@@ -53,8 +53,8 @@ namespace syntropy::unit_test
 
     .TestCase("Default constructed memory spans are null.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{};
-        auto rd_memory_span = MemorySpan{};
+        auto rw_memory_span = RWByteSpan{};
+        auto rd_memory_span = ByteSpan{};
 
         SYNTROPY_UNIT_EQUAL(!rw_memory_span, true);
         SYNTROPY_UNIT_EQUAL(Size(rw_memory_span), Bytes{ 0 });
@@ -67,8 +67,8 @@ namespace syntropy::unit_test
 
     .TestCase("Memory spans constructed from an iterator and a non-zero number of elements are non-empty.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 10 };
-        auto rd_memory_span = MemorySpan{ &fixture.buffer_[0], 10 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 10 };
+        auto rd_memory_span = ByteSpan{ &fixture.buffer_[0], 10 };
 
         SYNTROPY_UNIT_EQUAL(!!rw_memory_span, true);
         SYNTROPY_UNIT_EQUAL(Size(rw_memory_span), Bytes{ 10 });
@@ -81,8 +81,8 @@ namespace syntropy::unit_test
 
     .TestCase("Memory spans constructed from a pair of non-equal iterator are non-empty.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], &fixture.buffer_[0] + 10 };
-        auto rd_memory_span = MemorySpan{ &fixture.buffer_[0], &fixture.buffer_[0] + 10 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], &fixture.buffer_[0] + 10 };
+        auto rd_memory_span = ByteSpan{ &fixture.buffer_[0], &fixture.buffer_[0] + 10 };
 
         SYNTROPY_UNIT_EQUAL(!!rd_memory_span, true);
         SYNTROPY_UNIT_EQUAL(Size(rd_memory_span), Bytes{ 10 });
@@ -95,8 +95,8 @@ namespace syntropy::unit_test
 
     .TestCase("Memory spans are always equivalent to themselves.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 10 };
-        auto rd_memory_span = MemorySpan{ &fixture.buffer_[0], 10 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 10 };
+        auto rd_memory_span = ByteSpan{ &fixture.buffer_[0], 10 };
 
         SYNTROPY_UNIT_EQUAL(rw_memory_span == rw_memory_span, true);
         SYNTROPY_UNIT_EQUAL(rw_memory_span != rw_memory_span, false);
@@ -116,15 +116,15 @@ namespace syntropy::unit_test
 
     .TestCase("Memory spans are equivalent to spans whose values compare equivalent.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 10 };
-        auto rw_memory_span_short = RWMemorySpan{ &fixture.buffer_[0], 9 };
-        auto rw_memory_span_equivalent = RWMemorySpan{ &fixture.buffer_equivalent_[0], 10 };
-        auto rw_memory_span_different = RWMemorySpan{ &fixture.buffer_different_[3], 7 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 10 };
+        auto rw_memory_span_short = RWByteSpan{ &fixture.buffer_[0], 9 };
+        auto rw_memory_span_equivalent = RWByteSpan{ &fixture.buffer_equivalent_[0], 10 };
+        auto rw_memory_span_different = RWByteSpan{ &fixture.buffer_different_[3], 7 };
 
-        auto rd_memory_span = MemorySpan{ &fixture.buffer_[0], 10 };
-        auto rd_memory_span_short = MemorySpan{ &fixture.buffer_[0], 9 };
-        auto rd_memory_span_equivalent = MemorySpan{ &fixture.buffer_equivalent_[0], 10 };
-        auto rd_memory_span_different = MemorySpan{ &fixture.buffer_different_[3], 7 };
+        auto rd_memory_span = ByteSpan{ &fixture.buffer_[0], 10 };
+        auto rd_memory_span_short = ByteSpan{ &fixture.buffer_[0], 9 };
+        auto rd_memory_span_equivalent = ByteSpan{ &fixture.buffer_equivalent_[0], 10 };
+        auto rd_memory_span_different = ByteSpan{ &fixture.buffer_different_[3], 7 };
 
         SYNTROPY_UNIT_EQUAL(rw_memory_span == rw_memory_span_short, false);
         SYNTROPY_UNIT_EQUAL(rw_memory_span != rw_memory_span_short, true);
@@ -157,8 +157,8 @@ namespace syntropy::unit_test
 
     .TestCase("Memory spans front elements are readable.", [](auto& fixture)
     {
-        auto rw_memory_span = MemorySpan{ &fixture.buffer_[0], 10 };
-        auto rd_memory_span = RWMemorySpan{ &fixture.buffer_[0], 10 };
+        auto rw_memory_span = ByteSpan{ &fixture.buffer_[0], 10 };
+        auto rd_memory_span = RWByteSpan{ &fixture.buffer_[0], 10 };
 
         SYNTROPY_UNIT_EQUAL(Front(rw_memory_span), Byte{ 0 });
         SYNTROPY_UNIT_EQUAL(Front(rd_memory_span), Byte{ 0 });
@@ -166,7 +166,7 @@ namespace syntropy::unit_test
 
     .TestCase("Memory spans front elements are writable.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 10 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 10 };
 
         Front(rw_memory_span) = Byte{ 42 };
 
@@ -177,13 +177,13 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 10};
-        auto rw_popfront1 = RWMemorySpan{ &fixture.buffer_[1], 9 };
-        auto rw_popfront3 = RWMemorySpan{ &fixture.buffer_[3], 7 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 10};
+        auto rw_popfront1 = RWByteSpan{ &fixture.buffer_[1], 9 };
+        auto rw_popfront3 = RWByteSpan{ &fixture.buffer_[3], 7 };
 
-        auto rd_memory_span = MemorySpan{ &fixture.buffer_[0], 10 };
-        auto rd_popfront1 = MemorySpan{ &fixture.buffer_[1], 9 };
-        auto rd_popfront3 = MemorySpan{ &fixture.buffer_[3], 7 };
+        auto rd_memory_span = ByteSpan{ &fixture.buffer_[0], 10 };
+        auto rd_popfront1 = ByteSpan{ &fixture.buffer_[1], 9 };
+        auto rd_popfront3 = ByteSpan{ &fixture.buffer_[3], 7 };
 
         SYNTROPY_UNIT_EQUAL(PopFront(rw_memory_span), rw_popfront1);
         SYNTROPY_UNIT_EQUAL(PopFront(rw_memory_span, 3), rw_popfront3);
@@ -202,11 +202,11 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0],  10};
-        auto rw_first4 = RWMemorySpan{ &fixture.buffer_[0], 4 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0],  10};
+        auto rw_first4 = RWByteSpan{ &fixture.buffer_[0], 4 };
 
-        auto rd_memory_span = MemorySpan{ &fixture.buffer_[0],  10};
-        auto rd_first4 = MemorySpan{ &fixture.buffer_[0], 4 };
+        auto rd_memory_span = ByteSpan{ &fixture.buffer_[0],  10};
+        auto rd_first4 = ByteSpan{ &fixture.buffer_[0], 4 };
 
         SYNTROPY_UNIT_EQUAL(First(rw_memory_span, 4), rw_first4);
         SYNTROPY_UNIT_EQUAL(First(rd_memory_span, 4), rd_first4);
@@ -216,11 +216,11 @@ namespace syntropy::unit_test
 
     .TestCase("Memory spans contain themselves.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 4 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 4 };
 
         SYNTROPY_UNIT_EQUAL(Contains(rw_memory_span, rw_memory_span), true);
 
-        auto rd_memory_span = MemorySpan{ &fixture.buffer_[0], 4 };
+        auto rd_memory_span = ByteSpan{ &fixture.buffer_[0], 4 };
 
         SYNTROPY_UNIT_EQUAL(Contains(rw_memory_span, rw_memory_span), true);
         SYNTROPY_UNIT_EQUAL(Contains(rd_memory_span, rd_memory_span), true);
@@ -230,11 +230,11 @@ namespace syntropy::unit_test
 
     .TestCase("Memory spans contains another span if the latter refers to a memory location inside the first.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 10 };
-        auto rw_memory_subspan = RWMemorySpan{ &fixture.buffer_[2], 4 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 10 };
+        auto rw_memory_subspan = RWByteSpan{ &fixture.buffer_[2], 4 };
 
-        auto rd_memory_span = MemorySpan{ &fixture.buffer_[0], 10 };
-        auto rd_memory_subspan = MemorySpan{ &fixture.buffer_[2], 4 };
+        auto rd_memory_span = ByteSpan{ &fixture.buffer_[0], 10 };
+        auto rd_memory_subspan = ByteSpan{ &fixture.buffer_[2], 4 };
 
         SYNTROPY_UNIT_EQUAL(Contains(rw_memory_span, rw_memory_subspan), true);
         SYNTROPY_UNIT_EQUAL(Contains(rd_memory_span, rd_memory_subspan), true);
@@ -244,27 +244,27 @@ namespace syntropy::unit_test
 
     .TestCase("Empty memory spans are contained in any other span.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 10 };
-        auto rd_memory_span = MemorySpan{ &fixture.buffer_[0], 10 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 10 };
+        auto rd_memory_span = ByteSpan{ &fixture.buffer_[0], 10 };
 
-        SYNTROPY_UNIT_EQUAL(Contains(rw_memory_span, RWMemorySpan{}), true);
-        SYNTROPY_UNIT_EQUAL(Contains(rd_memory_span, MemorySpan{}), true);
-        SYNTROPY_UNIT_EQUAL(Contains(rw_memory_span, MemorySpan{}), true);
-        SYNTROPY_UNIT_EQUAL(Contains(rd_memory_span, RWMemorySpan{}), true);
+        SYNTROPY_UNIT_EQUAL(Contains(rw_memory_span, RWByteSpan{}), true);
+        SYNTROPY_UNIT_EQUAL(Contains(rd_memory_span, ByteSpan{}), true);
+        SYNTROPY_UNIT_EQUAL(Contains(rw_memory_span, ByteSpan{}), true);
+        SYNTROPY_UNIT_EQUAL(Contains(rd_memory_span, RWByteSpan{}), true);
     })
 
     .TestCase("Empty memory spans are not contained in themselves.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(Contains(RWMemorySpan{}, RWMemorySpan{}), false);
-        SYNTROPY_UNIT_EQUAL(Contains(MemorySpan{}, MemorySpan{}), false);
-        SYNTROPY_UNIT_EQUAL(Contains(RWMemorySpan{}, MemorySpan{}), false);
-        SYNTROPY_UNIT_EQUAL(Contains(MemorySpan{}, RWMemorySpan{}), false);
+        SYNTROPY_UNIT_EQUAL(Contains(RWByteSpan{}, RWByteSpan{}), false);
+        SYNTROPY_UNIT_EQUAL(Contains(ByteSpan{}, ByteSpan{}), false);
+        SYNTROPY_UNIT_EQUAL(Contains(RWByteSpan{}, ByteSpan{}), false);
+        SYNTROPY_UNIT_EQUAL(Contains(ByteSpan{}, RWByteSpan{}), false);
     })
 
     .TestCase("Span overlap with themselves.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 4 };
-        auto rd_cmemory_span = MemorySpan{ &fixture.buffer_[0], 4 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 4 };
+        auto rd_cmemory_span = ByteSpan{ &fixture.buffer_[0], 4 };
 
         SYNTROPY_UNIT_EQUAL(Overlaps(rw_memory_span, rw_memory_span), true);
         SYNTROPY_UNIT_EQUAL(Overlaps(rd_cmemory_span, rd_cmemory_span), true);
@@ -274,11 +274,11 @@ namespace syntropy::unit_test
 
     .TestCase("Disjoint spans do not overlap.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 4 };
-        auto rw_disjoint = RWMemorySpan{ &fixture.buffer_[6], 4 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 4 };
+        auto rw_disjoint = RWByteSpan{ &fixture.buffer_[6], 4 };
 
-        auto rd_cmemory_span = MemorySpan{ &fixture.buffer_[0], 4 };
-        auto rd_cdisjoint = MemorySpan{ &fixture.buffer_[6], 4 };
+        auto rd_cmemory_span = ByteSpan{ &fixture.buffer_[0], 4 };
+        auto rd_cdisjoint = ByteSpan{ &fixture.buffer_[6], 4 };
 
         SYNTROPY_UNIT_EQUAL(Overlaps(rw_memory_span, rw_disjoint), false);
         SYNTROPY_UNIT_EQUAL(Overlaps(rd_cmemory_span, rd_cdisjoint), false);
@@ -288,11 +288,11 @@ namespace syntropy::unit_test
 
     .TestCase("Contiguous spans do not overlap.", [](auto& fixture)
     {
-        auto rw_memory_span = RWMemorySpan{ &fixture.buffer_[0], 4 };
-        auto rw_contiguous = RWMemorySpan{ &fixture.buffer_[4], 3 };
+        auto rw_memory_span = RWByteSpan{ &fixture.buffer_[0], 4 };
+        auto rw_contiguous = RWByteSpan{ &fixture.buffer_[4], 3 };
 
-        auto rd_cmemory_span = MemorySpan{ &fixture.buffer_[0], 4 };
-        auto rd_ccontiguous = MemorySpan{ &fixture.buffer_[4], 3 };
+        auto rd_cmemory_span = ByteSpan{ &fixture.buffer_[0], 4 };
+        auto rd_ccontiguous = ByteSpan{ &fixture.buffer_[4], 3 };
 
         SYNTROPY_UNIT_EQUAL(Overlaps(rw_memory_span, rd_ccontiguous), false);
         SYNTROPY_UNIT_EQUAL(Overlaps(rd_cmemory_span, rw_contiguous), false);
@@ -302,11 +302,11 @@ namespace syntropy::unit_test
 
     .TestCase("Empty spans do not overlap with any other span.", [](auto& fixture)
     {
-        auto rw_span = RWMemorySpan{ &fixture.buffer_[0], 4 };
-        auto rw_empty = RWMemorySpan{};
+        auto rw_span = RWByteSpan{ &fixture.buffer_[0], 4 };
+        auto rw_empty = RWByteSpan{};
 
-        auto rd_span = MemorySpan{ &fixture.buffer_[0], 4 };
-        auto rd_empty = MemorySpan{};
+        auto rd_span = ByteSpan{ &fixture.buffer_[0], 4 };
+        auto rd_empty = ByteSpan{};
 
         SYNTROPY_UNIT_EQUAL(Overlaps(rw_empty, rw_empty), false);
         SYNTROPY_UNIT_EQUAL(Overlaps(rw_span, rw_empty), false);
@@ -319,11 +319,11 @@ namespace syntropy::unit_test
 
     .TestCase("Overlapping test is commutative.", [](auto& fixture)
     {
-        auto rw_left = RWMemorySpan{ &fixture.buffer_[0], 4 };
-        auto rw_right = RWMemorySpan{ &fixture.buffer_[2], 4 };
+        auto rw_left = RWByteSpan{ &fixture.buffer_[0], 4 };
+        auto rw_right = RWByteSpan{ &fixture.buffer_[2], 4 };
 
-        auto rd_left = MemorySpan{ &fixture.buffer_[0], 4 };
-        auto rd_right = MemorySpan{ &fixture.buffer_[2], 4 };
+        auto rd_left = ByteSpan{ &fixture.buffer_[0], 4 };
+        auto rd_right = ByteSpan{ &fixture.buffer_[2], 4 };
 
         SYNTROPY_UNIT_EQUAL(Overlaps(rw_left, rw_right), true);
         SYNTROPY_UNIT_EQUAL(Overlaps(rw_right, rw_left), true);
@@ -342,8 +342,8 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto rw_memory_span = RWMemorySpan{ &fixture.aligned_buffer16_[0], 4 };
-        auto rd_memory_span = MemorySpan{ &fixture.aligned_buffer16_[0], 4 };
+        auto rw_memory_span = RWByteSpan{ &fixture.aligned_buffer16_[0], 4 };
+        auto rd_memory_span = ByteSpan{ &fixture.aligned_buffer16_[0], 4 };
 
         SYNTROPY_UNIT_EQUAL(IsAlignedTo(rw_memory_span, 128_Alignment), false);
         SYNTROPY_UNIT_EQUAL(IsAlignedTo(rw_memory_span, 64_Alignment), false);
@@ -366,7 +366,7 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto rw_memory_span = RWMemorySpan{ &fixture.aligned_buffer16_[0], 4 };
+        auto rw_memory_span = RWByteSpan{ &fixture.aligned_buffer16_[0], 4 };
 
         SYNTROPY_UNIT_EQUAL(Align(rw_memory_span, 16_Alignment), rw_memory_span);
     })
@@ -375,8 +375,8 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto rw_memory_span = RWMemorySpan{ &fixture.aligned_buffer16_[1], 9 };
-        auto rw_memory_span_aligned = RWMemorySpan{ &fixture.aligned_buffer16_[8], 2 };
+        auto rw_memory_span = RWByteSpan{ &fixture.aligned_buffer16_[1], 9 };
+        auto rw_memory_span_aligned = RWByteSpan{ &fixture.aligned_buffer16_[8], 2 };
 
         SYNTROPY_UNIT_EQUAL(Align(rw_memory_span, 8_Alignment), rw_memory_span_aligned);
     })
@@ -385,9 +385,9 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto rw_memory_span = RWMemorySpan{ &fixture.aligned_buffer16_[8], 2 };
+        auto rw_memory_span = RWByteSpan{ &fixture.aligned_buffer16_[8], 2 };
 
-        SYNTROPY_UNIT_EQUAL(Align(rw_memory_span, 16_Alignment), RWMemorySpan{});
+        SYNTROPY_UNIT_EQUAL(Align(rw_memory_span, 16_Alignment), RWByteSpan{});
     })
 
     .TestCase("Memory spans can be converted to strongly-typed spans", [](auto& fixture)
@@ -395,7 +395,7 @@ namespace syntropy::unit_test
         using namespace literals;
 
         auto rw_span = RWSpan<Fix64>{ fixture.union_.elements_, 4 };
-        auto rw_memory_span = RWMemorySpan{ fixture.union_.raw_, 32 };
+        auto rw_memory_span = RWByteSpan{ fixture.union_.raw_, 32 };
 
          //auto blah = ToSpan<Fix64>(rw_memory_span);
  
@@ -409,8 +409,8 @@ namespace syntropy::unit_test
         using namespace literals;
 
         auto rw_span = RWSpan<Fix64>{ fixture.union_.elements_, 4 };
-        auto rw_memory_span = RWMemorySpan{ fixture.union_.raw_, 32 };
-        auto rd_memory_span = MemorySpan{ fixture.union_.raw_, 32 };
+        auto rw_memory_span = RWByteSpan{ fixture.union_.raw_, 32 };
+        auto rd_memory_span = ByteSpan{ fixture.union_.raw_, 32 };
 
         SYNTROPY_UNIT_EQUAL(ToRWMemorySpan(rw_span), rw_memory_span);
         SYNTROPY_UNIT_EQUAL(ToMemorySpan(rw_span), rd_memory_span);

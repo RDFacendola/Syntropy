@@ -6,7 +6,7 @@ namespace syntropy
     /* LINEAR VIRTUAL MEMORY RESOURCE                                       */
     /************************************************************************/
 
-    RWMemorySpan LinearVirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
+    RWByteSpan LinearVirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto aligned_free = Align(free_, alignment); Size(aligned_free) >= size)
         {

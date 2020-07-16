@@ -8,7 +8,7 @@
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 #include "syntropy/core/types.h"
 #include "syntropy/allocators/null_memory_resource.h"
 
@@ -49,16 +49,16 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns an empty range.
-        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Expects an empty range.
         /// \param alignment Block alignment.
-        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
-        Bool Owns(const MemorySpan& block) const noexcept;
+        Bool Owns(const ByteSpan& block) const noexcept;
 
     private:
 
@@ -81,7 +81,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline RWMemorySpan PassthroughMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline RWByteSpan PassthroughMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (memory_resource_)
         {
@@ -92,7 +92,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void PassthroughMemoryResource<TMemoryResource>::Deallocate(const RWMemorySpan& block, Alignment alignment)
+    inline void PassthroughMemoryResource<TMemoryResource>::Deallocate(const RWByteSpan& block, Alignment alignment)
     {
         if (memory_resource_)
         {
@@ -105,7 +105,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline Bool PassthroughMemoryResource<TMemoryResource>::Owns(const MemorySpan& block) const noexcept
+    inline Bool PassthroughMemoryResource<TMemoryResource>::Owns(const ByteSpan& block) const noexcept
     {
         return memory_resource_ ? memory_resource_->Owns(block) : NullMemoryResource::Owns(block);
     }

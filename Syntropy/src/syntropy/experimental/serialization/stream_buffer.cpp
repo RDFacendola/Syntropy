@@ -8,9 +8,9 @@ namespace syntropy
     /* STREAM BUFFER                                                        */
     /************************************************************************/
 
-    ReadOnlyMemorySpan StreamBuffer::Append(const ReadOnlyMemorySpan& data)
+    ByteSpan StreamBuffer::Append(const ByteSpan& data)
     {
-        auto data_size = data.GetSize();
+        auto data_size = Size(data);
 
         if (data_size > Bytes{ 0 })
         {
@@ -36,11 +36,11 @@ namespace syntropy
         return {};
     }
 
-    MemorySpan StreamBuffer::Consume(const MemorySpan& data)
+    RWByteSpan StreamBuffer::Consume(const RWByteSpan& data)
     {
         auto read_range = Read(Bytes{ 0 }, data);
 
-        auto data_size = read_range.GetSize();
+        auto data_size = Size(read_range);
 
         base_pointer_ = GetAddress(data_size);
 
@@ -54,14 +54,14 @@ namespace syntropy
         return read_range;
     }
 
-    ReadOnlyMemorySpan StreamBuffer::Write(Bytes position, const ReadOnlyMemorySpan& data)
+    ByteSpan StreamBuffer::Write(Bytes position, const ByteSpan& data)
     {
         auto written_data = [this, position, &data]()
         {
-            auto source = First(data, Math::Min(data.GetSize(), size_ - position));                                                             // Limit writable data to current buffer size.
+            auto source = First(data, ToInt(Math::Min(Size(data), size_ - position)));                                                          // Limit writable data to current buffer size.
 
             auto destination_begin = GetAddress(position);
-            auto destination_end = GetAddress(position + source.GetSize());
+            auto destination_end = GetAddress(position + Size(source));
 
             if (destination_begin < destination_end)
             {
@@ -76,14 +76,14 @@ namespace syntropy
         return { Begin(data) + written_data, End(data) };
     }
 
-    MemorySpan StreamBuffer::Read(Bytes position, const MemorySpan& data) const
+    RWByteSpan StreamBuffer::Read(Bytes position, const RWByteSpan& data) const
     {
         auto read_data = [this, position, &data]()
         {
-            auto destination = First(data, Math::Min(data.GetSize(), size_ - position));                                                        // Limit readable data to current buffer size.
+            auto destination = First(data, ToInt(Math::Min(Size(data), size_ - position)));                                                 // Limit readable data to current buffer size.
 
             auto source_begin = GetAddress(position);
-            auto source_end = GetAddress(position + destination.GetSize());
+            auto source_end = GetAddress(position + Size(destination));
 
             if (source_begin < source_end)
             {
@@ -91,11 +91,11 @@ namespace syntropy
             }
             else
             {
-                return Memory::Gather(destination, { { source_begin, static_cast<ReadOnlyBytePtr>(End(buffer_.GetData())) }, { static_cast<ReadOnlyBytePtr>(Begin(buffer_.GetData())), source_end } });     // Wrap-around range.
+                return Memory::Gather(destination, { { source_begin, static_cast<BytePtr>(End(buffer_.GetData())) }, { static_cast<BytePtr>(Begin(buffer_.GetData())), source_end } });     // Wrap-around range.
             }
         }();
 
-        return { Begin(data), read_data };
+        return { Begin(data), ToInt(read_data) };
     }
 
     void StreamBuffer::Realloc(Bytes capacity)
@@ -108,7 +108,7 @@ namespace syntropy
 
             if (base_pointer_ < head_pointer)
             {
-                Memory::Copy(buffer.GetData(), { base_pointer_, head_pointer });                                                                // Contiguous range.
+                Memory::Copy(buffer.GetData(), ByteSpan{ base_pointer_, head_pointer });                                                        // Contiguous range.
             }
             else
             {
@@ -122,12 +122,12 @@ namespace syntropy
         base_pointer_ = Begin(buffer_.GetData());
     }
 
-    BytePtr StreamBuffer::GetAddress(Bytes offset)
+    RWBytePtr StreamBuffer::GetAddress(Bytes offset)
     {
-        return const_cast<BytePtr>(ReadOnly(*this).GetAddress(offset));
+        return const_cast<RWBytePtr>(ReadOnly(*this).GetAddress(offset));
     }
 
-    ReadOnlyBytePtr StreamBuffer::GetAddress(Bytes offset) const
+    BytePtr StreamBuffer::GetAddress(Bytes offset) const
     {
         offset = ToBytes(base_pointer_ + offset - Begin(buffer_.GetData()));    // Advance.
 

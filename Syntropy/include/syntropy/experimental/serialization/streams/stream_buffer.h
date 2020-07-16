@@ -12,7 +12,7 @@
 #include "syntropy/language/algorithm.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/memory_buffer.h"
 #include "syntropy/allocators/memory_resource.h"
 #include "syntropy/math/constants.h"
@@ -62,22 +62,22 @@ namespace syntropy
         /// \brief Write data sequentially to the stream, causing it to grow.
         /// Append operations are performed tentatively if there's an active transaction.
         /// \return Returns the range containing unwritten data.
-        ReadOnlyMemorySpan Append(const ReadOnlyMemorySpan& data);
+        ByteSpan Append(const ByteSpan& data);
 
         /// \brief Read data sequentially from the stream, causing it to shrink.
         /// Consume operations are performed tentatively if there's an active transaction.
         /// \return Returns the range containing read data.
-        MemorySpan Consume(const MemorySpan& data);
+        RWByteSpan Consume(const RWByteSpan& data);
 
         /// \brief Write data at given position from buffer start.
         /// Writes past the end of the stream are no-ops. This method does not change stream allocation.
         /// \return Returns the range containing unwritten data.
-        ReadOnlyMemorySpan Write(Bytes position, const ReadOnlyMemorySpan& data);
+        ByteSpan Write(Bytes position, const ByteSpan& data);
 
         /// \brief Read data at given position from buffer start.
         /// Reads past the end of the stream are no-ops. This method does not change stream allocation.
         /// \return Returns the range containing read data.
-        MemorySpan Read(Bytes position, const MemorySpan& data) const;
+        RWByteSpan Read(Bytes position, const RWByteSpan& data) const;
 
         /// \brief Discard data content and clear the underlying buffer.
         void Discard();
@@ -124,10 +124,10 @@ namespace syntropy
         void Realloc(Bytes capacity);
 
         /// \brief Get the address of a byte at given offset from the base pointer, wrapping around.
-        BytePtr GetAddress(Bytes offset);
+        RWBytePtr GetAddress(Bytes offset);
 
         /// \brief Get the address of a byte at given offset from the base pointer, wrapping around.
-        ReadOnlyBytePtr GetAddress(Bytes offset) const;
+        BytePtr GetAddress(Bytes offset) const;
 
         /// \brief 
         void Commit(Bytes append_size, Bytes consume_size);
@@ -139,7 +139,7 @@ namespace syntropy
         MemoryBuffer buffer_;
 
         /// \brief Offset within the buffer data start from (inclusive).
-        BytePtr base_pointer_;
+        RWBytePtr base_pointer_;
 
         /// \brief Number of committed bytes in the underlying buffer.
         Bytes size_;

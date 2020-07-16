@@ -254,8 +254,8 @@ namespace syntropy
     {
         auto line = String(line_size_, ' ');
 
-        auto destination_span = RWMemorySpan(reinterpret_cast<RWBytePtr>(line.data()), ToInt(line.size()));
-        auto source_span = MemorySpan(reinterpret_cast<BytePtr>(fill.data()), ToInt(fill.size()));
+        auto destination_span = RWByteSpan(reinterpret_cast<RWBytePtr>(line.data()), ToInt(line.size()));
+        auto source_span = ByteSpan(reinterpret_cast<BytePtr>(fill.data()), ToInt(fill.size()));
 
         Memory::Repeat(destination_span, source_span);
 
@@ -264,8 +264,8 @@ namespace syntropy
 
     inline String& ConsoleLineBuilder::Copy(String& destination, const StringView& source, Int padding) const
     {
-        auto destination_span = RWMemorySpan(reinterpret_cast<RWBytePtr>(destination.data()), ToInt(destination.size()));
-        auto source_span = MemorySpan(reinterpret_cast<BytePtr>(source.data()), ToInt(source.size()));
+        auto destination_span = RWByteSpan(reinterpret_cast<RWBytePtr>(destination.data()), ToInt(destination.size()));
+        auto source_span = ByteSpan(reinterpret_cast<BytePtr>(source.data()), ToInt(source.size()));
 
         destination_span = PopFront(destination_span, padding);
 

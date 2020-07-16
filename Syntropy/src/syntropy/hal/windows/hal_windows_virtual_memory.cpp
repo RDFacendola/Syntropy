@@ -4,7 +4,7 @@
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 
 /************************************************************************/
 /* HEADERS & LIBRARIES                                                  */
@@ -46,7 +46,7 @@ namespace syntropy
         return ToAlignment(system_info.dwPageSize);
     }
 
-    RWMemorySpan HALVirtualMemory::Allocate(Bytes size)
+    RWByteSpan HALVirtualMemory::Allocate(Bytes size)
     {
         // Allocate up to the next page boundary.
 
@@ -60,7 +60,7 @@ namespace syntropy
         return {};
     }
 
-    RWMemorySpan HALVirtualMemory::Reserve(Bytes size)
+    RWByteSpan HALVirtualMemory::Reserve(Bytes size)
     {
         // Reserve up to the next page boundary.
 
@@ -74,41 +74,41 @@ namespace syntropy
         return {};
     }
 
-    Bool HALVirtualMemory::Release(const RWMemorySpan& memory_span)
+    Bool HALVirtualMemory::Release(const RWByteSpan& byte_span)
     {
-        if (memory_span)
+        if (byte_span)
         {
             // Deallocate the entire previously-allocated range.
 
-            return VirtualFree(memory_span.GetData(), 0, MEM_RELEASE) != 0;
+            return VirtualFree(byte_span.GetData(), 0, MEM_RELEASE) != 0;
         }
 
         return true;
     }
 
-    Bool HALVirtualMemory::Commit(const RWMemorySpan& memory_span)
+    Bool HALVirtualMemory::Commit(const RWByteSpan& byte_span)
     {
-        if (memory_span)
+        if (byte_span)
         {
-            auto size = ToInt(Size(memory_span));
+            auto size = ToInt(Size(byte_span));
 
             // Commit each page containing at least one byte in the range.
 
-            return VirtualAlloc(memory_span.GetData(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
+            return VirtualAlloc(byte_span.GetData(), size, MEM_COMMIT, PAGE_READWRITE) != nullptr;
         }
 
         return true;
     }
 
-    Bool HALVirtualMemory::Decommit(const RWMemorySpan& memory_span)
+    Bool HALVirtualMemory::Decommit(const RWByteSpan& byte_span)
     {
-        if (memory_span)
+        if (byte_span)
         {
-            auto size = ToInt(Size(memory_span));
+            auto size = ToInt(Size(byte_span));
 
             // Decommit each page containing at least one byte in the range.
 
-            return VirtualFree(memory_span.GetData(), size, MEM_DECOMMIT) != 0;
+            return VirtualFree(byte_span.GetData(), size, MEM_DECOMMIT) != 0;
         }
 
         return true;

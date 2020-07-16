@@ -9,7 +9,7 @@ namespace syntropy
     /* MEMORY                                                               */
     /************************************************************************/
 
-    Bytes Memory::Copy(const RWMemorySpan& destination, const MemorySpan& source)
+    Bytes Memory::Copy(const RWByteSpan& destination, const ByteSpan& source)
     {
         auto copy_size = Math::Min(Size(source), Size(destination));
 
@@ -31,7 +31,7 @@ namespace syntropy
         return copy_size;
     }
 
-    Bytes Memory::Gather(const RWMemorySpan& destination, InitializerList<MemorySpan> sources)
+    Bytes Memory::Gather(const RWByteSpan& destination, InitializerList<ByteSpan> sources)
     {
         auto gather = destination;
 
@@ -42,10 +42,10 @@ namespace syntropy
             PopFront(gather, ToInt(count));
         }
 
-        return Size(MemorySpan{ destination.GetData(), gather.GetData() });
+        return Size(ByteSpan{ destination.GetData(), gather.GetData() });
     }
 
-    Bytes Memory::Scatter(InitializerList<RWMemorySpan> destinations, const MemorySpan& source)
+    Bytes Memory::Scatter(InitializerList<RWByteSpan> destinations, const ByteSpan& source)
     {
         auto scatter = source;
 
@@ -56,7 +56,7 @@ namespace syntropy
             PopFront(scatter, ToInt(count));
         }
 
-        return Size(MemorySpan{ source.GetData(), scatter.GetData() });
+        return Size(ByteSpan{ source.GetData(), scatter.GetData() });
     }
 
 }

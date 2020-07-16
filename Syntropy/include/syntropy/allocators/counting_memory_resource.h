@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 
 namespace syntropy
 {
@@ -45,17 +45,17 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns an empty range.
-        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Expects an empty range.
         /// \param alignment Block alignment.
-        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// The null memory resource only contains empty ranges.
         /// \return Returns true if the provided memory range is empty, returns false otherwise.
-        Bool Owns(const MemorySpan& block) const noexcept;
+        Bool Owns(const ByteSpan& block) const noexcept;
 
         /// \brief Get the amount of active allocations on the underlying memory resource.
         /// \return Returns the number of active allocations on the underlying memory resource.
@@ -93,7 +93,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline RWMemorySpan CountingMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline RWByteSpan CountingMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto block = memory_resource_.Allocate(size, alignment))
         {
@@ -106,7 +106,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void CountingMemoryResource<TMemoryResource>::Deallocate(const RWMemorySpan& block, Alignment alignment) noexcept
+    inline void CountingMemoryResource<TMemoryResource>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
         memory_resource_.Deallocate(block, alignment);
 
@@ -114,7 +114,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline Bool CountingMemoryResource<TMemoryResource>::Owns(const MemorySpan& block) const noexcept
+    inline Bool CountingMemoryResource<TMemoryResource>::Owns(const ByteSpan& block) const noexcept
     {
         return memory_resource_.Owns(block);
     }

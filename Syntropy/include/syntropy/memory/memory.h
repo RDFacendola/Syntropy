@@ -13,7 +13,7 @@
 #include "syntropy/language/initializer_list.h"
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 
 #include "syntropy/diagnostics/assert.h"
 
@@ -26,32 +26,32 @@ namespace syntropy
     /// \brief Exposes utility methods to manipulate memory.
     namespace Memory
     {
-        /// \brief Copy a source memory region to a destination memory region. Neither range is exceed during the process.
+        /// \brief Copy a source memory region to a destination memory region. Neither span is exceed during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes Copy(const RWMemorySpan& destination, const MemorySpan& source);
+        Bytes Copy(const RWByteSpan& destination, const ByteSpan& source);
 
-        /// \brief Copy a source memory region to a destination memory region repeating the source until destination range is exhausted. Neither range is exceed during the process.
-        void Repeat(const RWMemorySpan& destination, const MemorySpan& source);
+        /// \brief Copy a source memory region to a destination memory region repeating the source until destination span is exhausted. Neither span is exceed during the process.
+        void Repeat(const RWByteSpan& destination, const ByteSpan& source);
 
-        /// \brief Set a value to each byte in a destination range.
-        void Set(const RWMemorySpan& destination, Byte value);
+        /// \brief Set a value to each byte in a destination span.
+        void Set(const RWByteSpan& destination, Byte value);
 
         /// \brief Zero-out a memory region.
-        void Zero(const RWMemorySpan& destination);
+        void Zero(const RWByteSpan& destination);
 
-        /// \brief Gather data from one or more memory regions to fill a contiguous memory region sequentially. Neither range is exceeded during the process.
+        /// \brief Gather data from one or more memory regions to fill a contiguous memory region sequentially. Neither span is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes Gather(const RWMemorySpan& destination, InitializerList<MemorySpan> sources);
+        Bytes Gather(const RWByteSpan& destination, InitializerList<ByteSpan> sources);
 
-        /// \brief Scatter a contiguous memory region to one or more memory regions sequentially. Neither range is exceeded during the process.
+        /// \brief Scatter a contiguous memory region to one or more memory regions sequentially. Neither span is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes Scatter(InitializerList<RWMemorySpan> destinations, const MemorySpan& source);
+        Bytes Scatter(InitializerList<RWByteSpan> destinations, const ByteSpan& source);
 
         /// \brief Reinterpret an object representation from a type to another type.
         template <typename TTo, typename TFrom>
         TTo BitCast(const TFrom& rhs);
 
-        /// \brief Reinterpret an address as an integer value.
+        /// \brief Reinterpret a pointer to its numeric address value.
         template <typename TType>
         constexpr Int ToIntAddress(const TType* rhs);
     };
@@ -63,22 +63,22 @@ namespace syntropy
     // Memory.
     // =======
 
-    inline void Memory::Repeat(const RWMemorySpan& destination, const MemorySpan& source)
+    inline void Memory::Repeat(const RWByteSpan& destination, const ByteSpan& source)
     {
-        for (auto range = destination; !IsEmpty(range);)
+        for (auto span = destination; !IsEmpty(span);)
         {
-            auto count = Copy(range, source);
+            auto count = Copy(span, source);
 
-            range = PopFront(range, ToInt(count));
+            span = PopFront(span, ToInt(count));
         }
     }
 
-    inline void Memory::Set(const RWMemorySpan& destination, Byte value)
+    inline void Memory::Set(const RWByteSpan& destination, Byte value)
     {
         std::memset(destination.GetData(), static_cast<int>(value), ToInt(Size(destination)));
     }
 
-    inline void Memory::Zero(const RWMemorySpan& destination)
+    inline void Memory::Zero(const RWByteSpan& destination)
     {
         Set(destination, Byte{ 0 });
     }

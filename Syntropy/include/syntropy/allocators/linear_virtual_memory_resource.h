@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/virtual_memory.h"
 #include "syntropy/memory/virtual_memory_range.h"
 #include "syntropy/math/math.h"
@@ -49,11 +49,11 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a span representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// Pointer-level deallocations are not supported, therefore this method does nothing.
-        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate every allocation performed so far.
         void DeallocateAll() noexcept;
@@ -61,18 +61,18 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        Bool Owns(const MemorySpan& block) const noexcept;
+        Bool Owns(const ByteSpan& block) const noexcept;
 
         /// \brief Swap this memory resource with the provided instance.
         void Swap(LinearVirtualMemoryResource& rhs) noexcept;
 
         /// \brief Get the current state of the allocator.
-        RWMemorySpan SaveState() const;
+        RWByteSpan SaveState() const;
 
         /// \brief Restore the allocator to a previous state.
         /// If the provided state wasn't obtained by means of ::SaveState(), the behavior of this method is undefined.
         /// RestoreState invalidates all states obtained after the state being provided. Restoring an invalid state results in undefined behavior.
-        void RestoreState(RWMemorySpan state);
+        void RestoreState(RWByteSpan state);
 
     private:
 
@@ -80,7 +80,7 @@ namespace syntropy
         VirtualMemoryRange virtual_memory_;
 
         /// \brief Span of unallocated memory.
-        RWMemorySpan free_;
+        RWByteSpan free_;
 
         /// \brief Commit granularity, reduces the number of kernel calls when committing new pages.
         Alignment granularity_;
@@ -126,7 +126,7 @@ namespace syntropy
         return *this;
     }
 
-    inline void LinearVirtualMemoryResource::Deallocate(const RWMemorySpan& block, Alignment /*alignment*/) noexcept
+    inline void LinearVirtualMemoryResource::Deallocate(const RWByteSpan& block, Alignment /*alignment*/) noexcept
     {
         SYNTROPY_ASSERT(Owns(block));
     }
@@ -141,7 +141,7 @@ namespace syntropy
         free_ = virtual_memory_.GetData();
     }
 
-    inline Bool LinearVirtualMemoryResource::Owns(const MemorySpan& block) const noexcept
+    inline Bool LinearVirtualMemoryResource::Owns(const ByteSpan& block) const noexcept
     {
         return Contains(virtual_memory_.GetData(), block);
     }
@@ -155,12 +155,12 @@ namespace syntropy
         swap(granularity_, rhs.granularity_);
     }
 
-    inline RWMemorySpan LinearVirtualMemoryResource::SaveState() const
+    inline RWByteSpan LinearVirtualMemoryResource::SaveState() const
     {
         return free_;
     }
 
-    inline void LinearVirtualMemoryResource::RestoreState(RWMemorySpan state)
+    inline void LinearVirtualMemoryResource::RestoreState(RWByteSpan state)
     {
         state = Align(state, granularity_);
 

@@ -8,9 +8,9 @@
 
 #include <utility>
 
-#include "syntropy/core/range.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/memory/bytes.h"
+#include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory.h"
 #include "syntropy/allocators/memory_resource.h"
@@ -62,8 +62,11 @@ namespace syntropy
         /// \brief Destructor.
         ~MemoryBuffer();
 
-        /// \brief Access the underlying memory span.
-        MemorySpan GetData() const;
+        /// \brief Access the underlying byte span.
+        ByteSpan GetData() const;
+
+        /// \brief Access the underlying byte span.
+        RWByteSpan GetData();
 
         /// \brief Get the size of the buffer, in bytes.
         /// \return Returns the size of the buffer, in bytes.
@@ -83,7 +86,7 @@ namespace syntropy
     private:
 
         ///< \brief Memory buffer.
-        MemorySpan buffer_;
+        RWByteSpan buffer_;
 
         ///< \brief Memory resource the buffer was allocated on.
         Pointer<MemoryResource> memory_resource_{ nullptr };
@@ -154,14 +157,19 @@ namespace syntropy
         }
     }
 
-    inline MemorySpan MemoryBuffer::GetData() const
+    inline ByteSpan MemoryBuffer::GetData() const
+    {
+        return buffer_;
+    }
+
+    inline RWByteSpan MemoryBuffer::GetData()
     {
         return buffer_;
     }
 
     inline Bytes MemoryBuffer::GetSize() const
     {
-        return buffer_.GetSize();
+        return Size(buffer_);
     }
 
     inline Alignment MemoryBuffer::GetAlignment() const

@@ -8,7 +8,7 @@
 
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/virtual_memory.h"
 
 namespace syntropy
@@ -30,8 +30,8 @@ namespace syntropy
         /// \param size Size of the buffer, in bytes. Must be a multiple of the system virtual page size.
         VirtualMemoryRange(Bytes size) noexcept;
 
-        /// \brief Take ownership of the provided memory span.
-        explicit VirtualMemoryRange(const RWMemorySpan& memory_span) noexcept;
+        /// \brief Take ownership of the provided byte span.
+        explicit VirtualMemoryRange(const RWByteSpan& byte_span) noexcept;
 
         /// \brief No copy constructor.
         VirtualMemoryRange(const VirtualMemoryRange&) = delete;
@@ -51,12 +51,12 @@ namespace syntropy
         void Swap(VirtualMemoryRange& rhs) noexcept;
 
         /// \brief Access the underlying memory.
-        RWMemorySpan GetData() const noexcept;
+        RWByteSpan GetData() const noexcept;
 
     private:
 
         /// \brief Underlying memory range.
-        RWMemorySpan memory_span_;
+        RWByteSpan byte_span_;
 
     };
 
@@ -67,26 +67,26 @@ namespace syntropy
     // VirtualMemoryRange.
 
     inline VirtualMemoryRange::VirtualMemoryRange(Bytes size) noexcept
-        : memory_span_(VirtualMemory::Reserve(size))
+        : byte_span_(VirtualMemory::Reserve(size))
     {
 
     }
 
-    inline VirtualMemoryRange::VirtualMemoryRange(const RWMemorySpan& memory_span) noexcept
-        : memory_span_(memory_span)
+    inline VirtualMemoryRange::VirtualMemoryRange(const RWByteSpan& byte_span) noexcept
+        : byte_span_(byte_span)
     {
 
     }
 
     inline VirtualMemoryRange::VirtualMemoryRange(VirtualMemoryRange&& rhs) noexcept
-        : memory_span_(rhs.memory_span_)
+        : byte_span_(rhs.byte_span_)
     {
-        rhs.memory_span_ = {};
+        rhs.byte_span_ = {};
     }
 
     inline VirtualMemoryRange::~VirtualMemoryRange()
     {
-        VirtualMemory::Release(memory_span_);
+        VirtualMemory::Release(byte_span_);
     }
 
     inline VirtualMemoryRange& VirtualMemoryRange::operator=(VirtualMemoryRange rhs) noexcept
@@ -98,12 +98,12 @@ namespace syntropy
 
     inline void VirtualMemoryRange::Swap(VirtualMemoryRange& rhs) noexcept
     {
-        std::swap(memory_span_, rhs.memory_span_);
+        std::swap(byte_span_, rhs.byte_span_);
     }
 
-    inline RWMemorySpan VirtualMemoryRange::GetData() const noexcept
+    inline RWByteSpan VirtualMemoryRange::GetData() const noexcept
     {
-        return memory_span_;
+        return byte_span_;
     }
 }
 

@@ -10,7 +10,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 #include "syntropy/diagnostics/assert.h"
 
 namespace syntropy
@@ -49,11 +49,11 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// Pointer-level deallocations are not supported, therefore this method does nothing.
-        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate every allocation performed so far.
         void DeallocateAll() noexcept;
@@ -61,18 +61,18 @@ namespace syntropy
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        Bool Owns(const MemorySpan& block) const noexcept;
+        Bool Owns(const ByteSpan& block) const noexcept;
 
         /// \brief Swap this memory resource with the provided instance.
         void Swap(LinearMemoryResource& rhs) noexcept;
 
         /// \brief Get the current state of the allocator.
-        RWMemorySpan SaveState() const noexcept;
+        RWByteSpan SaveState() const noexcept;
 
         /// \brief Restore the allocator to a previous state.
         /// If the provided state wasn't obtained by means of ::SaveState(), the behavior of this method is undefined.
         /// RestoreState invalidates all states obtained after the state being provided. Restoring an invalid state results in undefined behavior.
-        void RestoreState(RWMemorySpan state) noexcept;
+        void RestoreState(RWByteSpan state) noexcept;
 
     private:
 
@@ -154,7 +154,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    MemorySpan LinearMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    ByteSpan LinearMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         using namespace syntropy::literals;
 
@@ -200,7 +200,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void LinearMemoryResource<TMemoryResource>::Deallocate(const MemorySpan& block, Alignment /*alignment*/) noexcept
+    inline void LinearMemoryResource<TMemoryResource>::Deallocate(const ByteSpan& block, Alignment /*alignment*/) noexcept
     {
         SYNTROPY_ASSERT(Owns(block));
     }
@@ -221,13 +221,13 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline Bool LinearMemoryResource<TMemoryResource>::Owns(const MemorySpan& block) const noexcept
+    inline Bool LinearMemoryResource<TMemoryResource>::Owns(const ByteSpan& block) const noexcept
     {
         // Can't query the underlying memory resource directly since it might be shared with other allocators.
 
         for (auto chunk = chunk_; chunk; chunk = chunk->previous_)
         {
-            if (MemorySpan{ chunk, chunk->end_ }.Contains(block))
+            if (ByteSpan{ chunk, chunk->end_ }.Contains(block))
             {
                 return true;
             }
@@ -248,13 +248,13 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemorySpan LinearMemoryResource<TMemoryResource>::SaveState() const
+    inline ByteSpan LinearMemoryResource<TMemoryResource>::SaveState() const
     {
         return head_;
     }
 
     template <typename TMemoryResource>
-    inline void LinearMemoryResource<TMemoryResource>::RestoreState(MemorySpan state)
+    inline void LinearMemoryResource<TMemoryResource>::RestoreState(ByteSpan state)
     {
         // Start deallocating until the current chunk contains the state to restore and then set that as the new state.
 

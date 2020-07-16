@@ -11,7 +11,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 
 namespace syntropy
 {
@@ -61,18 +61,18 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        Bool Owns(const MemorySpan& block) const noexcept;
+        Bool Owns(const ByteSpan& block) const noexcept;
 
     private:
 
@@ -115,7 +115,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource, typename TFallbackResource>
-    inline RWMemorySpan FallbackMemoryResource<TMemoryResource, TFallbackResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline RWByteSpan FallbackMemoryResource<TMemoryResource, TFallbackResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto block = memory_resource_.Allocate(size, alignment))
         {
@@ -126,7 +126,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource, typename TFallbackResource>
-    inline void FallbackMemoryResource<TMemoryResource, TFallbackResource>::Deallocate(const RWMemorySpan& block, Alignment alignment) noexcept
+    inline void FallbackMemoryResource<TMemoryResource, TFallbackResource>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
         SYNTROPY_ASSERT(Owns(block));
 
@@ -141,7 +141,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource, typename TFallbackResource>
-    inline Bool FallbackMemoryResource<TMemoryResource, TFallbackResource>::Owns(const MemorySpan& block) const noexcept
+    inline Bool FallbackMemoryResource<TMemoryResource, TFallbackResource>::Owns(const ByteSpan& block) const noexcept
     {
         return memory_resource_.Owns(block) || fallback_resource_.Owns(block);
     }

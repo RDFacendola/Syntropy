@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/virtual_memory.h"
 #include "syntropy/memory/virtual_memory_range.h"
 #include "syntropy/math/math.h"
@@ -50,18 +50,18 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
         /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
-        Bool Owns(const MemorySpan& block) const noexcept;
+        Bool Owns(const ByteSpan& block) const noexcept;
 
         /// \brief Swap this allocator with the provided instance.
         void Swap(VirtualMemoryResource& rhs) noexcept;
@@ -69,7 +69,7 @@ namespace syntropy
     private:
 
         /// \brief Allocate a block and return its range.
-        RWMemorySpan Allocate();
+        RWByteSpan Allocate();
 
         /// \brief Type of a linked list used to track free pages.
         struct FreeList;
@@ -78,7 +78,7 @@ namespace syntropy
         VirtualMemoryRange virtual_memory_;
 
         /// \brief Range of memory yet to allocate.
-        RWMemorySpan unallocated_;
+        RWByteSpan unallocated_;
 
         /// \brief Size of each allocation. This value is a multiple of the system virtual memory page size.
         Bytes page_size_;
@@ -130,7 +130,7 @@ namespace syntropy
         return *this;
     }
 
-    inline Bool VirtualMemoryResource::Owns(const MemorySpan& block) const noexcept
+    inline Bool VirtualMemoryResource::Owns(const ByteSpan& block) const noexcept
     {
         return Contains(virtual_memory_.GetData(), block);
     }

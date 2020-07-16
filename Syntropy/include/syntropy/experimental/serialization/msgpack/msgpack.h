@@ -13,7 +13,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
 #include "syntropy/memory/bytes.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 #include "syntropy/experimental/serialization/append_stream_buffer.h"
 #include "syntropy/experimental/serialization/consume_stream_buffer.h"
 

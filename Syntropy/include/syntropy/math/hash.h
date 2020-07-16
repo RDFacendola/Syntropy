@@ -9,7 +9,7 @@
 #include <numeric>
 
 #include "syntropy/core/types.h"
-#include "syntropy/memory/memory_span.h"
+#include "syntropy/memory/byte_span.h"
 
 namespace syntropy
 {
@@ -22,10 +22,10 @@ namespace syntropy
     namespace Hash
     {
         /// \brief Get the non-cryptographic 64-bit FNV1a hash of a buffer.
-        Int FNV1a64(const MemorySpan& buffer);
+        Int FNV1a64(const ByteSpan& buffer);
 
         /// \brief Get the non-cryptographic 32-bit FNV1a hash of a buffer.
-        Int FNV1a32(const MemorySpan& buffer);
+        Int FNV1a32(const ByteSpan& buffer);
     }
 
     /************************************************************************/
@@ -34,7 +34,7 @@ namespace syntropy
 
     // Hash.
 
-    inline Int Hash::FNV1a64(const MemorySpan& buffer)
+    inline Int Hash::FNV1a64(const ByteSpan& buffer)
     {
         // Uses FNV1a 64-bit with recommended constants by Landon Curt Noll - http://www.isthe.com/chongo/
 
@@ -50,7 +50,7 @@ namespace syntropy
         return hash;
     }
 
-    inline Int Hash::FNV1a32(const MemorySpan& buffer)
+    inline Int Hash::FNV1a32(const ByteSpan& buffer)
     {
         // Uses FNV1a 32-bit with recommended constants by Landon Curt Noll - http://www.isthe.com/chongo/
 

@@ -26,12 +26,12 @@ namespace syntropy
         constexpr SpanT() noexcept = default;
 
         /// \brief Create a span given a pointer to the first element and the number of elements.
-        template <typename TIterator>
-        constexpr SpanT(TIterator begin, Int count) noexcept;
+        template <typename TBegin>
+        constexpr SpanT(TBegin begin, Int count) noexcept;
 
         /// \brief Create a span given a pointer to the first element and a pointer past the last element.
-        template <typename TIterator>
-        constexpr SpanT(TIterator begin, TIterator end) noexcept;
+        template <typename TBegin, typename TEnd, typename = EnableIfT<!IsConvertibleV<TEnd, Int>>>
+        constexpr SpanT(TBegin begin, TEnd end) noexcept;
 
         /// \brief Copy constructor.
         template <typename UElement>
@@ -190,11 +190,11 @@ namespace syntropy
 
     // Comparisons.
 
-    /// \brief Check whether two spans are identical, i.e. they both refer to the same underlying memory span.
+    /// \brief Check whether two spans are identical, i.e. they both refer to the same underlying byte span.
     template <typename TElement, typename UElement>
     constexpr Bool operator==(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
-    /// \brief Check whether two spans are different, i.e. they both refer to different underlying memory span.
+    /// \brief Check whether two spans are different, i.e. they both refer to different underlying byte span.
     template <typename TElement, typename UElement>
     constexpr Bool operator!=(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
@@ -263,8 +263,8 @@ namespace syntropy
     }
 
     template <typename TElement>
-    template <typename TIterator>
-    constexpr SpanT<TElement>::SpanT(TIterator begin, TIterator end) noexcept
+    template <typename TBegin, typename TEnd, typename>
+    constexpr SpanT<TElement>::SpanT(TBegin begin, TEnd end) noexcept
         : SpanT(begin, ToInt(end - begin))
     {
 
