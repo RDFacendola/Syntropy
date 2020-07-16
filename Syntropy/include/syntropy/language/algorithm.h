@@ -19,27 +19,17 @@ namespace syntropy
 
     /// \brief Rotate the order of the element in a range, in such a way that the element pointed by middle becomes the new first element.
     /// If middle doesn't belong to range, the result of this method is undefined.
-    void Rotate(const MemorySpan& span, BytePtr middle);
-
-    /// \brief Reduce the source range from the front until the first element is equal to the provided element or the range is exhausted.
-    MemorySpan Find(const MemorySpan& source, Byte element);
+    template <typename TElement>
+    void Rotate(const Span<TElement>& span, const TElement& middle);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    inline void Rotate(const MemorySpan& span, BytePtr middle)
+    template <typename TElement>
+    inline void Rotate(const MemorySpan& span, const TElement& middle)
     {
         std::rotate(Begin(span), middle, End(span));
-    }
-
-    inline MemorySpan Find(const MemorySpan& span, Byte element)
-    {
-        auto result = span;
-
-        for (; result && (Front(result) != element); result = PopFront(result));
-
-        return result;
     }
 
 }

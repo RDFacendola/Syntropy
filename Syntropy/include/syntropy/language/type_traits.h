@@ -303,4 +303,16 @@ namespace syntropy
     template <template<typename...> typename TExpression, typename... TTypes>
     using EnableIfValidExpressionT = EnableIfT<IsValidExpressionV<TExpression, TTypes...>>;
 
+    /************************************************************************/
+    /* COMPARISON                                                           */
+    /************************************************************************/
+
+    /// \brief Check if T can be compared equal to U.
+    template <typename T, typename U>
+    using HasEqualityComparison = decltype(std::declval<T>() == std::declval<U>());
+
+    /// \brief Check if T can be compared inequal to U.
+    template <typename T, typename U>
+    using HasInequalityComparison = decltype(std::declval<T>() != std::declval<U>());
+
 }

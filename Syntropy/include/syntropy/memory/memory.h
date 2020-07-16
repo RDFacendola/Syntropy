@@ -28,24 +28,24 @@ namespace syntropy
     {
         /// \brief Copy a source memory region to a destination memory region. Neither range is exceed during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes Copy(const MemorySpan& destination, const ReadOnlyMemorySpan& source);
+        Bytes Copy(const RWMemorySpan& destination, const MemorySpan& source);
 
         /// \brief Copy a source memory region to a destination memory region repeating the source until destination range is exhausted. Neither range is exceed during the process.
-        void Repeat(const MemorySpan& destination, const ReadOnlyMemorySpan& source);
+        void Repeat(const RWMemorySpan& destination, const MemorySpan& source);
 
         /// \brief Set a value to each byte in a destination range.
-        void Set(const MemorySpan& destination, Byte value);
+        void Set(const RWMemorySpan& destination, Byte value);
 
         /// \brief Zero-out a memory region.
-        void Zero(const MemorySpan& destination);
+        void Zero(const RWMemorySpan& destination);
 
         /// \brief Gather data from one or more memory regions to fill a contiguous memory region sequentially. Neither range is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes Gather(const MemorySpan& destination, InitializerList<ReadOnlyMemorySpan> sources);
+        Bytes Gather(const RWMemorySpan& destination, InitializerList<MemorySpan> sources);
 
         /// \brief Scatter a contiguous memory region to one or more memory regions sequentially. Neither range is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
-        Bytes Scatter(InitializerList<MemorySpan> destinations, const ReadOnlyMemorySpan& source);
+        Bytes Scatter(InitializerList<RWMemorySpan> destinations, const MemorySpan& source);
 
         /// \brief Reinterpret an object representation from a type to another type.
         template <typename TTo, typename TFrom>
@@ -61,23 +61,24 @@ namespace syntropy
     /************************************************************************/
 
     // Memory.
+    // =======
 
-    inline void Memory::Repeat(const MemorySpan& destination, const ReadOnlyMemorySpan& source)
+    inline void Memory::Repeat(const RWMemorySpan& destination, const MemorySpan& source)
     {
         for (auto range = destination; !IsEmpty(range);)
         {
             auto count = Copy(range, source);
 
-            range = PopFront(range, count);
+            range = PopFront(range, ToInt(count));
         }
     }
 
-    inline void Memory::Set(const MemorySpan& destination, Byte value)
+    inline void Memory::Set(const RWMemorySpan& destination, Byte value)
     {
-        std::memset(destination.GetData(), static_cast<int>(value), ToInt(destination.GetSize()));
+        std::memset(destination.GetData(), static_cast<int>(value), ToInt(Size(destination)));
     }
 
-    inline void Memory::Zero(const MemorySpan& destination)
+    inline void Memory::Zero(const RWMemorySpan& destination)
     {
         Set(destination, Byte{ 0 });
     }

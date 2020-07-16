@@ -50,13 +50,13 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Deallocate every allocation performed so far.
         /// \remarks This method returns every allocation to the underlying memory resource.
@@ -173,7 +173,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    MemorySpan PoolMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    RWMemorySpan PoolMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if ((size <= block_size_) && (alignment <= Alignment(block_size_)))
         {
@@ -191,7 +191,7 @@ namespace syntropy
             // Attempt to allocate on the current chunk. Fast-path.
 
             {
-                auto block = MemorySpan{ head_, block_size_ };
+                auto block = RWMemorySpan{ head_, block_size_ };
 
                 if (chunk_ && (block.End() <= chunk_->end_))
                 {
@@ -228,7 +228,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void PoolMemoryResource<TMemoryResource>::Deallocate(const MemorySpan& block, Alignment alignment)
+    inline void PoolMemoryResource<TMemoryResource>::Deallocate(const RWMemorySpan& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(alignment <= Alignment(block_size_));
         SYNTROPY_ASSERT(memory_resource_.Owns(block));

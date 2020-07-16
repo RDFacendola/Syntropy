@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "syntropy/language/type_traits.h"
 #include "syntropy/core/types.h"
 #include "syntropy/core/span.h"
 #include "syntropy/memory/bytes.h"
@@ -15,516 +14,195 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* TYPE ALIAS                                                           */
+    /* BYTE PTR                                                             */
     /************************************************************************/
 
-    /// \brief Type alias for a pointer to a read-write memory region.
-    using BytePtr = Pointer<Byte>;
+    /// \brief Represents a pointer to a read-only memory location.
+    using BytePtr = Pointer<const Byte>;
 
-    /// \brief Type alias for a pointer to a read-only memory region.
-    using ReadOnlyBytePtr = Pointer<const Byte>;
+    /// \brief Represents a pointer to a read-write memory location.
+    using RWBytePtr = Pointer<Byte>;
 
     /************************************************************************/
     /* MEMORY SPAN                                                          */
     /************************************************************************/
 
-    /// \brief Represents a contiguous memory region.
-    /// \author Raffaele D. Facendola - July 2020.
-    template <typename TTraits>
-    class MemorySpanT
-    {
-    public:
+    /// \brief Represents a span of read-only raw bytes.
+    using MemorySpan = Span<Byte>;
 
-        /// \brief Underlying pointer type.
-        using TPointer = typename TTraits::TPointer;
-
-        /// \brief Underlying reference type.
-        using TReference = typename TTraits::TReference;
-
-        /// \brief Create an empty memory span.
-        constexpr MemorySpanT() noexcept = default;
-
-        /// \brief Create a memory span given a pointer to the first byte and its size.
-        template <typename UPointer>
-        constexpr MemorySpanT(UPointer begin, Bytes size) noexcept;
-
-        /// \brief Create a memory span given pointer to the first byte and past the last one.
-        template <typename UPointer>
-        constexpr MemorySpanT(UPointer begin, UPointer end) noexcept;
-
-        /// \brief Copy constructor.
-        template <typename UTraits>
-        constexpr MemorySpanT(const MemorySpanT<UTraits>& rhs) noexcept;
-
-        /// \brief Default destructor.
-        ~MemorySpanT() noexcept = default;
-
-        /// \brief Copy assignment operator.
-        template <typename UTraits>
-        constexpr MemorySpanT& operator=(const MemorySpanT<UTraits>& rhs) noexcept;
-
-        /// \brief Check whether the memory span is non-empty.
-        constexpr operator Bool() const noexcept;
-
-        /// \brief Access a byte by offset from the first byte.
-        /// If the provided offset exceeds the span boundaries behavior of this method is undefined.
-        constexpr typename TTraits::TReference& operator[](Bytes offset) const noexcept;
-
-        /// \brief Get the size of the memory span.
-        constexpr Bytes GetSize() const noexcept;
-
-        /// \brief Access the underlying buffer.
-        constexpr typename TTraits::TPointer GetData() const noexcept;
-
-    private:
-
-        /// \brief Pointer to the first element in the memory region.
-        typename TTraits::TPointer data_{ nullptr };
-
-        /// \brief Span size.
-        Bytes size_ = Bytes{ 0 };
-
-    };
+    /// \brief Represents a span of read-write raw bytes.
+    using RWMemorySpan = RWSpan<Byte>;
 
     /************************************************************************/
-    /* MEMORY SPAN TRAITS                                                   */
+    /* NON MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Traits for a memory span in a read\write memory region.
-    struct MemorySpanTraits
-    {
-        /// \brief Address of the underlying memory region.
-        using TPointer = BytePtr;
+    // Observers.
 
-        /// \brief Reference to a byte.
-        using TReference = Byte&;
-    };
-
-    /// \brief Traits for a memory span in a read only memory region.
-    struct ReadOnlyMemorySpanTraits
-    {
-        /// \brief Address of the underlying memory region.
-        using TPointer = ReadOnlyBytePtr;
-
-        /// \brief Reference to a byte.
-        using TReference = const Byte&;
-    };
-
-    /************************************************************************/
-    /* MEMORY SPAN ALIAS                                                    */
-    /************************************************************************/
-
-    /// \brief Type alias for a memory span to a read-write memory region.
-    using MemorySpan = MemorySpanT<MemorySpanTraits>;
-
-    /// \brief Type alias for a memory span to a read-only memory region.
-    using ReadOnlyMemorySpan = MemorySpanT<ReadOnlyMemorySpanTraits>;
-
-    /// \brief Type of a memory span which may contain elements of type TElement.
+    /// \brief Get the memory footprint of a span.
     template <typename TElement>
-    using SelectMemorySpanT = ConditionalT<IsConstV<TElement>, ReadOnlyMemorySpan, MemorySpan>;
+    constexpr Bytes Size(const SpanT<TElement>& span) noexcept;
 
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Get a pointer to the first byte in a memory span.
-    template <typename TTraits>
-    constexpr auto begin(const MemorySpanT<TTraits>& memory_span) noexcept;
-
-    /// \brief Get a pointer past the last byte in a memory span.
-    template <typename TTraits>
-    constexpr auto end(const MemorySpanT<TTraits>& memory_span) noexcept;
-
-    /// \brief Get a pointer to the first byte in a memory span.
-    template <typename TTraits>
-    constexpr auto Begin(const MemorySpanT<TTraits>& span) noexcept;
-
-    /// \brief Get a pointer past the last byte in a memory span.
-    template <typename TTraits>
-    constexpr auto End(const MemorySpanT<TTraits>& span) noexcept;
-
-    /// \brief Check whether two memory spans' contents are equivalent.
-    template <typename TTraits, typename UTraits>
-    constexpr Bool operator==(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept;
-
-    /// \brief Check whether two memory spans' contents are not equivalent.
-    template <typename TTraits, typename UTraits>
-    constexpr Bool operator!=(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept;
-
-    /// \brief Check whether a memory span is empty.
-    template <typename TTraits>
-    constexpr Bool IsEmpty(const MemorySpanT<TTraits>& memory_span) noexcept;
-
-    /// \brief Get the size of a memory span.
-    template <typename TTraits>
-    constexpr Bytes Size(const MemorySpanT<TTraits>& memory_span) noexcept;
-
-    /// \brief Access the first byte in a memory span.
-    /// If the memory span is empty the behavior of this method is undefined.
-    template <typename TTraits>
-    constexpr typename MemorySpanT<TTraits>::TReference& Front(const MemorySpanT<TTraits>& memory_span) noexcept;
-
-    /// \brief Access the last byte in a memory span.
-    /// If the memory span is empty the behavior of this method is undefined.
-    template <typename TTraits>
-    constexpr typename MemorySpanT<TTraits>::TReference& Back(const MemorySpanT<TTraits>& memory_span) noexcept;
-
-    /// \brief Discard the first element in a memory span and return the resulting subspan.
-    /// If the memory span is empty the behavior of this method is undefined.
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span) noexcept;
-
-    /// \brief Discard some bytes in memory span and return the resulting memory span.
-    /// If this method would cause the new span to exceed the original one, the behavior of this method is undefined.
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span, Bytes bytes) noexcept;
-
-    /// \brief Discard the last element in a memory span and return the resulting subspan.
-    /// If the span is empty the behavior of this method is undefined.
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> PopBack(const MemorySpanT<TTraits>& span) noexcept;
-
-    /// \brief Discard the last count-elements in a span and return the resulting subspan.
-    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> PopBack(const MemorySpanT<TTraits>& span, Bytes bytes) noexcept;
-
-    /// \brief Obtain a memory span consisting of the first elements of a memory span.
-    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> First(const MemorySpanT<TTraits>& memory_span, Bytes bytes) noexcept;
-
-    /// \brief Check whether two spans are identical (ie: they both refer to the same memory region).
-    template <typename TTraits, typename UTraits>
-    constexpr Bool AreIdentical(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept;
-
-    /// \brief Check whether two spans are element-wise equivalent.
-    template <typename TTraits, typename UTraits>
-    constexpr Bool AreEquivalent(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept;
-
-    /// \brief Check whether rhs refers to a memory location identical or contained inside lhs.
-    template <typename TTraits, typename UTraits>
-    constexpr Bool Contains(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept;
-
-    /// \brief Check whether lhs and lhs overlaps the same memory location.
-    /// Empty spans are not considered to be overlapping with any other memory_span.
-    template <typename TTraits, typename UTraits>
-    constexpr Bool Overlaps(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept;
+    /// \brief Check whether a pointer is aligned to a given boundary.
+    Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
 
     /// \brief Check whether a memory span is aligned to a given alignment value.
-    /// This method only accounts for the first element in the span.
-    template <typename TTraits>
-    constexpr Bool IsAlignedTo(const MemorySpanT<TTraits>& memory_span, Alignment alignment) noexcept;
+    Bool IsAlignedTo(const MemorySpan& memory_span, Alignment alignment) noexcept;
 
-    /// \brief Consume a memory span until its first byte is aligned to a given boundary or the span is exhausted.
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> Align(const MemorySpanT<TTraits>& memory_span, Alignment alignment) noexcept;
+    // Memory operations.
 
-    /// \brief Convert a memory span to a strongly-typed span.
-    /// If the underlying memory span doesn't refer to TElements or it has non-integer number of elements, the behavior of this method is undefined.
-    template <typename TElement, typename TTraits>
-    constexpr Span<TElement> ToSpan(const MemorySpanT<TTraits>& memory_span) noexcept;
+    /// \brief Align a byte pointer to a given alignment value.
+    BytePtr Align(BytePtr pointer, Alignment alignment) noexcept;
 
-    /// \brief Convert a strongly-typed span to a memory span.
+    /// \brief Align a byte pointer to a given alignment value.
+    RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept;
+
+    /// \brief Consume a memory span from the back until its first byte is aligned to a given boundary or the span is exhausted.
+    MemorySpan Align(const MemorySpan& memory_span, Alignment alignment) noexcept;
+
+    /// \brief Consume a memory span from the back until its first byte is aligned to a given boundary or the span is exhausted.
+    RWMemorySpan Align(const RWMemorySpan& memory_span, Alignment alignment) noexcept;
+
+    // Conversions.
+
+    /// \brief Convert a read-only memory span to a read-only typed span.
+    /// If the memory span doesn't refer to instances of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
     template <typename TElement>
-    constexpr SelectMemorySpanT<TElement> ToMemorySpan(const Span<TElement>& rhs) noexcept;
+    Span<TElement> ToSpan(const MemorySpan& memory_span) noexcept;
 
-    /// \brief Convert a strongly-typed span to a read-only memory span.
+    /// \brief Convert a read-write memory span to a read-only typed span.
+    /// If the memory span doesn't refer to instances of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
     template <typename TElement>
-    constexpr ReadOnlyMemorySpan ToReadOnlyMemorySpan(const Span<TElement>& rhs) noexcept;
+    Span<TElement> ToSpan(const RWMemorySpan& memory_span) noexcept;
 
-    /// \brief Stream insertion for MemorySpans.
-    template <typename TTraits>
-    std::ostream& operator<<(std::ostream& lhs, const MemorySpanT<TTraits>& rhs);
+    /// \brief Convert a read-write memory span to a read-write typed span.
+    /// If the memory span doesn't refer to instances of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
+    template <typename TElement>
+    RWSpan<TElement> ToRWSpan(const RWMemorySpan& memory_span) noexcept;
+
+    /// \brief Convert an read-only span to a read-only memory span.
+    template <typename TElement>
+    MemorySpan ToMemorySpan(const Span<TElement>& span) noexcept;
+
+    /// \brief Convert a read-write span to a read-only memory span.
+    template <typename TElement>
+    MemorySpan ToMemorySpan(const RWSpan<TElement>& span) noexcept;
+
+    /// \brief Convert a read-write span to a read-write memory span.
+    template <typename TElement>
+    RWMemorySpan ToRWMemorySpan(const RWSpan<TElement>& span) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // MemorySpanT<TTraits>.
+    // Non member functions.
+    // =====================
 
-    template <typename TTraits>
-    template <typename UPointer>
-    constexpr MemorySpanT<TTraits>::MemorySpanT(UPointer begin, Bytes size) noexcept
-        : data_(reinterpret_cast<TPointer>(begin))
-        , size_(size)
+    // Observers.
+
+    template <typename TElement>
+    constexpr Bytes Size(const SpanT<TElement>& span) noexcept
     {
-
+        return Count(span) * BytesOf<TElement>();
     }
 
-    template <typename TTraits>
-    template <typename UPointer>
-    constexpr MemorySpanT<TTraits>::MemorySpanT(UPointer begin, UPointer end) noexcept
-        : data_(reinterpret_cast<TPointer>(begin))
-        , size_(ToBytes(reinterpret_cast<TPointer>(end) - reinterpret_cast<TPointer>(begin)))
+    inline Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept
     {
-
-    }
-
-    template <typename TTraits>
-    template <typename UTraits>
-    constexpr MemorySpanT<TTraits>::MemorySpanT(const MemorySpanT<UTraits>& rhs) noexcept
-        : data_(rhs.GetData())
-        , size_(rhs.GetSize())
-    {
-
-    }
-
-    template <typename TTraits>
-    template <typename UTraits>
-    constexpr MemorySpanT<TTraits>& MemorySpanT<TTraits>::operator=(const MemorySpanT<UTraits>& rhs) noexcept
-    {
-        data_ = rhs.GetData();
-        size_ = rhs.GetSize();
-
-        return *this;
-    }
-
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits>::operator Bool() const noexcept
-    {
-        return size_ > Bytes{ 0 };
-    }
-
-    template <typename TTraits>
-    constexpr typename TTraits::TReference& MemorySpanT<TTraits>::operator[](Bytes offset) const noexcept
-    {
-        return data_[ToInt(offset)];
-    }
-
-    template <typename TTraits>
-    constexpr Bytes MemorySpanT<TTraits>::GetSize() const noexcept
-    {
-        return size_;
-    }
-
-    template <typename TTraits>
-    constexpr typename TTraits::TPointer MemorySpanT<TTraits>::GetData() const noexcept
-    {
-        return data_;
-    }
-
-    // Non-member functions.
-
-    template <typename TTraits>
-    constexpr auto begin(const MemorySpanT<TTraits>& memory_span) noexcept
-    {
-        return Begin(memory_span);
-    }
-
-    template <typename TTraits>
-    constexpr auto end(const MemorySpanT<TTraits>& memory_span) noexcept
-    {
-        return End(memory_span);
-    }
-
-    template <typename TTraits>
-    constexpr auto Begin(const MemorySpanT<TTraits>& memory_span) noexcept
-    {
-        return memory_span.GetData();
-    }
-
-    template <typename TTraits>
-    constexpr auto End(const MemorySpanT<TTraits>& memory_span) noexcept
-    {
-        return memory_span.GetData() + memory_span.GetSize();
-    }
-
-    template <typename TTraits, typename UTraits>
-    constexpr Bool operator==(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
-    {
-        return AreEquivalent(lhs, rhs);
-    }
-
-    template <typename TTraits, typename UTraits>
-    constexpr Bool operator!=(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
-    {
-        return !(lhs == rhs);
-    }
-
-    template <typename TTraits>
-    constexpr Bool IsEmpty(const MemorySpanT<TTraits>& memory_span) noexcept
-    {
-        using namespace literals;
-
-        return Size(memory_span) <= 0_Bytes;
-    }
-
-    template <typename TTraits>
-    constexpr Bytes Size(const MemorySpanT<TTraits>& memory_span) noexcept
-    {
-        return memory_span.GetSize();
-    }
-
-    template <typename TTraits>
-    constexpr typename MemorySpanT<TTraits>::TReference& Front(const MemorySpanT<TTraits>& memory_span) noexcept
-    {
-        return memory_span[Bytes{ 0 }];
-    }
-
-    template <typename TTraits>
-    constexpr typename MemorySpanT<TTraits>::TReference& Back(const MemorySpanT<TTraits>& memory_span) noexcept
-    {
-        return memory_span[memory_span.GetSize() - Bytes{ 1 }];
-    }
-
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span) noexcept
-    {
-        using namespace literals;
-
-        return PopFront(memory_span, 1_Bytes);
-    }
-
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> PopFront(const MemorySpanT<TTraits>& memory_span, Bytes bytes) noexcept
-    {
-        return { memory_span.GetData() + bytes, Size(memory_span) - bytes };
-    }
-
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> PopBack(const MemorySpanT<TTraits>& span) noexcept
-    {
-        return PopBack(span, ToBytes(1));
-    }
-
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> PopBack(const MemorySpanT<TTraits>& span, Bytes bytes) noexcept
-    {
-        return { span.GetData(), span.GetSize() - bytes };
-    }
-
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> First(const MemorySpanT<TTraits>& memory_span, Bytes bytes) noexcept
-    {
-        return { memory_span.GetData(), bytes };
-    }
-
-    template <typename TTraits, typename UTraits>
-    constexpr Bool AreIdentical(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
-    {
-        return (lhs.GetData() == rhs.GetData()) && (Size(lhs) == Size(rhs));
-    }
-
-    template <typename TTraits, typename UTraits>
-    constexpr Bool AreEquivalent(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
-    {
-        auto lhs_count = Size(lhs);
-        auto rhs_count = Size(rhs);
-
-        return (lhs_count == rhs_count) && std::memcmp(lhs.GetData(), rhs.GetData(), ToInt(lhs_count)) == 0;
-    }
-
-    template <typename TTraits, typename UTraits>
-    constexpr Bool Contains(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
-    {
-        // Empty spans do not contain any other span.
-
-        if (!lhs)
-        {
-            return false;
-        }
-
-        // Empty spans are contained in any other set, except empty spans.
-
-        if (!rhs)
-        {
-            return true;
-        }
-
-        // Test span boundaries.
-
-        auto lhs_begin = lhs.GetData();
-        auto lhs_end = lhs_begin + Size(lhs);
-
-        auto rhs_begin = rhs.GetData();
-        auto rhs_end = rhs_begin + Size(rhs);
-
-        return (lhs_begin <= rhs_begin) && (lhs_end >= rhs_end);
-    }
-
-    template <typename TTraits, typename UTraits>
-    constexpr Bool Overlaps(const MemorySpanT<TTraits>& lhs, const MemorySpanT<UTraits>& rhs) noexcept
-    {
-        auto lhs_begin = lhs.GetData();
-        auto lhs_end = lhs_begin + Size(lhs);
-
-        auto rhs_begin = rhs.GetData();
-        auto rhs_end = rhs_begin + Size(rhs);
-
-        return (lhs_begin < rhs_end) && (rhs_begin < lhs_end);
-    }
-
-    template <typename TTraits>
-    constexpr Bool IsAlignedTo(const MemorySpanT<TTraits>& memory_span, Alignment alignment) noexcept
-    {
-        auto address = reinterpret_cast<Int>(memory_span.GetData());
-
-        return (address & (ToInt(alignment) - 1)) == 0;
-    }
-
-    template <typename TTraits>
-    constexpr MemorySpanT<TTraits> Align(const MemorySpanT<TTraits>& memory_span, Alignment alignment) noexcept
-    {
-        using TPointer = typename MemorySpanT<TTraits>::TPointer;
-
-        auto begin_address = reinterpret_cast<Int>(memory_span.GetData());
-        auto end_address = begin_address + ToInt(Size(memory_span));
+        auto address = reinterpret_cast<Int>(pointer);
 
         auto alignment_mask = ToInt(alignment) - 1;
 
-        begin_address = Math::Min((begin_address + alignment_mask) & ~alignment_mask, end_address);
-
-        auto begin_ptr = reinterpret_cast<TPointer>(begin_address);
-        auto end_ptr = reinterpret_cast<TPointer>(end_address);
-
-        return { begin_ptr, end_ptr };
+        return (address & alignment_mask) == 0;
     }
 
-    template <typename TElement, typename TTraits>
-    constexpr Span<TElement> ToSpan(const MemorySpanT<TTraits>& rhs) noexcept
+    inline Bool IsAlignedTo(const MemorySpan& memory_span, Alignment alignment) noexcept
     {
-        auto begin = reinterpret_cast<Pointer<TElement>>(rhs.GetData());
+        return IsAlignedTo(memory_span.GetData(), alignment);
+    }
 
-        auto size = Size(rhs) / BytesOf<TElement>();
+    // Memory operations.
 
-        return { begin, size };
+    inline BytePtr Align(BytePtr pointer, Alignment alignment) noexcept
+    {
+        auto address = reinterpret_cast<Int>(pointer);
+
+        auto alignment_mask = ToInt(alignment) - 1;
+
+        address = (address + alignment_mask) & ~alignment_mask;
+
+        return reinterpret_cast<BytePtr>(address);
+    }
+
+    inline RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept
+    {
+        return const_cast<RWBytePtr>(Align(BytePtr{ pointer }, alignment));
+    }
+
+    inline MemorySpan Align(const MemorySpan& memory_span, Alignment alignment) noexcept
+    {
+        auto aligned_data = Align(memory_span.GetData(), alignment);
+
+        return { Math::Min(aligned_data, End(memory_span)), End(memory_span) };
+    }
+
+    inline RWMemorySpan Align(const RWMemorySpan& memory_span, Alignment alignment) noexcept
+    {
+        auto aligned_data = Align(memory_span.GetData(), alignment);
+
+        return { Math::Min(aligned_data, End(memory_span)), End(memory_span) };
+    }
+
+    // Conversions.
+
+    template <typename TElement>
+    inline Span<TElement> ToSpan(const MemorySpan& memory_span) noexcept
+    {
+        auto begin = reinterpret_cast<Pointer<const TElement>>(Begin(memory_span));
+        auto end = reinterpret_cast<Pointer<const TElement>>(End(memory_span));
+
+        return { begin, end };
     }
 
     template <typename TElement>
-    constexpr SelectMemorySpanT<TElement> ToMemorySpan(const Span<TElement>& rhs) noexcept
+    inline Span<TElement> ToSpan(const RWMemorySpan& memory_span) noexcept
     {
-        auto begin = reinterpret_cast<typename SelectMemorySpanT<TElement>::TPointer>(rhs.GetData());
+        auto rd_memory_span = ReadOnly(memory_span);
 
-        auto size = Count(rhs) * BytesOf<TElement>();
-
-        return { begin, size };
+        return ToSpan<TElement>(rd_memory_span);
     }
 
     template <typename TElement>
-    constexpr ReadOnlyMemorySpan ToReadOnlyMemorySpan(const Span<TElement>& rhs) noexcept
+    inline RWSpan<TElement> ToRWSpan(const RWMemorySpan& memory_span) noexcept
     {
-        auto begin = reinterpret_cast<const Byte*>(rhs.GetData());
+        auto span = ToSpan<TElement>(memory_span);
 
-        auto size = Count(rhs) * BytesOf<TElement>();
-
-        return { begin, size };
+        return ReadWrite(span);
     }
 
-    template <typename TTraits>
-    std::ostream& operator<<(std::ostream& lhs, const MemorySpanT<TTraits>& rhs)
+    template <typename TElement>
+    inline MemorySpan ToMemorySpan(const Span<TElement>& span) noexcept
     {
-        lhs << "{";
+        auto begin = reinterpret_cast<BytePtr>(Begin(span));
+        auto end = reinterpret_cast<BytePtr>(End(span));
 
-        for (auto&& element : rhs)
-        {
-            lhs << element << ((&element != &Back(rhs)) ? ", " : "");
-        }
+        return { begin, end };
+    }
 
-        lhs << "}";
+    template <typename TElement>
+    inline MemorySpan ToMemorySpan(const RWSpan<TElement>& span) noexcept
+    {
+        auto rd_span = ReadOnly(span);
 
-        return lhs;
+        return ToMemorySpan(rd_span);
+    }
+
+    template <typename TElement>
+    inline RWMemorySpan ToRWMemorySpan(const RWSpan<TElement>& span) noexcept
+    {
+        auto memory_span = ToMemorySpan(span);
+
+        return ReadWrite(memory_span);
     }
 
 }

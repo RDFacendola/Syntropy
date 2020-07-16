@@ -49,11 +49,11 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// Pointer-level deallocations are not supported, therefore this method does nothing.
-        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate every allocation performed so far.
         void DeallocateAll() noexcept;
@@ -67,12 +67,12 @@ namespace syntropy
         void Swap(LinearMemoryResource& rhs) noexcept;
 
         /// \brief Get the current state of the allocator.
-        MemorySpan SaveState() const noexcept;
+        RWMemorySpan SaveState() const noexcept;
 
         /// \brief Restore the allocator to a previous state.
         /// If the provided state wasn't obtained by means of ::SaveState(), the behavior of this method is undefined.
         /// RestoreState invalidates all states obtained after the state being provided. Restoring an invalid state results in undefined behavior.
-        void RestoreState(MemorySpan state) noexcept;
+        void RestoreState(RWMemorySpan state) noexcept;
 
     private:
 

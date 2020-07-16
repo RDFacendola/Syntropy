@@ -47,7 +47,7 @@ namespace syntropy
         Registry();
 
         /// \brief Allocate a new entry.
-        const TChar* Allocate(const ReadOnlyMemorySpan& string_range);
+        const TChar* Allocate(const MemorySpan& string_range);
 
         /// \brief Memory resource used for dynamic memory allocation.
         TMemoryResource memory_resource_;
@@ -78,7 +78,7 @@ namespace syntropy
         using std::begin;
         using std::end;
 
-        auto string_range = ReadOnlyMemorySpan(string.data(), string.length() * BytesOf<TChar>());
+        auto string_range = MemorySpan(reinterpret_cast<BytePtr>(string.data()), ToInt(string.length() * BytesOf<TChar>()));
 
         auto label_hash = Hash::FNV1a64(string_range);
 
@@ -100,11 +100,11 @@ namespace syntropy
         }
     }
 
-    const Label::TChar* Label::Registry::Allocate(const ReadOnlyMemorySpan& string_range)
+    const Label::TChar* Label::Registry::Allocate(const MemorySpan& string_range)
     {
         // One extra byte accounts for the null terminator.
 
-        auto label_storage = memory_resource_.Allocate(string_range.GetSize() + 1_Bytes, AlignmentOf<Label::TChar*>());
+        auto label_storage = memory_resource_.Allocate(Size(string_range) + 1_Bytes, AlignmentOf<Label::TChar*>());
 
         auto label = reinterpret_cast<Pointer<const TChar>>(label_storage.GetData());
 

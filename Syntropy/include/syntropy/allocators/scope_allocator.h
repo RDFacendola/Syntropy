@@ -60,11 +60,11 @@ namespace syntropy
 
         /// \brief Allocate an object of type TObject along with its finalizer (if required).
         template <typename TObject>
-        MemorySpan AllocateObjectWithFinalizer();
+        RWMemorySpan AllocateObjectWithFinalizer();
 
         /// \brief Allocate an aligned object of type TObject along with its finalizer (if required).
         template <typename TObject>
-        MemorySpan AllocateObjectWithFinalizer(Alignment alignment);
+        RWMemorySpan AllocateObjectWithFinalizer(Alignment alignment);
 
         /// \brief Construct the finalizer for the type TObject.
         template <typename TObject>
@@ -165,7 +165,7 @@ namespace syntropy
 
     template <typename TMemoryResource>
     template <typename TObject>
-    MemorySpan ScopeAllocator<TMemoryResource>::AllocateObjectWithFinalizer()
+    RWMemorySpan ScopeAllocator<TMemoryResource>::AllocateObjectWithFinalizer()
     {
         auto object_size = BytesOf<TObject>();
 
@@ -187,7 +187,7 @@ namespace syntropy
 
     template <typename TMemoryResource>
     template <typename TObject>
-    MemorySpan ScopeAllocator<TMemoryResource>::AllocateObjectWithFinalizer(Alignment alignment)
+    RWMemorySpan ScopeAllocator<TMemoryResource>::AllocateObjectWithFinalizer(Alignment alignment)
     {
         auto object_size = BytesOf<TObject>();
         

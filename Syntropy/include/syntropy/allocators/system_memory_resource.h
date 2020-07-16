@@ -42,13 +42,13 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
@@ -63,20 +63,20 @@ namespace syntropy
 
     // SystemMemoryResource.
 
-    inline MemorySpan SystemMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
+    inline RWMemorySpan SystemMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
         auto size_value = static_cast<std::size_t>(ToInt(size));
         auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
 
         if (auto block = ::operator new(size_value, alignment_value, std::nothrow))
         {
-            return { block, size };
+            return { static_cast<RWBytePtr>(block), ToInt(size) };
         }
 
         return {};
     }
 
-    inline void SystemMemoryResource::Deallocate(const MemorySpan& block, Alignment alignment) noexcept
+    inline void SystemMemoryResource::Deallocate(const RWMemorySpan& block, Alignment alignment) noexcept
     {
         auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
 

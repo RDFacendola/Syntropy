@@ -9,17 +9,14 @@ namespace syntropy
     /* MEMORY                                                               */
     /************************************************************************/
 
-    Bytes Memory::Copy(const MemorySpan& destination, const ReadOnlyMemorySpan& source)
+    Bytes Memory::Copy(const RWMemorySpan& destination, const MemorySpan& source)
     {
-        auto source_size = source.GetSize();
-        auto destination_size = destination.GetSize();
-
-        auto copy_size = Math::Min(source_size, destination_size);
+        auto copy_size = Math::Min(Size(source), Size(destination));
 
         if (copy_size > Bytes{ 0 })
         {
-            auto destination_span = ReadOnlyMemorySpan(destination.GetData(), copy_size);
-            auto source_span = ReadOnlyMemorySpan(source.GetData(), copy_size);
+            auto destination_span = First(destination, ToInt(copy_size));
+            auto source_span = First(source, ToInt(copy_size));
 
             if (!Overlaps(destination_span, source_span))
             {
@@ -34,7 +31,7 @@ namespace syntropy
         return copy_size;
     }
 
-    Bytes Memory::Gather(const MemorySpan& destination, InitializerList<ReadOnlyMemorySpan> sources)
+    Bytes Memory::Gather(const RWMemorySpan& destination, InitializerList<MemorySpan> sources)
     {
         auto gather = destination;
 
@@ -42,13 +39,13 @@ namespace syntropy
         {
             auto count = Copy(gather, source);
 
-            PopFront(gather, count);
+            PopFront(gather, ToInt(count));
         }
 
-        return MemorySpan{ destination.GetData(), gather.GetData() }.GetSize();
+        return Size(MemorySpan{ destination.GetData(), gather.GetData() });
     }
 
-    Bytes Memory::Scatter(InitializerList<MemorySpan> destinations, const ReadOnlyMemorySpan& source)
+    Bytes Memory::Scatter(InitializerList<RWMemorySpan> destinations, const MemorySpan& source)
     {
         auto scatter = source;
 
@@ -56,10 +53,10 @@ namespace syntropy
         {
             auto count = Copy(destination, scatter);
 
-            PopFront(scatter, count);
+            PopFront(scatter, ToInt(count));
         }
 
-        return ReadOnlyMemorySpan{ source.GetData(), scatter.GetData() }.GetSize();
+        return Size(MemorySpan{ source.GetData(), scatter.GetData() });
     }
 
 }

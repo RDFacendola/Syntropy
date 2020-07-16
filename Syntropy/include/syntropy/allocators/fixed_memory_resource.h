@@ -47,13 +47,13 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
@@ -96,7 +96,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline MemorySpan FixedMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline RWMemorySpan FixedMemoryResource<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (is_free_ && (size <= max_size_) && (alignment <= max_alignment_) && (block_ = memory_resource_.Allocate(max_size_, alignment)))
         {
@@ -109,7 +109,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void FixedMemoryResource<TMemoryResource>::Deallocate(const MemorySpan& block, Alignment alignment)
+    inline void FixedMemoryResource<TMemoryResource>::Deallocate(const RWMemorySpan& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(Owns(block));
         SYNTROPY_ASSERT(alignment <= max_alignment_);

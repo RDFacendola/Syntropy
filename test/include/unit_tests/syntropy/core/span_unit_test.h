@@ -93,7 +93,7 @@ namespace syntropy::unit_test
 
     .TestCase("Non-constant spans provide read-write access to elements.", [](auto& fixture)
     {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
+        auto span = RWSpan<Int>{ &fixture.int_sequence_[0], 10 };
 
         span[5] = 42;
 
@@ -182,7 +182,7 @@ namespace syntropy::unit_test
 
     .TestCase("Span front elements are writable.", [](auto& fixture)
     {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
+        auto span = RWSpan<Int>{ &fixture.int_sequence_[0], 10 };
 
         Front(span) = 42;
 
@@ -200,7 +200,7 @@ namespace syntropy::unit_test
 
     .TestCase("Span back elements are writable.", [](auto& fixture)
     {
-        auto span = Span<Int>{ &fixture.int_sequence_[0], 10 };
+        auto span = RWSpan<Int>{ &fixture.int_sequence_[0], 10 };
 
         Back(span) = 42;
 

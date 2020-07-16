@@ -32,30 +32,30 @@ namespace syntropy
          /// Reserved memory region must be committed via Commit() before accessing it.
          /// \param size Size of the range to reserve, in bytes.
          /// \return Returns the reserved memory range. If the method fails returns an empty range.
-         MemorySpan Reserve(Bytes size);
+         RWMemorySpan Reserve(Bytes size);
  
          /// \brief Allocate a range of virtual memory addresses.
          /// This method has the same effect as a Reserve() followed by a Commit().
          /// \param size Size of the range to reserve, in bytes.
          /// \return Returns the reserved memory range. If the method fails returns an empty range.
-         MemorySpan Allocate(Bytes size);
+         RWMemorySpan Allocate(Bytes size);
  
          /// \brief Release a range of virtual memory addresses.
          /// \param memory_span Memory span to release. Must match any return value of a previous Reserve() / Allocate(), otherwise the behaviour is unspecified.
          /// \return Returns true if the range could be released, returns false otherwise.
-         Bool Release(const MemorySpan& memory_span);
+         Bool Release(const RWMemorySpan& memory_span);
 
          /// \brief Commit a reserved virtual memory block.
          /// This method allocates all the pages containing at least one byte in the provided range and makes them accessible by the application.
          /// \param memory_span Memory range to commit.
          /// \return Returns true if the memory could be committed, returns false otherwise.
          /// \remarks The provided memory range must refer to a memory region that was previously reserved via Reserve().
-         Bool Commit(const MemorySpan& memory_span);
+         Bool Commit(const RWMemorySpan& memory_span);
 
          /// \brief Decommit a virtual memory block.
          /// This method decommits all the pages containing at least one byte in the provided range.
          /// \param memory_span Memory range to decommit.
-         Bool Decommit(const MemorySpan& memory_span);
+         Bool Decommit(const RWMemorySpan& memory_span);
 
     };
 

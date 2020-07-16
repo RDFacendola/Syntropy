@@ -50,13 +50,13 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
@@ -69,7 +69,7 @@ namespace syntropy
     private:
 
         /// \brief Allocate a block and return its range.
-        MemorySpan Allocate();
+        RWMemorySpan Allocate();
 
         /// \brief Type of a linked list used to track free pages.
         struct FreeList;
@@ -78,7 +78,7 @@ namespace syntropy
         VirtualMemoryRange virtual_memory_;
 
         /// \brief Range of memory yet to allocate.
-        MemorySpan unallocated_;
+        RWMemorySpan unallocated_;
 
         /// \brief Size of each allocation. This value is a multiple of the system virtual memory page size.
         Bytes page_size_;

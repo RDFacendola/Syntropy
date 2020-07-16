@@ -31,7 +31,7 @@ namespace syntropy
         VirtualMemoryRange(Bytes size) noexcept;
 
         /// \brief Take ownership of the provided memory span.
-        explicit VirtualMemoryRange(const MemorySpan& memory_span) noexcept;
+        explicit VirtualMemoryRange(const RWMemorySpan& memory_span) noexcept;
 
         /// \brief No copy constructor.
         VirtualMemoryRange(const VirtualMemoryRange&) = delete;
@@ -51,12 +51,12 @@ namespace syntropy
         void Swap(VirtualMemoryRange& rhs) noexcept;
 
         /// \brief Access the underlying memory.
-        MemorySpan GetData() const noexcept;
+        RWMemorySpan GetData() const noexcept;
 
     private:
 
         /// \brief Underlying memory range.
-        MemorySpan memory_span_;
+        RWMemorySpan memory_span_;
 
     };
 
@@ -72,7 +72,7 @@ namespace syntropy
 
     }
 
-    inline VirtualMemoryRange::VirtualMemoryRange(const MemorySpan& memory_span) noexcept
+    inline VirtualMemoryRange::VirtualMemoryRange(const RWMemorySpan& memory_span) noexcept
         : memory_span_(memory_span)
     {
 
@@ -101,7 +101,7 @@ namespace syntropy
         std::swap(memory_span_, rhs.memory_span_);
     }
 
-    inline MemorySpan VirtualMemoryRange::GetData() const noexcept
+    inline RWMemorySpan VirtualMemoryRange::GetData() const noexcept
     {
         return memory_span_;
     }

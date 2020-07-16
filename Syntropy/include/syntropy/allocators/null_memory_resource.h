@@ -43,12 +43,12 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns an empty range.
-        MemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWMemorySpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Expects an empty range.
         /// \param alignment Block alignment.
-        void Deallocate(const MemorySpan& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const RWMemorySpan& block, Alignment alignment = MaxAlignmentOf());
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// The null memory resource only contains empty ranges.
@@ -63,12 +63,12 @@ namespace syntropy
  
     // NullMemoryResource.
 
-    inline MemorySpan NullMemoryResource::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
+    inline RWMemorySpan NullMemoryResource::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
     {
         return {};
     }
 
-    inline void NullMemoryResource::Deallocate(const MemorySpan& block, Alignment /*alignment*/)
+    inline void NullMemoryResource::Deallocate(const RWMemorySpan& block, Alignment /*alignment*/)
     {
         SYNTROPY_ASSERT(!block);        // Only empty ranges can be deallocated.
     }

@@ -46,7 +46,7 @@ namespace syntropy
         return ToAlignment(system_info.dwPageSize);
     }
 
-    MemorySpan HALVirtualMemory::Allocate(Bytes size)
+    RWMemorySpan HALVirtualMemory::Allocate(Bytes size)
     {
         // Allocate up to the next page boundary.
 
@@ -54,13 +54,13 @@ namespace syntropy
         {
             auto data = VirtualAlloc(0, ToInt(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-            return { data, size };
+            return { reinterpret_cast<RWBytePtr>(data), ToInt(size) };
         }
 
         return {};
     }
 
-    MemorySpan HALVirtualMemory::Reserve(Bytes size)
+    RWMemorySpan HALVirtualMemory::Reserve(Bytes size)
     {
         // Reserve up to the next page boundary.
 
@@ -68,13 +68,13 @@ namespace syntropy
         {
             auto data = VirtualAlloc(0, ToInt(size), MEM_RESERVE, PAGE_READWRITE);
 
-            return { data, size };
+            return { reinterpret_cast<RWBytePtr>(data), ToInt(size) };
         }
 
         return {};
     }
 
-    Bool HALVirtualMemory::Release(const MemorySpan& memory_span)
+    Bool HALVirtualMemory::Release(const RWMemorySpan& memory_span)
     {
         if (memory_span)
         {
@@ -86,11 +86,11 @@ namespace syntropy
         return true;
     }
 
-    Bool HALVirtualMemory::Commit(const MemorySpan& memory_span)
+    Bool HALVirtualMemory::Commit(const RWMemorySpan& memory_span)
     {
         if (memory_span)
         {
-            auto size = ToInt(memory_span.GetSize());
+            auto size = ToInt(Size(memory_span));
 
             // Commit each page containing at least one byte in the range.
 
@@ -100,11 +100,11 @@ namespace syntropy
         return true;
     }
 
-    Bool HALVirtualMemory::Decommit(const MemorySpan& memory_span)
+    Bool HALVirtualMemory::Decommit(const RWMemorySpan& memory_span)
     {
         if (memory_span)
         {
-            auto size = ToInt(memory_span.GetSize());
+            auto size = ToInt(Size(memory_span));
 
             // Decommit each page containing at least one byte in the range.
 

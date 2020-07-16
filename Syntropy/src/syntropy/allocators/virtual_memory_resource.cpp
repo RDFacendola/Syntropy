@@ -12,17 +12,17 @@ namespace syntropy
         Pointer<FreeList> next_{ nullptr };
 
         /// \brief Available memory in the free list.
-        Span<BytePtr> span_;
+        RWSpan<RWBytePtr> span_;
 
         /// \brief Unallocated space in the free list.
-        Span<BytePtr> unallocated_;
+        RWSpan<RWBytePtr> unallocated_;
     };
 
     /************************************************************************/
     /* VIRTUAL MEMORY RESOURCE                                              */
     /************************************************************************/
 
-    MemorySpan VirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
+    RWMemorySpan VirtualMemoryResource::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if ((size <= page_size_) && (alignment <= page_alignment_))
         {
@@ -30,14 +30,14 @@ namespace syntropy
             {
                 VirtualMemory::Commit(block);           // Kernel call: commit the entire block.
 
-                return First(block, size);
+                return First(block, ToInt(size));
             }
         }
 
         return {};
     }
 
-    void VirtualMemoryResource::Deallocate(const MemorySpan& block, Alignment alignment)
+    void VirtualMemoryResource::Deallocate(const RWMemorySpan& block, Alignment alignment)
     {
         SYNTROPY_ASSERT(Owns(block));
         SYNTROPY_ASSERT(alignment <= page_alignment_);
@@ -51,7 +51,7 @@ namespace syntropy
             free_ = reinterpret_cast<Pointer<FreeList>>(block.GetData());
 
             free_->next_ = next_free;
-            free_->span_ = ToSpan<BytePtr>(PopFront(block, BytesOf<FreeList>()));
+            free_->span_ = ToRWSpan<RWBytePtr>(PopFront(block, ToInt(BytesOf<FreeList>())));
             free_->unallocated_ = free_->span_;
         }
         else
@@ -64,7 +64,7 @@ namespace syntropy
 
             // Kernel call: decommit the entire block.
 
-            auto virtual_block = MemorySpan(block.GetData(), page_size_);
+            auto virtual_block = RWMemorySpan{ block.GetData(), ToInt(page_size_) };
 
             VirtualMemory::Decommit(virtual_block);
         }
@@ -81,7 +81,7 @@ namespace syntropy
         swap(free_, rhs.free_);
     }
 
-    MemorySpan VirtualMemoryResource::Allocate()
+    RWMemorySpan VirtualMemoryResource::Allocate()
     {
         // Attempt to recycle a free block from the current free list. The last block causes the list itself to be recycled.
 
@@ -91,7 +91,7 @@ namespace syntropy
             {
                 auto free_blocks = LeftDifference(free_->span_, free_->unallocated_);
 
-                auto block = MemorySpan(Back(free_blocks), page_size_);
+                auto block = RWMemorySpan{ Back(free_blocks), ToInt(page_size_) };
 
                 free_->unallocated_ = Intersection(free_->span_, PopBack(free_blocks));
 
@@ -99,7 +99,7 @@ namespace syntropy
             }
             else
             {
-                auto block = MemorySpan(free_, page_size_);
+                auto block = RWMemorySpan{ reinterpret_cast<RWBytePtr>(&free_), ToInt(page_size_) };
 
                 free_ = free_->next_;
 
@@ -111,9 +111,9 @@ namespace syntropy
 
         if (Size(unallocated_) <= page_size_)
         {
-            auto block = First(unallocated_, page_size_);
+            auto block = First(unallocated_, ToInt(page_size_));
 
-            unallocated_ = PopFront(unallocated_, page_size_);
+            unallocated_ = PopFront(unallocated_, ToInt(page_size_));
 
             return block;
         }

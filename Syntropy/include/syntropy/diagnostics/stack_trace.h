@@ -67,7 +67,7 @@ namespace syntropy
         StackTrace& operator+=(TStackTraceElement&& stack_trace_element);
 
         /// \brief Access the range of stack trace elements, from the most recent one.
-        ReadOnlySpan<StackTraceElement> GetData() const;
+        Span<StackTraceElement> GetData() const;
 
     private:
 
@@ -199,7 +199,7 @@ namespace syntropy
         return stack_trace_.front();
     }
 
-    inline ReadOnlySpan<StackTraceElement> StackTrace::GetData() const
+    inline Span<StackTraceElement> StackTrace::GetData() const
     {
         return { stack_trace_.data(), ToInt(stack_trace_.size()) };
     }
