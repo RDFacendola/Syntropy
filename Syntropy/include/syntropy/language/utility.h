@@ -114,7 +114,7 @@ namespace syntropy
     /// \brief Forms lvalue reference to const type of rhs.
     /// \remarks Identical to std::as_const.
     template <typename TType>
-    [[nodiscard]]  constexpr AddConstT<TType>& ReadOnly(TType& rhs) noexcept;
+    [[nodiscard]] constexpr AddConstT<TType>& ReadOnly(TType& rhs) noexcept;
 
     /// \brief Const rvalue reference deleted to disallow rvalue arguments.
     template <typename TType>
@@ -124,7 +124,7 @@ namespace syntropy
     /// \remarks Useful to write non-const getters from const ones without 
     ///          duplicating implementations. Other usages are discouraged.
     template <typename TType>
-    [[nodiscard]]  constexpr TType& ReadWrite(const TType& rhs) noexcept;
+    [[nodiscard]] constexpr TType& ReadWrite(const TType& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */

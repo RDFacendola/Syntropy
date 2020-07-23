@@ -58,7 +58,7 @@ namespace syntropy
     {
         auto written_data = [this, position, &data]()
         {
-            auto source = First(data, ToInt(Math::Min(Size(data), size_ - position)));                                                          // Limit writable data to current buffer size.
+            auto source = Front(data, ToInt(Math::Min(Size(data), size_ - position)));                                                          // Limit writable data to current buffer size.
 
             auto destination_begin = GetAddress(position);
             auto destination_end = GetAddress(position + Size(source));
@@ -80,7 +80,7 @@ namespace syntropy
     {
         auto read_data = [this, position, &data]()
         {
-            auto destination = First(data, ToInt(Math::Min(Size(data), size_ - position)));                                                 // Limit readable data to current buffer size.
+            auto destination = Front(data, ToInt(Math::Min(Size(data), size_ - position)));                                                     // Limit readable data to current buffer size.
 
             auto source_begin = GetAddress(position);
             auto source_end = GetAddress(position + Size(destination));

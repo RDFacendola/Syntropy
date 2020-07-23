@@ -47,14 +47,15 @@ namespace syntropy
     Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
 
     /// \brief Check whether a byte span is aligned to a given alignment value.
+    /// If the provided span is empty the behavior of this method is undefined.
     Bool IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept;
 
     // Memory operations.
 
-    /// \brief Align a byte pointer to a given alignment value.
+    /// \brief Move a byte pointer forward until it gets aligned to a specified value.
     BytePtr Align(BytePtr pointer, Alignment alignment) noexcept;
 
-    /// \brief Align a byte pointer to a given alignment value.
+    /// \brief Move a byte pointer forward until it gets aligned to a specified value.
     RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept;
 
     /// \brief Consume a byte span from the back until its first byte is aligned to a given boundary or the span is exhausted.
@@ -65,15 +66,18 @@ namespace syntropy
 
     // Conversions.
 
+    /// \brief Convert a pointer to a byte pointer.
+    template <typename TType>
+    BytePtr ToBytePtr(Pointer<const TType> pointer) noexcept;
+
+    /// \brief Convert a read-write pointer to a read-write byte pointer.
+    template <typename TType>
+    RWBytePtr ToRWBytePtr(Pointer<TType> pointer) noexcept;
+
     /// \brief Convert a read-only byte span to a read-only typed span.
     /// If the byte span doesn't refer to instances of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
     template <typename TElement>
     Span<TElement> ToSpan(const ByteSpan& byte_span) noexcept;
-
-    /// \brief Convert a read-write byte span to a read-only typed span.
-    /// If the byte span doesn't refer to instances of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
-    template <typename TElement>
-    Span<TElement> ToSpan(const RWByteSpan& byte_span) noexcept;
 
     /// \brief Convert a read-write byte span to a read-write typed span.
     /// If the byte span doesn't refer to instances of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
@@ -82,15 +86,11 @@ namespace syntropy
 
     /// \brief Convert an read-only span to a read-only byte span.
     template <typename TElement>
-    ByteSpan ToMemorySpan(const Span<TElement>& span) noexcept;
-
-    /// \brief Convert a read-write span to a read-only byte span.
-    template <typename TElement>
-    ByteSpan ToMemorySpan(const RWSpan<TElement>& span) noexcept;
+    ByteSpan ToByteSpan(const SpanT<TElement>& span) noexcept;
 
     /// \brief Convert a read-write span to a read-write byte span.
     template <typename TElement>
-    RWByteSpan ToRWMemorySpan(const RWSpan<TElement>& span) noexcept;
+    RWByteSpan ToRWByteSpan(const SpanT<TElement>& span) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -155,46 +155,56 @@ namespace syntropy
 
     // Conversions.
 
-    template <typename TElement>
-    inline Span<TElement> ToSpan(const ByteSpan& byte_span) noexcept
+    template <typename TType>
+    inline BytePtr ToBytePtr(Pointer<const TType> pointer) noexcept
     {
-        auto begin = reinterpret_cast<Pointer<const TElement>>(Begin(byte_span));
-        auto end = reinterpret_cast<Pointer<const TElement>>(End(byte_span));
+        return reinterpret_cast<BytePtr>(pointer);
+    }
 
-        return { begin, end };
+    template <typename TType>
+    inline RWBytePtr ToRWBytePtr(Pointer<TType> pointer) noexcept
+    {
+        return reinterpret_cast<RWBytePtr>(pointer);
     }
 
     template <typename TElement>
-    inline Span<TElement> ToSpan(const RWByteSpan& byte_span) noexcept
+    inline Span<TElement> ToSpan(const ByteSpan& byte_span) noexcept
     {
-         return ToSpan<TElement>(ReadOnly(byte_span));
+        using TPointer = Pointer<AddConstT<TElement>>;
+
+        auto begin = reinterpret_cast<TPointer>(Begin(byte_span));
+        auto end = reinterpret_cast<TPointer>(End(byte_span));
+
+        return { begin, end };
     }
 
     template <typename TElement>
     inline RWSpan<TElement> ToRWSpan(const RWByteSpan& byte_span) noexcept
     {
-        return ReadWrite(ToSpan<TElement>(byte_span));
-    }
+        using TRWPointer = Pointer<RemoveConstT<TElement>>;
 
-    template <typename TElement>
-    inline ByteSpan ToMemorySpan(const Span<TElement>& span) noexcept
-    {
-        auto begin = reinterpret_cast<BytePtr>(Begin(span));
-        auto end = reinterpret_cast<BytePtr>(End(span));
+        auto begin = reinterpret_cast<TRWPointer>(Begin(byte_span));
+        auto end = reinterpret_cast<TRWPointer>(End(byte_span));
 
         return { begin, end };
     }
 
     template <typename TElement>
-    inline ByteSpan ToMemorySpan(const RWSpan<TElement>& span) noexcept
+    inline ByteSpan ToByteSpan(const SpanT<TElement>& span) noexcept
     {
-        return ToMemorySpan(ReadOnly(span));
+        auto begin = ToBytePtr(Begin(span));
+        auto end = ToBytePtr(End(span));
+
+        return { begin, end };
     }
 
     template <typename TElement>
-    inline RWByteSpan ToRWMemorySpan(const RWSpan<TElement>& span) noexcept
+    inline RWByteSpan ToRWByteSpan(const SpanT<TElement>& span) noexcept
     {
-        return ReadWrite(ToMemorySpan(span));
+        auto begin = ToRWBytePtr(Begin(span));
+        auto end = ToRWBytePtr(End(span));
+
+        return { begin, end };
     }
 
 }

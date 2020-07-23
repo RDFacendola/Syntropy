@@ -30,7 +30,7 @@ namespace syntropy
             {
                 VirtualMemory::Commit(block);           // Kernel call: commit the entire block.
 
-                return First(block, ToInt(size));
+                return Front(block, ToInt(size));
             }
         }
 
@@ -89,7 +89,7 @@ namespace syntropy
         {
             if (free_->unallocated_.GetCount() != free_->span_.GetCount())
             {
-                auto free_blocks = LeftDifference(free_->span_, free_->unallocated_);
+                auto free_blocks = DifferenceFront(free_->span_, free_->unallocated_);
 
                 auto block = RWByteSpan{ Back(free_blocks), ToInt(page_size_) };
 
@@ -111,7 +111,7 @@ namespace syntropy
 
         if (Size(unallocated_) <= page_size_)
         {
-            auto block = First(unallocated_, ToInt(page_size_));
+            auto block = Front(unallocated_, ToInt(page_size_));
 
             unallocated_ = PopFront(unallocated_, ToInt(page_size_));
 

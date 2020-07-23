@@ -10,7 +10,7 @@ namespace syntropy
     {
         if (auto aligned_free = Align(free_, alignment); Size(aligned_free) >= size)
         {
-            auto block = First(aligned_free, ToInt(size));
+            auto block = Front(aligned_free, ToInt(size));
 
             free_ = PopFront(aligned_free, ToInt(size));
 

@@ -10,6 +10,8 @@
 #include <cmath>
 #include <algorithm>
 
+#include "syntropy/language/type_traits.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -21,16 +23,16 @@ namespace syntropy
     namespace Math
     {
         /// \brief Get the minimum element.
-        template <typename TType, typename... TTypes>
-        const TType& Min(const TType& element, TTypes&&... elements);
+        template <typename TValue, typename... TValues>
+        constexpr CommonTypeT<TValue, TValues...> Min(const TValue& value, const TValues&... values) noexcept;
 
         /// \brief Get the maximum element.
-        template <typename TType, typename... TTypes>
-        const TType& Max(const TType& element, TTypes&&... elements);
+        template <typename TValue, typename... TValues>
+        constexpr CommonTypeT<TValue, TValues...> Max(const TValue& value, const TValues&... values) noexcept;
 
         /// \brief Clamp an element between a minimum and a maximum.
-        template <typename TType>
-        const TType& Clamp(const TType& element, const TType& min, const TType& max);
+        template <typename TValue, typename TMin, typename TMax>
+        constexpr CommonTypeT<TValue, TMin, TMax> Clamp(const TValue& value, const TMin& min, const TMax& max) noexcept;
 
         /// \brief Get the smallest integral number greater than or equal to rhs.
         template <typename TNumber>
@@ -93,40 +95,40 @@ namespace syntropy
 
     // Math.
 
-    template <typename TType, typename... TTypes>
-    const TType& Math::Min(const TType& element, TTypes&&... elements)
+    template <typename TValue, typename... TValues>
+    constexpr CommonTypeT<TValue, TValues...> Math::Min(const TValue& value, const TValues&... values) noexcept
     {
-        if constexpr (sizeof...(elements) == 0)
+        if constexpr (sizeof...(values) == 0)
         {
-            return element;
+            return value;
         }
         else
         {
-            using std::min;
+            auto min = Min(values...);
 
-            return min(element, Min(std::forward<TTypes>(elements)...));
+            return (value < min) ? value : min;
         }
     }
 
-    template <typename TType, typename... TTypes>
-    const TType& Math::Max(const TType& element, TTypes&&... elements)
+    template <typename TValue, typename... TValues>
+    constexpr CommonTypeT<TValue, TValues...> Math::Max(const TValue& value, const TValues&... values) noexcept
     {
-        if constexpr (sizeof...(elements) == 0)
+        if constexpr (sizeof...(values) == 0)
         {
-            return element;
+            return value;
         }
         else
         {
-            using std::max;
+            auto max = Max(values...);
 
-            return max(element, Max(std::forward<TTypes>(elements)...));
+            return (value > max) ? value : max;
         }
     }
 
-    template <typename TType>
-    const TType& Math::Clamp(const TType& element, const TType& min, const TType& max)
+    template <typename TValue, typename TMin, typename TMax>
+    constexpr CommonTypeT<TValue, TMin, TMax> Math::Clamp(const TValue& value, const TMin& min, const TMax& max) noexcept
     {
-        return Math::Min(Math::Max(element, min), max);
+        return std::clamp(value, min, max);
     }
 
     template <typename TNumber>

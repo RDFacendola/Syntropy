@@ -117,6 +117,7 @@
     <ClInclude Include="include\syntropy\application\console\plain_console_style.h" />
     <ClInclude Include="include\syntropy\unit_test\unit_test.h" />
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
+    <ClInclude Include="include\syntropy\core\array.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

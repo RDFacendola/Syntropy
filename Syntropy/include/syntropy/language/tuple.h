@@ -46,6 +46,14 @@ namespace syntropy
     constexpr void LockstepApplyAt(TFunction function, TTuples&&... tuples);
 
     /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Access a tuple element.
+    template <Int index, typename TTuple>
+    constexpr decltype(auto) Get(TTuple&& tuple) noexcept;
+
+    /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
@@ -59,6 +67,8 @@ namespace syntropy
         }
     }
 
+    // Lockstep.
+
     template <typename TFunction, typename... TTuples>
     constexpr void LockstepApply(TFunction&& function, TTuples&&... tuples)
     {
@@ -71,6 +81,14 @@ namespace syntropy
         using std::get;
 
         function(get<I>(tuples)...);
+    }
+
+    // Non-member functions.
+
+    template <Int index, typename TTuple>
+    constexpr decltype(auto) Get(TTuple&& tuple) noexcept
+    {
+        return std::get<static_cast<std::size_t>(index)>(std::forward<TTuple>(tuple));
     }
 
 }

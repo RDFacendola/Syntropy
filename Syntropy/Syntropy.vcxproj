@@ -30,6 +30,7 @@
     <ClInclude Include="include\syntropy\allocators\virtual_memory_resource.h" />
     <ClInclude Include="include\syntropy\application\command_line.h" />
     <ClInclude Include="include\syntropy\application\command_line_argument.h" />
+    <ClInclude Include="include\syntropy\core\array.h" />
     <ClInclude Include="include\syntropy\core\map.h" />
     <ClInclude Include="include\syntropy\core\stream_vector.h" />
     <ClInclude Include="include\syntropy\core\stream_vector_view.h" />

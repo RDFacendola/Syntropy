@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "syntropy/language/type_traits.h"
+#include "syntropy/language/tuple.h"
 #include "syntropy/core/types.h"
 #include "syntropy/math/math.h"
 
@@ -76,8 +78,12 @@ namespace syntropy
     using Span = SpanT<const TType>;
 
     /// \brief Alias for a span of read-write elements.
-    template <typename TType>
+    template <typename TType, typename = EnableIfT<!IsConstV<TType>>>
     using RWSpan = SpanT<TType>;
+
+    /// \brief Alias for a common type between two or more spans.
+    template <typename... TElements>
+    using CommonSpan = SpanT<RemovePointerT<CommonTypeT<AddPointerT<TElements>...>>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -115,86 +121,71 @@ namespace syntropy
     // Accessors.
 
     /// \brief Access the first element in a span.
-    /// If the span is empty the behavior of this method is undefined.
+    /// \remarks Accessing the first element of an empty span results in undefined behavior.
     template <typename TElement>
-    constexpr TElement& Front(const SpanT<TElement>& span) noexcept;
+    [[nodiscard]]  constexpr TElement& Front(const SpanT<TElement>& span) noexcept;
 
     /// \brief Access the last element in a span.
-    /// If the span is empty the behavior of this method is undefined.
+    /// \remarks Accessing the last element of an empty span results in undefined behavior.
     template <typename TElement>
-    constexpr TElement& Back(const SpanT<TElement>& span) noexcept;
-
-    // Sub-spans.
-
-    /// \brief Obtain a sub-span given an offset and a number of elements.
-    /// If the sub-span would exceed original span bounds, the behavior of this method is undefined.
-    template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> Subspan(const SpanT<TElement>& span, Int offset, Int count) noexcept;
-
-    /// \brief Discard the first element in a span and return the resulting subspan.
-    /// If the span is empty the behavior of this method is undefined.
-    template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> PopFront(const SpanT<TElement>& span) noexcept;
-
-    /// \brief Discard the first count-elements in a span and return the resulting subspan.
-    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> PopFront(const SpanT<TElement>& span, Int count) noexcept;
-
-    /// \brief Discard the last element in a span and return the resulting subspan.
-    /// If the span is empty the behavior of this method is undefined.
-    template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> PopBack(const SpanT<TElement>& span) noexcept;
-
-    /// \brief Discard the last count-elements in a span and return the resulting subspan.
-    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> PopBack(const SpanT<TElement>& span, Int count) noexcept;
+    [[nodiscard]]  constexpr TElement& Back(const SpanT<TElement>& span) noexcept;
 
     /// \brief Obtain a span consisting of the first elements of another span.
-    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+    /// \remarks Exceeding span boundaries results in undefined behavior.
     template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> First(const SpanT<TElement>& span, Int count) noexcept;
+    [[nodiscard]] constexpr SpanT<TElement> Front(const SpanT<TElement>& span, Int count) noexcept;
 
     /// \brief Obtain a span consisting of the last elements of another span.
-    /// If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+    /// \remarks Exceeding span boundaries results in undefined behavior.
     template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> Last(const SpanT<TElement>& span, Int count) noexcept;
+    [[nodiscard]] constexpr SpanT<TElement> Back(const SpanT<TElement>& span, Int count) noexcept;
+
+    /// \brief Obtain a sub-span given an offset and a number of elements.
+    /// \remarks Exceeding span boundaries results in undefined behavior.
+    template <typename TElement>
+    [[nodiscard]] constexpr SpanT<TElement> Select(const SpanT<TElement>& span, Int offset, Int count) noexcept;
+
+    /// \brief Discard the first count-elements in a span and return the resulting subspan.
+    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+    template <typename TElement>
+    [[nodiscard]] constexpr SpanT<TElement> PopFront(const SpanT<TElement>& span, Int count = 1) noexcept;
+
+    /// \brief Discard the last count-elements in a span and return the resulting subspan.
+    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+    template <typename TElement>
+    [[nodiscard]] constexpr SpanT<TElement> PopBack(const SpanT<TElement>& span, Int count = 1) noexcept;
 
     // Set operations.
 
-    /// \brief Obtain the smallest span which includes all the elements in both lhs and rhs exclusively.
-    /// If lhs and rhs are not contiguous the behavior of this method is undefined.
-    template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> Union(const SpanT<TElement>& lhs, const SpanT<TElement>& rhs) noexcept;
+    /// \brief Extend lhs to the smallest smallest span which includes both itself and rhs.
+    /// \remarks This function may introduce elements that do not belong to either lhs and rhs. If those elements refer
+    ///          to an invalid memory region, the behavior of this method is undefined.
+    template <typename TElement, typename UElement>
+    [[nodiscard]] constexpr CommonSpan<TElement, UElement> Union(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
-    /// \brief Obtain the smallest span which includes all the elements of lhs which are also contained in rhs and vice-versa.
-    template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> Intersection(const SpanT<TElement>& lhs, const SpanT<TElement>& rhs) noexcept;
+    /// \brief Reduce lhs to the smallest span shared between itself and rhs.
+    template <typename TElement, typename UElement>
+    [[nodiscard]] constexpr CommonSpan<TElement, UElement> Intersection(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
-    /// \brief Reduce lhs from the back until no element of lhs is contained in rhs or lhs is exhausted.
-    template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> LeftDifference(const SpanT<TElement>& lhs, const SpanT<TElement>& rhs) noexcept;
+    /// \brief Reduce lhs from the back until the intersection between lhs and rhs becomes empty or lhs is exhausted.
+    template <typename TElement, typename UElement>
+    [[nodiscard]] constexpr CommonSpan<TElement, UElement> DifferenceFront(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
-    /// \brief Reduce lhs from the front until no element of lhs is contained in rhs or lhs is exhausted.
-    template <typename TElement>
-    [[nodiscard]] constexpr SpanT<TElement> RightDifference(const SpanT<TElement>& lhs, const SpanT<TElement>& rhs) noexcept;
+    /// \brief Reduce lhs from the front until the intersection between lhs and rhs becomes empty or lhs is exhausted.
+    template <typename TElement, typename UElement>
+    [[nodiscard]] constexpr CommonSpan<TElement, UElement> DifferenceBack(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
-    /// \brief Check whether rhs is contained inside lhs, that is if their intersection is rhs.
+    /// \brief Check whether rhs is identical to any subset in lhs.
     template <typename TElement, typename UElement>
     constexpr Bool Contains(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
-    /// \brief Check whether lhs and lhs overlap, that is if their intersection is non-empty.
-    template <typename TElement, typename UElement>
-    constexpr Bool Overlaps(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
-
     // Comparisons.
 
-    /// \brief Check whether two spans are identical, i.e. they both refer to the same underlying byte span.
+    /// \brief Check whether lhs and rhs are identical.
     template <typename TElement, typename UElement>
     constexpr Bool operator==(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
-    /// \brief Check whether two spans are different, i.e. they both refer to different underlying byte span.
+    /// \brief Check whether lhs and rhs are different.
     template <typename TElement, typename UElement>
     constexpr Bool operator!=(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
@@ -202,45 +193,39 @@ namespace syntropy
     template <typename TElement, typename UElement>
     constexpr Bool Equals(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
-    /// \brief Check whether rhs is a member-wise prefix of lhs.
+    /// \brief Check whether lhs starts with rhs.
+    /// \remarks This method returns false if either lhs or rhs are empty, since empty spans are not considered a proper prefix.
     template <typename TElement, typename UElement>
-    constexpr Bool HasPrefix(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
+    constexpr Bool StartsWith(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
-    /// \brief Check whether rhs is a member-wise suffix of lhs.
+    /// \brief Check whether lhs ends with lhs.
+    /// \remarks This method returns false if either lhs or rhs are empty, since empty spans are not considered a proper suffix.
     template <typename TElement, typename UElement>
-    constexpr Bool HasSuffix(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
-
-    /// \brief Check whether exists a subspan in lhs which compares equivalent to rhs.
-    /// \return Returns true if lhs has a subset which compares equivalent to rhs, returns false otherwise.
-    template <typename TElement, typename UElement>
-    constexpr Bool HasSubspan(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
-
-    // Algorithms.
+    constexpr Bool EndsWith(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
     /// \brief Reduce lhs until rhs becomes the first element in lhs or lhs is exhausted.
     /// \return Returns the reduced range starting from the first occurrence of rhs in lhs or an empty range if no occurrence was found.
     template <typename TElement, typename UElement>
-    constexpr SpanT<TElement> Search(const SpanT<TElement>& lhs, const UElement& rhs) noexcept;
+    constexpr SpanT<TElement> Find(const SpanT<TElement>& lhs, const UElement& rhs) noexcept;
 
-    /// \brief Reduce lhs until rhs becomes a member-wise prefix for lhs or lhs is exhausted.
+    /// \brief Reduce lhs until lhs starts with rhs or lhs is exhausted.
     /// \return Returns the reduced range starting from the first occurrence of rhs in lhs or an empty range if no occurrence was found.
     template <typename TElement, typename UElement>
-    constexpr SpanT<TElement> Search(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
+    constexpr SpanT<TElement> Find(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
     // Utilities.
 
-    /// \brief Create a new span by deducing type from templates.
-    template <typename TElement, typename UElement>
-    auto MakeSpan(Pointer<TElement> begin, Pointer<UElement> end) noexcept;
+    /// \brief Create a new span by deducing template from arguments.
+    template <typename TBegin>
+    constexpr SpanT<TBegin> MakeSpan(Pointer<TBegin> begin, Int count) noexcept;
 
-    /// \brief Create a new span by deducing type from templates.
-    /// If the two iterators do not represent a valid span, returns an empty span.
-    template <typename TElement, typename UElement>
-    auto MakeSafeSpan(Pointer<TElement> begin, Pointer<UElement> end) noexcept;
+    /// \brief Create a new span by deducing template from arguments.
+    template <typename TBegin, typename TEnd>
+    constexpr auto MakeSpan(Pointer<TBegin> begin, Pointer<TEnd> end) noexcept;
 
     /// \brief Convert a span to its read-only equivalent.
     template <typename TElement>
-    [[nodiscard]] constexpr Span<RemoveConstT<TElement>> ReadOnly(const SpanT<TElement>& rhs);
+    [[nodiscard]] constexpr Span<TElement> ReadOnly(const SpanT<TElement>& rhs);
 
     /// \brief Const rvalue reference deleted to disallow rvalue arguments.
     template <typename TElement>
@@ -249,7 +234,11 @@ namespace syntropy
     /// \brief Convert a read-only span to its read-write equivalent.
     /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
     template <typename TElement>
-    [[nodiscard]] constexpr RWSpan<TElement> ReadWrite(const SpanT<const TElement>& rhs) noexcept;
+    [[nodiscard]] constexpr RWSpan<TElement> ReadWrite(const SpanT<TElement>& rhs) noexcept;
+
+    /// \brief Return either lhs if non-empty or lhs otherwise.
+    template <typename TElement, typename UElement>
+    [[nodiscard]] constexpr CommonSpan<TElement, UElement> Either(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
     /// \brief Stream insertion for Spans.
     template <typename TElement>
@@ -263,8 +252,8 @@ namespace syntropy
     // ===============
 
     template <typename TElement>
-    template <typename TIterator>
-    constexpr SpanT<TElement>::SpanT(TIterator begin, Int count) noexcept
+    template <typename TBegin>
+    constexpr SpanT<TElement>::SpanT(TBegin begin, Int count) noexcept
         : data_((count > 0) ? begin : nullptr)
         , count_(count)
     {
@@ -379,106 +368,98 @@ namespace syntropy
         return *(Begin(span) + Count(span) - 1);
     }
 
-    // Sub-spans.
-
     template <typename TElement>
-    constexpr SpanT<TElement> Subspan(const SpanT<TElement>& span, Int offset, Int count) noexcept
-    {
-        return { Begin(span) + offset, count };
-    }
-
-    template <typename TElement>
-    constexpr SpanT<TElement> PopFront(const SpanT<TElement>& span) noexcept
-    {
-        return PopFront(span, 1);
-    }
-
-    template <typename TElement>
-    constexpr SpanT<TElement> PopFront(const SpanT<TElement>& span, Int count) noexcept
-    {
-        return Subspan(span, count, Count(span) - count);
-    }
-
-    template <typename TElement>
-    constexpr SpanT<TElement> PopBack(const SpanT<TElement>& span) noexcept
-    {
-        return PopBack(span, 1);
-    }
-
-    template <typename TElement>
-    constexpr SpanT<TElement> PopBack(const SpanT<TElement>& span, Int count) noexcept
-    {
-        return Subspan(span, 0, Count(span) - count);
-    }
-
-    template <typename TElement>
-    constexpr SpanT<TElement> First(const SpanT<TElement>& span, Int count) noexcept
+    constexpr SpanT<TElement> Front(const SpanT<TElement>& span, Int count) noexcept
     {
         return PopBack(span, Count(span) - count);
     }
 
     template <typename TElement>
-    constexpr SpanT<TElement> Last(const SpanT<TElement>& span, Int count) noexcept
+    constexpr SpanT<TElement> Back(const SpanT<TElement>& span, Int count) noexcept
     {
         return PopFront(span, Count(span) - count);
     }
 
+    template <typename TElement>
+    constexpr SpanT<TElement> Select(const SpanT<TElement>& span, Int offset, Int count) noexcept
+    {
+        return { Begin(span) + offset, count };
+    }
+
+    template <typename TElement>
+    constexpr SpanT<TElement> PopFront(const SpanT<TElement>& span, Int count) noexcept
+    {
+        return Select(span, count, Count(span) - count);
+    }
+
+    template <typename TElement>
+    constexpr SpanT<TElement> PopBack(const SpanT<TElement>& span, Int count) noexcept
+    {
+        return Select(span, 0, Count(span) - count);
+    }
+
     // Set operations.
 
-    template <typename TElement>
-    constexpr SpanT<TElement> Union(const SpanT<TElement>& lhs, const SpanT<TElement>& rhs) noexcept
+    template <typename TElement, typename UElement>
+    constexpr CommonSpan<TElement, UElement> Union(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
     {
-        auto begin = Math::Min(Begin(lhs), Begin(rhs));
+        if (lhs && rhs)
+        {
+            auto begin = Math::Min(Begin(lhs), Begin(rhs));
+            auto end = Math::Max(End(lhs), End(rhs));
 
-        auto end = Math::Max(End(lhs), End(rhs));
+            return { begin, end };
+        }
 
-        SYNTROPY_PRECONDITION(Count(SpanT<TElement>(begin, end)) <= (Count(lhs) + Count(rhs)));
-
-        return { begin, end };
+        return Either(lhs, rhs);
     }
 
-    template <typename TElement>
-    constexpr SpanT<TElement> Intersection(const SpanT<TElement>& lhs, const SpanT<TElement>& rhs) noexcept
+    template <typename TElement, typename UElement>
+    constexpr CommonSpan<TElement, UElement> Intersection(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
     {
-        auto begin = Math::Max(Begin(lhs), Begin(rhs));
+        if (lhs && rhs)
+        {
+            auto begin = Math::Max(Begin(lhs), Begin(rhs));
+            auto end = Math::Min(End(lhs), End(rhs));
 
-        auto end = Math::Min(End(lhs), End(rhs));
+            return { begin, Math::Max(begin, end) };
+        }
 
-        return MakeSpan(begin, end);
+        return Either(lhs, rhs);
     }
 
-    template <typename TElement>
-    constexpr SpanT<TElement> LeftDifference(const SpanT<TElement>& lhs, const SpanT<TElement>& rhs) noexcept
+    template <typename TElement, typename UElement>
+    constexpr CommonSpan<TElement, UElement> DifferenceFront(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
     {
-        auto begin = Begin(lhs);
+        if (rhs)
+        {
+            auto begin = Begin(lhs);
+            auto end = Math::Min(End(lhs), Begin(rhs));
 
-        auto end = Math::Min(End(lhs), Begin(rhs));
+            return { begin, Math::Max(begin, end) };
+        }
 
-        return MakeSpan(begin, end);
+        return lhs;
     }
 
-    template <typename TElement>
-    constexpr SpanT<TElement> RightDifference(const SpanT<TElement>& lhs, const SpanT<TElement>& rhs) noexcept
+    template <typename TElement, typename UElement>
+    constexpr CommonSpan<TElement, UElement> DifferenceBack(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
     {
-        auto begin = Math::Max(Begin(lhs), End(rhs));
+        if (rhs)
+        {
+            auto begin = Math::Max(Begin(lhs), End(rhs));
+            auto end = End(lhs);
 
-        auto end = End(lhs);
+            return { Math::Min(begin, end), end };
+        }
 
-        return MakeSpan(begin, end);
+        return lhs;
     }
 
     template <typename TElement, typename UElement>
     constexpr Bool Contains(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
     {
-        // Empty span are contained in every non-empty span.
-
-        return lhs && (!rhs || (Begin(lhs) <= Begin(rhs)) && (End(rhs) <= End(lhs)));
-    }
-
-    template <typename TElement, typename UElement>
-    constexpr Bool Overlaps(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
-    {
-        return (Begin(lhs) < End(rhs)) && (Begin(rhs) < End(lhs));
+        return Intersection(lhs, rhs) == rhs;
     }
 
     // Comparisons.
@@ -500,7 +481,7 @@ namespace syntropy
     {
         if (Count(lhs) != Count(rhs))
         {
-            return false;                           // Early out if the number of elements is different.
+            return false;                           // Early out if spans sizes are different.
         }
 
         if constexpr (IsValidExpressionV<HasEqualityComparison, Pointer<TElement>, Pointer<UElement>>)
@@ -523,33 +504,25 @@ namespace syntropy
     }
 
     template <typename TElement, typename UElement>
-    constexpr Bool HasPrefix(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
+    constexpr Bool StartsWith(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
     {
         auto lhs_count = Count(lhs);
         auto rhs_count = Count(rhs);
 
-        return (lhs_count >= rhs_count) && (Equals(First(lhs, rhs_count), rhs));
+        return (lhs_count >= rhs_count) && (Equals(Front(lhs, rhs_count), rhs));
     }
 
     template <typename TElement, typename UElement>
-    constexpr Bool HasSuffix(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
+    constexpr Bool EndsWith(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
     {
         auto lhs_count = Count(lhs);
         auto rhs_count = Count(rhs);
 
-        return (lhs_count >= rhs_count) && (Equals(Last(lhs, rhs_count), rhs));
+        return (lhs_count >= rhs_count) && (Equals(Back(lhs, rhs_count), rhs));
     }
 
     template <typename TElement, typename UElement>
-    constexpr Bool HasSubspan(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
-    {
-        return Count(Search(lhs, rhs)) == Count(rhs);
-    }
-
-    // Algorithms.
-
-    template <typename TElement, typename UElement>
-    constexpr SpanT<TElement> Search(const SpanT<TElement>& lhs, const UElement& rhs) noexcept
+    constexpr SpanT<TElement> Find(const SpanT<TElement>& lhs, const UElement& rhs) noexcept
     {
         auto result = lhs;
 
@@ -559,46 +532,64 @@ namespace syntropy
     }
 
     template <typename TElement, typename UElement>
-    constexpr SpanT<TElement> Search(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
+    constexpr SpanT<TElement> Find(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
     {
-        auto result = lhs;
-
-        for (; result && !HasPrefix(result, rhs); result = PopFront(result));
-
-        return result;
-    }
-
-    // Utilities.
-
-    template <typename TElement, typename UElement>
-    auto MakeSpan(Pointer<TElement> begin, Pointer<UElement> end) noexcept
-    {
-        return SpanT<CommonTypeT<TElement, UElement>>{ begin, end };
-    }
-
-    template <typename TElement, typename UElement>
-    auto MakeSafeSpan(Pointer<TElement> begin, Pointer<UElement> end) noexcept
-    {
-        if (begin <= end)
+        if (rhs)
         {
-            return MakeSpan(begin, end);
+            auto result = lhs;
+
+            for (; result && !StartsWith(result, rhs); result = PopFront(result));
+
+            return result;
         }
 
         return {};
     }
 
-    template <typename TElement>
-    constexpr Span<RemoveConstT<TElement>> ReadOnly(const SpanT<TElement>& rhs)
+    // Utilities.
+
+    template <typename TBegin>
+    constexpr SpanT<TBegin> MakeSpan(Pointer<TBegin> begin, Int count) noexcept
     {
-        return { rhs };
+        return { begin, count };
+    }
+
+    template <typename TBegin, typename TEnd>
+    constexpr SpanT<TBegin> MakeSpan(Pointer<TBegin> begin, Pointer<TEnd> end) noexcept
+    {
+        using TSpan = CommonTypeT<TBegin, TEnd>;
+
+        return Span<TSpan>{ begin, end };
     }
 
     template <typename TElement>
-    constexpr RWSpan<TElement> ReadWrite(const SpanT<const TElement>& rhs) noexcept
+    constexpr Span<TElement> ReadOnly(const SpanT<TElement>& rhs)
     {
-        using TPointer = Pointer<TElement>;
+        return rhs;
+    }
 
-        return { const_cast<TPointer>(Begin(rhs)), const_cast<TPointer>(End(rhs)) };
+    template <typename TElement>
+    constexpr RWSpan<TElement> ReadWrite(const SpanT<TElement>& rhs) noexcept
+    {
+        using TPointer = Pointer<RemoveConstT<TElement>>;
+
+        auto begin = const_cast<TPointer>(Begin(rhs));
+        auto end = const_cast<TPointer>(End(rhs));
+
+        return { begin, end };
+    }
+
+    template <typename TElement, typename UElement>
+    constexpr CommonSpan<TElement, UElement> Either(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
+    {
+        if (lhs)
+        {
+            return lhs;
+        }
+        else
+        {
+            return rhs;
+        }
     }
 
     template <typename TElement>

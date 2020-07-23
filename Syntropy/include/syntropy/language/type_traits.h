@@ -42,6 +42,10 @@ namespace syntropy
     template <typename TType>
     using RemoveExtentsConstReferenceT = std::remove_cv_t<std::remove_all_extents_t<std::remove_reference_t<TType>>>;
 
+    /// \brief Type equal to the type pointed by TType or equal to TType if it is not a pointer.
+    template <typename TType>
+    using RemovePointerT = std::remove_pointer_t<TType>;
+
     /// \brief Add a const qualifier to a type.
     template <typename TType>
     using AddConstT = std::add_const_t<TType>;
@@ -49,6 +53,10 @@ namespace syntropy
     /// \brief Create a lvalue or rvalue reference type of TType.
     template <typename TType>
     using AddRValueReferenceT = std::add_rvalue_reference_t<TType>;
+
+    /// \brief Type equal to the pointer to TType.
+    template <typename TType>
+    using AddPointerT = std::add_pointer_t<TType>;
 
     /************************************************************************/
     /* TYPE QUERY                                                           */
