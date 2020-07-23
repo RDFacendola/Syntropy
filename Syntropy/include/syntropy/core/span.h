@@ -194,12 +194,12 @@ namespace syntropy
     constexpr Bool Equals(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
     /// \brief Check whether lhs starts with rhs.
-    /// \remarks This method returns false if either lhs or rhs are empty, since empty spans are not considered a proper prefix.
+    /// \remarks If lhs starts with rhs, return true, otherwise return false.
     template <typename TElement, typename UElement>
     constexpr Bool StartsWith(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
     /// \brief Check whether lhs ends with lhs.
-    /// \remarks This method returns false if either lhs or rhs are empty, since empty spans are not considered a proper suffix.
+    /// \remarks If lhs endswith rhs, return true, otherwise return false.
     template <typename TElement, typename UElement>
     constexpr Bool EndsWith(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
@@ -210,6 +210,7 @@ namespace syntropy
 
     /// \brief Reduce lhs until lhs starts with rhs or lhs is exhausted.
     /// \return Returns the reduced range starting from the first occurrence of rhs in lhs or an empty range if no occurrence was found.
+    ///         If rhs is empty lhs is returned instead.
     template <typename TElement, typename UElement>
     constexpr SpanT<TElement> Find(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
@@ -425,7 +426,7 @@ namespace syntropy
             return { begin, Math::Max(begin, end) };
         }
 
-        return Either(lhs, rhs);
+        return {};
     }
 
     template <typename TElement, typename UElement>
@@ -536,14 +537,20 @@ namespace syntropy
     {
         if (rhs)
         {
-            auto result = lhs;
+            auto result = Find(lhs, Front(rhs));
 
-            for (; result && !StartsWith(result, rhs); result = PopFront(result));
+            for (; Count(result) >= Count(rhs); result = Find(PopFront(result), Front(rhs)))
+            {
+                if (StartsWith(result, rhs))
+                {
+                    return result;
+                }
+            }
 
-            return result;
+            return {};
         }
 
-        return {};
+        return lhs;
     }
 
     // Utilities.

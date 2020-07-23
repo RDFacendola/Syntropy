@@ -478,7 +478,12 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(StartsWith(span0_9, span0_9), true);
     })
 
+    .TestCase("Spans end-with themselves.", [](auto& fixture)
+    {
+        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
 
+        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, span0_9), true);
+    })
 
 
 
@@ -491,12 +496,12 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(StartsWith(empty, span0_9), false);
     })
 
-    .TestCase("Empty spans are prefix of no other span.", [](auto& fixture)
+    .TestCase("Spans always start-with empty spans.", [](auto& fixture)
     {
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
         auto empty = SpanT<Int>{};
 
-        SYNTROPY_UNIT_EQUAL(StartsWith(span0_9, empty), false);
+        SYNTROPY_UNIT_EQUAL(StartsWith(span0_9, empty), true);
     })
 
     .TestCase("Spans are prefix of spans whose values compare equivalent.", [](auto& fixture)
@@ -541,20 +546,15 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(EndsWith(empty, span0_9), false);
     })
 
-    .TestCase("Empty spans are prefix of no other span.", [](auto& fixture)
+    .TestCase("Spans always end-with empty spans.", [](auto& fixture)
     {
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
         auto empty = SpanT<Int>{};
 
-        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, empty), false);
+        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, empty), true);
     })
 
-    .TestCase("Spans have themselves as suffix.", [](auto& fixture)
-    {
-        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
 
-        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, span0_9), true);
-    })
 
     .TestCase("Spans are suffix of spans whose values compare equivalent.", [](auto& fixture)
     {

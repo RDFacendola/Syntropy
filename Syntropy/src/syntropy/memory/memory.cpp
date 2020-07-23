@@ -15,10 +15,10 @@ namespace syntropy
 
         if (copy_size > Bytes{ 0 })
         {
-            auto destination_span = First(destination, ToInt(copy_size));
-            auto source_span = First(source, ToInt(copy_size));
+            auto destination_span = Front(destination, ToInt(copy_size));
+            auto source_span = Front(source, ToInt(copy_size));
 
-            if (!Overlaps(destination_span, source_span))
+            if (!Intersection(destination_span, source_span))
             {
                 std::memcpy(destination.GetData(), source.GetData(), ToInt(copy_size));         // Faster copy for non-overlapping ranges.
             }
