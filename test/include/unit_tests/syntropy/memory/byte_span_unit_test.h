@@ -19,9 +19,6 @@ namespace syntropy::unit_test
     /// \brief Byte span test fixture.
     struct ByteSpanTestFixture
     {
-        /// \brief Buffer aligned to 16 Bytes.
-        alignas(16) Array<Byte, 10> align16_;
-
         /// \brief Union used to test data conversion.
         union
         {
@@ -43,11 +40,20 @@ namespace syntropy::unit_test
 
     inline const auto& byte_span_unit_test = MakeAutoUnitTest<ByteSpanTestFixture>("byte_span.memory.syntropy")
 
+    .TestCase("Span have a size which is exactly equal to the memory footprint of a single element times the number of elements in the span.", [](auto& fixture)
+    {
+        using namespace literals;
+
+        auto span = Span<Fix64>{ nullptr, 10 };
+
+        SYNTROPY_UNIT_EQUAL(Size(span), Bytes{ 80 });
+    })
+
     .TestCase("Byte pointers are aligned to the same alignment requirement of the memory region they refer to.", [](auto& fixture)
     {
         using namespace literals;
 
-        auto byte_ptr = ToBytePtr(&fixture.align16_[0]);
+        auto byte_ptr = reinterpret_cast<BytePtr>(16);
 
         SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_ptr, 128_Alignment), false);
         SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_ptr, 64_Alignment), false);
@@ -62,7 +68,9 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto byte_span = ByteSpan{ &fixture.align16_[0], 4 };
+        auto byte_ptr = reinterpret_cast<BytePtr>(16);
+
+        auto byte_span = ByteSpan{ byte_ptr, 4 };
 
         SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_span, 128_Alignment), false);
         SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_span, 64_Alignment), false);
@@ -77,7 +85,9 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto byte_span = ByteSpan{ &fixture.align16_[0], 4 };
+        auto byte_ptr = reinterpret_cast<BytePtr>(32);
+
+        auto byte_span = ByteSpan{ byte_ptr, 4 };
 
         SYNTROPY_UNIT_EQUAL(Align(byte_span, 16_Alignment), byte_span);
     })
@@ -86,8 +96,11 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto byte_span = ByteSpan{ &fixture.align16_[1], 9 };
-        auto byte_span_aligned = ByteSpan{ &fixture.align16_[8], 2 };
+        auto byte_ptr = reinterpret_cast<BytePtr>(10);
+        auto byte_ptr_aligned = reinterpret_cast<BytePtr>(16);
+
+        auto byte_span = ByteSpan{ byte_ptr, 8 };
+        auto byte_span_aligned = ByteSpan{ byte_ptr_aligned, 2 };
 
         SYNTROPY_UNIT_EQUAL(Align(byte_span, 8_Alignment), byte_span_aligned);
     })
@@ -96,7 +109,9 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        auto byte_span = ByteSpan{ &fixture.align16_[8], 2 };
+        auto byte_ptr = reinterpret_cast<BytePtr>(10);
+
+        auto byte_span = ByteSpan{ byte_ptr, 2 };
 
         SYNTROPY_UNIT_EQUAL(Align(byte_span, 16_Alignment), ByteSpan{});
     })
@@ -125,11 +140,6 @@ namespace syntropy::unit_test
 
     inline void ByteSpanTestFixture::Before()
     {
-        for (auto index = 0; index < 10; ++index)
-        {
-            align16_[index] = Byte{ index };
-        }
-
         for (auto index = 0; index < 4; ++index)
         {
             union_.elements_[index] = Fix64{ index * index };

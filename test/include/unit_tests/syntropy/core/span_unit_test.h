@@ -474,26 +474,19 @@ namespace syntropy::unit_test
     .TestCase("Spans start-with themselves.", [](auto& fixture)
     {
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
-
+        auto empty = SpanT<Int>{};
+         
         SYNTROPY_UNIT_EQUAL(StartsWith(span0_9, span0_9), true);
+        SYNTROPY_UNIT_EQUAL(StartsWith(empty, empty), true);
     })
 
     .TestCase("Spans end-with themselves.", [](auto& fixture)
     {
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
+        auto empty = SpanT<Int>{};
 
         SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, span0_9), true);
-    })
-
-
-
-
-    .TestCase("Empty spans have no prefix.", [](auto& fixture)
-    {
-        auto empty = SpanT<Int>{};
-        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
-
-        SYNTROPY_UNIT_EQUAL(StartsWith(empty, span0_9), false);
+        SYNTROPY_UNIT_EQUAL(EndsWith(empty, empty), true);
     })
 
     .TestCase("Spans always start-with empty spans.", [](auto& fixture)
@@ -504,7 +497,15 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(StartsWith(span0_9, empty), true);
     })
 
-    .TestCase("Spans are prefix of spans whose values compare equivalent.", [](auto& fixture)
+    .TestCase("Spans always end-with empty spans.", [](auto& fixture)
+    {
+        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
+        auto empty = SpanT<Int>{};
+
+        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, empty), true);
+    })
+
+    .TestCase("Spans start-with spans whose value compare equivalent.", [](auto& fixture)
     {
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
         auto span0_4 = SpanT<Int>{ &fixture.ints_a_[0], 5 };
@@ -512,12 +513,60 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(StartsWith(span0_9, span0_4), true);
     })
 
-    .TestCase("Spans have no prefix if the latter contains at least one element which compare different.", [](auto& fixture)
+    .TestCase("Spans end-with spans whose values compare equivalent.", [](auto& fixture)
+    {
+        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
+        auto span5_9 = SpanT<Int>{ &fixture.ints_a_[5], 5 };
+
+        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, span5_9), true);
+    })
+
+    .TestCase("Spans start-with spans with a different type when their elements are implicitly convertible and compare equal.", [](auto& fixture)
+    {
+        auto ints0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
+        auto floats0_4 = SpanT<Float>{ &fixture.floats_[0], 5 };
+
+        SYNTROPY_UNIT_EQUAL(StartsWith(ints0_9, floats0_4), true);
+    })
+
+    .TestCase("Spans end-with of spans with a different type when their elements are implicitly convertible and compare equal.", [](auto& fixture)
+    {
+        auto ints0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
+        auto floats5_9 = SpanT<Float>{ &fixture.floats_[5], 5 };
+
+        SYNTROPY_UNIT_EQUAL(EndsWith(ints0_9, floats5_9), true);
+    })
+
+    .TestCase("Spans don't-start-with spans whose member-wise equivalence is not met at least once.", [](auto& fixture)
     {
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
         auto span0_4 = SpanT<Int>{ &fixture.ones_[0], 5 };
 
         SYNTROPY_UNIT_EQUAL(StartsWith(span0_9, span0_4), false);
+    })
+
+    .TestCase("Spans don't-end-with spans whose member-wise equivalence is not met at least once.", [](auto& fixture)
+    {
+        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
+        auto span5_9 = SpanT<Int>{ &fixture.ones_[5], 5 };
+
+        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, span5_9), false);
+    })
+
+    .TestCase("Empty spans don't-start-with non-empty spans.", [](auto& fixture)
+    {
+        auto empty = SpanT<Int>{};
+        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
+
+        SYNTROPY_UNIT_EQUAL(StartsWith(empty, span0_9), false);
+    })
+
+    .TestCase("Empty spans don't-end-with non-empty spans.", [](auto& fixture)
+    {
+        auto empty = SpanT<Int>{};
+        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
+
+        SYNTROPY_UNIT_EQUAL(EndsWith(empty, span0_9), false);
     })
 
     .TestCase("Spans have no prefix if the latter is longer than the former.", [](auto& fixture)
@@ -528,64 +577,20 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(StartsWith(span0_4, span0_9), false);
     })
 
-    .TestCase("Spans are prefix of spans with a different type when their elements are implicitly convertible and compare equal.", [](auto& fixture)
+    .TestCase("Spans don't-start-with any other longer span.", [](auto& fixture)
     {
+        auto span0_5 = SpanT<Int>{ &fixture.ints_a_[0], 5 };
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
-        auto span0_4 = SpanT<Float>{ &fixture.floats_[0], 5 };
 
-        SYNTROPY_UNIT_EQUAL(StartsWith(span0_9, span0_4), true);
+        SYNTROPY_UNIT_EQUAL(StartsWith(span0_5, span0_9), false);
     })
 
-
-
-    .TestCase("Empty spans have no suffix.", [](auto& fixture)
+    .TestCase("Spans don't-end-with any other longer span.", [](auto& fixture)
     {
-        auto empty = SpanT<Int>{};
+        auto span0_5 = SpanT<Int>{ &fixture.ints_a_[0], 5 };
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
 
-        SYNTROPY_UNIT_EQUAL(EndsWith(empty, span0_9), false);
-    })
-
-    .TestCase("Spans always end-with empty spans.", [](auto& fixture)
-    {
-        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
-        auto empty = SpanT<Int>{};
-
-        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, empty), true);
-    })
-
-
-
-    .TestCase("Spans are suffix of spans whose values compare equivalent.", [](auto& fixture)
-    {
-        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
-        auto span5_9 = SpanT<Int>{ &fixture.ints_a_[5], 5 };
-
-        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, span5_9), true);
-    })
-
-    .TestCase("Spans have no suffix if the latter contains at least one element which compare different.", [](auto& fixture)
-    {
-        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
-        auto span5_9 = SpanT<Int>{ &fixture.ones_[5], 5 };
-
-        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, span5_9), false);
-    })
-
-    .TestCase("Spans have no suffix if the latter is longer than the former.", [](auto& fixture)
-    {
-        auto span5_9 = SpanT<Int>{ &fixture.ints_[5], 5 };
-        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
-
-        SYNTROPY_UNIT_EQUAL(EndsWith(span5_9, span0_9), false);
-    })
-
-    .TestCase("Spans are suffix of spans with a different type when their elements are implicitly convertible and compare equal.", [](auto& fixture)
-    {
-        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
-        auto span5_9 = SpanT<Float>{ &fixture.floats_[5], 5 };
-
-        SYNTROPY_UNIT_EQUAL(EndsWith(span0_9, span5_9), true);
+        SYNTROPY_UNIT_EQUAL(EndsWith(span0_5, span0_9), false);
     })
 
     .TestCase("Searching a span for an element reduce the first until its front element compares equal to the provided element.", [](auto& fixture)
@@ -604,7 +609,7 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(Find(span0_9, 3.0f), span_3_7);
     })
 
-    .TestCase("Searching a span for a sub-span reduces the latter until the former becomes its prefix.", [](auto& fixture)
+    .TestCase("Searching a span for a sub-span reduces the former until it starts-with the latter.", [](auto& fixture)
     {
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
         auto span6_1 = SpanT<Float>{ &fixture.floats_[6], 1 };
@@ -613,7 +618,7 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(Find(span0_9, span6_1), span6_9);
     })
 
-    .TestCase("Searching a span for a sub-span reduces the latter until the former becomes its prefix, implicitly converting element types.", [](auto& fixture)
+    .TestCase("Searching a span for a sub-span reduces the former until it starts-with the latter, implicitly converting element types.", [](auto& fixture)
     {
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
         auto span6_1 = SpanT<Float>{ &fixture.floats_[6], 1 };
@@ -622,7 +627,7 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(Find(span0_9, span6_1), span6_9);
     })
 
-    .TestCase("Searching a span for a subspan which is not contained in the original sequence returns an empty span.", [](auto& fixture)
+    .TestCase("Searching a span for a sub-span which is not contained in the original sequence returns an empty span.", [](auto& fixture)
     {
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
         auto ones = SpanT<Int>{ &fixture.ones_[0], 4 };
@@ -637,6 +642,14 @@ namespace syntropy::unit_test
         auto empty = SpanT<Int>{};
 
         SYNTROPY_UNIT_EQUAL(Find(span0_9, empty), span0_9);
+    })
+
+        .TestCase("Searching an empty span for a non-empty span returns the empty span.", [](auto& fixture)
+    {
+        auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
+        auto empty = SpanT<Int>{};
+
+        SYNTROPY_UNIT_EQUAL(Find(empty, span0_9), empty);
     });
 
     /************************************************************************/
