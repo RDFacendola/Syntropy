@@ -14,16 +14,6 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* BYTE PTR                                                             */
-    /************************************************************************/
-
-    /// \brief Represents a pointer to a read-only memory location.
-    using BytePtr = Pointer<const Byte>;
-
-    /// \brief Represents a pointer to a read-write memory location.
-    using RWBytePtr = Pointer<Byte>;
-
-    /************************************************************************/
     /* BYTE SPAN                                                            */
     /************************************************************************/
 
@@ -65,14 +55,6 @@ namespace syntropy
     RWByteSpan Align(const RWByteSpan& byte_span, Alignment alignment) noexcept;
 
     // Conversions.
-
-    /// \brief Convert a pointer to a byte pointer.
-    template <typename TType>
-    BytePtr ToBytePtr(Pointer<const TType> pointer) noexcept;
-
-    /// \brief Convert a read-write pointer to a read-write byte pointer.
-    template <typename TType>
-    RWBytePtr ToRWBytePtr(Pointer<TType> pointer) noexcept;
 
     /// \brief Convert a read-only byte span to a read-only typed span.
     /// If the byte span doesn't refer to instances of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
@@ -154,18 +136,6 @@ namespace syntropy
     }
 
     // Conversions.
-
-    template <typename TType>
-    inline BytePtr ToBytePtr(Pointer<const TType> pointer) noexcept
-    {
-        return reinterpret_cast<BytePtr>(pointer);
-    }
-
-    template <typename TType>
-    inline RWBytePtr ToRWBytePtr(Pointer<TType> pointer) noexcept
-    {
-        return reinterpret_cast<RWBytePtr>(pointer);
-    }
 
     template <typename TElement>
     inline Span<TElement> ToSpan(const ByteSpan& byte_span) noexcept

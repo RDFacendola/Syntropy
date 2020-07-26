@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/core/types.h"
 #include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy
@@ -22,10 +23,10 @@ namespace syntropy
     public:
 
         /// \brief Set a new memory resource for the current scope.
-        MemoryContext(MemoryResource& memory_resource);
+        MemoryContext(MemoryResource& memory_resource) noexcept;
 
         /// \brief Restore the previous memory resource.
-        ~MemoryContext();
+        ~MemoryContext() noexcept;
 
         /// \brief No copy constructor.
         MemoryContext(const MemoryContext&) = delete;
@@ -36,7 +37,7 @@ namespace syntropy
     public:
 
         /// \brief Previous memory resource.
-        MemoryResource* previous_memory_resource_ = nullptr;
+        Pointer<MemoryResource> previous_memory_resource_{ nullptr };
 
     };
 
@@ -45,14 +46,15 @@ namespace syntropy
     /************************************************************************/
 
     // MemoryContext.
+    // ==============
 
-    inline MemoryContext::MemoryContext(MemoryResource& memory_resource)
+    inline MemoryContext::MemoryContext(MemoryResource& memory_resource) noexcept
         : previous_memory_resource_(&SetDefaultMemoryResource(memory_resource))
     {
 
     }
 
-    inline MemoryContext::~MemoryContext()
+    inline MemoryContext::~MemoryContext() noexcept
     {
         SetDefaultMemoryResource(*previous_memory_resource_);
     }

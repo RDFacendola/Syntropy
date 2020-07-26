@@ -43,12 +43,12 @@ namespace syntropy
         FallbackMemoryResource(TArguments&& arguments, TFallbackArguments&& fallback_arguments) noexcept;
 
         /// \brief Create a new memory resource by initializing the memory resource explicitly and default-constructing the fallback one.
-         template <typename TArguments>
-         FallbackMemoryResource(TArguments&& arguments, DefaultConstructT) noexcept;
+        template <typename TArguments>
+        FallbackMemoryResource(TArguments&& arguments, DefaultConstructT) noexcept;
 
-         /// \brief Create a new memory resource by initializing the fallback memory resource explicitly and default-constructing the primary one.
-         template <typename TFallbackArguments>
-         FallbackMemoryResource(DefaultConstructT, TFallbackArguments&& fallback_arguments) noexcept;
+        /// \brief Create a new memory resource by initializing the fallback memory resource explicitly and default-constructing the primary one.
+        template <typename TFallbackArguments>
+        FallbackMemoryResource(DefaultConstructT, TFallbackArguments&& fallback_arguments) noexcept;
 
         /// \brief Default destructor.
         ~FallbackMemoryResource() noexcept = default;
@@ -57,21 +57,16 @@ namespace syntropy
         /// This method requires that each underlying memory resource is assignable.
         FallbackMemoryResource& operator=(const FallbackMemoryResource&) noexcept = default;
 
-        /// \brief Allocate a new aligned memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \param alignment Block alignment.
-        /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        /// \brief Allocate a new memory block.
+        /// If the primary memory resource could not handle the allocation request, the fallback memory resource will be used instead.
+        /// If a memory block could not be allocated, returns an empty block.
+        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
-        /// \brief Deallocate an aligned memory block.
-        /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
-        /// \param alignment Block alignment.
+        /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
-        /// \brief Check whether this memory resource owns the provided memory block.
-        /// \param block Block to check the ownership of.
-        /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
+        /// \brief Check whether the memory resource owns a memory block.
         Bool Owns(const ByteSpan& block) const noexcept;
 
     private:
@@ -89,6 +84,7 @@ namespace syntropy
     /************************************************************************/
 
     // FallbackMemoryResource<TMemoryResource, TFallbackResource>.
+    // ===========================================================
 
     template <typename TMemoryResource, typename TFallbackResource>
     template <typename TArguments, typename TFallbackArguments>
@@ -128,7 +124,7 @@ namespace syntropy
     template <typename TMemoryResource, typename TFallbackResource>
     inline void FallbackMemoryResource<TMemoryResource, TFallbackResource>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
-        SYNTROPY_ASSERT(Owns(block));
+        SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block));
 
         if (memory_resource_.Owns(block))
         {

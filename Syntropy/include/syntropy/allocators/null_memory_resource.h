@@ -1,6 +1,6 @@
 
 /// \file null_memory_resource.h
-/// \brief This header is part of the Syntropy allocators module. It contains memory resources that use no system memory at all.
+/// \brief This header is part of the Syntropy allocators module. It contains memory resources that use no memory at all.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -39,20 +39,15 @@ namespace syntropy
         /// \brief Default assignment operator.
         NullMemoryResource& operator=(const NullMemoryResource&) noexcept = default;
 
-        /// \brief Allocate a new aligned memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \param alignment Block alignment.
-        /// \return Returns an empty range.
-        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        /// \brief Allocate a new memory block.
+        /// Allocations performed on this allocator are rejected, hence this method returns empty spans only.
+        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
-        /// \brief Deallocate an aligned memory block.
-        /// \param block Block to deallocate. Expects an empty range.
-        /// \param alignment Block alignment.
-        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf());
+        /// \brief Deallocate a memory block.
+        /// \remarks The behavior of this function is undefined unless the provided block was empty.
+        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
-        /// \brief Check whether this memory resource owns the provided memory block.
-        /// The null memory resource only contains empty ranges.
-        /// \return Returns true if the provided memory range is empty, returns false otherwise.
+        /// \brief Check whether the memory resource owns a memory block.
         Bool Owns(const ByteSpan& block) const noexcept;
 
     };
@@ -62,6 +57,7 @@ namespace syntropy
     /************************************************************************/
  
     // NullMemoryResource.
+    // ===================
 
     inline RWByteSpan NullMemoryResource::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
     {
@@ -70,12 +66,12 @@ namespace syntropy
 
     inline void NullMemoryResource::Deallocate(const RWByteSpan& block, Alignment /*alignment*/)
     {
-        SYNTROPY_ASSERT(!block);        // Only empty ranges can be deallocated.
+        SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block));       // Empty memory blocks only.
     }
 
     inline Bool NullMemoryResource::Owns(const ByteSpan& block) const noexcept
     {
-        return !block;                  // This memory resource owns only empty ranges.
+        return !block;                                  // This memory resource owns only empty ranges.
     }
 
 }

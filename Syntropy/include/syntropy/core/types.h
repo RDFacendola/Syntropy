@@ -31,10 +31,6 @@ namespace syntropy
     /// \brief 32-bit floating point value.
     using Float = float;
 
-    /// \brief Type alias for a non-owning pointer which doesn't participate to pointee life-time.
-    template <typename TType>
-    using Pointer = TType*;
-
     /// \brief Represents a single byte. This type is neither a character type, nor an arithmetic type.
     using Byte = std::byte;
 
@@ -57,6 +53,26 @@ namespace syntropy
 
     /// \brief 64-bit integer value.
     enum class Fix64 : std::int64_t {};
+
+    /************************************************************************/
+    /* POINTER TYPES                                                        */
+    /************************************************************************/
+
+    /// \brief Type alias for a non-owning pointer which doesn't participate to pointee life-time.
+    template <typename TType>
+    using Pointer = TType*;
+
+    /// \brief Represents a raw pointer to a read-only memory location.
+    using BytePtr = Pointer<const Byte>;
+
+    /// \brief Represents a raw pointer to a read-write memory location.
+    using RWBytePtr = Pointer<Byte>;
+
+    /// \brief A pointer to a typeless read-only memory location.
+    using TypelessPtr = Pointer<const void>;
+
+    /// \brief A pointer to a typeless read-write memory location.
+    using RWTypelessPtr = Pointer<void>;
 
     /************************************************************************/
     /* TYPE CAST                                                            */
@@ -95,6 +111,14 @@ namespace syntropy
     /// \brief Cast a value to a 64-bit integer value.
     template <typename TNumber>
     constexpr Fix64 ToFix64(TNumber rhs) noexcept;
+
+    /// \brief Convert a pointer to a read-only byte pointer.
+    template <typename TType>
+    constexpr BytePtr ToBytePtr(Pointer<const TType> pointer) noexcept;
+
+    /// \brief Convert a pointer to a read-write byte pointer.
+    template <typename TType>
+    constexpr RWBytePtr ToRWBytePtr(Pointer<TType> pointer) noexcept;
 
     /************************************************************************/
     /* STREAM INSERTION                                                     */
@@ -136,7 +160,7 @@ namespace syntropy
     template <typename TType, typename UType>
     constexpr Pointer<TType> ToPointer(Pointer<UType> rhs) noexcept
     {
-        return static_cast<UType*>(rhs);
+        return static_cast<Pointer<TType>>(rhs);
     }
 
     template <typename TNumber>
@@ -167,6 +191,18 @@ namespace syntropy
     constexpr Fix64 ToFix64(TNumber rhs) noexcept
     {
         return static_cast<Fix64>(rhs);
+    }
+
+    template <typename TType>
+    constexpr BytePtr ToBytePtr(Pointer<const TType> pointer) noexcept
+    {
+        return reinterpret_cast<BytePtr>(pointer);
+    }
+
+    template <typename TType>
+    constexpr RWBytePtr ToRWBytePtr(Pointer<TType> pointer) noexcept
+    {
+        return reinterpret_cast<RWBytePtr>(pointer);
     }
 
     // Stream insertion.

@@ -7,8 +7,8 @@
 #pragma once
 
 #include "syntropy/language/utility.h"
-#include "syntropy/allocators/memory_resource.h"
 #include "syntropy/core/types.h"
+#include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy
 {
@@ -31,23 +31,23 @@ namespace syntropy
         PolymorphicDeleter(TypeT<TType>, MemoryResource& memory_resource) noexcept;
 
         /// \brief Destroy an object allocated on the underlying memory resource.
-        void operator()(void* object);
+        void operator()(RWTypelessPtr object);
 
     private:
 
         /// \brief Type of a function used to destroy objects.
-        using TDestructor = void(*)(MemoryResource&, void*);
+        using TDestructor = void(*)(MemoryResource&, RWTypelessPtr);
 
         /// \brief Function used to destroy strongly-typed objects.
         /// If the provided object's type is not equal to TType the behavior of this method is undefined.
         template <typename TType>
-        static void Destroy(MemoryResource& memory_resource, void* object);
+        static void Destroy(MemoryResource& memory_resource, RWTypelessPtr object);
 
         /// \brief Destructor.
         TDestructor destructor_{ nullptr };
 
         /// \brief Underlying memory resource.
-        MemoryResource* memory_resource_ = &GetDefaultMemoryResource();
+        Pointer<MemoryResource> memory_resource_ = &GetDefaultMemoryResource();
 
     };
 
@@ -74,19 +74,19 @@ namespace syntropy
 
     }
 
-    inline void PolymorphicDeleter::operator()(void* object)
+    inline void PolymorphicDeleter::operator()(RWTypelessPtr object)
     {
         destructor_(*memory_resource_, object);
     }
 
     template <typename TType>
-    inline void PolymorphicDeleter::Destroy(MemoryResource& memory_resource, void* object)
+    inline void PolymorphicDeleter::Destroy(MemoryResource& memory_resource, RWTypelessPtr object)
     {
         if (object)
         {
-            DestroyAt(static_cast<TType*>(object));
+            DestroyAt(ToPointer<TType>(object));
 
-            auto block = RWByteSpan{ reinterpret_cast<RWBytePtr>(object), ToInt(BytesOf<TType>()) };
+            auto block = RWByteSpan{ ToRWBytePtr(object), ToInt(BytesOf<TType>()) };
 
             memory_resource.Deallocate(block, AlignmentOf<TType>());
         }

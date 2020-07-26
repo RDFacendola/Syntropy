@@ -17,7 +17,7 @@ namespace syntropy
     /* COUNTING MEMORY RESOURCE <TMEMORY RESOURCE>                          */
     /************************************************************************/
 
-    /// \brief Tier Omega memory resources used to count allocations performed on another memory resource.
+    /// \brief Tier Omega memory resource used to count allocations performed on another memory resource.
     /// \author Raffaele D. Facendola - September 2018
     template <typename TMemoryResource>
     class CountingMemoryResource
@@ -41,27 +41,22 @@ namespace syntropy
         /// \brief Default assignment operator.
         CountingMemoryResource& operator=(const CountingMemoryResource&) noexcept = default;
 
-        /// \brief Allocate a new aligned memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \param alignment Block alignment.
-        /// \return Returns an empty range.
-        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        /// \brief Allocate a new memory block.
+        /// If a memory block could not be allocated, returns an empty block.
+        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
-        /// \brief Deallocate an aligned memory block.
-        /// \param block Block to deallocate. Expects an empty range.
-        /// \param alignment Block alignment.
-        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        /// \brief Deallocate a memory block.
+        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
+        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
-        /// \brief Check whether this memory resource owns the provided memory block.
-        /// The null memory resource only contains empty ranges.
-        /// \return Returns true if the provided memory range is empty, returns false otherwise.
+        /// \brief Check whether the memory resource owns a memory block.
         Bool Owns(const ByteSpan& block) const noexcept;
 
         /// \brief Get the amount of active allocations on the underlying memory resource.
         /// \return Returns the number of active allocations on the underlying memory resource.
         Int GetAllocationCount() const noexcept;
 
-        /// \brief Get the total amount of allocations that were performed on the underlying memory resource, ignoring any deallocation.
+        /// \brief Get the total amount of allocations that were performed on the underlying memory resource, ignoring deallocations.
         /// \return Returns the total amount of allocations that were performed on the underlying memory resource.
         Int GetProgressiveAllocationCount() const noexcept;
 
@@ -83,6 +78,7 @@ namespace syntropy
     /************************************************************************/
 
     // CountingMemoryResource<TMemoryResource>.
+    // ========================================
 
     template <typename TMemoryResource>
     template <typename... TArguments>

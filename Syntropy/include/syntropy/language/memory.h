@@ -21,12 +21,12 @@ namespace syntropy
     /// \brief Creates a TType object initialized with arguments arguments... at given address storage.
     /// \remarks #TODO Update to C++20 std::construct_at.
     template <typename TType, typename... TArguments>
-    constexpr TType* ConstructAt(TType* storage, TArguments&&... arguments);
+    constexpr Pointer<TType> ConstructAt(Pointer<TType> storage, TArguments&&... arguments);
 
     /// \brief If T is not an array type, calls the destructor of the object pointed to by p, otherwise recursively destroys all elements;
     /// \remarks #TODO Update to C++20 std::destroy_at.
     template <typename TType>
-    constexpr void DestroyAt(TType* storage);
+    constexpr void DestroyAt(Pointer<TType> storage);
 
     /// \brief Prepares the argument list needed to create an object of the given type TType by means of uses-allocator construction.
     /// \remarks #TODO Update to C++20 std::uses_allocator_construction_args.
@@ -66,7 +66,7 @@ namespace syntropy
     /// \brief Creates an object of the given type TType by means of uses-allocator construction at the uninitialized memory location indicated by storage.
     /// \remarks #TODO Update to C++20 std::uninitialized_construct_using_allocator.
     template <typename TType, typename TAllocator, typename... TArguments>
-    /*constexpr*/ TType* UninitializedConstructUsingAllocator(TType* storage, const TAllocator& allocator, TArguments&&... arguments);
+    /*constexpr*/ Pointer<TType> UninitializedConstructUsingAllocator(Pointer<TType> storage, const TAllocator& allocator, TArguments&&... arguments);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -82,20 +82,20 @@ namespace syntropy
         struct ConstructAtHelper
         {
             /// \brief Create a new helper for the provided storage location.
-            ConstructAtHelper(TType* storage);
+            ConstructAtHelper(Pointer<TType> storage);
 
             /// \brief Construct an object at registered storage location.
             template <typename... TArguments>
-            TType* operator()(TArguments&&... arguments);
+            Pointer<TType> operator()(TArguments&&... arguments);
 
             /// \brief Storage location used to construct the object into.
-            TType* storage_{ nullptr };
+            Pointer<TType> storage_{ nullptr };
         };
 
         // Implementation.
 
         template <typename TType>
-        ConstructAtHelper<TType>::ConstructAtHelper(TType* storage)
+        ConstructAtHelper<TType>::ConstructAtHelper(Pointer<TType> storage)
             : storage_(storage)
         {
 
@@ -103,7 +103,7 @@ namespace syntropy
 
         template <typename TType>
         template <typename... TArguments>
-        TType* ConstructAtHelper<TType>::operator()(TArguments&&... arguments)
+        Pointer<TType> ConstructAtHelper<TType>::operator()(TArguments&&... arguments)
         {
             return ConstructAt(storage_, std::forward<TArguments>(arguments)...);
         }
@@ -113,13 +113,13 @@ namespace syntropy
     // Non-member functions.
 
     template <typename TType, typename... TArguments>
-    constexpr TType* ConstructAt(TType* storage, TArguments&&... arguments)
+    constexpr Pointer<TType> ConstructAt(Pointer<TType> storage, TArguments&&... arguments)
     {
         return ::new (const_cast<void*>(static_cast<const volatile void*>(storage))) TType(std::forward<TArguments>(arguments)...);
     }
 
     template <typename TType>
-    constexpr void DestroyAt(TType* storage)
+    constexpr void DestroyAt(Pointer<TType> storage)
     {
         if constexpr (std::is_array_v<TType>)
         {
@@ -211,7 +211,7 @@ namespace syntropy
     }
 
     template <typename TType, typename TAllocator, typename... TArguments>
-    /*constexpr*/ TType* UninitializedConstructUsingAllocator(TType* storage, const TAllocator& allocator, TArguments&&... arguments)
+    /*constexpr*/ Pointer<TType> UninitializedConstructUsingAllocator(Pointer<TType> storage, const TAllocator& allocator, TArguments&&... arguments)
     {
         // Requires C++20.
 

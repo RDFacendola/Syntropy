@@ -42,7 +42,7 @@ namespace syntropy
         MemoryResourceT<TMemoryResource> memory_resource_;
 
         /// \brief Previous memory resource.
-        MemoryResource* previous_memory_resource_ = nullptr;
+        Pointer<MemoryResource> previous_memory_resource_ = nullptr;
 
     };
 

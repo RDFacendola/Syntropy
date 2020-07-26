@@ -45,25 +45,22 @@ namespace syntropy
         /// \brief Default assignment operator.
         PassthroughMemoryResource& operator=(const PassthroughMemoryResource&) noexcept = default;
 
-        /// \brief Allocate a new aligned memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \param alignment Block alignment.
-        /// \return Returns an empty range.
-        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        /// \brief Allocate a new memory block.
+        /// If a memory resource is assigned, relay this function call to that, otherwise this memory resource behaves as the null memory resource.
+        /// If a memory block could not be allocated, returns an empty block.
+        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
-        /// \brief Deallocate an aligned memory block.
-        /// \param block Block to deallocate. Expects an empty range.
-        /// \param alignment Block alignment.
-        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf());
+        /// \brief Deallocate a memory block.
+        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
+        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
-        /// \brief Check whether this memory resource owns the provided memory block.
-        /// \return Returns true if the provided memory range is empty, returns false otherwise.
+        /// \brief Check whether the memory resource owns a memory block.
         Bool Owns(const ByteSpan& block) const noexcept;
 
     private:
 
         ///< \brief Underlying memory resource.
-        TMemoryResource* memory_resource_{ nullptr };
+        Pointer<TMemoryResource> memory_resource_{ nullptr };
 
     };
 
@@ -72,6 +69,7 @@ namespace syntropy
     /************************************************************************/
 
     // PassthroughMemoryResource<TMemoryResource>.
+    // ===========================================
 
     template <typename TMemoryResource>
     PassthroughMemoryResource<TMemoryResource>::PassthroughMemoryResource(TMemoryResource& memory_resource)

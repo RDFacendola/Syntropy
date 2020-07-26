@@ -1,6 +1,6 @@
 
 /// \file memory_resource.h
-/// \brief This header is part of the Syntropy allocators module. It contains definitions and interfaces for memory resource.
+/// \brief This header is part of the Syntropy allocators module. It contains definitions for memory resources.
 ///
 /// \author Raffaele D. Facendola - 2020
 
@@ -53,27 +53,20 @@ namespace syntropy
         virtual ~MemoryResource() = default;
 
         /// \brief Allocate a new memory block.
-        /// The returned storage, if any, is aligned to a specified amount if supported or to MaxAlignmentOf otherwise.
-        /// \param size Size of the memory block to allocate.
-        /// \param alignment Block alignment.
-        /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        virtual RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept = 0;
+        /// If a memory block could not be allocated, returns an empty block.
+        virtual RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept = 0;
 
         /// \brief Deallocate a memory block.
-        /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
-        /// \param alignment Block alignment.
-        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to Allocate(size, alignment).
-        virtual void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf()) = 0;
+        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
+        virtual void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept = 0;
 
-        /// \brief Check whether this memory resource owns the provided memory block.
-        /// \param block Block to check the ownership of.
-        /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
+        /// \brief Check whether the memory resource owns a memory block.
         virtual Bool Owns(const ByteSpan& block) const noexcept = 0;
 
     private:
 
         /// \brief Get the active memory resource in the current scope.
-        static MemoryResource*& GetScopeMemoryResource() noexcept;
+        static Pointer<MemoryResource>& GetScopeMemoryResource() noexcept;
 
     };
 
@@ -92,20 +85,20 @@ namespace syntropy
         template <typename... TArguments>
         MemoryResourceT(TArguments&&... arguments) noexcept;
 
-        /// \brief Default destructor.
+        /// \brief Default virtual destructor.
         virtual ~MemoryResourceT() = default;
 
-        virtual RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept override;
+        virtual RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept override;
 
-        virtual void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf()) override;
+        virtual void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept override;
 
         virtual Bool Owns(const ByteSpan& block) const noexcept override;
 
         /// \brief Get the underlying memory resource.
-        TMemoryResource& GetMemoryResource();
+        TMemoryResource& GetMemoryResource() noexcept;
 
         /// \brief Get the underlying memory resource.
-        const TMemoryResource& GetMemoryResource() const;
+        const TMemoryResource& GetMemoryResource() const noexcept;
 
     private:
 
@@ -119,6 +112,7 @@ namespace syntropy
     /************************************************************************/
 
     // Non-member functions.
+    // =====================
 
     inline MemoryResource& GetSystemMemoryResource() noexcept
     {
@@ -142,15 +136,17 @@ namespace syntropy
     }
 
     // MemoryResource.
+    // ===============
 
-    inline MemoryResource*& MemoryResource::GetScopeMemoryResource() noexcept
+    inline Pointer<MemoryResource>& MemoryResource::GetScopeMemoryResource() noexcept
     {
-        static thread_local MemoryResource* default_memory_resource_ = &GetSystemMemoryResource();
+        static thread_local Pointer<MemoryResource> default_memory_resource_ = &GetSystemMemoryResource();
 
         return default_memory_resource_;
     }
 
     // MemoryResourceT<TMemoryResource>.
+    // =================================
 
     template <typename TMemoryResource>
     template <typename... TArguments>
@@ -167,7 +163,7 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline void MemoryResourceT<TMemoryResource>::Deallocate(const RWByteSpan& block, Alignment alignment)
+    inline void MemoryResourceT<TMemoryResource>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
         memory_resource_.Deallocate(block, alignment);
     }
@@ -179,13 +175,13 @@ namespace syntropy
     }
 
     template <typename TMemoryResource>
-    inline TMemoryResource& MemoryResourceT<TMemoryResource>::GetMemoryResource()
+    inline TMemoryResource& MemoryResourceT<TMemoryResource>::GetMemoryResource() noexcept
     {
         return memory_resource_;
     }
 
     template <typename TMemoryResource>
-    inline const TMemoryResource& MemoryResourceT<TMemoryResource>::GetMemoryResource() const
+    inline const TMemoryResource& MemoryResourceT<TMemoryResource>::GetMemoryResource() const noexcept
     {
         return memory_resource_;
     }

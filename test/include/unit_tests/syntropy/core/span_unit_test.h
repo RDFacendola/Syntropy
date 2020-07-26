@@ -644,7 +644,7 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(Find(span0_9, empty), span0_9);
     })
 
-        .TestCase("Searching an empty span for a non-empty span returns the empty span.", [](auto& fixture)
+    .TestCase("Searching an empty span for a non-empty span returns the empty span.", [](auto& fixture)
     {
         auto span0_9 = SpanT<Int>{ &fixture.ints_[0], 10 };
         auto empty = SpanT<Int>{};

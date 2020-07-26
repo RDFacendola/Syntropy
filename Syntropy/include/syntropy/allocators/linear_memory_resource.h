@@ -45,22 +45,18 @@ namespace syntropy
         /// \brief Unified assignment operator.
         LinearMemoryResource& operator=(LinearMemoryResource rhs) noexcept;
 
-        /// \brief Allocate a new aligned memory block.
-        /// \param size Size of the memory block to allocate.
-        /// \param alignment Block alignment.
-        /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        /// \brief Allocate a new memory block.
+        /// If a memory block could not be allocated, returns an empty block.
+        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
-        /// \brief Deallocate an aligned memory block.
-        /// Pointer-level deallocations are not supported, therefore this method does nothing.
-        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        /// \brief Deallocate a memory block.
+        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
+        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
         /// \brief Deallocate every allocation performed so far.
         void DeallocateAll() noexcept;
 
-        /// \brief Check whether this memory resource owns the provided memory block.
-        /// \param block Block to check the ownership of.
-        /// \return Returns true if the provided memory range was allocated by this memory resource, returns false otherwise.
+        /// \brief Check whether the memory resource owns a memory block.
         Bool Owns(const ByteSpan& block) const noexcept;
 
         /// \brief Swap this memory resource with the provided instance.
@@ -120,6 +116,7 @@ namespace syntropy
     /************************************************************************/
 
     // LinearMemoryResource<TMemoryResource>.
+    // ======================================
 
     template <typename TMemoryResource>
     template <typename... TArguments>
