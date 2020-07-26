@@ -48,12 +48,12 @@ namespace syntropy
         /// \brief Attempt to visit an element via a visitor functor.
         /// \return Returns true if the visit was successful, returns false otherwise.
         template <typename TFunction, typename TVisitor>
-        Bool TryVisit(const TVisitor& visitor, Pointer<void> visitable, const std::type_info& type) const;
+        Bool TryVisit(const TVisitor& visitor, RWTypelessPtr visitable, const std::type_info& type) const;
 
     private:
 
         /// \brief Visit an element.
-        virtual void VirtualVisit(Pointer<void> visitable, const std::type_info& type) const = 0;
+        virtual void VirtualVisit(RWTypelessPtr visitable, const std::type_info& type) const = 0;
 
     };
 
@@ -79,7 +79,7 @@ namespace syntropy
             using TFunctions::operator()...;
 
             // Attempt to visit with each of the lambdas.
-            void VirtualVisit(Pointer<void> visitable, const std::type_info& type) const override
+            void VirtualVisit(RWTypelessPtr visitable, const std::type_info& type) const override
             {
                 (TryVisit<TFunctions>(*this, visitable, type) || ...);
             }
@@ -99,12 +99,12 @@ namespace syntropy
         }
         else
         {
-            VirtualVisit(dynamic_cast<Pointer<void>>(&visitable), typeid(visitable));      // Downcast to the most derived class since typeid will return the dynamic type of visitable.
+            VirtualVisit(dynamic_cast<RWTypelessPtr>(&visitable), typeid(visitable));       // Downcast to the most derived class since typeid will return the dynamic type of visitable.
         }
     }
 
     template <typename TFunction, typename TVisitor>
-    inline Bool Visitor::TryVisit(const TVisitor& visitor, Pointer<void> visitable, const std::type_info& type) const
+    inline Bool Visitor::TryVisit(const TVisitor& visitor, RWTypelessPtr visitable, const std::type_info& type) const
     {
         using TArgument = FunctionArgumentT<0, TFunction>;
         using TVisitable = RemoveReferenceT<TArgument>;

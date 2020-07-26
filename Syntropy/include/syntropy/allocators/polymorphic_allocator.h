@@ -115,7 +115,7 @@ namespace syntropy
     template <typename TType>
     inline TType* PolymorphicAllocator<TType>::allocate(std::size_t count)
     {
-        auto block = memory_resource_->Allocate(BytesOf<TType>() * count, AlignmentOf<TType>());
+        auto block = memory_resource_->Allocate(SizeOf<TType>() * count, AlignmentOf<TType>());
 
         return reinterpret_cast<TType*>(block.GetData());
     }
@@ -123,7 +123,7 @@ namespace syntropy
     template <typename TType>
     inline void PolymorphicAllocator<TType>::deallocate(TType* storage, size_t count) noexcept
     {
-        auto block = RWByteSpan{ reinterpret_cast<RWBytePtr>(storage), ToInt(BytesOf<TType>() * count) };
+        auto block = RWByteSpan{ reinterpret_cast<RWBytePtr>(storage), ToInt(SizeOf<TType>() * count) };
 
         memory_resource_->Deallocate(block, AlignmentOf<TType>());
     }

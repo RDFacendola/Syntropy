@@ -31,11 +31,11 @@ namespace syntropy
 
     /// \brief Get the size of rhs, in bytes.
     template <typename TType>
-    constexpr Bytes BytesOf(const TType& rhs) noexcept;
+    constexpr Bytes SizeOf(const TType& rhs) noexcept;
 
     /// \brief Get the size of TType, in bytes.
     template <typename TType>
-    constexpr Bytes BytesOf() noexcept;
+    constexpr Bytes SizeOf() noexcept;
 
     /// \brief Sum a byte amount to an existing value.
     constexpr Bytes& operator+=(Bytes& lhs, Bytes rhs) noexcept;
@@ -207,13 +207,13 @@ namespace syntropy
     }
 
     template <typename TType>
-    constexpr Bytes BytesOf(const TType& rhs) noexcept
+    constexpr Bytes SizeOf(const TType& rhs) noexcept
     {
         return Bytes{ sizeof(rhs) };
     }
 
     template <typename TType>
-    constexpr Bytes BytesOf() noexcept
+    constexpr Bytes SizeOf() noexcept
     {
         return Bytes{ sizeof(TType) };
     }

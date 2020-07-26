@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <typeinfo>
+
+#include "syntropy/diagnostics/assert.h"
 #include "syntropy/core/types.h"
 #include "syntropy/core/span.h"
 #include "syntropy/memory/bytes.h"
@@ -74,6 +77,18 @@ namespace syntropy
     template <typename TElement>
     RWByteSpan ToRWByteSpan(const SpanT<TElement>& span) noexcept;
 
+    /// \brief Get the read-only object representation of an object.
+    /// An object representation is the sequence of bytes starting from the object address.
+    /// If the object type is not exactly TObject, the behavior of this method is undefined.
+    template <typename TObject>
+    ByteSpan BytesOf(const TObject& object);
+
+    /// \brief Get the read-write object representation of an object.
+    /// An object representation is the sequence of bytes starting from the object address.
+    /// If the object type is not exactly TObject, the behavior of this method is undefined.
+    template <typename TObject>
+    RWByteSpan RWBytesOf(TObject& object);
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -86,7 +101,7 @@ namespace syntropy
     template <typename TElement>
     constexpr Bytes Size(const SpanT<TElement>& span) noexcept
     {
-        return Count(span) * BytesOf<TElement>();
+        return Count(span) * SizeOf<TElement>();
     }
 
     inline Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept
@@ -175,6 +190,22 @@ namespace syntropy
         auto end = ToRWBytePtr(End(span));
 
         return { begin, end };
+    }
+
+    template <typename TObject>
+    inline ByteSpan BytesOf(const TObject& object)
+    {
+        SYNTROPY_UNDEFINED_BEHAVIOR(typeid(object) == typeid(TObject), "Dynamic type mismatch.");
+
+        return ByteSpan{ ToBytePtr(&object), ToInt(SizeOf<TObject>()) };
+    }
+
+    template <typename TObject>
+    inline RWByteSpan RWBytesOf(TObject& object)
+    {
+        SYNTROPY_UNDEFINED_BEHAVIOR(typeid(object) == typeid(TObject), "Dynamic type mismatch.");
+
+        return RWByteSpan{ ToRWBytePtr(&object), ToInt(SizeOf<TObject>()) };
     }
 
 }

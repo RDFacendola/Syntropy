@@ -107,7 +107,7 @@ namespace syntropy
 
     Pointer<const Context> Context::Registry::Allocate(const Context::TStringView& context_name)
     {
-        auto storage = reinterpret_cast<Pointer<Context>>(memory_resource_.Allocate(BytesOf<Context>(), AlignmentOf<Context>()).GetData());
+        auto storage = reinterpret_cast<Pointer<Context>>(memory_resource_.Allocate(SizeOf<Context>(), AlignmentOf<Context>()).GetData());
 
         new (storage) Context(context_name);
 

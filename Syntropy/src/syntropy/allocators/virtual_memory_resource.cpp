@@ -51,7 +51,7 @@ namespace syntropy
             free_ = reinterpret_cast<Pointer<FreeList>>(block.GetData());
 
             free_->next_ = next_free;
-            free_->span_ = ToRWSpan<RWBytePtr>(PopFront(block, ToInt(BytesOf<FreeList>())));
+            free_->span_ = ToRWSpan<RWBytePtr>(PopFront(block, ToInt(SizeOf<FreeList>())));
             free_->unallocated_ = free_->span_;
         }
         else

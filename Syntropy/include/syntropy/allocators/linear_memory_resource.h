@@ -171,7 +171,7 @@ namespace syntropy
 
         // Allocate a new chunk accounting for Chunk header and alignment requirements. Performance cost depends on the underlying memory resource.
 
-        auto chunk_size = Ceil(BytesOf<Chunk>() + size + alignment - 1_Bytes, chunk_size_);
+        auto chunk_size = Ceil(SizeOf<Chunk>() + size + alignment - 1_Bytes, chunk_size_);
 
         if (auto block = memory_resource_.Allocate(chunk_size))
         {
@@ -186,7 +186,7 @@ namespace syntropy
 
             // Allocate the block from the new chunk.
 
-            auto head = (block.Begin() + BytesOf<Chunk>()).GetAligned(alignment);
+            auto head = (block.Begin() + SizeOf<Chunk>()).GetAligned(alignment);
 
             head_ = head + size;
 

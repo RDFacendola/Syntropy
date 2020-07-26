@@ -167,7 +167,7 @@ namespace syntropy
     template <typename TObject>
     RWByteSpan ScopeAllocator<TMemoryResource>::AllocateObjectWithFinalizer()
     {
-        auto object_size = BytesOf<TObject>();
+        auto object_size = SizeOf<TObject>();
 
         if constexpr(std::is_trivially_destructible_v<TObject>)
         {
@@ -175,7 +175,7 @@ namespace syntropy
         }
         else
         {
-            auto finalizer_size = BytesOf<Finalizer>();
+            auto finalizer_size = SizeOf<Finalizer>();
 
             auto finalizer = memory_resource_.Allocate(object_size + finalizer_size).Begin().As<Finalizer>();
 
@@ -189,7 +189,7 @@ namespace syntropy
     template <typename TObject>
     RWByteSpan ScopeAllocator<TMemoryResource>::AllocateObjectWithFinalizer(Alignment alignment)
     {
-        auto object_size = BytesOf<TObject>();
+        auto object_size = SizeOf<TObject>();
         
         if constexpr(std::is_trivially_destructible_v<TObject>)
         {
@@ -197,7 +197,7 @@ namespace syntropy
         }
         else
         {
-            auto finalizer_size = BytesOf<Finalizer>();
+            auto finalizer_size = SizeOf<Finalizer>();
 
             auto padding_size = alignment - 1_Bytes;
 
@@ -232,7 +232,7 @@ namespace syntropy
     template <typename TMemoryResource>
     inline void* ScopeAllocator<TMemoryResource>::Finalizer::GetObject()
     {
-        return *(MemoryAddress(this) + BytesOf<Finalizer>());
+        return *(MemoryAddress(this) + SizeOf<Finalizer>());
     }
 
     // Non-member functions.

@@ -124,7 +124,7 @@ namespace syntropy
     template <typename TMemoryResource, typename TFallbackResource>
     inline void FallbackMemoryResource<TMemoryResource, TFallbackResource>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
-        SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block));
+        SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block), "The memory-block doesn't belong to this memory resource.");
 
         if (memory_resource_.Owns(block))
         {

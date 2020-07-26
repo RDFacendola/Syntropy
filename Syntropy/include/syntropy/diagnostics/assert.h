@@ -35,6 +35,6 @@ namespace syntropy
         if(!(condition)) { SYNTROPY_TRAP; }
 
     #undef SYNTROPY_UNDEFINED_BEHAVIOR
-    #define SYNTROPY_UNDEFINED_BEHAVIOR(condition) \
+    #define SYNTROPY_UNDEFINED_BEHAVIOR(condition, message) \
         if(!(condition)) { SYNTROPY_TRAP; }
 }

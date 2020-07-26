@@ -78,7 +78,7 @@ namespace syntropy
         using std::begin;
         using std::end;
 
-        auto string_range = ByteSpan(reinterpret_cast<BytePtr>(string.data()), ToInt(string.length() * BytesOf<TChar>()));
+        auto string_range = ByteSpan(reinterpret_cast<BytePtr>(string.data()), ToInt(string.length() * SizeOf<TChar>()));
 
         auto label_hash = Hash::FNV1a64(string_range);
 

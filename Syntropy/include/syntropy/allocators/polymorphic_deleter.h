@@ -86,8 +86,8 @@ namespace syntropy
         {
             DestroyAt(ToPointer<TType>(object));
 
-            auto block = RWByteSpan{ ToRWBytePtr(object), ToInt(BytesOf<TType>()) };
-
+            auto block = RWBytesOf(*ToPointer<TType>(object));
+            
             memory_resource.Deallocate(block, AlignmentOf<TType>());
         }
     }

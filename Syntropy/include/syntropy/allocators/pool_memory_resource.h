@@ -216,7 +216,7 @@ namespace syntropy
 
                 // Allocate the block from the new chunk.
 
-                auto head = (block.Begin() + BytesOf<Chunk>()).GetAligned(Alignment(block_size_));
+                auto head = (block.Begin() + SizeOf<Chunk>()).GetAligned(Alignment(block_size_));
 
                 head_ = head + block_size_;
 

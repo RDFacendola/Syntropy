@@ -61,12 +61,12 @@ namespace syntropy::unit_test
         SYNTROPY_UNIT_EQUAL(ToBytes(2), fixture.bytes2_);
     })
 
-    .TestCase("BytesOf return a bytes amount equal to the size of a type, converted to a bytes amount.", [](auto& fixture)
+    .TestCase("SizeOf return a bytes amount equal to the size of a type, converted to a bytes amount.", [](auto& fixture)
     {
         using namespace literals;
 
-        SYNTROPY_UNIT_EQUAL(BytesOf<Fix32>(), 4_Bytes);
-        SYNTROPY_UNIT_EQUAL(BytesOf(Fix64{}), 8_Bytes);
+        SYNTROPY_UNIT_EQUAL(SizeOf<Fix32>(), 4_Bytes);
+        SYNTROPY_UNIT_EQUAL(SizeOf(Fix64{}), 8_Bytes);
     })
 
     .TestCase("Default initialized Bytes are empty.", [](auto& fixture)
