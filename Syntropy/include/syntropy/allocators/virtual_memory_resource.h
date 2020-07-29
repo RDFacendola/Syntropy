@@ -11,7 +11,7 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/virtual_memory.h"
-#include "syntropy/memory/virtual_memory_range.h"
+#include "syntropy/memory/virtual_memory_buffer.h"
 #include "syntropy/math/math.h"
 #include "syntropy/diagnostics/assert.h"
 
@@ -50,13 +50,13 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a range representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// \param block Block to deallocate. Must refer to any allocation performed via Allocate(size, alignment).
         /// \param alignment Block alignment.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf());
+        void Deallocate(const RWByteSpan& block, Alignment alignment);
 
         /// \brief Check whether this memory resource owns the provided memory block.
         /// \param block Block to check the ownership of.
@@ -75,7 +75,7 @@ namespace syntropy
         struct FreeList;
 
         /// \brief Virtual memory range reserved for this resource.
-        VirtualMemoryRange virtual_memory_;
+        VirtualMemoryBuffer virtual_memory_;
 
         /// \brief Range of memory yet to allocate.
         RWByteSpan unallocated_;

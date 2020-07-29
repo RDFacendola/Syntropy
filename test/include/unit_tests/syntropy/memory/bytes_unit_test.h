@@ -65,8 +65,8 @@ namespace syntropy::unit_test
     {
         using namespace literals;
 
-        SYNTROPY_UNIT_EQUAL(SizeOf<Fix32>(), 4_Bytes);
-        SYNTROPY_UNIT_EQUAL(SizeOf(Fix64{}), 8_Bytes);
+        SYNTROPY_UNIT_EQUAL(Memory::SizeOf<Fix32>(), 4_Bytes);
+        SYNTROPY_UNIT_EQUAL(Memory::SizeOf(Fix64{}), 8_Bytes);
     })
 
     .TestCase("Default initialized Bytes are empty.", [](auto& fixture)

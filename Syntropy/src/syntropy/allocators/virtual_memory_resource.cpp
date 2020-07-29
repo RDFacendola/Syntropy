@@ -51,7 +51,7 @@ namespace syntropy
             free_ = reinterpret_cast<Pointer<FreeList>>(block.GetData());
 
             free_->next_ = next_free;
-            free_->span_ = ToRWSpan<RWBytePtr>(PopFront(block, ToInt(SizeOf<FreeList>())));
+            free_->span_ = ToRWSpan<RWBytePtr>(PopFront(block, ToInt(Memory::SizeOf<FreeList>())));
             free_->unallocated_ = free_->span_;
         }
         else
@@ -109,7 +109,7 @@ namespace syntropy
 
         // Allocate directly from the underlying virtual memory range.
 
-        if (Size(unallocated_) <= page_size_)
+        if (Memory::Size(unallocated_) <= page_size_)
         {
             auto block = Front(unallocated_, ToInt(page_size_));
 

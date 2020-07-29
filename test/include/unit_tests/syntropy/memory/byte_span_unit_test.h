@@ -46,7 +46,7 @@ namespace syntropy::unit_test
 
         auto span = Span<Fix64>{ nullptr, 10 };
 
-        SYNTROPY_UNIT_EQUAL(Size(span), Bytes{ 80 });
+        SYNTROPY_UNIT_EQUAL(Memory::Size(span), Bytes{ 80 });
     })
 
     .TestCase("Byte pointers are aligned to the same alignment requirement of the memory region they refer to.", [](auto& fixture)
@@ -55,13 +55,13 @@ namespace syntropy::unit_test
 
         auto byte_ptr = reinterpret_cast<BytePtr>(16);
 
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_ptr, 128_Alignment), false);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_ptr, 64_Alignment), false);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_ptr, 32_Alignment), false);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_ptr, 16_Alignment), true);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_ptr, 8_Alignment), true);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_ptr, 4_Alignment), true);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_ptr, 2_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_ptr, 128_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_ptr, 64_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_ptr, 32_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_ptr, 16_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_ptr, 8_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_ptr, 4_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_ptr, 2_Alignment), true);
     })
 
     .TestCase("Byte spans are aligned to the same alignment requirement of the memory region they refer to.", [](auto& fixture)
@@ -72,13 +72,13 @@ namespace syntropy::unit_test
 
         auto byte_span = ByteSpan{ byte_ptr, 4 };
 
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_span, 128_Alignment), false);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_span, 64_Alignment), false);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_span, 32_Alignment), false);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_span, 16_Alignment), true);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_span, 8_Alignment), true);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_span, 4_Alignment), true);
-        SYNTROPY_UNIT_EQUAL(IsAlignedTo(byte_span, 2_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_span, 128_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_span, 64_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_span, 32_Alignment), false);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_span, 16_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_span, 8_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_span, 4_Alignment), true);
+        SYNTROPY_UNIT_EQUAL(Memory::IsAlignedTo(byte_span, 2_Alignment), true);
     })
 
     .TestCase("Aligning a byte span to a value less than the original alignment returns the same span.", [](auto& fixture)
@@ -89,7 +89,7 @@ namespace syntropy::unit_test
 
         auto byte_span = ByteSpan{ byte_ptr, 4 };
 
-        SYNTROPY_UNIT_EQUAL(Align(byte_span, 16_Alignment), byte_span);
+        SYNTROPY_UNIT_EQUAL(Memory::Align(byte_span, 16_Alignment), byte_span);
     })
 
     .TestCase("Aligning an unaligned byte span reduces the span size by the difference between the original alignment and the requested one.", [](auto& fixture)
@@ -102,7 +102,7 @@ namespace syntropy::unit_test
         auto byte_span = ByteSpan{ byte_ptr, 8 };
         auto byte_span_aligned = ByteSpan{ byte_ptr_aligned, 2 };
 
-        SYNTROPY_UNIT_EQUAL(Align(byte_span, 8_Alignment), byte_span_aligned);
+        SYNTROPY_UNIT_EQUAL(Memory::Align(byte_span, 8_Alignment), byte_span_aligned);
     })
 
     .TestCase("Over-aligning a byte span returns an empty span.", [](auto& fixture)
@@ -113,7 +113,7 @@ namespace syntropy::unit_test
 
         auto byte_span = ByteSpan{ byte_ptr, 2 };
 
-        SYNTROPY_UNIT_EQUAL(Align(byte_span, 16_Alignment), ByteSpan{});
+        SYNTROPY_UNIT_EQUAL(Memory::Align(byte_span, 16_Alignment), ByteSpan{});
     })
 
     .TestCase("Byte spans can be converted to typed spans.", [](auto& fixture)

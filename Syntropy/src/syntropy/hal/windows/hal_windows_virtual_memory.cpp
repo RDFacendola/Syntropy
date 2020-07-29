@@ -26,16 +26,16 @@ namespace syntropy
     /* HAL VIRTUAL MEMORY                                                   */
     /************************************************************************/
 
-    Bytes HALVirtualMemory::GetPageSize()
+    Bytes HALVirtualMemory::GetPageSize() noexcept
     {
         SYSTEM_INFO system_info;
 
         GetSystemInfo(&system_info);
 
-        return Bytes(system_info.dwPageSize);
+        return Bytes{ system_info.dwPageSize };
     }
 
-    Alignment HALVirtualMemory::GetPageAlignment()
+    Alignment HALVirtualMemory::GetPageAlignment() noexcept
     {
         SYSTEM_INFO system_info;
 
@@ -46,7 +46,7 @@ namespace syntropy
         return ToAlignment(system_info.dwPageSize);
     }
 
-    RWByteSpan HALVirtualMemory::Allocate(Bytes size)
+    RWByteSpan HALVirtualMemory::Allocate(Bytes size) noexcept
     {
         // Allocate up to the next page boundary.
 
@@ -54,13 +54,13 @@ namespace syntropy
         {
             auto data = VirtualAlloc(0, ToInt(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-            return { reinterpret_cast<RWBytePtr>(data), ToInt(size) };
+            return { ToRWBytePtr(data), ToInt(size) };
         }
 
         return {};
     }
 
-    RWByteSpan HALVirtualMemory::Reserve(Bytes size)
+    RWByteSpan HALVirtualMemory::Reserve(Bytes size) noexcept
     {
         // Reserve up to the next page boundary.
 
@@ -68,13 +68,13 @@ namespace syntropy
         {
             auto data = VirtualAlloc(0, ToInt(size), MEM_RESERVE, PAGE_READWRITE);
 
-            return { reinterpret_cast<RWBytePtr>(data), ToInt(size) };
+            return { ToRWBytePtr(data), ToInt(size) };
         }
 
         return {};
     }
 
-    Bool HALVirtualMemory::Release(const RWByteSpan& byte_span)
+    Bool HALVirtualMemory::Release(const RWByteSpan& byte_span) noexcept
     {
         if (byte_span)
         {
@@ -86,11 +86,11 @@ namespace syntropy
         return true;
     }
 
-    Bool HALVirtualMemory::Commit(const RWByteSpan& byte_span)
+    Bool HALVirtualMemory::Commit(const RWByteSpan& byte_span) noexcept
     {
         if (byte_span)
         {
-            auto size = ToInt(Size(byte_span));
+            auto size = ToInt(Memory::Size(byte_span));
 
             // Commit each page containing at least one byte in the range.
 
@@ -100,11 +100,11 @@ namespace syntropy
         return true;
     }
 
-    Bool HALVirtualMemory::Decommit(const RWByteSpan& byte_span)
+    Bool HALVirtualMemory::Decommit(const RWByteSpan& byte_span) noexcept
     {
         if (byte_span)
         {
-            auto size = ToInt(Size(byte_span));
+            auto size = ToInt(Memory::Size(byte_span));
 
             // Decommit each page containing at least one byte in the range.
 

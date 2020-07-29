@@ -1,6 +1,6 @@
 
 /// \file memory.h
-/// \brief This header is part of the Syntropy memory module. It contains generic functionalities used to manipulate memory.
+/// \brief This header is part of the Syntropy memory module. It contains low-level memory functionalities.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -11,9 +11,13 @@
 
 #include "syntropy/language/type_traits.h"
 #include "syntropy/language/initializer_list.h"
+
 #include "syntropy/core/types.h"
-#include "syntropy/memory/bytes.h"
+#include "syntropy/core/span.h"
+
 #include "syntropy/memory/byte_span.h"
+#include "syntropy/memory/bytes.h"
+#include "syntropy/memory/alignment.h"
 
 #include "syntropy/diagnostics/assert.h"
 
@@ -23,9 +27,28 @@ namespace syntropy
     /* MEMORY                                                               */
     /************************************************************************/
 
-    /// \brief Exposes utility methods to manipulate memory.
+    /// \brief Exposes methods used to manipulate memory.
     namespace Memory
     {
+
+        /// \brief Reinterpret an object representation from a type to another type.
+        template <typename TTo, typename TFrom>
+        TTo BitCast(const TFrom& rhs);
+
+        /// \brief Check whether a byte span is aligned to a given alignment value.
+        /// If the provided span is empty the behavior of this method is undefined.
+        Bool IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept;
+
+        /// \brief Consume a byte span from the back until its first byte is aligned to a given boundary or the span is exhausted.
+        ByteSpan Align(const ByteSpan& byte_span, Alignment alignment) noexcept;
+
+        /// \brief Consume a byte span from the back until its first byte is aligned to a given boundary or the span is exhausted.
+        RWByteSpan Align(const RWByteSpan& byte_span, Alignment alignment) noexcept;
+
+        /// \brief Convert a pointer to its numeric address value.
+        template <typename TType>
+        Int NumericAddress(Pointer<TType> pointer) noexcept;
+
         /// \brief Copy a source memory region to a destination memory region. Neither span is exceed during the process.
         /// \return Returns the bytes copied as a result of this call.
         Bytes Copy(const RWByteSpan& destination, const ByteSpan& source);
@@ -47,13 +70,6 @@ namespace syntropy
         /// \return Returns the bytes copied as a result of this call.
         Bytes Scatter(InitializerList<RWByteSpan> destinations, const ByteSpan& source);
 
-        /// \brief Reinterpret an object representation from a type to another type.
-        template <typename TTo, typename TFrom>
-        TTo BitCast(const TFrom& rhs);
-
-        /// \brief Reinterpret a pointer to its numeric address value.
-        template <typename TType>
-        constexpr Int ToIntAddress(const TType* rhs);
     };
 
     /************************************************************************/
@@ -62,6 +78,47 @@ namespace syntropy
 
     // Memory.
     // =======
+
+    template <typename TTo, typename TFrom>
+    inline TTo Memory::BitCast(const TFrom& rhs)
+    {
+        static_assert(sizeof(TTo) == sizeof(TFrom), "TTo and TFrom must have the same size.");
+        static_assert(IsTriviallyCopyableV<TFrom>, "TFrom must be trivially copyable.");
+        static_assert(IsTrivialV<TTo>, "TTo must be trivial.");
+        static_assert(IsCopyConstructibleV<TTo> || IsMoveConstructibleV<TTo>, "TTo must either be copy constructible or move constructible.");
+        static_assert(IsTriviallyDefaultConstructibleV<TTo>, "TTo must be trivially default constructible.");
+
+        auto lhs = TTo{};
+
+        std::memcpy(&lhs, &rhs, sizeof(TTo));
+
+        return lhs;
+    }
+
+    inline Bool Memory::IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept
+    {
+        return IsAlignedTo(byte_span.GetData(), alignment);
+    }
+
+    inline ByteSpan Memory::Align(const ByteSpan& byte_span, Alignment alignment) noexcept
+    {
+        auto aligned_data = Align(byte_span.GetData(), alignment);
+
+        return { Math::Min(aligned_data, End(byte_span)), End(byte_span) };
+    }
+
+    inline RWByteSpan Memory::Align(const RWByteSpan& byte_span, Alignment alignment) noexcept
+    {
+        auto aligned_data = Align(byte_span.GetData(), alignment);
+
+        return { Math::Min(aligned_data, End(byte_span)), End(byte_span) };
+    }
+
+    template <typename TType>
+    inline Int Memory::NumericAddress(Pointer<TType> pointer) noexcept
+    {
+        return reinterpret_cast<Int>(pointer);
+    }
 
     inline void Memory::Repeat(const RWByteSpan& destination, const ByteSpan& source)
     {
@@ -81,30 +138,6 @@ namespace syntropy
     inline void Memory::Zero(const RWByteSpan& destination)
     {
         Set(destination, Byte{ 0 });
-    }
-
-    template <typename TTo, typename TFrom>
-    inline TTo Memory::BitCast(const TFrom& rhs)
-    {
-        static_assert(sizeof(TTo) == sizeof(TFrom), "TTo and TFrom must have the same size.");
-        static_assert(IsTriviallyCopyableV<TFrom>, "TFrom must be trivially copyable.");
-        static_assert(IsTrivialV<TTo>, "TTo must be trivial.");
-        static_assert(IsCopyConstructibleV<TTo> || IsMoveConstructibleV<TTo>, "TTo must either be copy constructible or move constructible.");
-        static_assert(IsTriviallyDefaultConstructibleV<TTo>, "TTo must be trivially default constructible.");
-
-        auto lhs = TTo{};
-
-        std::memcpy(&lhs, &rhs, sizeof(TTo));
-
-        return lhs;
-    }
-
-    template <typename TType>
-    constexpr Int Memory::ToIntAddress(const TType* rhs)
-    {
-        static_assert(sizeof(Int) >= sizeof(std::intptr_t));
-
-        return reinterpret_cast<Int>(rhs);
     }
 
 }

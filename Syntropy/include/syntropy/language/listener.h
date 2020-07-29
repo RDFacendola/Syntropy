@@ -100,6 +100,7 @@ namespace syntropy
     /************************************************************************/
 
     // EventHandler.
+    // =============
 
     inline EventHandler::~EventHandler()
     {
@@ -107,6 +108,7 @@ namespace syntropy
     }
 
     // Listener.
+    // =========
 
     inline Listener::Listener(UniquePtr<EventHandler> event_handler)
     {

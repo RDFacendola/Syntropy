@@ -78,7 +78,7 @@ namespace syntropy
         using std::begin;
         using std::end;
 
-        auto string_range = ByteSpan(reinterpret_cast<BytePtr>(string.data()), ToInt(string.length() * SizeOf<TChar>()));
+        auto string_range = ByteSpan(reinterpret_cast<BytePtr>(string.data()), ToInt(string.length() * Memory::SizeOf<TChar>()));
 
         auto label_hash = Hash::FNV1a64(string_range);
 
@@ -104,7 +104,7 @@ namespace syntropy
     {
         // One extra byte accounts for the null terminator.
 
-        auto label_storage = memory_resource_.Allocate(Size(string_range) + 1_Bytes, AlignmentOf<Label::TChar*>());
+        auto label_storage = memory_resource_.Allocate(Memory::Size(string_range) + 1_Bytes, Memory::AlignmentOf<Label::TChar*>());
 
         auto label = reinterpret_cast<Pointer<const TChar>>(label_storage.GetData());
 

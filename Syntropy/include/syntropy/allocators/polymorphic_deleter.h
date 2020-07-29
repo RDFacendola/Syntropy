@@ -8,6 +8,7 @@
 
 #include "syntropy/language/utility.h"
 #include "syntropy/core/types.h"
+#include "syntropy/memory/memory.h"
 #include "syntropy/allocators/memory_resource.h"
 
 namespace syntropy
@@ -84,11 +85,13 @@ namespace syntropy
     {
         if (object)
         {
-            DestroyAt(ToPointer<TType>(object));
+            auto object_ptr = ToPointer<TType>(object);
 
-            auto block = RWBytesOf(*ToPointer<TType>(object));
-            
-            memory_resource.Deallocate(block, AlignmentOf<TType>());
+            auto block = Memory::RWBytesOf(*object_ptr);        // Memory must be read before destroying the object in order to account for proper dynamic type.
+
+            DestroyAt(object_ptr);
+
+            memory_resource.Deallocate(block, Memory::AlignmentOf<TType>());
         }
     }
 

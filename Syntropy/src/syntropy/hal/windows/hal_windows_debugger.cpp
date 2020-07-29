@@ -120,7 +120,7 @@ namespace syntropy
     {
         auto stack_frame = STACKFRAME64{};
 
-        Memory::Zero(RWByteSpan{ reinterpret_cast<RWBytePtr>(&stack_frame), ToInt(SizeOf(stack_frame)) });
+        Memory::Zero(Memory::RWBytesOf(stack_frame));
 
         // https://msdn.microsoft.com/it-it/library/windows/desktop/ms680646(v=vs.85).aspx
 

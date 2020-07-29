@@ -8,6 +8,7 @@
 
 #include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
+
 #include "syntropy/memory/memory.h"
 
 namespace syntropy
@@ -157,7 +158,7 @@ namespace syntropy
     {
         // Labels are never deallocated, hence their memory location is unique.
 
-        return Memory::ToIntAddress(rhs.GetCharacters());
+        return Memory::NumericAddress(rhs.GetCharacters());
     }
 
     inline void swap(Label& lhs, Label& rhs) noexcept

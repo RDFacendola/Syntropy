@@ -10,7 +10,7 @@ namespace syntropy
 
     ByteSpan StreamBuffer::Append(const ByteSpan& data)
     {
-        auto data_size = Size(data);
+        auto data_size = Memory::Size(data);
 
         if (data_size > Bytes{ 0 })
         {
@@ -40,7 +40,7 @@ namespace syntropy
     {
         auto read_range = Read(Bytes{ 0 }, data);
 
-        auto data_size = Size(read_range);
+        auto data_size = Memory::Size(read_range);
 
         base_pointer_ = GetAddress(data_size);
 
@@ -58,10 +58,10 @@ namespace syntropy
     {
         auto written_data = [this, position, &data]()
         {
-            auto source = Front(data, ToInt(Math::Min(Size(data), size_ - position)));                                                          // Limit writable data to current buffer size.
+            auto source = Front(data, ToInt(Math::Min(Memory::Size(data), size_ - position)));                                                          // Limit writable data to current buffer size.
 
             auto destination_begin = GetAddress(position);
-            auto destination_end = GetAddress(position + Size(source));
+            auto destination_end = GetAddress(position + Memory::Size(source));
 
             if (destination_begin < destination_end)
             {
@@ -80,10 +80,10 @@ namespace syntropy
     {
         auto read_data = [this, position, &data]()
         {
-            auto destination = Front(data, ToInt(Math::Min(Size(data), size_ - position)));                                                     // Limit readable data to current buffer size.
+            auto destination = Front(data, ToInt(Math::Min(Memory::Size(data), size_ - position)));                                                     // Limit readable data to current buffer size.
 
             auto source_begin = GetAddress(position);
-            auto source_end = GetAddress(position + Size(destination));
+            auto source_end = GetAddress(position + Memory::Size(destination));
 
             if (source_begin < source_end)
             {
@@ -102,7 +102,7 @@ namespace syntropy
     {
         auto buffer = MemoryBuffer{ capacity, buffer_.GetMemoryResource() };
 
-        if ((buffer_.GetSize() > Bytes{ 0 }) && (capacity > Bytes{ 0 }))
+        if ((Memory::SizeOf(buffer_) > Bytes{ 0 }) && (capacity > Bytes{ 0 }))
         {
             auto head_pointer = GetAddress(size_);
 
@@ -131,7 +131,7 @@ namespace syntropy
     {
         offset = ToBytes(base_pointer_ + offset - Begin(buffer_.GetData()));    // Advance.
 
-        offset = ToBytes(offset % buffer_.GetSize());                           // Wrap-around.
+        offset = ToBytes(offset % Memory::Size(buffer_));                       // Wrap-around.
 
         return Begin(buffer_.GetData()) + offset;                               // Offset in buffer-space.
 

@@ -178,7 +178,7 @@ namespace syntropy
     inline StreamBuffer::StreamBuffer(MemoryBuffer&& buffer)
         : buffer_(std::move(buffer))
         , base_pointer_(Begin(buffer_.GetData()))
-        , size_(buffer_.GetSize())
+        , size_(Memory::Size(buffer_))
         , append_size_(size_)
         , consume_size_(size_)
     {
@@ -186,9 +186,9 @@ namespace syntropy
     }
 
     inline StreamBuffer::StreamBuffer(const MemoryBuffer& buffer, MemoryResource& memory_resource)
-        : buffer_(buffer.GetSize(), memory_resource)
+        : buffer_(Memory::Size(buffer), memory_resource)
         , base_pointer_(Begin(buffer_.GetData()))
-        , size_(buffer_.GetSize())
+        , size_(Memory::Size(buffer_))
     {
         Memory::Copy(buffer_.GetData(), buffer.GetData());
     }
@@ -234,7 +234,7 @@ namespace syntropy
 
     inline Bytes StreamBuffer::GetCapacity() const
     {
-        return buffer_.GetSize();
+        return Memory::Size(buffer_);
     }
 
     inline MemoryResource& StreamBuffer::GetMemoryResource() const

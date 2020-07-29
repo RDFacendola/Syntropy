@@ -20,22 +20,24 @@ namespace syntropy
     enum class Bytes : Int {};
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* MEMORY                                                               */
     /************************************************************************/
 
-    /// \brief Convert an amount of bytes to integer.
-    constexpr Int ToInt(Bytes lhs) noexcept;
+    /// \brief Exposes bytes-related functions.
+    namespace Memory
+    {
+        /// \brief Get the size of rhs, in bytes.
+        template <typename TType>
+        constexpr Bytes SizeOf(const TType& rhs) noexcept;
 
-    /// \brief Convert an integer number to a bytes amount.
-    constexpr Bytes ToBytes(Int lhs) noexcept;
+        /// \brief Get the size of TType, in bytes.
+        template <typename TType>
+        constexpr Bytes SizeOf() noexcept;
+    }
 
-    /// \brief Get the size of rhs, in bytes.
-    template <typename TType>
-    constexpr Bytes SizeOf(const TType& rhs) noexcept;
-
-    /// \brief Get the size of TType, in bytes.
-    template <typename TType>
-    constexpr Bytes SizeOf() noexcept;
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
     /// \brief Sum a byte amount to an existing value.
     constexpr Bytes& operator+=(Bytes& lhs, Bytes rhs) noexcept;
@@ -163,6 +165,16 @@ namespace syntropy
     std::ostream& operator<<(std::ostream& lhs, Bytes rhs);
 
     /************************************************************************/
+    /* TYPE CAST                                                            */
+    /************************************************************************/
+
+    /// \brief Convert an amount of bytes to integer.
+    constexpr Int ToInt(Bytes lhs) noexcept;
+
+    /// \brief Convert an integer number to a bytes amount.
+    constexpr Bytes ToBytes(Int lhs) noexcept;
+
+    /************************************************************************/
     /* LITERALS                                                             */
     /************************************************************************/
 
@@ -194,29 +206,23 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Non-member functions.
-
-    constexpr Int ToInt(Bytes lhs) noexcept
-    {
-        return static_cast<Int>(lhs);
-    }
-
-    constexpr Bytes ToBytes(Int lhs) noexcept
-    {
-        return Bytes{ lhs };
-    }
+    // Memory.
+    // =======
 
     template <typename TType>
-    constexpr Bytes SizeOf(const TType& rhs) noexcept
+    constexpr Bytes Memory::SizeOf(const TType& rhs) noexcept
     {
         return Bytes{ sizeof(rhs) };
     }
 
     template <typename TType>
-    constexpr Bytes SizeOf() noexcept
+    constexpr Bytes Memory::SizeOf() noexcept
     {
         return Bytes{ sizeof(TType) };
     }
+
+    // Non-member functions.
+    // =====================
 
     constexpr Bytes& operator+=(Bytes& lhs, Bytes rhs) noexcept
     {
@@ -445,6 +451,18 @@ namespace syntropy
     inline std::ostream& operator<<(std::ostream& lhs, Bytes rhs)
     {
         return lhs << ToInt(rhs);
+    }
+
+    // Type cast.
+
+    constexpr Int ToInt(Bytes lhs) noexcept
+    {
+        return static_cast<Int>(lhs);
+    }
+
+    constexpr Bytes ToBytes(Int lhs) noexcept
+    {
+        return Bytes{ lhs };
     }
 
     // Literals.

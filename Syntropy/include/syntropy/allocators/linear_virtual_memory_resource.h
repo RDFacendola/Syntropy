@@ -7,12 +7,16 @@
 #pragma once
 
 #include "syntropy/core/types.h"
+
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
+#include "syntropy/memory/memory.h"
 #include "syntropy/memory/virtual_memory.h"
-#include "syntropy/memory/virtual_memory_range.h"
+#include "syntropy/memory/virtual_memory_buffer.h"
+
 #include "syntropy/math/math.h"
+
 #include "syntropy/diagnostics/assert.h"
 
 namespace syntropy
@@ -49,11 +53,11 @@ namespace syntropy
         /// \param size Size of the memory block to allocate.
         /// \param alignment Block alignment.
         /// \return Returns a span representing the requested aligned memory block. If no allocation could be performed returns an empty range.
-        RWByteSpan Allocate(Bytes size, Alignment alignment = MaxAlignmentOf()) noexcept;
+        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate an aligned memory block.
         /// Pointer-level deallocations are not supported, therefore this method does nothing.
-        void Deallocate(const RWByteSpan& block, Alignment alignment = MaxAlignmentOf()) noexcept;
+        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
         /// \brief Deallocate every allocation performed so far.
         void DeallocateAll() noexcept;
@@ -77,7 +81,7 @@ namespace syntropy
     private:
 
         /// \brief Virtual memory range reserved for this resource.
-        VirtualMemoryRange virtual_memory_;
+        VirtualMemoryBuffer virtual_memory_;
 
         /// \brief Span of unallocated memory.
         RWByteSpan free_;
@@ -106,7 +110,7 @@ namespace syntropy
         , granularity_(ToAlignment(Math::Ceil(granularity, VirtualMemory::GetPageSize())))
     {
         auto commit_head = free_.GetData();
-        auto commit_tail = Align(free_, ToAlignment(granularity)).GetData();
+        auto commit_tail = Memory::Align(free_, ToAlignment(granularity)).GetData();
 
         VirtualMemory::Commit({ commit_head, commit_tail });
     }
@@ -134,7 +138,7 @@ namespace syntropy
     inline void LinearVirtualMemoryResource::DeallocateAll() noexcept
     {
         auto decommit_head = virtual_memory_.GetData().GetData();
-        auto decommit_tail = Align(free_, granularity_).GetData();
+        auto decommit_tail = Memory::Align(free_, granularity_).GetData();
 
         VirtualMemory::Decommit({ decommit_head, decommit_tail });
 
@@ -162,7 +166,7 @@ namespace syntropy
 
     inline void LinearVirtualMemoryResource::RestoreState(RWByteSpan state)
     {
-        state = Align(state, granularity_);
+        state = Memory::Align(state, granularity_);
 
         VirtualMemory::Decommit(state);
 

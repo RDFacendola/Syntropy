@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <cstddef>
 
+#include "syntropy/hal/hal_macro.h"
+
 namespace syntropy
 {
     /************************************************************************/
@@ -120,6 +122,16 @@ namespace syntropy
     template <typename TType>
     constexpr RWBytePtr ToRWBytePtr(Pointer<TType> pointer) noexcept;
 
+    /// \brief Convert a typeless pointer to another pointer type.
+    /// If the pointed object is not related to TType, the behavior of this method is undefined.
+    template <typename TType>
+    Pointer<const TType> FromTypeless(TypelessPtr rhs) noexcept;
+
+    /// \brief Convert a typeless pointer to another pointer type.
+    /// If the pointed object is not related to TType, the behavior of this method is undefined.
+    template <typename TType>
+    Pointer<TType> FromTypeless(RWTypelessPtr rhs) noexcept;
+
     /************************************************************************/
     /* STREAM INSERTION                                                     */
     /************************************************************************/
@@ -203,6 +215,18 @@ namespace syntropy
     constexpr RWBytePtr ToRWBytePtr(Pointer<TType> pointer) noexcept
     {
         return reinterpret_cast<RWBytePtr>(pointer);
+    }
+
+    template <typename TType>
+    Pointer<const TType> FromTypeless(TypelessPtr rhs) noexcept
+    {
+        return reinterpret_cast<Pointer<const TType>>(rhs);
+    }
+
+    template <typename TType>
+    Pointer<TType> FromTypeless(RWTypelessPtr rhs) noexcept
+    {
+        return reinterpret_cast<Pointer<TType>>(rhs);
     }
 
     // Stream insertion.
