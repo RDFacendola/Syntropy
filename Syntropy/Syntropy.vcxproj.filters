@@ -59,7 +59,6 @@
     <ClInclude Include="include\syntropy\allocators\polymorphic_deleter.h" />
     <ClInclude Include="include\syntropy\language\memory.h" />
     <ClInclude Include="include\syntropy\core\smart_pointers.h" />
-    <ClInclude Include="include\syntropy\memory\memory_buffer.h" />
     <ClInclude Include="include\syntropy\language\tuple.h" />
     <ClInclude Include="include\syntropy\math\interpolations.h" />
     <ClInclude Include="include\syntropy\math\numeric.h" />
@@ -118,6 +117,7 @@
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
     <ClInclude Include="include\syntropy\core\array.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory_buffer.h" />
+    <ClInclude Include="include\syntropy\memory\buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

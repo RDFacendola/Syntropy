@@ -1,5 +1,5 @@
 
-/// \file memory_buffer.h
+/// \file buffer.h
 /// \brief This header is part of the Syntropy memory module. It contains classes and definitions for raw memory buffers.
 ///
 /// \author Raffaele D. Facendola - 2017
@@ -16,49 +16,49 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* MEMORY BUFFER                                                        */
+    /* BUFFER                                                               */
     /************************************************************************/
 
-    /// \brief Represents a raw memory buffer allocated from a memory resource.
+    /// \brief Represents a raw buffer allocated from a memory resource.
     /// Buffer size is immutable and decided during construction.
     /// \author Raffaele D. Facendola - February 2017
-    class MemoryBuffer
+    class Buffer
     {
     public:
 
         /// \brief Create a new empty buffer.
         /// The buffer is zero-filled.
-        MemoryBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource()) noexcept;
+        Buffer(MemoryResource& memory_resource = GetDefaultMemoryResource()) noexcept;
 
         /// \brief Create a new memory buffer.
         /// The buffer is zero-filled.
         /// \param size Size of the buffer, in bytes.
         /// \param memory_resource Memory resource the buffer will be allocated from.
-        MemoryBuffer(Bytes size, MemoryResource& memory_resource = GetDefaultMemoryResource()) noexcept;
+        Buffer(Bytes size, MemoryResource& memory_resource = GetDefaultMemoryResource()) noexcept;
 
         /// \brief Create a new memory buffer.
         /// The buffer is zero-filled.
         /// \param size Size of the buffer, in bytes.
         /// \param alignment Buffer alignment.
         /// \param memory_resource Memory resource the buffer will be allocated from.
-        MemoryBuffer(Bytes size, Alignment alignment, MemoryResource& memory_resource = GetDefaultMemoryResource()) noexcept;
+        Buffer(Bytes size, Alignment alignment, MemoryResource& memory_resource = GetDefaultMemoryResource()) noexcept;
 
         /// \brief Copy constructor.
         /// This method allocates a new buffer and copy the content to the other instance.
         /// \param other Buffer to copy.
-        MemoryBuffer(const MemoryBuffer& other) noexcept;
+        Buffer(const Buffer& other) noexcept;
 
         /// \brief Move constructor.
         /// This method moves the other buffer to this instance.
         /// \param other Buffer to move.
-        MemoryBuffer(MemoryBuffer&& other) noexcept;
+        Buffer(Buffer&& other) noexcept;
 
         /// \brief Unified assignment operator.
         /// This method propagates underlying memory resource as well.
-        MemoryBuffer& operator=(MemoryBuffer other) noexcept;
+        Buffer& operator=(Buffer other) noexcept;
 
         /// \brief Destructor.
-        ~MemoryBuffer() noexcept;
+        ~Buffer() noexcept;
 
         /// \brief Access the underlying byte span.
         ByteSpan GetData() const noexcept;
@@ -75,14 +75,14 @@ namespace syntropy
 
         /// \brief Swap the content of this buffer with another one.
         /// \remarks This method swaps underlying memory resources as well.
-        void Swap(MemoryBuffer& other) noexcept;
+        void Swap(Buffer& other) noexcept;
 
     private:
 
-        ///< \brief Memory buffer.
+        /// \brief Buffer.
         RWByteSpan buffer_;
 
-        ///< \brief Memory resource the buffer was allocated on.
+        /// \brief Memory resource the buffer was allocated on.
         Pointer<MemoryResource> memory_resource_{ nullptr };
 
         /// \brief Buffer alignment.
@@ -98,36 +98,29 @@ namespace syntropy
     namespace Memory
     {
         /// \brief Get the memory footprint of a memory buffer.
-        Bytes Size(const MemoryBuffer& span) noexcept;
+        Bytes Size(const Buffer& span) noexcept;
     }
-
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Swaps two memory buffers.
-    void swap(MemoryBuffer& lhs, MemoryBuffer& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // MemoryBuffer.
+    // Buffer.
     // =============
 
-    inline MemoryBuffer::MemoryBuffer(MemoryResource& memory_resource) noexcept
-        : MemoryBuffer(Bytes{}, Alignment{}, memory_resource)
+    inline Buffer::Buffer(MemoryResource& memory_resource) noexcept
+        : Buffer(Bytes{}, Alignment{}, memory_resource)
     {
 
     }
 
-    inline MemoryBuffer::MemoryBuffer(Bytes size, MemoryResource& memory_resource) noexcept
-        : MemoryBuffer(size, Alignment{}, memory_resource)
+    inline Buffer::Buffer(Bytes size, MemoryResource& memory_resource) noexcept
+        : Buffer(size, Alignment{}, memory_resource)
     {
 
     }
 
-    inline MemoryBuffer::MemoryBuffer(Bytes size, Alignment alignment, MemoryResource& memory_resource) noexcept
+    inline Buffer::Buffer(Bytes size, Alignment alignment, MemoryResource& memory_resource) noexcept
         : memory_resource_(&memory_resource)
         , alignment_(alignment)
         , buffer_(memory_resource.Allocate(size, alignment))
@@ -135,13 +128,13 @@ namespace syntropy
         Memory::Zero(buffer_);
     }
 
-    inline MemoryBuffer::MemoryBuffer(const MemoryBuffer& other) noexcept
-        : MemoryBuffer(Memory::Size(other), other.alignment_, *other.memory_resource_)
+    inline Buffer::Buffer(const Buffer& other) noexcept
+        : Buffer(Memory::Size(other), other.alignment_, *other.memory_resource_)
     {
         Memory::Copy(buffer_, other.buffer_);
     }
 
-    inline MemoryBuffer::MemoryBuffer(MemoryBuffer&& other) noexcept
+    inline Buffer::Buffer(Buffer&& other) noexcept
         : memory_resource_(other.memory_resource_)
         , alignment_(other.alignment_)
         , buffer_(other.buffer_)
@@ -149,14 +142,14 @@ namespace syntropy
         other.buffer_ = {}; // Null-out other's buffer.
     }
 
-    inline MemoryBuffer& MemoryBuffer::operator=(MemoryBuffer other) noexcept
+    inline Buffer& Buffer::operator=(Buffer other) noexcept
     {
         Swap(other);
 
         return *this;
     }
 
-    inline MemoryBuffer::~MemoryBuffer() noexcept
+    inline Buffer::~Buffer() noexcept
     {
         if (memory_resource_)
         {
@@ -164,27 +157,27 @@ namespace syntropy
         }
     }
 
-    inline ByteSpan MemoryBuffer::GetData() const noexcept
+    inline ByteSpan Buffer::GetData() const noexcept
     {
         return buffer_;
     }
 
-    inline RWByteSpan MemoryBuffer::GetData() noexcept
+    inline RWByteSpan Buffer::GetData() noexcept
     {
         return buffer_;
     }
 
-    inline Alignment MemoryBuffer::GetAlignment() const noexcept
+    inline Alignment Buffer::GetAlignment() const noexcept
     {
         return alignment_;
     }
 
-    inline MemoryResource& MemoryBuffer::GetMemoryResource() const noexcept
+    inline MemoryResource& Buffer::GetMemoryResource() const noexcept
     {
         return *memory_resource_;
     }
 
-    inline void MemoryBuffer::Swap(MemoryBuffer& other) noexcept
+    inline void Buffer::Swap(Buffer& other) noexcept
     {
         std::swap(memory_resource_, other.memory_resource_);
         std::swap(alignment_, other.alignment_);
@@ -194,17 +187,9 @@ namespace syntropy
     // Memory.
     // =======
 
-    inline Bytes Memory::Size(const MemoryBuffer& span) noexcept
+    inline Bytes Memory::Size(const Buffer& span) noexcept
     {
         return Memory::Size(span.GetData());
-    }
-
-    // Non-member functions.
-    // =====================
-
-    inline void swap(MemoryBuffer& lhs, MemoryBuffer& rhs) noexcept
-    {
-        lhs.Swap(rhs);
     }
 
 }

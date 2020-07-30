@@ -1,5 +1,5 @@
 
-/// \file virtual_memory_buffer.h
+/// \file virtual_buffer.h
 /// \brief This header is part of the Syntropy memory module. It contains classes and functionalities for automatic virtual memory management.
 ///
 /// \author Raffaele D. Facendola - 2018

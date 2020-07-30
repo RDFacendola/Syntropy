@@ -100,7 +100,7 @@ namespace syntropy
 
     void StreamBuffer::Realloc(Bytes capacity)
     {
-        auto buffer = MemoryBuffer{ capacity, buffer_.GetMemoryResource() };
+        auto buffer = Buffer{ capacity, buffer_.GetMemoryResource() };
 
         if ((Memory::SizeOf(buffer_) > Bytes{ 0 }) && (capacity > Bytes{ 0 }))
         {

@@ -13,7 +13,7 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/byte_span.h"
-#include "syntropy/memory/memory_buffer.h"
+#include "syntropy/memory/buffer.h"
 #include "syntropy/allocators/memory_resource.h"
 #include "syntropy/math/constants.h"
 #include "syntropy/math/math.h"
@@ -39,10 +39,10 @@ namespace syntropy
         StreamBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Create a new stream by moving an existing memory buffer.
-        StreamBuffer(MemoryBuffer&& buffer);
+        StreamBuffer(Buffer&& buffer);
 
         /// \brief Create a new stream by copying a memory buffer.
-        StreamBuffer(const MemoryBuffer& buffer, MemoryResource& memory_resource);
+        StreamBuffer(const Buffer& buffer, MemoryResource& memory_resource);
 
         /// \brief Default copy constructor.
         StreamBuffer(const StreamBuffer& other) = default;
@@ -83,7 +83,7 @@ namespace syntropy
         void Discard();
 
         /// \brief Release and return underlying memory buffer and clear the stream buffer.
-        MemoryBuffer Release();
+        Buffer Release();
 
         /// \brief Increase the underlying buffer allocation up to a given size.
         void Reserve(Bytes capacity);
@@ -136,7 +136,7 @@ namespace syntropy
 
         /// \brief Underlying memory buffer, may be larger than current stream size.
         /// This buffer is circular to prevent reallocations from consume operations.
-        MemoryBuffer buffer_;
+        Buffer buffer_;
 
         /// \brief Offset within the buffer data start from (inclusive).
         RWBytePtr base_pointer_;
@@ -175,7 +175,7 @@ namespace syntropy
 
     }
 
-    inline StreamBuffer::StreamBuffer(MemoryBuffer&& buffer)
+    inline StreamBuffer::StreamBuffer(Buffer&& buffer)
         : buffer_(std::move(buffer))
         , base_pointer_(Begin(buffer_.GetData()))
         , size_(Memory::Size(buffer_))
@@ -185,7 +185,7 @@ namespace syntropy
 
     }
 
-    inline StreamBuffer::StreamBuffer(const MemoryBuffer& buffer, MemoryResource& memory_resource)
+    inline StreamBuffer::StreamBuffer(const Buffer& buffer, MemoryResource& memory_resource)
         : buffer_(Memory::Size(buffer), memory_resource)
         , base_pointer_(Begin(buffer_.GetData()))
         , size_(Memory::Size(buffer_))
@@ -242,7 +242,7 @@ namespace syntropy
         return buffer_.GetMemoryResource();
     }
 
-    inline MemoryBuffer StreamBuffer::Release()
+    inline Buffer StreamBuffer::Release()
     {
         // Rotate the underlying buffer such that base pointer is shifted in first position.
 
@@ -250,7 +250,7 @@ namespace syntropy
 
         // Clear.
 
-        auto buffer = MemoryBuffer(buffer_.GetMemoryResource());
+        auto buffer = Buffer(buffer_.GetMemoryResource());
 
         buffer.Swap(buffer_);
         base_pointer_ = Begin(buffer_.GetData());
