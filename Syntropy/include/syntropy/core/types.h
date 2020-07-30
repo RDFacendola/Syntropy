@@ -64,16 +64,16 @@ namespace syntropy
     template <typename TType>
     using Pointer = TType*;
 
-    /// \brief Represents a raw pointer to a read-only memory location.
+    /// \brief A non-owning raw pointer to a read-only memory location.
     using BytePtr = Pointer<const Byte>;
 
-    /// \brief Represents a raw pointer to a read-write memory location.
+    /// \brief A non-owning raw pointer to a read-write memory location.
     using RWBytePtr = Pointer<Byte>;
 
-    /// \brief A pointer to a typeless read-only memory location.
+    /// \brief A non-owning pointer to a typeless read-only memory location.
     using TypelessPtr = Pointer<const void>;
 
-    /// \brief A pointer to a typeless read-write memory location.
+    /// \brief A non-owning pointer to a typeless read-write memory location.
     using RWTypelessPtr = Pointer<void>;
 
     /************************************************************************/

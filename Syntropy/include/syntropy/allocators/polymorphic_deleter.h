@@ -87,11 +87,11 @@ namespace syntropy
         {
             auto object_ptr = ToPointer<TType>(object);
 
-            auto block = Memory::RWBytesOf(*object_ptr);        // Memory must be read before destroying the object in order to account for proper dynamic type.
+            auto storage = Memory::RWBytesOf(*object_ptr);          // Memory must be read before destroying the object in order to account for proper dynamic type.
 
             DestroyAt(object_ptr);
 
-            memory_resource.Deallocate(block, Memory::AlignmentOf<TType>());
+            memory_resource.Deallocate(storage, Memory::AlignmentOf<TType>());
         }
     }
 
