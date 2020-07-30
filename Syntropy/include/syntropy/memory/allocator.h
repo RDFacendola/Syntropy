@@ -1,6 +1,6 @@
 
-/// \file memory_resource.h
-/// \brief This header is part of the Syntropy allocators module. It contains definitions for memory resources.
+/// \file allocator.h
+/// \brief This header is part of the Syntropy memory module. It contains definitions for base allocators.
 ///
 /// \author Raffaele D. Facendola - 2020
 
@@ -19,38 +19,38 @@ namespace syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    class MemoryResource;
+    class Allocator;
 
     /// \brief Get a memory resource that uses the global operator new and operator delete to allocate memory.
-    MemoryResource& GetSystemMemoryResource() noexcept;
+    Allocator& GetSystemMemoryResource() noexcept;
 
     /// \brief Get the thread-local default memory resource.
     /// \remarks The local default memory resource is used by certain facilities when an explicit memory resource is not supplied.
-    MemoryResource& GetDefaultMemoryResource() noexcept;
+    Allocator& GetDefaultMemoryResource() noexcept;
 
     /// \brief Set the thread-local default memory resource.
     /// \return Returns the previous value of the local default memory resource.
     /// \remarks The local default memory resource is used by certain facilities when an explicit memory resource is not supplied.
-    MemoryResource& SetDefaultMemoryResource(MemoryResource& memory_resource) noexcept;
+    Allocator& SetDefaultMemoryResource(Allocator& memory_resource) noexcept;
 
     /************************************************************************/
-    /* MEMORY RESOURCE                                                      */
+    /* ALLOCATOR                                                            */
     /************************************************************************/
 
     /// \brief Represents an abstract interface to an unbounded set of classes encapsulating memory resources.
     /// This class mimics and replaces standard's std::memory_resource. Standard's global default memory resoures are deemed
     /// to be harmful since it may cause non-coherent allocation behavior in the same scope.
     /// \author Raffaele D. Facendola - April 2020.
-    class MemoryResource
+    class Allocator
     {
-        friend MemoryResource& GetSystemMemoryResource() noexcept;
-        friend MemoryResource& GetDefaultMemoryResource() noexcept;
-        friend MemoryResource& SetDefaultMemoryResource(MemoryResource& memory_resource) noexcept;
+        friend Allocator& GetSystemMemoryResource() noexcept;
+        friend Allocator& GetDefaultMemoryResource() noexcept;
+        friend Allocator& SetDefaultMemoryResource(Allocator& memory_resource) noexcept;
 
     public:
 
         /// \brief Default virtual destructor.
-        virtual ~MemoryResource() = default;
+        virtual ~Allocator() = default;
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
@@ -66,27 +66,27 @@ namespace syntropy
     private:
 
         /// \brief Get the active memory resource in the current scope.
-        static Pointer<MemoryResource>& GetScopeMemoryResource() noexcept;
+        static Pointer<Allocator>& GetScopeMemoryResource() noexcept;
 
     };
 
     /************************************************************************/
-    /* MEMORY RESOURCE T <TMEMORY RESOURCE>                                 */
+    /* ALLOCATOR <ALLOCATOR>                                                */
     /************************************************************************/
 
     /// \brief Tier Omega memory resource used to forward calls to an underlying, type-erased, memory resource.
     /// \author Raffaele D. Facendola - April 2020
-    template <typename TMemoryResource>
-    class MemoryResourceT : public MemoryResource
+    template <typename TAllocator>
+    class AllocatorT : public Allocator
     {
     public:
 
         /// \brief Create a new memory resource.
         template <typename... TArguments>
-        MemoryResourceT(TArguments&&... arguments) noexcept;
+        AllocatorT(TArguments&&... arguments) noexcept;
 
         /// \brief Default virtual destructor.
-        virtual ~MemoryResourceT() = default;
+        virtual ~AllocatorT() = default;
 
         virtual RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept override;
 
@@ -95,15 +95,15 @@ namespace syntropy
         virtual Bool Owns(const ByteSpan& block) const noexcept override;
 
         /// \brief Get the underlying memory resource.
-        TMemoryResource& GetMemoryResource() noexcept;
+        TAllocator& GetMemoryResource() noexcept;
 
         /// \brief Get the underlying memory resource.
-        const TMemoryResource& GetMemoryResource() const noexcept;
+        const TAllocator& GetMemoryResource() const noexcept;
 
     private:
 
         /// \brief Underlying memory resource.
-        TMemoryResource memory_resource_;
+        TAllocator memory_resource_;
 
     };
 
@@ -114,74 +114,74 @@ namespace syntropy
     // Non-member functions.
     // =====================
 
-    inline MemoryResource& GetSystemMemoryResource() noexcept
+    inline Allocator& GetSystemMemoryResource() noexcept
     {
-        static auto system_memory_resource = MemoryResourceT<SystemMemoryResource>{};
+        static auto system_memory_resource = AllocatorT<SystemMemoryResource>{};
 
         return system_memory_resource;
     }
 
-    inline MemoryResource& GetDefaultMemoryResource() noexcept
+    inline Allocator& GetDefaultMemoryResource() noexcept
     {
-        return *MemoryResource::GetScopeMemoryResource();
+        return *Allocator::GetScopeMemoryResource();
     }
 
-    inline MemoryResource& SetDefaultMemoryResource(MemoryResource& memory_resource) noexcept
+    inline Allocator& SetDefaultMemoryResource(Allocator& memory_resource) noexcept
     {
         auto& previous_memory_resource = GetDefaultMemoryResource();
 
-        MemoryResource::GetScopeMemoryResource() = &memory_resource;
+        Allocator::GetScopeMemoryResource() = &memory_resource;
 
         return previous_memory_resource;
     }
 
-    // MemoryResource.
-    // ===============
+    // Allocator.
+    // ==========
 
-    inline Pointer<MemoryResource>& MemoryResource::GetScopeMemoryResource() noexcept
+    inline Pointer<Allocator>& Allocator::GetScopeMemoryResource() noexcept
     {
-        static thread_local Pointer<MemoryResource> default_memory_resource_ = &GetSystemMemoryResource();
+        static thread_local Pointer<Allocator> default_memory_resource_ = &GetSystemMemoryResource();
 
         return default_memory_resource_;
     }
 
-    // MemoryResourceT<TMemoryResource>.
-    // =================================
+    // AllocatorT<TAllocator>.
+    // ============================
 
-    template <typename TMemoryResource>
+    template <typename TAllocator>
     template <typename... TArguments>
-    inline MemoryResourceT<TMemoryResource>::MemoryResourceT(TArguments&&... arguments) noexcept
+    inline AllocatorT<TAllocator>::AllocatorT(TArguments&&... arguments) noexcept
         : memory_resource_(std::forward<TArguments>(arguments)...)
     {
 
     }
 
-    template <typename TMemoryResource>
-    inline RWByteSpan MemoryResourceT<TMemoryResource>::Allocate(Bytes size, Alignment alignment) noexcept
+    template <typename TAllocator>
+    inline RWByteSpan AllocatorT<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         return memory_resource_.Allocate(size, alignment);
     }
 
-    template <typename TMemoryResource>
-    inline void MemoryResourceT<TMemoryResource>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
+    template <typename TAllocator>
+    inline void AllocatorT<TAllocator>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
         memory_resource_.Deallocate(block, alignment);
     }
 
-    template <typename TMemoryResource>
-    inline Bool MemoryResourceT<TMemoryResource>::Owns(const ByteSpan& block) const noexcept
+    template <typename TAllocator>
+    inline Bool AllocatorT<TAllocator>::Owns(const ByteSpan& block) const noexcept
     {
         return memory_resource_.Owns(block);
     }
 
-    template <typename TMemoryResource>
-    inline TMemoryResource& MemoryResourceT<TMemoryResource>::GetMemoryResource() noexcept
+    template <typename TAllocator>
+    inline TAllocator& AllocatorT<TAllocator>::GetMemoryResource() noexcept
     {
         return memory_resource_;
     }
 
-    template <typename TMemoryResource>
-    inline const TMemoryResource& MemoryResourceT<TMemoryResource>::GetMemoryResource() const noexcept
+    template <typename TAllocator>
+    inline const TAllocator& AllocatorT<TAllocator>::GetMemoryResource() const noexcept
     {
         return memory_resource_;
     }

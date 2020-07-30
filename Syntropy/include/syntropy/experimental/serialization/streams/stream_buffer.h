@@ -14,7 +14,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/buffer.h"
-#include "syntropy/allocators/memory_resource.h"
+#include "syntropy/memory/allocator.h"
 #include "syntropy/math/constants.h"
 #include "syntropy/math/math.h"
 
@@ -36,13 +36,13 @@ namespace syntropy
     public:
 
         /// \brief Create a new empty stream.
-        StreamBuffer(MemoryResource& memory_resource = GetDefaultMemoryResource());
+        StreamBuffer(Allocator& memory_resource = GetDefaultMemoryResource());
 
         /// \brief Create a new stream by moving an existing memory buffer.
         StreamBuffer(Buffer&& buffer);
 
         /// \brief Create a new stream by copying a memory buffer.
-        StreamBuffer(const Buffer& buffer, MemoryResource& memory_resource);
+        StreamBuffer(const Buffer& buffer, Allocator& memory_resource);
 
         /// \brief Default copy constructor.
         StreamBuffer(const StreamBuffer& other) = default;
@@ -104,7 +104,7 @@ namespace syntropy
         Bytes GetCapacity() const;
 
         /// \brief Access the memory resource the underlying buffer is allocated on.
-        MemoryResource& GetMemoryResource() const;
+        Allocator& GetMemoryResource() const;
 
         /// \brief Swap the content of this stream with another one.
         /// \remarks This method swaps underlying memory resources as well.
@@ -168,7 +168,7 @@ namespace syntropy
 
     // StreamBuffer.
 
-    inline StreamBuffer::StreamBuffer(MemoryResource& memory_resource)
+    inline StreamBuffer::StreamBuffer(Allocator& memory_resource)
         : buffer_(memory_resource)
         , base_pointer_(Begin(buffer_.GetData()))
     {
@@ -185,7 +185,7 @@ namespace syntropy
 
     }
 
-    inline StreamBuffer::StreamBuffer(const Buffer& buffer, MemoryResource& memory_resource)
+    inline StreamBuffer::StreamBuffer(const Buffer& buffer, Allocator& memory_resource)
         : buffer_(Memory::Size(buffer), memory_resource)
         , base_pointer_(Begin(buffer_.GetData()))
         , size_(Memory::Size(buffer_))
@@ -237,7 +237,7 @@ namespace syntropy
         return Memory::Size(buffer_);
     }
 
-    inline MemoryResource& StreamBuffer::GetMemoryResource() const
+    inline Allocator& StreamBuffer::GetMemoryResource() const
     {
         return buffer_.GetMemoryResource();
     }

@@ -12,7 +12,7 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
 
-#include "syntropy/allocators/memory_resource.h"
+#include "syntropy/memory/allocator.h"
 
 #include "syntropy/containers/vector.h"
 

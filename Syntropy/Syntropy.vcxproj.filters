@@ -16,7 +16,6 @@
     <ClInclude Include="include\syntropy\allocators\pool_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\counting_memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\scope_allocator.h" />
-    <ClInclude Include="include\syntropy\allocators\memory_resource.h" />
     <ClInclude Include="include\syntropy\allocators\memory_context.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
     <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
@@ -118,6 +117,7 @@
     <ClInclude Include="include\syntropy\core\array.h" />
     <ClInclude Include="include\syntropy\memory\buffer.h" />
     <ClInclude Include="include\syntropy\memory\virtual_buffer.h" />
+    <ClInclude Include="include\syntropy\memory\allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

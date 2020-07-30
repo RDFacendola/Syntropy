@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/core/types.h"
-#include "syntropy/allocators/memory_resource.h"
+#include "syntropy/memory/allocator.h"
 
 namespace syntropy
 {
@@ -23,7 +23,7 @@ namespace syntropy
     public:
 
         /// \brief Set a new memory resource for the current scope.
-        MemoryContext(MemoryResource& memory_resource) noexcept;
+        MemoryContext(Allocator& memory_resource) noexcept;
 
         /// \brief Restore the previous memory resource.
         ~MemoryContext() noexcept;
@@ -37,7 +37,7 @@ namespace syntropy
     public:
 
         /// \brief Previous memory resource.
-        Pointer<MemoryResource> previous_memory_resource_{ nullptr };
+        Pointer<Allocator> previous_memory_resource_{ nullptr };
 
     };
 
@@ -48,7 +48,7 @@ namespace syntropy
     // MemoryContext.
     // ==============
 
-    inline MemoryContext::MemoryContext(MemoryResource& memory_resource) noexcept
+    inline MemoryContext::MemoryContext(Allocator& memory_resource) noexcept
         : previous_memory_resource_(&SetDefaultMemoryResource(memory_resource))
     {
 

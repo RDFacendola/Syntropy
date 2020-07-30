@@ -9,7 +9,7 @@
 #include "syntropy/language/utility.h"
 #include "syntropy/core/types.h"
 #include "syntropy/memory/memory.h"
-#include "syntropy/allocators/memory_resource.h"
+#include "syntropy/memory/allocator.h"
 
 namespace syntropy
 {
@@ -17,7 +17,7 @@ namespace syntropy
     /* POLYMORPHIC DELETER                                                  */
     /************************************************************************/
 
-    /// \brief Deleter used to destroy objects allocated via a MemoryResource.
+    /// \brief Deleter used to destroy objects allocated via a Allocator.
     /// The underlying type is erased to promote propagation and assignment with smart pointers.
     /// \author Raffaele D. Facendola - May 2020.
     class PolymorphicDeleter
@@ -29,7 +29,7 @@ namespace syntropy
 
         /// \brief Create a new polymorphic deleter with explicit memory resource.
         template <typename TType>
-        PolymorphicDeleter(TypeT<TType>, MemoryResource& memory_resource) noexcept;
+        PolymorphicDeleter(TypeT<TType>, Allocator& memory_resource) noexcept;
 
         /// \brief Destroy an object allocated on the underlying memory resource.
         void operator()(RWTypelessPtr object);
@@ -37,18 +37,18 @@ namespace syntropy
     private:
 
         /// \brief Type of a function used to destroy objects.
-        using TDestructor = void(*)(MemoryResource&, RWTypelessPtr);
+        using TDestructor = void(*)(Allocator&, RWTypelessPtr);
 
         /// \brief Function used to destroy strongly-typed objects.
         /// If the provided object's type is not equal to TType the behavior of this method is undefined.
         template <typename TType>
-        static void Destroy(MemoryResource& memory_resource, RWTypelessPtr object);
+        static void Destroy(Allocator& memory_resource, RWTypelessPtr object);
 
         /// \brief Destructor.
         TDestructor destructor_{ nullptr };
 
         /// \brief Underlying memory resource.
-        Pointer<MemoryResource> memory_resource_ = &GetDefaultMemoryResource();
+        Pointer<Allocator> memory_resource_ = &GetDefaultMemoryResource();
 
     };
 
@@ -59,7 +59,7 @@ namespace syntropy
     /// \brief Create a new deleter from a memory resource.
     /// The returned deleter can deallocate any object allocated via the provided memory resource.
     template <typename TType>
-    PolymorphicDeleter MakePolymorphicDeleter(MemoryResource& memory_resource);
+    PolymorphicDeleter MakePolymorphicDeleter(Allocator& memory_resource);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -68,7 +68,7 @@ namespace syntropy
     // PolymorphicDeleter<TType>.
 
     template <typename TType>
-    inline PolymorphicDeleter::PolymorphicDeleter(TypeT<TType>, MemoryResource& memory_resource) noexcept
+    inline PolymorphicDeleter::PolymorphicDeleter(TypeT<TType>, Allocator& memory_resource) noexcept
         : destructor_(&Destroy<TType>)
         , memory_resource_(&memory_resource)
     {
@@ -81,7 +81,7 @@ namespace syntropy
     }
 
     template <typename TType>
-    inline void PolymorphicDeleter::Destroy(MemoryResource& memory_resource, RWTypelessPtr object)
+    inline void PolymorphicDeleter::Destroy(Allocator& memory_resource, RWTypelessPtr object)
     {
         if (object)
         {
@@ -98,7 +98,7 @@ namespace syntropy
     // Non-member functions.
 
     template <typename TType>
-    inline PolymorphicDeleter MakePolymorphicDeleter(MemoryResource& memory_resource)
+    inline PolymorphicDeleter MakePolymorphicDeleter(Allocator& memory_resource)
     {
         return PolymorphicDeleter(kType<TType>, memory_resource);
     }

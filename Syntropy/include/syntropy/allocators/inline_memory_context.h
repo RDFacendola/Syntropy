@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/allocators/memory_resource.h"
+#include "syntropy/memory/allocator.h"
 
 namespace syntropy
 {
@@ -39,10 +39,10 @@ namespace syntropy
     public:
 
         /// \brief Underlying memory resource.
-        MemoryResourceT<TMemoryResource> memory_resource_;
+        AllocatorT<TMemoryResource> memory_resource_;
 
         /// \brief Previous memory resource.
-        Pointer<MemoryResource> previous_memory_resource_ = nullptr;
+        Pointer<Allocator> previous_memory_resource_ = nullptr;
 
     };
 

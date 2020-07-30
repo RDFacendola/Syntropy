@@ -11,7 +11,7 @@
 #include "syntropy/language/utility.h"
 #include "syntropy/language/memory.h"
 
-#include "syntropy/allocators/memory_resource.h"
+#include "syntropy/memory/allocator.h"
 
 #include "syntropy/allocators/polymorphic_allocator.h"
 #include "syntropy/allocators/polymorphic_deleter.h"
