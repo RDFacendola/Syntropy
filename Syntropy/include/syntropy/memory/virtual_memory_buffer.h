@@ -76,15 +76,7 @@ namespace syntropy
     {
         /// \brief Get the memory footprint of a virtual memory buffer.
         Bytes Size(const VirtualMemoryBuffer& buffer) noexcept;
-    }
 
-    /************************************************************************/
-    /* VIRTUAL MEMORY                                                       */
-    /************************************************************************/
-
-    /// \brief Exposes virtual memory-related definitions.
-    namespace VirtualMemory
-    {
         /// \brief Commit a virtual memory buffer.
         /// \return Returns true if the memory could be committed, returns false otherwise.
         Bool Commit(VirtualMemoryBuffer& buffer) noexcept;
@@ -92,7 +84,7 @@ namespace syntropy
         /// \brief Decommit a virtual memory buffer.
         /// \return Returns true if the memory could be committed, returns false otherwise.
         Bool Decommit(VirtualMemoryBuffer& buffer) noexcept;
-    };
+    }
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -102,7 +94,7 @@ namespace syntropy
     // ====================
 
     inline VirtualMemoryBuffer::VirtualMemoryBuffer(Bytes size) noexcept
-        : buffer_(VirtualMemory::Reserve(size))
+        : buffer_(Memory::Reserve(size))
     {
 
     }
@@ -121,7 +113,7 @@ namespace syntropy
 
     inline VirtualMemoryBuffer::~VirtualMemoryBuffer() noexcept
     {
-        VirtualMemory::Release(buffer_);
+        Memory::Release(buffer_);
     }
 
     inline VirtualMemoryBuffer& VirtualMemoryBuffer::operator=(VirtualMemoryBuffer rhs) noexcept
@@ -154,17 +146,14 @@ namespace syntropy
         return Memory::Size(span.GetData());
     }
 
-    // VirtualMemory.
-    // ==============
-
-    inline Bool VirtualMemory::Commit(VirtualMemoryBuffer& buffer) noexcept
+    inline Bool Memory::Commit(VirtualMemoryBuffer& buffer) noexcept
     {
-        return VirtualMemory::Commit(buffer.GetData());
+        return Memory::Commit(buffer.GetData());
     }
 
-    inline Bool VirtualMemory::Decommit(VirtualMemoryBuffer& buffer) noexcept
+    inline Bool Memory::Decommit(VirtualMemoryBuffer& buffer) noexcept
     {
-        return VirtualMemory::Commit(buffer.GetData());
+        return Memory::Commit(buffer.GetData());
     }
 
 }

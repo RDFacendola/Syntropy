@@ -107,8 +107,8 @@ namespace syntropy
     inline VirtualMemoryResource::VirtualMemoryResource(Bytes capacity, Bytes page_size) noexcept
         : virtual_memory_(capacity)
         , unallocated_(virtual_memory_.GetData())
-        , page_size_(Math::Ceil(page_size, VirtualMemory::GetPageSize()))
-        , page_alignment_(ToAlignment(VirtualMemory::GetPageSize()))
+        , page_size_(Math::Ceil(page_size, Memory::GetPageSize()))
+        , page_alignment_(ToAlignment(Memory::GetPageSize()))
     {
 
     }

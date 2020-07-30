@@ -28,7 +28,7 @@ namespace syntropy
         {
             if (auto block = Allocate())
             {
-                VirtualMemory::Commit(block);           // Kernel call: commit the entire block.
+                Memory::Commit(block);                  // Kernel call: commit the entire block.
 
                 return Front(block, ToInt(size));
             }
@@ -66,7 +66,7 @@ namespace syntropy
 
             auto virtual_block = RWByteSpan{ block.GetData(), ToInt(page_size_) };
 
-            VirtualMemory::Decommit(virtual_block);
+            Memory::Decommit(virtual_block);
         }
     }
 

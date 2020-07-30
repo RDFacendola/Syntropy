@@ -5,42 +5,42 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* VIRTUAL MEMORY                                                       */
+    /* MEMORY                                                               */
     /************************************************************************/
 
-    Bytes VirtualMemory::GetPageSize() noexcept
+    Bytes Memory::GetPageSize() noexcept
     {
-        return HALVirtualMemory::GetPageSize();
+        return HALMemory::GetPageSize();
     }
 
-    Alignment VirtualMemory::GetPageAlignment() noexcept
+    Alignment Memory::GetPageAlignment() noexcept
     {
-        return HALVirtualMemory::GetPageAlignment();
+        return HALMemory::GetPageAlignment();
     }
 
-    RWByteSpan VirtualMemory::Reserve(Bytes size) noexcept
+    RWByteSpan Memory::Reserve(Bytes size) noexcept
     {
-        return HALVirtualMemory::Reserve(size);
+        return HALMemory::Reserve(size);
     }
 
-    RWByteSpan VirtualMemory::Allocate(Bytes size) noexcept
+    RWByteSpan Memory::Allocate(Bytes size) noexcept
     {
-        return HALVirtualMemory::Allocate(size);
+        return HALMemory::Allocate(size);
     }
 
-    Bool VirtualMemory::Release(const RWByteSpan& byte_span) noexcept
+    Bool Memory::Release(const RWByteSpan& byte_span) noexcept
     {
-        return HALVirtualMemory::Release(byte_span);
+        return HALMemory::Release(byte_span);
     }
 
-    Bool VirtualMemory::Commit(const RWByteSpan& byte_span) noexcept
+    Bool Memory::Commit(const RWByteSpan& byte_span) noexcept
     {
-        return HALVirtualMemory::Commit(byte_span);
+        return HALMemory::Commit(byte_span);
     }
 
-    Bool VirtualMemory::Decommit(const RWByteSpan& byte_span) noexcept
+    Bool Memory::Decommit(const RWByteSpan& byte_span) noexcept
     {
-        return HALVirtualMemory::Decommit(byte_span);
+        return HALMemory::Decommit(byte_span);
     }
 
 }

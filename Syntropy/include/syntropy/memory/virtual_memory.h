@@ -14,11 +14,11 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* VIRTUAL MEMORY                                                       */
+    /* MEMORY                                                               */
     /************************************************************************/
 
     /// \brief Wraps the low-level calls used to handle virtual memory allocation.
-    namespace VirtualMemory
+    namespace Memory
     {
         /// \brief Get the virtual memory page size.
         /// \return Returns the virtual memory page size, in bytes.

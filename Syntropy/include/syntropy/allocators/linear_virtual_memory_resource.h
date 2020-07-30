@@ -107,12 +107,12 @@ namespace syntropy
     inline LinearVirtualMemoryResource::LinearVirtualMemoryResource(Bytes capacity, Bytes granularity) noexcept
         : virtual_memory_(capacity)
         , free_(virtual_memory_.GetData())
-        , granularity_(ToAlignment(Math::Ceil(granularity, VirtualMemory::GetPageSize())))
+        , granularity_(ToAlignment(Math::Ceil(granularity, Memory::GetPageSize())))
     {
         auto commit_head = free_.GetData();
         auto commit_tail = Memory::Align(free_, ToAlignment(granularity)).GetData();
 
-        VirtualMemory::Commit({ commit_head, commit_tail });
+        Memory::Commit({ commit_head, commit_tail });
     }
 
     inline LinearVirtualMemoryResource::LinearVirtualMemoryResource(LinearVirtualMemoryResource&& rhs) noexcept
@@ -140,7 +140,7 @@ namespace syntropy
         auto decommit_head = virtual_memory_.GetData().GetData();
         auto decommit_tail = Memory::Align(free_, granularity_).GetData();
 
-        VirtualMemory::Decommit({ decommit_head, decommit_tail });
+        Memory::Decommit({ decommit_head, decommit_tail });
 
         free_ = virtual_memory_.GetData();
     }
@@ -168,7 +168,7 @@ namespace syntropy
     {
         state = Memory::Align(state, granularity_);
 
-        VirtualMemory::Decommit(state);
+        Memory::Decommit(state);
 
         free_ = state;
     }

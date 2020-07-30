@@ -13,12 +13,12 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* HAL VIRTUAL MEMORY                                                   */
+    /* HAL MEMORY                                                           */
     /************************************************************************/
 
     /// \brief Abstracts low level primitives used to handle virtual memory.
     /// \author Raffaele D. Facendola - 2017
-    namespace HALVirtualMemory
+    namespace HALMemory
     {
         /// \brief Get the virtual memory page size.
         /// \return Returns the virtual memory page size, in bytes.

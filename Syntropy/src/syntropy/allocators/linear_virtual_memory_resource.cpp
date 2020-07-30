@@ -17,7 +17,7 @@ namespace syntropy
             auto commit_head = Memory::Align(block, granularity_).GetData();
             auto commit_tail = Memory::Align(free_, granularity_).GetData();
 
-            VirtualMemory::Commit({ commit_head, commit_tail });
+            Memory::Commit({ commit_head, commit_tail });
 
             return block;
         }
