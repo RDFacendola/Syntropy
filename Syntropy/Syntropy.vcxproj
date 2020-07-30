@@ -103,7 +103,7 @@
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\memory\buffer.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
-    <ClInclude Include="include\syntropy\memory\virtual_memory_buffer.h" />
+    <ClInclude Include="include\syntropy\memory\virtual_buffer.h" />
     <ClInclude Include="include\syntropy\platform\endianness.h" />
     <ClInclude Include="include\syntropy\platform\intrinsics.h" />
     <ClInclude Include="include\syntropy\platform\system.h" />

@@ -116,8 +116,8 @@
     <ClInclude Include="include\syntropy\unit_test\unit_test.h" />
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
     <ClInclude Include="include\syntropy\core\array.h" />
-    <ClInclude Include="include\syntropy\memory\virtual_memory_buffer.h" />
     <ClInclude Include="include\syntropy\memory\buffer.h" />
+    <ClInclude Include="include\syntropy\memory\virtual_buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

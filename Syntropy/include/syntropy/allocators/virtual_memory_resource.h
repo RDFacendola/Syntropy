@@ -11,7 +11,7 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/virtual_memory.h"
-#include "syntropy/memory/virtual_memory_buffer.h"
+#include "syntropy/memory/virtual_buffer.h"
 #include "syntropy/math/math.h"
 #include "syntropy/diagnostics/assert.h"
 
@@ -75,7 +75,7 @@ namespace syntropy
         struct FreeList;
 
         /// \brief Virtual memory range reserved for this resource.
-        VirtualMemoryBuffer virtual_memory_;
+        VirtualBuffer virtual_memory_;
 
         /// \brief Range of memory yet to allocate.
         RWByteSpan unallocated_;

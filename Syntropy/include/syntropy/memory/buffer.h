@@ -106,7 +106,7 @@ namespace syntropy
     /************************************************************************/
 
     // Buffer.
-    // =============
+    // =======
 
     inline Buffer::Buffer(MemoryResource& memory_resource) noexcept
         : Buffer(Bytes{}, Alignment{}, memory_resource)

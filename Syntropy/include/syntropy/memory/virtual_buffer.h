@@ -14,42 +14,42 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* VIRTUAL MEMORY BUFFER                                                */
+    /* VIRTUAL BUFFER                                                       */
     /************************************************************************/
 
     /// \brief Represents a raw buffer mapped to a virtual memory which is reserved during construction and released upon destruction via RAII paradigm.
     /// Buffer ownership is exclusive and can only be moved to other virtual memory buffers.
     /// The buffer is aligned to system virtual memory-page boundary.
     /// \author Raffaele D. Facendola - August 2018
-    class VirtualMemoryBuffer
+    class VirtualBuffer
     {
     public:
 
         /// \brief Create a new empty virtual memory buffer.
-        VirtualMemoryBuffer() noexcept = default;
+        VirtualBuffer() noexcept = default;
 
         /// \brief Reserve a virtual memory buffer.
         /// \param size Size of the buffer, in bytes.
         /// \remarks The buffer starts uncommitted.
-        VirtualMemoryBuffer(Bytes size) noexcept;
+        VirtualBuffer(Bytes size) noexcept;
 
         /// \brief Take ownership of the provided virtual memory span.
         /// If the provided span wasn't allocated from system virtual memory, the result of this method is undefined.
-        explicit VirtualMemoryBuffer(const RWByteSpan& byte_span) noexcept;
+        explicit VirtualBuffer(const RWByteSpan& byte_span) noexcept;
 
         /// \brief No copy constructor.
-        VirtualMemoryBuffer(const VirtualMemoryBuffer&) = delete;
+        VirtualBuffer(const VirtualBuffer&) = delete;
 
         /// \brief Move constructor.
         /// Assign the virtual memory buffer of another instance to this one.
         /// \param rhs Virtual memory buffer to move.
-        VirtualMemoryBuffer(VirtualMemoryBuffer&& rhs) noexcept;
+        VirtualBuffer(VirtualBuffer&& rhs) noexcept;
 
         /// \brief Release reserved virtual memory.
-        ~VirtualMemoryBuffer() noexcept;
+        ~VirtualBuffer() noexcept;
 
         /// \brief Unified assignment operator.
-        VirtualMemoryBuffer& operator=(VirtualMemoryBuffer rhs) noexcept;
+        VirtualBuffer& operator=(VirtualBuffer rhs) noexcept;
 
         /// \brief Access the underlying byte span.
         ByteSpan GetData() const noexcept;
@@ -58,7 +58,7 @@ namespace syntropy
         RWByteSpan GetData() noexcept;
 
         /// \brief Swap the content of this buffer with another one.
-        void Swap(VirtualMemoryBuffer& rhs) noexcept;
+        void Swap(VirtualBuffer& rhs) noexcept;
 
     private:
 
@@ -75,65 +75,65 @@ namespace syntropy
     namespace Memory
     {
         /// \brief Get the memory footprint of a virtual memory buffer.
-        Bytes Size(const VirtualMemoryBuffer& buffer) noexcept;
+        Bytes Size(const VirtualBuffer& buffer) noexcept;
 
         /// \brief Commit a virtual memory buffer.
         /// \return Returns true if the memory could be committed, returns false otherwise.
-        Bool Commit(VirtualMemoryBuffer& buffer) noexcept;
+        Bool Commit(VirtualBuffer& buffer) noexcept;
 
         /// \brief Decommit a virtual memory buffer.
         /// \return Returns true if the memory could be committed, returns false otherwise.
-        Bool Decommit(VirtualMemoryBuffer& buffer) noexcept;
+        Bool Decommit(VirtualBuffer& buffer) noexcept;
     }
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // VirtualMemoryBuffer.
-    // ====================
+    // VirtualBuffer.
+    // ==============
 
-    inline VirtualMemoryBuffer::VirtualMemoryBuffer(Bytes size) noexcept
+    inline VirtualBuffer::VirtualBuffer(Bytes size) noexcept
         : buffer_(Memory::Reserve(size))
     {
 
     }
 
-    inline VirtualMemoryBuffer::VirtualMemoryBuffer(const RWByteSpan& byte_span) noexcept
+    inline VirtualBuffer::VirtualBuffer(const RWByteSpan& byte_span) noexcept
         : buffer_(byte_span)
     {
 
     }
 
-    inline VirtualMemoryBuffer::VirtualMemoryBuffer(VirtualMemoryBuffer&& rhs) noexcept
+    inline VirtualBuffer::VirtualBuffer(VirtualBuffer&& rhs) noexcept
         : buffer_(rhs.buffer_)
     {
         rhs.buffer_ = {};
     }
 
-    inline VirtualMemoryBuffer::~VirtualMemoryBuffer() noexcept
+    inline VirtualBuffer::~VirtualBuffer() noexcept
     {
         Memory::Release(buffer_);
     }
 
-    inline VirtualMemoryBuffer& VirtualMemoryBuffer::operator=(VirtualMemoryBuffer rhs) noexcept
+    inline VirtualBuffer& VirtualBuffer::operator=(VirtualBuffer rhs) noexcept
     {
         rhs.Swap(*this);
 
         return *this;
     }
 
-    inline void VirtualMemoryBuffer::Swap(VirtualMemoryBuffer& rhs) noexcept
+    inline void VirtualBuffer::Swap(VirtualBuffer& rhs) noexcept
     {
         std::swap(buffer_, rhs.buffer_);
     }
 
-    inline ByteSpan VirtualMemoryBuffer::GetData() const noexcept
+    inline ByteSpan VirtualBuffer::GetData() const noexcept
     {
         return buffer_;
     }
 
-    inline RWByteSpan VirtualMemoryBuffer::GetData() noexcept
+    inline RWByteSpan VirtualBuffer::GetData() noexcept
     {
         return buffer_;
     }
@@ -141,17 +141,17 @@ namespace syntropy
     // Memory.
     // =======
 
-    inline Bytes Memory::Size(const VirtualMemoryBuffer& span) noexcept
+    inline Bytes Memory::Size(const VirtualBuffer& span) noexcept
     {
         return Memory::Size(span.GetData());
     }
 
-    inline Bool Memory::Commit(VirtualMemoryBuffer& buffer) noexcept
+    inline Bool Memory::Commit(VirtualBuffer& buffer) noexcept
     {
         return Memory::Commit(buffer.GetData());
     }
 
-    inline Bool Memory::Decommit(VirtualMemoryBuffer& buffer) noexcept
+    inline Bool Memory::Decommit(VirtualBuffer& buffer) noexcept
     {
         return Memory::Commit(buffer.GetData());
     }
