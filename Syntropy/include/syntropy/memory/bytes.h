@@ -138,28 +138,28 @@ namespace syntropy
     constexpr Bytes operator^(Bytes lhs, Bytes rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    constexpr Pointer<Byte>& operator+=(Pointer<Byte>& lhs, Bytes rhs) noexcept;
+    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, Bytes rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    constexpr Pointer<Byte>& operator-=(Pointer<Byte>& lhs, Bytes rhs) noexcept;
+    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, Bytes rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    constexpr Pointer<Byte> operator+(Pointer<Byte> lhs, Bytes rhs) noexcept;
+    constexpr RWBytePtr operator+(RWBytePtr lhs, Bytes rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    constexpr Pointer<Byte> operator-(Pointer<Byte> lhs, Bytes rhs) noexcept;
+    constexpr RWBytePtr operator-(RWBytePtr lhs, Bytes rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    constexpr Pointer<const Byte>& operator+=(Pointer<const Byte>& lhs, Bytes rhs) noexcept;
+    constexpr BytePtr& operator+=(BytePtr& lhs, Bytes rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    constexpr Pointer<const Byte>& operator-=(Pointer<const Byte>& lhs, Bytes rhs) noexcept;
+    constexpr BytePtr& operator-=(BytePtr& lhs, Bytes rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    constexpr Pointer<const Byte> operator+(Pointer<const Byte> lhs, Bytes rhs) noexcept;
+    constexpr BytePtr operator+(BytePtr lhs, Bytes rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    constexpr Pointer<const Byte> operator-(Pointer<const Byte> lhs, Bytes rhs) noexcept;
+    constexpr BytePtr operator-(BytePtr lhs, Bytes rhs) noexcept;
 
     /// \brief Stream insertion for Bytes.
     std::ostream& operator<<(std::ostream& lhs, Bytes rhs);
@@ -400,50 +400,50 @@ namespace syntropy
         return ToBytes(ToInt(lhs) ^ ToInt(rhs));
     }
 
-    constexpr Pointer<Byte>& operator+=(Pointer<Byte>& lhs, Bytes rhs) noexcept
+    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, Bytes rhs) noexcept
     {
         lhs = lhs + rhs;
 
         return lhs;
     }
 
-    constexpr Pointer<Byte>& operator-=(Pointer<Byte>& lhs, Bytes rhs) noexcept
+    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, Bytes rhs) noexcept
     {
         lhs = lhs - rhs;
 
         return lhs;
     }
 
-    constexpr Pointer<Byte> operator+(Pointer<Byte> lhs, Bytes rhs) noexcept
+    constexpr RWBytePtr operator+(RWBytePtr lhs, Bytes rhs) noexcept
     {
         return lhs + ToInt(rhs);
     }
 
-    constexpr Pointer<Byte> operator-(Pointer<Byte> lhs, Bytes rhs) noexcept
+    constexpr RWBytePtr operator-(RWBytePtr lhs, Bytes rhs) noexcept
     {
         return lhs - ToInt(rhs);
     }
 
-    constexpr Pointer<const Byte>& operator+=(Pointer<const Byte>& lhs, Bytes rhs) noexcept
+    constexpr BytePtr& operator+=(BytePtr& lhs, Bytes rhs) noexcept
     {
         lhs = lhs + rhs;
 
         return lhs;
     }
 
-    constexpr Pointer<const Byte>& operator-=(Pointer<const Byte>& lhs, Bytes rhs) noexcept
+    constexpr BytePtr& operator-=(BytePtr& lhs, Bytes rhs) noexcept
     {
         lhs = lhs - rhs;
 
         return lhs;
     }
 
-    constexpr Pointer<const Byte> operator+(Pointer<const Byte> lhs, Bytes rhs) noexcept
+    constexpr BytePtr operator+(BytePtr lhs, Bytes rhs) noexcept
     {
         return lhs + ToInt(rhs);
     }
 
-    constexpr Pointer<const Byte> operator-(Pointer<const Byte> lhs, Bytes rhs) noexcept
+    constexpr BytePtr operator-(BytePtr lhs, Bytes rhs) noexcept
     {
         return lhs - ToInt(rhs);
     }
