@@ -6,7 +6,7 @@
 
 #include "syntropy/allocators/linear_virtual_memory_resource.h"
 #include "syntropy/allocators/fallback_memory_resource.h"
-#include "syntropy/allocators/system_memory_resource.h"
+#include "syntropy/memory/system_allocator.h"
 #include "syntropy/memory/allocator.h"
 
 namespace syntropy
@@ -36,7 +36,7 @@ namespace syntropy
 
         /// \brief Type of the memory resource used to store context. Contexts are never deallocated.
         /// In the unlikely event the virtual memory range is exhausted, the system memory resource is used as a last resort.
-        using TMemoryResource = AllocatorT<FallbackMemoryResource<LinearVirtualMemoryResource, SystemMemoryResource>>;
+        using TMemoryResource = AllocatorT<FallbackMemoryResource<LinearVirtualMemoryResource, SystemAllocator>>;
 
         /// \brief Private constructor.
         Registry();

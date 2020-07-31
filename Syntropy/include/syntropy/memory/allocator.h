@@ -11,7 +11,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
-#include "syntropy/allocators/system_memory_resource.h"
+#include "syntropy/memory/system_allocator.h"
 
 namespace syntropy
 {
@@ -169,9 +169,9 @@ namespace syntropy
 
     inline Allocator& Memory::GetSystemAllocator() noexcept
     {
-        static auto system_memory_resource = AllocatorT<SystemMemoryResource>{};
+        static auto system_allocator = AllocatorT<SystemAllocator>{};
 
-        return system_memory_resource;
+        return system_allocator;
     }
 
     inline Allocator& Memory::GetAllocator() noexcept
