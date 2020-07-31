@@ -1,207 +1,214 @@
 
 /// \file scope_allocator.h
-/// \brief This header is part of the Syntropy allocators module. It contains scope-based allocators used to automatically destruct objects on rewindable memory resources.
+/// \brief This header is part of the Syntropy memory module. It contains scope-based allocators used to automatically destruct objects on rewindable allocators.
 ///
 /// \author Raffaele D. Facendola - March 2017
 
 #pragma once
 
-#include "syntropy/language/utility.h"
+#include "syntropy/language/type_traits.h"
+
+#include "syntropy/core/types.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_address.h"
+#include "syntropy/memory/byte_span.h"
 
 #include "syntropy/diagnostics/assert.h"
 
 namespace syntropy
 {
     /************************************************************************/
-    /* SCOPE ALLOCATOR <TMEMORY RESOURCE>                                   */
+    /* SCOPE ALLOCATOR <ALLOCATOR>                                          */
     /************************************************************************/
 
-    /// \brief Utility allocator that sits on top of a rewindable memory resource and uses RAII paradigm to automatically destruct objects when going out of scope.
-    /// \tparam TMemoryResource Type of the underlying memory resource. The memory resource must be rewindable by means of SaveState()\RestoreState() method pairs.
+    /// \brief Utility allocator that sits on top of another rewindable allocator and uses RAII paradigm to automatically destruct objects when going out of scope.
+    /// \tparam TAllocator Type of the underlying allocator. The allocator must be rewindable by means of Checkpoint()\Rewind() method pairs.
     /// \author Raffaele D. Facendola - January 2017
     /// \remarks Based on https://media.contentapi.ea.com/content/dam/eacom/frostbite/files/scopestacks-public.pdf
-    template <typename TMemoryResource>
+    template <typename TAllocator>
     class ScopeAllocator
     {
 
-        /// \brief Type of the memory resource state.
-        using TState = decltype(std::declval<TMemoryResource>().SaveState());
+        /// \brief Type of the allocator checkpoint.
+        using TCheckpoint = decltype(Declval<TAllocator>().Checkpoint());
 
     public:
 
         /// \brief Create a new scope allocator.
-        /// \param memory_resource Underlying memory resource.
-        ScopeAllocator(TMemoryResource& memory_resource);
+        /// \param allocator Underlying allocator.
+        ScopeAllocator(TAllocator& allocator) noexcept;
 
         /// \brief Default destructor.
-        /// Destroy all the objects that were allocated from this allocator and restore the underlying memory resource status.
-        ~ScopeAllocator();
+        /// Destroy all the objects that were allocated from this allocator and restore the underlying allocator status.
+        ~ScopeAllocator() noexcept;
 
         /// \brief Create a new object of type TObject.
         template <typename TObject, typename... TArguments>
-        TObject* New(TArguments&&... arguments);
+        Pointer<TObject> New(TArguments&&... arguments) noexcept;
 
         /// \brief Create a new aligned object of type TObject.
         template <typename TObject, typename... TArguments>
-        TObject* AlignedNew(Alignment alignment, TArguments&&... arguments);
+        Pointer<TObject> AlignedNew(Alignment alignment, TArguments&&... arguments) noexcept;
 
     private:
 
         struct Finalizer;
 
         /// \brief Destroy an object of type TObject.
-        /// \param instance Pointer to the instance to destroy. Must be of type TObject, otherwise the behavior of this method is undefined..
         template <typename TObject>
-        static void Destructor(void* instance);
+        static void Destructor(RWTypelessPtr object) noexcept;
 
         /// \brief Allocate an object of type TObject along with its finalizer (if required).
         template <typename TObject>
-        RWByteSpan AllocateObjectWithFinalizer();
+        RWByteSpan AllocateObjectWithFinalizer() noexcept;
 
         /// \brief Allocate an aligned object of type TObject along with its finalizer (if required).
         template <typename TObject>
-        RWByteSpan AllocateObjectWithFinalizer(Alignment alignment);
+        RWByteSpan AllocateObjectWithFinalizer(Alignment alignment) noexcept;
 
         /// \brief Construct the finalizer for the type TObject.
         template <typename TObject>
-        void ConstructFinalizer(Finalizer& finalizer);
+        void ConstructFinalizer(Finalizer& finalizer) noexcept;
 
-        /// \brief Underlying memory resource.
-        TMemoryResource& memory_resource_;
+        /// \brief Underlying allocator.
+        TAllocator& allocator_;
 
         /// \brief First finalizer.
-        Finalizer* finalizers_{ nullptr };
+        Pointer<Finalizer> finalizers_{ nullptr };
 
-        /// \brief Memory resource state to restore.
-        TState state_;
+        /// \brief Allocator checkpoint prior to scope allocator ctor.
+        TCheckpoint checkpoint_;
     };
 
     /************************************************************************/
-    /* SCOPE ALLOCATOR <TMEMORY RESOURCE> :: FINALIZER                      */
+    /* SCOPE ALLOCATOR <ALLOCATOR> :: FINALIZER                             */
     /************************************************************************/
 
     /// \brief Finalizer object used to destroy non-trivially-destructible objects.
-    template <typename TMemoryResource>
-    struct ScopeAllocator<TMemoryResource>::Finalizer
+    template <typename TAllocator>
+    struct ScopeAllocator<TAllocator>::Finalizer
     {
         /// \brief Type of a finalizer.
-        using TFinalizer = void(*)(void*);
+        using TFinalizer = void(*)(RWTypelessPtr);
 
         /// \brief Destroy the object after this finalizer.
-        void operator()();
+        void operator()() noexcept;
 
         /// \brief Get the object bound to this finalizer.
-        void* GetObject();
+        RWTypelessPtr GetObject() noexcept;
 
         /// \brief Concrete object destructor.
         TFinalizer destructor_;
 
         /// \brief Next finalizer.
-        Finalizer* next_{ nullptr };
+        Pointer<Finalizer> next_{ nullptr };
     };
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Utility method used to make a new scope allocator.
-    template <typename TMemoryResource>
-    ScopeAllocator<TMemoryResource> MakeScopeAllocator(TMemoryResource& memory_resource);
+    /// \brief Create a new scope allocator by deducing template from arguments.
+    template <typename TAllocator>
+    ScopeAllocator<TAllocator> MakeScopeAllocator(TAllocator& allocator) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // ScopeAllocator<TMemoryResource>.
+    // ScopeAllocator<TAllocator>.
 
-    template <typename TMemoryResource>
-    inline ScopeAllocator<TMemoryResource>::ScopeAllocator(TMemoryResource& memory_resource)
-        : memory_resource_(memory_resource)
+    template <typename TAllocator>
+    inline ScopeAllocator<TAllocator>::ScopeAllocator(TAllocator& allocator) noexcept
+        : allocator_(allocator)
         , finalizers_(nullptr)
-        , state_(memory_resource.SaveState())
+        , checkpoint_(allocator.Checkpoint())
     {
 
     }
 
-    template <typename TMemoryResource>
-    inline ScopeAllocator<TMemoryResource>::~ScopeAllocator()
+    template <typename TAllocator>
+    inline ScopeAllocator<TAllocator>::~ScopeAllocator() noexcept
     {
         for(;finalizers_; finalizers_ = finalizers_->next_)
         {
             (*finalizers_)();
         }
 
-        memory_resource_.RestoreState(state_);
+        allocator_.Rewind(checkpoint_);
     }
 
-    template <typename TMemoryResource>
+    template <typename TAllocator>
     template <typename TObject, typename... TArguments>
-    inline TObject* ScopeAllocator<TMemoryResource>::New(TArguments&&... arguments)
+    inline TObject* ScopeAllocator<TAllocator>::New(TArguments&&... arguments) noexcept
     {
         auto storage = AllocateObjectWithFinalizer<TObject>();
 
         return new (*storage) TObject(std::forward<TArguments>(arguments)...);
     }
 
-    template <typename TMemoryResource>
+    template <typename TAllocator>
     template <typename TObject, typename... TArguments>
-    inline  TObject* ScopeAllocator<TMemoryResource>::AlignedNew(Alignment alignment, TArguments&&... arguments)
+    inline  TObject* ScopeAllocator<TAllocator>::AlignedNew(Alignment alignment, TArguments&&... arguments) noexcept
     {
         auto storage = AllocateObjectWithFinalizer<TObject>(alignment);
 
         return new (*storage) TObject(std::forward<TArguments>(arguments)...);
     }
 
-    template <typename TMemoryResource>
+    template <typename TAllocator>
     template <typename TObject>
-    inline void ScopeAllocator<TMemoryResource>::Destructor(void* instance)
+    inline void ScopeAllocator<TAllocator>::Destructor(RWTypelessPtr instance) noexcept
     {
-        static_cast<TObject*>(instance)->~TObject();
+        auto& type_from = typeid(object);
+        auto& type_to = typeid(TObject);
+
+        SYNTROPY_UNDEFINED_BEHAVIOR(type_from == type_to, "Dynamic type mismatch.");
+
+        ToPointer<TObject>(instance)->~TObject();
     }
 
-    template <typename TMemoryResource>
+    template <typename TAllocator>
     template <typename TObject>
-    RWByteSpan ScopeAllocator<TMemoryResource>::AllocateObjectWithFinalizer()
+    RWByteSpan ScopeAllocator<TAllocator>::AllocateObjectWithFinalizer() noexcept
     {
-        auto object_size = SizeOf<TObject>();
+        auto size = Memory::SizeOf<TObject>();
+        auto alignment = Memory::AlignmentOf<TObject>();
 
         if constexpr(std::is_trivially_destructible_v<TObject>)
         {
-            return memory_resource_.Allocate(object_size).Begin();
+            return allocator_.Allocate(size, alignment);
         }
         else
         {
-            auto finalizer_size = SizeOf<Finalizer>();
+            auto finalizer_size = Memory::SizeOf<Finalizer>();
 
-            auto finalizer = memory_resource_.Allocate(object_size + finalizer_size).Begin().As<Finalizer>();
+            auto& finalizer = ToRWSpan<Finalizer>(allocator_.Allocate(size + finalizer_size, size))[0];
 
-            ConstructFinalizer<TObject>(*finalizer);
+            ConstructFinalizer<TObject>(finalizer);
 
-            return finalizer->GetObject();
+            return finalizer.GetObject();
         }
     }
 
-    template <typename TMemoryResource>
+    template <typename TAllocator>
     template <typename TObject>
-    RWByteSpan ScopeAllocator<TMemoryResource>::AllocateObjectWithFinalizer(Alignment alignment)
+    RWByteSpan ScopeAllocator<TAllocator>::AllocateObjectWithFinalizer(Alignment alignment) noexcept
     {
-        auto object_size = SizeOf<TObject>();
+        auto size = Memory::SizeOf<TObject>();
         
         if constexpr(std::is_trivially_destructible_v<TObject>)
         {
-            return memory_resource_.Allocate(object_size, alignment).Begin();
+            return allocator_.Allocate(size, alignment);
         }
         else
         {
-            auto finalizer_size = SizeOf<Finalizer>();
+            auto finalizer_size = Memory::SizeOf<Finalizer>();
 
             auto padding_size = alignment - 1_Bytes;
 
-            auto buffer = memory_resource_.Allocate(object_size + finalizer_size + padding_size);
+            auto buffer = allocator_.Allocate(size + finalizer_size + padding_size);
 
             auto finalizer = ((buffer + finalizer_size).GetAligned(alignment) - finalizer_size).Begin().As<Finalizer>();
 
@@ -211,9 +218,9 @@ namespace syntropy
         }
     }
 
-    template <typename TMemoryResource>
+    template <typename TAllocator>
     template <typename TObject>
-    void ScopeAllocator<TMemoryResource>::ConstructFinalizer(Finalizer& finalizer)
+    void ScopeAllocator<TAllocator>::ConstructFinalizer(Finalizer& finalizer) noexcept
     {
         finalizer.next_ = finalizers_;
         finalizer.destructor_ = &Destructor<TObject>;
@@ -221,26 +228,26 @@ namespace syntropy
         finalizers_ = &finalizer;
     }
 
-    //ScopeAllocator<TMemoryResource>::Finalizer.
+    //ScopeAllocator<TAllocator>::Finalizer.
 
-    template <typename TMemoryResource>
-    inline void ScopeAllocator<TMemoryResource>::Finalizer::operator()()
+    template <typename TAllocator>
+    inline void ScopeAllocator<TAllocator>::Finalizer::operator()() noexcept
     {
         destructor_(GetObject());
     }
 
-    template <typename TMemoryResource>
-    inline void* ScopeAllocator<TMemoryResource>::Finalizer::GetObject()
+    template <typename TAllocator>
+    inline RWTypelessPtr ScopeAllocator<TAllocator>::Finalizer::GetObject() noexcept
     {
-        return *(MemoryAddress(this) + SizeOf<Finalizer>());
+        return ToRWBytePtr(this) + Memory::SizeOf<Finalizer>();
     }
 
     // Non-member functions.
 
-    template <typename TMemoryResource>
-    inline ScopeAllocator<TMemoryResource> MakeScopeAllocator(TMemoryResource& memory_resource)
+    template <typename TAllocator>
+    inline ScopeAllocator<TAllocator> MakeScopeAllocator(TAllocator& allocator) noexcept
     {
-        return ScopeAllocator<TMemoryResource>(memory_resource);
+        return ScopeAllocator<TAllocator>(allocator);
     }
 
 }
