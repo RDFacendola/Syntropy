@@ -10,7 +10,6 @@
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory.h"
-
 #include "syntropy/memory/allocator.h"
 
 namespace syntropy
@@ -28,20 +27,20 @@ namespace syntropy
 
         /// \brief Create a new empty buffer.
         /// The buffer is zero-filled.
-        Buffer(Allocator& memory_resource = GetDefaultMemoryResource()) noexcept;
+        Buffer(Allocator& allocator = Memory::GetAllocator()) noexcept;
 
         /// \brief Create a new memory buffer.
         /// The buffer is zero-filled.
         /// \param size Size of the buffer, in bytes.
-        /// \param memory_resource Memory resource the buffer will be allocated from.
-        Buffer(Bytes size, Allocator& memory_resource = GetDefaultMemoryResource()) noexcept;
+        /// \param allocator Allocator the buffer will be allocated from.
+        Buffer(Bytes size, Allocator& allocator = Memory::GetAllocator()) noexcept;
 
         /// \brief Create a new memory buffer.
         /// The buffer is zero-filled.
         /// \param size Size of the buffer, in bytes.
         /// \param alignment Buffer alignment.
-        /// \param memory_resource Memory resource the buffer will be allocated from.
-        Buffer(Bytes size, Alignment alignment, Allocator& memory_resource = GetDefaultMemoryResource()) noexcept;
+        /// \param allocator Allocator the buffer will be allocated from.
+        Buffer(Bytes size, Alignment alignment, Allocator& allocator = Memory::GetAllocator()) noexcept;
 
         /// \brief Copy constructor.
         /// This method allocates a new buffer and copy the content to the other instance.
@@ -70,8 +69,8 @@ namespace syntropy
         /// \return Returns the buffer alignment.
         Alignment GetAlignment() const noexcept;
 
-        /// \brief Access the memory resource this buffer is allocated on.
-        Allocator& GetMemoryResource() const noexcept;
+        /// \brief Access the allocator this buffer is allocated on.
+        Allocator& GetAllocator() const noexcept;
 
         /// \brief Swap the content of this buffer with another one.
         /// \remarks This method swaps underlying memory resources as well.
@@ -82,8 +81,8 @@ namespace syntropy
         /// \brief Buffer.
         RWByteSpan buffer_;
 
-        /// \brief Memory resource the buffer was allocated on.
-        Pointer<Allocator> memory_resource_{ nullptr };
+        /// \brief Allocator the buffer was allocated on.
+        Pointer<Allocator> allocator_{ nullptr };
 
         /// \brief Buffer alignment.
         Alignment alignment_;
@@ -108,34 +107,34 @@ namespace syntropy
     // Buffer.
     // =======
 
-    inline Buffer::Buffer(Allocator& memory_resource) noexcept
-        : Buffer(Bytes{}, Alignment{}, memory_resource)
+    inline Buffer::Buffer(Allocator& allocator) noexcept
+        : Buffer(Bytes{}, Alignment{}, allocator)
     {
 
     }
 
-    inline Buffer::Buffer(Bytes size, Allocator& memory_resource) noexcept
-        : Buffer(size, Alignment{}, memory_resource)
+    inline Buffer::Buffer(Bytes size, Allocator& allocator) noexcept
+        : Buffer(size, Alignment{}, allocator)
     {
 
     }
 
-    inline Buffer::Buffer(Bytes size, Alignment alignment, Allocator& memory_resource) noexcept
-        : memory_resource_(&memory_resource)
+    inline Buffer::Buffer(Bytes size, Alignment alignment, Allocator& allocator) noexcept
+        : allocator_(&allocator)
         , alignment_(alignment)
-        , buffer_(memory_resource.Allocate(size, alignment))
+        , buffer_(allocator.Allocate(size, alignment))
     {
         Memory::Zero(buffer_);
     }
 
     inline Buffer::Buffer(const Buffer& other) noexcept
-        : Buffer(Memory::Size(other), other.alignment_, *other.memory_resource_)
+        : Buffer(Memory::Size(other), other.alignment_, *other.allocator_)
     {
         Memory::Copy(buffer_, other.buffer_);
     }
 
     inline Buffer::Buffer(Buffer&& other) noexcept
-        : memory_resource_(other.memory_resource_)
+        : allocator_(other.allocator_)
         , alignment_(other.alignment_)
         , buffer_(other.buffer_)
     {
@@ -151,9 +150,9 @@ namespace syntropy
 
     inline Buffer::~Buffer() noexcept
     {
-        if (memory_resource_)
+        if (allocator_)
         {
-            memory_resource_->Deallocate(buffer_, alignment_);
+            allocator_->Deallocate(buffer_, alignment_);
         }
     }
 
@@ -172,14 +171,14 @@ namespace syntropy
         return alignment_;
     }
 
-    inline Allocator& Buffer::GetMemoryResource() const noexcept
+    inline Allocator& Buffer::GetAllocator() const noexcept
     {
-        return *memory_resource_;
+        return *allocator_;
     }
 
     inline void Buffer::Swap(Buffer& other) noexcept
     {
-        std::swap(memory_resource_, other.memory_resource_);
+        std::swap(allocator_, other.allocator_);
         std::swap(alignment_, other.alignment_);
         std::swap(buffer_, other.buffer_);
     }

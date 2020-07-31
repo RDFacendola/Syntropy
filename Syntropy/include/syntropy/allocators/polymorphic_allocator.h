@@ -69,7 +69,7 @@ namespace syntropy
     private:
 
         /// \brief Underlying memory resource.
-        Allocator* memory_resource_ = &GetDefaultMemoryResource();
+        Allocator* memory_resource_ = &Memory::GetAllocator();
 
     };
 

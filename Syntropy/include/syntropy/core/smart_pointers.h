@@ -67,7 +67,7 @@ namespace syntropy
     template <typename TType, typename... TArguments>
     inline UniquePtr<TType> MakeUnique(TArguments&&... arguments)
     {
-        auto& memory_resource = GetDefaultMemoryResource();
+        auto& memory_resource = Memory::GetAllocator();
 
         auto object = FromTypeless<TType>(memory_resource.Allocate(Memory::SizeOf<TType>(), Memory::AlignmentOf<TType>()).GetData());
 

@@ -36,7 +36,7 @@ namespace syntropy
     public:
 
         /// \brief Create a new empty stream.
-        StreamBuffer(Allocator& memory_resource = GetDefaultMemoryResource());
+        StreamBuffer(Allocator& memory_resource = Memory::GetAllocator());
 
         /// \brief Create a new stream by moving an existing memory buffer.
         StreamBuffer(Buffer&& buffer);
@@ -239,7 +239,7 @@ namespace syntropy
 
     inline Allocator& StreamBuffer::GetMemoryResource() const
     {
-        return buffer_.GetMemoryResource();
+        return buffer_.GetAllocator();
     }
 
     inline Buffer StreamBuffer::Release()
@@ -250,7 +250,7 @@ namespace syntropy
 
         // Clear.
 
-        auto buffer = Buffer(buffer_.GetMemoryResource());
+        auto buffer = Buffer(buffer_.GetAllocator());
 
         buffer.Swap(buffer_);
         base_pointer_ = Begin(buffer_.GetData());

@@ -16,36 +16,38 @@
 namespace syntropy
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* MEMORY                                                               */
     /************************************************************************/
 
     class Allocator;
 
-    /// \brief Get a memory resource that uses the global operator new and operator delete to allocate memory.
-    Allocator& GetSystemMemoryResource() noexcept;
+    /// \brief Exposes methods to get and set the thread-local active allocator.
+    namespace Memory
+    {
+        /// \brief Get the system allocator, an allocator that uses the global operator new and operator delete to allocate and deallocate memory.
+        Allocator& GetSystemAllocator() noexcept;
 
-    /// \brief Get the thread-local default memory resource.
-    /// \remarks The local default memory resource is used by certain facilities when an explicit memory resource is not supplied.
-    Allocator& GetDefaultMemoryResource() noexcept;
+        /// \brief Get the thread-local active allocator.
+        /// \remarks The active allocator is used when an explicit allocator cannot be supplied.
+        Allocator& GetAllocator() noexcept;
 
-    /// \brief Set the thread-local default memory resource.
-    /// \return Returns the previous value of the local default memory resource.
-    /// \remarks The local default memory resource is used by certain facilities when an explicit memory resource is not supplied.
-    Allocator& SetDefaultMemoryResource(Allocator& memory_resource) noexcept;
+        /// \brief Set the thread-local active allocator.
+        /// \return Returns the previous active allocator.
+        /// \remarks The active allocator is used when an explicit allocator cannot be supplied.
+        Allocator& SetAllocator(Allocator& allocator) noexcept;
+    }
 
     /************************************************************************/
     /* ALLOCATOR                                                            */
     /************************************************************************/
 
-    /// \brief Represents an abstract interface to an unbounded set of classes encapsulating memory resources.
-    /// This class mimics and replaces standard's std::memory_resource. Standard's global default memory resoures are deemed
-    /// to be harmful since it may cause non-coherent allocation behavior in the same scope.
+    /// \brief Represents an abstract interface for scope-based allocators.
     /// \author Raffaele D. Facendola - April 2020.
     class Allocator
     {
-        friend Allocator& GetSystemMemoryResource() noexcept;
-        friend Allocator& GetDefaultMemoryResource() noexcept;
-        friend Allocator& SetDefaultMemoryResource(Allocator& memory_resource) noexcept;
+        friend Allocator& Memory::GetSystemAllocator() noexcept;
+        friend Allocator& Memory::GetAllocator() noexcept;
+        friend Allocator& Memory::SetAllocator(Allocator&) noexcept;
 
     public:
 
@@ -65,8 +67,8 @@ namespace syntropy
 
     private:
 
-        /// \brief Get the active memory resource in the current scope.
-        static Pointer<Allocator>& GetScopeMemoryResource() noexcept;
+        /// \brief Get the active allocator in the current scope.
+        static Pointer<Allocator>& GetScopeAllocator() noexcept;
 
     };
 
@@ -74,7 +76,7 @@ namespace syntropy
     /* ALLOCATOR <ALLOCATOR>                                                */
     /************************************************************************/
 
-    /// \brief Tier Omega memory resource used to forward calls to an underlying, type-erased, memory resource.
+    /// \brief Tier Omega memory resource used to forward calls to an underlying, type-erased, allocator.
     /// \author Raffaele D. Facendola - April 2020
     template <typename TAllocator>
     class AllocatorT : public Allocator
@@ -102,8 +104,8 @@ namespace syntropy
 
     private:
 
-        /// \brief Underlying memory resource.
-        TAllocator memory_resource_;
+        /// \brief Underlying allocator.
+        TAllocator allocator_;
 
     };
 
@@ -111,38 +113,14 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Non-member functions.
-    // =====================
-
-    inline Allocator& GetSystemMemoryResource() noexcept
-    {
-        static auto system_memory_resource = AllocatorT<SystemMemoryResource>{};
-
-        return system_memory_resource;
-    }
-
-    inline Allocator& GetDefaultMemoryResource() noexcept
-    {
-        return *Allocator::GetScopeMemoryResource();
-    }
-
-    inline Allocator& SetDefaultMemoryResource(Allocator& memory_resource) noexcept
-    {
-        auto& previous_memory_resource = GetDefaultMemoryResource();
-
-        Allocator::GetScopeMemoryResource() = &memory_resource;
-
-        return previous_memory_resource;
-    }
-
     // Allocator.
     // ==========
 
-    inline Pointer<Allocator>& Allocator::GetScopeMemoryResource() noexcept
+    inline Pointer<Allocator>& Allocator::GetScopeAllocator() noexcept
     {
-        static thread_local Pointer<Allocator> default_memory_resource_ = &GetSystemMemoryResource();
+        static thread_local Pointer<Allocator> default_allocator_ = &Memory::GetSystemAllocator();
 
-        return default_memory_resource_;
+        return default_allocator_;
     }
 
     // AllocatorT<TAllocator>.
@@ -151,7 +129,7 @@ namespace syntropy
     template <typename TAllocator>
     template <typename... TArguments>
     inline AllocatorT<TAllocator>::AllocatorT(TArguments&&... arguments) noexcept
-        : memory_resource_(std::forward<TArguments>(arguments)...)
+        : allocator_(std::forward<TArguments>(arguments)...)
     {
 
     }
@@ -159,31 +137,55 @@ namespace syntropy
     template <typename TAllocator>
     inline RWByteSpan AllocatorT<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        return memory_resource_.Allocate(size, alignment);
+        return allocator_.Allocate(size, alignment);
     }
 
     template <typename TAllocator>
     inline void AllocatorT<TAllocator>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
-        memory_resource_.Deallocate(block, alignment);
+        allocator_.Deallocate(block, alignment);
     }
 
     template <typename TAllocator>
     inline Bool AllocatorT<TAllocator>::Owns(const ByteSpan& block) const noexcept
     {
-        return memory_resource_.Owns(block);
+        return allocator_.Owns(block);
     }
 
     template <typename TAllocator>
     inline TAllocator& AllocatorT<TAllocator>::GetMemoryResource() noexcept
     {
-        return memory_resource_;
+        return allocator_;
     }
 
     template <typename TAllocator>
     inline const TAllocator& AllocatorT<TAllocator>::GetMemoryResource() const noexcept
     {
-        return memory_resource_;
+        return allocator_;
+    }
+
+    // Memory.
+    // =======
+
+    inline Allocator& Memory::GetSystemAllocator() noexcept
+    {
+        static auto system_memory_resource = AllocatorT<SystemMemoryResource>{};
+
+        return system_memory_resource;
+    }
+
+    inline Allocator& Memory::GetAllocator() noexcept
+    {
+        return *Allocator::GetScopeAllocator();
+    }
+
+    inline Allocator& Memory::SetAllocator(Allocator& allocator) noexcept
+    {
+        auto& previous_allocator = GetAllocator();
+
+        Allocator::GetScopeAllocator() = &allocator;
+
+        return previous_allocator;
     }
 
 }

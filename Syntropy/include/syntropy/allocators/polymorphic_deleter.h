@@ -48,7 +48,7 @@ namespace syntropy
         TDestructor destructor_{ nullptr };
 
         /// \brief Underlying memory resource.
-        Pointer<Allocator> memory_resource_ = &GetDefaultMemoryResource();
+        Pointer<Allocator> memory_resource_ = &Memory::GetAllocator();
 
     };
 
