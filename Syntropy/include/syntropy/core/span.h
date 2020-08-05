@@ -145,15 +145,35 @@ namespace syntropy
     template <typename TElement>
     [[nodiscard]] constexpr SpanT<TElement> Select(const SpanT<TElement>& span, Int offset, Int count) noexcept;
 
-    /// \brief Discard the first count-elements in a span and return the resulting subspan.
+    /// \brief Discard the first count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TElement>
     [[nodiscard]] constexpr SpanT<TElement> PopFront(const SpanT<TElement>& span, Int count = 1) noexcept;
 
-    /// \brief Discard the last count-elements in a span and return the resulting subspan.
+    /// \brief Discard the last count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TElement>
     [[nodiscard]] constexpr SpanT<TElement> PopBack(const SpanT<TElement>& span, Int count = 1) noexcept;
+
+    /// \brief Slice a span returning the first element and a subspan to the remaining ones.
+    /// \remarks If the span is empty the behavior of this method is undefined.
+    template <typename TElement>
+    [[nodiscard]] constexpr Tuple<TElement&, SpanT<TElement>> SliceFront(const SpanT<TElement>& span) noexcept;
+
+    /// \brief Slice a span returning the last element and a subspan to the remaining ones.
+    /// \remarks If the span is empty the behavior of this method is undefined.
+    template <typename TElement>
+    [[nodiscard]] constexpr Tuple<TElement&, SpanT<TElement>> SliceBack(const SpanT<TElement>& span) noexcept;
+
+    /// \brief Slice a span returning a subspan to the first count-elements and a subspan to the remaining ones.
+    /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
+    template <typename TElement>
+    [[nodiscard]] constexpr Tuple<SpanT<TElement>, SpanT<TElement>> SliceFront(const SpanT<TElement>& span, Int count) noexcept;
+
+    /// \brief Slice a span returning a subspan to the last-count elements and a subspan to the remaining ones.
+    /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
+    template <typename TElement>
+    [[nodiscard]] constexpr Tuple<SpanT<TElement>, SpanT<TElement>> SliceBack(const SpanT<TElement>& span, Int count) noexcept;
 
     // Set operations.
 
@@ -397,6 +417,30 @@ namespace syntropy
     constexpr SpanT<TElement> PopBack(const SpanT<TElement>& span, Int count) noexcept
     {
         return Select(span, 0, Count(span) - count);
+    }
+
+    template <typename TElement>
+    constexpr Tuple<TElement&, SpanT<TElement>> SliceFront(const SpanT<TElement>& span) noexcept
+    {
+        return { Front(span), PopFront(span) };
+    }
+
+    template <typename TElement>
+    constexpr Tuple<TElement&, SpanT<TElement>> SliceBack(const SpanT<TElement>& span) noexcept
+    {
+        return { Back(span), PopBack(span) };
+    }
+
+    template <typename TElement>
+    constexpr Tuple<SpanT<TElement>, SpanT<TElement>> SliceFront(const SpanT<TElement>& span, Int count) noexcept
+    {
+        return { Front(span, count), PopFront(span, count) };
+    }
+
+    template <typename TElement>
+    constexpr Tuple<SpanT<TElement>, SpanT<TElement>> SliceBack(const SpanT<TElement>& span, Int count) noexcept
+    {
+        return { Back(span, count), PopBack(span, count) };
     }
 
     // Set operations.
