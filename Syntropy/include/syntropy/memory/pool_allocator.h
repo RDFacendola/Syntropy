@@ -120,14 +120,6 @@ namespace syntropy
     };
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Swaps two syntropy::PoolMemoryResource.
-    template <typename TAllocator>
-    void swap(syntropy::PoolAllocator<TAllocator>& lhs, syntropy::PoolAllocator<TAllocator>& rhs) noexcept;
-
-    /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
@@ -278,14 +270,6 @@ namespace syntropy
         }
 
         return {};
-    }
-
-    // Non-member functions.
-
-    template <typename TAllocator>
-    void swap(syntropy::PoolAllocator<TAllocator>& lhs, syntropy::PoolAllocator<TAllocator>& rhs) noexcept
-    {
-        lhs.Swap(rhs);
     }
 
 }
