@@ -99,11 +99,11 @@ namespace syntropy
             }
             else
             {
-                auto block = RWByteSpan{ reinterpret_cast<RWBytePtr>(&free_), ToInt(page_size_) };
-
-                free_ = free_->next_;
-
-                return block;
+//                 auto block = RWByteSpan{ FromTypeless<RWBytePtr>(&free_), ToInt(page_size_) };
+// 
+//                 free_ = free_->next_;
+// 
+//                 return block;
             }
         }
 
