@@ -1,3 +1,3 @@
 # Syntropy Engine
 
-Please write a description! :(
+Coming soon!
