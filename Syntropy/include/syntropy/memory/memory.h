@@ -35,16 +35,6 @@ namespace syntropy
         template <typename TTo, typename TFrom>
         TTo BitCast(const TFrom& rhs);
 
-        /// \brief Check whether a byte span is aligned to a given alignment value.
-        /// If the provided span is empty the behavior of this method is undefined.
-        Bool IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept;
-
-        /// \brief Consume a byte span from the back until its first byte is aligned to a given boundary or the span is exhausted.
-        ByteSpan Align(const ByteSpan& byte_span, Alignment alignment) noexcept;
-
-        /// \brief Consume a byte span from the back until its first byte is aligned to a given boundary or the span is exhausted.
-        RWByteSpan Align(const RWByteSpan& byte_span, Alignment alignment) noexcept;
-
         /// \brief Convert a pointer to its numeric address value.
         template <typename TType>
         Int NumericAddress(Pointer<TType> pointer) noexcept;
@@ -93,25 +83,6 @@ namespace syntropy
         std::memcpy(&lhs, &rhs, sizeof(TTo));
 
         return lhs;
-    }
-
-    inline Bool Memory::IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept
-    {
-        return IsAlignedTo(byte_span.GetData(), alignment);
-    }
-
-    inline ByteSpan Memory::Align(const ByteSpan& byte_span, Alignment alignment) noexcept
-    {
-        auto aligned_data = Align(byte_span.GetData(), alignment);
-
-        return { Math::Min(aligned_data, End(byte_span)), End(byte_span) };
-    }
-
-    inline RWByteSpan Memory::Align(const RWByteSpan& byte_span, Alignment alignment) noexcept
-    {
-        auto aligned_data = Align(byte_span.GetData(), alignment);
-
-        return { Math::Min(aligned_data, End(byte_span)), End(byte_span) };
     }
 
     template <typename TType>

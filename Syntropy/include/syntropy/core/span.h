@@ -255,7 +255,7 @@ namespace syntropy
     /// \brief Convert a read-only span to its read-write equivalent.
     /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
     template <typename TElement>
-    [[nodiscard]] constexpr RWSpan<TElement> ReadWrite(const SpanT<TElement>& rhs) noexcept;
+    [[nodiscard]] constexpr RWSpan<RemoveConstT<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept;
 
     /// \brief Return either lhs if non-empty or lhs otherwise.
     template <typename TElement, typename UElement>
@@ -620,7 +620,7 @@ namespace syntropy
     }
 
     template <typename TElement>
-    constexpr RWSpan<TElement> ReadWrite(const SpanT<TElement>& rhs) noexcept
+    constexpr RWSpan<RemoveConstT<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept
     {
         using TPointer = Pointer<RemoveConstT<TElement>>;
 

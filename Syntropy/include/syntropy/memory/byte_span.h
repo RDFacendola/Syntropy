@@ -14,6 +14,7 @@
 #include "syntropy/core/span.h"
 
 #include "syntropy/memory/bytes.h"
+#include "syntropy/memory/alignment.h"
 
 namespace syntropy
 {
@@ -31,7 +32,7 @@ namespace syntropy
     /* MEMORY                                                               */
     /************************************************************************/
 
-    /// \brief Exposes alignment definitions.
+    /// \brief Exposes byte span-related definitions.
     namespace Memory
     {
         /// \brief Get the memory footprint of a span.
@@ -42,13 +43,23 @@ namespace syntropy
         /// An object representation is the sequence of bytes starting from the object address.
         /// If the object type is not exactly TObject, the behavior of this method is undefined.
         template <typename TObject>
-        ByteSpan BytesOf(const TObject& object);
+        ByteSpan BytesOf(const TObject& object) noexcept;
 
         /// \brief Get the read-write object representation of an object.
         /// An object representation is the sequence of bytes starting from the object address.
         /// If the object type is not exactly TObject, the behavior of this method is undefined.
         template <typename TObject>
-        RWByteSpan RWBytesOf(TObject& object);
+        RWByteSpan RWBytesOf(TObject& object) noexcept;
+
+        /// \brief Check whether a byte span is aligned to a given alignment value.
+        /// If the provided span is empty the behavior of this method is undefined.
+        Bool IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept;
+
+        /// \brief Consume a byte span from the front and from the back until both the first and the last byte are aligned to a given boundary or the span is exhausted.
+        ByteSpan Align(const ByteSpan& byte_span, Alignment alignment) noexcept;
+
+        /// \brief Consume a byte span from the front and from the back until both the first and the last byte are aligned to a given boundary or the span is exhausted.
+        RWByteSpan Align(const RWByteSpan& byte_span, Alignment alignment) noexcept;
     }
 
     /************************************************************************/
@@ -87,7 +98,7 @@ namespace syntropy
     }
 
     template <typename TObject>
-    inline ByteSpan Memory::BytesOf(const TObject& object)
+    inline ByteSpan Memory::BytesOf(const TObject& object) noexcept
     {
         auto& type_from = typeid(object);
         auto& type_to = typeid(TObject);
@@ -98,7 +109,7 @@ namespace syntropy
     }
 
     template <typename TObject>
-    inline RWByteSpan Memory::RWBytesOf(TObject& object)
+    inline RWByteSpan Memory::RWBytesOf(TObject& object) noexcept
     {
         auto& type_from = typeid(object);
         auto& type_to = typeid(TObject);
@@ -106,6 +117,33 @@ namespace syntropy
         SYNTROPY_UNDEFINED_BEHAVIOR(type_from == type_to, "Dynamic type mismatch.");
 
         return RWByteSpan{ ToRWBytePtr(&object), ToInt(SizeOf<TObject>()) };
+    }
+
+    inline Bool Memory::IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept
+    {
+        SYNTROPY_UNDEFINED_BEHAVIOR(!IsEmpty(byte_span), "Empty spans don't have a well-defined alignment.");
+
+        auto data = byte_span.GetData();
+
+        return IsAlignedTo(data, alignment) && IsAlignedTo(data + Memory::Size(byte_span), alignment);
+    }
+
+    inline ByteSpan Memory::Align(const ByteSpan& byte_span, Alignment alignment) noexcept
+    {
+        auto begin = Align(byte_span.GetData(), alignment);
+        auto end = Align(End(byte_span) - ToBytes(alignment) + ToBytes(1), alignment);
+
+        if (begin <= end)
+        {
+            return { begin, end };
+        }
+
+        return {};
+    }
+
+    inline RWByteSpan Memory::Align(const RWByteSpan& byte_span, Alignment alignment) noexcept
+    {
+        return ReadWrite(Align(ReadOnly(byte_span), alignment));
     }
 
     // Type cast.
