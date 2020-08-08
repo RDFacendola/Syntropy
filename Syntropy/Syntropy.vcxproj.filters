@@ -18,7 +18,6 @@
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\core\label.h" />
     <ClInclude Include="include\syntropy\memory\memory.h" />
-    <ClInclude Include="include\syntropy\allocators\linear_virtual_memory_resource.h" />
     <ClInclude Include="include\syntropy\language\functional.h" />
     <ClInclude Include="include\syntropy\platform\endianness.h" />
     <ClInclude Include="src\syntropy\hal\hal_endianness.h" />
@@ -116,12 +115,12 @@
     <ClInclude Include="include\syntropy\memory\pool_allocator.h" />
     <ClInclude Include="include\syntropy\memory\quota_allocator.h" />
     <ClInclude Include="include\syntropy\memory\virtual_allocator.h" />
+    <ClInclude Include="include\syntropy\memory\virtual_stack_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\core\label.cpp" />
-    <ClCompile Include="src\syntropy\allocators\linear_virtual_memory_resource.cpp" />
     <ClCompile Include="src\syntropy\platform\endianness.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\stack_trace.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />
@@ -146,5 +145,6 @@
     <ClCompile Include="src\syntropy\experimental\serialization\stream_buffer.cpp" />
     <ClCompile Include="src\syntropy\unit_test\test_runner.cpp" />
     <ClCompile Include="src\syntropy\memory\virtual_allocator.cpp" />
+    <ClCompile Include="src\syntropy\memory\virtual_stack_allocator.cpp" />
   </ItemGroup>
 </Project>

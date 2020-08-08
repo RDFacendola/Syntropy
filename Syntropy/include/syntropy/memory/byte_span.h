@@ -52,6 +52,7 @@ namespace syntropy
         RWByteSpan RWBytesOf(TObject& object) noexcept;
 
         /// \brief Check whether a byte span is aligned to a given alignment value.
+        /// A span is aligned if both its iterators are aligned to the given value.
         /// If the provided span is empty the behavior of this method is undefined.
         Bool IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept;
 
