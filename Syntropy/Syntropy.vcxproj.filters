@@ -8,11 +8,9 @@
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\memory\alignment.h" />
-    <ClInclude Include="include\syntropy\allocators\scope_allocator.h" />
     <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
     <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
-    <ClInclude Include="include\syntropy\allocators\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\core\string.h" />
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\core\label.h" />
@@ -42,7 +40,6 @@
     <ClInclude Include="include\syntropy\diagnostics\log_manager.h" />
     <ClInclude Include="include\syntropy\core\string_stream.h" />
     <ClInclude Include="include\syntropy\language\scope_guard.h" />
-    <ClInclude Include="include\syntropy\allocators\polymorphic_deleter.h" />
     <ClInclude Include="include\syntropy\language\memory.h" />
     <ClInclude Include="include\syntropy\core\smart_pointers.h" />
     <ClInclude Include="include\syntropy\language\tuple.h" />
@@ -116,6 +113,9 @@
     <ClInclude Include="include\syntropy\memory\virtual_allocator.h" />
     <ClInclude Include="include\syntropy\memory\virtual_stack_allocator.h" />
     <ClInclude Include="include\syntropy\memory\stack_allocator.h" />
+    <ClInclude Include="include\syntropy\experimental\core\polymorphic_allocator.h" />
+    <ClInclude Include="include\syntropy\experimental\core\polymorphic_deleter.h" />
+    <ClInclude Include="include\syntropy\experimental\core\scope_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

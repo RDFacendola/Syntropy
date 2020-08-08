@@ -8,7 +8,7 @@
 
 #include <sstream>
 
-#include "syntropy/allocators/polymorphic_allocator.h"
+#include "syntropy/experimental/core/polymorphic_allocator.h"
 
 namespace syntropy
 {

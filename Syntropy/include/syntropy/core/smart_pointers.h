@@ -13,8 +13,8 @@
 
 #include "syntropy/memory/allocator.h"
 
-#include "syntropy/allocators/polymorphic_allocator.h"
-#include "syntropy/allocators/polymorphic_deleter.h"
+#include "syntropy/experimental/core/polymorphic_allocator.h"
+#include "syntropy/experimental/core/polymorphic_deleter.h"
 
 namespace syntropy
 {

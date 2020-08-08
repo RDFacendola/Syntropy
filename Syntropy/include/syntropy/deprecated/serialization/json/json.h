@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "syntropy/allocators/polymorphic_allocator.h"
+#include "syntropy/experimental/core/polymorphic_allocator.h"
 
 #include "syntropy/serialization/json/serialization.h"
 #include "syntropy/serialization/json/deserialization.h"

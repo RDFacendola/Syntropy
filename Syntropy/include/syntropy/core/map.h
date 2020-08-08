@@ -12,7 +12,7 @@
 #include "syntropy/language/utility.h"
 #include "syntropy/math/hash.h"
 
-#include "syntropy/allocators/polymorphic_allocator.h"
+#include "syntropy/experimental/core/polymorphic_allocator.h"
 
 namespace syntropy
 {
