@@ -51,16 +51,16 @@ namespace syntropy
         template <typename TObject>
         RWByteSpan RWBytesOf(TObject& object) noexcept;
 
-        /// \brief Check whether a byte span is aligned to a given alignment value.
-        /// A span is aligned if both its iterators are aligned to the given value.
+        /// \brief Check whether the first byte in a span is aligned to a given alignment value.
         /// If the provided span is empty the behavior of this method is undefined.
         Bool IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept;
 
-        /// \brief Consume a byte span from the front and from the back until both the first and the last byte are aligned to a given boundary or the span is exhausted.
+        /// \brief Consume a byte span from the front until its first byte is aligned to a given boundary.
         ByteSpan Align(const ByteSpan& byte_span, Alignment alignment) noexcept;
 
-        /// \brief Consume a byte span from the front and from the back until both the first and the last byte are aligned to a given boundary or the span is exhausted.
+        /// \brief Consume a byte span from the front until its first byte is aligned to a given boundary.
         RWByteSpan Align(const RWByteSpan& byte_span, Alignment alignment) noexcept;
+
     }
 
     /************************************************************************/
@@ -124,22 +124,15 @@ namespace syntropy
     {
         SYNTROPY_UNDEFINED_BEHAVIOR(!IsEmpty(byte_span), "Empty spans don't have a well-defined alignment.");
 
-        auto data = byte_span.GetData();
-
-        return IsAlignedTo(data, alignment) && IsAlignedTo(data + Memory::Size(byte_span), alignment);
+        return IsAlignedTo(Begin(byte_span), alignment);
     }
 
     inline ByteSpan Memory::Align(const ByteSpan& byte_span, Alignment alignment) noexcept
     {
         auto begin = Align(byte_span.GetData(), alignment);
-        auto end = Align(End(byte_span) - ToBytes(alignment) + ToBytes(1), alignment);
+        auto end = End(byte_span);
 
-        if (begin <= end)
-        {
-            return { begin, end };
-        }
-
-        return {};
+        return { Math::Min(begin, end), end };
     }
 
     inline RWByteSpan Memory::Align(const RWByteSpan& byte_span, Alignment alignment) noexcept
