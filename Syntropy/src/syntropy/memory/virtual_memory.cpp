@@ -8,39 +8,39 @@ namespace syntropy
     /* MEMORY                                                               */
     /************************************************************************/
 
-    Bytes Memory::GetPageSize() noexcept
+    Bytes Memory::VirtualPageSize() noexcept
     {
-        return HALMemory::GetPageSize();
+        return HALMemory::VirtualPageSize();
     }
 
-    Alignment Memory::GetPageAlignment() noexcept
+    Alignment Memory::VirtualPageAlignment() noexcept
     {
-        return HALMemory::GetPageAlignment();
+        return HALMemory::VirtualPageAlignment();
     }
 
-    RWByteSpan Memory::Reserve(Bytes size) noexcept
+    RWByteSpan Memory::VirtualReserve(Bytes size) noexcept
     {
-        return HALMemory::Reserve(size);
+        return HALMemory::VirtualReserve(size);
     }
 
-    RWByteSpan Memory::Allocate(Bytes size) noexcept
+    RWByteSpan Memory::VirtualAllocate(Bytes size) noexcept
     {
-        return HALMemory::Allocate(size);
+        return HALMemory::VirtualAllocate(size);
     }
 
-    Bool Memory::Release(const RWByteSpan& byte_span) noexcept
+    Bool Memory::VirtualRelease(const RWByteSpan& byte_span) noexcept
     {
-        return HALMemory::Release(byte_span);
+        return HALMemory::VirtualRelease(byte_span);
     }
 
-    Bool Memory::Commit(const RWByteSpan& byte_span) noexcept
+    Bool Memory::VirtualCommit(const RWByteSpan& byte_span) noexcept
     {
-        return HALMemory::Commit(byte_span);
+        return HALMemory::VirtualCommit(byte_span);
     }
 
-    Bool Memory::Decommit(const RWByteSpan& byte_span) noexcept
+    Bool Memory::VirtualDecommit(const RWByteSpan& byte_span) noexcept
     {
-        return HALMemory::Decommit(byte_span);
+        return HALMemory::VirtualDecommit(byte_span);
     }
 
 }

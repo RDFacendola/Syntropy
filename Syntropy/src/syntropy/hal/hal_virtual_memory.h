@@ -21,41 +21,41 @@ namespace syntropy
     namespace HALMemory
     {
         /// \brief Get the virtual memory page size.
-        /// \return Returns the virtual memory page size, in bytes.
-        Bytes GetPageSize() noexcept;
+        /// \return Returns the virtual memory page size.
+        Bytes VirtualPageSize() noexcept;
 
         /// \brief Get the virtual memory page alignment.
-        /// \return Returns the virtual memory page alignment, in bytes.
-        Alignment GetPageAlignment() noexcept;
+        /// \return Returns the virtual memory page alignment.
+        Alignment VirtualPageAlignment() noexcept;
 
         /// \brief Reserve a range of virtual memory addresses.
-        /// Reserved memory region must be committed via Commit() before accessing it.
+        /// Reserved memory region must be committed via VirtualCommit() before accessing it.
         /// \param size Size of the range to reserve, in bytes.
         /// \return Returns the reserved memory range. If the method fails returns an empty range.
-        RWByteSpan Reserve(Bytes size) noexcept;
+        RWByteSpan VirtualReserve(Bytes size) noexcept;
 
         /// \brief Allocate a range of virtual memory addresses.
-        /// This method has the same effect as a Reserve() followed by a Commit().
+        /// This method has the same effect as a VirtualReserve() followed by a VirtualCommit().
         /// \param size Size of the range to reserve, in bytes.
         /// \return Returns the reserved virtual memory range. If the method fails returns an empty range.
-        RWByteSpan Allocate(Bytes size) noexcept;
+        RWByteSpan VirtualAllocate(Bytes size) noexcept;
 
         /// \brief Release a range of virtual memory addresses.
-        /// \param byte_span Memory range to release. Must match any return value of a previous Reserve() / Allocate(), otherwise the behaviour is unspecified.
+        /// \param byte_span Memory range to release. Must match any return value of a previous VirtualReserve() / VirtualAllocate(), otherwise the behaviour is unspecified.
         /// \return Returns true if the range could be released, returns false otherwise.
-        Bool Release(const RWByteSpan& byte_span) noexcept;
+        Bool VirtualRelease(const RWByteSpan& byte_span) noexcept;
 
         /// \brief Commit a reserved virtual memory block.
         /// This method allocates all the pages containing at least one byte in the provided range and makes them accessible by the application.
         /// \param byte_span Memory range to commit.
         /// \return Returns true if the memory could be committed, returns false otherwise.
-        /// \remarks The provided memory range must refer to a memory region that was previously reserved via Reserve().
-        Bool Commit(const RWByteSpan& byte_span) noexcept;
+        /// \remarks The provided memory range must refer to a memory region that was previously reserved via VirtualReserve().
+        Bool VirtualCommit(const RWByteSpan& byte_span) noexcept;
 
         /// \brief Decommit a virtual memory block.
         /// This method decommits all the pages containing at least one byte in the provided range.
         /// \param byte_span Memory range to decommit.
-        Bool Decommit(const RWByteSpan& byte_span) noexcept;
+        Bool VirtualDecommit(const RWByteSpan& byte_span) noexcept;
 
     };
 

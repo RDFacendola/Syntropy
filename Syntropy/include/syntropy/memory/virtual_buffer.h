@@ -79,11 +79,11 @@ namespace syntropy
 
         /// \brief Commit a virtual memory buffer.
         /// \return Returns true if the memory could be committed, returns false otherwise.
-        Bool Commit(VirtualBuffer& buffer) noexcept;
+        Bool VirtualCommit(VirtualBuffer& buffer) noexcept;
 
         /// \brief Decommit a virtual memory buffer.
         /// \return Returns true if the memory could be committed, returns false otherwise.
-        Bool Decommit(VirtualBuffer& buffer) noexcept;
+        Bool VirtualDecommit(VirtualBuffer& buffer) noexcept;
     }
 
     /************************************************************************/
@@ -94,7 +94,7 @@ namespace syntropy
     // ==============
 
     inline VirtualBuffer::VirtualBuffer(Bytes size) noexcept
-        : buffer_(Memory::Reserve(size))
+        : buffer_(Memory::VirtualReserve(size))
     {
 
     }
@@ -113,7 +113,7 @@ namespace syntropy
 
     inline VirtualBuffer::~VirtualBuffer() noexcept
     {
-        Memory::Release(buffer_);
+        Memory::VirtualRelease(buffer_);
     }
 
     inline VirtualBuffer& VirtualBuffer::operator=(VirtualBuffer rhs) noexcept
@@ -146,14 +146,14 @@ namespace syntropy
         return Memory::Size(span.GetData());
     }
 
-    inline Bool Memory::Commit(VirtualBuffer& buffer) noexcept
+    inline Bool Memory::VirtualCommit(VirtualBuffer& buffer) noexcept
     {
-        return Memory::Commit(buffer.GetData());
+        return Memory::VirtualCommit(buffer.GetData());
     }
 
-    inline Bool Memory::Decommit(VirtualBuffer& buffer) noexcept
+    inline Bool Memory::VirtualDecommit(VirtualBuffer& buffer) noexcept
     {
-        return Memory::Commit(buffer.GetData());
+        return Memory::VirtualCommit(buffer.GetData());
     }
 
 }
