@@ -11,7 +11,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/language/type_traits.h"
 #include "syntropy/language/memory.h"
-#include "syntropy/memory/allocator.h"
+#include "syntropy/allocators/allocator.h"
 
 namespace syntropy
 {

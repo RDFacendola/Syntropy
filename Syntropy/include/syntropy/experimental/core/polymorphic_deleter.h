@@ -9,7 +9,7 @@
 #include "syntropy/language/utility.h"
 #include "syntropy/core/types.h"
 #include "syntropy/memory/memory.h"
-#include "syntropy/memory/allocator.h"
+#include "syntropy/allocators/allocator.h"
 
 namespace syntropy
 {

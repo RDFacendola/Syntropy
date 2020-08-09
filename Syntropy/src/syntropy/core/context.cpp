@@ -4,10 +4,10 @@
 
 #include "syntropy/core/map.h"
 
-#include "syntropy/memory/virtual_stack_allocator.h"
-#include "syntropy/memory/fallback_allocator.h"
-#include "syntropy/memory/system_allocator.h"
-#include "syntropy/memory/allocator.h"
+#include "syntropy/allocators/virtual_stack_allocator.h"
+#include "syntropy/allocators/fallback_allocator.h"
+#include "syntropy/allocators/system_allocator.h"
+#include "syntropy/allocators/allocator.h"
 
 namespace syntropy
 {

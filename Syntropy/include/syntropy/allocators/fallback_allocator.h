@@ -1,22 +1,24 @@
 
 /// \file fallback_allocator.h
-/// \brief This header is part of the Syntropy memory module. It contains allocators that attempt to allocate on a primary allocator and fallback to a second one on failure.
+/// \brief This header is part of the Syntropy allocators module. It contains allocators that attempt to allocate on a primary allocator and fallback to a second one upon failure.
 ///
 /// \author Raffaele D. Facendola - 2018
 
 #pragma once
 
+#include "syntropy/language/type_traits.h"
 #include "syntropy/language/utility.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
+#include "syntropy/allocators/allocator.h"
 
 namespace syntropy
 {
     /************************************************************************/
-    /* FALLBACK ALLOCATOR                                                   */
+    /* FALLBACK ALLOCATOR <ALLOCATOR, FALLBACK>                             */
     /************************************************************************/
 
     /// \brief Tier Omega allocator that attempts to perform allocation on the primary allocator and falls back to the other one upon failure.
@@ -27,15 +29,12 @@ namespace syntropy
     public:
 
         /// \brief Default constructor.
-        /// This method assumes each allocator is default-constructible.
         FallbackAllocator() noexcept = default;
 
         /// \brief Default copy constructor.
-        /// This method assumes each allocator is copyable.
         FallbackAllocator(const FallbackAllocator&) noexcept = default;
 
         /// \brief Default move constructor.
-        /// This method assumes each allocator is movable.
         FallbackAllocator(FallbackAllocator&&) noexcept = default;
 
         /// \brief Create a new allocator by initializing both allocators explicitly.
@@ -54,15 +53,12 @@ namespace syntropy
         ~FallbackAllocator() noexcept = default;
 
         /// \brief Default copy-assignment operator.
-        /// This method assumes each allocator is copy-assignable.
         FallbackAllocator& operator=(const FallbackAllocator&) noexcept = default;
 
         /// \brief Default move-assignment operator.
-        /// This method assumes each allocator is copy-assignable.
         FallbackAllocator& operator=(FallbackAllocator&&) noexcept = default;
 
         /// \brief Allocate a new memory block.
-        /// If the primary allocator could not handle the request, the fallback allocator will be used instead.
         /// If a memory block could not be allocated, returns an empty block.
         RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
@@ -70,7 +66,14 @@ namespace syntropy
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
         void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
-        /// \brief Check whether the allocator owns a memory block.
+        /// \brief Deallocate each allocation performed so far.
+        /// This method only participates in overload resolution if both allocators implement ::DeallocateAll() method.
+        template<typename = EnableIfT<IsValidExpressionV<AllocatorImplementsDeallocateAll, TAllocator> && IsValidExpressionV<AllocatorImplementsDeallocateAll, TFallback>>>
+        void DeallocateAll() noexcept;
+
+        /// \brief Check whether either allocator owns a memory block.
+        /// This method only participates in overload resolution if both allocator implement ::Own(block) method.
+        template<typename = EnableIfT<IsValidExpressionV<AllocatorImplementsOwn, TAllocator>&& IsValidExpressionV<AllocatorImplementsOwn, TFallback>>>
         Bool Owns(const ByteSpan& block) const noexcept;
 
     private:
@@ -128,22 +131,47 @@ namespace syntropy
     template <typename TAllocator, typename TFallback>
     inline void FallbackAllocator<TAllocator, TFallback>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
-        SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block), "The provided block doesn't belong to this allocator.");
-
-        if (allocator_.Owns(block))
+        if constexpr (IsValidExpressionV<AllocatorImplementsOwn, TAllocator>)
         {
-            allocator_.Deallocate(block, alignment);
+            if (allocator_.Owns(block))
+            {
+                allocator_.Deallocate(block, alignment);
+            }
+            else
+            {
+                fallback_.Deallocate(block, alignment);
+            }
+        }
+        else if constexpr (IsValidExpressionV<AllocatorImplementsOwn, TFallback>)
+        {
+            if (fallback_.Owns(block))
+            {
+                fallback_.Deallocate(block, alignment);
+            }
+            else
+            {
+                allocator_.Deallocate(block, alignment);
+            }
         }
         else
         {
-            fallback_.Deallocate(block, alignment);
+            static_assert(AlwaysFalseV, "Cannot infer block owner: either TAllocator or TFallback must provide ::Owns(...) method.");
         }
     }
 
     template <typename TAllocator, typename TFallback>
+    template <typename>
+    inline void FallbackAllocator<TAllocator, TFallback>::DeallocateAll() noexcept
+    {
+        allocator_.DeallocateAll();
+        fallback_.DeallocateAll();
+    }
+
+    template <typename TAllocator, typename TFallback>
+    template <typename>
     inline Bool FallbackAllocator<TAllocator, TFallback>::Owns(const ByteSpan& block) const noexcept
     {
-        return allocator_.Owns(block) || fallback_.Owns(block);
+        allocator_.Owns(block) || fallback_.Owns(block);
     }
 
 }

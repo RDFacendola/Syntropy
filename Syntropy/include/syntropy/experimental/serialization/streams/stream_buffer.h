@@ -14,7 +14,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/buffer.h"
-#include "syntropy/memory/allocator.h"
+#include "syntropy/allocators/allocator.h"
 #include "syntropy/math/constants.h"
 #include "syntropy/math/math.h"
 

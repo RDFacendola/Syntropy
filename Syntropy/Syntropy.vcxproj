@@ -11,21 +11,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\syntropy\memory\counting_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\fallback_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\quota_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\virtual_stack_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\counting_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\fallback_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\quota_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\virtual_stack_allocator.h" />
     <ClInclude Include="include\syntropy\experimental\core\polymorphic_deleter.h" />
-    <ClInclude Include="include\syntropy\memory\system_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\stack_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\allocation_context.h" />
-    <ClInclude Include="include\syntropy\memory\allocator.h" />
-    <ClInclude Include="include\syntropy\memory\null_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\passthrough_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\system_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\stack_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\allocation_context.h" />
+    <ClInclude Include="include\syntropy\allocators\allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\null_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\passthrough_allocator.h" />
     <ClInclude Include="include\syntropy\experimental\core\polymorphic_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\pool_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\pool_allocator.h" />
     <ClInclude Include="include\syntropy\experimental\core\scope_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\virtual_allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\virtual_allocator.h" />
     <ClInclude Include="include\syntropy\application\command_line.h" />
     <ClInclude Include="include\syntropy\application\command_line_argument.h" />
     <ClInclude Include="include\syntropy\core\array.h" />
@@ -131,8 +131,8 @@
     <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\syntropy\memory\virtual_stack_allocator.cpp" />
-    <ClCompile Include="src\syntropy\memory\virtual_allocator.cpp" />
+    <ClCompile Include="src\syntropy\allocators\virtual_stack_allocator.cpp" />
+    <ClCompile Include="src\syntropy\allocators\virtual_allocator.cpp" />
     <ClCompile Include="src\syntropy\application\command_line.cpp" />
     <ClCompile Include="src\syntropy\core\context.cpp" />
     <ClCompile Include="src\syntropy\core\label.cpp" />

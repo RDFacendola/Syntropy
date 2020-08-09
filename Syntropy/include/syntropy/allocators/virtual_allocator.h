@@ -1,6 +1,6 @@
 
 /// \file virtual_allocator.h
-/// \brief This header is part of the Syntropy memory module. It contains definitions for allocators allocating fixed-size blocks on system virtual memory.
+/// \brief This header is part of the Syntropy allocators module. It contains definitions for allocators allocating fixed-size blocks on system virtual memory.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -58,6 +58,9 @@ namespace syntropy
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
         void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
+        /// \brief Deallocate every allocation performed on this allocator so far.
+        void DeallocateAll() noexcept;
+
         /// \brief Check whether this allocator owns a memory block.
         Bool Owns(const ByteSpan& block) const noexcept;
 
@@ -72,29 +75,19 @@ namespace syntropy
         /// \brief Reserve a block and return its range.
         RWByteSpan Reserve() noexcept;
 
-        /// \brief Virtual memory range reserved for this resource.
-        VirtualBuffer virtual_storage_;
+        /// \brief Virtual memory range reserved for this allocator.
+        VirtualBuffer virtual_span_;
 
-        /// \brief Range of memory yet to allocate.
-        RWByteSpan virtual_unallocated_;
+        /// \brief Memory span yet to allocate.
+        RWByteSpan unallocated_span_;
 
         /// \brief Size of each allocation. This value is a multiple of the system virtual memory page size.
         Bytes page_size_;
 
-        ///< \brief Maximum alignment for each allocated page.
-        Alignment page_alignment_;
-
         /// \brief Head of the free list.
-        Pointer<FreeList> free_{ nullptr };
+        Pointer<FreeList> free_list_{ nullptr };
 
     };
-
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Swaps two VirtualMemoryResources.
-    void swap(VirtualAllocator& lhs, VirtualAllocator& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -104,22 +97,21 @@ namespace syntropy
     // =================
 
     inline VirtualAllocator::VirtualAllocator(Bytes capacity, Bytes page_size) noexcept
-        : virtual_storage_(capacity)
-        , virtual_unallocated_(virtual_storage_.GetData())
-        , page_size_(Math::Ceil(page_size, Memory::GetPageSize()))
-        , page_alignment_(ToAlignment(Memory::GetPageSize()))
+        : virtual_span_(capacity)
+        , unallocated_span_(virtual_span_.GetData())
+        , page_size_(Memory::VirtualCeil(page_size))
     {
 
     }
 
     inline VirtualAllocator::VirtualAllocator(VirtualAllocator&& rhs) noexcept
-        : virtual_storage_(std::move(rhs.virtual_storage_))
-        , virtual_unallocated_(rhs.virtual_unallocated_)
+        : virtual_span_(std::move(rhs.virtual_span_))
+        , unallocated_span_(rhs.unallocated_span_)
         , page_size_(rhs.page_size_)
-        , page_alignment_(rhs.page_alignment_)
-        , free_(rhs.free_)
+        , free_list_(rhs.free_list_)
     {
-
+        rhs.unallocated_span_ = {};
+        rhs.free_list_ = nullptr;
     }
 
     inline VirtualAllocator& VirtualAllocator::operator=(VirtualAllocator rhs) noexcept
@@ -129,14 +121,19 @@ namespace syntropy
         return *this;
     }
 
-    inline Bool VirtualAllocator::Owns(const ByteSpan& block) const noexcept
+    inline void VirtualAllocator::DeallocateAll() noexcept
     {
-        return Contains(virtual_storage_.GetData(), block);
+        auto allocated_span = PopBack(virtual_span_.GetData(), Count(unallocated_span_));
+
+        Memory::VirtualDecommit(allocated_span);
+
+        unallocated_span_ = virtual_span_.GetData();
+        free_list_ = nullptr;
     }
 
-    inline void swap(VirtualAllocator& lhs, VirtualAllocator& rhs) noexcept
+    inline Bool VirtualAllocator::Owns(const ByteSpan& block) const noexcept
     {
-        lhs.Swap(rhs);
+        return Contains(virtual_span_.GetData(), block);
     }
 
 }

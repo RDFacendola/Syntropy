@@ -10,7 +10,7 @@
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory.h"
-#include "syntropy/memory/allocator.h"
+#include "syntropy/allocators/allocator.h"
 
 namespace syntropy
 {

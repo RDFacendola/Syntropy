@@ -1,6 +1,6 @@
 
 /// \file system_allocator.h
-/// \brief This header is part of the Syntropy memory module. It contains allocators using system heap memory.
+/// \brief This header is part of the Syntropy allocators module. It contains definitions for allocators wrapping system heap memory.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -46,9 +46,6 @@ namespace syntropy
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
         void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
-        /// \brief Check whether the memory resource owns a memory block.
-        Bool Owns(const ByteSpan& block) const noexcept;
-
     };
 
     /************************************************************************/
@@ -76,14 +73,6 @@ namespace syntropy
         auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
 
         ::operator delete(block.GetData(), alignment_value, std::nothrow);
-    }
-
-    inline Bool SystemAllocator::Owns(const ByteSpan& block) const noexcept
-    {
-        // This is not correct, however system allocator is expected to be used as last resort 
-        // to other memory resources or used as the single allocator for the application.
-
-        return true;
     }
 
 }

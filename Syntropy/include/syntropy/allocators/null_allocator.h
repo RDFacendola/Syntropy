@@ -1,6 +1,6 @@
 
 /// \file null_allocator.h
-/// \brief This header is part of the Syntropy memory module. It contains allocators that use no memory.
+/// \brief This header is part of the Syntropy allocators module. It contains definitions for allocators which don't use any memory.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -44,11 +44,13 @@ namespace syntropy
         RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
-        /// \remarks If the provided block is not empty the behavior of this function is undefined.
+        /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
         void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
-        /// \brief Check whether the memory resource owns a memory block.
-        /// \remarks Only empty blocks are owned by this allocator, even empty blocks allocated on another allocator.
+        /// \brief Deallocate each allocation performed so far.
+        void DeallocateAll() noexcept;
+
+        /// \brief Check whether the allocator owns a memory block.
         Bool Owns(const ByteSpan& block) const noexcept;
 
     };
@@ -67,12 +69,17 @@ namespace syntropy
 
     inline void NullAllocator::Deallocate(const RWByteSpan& block, Alignment /*alignment*/)
     {
-        SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block));       // Empty memory blocks only.
+        SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block));
+    }
+
+    inline void NullAllocator::DeallocateAll() noexcept
+    {
+
     }
 
     inline Bool NullAllocator::Owns(const ByteSpan& block) const noexcept
     {
-        return !block;                                  // This memory resource owns only empty ranges.
+        return !block;
     }
 
 }
