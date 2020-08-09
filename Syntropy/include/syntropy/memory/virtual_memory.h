@@ -10,6 +10,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
+#include "syntropy/math/math.h"
 
 namespace syntropy
 {
@@ -56,8 +57,46 @@ namespace syntropy
         /// This method decommits all the pages containing at least one byte in the provided range.
         /// \param byte_span Memory range to decommit.
         Bool Decommit(const RWByteSpan& byte_span) noexcept;
+        /// \brief Return the greatest size equal-to or smaller-than the provided value which is also a multiple of virtual memory's page size.
+        Bytes VirtualFloor(Bytes size) noexcept;
+
+        /// \brief Return the greatest alignment equal-to or smaller-than the provided value which also satisfies virtual memory's page alignment.
+        Alignment VirtualFloor(Alignment alignment) noexcept;
+
+        /// \brief Return the smallest size equal-to or greater-than the provided value which is also a multiple of virtual memory's page size.
+        Bytes VirtualCeil(Bytes size) noexcept;
+
+        /// \brief Return the smallest alignment equal-to or greater-than the provided value which also satisfies virtual memory's page alignment.
+        Alignment VirtualCeil(Alignment alignment) noexcept;
 
     };
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Memory.
+    // =======
+
+    inline Bytes Memory::VirtualFloor(Bytes size) noexcept
+    {
+        return Math::Floor(size, VirtualPageSize());
+    }
+
+    inline Alignment Memory::VirtualFloor(Alignment alignment) noexcept
+    {
+        return Math::Min(alignment, VirtualPageAlignment());
+    }
+
+    inline Bytes Memory::VirtualCeil(Bytes size) noexcept
+    {
+        return Math::Ceil(size, VirtualPageSize());
+    }
+
+    inline Alignment Memory::VirtualCeil(Alignment alignment) noexcept
+    {
+        return Math::Max(alignment, VirtualPageAlignment());
+    }
 
 }
 
