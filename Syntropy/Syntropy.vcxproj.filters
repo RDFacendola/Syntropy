@@ -8,7 +8,6 @@
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\memory\alignment.h" />
-    <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
     <ClInclude Include="src\syntropy\hal\hal_virtual_memory.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
     <ClInclude Include="include\syntropy\core\string.h" />
@@ -100,7 +99,6 @@
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
     <ClInclude Include="include\syntropy\core\array.h" />
     <ClInclude Include="include\syntropy\memory\buffer.h" />
-    <ClInclude Include="include\syntropy\memory\virtual_buffer.h" />
     <ClInclude Include="include\syntropy\experimental\core\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\experimental\core\polymorphic_deleter.h" />
     <ClInclude Include="include\syntropy\experimental\core\scope_allocator.h" />
@@ -116,10 +114,11 @@
     <ClInclude Include="include\syntropy\allocators\fallback_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\counting_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\allocation_context.h" />
+    <ClInclude Include="include\syntropy\virtual_memory\virtual_memory.h" />
+    <ClInclude Include="include\syntropy\virtual_memory\virtual_buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
-    <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\core\label.cpp" />
     <ClCompile Include="src\syntropy\platform\endianness.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\stack_trace.cpp" />
@@ -146,5 +145,6 @@
     <ClCompile Include="src\syntropy\unit_test\test_runner.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_stack_allocator.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_allocator.cpp" />
+    <ClCompile Include="src\syntropy\virtual_memory\virtual_memory.cpp" />
   </ItemGroup>
 </Project>

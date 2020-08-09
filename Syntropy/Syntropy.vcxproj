@@ -100,8 +100,8 @@
     <ClInclude Include="include\syntropy\memory\alignment.h" />
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\memory\buffer.h" />
-    <ClInclude Include="include\syntropy\memory\virtual_memory.h" />
-    <ClInclude Include="include\syntropy\memory\virtual_buffer.h" />
+    <ClInclude Include="include\syntropy\virtual_memory\virtual_memory.h" />
+    <ClInclude Include="include\syntropy\virtual_memory\virtual_buffer.h" />
     <ClInclude Include="include\syntropy\platform\endianness.h" />
     <ClInclude Include="include\syntropy\platform\intrinsics.h" />
     <ClInclude Include="include\syntropy\platform\system.h" />
@@ -149,7 +149,7 @@
     <ClCompile Include="src\syntropy\language\listener.cpp" />
     <ClCompile Include="src\syntropy\random\pcg_random_engine.cpp" />
     <ClCompile Include="src\syntropy\memory\memory.cpp" />
-    <ClCompile Include="src\syntropy\memory\virtual_memory.cpp" />
+    <ClCompile Include="src\syntropy\virtual_memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\platform\endianness.cpp" />
     <ClCompile Include="src\syntropy\platform\intrinsics.cpp" />

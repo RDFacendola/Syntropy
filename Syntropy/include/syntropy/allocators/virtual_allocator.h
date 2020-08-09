@@ -10,8 +10,8 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
-#include "syntropy/memory/virtual_memory.h"
-#include "syntropy/memory/virtual_buffer.h"
+#include "syntropy/virtual_memory/virtual_memory.h"
+#include "syntropy/virtual_memory/virtual_buffer.h"
 #include "syntropy/math/math.h"
 #include "syntropy/diagnostics/assert.h"
 
@@ -99,7 +99,7 @@ namespace syntropy
     inline VirtualAllocator::VirtualAllocator(Bytes capacity, Bytes page_size) noexcept
         : virtual_span_(capacity)
         , unallocated_span_(virtual_span_.GetData())
-        , page_size_(Memory::VirtualCeil(page_size))
+        , page_size_(VirtualMemory::Ceil(page_size))
     {
 
     }
@@ -125,7 +125,7 @@ namespace syntropy
     {
         auto allocated_span = PopBack(virtual_span_.GetData(), Count(unallocated_span_));
 
-        Memory::VirtualDecommit(allocated_span);
+        VirtualMemory::Decommit(allocated_span);
 
         unallocated_span_ = virtual_span_.GetData();
         free_list_ = nullptr;

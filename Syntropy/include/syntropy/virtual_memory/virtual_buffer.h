@@ -1,6 +1,6 @@
 
 /// \file virtual_buffer.h
-/// \brief This header is part of the Syntropy memory module. It contains classes and functionalities for automatic virtual memory management.
+/// \brief This header is part of the Syntropy virtual memory module. It contains classes and functionalities for automatic virtual memory management.
 ///
 /// \author Raffaele D. Facendola - 2018
 
@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/byte_span.h"
-#include "syntropy/memory/virtual_memory.h"
+#include "syntropy/virtual_memory/virtual_memory.h"
 
 namespace syntropy
 {
@@ -68,22 +68,38 @@ namespace syntropy
     };
 
     /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Swap two VirtualBuffer instances.
+    void Swap(VirtualBuffer& lhs, VirtualBuffer& rhs) noexcept;
+
+    /************************************************************************/
     /* MEMORY                                                               */
     /************************************************************************/
 
-    /// \brief Exposes memory-related definitions.
+        /// \brief Exposes memory-related definitions.
     namespace Memory
     {
         /// \brief Get the memory footprint of a virtual memory buffer.
+        /// \return Returns the size of a virtual memory buffer, in bytes.
         Bytes Size(const VirtualBuffer& buffer) noexcept;
+    }
 
+    /************************************************************************/
+    /* VIRTUAL MEMORY                                                       */
+    /************************************************************************/
+
+    /// \brief Exposes virtual memory-related definitions.
+    namespace VirtualMemory
+    {
         /// \brief Commit a virtual memory buffer.
         /// \return Returns true if the memory could be committed, returns false otherwise.
-        Bool VirtualCommit(VirtualBuffer& buffer) noexcept;
+        Bool Commit(VirtualBuffer& buffer) noexcept;
 
         /// \brief Decommit a virtual memory buffer.
         /// \return Returns true if the memory could be committed, returns false otherwise.
-        Bool VirtualDecommit(VirtualBuffer& buffer) noexcept;
+        Bool Decommit(VirtualBuffer& buffer) noexcept;
     }
 
     /************************************************************************/
@@ -94,7 +110,7 @@ namespace syntropy
     // ==============
 
     inline VirtualBuffer::VirtualBuffer(Bytes size) noexcept
-        : buffer_(Memory::VirtualReserve(size))
+        : buffer_(VirtualMemory::Reserve(size))
     {
 
     }
@@ -113,7 +129,7 @@ namespace syntropy
 
     inline VirtualBuffer::~VirtualBuffer() noexcept
     {
-        Memory::VirtualRelease(buffer_);
+        VirtualMemory::Release(buffer_);
     }
 
     inline VirtualBuffer& VirtualBuffer::operator=(VirtualBuffer rhs) noexcept
@@ -138,6 +154,14 @@ namespace syntropy
         return buffer_;
     }
 
+    // Non-member functions.
+    // =====================
+
+    inline void Swap(VirtualBuffer& lhs, VirtualBuffer& rhs) noexcept
+    {
+        lhs.Swap(rhs);
+    }
+
     // Memory.
     // =======
 
@@ -146,14 +170,17 @@ namespace syntropy
         return Memory::Size(span.GetData());
     }
 
-    inline Bool Memory::VirtualCommit(VirtualBuffer& buffer) noexcept
+    // VirtualMemory.
+    // ==============
+
+    inline Bool VirtualMemory::Commit(VirtualBuffer& buffer) noexcept
     {
-        return Memory::VirtualCommit(buffer.GetData());
+        return VirtualMemory::Commit(buffer.GetData());
     }
 
-    inline Bool Memory::VirtualDecommit(VirtualBuffer& buffer) noexcept
+    inline Bool VirtualMemory::Decommit(VirtualBuffer& buffer) noexcept
     {
-        return Memory::VirtualCommit(buffer.GetData());
+        return VirtualMemory::Commit(buffer.GetData());
     }
 
 }

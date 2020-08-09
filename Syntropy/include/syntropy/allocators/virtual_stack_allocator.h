@@ -12,8 +12,8 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/memory.h"
-#include "syntropy/memory/virtual_memory.h"
-#include "syntropy/memory/virtual_buffer.h"
+#include "syntropy/virtual_memory/virtual_memory.h"
+#include "syntropy/virtual_memory/virtual_buffer.h"
 
 #include "syntropy/math/math.h"
 
@@ -125,7 +125,7 @@ namespace syntropy
         : virtual_span_(capacity)
         , free_span_(virtual_span_.GetData())
         , committed_span_()
-        , granularity_(Memory::VirtualCeil(granularity))
+        , granularity_(VirtualMemory::Ceil(granularity))
     {
 
     }
@@ -153,7 +153,7 @@ namespace syntropy
 
     inline void VirtualStackAllocator::DeallocateAll() noexcept
     {
-        Memory::VirtualDecommit(committed_span_);
+        VirtualMemory::Decommit(committed_span_);
 
         free_span_ = virtual_span_.GetData();
         committed_span_ = {};
@@ -189,7 +189,7 @@ namespace syntropy
     {
         auto decommit_span = PopFront(committed_span_, ToInt(Memory::Size(checkpoint.committed_span_)));
 
-        Memory::VirtualDecommit(decommit_span);                 // Kernel call.
+        VirtualMemory::Decommit(decommit_span);                 // Kernel call.
 
         free_span_ = checkpoint.free_span_;
         committed_span_ = checkpoint.committed_span_;

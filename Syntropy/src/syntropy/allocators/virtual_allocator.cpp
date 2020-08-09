@@ -31,11 +31,11 @@ namespace syntropy
 
     RWByteSpan VirtualAllocator::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if ((size <= page_size_) && (alignment <= Memory::VirtualPageAlignment()))
+        if ((size <= page_size_) && (alignment <= VirtualMemory::PageAlignment()))
         {
             if (auto page = Reserve())
             {
-                Memory::VirtualCommit(page);                        // Kernel call: commit the page(s).
+                VirtualMemory::Commit(page);                     // Kernel call: commit the page(s).
 
                 return Front(page, ToInt(size));
             }
@@ -46,7 +46,7 @@ namespace syntropy
 
     RWByteSpan VirtualAllocator::Reserve(Bytes size, Alignment alignment) noexcept
     {
-        if ((size <= page_size_) && (alignment <= Memory::VirtualPageAlignment()))
+        if ((size <= page_size_) && (alignment <= VirtualMemory::PageAlignment()))
         {
             if (auto page = Reserve())
             {
@@ -60,7 +60,7 @@ namespace syntropy
     void VirtualAllocator::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
         SYNTROPY_ASSERT(Owns(block));
-        SYNTROPY_ASSERT(alignment <= Memory::VirtualPageAlignment());
+        SYNTROPY_ASSERT(alignment <= VirtualMemory::PageAlignment());
 
         auto page = RWByteSpan{ Begin(block), ToInt(page_size_) };      // Blocks are allocated at page boundary.
 
@@ -68,7 +68,7 @@ namespace syntropy
         {
             // (a) Link to free pages in the current free list node.
 
-            Memory::VirtualDecommit(page);                              // Kernel call: decommit the page(s).
+            VirtualMemory::Decommit(page);                       // Kernel call: decommit the page(s).
 
             // #TODO FIFO Policy.
 

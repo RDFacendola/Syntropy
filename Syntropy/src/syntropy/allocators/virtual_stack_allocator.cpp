@@ -22,7 +22,7 @@ namespace syntropy
 
                 auto commit_span = Front(uncommitted_span, ToInt(commit_size));
 
-                Memory::VirtualCommit(commit_span);                                                                                 // Kernel call.
+                VirtualMemory::Commit(commit_span);                                                                          // Kernel call.
 
                 committed_span_ = Union(committed_span_, commit_span);
             }
@@ -35,8 +35,8 @@ namespace syntropy
 
     RWByteSpan VirtualStackAllocator::Reserve(Bytes size, Alignment alignment) noexcept
     {
-        auto virtual_size = Memory::VirtualCeil(size);
-        auto virtual_alignment = Memory::VirtualCeil(alignment);
+        auto virtual_size = VirtualMemory::Ceil(size);
+        auto virtual_alignment = VirtualMemory::Ceil(alignment);
 
         if (auto virtual_span = Memory::Align(free_span_, virtual_alignment); Memory::Size(virtual_span) >= virtual_size)           // Jump next to a virtual page to avoid interference with previous allocations\reservations.
         {
