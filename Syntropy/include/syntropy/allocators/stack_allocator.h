@@ -141,8 +141,8 @@ namespace syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // StackAllocator<TAllocator>.
-    // ===========================
+    // StackAllocator<TAllocator>
+    // ==========================
 
     template <typename TAllocator>
     template <typename... TArguments>
