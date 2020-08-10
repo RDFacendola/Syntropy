@@ -2,7 +2,7 @@
 
 #include "syntropy/reflection/reflection.h"
 
-namespace syntropy::diagnostics
+namespace Syntropy::diagnostics
 {
     reflection::AutoRegisterClass<Severity> severity_class;
 

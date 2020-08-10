@@ -24,7 +24,7 @@
 
 #include "unit_tests/unit_tests.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* UNIT TEST APPLICATION                                                */
@@ -63,19 +63,19 @@ namespace syntropy
     private:
 
         /// \brief Called whenever a test suite starts.
-        void OnSuiteStarted(const TestRunner& sender, const syntropy::OnTestRunnerSuiteStartedEventArgs& e);
+        void OnSuiteStarted(const TestRunner& sender, const Syntropy::OnTestRunnerSuiteStartedEventArgs& e);
 
         /// \brief Called whenever a test case starts.
-        void OnCaseStarted(const TestRunner& sender, const syntropy::OnTestRunnerCaseStartedEventArgs& e);
+        void OnCaseStarted(const TestRunner& sender, const Syntropy::OnTestRunnerCaseStartedEventArgs& e);
 
         /// \brief Called whenever a test case failure is reported.
-        void OnCaseFailure(const TestRunner& sender, const syntropy::OnTestRunnerCaseFailureEventArgs& e);
+        void OnCaseFailure(const TestRunner& sender, const Syntropy::OnTestRunnerCaseFailureEventArgs& e);
 
         /// \brief Called whenever a test case finishes.
-        void OnCaseFinished(const TestRunner& sender, const syntropy::OnTestRunnerCaseFinishedEventArgs& e);
+        void OnCaseFinished(const TestRunner& sender, const Syntropy::OnTestRunnerCaseFinishedEventArgs& e);
 
         /// \brief Called whenever a test suite finishes.
-        void OnSuiteFinished(const TestRunner& sender, const syntropy::OnTestRunnerSuiteFinishedEventArgs& e);
+        void OnSuiteFinished(const TestRunner& sender, const Syntropy::OnTestRunnerSuiteFinishedEventArgs& e);
 
         /// \brief Console output stream.
         ConsoleOutput& out = ConsoleOutput::GetSingleton();
@@ -168,21 +168,21 @@ namespace syntropy
         return ((failed_test_cases_ == 0) ? 0 : 1);
     }
 
-    inline void UnitTestApplication::OnSuiteStarted(const TestRunner& sender, const syntropy::OnTestRunnerSuiteStartedEventArgs& e)
+    inline void UnitTestApplication::OnSuiteStarted(const TestRunner& sender, const Syntropy::OnTestRunnerSuiteStartedEventArgs& e)
     {
         test_suite_failed_ = false;
 
         ++total_test_suites_;
     }
 
-    inline void UnitTestApplication::OnCaseStarted(const TestRunner& sender, const syntropy::OnTestRunnerCaseStartedEventArgs& e)
+    inline void UnitTestApplication::OnCaseStarted(const TestRunner& sender, const Syntropy::OnTestRunnerCaseStartedEventArgs& e)
     {
         test_case_failed_ = false;
 
         ++total_test_cases_;
     }
 
-    inline void UnitTestApplication::OnCaseFailure(const TestRunner& sender, const syntropy::OnTestRunnerCaseFailureEventArgs& e)
+    inline void UnitTestApplication::OnCaseFailure(const TestRunner& sender, const Syntropy::OnTestRunnerCaseFailureEventArgs& e)
     {
         if (!test_suite_failed_)
         {
@@ -207,7 +207,7 @@ namespace syntropy
         out.Print(" > ", e.expression_, " returned '", e.result_, "' but '", e.expected_, "' was expected.");
     }
 
-    inline void UnitTestApplication::OnCaseFinished(const TestRunner& sender, const syntropy::OnTestRunnerCaseFinishedEventArgs& e)
+    inline void UnitTestApplication::OnCaseFinished(const TestRunner& sender, const Syntropy::OnTestRunnerCaseFinishedEventArgs& e)
     {
         if (test_case_failed_)
         {
@@ -221,7 +221,7 @@ namespace syntropy
         }
     }
 
-    inline void UnitTestApplication::OnSuiteFinished(const TestRunner& sender, const syntropy::OnTestRunnerSuiteFinishedEventArgs& e)
+    inline void UnitTestApplication::OnSuiteFinished(const TestRunner& sender, const Syntropy::OnTestRunnerSuiteFinishedEventArgs& e)
     {
         if (test_suite_failed_)
         {

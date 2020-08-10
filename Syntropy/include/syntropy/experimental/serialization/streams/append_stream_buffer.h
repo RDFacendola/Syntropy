@@ -11,7 +11,7 @@
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/bytes.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* APPEND STREAM BUFFER                                                 */

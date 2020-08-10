@@ -10,7 +10,7 @@
 #include "syntropy/diagnostics/log_manager.h"
 #include "syntropy/diagnostics/log_event.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MACROS                                                               */
@@ -54,34 +54,34 @@ namespace syntropy
 
     #undef  SYNTROPY_DEBUG
     #define SYNTROPY_DEBUG(context, ...) \
-        syntropy::GetLogManager().Send(syntropy::MakeLogEvent(syntropy::Severity::kDebug, context, SYNTROPY_HERE, __VA_ARGS__))
+        Syntropy::GetLogManager().Send(Syntropy::MakeLogEvent(Syntropy::Severity::kDebug, context, SYNTROPY_HERE, __VA_ARGS__))
 
     #undef  SYNTROPY_INFO
     #define SYNTROPY_INFO(context, ...) \
-        syntropy::GetLogManager().Send(syntropy::MakeLogEvent(syntropy::Severity::kInformative, context, SYNTROPY_HERE, __VA_ARGS__))
+        Syntropy::GetLogManager().Send(Syntropy::MakeLogEvent(Syntropy::Severity::kInformative, context, SYNTROPY_HERE, __VA_ARGS__))
 
     #undef  SYNTROPY_WARNING
     #define SYNTROPY_WARNING(context, ...) \
-        syntropy::GetLogManager().Send(syntropy::MakeLogEvent(syntropy::Severity::kWarning, context, SYNTROPY_HERE, __VA_ARGS__))
+        Syntropy::GetLogManager().Send(Syntropy::MakeLogEvent(Syntropy::Severity::kWarning, context, SYNTROPY_HERE, __VA_ARGS__))
 
     #undef  SYNTROPY_ERROR
     #define SYNTROPY_ERROR(context, ...) \
         { \
-            syntropy::GetLogManager().Send(syntropy::MakeLogEvent(syntropy::Severity::kError, context, SYNTROPY_HERE, __VA_ARGS__)); \
+            Syntropy::GetLogManager().Send(Syntropy::MakeLogEvent(Syntropy::Severity::kError, context, SYNTROPY_HERE, __VA_ARGS__)); \
             SYNTROPY_BREAK; \
         }
 
     #undef  SYNTROPY_CRITICAL
     #define SYNTROPY_CRITICAL(context, ...) \
         { \
-            syntropy::GetLogManager().Send(syntropy::MakeLogEvent(syntropy::Severity::kCritical, context, syntropy::Debugger::GetStackTrace( SYNTROPY_HERE ), __VA_ARGS__)).Flush(); \
+            Syntropy::GetLogManager().Send(Syntropy::MakeLogEvent(Syntropy::Severity::kCritical, context, Syntropy::Debugger::GetStackTrace( SYNTROPY_HERE ), __VA_ARGS__)).Flush(); \
             SYNTROPY_BREAK; \
         }
 
     #undef  SYNTROPY_FATAL
     #define SYNTROPY_FATAL(context, ...) \
         { \
-            syntropy::GetLogManager().Send(syntropy::MakeLogEvent(syntropy::Severity::kFatal, context, syntropy::Debugger::GetStackTrace( SYNTROPY_HERE ), __VA_ARGS__)).Flush(); \
+            Syntropy::GetLogManager().Send(Syntropy::MakeLogEvent(Syntropy::Severity::kFatal, context, Syntropy::Debugger::GetStackTrace( SYNTROPY_HERE ), __VA_ARGS__)).Flush(); \
             SYNTROPY_TRAP; \
         }
 

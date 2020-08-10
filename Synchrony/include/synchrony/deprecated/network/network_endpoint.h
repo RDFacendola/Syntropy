@@ -32,10 +32,10 @@ namespace synchrony
     {
         /// \brief Create an endpoint from its standard text presentation form.
         /// \return Returns the endpoint if the provided string could be converted, returns an empty value otherwise.
-        static std::optional<NetworkEndpoint> FromString(const syntropy::String& address, NetworkPort port);
+        static std::optional<NetworkEndpoint> FromString(const Syntropy::String& address, NetworkPort port);
 
         /// \brief Convert the endpoint to its standard text presentation form.
-        syntropy::String ToString() const;
+        Syntropy::String ToString() const;
 
         /// \brief Endpoint address.
         NetworkAddress address_;
@@ -53,7 +53,7 @@ namespace synchrony
 
     // NetworkEndpoint.
 
-    inline std::optional<NetworkEndpoint> NetworkEndpoint::FromString(const syntropy::String& address, NetworkPort port)
+    inline std::optional<NetworkEndpoint> NetworkEndpoint::FromString(const Syntropy::String& address, NetworkPort port)
     {
         if (auto network_address = NetworkAddress::FromString(address))
         {
@@ -63,9 +63,9 @@ namespace synchrony
         return {};
     }
 
-    inline syntropy::String NetworkEndpoint::ToString() const
+    inline Syntropy::String NetworkEndpoint::ToString() const
     {
-        auto endpoint = syntropy::String{};
+        auto endpoint = Syntropy::String{};
 
         endpoint.resize(64);
 

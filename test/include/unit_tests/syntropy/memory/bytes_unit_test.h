@@ -9,7 +9,7 @@
 
 #include "syntropy/unit_test/unit_test.h"
 
-namespace syntropy::unit_test
+namespace Syntropy::unit_test
 {
     /************************************************************************/
     /* BYTES TEST FIXTURE                                                   */

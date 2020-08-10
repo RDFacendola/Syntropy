@@ -12,7 +12,7 @@
 
 #include "syntropy/hal/hal_macro.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* FUNDAMENTAL TYPES                                                    */

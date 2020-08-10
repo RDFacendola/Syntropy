@@ -11,7 +11,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/platform/threading.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* HAL THREADING                                                        */

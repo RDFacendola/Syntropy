@@ -1,6 +1,6 @@
 #include "syntropy/reflection/interfaces/property_interfaces.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /************************************************************************/
     /* READABLE                                                             */

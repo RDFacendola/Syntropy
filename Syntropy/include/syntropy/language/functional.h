@@ -11,7 +11,7 @@
 
 #include <functional>
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* HASH FUNCTOR 64                                                      */
@@ -82,7 +82,7 @@ namespace syntropy
     template <typename TType>
     inline Int Hash32(const TType& rhs)
     {
-        using syntropy::Hash64;
+        using Syntropy::Hash64;
 
         return Hash64(rhs) & 0xFFFFFFFF;
     }

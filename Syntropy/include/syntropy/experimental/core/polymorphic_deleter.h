@@ -11,7 +11,7 @@
 #include "syntropy/memory/memory.h"
 #include "syntropy/allocators/allocator.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* POLYMORPHIC DELETER                                                  */

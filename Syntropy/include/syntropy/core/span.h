@@ -11,7 +11,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/math/math.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* SPAN <ELEMENT>                                                       */

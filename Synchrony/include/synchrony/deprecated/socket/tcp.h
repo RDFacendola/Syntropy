@@ -60,20 +60,20 @@ namespace synchrony
         /// \brief Send data to the connected host.
         /// \param buffer Buffer to send.
         /// \return If data could be sent reduce buffer capacity to fit the unsent data and returns true, otherwise returns false.
-        virtual TCPSendResult Send(syntropy::ConstMemoryRange& buffer) = 0;
+        virtual TCPSendResult Send(Syntropy::ConstMemoryRange& buffer) = 0;
 
         /// \brief Receive data from the connected host.
         /// \param buffer Buffer to receive in.
         /// \return If data could be received reduce buffer capacity to fit that amount and returns TCPReceiveResult::kOk, otherwise returns an error.
         /// \remarks This method blocks until data are received or an exception occurs.
-        virtual TCPReceiveResult Receive(syntropy::MemoryRange& buffer) = 0;
+        virtual TCPReceiveResult Receive(Syntropy::MemoryRange& buffer) = 0;
 
         /// \brief Receive data from the connected host.
         /// \param buffer Buffer to receive in.
         /// \param timeout Maximum waiting time for this call.
         /// \return If data could be received within the specified timeout reduce buffer capacity to fit that amount and returns TCPReceiveResult::kOk, otherwise returns an error.
         /// \remarks This method blocks until data are received, an exception occurs or the timeout expires.
-        virtual TCPReceiveResult Receive(syntropy::MemoryRange& buffer, std::chrono::milliseconds timeout) = 0;
+        virtual TCPReceiveResult Receive(Syntropy::MemoryRange& buffer, std::chrono::milliseconds timeout) = 0;
 
         /// \brief Get the local endpoint the socket is bound to.
         /// \return Returns the local endpoint the socket is bound to.
@@ -90,7 +90,7 @@ namespace synchrony
         /// \brief Send data to the connected host.
         /// \param buffer Buffer to send.
         /// \return Returns TCPSendResult::kOk if the entire buffer could be sent, returns an error code otherwise.
-        TCPSendResult SendAll(syntropy::ConstMemoryRange buffer);
+        TCPSendResult SendAll(Syntropy::ConstMemoryRange buffer);
     };
 
     /************************************************************************/
@@ -139,7 +139,7 @@ namespace synchrony
         /// \param remote_address Server address used to receive and send data from\to.
         /// \param local_port Port used to receive and send data from\to.
         ///\ return Returns a valid TCP socket if a connection could be established with the remote server, returns false otherwise.
-        std::unique_ptr<TCPSocket> Connect(const syntropy::String& local_address, NetworkPort local_port, const syntropy::String& remote_address, NetworkPort remote_port);
+        std::unique_ptr<TCPSocket> Connect(const Syntropy::String& local_address, NetworkPort local_port, const Syntropy::String& remote_address, NetworkPort remote_port);
 
         /// \brief Start a new TCP server.
         /// \param local Address used to receive and send data to\from.
@@ -152,7 +152,7 @@ namespace synchrony
         /// \param local_port Port to bound the server to.
         /// \param backlog Maximum number of simultaneous connections to the server.
         /// \return Returns a valid TCP server if the server could be created, returns nullptr otherwise.
-        std::unique_ptr<TCPServer> StartServer(const syntropy::String& local_address, NetworkPort local_port, std::int32_t backlog);
+        std::unique_ptr<TCPServer> StartServer(const Syntropy::String& local_address, NetworkPort local_port, std::int32_t backlog);
     }
 
     /************************************************************************/
@@ -161,7 +161,7 @@ namespace synchrony
 
     // TCP.
 
-    inline std::unique_ptr<TCPSocket> TCP::Connect(const syntropy::String& local_address, NetworkPort local_port, const syntropy::String& remote_address, NetworkPort remote_port)
+    inline std::unique_ptr<TCPSocket> TCP::Connect(const Syntropy::String& local_address, NetworkPort local_port, const Syntropy::String& remote_address, NetworkPort remote_port)
     {
         auto local_endpoint = NetworkEndpoint::FromString(local_address, local_port);
         auto remote_endpoint = NetworkEndpoint::FromString(remote_address, remote_port);
@@ -174,7 +174,7 @@ namespace synchrony
         return nullptr;
     }
 
-    inline std::unique_ptr<TCPServer> TCP::StartServer(const syntropy::String& local_address, NetworkPort local_port, std::int32_t backlog)
+    inline std::unique_ptr<TCPServer> TCP::StartServer(const Syntropy::String& local_address, NetworkPort local_port, std::int32_t backlog)
     {
         if (auto local_endpoint = NetworkEndpoint::FromString(local_address, local_port))
         {
@@ -186,7 +186,7 @@ namespace synchrony
 
     // TCPSocket.
 
-    inline TCPSendResult TCPSocket::SendAll(syntropy::ConstMemoryRange buffer)
+    inline TCPSendResult TCPSocket::SendAll(Syntropy::ConstMemoryRange buffer)
     {
         while (buffer)
         {

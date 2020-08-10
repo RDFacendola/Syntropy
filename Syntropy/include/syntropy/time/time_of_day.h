@@ -10,7 +10,7 @@
 #include <chrono>
 #include <ostream>
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* TIME OF DAY                                                          */

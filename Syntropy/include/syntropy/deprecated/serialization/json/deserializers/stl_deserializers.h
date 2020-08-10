@@ -19,7 +19,7 @@
 
 #include "syntropy/serialization/json/json.h"
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
     /************************************************************************/
     /* VECTOR                                                               */

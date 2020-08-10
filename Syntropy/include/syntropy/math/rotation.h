@@ -11,7 +11,7 @@
 #include "syntropy/math/vector.h"
 #include "syntropy/math/quaternion.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MATH                                                                 */

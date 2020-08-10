@@ -12,7 +12,7 @@
 #include "syntropy/unit_test/auto_test_suite.h"
 #include "syntropy/unit_test/auto_test_case.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* AUTO UNIT TEST                                                       */

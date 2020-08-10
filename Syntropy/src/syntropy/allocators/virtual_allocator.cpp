@@ -2,7 +2,7 @@
 
 #include "syntropy/memory/memory.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* VIRTUAL MEMORY RESOURCE :: FREE LIST                                 */

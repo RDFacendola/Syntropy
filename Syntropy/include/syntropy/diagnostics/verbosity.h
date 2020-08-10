@@ -12,7 +12,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/diagnostics/severity.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* VERBOSITY                                                            */

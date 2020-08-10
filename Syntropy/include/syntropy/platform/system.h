@@ -11,7 +11,7 @@
 #include "syntropy/core/vector.h"
 #include "syntropy/memory/bytes.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* CPU ARCHITECTURE                                                     */

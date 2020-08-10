@@ -15,7 +15,7 @@
 #include "syntropy/application/console/default_console_style.h"
 #include "syntropy/application/console/console_style.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* CONSOLE OUTPUT                                                       */

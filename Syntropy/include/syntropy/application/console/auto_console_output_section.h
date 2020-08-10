@@ -10,7 +10,7 @@
 
 #include "syntropy/application/console/console_output_section.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* AUTO CONSOLE OUTPUT SECTION <STYLE>                                  */

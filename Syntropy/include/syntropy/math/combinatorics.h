@@ -11,7 +11,7 @@
 #include "syntropy/core/range.h"
 #include "syntropy/math/random_distributions.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* RANDOM                                                               */

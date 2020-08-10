@@ -12,7 +12,7 @@
 #include "syntropy/language/type_traits.h"
 #include "syntropy/language/utility.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* VECTOR VIEW                                                          */

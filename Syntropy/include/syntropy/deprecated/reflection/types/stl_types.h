@@ -18,7 +18,7 @@
 
 #include "syntropy/reflection/class.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /************************************************************************/
     /* NULLPTR                                                              */
@@ -89,7 +89,7 @@ namespace syntropy::reflection
     template <>
     struct ClassDeclarationT<String>
     {
-        static constexpr const char* name_{ "syntropy::String" };
+        static constexpr const char* name_{ "Syntropy::String" };
     };
 
     template <>

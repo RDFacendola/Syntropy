@@ -10,7 +10,7 @@
 
 #include "syntropy/core/types.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* VECTOR <TYPE, SIZE>                                                  */

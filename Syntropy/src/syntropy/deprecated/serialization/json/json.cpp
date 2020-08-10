@@ -4,7 +4,7 @@
 
 #include "syntropy/diagnostics/log.h"
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */

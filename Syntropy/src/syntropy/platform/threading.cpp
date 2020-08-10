@@ -2,7 +2,7 @@
 
 #include "syntropy/hal/hal_threading.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* THREADING                                                            */

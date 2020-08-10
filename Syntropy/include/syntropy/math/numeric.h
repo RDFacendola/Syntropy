@@ -12,7 +12,7 @@
 #include "syntropy/math/math.h"
 #include "syntropy/core/types.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MATH                                                                 */

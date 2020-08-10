@@ -13,7 +13,7 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* ALIGNMENT                                                            */

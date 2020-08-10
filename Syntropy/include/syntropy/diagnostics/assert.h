@@ -9,7 +9,7 @@
 #include "syntropy/language/macro.h"
 #include "syntropy/diagnostics/debugger.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MACROS                                                               */

@@ -18,7 +18,7 @@
 
 #include "syntropy/serialization/json/shared.h"
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
     /// \brief Deserialize an object properties from JSON.
     /// This method enumerates JSON properties and attempts to deserialize the corresponding object properties.

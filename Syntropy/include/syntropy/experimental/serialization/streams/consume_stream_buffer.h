@@ -11,7 +11,7 @@
 #include "syntropy/language/type_traits.h"
 #include "syntropy/memory/bytes.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* CONSUME STREAM BUFFER                                                */

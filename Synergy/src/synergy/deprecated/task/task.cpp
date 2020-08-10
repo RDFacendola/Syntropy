@@ -5,7 +5,7 @@
 #include "synergy/task/scheduler.h"
 #include "synergy/task/worker.h"
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
     /************************************************************************/
     /* TASK                                                                 */

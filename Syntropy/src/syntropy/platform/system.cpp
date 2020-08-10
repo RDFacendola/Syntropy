@@ -2,7 +2,7 @@
 
 #include "syntropy/hal/hal_system.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* SYSTEM                                                               */

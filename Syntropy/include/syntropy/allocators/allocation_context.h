@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/allocators/allocator.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* ALLOCATION CONTEXT                                                   */

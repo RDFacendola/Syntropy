@@ -1,6 +1,6 @@
 #include "synergy/task/task_pool.h"
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
 
     /************************************************************************/

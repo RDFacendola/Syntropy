@@ -13,7 +13,7 @@
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/diagnostics/assert.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* POOL ALLOCATOR <ALLOCATOR>                                           */

@@ -11,7 +11,7 @@
 
 #include "syntropy/memory/memory.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* LABEL                                                                */

@@ -16,7 +16,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* BYTE SPAN                                                            */

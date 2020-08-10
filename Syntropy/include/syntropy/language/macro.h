@@ -9,7 +9,7 @@
 #include "syntropy/hal/hal_macro.h"
 #include "syntropy/language/type_traits.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MACROS                                                               */

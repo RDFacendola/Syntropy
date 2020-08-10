@@ -1,6 +1,6 @@
 #include "syntropy/allocators/virtual_stack_allocator.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* VIRTUAL STACK ALLOCATOR                                              */

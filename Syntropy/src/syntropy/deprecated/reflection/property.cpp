@@ -1,6 +1,6 @@
 #include "syntropy/reflection/property.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
 
     /************************************************************************/

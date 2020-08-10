@@ -2,13 +2,13 @@
 
 #include "syntropy/diagnostics/log.h"
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
 	/************************************************************************/
 	/* JSON SERIALIZABLE                                                  */
 	/************************************************************************/
 
-	void JSONSerializable::operator()(const String& name, syntropy::reflection::Any& instance, JSON& json) const
+	void JSONSerializable::operator()(const String& name, Syntropy::reflection::Any& instance, JSON& json) const
 	{
 		serializer_(name, instance, json);
 	}

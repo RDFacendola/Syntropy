@@ -28,11 +28,11 @@ namespace synchrony
         /// \brief Virtual destructor. Close any open connection.
         virtual ~WindowsTCPSocket();
 
-        virtual TCPSendResult Send(syntropy::ConstMemoryRange& buffer) override;
+        virtual TCPSendResult Send(Syntropy::ConstMemoryRange& buffer) override;
 
-        virtual TCPReceiveResult Receive(syntropy::MemoryRange& buffer) override;
+        virtual TCPReceiveResult Receive(Syntropy::MemoryRange& buffer) override;
 
-        virtual TCPReceiveResult Receive(syntropy::MemoryRange& buffer, std::chrono::milliseconds timeout) override;
+        virtual TCPReceiveResult Receive(Syntropy::MemoryRange& buffer, std::chrono::milliseconds timeout) override;
 
         virtual NetworkEndpoint GetLocalEndpoint() const override;
 
@@ -96,7 +96,7 @@ namespace synchrony
         closesocket(tcp_socket_);
     }
 
-    TCPSendResult WindowsTCPSocket::Send(syntropy::ConstMemoryRange& buffer)
+    TCPSendResult WindowsTCPSocket::Send(Syntropy::ConstMemoryRange& buffer)
     {
         auto send_buffer = buffer.Begin().As<char>();
         auto send_size = static_cast<int>(*buffer.GetSize());
@@ -105,7 +105,7 @@ namespace synchrony
 
         if (sent_amount != SOCKET_ERROR)
         {
-            buffer = syntropy::ConstMemoryRange(buffer.Begin() + syntropy::Bytes(sent_amount), buffer.End());
+            buffer = Syntropy::ConstMemoryRange(buffer.Begin() + Syntropy::Bytes(sent_amount), buffer.End());
 
             return TCPSendResult::kOk;
         }
@@ -119,7 +119,7 @@ namespace synchrony
         return TCPSendResult::kError;
     }
 
-    TCPReceiveResult WindowsTCPSocket::Receive(syntropy::MemoryRange& buffer)
+    TCPReceiveResult WindowsTCPSocket::Receive(Syntropy::MemoryRange& buffer)
     {
         auto receive_buffer = buffer.Begin().As<char>();
         auto receive_size = static_cast<int>(*buffer.GetSize());
@@ -128,7 +128,7 @@ namespace synchrony
 
         if (receive_amount > 0)
         {
-            buffer = syntropy::MemoryRange(buffer.Begin(), buffer.Begin() + syntropy::Bytes(receive_amount));
+            buffer = Syntropy::MemoryRange(buffer.Begin(), buffer.Begin() + Syntropy::Bytes(receive_amount));
 
             return TCPReceiveResult::kOk;
         }
@@ -142,7 +142,7 @@ namespace synchrony
         return TCPReceiveResult::kError;
     }
 
-    TCPReceiveResult WindowsTCPSocket::Receive(syntropy::MemoryRange& buffer, std::chrono::milliseconds timeout)
+    TCPReceiveResult WindowsTCPSocket::Receive(Syntropy::MemoryRange& buffer, std::chrono::milliseconds timeout)
     {
         return WindowsNetwork::ReadTimeout(tcp_socket_, timeout) ? Receive(buffer) : TCPReceiveResult::kTimeout;
     }

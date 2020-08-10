@@ -15,7 +15,7 @@
 #include "syntropy/language/event.h"
 #include "syntropy/language/type_traits.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* UNIT TEST MACROS                                                     */
@@ -154,11 +154,11 @@ namespace syntropy
     #define SYNTROPY_UNIT_EQUAL(expression, expected) \
         if (auto&& result = (expression); result != expected) \
         { \
-            syntropy::UnitTest::ReportFailure( SYNTROPY_HERE, #expression, result, expected ); \
+            Syntropy::UnitTest::ReportFailure( SYNTROPY_HERE, #expression, result, expected ); \
         } \
         else \
         { \
-            syntropy::UnitTest::ReportSuccess( SYNTROPY_HERE, #expression ); \
+            Syntropy::UnitTest::ReportSuccess( SYNTROPY_HERE, #expression ); \
         }
 
     // UnitTest.

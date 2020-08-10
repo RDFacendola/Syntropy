@@ -25,7 +25,7 @@
 
 #include "syntropy/diagnostics/log.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /************************************************************************/
     /* CLASS DECLARATION                                                    */

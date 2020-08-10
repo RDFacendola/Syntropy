@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /************************************************************************/
     /* CLASS                                                                */

@@ -13,7 +13,7 @@
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/allocators/allocator.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* COUNTING ALLOCATOR <ALLOCATOR>                                       */

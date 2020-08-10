@@ -41,7 +41,7 @@ namespace synchrony
         /// \param name Procedure to call.
         /// \param arguments Arguments passed to the function.
         template <typename... TArguments>
-        void Call(const syntropy::Label& name, TArguments&&... arguments);
+        void Call(const Syntropy::Label& name, TArguments&&... arguments);
 
         /// \brief Bind a new procedure that is called whenever an error occurs.
         /// \param procedure Procedure to bind.
@@ -105,7 +105,7 @@ namespace synchrony
     };
 
     /// \brief Default RPC client.
-    using RPCClient = RPCClientT<syntropy::MsgpackStream>;
+    using RPCClient = RPCClientT<Syntropy::MsgpackStream>;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -120,7 +120,7 @@ namespace synchrony
 
     template <typename TStream>
     template <typename... TArguments>
-    void RPCClientT<TStream>::Call(const syntropy::Label& name, TArguments&&... arguments)
+    void RPCClientT<TStream>::Call(const Syntropy::Label& name, TArguments&&... arguments)
     {
         auto stream = TStream{};
 
@@ -196,7 +196,7 @@ namespace synchrony
 
             if (send_buffer_.size() > 0)
             {
-                auto send_range = syntropy::ConstMemoryRange(send_buffer_.data(), send_buffer_.data() + send_buffer_.size());
+                auto send_range = Syntropy::ConstMemoryRange(send_buffer_.data(), send_buffer_.data() + send_buffer_.size());
 
                 if (auto send_result = socket.SendAll(send_range);
                     send_result == TCPSendResult::kOk)                              // Send the buffered commands.

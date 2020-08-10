@@ -10,7 +10,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/vector.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* THREAD PRIORITY                                                      */

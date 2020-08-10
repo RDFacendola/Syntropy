@@ -13,7 +13,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/core/string.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* CONSOLE OUTPUT SECTION <STYLE>                                       */

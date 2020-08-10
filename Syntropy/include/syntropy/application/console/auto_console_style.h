@@ -8,7 +8,7 @@
 
 #include "syntropy/application/console/auto_console_output_section.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* AUTO CONSOLE STYLE                                                   */

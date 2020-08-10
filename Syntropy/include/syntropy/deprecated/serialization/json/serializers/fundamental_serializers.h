@@ -14,7 +14,7 @@
 
 #include "syntropy/serialization/json/json.h"
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
     /************************************************************************/
     /* POINTERS                                                             */
@@ -26,7 +26,7 @@ namespace syntropy::serialization
     {
         void operator()(JSON& json, const TType* value) const
         {
-            auto value_json = syntropy::serialization::SerializeObjectToJSON(*value);
+            auto value_json = Syntropy::serialization::SerializeObjectToJSON(*value);
 
             if (value_json.has_value())
             {

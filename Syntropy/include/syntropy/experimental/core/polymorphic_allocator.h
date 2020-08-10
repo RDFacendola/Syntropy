@@ -13,7 +13,7 @@
 #include "syntropy/language/memory.h"
 #include "syntropy/allocators/allocator.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* POLYMORPHIC ALLOCATOR <TTYPE>                                        */

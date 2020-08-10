@@ -9,7 +9,7 @@
 #include "syntropy/allocators/system_allocator.h"
 #include "syntropy/allocators/allocator.h"
 
-namespace syntropy
+namespace Syntropy
 {
     using namespace literals;
 

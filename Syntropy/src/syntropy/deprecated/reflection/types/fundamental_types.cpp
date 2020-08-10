@@ -2,7 +2,7 @@
 
 #include "syntropy/reflection/reflection.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     // void
 

@@ -12,7 +12,7 @@
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/math/math.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* VIRTUAL MEMORY                                                       */

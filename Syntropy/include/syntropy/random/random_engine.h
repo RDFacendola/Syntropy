@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/random/pcg_random_engine.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */

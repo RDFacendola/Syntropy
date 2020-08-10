@@ -29,14 +29,14 @@ namespace synchrony
         /// \param remote Address of the peer to send the data to.
         /// \param datagram Datagram to send.
         /// \return Returns true if the datagram could be sent entirely, returns false otherwise.
-        virtual bool Send(const NetworkEndpoint& remote, const syntropy::ConstMemoryRange& datagram) = 0;
+        virtual bool Send(const NetworkEndpoint& remote, const Syntropy::ConstMemoryRange& datagram) = 0;
 
         /// \brief Receive a datagram from a remote peer.
         /// This method will block until some data is received from the remote peer.
         /// \param remote If the method succeeds contains the address of the peer the datagram originated from.
         /// \param datagram Datagram buffer to receive in.
         /// \return If a datagram could be received reduce datagram capacity to fit that amount and returns true, otherwise return false.
-        virtual bool Receive(NetworkEndpoint& remote, syntropy::MemoryRange& datagram) = 0;
+        virtual bool Receive(NetworkEndpoint& remote, Syntropy::MemoryRange& datagram) = 0;
 
         /// \brief Get the local endpoint the socket is bound to.
         /// \return Returns the local endpoint the socket is bound to.
@@ -61,13 +61,13 @@ namespace synchrony
         /// \brief Send a datagram to the remote peer.
         /// \param datagram Datagram to send.
         /// \return Returns true if the datagram could be sent entirely, returns false otherwise.
-        virtual bool Send(const syntropy::ConstMemoryRange& datagram) = 0;
+        virtual bool Send(const Syntropy::ConstMemoryRange& datagram) = 0;
 
         /// \brief Receive a datagram from the remote peer.
         /// This method will block until some data is received from the remote peer.
         /// \param datagram Datagram buffer to receive in.
         /// \return If a datagram could be received reduce datagram capacity to fit that amount and returns true, otherwise return false.
-        virtual bool Receive(syntropy::MemoryRange& datagram) = 0;
+        virtual bool Receive(Syntropy::MemoryRange& datagram) = 0;
 
         /// \brief Get the local endpoint the socket is bound to.
         /// \return Returns the local endpoint the socket is bound to.

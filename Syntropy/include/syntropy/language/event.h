@@ -10,7 +10,7 @@
 
 #include "syntropy/language/listener.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* LISTENER HANDLER <TARGUMENTS>                                        */

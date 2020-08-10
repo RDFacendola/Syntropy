@@ -13,7 +13,7 @@
 
 #include "syntropy/math/hash.h"
 
-namespace syntropy
+namespace Syntropy
 {
     using namespace literals;
 

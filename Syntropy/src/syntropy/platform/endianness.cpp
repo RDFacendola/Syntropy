@@ -2,7 +2,7 @@
 
 #include "syntropy/hal/hal_endianness.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* ENDIANNESS                                                           */

@@ -12,7 +12,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/diagnostics/assert.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* NULL ALLOCATOR                                                       */

@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/platform/system.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* HAL SYSTEM                                                           */

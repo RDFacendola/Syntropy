@@ -16,7 +16,7 @@
 
 #include "syntropy/experimental/core/polymorphic_allocator.h"
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
     // NOTE: Even if NLohmann says basic_json can use unordered_maps as object types, the fact that Hash and KeyEqual template types are not propagated correctly prohibits so. 
 

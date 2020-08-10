@@ -10,7 +10,7 @@
 #include "syntropy/language/macro.h"
 #include "syntropy/hal/hal_macro.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MACROS                                                               */
@@ -48,6 +48,6 @@ namespace syntropy
 
     #undef SYNTROPY_BREAK
     #define SYNTROPY_BREAK \
-        if(syntropy::Debugger::IsAttached()){ SYNTROPY_TRAP }
+        if(Syntropy::Debugger::IsAttached()){ SYNTROPY_TRAP }
 
 }

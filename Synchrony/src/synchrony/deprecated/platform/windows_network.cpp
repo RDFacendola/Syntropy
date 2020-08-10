@@ -27,7 +27,7 @@ namespace synchrony
         return WSACleanup() == 0;
     }
 
-    std::optional<NetworkAddress> WindowsNetwork::MakeNetworkAddress(const syntropy::String& address)
+    std::optional<NetworkAddress> WindowsNetwork::MakeNetworkAddress(const Syntropy::String& address)
     {
         auto ipv6_address = IN6_ADDR{};                                             // Network byte-order: big-endian.
         auto ipv4_address = IN_ADDR{};
@@ -64,7 +64,7 @@ namespace synchrony
         return {};
     }
 
-    syntropy::String WindowsNetwork::NetworkAddressToString(const NetworkAddress& address)
+    Syntropy::String WindowsNetwork::NetworkAddressToString(const NetworkAddress& address)
     {
         auto network_address = IN6_ADDR{};                                          // Network byte-order: big-endian.
 

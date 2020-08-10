@@ -15,7 +15,7 @@
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/allocators/system_allocator.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MEMORY                                                               */

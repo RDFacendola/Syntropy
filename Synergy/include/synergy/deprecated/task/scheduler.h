@@ -21,7 +21,7 @@
 #include "synergy/task/worker.h"
 #include "synergy/task/task_execution_context.h"
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
     /// \brief Scheduler used to schedule and allocate tasks.
     /// \author Raffaele D. Facendola - June 2017

@@ -18,7 +18,7 @@
 
 #include "syntropy/patterns/utility.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     class Class;
 

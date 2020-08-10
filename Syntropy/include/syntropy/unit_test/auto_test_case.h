@@ -12,7 +12,7 @@
 
 #include "syntropy/unit_test/test_case.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* AUTO TEST CASE <TTEST FIXTURE>                                       */

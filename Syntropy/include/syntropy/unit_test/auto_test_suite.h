@@ -14,7 +14,7 @@
 
 #include "syntropy/unit_test/test_suite.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* AUTO TEST SUITE                                                      */

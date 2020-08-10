@@ -1,6 +1,6 @@
 #include "syntropy/diagnostics/log_event_formatter.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* LOG EVENT FORMATTER                                                  */

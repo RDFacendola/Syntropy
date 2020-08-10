@@ -16,7 +16,7 @@
 #include "syntropy/math/math.h"
 #include "syntropy/random/random_engine.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* RANDOM                                                               */

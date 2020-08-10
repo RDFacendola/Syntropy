@@ -13,7 +13,7 @@
 #include "syntropy/unit_test/test_suite.h"
 #include "syntropy/unit_test/auto_test_suite.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* ON TEST RUNNER SUITE STARTED EVENT ARGS                              */

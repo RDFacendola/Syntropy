@@ -9,7 +9,7 @@
 #include <thread>
 #include <atomic>
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
 
     /************************************************************************/

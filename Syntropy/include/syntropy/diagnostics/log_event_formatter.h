@@ -14,7 +14,7 @@
 #include "syntropy/time/time_of_day.h"
 #include "syntropy/time/date.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* LOG EVENT FORMATTER                                                  */

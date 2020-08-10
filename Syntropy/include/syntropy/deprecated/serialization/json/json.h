@@ -16,7 +16,7 @@
 
 #include "syntropy/serialization/json/shared.h"
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
     /************************************************************************/
     /* JSON PROPERTY                                                        */

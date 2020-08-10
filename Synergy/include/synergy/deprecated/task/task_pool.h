@@ -13,7 +13,7 @@
 
 #include "synergy/task/task.h"
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
 
     /// \brief Handles allocation, pooling and construction of tasks.

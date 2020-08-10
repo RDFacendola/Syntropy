@@ -11,7 +11,7 @@
 #include <mutex>
 #include <condition_variable>
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
 
     /************************************************************************/

@@ -16,7 +16,7 @@
 
 #include "syntropy/diagnostics/assert.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* SCOPE ALLOCATOR <ALLOCATOR>                                          */

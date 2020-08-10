@@ -15,7 +15,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/platform/intrinsics.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MATH                                                                 */

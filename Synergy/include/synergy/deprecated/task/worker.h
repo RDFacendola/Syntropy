@@ -18,7 +18,7 @@
 #include "synergy/task/task_queue.h"
 #include "synergy/task/task_execution_context.h"
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
     /// \brief Worker thread used to execute tasks.
     /// A worker thread sleeps until there's at least one task to execute.

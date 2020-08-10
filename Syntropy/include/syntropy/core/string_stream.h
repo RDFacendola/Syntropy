@@ -10,7 +10,7 @@
 
 #include "syntropy/experimental/core/polymorphic_allocator.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* BASIC STRING BUF                                                     */

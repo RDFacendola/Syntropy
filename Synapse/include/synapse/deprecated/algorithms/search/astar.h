@@ -11,7 +11,7 @@
 #include "syntropy/containers/map.h"
 #include <algorithm>
 
-namespace syntropy::synapse
+namespace Syntropy::synapse
 {
 
     /// \brief Find the path with lowest cost among start and end.

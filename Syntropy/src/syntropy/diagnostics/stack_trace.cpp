@@ -2,7 +2,7 @@
 
 #include "syntropy/hal/hal_debugger.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* DEBUGGER                                                             */

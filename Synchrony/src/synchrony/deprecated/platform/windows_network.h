@@ -35,10 +35,10 @@ namespace synchrony
         /// \brief Create a network address from its standard text presentation form.
         /// \remarks This method supports IPv4-mapped IPv6 addresses.
         /// \return Returns the network address if the text could be converted, returns an empty value otherwise.
-        std::optional<NetworkAddress> MakeNetworkAddress(const syntropy::String& address);
+        std::optional<NetworkAddress> MakeNetworkAddress(const Syntropy::String& address);
 
         /// \brief Convert a network address to its standard text presentation form.
-        syntropy::String NetworkAddressToString(const NetworkAddress& address);
+        Syntropy::String NetworkAddressToString(const NetworkAddress& address);
 
     }
 

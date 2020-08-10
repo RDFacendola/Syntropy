@@ -44,7 +44,7 @@ namespace syntropy
         using Command = std::function<bool(TStream& stream)>;
 
         /// \brief Commands bound to the parser.
-        Map<syntropy::Label, Command> commands_;
+        Map<Syntropy::Label, Command> commands_;
 
     };
 
@@ -61,7 +61,7 @@ namespace syntropy
     {
         commands_[name] = [this, command = std::move(command)](TStream& stream)
         {
-            auto arguments = syntropy::function_arguments_t<TCommand>{};
+            auto arguments = Syntropy::function_arguments_t<TCommand>{};
 
             auto deserialize_argument = [&stream](auto&& argument)
             {
@@ -71,7 +71,7 @@ namespace syntropy
                 }
             };
 
-            syntropy::LockstepApply(deserialize_argument, arguments);
+            Syntropy::LockstepApply(deserialize_argument, arguments);
 
             if (!stream.fail() && stream.eof())
             {

@@ -10,7 +10,7 @@
 
 #include "syntropy/experimental/serialization/streams/stream_buffer.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* STREAM BUFFER TRANSACTION                                            */

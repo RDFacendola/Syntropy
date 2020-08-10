@@ -2,7 +2,7 @@
 
 #include "syntropy/hal/hal_virtual_memory.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* VIRTUAL MEMORY                                                       */

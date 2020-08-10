@@ -10,7 +10,7 @@
 #include "syntropy/diagnostics/auto_log_channel.h"
 #include "syntropy/diagnostics/file_log_channel.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* LOG MANAGER                                                          */

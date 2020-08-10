@@ -11,7 +11,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/language/type_traits.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* DEFAULT CONSTRUCT T                                                  */

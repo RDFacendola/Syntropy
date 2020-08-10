@@ -11,7 +11,7 @@
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/virtual_memory/virtual_memory.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* VIRTUAL BUFFER                                                       */

@@ -8,7 +8,7 @@
 
 #include <xmmintrin.h>
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* HAL INTRINSICS                                                       */

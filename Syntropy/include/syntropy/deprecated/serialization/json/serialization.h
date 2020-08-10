@@ -18,7 +18,7 @@
 
 #include "syntropy/serialization/json/shared.h"
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
     /// \brief Class token used to identify the class type in a JSON. 
     static constexpr const char* kClassToken = "$class";
@@ -61,7 +61,7 @@ namespace syntropy::serialization
         {
             static_assert(std::is_move_assignable_v<TProperty>, "TProperty must be copy-assignable");
 
-            serializer_ = [field](const String& name, const syntropy::reflection::Any& instance, JSON& json)
+            serializer_ = [field](const String& name, const Syntropy::reflection::Any& instance, JSON& json)
             {
                 // #TODO Custom container conversion. Use JSON with custom containers.
 
@@ -75,7 +75,7 @@ namespace syntropy::serialization
         {
             static_assert(std::is_move_constructible_v<std::remove_cvref_t<TProperty>>, "remove_reference_cv_t<TProperty> must be move-constructible");
 
-            serializer_ = [getter](const String& name, const syntropy::reflection::Any& instance, JSON& json)
+            serializer_ = [getter](const String& name, const Syntropy::reflection::Any& instance, JSON& json)
             {
                 // #TODO Custom container conversion. Use JSON with custom containers.
 
@@ -104,7 +104,7 @@ namespace syntropy::serialization
         /// \param instance Object that owns the property to serialize.
         /// \param json JSON containing the serialized property.
         template<typename TInstance>
-        void operator()(const syntropy::reflection::Property& property, TInstance& instance, JSON& json) const
+        void operator()(const Syntropy::reflection::Property& property, TInstance& instance, JSON& json) const
         {
             (*this)(property.GetName().GetString(), std::forward<TInstance>(instance), json);
         }
@@ -133,7 +133,7 @@ namespace syntropy::serialization
         template<typename TClass>
         std::optional<JSON> operator()(const TClass& instance) const
         {
-            auto Class = &syntropy::reflection::ClassOf<TClass>();
+            auto Class = &Syntropy::reflection::ClassOf<TClass>();
 
             size_t serialized_properties = 0;
 

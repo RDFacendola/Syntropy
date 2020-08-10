@@ -16,7 +16,7 @@
 
 #pragma warning(pop)
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* WINDOWS THREADING                                                    */

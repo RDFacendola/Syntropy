@@ -10,7 +10,7 @@
 
 #include "syntropy/unit_test/unit_test.h"
 
-namespace syntropy::unit_test
+namespace Syntropy::unit_test
 {
     /************************************************************************/
     /* BYTE SPAN TEST FIXTURE                                               */

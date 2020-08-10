@@ -17,7 +17,7 @@
 
 #include "syntropy/serialization/json/json.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /************************************************************************/
     /* POLYMORPHIC ALLOCATOR <TTYPE>                                        */
@@ -26,7 +26,7 @@ namespace syntropy::reflection
     template <typename TType>
     struct ClassDeclarationT<PolymorphicAllocator<TType>>
     {
-        static constexpr const char* name_{ "syntropy::PolymorphicAllocator" };
+        static constexpr const char* name_{ "Syntropy::PolymorphicAllocator" };
     };
 
     /************************************************************************/
@@ -36,7 +36,7 @@ namespace syntropy::reflection
     template <>
     struct ClassDeclarationT<Label>
     {
-        static constexpr const char* name_{ "syntropy::Label" };
+        static constexpr const char* name_{ "Syntropy::Label" };
     };
 
     /************************************************************************/
@@ -46,7 +46,7 @@ namespace syntropy::reflection
     template<>
     struct ClassDeclarationT<Context>
     {
-        static constexpr const char* name_{ "syntropy::diagnostics::Context" };
+        static constexpr const char* name_{ "Syntropy::diagnostics::Context" };
 
         void operator()(ClassT<Context>& class_t) const
         {

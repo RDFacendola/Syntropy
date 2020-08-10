@@ -30,10 +30,10 @@ namespace synchrony
         /// \brief Create an address from its standard text presentation form.
         /// \remarks This method supports IPv4-mapped IPv6 addresses.
         /// \return Returns the address if the provided string could be converted, returns an empty value otherwise.
-        static std::optional<NetworkAddress> FromString(const syntropy::String& address);
+        static std::optional<NetworkAddress> FromString(const Syntropy::String& address);
 
         /// \brief Convert the address to its standard text presentation form.
-        syntropy::String ToString() const;
+        Syntropy::String ToString() const;
 
         std::uint16_t a_;
         std::uint16_t b_;

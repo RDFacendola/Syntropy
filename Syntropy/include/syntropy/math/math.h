@@ -12,7 +12,7 @@
 
 #include "syntropy/language/type_traits.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MATH                                                                 */

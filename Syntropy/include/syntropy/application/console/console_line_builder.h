@@ -14,7 +14,7 @@
 
 #include "syntropy/math/math.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* CONSOLE LINE BUILDER                                                 */

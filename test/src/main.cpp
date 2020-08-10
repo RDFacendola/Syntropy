@@ -11,7 +11,7 @@
 
 int main(int argc, char **argv)
 {
-    auto result = static_cast<int>(syntropy::UnitTestApplication({ argc, argv }).Run());
+    auto result = static_cast<int>(Syntropy::UnitTestApplication({ argc, argv }).Run());
 
     system("pause");
 

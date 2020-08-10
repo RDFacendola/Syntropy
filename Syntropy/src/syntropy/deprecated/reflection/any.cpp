@@ -3,7 +3,7 @@
 #include "syntropy/reflection/class.h"
 #include "syntropy/reflection/types/fundamental_types.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /************************************************************************/
     /* ANY                                                                  */
@@ -70,7 +70,7 @@ namespace syntropy::reflection
 
 namespace std
 {
-    void swap(syntropy::reflection::Any& first, syntropy::reflection::Any& second) noexcept
+    void swap(Syntropy::reflection::Any& first, Syntropy::reflection::Any& second) noexcept
     {
         first.Swap(second);
     }

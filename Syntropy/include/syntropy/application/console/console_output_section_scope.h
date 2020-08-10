@@ -8,7 +8,7 @@
 
 #include "syntropy/application/console/console_output.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* CONSOLE OUTPUT SECTION SCOPE <SECTION>                               */

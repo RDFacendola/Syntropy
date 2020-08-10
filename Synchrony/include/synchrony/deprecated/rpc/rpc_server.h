@@ -47,7 +47,7 @@ namespace synchrony
         /// \param procedure Procedure to bind.
         /// \return Returns a reference to this.
         template <typename TProcedure>
-        RPCServerT& Bind(const syntropy::Label& name, TProcedure&& procedure);
+        RPCServerT& Bind(const Syntropy::Label& name, TProcedure&& procedure);
 
         /// \brief Bind a new procedure that is called whenever an error occurs.
         /// \param procedure Procedure to bind.
@@ -78,7 +78,7 @@ namespace synchrony
         void SetReceiveRate(std::chrono::milliseconds receive_rate);
 
         /// \brief Set the size of the buffer used to receive data from the network.
-        void SetReceiveSize(syntropy::Bytes receive_size);
+        void SetReceiveSize(Syntropy::Bytes receive_size);
 
     private:
 
@@ -114,7 +114,7 @@ namespace synchrony
         std::atomic_bool is_running_{ false };
 
         /// \brief Procedures bound to the server.
-        Map<syntropy::Label, RemoteProcedure> procedures_;
+        Map<Syntropy::Label, RemoteProcedure> procedures_;
 
         /// \brief Handlers to events that are called whenever a server error occurs.
         Vector<RemoteEvent> error_handlers_;
@@ -126,11 +126,11 @@ namespace synchrony
         std::chrono::milliseconds receive_rate_ = std::chrono::milliseconds{ 1000 };
 
         /// \brief Size of the buffer used to receive data from the network.
-        syntropy::Bytes receive_size_ = syntropy::Bytes{ 1024 };
+        Syntropy::Bytes receive_size_ = Syntropy::Bytes{ 1024 };
     };
 
     /// \brief Default command parser.
-    using RPCServer = RPCServerT<syntropy::MsgpackStream>;
+    using RPCServer = RPCServerT<Syntropy::MsgpackStream>;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -145,20 +145,20 @@ namespace synchrony
 
     template <typename TStream>
     template <typename TProcedure>
-    inline RPCServerT<TStream>& RPCServerT<TStream>::Bind(const syntropy::Label& name, TProcedure&& procedure)
+    inline RPCServerT<TStream>& RPCServerT<TStream>::Bind(const Syntropy::Label& name, TProcedure&& procedure)
     {
         procedures_[name] = [this, procedure = std::move(procedure)](TStream& stream)
         {
             // Deserialize the procedure arguments from the stream.
 
-            auto arguments = syntropy::function_arguments_t<TProcedure>{};
+            auto arguments = Syntropy::function_arguments_t<TProcedure>{};
 
             auto deserialize_argument = [&stream](auto&& argument)
             {
                 stream >> argument;
             };
 
-            syntropy::LockstepApply(deserialize_argument, arguments);
+            Syntropy::LockstepApply(deserialize_argument, arguments);
 
             // Call the procedure.
 
@@ -232,7 +232,7 @@ namespace synchrony
     }
 
     template <typename TStream>
-    inline void RPCServerT<TStream>::SetReceiveSize(syntropy::Bytes receive_size)
+    inline void RPCServerT<TStream>::SetReceiveSize(Syntropy::Bytes receive_size)
     {
         receive_size_ = receive_size;
     }
@@ -249,7 +249,7 @@ namespace synchrony
         {
             receive_buffer.resize(std::size_t(receive_size_));
 
-            auto receive_range = syntropy::MemoryRange(receive_buffer.data(), receive_buffer.data() + std::size_t(receive_size_));
+            auto receive_range = Syntropy::MemoryRange(receive_buffer.data(), receive_buffer.data() + std::size_t(receive_size_));
 
             if (auto receive_result = socket.Receive(receive_range, receive_rate_);
                 receive_result == TCPReceiveResult::kOk)                                    // Receive a chunk of data.

@@ -28,9 +28,9 @@ namespace synchrony
         /// \brief Virtual destructor. Close any open connection.
         virtual ~WindowsUDPSocket();
 
-        virtual bool Send(const NetworkEndpoint& remote, const syntropy::ConstMemoryRange& datagram) override;
+        virtual bool Send(const NetworkEndpoint& remote, const Syntropy::ConstMemoryRange& datagram) override;
 
-        virtual bool Receive(NetworkEndpoint& remote, syntropy::MemoryRange& datagram) override;
+        virtual bool Receive(NetworkEndpoint& remote, Syntropy::MemoryRange& datagram) override;
 
         virtual NetworkEndpoint GetLocalEndpoint() const override;
 
@@ -57,9 +57,9 @@ namespace synchrony
         /// \brief Virtual destructor.
         virtual ~WindowsUDPChannel();
 
-        virtual bool Send(const syntropy::ConstMemoryRange& datagram) override;
+        virtual bool Send(const Syntropy::ConstMemoryRange& datagram) override;
 
-        virtual bool Receive(syntropy::MemoryRange& datagram) override;
+        virtual bool Receive(Syntropy::MemoryRange& datagram) override;
 
         virtual NetworkEndpoint GetLocalEndpoint() const override;
 
@@ -90,7 +90,7 @@ namespace synchrony
         closesocket(udp_socket_);
     }
 
-    bool WindowsUDPSocket::Send(const NetworkEndpoint& remote, const syntropy::ConstMemoryRange& datagram)
+    bool WindowsUDPSocket::Send(const NetworkEndpoint& remote, const Syntropy::ConstMemoryRange& datagram)
     {
         auto send_buffer = datagram.Begin().As<char>();
         auto send_size = static_cast<int>(*datagram.GetSize());
@@ -109,7 +109,7 @@ namespace synchrony
         }
     }
 
-    bool WindowsUDPSocket::Receive(NetworkEndpoint& remote, syntropy::MemoryRange& datagram)
+    bool WindowsUDPSocket::Receive(NetworkEndpoint& remote, Syntropy::MemoryRange& datagram)
     {
         auto receive_buffer = datagram.Begin().As<char>();
         auto receive_size = static_cast<int>(*datagram.GetSize());
@@ -120,7 +120,7 @@ namespace synchrony
             receive_amount != SOCKET_ERROR && receive_address.sin6_family == AF_INET6 && receive_amount > 0)
         {
             remote = WindowsNetwork::FromSockAddr(receive_address);
-            datagram = syntropy::MemoryRange(datagram.Begin(), datagram.Begin() + syntropy::Bytes(receive_amount));
+            datagram = Syntropy::MemoryRange(datagram.Begin(), datagram.Begin() + Syntropy::Bytes(receive_amount));
 
             return true;
         }
@@ -150,7 +150,7 @@ namespace synchrony
         closesocket(udp_socket_);
     }
 
-    bool WindowsUDPChannel::Send(const syntropy::ConstMemoryRange& datagram)
+    bool WindowsUDPChannel::Send(const Syntropy::ConstMemoryRange& datagram)
     {
         auto send_buffer = datagram.Begin().As<char>();
         auto send_size = static_cast<int>(*datagram.GetSize());
@@ -168,7 +168,7 @@ namespace synchrony
         }
     }
 
-    bool WindowsUDPChannel::Receive(syntropy::MemoryRange& datagram)
+    bool WindowsUDPChannel::Receive(Syntropy::MemoryRange& datagram)
     {
         auto receive_buffer = datagram.Begin().As<char>();
         auto receive_size = static_cast<int>(*datagram.GetSize());
@@ -176,7 +176,7 @@ namespace synchrony
         if (auto receive_amount = recv(udp_socket_, receive_buffer, receive_size, 0);
             receive_amount != SOCKET_ERROR && receive_amount > 0)
         {
-            datagram = syntropy::MemoryRange(datagram.Begin(), datagram.Begin() + syntropy::Bytes(receive_amount));
+            datagram = Syntropy::MemoryRange(datagram.Begin(), datagram.Begin() + Syntropy::Bytes(receive_amount));
 
             return true;
         }

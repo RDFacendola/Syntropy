@@ -11,7 +11,7 @@
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/experimental/serialization/consume_stream_buffer.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* CONSUME STREAM T <T DECODER, T STREAM BUFFER>                        */

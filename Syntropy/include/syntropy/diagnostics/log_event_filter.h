@@ -12,7 +12,7 @@
 #include "syntropy/core/context.h"
 #include "syntropy/core/vector.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* LOG EVENT FILTER                                                     */

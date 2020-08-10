@@ -8,12 +8,12 @@ namespace synchrony
     /* NETWORK ADDRESS                                                      */
     /************************************************************************/
 
-    std::optional<NetworkAddress> NetworkAddress::FromString(const syntropy::String& address)
+    std::optional<NetworkAddress> NetworkAddress::FromString(const Syntropy::String& address)
     {
         return PlatformNetwork::MakeNetworkAddress(address);
     }
 
-    syntropy::String NetworkAddress::ToString() const
+    Syntropy::String NetworkAddress::ToString() const
     {
         return PlatformNetwork::NetworkAddressToString(*this);
     }

@@ -12,7 +12,7 @@
 #include "syntropy/language/utility.h"
 #include "syntropy/memory/byte_span.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */

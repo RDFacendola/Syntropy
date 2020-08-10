@@ -9,7 +9,7 @@
 
 #include "syntropy/core/types.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* TIMER <TDURATION>                                                    */

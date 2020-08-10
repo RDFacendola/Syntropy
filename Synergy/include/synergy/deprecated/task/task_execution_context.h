@@ -15,7 +15,7 @@
 #include "synergy/task/task.h"
 #include "synergy/task/task_pool.h"
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
     /// \brief Context object used to execute, spawn and continue tasks.
     /// \author Raffaele D. Facendola - November 2017

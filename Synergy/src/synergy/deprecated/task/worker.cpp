@@ -3,7 +3,7 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/patterns/scope_guard.h"
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
     /************************************************************************/
     /* WORKER                                                               */

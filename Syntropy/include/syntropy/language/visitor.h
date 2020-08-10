@@ -12,7 +12,7 @@
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/language/type_traits.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */

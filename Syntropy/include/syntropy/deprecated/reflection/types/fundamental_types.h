@@ -12,7 +12,7 @@
 
 #include "syntropy/reflection/class.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /// \brief Append additional name aliases for fixed width integer types.
     template <typename TClass>

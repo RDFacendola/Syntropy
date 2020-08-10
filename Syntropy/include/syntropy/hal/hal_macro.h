@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MSVC COMPILER                                                        */

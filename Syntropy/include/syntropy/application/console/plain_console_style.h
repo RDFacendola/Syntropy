@@ -8,7 +8,7 @@
 
 #include "syntropy/core/string.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* DEFAULT CONSOLE STYLE                                                */

@@ -8,7 +8,7 @@
 
 #include <initializer_list>
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* TYPE ALIAS                                                           */

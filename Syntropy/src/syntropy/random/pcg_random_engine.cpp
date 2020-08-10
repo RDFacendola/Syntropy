@@ -2,7 +2,7 @@
 
 #include "pcg/include/pcg_random.hpp"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* PCG RANDOM ENIGNE :: PCG32                                           */

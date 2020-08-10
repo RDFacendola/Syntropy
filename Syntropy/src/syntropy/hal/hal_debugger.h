@@ -9,7 +9,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/diagnostics/stack_trace.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* HAL DEBUGGER                                                         */

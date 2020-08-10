@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <limits>
 
-namespace syntropy
+namespace Syntropy
 {
 
 }

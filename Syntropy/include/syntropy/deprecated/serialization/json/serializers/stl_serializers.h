@@ -12,7 +12,7 @@
 
 #include "syntropy/serialization/json/shared.h"
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
 	/// \brief Partial specialization of JSONSerializerT for shared_ptr.
 	template<typename TType>

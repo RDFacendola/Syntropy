@@ -24,8 +24,8 @@ public:
 };
 
 // Declare the test suite for MyUnitTest.
-auto MyUnitTestSuite = syntropy::MakeAutoTestSuite<MyUnitTest>("MyUnitTest.suite");
+auto MyUnitTestSuite = Syntropy::MakeAutoTestSuite<MyUnitTest>("MyUnitTest.suite");
 
 // Declare individual test cases for MyUnitTest.
-const auto MyUnitTestSuiteTestCase0 = syntropy::MakeAutoTestCase("TestCase0", &MyUnitTest::TestCase0);
-const auto MyUnitTestSuiteTestCaseN = syntropy::MakeAutoTestCase("TestCaseN", &MyUnitTest::TestCaseN);
+const auto MyUnitTestSuiteTestCase0 = Syntropy::MakeAutoTestCase("TestCase0", &MyUnitTest::TestCase0);
+const auto MyUnitTestSuiteTestCaseN = Syntropy::MakeAutoTestCase("TestCaseN", &MyUnitTest::TestCaseN);

@@ -1,6 +1,6 @@
 #include "syntropy/unit_test/test_runner.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* TEST RUNNER                                                          */
@@ -10,7 +10,7 @@ namespace syntropy
     {
         // Setup listeners for the current test suite.
 
-        auto test_suite_listener = syntropy::Listener{};
+        auto test_suite_listener = Syntropy::Listener{};
 
         test_suite_listener += test_suite.OnCaseStarted([this](const auto& sender, const auto& event_args)
         {

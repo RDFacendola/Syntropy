@@ -12,7 +12,7 @@
 
 #include "syntropy/reflection/any.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
 
     /************************************************************************/

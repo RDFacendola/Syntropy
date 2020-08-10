@@ -10,7 +10,7 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* HAL MEMORY                                                           */

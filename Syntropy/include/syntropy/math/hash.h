@@ -11,7 +11,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/memory/byte_span.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* HASH                                                                 */

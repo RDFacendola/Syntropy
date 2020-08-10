@@ -11,7 +11,7 @@
 #include "syntropy/core/types.h"
 #include "syntropy/math/vector.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* CODES                                                                */

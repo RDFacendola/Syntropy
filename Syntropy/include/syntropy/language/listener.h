@@ -8,7 +8,7 @@
 
 #include "syntropy/core/smart_pointers.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* EVENT HANDLER                                                        */

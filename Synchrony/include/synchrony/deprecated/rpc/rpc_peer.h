@@ -55,14 +55,14 @@ namespace synchrony
         /// \param procedure Procedure to bind.
         /// \return Returns a reference to this.
         template <typename TProcedure>
-        RPCPeerT& Bind(const syntropy::Label& name, TProcedure&& procedure);
+        RPCPeerT& Bind(const Syntropy::Label& name, TProcedure&& procedure);
 
         /// \brief Call a remote procedure on the remote peer.
         /// If the transceiver is not running the behavior of this method is undefined.
         /// \param name Procedure to call.
         /// \param arguments Arguments passed to the function.
         template <typename... TArguments>
-        void Call(const syntropy::Label& name, TArguments&&... arguments);
+        void Call(const Syntropy::Label& name, TArguments&&... arguments);
 
         /// \brief Bind a new procedure that is called whenever an error occurs.
         /// \param procedure Procedure to bind.
@@ -80,7 +80,7 @@ namespace synchrony
         void SetReceiveRate(std::chrono::milliseconds receive_rate);
 
         /// \brief Set the size of the buffer used to receive data from the network.
-        void SetReceiveSize(syntropy::Bytes receive_size);
+        void SetReceiveSize(Syntropy::Bytes receive_size);
 
     private:
 
@@ -95,7 +95,7 @@ namespace synchrony
     };
 
     /// \brief Default RPC peer.
-    using RPCPeer = RPCPeerT<syntropy::MsgpackStream>;
+    using RPCPeer = RPCPeerT<Syntropy::MsgpackStream>;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -145,7 +145,7 @@ namespace synchrony
 
     template <typename TStream>
     template <typename TProcedure>
-    inline RPCPeerT<TStream>& RPCPeerT<TStream>::Bind(const syntropy::Label& name, TProcedure&& procedure)
+    inline RPCPeerT<TStream>& RPCPeerT<TStream>::Bind(const Syntropy::Label& name, TProcedure&& procedure)
     {
         rpc_server_.Bind(name, std::forward<TProcedure>(procedure));
 
@@ -154,7 +154,7 @@ namespace synchrony
 
     template <typename TStream>
     template <typename... TArguments>
-    inline void RPCPeerT<TStream>::Call(const syntropy::Label& name, TArguments&&... arguments)
+    inline void RPCPeerT<TStream>::Call(const Syntropy::Label& name, TArguments&&... arguments)
     {
         rpc_client_.Call(name, std::forward<TArguments>(arguments)...);
     }
@@ -186,7 +186,7 @@ namespace synchrony
     }
 
     template <typename TStream>
-    inline void RPCPeerT<TStream>::SetReceiveSize(syntropy::Bytes receive_size)
+    inline void RPCPeerT<TStream>::SetReceiveSize(Syntropy::Bytes receive_size)
     {
         rpc_server_.SetReceiveSize(receive_size);
     }

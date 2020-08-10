@@ -11,7 +11,7 @@
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/experimental/serialization/append_stream_buffer.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* APPEND STREAM <T ENCODER, T STREAM BUFFER>                           */

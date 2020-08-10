@@ -17,7 +17,7 @@
 #include "syntropy/diagnostics/stack_trace.h"
 #include "syntropy/unit_test/test_context.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* ON TEST CASE SUCCESS EVENT ARGS                                      */
@@ -163,7 +163,7 @@ namespace syntropy
     {
         auto test_context = TestContext{};
 
-        auto context_listener = syntropy::Listener{};
+        auto context_listener = Syntropy::Listener{};
 
         context_listener += test_context.OnSuccess([this](const auto& sender, const auto& event_args)
         {

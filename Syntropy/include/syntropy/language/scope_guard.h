@@ -9,7 +9,7 @@
 #include "syntropy/language/utility.h"
 #include "syntropy/core/types.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* SCOPE GUARD <TFUNCTOR>                                               */

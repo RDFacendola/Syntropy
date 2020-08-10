@@ -1,6 +1,6 @@
 #include "syntropy/application/command_line.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* COMMAND LINE                                                         */

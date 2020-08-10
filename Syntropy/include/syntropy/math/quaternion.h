@@ -12,7 +12,7 @@
 #include "syntropy/math/numeric.h"
 #include "syntropy/math/vector.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MATH                                                                 */

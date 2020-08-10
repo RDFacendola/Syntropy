@@ -2,7 +2,7 @@
 
 #include "syntropy/language/utility.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* STREAM BUFFER                                                        */

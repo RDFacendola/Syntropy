@@ -21,7 +21,7 @@
 #include <chrono>
 #include <iostream>
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* LOG CLOCK                                                            */

@@ -3,7 +3,7 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/math/math.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MEMORY                                                               */

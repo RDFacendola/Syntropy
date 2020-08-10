@@ -14,7 +14,7 @@
 #include "syntropy/allocators/allocator.h"
 #include "syntropy/allocators/null_allocator.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* PASSTHROUGH ALLOCATOR <ALLOCATOR>                                    */

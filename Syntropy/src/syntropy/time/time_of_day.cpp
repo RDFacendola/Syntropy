@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* TIME OF DAY                                                          */

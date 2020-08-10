@@ -14,7 +14,7 @@
 
 #include "syntropy/reflection/class.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /************************************************************************/
     /* REFLECTION                                                           */

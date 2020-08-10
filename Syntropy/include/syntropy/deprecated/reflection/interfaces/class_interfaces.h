@@ -18,7 +18,7 @@
 
 #include "syntropy/diagnostics/log.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     template <typename TClass>
     class ClassT;

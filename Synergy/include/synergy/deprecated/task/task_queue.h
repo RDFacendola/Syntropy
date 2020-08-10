@@ -11,7 +11,7 @@
 
 #include "synergy/task/task.h"
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
 
     /// \brief Queue of tasks.

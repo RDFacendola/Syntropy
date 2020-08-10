@@ -13,7 +13,7 @@
 #include "syntropy/unit_test/test_case.h"
 #include "syntropy/unit_test/auto_test_case.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* ON TEST SUITE CASE STARTED EVENT ARGS                                */
@@ -281,7 +281,7 @@ namespace syntropy
     {
         // Setup listeners for the current test case.
 
-        auto test_case_listener = syntropy::Listener{};
+        auto test_case_listener = Syntropy::Listener{};
 
         test_case_listener += test_case.OnSuccess([this](const auto& sender, const auto& event_args)
         {

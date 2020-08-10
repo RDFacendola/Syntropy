@@ -18,7 +18,7 @@
 #include "syntropy/math/constants.h"
 #include "syntropy/math/math.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* STREAM BUFFER                                                        */

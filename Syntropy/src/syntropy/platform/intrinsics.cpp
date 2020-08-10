@@ -2,7 +2,7 @@
 
 #include "syntropy/hal/hal_intrinsics.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* INTRINSICS                                                           */

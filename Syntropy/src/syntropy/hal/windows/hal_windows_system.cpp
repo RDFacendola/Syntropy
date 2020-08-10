@@ -16,7 +16,7 @@
 
 #pragma warning(pop)
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* HAL SYSTEM                                                           */

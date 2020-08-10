@@ -16,7 +16,7 @@
 
 #include "syntropy/core/string_stream.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* BASIC STRING                                                         */

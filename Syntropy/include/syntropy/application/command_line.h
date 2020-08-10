@@ -13,7 +13,7 @@
 #include "syntropy/core/vector.h"
 #include "syntropy/application/command_line_argument.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* COMMAND LINE                                                         */

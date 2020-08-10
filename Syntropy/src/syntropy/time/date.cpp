@@ -2,7 +2,7 @@
 
 #include "hinnant/date/date.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* DATE                                                                 */

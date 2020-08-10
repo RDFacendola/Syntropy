@@ -1,6 +1,6 @@
 #include "syntropy/reflection/interfaces/class_interfaces.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /************************************************************************/
     /* ENUMERATION                                                          */

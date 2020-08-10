@@ -13,7 +13,7 @@
 #include "syntropy/application/console/console_output_sections.h"
 #include "syntropy/application/console/console_line_builder.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* DEFAULT CONSOLE STYLE                                                */

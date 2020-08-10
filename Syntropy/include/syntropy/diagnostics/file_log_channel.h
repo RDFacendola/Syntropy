@@ -15,7 +15,7 @@
 #include "syntropy/diagnostics/log_event_filter.h"
 #include "syntropy/diagnostics/auto_log_channel.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* FILE LOG CHANNEL                                                     */

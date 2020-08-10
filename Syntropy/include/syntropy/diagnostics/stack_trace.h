@@ -12,7 +12,7 @@
 #include "syntropy/core/vector.h"
 #include "syntropy/language/macro.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* MACROS                                                               */
@@ -144,7 +144,7 @@ namespace syntropy
 
     #undef SYNTROPY_HERE
     #define SYNTROPY_HERE \
-        syntropy::StackTraceElement{ SYNTROPY_FILE, SYNTROPY_FUNCTION, SYNTROPY_LINE }
+        Syntropy::StackTraceElement{ SYNTROPY_FILE, SYNTROPY_FUNCTION, SYNTROPY_LINE }
 
     // StackTrace.
 

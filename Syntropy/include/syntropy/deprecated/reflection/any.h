@@ -14,7 +14,7 @@
 
 #include "syntropy/reflection/type.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /// The class any describes a type-safe container for single values of any type.
     /// This class is similar to std::any, but takes advantage of syntropy reflection system to allow polymorphic conversions of values.
@@ -295,6 +295,6 @@ namespace syntropy::reflection
 
 namespace std
 {
-    /// \brief Overloads the std::swap algorithm for syntropy::reflection::Any. Swaps the content of two any objects by calling first.Swap(second)
-    void swap(syntropy::reflection::Any& first, syntropy::reflection::Any& second) noexcept;
+    /// \brief Overloads the std::swap algorithm for Syntropy::reflection::Any. Swaps the content of two any objects by calling first.Swap(second)
+    void swap(Syntropy::reflection::Any& first, Syntropy::reflection::Any& second) noexcept;
 }

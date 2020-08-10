@@ -21,7 +21,7 @@
 #include "syntropy/serialization/json/json.h"
 #include "syntropy/serialization/json/deserializers/stl_deserializers.h"
 
-namespace syntropy::reflection
+namespace Syntropy::reflection
 {
     /************************************************************************/
     /* DIAGNOSTICS.H                                                        */
@@ -31,7 +31,7 @@ namespace syntropy::reflection
     template<>
     struct ClassDeclarationT<diagnostics::Severity>
     {
-        static constexpr const char* name_{ "syntropy::diagnostics::Severity" };
+        static constexpr const char* name_{ "Syntropy::diagnostics::Severity" };
 
         void operator()(ClassT<diagnostics::Severity>& class_t) const
         {
@@ -57,7 +57,7 @@ namespace syntropy::reflection
     template <>
     struct ClassDeclarationT<diagnostics::LogChannel>
     {
-        static constexpr const char* name_{ "syntropy::diagnostics::LogChannel" };
+        static constexpr const char* name_{ "Syntropy::diagnostics::LogChannel" };
     };
 
     /************************************************************************/
@@ -68,7 +68,7 @@ namespace syntropy::reflection
     template <>
     struct ClassDeclarationT<diagnostics::StreamLogChannel>
     {
-        static constexpr const char* name_{ "syntropy::diagnostics::StreamLogChannel" };
+        static constexpr const char* name_{ "Syntropy::diagnostics::StreamLogChannel" };
 
         void operator()(ClassT<diagnostics::StreamLogChannel>& class_t) const
         {
@@ -80,7 +80,7 @@ namespace syntropy::reflection
     template <>
     struct ClassDeclarationT<diagnostics::FileLogChannel>
     {
-        static constexpr const char* name_{ "syntropy::diagnostics::FileLogChannel" };
+        static constexpr const char* name_{ "Syntropy::diagnostics::FileLogChannel" };
 
         void operator()(ClassT<diagnostics::FileLogChannel>& class_t) const
         {
@@ -91,7 +91,7 @@ namespace syntropy::reflection
     };
 }
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
     /************************************************************************/
     /* LOG_CHANNELS.H                                                       */
@@ -129,7 +129,7 @@ namespace syntropy::serialization
 template<>
 struct ClassDeclarationT<Bytes>
 {
-    static constexpr const char* name_{ "syntropy::Bytes" };
+    static constexpr const char* name_{ "Syntropy::Bytes" };
 };
 
 /************************************************************************/
@@ -140,7 +140,7 @@ struct ClassDeclarationT<Bytes>
 //     template<>
 //     struct ClassDeclarationT<LinearSegregatedFitAllocator>
 //     {
-//         static constexpr const char* name_{ "syntropy::LinearSegregatedFitAllocator" };
+//         static constexpr const char* name_{ "Syntropy::LinearSegregatedFitAllocator" };
 // 
 //         void operator()(ClassT<LinearSegregatedFitAllocator>& class_t) const
 //         {
@@ -157,7 +157,7 @@ struct ClassDeclarationT<Bytes>
 //     template<>
 //     struct ClassDeclarationT<ExponentialSegregatedFitAllocator>
 //     {
-//         static constexpr const char* name_{ "syntropy::ExponentialSegregatedFitAllocator" };
+//         static constexpr const char* name_{ "Syntropy::ExponentialSegregatedFitAllocator" };
 // 
 //         void operator()(ClassT<ExponentialSegregatedFitAllocator>& class_t) const
 //         {
@@ -174,7 +174,7 @@ struct ClassDeclarationT<Bytes>
 //     template<>
 //     struct ClassDeclarationT<TwoLevelSegregatedFitAllocator>
 //     {
-//         static constexpr const char* name_{ "syntropy::TwoLevelSegregatedFitAllocator" };
+//         static constexpr const char* name_{ "Syntropy::TwoLevelSegregatedFitAllocator" };
 // 
 //         void operator()(ClassT<TwoLevelSegregatedFitAllocator>& class_t) const
 //         {
@@ -186,7 +186,7 @@ struct ClassDeclarationT<Bytes>
 
 }
 
-namespace syntropy::serialization
+namespace Syntropy::serialization
 {
 
     /************************************************************************/

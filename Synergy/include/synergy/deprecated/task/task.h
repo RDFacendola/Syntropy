@@ -13,7 +13,7 @@
 
 #include "syntropy/diagnostics/assert.h"
 
-namespace syntropy::synergy
+namespace Syntropy::synergy
 {
     class Task;
 

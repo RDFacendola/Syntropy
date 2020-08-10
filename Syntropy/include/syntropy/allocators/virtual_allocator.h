@@ -15,7 +15,7 @@
 #include "syntropy/math/math.h"
 #include "syntropy/diagnostics/assert.h"
 
-namespace syntropy
+namespace Syntropy
 {
     /************************************************************************/
     /* VIRTUAL ALLOCATOR                                                    */
