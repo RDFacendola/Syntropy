@@ -158,7 +158,7 @@ namespace Syntropy
     {
         // Labels are never deallocated, hence their memory location is unique.
 
-        return Memory::NumericAddress(rhs.GetCharacters());
+        return Memory::NumericAddressOf(rhs.GetCharacters());
     }
 
     inline void swap(Label& lhs, Label& rhs) noexcept

@@ -35,31 +35,37 @@ namespace Syntropy
     /// \brief Exposes byte span-related definitions.
     namespace Memory
     {
-        /// \brief Get the memory footprint of a span.
+        /// \brief Get the memory footprint of rhs.
         template <typename TElement>
-        constexpr Bytes Size(const SpanT<TElement>& span) noexcept;
+        constexpr Bytes Size(const SpanT<TElement>& rhs) noexcept;
 
-        /// \brief Get the read-only object representation of an object.
+        /// \brief Get the read-only object representation of rhs.
         /// An object representation is the sequence of bytes starting from the object address.
-        /// If the object type is not exactly TObject, the behavior of this method is undefined.
+        /// If rhs type is not exactly TObject, the behavior of this method is undefined.
         template <typename TObject>
-        ByteSpan BytesOf(const TObject& object) noexcept;
+        ByteSpan BytesOf(const TObject& rhs) noexcept;
 
-        /// \brief Get the read-write object representation of an object.
+        /// \brief Get the read-write object representation of rhs.
         /// An object representation is the sequence of bytes starting from the object address.
-        /// If the object type is not exactly TObject, the behavior of this method is undefined.
+        /// If rhs type is not exactly TObject, the behavior of this method is undefined.
         template <typename TObject>
-        RWByteSpan RWBytesOf(TObject& object) noexcept;
+        RWByteSpan RWBytesOf(TObject& rhs) noexcept;
 
-        /// \brief Check whether the first byte in a span is aligned to a given alignment value.
+        /// \brief Check whether the first byte in lhs is aligned to alignment
         /// If the provided span is empty the behavior of this method is undefined.
-        Bool IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept;
+        Bool IsAlignedTo(const ByteSpan& lhs, Alignment alignment) noexcept;
 
-        /// \brief Consume a byte span from the front until its first byte is aligned to a given boundary.
-        ByteSpan Align(const ByteSpan& byte_span, Alignment alignment) noexcept;
+        /// \brief Consume lhs from the front until its first byte is aligned to alignment or lhs is exhausted.
+        ByteSpan Align(const ByteSpan& lhs, Alignment alignment) noexcept;
 
-        /// \brief Consume a byte span from the front until its first byte is aligned to a given boundary.
-        RWByteSpan Align(const RWByteSpan& byte_span, Alignment alignment) noexcept;
+        /// \brief Consume lhs from the front until its first byte is aligned to alignment or lhs is exhausted.
+        RWByteSpan Align(const RWByteSpan& lhs, Alignment alignment) noexcept;
+
+        /// \brief Reduce lhs from the back until its size if multiple of size or lhs is exhausted.
+        ByteSpan Floor(const ByteSpan& lhs, Bytes size) noexcept;
+
+        /// \brief Reduce lhs from the back until its size if multiple of size or lhs is exhausted.
+        RWByteSpan Floor(const RWByteSpan& lhs, Bytes size) noexcept;
 
     }
 
@@ -67,23 +73,23 @@ namespace Syntropy
     /* TYPE CAST                                                            */
     /************************************************************************/
 
-    /// \brief Convert a read-only byte span to a read-only typed span.
-    /// If the byte span doesn't refer to instances of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
+    /// \brief Convert rhs to a read-only typed span.
+    /// If rhs doesn't refer to a span of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
     template <typename TElement>
-    Span<TElement> ToSpan(const ByteSpan& byte_span) noexcept;
+    Span<TElement> ToSpan(const ByteSpan& rhs) noexcept;
 
-    /// \brief Convert a read-write byte span to a read-write typed span.
-    /// If the byte span doesn't refer to instances of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
+    /// \brief Convert rhs to a read-write typed span.
+    /// If rhs doesn't refer to a span of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
     template <typename TElement>
-    RWSpan<TElement> ToRWSpan(const RWByteSpan& byte_span) noexcept;
+    RWSpan<TElement> ToRWSpan(const RWByteSpan& rhs) noexcept;
 
     /// \brief Convert an read-only span to a read-only byte span.
     template <typename TElement>
-    ByteSpan ToByteSpan(const SpanT<TElement>& span) noexcept;
+    ByteSpan ToByteSpan(const SpanT<TElement>& rhs) noexcept;
 
     /// \brief Convert a read-write span to a read-write byte span.
     template <typename TElement>
-    RWByteSpan ToRWByteSpan(const SpanT<TElement>& span) noexcept;
+    RWByteSpan ToRWByteSpan(const SpanT<TElement>& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -93,92 +99,104 @@ namespace Syntropy
     // =======
 
     template <typename TElement>
-    constexpr Bytes Memory::Size(const SpanT<TElement>& span) noexcept
+    constexpr Bytes Memory::Size(const SpanT<TElement>& rhs) noexcept
     {
-        return Count(span) * SizeOf<TElement>();
+        return Count(rhs) * SizeOf<TElement>();
     }
 
     template <typename TObject>
-    inline ByteSpan Memory::BytesOf(const TObject& object) noexcept
+    inline ByteSpan Memory::BytesOf(const TObject& rhs) noexcept
     {
-        auto& type_from = typeid(object);
+        auto& type_from = typeid(rhs);
         auto& type_to = typeid(TObject);
 
         SYNTROPY_UNDEFINED_BEHAVIOR(type_from == type_to, "Dynamic type mismatch.");
 
-        return ByteSpan{ ToBytePtr(&object), ToInt(SizeOf<TObject>()) };
+        return ByteSpan{ ToBytePtr(&rhs), ToInt(SizeOf<TObject>()) };
     }
 
     template <typename TObject>
-    inline RWByteSpan Memory::RWBytesOf(TObject& object) noexcept
+    inline RWByteSpan Memory::RWBytesOf(TObject& rhs) noexcept
     {
-        auto& type_from = typeid(object);
+        auto& type_from = typeid(rhs);
         auto& type_to = typeid(TObject);
 
         SYNTROPY_UNDEFINED_BEHAVIOR(type_from == type_to, "Dynamic type mismatch.");
 
-        return RWByteSpan{ ToRWBytePtr(&object), ToInt(SizeOf<TObject>()) };
+        return RWByteSpan{ ToRWBytePtr(&rhs), ToInt(SizeOf<TObject>()) };
     }
 
-    inline Bool Memory::IsAlignedTo(const ByteSpan& byte_span, Alignment alignment) noexcept
+    inline Bool Memory::IsAlignedTo(const ByteSpan& lhs, Alignment alignment) noexcept
     {
-        SYNTROPY_UNDEFINED_BEHAVIOR(!IsEmpty(byte_span), "Empty spans don't have a well-defined alignment.");
+        SYNTROPY_UNDEFINED_BEHAVIOR(!IsEmpty(lhs), "Empty spans don't have a well-defined alignment.");
 
-        return IsAlignedTo(Begin(byte_span), alignment);
+        return IsAlignedTo(Begin(lhs), alignment);
     }
 
-    inline ByteSpan Memory::Align(const ByteSpan& byte_span, Alignment alignment) noexcept
+    inline ByteSpan Memory::Align(const ByteSpan& lhs, Alignment alignment) noexcept
     {
-        auto begin = Align(byte_span.GetData(), alignment);
-        auto end = End(byte_span);
+        auto begin = Align(lhs.GetData(), alignment);
+        auto end = End(lhs);
 
         return { Math::Min(begin, end), end };
     }
 
-    inline RWByteSpan Memory::Align(const RWByteSpan& byte_span, Alignment alignment) noexcept
+    inline RWByteSpan Memory::Align(const RWByteSpan& lhs, Alignment alignment) noexcept
     {
-        return ReadWrite(Align(ReadOnly(byte_span), alignment));
+        return ReadWrite(Align(ReadOnly(lhs), alignment));
+    }
+
+    inline ByteSpan Memory::Floor(const ByteSpan& lhs, Bytes size) noexcept
+    {
+        auto floor_size = Math::Floor(Memory::Size(lhs), size);
+
+        return Front(lhs, ToInt(floor_size));
+    }
+
+    inline RWByteSpan Memory::Floor(const RWByteSpan& lhs, Bytes size) noexcept
+    {
+        return ReadWrite(Floor(ReadOnly(lhs), size));
     }
 
     // Type cast.
     // ==========
 
     template <typename TElement>
-    inline Span<TElement> ToSpan(const ByteSpan& byte_span) noexcept
+    inline Span<TElement> ToSpan(const ByteSpan& rhs) noexcept
     {
         using TPointer = Pointer<AddConstT<TElement>>;
 
-        auto begin = reinterpret_cast<TPointer>(Begin(byte_span));
-        auto end = reinterpret_cast<TPointer>(End(byte_span));
+        auto begin = reinterpret_cast<TPointer>(Begin(rhs));
+        auto end = reinterpret_cast<TPointer>(End(rhs));
 
         return { begin, end };
     }
 
     template <typename TElement>
-    inline RWSpan<TElement> ToRWSpan(const RWByteSpan& byte_span) noexcept
+    inline RWSpan<TElement> ToRWSpan(const RWByteSpan& rhs) noexcept
     {
         using TRWPointer = Pointer<RemoveConstT<TElement>>;
 
-        auto begin = reinterpret_cast<TRWPointer>(Begin(byte_span));
-        auto end = reinterpret_cast<TRWPointer>(End(byte_span));
+        auto begin = reinterpret_cast<TRWPointer>(Begin(rhs));
+        auto end = reinterpret_cast<TRWPointer>(End(rhs));
 
         return { begin, end };
     }
 
     template <typename TElement>
-    inline ByteSpan ToByteSpan(const SpanT<TElement>& span) noexcept
+    inline ByteSpan ToByteSpan(const SpanT<TElement>& rhs) noexcept
     {
-        auto begin = ToBytePtr(Begin(span));
-        auto end = ToBytePtr(End(span));
+        auto begin = ToBytePtr(Begin(rhs));
+        auto end = ToBytePtr(End(rhs));
 
         return { begin, end };
     }
 
     template <typename TElement>
-    inline RWByteSpan ToRWByteSpan(const SpanT<TElement>& span) noexcept
+    inline RWByteSpan ToRWByteSpan(const SpanT<TElement>& rhs) noexcept
     {
-        auto begin = ToRWBytePtr(Begin(span));
-        auto end = ToRWBytePtr(End(span));
+        auto begin = ToRWBytePtr(Begin(rhs));
+        auto end = ToRWBytePtr(End(rhs));
 
         return { begin, end };
     }

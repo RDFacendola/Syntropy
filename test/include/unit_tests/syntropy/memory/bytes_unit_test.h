@@ -63,7 +63,7 @@ namespace Syntropy::unit_test
 
     .TestCase("SizeOf return a bytes amount equal to the size of a type, converted to a bytes amount.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         SYNTROPY_UNIT_EQUAL(Memory::SizeOf<Fix32>(), 4_Bytes);
         SYNTROPY_UNIT_EQUAL(Memory::SizeOf(Fix64{}), 8_Bytes);
@@ -186,7 +186,7 @@ namespace Syntropy::unit_test
 
     .TestCase("Bytes literals behaves as binary metric prefixes equivalent.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         SYNTROPY_UNIT_EQUAL(1_Bytes,   Bytes{ 0x0000000000000001ll });
         SYNTROPY_UNIT_EQUAL(2_KiBytes, Bytes{ 0x0000000000000800ll });
@@ -197,7 +197,7 @@ namespace Syntropy::unit_test
 
     .TestCase("Byte pointers can be moved forward by Bytes amount.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         auto read_write_ptr8 = Pointer<Byte>{ &fixture.buffer_[8] };
         auto read_only_ptr8 = Pointer<const Byte>{ &fixture.buffer_[8] };
@@ -211,7 +211,7 @@ namespace Syntropy::unit_test
 
     .TestCase("Byte pointers can be moved backwards by Bytes amount.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         auto read_write_ptr0 = Pointer<Byte>{ &fixture.buffer_[0] };
         auto read_only_ptr0 = Pointer<const Byte>{ &fixture.buffer_[0] };

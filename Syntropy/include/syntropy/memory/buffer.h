@@ -11,6 +11,7 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/memory.h"
 #include "syntropy/allocators/allocator.h"
+#include "syntropy/diagnostics/assert.h"
 
 namespace Syntropy
 {
@@ -18,8 +19,7 @@ namespace Syntropy
     /* BUFFER                                                               */
     /************************************************************************/
 
-    /// \brief Represents a raw buffer allocated from a memory resource.
-    /// Buffer size is immutable and decided during construction.
+    /// \brief Represents a contiguous sequence of bytes.
     /// \author Raffaele D. Facendola - February 2017
     class Buffer
     {
@@ -124,6 +124,8 @@ namespace Syntropy
         , alignment_(alignment)
         , buffer_(allocator.Allocate(size, alignment))
     {
+        SYNTROPY_ASSERT(Memory::Size(buffer_) == size);     // Out of memory.
+
         Memory::Zero(buffer_);
     }
 
@@ -138,7 +140,7 @@ namespace Syntropy
         , alignment_(other.alignment_)
         , buffer_(other.buffer_)
     {
-        other.buffer_ = {}; // Null-out other's buffer.
+        other.buffer_ = {};
     }
 
     inline Buffer& Buffer::operator=(Buffer other) noexcept
@@ -150,10 +152,7 @@ namespace Syntropy
 
     inline Buffer::~Buffer() noexcept
     {
-        if (allocator_)
-        {
-            allocator_->Deallocate(buffer_, alignment_);
-        }
+        allocator_->Deallocate(buffer_, alignment_);
     }
 
     inline ByteSpan Buffer::GetData() const noexcept

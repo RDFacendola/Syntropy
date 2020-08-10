@@ -179,7 +179,7 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Exposes memory unit literals.
-    namespace literals
+    namespace Literals
     {
         /// \brief User-defined literal used to convert a number from Bytes to Bytes.
         /// \param number Number to convert.
@@ -296,7 +296,7 @@ namespace Syntropy
 
     constexpr Bytes& operator++(Bytes& rhs) noexcept
     {
-        using namespace literals;
+        using namespace Literals;
 
         rhs += 1_Bytes;
 
@@ -314,7 +314,7 @@ namespace Syntropy
 
     constexpr Bytes& operator--(Bytes& rhs) noexcept
     {
-        using namespace literals;
+        using namespace Literals;
 
         rhs -= 1_Bytes;
 
@@ -467,27 +467,27 @@ namespace Syntropy
 
     // Literals.
 
-    constexpr Bytes literals::operator "" _Bytes(std::size_t lhs) noexcept
+    constexpr Bytes Literals::operator "" _Bytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs);
     }
 
-    constexpr Bytes literals::operator "" _KiBytes(std::size_t lhs) noexcept
+    constexpr Bytes Literals::operator "" _KiBytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs * 0x400ull);
     }
 
-    constexpr Bytes literals::operator "" _MiBytes(std::size_t lhs) noexcept
+    constexpr Bytes Literals::operator "" _MiBytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs * 0x400ull * 0x400ull);
     }
 
-    constexpr Bytes literals::operator "" _GiBytes(std::size_t lhs) noexcept
+    constexpr Bytes Literals::operator "" _GiBytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull);
     }
 
-    constexpr Bytes literals::operator "" _TiBytes(std::size_t lhs) noexcept
+    constexpr Bytes Literals::operator "" _TiBytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull * 0x400ull);
     }

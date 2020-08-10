@@ -1,6 +1,6 @@
 
 /// \file alignment.h
-/// \brief This header is part of Syntropy memory module. It contains the definition of the Alignment type and related functions.
+/// \brief This header is part of Syntropy memory module. It contains alignment-related definitions.
 ///
 /// \author Raffaele D. Facendola - August 2018
 
@@ -37,8 +37,8 @@ namespace Syntropy
         template <typename TType>
         constexpr Alignment AlignmentOf() noexcept;
 
-        /// \brief Get an alignment which is at least as strict (as large) as that of every scalar type.
-        constexpr Alignment MaxAlignmentOf() noexcept;
+        /// \brief Get an alignment which is at least as large as that of every scalar type.
+        constexpr Alignment MaxAlignment() noexcept;
 
         /// \brief Check whether a pointer is aligned to a given boundary.
         Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
@@ -92,7 +92,7 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Exposes alignment unit literals.
-    namespace literals
+    namespace Literals
     {
         /// \brief User-defined literal used to convert a number to Alignment type.
         constexpr Alignment operator "" _Alignment(std::size_t lhs) noexcept;
@@ -117,7 +117,7 @@ namespace Syntropy
         return Alignment(std::align_val_t{ alignof(TType) });
     }
 
-    constexpr Alignment Memory::MaxAlignmentOf() noexcept
+    constexpr Alignment Memory::MaxAlignment() noexcept
     {
         return Alignment(std::align_val_t{ alignof(std::max_align_t) });
     }
@@ -206,7 +206,7 @@ namespace Syntropy
 
     // Literals.
     
-    constexpr Alignment literals::operator "" _Alignment(std::size_t lhs) noexcept
+    constexpr Alignment Literals::operator "" _Alignment(std::size_t lhs) noexcept
     {
         return Alignment(lhs);
     }

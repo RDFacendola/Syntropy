@@ -69,7 +69,7 @@ namespace Syntropy::unit_test
 
     .TestCase("Alignment literals behaves as metric prefixes equivalent.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         SYNTROPY_UNIT_EQUAL(32_Alignment,  Alignment{ 32 });
     });

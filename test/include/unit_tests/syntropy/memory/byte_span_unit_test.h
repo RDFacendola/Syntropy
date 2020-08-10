@@ -42,7 +42,7 @@ namespace Syntropy::unit_test
 
     .TestCase("Span have a size which is exactly equal to the memory footprint of a single element times the number of elements in the span.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         auto span = Span<Fix64>{ nullptr, 10 };
 
@@ -51,7 +51,7 @@ namespace Syntropy::unit_test
 
     .TestCase("Byte pointers are aligned to the same alignment requirement of the memory region they refer to.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         auto byte_ptr = reinterpret_cast<BytePtr>(16);
 
@@ -66,7 +66,7 @@ namespace Syntropy::unit_test
 
     .TestCase("Byte spans are aligned to the same alignment requirement of the memory region they refer to.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         auto byte_ptr = reinterpret_cast<BytePtr>(16);
 
@@ -83,7 +83,7 @@ namespace Syntropy::unit_test
 
     .TestCase("Aligning a byte span to a value less than the original alignment returns the same span.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         auto byte_ptr = reinterpret_cast<BytePtr>(32);
 
@@ -94,7 +94,7 @@ namespace Syntropy::unit_test
 
     .TestCase("Aligning an unaligned byte span reduces the span size by the difference between the original alignment and the requested one.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         auto byte_ptr = reinterpret_cast<BytePtr>(10);
         auto byte_ptr_aligned = reinterpret_cast<BytePtr>(16);
@@ -107,7 +107,7 @@ namespace Syntropy::unit_test
 
     .TestCase("Over-aligning a byte span returns an empty span.", [](auto& fixture)
     {
-        using namespace literals;
+        using namespace Literals;
 
         auto byte_ptr = reinterpret_cast<BytePtr>(10);
 

@@ -31,13 +31,13 @@ namespace Syntropy
     namespace Memory
     {
 
-        /// \brief Reinterpret an object representation from a type to another type.
+        /// \brief Reinterpret an object representation to another type.
         template <typename TTo, typename TFrom>
         TTo BitCast(const TFrom& rhs);
 
         /// \brief Convert a pointer to its numeric address value.
         template <typename TType>
-        Int NumericAddress(Pointer<TType> pointer) noexcept;
+        Int NumericAddressOf(Pointer<TType> pointer) noexcept;
 
         /// \brief Copy a source memory region to a destination memory region. Neither span is exceed during the process.
         /// \return Returns the bytes copied as a result of this call.
@@ -86,7 +86,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    inline Int Memory::NumericAddress(Pointer<TType> pointer) noexcept
+    inline Int Memory::NumericAddressOf(Pointer<TType> pointer) noexcept
     {
         return reinterpret_cast<Int>(pointer);
     }

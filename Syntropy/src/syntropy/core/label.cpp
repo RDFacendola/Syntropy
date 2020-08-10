@@ -15,7 +15,7 @@
 
 namespace Syntropy
 {
-    using namespace literals;
+    using namespace Literals;
 
     /************************************************************************/
     /* LABEL :: REGISTRY                                                    */
