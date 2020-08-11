@@ -61,11 +61,11 @@ namespace Syntropy
         /// \brief Consume lhs from the front until its first byte is aligned to alignment or lhs is exhausted.
         RWByteSpan Align(const RWByteSpan& lhs, Alignment alignment) noexcept;
 
-        /// \brief Reduce lhs from the back until its size if multiple of size or lhs is exhausted.
-        ByteSpan Floor(const ByteSpan& lhs, Bytes size) noexcept;
+        /// \brief Consume lhs from both sides until its first byte is aligned to alignment and its size is a multiple of size or lhs is exhausted.
+        ByteSpan Align(const ByteSpan& lhs, Bytes size, Alignment alignment) noexcept;
 
-        /// \brief Reduce lhs from the back until its size if multiple of size or lhs is exhausted.
-        RWByteSpan Floor(const RWByteSpan& lhs, Bytes size) noexcept;
+        /// \brief Consume lhs from both sides until its first byte is aligned to alignment and its size is a multiple of size or lhs is exhausted.
+        RWByteSpan Align(const RWByteSpan& lhs, Bytes size, Alignment alignment) noexcept;
 
     }
 
@@ -146,16 +146,18 @@ namespace Syntropy
         return ReadWrite(Align(ReadOnly(lhs), alignment));
     }
 
-    inline ByteSpan Memory::Floor(const ByteSpan& lhs, Bytes size) noexcept
+    inline ByteSpan Memory::Align(const ByteSpan& lhs, Bytes size, Alignment alignment) noexcept
     {
-        auto floor_size = Math::Floor(Memory::Size(lhs), size);
+        auto aligned_lhs = Align(lhs, alignment);
 
-        return Front(lhs, ToInt(floor_size));
+        size = Math::Floor(Memory::Size(aligned_lhs), size);
+
+        return Front(aligned_lhs, ToInt(size));
     }
 
-    inline RWByteSpan Memory::Floor(const RWByteSpan& lhs, Bytes size) noexcept
+    inline RWByteSpan Memory::Align(const RWByteSpan& lhs, Bytes size, Alignment alignment) noexcept
     {
-        return ReadWrite(Floor(ReadOnly(lhs), size));
+        return ReadWrite(Align(ReadOnly(lhs), size, alignment));
     }
 
     // Type cast.
