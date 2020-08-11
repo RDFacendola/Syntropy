@@ -70,6 +70,12 @@ namespace Syntropy
         /// \brief Return the smallest alignment equal-to or greater-than the provided value which also satisfies virtual memory's page alignment.
         Alignment Ceil(Alignment alignment) noexcept;
 
+        /// \brief Consume lhs from both sides until its first byte is aligned to virtual memory's page alignment and its size is a multiple of virtual memory's page size.
+        ByteSpan Align(const ByteSpan& lhs) noexcept;
+
+        /// \brief Consume lhs from both sides until its first byte is aligned to virtual memory's page alignment and its size is a multiple of virtual memory's page size.
+        RWByteSpan Align(const RWByteSpan& lhs) noexcept;
+
     };
 
     /************************************************************************/
@@ -99,5 +105,14 @@ namespace Syntropy
         return Math::Max(alignment, PageAlignment());
     }
 
+    inline ByteSpan VirtualMemory::Align(const ByteSpan& lhs) noexcept
+    {
+        return Memory::Align(lhs, PageSize(), PageAlignment());
+    }
+
+    inline RWByteSpan VirtualMemory::Align(const RWByteSpan& lhs) noexcept
+    {
+        return ReadWrite(Align(ReadOnly(lhs)));
+    }
 }
 

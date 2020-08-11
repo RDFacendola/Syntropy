@@ -150,7 +150,7 @@ namespace Syntropy
     {
         auto aligned_lhs = Align(lhs, alignment);
 
-        size = Math::Floor(Memory::Size(aligned_lhs), size);
+        size = Math::Floor(Size(aligned_lhs), size);
 
         return Front(aligned_lhs, ToInt(size));
     }
