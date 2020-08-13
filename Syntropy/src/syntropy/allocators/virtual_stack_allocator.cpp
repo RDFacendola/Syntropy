@@ -8,48 +8,45 @@ namespace Syntropy
 
     RWByteSpan VirtualStackAllocator::Allocate(Bytes size, Alignment alignment) noexcept
     {
-        if (auto virtual_span = Memory::Align(free_span_, alignment); Memory::Size(virtual_span) >= size)
+        // Committing at higher granularity to reduce overall kernel calls.
+
+        if (auto available_span = Memory::Align(unallocated_span_, size, alignment))
         {
-            auto [block, free_span] = SliceFront(virtual_span, ToInt(size));
+            auto [block, unallocated_span] = Memory::SliceFront(available_span, size);
 
-            free_span_ = free_span;
+            auto commit_size = Math::Max(Memory::Size(uncommitted_span_) - Memory::Size(unallocated_span), ToBytes(0));
 
-            if (auto intersection_span = Intersection(committed_span_, block); intersection_span != block)                          // Portion of the block that was already committed.
-            {
-                auto uncommitted_span = PopFront(virtual_span_.GetData(), ToInt(Memory::Size(committed_span_)));
+            auto [commit_span, uncommitted_span] = Memory::SliceFront(uncommitted_span_, commit_size);
 
-                auto commit_size = Math::Ceil(size - Memory::Size(intersection_span), granularity_);                                // Round at granularity boundary to reduce overall kernel calls.
+            VirtualMemory::Commit(commit_span);         // Kernel call.
 
-                auto commit_span = Front(uncommitted_span, ToInt(commit_size));
-
-                VirtualMemory::Commit(commit_span);                                                                          // Kernel call.
-
-                committed_span_ = Union(committed_span_, commit_span);
-            }
+            unallocated_span_ = unallocated_span;
+            uncommitted_span_ = uncommitted_span;
 
             return block;
         }
 
-        return {};          // Out-of-memory.
+        return {};
     }
 
     RWByteSpan VirtualStackAllocator::Reserve(Bytes size, Alignment alignment) noexcept
     {
+        // Reserve a span aligned to virtual memory's page to avoid interferences with adjacent blocks when committing\decommitting.
+
         auto virtual_size = VirtualMemory::Ceil(size);
         auto virtual_alignment = VirtualMemory::Ceil(alignment);
 
-        if (auto virtual_span = Memory::Align(free_span_, virtual_alignment); Memory::Size(virtual_span) >= virtual_size)           // Jump next to a virtual page to avoid interference with previous allocations\reservations.
+        if (auto available_span = Memory::Align(unallocated_span_, virtual_size, virtual_alignment))
         {
-            auto [block, free_span] = SliceFront(virtual_span, ToInt(virtual_size));
+            auto [block, unallocated_span] = Memory::SliceFront(available_span, virtual_size);
 
-            free_span_ = free_span;
-
-            committed_span_ = Union(committed_span_, block);                                                                        // Jump after the reserved block to avoid interference with following allocations\reservations.
+            unallocated_span_ = unallocated_span;
+            uncommitted_span_ = Memory::PopFront(uncommitted_span_, virtual_size);
 
             return Front(block, ToInt(size));
         }
 
-        return {};          // Out-of-memory.
+        return {};
     }
 
 }

@@ -84,17 +84,17 @@ namespace Syntropy
 
     private:
 
-        /// \brief Virtual memory range reserved for this allocator.
+        /// \brief Virtual memory reserved for this allocator.
         VirtualBuffer virtual_span_;
 
-        /// \brief Free memory range.
-        RWByteSpan free_span_;
+        /// \brief Memory that hasn't been allocated yet.
+        RWByteSpan unallocated_span_;
 
-        /// \brief Committed memory range. This always represents an integer number of virtual memory pages.
-        RWByteSpan committed_span_;
+        /// \brief Memory that hasn't been committed yet.
+        RWByteSpan uncommitted_span_;
 
         /// \brief Commit granularity. This is always a multiple of the virtual memory's page size.
-        Bytes granularity_;
+        Bytes commit_granularity_;
 
     };
 
@@ -107,11 +107,11 @@ namespace Syntropy
     {
         friend class VirtualStackAllocator;
 
-        /// \brief Free memory range when the checkpoint was initially created.
-        RWByteSpan free_span_;
+        /// \brief Memory that hadn't been allocated yet when the checkpoint was initialized.
+        RWByteSpan unallocated_span_;
 
-        /// \brief Committed memory range when the checkpoint was initially created.
-        RWByteSpan committed_span_;
+        /// \brief Memory that hadn't been committed yet when the checkpoint was initialized.
+        RWByteSpan uncommitted_span_;
     };
 
     /************************************************************************/
@@ -123,18 +123,18 @@ namespace Syntropy
 
     inline VirtualStackAllocator::VirtualStackAllocator(Bytes capacity, Bytes granularity) noexcept
         : virtual_span_(capacity)
-        , free_span_(virtual_span_.GetData())
-        , committed_span_()
-        , granularity_(VirtualMemory::Ceil(granularity))
+        , unallocated_span_(virtual_span_.GetData())
+        , uncommitted_span_(unallocated_span_)
+        , commit_granularity_(VirtualMemory::Ceil(granularity))
     {
 
     }
 
     inline VirtualStackAllocator::VirtualStackAllocator(VirtualStackAllocator&& rhs) noexcept
         : virtual_span_(std::move(rhs.virtual_span_))
-        , free_span_(rhs.free_span_)
-        , committed_span_()
-        , granularity_(rhs.granularity_)
+        , unallocated_span_(rhs.unallocated_span_)
+        , uncommitted_span_(rhs.uncommitted_span_)
+        , commit_granularity_(rhs.commit_granularity_)
     {
 
     }
@@ -153,15 +153,17 @@ namespace Syntropy
 
     inline void VirtualStackAllocator::DeallocateAll() noexcept
     {
-        VirtualMemory::Decommit(committed_span_);
+        auto committed_span = DifferenceFront(virtual_span_.GetData(), uncommitted_span_);
 
-        free_span_ = virtual_span_.GetData();
-        committed_span_ = {};
+        VirtualMemory::Decommit(committed_span);                // Kernel call.
+
+        unallocated_span_ = virtual_span_.GetData();
+        uncommitted_span_ = unallocated_span_;
     }
 
     inline Bool VirtualStackAllocator::Owns(const ByteSpan& block) const noexcept
     {
-        auto allocated_span = PopBack(virtual_span_.GetData(), ToInt(Memory::Size(free_span_)));
+        auto allocated_span = DifferenceFront(virtual_span_.GetData(), unallocated_span_);
 
         return Contains(allocated_span, block);
     }
@@ -171,28 +173,26 @@ namespace Syntropy
         using std::swap;
 
         swap(virtual_span_, rhs.virtual_span_);
-        swap(free_span_, rhs.free_span_);
-        swap(granularity_, rhs.granularity_);
+        swap(unallocated_span_, rhs.unallocated_span_);
+        swap(uncommitted_span_, rhs.uncommitted_span_);
     }
 
     inline VirtualStackAllocator::TCheckpoint VirtualStackAllocator::Checkpoint() const noexcept
     {
         auto checkpoint = TCheckpoint{};
 
-        checkpoint.free_span_ = free_span_;
-        checkpoint.committed_span_ = committed_span_;
+        checkpoint.unallocated_span_ = unallocated_span_;
+        checkpoint.uncommitted_span_ = uncommitted_span_;
 
         return checkpoint;
     }
 
     inline void VirtualStackAllocator::Rewind(const TCheckpoint& checkpoint) noexcept
     {
-        auto decommit_span = PopFront(committed_span_, ToInt(Memory::Size(checkpoint.committed_span_)));
+        VirtualMemory::Decommit(DifferenceFront(checkpoint.uncommitted_span_, uncommitted_span_));          // Kernel call.
 
-        VirtualMemory::Decommit(decommit_span);                 // Kernel call.
-
-        free_span_ = checkpoint.free_span_;
-        committed_span_ = checkpoint.committed_span_;
+        unallocated_span_ = checkpoint.unallocated_span_;
+        uncommitted_span_ = checkpoint.uncommitted_span_;
     }
 
 }
