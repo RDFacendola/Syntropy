@@ -75,6 +75,14 @@ namespace Syntropy
         /// \remarks Exceeding span boundaries results in undefined behavior.
         [[nodiscard]] constexpr RWByteSpan Front(const RWByteSpan& lhs, Bytes size) noexcept;
 
+        /// \brief Obtain a span consisting of the last "size" bytes of lhs.
+        /// \remarks Exceeding span boundaries results in undefined behavior.
+        [[nodiscard]] constexpr ByteSpan Back(const ByteSpan& lhs, Bytes size) noexcept;
+
+        /// \brief Obtain a span consisting of the last "size" bytes of lhs.
+        /// \remarks Exceeding span boundaries results in undefined behavior.
+        [[nodiscard]] constexpr RWByteSpan Back(const RWByteSpan& lhs, Bytes size) noexcept;
+
         /// \brief Discard the first "size" bytes in a span and return the resulting subspan.
         /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
         [[nodiscard]] ByteSpan PopFront(const ByteSpan& lhs, Bytes size) noexcept;
@@ -83,6 +91,14 @@ namespace Syntropy
         /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
         [[nodiscard]] RWByteSpan PopFront(const RWByteSpan& lhs, Bytes size) noexcept;
 
+        /// \brief Discard the last "size" bytes in a span and return the resulting subspan.
+        /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+        [[nodiscard]] ByteSpan PopBack(const ByteSpan& lhs, Bytes size) noexcept;
+
+        /// \brief Discard the last  "size" bytes in a span and return the resulting subspan.
+        /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+        [[nodiscard]] RWByteSpan PopBack(const RWByteSpan& lhs, Bytes size) noexcept;
+
         /// \brief Slice lhs returning a span to the first "size" bytes and a span to the remaining elements of lhs.
         /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
         [[nodiscard]] constexpr Tuple<ByteSpan, ByteSpan> SliceFront(const ByteSpan& lhs, Bytes size) noexcept;
@@ -90,6 +106,14 @@ namespace Syntropy
         /// \brief Slice lhs returning a span to the first "size" bytes and a span to the remaining elements of lhs.
         /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
         [[nodiscard]] constexpr Tuple<RWByteSpan, RWByteSpan> SliceFront(const RWByteSpan& lhs, Bytes size) noexcept;
+
+        /// \brief Slice lhs returning a span to the last "size" bytes and a span to the remaining elements of lhs.
+        /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
+        [[nodiscard]] constexpr Tuple<ByteSpan, ByteSpan> SliceBack(const ByteSpan& lhs, Bytes size) noexcept;
+
+        /// \brief Slice lhs returning a span to the last "size" bytes and a span to the remaining elements of lhs.
+        /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
+        [[nodiscard]] constexpr Tuple<RWByteSpan, RWByteSpan> SliceBack(const RWByteSpan& lhs, Bytes size) noexcept;
     }
 
     /************************************************************************/
@@ -193,6 +217,16 @@ namespace Syntropy
         return Front(lhs, ToInt(size));
     }
 
+    inline constexpr ByteSpan Memory::Back(const ByteSpan& lhs, Bytes size) noexcept
+    {
+        return Back(lhs, ToInt(size));
+    }
+
+    inline constexpr RWByteSpan Memory::Back(const RWByteSpan& lhs, Bytes size) noexcept
+    {
+        return Back(lhs, ToInt(size));
+    }
+
     inline ByteSpan Memory::PopFront(const ByteSpan& lhs, Bytes size) noexcept
     {
         return PopFront(lhs, ToInt(size));
@@ -203,6 +237,16 @@ namespace Syntropy
         return PopFront(lhs, ToInt(size));
     }
 
+    inline ByteSpan Memory::PopBack(const ByteSpan& lhs, Bytes size) noexcept
+    {
+        return PopBack(lhs, ToInt(size));
+    }
+
+    inline RWByteSpan Memory::PopBack(const RWByteSpan& lhs, Bytes size) noexcept
+    {
+        return PopBack(lhs, ToInt(size));
+    }
+
     inline constexpr Tuple<ByteSpan, ByteSpan> Memory::SliceFront(const ByteSpan& lhs, Bytes size) noexcept
     {
         return SliceFront(lhs, ToInt(size));
@@ -211,6 +255,16 @@ namespace Syntropy
     inline constexpr Tuple<RWByteSpan, RWByteSpan> Memory::SliceFront(const RWByteSpan& lhs, Bytes size) noexcept
     {
         return SliceFront(lhs, ToInt(size));
+    }
+
+    inline constexpr Tuple<ByteSpan, ByteSpan> Memory::SliceBack(const ByteSpan& lhs, Bytes size) noexcept
+    {
+        return SliceBack(lhs, ToInt(size));
+    }
+
+    inline constexpr Tuple<RWByteSpan, RWByteSpan> Memory::SliceBack(const RWByteSpan& lhs, Bytes size) noexcept
+    {
+        return SliceBack(lhs, ToInt(size));
     }
 
     // Type cast.
