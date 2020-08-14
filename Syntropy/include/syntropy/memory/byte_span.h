@@ -215,12 +215,12 @@ namespace Syntropy
         return ReadWrite(Align(ReadOnly(lhs), size, alignment));
     }
 
-    inline constexpr ByteSpan Select(const ByteSpan& span, Bytes offset, Bytes count) noexcept
+    inline constexpr ByteSpan Memory::Select(const ByteSpan& span, Bytes offset, Bytes count) noexcept
     {
         return Select(span, ToInt(offset), ToInt(count));
     }
 
-    inline constexpr RWByteSpan Select(const RWByteSpan& span, Bytes offset, Bytes count) noexcept
+    inline constexpr RWByteSpan Memory::Select(const RWByteSpan& span, Bytes offset, Bytes count) noexcept
     {
         return Select(span, ToInt(offset), ToInt(count));
     }
