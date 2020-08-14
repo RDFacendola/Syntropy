@@ -66,7 +66,6 @@ namespace Syntropy
         template<typename = EnableIfValidExpressionT<AllocatorImplementsOwn, TAllocator>>
         Bool Owns(const ByteSpan& block) const noexcept;
 
-
         /// \brief Swap this allocator with the provided instance.
         void Swap(StackAllocator& rhs) noexcept;
 
