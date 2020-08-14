@@ -75,6 +75,14 @@ namespace Syntropy
         /// \remarks Exceeding span boundaries results in undefined behavior.
         [[nodiscard]] constexpr RWByteSpan Front(const RWByteSpan& lhs, Bytes size) noexcept;
 
+        /// \brief Obtain a sub-span given an offset and a size.
+        /// \remarks Exceeding span boundaries results in undefined behavior.
+        [[nodiscard]] constexpr ByteSpan Select(const ByteSpan& span, Bytes offset, Bytes count) noexcept;
+
+        /// \brief Obtain a sub-span given an offset and a size.
+        /// \remarks Exceeding span boundaries results in undefined behavior.
+        [[nodiscard]] constexpr RWByteSpan Select(const RWByteSpan& span, Bytes offset, Bytes count) noexcept;
+
         /// \brief Obtain a span consisting of the last "size" bytes of lhs.
         /// \remarks Exceeding span boundaries results in undefined behavior.
         [[nodiscard]] constexpr ByteSpan Back(const ByteSpan& lhs, Bytes size) noexcept;
@@ -205,6 +213,16 @@ namespace Syntropy
     inline RWByteSpan Memory::Align(const RWByteSpan& lhs, Bytes size, Alignment alignment) noexcept
     {
         return ReadWrite(Align(ReadOnly(lhs), size, alignment));
+    }
+
+    inline constexpr ByteSpan Select(const ByteSpan& span, Bytes offset, Bytes count) noexcept
+    {
+        return Select(span, ToInt(offset), ToInt(count));
+    }
+
+    inline constexpr RWByteSpan Select(const RWByteSpan& span, Bytes offset, Bytes count) noexcept
+    {
+        return Select(span, ToInt(offset), ToInt(count));
     }
 
     inline constexpr ByteSpan Memory::Front(const ByteSpan& lhs, Bytes size) noexcept
