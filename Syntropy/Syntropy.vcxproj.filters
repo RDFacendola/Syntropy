@@ -116,6 +116,7 @@
     <ClInclude Include="include\syntropy\allocators\allocation_context.h" />
     <ClInclude Include="include\syntropy\virtual_memory\virtual_memory.h" />
     <ClInclude Include="include\syntropy\virtual_memory\virtual_buffer.h" />
+    <ClInclude Include="include\syntropy\memory\new.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
