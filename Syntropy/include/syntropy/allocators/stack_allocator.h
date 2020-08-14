@@ -11,6 +11,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
+#include "syntropy/memory/new.h"
 #include "syntropy/diagnostics/assert.h"
 
 namespace Syntropy
@@ -57,13 +58,14 @@ namespace Syntropy
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
         void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
 
+        /// \brief Deallocate every allocation performed on this allocator so far, invalidating all outstanding checkpoints.
+        void DeallocateAll() noexcept;
+
         /// \brief Check whether a block belongs to the underlying allocator.
         /// This method only participates in overload resolution if the underlying allocator implements the ::Own(block) method.
         template<typename = EnableIfValidExpressionT<AllocatorImplementsOwn, TAllocator>>
         Bool Owns(const ByteSpan& block) const noexcept;
 
-        /// \brief Deallocate every allocation performed on this allocator so far, invalidating all outstanding checkpoints.
-        void DeallocateAll() noexcept;
 
         /// \brief Swap this allocator with the provided instance.
         void Swap(StackAllocator& rhs) noexcept;
@@ -85,8 +87,10 @@ namespace Syntropy
         /// If the block could not be allocated, returns an empty block.
         RWByteSpan Allocate(Pointer<Chunk> chunk, Bytes size, Alignment alignment) const noexcept;
 
-        /// \brief Allocate a new chunk whose payload size is at least as big as the provided size.
-        Pointer<Chunk> AllocateChunk(Bytes size) const noexcept;
+        /// \brief Allocate a new chunk.
+        /// \param size Minimum size for the payload.
+        /// \param alignment Alignment requirement for the payload.
+        Pointer<Chunk> AllocateChunk(Bytes size, Alignment alignment) const noexcept;
 
         /// \brief Underlying allocator.
         TAllocator allocator_;
@@ -121,20 +125,21 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief A chunk in the allocation chain.
+    /// A chunk behave as a stack allocator growing inside a "payload".
     template <typename TAllocator>
     struct StackAllocator<TAllocator>::Chunk
     {
         /// \brief Pointer to the previous chunk.
         Pointer<Chunk> previous_{ nullptr };
 
-        /// \brief Memory range in this chunk.
-        RWByteSpan chunk_span_;
+        /// \brief Memory span enclosing this chunk.
+        RWByteSpan self_;
 
-        /// \brief Memory range containing allocated data.
-        RWByteSpan payload_span_;
+        /// \brief Memory span containing chunk data.
+        RWByteSpan payload_;
 
-        /// \brief Free memory range, relative to the payload span.
-        RWByteSpan free_span_;
+        /// \brief Unallocated memory span within a payload.
+        RWByteSpan unallocated_;
     };
 
     /************************************************************************/
@@ -188,7 +193,7 @@ namespace Syntropy
         
         // Allocate on a new chunk.
 
-        if(auto chunk = AllocateChunk(size + ToBytes(alignment) - ToBytes(1)))
+        if(auto chunk = AllocateChunk(size, alignment))
         {
             chunk->previous_ = chunk_;
             chunk_ = chunk;
@@ -208,31 +213,31 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    template <typename>
-    inline Bool StackAllocator<TAllocator>::Owns(const ByteSpan& block) const noexcept
-    {
-        for (auto chunk = chunk_; chunk; chunk = chunk->previous_)
-        {
-            if (chunk->payload_span_.Contains(block))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    template <typename TAllocator>
     inline void StackAllocator<TAllocator>::DeallocateAll() noexcept
     {
         for (; chunk_ != nullptr;)
         {
             auto previous = chunk_->previous_;
 
-            allocator_.Deallocate(chunk_->chunk_span_);
+            allocator_.Deallocate(chunk_->self_);
 
             chunk_ = previous;
         }
+    }
+
+    template <typename TAllocator>
+    template <typename>
+    inline Bool StackAllocator<TAllocator>::Owns(const ByteSpan& block) const noexcept
+    {
+        for (auto chunk = chunk_; chunk; chunk = chunk->previous_)
+        {
+            if (chunk->payload_.Contains(block))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     template <typename TAllocator>
@@ -243,7 +248,6 @@ namespace Syntropy
         swap(allocator_, rhs.allocator_);
         swap(granularity_, rhs.granularity_);
         swap(chunk_, rhs.chunk_);
-        swap(head_, rhs.head_);
     }
 
     template <typename TAllocator>
@@ -252,7 +256,7 @@ namespace Syntropy
         auto checkpoint = TCheckpoint{};
 
         checkpoint.chunk_ = chunk_;
-        checkpoint.free_span_ = chunk_ ? (chunk_->free_span_) : nullptr;
+        checkpoint.unallocated_ = chunk_ ? (chunk_->unallocated_) : nullptr;
 
         return checkpoint;
     }
@@ -266,7 +270,7 @@ namespace Syntropy
         {
             auto previous = chunk_->previous_;
              
-            allocator_.Deallocate(chunk_->chunk_span_);
+            allocator_.Deallocate(chunk_->self_);
 
             chunk_ = previous;
         }
@@ -275,7 +279,7 @@ namespace Syntropy
 
         if (chunk_)
         {
-            chunk_->free_span_ = checkpoint.free_span_;
+            chunk_->unallocated_ = checkpoint.unallocated_;
         }
     }
 
@@ -284,11 +288,11 @@ namespace Syntropy
     {
         if (chunk)
         {
-            if (auto chunk_span = Memory::Align(chunk->free_span_, alignment); Memory::Size(chunk_span) >= size)
+            if (auto chunk_span = Memory::Align(chunk->unallocated_, size, alignment))
             {
-                auto [block, free_span] = SliceFront(chunk_span, ToInt(size));
+                auto [block, free_span] = Memory::SliceFront(chunk_span, size);
 
-                chunk->free_span_ = free_span;
+                chunk->unallocated_ = free_span;
 
                 return block;
             }
@@ -298,20 +302,19 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    Pointer<typename StackAllocator<TAllocator>::Chunk> StackAllocator<TAllocator>::AllocateChunk(Bytes size) const noexcept
+    Pointer<typename StackAllocator<TAllocator>::Chunk> StackAllocator<TAllocator>::AllocateChunk(Bytes size, Alignment alignment) const noexcept
     {
-        // Reserve additional space for chunk header.
+        auto payload_size = size + ToBytes(alignment) - ToBytes(1);
+        auto header_size = Memory::SizeOf<Chunk>();
 
-        auto chunk_size = Math::Ceil(size + SizeOf<Chunk>(), granularity_);
-
-        if (auto chunk_span = allocator_.Allocate(chunk_size))
+        if (auto chunk_storage = allocator_.Allocate(header_size + payload_size))
         {
-            auto chunk = FromTypeless<Chunk>(Begin(block));
+            auto chunk = new (chunk_storage) Chunk();
 
             chunk->previous_ = nullptr;
-            chunk->chunk_span_ = chunk_span;
-            chunk->payload_span_ = PopFront(chunk_span, ToInt(SizeOf<Chunk>()));
-            chunk->free_span_ = chunk->payload_span_;
+            chunk->self_ = chunk_span;
+            chunk->payload_ = Memory::PopFront(chunk_span, header_size);
+            chunk->unallocated_ = chunk->payload_;
 
             return chunk;
         }
