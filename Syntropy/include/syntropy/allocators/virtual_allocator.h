@@ -7,6 +7,7 @@
 #pragma once
 
 #include "syntropy/core/types.h"
+#include "syntropy/allocators/virtual_stack_allocator.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
@@ -69,23 +70,20 @@ namespace Syntropy
 
     private:
 
-        /// \brief Type of a linked list used to track free pages.
-        struct FreeList;
+        /// \brief A chunk in the index used to keep unmapped free pages.
+        struct FreePageIndex;
 
-        /// \brief Reserve a block and return its range.
+        /// \brief Reserve a chunk and return its range.
         RWByteSpan Reserve() noexcept;
-
-        /// \brief Virtual memory range reserved for this allocator.
-        VirtualBuffer virtual_span_;
-
-        /// \brief Memory span yet to allocate.
-        RWByteSpan unallocated_span_;
 
         /// \brief Size of each allocation. This value is a multiple of the system virtual memory page size.
         Bytes page_size_;
 
         /// \brief Head of the free list.
-        Pointer<FreeList> free_list_{ nullptr };
+        Pointer<FreePageIndex> free_page_index_{ nullptr };
+
+        /// \brief Underlying virtual allocator.
+        VirtualStackAllocator allocator_;
 
     };
 
@@ -97,21 +95,18 @@ namespace Syntropy
     // =================
 
     inline VirtualAllocator::VirtualAllocator(Bytes capacity, Bytes page_size) noexcept
-        : virtual_span_(capacity)
-        , unallocated_span_(virtual_span_.GetData())
-        , page_size_(VirtualMemory::Ceil(page_size))
+        : page_size_(VirtualMemory::Ceil(page_size))
+        , allocator_(capacity, page_size)
     {
 
     }
 
     inline VirtualAllocator::VirtualAllocator(VirtualAllocator&& rhs) noexcept
-        : virtual_span_(std::move(rhs.virtual_span_))
-        , unallocated_span_(rhs.unallocated_span_)
-        , page_size_(rhs.page_size_)
-        , free_list_(rhs.free_list_)
+        : page_size_(rhs.page_size_)
+        , free_page_index_(rhs.free_page_index_)
+        , allocator_(std::move(rhs.allocator_))
     {
-        rhs.unallocated_span_ = {};
-        rhs.free_list_ = nullptr;
+        rhs.free_page_index_ = nullptr;
     }
 
     inline VirtualAllocator& VirtualAllocator::operator=(VirtualAllocator rhs) noexcept
@@ -123,18 +118,23 @@ namespace Syntropy
 
     inline void VirtualAllocator::DeallocateAll() noexcept
     {
-        auto allocated_span = PopBack(virtual_span_.GetData(), Count(unallocated_span_));
+        allocator_.DeallocateAll();
 
-        VirtualMemory::Decommit(allocated_span);
-
-        unallocated_span_ = virtual_span_.GetData();
-        free_list_ = nullptr;
+        free_page_index_ = nullptr;
     }
 
     inline Bool VirtualAllocator::Owns(const ByteSpan& block) const noexcept
     {
-        return Contains(virtual_span_.GetData(), block);
+        return allocator_.Owns(block);
     }
 
+    inline void VirtualAllocator::Swap(VirtualAllocator& rhs) noexcept
+    {
+        using std::swap;
+
+        swap(page_size_, rhs.page_size_);
+        swap(free_page_index_, rhs.free_page_index_);
+        swap(allocator_, rhs.allocator_);
+    }
 }
 

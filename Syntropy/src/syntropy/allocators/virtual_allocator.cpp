@@ -1,32 +1,36 @@
 #include "syntropy/allocators/virtual_allocator.h"
 
 #include "syntropy/memory/memory.h"
+#include "syntropy/memory/new.h"
 
 namespace Syntropy
 {
     /************************************************************************/
-    /* VIRTUAL MEMORY RESOURCE :: FREE LIST                                 */
+    /* VIRTUAL ALLOCATOR :: FREE PAGE INDEX                                 */
     /************************************************************************/
 
-    /// \brief Type of a linked list used to track free pages.
+    /// \brief A chunk in the index used to track free unmapped pages.
     /// \author Raffaele D. Facendola - August 2018
-    struct VirtualAllocator::FreeList
+    struct VirtualAllocator::FreePageIndex
     {
-        /// \brief Self free-list node span.
+        /// \brief Next index.
+        Pointer<FreePageIndex> next_{ nullptr };
+
+        /// \brief Memory span covering the free page index chunk.
         RWByteSpan self_;
 
-        /// \brief Payload range.
-        RWSpan<RWByteSpan> payload_;
+        /// \brief Memory span enclosing the payload.
+        RWByteSpan payload_;
+
+        /// \brief Free entries in the index.
+        RWSpan<RWByteSpan> free_entries_;
 
         /// \brief Free pages.
         RWSpan<RWByteSpan> free_pages_;
-
-        /// \brief Next free list node.
-        Pointer<FreeList> next_{ nullptr };
     };
 
     /************************************************************************/
-    /* VIRTUAL MEMORY RESOURCE                                              */
+    /* VIRTUAL ALLOCATOR                                                    */
     /************************************************************************/
 
     RWByteSpan VirtualAllocator::Allocate(Bytes size, Alignment alignment) noexcept
@@ -35,9 +39,9 @@ namespace Syntropy
         {
             if (auto page = Reserve())
             {
-                VirtualMemory::Commit(page);                     // Kernel call: commit the page(s).
+                VirtualMemory::Commit(page);            // Kernel call.
 
-                return Front(page, ToInt(size));
+                return Memory::Front(page, size);
             }
         }
 
@@ -50,7 +54,7 @@ namespace Syntropy
         {
             if (auto page = Reserve())
             {
-                return Front(page, ToInt(size));
+                return Memory::Front(page, size);
             }
         }
 
@@ -60,96 +64,65 @@ namespace Syntropy
     void VirtualAllocator::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
         SYNTROPY_ASSERT(Owns(block));
-        SYNTROPY_ASSERT(alignment <= VirtualMemory::PageAlignment());
 
-        auto page = RWByteSpan{ Begin(block), ToInt(page_size_) };      // Blocks are allocated at page boundary.
+        auto page = RWByteSpan{ Begin(block), ToInt(page_size_) };
 
-        if (free_list_ && (free_list_->free_pages_ != free_list_->payload_))
+        if (free_page_index_ && free_page_index_->free_entries_)
         {
-            // (a) Link to free pages in the current free list node.
+            // Store the page reference inside the current free page index.
 
-            VirtualMemory::Decommit(page);                       // Kernel call: decommit the page(s).
+            auto [entry, free_entries] = SliceFront(free_page_index_->free_entries_, 1);
 
-            // #TODO FIFO Policy.
+            free_page_index_->free_entries_ = free_entries;
+            free_page_index_->free_pages_ = Union(free_page_index_->free_pages_, entry);
 
-            auto available = DifferenceBack(free_list_->payload_, free_list_->free_pages_);
+            Front(entry) = page;
 
-            new (Begin(available)) RWByteSpan{ page };
-
-            free_list_->free_pages_ = DifferenceFront(free_list_->payload_, PopFront(available));
+            VirtualMemory::Decommit(page);      // Kernel call.
         }
         else
         {
-            // (b) Recycle the deallocated block as a new free list node.
+            // Recycle the page itself as a new free page index.
 
-            auto next = free_list_;
+            auto free_page_index = new (&page) FreePageIndex{};
 
-            free_list_ = new (block.GetData()) FreeList{};
+            free_page_index->next_ = free_page_index_;
+            free_page_index->self_ = page;
+            free_page_index->payload_ = Memory::PopFront<FreePageIndex>(page);
+            free_page_index->free_entries_ = ToRWSpan<RWByteSpan>(Memory::AlignAs<RWByteSpan>(free_page_index->payload_));
 
-            // #TODO Boilerplate!
-
-            auto payload = PopFront(page, ToInt(Memory::SizeOf<FreeList>()));
-            
-            payload = Front(payload, Math::Floor(Count(payload), ToInt(Memory::SizeOf<RWByteSpan>())));     // #TODO Floor (reduce from the back), Ceil (reduce from the front).
-
-            free_list_->self_ = page;
-            free_list_->payload_ = ToRWSpan<RWByteSpan>(payload);
-            free_list_->free_pages_ = {};
-            free_list_->next_ = next;
+            free_page_index_ = free_page_index;
         }
-
-    }
-
-    void VirtualAllocator::Swap(VirtualAllocator& rhs) noexcept
-    {
-        using std::swap;
-
-        swap(virtual_span_, rhs.virtual_span_);
-        swap(unallocated_span_, rhs.unallocated_span_);
-        swap(page_size_, rhs.page_size_);
-        swap(free_list_, rhs.free_list_);
     }
 
     RWByteSpan VirtualAllocator::Reserve() noexcept
     {
-        // Recycle a free block.
+        // Recycle a free page in the current free page index.
 
-        if (free_list_ && (free_list_->free_pages_))
+        if (free_page_index_ && (free_page_index_->free_pages_))
         {
-            // #TODO FIFO Policy.
+            auto [entry, free_pages] = SliceBack(free_page_index_->free_pages_, 1);
 
-            auto block = Back(free_list_->free_pages_);
+            free_page_index_->free_pages_ = free_pages;
+            free_page_index_->free_entries_ = Union(free_page_index_->free_entries_, entry);
 
-            free_list_->free_pages_ = PopBack(free_list_->free_pages_);
-
-            return block;
+            return Front(entry);
         }
 
-        // Recycle itself as a free block.
+        // Recycle the free page index itself as a page.
 
-        if(free_list_)
+        if(free_page_index_)
         {
-            auto block = free_list_->self_;
+            auto block = free_page_index_->self_;
 
-            free_list_ = free_list_->next_;
+            free_page_index_ = free_page_index_->next_;
 
             return block;
         }
         
-        // Allocate from the end.
+        // Allocate on the underlying allocator.
 
-        if (page_size_ <= Memory::Size(unallocated_span_))
-        {
-            auto [page, unallocated_span] = SliceFront(unallocated_span_, ToInt(page_size_));
-
-            unallocated_span_ = unallocated_span;
-
-            return page;
-        }
-
-        // Out of memory!
-
-        return {};
+        return allocator_.Reserve(page_size_, ToAlignment(page_size_));
     }
 
 }
