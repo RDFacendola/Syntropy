@@ -71,16 +71,18 @@ namespace Syntropy
     using RWBytePtr = Pointer<Byte>;
 
     /// \brief A non-owning pointer to a typeless read-only memory location.
+    /// A typeless pointer binds to any strongly-typed pointer.
     using TypelessPtr = Pointer<const void>;
 
     /// \brief A non-owning pointer to a typeless read-write memory location.
+    /// A read-write typeless pointer binds to any non-const strongly-typed pointer.
     using RWTypelessPtr = Pointer<void>;
 
     /************************************************************************/
     /* TYPE CAST                                                            */
     /************************************************************************/
 
-    // Convenient casts to convert to fundamental types.
+    // Convenient casts to convert to core types.
 
     /// \brief Truncate a value to integer.
     template <typename TNumber>
