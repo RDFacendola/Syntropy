@@ -12,6 +12,8 @@
 #include "syntropy/math/bits.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
+#include "syntropy/memory/address.h"
+#include "syntropy/language/utility.h"
 
 namespace Syntropy
 {
@@ -43,11 +45,17 @@ namespace Syntropy
         /// \brief Check whether a pointer is aligned to a given boundary.
         Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
 
-        /// \brief Move a byte pointer forward until it gets aligned to a specified value.
+        /// \brief Move a byte pointer forwards until it gets aligned to a specified value.
         BytePtr Align(BytePtr pointer, Alignment alignment) noexcept;
 
-        /// \brief Move a byte pointer forward until it gets aligned to a specified value.
+        /// \brief Move a byte pointer forwards until it gets aligned to a specified value.
         RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept;
+
+        /// \brief Move a byte pointer backwards until it gets aligned to a specified value.
+        BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept;
+
+        /// \brief Move a byte pointer backwards until it gets aligned to a specified value.
+        RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept;
     }
 
     /************************************************************************/
@@ -124,27 +132,37 @@ namespace Syntropy
 
     inline Bool Memory::IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept
     {
-        auto address = reinterpret_cast<Int>(pointer);
+        auto mask = ToInt(alignment) - 1;
 
-        auto alignment_mask = ToInt(alignment) - 1;
-
-        return (address & alignment_mask) == 0;
+        return (ToAddress(pointer) & mask) == Address{};
     }
 
     inline BytePtr Memory::Align(BytePtr pointer, Alignment alignment) noexcept
     {
-        auto address = reinterpret_cast<Int>(pointer);
+        auto mask = ToInt(alignment) - 1;
 
-        auto alignment_mask = ToInt(alignment) - 1;
+        auto aligned = (ToAddress(pointer) + mask) & ~mask;
 
-        address = (address + alignment_mask) & ~alignment_mask;
-
-        return reinterpret_cast<BytePtr>(address);
+        return FromAddress(aligned);
     }
 
     inline RWBytePtr Memory::Align(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        return const_cast<RWBytePtr>(Align(BytePtr{ pointer }, alignment));
+        return ReadWrite(Align(ReadOnly(pointer), alignment));
+    }
+
+    inline BytePtr Memory::AlignDown(BytePtr pointer, Alignment alignment) noexcept
+    {
+        auto mask = ToInt(alignment) - 1;
+
+        auto aligned = ToAddress(pointer) & ~mask;
+
+        return FromAddress(aligned);
+    }
+
+    inline RWBytePtr Memory::AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
+    {
+        return ReadWrite(AlignDown(ReadOnly(pointer), alignment));
     }
 
     // Non-member functions.
