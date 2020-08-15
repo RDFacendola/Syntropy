@@ -26,7 +26,7 @@ Syntropy::RWTypelessPtr operator new(std::size_t size, const Syntropy::RWByteSpa
 
 inline Syntropy::RWTypelessPtr operator new(std::size_t size, const Syntropy::RWByteSpan& byte_span)
 {
-    if (size <= Syntropy::ToInt(Syntropy::Memory::Size(byte_span)))
+    if (Syntropy::ToInt(size) <= Syntropy::ToInt(Syntropy::Memory::Size(byte_span)))
     {
         return Begin(byte_span);
     }
