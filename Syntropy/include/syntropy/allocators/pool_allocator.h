@@ -11,6 +11,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
+#include "syntropy/memory/new.h"
 #include "syntropy/diagnostics/assert.h"
 
 namespace Syntropy
@@ -71,33 +72,34 @@ namespace Syntropy
         /// \brief Free block.
         struct FreeBlock;
 
-        /// \brief Get the chunk containing a block.
-        /// If the provided block doesn't belong to this allocator, the behavior of this method is undefined.
-        Chunk& BlockToChunk(const ByteSpan& block) const noexcept;
-
-        /// \brief Link a chunk to a list and get the head of the list.
-        Pointer<Chunk> Link(Chunk& chunk, Pointer<Chunk> list) const noexcept;
-
         /// \brief Allocate a new chunk and replace the active one.
         Pointer<Chunk> AllocateChunk() noexcept;
 
-        /// \brief Allocate a block on the current chunk.
-        /// \remarks If the current chunk cannot fit the allocation or there's no active chunk, the behavior of this function is undefined.
+        /// \brief Allocate a new block in a chunk.
+        RWByteSpan AllocateBlock(Chunk& chunk) noexcept;
+
+        /// \brief Allocate a block on the current chunk or, if unavailable, allocate a new chunk.
         RWByteSpan AllocateBlock() noexcept;
+
+        /// \brief Link a chunk to another chunk.
+        void Link(Chunk& chunk, Pointer<Chunk> next) noexcept;
+
+        /// \brief Unlink a chunk.
+        void Unlink(Chunk& chunk) noexcept;
 
         /// \brief Underlying allocator. Deallocated blocks are sent to the free list and never deallocated by this allocator.
         TAllocator allocator_;
 
-        /// \brief Size of each block.
-        Bytes block_size_;
-
         /// \brief Size of each chunk.
         Bytes chunk_size_;
 
-        /// \brief Linked list of chunks with at least one free block.
+        /// \brief Size of each block in a chunk.
+        Bytes block_size_;
+
+        /// \brief List of chunks with at least one free block.
         Pointer<Chunk> available_chunks_{ nullptr };
 
-        /// \brief Linked list of chunks with no free block.
+        /// \brief List of chunks with no free block.
         Pointer<Chunk> unavailable_chunks_{ nullptr };
 
     };
@@ -113,20 +115,23 @@ namespace Syntropy
         /// \brief A span covering the entire chunk.
         RWByteSpan self_;
 
+        /// \brief Pointer to the previous chunk.
+        Pointer<Chunk> previous_{ nullptr };
+
+        /// \brief Pointer to the next chunk.
+        Pointer<Chunk> next_{ nullptr };
+
+        /// \brief Pointer to the first free block in the chunk.
+        Pointer<FreeBlock> free_{ nullptr };
+
+        /// \brief Number of active allocations.
+        Int allocation_count_{ 0 };
+
         /// \brief A span covering the chunk payload.
         RWByteSpan payload_;
 
         /// \brief List of blocks (either free or allocated).
         RWByteSpan blocks_;
-
-        /// \brief Pointer to the next chunk.
-        Pointer<Chunk> next_{ nullptr };
-
-        /// \brief Pointer to the previous chunk.
-        Pointer<Chunk> previous_{ nullptr };
-
-        /// \brief Pointer to the first free block in the chunk.
-        Pointer<FreeBlock> free_{ nullptr };
     };
 
     /************************************************************************/
@@ -151,17 +156,17 @@ namespace Syntropy
     template <typename... TArguments>
     inline PoolAllocator<TAllocator>::PoolAllocator(Bytes block_size, Bytes chunk_size, TArguments&&... arguments) noexcept
         : allocator_(std::forward<TArguments>(arguments)...)
-        , block_size_(block_size)
         , chunk_size_(chunk_size)
+        , block_size_(Math::Max(block_size, Memory::SizeOf<FreeBlock>()))               // Free blocks in a chunk are chained together: each block must be large enough to fit a pointer.
     {
-
+        SYNTROPY_ASSERT((chunk_size - Memory::SizeOf<Chunk>()) > block_size_);          // Chunks are expected to fit two or more blocks, otherwise the first allocation will make them unavailable right away.
     }
 
     template <typename TAllocator>
     inline PoolAllocator<TAllocator>::PoolAllocator(PoolAllocator&& rhs) noexcept
         : allocator_(std::move(rhs.allocator_))
-        , block_size_(rhs.block_size_)
         , chunk_size_(rhs.chunk_size_)
+        , block_size_(rhs.block_size_)
         , available_chunks_(rhs.available_chunks_)
         , unavailable_chunks_(rhs.unavailable_chunks_)
     {
@@ -190,7 +195,7 @@ namespace Syntropy
         {
             if (auto block = AllocateBlock())
             {
-                return Front(block, ToInt(size));
+                return Memory::Front(block, size);
             }
         }
 
@@ -200,30 +205,40 @@ namespace Syntropy
     template <typename TAllocator>
     void PoolAllocator<TAllocator>::Deallocate(const RWByteSpan& block, Alignment alignment)
     {
-        SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block));
-        SYNTROPY_UNDEFINED_BEHAVIOR(Size(block) <= block_size_);
-        SYNTROPY_UNDEFINED_BEHAVIOR(alignment <= Alignment(block_size_));
+        SYNTROPY_UNDEFINED_BEHAVIOR((Size(block) <= block_size_) && (alignment <= Alignment(block_size_)), "The provided block doesn't belong to this allocator instance");
 
-        // Find the chunk containing the provided block.
+        auto chunk = FromTypeless<Chunk>(Memory::AlignDown(Begin(block)));
 
-        auto chunk = BlockToChunk(block);
+        auto is_available = chunk->free_ || chunk->blocks_;
 
-        // Link the block with other free blocks in the chunk.
+        chunk->allocation_count_--;
+
+        // Link to chunk free list.
 
         auto free = FromTypeless<FreeBlock>(Begin(block));
 
-        free->next_ = chunk_->free_;
+        free->next_ = chunk->free_;
+        chunk->free_ = free;
 
-        chunk_->free_ = free;
+        // Fast-path : if the chunk was already available and it has other active allocations no action is required.
 
-        // If the chunk was unavailable, it becomes available now.
-
-        if (!free->next_)
+        if (is_available && (chunk->allocation_count_ > 0))
         {
-            available_chunks_ = Link(*free, available_chunks_);
+            return;
         }
 
-        // #TODO Release the entire chunk if it was the last allocation!
+        // Either the chunk become available (most likely, fast path) or, if the last block was deallocated, the entire chunk is deallocated.
+
+        if (chunk->allocation_count_ > 0)
+        {
+            Link(*chunk, available_chunks_);
+        }
+        else
+        {
+            Unlink(chunk);
+
+            allocator_.Deallocate(RWByteSpan{ chunk, chunk_size_ }, ToAlignment(chunk_size_));
+        }
     }
 
     template <typename TAllocator>
@@ -277,28 +292,15 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline typename PoolAllocator<TAllocator>::Chunk& PoolAllocator<TAllocator>::BlockToChunk(const ByteSpan& block) const noexcept
-    {
-
-    }
-
-    template <typename TAllocator>
-    inline Pointer<typename PoolAllocator<TAllocator>::Chunk> Link(Chunk& chunk, Pointer<Chunk> list) const noexcept
-    {
-
-    }
-
-    template <typename TAllocator>
     inline Pointer<typename PoolAllocator<TAllocator>::Chunk> PoolAllocator<TAllocator>::AllocateChunk() noexcept
     {
-        if (auto storage = allocator_.Allocate(chunk_size_))
+        if (auto chunk_storage = allocator_.Allocate(chunk_size_, ToAlignment(chunk_size_)))            // Chunks are aligned at their own size.
         {
-            auto chunk = FromTypeless<Chunk>(Begin(storage));
+            auto chunk = new (chunk_storage) Chunk{};
 
-            chunk->next_ = chunk_;
-            chunk->storage_ = PopFront(storage, ToInt(SizeOf<Chunk>()));
-
-            chunk_ = chunk;
+            chunk->self_ = chunk_storage;
+            chunk->payload_ = Memory::PopFront(chunk_storage, Memory::SizeOf<Chunk>());                 // Discard header footprint.
+            chunk->blocks_ = Memory::Align(chunk->payload_, block_size_, ToAlignment(block_size_));     // Align the payload to block size and alignment.
 
             return chunk_;
         }
@@ -307,33 +309,107 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline RWByteSpan PoolAllocator<TAllocator>::AllocateBlock() noexcept
+    RWByteSpan PoolAllocator<TAllocator>::AllocateBlock(Chunk& chunk) noexcept
     {
-        // Attempt to recycle a free block. Fast-path.
+        chunk.allocation_count_++;
 
-        if (free_)
+        // Fast-path: recycle a free block (keeps allocations close together).
+
+        if (chunk.free_)
         {
-            auto block = RWByteSpan{ ToRWBytePtr(free_), ToInt(size) };
+            auto block = RWByteSpan{ chunk.free_, block_size_ };
 
-            free_ = free_->next_;
+            auto next_free = FromTypeless<FreeBlock>(Begin(block))->next_;
+
+            chunk.free_ = next_free;
 
             return block;
         }
 
-        // Either allocate on the current chunk (fast path) or allocate a new chunk (speed depends on the underlying allocator).
+        // Fast-path: allocate at the end of the chunk.
 
-        if ((chunk_ && (Size(chunk_->storage_) >= block_size_)) || AllocateChunk())
+        auto [block, blocks] = Memory::SliceFront(chunk.blocks_, block_size_);
+
+        chunk.blocks_ = blocks;
+
+        return block;
+    }
+
+    template <typename TAllocator>
+    RWByteSpan PoolAllocator<TAllocator>::AllocateBlock() noexcept
+    {
+        auto chunk = (available_chunks_ ? available_chunks_ : AllocateChunk());                         // Either the first available chunk (fast path) or a new one.
+
+        if (chunk)
         {
-            auto [block, storage] = SliceFront(chunk_->storage_, ToInt(block_size_));
+            auto block = AllocateBlock(*chunk);
 
-            chunk_->storage_ = storage;
+            auto chunks = (chunk->free_ || chunk_->blocks_) ? available_chunks_ : unavailable_chunks_;  
 
-            return block_;
+            Link(*chunk, chunks);
+
+            return block;
         }
 
         return {};
     }
 
+    template <typename TAllocator>
+    inline void PoolAllocator<TAllocator>::Link(Chunk& chunk, Pointer<Chunk> next) noexcept
+    {
+        if (&chunk != next)
+        {
+            Unlink(chunk);
 
+            chunk.next_ = next;
+
+            if (next)
+            {
+                next.previous_ = &chunk;
+            }
+
+            // Make sure to update allocation chains eventually.
+
+            if (next == available_chunks_)
+            {
+                available_chunks_ = &chunk;
+            }
+            
+            if (next == unavailable_chunks_)
+            {
+                unavailable_chunks_ = &chunk;
+            }
+        }
+    }
+
+    template <typename TAllocator>
+    void PoolAllocator<TAllocator>::Unlink(Chunk& chunk) noexcept
+    {
+        // Make sure not to break allocation chains.
+
+        if (&chunk == unavailable_chunks_)
+        {
+            unavailable_chunks_ = chunk->next_;
+        }
+
+        if (&chunk == available_chunks_)
+        {
+            available_chunks_ = chunk->next_;
+        }
+
+        // Unlink.
+
+        if (chunk.previous_)
+        {
+            chunk.previous_->next_ = chunk.next_;
+            chunk.previous_ = nullptr;
+        }
+
+        if (chunk.next_)
+        {
+            chunk.next_->previous_ = chunk.previous_;
+            chunk.next_ = nullptr;
+        }
+    }
 
 }
