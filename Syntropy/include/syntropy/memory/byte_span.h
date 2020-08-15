@@ -67,6 +67,14 @@ namespace Syntropy
         /// \brief Consume lhs from both sides until its first byte is aligned to alignment and its size is a multiple of size or lhs is exhausted.
         RWByteSpan Align(const RWByteSpan& lhs, Bytes size, Alignment alignment) noexcept;
 
+        /// \brief Consume lhs from both sides until lhs is aligned as TType and its size is a multiple of TType size or lhs is exhausted.
+        template <typename TType>
+        ByteSpan AlignAs(const ByteSpan& lhs) noexcept;
+
+        /// \brief Consume lhs from both sides until lhs is aligned as TType and its size is a multiple of TType size or lhs is exhausted.
+        template <typename TType>
+        RWByteSpan AlignAs(const RWByteSpan& lhs) noexcept;
+
         /// \brief Obtain a span consisting of the first "size" bytes of lhs.
         /// \remarks Exceeding span boundaries results in undefined behavior.
         [[nodiscard]] constexpr ByteSpan Front(const ByteSpan& lhs, Bytes size) noexcept;
@@ -106,6 +114,26 @@ namespace Syntropy
         /// \brief Discard the last  "size" bytes in a span and return the resulting subspan.
         /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
         [[nodiscard]] RWByteSpan PopBack(const RWByteSpan& lhs, Bytes size) noexcept;
+
+        /// \brief Discard an amount of bytes equal to the memory requirement for TType from lhs front and return the resulting subspan.
+        /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+        template <typename TType>
+        [[nodiscard]] ByteSpan PopFront(const ByteSpan& lhs) noexcept;
+
+        /// \brief Discard an amount of bytes equal to the memory requirement for TType from lhs front and return the resulting subspan.
+        /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+        template <typename TType>
+        [[nodiscard]] RWByteSpan PopFront(const RWByteSpan& lhs) noexcept;
+
+        /// \brief Discard an amount of bytes equal to the memory requirement for TType from lhs back and return the resulting subspan.
+        /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+        template <typename TType>
+        [[nodiscard]] ByteSpan PopBack(const ByteSpan& lhs) noexcept;
+
+        /// \brief Discard an amount of bytes equal to the memory requirement for TType from lhs back and return the resulting subspan.
+        /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+        template <typename TType>
+        [[nodiscard]] RWByteSpan PopBack(const RWByteSpan& lhs) noexcept;
 
         /// \brief Slice lhs returning a span to the first "size" bytes and a span to the remaining elements of lhs.
         /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
@@ -215,6 +243,18 @@ namespace Syntropy
         return ReadWrite(Align(ReadOnly(lhs), size, alignment));
     }
 
+    template <typename TType>
+    inline ByteSpan Memory::AlignAs(const ByteSpan& lhs) noexcept
+    {
+        return Align(lhs, Memory::SizeOf<TType>(), Memory::AlignmentOf<TType>());
+    }
+
+    template <typename TType>
+    inline RWByteSpan Memory::AlignAs(const RWByteSpan& lhs) noexcept
+    {
+        return ReadWrite(AlignAs<TType>(ReadOnly(lhs)));
+    }
+
     inline constexpr ByteSpan Memory::Select(const ByteSpan& span, Bytes offset, Bytes count) noexcept
     {
         return Select(span, ToInt(offset), ToInt(count));
@@ -263,6 +303,30 @@ namespace Syntropy
     inline RWByteSpan Memory::PopBack(const RWByteSpan& lhs, Bytes size) noexcept
     {
         return PopBack(lhs, ToInt(size));
+    }
+
+    template <typename TType>
+    inline ByteSpan Memory::PopFront(const ByteSpan& lhs) noexcept
+    {
+        return PopFront(lhs, SizeOf(lhs));
+    }
+
+    template <typename TType>
+    inline RWByteSpan Memory::PopFront(const RWByteSpan& lhs) noexcept
+    {
+        return PopFront(lhs, SizeOf(lhs));
+    }
+
+    template <typename TType>
+    inline ByteSpan Memory::PopBack(const ByteSpan& lhs) noexcept
+    {
+        return PopBack(lhs, SizeOf(lhs));
+    }
+
+    template <typename TType>
+    inline RWByteSpan Memory::PopBack(const RWByteSpan& lhs) noexcept
+    {
+        return PopBack(lhs, SizeOf(lhs));
     }
 
     inline constexpr Tuple<ByteSpan, ByteSpan> Memory::SliceFront(const ByteSpan& lhs, Bytes size) noexcept
