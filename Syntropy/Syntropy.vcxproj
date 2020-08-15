@@ -81,6 +81,7 @@
     <ClInclude Include="include\syntropy\math\combinatorics.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
     <ClInclude Include="include\syntropy\math\codes.h" />
+    <ClInclude Include="include\syntropy\memory\address.h" />
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
     <ClInclude Include="include\syntropy\memory\new.h" />
     <ClInclude Include="include\syntropy\random\pcg_random_engine.h" />
