@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <limits>
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/diagnostics/severity.h"
 
 namespace Syntropy

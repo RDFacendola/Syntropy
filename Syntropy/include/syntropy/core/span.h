@@ -8,7 +8,7 @@
 
 #include "syntropy/language/type_traits.h"
 #include "syntropy/language/tuple.h"
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/math/math.h"
 
 namespace Syntropy
@@ -57,12 +57,12 @@ namespace Syntropy
         constexpr Int GetCount() const noexcept;
 
         /// \brief Access the underlying memory.
-        constexpr Pointer<TElement> GetData() const noexcept;
+        constexpr PointerT<TElement> GetData() const noexcept;
 
     private:
 
         /// \brief Pointer to the first element in the range.
-        Pointer<TElement> data_{ nullptr };
+        PointerT<TElement> data_{ nullptr };
 
         /// \brief Number of elements in the span.
         Int count_{ 0 };
@@ -93,19 +93,19 @@ namespace Syntropy
 
     /// \brief Get an iterator to the first element in a span.
     template <typename TElement>
-    constexpr  Pointer<TElement> begin(const SpanT<TElement>& span) noexcept;
+    constexpr  PointerT<TElement> begin(const SpanT<TElement>& span) noexcept;
 
     /// \brief Get an iterator past the last element in a span.
     template <typename TElement>
-    constexpr  Pointer<TElement> end(const SpanT<TElement>& span) noexcept;
+    constexpr  PointerT<TElement> end(const SpanT<TElement>& span) noexcept;
 
     /// \brief Get an iterator to the first element in a span.
     template <typename TElement>
-    constexpr Pointer<TElement> Begin(const SpanT<TElement>& span) noexcept;
+    constexpr PointerT<TElement> Begin(const SpanT<TElement>& span) noexcept;
 
     /// \brief Get an iterator past the last element in a span.
     template <typename TElement>
-    constexpr Pointer<TElement> End(const SpanT<TElement>& span) noexcept;
+    constexpr PointerT<TElement> End(const SpanT<TElement>& span) noexcept;
 
     // Observers.
 
@@ -219,7 +219,7 @@ namespace Syntropy
     constexpr Bool StartsWith(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
     /// \brief Check whether lhs ends with lhs.
-    /// \remarks If lhs endswith rhs, return true, otherwise return false.
+    /// \remarks If lhs ends with rhs, return true, otherwise return false.
     template <typename TElement, typename UElement>
     constexpr Bool EndsWith(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
@@ -238,11 +238,11 @@ namespace Syntropy
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TBegin>
-    constexpr SpanT<TBegin> MakeSpan(Pointer<TBegin> begin, Int count) noexcept;
+    constexpr SpanT<TBegin> MakeSpan(PointerT<TBegin> begin, Int count) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TBegin, typename TEnd>
-    constexpr auto MakeSpan(Pointer<TBegin> begin, Pointer<TEnd> end) noexcept;
+    constexpr auto MakeSpan(PointerT<TBegin> begin, PointerT<TEnd> end) noexcept;
 
     /// \brief Convert a span to its read-only equivalent.
     template <typename TElement>
@@ -327,7 +327,7 @@ namespace Syntropy
     }
 
     template <typename TElement>
-    constexpr Pointer<TElement> SpanT<TElement>::GetData() const noexcept
+    constexpr PointerT<TElement> SpanT<TElement>::GetData() const noexcept
     {
         return data_;
     }
@@ -338,25 +338,25 @@ namespace Syntropy
     // Iterators.
 
     template <typename TElement>
-    constexpr Pointer<TElement> begin(const SpanT<TElement>& span) noexcept
+    constexpr PointerT<TElement> begin(const SpanT<TElement>& span) noexcept
     {
         return Begin(span);
     }
 
     template <typename TElement>
-    constexpr Pointer<TElement> end(const SpanT<TElement>& span) noexcept
+    constexpr PointerT<TElement> end(const SpanT<TElement>& span) noexcept
     {
         return End(span);
     }
 
     template <typename TElement>
-    constexpr Pointer<TElement> Begin(const SpanT<TElement>& span) noexcept
+    constexpr PointerT<TElement> Begin(const SpanT<TElement>& span) noexcept
     {
         return span.GetData();
     }
 
     template <typename TElement>
-    constexpr Pointer<TElement> End(const SpanT<TElement>& span) noexcept
+    constexpr PointerT<TElement> End(const SpanT<TElement>& span) noexcept
     {
         return Begin(span) + Count(span);
     }
@@ -600,13 +600,13 @@ namespace Syntropy
     // Utilities.
 
     template <typename TBegin>
-    constexpr SpanT<TBegin> MakeSpan(Pointer<TBegin> begin, Int count) noexcept
+    constexpr SpanT<TBegin> MakeSpan(PointerT<TBegin> begin, Int count) noexcept
     {
         return { begin, count };
     }
 
     template <typename TBegin, typename TEnd>
-    constexpr SpanT<TBegin> MakeSpan(Pointer<TBegin> begin, Pointer<TEnd> end) noexcept
+    constexpr SpanT<TBegin> MakeSpan(PointerT<TBegin> begin, Pointer<TEnd> end) noexcept
     {
         using TSpan = CommonTypeT<TBegin, TEnd>;
 
@@ -622,7 +622,7 @@ namespace Syntropy
     template <typename TElement>
     constexpr RWSpan<RemoveConstT<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept
     {
-        using TPointer = Pointer<RemoveConstT<TElement>>;
+        using TPointer = PointerT<RemoveConstT<TElement>>;
 
         auto begin = const_cast<TPointer>(Begin(rhs));
         auto end = const_cast<TPointer>(End(rhs));

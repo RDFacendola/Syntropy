@@ -9,7 +9,7 @@
 #include "syntropy/language/type_traits.h"
 #include "syntropy/language/utility.h"
 #include "syntropy/diagnostics/assert.h"
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"

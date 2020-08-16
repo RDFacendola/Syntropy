@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/language/type_traits.h"
 
 namespace Syntropy
@@ -111,24 +111,6 @@ namespace Syntropy
     template<class TType>
     typename AddRValueReferenceT<TType> Declval() noexcept;
 
-    /// \brief Convert an lvalue reference to a reference to a read-only value.
-    template <typename TType>
-    [[nodiscard]] constexpr AddConstT<TType>& ReadOnly(TType& rhs) noexcept;
-
-    /// \brief Convert an lvalue reference to a reference to a read-write value.
-    /// If rhs doesn't refer to a read-write value, the behavior of this method is undefined.
-    template <typename TType>
-    [[nodiscard]] constexpr TType& ReadWrite(const TType& rhs) noexcept;
-
-    /// \brief Convert a pointer to memory location to a pointer to a read-only memory location.
-    template <typename TType>
-    [[nodiscard]] constexpr Pointer<const TType> ReadOnly(Pointer<TType> rhs) noexcept;
-
-    /// \brief Convert a pointer to memory location to a pointer to a read-write memory location.
-        /// If rhs doesn't refer to a read-write value, the behavior of this method is undefined.
-    template <typename TType>
-    [[nodiscard]] constexpr Pointer<TType> ReadWrite(Pointer<const TType> rhs) noexcept;
-
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -155,30 +137,6 @@ namespace Syntropy
     typename AddRValueReferenceT<TType> Declval() noexcept
     {
         return std::declval<TType>();
-    }
-
-    template <typename TType>
-    constexpr AddConstT<TType>& ReadOnly(TType& rhs) noexcept
-    {
-        return rhs;
-    }
-
-    template <typename TType>
-    constexpr TType& ReadWrite(const TType& rhs) noexcept
-    {
-        return const_cast<TType&>(rhs);
-    }
-
-    template <typename TType>
-    constexpr Pointer<const TType> ReadOnly(Pointer<TType> rhs) noexcept
-    {
-        return rhs;
-    }
-
-    template <typename TType>
-    constexpr Pointer<TType> ReadWrite(Pointer<const TType> rhs) noexcept
-    {
-        return &(const_cast<TType&>(*rhs));
     }
 
 }

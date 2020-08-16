@@ -8,7 +8,7 @@
 
 #include "syntropy/language/type_traits.h"
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -45,11 +45,11 @@ namespace Syntropy
 
         /// \brief Create a new object of type TObject.
         template <typename TObject, typename... TArguments>
-        Pointer<TObject> New(TArguments&&... arguments) noexcept;
+        RWPointer<TObject> New(TArguments&&... arguments) noexcept;
 
         /// \brief Create a new aligned object of type TObject.
         template <typename TObject, typename... TArguments>
-        Pointer<TObject> AlignedNew(Alignment alignment, TArguments&&... arguments) noexcept;
+        RWPointer<TObject> AlignedNew(Alignment alignment, TArguments&&... arguments) noexcept;
 
     private:
 
@@ -75,7 +75,7 @@ namespace Syntropy
         TAllocator& allocator_;
 
         /// \brief First finalizer.
-        Pointer<Finalizer> finalizers_{ nullptr };
+        RWPointer<Finalizer> finalizers_{ nullptr };
 
         /// \brief Allocator checkpoint prior to scope allocator ctor.
         TCheckpoint checkpoint_;
@@ -102,7 +102,7 @@ namespace Syntropy
         TFinalizer destructor_;
 
         /// \brief Next finalizer.
-        Pointer<Finalizer> next_{ nullptr };
+        RWPointer<Finalizer> next_{ nullptr };
     };
 
     /************************************************************************/

@@ -27,10 +27,10 @@ namespace Syntropy
         /// If more than one section matches the provided type, which returned element among those is unspecified.
         /// If no section matches the provided type, returns a fallback output section.
         /// \see GetFallbackSection().
-        static Pointer<const ConsoleOutputSection<TStyle>> FindSection(const std::type_info& section_type);
+        static Pointer<ConsoleOutputSection<TStyle>> FindSection(const std::type_info& section_type);
 
         /// \brief Get a generic, fallback, output section.
-        static Pointer<const ConsoleOutputSection<TStyle>> GetFallbackSection();
+        static Pointer<ConsoleOutputSection<TStyle>> GetFallbackSection();
 
         /// \brief Create a new self-registering console output.
         AutoConsoleOutputSection();
@@ -56,13 +56,13 @@ namespace Syntropy
         virtual const ConsoleOutputSection<TStyle>& GetConsoleOutputSection() const = 0;
 
         /// \brief Get the first element in a linked list to which every other self-registering console output section is linked to.
-        static Pointer<const AutoConsoleOutputSection>& GetLinkedList();
+        static Pointer<AutoConsoleOutputSection>& GetLinkedList();
 
         /// \brief Link this console output section to the others and return the next after this one.
-        Pointer<const AutoConsoleOutputSection> LinkBefore();
+        Pointer<AutoConsoleOutputSection> LinkBefore();
 
         /// \brief Next auto console output section relative to the style.
-        Pointer<const AutoConsoleOutputSection> next_console_output_section_{ nullptr };
+        Pointer<AutoConsoleOutputSection> next_console_output_section_{ nullptr };
 
     };
 
@@ -119,7 +119,7 @@ namespace Syntropy
     // AutoConsoleOutputSection<TStyle>.
 
     template <typename TStyle>
-    inline Pointer<const ConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::FindSection(const std::type_info& section_type)
+    inline Pointer<ConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::FindSection(const std::type_info& section_type)
     {
         for (auto auto_console_output_section = GetLinkedList(); auto_console_output_section; auto_console_output_section = auto_console_output_section->next_console_output_section_)
         {
@@ -135,7 +135,7 @@ namespace Syntropy
     }
 
     template <typename TStyle>
-    inline Pointer<const ConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::GetFallbackSection()
+    inline Pointer<ConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::GetFallbackSection()
     {
         static auto fallback_output_section = ConsoleOutputSectionT<TStyle, void>{};
 
@@ -150,15 +150,15 @@ namespace Syntropy
     }
 
     template <typename TStyle>
-    inline Pointer<const AutoConsoleOutputSection<TStyle>>& AutoConsoleOutputSection<TStyle>::GetLinkedList()
+    inline Pointer<AutoConsoleOutputSection<TStyle>>& AutoConsoleOutputSection<TStyle>::GetLinkedList()
     {
-        static auto linked_list = Pointer<const AutoConsoleOutputSection<TStyle>>{ nullptr };
+        static auto linked_list = Pointer<AutoConsoleOutputSection<TStyle>>{ nullptr };
 
         return linked_list;
     }
 
     template <typename TStyle>
-    inline Pointer<const AutoConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::LinkBefore()
+    inline Pointer<AutoConsoleOutputSection<TStyle>> AutoConsoleOutputSection<TStyle>::LinkBefore()
     {
         auto& linked_list = GetLinkedList();
 

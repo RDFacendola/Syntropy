@@ -10,7 +10,7 @@
 
 #include "syntropy/diagnostics/assert.h"
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/core/span.h"
 
 #include "syntropy/memory/bytes.h"
@@ -355,7 +355,7 @@ namespace Syntropy
     template <typename TElement>
     inline Span<TElement> ToSpan(const ByteSpan& rhs) noexcept
     {
-        using TPointer = Pointer<AddConstT<TElement>>;
+        using TPointer = PointerT<AddConstT<TElement>>;
 
         auto begin = reinterpret_cast<TPointer>(Begin(rhs));
         auto end = reinterpret_cast<TPointer>(End(rhs));
@@ -366,7 +366,7 @@ namespace Syntropy
     template <typename TElement>
     inline RWSpan<TElement> ToRWSpan(const RWByteSpan& rhs) noexcept
     {
-        using TRWPointer = Pointer<RemoveConstT<TElement>>;
+        using TRWPointer = PointerT<RemoveConstT<TElement>>;
 
         auto begin = reinterpret_cast<TRWPointer>(Begin(rhs));
         auto end = reinterpret_cast<TRWPointer>(End(rhs));

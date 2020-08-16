@@ -9,7 +9,7 @@
 #include "syntropy/syntropy.h"
 #include "syntropy/language/type_traits.h"
 #include "syntropy/language/utility.h"
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
@@ -91,7 +91,7 @@ namespace Syntropy
     private:
 
         /// \brief Get the active allocator in the current scope.
-        static Pointer<Allocator>& GetScopeAllocator() noexcept;
+        static RWPointer<Allocator>& GetScopeAllocator() noexcept;
 
     };
 
@@ -148,9 +148,9 @@ namespace Syntropy
     // Allocator.
     // ==========
 
-    inline Pointer<Allocator>& Allocator::GetScopeAllocator() noexcept
+    inline RWPointer<Allocator>& Allocator::GetScopeAllocator() noexcept
     {
-        static thread_local Pointer<Allocator> default_allocator_ = &Memory::GetSystemAllocator();
+        static thread_local RWPointer<Allocator> default_allocator_ = &Memory::GetSystemAllocator();
 
         return default_allocator_;
     }

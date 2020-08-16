@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/language/type_traits.h"
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/bytes.h"
@@ -78,7 +78,7 @@ namespace Syntropy
         using IsGrowSupported = decltype(std::declval<UStreamBuffer>().Grow(Bytes{}));
 
         /// \brief Underlying stream buffer.
-        Pointer<TStreamBuffer> stream_buffer_{ nullptr };
+        RWPointer<TStreamBuffer> stream_buffer_{ nullptr };
 
     };
 

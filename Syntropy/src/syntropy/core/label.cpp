@@ -106,7 +106,7 @@ namespace Syntropy
 
         auto label_storage = memory_resource_.Allocate(Memory::Size(string_range) + 1_Bytes, Memory::AlignmentOf<Label::TChar*>());
 
-        auto label = reinterpret_cast<Pointer<const TChar>>(label_storage.GetData());
+        auto label = reinterpret_cast<Pointer<TChar>>(label_storage.GetData());
 
         Memory::Zero(label_storage);
 

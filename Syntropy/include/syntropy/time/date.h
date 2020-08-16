@@ -9,7 +9,8 @@
 #include <chrono>
 #include <ostream>
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
+#include "syntropy/serialization/serialization_types.h"
 
 namespace Syntropy
 {

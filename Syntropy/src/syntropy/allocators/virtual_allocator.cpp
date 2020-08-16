@@ -14,7 +14,7 @@ namespace Syntropy
     struct VirtualAllocator::FreePageIndex
     {
         /// \brief Next index.
-        Pointer<FreePageIndex> next_{ nullptr };
+        RWPointer<FreePageIndex> next_{ nullptr };
 
         /// \brief Memory span covering the free page index chunk.
         RWByteSpan self_;

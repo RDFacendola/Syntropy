@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/allocators/allocator.h"
 
 namespace Syntropy
@@ -37,7 +37,7 @@ namespace Syntropy
     public:
 
         /// \brief Previous allocator.
-        Pointer<Allocator> previous_allocator_{ nullptr };
+        RWPointer<Allocator> previous_allocator_{ nullptr };
 
     };
 

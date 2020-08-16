@@ -81,7 +81,6 @@
     <ClInclude Include="include\syntropy\core\stream_vector.h" />
     <ClInclude Include="include\syntropy\core\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\core\vector.h" />
-    <ClInclude Include="include\syntropy\core\types.h" />
     <ClInclude Include="include\syntropy\unit_test\test_context.h" />
     <ClInclude Include="include\syntropy\unit_test\auto_unit_test.h" />
     <ClInclude Include="include\syntropy\core\span.h" />
@@ -118,6 +117,9 @@
     <ClInclude Include="include\syntropy\virtual_memory\virtual_buffer.h" />
     <ClInclude Include="include\syntropy\memory\new.h" />
     <ClInclude Include="include\syntropy\memory\address.h" />
+    <ClInclude Include="include\syntropy\memory\memory_types.h" />
+    <ClInclude Include="include\syntropy\language\language_types.h" />
+    <ClInclude Include="include\syntropy\serialization\serialization_types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -148,5 +150,8 @@
     <ClCompile Include="src\syntropy\allocators\virtual_stack_allocator.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_allocator.cpp" />
     <ClCompile Include="src\syntropy\virtual_memory\virtual_memory.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="include\syntropy\language\language.md" />
   </ItemGroup>
 </Project>

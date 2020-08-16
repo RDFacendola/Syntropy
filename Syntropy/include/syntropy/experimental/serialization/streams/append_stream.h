@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/experimental/serialization/append_stream_buffer.h"
@@ -50,7 +50,7 @@ namespace Syntropy
     private:
 
         /// \brief Underlying stream buffer.
-        Pointer<TStreamBuffer> stream_buffer_{ nullptr };
+        RWPointer<TStreamBuffer> stream_buffer_{ nullptr };
 
     };
 

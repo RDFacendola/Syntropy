@@ -11,7 +11,7 @@
 #include <string_view>
 #include <iterator>
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/experimental/core/polymorphic_allocator.h"
 
 #include "syntropy/core/string_stream.h"

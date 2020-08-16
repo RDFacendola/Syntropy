@@ -10,7 +10,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/allocators/allocator.h"
 #include "syntropy/allocators/null_allocator.h"
 
@@ -62,7 +62,7 @@ namespace Syntropy
     private:
 
         ///< \brief Underlying allocator.
-        Pointer<TAllocator> allocator_{ nullptr };
+        RWPointer<TAllocator> allocator_{ nullptr };
 
     };
 

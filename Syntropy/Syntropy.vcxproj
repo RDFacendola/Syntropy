@@ -55,7 +55,6 @@
     <ClInclude Include="include\syntropy\core\label.h" />
     <ClInclude Include="include\syntropy\core\smart_pointers.h" />
     <ClInclude Include="include\syntropy\core\string.h" />
-    <ClInclude Include="include\syntropy\core\types.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
     <ClInclude Include="include\syntropy\diagnostics\file_log_channel.h" />
@@ -76,6 +75,7 @@
     <ClInclude Include="include\syntropy\core\string_stream.h" />
     <ClInclude Include="include\syntropy\language\memory.h" />
     <ClInclude Include="include\syntropy\language\tuple.h" />
+    <ClInclude Include="include\syntropy\language\language_types.h" />
     <ClInclude Include="include\syntropy\language\visitor.h" />
     <ClInclude Include="include\syntropy\math\bits.h" />
     <ClInclude Include="include\syntropy\math\combinatorics.h" />
@@ -84,6 +84,7 @@
     <ClInclude Include="include\syntropy\memory\address.h" />
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
     <ClInclude Include="include\syntropy\memory\new.h" />
+    <ClInclude Include="include\syntropy\memory\memory_types.h" />
     <ClInclude Include="include\syntropy\random\pcg_random_engine.h" />
     <ClInclude Include="include\syntropy\random\random_context.h" />
     <ClInclude Include="include\syntropy\random\random.h" />
@@ -102,6 +103,7 @@
     <ClInclude Include="include\syntropy\memory\alignment.h" />
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\memory\buffer.h" />
+    <ClInclude Include="include\syntropy\serialization\serialization_types.h" />
     <ClInclude Include="include\syntropy\virtual_memory\virtual_memory.h" />
     <ClInclude Include="include\syntropy\virtual_memory\virtual_buffer.h" />
     <ClInclude Include="include\syntropy\platform\endianness.h" />
@@ -161,6 +163,9 @@
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\time\date.cpp" />
     <ClCompile Include="src\syntropy\time\time_of_day.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="include\syntropy\language\language.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

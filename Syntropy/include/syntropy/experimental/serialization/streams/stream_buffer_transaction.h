@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 
 #include "syntropy/experimental/serialization/streams/stream_buffer.h"
 
@@ -48,10 +48,10 @@ namespace Syntropy
     private:
 
         /// \brief Stream buffer. This variable is nullptr if the transaction is invalidated.
-        Pointer<StreamBuffer> stream_buffer_{ nullptr };
+        RWPointer<StreamBuffer> stream_buffer_{ nullptr };
 
         /// \brief Parent transaction.
-        Pointer<StreamBufferTransaction> parent_{ nullptr };
+        RWPointer<StreamBufferTransaction> parent_{ nullptr };
 
         /// \brief Whether the transaction was rollback'd.
         Bool rollback_{ false };

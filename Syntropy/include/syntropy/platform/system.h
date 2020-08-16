@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/core/string.h"
 #include "syntropy/core/vector.h"
 #include "syntropy/memory/bytes.h"

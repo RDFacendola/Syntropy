@@ -10,7 +10,7 @@
 #include <tuple>
 #include <algorithm>
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/core/vector.h"
 #include "syntropy/core/stream_vector.h"
 #include "syntropy/core/vector_view.h"

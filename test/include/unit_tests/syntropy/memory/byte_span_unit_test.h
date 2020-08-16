@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/core/array.h"
 #include "syntropy/memory/byte_span.h"
 

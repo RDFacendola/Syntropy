@@ -10,7 +10,8 @@
 #include <type_traits>
 #include <tuple>
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
+#include "syntropy/serialization/serialization_types.h"
 
 namespace Syntropy
 {

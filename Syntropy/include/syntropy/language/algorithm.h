@@ -21,7 +21,7 @@ namespace Syntropy
     /// \brief Rotate the order of the element in a range, in such a way that the element pointed by middle becomes the new first element.
     /// If middle doesn't belong to range, the result of this method is undefined.
     template <typename TElement>
-    void Rotate(const RWSpan<TElement>& span, Pointer<TElement> middle) noexcept;
+    void Rotate(const RWSpan<TElement>& span, RWPointer<TElement> middle) noexcept;
 
     /// \brief Check whether a predicate holds true for at least one element in a collection.
     template <typename TIterable, typename TPredicate>
@@ -43,7 +43,7 @@ namespace Syntropy
     // =====================
 
     template <typename TElement>
-    inline void Rotate(const RWSpan<TElement>& span, Pointer<TElement> middle) noexcept
+    inline void Rotate(const RWSpan<TElement>& span, RWPointer<TElement> middle) noexcept
     {
         std::rotate(Begin(span), middle, End(span));
     }

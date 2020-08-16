@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/memory/alignment.h"
 
 #include "syntropy/unit_test/unit_test.h"

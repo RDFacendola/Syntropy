@@ -44,10 +44,10 @@ namespace Syntropy
 
         /// \brief Unlink from other listeners.
         /// \brief Returns a pointer to this.
-        Pointer<ListenerHandler> UnlinkFromListeners();
+        RWPointer<ListenerHandler> UnlinkFromListeners();
 
         /// \brief Release the next listener along with every other listener that is reachable from this.
-        Pointer<ListenerHandler> ReleaseNextListeners();
+        RWPointer<ListenerHandler> ReleaseNextListeners();
 
     private:
 
@@ -55,10 +55,10 @@ namespace Syntropy
         virtual void NotifyHandler(const TArguments&... arguments) const;
 
         /// \brief Pointer to the next listener.
-        Pointer<ListenerHandler> next_listener_{ nullptr };
+        RWPointer<ListenerHandler> next_listener_{ nullptr };
 
         /// \brief Pointer to the previous listener.
-        Pointer<ListenerHandler> previous_listener_{ nullptr };
+        RWPointer<ListenerHandler> previous_listener_{ nullptr };
 
     };
 
@@ -173,7 +173,7 @@ namespace Syntropy
     }
 
     template <typename... TArguments>
-    inline Pointer<ListenerHandler<TArguments...>> ListenerHandler<TArguments...>::UnlinkFromListeners()
+    inline RWPointer<ListenerHandler<TArguments...>> ListenerHandler<TArguments...>::UnlinkFromListeners()
     {
         if (next_listener_)
         {
@@ -189,7 +189,7 @@ namespace Syntropy
     }
 
     template <typename... TArguments>
-    inline Pointer<ListenerHandler<TArguments...>> ListenerHandler<TArguments...>::ReleaseNextListeners()
+    inline RWPointer<ListenerHandler<TArguments...>> ListenerHandler<TArguments...>::ReleaseNextListeners()
     {
         if (auto next_listener = next_listener_)
         {

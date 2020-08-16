@@ -32,7 +32,7 @@ namespace Syntropy
     private:
 
         /// \brief Allocate a new entry.
-        Pointer<const Context> Allocate(const Context::TStringView& context_name);
+        Pointer<Context> Allocate(const Context::TStringView& context_name);
 
         /// \brief Type of the memory resource used to store context. Contexts are never deallocated.
         /// In the unlikely event the virtual memory range is exhausted, the system memory resource is used as a last resort.
@@ -105,9 +105,9 @@ namespace Syntropy
         return &root_context_;
     }
 
-    Pointer<const Context> Context::Registry::Allocate(const Context::TStringView& context_name)
+    Pointer<Context> Context::Registry::Allocate(const Context::TStringView& context_name)
     {
-        auto storage = reinterpret_cast<Pointer<Context>>(memory_resource_.Allocate(Memory::SizeOf<Context>(), Memory::AlignmentOf<Context>()).GetData());
+        auto storage = reinterpret_cast<RWPointer<Context>>(memory_resource_.Allocate(Memory::SizeOf<Context>(), Memory::AlignmentOf<Context>()).GetData());
 
         new (storage) Context(context_name);
 

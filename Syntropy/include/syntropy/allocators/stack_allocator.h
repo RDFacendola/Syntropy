@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/math/math.h"
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
@@ -84,12 +84,12 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block on the provided chunk.
         /// If the block could not be allocated, returns an empty block.
-        RWByteSpan Allocate(Pointer<Chunk> chunk, Bytes size, Alignment alignment) const noexcept;
+        RWByteSpan Allocate(RWPointer<Chunk> chunk, Bytes size, Alignment alignment) const noexcept;
 
         /// \brief Allocate a new chunk.
         /// \param size Minimum size for the payload.
         /// \param alignment Alignment requirement for the payload.
-        Pointer<Chunk> AllocateChunk(Bytes size, Alignment alignment) const noexcept;
+        RWPointer<Chunk> AllocateChunk(Bytes size, Alignment alignment) const noexcept;
 
         /// \brief Underlying allocator.
         TAllocator allocator_;
@@ -98,7 +98,7 @@ namespace Syntropy
         Bytes granularity_;
 
         /// \brief Current active chunk.
-        Pointer<Chunk> chunk_{ nullptr };
+        RWPointer<Chunk> chunk_{ nullptr };
 
     };
 
@@ -113,7 +113,7 @@ namespace Syntropy
         friend class StackAllocator<TAllocator>;
 
         /// \brief Chunk when the checkpoint was initially created.
-        Pointer<Chunk> chunk_{ nullptr };
+        RWPointer<Chunk> chunk_{ nullptr };
 
         /// \brief Free memory range when the checkpoint was initially created.
         RWByteSpan free_span_;
@@ -129,7 +129,7 @@ namespace Syntropy
     struct StackAllocator<TAllocator>::Chunk
     {
         /// \brief Pointer to the previous chunk.
-        Pointer<Chunk> previous_{ nullptr };
+        RWPointer<Chunk> previous_{ nullptr };
 
         /// \brief Memory span enclosing this chunk.
         RWByteSpan self_;
@@ -283,7 +283,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    RWByteSpan StackAllocator<TAllocator>::Allocate(Pointer<Chunk> chunk, Bytes size, Alignment alignment) const noexcept
+    RWByteSpan StackAllocator<TAllocator>::Allocate(RWPointer<Chunk> chunk, Bytes size, Alignment alignment) const noexcept
     {
         if (chunk)
         {
@@ -301,7 +301,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    Pointer<typename StackAllocator<TAllocator>::Chunk> StackAllocator<TAllocator>::AllocateChunk(Bytes size, Alignment alignment) const noexcept
+    RWPointer<typename StackAllocator<TAllocator>::Chunk> StackAllocator<TAllocator>::AllocateChunk(Bytes size, Alignment alignment) const noexcept
     {
         auto payload_size = size + ToBytes(alignment) - ToBytes(1);
         auto header_size = Memory::SizeOf<Chunk>();

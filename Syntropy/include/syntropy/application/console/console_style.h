@@ -8,7 +8,7 @@
 
 #include <typeinfo>
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/core/string.h"
 
 #include "syntropy/application/console/console_output_section.h"
@@ -121,7 +121,7 @@ namespace Syntropy
         UniquePtr<NestedSection> outer_section_;
 
         /// \brief Concrete section.
-        Pointer<const ConsoleOutputSection<TStyle>> section_;
+        Pointer<ConsoleOutputSection<TStyle>> section_;
     };
 
     /************************************************************************/

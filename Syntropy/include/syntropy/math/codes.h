@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/math/vector.h"
 
 namespace Syntropy

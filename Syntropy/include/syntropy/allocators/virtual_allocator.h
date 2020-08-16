@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/allocators/virtual_stack_allocator.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -80,7 +80,7 @@ namespace Syntropy
         Bytes page_size_;
 
         /// \brief Head of the free list.
-        Pointer<FreePageIndex> free_page_index_{ nullptr };
+        RWPointer<FreePageIndex> free_page_index_{ nullptr };
 
         /// \brief Underlying virtual allocator.
         VirtualStackAllocator allocator_;

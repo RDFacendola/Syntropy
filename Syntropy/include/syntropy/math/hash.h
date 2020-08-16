@@ -8,7 +8,7 @@
 
 #include <numeric>
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/memory/byte_span.h"
 
 namespace Syntropy

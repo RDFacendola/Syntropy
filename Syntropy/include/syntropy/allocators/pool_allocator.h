@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -73,7 +73,7 @@ namespace Syntropy
         struct FreeBlock;
 
         /// \brief Allocate a new chunk and replace the active one.
-        Pointer<Chunk> AllocateChunk() noexcept;
+        RWPointer<Chunk> AllocateChunk() noexcept;
 
         /// \brief Allocate a new block in a chunk.
         RWByteSpan AllocateBlock(Chunk& chunk) noexcept;
@@ -82,7 +82,7 @@ namespace Syntropy
         RWByteSpan AllocateBlock() noexcept;
 
         /// \brief Link a chunk to another chunk.
-        void Link(Chunk& chunk, Pointer<Chunk> next) noexcept;
+        void Link(Chunk& chunk, RWPointer<Chunk> next) noexcept;
 
         /// \brief Unlink a chunk.
         void Unlink(Chunk& chunk) noexcept;
@@ -97,10 +97,10 @@ namespace Syntropy
         Bytes block_size_;
 
         /// \brief List of chunks with at least one free block.
-        Pointer<Chunk> available_chunks_{ nullptr };
+        RWPointer<Chunk> available_chunks_{ nullptr };
 
         /// \brief List of chunks with no free block.
-        Pointer<Chunk> unavailable_chunks_{ nullptr };
+        RWPointer<Chunk> unavailable_chunks_{ nullptr };
 
     };
 
@@ -116,13 +116,13 @@ namespace Syntropy
         RWByteSpan self_;
 
         /// \brief Pointer to the previous chunk.
-        Pointer<Chunk> previous_{ nullptr };
+        RWPointer<Chunk> previous_{ nullptr };
 
         /// \brief Pointer to the next chunk.
-        Pointer<Chunk> next_{ nullptr };
+        RWPointer<Chunk> next_{ nullptr };
 
         /// \brief Pointer to the first free block in the chunk.
-        Pointer<FreeBlock> free_{ nullptr };
+        RWPointer<FreeBlock> free_{ nullptr };
 
         /// \brief Number of active allocations.
         Int allocation_count_{ 0 };
@@ -143,7 +143,7 @@ namespace Syntropy
     struct PoolAllocator<TAllocator>::FreeBlock
     {
         ///< \brief Next free block in the chunk.
-        Pointer<FreeBlock> next_{ nullptr };
+        RWPointer<FreeBlock> next_{ nullptr };
     };
 
     /************************************************************************/
@@ -292,7 +292,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline Pointer<typename PoolAllocator<TAllocator>::Chunk> PoolAllocator<TAllocator>::AllocateChunk() noexcept
+    inline RWPointer<typename PoolAllocator<TAllocator>::Chunk> PoolAllocator<TAllocator>::AllocateChunk() noexcept
     {
         if (auto chunk_storage = allocator_.Allocate(chunk_size_, ToAlignment(chunk_size_)))            // Chunks are aligned at their own size.
         {
@@ -355,7 +355,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline void PoolAllocator<TAllocator>::Link(Chunk& chunk, Pointer<Chunk> next) noexcept
+    inline void PoolAllocator<TAllocator>::Link(Chunk& chunk, RWPointer<Chunk> next) noexcept
     {
         if (&chunk != next)
         {

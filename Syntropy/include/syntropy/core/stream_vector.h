@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <tuple>
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/core/vector.h"
 #include "syntropy/core/vector_view.h"
 #include "syntropy/language/type_traits.h"

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/core/types.h"
+#include "syntropy/language/language_types.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/language/initializer_list.h"
 #include "syntropy/language/algorithm.h"
@@ -151,7 +151,7 @@ namespace Syntropy
         Bytes consume_size_;
 
         /// \brief Current active transaction.
-        Pointer<StreamBufferTransaction> transaction_{ nullptr };
+        RWPointer<StreamBufferTransaction> transaction_{ nullptr };
 
     };
 

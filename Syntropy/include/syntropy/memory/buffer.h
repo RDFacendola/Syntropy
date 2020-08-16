@@ -82,7 +82,7 @@ namespace Syntropy
         RWByteSpan buffer_;
 
         /// \brief Allocator the buffer was allocated on.
-        Pointer<Allocator> allocator_{ nullptr };
+        RWPointer<Allocator> allocator_{ nullptr };
 
         /// \brief Buffer alignment.
         Alignment alignment_;
