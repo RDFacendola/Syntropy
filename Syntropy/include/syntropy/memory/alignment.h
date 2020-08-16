@@ -9,12 +9,12 @@
 #include <ostream>
 
 #include "syntropy/language/language_types.h"
+#include "syntropy/language/utility.h"
 #include "syntropy/memory/memory_types.h"
-#include "syntropy/math/bits.h"
-#include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/address.h"
-#include "syntropy/language/utility.h"
+#include "syntropy/diagnostics/assert.h"
+#include "syntropy/math/bits.h"
 
 namespace Syntropy
 {

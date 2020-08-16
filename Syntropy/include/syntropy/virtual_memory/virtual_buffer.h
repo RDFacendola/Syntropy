@@ -17,7 +17,7 @@ namespace Syntropy
     /* VIRTUAL BUFFER                                                       */
     /************************************************************************/
 
-    /// \brief Represents a raw buffer mapped to a virtual memory which is reserved during construction and released upon destruction via RAII paradigm.
+    /// \brief Represents a raw buffer mapped to virtual memory which is reserved during construction and released upon destruction via RAII paradigm.
     /// Buffer ownership is exclusive and can only be moved to other virtual memory buffers.
     /// The buffer is aligned to system virtual memory-page boundary.
     /// \author Raffaele D. Facendola - August 2018

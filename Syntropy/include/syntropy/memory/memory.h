@@ -30,7 +30,6 @@ namespace Syntropy
     /// \brief Exposes methods used to manipulate memory.
     namespace Memory
     {
-
         /// \brief Reinterpret an object representation to another type.
         template <typename TTo, typename TFrom>
         TTo BitCast(const TFrom& rhs);
@@ -59,7 +58,6 @@ namespace Syntropy
         /// \brief Scatter a contiguous memory region to one or more memory regions sequentially. Neither span is exceeded during the process.
         /// \return Returns the bytes copied as a result of this call.
         Bytes Scatter(InitializerList<RWByteSpan> destinations, const ByteSpan& source);
-
     };
 
     /************************************************************************/
