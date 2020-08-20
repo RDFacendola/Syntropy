@@ -118,6 +118,7 @@ namespace Syntropy
     /************************************************************************/
 
     // ScopeAllocator<TAllocator>.
+    // ===========================
 
     template <typename TAllocator>
     inline ScopeAllocator<TAllocator>::ScopeAllocator(TAllocator& allocator) noexcept

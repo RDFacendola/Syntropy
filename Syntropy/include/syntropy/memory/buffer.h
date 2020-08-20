@@ -53,7 +53,7 @@ namespace Syntropy
         Buffer(Buffer&& other) noexcept;
 
         /// \brief Unified assignment operator.
-        /// This method propagates underlying memory resource as well.
+        /// This method propagates underlying allocator as well.
         Buffer& operator=(Buffer other) noexcept;
 
         /// \brief Destructor.
@@ -73,7 +73,7 @@ namespace Syntropy
         Allocator& GetAllocator() const noexcept;
 
         /// \brief Swap the content of this buffer with another one.
-        /// \remarks This method swaps underlying memory resources as well.
+        /// \remarks This method swaps underlying allocator as well.
         void Swap(Buffer& other) noexcept;
 
     private:
