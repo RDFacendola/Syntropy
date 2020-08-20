@@ -43,8 +43,28 @@ namespace Syntropy
 
     /// \brief Type alias for a non-owning pointer to a read-write pointee. This pointer doesn't participate to pointee life-time.
     /// This type can be used to initialize pointers as: auto p = Pointer<Foo>{ nullptr };
+    /// This type only binds to read-write objects.
     template <typename TType, typename = std::enable_if_t<!std::is_const_v<TType>>>
     using RWPointer = PointerT<TType>;
+
+    /************************************************************************/
+    /* REFERENCE TYPES                                                      */
+    /************************************************************************/
+
+    /// \brief Type alias for a l-value reference to an object.
+    /// The reference can either be read-only or read-write.
+    template <typename TType>
+    using ReferenceT = TType&;
+
+    /// \brief Type alias for a l-value reference to a read-only object.
+    /// This type binds also to RWReferences automatically.
+    template <typename TType>
+    using Reference = ReferenceT<const TType>;
+
+    /// \brief Type alias for a l-value reference to a read-write object.
+    /// This type only binds to read-write objects.
+    template <typename TType, typename = std::enable_if_t<!std::is_const_v<TType>>>
+    using RWReference = ReferenceT<TType>;
 
     /************************************************************************/
     /* SPECIAL TYPES                                                        */
@@ -54,8 +74,10 @@ namespace Syntropy
     using Null = std::nullptr_t;
 
     /************************************************************************/
-    /* TYPE CAST                                                            */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
+
+    // Type casts.
 
     /// \brief Convert rhs to a boolean.
     template <typename TType>
@@ -74,22 +96,7 @@ namespace Syntropy
     template <typename TType, typename UType>
     constexpr PointerT<TType> ToPointer(PointerT<UType> rhs) noexcept;
 
-    /************************************************************************/
-    /* READ ONLY \ READ WRITE                                               */
-    /************************************************************************/
-
-    /// \brief Convert rhs to a read-only value.
-    template <typename TType>
-    constexpr const TType& ReadOnly(const TType& rhs) noexcept;
-
-    /// \brief R-value references shall not be converted to read-only: they are being thrown away \ moved.
-    template <typename TType>
-    constexpr void ReadOnly(const TType&& rhs) noexcept = delete;
-
-    /// \brief Convert rhs to a read-write value.
-    /// \remarks If rhs doesn't refer to a read-write value, accessing the result of this method results in undefined behavior.
-    template <typename TType>
-    constexpr TType& ReadWrite(const TType& rhs) noexcept;
+    // Access modifiers.
 
     /// \brief Convert rhs to a pointer to a read-only value.
     template <typename TType>
@@ -100,12 +107,27 @@ namespace Syntropy
     template <typename TType>
     constexpr RWPointer<TType> ReadWrite(Pointer<TType> rhs) noexcept;
 
+    /// \brief Convert rhs to a read-only reference.
+    template <typename TType>
+    constexpr Reference<TType> ReadOnly(Reference<TType> rhs) noexcept;
+
+    /// \brief R-value references shall not be converted to read-only: they are being thrown away \ moved.
+    template <typename TType>
+    constexpr void ReadOnly(const TType&& rhs) noexcept = delete;
+
+    /// \brief Convert rhs to a read-write reference.
+    /// \remarks If rhs doesn't refer to a read-write reference, accessing the result of this method results in undefined behavior.
+    template <typename TType>
+    constexpr RWReference<TType> ReadWrite(Reference<TType> rhs) noexcept;
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Type cast.
-    // ==========
+    // Non-member functions.
+    // =====================
+
+    // Type casts.
 
     template <typename TType>
     constexpr Bool ToBool(TType rhs) noexcept
@@ -131,20 +153,7 @@ namespace Syntropy
         return static_cast<PointerT<TType>>(rhs);
     }
 
-    // Read-Only \ Read-Write.
-    // =======================
-
-    template <typename TType>
-    constexpr const TType& ReadOnly(const TType& rhs) noexcept
-    {
-        return rhs;
-    }
-
-    template <typename TType>
-    constexpr TType& ReadWrite(const TType& rhs) noexcept
-    {
-        return const_cast<TType&>(rhs);
-    }
+    // Access modifiers.
 
     template <typename TType>
     constexpr Pointer<TType> ReadOnly(Pointer<TType> rhs) noexcept
@@ -156,6 +165,18 @@ namespace Syntropy
     constexpr RWPointer<TType> ReadWrite(Pointer<TType> rhs) noexcept
     {
         return rhs ? ReadWrite(*rhs) : nullptr;
+    }
+
+    template <typename TType>
+    constexpr Reference<TType> ReadOnly(Reference<TType> rhs) noexcept
+    {
+        return rhs;
+    }
+
+    template <typename TType>
+    constexpr RWReference<TType> ReadWrite(Reference<TType> rhs) noexcept
+    {
+        return const_cast<RWReference<TType>>(rhs);
     }
 
 }
