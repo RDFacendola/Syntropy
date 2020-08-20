@@ -96,7 +96,6 @@
     <ClInclude Include="include\syntropy\application\console\plain_console_style.h" />
     <ClInclude Include="include\syntropy\unit_test\unit_test.h" />
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
-    <ClInclude Include="include\syntropy\core\array.h" />
     <ClInclude Include="include\syntropy\memory\buffer.h" />
     <ClInclude Include="include\syntropy\experimental\core\polymorphic_allocator.h" />
     <ClInclude Include="include\syntropy\experimental\core\polymorphic_deleter.h" />
@@ -120,6 +119,7 @@
     <ClInclude Include="include\syntropy\memory\memory_types.h" />
     <ClInclude Include="include\syntropy\language\language_types.h" />
     <ClInclude Include="include\syntropy\serialization\serialization_types.h" />
+    <ClInclude Include="include\syntropy\core\fix_array.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

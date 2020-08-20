@@ -5,7 +5,7 @@
 #pragma once
 
 #include "syntropy/language/language_types.h"
-#include "syntropy/core/array.h"
+#include "syntropy/core/fix_array.h"
 #include "syntropy/core/span.h"
 
 #include "syntropy/unit_test/unit_test.h"
@@ -20,16 +20,16 @@ namespace Syntropy::unit_test
     struct SpanTestFixture
     {
         /// \brief Integer sequence.
-        Array<Int, 10> ints_ = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        FixArray<Int, 10> ints_ = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
         /// \brief Integer sequence.
-        Array<Int, 10> ints_a_ = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        FixArray<Int, 10> ints_a_ = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
         /// \brief Float sequence.
-        Array<Float, 10> floats_ = { 0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f };
+        FixArray<Float, 10> floats_ = { 0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f };
 
         /// \brief Integer constant sequence.
-        Array<Int, 10> ones_ = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+        FixArray<Int, 10> ones_ = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
         /// \brief Executed before each test case.
         void Before();

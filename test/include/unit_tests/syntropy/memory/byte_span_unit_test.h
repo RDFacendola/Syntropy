@@ -5,7 +5,7 @@
 #pragma once
 
 #include "syntropy/language/language_types.h"
-#include "syntropy/core/array.h"
+#include "syntropy/core/fix_array.h"
 #include "syntropy/memory/byte_span.h"
 
 #include "syntropy/unit_test/unit_test.h"
@@ -23,10 +23,10 @@ namespace Syntropy::unit_test
         union
         {
             /// \brief Raw buffer.
-            Array<Byte, 32> raw_;
+            FixArray<Byte, 32> raw_;
 
             /// \brief Typed elements span.
-            Array<Fix64, 4> elements_;
+            FixArray<Fix64, 4> elements_;
 
         } union_;
 

@@ -148,7 +148,7 @@ namespace Syntropy
         String format_;
 
         /// \brief Token list.
-        Vector<Token> tokens_;
+        Array<Token> tokens_;
 
     };
 

@@ -79,7 +79,7 @@ namespace Syntropy
     struct StorageInfo
     {
         /// \brief List of available physical drives.
-        Vector<DriveInfo> drives_;
+        Array<DriveInfo> drives_;
     };
 
     /************************************************************************/
@@ -145,7 +145,7 @@ namespace Syntropy
     struct DisplayInfo
     {
         /// \brief Available monitors.
-        Vector<MonitorInfo> monitors_;
+        Array<MonitorInfo> monitors_;
     };
 
     /************************************************************************/

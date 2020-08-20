@@ -18,6 +18,6 @@ namespace Syntropy
 
     /// \brief Alias type for std::vector with polymorphic allocator type.
     template <typename TType>
-    using Vector = std::vector<TType, PolymorphicAllocator<TType>>;
+    using Array = std::vector<TType, PolymorphicAllocator<TType>>;
 
 }

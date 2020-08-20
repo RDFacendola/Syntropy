@@ -48,7 +48,7 @@ namespace Syntropy
 
     /// \brief Type used to specify an affinity mask for both threads and processes.
     /// Each element represents the affinity for a particular core.
-    using AffinityMask = Vector<Bool>;
+    using AffinityMask = Array<Bool>;
 
     /************************************************************************/
     /* THREADING                                                            */

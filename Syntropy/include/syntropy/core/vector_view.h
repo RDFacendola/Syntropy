@@ -36,7 +36,7 @@ namespace Syntropy
 
         /// \brief Type of the underlying vector.
         /// Const elements are not supported: propagate the constness outside the container.
-        using TVector = ConditionalT<IsConstV<TElement>, const Vector<RemoveConstT<TElement>>, Vector<TElement>>;
+        using TVector = ConditionalT<IsConstV<TElement>, const Array<RemoveConstT<TElement>>, Array<TElement>>;
 
         /// \brief Type of a range in the vector view.
         using TRange = decltype(MakeRange(std::declval<TVector&>()));
@@ -46,11 +46,11 @@ namespace Syntropy
 
         /// \brief Create a view into a non-const vector.
         template <typename UElement>
-        VectorView(Vector<UElement>& vector);
+        VectorView(Array<UElement>& vector);
 
         /// \brief Create a view into a const vector.
         template <typename UElement>
-        VectorView(const Vector<UElement>& vector);
+        VectorView(const Array<UElement>& vector);
 
         /// \brief Default copy constructor.
         template <typename UElement>
@@ -110,11 +110,11 @@ namespace Syntropy
 
     /// \brief Create a new vector view from a vector.
     template <typename TElement>
-    VectorView<TElement> MakeVectorView(Vector<TElement>& vector);
+    VectorView<TElement> MakeVectorView(Array<TElement>& vector);
 
     /// \brief Create a new const vector view from a const vector.
     template <typename TElement>
-    VectorView<const TElement> MakeVectorView(const Vector<TElement>& vector);
+    VectorView<const TElement> MakeVectorView(const Array<TElement>& vector);
 
     /// \brief Create a new vector view from a vector view.
     template <typename TElement>
@@ -122,7 +122,7 @@ namespace Syntropy
 
     /// \brief Create a new const vector view from a vector.
     template <typename TElement>
-    VectorView<const TElement> MakeConstVectorView(const Vector<TElement>& vector);
+    VectorView<const TElement> MakeConstVectorView(const Array<TElement>& vector);
 
     /// \brief Create a new const vector view from a vector view.
     template <typename TElement>
@@ -136,7 +136,7 @@ namespace Syntropy
 
     template <typename TElement>
     template <typename UElement>
-    inline VectorView<TElement>::VectorView(Vector<UElement>& vector)
+    inline VectorView<TElement>::VectorView(Array<UElement>& vector)
         : vector_(&vector)
     {
 
@@ -144,7 +144,7 @@ namespace Syntropy
 
     template <typename TElement>
     template <typename UElement>
-    inline VectorView<TElement>::VectorView(const Vector<UElement>& vector)
+    inline VectorView<TElement>::VectorView(const Array<UElement>& vector)
         : vector_(&vector)
     {
         static_assert(IsConstV<TElement>, "Conversion loses const qualifiers.");
@@ -227,13 +227,13 @@ namespace Syntropy
     // Non-member functions.
 
     template <typename TElement>
-    VectorView<TElement> MakeVectorView(Vector<TElement>& vector)
+    VectorView<TElement> MakeVectorView(Array<TElement>& vector)
     {
         return { vector };
     }
 
     template <typename TElement>
-    VectorView<const TElement> MakeVectorView(const Vector<TElement>& vector)
+    VectorView<const TElement> MakeVectorView(const Array<TElement>& vector)
     {
         return { vector };
     }
@@ -245,7 +245,7 @@ namespace Syntropy
     }
 
     template <typename TElement>
-    VectorView<const TElement> MakeConstVectorView(const Vector<TElement>& vector)
+    VectorView<const TElement> MakeConstVectorView(const Array<TElement>& vector)
     {
         return { vector };
     }

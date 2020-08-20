@@ -6,7 +6,7 @@ namespace Syntropy
     /* COMMAND LINE                                                         */
     /************************************************************************/
 
-    CommandLine::CommandLine(Vector<String> command_line)
+    CommandLine::CommandLine(Array<String> command_line)
     {
         arguments_.reserve(command_line.size());
 
@@ -39,7 +39,7 @@ namespace Syntropy
         {
             // The argument doesn't exist yet: add a new one.
 
-            arguments_.emplace_back(argument_name, Vector<String>{ std::make_move_iterator(begin_argument), std::make_move_iterator(next_argument) });
+            arguments_.emplace_back(argument_name, Array<String>{ std::make_move_iterator(begin_argument), std::make_move_iterator(next_argument) });
         }
 
         return next_argument;

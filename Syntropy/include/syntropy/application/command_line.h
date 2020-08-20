@@ -39,7 +39,7 @@ namespace Syntropy
 
         /// \brief Create a new command line.
         /// \param argument_list List of arguments passed to the command line.
-        CommandLine(Vector<String> command_line);
+        CommandLine(Array<String> command_line);
 
         /// \brief Get an argument by name.
         /// \param argument_name Name of the argument to get.
@@ -53,7 +53,7 @@ namespace Syntropy
 
         /// \brief Get the arguments in this command line.
         /// \return Returns the arguments in this command line, as key-value pairs.
-        const Vector<CommandLineArgument>& GetArguments() const;
+        const Array<CommandLineArgument>& GetArguments() const;
 
     private:
 
@@ -71,7 +71,7 @@ namespace Syntropy
         TIterator FindNextArgument(TIterator begin_argument, TIterator end_argument);
 
         /// \brief Arguments in the command line.
-        Vector<CommandLineArgument> arguments_;
+        Array<CommandLineArgument> arguments_;
 
     };
 
@@ -89,7 +89,7 @@ namespace Syntropy
     // CommandLine.
 
     inline CommandLine::CommandLine(int argc, char** argv)
-        : CommandLine(Vector<String>{ argv, argv + argc })
+        : CommandLine(Array<String>{ argv, argv + argc })
     {
 
     }
@@ -109,7 +109,7 @@ namespace Syntropy
         return GetArgument(argument_name) != nullptr;
     }
 
-    inline const Vector<CommandLineArgument>& CommandLine::GetArguments() const
+    inline const Array<CommandLineArgument>& CommandLine::GetArguments() const
     {
         return arguments_;
     }

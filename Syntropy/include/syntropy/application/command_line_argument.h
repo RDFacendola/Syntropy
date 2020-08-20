@@ -41,7 +41,7 @@ namespace Syntropy
         /// \brief Create a new command line argument from explicit name and values.
         /// \param name Name of the command line argument.
         /// \param values Argument values.
-        CommandLineArgument(const Label& name, Vector<String> values);
+        CommandLineArgument(const Label& name, Array<String> values);
 
         /// \brief Default assignment operator.
         CommandLineArgument& operator=(const CommandLineArgument&) = default;
@@ -57,7 +57,7 @@ namespace Syntropy
 
         /// \brief Get the argument values.
         /// \return Returns the argument values.
-        const Vector<String>& GetValues() const;
+        const Array<String>& GetValues() const;
 
         /// \brief Check whether the argument has at least one value.
         /// \return Returns true if the argument has no value, returns false otherwise.
@@ -73,7 +73,7 @@ namespace Syntropy
         Label name_;
 
         /// \brief Argument values.
-        Vector<String> values_;
+        Array<String> values_;
 
     };
 
@@ -90,7 +90,7 @@ namespace Syntropy
 
     // CommandLineArgument.
 
-    inline CommandLineArgument::CommandLineArgument(const Label& name, Vector<String> values)
+    inline CommandLineArgument::CommandLineArgument(const Label& name, Array<String> values)
         : name_(name)
         , values_(std::move(values))
     {
@@ -113,7 +113,7 @@ namespace Syntropy
         return values_.front();
     }
 
-    inline const Vector<String>& CommandLineArgument::GetValues() const
+    inline const Array<String>& CommandLineArgument::GetValues() const
     {
         return values_;
     }

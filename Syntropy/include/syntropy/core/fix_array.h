@@ -18,6 +18,6 @@ namespace Syntropy
 
     /// \brief Alias type for a fixed-size array.
     template <typename TType, Int size>
-    using Array = std::array<TType, size>;
+    using FixArray = std::array<TType, size>;
 
 }

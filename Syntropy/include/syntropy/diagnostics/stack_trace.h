@@ -72,7 +72,7 @@ namespace Syntropy
     private:
 
         /// \brief Elements in the stack trace, from the most recent one.
-        Vector<StackTraceElement> stack_trace_;
+        Array<StackTraceElement> stack_trace_;
 
         /// \brief Whether the trace has symbols for the caller.
         /// This value is intended to discard stack entries between the actual stack trace location and

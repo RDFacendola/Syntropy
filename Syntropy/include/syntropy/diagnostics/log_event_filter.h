@@ -28,13 +28,13 @@ namespace Syntropy
         LogEventFilter() = default;
 
         /// \brief Create a new log event filter.
-        LogEventFilter(Verbosity verbosity, Vector<Context> contexts);
+        LogEventFilter(Verbosity verbosity, Array<Context> contexts);
 
         /// \brief Create a new log event filter.
         LogEventFilter(Verbosity verbosity);
 
         /// \brief Create a new log event filter.
-        LogEventFilter(Vector<Context> contexts);
+        LogEventFilter(Array<Context> contexts);
 
         /// \brief Default copy constructor.
         LogEventFilter(const LogEventFilter&) = default;
@@ -61,7 +61,7 @@ namespace Syntropy
         Verbosity verbosity_{ Verbosity::kAll };
 
         /// \brief Filter contexts.
-        Vector<Context> contexts_{ Context{} };
+        Array<Context> contexts_{ Context{} };
 
     };
 
@@ -71,7 +71,7 @@ namespace Syntropy
 
     // LogEventFilter.
 
-    inline LogEventFilter::LogEventFilter(Verbosity verbosity, Vector<Context> contexts)
+    inline LogEventFilter::LogEventFilter(Verbosity verbosity, Array<Context> contexts)
         : verbosity_(verbosity)
         , contexts_(std::move(contexts))
     {
@@ -84,7 +84,7 @@ namespace Syntropy
 
     }
 
-    inline LogEventFilter::LogEventFilter(Vector<Context> contexts)
+    inline LogEventFilter::LogEventFilter(Array<Context> contexts)
         : contexts_(std::move(contexts))
     {
 
