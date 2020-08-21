@@ -606,7 +606,7 @@ namespace Syntropy
     }
 
     template <typename TBegin, typename TEnd>
-    constexpr SpanT<TBegin> MakeSpan(PointerT<TBegin> begin, Pointer<TEnd> end) noexcept
+    constexpr auto MakeSpan(PointerT<TBegin> begin, PointerT<TEnd> end) noexcept
     {
         using TSpan = CommonTypeT<TBegin, TEnd>;
 
