@@ -8,7 +8,7 @@
 
 #include <ostream>
 
-#include "syntropy/language/language_types.h"
+#include "syntropy/language/language.h"
 #include "syntropy/language/utility.h"
 #include "syntropy/memory/memory_types.h"
 #include "syntropy/memory/bytes.h"

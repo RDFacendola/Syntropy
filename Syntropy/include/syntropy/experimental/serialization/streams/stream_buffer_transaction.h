@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/language_types.h"
+#include "syntropy/language/language.h"
 
 #include "syntropy/experimental/serialization/streams/stream_buffer.h"
 

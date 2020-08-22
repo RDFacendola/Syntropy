@@ -1,39 +1,20 @@
 
-/// \file language_types.h
-/// \brief This header is part of Syntropy language module. It contains definitions for fundamental data types.
+/// \file language.h
+/// \brief This header is part of Syntropy language module. It contains basic language definitions and types.
 ///
 /// \author Raffaele D. Facendola - August  2020
 
 #pragma once
 
-#include <cstdint>
-#include <cstddef>
 #include <type_traits>
+
+#include "syntropy/language/fundamentals.h"
 
 namespace Syntropy
 {
     /************************************************************************/
-    /* FUNDAMENTAL TYPES                                                    */
-    /************************************************************************/
-
-    /// \brief Boolean value.
-    /// \remarks Standard booleans bind also to numeric values.
-    using Bool = bool;
-
-    /// \brief 64-bit integer value.
-    using Int = std::int64_t;
-
-    /// \brief 32-bit floating point value.
-    using Float = float;
-
-    /************************************************************************/
     /* POINTER TYPES                                                        */
     /************************************************************************/
-
-    /// \brief Type alias for a non-owning pointer which doesn't participate to pointee life-time.
-    /// The pointee can either be read-only or read-write.
-    template <typename TType>
-    using PointerT = TType*;
 
     /// \brief Type alias for a non-owning pointer to a read-only pointee. This pointer doesn't participate to pointee life-time.
     /// This pointer binds also to RWPointers automatically.
@@ -51,11 +32,6 @@ namespace Syntropy
     /* REFERENCE TYPES                                                      */
     /************************************************************************/
 
-    /// \brief Type alias for a l-value reference to an object.
-    /// The reference can either be read-only or read-write.
-    template <typename TType>
-    using ReferenceT = TType&;
-
     /// \brief Type alias for a l-value reference to a read-only object.
     /// This type binds also to RWReferences automatically.
     template <typename TType>
@@ -65,13 +41,6 @@ namespace Syntropy
     /// This type only binds to read-write objects.
     template <typename TType, typename = std::enable_if_t<!std::is_const_v<TType>>>
     using RWReference = ReferenceT<TType>;
-
-    /************************************************************************/
-    /* SPECIAL TYPES                                                        */
-    /************************************************************************/
-
-    /// \brief Type of the null pointer literal (nullptr).
-    using Null = std::nullptr_t;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */

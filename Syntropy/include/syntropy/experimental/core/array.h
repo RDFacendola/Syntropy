@@ -10,7 +10,7 @@
 
 #include <array>
 
-#include "syntropy/language/language_types.h"
+#include "syntropy/language/language.h"
 #include "syntropy/language/initializer_list.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"

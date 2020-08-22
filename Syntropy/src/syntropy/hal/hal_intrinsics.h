@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "syntropy/language/language_types.h"
+#include "syntropy/language/language.h"
 
 namespace Syntropy
 {

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/language_types.h"
+#include "syntropy/language/language.h"
 #include "syntropy/random/pcg_random_engine.h"
 
 namespace Syntropy

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/language_types.h"
+#include "syntropy/language/language.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/language/initializer_list.h"
 #include "syntropy/language/algorithm.h"

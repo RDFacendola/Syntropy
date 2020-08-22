@@ -8,7 +8,7 @@
 
 #include <typeinfo>
 
-#include "syntropy/language/language_types.h"
+#include "syntropy/language/language.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/language/type_traits.h"
 

@@ -9,7 +9,7 @@
 #include <cstdint>
 
 #include "syntropy/language/type_traits.h"
-#include "syntropy/language/language_types.h"
+#include "syntropy/language/language.h"
 
 namespace Syntropy
 {
