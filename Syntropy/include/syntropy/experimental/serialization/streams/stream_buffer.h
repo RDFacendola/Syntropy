@@ -39,10 +39,10 @@ namespace Syntropy
         StreamBuffer(Allocator& memory_resource = Memory::GetAllocator());
 
         /// \brief Create a new stream by moving an existing memory buffer.
-        StreamBuffer(Buffer&& buffer);
+        StreamBuffer(Memory::Buffer&& buffer);
 
         /// \brief Create a new stream by copying a memory buffer.
-        StreamBuffer(const Buffer& buffer, Allocator& memory_resource);
+        StreamBuffer(const Memory::Buffer& buffer, Allocator& memory_resource);
 
         /// \brief Default copy constructor.
         StreamBuffer(const StreamBuffer& other) = default;
@@ -83,7 +83,7 @@ namespace Syntropy
         void Discard();
 
         /// \brief Release and return underlying memory buffer and clear the stream buffer.
-        Buffer Release();
+        Memory::Buffer Release();
 
         /// \brief Increase the underlying buffer allocation up to a given size.
         void Reserve(Bytes capacity);
@@ -136,7 +136,7 @@ namespace Syntropy
 
         /// \brief Underlying memory buffer, may be larger than current stream size.
         /// This buffer is circular to prevent reallocations from consume operations.
-        Buffer buffer_;
+        Memory::Buffer buffer_;
 
         /// \brief Offset within the buffer data start from (inclusive).
         RWBytePtr base_pointer_;
@@ -175,7 +175,7 @@ namespace Syntropy
 
     }
 
-    inline StreamBuffer::StreamBuffer(Buffer&& buffer)
+    inline StreamBuffer::StreamBuffer(Memory::Buffer&& buffer)
         : buffer_(std::move(buffer))
         , base_pointer_(Begin(buffer_.GetData()))
         , size_(Memory::Size(buffer_))
@@ -185,7 +185,7 @@ namespace Syntropy
 
     }
 
-    inline StreamBuffer::StreamBuffer(const Buffer& buffer, Allocator& memory_resource)
+    inline StreamBuffer::StreamBuffer(const Memory::Buffer& buffer, Allocator& memory_resource)
         : buffer_(Memory::Size(buffer), memory_resource)
         , base_pointer_(Begin(buffer_.GetData()))
         , size_(Memory::Size(buffer_))
@@ -242,7 +242,7 @@ namespace Syntropy
         return buffer_.GetAllocator();
     }
 
-    inline Buffer StreamBuffer::Release()
+    inline Memory::Buffer StreamBuffer::Release()
     {
         // Rotate the underlying buffer such that base pointer is shifted in first position.
 
@@ -250,7 +250,7 @@ namespace Syntropy
 
         // Clear.
 
-        auto buffer = Buffer(buffer_.GetAllocator());
+        auto buffer = Memory::Buffer(buffer_.GetAllocator());
 
         buffer.Swap(buffer_);
         base_pointer_ = Begin(buffer_.GetData());

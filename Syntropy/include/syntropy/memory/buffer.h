@@ -6,99 +6,100 @@
 
 #pragma once
 
+#include "syntropy/language/language_types.h"
+
 #include "syntropy/memory/bytes.h"
-#include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/alignment.h"
+#include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/memory.h"
 #include "syntropy/allocators/allocator.h"
 #include "syntropy/diagnostics/assert.h"
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* BUFFER                                                               */
     /************************************************************************/
 
-    /// \brief Represents a contiguous sequence of bytes.
+    /// \brief A contiguous sequence of bytes allocated by an allocator.
+    /// Allocator is set upon construction an is never propagated between instances.
     /// \author Raffaele D. Facendola - February 2017
     class Buffer
     {
     public:
 
         /// \brief Create a new empty buffer.
-        /// The buffer is zero-filled.
         Buffer(Allocator& allocator = Memory::GetAllocator()) noexcept;
 
-        /// \brief Create a new memory buffer.
-        /// The buffer is zero-filled.
-        /// \param size Size of the buffer, in bytes.
-        /// \param allocator Allocator the buffer will be allocated from.
+        /// \brief Create a new memory buffer with unspecified content.
         Buffer(Bytes size, Allocator& allocator = Memory::GetAllocator()) noexcept;
 
-        /// \brief Create a new memory buffer.
-        /// The buffer is zero-filled.
-        /// \param size Size of the buffer, in bytes.
-        /// \param alignment Buffer alignment.
-        /// \param allocator Allocator the buffer will be allocated from.
+        /// \brief Create a new aligned memory buffer with unspecified content.
         Buffer(Bytes size, Alignment alignment, Allocator& allocator = Memory::GetAllocator()) noexcept;
 
-        /// \brief Copy constructor.
-        /// This method allocates a new buffer and copy the content to the other instance.
-        /// \param other Buffer to copy.
-        Buffer(const Buffer& other) noexcept;
+        /// \brief Create a buffer which is a copy of rhs.
+        Buffer(Reference<Buffer> rhs) noexcept;
 
-        /// \brief Move constructor.
-        /// This method moves the other buffer to this instance.
-        /// \param other Buffer to move.
+        /// \brief Create a buffer which is a copy of rhs with a different allocator.
+        Buffer(Reference<Buffer> rhs, Allocator& allocator) noexcept;
+
+        /// \brief Create a buffer by transferring ownership of resources.
+        /// After this method rhs is guaranteed to be valid and empty.
         Buffer(Buffer&& other) noexcept;
 
-        /// \brief Unified assignment operator.
-        /// This method propagates underlying allocator as well.
-        Buffer& operator=(Buffer other) noexcept;
+        /// \brief Create a buffer by transferring ownership of resources.
+        /// If the provided allocator is not equal to rhs allocator, this method behaves as a copy-constructor.
+        /// After this method rhs is left in a valid but unspecified state.
+        Buffer(Buffer&& other, Allocator& allocator) noexcept;
+
+        /// \brief Copy-assignment operator.
+        /// Rhs allocator is not propagated.
+        /// \return Returns a reference to this.
+        Buffer& operator=(Reference<Buffer> rhs) noexcept;
+
+        /// \brief Move-assignment operator.
+        /// If rhs allocator is different than this instance allocator, this method behaves as a copy-assignment.
+        /// \return Returns a reference to this.
+        Buffer& operator=(Buffer&& rhs) noexcept;
 
         /// \brief Destructor.
         ~Buffer() noexcept;
 
-        /// \brief Access the underlying byte span.
+        /// \brief Read-only access to buffer data.
         ByteSpan GetData() const noexcept;
 
-        /// \brief Access the underlying byte span.
+        /// \brief Read-write access to buffer data.
         RWByteSpan GetData() noexcept;
 
-        /// \brief Get the buffer alignment.
-        /// \return Returns the buffer alignment.
+        /// \brief Get buffer alignment.
         Alignment GetAlignment() const noexcept;
 
-        /// \brief Access the allocator this buffer is allocated on.
+        /// \brief Get buffer allocator.
         Allocator& GetAllocator() const noexcept;
 
-        /// \brief Swap the content of this buffer with another one.
-        /// \remarks This method swaps underlying allocator as well.
-        void Swap(Buffer& other) noexcept;
+        /// \brief Swap the content of this buffer with rhs.
+        /// If both don't share the same allocator, the behavior of this method is undefined.
+        void Swap(RWReference<Buffer> rhs) noexcept;
 
     private:
-
-        /// \brief Buffer.
-        RWByteSpan buffer_;
 
         /// \brief Allocator the buffer was allocated on.
         RWPointer<Allocator> allocator_{ nullptr };
 
+        /// \brief Buffer data.
+        RWByteSpan data_;
+
         /// \brief Buffer alignment.
-        Alignment alignment_;
+        Alignment alignment_ = MaxAlignment();
 
     };
 
     /************************************************************************/
-    /* MEMORY                                                               */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Exposes memory-related definitions.
-    namespace Memory
-    {
-        /// \brief Get the memory footprint of a memory buffer.
-        Bytes Size(const Buffer& span) noexcept;
-    }
+    /// \brief Get the memory footprint of a buffer.
+    Bytes Size(const Buffer& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -108,61 +109,102 @@ namespace Syntropy
     // =======
 
     inline Buffer::Buffer(Allocator& allocator) noexcept
-        : Buffer(Bytes{}, Alignment{}, allocator)
+        : Buffer(ToBytes(0), MaxAlignment(), allocator)
     {
 
     }
 
     inline Buffer::Buffer(Bytes size, Allocator& allocator) noexcept
-        : Buffer(size, Alignment{}, allocator)
+        : Buffer(size, MaxAlignment(), allocator)
     {
 
     }
 
     inline Buffer::Buffer(Bytes size, Alignment alignment, Allocator& allocator) noexcept
         : allocator_(&allocator)
+        , data_(allocator.Allocate(size, alignment))
         , alignment_(alignment)
-        , buffer_(allocator.Allocate(size, alignment))
     {
-        SYNTROPY_ASSERT(Memory::Size(buffer_) == size);     // Out of memory.
-
-        Memory::Zero(buffer_);
+        SYNTROPY_ASSERT(Size(data_) == size);       // Out of memory?
     }
 
-    inline Buffer::Buffer(const Buffer& other) noexcept
-        : Buffer(Memory::Size(other), other.alignment_, *other.allocator_)
+    inline Buffer::Buffer(Reference<Buffer> rhs) noexcept
+        : Buffer(rhs, rhs.GetAllocator())
     {
-        Memory::Copy(buffer_, other.buffer_);
+
     }
 
-    inline Buffer::Buffer(Buffer&& other) noexcept
-        : allocator_(other.allocator_)
-        , alignment_(other.alignment_)
-        , buffer_(other.buffer_)
+    inline Buffer::Buffer(Reference<Buffer> rhs, Allocator& allocator) noexcept
+        : Buffer(Size(rhs), rhs.GetAlignment(), allocator)
     {
-        other.buffer_ = {};
+        Copy(data_, rhs.data_);
     }
 
-    inline Buffer& Buffer::operator=(Buffer other) noexcept
+    inline Buffer::Buffer(Buffer&& rhs) noexcept
+        : allocator_(rhs.allocator_)
+        , alignment_(rhs.alignment_)
     {
-        Swap(other);
+        std::swap(data_, rhs.data_);
+    }
+
+    inline Buffer::Buffer(Buffer&& rhs, Allocator& allocator) noexcept
+        : allocator_(allocator_)
+        , alignment_(rhs.alignment_)
+    {
+        // Either move or copy.
+
+        if (allocator_ == rhs.allocator_)
+        {
+            std::swap(data_, rhs.data_);
+        }
+        else
+        {
+            Copy(data_, rhs.data_);
+        }
+    }
+
+    inline Buffer& Buffer::operator=(Reference<Buffer> rhs) noexcept
+    {
+        if (this != &rhs)
+        {
+            if (Size(*this) != Size(rhs))
+            {
+                data_ = allocator_->Allocate(Size(rhs), rhs.GetAlignment());
+            }
+
+            Copy(data_, rhs.GetData());
+        }
+
+        return *this;
+    }
+
+    inline Buffer& Buffer::operator=(Buffer&& rhs) noexcept
+    {
+        if (allocator_ == rhs.allocator_)
+        {
+            Swap(rhs);                          // Move by swap.
+        }
+        else
+        {
+            *this = ReadOnly(rhs);              // Copy reference.
+        }
 
         return *this;
     }
 
     inline Buffer::~Buffer() noexcept
     {
-        allocator_->Deallocate(buffer_, alignment_);
+        allocator_->Deallocate(data_, alignment_);
     }
 
     inline ByteSpan Buffer::GetData() const noexcept
     {
-        return buffer_;
+        return data_;
     }
 
     inline RWByteSpan Buffer::GetData() noexcept
     {
-        return buffer_;
+        return data_;
     }
 
     inline Alignment Buffer::GetAlignment() const noexcept
@@ -174,18 +216,19 @@ namespace Syntropy
     {
         return *allocator_;
     }
-
-    inline void Buffer::Swap(Buffer& other) noexcept
+  
+    inline void Buffer::Swap(RWReference<Buffer> rhs) noexcept
     {
-        std::swap(allocator_, other.allocator_);
-        std::swap(alignment_, other.alignment_);
-        std::swap(buffer_, other.buffer_);
+        SYNTROPY_UNDEFINED_BEHAVIOR(allocator_ == rhs.allocator_, "Buffers must share the same allocator.");
+
+        std::swap(data_, rhs.data_);
+        std::swap(alignment_, rhs.alignment_);
     }
 
-    // Memory.
-    // =======
+    // Non-member functions.
+    // =====================
 
-    inline Bytes Memory::Size(const Buffer& span) noexcept
+    inline Bytes Size(const Buffer& span) noexcept
     {
         return Memory::Size(span.GetData());
     }

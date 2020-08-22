@@ -120,6 +120,12 @@ namespace Syntropy
     template <typename TType>
     constexpr RWReference<TType> ReadWrite(Reference<TType> rhs) noexcept;
 
+    // Utilities.
+
+    /// \brief Swap the content of lhs with rhs.
+    template <typename TType>
+    constexpr void Swap(RWReference<TType> lhs, RWReference<TType> rhs) noexcept;
+
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -177,6 +183,14 @@ namespace Syntropy
     constexpr RWReference<TType> ReadWrite(Reference<TType> rhs) noexcept
     {
         return const_cast<RWReference<TType>>(rhs);
+    }
+
+    // Utilities.
+
+    template <typename TType>
+    constexpr void Swap(RWReference<TType> lhs, RWReference<TType> rhs) noexcept
+    {
+
     }
 
 }
