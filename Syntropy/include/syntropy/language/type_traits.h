@@ -18,24 +18,11 @@
 #include "syntropy/language/type_traits/relationships.h"
 #include "syntropy/language/type_traits/categories.h"
 #include "syntropy/language/type_traits/operations.h"
+#include "syntropy/language/type_traits/meta.h"
 
 namespace Syntropy
 {
-    /************************************************************************/
-    /* META                                                                 */
-    /************************************************************************/
 
-    /// \brief Type equal to TTrue if condition is true, equal to TFalse otherwise.
-    template <Bool Condition, typename TTrue, typename TFalse>
-    using ConditionalT = std::conditional_t<Condition, TTrue, TFalse>;
-
-    /************************************************************************/
-    /* TYPE TRANSFORMATIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Determine the common type among all types TTypes, that is the type to which all TTypes... can be converted to.
-    template <typename... TTypes>
-    using CommonTypeT = std::common_type_t<TTypes...>;
 
     /************************************************************************/
     /* ALWAYS FALSE                                                         */
@@ -150,20 +137,12 @@ namespace Syntropy
     inline constexpr Bool IsValidExpressionV = IsValidExpression<void, TExpression, TTypes...>::value;
 
     /************************************************************************/
-    /* ENABLE IF                                                            */
-    /************************************************************************/
-
-    /// \brief If kEnable is true exposes a member typedef equal to TType, otherwise there's no member typedef.
-    template <Bool kEnable, typename TType = void>
-    using EnableIfT = std::enable_if_t<kEnable, TType>;
-
-    /************************************************************************/
     /* ENABLE IF VALID EXPRESSION                                           */
     /************************************************************************/
 
     /// \brief If TExpression<TTypes> is a valid expression, exposes a member typedef equal to void, otherwise there's no member typedef.
     template <template<typename...> typename TExpression, typename... TTypes>
-    using EnableIfValidExpressionT = EnableIfT<IsValidExpressionV<TExpression, TTypes...>>;
+    using EnableIfValidExpressionT = Traits::EnableIf<IsValidExpressionV<TExpression, TTypes...>>;
 
     /************************************************************************/
     /* COMPARISON                                                           */

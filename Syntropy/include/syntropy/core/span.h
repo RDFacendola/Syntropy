@@ -32,7 +32,7 @@ namespace Syntropy
         constexpr SpanT(TBegin begin, Int count) noexcept;
 
         /// \brief Create a span given a pointer to the first element and a pointer past the last element.
-        template <typename TBegin, typename TEnd, typename = EnableIfT<!Traits::IsConvertible<TEnd, Int>>>
+        template <typename TBegin, typename TEnd, typename = Traits::EnableIf<!Traits::IsConvertible<TEnd, Int>>>
         constexpr SpanT(TBegin begin, TEnd end) noexcept;
 
         /// \brief Copy constructor.
@@ -78,12 +78,12 @@ namespace Syntropy
     using Span = SpanT<const TType>;
 
     /// \brief Alias for a span of read-write elements.
-    template <typename TType, typename = EnableIfT<!Traits::IsConst<TType>>>
+    template <typename TType, typename = Traits::EnableIf<!Traits::IsConst<TType>>>
     using RWSpan = SpanT<TType>;
 
     /// \brief Alias for a common type between two or more spans.
     template <typename... TElements>
-    using CommonSpan = SpanT<Traits::RemovePointer<CommonTypeT<Traits::AddPointer<TElements>...>>>;
+    using CommonSpan = SpanT<Traits::RemovePointer<Traits::CommonTypeOf<Traits::AddPointer<TElements>...>>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -608,7 +608,7 @@ namespace Syntropy
     template <typename TBegin, typename TEnd>
     constexpr auto MakeSpan(PointerT<TBegin> begin, PointerT<TEnd> end) noexcept
     {
-        using TSpan = CommonTypeT<TBegin, TEnd>;
+        using TSpan = Traits::CommonTypeOf<TBegin, TEnd>;
 
         return Span<TSpan>{ begin, end };
     }

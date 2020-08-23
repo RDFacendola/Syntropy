@@ -79,7 +79,7 @@ namespace Syntropy
     public:
 
         /// \brief Create a new explicit wrapper.
-        template <typename UTo, typename = EnableIfT<(IsSameV<UTo, TFrom> || ...)>>
+        template <typename UTo, typename = Traits::EnableIf<(Traits::IsSame<UTo, TFrom> || ...)>>
         constexpr Explicit(const UTo& value) noexcept;
 
         /// \brief Implicitly convert the wrapper to its underlying type.

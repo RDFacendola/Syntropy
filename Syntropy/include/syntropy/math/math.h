@@ -24,15 +24,15 @@ namespace Syntropy
     {
         /// \brief Get the minimum element.
         template <typename TValue, typename... TValues>
-        constexpr CommonTypeT<TValue, TValues...> Min(const TValue& value, const TValues&... values) noexcept;
+        constexpr Traits::CommonTypeOf<TValue, TValues...> Min(const TValue& value, const TValues&... values) noexcept;
 
         /// \brief Get the maximum element.
         template <typename TValue, typename... TValues>
-        constexpr CommonTypeT<TValue, TValues...> Max(const TValue& value, const TValues&... values) noexcept;
+        constexpr Traits::CommonTypeOf<TValue, TValues...> Max(const TValue& value, const TValues&... values) noexcept;
 
         /// \brief Clamp an element between a minimum and a maximum.
         template <typename TValue, typename TMin, typename TMax>
-        constexpr CommonTypeT<TValue, TMin, TMax> Clamp(const TValue& value, const TMin& min, const TMax& max) noexcept;
+        constexpr Traits::CommonTypeOf<TValue, TMin, TMax> Clamp(const TValue& value, const TMin& min, const TMax& max) noexcept;
 
         /// \brief Get the smallest integral number greater than or equal to rhs.
         template <typename TNumber>
@@ -96,7 +96,7 @@ namespace Syntropy
     // Math.
 
     template <typename TValue, typename... TValues>
-    constexpr CommonTypeT<TValue, TValues...> Math::Min(const TValue& value, const TValues&... values) noexcept
+    constexpr Traits::CommonTypeOf<TValue, TValues...> Math::Min(const TValue& value, const TValues&... values) noexcept
     {
         if constexpr (sizeof...(values) == 0)
         {
@@ -111,7 +111,7 @@ namespace Syntropy
     }
 
     template <typename TValue, typename... TValues>
-    constexpr CommonTypeT<TValue, TValues...> Math::Max(const TValue& value, const TValues&... values) noexcept
+    constexpr Traits::CommonTypeOf<TValue, TValues...> Math::Max(const TValue& value, const TValues&... values) noexcept
     {
         if constexpr (sizeof...(values) == 0)
         {
@@ -126,7 +126,7 @@ namespace Syntropy
     }
 
     template <typename TValue, typename TMin, typename TMax>
-    constexpr CommonTypeT<TValue, TMin, TMax> Math::Clamp(const TValue& value, const TMin& min, const TMax& max) noexcept
+    constexpr Traits::CommonTypeOf<TValue, TMin, TMax> Math::Clamp(const TValue& value, const TMin& min, const TMax& max) noexcept
     {
         return std::clamp(value, min, max);
     }

@@ -68,12 +68,12 @@ namespace Syntropy
 
         /// \brief Deallocate each allocation performed so far.
         /// This method only participates in overload resolution if both allocators implement ::DeallocateAll() method.
-        template<typename = EnableIfT<IsValidExpressionV<AllocatorImplementsDeallocateAll, TAllocator> && IsValidExpressionV<AllocatorImplementsDeallocateAll, TFallback>>>
+        template<typename = Traits::EnableIf<IsValidExpressionV<AllocatorImplementsDeallocateAll, TAllocator> && IsValidExpressionV<AllocatorImplementsDeallocateAll, TFallback>>>
         void DeallocateAll() noexcept;
 
         /// \brief Check whether either allocator owns a memory block.
         /// This method only participates in overload resolution if both allocator implement ::Own(block) method.
-        template<typename = EnableIfT<IsValidExpressionV<AllocatorImplementsOwn, TAllocator>&& IsValidExpressionV<AllocatorImplementsOwn, TFallback>>>
+        template<typename = Traits::EnableIf<IsValidExpressionV<AllocatorImplementsOwn, TAllocator>&& IsValidExpressionV<AllocatorImplementsOwn, TFallback>>>
         Bool Owns(const ByteSpan& block) const noexcept;
 
     private:
