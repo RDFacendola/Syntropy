@@ -9,6 +9,13 @@
 #include <type_traits>
 
 #include "syntropy/language/fundamentals.h"
+#include "syntropy/language/casts.h"
+
+// Pointer (ReadOnly \ ReadWrite)
+// Reference (ReadOnly \ ReadWrite)
+// Casts
+// ReadOnly \ ReadWrite
+// Move \ Forward \ Declval
 
 namespace Syntropy
 {
@@ -46,25 +53,6 @@ namespace Syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Type casts.
-
-    /// \brief Convert rhs to a boolean.
-    template <typename TType>
-    constexpr Bool ToBool(TType rhs) noexcept;
-
-    /// \brief Truncate rhs to an integer value.
-    template <typename TNumber>
-    constexpr Int ToInt(TNumber rhs) noexcept;
-
-    /// \brief Convert rhs to a floating point value.
-    template <typename TNumber>
-    constexpr Float ToFloat(TNumber rhs) noexcept;
-
-    /// \brief Convert rhs to a pointer to UType.
-    /// \remarks If the pointee type is not related to UType, the program is ill-formed.
-    template <typename TType, typename UType>
-    constexpr PointerT<TType> ToPointer(PointerT<UType> rhs) noexcept;
-
     // Access modifiers.
 
     /// \brief Convert rhs to a pointer to a read-only value.
@@ -89,44 +77,9 @@ namespace Syntropy
     template <typename TType>
     constexpr RWReference<TType> ReadWrite(Reference<TType> rhs) noexcept;
 
-    // Utilities.
-
-    /// \brief Swap the content of lhs with rhs.
-    template <typename TType>
-    constexpr void Swap(RWReference<TType> lhs, RWReference<TType> rhs) noexcept;
-
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
-
-    // Non-member functions.
-    // =====================
-
-    // Type casts.
-
-    template <typename TType>
-    constexpr Bool ToBool(TType rhs) noexcept
-    {
-        return !!rhs;
-    }
-
-    template <typename TNumber>
-    constexpr Int ToInt(TNumber rhs) noexcept
-    {
-        return static_cast<Int>(rhs);
-    }
-
-    template <typename TNumber>
-    constexpr Float ToFloat(TNumber rhs) noexcept
-    {
-        return static_cast<Float>(rhs);
-    }
-
-    template <typename TType, typename UType>
-    constexpr PointerT<TType> ToPointer(PointerT<UType> rhs) noexcept
-    {
-        return static_cast<PointerT<TType>>(rhs);
-    }
 
     // Access modifiers.
 
@@ -152,14 +105,6 @@ namespace Syntropy
     constexpr RWReference<TType> ReadWrite(Reference<TType> rhs) noexcept
     {
         return const_cast<RWReference<TType>>(rhs);
-    }
-
-    // Utilities.
-
-    template <typename TType>
-    constexpr void Swap(RWReference<TType> lhs, RWReference<TType> rhs) noexcept
-    {
-
     }
 
 }

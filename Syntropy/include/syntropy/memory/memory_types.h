@@ -17,7 +17,8 @@ namespace Syntropy
     /* FUNDAMENTAL TYPES                                                    */
     /************************************************************************/
 
-    /// \brief Represents a single byte. This type is neither a character type, nor an arithmetic type.
+    /// \brief Represents a single byte.
+    /// This type is neither a character type, nor an arithmetic type.
     using Byte = std::byte;
 
     /************************************************************************/
