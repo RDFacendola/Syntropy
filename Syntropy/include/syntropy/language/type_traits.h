@@ -17,6 +17,7 @@
 #include "syntropy/language/type_traits/manipulation.h"
 #include "syntropy/language/type_traits/relationships.h"
 #include "syntropy/language/type_traits/categories.h"
+#include "syntropy/language/type_traits/operations.h"
 
 namespace Syntropy
 {
@@ -27,22 +28,6 @@ namespace Syntropy
     /// \brief Type equal to TTrue if condition is true, equal to TFalse otherwise.
     template <Bool Condition, typename TTrue, typename TFalse>
     using ConditionalT = std::conditional_t<Condition, TTrue, TFalse>;
-
-    /************************************************************************/
-    /* TYPE QUERY                                                           */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TType is copy-constructible, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsCopyConstructibleV = std::is_copy_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType is move-constructible, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsMoveConstructibleV = std::is_move_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType is trivially default constructible, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsTriviallyDefaultConstructibleV = std::is_trivially_default_constructible_v<TType>;
 
     /************************************************************************/
     /* TYPE TRANSFORMATIONS                                                 */
