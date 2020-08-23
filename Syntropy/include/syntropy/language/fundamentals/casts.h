@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#include "syntropy/language/fundamentals.h"
+#include "syntropy/language/fundamentals/types.h"
 
 namespace Syntropy
 {

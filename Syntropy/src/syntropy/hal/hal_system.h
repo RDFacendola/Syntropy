@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 #include "syntropy/platform/system.h"
 
 namespace Syntropy

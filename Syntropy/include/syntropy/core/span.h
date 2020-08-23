@@ -8,7 +8,7 @@
 
 #include "syntropy/language/type_traits.h"
 #include "syntropy/language/tuple.h"
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 #include "syntropy/math/math.h"
 
 namespace Syntropy

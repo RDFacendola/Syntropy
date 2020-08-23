@@ -12,7 +12,7 @@
 #include "syntropy/language/type_traits.h"
 #include "syntropy/language/initializer_list.h"
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 #include "syntropy/core/span.h"
 
 #include "syntropy/memory/byte_span.h"

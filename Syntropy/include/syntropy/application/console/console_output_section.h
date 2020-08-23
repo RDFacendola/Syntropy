@@ -10,7 +10,7 @@
 
 #include "syntropy/language/type_traits.h"
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 #include "syntropy/core/string.h"
 
 namespace Syntropy

@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <ostream>
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 
 namespace Syntropy
 {

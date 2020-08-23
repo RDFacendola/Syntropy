@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 #include "syntropy/diagnostics/log_event.h"
 #include "syntropy/diagnostics/verbosity.h"
 #include "syntropy/core/context.h"

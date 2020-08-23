@@ -15,7 +15,8 @@
     <ClInclude Include="include\syntropy\allocators\fallback_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\quota_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\virtual_stack_allocator.h" />
-    <ClInclude Include="include\syntropy\language\casts.h" />
+    <ClInclude Include="include\syntropy\language\fundamentals\casts.h" />
+    <ClInclude Include="include\syntropy\language\fundamentals\types.h" />
     <ClInclude Include="include\syntropy\language\type_traits\constants.h" />
     <ClInclude Include="include\syntropy\experimental\core\polymorphic_deleter.h" />
     <ClInclude Include="include\syntropy\allocators\system_allocator.h" />
@@ -49,7 +50,6 @@
     <ClInclude Include="include\syntropy\application\console\plain_console_style.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\stream_buffer_transaction.h" />
     <ClInclude Include="include\syntropy\language\algorithm.h" />
-    <ClInclude Include="include\syntropy\language\fundamentals.h" />
     <ClInclude Include="include\syntropy\language\initializer_list.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\consume_stream_buffer.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\append_stream_buffer.h" />
@@ -78,7 +78,7 @@
     <ClInclude Include="include\syntropy\core\string_stream.h" />
     <ClInclude Include="include\syntropy\language\memory.h" />
     <ClInclude Include="include\syntropy\language\tuple.h" />
-    <ClInclude Include="include\syntropy\language\language.h" />
+    <ClInclude Include="include\syntropy\language\fundamentals.h" />
     <ClInclude Include="include\syntropy\language\type_traits\categories.h" />
     <ClInclude Include="include\syntropy\language\type_traits\manipulation.h" />
     <ClInclude Include="include\syntropy\language\type_traits\meta.h" />

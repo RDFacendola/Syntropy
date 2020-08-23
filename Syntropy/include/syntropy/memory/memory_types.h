@@ -9,7 +9,7 @@
 #include <ostream>
 #include <type_traits>
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 
 namespace Syntropy
 {

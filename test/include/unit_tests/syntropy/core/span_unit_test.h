@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 #include "syntropy/core/fix_array.h"
 #include "syntropy/core/span.h"
 

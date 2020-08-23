@@ -8,7 +8,7 @@
 
 #include <ostream>
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 #include "syntropy/core/label.h"
 #include "syntropy/core/string.h"
 

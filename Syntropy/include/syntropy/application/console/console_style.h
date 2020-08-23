@@ -8,7 +8,7 @@
 
 #include <typeinfo>
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 #include "syntropy/core/string.h"
 
 #include "syntropy/application/console/console_output_section.h"

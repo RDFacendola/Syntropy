@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/math/math.h"
 #include "syntropy/math/numeric.h"

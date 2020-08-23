@@ -10,7 +10,7 @@
 
 #include "syntropy/platform/intrinsics.h"
 #include "syntropy/math/math.h"
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 
 namespace Syntropy
 {

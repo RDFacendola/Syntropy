@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <tuple>
 
-#include "syntropy/language/language.h"
+#include "syntropy/language/fundamentals.h"
 
 namespace Syntropy
 {
