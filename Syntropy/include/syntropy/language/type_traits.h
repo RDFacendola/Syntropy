@@ -77,17 +77,6 @@ namespace Syntropy
     template <typename TType>
     constexpr Bool IsClassNameV = std::is_same<ClassNameT<TType>, TType>::value;
 
-    /************************************************************************/
-    /* IS SPECIALIZATION                                                    */
-    /************************************************************************/
-
-    /// \brief If TType is a specialization of TTemplate IsSpecializationV is true, false otherwise.
-    template<typename TType, template <typename...> typename TTemplate>
-    constexpr Bool IsSpecializationV = false;
-
-    /// \brief If TType is a specialization of TTemplate IsSpecializationV is true, false otherwise.
-    template<template <typename...> typename TTemplate, typename... TTypes>
-    constexpr Bool IsSpecializationV<TTemplate<TTypes...>, TTemplate> = true;
 
     /************************************************************************/
     /* ALWAYS FALSE                                                         */

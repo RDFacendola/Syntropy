@@ -30,32 +30,32 @@ namespace Syntropy
 
     /// \brief Prepares the argument list needed to create an object of the given type TType by means of uses-allocator construction.
     /// \remarks #TODO Update to C++20 std::uses_allocator_construction_args.
-    template <typename TType, typename TAllocator, typename... TArguments, typename = std::enable_if_t<!IsSpecializationV<TType, std::pair>>>
+    template <typename TType, typename TAllocator, typename... TArguments, typename = std::enable_if_t<!Traits::IsTemplateSpecializationOf<TType, std::pair>>>
     constexpr decltype(auto) UsesAllocatorConstructionArgs(const TAllocator& allocator, TArguments&&...arguments);
 
     /// \brief Prepares the argument list needed to create an object of the given type TType by means of uses-allocator construction.
     /// \remarks #TODO Update to C++20 std::uses_allocator_construction_args.
-    template <typename TType, typename TAllocator, typename TTuple1, typename TTuple2, typename = std::enable_if_t<IsSpecializationV<TType, std::pair>>>
+    template <typename TType, typename TAllocator, typename TTuple1, typename TTuple2, typename = std::enable_if_t<Traits::IsTemplateSpecializationOf<TType, std::pair>>>
     constexpr decltype(auto) UsesAllocatorConstructionArgs(const TAllocator& allocator, std::piecewise_construct_t, TTuple1&& tuple1, TTuple2&& tuple2);
 
     /// \brief Prepares the argument list needed to create an object of the given type TType by means of uses-allocator construction.
     /// \remarks #TODO Update to C++20 std::uses_allocator_construction_args.
-    template <typename TType, typename TAllocator, typename = std::enable_if_t<IsSpecializationV<TType, std::pair>>>
+    template <typename TType, typename TAllocator, typename = std::enable_if_t<Traits::IsTemplateSpecializationOf<TType, std::pair>>>
     constexpr decltype(auto) UsesAllocatorConstructionArgs(const TAllocator& allocator);
 
     /// \brief Prepares the argument list needed to create an object of the given type TType by means of uses-allocator construction.
     /// \remarks #TODO Update to C++20 std::uses_allocator_construction_args.
-    template <typename TType, typename TAllocator, typename UType, typename VType, typename = std::enable_if_t<IsSpecializationV<TType, std::pair>>>
+    template <typename TType, typename TAllocator, typename UType, typename VType, typename = std::enable_if_t<Traits::IsTemplateSpecializationOf<TType, std::pair>>>
     constexpr decltype(auto) UsesAllocatorConstructionArgs(const TAllocator& allocator, UType&& u, VType&& v);
 
     /// \brief Prepares the argument list needed to create an object of the given type TType by means of uses-allocator construction.
     /// \remarks #TODO Update to C++20 std::uses_allocator_construction_args.
-    template <typename TType, typename TAllocator, typename UType, typename VType, typename = std::enable_if_t<IsSpecializationV<TType, std::pair>>>
+    template <typename TType, typename TAllocator, typename UType, typename VType, typename = std::enable_if_t<Traits::IsTemplateSpecializationOf<TType, std::pair>>>
     constexpr decltype(auto) UsesAllocatorConstructionArgs(const TAllocator& allocator, const std::pair<UType, VType>& uv);
 
     /// \brief Prepares the argument list needed to create an object of the given type TType by means of uses-allocator construction.
     /// \remarks #TODO Update to C++20 std::uses_allocator_construction_args.
-    template <typename TType, typename TAllocator, typename UType, typename VType, typename = std::enable_if_t<IsSpecializationV<TType, std::pair>>>
+    template <typename TType, typename TAllocator, typename UType, typename VType, typename = std::enable_if_t<Traits::IsTemplateSpecializationOf<TType, std::pair>>>
     constexpr decltype(auto) UsesAllocatorConstructionArgs(const TAllocator& allocator, std::pair<UType, VType>&& uv);
 
     /// \brief Creates an object of the given type TType by means of uses-allocator construction.
