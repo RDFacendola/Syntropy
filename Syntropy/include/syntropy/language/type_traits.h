@@ -13,6 +13,7 @@
 #include "syntropy/language/language.h"
 #include "syntropy/serialization/serialization_types.h"
 
+#include "syntropy/language/type_traits/constants.h"
 #include "syntropy/language/type_traits/properties.h"
 #include "syntropy/language/type_traits/manipulation.h"
 #include "syntropy/language/type_traits/relationships.h"
@@ -22,16 +23,6 @@
 
 namespace Syntropy
 {
-
-
-    /************************************************************************/
-    /* ALWAYS FALSE                                                         */
-    /************************************************************************/
-
-    /// \brief Evaluates to false.
-    /// This value can be used to trigger static_assert that evaluates to false.
-    template <typename...>
-    inline constexpr Bool AlwaysFalseV = false;
 
     /************************************************************************/
     /* IS CONTIGUOUS SEQUENCE                                               */
@@ -114,35 +105,6 @@ namespace Syntropy
     /// \brief Helper value for tuple_element_index<TType, TTuple>.
     template <typename TType, typename TTuple>
     constexpr Int TupleElementIndexV = TupleElementIndex<TType, TTuple>::Value;
-
-    /************************************************************************/
-    /* IS VALID EXPRESSION                                                  */
-    /************************************************************************/
-
-    /// \brief If TExpression<TTypes...> is a valid expression, exposes a member value equal to true, otherwise exposes a member value equal to false.
-    /// Default trait for invalid expressions.
-    /// \see Based on std::experimental::is_detected.
-    template <typename TVoid, template<typename...> typename TExpression, typename... TTypes>
-    struct IsValidExpression : std::false_type {};
-
-    /// \brief Partial specialization for valid expressions.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    struct IsValidExpression<std::void_t<TExpression<TTypes...>>, TExpression, TTypes...> : std::true_type {};
-
-    /// \brief Boolean value equal to true if TExpression<TTypes...> is a valid expression, false otherwise.
-    ///
-    /// \usage template<typename T> using HasFoo = decltype(&T::Foo());     // Expression type.
-    ///        auto b = IsValidExpressionV<HasFoo, MyType>;                 // true if MyType::Foo is valid, false otherwise.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    inline constexpr Bool IsValidExpressionV = IsValidExpression<void, TExpression, TTypes...>::value;
-
-    /************************************************************************/
-    /* ENABLE IF VALID EXPRESSION                                           */
-    /************************************************************************/
-
-    /// \brief If TExpression<TTypes> is a valid expression, exposes a member typedef equal to void, otherwise there's no member typedef.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    using EnableIfValidExpressionT = Traits::EnableIf<IsValidExpressionV<TExpression, TTypes...>>;
 
     /************************************************************************/
     /* COMPARISON                                                           */

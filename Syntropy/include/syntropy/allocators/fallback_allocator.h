@@ -68,12 +68,12 @@ namespace Syntropy
 
         /// \brief Deallocate each allocation performed so far.
         /// This method only participates in overload resolution if both allocators implement ::DeallocateAll() method.
-        template<typename = Traits::EnableIf<IsValidExpressionV<AllocatorImplementsDeallocateAll, TAllocator> && IsValidExpressionV<AllocatorImplementsDeallocateAll, TFallback>>>
+        template<typename = Traits::EnableIf<Traits::IsValidExpression<AllocatorImplementsDeallocateAll, TAllocator> && Traits::IsValidExpression<AllocatorImplementsDeallocateAll, TFallback>>>
         void DeallocateAll() noexcept;
 
         /// \brief Check whether either allocator owns a memory block.
         /// This method only participates in overload resolution if both allocator implement ::Own(block) method.
-        template<typename = Traits::EnableIf<IsValidExpressionV<AllocatorImplementsOwn, TAllocator>&& IsValidExpressionV<AllocatorImplementsOwn, TFallback>>>
+        template<typename = Traits::EnableIf<Traits::IsValidExpression<AllocatorImplementsOwn, TAllocator>&& Traits::IsValidExpression<AllocatorImplementsOwn, TFallback>>>
         Bool Owns(const ByteSpan& block) const noexcept;
 
     private:
@@ -131,7 +131,7 @@ namespace Syntropy
     template <typename TAllocator, typename TFallback>
     inline void FallbackAllocator<TAllocator, TFallback>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
-        if constexpr (IsValidExpressionV<AllocatorImplementsOwn, TAllocator>)
+        if constexpr (Traits::IsValidExpression<AllocatorImplementsOwn, TAllocator>)
         {
             if (allocator_.Owns(block))
             {
@@ -142,7 +142,7 @@ namespace Syntropy
                 fallback_.Deallocate(block, alignment);
             }
         }
-        else if constexpr (IsValidExpressionV<AllocatorImplementsOwn, TFallback>)
+        else if constexpr (Traits::IsValidExpression<AllocatorImplementsOwn, TFallback>)
         {
             if (fallback_.Owns(block))
             {
@@ -155,7 +155,7 @@ namespace Syntropy
         }
         else
         {
-            static_assert(AlwaysFalseV, "Cannot infer block owner: either TAllocator or TFallback must provide ::Owns(...) method.");
+            static_assert(Traits::AlwaysFalse, "Cannot infer block owner: either TAllocator or TFallback must provide ::Owns(...) method.");
         }
     }
 

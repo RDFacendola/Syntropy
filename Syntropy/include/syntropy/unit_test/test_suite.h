@@ -297,14 +297,14 @@ namespace Syntropy
 
         NotifyCaseStarted({ test_case.GetName() });
 
-        if constexpr (IsValidExpressionV<HasBefore, TTestFixture>)
+        if constexpr (Traits::IsValidExpression<HasBefore, TTestFixture>)
         {
             test_fixture_.Before();         // Setup the test fixture. Optional.
         }
 
         test_case.Run(test_fixture_);
 
-        if constexpr (IsValidExpressionV<HasAfter, TTestFixture>)
+        if constexpr (Traits::IsValidExpression<HasAfter, TTestFixture>)
         {
             test_fixture_.After();          // Cleanup the test fixture. Optional.
         }
