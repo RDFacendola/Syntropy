@@ -27,28 +27,12 @@ namespace Syntropy
     using ConditionalT = std::conditional_t<Condition, TTrue, TFalse>;
 
     /************************************************************************/
-    /* TYPE MANIPULATION                                                    */
-    /************************************************************************/
-
-    /// \brief Type equal to TType without top-most references, qualifiers and extents.
-    template <typename TType>
-    using RemoveExtentsConstReferenceT = std::remove_cv_t<std::remove_all_extents_t<std::remove_reference_t<TType>>>;
-
-    /************************************************************************/
     /* TYPE QUERY                                                           */
     /************************************************************************/
 
     /// \brief Constant equal to true if TType is equal to UType, equal to false otherwise.
     template <typename TType, typename UType>
     inline constexpr Bool IsSameV = std::is_same_v<TType, UType>;
-
-    /// \brief Constant equal to true if TType is trivial, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsTrivialV = std::is_trivial_v<TType>;
-
-    /// \brief Constant equal to true if TType is trivially copyable, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsTriviallyCopyableV = std::is_trivially_copyable_v<TType>;
 
     /// \brief Constant equal to true if TType is copy-constructible, equal to false otherwise.
     template <typename TType>
@@ -90,18 +74,6 @@ namespace Syntropy
     /// \brief Determine the common type among all types TTypes, that is the type to which all TTypes... can be converted to.
     template <typename... TTypes>
     using CommonTypeT = std::common_type_t<TTypes...>;
-
-    /************************************************************************/
-    /* POLYMORPHISM QUERY                                                   */
-    /************************************************************************/
-
-    /// \brief Wraps the standard type trait std::is_polymorphic_v.
-    template <typename TType>
-    inline constexpr Bool IsPolymorphicV = std::is_polymorphic_v<TType>;
-
-    /// \brief Wraps the standard type trait std::is_final_v.
-    template <typename TType>
-    inline constexpr Bool IsFinalV = std::is_final_v<TType>;
 
     /************************************************************************/
     /* STRIP                                                                */
