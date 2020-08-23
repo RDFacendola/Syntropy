@@ -121,6 +121,7 @@
     <ClInclude Include="include\syntropy\core\fix_array.h" />
     <ClInclude Include="include\syntropy\language\language.h" />
     <ClInclude Include="include\syntropy\language\fundamentals.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\qualifiers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

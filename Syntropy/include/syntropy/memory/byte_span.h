@@ -355,7 +355,7 @@ namespace Syntropy
     template <typename TElement>
     inline Span<TElement> ToSpan(const ByteSpan& rhs) noexcept
     {
-        using TPointer = PointerT<AddConstT<TElement>>;
+        using TPointer = PointerT<Traits::AddConst<TElement>>;
 
         auto begin = reinterpret_cast<TPointer>(Begin(rhs));
         auto end = reinterpret_cast<TPointer>(End(rhs));
@@ -366,7 +366,7 @@ namespace Syntropy
     template <typename TElement>
     inline RWSpan<TElement> ToRWSpan(const RWByteSpan& rhs) noexcept
     {
-        using TRWPointer = PointerT<RemoveConstT<TElement>>;
+        using TRWPointer = PointerT<Traits::RemoveConst<TElement>>;
 
         auto begin = reinterpret_cast<TRWPointer>(Begin(rhs));
         auto end = reinterpret_cast<TRWPointer>(End(rhs));

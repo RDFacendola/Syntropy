@@ -77,6 +77,7 @@
     <ClInclude Include="include\syntropy\language\memory.h" />
     <ClInclude Include="include\syntropy\language\tuple.h" />
     <ClInclude Include="include\syntropy\language\language.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\qualifiers.h" />
     <ClInclude Include="include\syntropy\language\visitor.h" />
     <ClInclude Include="include\syntropy\math\bits.h" />
     <ClInclude Include="include\syntropy\math\combinatorics.h" />

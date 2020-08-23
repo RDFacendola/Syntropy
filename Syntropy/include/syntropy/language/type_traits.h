@@ -13,6 +13,8 @@
 #include "syntropy/language/language.h"
 #include "syntropy/serialization/serialization_types.h"
 
+#include "syntropy/language/type_traits/qualifiers.h"
+
 namespace Syntropy
 {
     /************************************************************************/
@@ -31,10 +33,6 @@ namespace Syntropy
     template <typename TType>
     using RemoveReferenceT = std::remove_reference_t<TType>;
 
-    /// \brief Type equal to TType without const qualifier.
-    template <typename TType>
-    using RemoveConstT = std::remove_const_t<TType>;
-
     /// \brief Type equal to TType without top-most references and qualifiers.
     template <typename TType>
     using RemoveConstReferenceT = std::remove_cv_t<std::remove_reference_t<TType>>;
@@ -46,10 +44,6 @@ namespace Syntropy
     /// \brief Type equal to the type pointed by TType or equal to TType if it is not a pointer.
     template <typename TType>
     using RemovePointerT = std::remove_pointer_t<TType>;
-
-    /// \brief Add a const qualifier to a type.
-    template <typename TType>
-    using AddConstT = std::add_const_t<TType>;
 
     /// \brief Create a lvalue or rvalue reference type of TType.
     template <typename TType>
@@ -66,10 +60,6 @@ namespace Syntropy
     /// \brief Constant equal to true if TType is equal to UType, equal to false otherwise.
     template <typename TType, typename UType>
     inline constexpr Bool IsSameV = std::is_same_v<TType, UType>;
-
-    /// \brief Constant equal to true if TType is constant, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsConstV = std::is_const_v<TType>;
 
     /// \brief Constant equal to true if TType is trivial, equal to false otherwise.
     template <typename TType>

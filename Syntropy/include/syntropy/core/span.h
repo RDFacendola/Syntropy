@@ -78,7 +78,7 @@ namespace Syntropy
     using Span = SpanT<const TType>;
 
     /// \brief Alias for a span of read-write elements.
-    template <typename TType, typename = EnableIfT<!IsConstV<TType>>>
+    template <typename TType, typename = EnableIfT<!Traits::IsConst<TType>>>
     using RWSpan = SpanT<TType>;
 
     /// \brief Alias for a common type between two or more spans.
@@ -255,7 +255,7 @@ namespace Syntropy
     /// \brief Convert a read-only span to its read-write equivalent.
     /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
     template <typename TElement>
-    [[nodiscard]] constexpr RWSpan<RemoveConstT<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept;
+    [[nodiscard]] constexpr RWSpan<Traits::RemoveConst<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept;
 
     /// \brief Return either lhs if non-empty or lhs otherwise.
     template <typename TElement, typename UElement>
@@ -620,9 +620,9 @@ namespace Syntropy
     }
 
     template <typename TElement>
-    constexpr RWSpan<RemoveConstT<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept
+    constexpr RWSpan<Traits::RemoveConst<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept
     {
-        using TPointer = PointerT<RemoveConstT<TElement>>;
+        using TPointer = PointerT<Traits::RemoveConst<TElement>>;
 
         auto begin = const_cast<TPointer>(Begin(rhs));
         auto end = const_cast<TPointer>(End(rhs));
