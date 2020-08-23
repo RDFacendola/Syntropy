@@ -15,6 +15,7 @@
 
 #include "syntropy/language/type_traits/properties.h"
 #include "syntropy/language/type_traits/manipulation.h"
+#include "syntropy/language/type_traits/relationships.h"
 
 namespace Syntropy
 {
@@ -30,9 +31,7 @@ namespace Syntropy
     /* TYPE QUERY                                                           */
     /************************************************************************/
 
-    /// \brief Constant equal to true if TType is equal to UType, equal to false otherwise.
-    template <typename TType, typename UType>
-    inline constexpr Bool IsSameV = std::is_same_v<TType, UType>;
+
 
     /// \brief Constant equal to true if TType is copy-constructible, equal to false otherwise.
     template <typename TType>
@@ -46,9 +45,7 @@ namespace Syntropy
     template <typename TType>
     inline constexpr Bool IsTriviallyDefaultConstructibleV = std::is_trivially_default_constructible_v<TType>;
 
-    /// \brief Constant equal to true if TFrom is implicitly convertible to TTo, equal to false otherwise.
-    template <typename TFrom, typename TTo>
-    inline constexpr Bool IsConvertibleV = std::is_convertible_v<TFrom, TTo>;
+
 
     /************************************************************************/
     /* TYPE CATEGORIES                                                      */

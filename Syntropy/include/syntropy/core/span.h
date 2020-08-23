@@ -32,7 +32,7 @@ namespace Syntropy
         constexpr SpanT(TBegin begin, Int count) noexcept;
 
         /// \brief Create a span given a pointer to the first element and a pointer past the last element.
-        template <typename TBegin, typename TEnd, typename = EnableIfT<!IsConvertibleV<TEnd, Int>>>
+        template <typename TBegin, typename TEnd, typename = EnableIfT<!Traits::IsConvertible<TEnd, Int>>>
         constexpr SpanT(TBegin begin, TEnd end) noexcept;
 
         /// \brief Copy constructor.

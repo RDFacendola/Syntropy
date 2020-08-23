@@ -123,6 +123,7 @@
     <ClInclude Include="include\syntropy\language\fundamentals.h" />
     <ClInclude Include="include\syntropy\language\type_traits\properties.h" />
     <ClInclude Include="include\syntropy\language\type_traits\manipulation.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\relationships.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
