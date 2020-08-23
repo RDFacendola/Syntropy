@@ -10,25 +10,10 @@
 #include <cstdint>
 #include <cstddef>
 
+#include "syntropy/language/fundamentals.h"
+
 namespace Syntropy
 {
-    /************************************************************************/
-    /* FIXED-SIZE TYPES                                                     */
-    /************************************************************************/
-
-    // These types are meant only for storage and member variables. For every other uses see language/types.
-
-    /// \brief 8-bit integer value.
-    enum class Fix8 : std::int8_t {};
-
-    /// \brief 16-bit integer value.
-    enum class Fix16 : std::int16_t {};
-
-    /// \brief 32-bit integer value.
-    enum class Fix32 : std::int32_t {};
-
-    /// \brief 64-bit integer value.
-    enum class Fix64 : std::int64_t {};
 
     /************************************************************************/
     /* TYPE CAST                                                            */

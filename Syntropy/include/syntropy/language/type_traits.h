@@ -16,6 +16,7 @@
 #include "syntropy/language/type_traits/properties.h"
 #include "syntropy/language/type_traits/manipulation.h"
 #include "syntropy/language/type_traits/relationships.h"
+#include "syntropy/language/type_traits/categories.h"
 
 namespace Syntropy
 {
@@ -31,8 +32,6 @@ namespace Syntropy
     /* TYPE QUERY                                                           */
     /************************************************************************/
 
-
-
     /// \brief Constant equal to true if TType is copy-constructible, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsCopyConstructibleV = std::is_copy_constructible_v<TType>;
@@ -44,25 +43,6 @@ namespace Syntropy
     /// \brief Constant equal to true if TType is trivially default constructible, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsTriviallyDefaultConstructibleV = std::is_trivially_default_constructible_v<TType>;
-
-
-
-    /************************************************************************/
-    /* TYPE CATEGORIES                                                      */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TType is boolean, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsBooleanV = IsSameV<TType, Bool>;
-
-    /// \brief Constant equal to true if TType is integral, equal to false otherwise.
-    /// Differently from standard's std::is_integral, booleans and chars are not considered integral types.
-    template <typename TType>
-    inline constexpr Bool IsIntegralV = IsSameV<TType, Int> || IsSameV<TType, Fix8> || IsSameV<TType, Fix16> || IsSameV<TType, Fix32> || IsSameV<TType, Fix64>;
-
-    /// \brief Constant equal to true if TType is a floating point, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsFloatingPointV = IsSameV<TType, Float>;
 
     /************************************************************************/
     /* TYPE TRANSFORMATIONS                                                 */
