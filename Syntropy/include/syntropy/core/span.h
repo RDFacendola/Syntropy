@@ -83,7 +83,7 @@ namespace Syntropy
 
     /// \brief Alias for a common type between two or more spans.
     template <typename... TElements>
-    using CommonSpan = SpanT<RemovePointerT<CommonTypeT<AddPointerT<TElements>...>>>;
+    using CommonSpan = SpanT<Traits::RemovePointer<CommonTypeT<Traits::AddPointer<TElements>...>>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */

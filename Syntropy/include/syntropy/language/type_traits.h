@@ -13,7 +13,8 @@
 #include "syntropy/language/language.h"
 #include "syntropy/serialization/serialization_types.h"
 
-#include "syntropy/language/type_traits/qualifiers.h"
+#include "syntropy/language/type_traits/properties.h"
+#include "syntropy/language/type_traits/manipulation.h"
 
 namespace Syntropy
 {
@@ -29,29 +30,9 @@ namespace Syntropy
     /* TYPE MANIPULATION                                                    */
     /************************************************************************/
 
-    /// \brief Type equal to TType without top-most reference.
-    template <typename TType>
-    using RemoveReferenceT = std::remove_reference_t<TType>;
-
-    /// \brief Type equal to TType without top-most references and qualifiers.
-    template <typename TType>
-    using RemoveConstReferenceT = std::remove_cv_t<std::remove_reference_t<TType>>;
-
     /// \brief Type equal to TType without top-most references, qualifiers and extents.
     template <typename TType>
     using RemoveExtentsConstReferenceT = std::remove_cv_t<std::remove_all_extents_t<std::remove_reference_t<TType>>>;
-
-    /// \brief Type equal to the type pointed by TType or equal to TType if it is not a pointer.
-    template <typename TType>
-    using RemovePointerT = std::remove_pointer_t<TType>;
-
-    /// \brief Create a lvalue or rvalue reference type of TType.
-    template <typename TType>
-    using AddRValueReferenceT = std::add_rvalue_reference_t<TType>;
-
-    /// \brief Type equal to the pointer to TType.
-    template <typename TType>
-    using AddPointerT = std::add_pointer_t<TType>;
 
     /************************************************************************/
     /* TYPE QUERY                                                           */

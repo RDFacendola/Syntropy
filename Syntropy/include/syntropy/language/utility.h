@@ -109,7 +109,7 @@ namespace Syntropy
     /// possible to use member functions in decltype expressions without 
     /// the need to go through constructors.
     template<class TType>
-    typename AddRValueReferenceT<TType> Declval() noexcept;
+    typename Traits::AddRValueReference<TType> Declval() noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -134,7 +134,7 @@ namespace Syntropy
     // Non-member functions.
 
     template<class TType>
-    typename AddRValueReferenceT<TType> Declval() noexcept
+    typename Traits::AddRValueReference<TType> Declval() noexcept
     {
         return std::declval<TType>();
     }
