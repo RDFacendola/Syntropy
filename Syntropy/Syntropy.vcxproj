@@ -15,8 +15,8 @@
     <ClInclude Include="include\syntropy\allocators\fallback_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\quota_allocator.h" />
     <ClInclude Include="include\syntropy\allocators\virtual_stack_allocator.h" />
-    <ClInclude Include="include\syntropy\language\fundamentals\access.h" />
-    <ClInclude Include="include\syntropy\language\fundamentals\casts.h" />
+    <ClInclude Include="include\syntropy\core\core.h" />
+    <ClInclude Include="include\syntropy\language\fundamentals\conversions.h" />
     <ClInclude Include="include\syntropy\language\fundamentals\support.h" />
     <ClInclude Include="include\syntropy\language\fundamentals\types.h" />
     <ClInclude Include="include\syntropy\language\type_traits\constants.h" />
@@ -87,6 +87,7 @@
     <ClInclude Include="include\syntropy\language\type_traits\operations.h" />
     <ClInclude Include="include\syntropy\language\type_traits\properties.h" />
     <ClInclude Include="include\syntropy\language\type_traits\relationships.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\utility.h" />
     <ClInclude Include="include\syntropy\language\visitor.h" />
     <ClInclude Include="include\syntropy\math\bits.h" />
     <ClInclude Include="include\syntropy\math\combinatorics.h" />

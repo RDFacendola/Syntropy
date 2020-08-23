@@ -7,6 +7,5 @@
 #pragma once
 
 #include "syntropy/language/fundamentals/types.h"
-#include "syntropy/language/fundamentals/casts.h"
+#include "syntropy/language/fundamentals/conversions.h"
 #include "syntropy/language/fundamentals/support.h"
-#include "syntropy/language/fundamentals/access.h"

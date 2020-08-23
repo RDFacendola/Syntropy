@@ -1,5 +1,5 @@
 
-/// \file casts.h
+/// \file conversions.h
 /// \brief This header is part of Syntropy language module. It contains definitions to convert between fundamental types.
 ///
 /// \author Raffaele D. Facendola - August  2020
