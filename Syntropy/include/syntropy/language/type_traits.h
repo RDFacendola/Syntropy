@@ -38,47 +38,6 @@ namespace Syntropy
     using CommonTypeT = std::common_type_t<TTypes...>;
 
     /************************************************************************/
-    /* STRIP                                                                */
-    /************************************************************************/
-
-    /// \brief Type equal to TType after being stripped of either all references or extents, an indirection level or all qualifiers (in this order).
-    template <typename TType>
-    struct Strip : std::conditional<std::is_array<TType>::value || std::is_reference<TType>::value,
-        std::remove_all_extents_t<std::remove_reference_t<TType>>,              // Remove references and extents from the outermost level (mutually exclusive)
-        std::conditional_t<std::is_pointer<TType>::value,
-        std::remove_pointer_t<TType>,                                           // Remove a pointer level (removes qualifiers as well)
-        std::remove_cv_t<TType>>> {};                                           // Remove const and volatile qualifiers from the innermost level
-
-    /// \brief Helper type Strip<TType>.
-    template <typename TType>
-    using StripT = typename Strip<TType>::type;
-
-    /************************************************************************/
-    /* CLASS NAMES                                                          */
-    /************************************************************************/
-
-    /// \brief Provides a member typedef which is the same as TType except that any pointer, qualifiers, references and extents are removed recursively.
-    /// For example: ClassName<int ** const *[1][3]> has a member Type 'int'.
-    template <typename TType, typename = void>
-    struct ClassName
-    {
-        using Type = TType;
-    };
-
-    /// \brief Recursive specialization which strips an indirection level \ qualifiers until the class name is reached.
-    template <typename TType>
-    struct ClassName<TType, std::enable_if_t<!std::is_same_v<StripT<TType>, TType>>> : ClassName<StripT<TType>> {};
-
-    /// \brief Helper type for ClassName<TType>.
-    template <typename TType>
-    using ClassNameT = typename ClassName<TType>::Type;
-
-    /// \brief Constant equal to true if TType is a class name without reference, qualifiers, extents and indirection levels, equal to false otherwise.
-    template <typename TType>
-    constexpr Bool IsClassNameV = std::is_same<ClassNameT<TType>, TType>::value;
-
-
-    /************************************************************************/
     /* ALWAYS FALSE                                                         */
     /************************************************************************/
 
