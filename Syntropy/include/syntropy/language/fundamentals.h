@@ -10,12 +10,11 @@
 
 #include "syntropy/language/fundamentals/types.h"
 #include "syntropy/language/fundamentals/casts.h"
+#include "syntropy/language/fundamentals/support.h"
 
 // Pointer (ReadOnly \ ReadWrite)
 // Reference (ReadOnly \ ReadWrite)
-// Casts
 // ReadOnly \ ReadWrite
-// Move \ Forward \ Declval
 
 namespace Syntropy
 {
