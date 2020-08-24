@@ -73,4 +73,20 @@ namespace Syntropy::Traits
     template <typename TType>
     inline constexpr Bool IsClass = std::is_class_v<TType>;
 
+    /************************************************************************/
+    /* IS LVALUE REFERENCE                                                  */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is a lvalue reference, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsLValueReference = std::is_lvalue_reference_v<TType>;
+
+    /************************************************************************/
+    /* IS RVALUE REFERENCE                                                  */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is a rvalue reference, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsRValueReference = std::is_rvalue_reference_v<TType>;
+
 }

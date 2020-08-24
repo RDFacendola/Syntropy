@@ -123,7 +123,7 @@ namespace Syntropy
         /// \brief Insert an element before position by constructing it in-place from arguments.
         /// \return Returns an iterator to the inserted element.
         template <typename... TArguments>
-        constexpr PointerT<TElement> Insert(Pointer<TElement> position, TArguments&&... arguments) noexcept;
+        constexpr XPointer<TElement> Insert(Pointer<TElement> position, TArguments&&... arguments) noexcept;
 
         /// \brief Insert count copies of element before position.
         /// \return Returns a span to the inserted elements.
@@ -363,7 +363,7 @@ namespace Syntropy
 
     template <typename TElement>
     template <typename... TArguments>
-    constexpr PointerT<TElement> Array<TElement>::Insert(Pointer<TElement> position, TArguments&&... arguments) noexcept
+    constexpr XPointer<TElement> Array<TElement>::Insert(Pointer<TElement> position, TArguments&&... arguments) noexcept
     {
         return {};
     }

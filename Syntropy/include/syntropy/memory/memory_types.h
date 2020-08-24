@@ -7,8 +7,8 @@
 #pragma once
 
 #include <ostream>
-#include <type_traits>
 
+#include "syntropy/language/type_traits.h"
 #include "syntropy/language/fundamentals.h"
 
 namespace Syntropy
@@ -25,15 +25,15 @@ namespace Syntropy
     /* POINTER TYPES                                                        */
     /************************************************************************/
 
-    /// \brief A non-owning raw pointer to a memory location.
-    template <typename TByte, typename = std::enable_if_t<std::is_same_v<TByte, Byte> || std::is_same_v<TByte, const Byte>>>
-    using BytePtrT = PointerT<TByte>;
-
     /// \brief A non-owning raw pointer to a read-only memory location.
     using BytePtr = Pointer<Byte>;
 
     /// \brief A non-owning raw pointer to a read-write memory location.
     using RWBytePtr = RWPointer<Byte>;
+
+    /// \brief A non-owning raw pointer to a memory location.
+    template <typename TByte, typename = Traits::EnableIf<Traits::IsSame<TByte, Traits::RemoveConst<Byte>>>>
+    using XBytePtr = XPointer<TByte>;
 
     /// \brief A non-owning pointer to a typeless read-only memory location.
     /// A typeless pointer binds to any strongly-typed pointer.
