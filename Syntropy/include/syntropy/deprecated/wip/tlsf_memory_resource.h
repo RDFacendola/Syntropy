@@ -133,7 +133,7 @@ namespace syntropy
     template <typename TMemoryResource>
     template <typename... TArguments>
     TLSFMemoryResource<TMemoryResource>::TLSFMemoryResource(std::int64_t first_levels, std::int64_t second_level_bits, TArguments&&... arguments)
-        : memory_resource_(std::forward<TArguments>(arguments)...)
+        : memory_resource_(Forward<TArguments>(arguments)...)
         , first_levels_(first_levels)
         , second_levels_(std::int64_t{ 1 } << second_level_bits)
         , second_level_bits_(second_level_bits)
@@ -148,12 +148,12 @@ namespace syntropy
 
     template <typename TMemoryResource>
     TLSFMemoryResource<TMemoryResource>::TLSFMemoryResource(TLSFMemoryResource&& rhs)
-        : memory_resource_(std::move(rhs.memory_resource_))
+        : memory_resource_(Move(rhs.memory_resource_))
         , first_levels_(rhs.first_levels_)
         , second_levels_(rhs.second_levels_)
         , second_level_bits_(rhs.second_level_bits_)
-        , second_bitmaps_(std::move(rhs.second_bitmaps_))
-        , free_lists_(std::move(rhs.free_lists_))
+        , second_bitmaps_(Move(rhs.second_bitmaps_))
+        , free_lists_(Move(rhs.free_lists_))
     {
         rhs.second_bitmaps_ = {};
         rhs.free_lists_ = {};

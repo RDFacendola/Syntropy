@@ -151,7 +151,7 @@ namespace Syntropy
     template <typename TAllocator>
     template <typename... TArguments>
     inline StackAllocator<TAllocator>::StackAllocator(Bytes granularity, TArguments&&... arguments) noexcept
-        : allocator_(std::forward<TArguments>(arguments)...)
+        : allocator_(Forward<TArguments>(arguments)...)
         , granularity_(granularity)
     {
 
@@ -159,7 +159,7 @@ namespace Syntropy
 
     template <typename TAllocator>
     inline StackAllocator<TAllocator>::StackAllocator(StackAllocator&& rhs) noexcept
-        : allocator_(std::move(rhs.allocator_))
+        : allocator_(Move(rhs.allocator_))
         , granularity_(rhs.granularity_)
         , chunk_(rhs.chunk_)
     {

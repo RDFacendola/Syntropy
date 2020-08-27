@@ -176,7 +176,7 @@ namespace Syntropy
     }
 
     inline StreamBuffer::StreamBuffer(Memory::Buffer&& buffer)
-        : buffer_(std::move(buffer))
+        : buffer_(Move(buffer))
         , base_pointer_(Begin(buffer_.GetData()))
         , size_(Memory::Size(buffer_))
         , append_size_(size_)

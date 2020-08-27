@@ -148,7 +148,9 @@ namespace Syntropy
 
     inline RWBytePtr Memory::Align(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        return ReadWrite(Align(ReadOnly(pointer), alignment));
+        auto x = Align(ReadOnly(pointer), alignment);
+
+        return ReadWrite(x);
     }
 
     inline BytePtr Memory::AlignDown(BytePtr pointer, Alignment alignment) noexcept
@@ -162,7 +164,9 @@ namespace Syntropy
 
     inline RWBytePtr Memory::AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        return ReadWrite(AlignDown(ReadOnly(pointer), alignment));
+        auto x = AlignDown(ReadOnly(pointer), alignment);
+        
+        return ReadWrite(x);
     }
 
     // Non-member functions.

@@ -161,7 +161,7 @@ namespace Syntropy
     template <typename TAllocator>
     template <typename... TArguments>
     inline AllocatorT<TAllocator>::AllocatorT(TArguments&&... arguments) noexcept
-        : allocator_(std::forward<TArguments>(arguments)...)
+        : allocator_(Forward<TArguments>(arguments)...)
     {
 
     }

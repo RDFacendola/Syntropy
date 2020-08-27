@@ -75,7 +75,7 @@ namespace Syntropy
                 drive_info.total_space_ = ToBytes(size.QuadPart);
                 drive_info.available_space_ = ToBytes(available_space.QuadPart);
 
-                storage_info.drives_.emplace_back(std::move(drive_info));
+                storage_info.drives_.emplace_back(Move(drive_info));
             }
 
             ++unit_path[0];
@@ -136,7 +136,7 @@ namespace Syntropy
                     monitor_info.refresh_rate_ = static_cast<Float>(dev_mode.dmDisplayFrequency);
                     monitor_info.device_name_ = monitor_device.DeviceString;
 
-                    display_info.monitors_.emplace_back(std::move(monitor_info));
+                    display_info.monitors_.emplace_back(Move(monitor_info));
                 }
             }
 

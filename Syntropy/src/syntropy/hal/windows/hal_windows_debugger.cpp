@@ -186,7 +186,7 @@ namespace Syntropy
 
     StackTrace HALDebugger::GetStackTrace(StackTraceElement here)
     {
-        return WindowsDebugger::GetSingleton().GetStackTrace(std::move(here));
+        return WindowsDebugger::GetSingleton().GetStackTrace(Move(here));
     }
 
 }

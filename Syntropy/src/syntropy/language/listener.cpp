@@ -20,7 +20,7 @@ namespace Syntropy
 
             rhs->previous_event_ = tail;
 
-            tail->next_event_ = std::move(rhs);
+            tail->next_event_ = Move(rhs);
         }
     }
 
@@ -33,9 +33,9 @@ namespace Syntropy
 
         if (previous_event_)
         {
-            auto unique_this = std::move(previous_event_->next_event_);     // When the pointer goes out of scope "this" gets destroyed.
+            auto unique_this = Move(previous_event_->next_event_);     // When the pointer goes out of scope "this" gets destroyed.
 
-            previous_event_->next_event_ = std::move(next_event_);
+            previous_event_->next_event_ = Move(next_event_);
 
             return unique_this;                                             // Return the ownership of this to the owner.
         }
@@ -45,7 +45,7 @@ namespace Syntropy
 
     UniquePtr<EventHandler> EventHandler::ReleaseNextEvents()
     {
-        if (auto next_event = std::move(next_event_))
+        if (auto next_event = Move(next_event_))
         {
             SYNTROPY_ASSERT(this == next_event->previous_event_);
 

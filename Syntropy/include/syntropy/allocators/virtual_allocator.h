@@ -104,7 +104,7 @@ namespace Syntropy
     inline VirtualAllocator::VirtualAllocator(VirtualAllocator&& rhs) noexcept
         : page_size_(rhs.page_size_)
         , free_page_index_(rhs.free_page_index_)
-        , allocator_(std::move(rhs.allocator_))
+        , allocator_(Move(rhs.allocator_))
     {
         rhs.free_page_index_ = nullptr;
     }

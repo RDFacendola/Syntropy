@@ -141,7 +141,7 @@ namespace Syntropy
     template <typename TStyle>
     template <typename... TArguments>
     inline ConsoleStyleT<TStyle>::ConsoleStyleT(TArguments&&... arguments)
-        : style_(std::forward<TArguments>(arguments)...)
+        : style_(Forward<TArguments>(arguments)...)
     {
 
     }
@@ -151,11 +151,11 @@ namespace Syntropy
     {
         auto active_section = MakeUnique<NestedSection>();
 
-        active_section->outer_section_ = std::move(active_section_);
+        active_section->outer_section_ = Move(active_section_);
 
         active_section->section_ = AutoConsoleOutputSection<TStyle>::FindSection(section_type);
 
-        active_section_ = std::move(active_section);
+        active_section_ = Move(active_section);
 
         return active_section_->section_->Push(style_, text);
     }
@@ -163,11 +163,11 @@ namespace Syntropy
     template <typename TStyle>
     inline String ConsoleStyleT<TStyle>::PopSection()
     {
-        auto outer_section = std::move(active_section_->outer_section_);
+        auto outer_section = Move(active_section_->outer_section_);
 
         auto result = active_section_->section_->Pop(style_);
 
-        active_section_ = std::move(outer_section);
+        active_section_ = Move(outer_section);
 
         return result;
     }
@@ -203,7 +203,7 @@ namespace Syntropy
     template <typename TStyle, typename... TArguments>
     inline UniquePtr<ConsoleStyleT<TStyle>> NewConsoleStyle(TArguments&&... arguments)
     {
-        return MakeUnique<ConsoleStyleT<TStyle>>(std::forward<TArguments>(arguments)...);
+        return MakeUnique<ConsoleStyleT<TStyle>>(Forward<TArguments>(arguments)...);
     }
 
 }

@@ -96,15 +96,15 @@ namespace Syntropy
     template <typename TAllocator, typename TFallback>
     template <typename TArguments, typename TFallbackArguments>
     inline FallbackAllocator<TAllocator, TFallback>::FallbackAllocator(TArguments&& arguments, TFallbackArguments&& fallback_arguments) noexcept
-        : allocator_(std::make_from_tuple<TAllocator>(std::forward<TArguments>(arguments)))
-        , fallback_(std::make_from_tuple<TFallback>(std::forward<TFallbackArguments>(fallback_arguments)))
+        : allocator_(std::make_from_tuple<TAllocator>(Forward<TArguments>(arguments)))
+        , fallback_(std::make_from_tuple<TFallback>(Forward<TFallbackArguments>(fallback_arguments)))
     {
 
     }
     template <typename TAllocator, typename TFallback>
     template <typename TArguments>
     inline FallbackAllocator<TAllocator, TFallback>::FallbackAllocator(TArguments&& arguments, DefaultConstructT) noexcept
-        : allocator_(std::make_from_tuple<TAllocator>(std::forward<TArguments>(arguments)))
+        : allocator_(std::make_from_tuple<TAllocator>(Forward<TArguments>(arguments)))
     {
 
     }
@@ -112,7 +112,7 @@ namespace Syntropy
     template <typename TAllocator, typename TFallback>
     template <typename TFallbackArguments>
     inline FallbackAllocator<TAllocator, TFallback>::FallbackAllocator(DefaultConstructT, TFallbackArguments&& fallback_arguments) noexcept
-        : fallback_(std::make_from_tuple<TFallback>(std::forward<TFallbackArguments>(fallback_arguments)))
+        : fallback_(std::make_from_tuple<TFallback>(Forward<TFallbackArguments>(fallback_arguments)))
     {
 
     }

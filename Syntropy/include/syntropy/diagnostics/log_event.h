@@ -121,9 +121,9 @@ namespace Syntropy
 
     inline LogEvent::LogEvent(Severity severity, Context context, StackTrace stack_trace, String message)
         : severity_(severity)
-        , context_(std::move(context))
-        , stack_trace_(std::move(stack_trace))
-        , message_(std::move(message))
+        , context_(Move(context))
+        , stack_trace_(Move(stack_trace))
+        , message_(Move(message))
     {
 
     }
@@ -167,9 +167,9 @@ namespace Syntropy
 
         auto builder_cleanup = MakeScopeGuard([]() { message_builder.str(""); });
 
-        (message_builder << ... << std::forward<TMessage>(message));
+        (message_builder << ... << Forward<TMessage>(message));
 
-        return LogEvent(severity, std::move(context), std::move(stack_trace), message_builder.str());
+        return LogEvent(severity, Move(context), Move(stack_trace), message_builder.str());
     }
 
     inline std::ostream& operator<<(std::ostream& out, const LogEvent& log_event)

@@ -63,7 +63,7 @@ namespace Syntropy
         template <typename TFunction, typename... TTuples, Int... Is>
         inline constexpr void LockstepApply(TFunction&& function, TTuples&&... tuples, std::index_sequence<Is...>)
         {
-            (LockstepApplyAt<Is>(std::forward<TFunction>(function), std::forward<TTuples>(tuples)...), ...);
+            (LockstepApplyAt<Is>(Forward<TFunction>(function), Forward<TTuples>(tuples)...), ...);
         }
     }
 
@@ -72,7 +72,7 @@ namespace Syntropy
     template <typename TFunction, typename... TTuples>
     constexpr void LockstepApply(TFunction&& function, TTuples&&... tuples)
     {
-        details::LockstepApply<TFunction, TTuples...>(std::forward<TFunction>(function), std::forward<TTuples>(tuples)..., std::make_index_sequence<LockstepRankV<std::decay_t<TTuples>...>>{});
+        details::LockstepApply<TFunction, TTuples...>(Forward<TFunction>(function), Forward<TTuples>(tuples)..., std::make_index_sequence<LockstepRankV<std::decay_t<TTuples>...>>{});
     }
 
     template <Int I, typename TFunction, typename... TTuples>
@@ -88,7 +88,7 @@ namespace Syntropy
     template <Int index, typename TTuple>
     constexpr decltype(auto) Get(TTuple&& tuple) noexcept
     {
-        return std::get<static_cast<std::size_t>(index)>(std::forward<TTuple>(tuple));
+        return std::get<static_cast<std::size_t>(index)>(Forward<TTuple>(tuple));
     }
 
 }

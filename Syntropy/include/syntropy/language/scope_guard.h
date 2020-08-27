@@ -71,7 +71,7 @@ namespace Syntropy
 
     template <typename TFunctor>
     inline ScopeGuard<TFunctor>::ScopeGuard(TFunctor functor)
-        : functor_(std::move(functor))
+        : functor_(Move(functor))
         , dismissed_(false) 
     {
 
@@ -79,7 +79,7 @@ namespace Syntropy
 
     template <typename TFunctor>
     inline ScopeGuard<TFunctor>::ScopeGuard(ScopeGuard && other)
-        : functor_(std::move(other.functor_))
+        : functor_(Move(other.functor_))
         , dismissed_(other.dismissed_)
     {
         other.Dismiss();
@@ -105,7 +105,7 @@ namespace Syntropy
     template <typename TFunctor>
     inline  ScopeGuard<TFunctor> MakeScopeGuard(TFunctor functor)
     {
-        return ScopeGuard<TFunctor>(std::move(functor));
+        return ScopeGuard<TFunctor>(Move(functor));
     }
 
 }

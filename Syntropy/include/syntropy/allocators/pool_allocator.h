@@ -155,7 +155,7 @@ namespace Syntropy
     template <typename TAllocator>
     template <typename... TArguments>
     inline PoolAllocator<TAllocator>::PoolAllocator(Bytes block_size, Bytes chunk_size, TArguments&&... arguments) noexcept
-        : allocator_(std::forward<TArguments>(arguments)...)
+        : allocator_(Forward<TArguments>(arguments)...)
         , chunk_size_(chunk_size)
         , block_size_(Math::Max(block_size, Memory::SizeOf<FreeBlock>()))               // Free blocks in a chunk are chained together: each block must be large enough to fit a pointer.
     {
@@ -164,7 +164,7 @@ namespace Syntropy
 
     template <typename TAllocator>
     inline PoolAllocator<TAllocator>::PoolAllocator(PoolAllocator&& rhs) noexcept
-        : allocator_(std::move(rhs.allocator_))
+        : allocator_(Move(rhs.allocator_))
         , chunk_size_(rhs.chunk_size_)
         , block_size_(rhs.block_size_)
         , available_chunks_(rhs.available_chunks_)

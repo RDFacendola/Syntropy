@@ -820,19 +820,19 @@ namespace Syntropy
     template <typename TVector>
     inline decltype(auto) Math::XY(TVector&& rhs)
     {
-        return Shuffle<0, 1>(std::forward<TVector>(rhs));
+        return Shuffle<0, 1>(Forward<TVector>(rhs));
     }
 
     template <typename TVector>
     inline decltype(auto) Math::ZW(TVector&& rhs)
     {
-        return Shuffle<2, 3>(std::forward<TVector>(rhs));
+        return Shuffle<2, 3>(Forward<TVector>(rhs));
     }
 
     template <typename TVector>
     inline decltype(auto) Math::XYZ(TVector&& rhs)
     {
-        return Shuffle<0, 1, 2>(std::forward<TVector>(rhs));
+        return Shuffle<0, 1, 2>(Forward<TVector>(rhs));
     }
 
     template <typename T, typename U, Int kRank>

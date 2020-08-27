@@ -347,7 +347,7 @@ namespace Syntropy
     {
         static_assert(sizeof...(TValues) == sizeof...(TStreams), "Invalid argument count.");
 
-        PushBack<0>(std::forward<TValues>(values)...);
+        PushBack<0>(Forward<TValues>(values)...);
     }
 
     template <typename... TStreams>
@@ -366,7 +366,7 @@ namespace Syntropy
         {
             if (index < static_cast<Int>(stream.size()) - 1)
             {
-                stream[index] = std::move(stream.back());
+                stream[index] = Move(stream.back());
             }
 
             stream.pop_back();
@@ -397,14 +397,14 @@ namespace Syntropy
     template <typename... TStreamTypes, typename TOperation>
     inline void StreamVector<TStreams...>::ForEach(TOperation&& operation)
     {
-        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
+        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(Forward<TOperation>(operation));
     }
 
     template <typename... TStreams>
     template <typename... TStreamTypes, typename TOperation>
     inline void StreamVector<TStreams...>::ForEach(TOperation&& operation) const
     {
-        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
+        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(Forward<TOperation>(operation));
     }
 
     template <typename... TStreams>
@@ -455,9 +455,9 @@ namespace Syntropy
     template <Int kStream, typename TValue, typename... TValues>
     inline void StreamVector<TStreams...>::PushBack(TValue&& value, TValues&&... values)
     {
-        std::get<kStream>(streams_).emplace_back(std::forward<TValue>(value));
+        std::get<kStream>(streams_).emplace_back(Forward<TValue>(value));
 
-        PushBack<kStream + 1>(std::forward<TValues>(values)...);
+        PushBack<kStream + 1>(Forward<TValues>(values)...);
     }
 
     template <typename... TStreams>
@@ -471,7 +471,7 @@ namespace Syntropy
     template <typename TOperation>
     inline void StreamVector<TStreams...>::ForEachStream(TOperation&& operation)
     {
-        ForEachStream(std::forward<TOperation>(operation), std::index_sequence_for<TStreams...>{});
+        ForEachStream(Forward<TOperation>(operation), std::index_sequence_for<TStreams...>{});
     }
 
     template <typename... TStreams>

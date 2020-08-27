@@ -47,7 +47,7 @@ namespace syntropy
 
             static_assert(std::is_constructible_v<TConcrete, TArguments...>, "TConcrete must be constructible from TArguments.");
 
-            auto[it, success] = interfaces_.emplace(typeid(TInterface), [interface = TConcrete(std::forward<TArguments>(arguments)...)]() mutable
+            auto[it, success] = interfaces_.emplace(typeid(TInterface), [interface = TConcrete(Forward<TArguments>(arguments)...)]() mutable
             {
                 return &interface;
             });

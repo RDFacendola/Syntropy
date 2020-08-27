@@ -71,7 +71,7 @@ namespace Syntropy
 
         auto object = FromTypeless<TType>(memory_resource.Allocate(Memory::SizeOf<TType>(), Memory::AlignmentOf<TType>()).GetData());
 
-        ConstructAt(object, std::forward<TArguments>(arguments)...);
+        ConstructAt(object, Forward<TArguments>(arguments)...);
 
         return UniquePtr<TType>(object, MakePolymorphicDeleter<TType>(memory_resource));
     }
@@ -79,7 +79,7 @@ namespace Syntropy
     template <typename TType, typename... TArguments>
     inline SharedPtr<TType> MakeShared(TArguments&&... arguments)
     {
-        return std::allocate_shared<TType>(PolymorphicAllocator<TType>{}, std::forward<TArguments>(arguments)...);
+        return std::allocate_shared<TType>(PolymorphicAllocator<TType>{}, Forward<TArguments>(arguments)...);
     }
 
     template <typename TType>

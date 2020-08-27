@@ -112,7 +112,7 @@ namespace Syntropy::serialization
 
             if (file)
             {
-                return std::make_optional<diagnostics::FileLogChannel>(std::move(*file), std::move(*format), std::move(*contexts), *verbosity);
+                return std::make_optional<diagnostics::FileLogChannel>(Move(*file), Move(*format), Move(*contexts), *verbosity);
             }
 
             return std::nullopt;
@@ -225,7 +225,7 @@ namespace Syntropy::serialization
 // 
 //             if (name && capacity)
 //             {
-//                 return LinearSegregatedFitAllocator(std::move(*name), *capacity, *class_size, *order, *page_size);
+//                 return LinearSegregatedFitAllocator(Move(*name), *capacity, *class_size, *order, *page_size);
 //             }
 // 
 //             return std::nullopt;
@@ -245,7 +245,7 @@ namespace Syntropy::serialization
 // 
 //             if (name && capacity)
 //             {
-//                 return ExponentialSegregatedFitAllocator(std::move(*name), *capacity, *class_size, *order);
+//                 return ExponentialSegregatedFitAllocator(Move(*name), *capacity, *class_size, *order);
 //             }
 // 
 //             return std::nullopt;
@@ -264,7 +264,7 @@ namespace Syntropy::serialization
 // 
 //             if (name && capacity)
 //             {
-//                 return TwoLevelSegregatedFitAllocator(std::move(*name), *capacity, *second_level_index);
+//                 return TwoLevelSegregatedFitAllocator(Move(*name), *capacity, *second_level_index);
 //             }
 // 
 //             return std::nullopt;

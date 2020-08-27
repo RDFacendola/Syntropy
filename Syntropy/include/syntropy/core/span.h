@@ -244,19 +244,6 @@ namespace Syntropy
     template <typename TBegin, typename TEnd>
     constexpr auto MakeSpan(XPointer<TBegin> begin, XPointer<TEnd> end) noexcept;
 
-    /// \brief Convert a span to its read-only equivalent.
-    template <typename TElement>
-    [[nodiscard]] constexpr Span<TElement> ReadOnly(const SpanT<TElement>& rhs);
-
-    /// \brief Const rvalue reference deleted to disallow rvalue arguments.
-    template <typename TElement>
-    constexpr void ReadOnly(const SpanT<TElement>&&) = delete;
-
-    /// \brief Convert a read-only span to its read-write equivalent.
-    /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
-    template <typename TElement>
-    [[nodiscard]] constexpr RWSpan<Traits::RemoveConst<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept;
-
     /// \brief Return either lhs if non-empty or lhs otherwise.
     template <typename TElement, typename UElement>
     [[nodiscard]] constexpr CommonSpan<TElement, UElement> Either(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
@@ -264,6 +251,26 @@ namespace Syntropy
     /// \brief Stream insertion for Spans.
     template <typename TElement>
     std::ostream& operator<<(std::ostream& lhs, const SpanT<TElement>& rhs);
+
+    // Read-only \ read-write.
+
+    /// \brief Convert a span to its read-only equivalent.
+    template <typename TElement>
+    [[nodiscard]] constexpr Span<TElement> ReadOnly(const SpanT<TElement>& rhs) noexcept;
+
+    /// \brief Convert a span to its read-only equivalent.
+    template <typename TElement>
+    [[nodiscard]] constexpr Span<TElement> ReadOnly(SpanT<TElement>&&) noexcept;
+
+    /// \brief Convert a read-only span to its read-write equivalent.
+    /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
+    template <typename TElement>
+    [[nodiscard]] constexpr RWSpan<Traits::RemoveConst<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept;
+
+    /// \brief Convert a read-only span to its read-write equivalent.
+    /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
+    template <typename TElement>
+    [[nodiscard]] constexpr RWSpan<Traits::RemoveConst<TElement>> ReadWrite(SpanT<TElement>&& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -613,8 +620,16 @@ namespace Syntropy
         return Span<TSpan>{ begin, end };
     }
 
+    // Read-only \ read-write.
+
     template <typename TElement>
-    constexpr Span<TElement> ReadOnly(const SpanT<TElement>& rhs)
+    constexpr Span<TElement> ReadOnly(const SpanT<TElement>& rhs) noexcept
+    {
+        return rhs;
+    }
+
+    template <typename TElement>
+    constexpr Span<TElement> ReadOnly(SpanT<TElement>&& rhs) noexcept
     {
         return rhs;
     }
@@ -628,6 +643,12 @@ namespace Syntropy
         auto end = const_cast<TPointer>(End(rhs));
 
         return { begin, end };
+    }
+
+    template <typename TElement>
+    constexpr RWSpan<Traits::RemoveConst<TElement>> ReadWrite(SpanT<TElement>&& rhs) noexcept
+    {
+        return ReadWrite(rhs);
     }
 
     template <typename TElement, typename UElement>

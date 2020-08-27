@@ -18,16 +18,18 @@ namespace Syntropy
     /* POINTER                                                              */
     /************************************************************************/
 
-    /// \brief Type alias for a non-owning pointer to a *read-only* pointee. This pointer doesn't participate to pointee life-time.
+    /// \brief Type alias for a pointer to a *read-only* pointee. This pointer doesn't participate to pointee life-time.
+    /// Binds to both read-only and read-write pointers.
     template <typename TType>
     using Pointer = const TType*;
 
-    /// \brief Type alias for a non-owning pointer to a *read-write* pointee. This pointer doesn't participate to pointee life-time.
-    /// TType is required to be non-const.
+    /// \brief Type alias for a pointer to a *read-write* pointee. This pointer doesn't participate to pointee life-time.
+    /// TType must be non-constant (aka read-write).
     template <typename TType, typename = Traits::EnableIf<!Traits::IsConst<TType>>>
     using RWPointer = TType*;
 
-    /// \brief Type alias for a non-owning pointer to either a *read-only* or *read-write* pointee. This Pointer doesn't participate to pointee life-time.
+    /// \brief Type alias for a pointer to either a *read-only* or *read-write* pointee. This Pointer doesn't participate to pointee life-time.
+    /// Depending on TType, this type is either equal to Pointer<TType or to RWPointer<T>.
     template <typename TType>
     using XPointer = TType*;
 
@@ -90,7 +92,7 @@ namespace Syntropy
     template <typename TType>
     constexpr RWPointer<TType> ReadWrite(Pointer<TType> rhs) noexcept
     {
-        return rhs ? AddressOf(ReadWrite(*rhs)) : nullptr;
+        return const_cast<RWPointer<TType>>(rhs);
     }
 
 }

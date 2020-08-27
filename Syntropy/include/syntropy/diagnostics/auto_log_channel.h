@@ -189,7 +189,7 @@ namespace Syntropy
     template <typename TLogChannel>
     template <typename... TArguments>
     inline AutoLogChannelT<TLogChannel>::AutoLogChannelT(TArguments&&... arguments)
-        : log_channel_(std::forward<TArguments>(arguments)...)
+        : log_channel_(Forward<TArguments>(arguments)...)
     {
 
     }
@@ -211,7 +211,7 @@ namespace Syntropy
     template <typename TLogChannel, typename... TArguments>
     inline AutoLogChannelT<TLogChannel> MakeAutoLogChannel(TArguments&&... arguments)
     {
-        return AutoLogChannelT<TLogChannel>(std::forward<TArguments>(arguments)...);
+        return AutoLogChannelT<TLogChannel>(Forward<TArguments>(arguments)...);
     }
 
 }

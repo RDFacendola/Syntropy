@@ -10,7 +10,7 @@ namespace Syntropy
 
     StackTrace Debugger::GetStackTrace(StackTraceElement here)
     {
-        return HALDebugger::GetStackTrace(std::move(here));
+        return HALDebugger::GetStackTrace(Move(here));
     }
 
     /************************************************************************/

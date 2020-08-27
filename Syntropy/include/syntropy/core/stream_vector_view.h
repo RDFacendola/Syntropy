@@ -340,14 +340,14 @@ namespace Syntropy
     template <typename... TStreamTypes, typename TOperation>
     inline void StreamVectorView<TStreams...>::ForEach(TOperation&& operation)
     {
-        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
+        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(Forward<TOperation>(operation));
     }
 
     template <typename... TStreams>
     template <typename... TStreamTypes, typename TOperation>
     inline void StreamVectorView<TStreams...>::ForEach(TOperation&& operation) const
     {
-        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(std::forward<TOperation>(operation));
+        ForEach<TupleElementIndexV<TStreamTypes, std::tuple<TStreams...>>...>(Forward<TOperation>(operation));
     }
 
     template <typename... TStreams>

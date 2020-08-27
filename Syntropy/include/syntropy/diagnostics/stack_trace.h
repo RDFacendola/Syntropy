@@ -148,7 +148,7 @@ namespace Syntropy
     // StackTrace.
 
     inline StackTrace::StackTrace(StackTraceElement stack_trace_element)
-        : stack_trace_{ {std::move(stack_trace_element)} }
+        : stack_trace_{ {Move(stack_trace_element)} }
     {
         stack_trace_.reserve(64);       // Educated guess of the trace length.
     }
@@ -175,7 +175,7 @@ namespace Syntropy
         }
         else
         {
-            stack_trace_.emplace_back(std::forward<TStackTraceElement>(stack_trace_element));
+            stack_trace_.emplace_back(Forward<TStackTraceElement>(stack_trace_element));
         }
 
         return *this;

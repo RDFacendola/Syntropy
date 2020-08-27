@@ -65,7 +65,7 @@ namespace Syntropy
     template <typename... TArguments>
     inline ConsoleOutputSectionScope<TSection>::ConsoleOutputSectionScope(TArguments&&... arguments)
     {
-        ConsoleOutput::GetSingleton().PushSection<TSection>(std::forward<TArguments>(arguments)...);
+        ConsoleOutput::GetSingleton().PushSection<TSection>(Forward<TArguments>(arguments)...);
     }
 
     template <typename TSection>
@@ -79,7 +79,7 @@ namespace Syntropy
     template <typename TSection, typename... TArguments>
     ConsoleOutputSectionScope<TSection> MakeConsoleOutputSectionScope(TArguments&&... arguments)
     {
-        return ConsoleOutputSectionScope<TSection>(std::forward<TArguments>(arguments)...);
+        return ConsoleOutputSectionScope<TSection>(Forward<TArguments>(arguments)...);
     }
 
 }

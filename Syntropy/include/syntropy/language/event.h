@@ -214,7 +214,7 @@ namespace Syntropy
 
     template <typename TDelegate, typename... TArguments>
     inline ListenerDelegate<TDelegate, TArguments...>::ListenerDelegate(TDelegate&& delegate)
-        : delegate_(std::move(delegate))
+        : delegate_(Move(delegate))
     {
 
     }
@@ -250,11 +250,11 @@ namespace Syntropy
     template <typename TDelegate>
     inline Listener Event<TArguments...>::Subscribe(TDelegate&& delegate) const
     {
-        auto listener_handler_delegate = MakeListenerDelegate<TArguments...>(std::move(delegate));
+        auto listener_handler_delegate = MakeListenerDelegate<TArguments...>(Move(delegate));
 
         dispatcher_.LinkToListeners(*listener_handler_delegate);
 
-        return UniquePtr<EventHandler>(std::move(listener_handler_delegate));
+        return UniquePtr<EventHandler>(Move(listener_handler_delegate));
     }
 
     template <typename... TArguments>
@@ -268,7 +268,7 @@ namespace Syntropy
     template <typename... TArguments, typename TDelegate>
     inline UniquePtr<ListenerDelegate<TDelegate, TArguments...>> MakeListenerDelegate(TDelegate&& delegate)
     {
-        return MakeUnique<ListenerDelegate<TDelegate, TArguments...>>(std::move(delegate));
+        return MakeUnique<ListenerDelegate<TDelegate, TArguments...>>(Move(delegate));
     }
 
 }

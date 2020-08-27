@@ -59,7 +59,7 @@ namespace syntropy
     template <typename TCommand>
     CommandParserT<TStream>& CommandParserT<TStream>::Bind(const Label& name, TCommand&& command)
     {
-        commands_[name] = [this, command = std::move(command)](TStream& stream)
+        commands_[name] = [this, command = Move(command)](TStream& stream)
         {
             auto arguments = Syntropy::function_arguments_t<TCommand>{};
 
@@ -75,7 +75,7 @@ namespace syntropy
 
             if (!stream.fail() && stream.eof())
             {
-                std::apply(command, std::move(arguments));
+                std::apply(command, Move(arguments));
                 return true;
             }
 

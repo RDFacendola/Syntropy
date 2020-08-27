@@ -102,7 +102,7 @@ namespace Syntropy
     template <typename TAllocator>
     template <typename... TArguments>
     CountingAllocator<TAllocator>::CountingAllocator(TArguments&&... arguments) noexcept
-        : allocator_(std::forward<TArguments>(arguments)...)
+        : allocator_(Forward<TArguments>(arguments)...)
     {
 
     }

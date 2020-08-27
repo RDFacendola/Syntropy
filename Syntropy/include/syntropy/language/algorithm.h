@@ -79,7 +79,7 @@ namespace Syntropy
     template <typename TIterable, typename TPredicate>
     inline Bool None(const TIterable& rhs, TPredicate&& predicate) noexcept
     {
-        return !Any(rhs, std::forward<TPredicate>(predicate));
+        return !Any(rhs, Forward<TPredicate>(predicate));
     }
 
 }

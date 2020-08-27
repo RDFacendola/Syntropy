@@ -70,7 +70,7 @@ namespace Syntropy
         {
             // Gather many lambdas in a single callable object.
             LambdaVisitor(TFunctions... functions)
-                : TFunctions(std::move(functions))...
+                : TFunctions(Move(functions))...
             {
 
             }
@@ -85,7 +85,7 @@ namespace Syntropy
             }
         };
 
-        return LambdaVisitor(std::move(functions)...);
+        return LambdaVisitor(Move(functions)...);
     }
 
     // Visitor.

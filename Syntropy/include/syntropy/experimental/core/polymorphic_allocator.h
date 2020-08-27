@@ -132,7 +132,7 @@ namespace Syntropy
     template <typename UType, typename... UArguments>
     inline void PolymorphicAllocator<TType>::construct(UType* storage, UArguments&&... arguments)
     {
-        UninitializedConstructUsingAllocator(storage, *this, std::forward<UArguments>(arguments)...);
+        UninitializedConstructUsingAllocator(storage, *this, Forward<UArguments>(arguments)...);
     }
 
     template <typename TType>

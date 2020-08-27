@@ -88,7 +88,7 @@ namespace Syntropy::serialization
 
                 if (value)
                 {
-                    reflection::AnyCast<TClass*>(object)->*field = std::move(*value);       // #TODO Can we deserialize inside the field directly?
+                    reflection::AnyCast<TClass*>(object)->*field = Move(*value);       // #TODO Can we deserialize inside the field directly?
                 }
 
                 return value.has_value();
@@ -107,7 +107,7 @@ namespace Syntropy::serialization
 
                 if (value)
                 {
-                    (reflection::AnyCast<TClass*>(object)->*setter)(std::move(*value));
+                    (reflection::AnyCast<TClass*>(object)->*setter)(Move(*value));
                 }
 
                 return value.has_value();
@@ -128,7 +128,7 @@ namespace Syntropy::serialization
 
                 if (value)
                 {
-                    (reflection::AnyCast<TClass*>(object)->*setter)() = std::move(*value);  // #TODO Can we deserialize inside the field directly?
+                    (reflection::AnyCast<TClass*>(object)->*setter)() = Move(*value);  // #TODO Can we deserialize inside the field directly?
                 }
 
                 return value.has_value();
@@ -188,7 +188,7 @@ namespace Syntropy::serialization
         {
             if (auto deserialized_object = JSONDeserializer<TClass>(json))
             {
-                return new TClass(std::move(*deserialized_object));             // #TODO What if TClass is neither copy-constructible nor move-constructible?
+                return new TClass(Move(*deserialized_object));             // #TODO What if TClass is neither copy-constructible nor move-constructible?
             }
 
             return reflection::Any();
@@ -224,7 +224,7 @@ namespace Syntropy::serialization
 
                 if (object)
                 {
-                    return std::move(object);
+                    return Move(object);
                 }
             }
         }
@@ -232,13 +232,13 @@ namespace Syntropy::serialization
         {
             // Deserialize the entire JSON object.
 
-            if (auto object = std::move(JSONDeserializer<TType>(json)))
+            if (auto object = Move(JSONDeserializer<TType>(json)))
             {
-                return std::move(object);
+                return Move(object);
             }
         }
 
-        return std::move(default_value);
+        return Move(default_value);
     }
 
     /// \brief Deserialize an object properties from JSON.

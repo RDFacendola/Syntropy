@@ -112,7 +112,7 @@ namespace Syntropy
 
     inline Listener::Listener(UniquePtr<EventHandler> event_handler)
     {
-        dispatcher_.LinkToEvents(std::move(event_handler));
+        dispatcher_.LinkToEvents(Move(event_handler));
     }
 
     inline Listener::Listener(const Listener& rhs)
@@ -124,7 +124,7 @@ namespace Syntropy
     {
         auto rhs_events = rhs.dispatcher_.ReleaseNextEvents();
 
-        dispatcher_.LinkToEvents(std::move(rhs_events));
+        dispatcher_.LinkToEvents(Move(rhs_events));
 
         return *this;
     }

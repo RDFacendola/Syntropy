@@ -74,7 +74,7 @@ namespace Syntropy
     template <typename TStyle, typename... TArguments>
     inline ConsoleOutput& ConsoleOutput::SetStyle(TArguments&&... arguments)
     {
-        style_ = NewConsoleStyle<TStyle>(std::forward<TArguments>(arguments)...);
+        style_ = NewConsoleStyle<TStyle>(Forward<TArguments>(arguments)...);
 
         return *this;
     }
@@ -82,7 +82,7 @@ namespace Syntropy
     template <typename TSection, typename... TArguments>
     inline ConsoleOutput& ConsoleOutput::PushSection(TArguments&&... arguments)
     {
-        auto text = Strings::Build(std::forward<TArguments>(arguments)...);
+        auto text = Strings::Build(Forward<TArguments>(arguments)...);
 
         std::cout << style_->PushSection(typeid(TSection), text);
 
@@ -99,7 +99,7 @@ namespace Syntropy
     template <typename... TArguments>
     inline ConsoleOutput& ConsoleOutput::Print(TArguments&&... arguments)
     {
-        auto text = Strings::Build(std::forward<TArguments>(arguments)...);
+        auto text = Strings::Build(Forward<TArguments>(arguments)...);
 
         std::cout << style_->Print(text);
 

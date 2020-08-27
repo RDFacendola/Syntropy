@@ -232,7 +232,7 @@ namespace Syntropy
 
     template <typename TElement>
     constexpr Array<TElement>::Array(Array&& rhs) noexcept
-        : Array(std::move(rhs), Memory::GetAllocator())
+        : Array(Move(rhs), Memory::GetAllocator())
     {
 
     }

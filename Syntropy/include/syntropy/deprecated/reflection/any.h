@@ -49,31 +49,31 @@ namespace Syntropy::reflection
         Any(Any&& other) noexcept;
 
         /// \brief Create a non-empty object from a value.
-        /// Constructs an object with initial content an object of type std::decay_t<TValue>, direct-initialized from std::forward<TValue>(value). 
+        /// Constructs an object with initial content an object of type std::decay_t<TValue>, direct-initialized from Forward<TValue>(value). 
         /// If std::is_copy_constructible<std::decay_t<TValue>>::value is false, the program is ill-formed. 
         /// This overload only participates in overload resolution if std::decay_t<TValue> is not the same type as any nor a specialization of std::in_place_type_t.
         template <typename TValue, typename = std::enable_if_t<!std::is_same<std::decay_t<TValue>, Any>::value && !is_in_place_type<std::decay_t<TValue>>::value>>
         Any(TValue&& value)
-            : holder_(new HolderT<std::decay_t<TValue>>(std::forward<TValue>(value)))
+            : holder_(new HolderT<std::decay_t<TValue>>(Forward<TValue>(value)))
         {
             static_assert(std::is_copy_constructible<std::decay_t<TValue>>::value, "std::decay<TValue> must be copy-constructible.");
         }
 
         /// \brief Create a non-empty object in place.
-        /// Constructs an object with initial content an object of type std::decay_t<TValue>, direct-non-list-initialized from std::forward<TArguments>(arguments).... 
+        /// Constructs an object with initial content an object of type std::decay_t<TValue>, direct-non-list-initialized from Forward<TArguments>(arguments).... 
         template <typename TValue, typename... TArguments>
         explicit Any(std::in_place_type_t<TValue>, TArguments&&... arguments)
-            : holder_(new HolderT<std::decay_t<TValue>>(std::in_place_type_t<TValue>{}, std::forward<TArguments>(arguments)...))
+            : holder_(new HolderT<std::decay_t<TValue>>(std::in_place_type_t<TValue>{}, Forward<TArguments>(arguments)...))
         {
             static_assert(std::is_constructible<std::decay_t<TValue>, TArguments...>::value, "std::decay<TValue> must be constructible from TArguments... .");
             static_assert(std::is_copy_constructible<std::decay_t<TValue>>::value, "std::decay<TValue> must be copy-constructible.");
         }
 
         /// \brief Create a non-empty object in place.
-        /// Constructs an object with initial content an object of type std::decay_t<TValue>, direct-non-list-initialized from initializer_list, std::forward<TArguments>(arguments)... .
+        /// Constructs an object with initial content an object of type std::decay_t<TValue>, direct-non-list-initialized from initializer_list, Forward<TArguments>(arguments)... .
         template< typename TValue, typename TInitializerList, typename... TArguments >
         explicit Any(std::in_place_type_t<TValue>, std::initializer_list<TInitializerList> initializer_list, TArguments&&... arguments)
-            : holder_(new HolderT<std::decay_t<TValue>>(std::in_place_type_t<TValue>{}, initializer_list, std::forward<TArguments>(arguments)...))
+            : holder_(new HolderT<std::decay_t<TValue>>(std::in_place_type_t<TValue>{}, initializer_list, Forward<TArguments>(arguments)...))
         {
             static_assert(std::is_constructible<std::decay_t<TValue>, std::initializer_list<TInitializerList>&, TArguments...>::value, "std::decay<TValue> must be constructible from std::initializer_list<TInitializerList>& and TArguments... .");
             static_assert(std::is_copy_constructible<std::decay_t<TValue>>::value, "std::decay<TValue> must be copy-constructible.");
@@ -94,7 +94,7 @@ namespace Syntropy::reflection
         {
             static_assert(std::is_copy_constructible<std::decay_t<TValue>>::value, "std::decay<TValue> must be copy-constructible.");
 
-            Any(std::forward<TValue>(other)).Swap(*this);
+            Any(Forward<TValue>(other)).Swap(*this);
 
             return *this;
         }
@@ -102,13 +102,13 @@ namespace Syntropy::reflection
         /// \brief Destructor.
         ~Any();
 
-        /// \brief Constructs an object of type std::decay_t<TValue>, direct-non-list-initialized from std::forward<TArguments>(arguments)... . 
+        /// \brief Constructs an object of type std::decay_t<TValue>, direct-non-list-initialized from Forward<TArguments>(arguments)... . 
         template<typename TValue, typename... TArguments>
         std::decay_t<TValue>& Emplace(TArguments&&... arguments)
         {
             Reset();
 
-            Any(std::in_place_type_t<TValue>{}, std::forward<TArguments>(arguments)...).Swap(*this);
+            Any(std::in_place_type_t<TValue>{}, Forward<TArguments>(arguments)...).Swap(*this);
 
             SYNTROPY_ASSERT(holder_);
             SYNTROPY_ASSERT(holder_->GetTypeInfo() == typeid(std::decay_t<TValue>));
@@ -116,13 +116,13 @@ namespace Syntropy::reflection
             return static_cast<Any::HolderT<std::decay_t<TValue>>*>(holder_)->value_;
         }
 
-        /// \brief Constructs an object of type std::decay_t<TValue>, direct-non-list-initialized from initializer_list, std::forward<TArguments>(arguments)... .
+        /// \brief Constructs an object of type std::decay_t<TValue>, direct-non-list-initialized from initializer_list, Forward<TArguments>(arguments)... .
         template< typename TValue, typename TInitializerList, typename... TArguments >
         std::decay_t<TValue>& Emplace(std::initializer_list<TInitializerList> initializer_list, TArguments&&... arguments)
         {
             Reset();
 
-            Any(std::in_place_type_t<TValue>{}, initializer_list, std::forward<TArguments>(arguments)...).Swap(*this);
+            Any(std::in_place_type_t<TValue>{}, initializer_list, Forward<TArguments>(arguments)...).Swap(*this);
 
             SYNTROPY_ASSERT(holder_);
             SYNTROPY_ASSERT(holder_->GetTypeInfo() == typeid(std::decay_t<TValue>));
@@ -184,21 +184,21 @@ namespace Syntropy::reflection
         {
             template <typename TValue>
             HolderT(TValue&& value)
-                : value_(std::forward<TValue>(value))
+                : value_(Forward<TValue>(value))
             {
 
             }
 
             template <typename TValue, typename... TArguments>
             HolderT(std::in_place_type_t<TValue>, TArguments&&... arguments)
-                : value_(std::forward<TValue>(arguments)...)
+                : value_(Forward<TValue>(arguments)...)
             {
 
             }
 
             template< typename TValue, typename TInitializerList, typename... TArguments>
             HolderT(std::in_place_type_t<TValue>, std::initializer_list<TInitializerList> initializer_list, TArguments&&... arguments)
-                : value_(std::move(initializer_list), std::forward<TValue>(arguments)...)
+                : value_(Move(initializer_list), Forward<TValue>(arguments)...)
             {
 
             }
@@ -255,7 +255,7 @@ namespace Syntropy::reflection
 
         static_assert(std::is_constructible<TValue, U>::value, "TValue must be constructible from value.");
 
-        return static_cast<TValue>(std::move(*AnyCast<U>(&operand)));
+        return static_cast<TValue>(Move(*AnyCast<U>(&operand)));
     }
 
     template<class TValue>
@@ -283,13 +283,13 @@ namespace Syntropy::reflection
     template<typename TValue, typename... TArguments>
     Any MakeAny(TArguments&&... arguments)
     {
-        return Any(std::in_place_type_t<TValue>{}, std::forward<TArguments>(arguments)...);
+        return Any(std::in_place_type_t<TValue>{}, Forward<TArguments>(arguments)...);
     }
 
     template<typename TValue, typename TInitializerList, typename... TArguments>
     Any MakeAny(std::initializer_list<TInitializerList> initializer_list, TArguments&&... arguments)
     {
-        return Any(std::in_place_type_t<TValue>{}, initializer_list, std::forward<TArguments>(arguments)...);
+        return Any(std::in_place_type_t<TValue>{}, initializer_list, Forward<TArguments>(arguments)...);
     }
 }
 

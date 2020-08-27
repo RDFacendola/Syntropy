@@ -341,7 +341,7 @@ namespace syntropy
     // MsgpackStreamReader.
 
     inline MsgpackStreamReader::MsgpackStreamReader(TString stream)
-        : stream_(std::move(stream))
+        : stream_(Move(stream))
     {
 
     }
@@ -409,7 +409,7 @@ namespace syntropy
     // MsgpackReader.
 
     inline MsgpackReader::MsgpackReader(TString stream)
-        : stream_reader_(std::move(stream))
+        : stream_reader_(Move(stream))
     {
 
     }
@@ -451,7 +451,7 @@ namespace syntropy
 
             operator>>(element);
 
-            rhs.emplace_back(std::move(element));
+            rhs.emplace_back(Move(element));
         }
 
         sentry.Dismiss();
@@ -498,7 +498,7 @@ namespace syntropy
             operator>>(key);
             operator>>(value);
 
-            rhs.emplace(std::make_pair(std::move(key), std::move(value)));
+            rhs.emplace(std::make_pair(Move(key), Move(value)));
         }
 
         sentry.Dismiss();

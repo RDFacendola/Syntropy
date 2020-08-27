@@ -131,7 +131,7 @@ namespace Syntropy
     }
 
     inline VirtualStackAllocator::VirtualStackAllocator(VirtualStackAllocator&& rhs) noexcept
-        : virtual_span_(std::move(rhs.virtual_span_))
+        : virtual_span_(Move(rhs.virtual_span_))
         , unallocated_span_(rhs.unallocated_span_)
         , uncommitted_span_(rhs.uncommitted_span_)
         , commit_granularity_(rhs.commit_granularity_)

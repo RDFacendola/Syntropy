@@ -181,37 +181,37 @@ namespace Syntropy
     template <typename TDelegate>
     inline Listener TestRunner::OnSuiteStarted(TDelegate&& delegate) const
     {
-        return suite_started_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return suite_started_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
     inline Listener TestRunner::OnSuiteFinished(TDelegate&& delegate) const
     {
-        return suite_finished_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return suite_finished_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
     inline Listener TestRunner::OnCaseStarted(TDelegate&& delegate) const
     {
-        return case_started_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_started_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
     inline  Listener TestRunner::OnCaseFinished(TDelegate&& delegate) const
     {
-        return case_finished_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_finished_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
     inline Listener TestRunner::OnCaseSuccess(TDelegate&& delegate) const
     {
-        return case_success_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_success_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
     inline Listener TestRunner::OnCaseFailure(TDelegate&& delegate) const
     {
-        return case_failure_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_failure_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
 }

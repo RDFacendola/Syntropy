@@ -159,7 +159,7 @@ namespace Syntropy
     template <typename TTestFixture>
     template <typename... TFixtureArguments>
     inline AutoTestSuiteT<TTestFixture>::AutoTestSuiteT(const Context& name, TFixtureArguments&&... fixture_arguments)
-        : test_suite_(name, std::forward<TFixtureArguments>(fixture_arguments)...)
+        : test_suite_(name, Forward<TFixtureArguments>(fixture_arguments)...)
     {
 
     }
@@ -175,7 +175,7 @@ namespace Syntropy
     template <typename TTestFixture, typename... TFixtureArguments>
     inline AutoTestSuiteT<TTestFixture> MakeAutoTestSuite(const Context& name, TFixtureArguments&&... arguments)
     {
-        return { name, std::forward<TFixtureArguments>(arguments)... };
+        return { name, Forward<TFixtureArguments>(arguments)... };
     }
 
 }

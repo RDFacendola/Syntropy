@@ -44,7 +44,7 @@ namespace Syntropy::reflection
         template <typename... TArguments>
         Any operator()(TArguments&&... arguments) const
         {
-            return (*instancer_)(std::forward<TArguments>(arguments)...);
+            return (*instancer_)(Forward<TArguments>(arguments)...);
         }
 
     private:
@@ -55,7 +55,7 @@ namespace Syntropy::reflection
         static Any Instantiate(TConstructorArguments... arguments)
         {
             // TODO: if the caller doesn't take owneship of this object it will leak. Use std::unique_ptr<T> instead...
-            return new TClass(std::forward<TConstructorArguments>(arguments)...);
+            return new TClass(Forward<TConstructorArguments>(arguments)...);
         }
 
         Any(*instancer_)(TConstructorArguments...);                     /// \brief Functor used to instantiate the class.

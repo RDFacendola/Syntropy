@@ -73,7 +73,7 @@ namespace Syntropy
 
     inline LogEventFilter::LogEventFilter(Verbosity verbosity, Array<Context> contexts)
         : verbosity_(verbosity)
-        , contexts_(std::move(contexts))
+        , contexts_(Move(contexts))
     {
 
     }
@@ -85,7 +85,7 @@ namespace Syntropy
     }
 
     inline LogEventFilter::LogEventFilter(Array<Context> contexts)
-        : contexts_(std::move(contexts))
+        : contexts_(Move(contexts))
     {
 
     }

@@ -154,7 +154,7 @@ namespace Syntropy::reflection
         template <typename TFunctor>
         PropertyDefinitionT& operator<<(TFunctor&& functor)
         {
-            std::apply(std::forward<TFunctor>(functor), std::tuple_cat(std::tie(*this), accessors_));
+            std::apply(Forward<TFunctor>(functor), std::tuple_cat(std::tie(*this), accessors_));
             return *this;
         }
 
@@ -162,7 +162,7 @@ namespace Syntropy::reflection
         /// \param accessor Accessors to the property.
         PropertyDefinitionT(Property& subject, TAccessors... accessors)
             : property_(subject)
-            , accessors_(std::forward<TAccessors>(accessors)...)
+            , accessors_(Forward<TAccessors>(accessors)...)
         {
 
         }
@@ -174,7 +174,7 @@ namespace Syntropy::reflection
         template <typename TInterface, typename TConcrete = TInterface, typename... TArgs>
         PropertyDefinitionT& AddInterface(TArgs&&... arguments)
         {
-            property_.AddInterface<TInterface, TConcrete>(std::forward<TArgs>(arguments)...);
+            property_.AddInterface<TInterface, TConcrete>(Forward<TArgs>(arguments)...);
             return *this;
         }
 

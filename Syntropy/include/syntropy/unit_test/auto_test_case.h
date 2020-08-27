@@ -160,7 +160,7 @@ namespace Syntropy
     template <typename TTestFixture, typename TTestCase>
     template <typename UTestCase>
     inline AutoTestCaseT<TTestFixture, TTestCase>::AutoTestCaseT(const Label& name, UTestCase&& test_case)
-        : test_case_(MakeTestCase<TTestFixture>(name, std::forward<TTestCase>(test_case)))
+        : test_case_(MakeTestCase<TTestFixture>(name, Forward<TTestCase>(test_case)))
     {
 
     }
@@ -176,7 +176,7 @@ namespace Syntropy
     template <typename TTestFixture, typename TTestCase>
     inline AutoTestCaseT<TTestFixture, TTestCase> MakeAutoTestCase(const Label& name, TTestCase&& test_case)
     {
-        return { name, std::forward<TTestCase>(test_case) };
+        return { name, Forward<TTestCase>(test_case) };
     }
 
 }

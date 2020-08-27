@@ -41,7 +41,7 @@ namespace Syntropy::serialization
                 {
                     if (auto item = JSONDeserializer<TType>(json[array_index]))
                     {
-                        vector->emplace_back(std::move(*item));
+                        vector->emplace_back(Move(*item));
                     }
                 }
 
@@ -70,7 +70,7 @@ namespace Syntropy::serialization
                 {
                     if (auto item = JSONDeserializer<TSet::value_type>(json[array_index]))
                     {
-                        set->emplace(std::move(*item));
+                        set->emplace(Move(*item));
                     }
                 }
 
@@ -125,7 +125,7 @@ namespace Syntropy::serialization
 							{
 								if (auto value = JSONDeserializer<TValue>(*value_it))
 								{
-									map->insert(std::make_pair(std::move(*key), std::move(*value)));
+									map->insert(std::make_pair(Move(*key), Move(*value)));
 								}
 								else if constexpr(std::is_pointer_v<TKey>)
 								{
@@ -152,7 +152,7 @@ namespace Syntropy::serialization
                 {
                     if (auto value = JSONDeserializer<TValue>(json_property.value()))
                     {
-                        map->insert(std::make_pair(json_property.key(), std::move(*value)));
+                        map->insert(std::make_pair(json_property.key(), Move(*value)));
                     }
                 }
 

@@ -203,13 +203,13 @@ namespace Syntropy
     template <typename TDelegate>
     inline Listener TestContext::OnSuccess(TDelegate&& delegate) const
     {
-        return success_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return success_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
     inline Listener TestContext::OnFailure(TDelegate&& delegate) const
     {
-        return failure_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return failure_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     inline void TestContext::ReportSuccess(const StackTrace& location, const String& expression) const

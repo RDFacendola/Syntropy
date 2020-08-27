@@ -16,7 +16,7 @@ namespace Syntropy::reflection
     }
 
     Any::Any(Any&& other) noexcept
-        : holder_(std::move(other.holder_))
+        : holder_(Move(other.holder_))
     {
         other.holder_ = nullptr;
     }
@@ -29,7 +29,7 @@ namespace Syntropy::reflection
 
     Any& Any::operator=(Any&& other) noexcept
     {
-        Any(std::move(other)).Swap(*this);
+        Any(Move(other)).Swap(*this);
         return *this;
     }
 

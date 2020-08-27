@@ -119,7 +119,7 @@ namespace Syntropy
     template <typename... TArguments>
     inline AutoLogFile MakeAutoLogFile(TArguments&&... arguments)
     {
-        return { std::forward<TArguments>(arguments)... };
+        return { Forward<TArguments>(arguments)... };
     }
 
 }

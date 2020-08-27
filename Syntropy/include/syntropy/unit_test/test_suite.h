@@ -215,25 +215,25 @@ namespace Syntropy
     template <typename TDelegate>
     inline Listener TestSuite::OnCaseStarted(TDelegate&& delegate) const
     {
-        return case_started_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_started_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
     inline Listener TestSuite::OnCaseFinished(TDelegate&& delegate) const
     {
-        return case_finished_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_finished_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
     inline Listener TestSuite::OnCaseSuccess(TDelegate&& delegate) const
     {
-        return case_success_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_success_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     template <typename TDelegate>
     inline Listener TestSuite::OnCaseFailure(TDelegate&& delegate) const
     {
-        return case_failure_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return case_failure_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     inline void TestSuite::NotifyCaseStarted(const OnTestSuiteCaseStartedEventArgs& event_args) const
@@ -262,7 +262,7 @@ namespace Syntropy
     template <typename... TArguments>
     inline TestSuiteT<TTestFixture>::TestSuiteT(const Context& name, TArguments&&... arguments)
         : TestSuite(name)
-        , test_fixture_(std::forward<TArguments>(arguments)...)
+        , test_fixture_(Forward<TArguments>(arguments)...)
     {
 
     }

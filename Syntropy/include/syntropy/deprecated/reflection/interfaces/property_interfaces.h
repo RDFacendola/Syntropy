@@ -38,7 +38,7 @@ namespace Syntropy::reflection
 
             mover_ = [field](Any&& instance)
             {
-                return std::move(AnyCast<TClass*>(instance)->*field);       // Move-construct the returned value.
+                return Move(AnyCast<TClass*>(instance)->*field);       // Move-construct the returned value.
             };
         }
 
@@ -117,7 +117,7 @@ namespace Syntropy::reflection
 
             mover_ = [field](const Any& instance, Any&& value)
             {
-                AnyCast<TClass*>(instance)->*field = AnyCast<TProperty>(std::move(value));          // Move-assignment.
+                AnyCast<TClass*>(instance)->*field = AnyCast<TProperty>(Move(value));          // Move-assignment.
             };
         }
 
@@ -134,7 +134,7 @@ namespace Syntropy::reflection
 
             mover_ = [setter](const Any& instance, Any&& value)
             {
-                (AnyCast<TClass*>(instance)->*setter)(AnyCast<TProperty>(std::move(value)));        // Move-construction.
+                (AnyCast<TClass*>(instance)->*setter)(AnyCast<TProperty>(Move(value)));        // Move-construction.
             };
         }
 
@@ -151,7 +151,7 @@ namespace Syntropy::reflection
 
             mover_ = [setter](const Any& instance, Any&& value)
             {
-                (AnyCast<TClass*>(instance)->*setter)() = AnyCast<TProperty>(std::move(value));     // Move-assignment.
+                (AnyCast<TClass*>(instance)->*setter)() = AnyCast<TProperty>(Move(value));     // Move-assignment.
             };
         }
 
@@ -171,7 +171,7 @@ namespace Syntropy::reflection
         template <typename TValue, typename = std::enable_if_t<!std::is_lvalue_reference<TValue>::value>>
         void operator()(const Any& instance, TValue&& value) const
         {
-            mover_(instance, std::forward<TValue>(value));
+            mover_(instance, Forward<TValue>(value));
         }
 
         /// \brief Write the property value.
@@ -181,7 +181,7 @@ namespace Syntropy::reflection
         template <typename TInstance, typename TValue, typename = std::enable_if_t<!std::is_same_v<std::decay_t<TInstance>, reflection::Any>>>
         void operator()(TInstance& instance, TValue&& value) const
                     {
-            (*this)(std::addressof(instance), std::forward<TValue>(value));
+            (*this)(std::addressof(instance), Forward<TValue>(value));
         }
 
     private:

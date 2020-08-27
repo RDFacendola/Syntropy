@@ -92,7 +92,7 @@ namespace Syntropy
 
     inline CommandLineArgument::CommandLineArgument(const Label& name, Array<String> values)
         : name_(name)
-        , values_(std::move(values))
+        , values_(Move(values))
     {
 
     }
@@ -100,7 +100,7 @@ namespace Syntropy
     inline CommandLineArgument::CommandLineArgument(const Label& name, String value)
         : name_(name)
     {
-        values_.emplace_back(std::move(value));
+        values_.emplace_back(Move(value));
     }
 
     inline const Label& CommandLineArgument::GetName() const

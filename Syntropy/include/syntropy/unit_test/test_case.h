@@ -188,14 +188,14 @@ namespace Syntropy
     template <typename TDelegate>
     inline Listener TestCase<TTestFixture>::OnSuccess(TDelegate&& delegate) const
     {
-        return success_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return success_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     template <typename TTestFixture>
     template <typename TDelegate>
     inline Listener TestCase<TTestFixture>::OnFailure(TDelegate&& delegate) const
     {
-        return failure_event_.Subscribe(std::forward<TDelegate>(delegate));
+        return failure_event_.Subscribe(Forward<TDelegate>(delegate));
     }
 
     // TestCaseT<TTestFixture, TTestCase>.
@@ -204,7 +204,7 @@ namespace Syntropy
     template <typename UTestCase>
     inline TestCaseT<TTestFixture, TTestCase>::TestCaseT(const Label& name, UTestCase&& test_case)
         : TestCase<TTestFixture>(name)
-        , test_case_(std::forward<UTestCase>(test_case))
+        , test_case_(Forward<UTestCase>(test_case))
     {
 
     }
@@ -220,7 +220,7 @@ namespace Syntropy
     template <typename TTestFixture, typename TTestCase>
     inline TestCaseT<TTestFixture, TTestCase> MakeTestCase(const Label& name, TTestCase&& test_case)
     {
-        return TestCaseT<TTestFixture, TTestCase>(name, std::forward<TTestCase>(test_case));
+        return TestCaseT<TTestFixture, TTestCase>(name, Forward<TTestCase>(test_case));
     }
 
 }

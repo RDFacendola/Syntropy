@@ -146,7 +146,7 @@ namespace Syntropy
     {
         auto storage = AllocateObjectWithFinalizer<TObject>();
 
-        return new (*storage) TObject(std::forward<TArguments>(arguments)...);
+        return new (*storage) TObject(Forward<TArguments>(arguments)...);
     }
 
     template <typename TAllocator>
@@ -155,7 +155,7 @@ namespace Syntropy
     {
         auto storage = AllocateObjectWithFinalizer<TObject>(alignment);
 
-        return new (*storage) TObject(std::forward<TArguments>(arguments)...);
+        return new (*storage) TObject(Forward<TArguments>(arguments)...);
     }
 
     template <typename TAllocator>

@@ -347,14 +347,14 @@ namespace syntropy
     }
 
     TwoLevelSegregatedFitAllocator::TwoLevelSegregatedFitAllocator(TwoLevelSegregatedFitAllocator&& other)
-        : Allocator(std::move(other))
-        , allocator_(std::move(other.allocator_))
-        , last_block_(std::move(other.last_block_))
+        : Allocator(Move(other))
+        , allocator_(Move(other.allocator_))
+        , last_block_(Move(other.last_block_))
         , first_level_count_(other.first_level_count_)
         , second_level_count_(other.second_level_count_)
         , first_level_bitmap_(other.first_level_bitmap_)
-        , second_level_bitmap_(std::move(other.second_level_bitmap_))
-        , free_lists_(std::move(other.free_lists_))
+        , second_level_bitmap_(Move(other.second_level_bitmap_))
+        , free_lists_(Move(other.free_lists_))
     {
 
     }
