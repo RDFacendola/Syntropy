@@ -10,7 +10,7 @@
 
 #include "syntropy/language/type_traits/meta.h"
 #include "syntropy/language/type_traits/properties.h"
-#include "syntropy/language/fundamentals/references.h"
+#include "syntropy/language/foundation/references.h"
 
 namespace Syntropy
 {

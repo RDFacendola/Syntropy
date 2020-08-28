@@ -10,9 +10,9 @@
 #include <cmath>
 #include <limits>
 
-#include "syntropy/language/fundamentals.h"
+#include "syntropy/language/foundation.h"
 #include "syntropy/math/numeric.h"
-#include "syntropy/language/fundamentals.h"
+#include "syntropy/language/foundation.h"
 #include "syntropy/platform/intrinsics.h"
 
 namespace Syntropy

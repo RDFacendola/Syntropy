@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <cstddef>
 
-#include "syntropy/language/fundamentals.h"
+#include "syntropy/language/foundation.h"
 
 namespace Syntropy
 {

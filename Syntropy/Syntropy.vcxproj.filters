@@ -126,12 +126,12 @@
     <ClInclude Include="include\syntropy\language\type_traits\operations.h" />
     <ClInclude Include="include\syntropy\language\type_traits\meta.h" />
     <ClInclude Include="include\syntropy\language\type_traits\constants.h" />
-    <ClInclude Include="include\syntropy\language\fundamentals\types.h" />
-    <ClInclude Include="include\syntropy\language\fundamentals.h" />
     <ClInclude Include="include\syntropy\core\core.h" />
     <ClInclude Include="include\syntropy\language\type_traits\utility.h" />
-    <ClInclude Include="include\syntropy\language\fundamentals\references.h" />
-    <ClInclude Include="include\syntropy\language\fundamentals\pointers.h" />
+    <ClInclude Include="include\syntropy\language\foundation\pointers.h" />
+    <ClInclude Include="include\syntropy\language\foundation\references.h" />
+    <ClInclude Include="include\syntropy\language\foundation\types.h" />
+    <ClInclude Include="include\syntropy\language\foundation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

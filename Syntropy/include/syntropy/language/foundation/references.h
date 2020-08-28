@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#include "syntropy/language/fundamentals/types.h"
+#include "syntropy/language/foundation/types.h"
 #include "syntropy/language/type_traits/meta.h"
 #include "syntropy/language/type_traits/manipulation.h"
 #include "syntropy/language/type_traits/properties.h"

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/fundamentals.h"
+#include "syntropy/language/foundation.h"
 #include "syntropy/language/macro.h"
 #include "syntropy/hal/hal_macro.h"
 

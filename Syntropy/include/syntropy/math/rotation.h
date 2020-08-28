@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/fundamentals.h"
+#include "syntropy/language/foundation.h"
 #include "syntropy/math/math.h"
 #include "syntropy/math/vector.h"
 #include "syntropy/math/quaternion.h"

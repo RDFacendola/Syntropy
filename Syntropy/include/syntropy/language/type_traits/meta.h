@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-#include "syntropy/language/fundamentals.h"
+#include "syntropy/language/foundation.h"
 #include "syntropy/language/type_traits/constants.h"
 
 namespace Syntropy::Traits

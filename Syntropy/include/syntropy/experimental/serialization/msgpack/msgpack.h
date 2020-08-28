@@ -10,7 +10,7 @@
 
 #include <limits>
 
-#include "syntropy/language/fundamentals.h"
+#include "syntropy/language/foundation.h"
 #include "syntropy/core/string.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/byte_span.h"

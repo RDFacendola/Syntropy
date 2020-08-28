@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/tuple.h"
-#include "syntropy/language/fundamentals.h"
+#include "syntropy/language/foundation.h"
 #include "syntropy/platform/endianness.h"
 #include "syntropy/math/vector.h"
 #include "syntropy/memory/bytes.h"

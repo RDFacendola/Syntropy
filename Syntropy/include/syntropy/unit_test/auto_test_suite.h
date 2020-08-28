@@ -8,7 +8,7 @@
 
 #include <tuple>
 
-#include "syntropy/language/fundamentals.h"
+#include "syntropy/language/foundation.h"
 #include "syntropy/core/label.h"
 #include "syntropy/core/smart_pointers.h"
 
