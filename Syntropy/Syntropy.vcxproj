@@ -51,7 +51,7 @@
     <ClInclude Include="include\syntropy\application\console\default_console_style.h" />
     <ClInclude Include="include\syntropy\application\console\plain_console_style.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\stream_buffer_transaction.h" />
-    <ClInclude Include="include\syntropy\language\algorithm.h" />
+    <ClInclude Include="include\syntropy\core\algorithm.h" />
     <ClInclude Include="include\syntropy\language\initializer_list.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\consume_stream_buffer.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\append_stream_buffer.h" />

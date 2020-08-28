@@ -10,7 +10,7 @@
 #include "syntropy/core/string.h"
 #include "syntropy/core/string_stream.h"
 #include "syntropy/memory/memory.h"
-#include "syntropy/language/algorithm.h"
+#include "syntropy/core/algorithm.h"
 
 #include "syntropy/math/math.h"
 

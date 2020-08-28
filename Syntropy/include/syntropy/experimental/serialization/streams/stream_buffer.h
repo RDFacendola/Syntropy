@@ -9,7 +9,7 @@
 #include "syntropy/language/foundation.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/language/initializer_list.h"
-#include "syntropy/language/algorithm.h"
+#include "syntropy/core/algorithm.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/byte_span.h"
