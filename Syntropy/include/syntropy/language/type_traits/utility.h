@@ -1,7 +1,9 @@
 
 /// \file foundation.h
-/// \brief This header is part of Syntropy language module. It contains language foundation definitions.
+/// \brief This header is part of Syntropy language module. It contains language utility definitions.
 ///
+/// This header contains mostly aliases to the standard traits, eventually modified to suite Syntropy needs and to enforce code style consistency.
+/// 
 /// \author Raffaele D. Facendola - August  2020
 
 #pragma once
