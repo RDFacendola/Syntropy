@@ -536,7 +536,7 @@ namespace Syntropy
             return false;                           // Early out if spans sizes are different.
         }
 
-        if constexpr (Traits::IsValidExpression<HasEqualityComparison, Pointer<TElement>, Pointer<UElement>>)
+        if constexpr (Traits::IsValidExpression<Traits::HasEqualityComparison, Pointer<TElement>, Pointer<UElement>>)
         {
             if (lhs.GetData() == rhs.GetData())
             {

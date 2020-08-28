@@ -129,12 +129,13 @@
     <ClInclude Include="include\syntropy\core\visitor.h" />
     <ClInclude Include="include\syntropy\core\tuple.h" />
     <ClInclude Include="include\syntropy\core\memory.h" />
-    <ClInclude Include="include\syntropy\language\tuple.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
     <ClInclude Include="include\syntropy\language\preprocessor.h" />
     <ClInclude Include="include\syntropy\language\support\utility.h" />
     <ClInclude Include="include\syntropy\language\support.h" />
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
+    <ClInclude Include="include\syntropy\core\tuple.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\capabilities.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

@@ -20,6 +20,8 @@
 #include "syntropy/language/type_traits/categories.h"
 #include "syntropy/language/type_traits/operations.h"
 #include "syntropy/language/type_traits/meta.h"
+#include "syntropy/language/type_traits/capabilities.h"
+#include "syntropy/language/type_traits/utility.h"
 
 namespace Syntropy
 {
@@ -104,17 +106,5 @@ namespace Syntropy
     /// \brief Helper value for tuple_element_index<TType, TTuple>.
     template <typename TType, typename TTuple>
     constexpr Int TupleElementIndexV = TupleElementIndex<TType, TTuple>::Value;
-
-    /************************************************************************/
-    /* COMPARISON                                                           */
-    /************************************************************************/
-
-    /// \brief Check if T can be compared equal to U.
-    template <typename T, typename U>
-    using HasEqualityComparison = decltype(std::declval<T>() == std::declval<U>());
-
-    /// \brief Check if T can be compared inequal to U.
-    template <typename T, typename U>
-    using HasInequalityComparison = decltype(std::declval<T>() != std::declval<U>());
 
 }
