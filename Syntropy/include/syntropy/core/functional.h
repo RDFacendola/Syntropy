@@ -1,6 +1,6 @@
 
 /// \file functional.h
-/// \brief This header is part of Syntropy language module. It contains extensions to standard header <functional>
+/// \brief This header is part of Syntropy core module. It contains extensions to standard header <functional>
 ///
 /// \author Raffaele D. Facendola - 2020.
 

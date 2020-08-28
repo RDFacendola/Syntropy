@@ -1,4 +1,4 @@
-#include "syntropy/language/listener.h"
+#include "syntropy/core/listener.h"
 
 #include "syntropy/diagnostics/assert.h"
 

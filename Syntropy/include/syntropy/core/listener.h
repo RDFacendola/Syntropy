@@ -1,6 +1,6 @@
 
 /// \file listener.h
-/// \brief This header is part of the Syntropy language module. It contains definitions for listener that can be subscribed to events.
+/// \brief This header is part of the Syntropy core module. It contains definitions for listener that can be subscribed to events.
 ///
 /// \author Raffaele D. Facendola - 2020
 

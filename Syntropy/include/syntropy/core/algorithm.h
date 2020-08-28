@@ -1,6 +1,6 @@
 
 /// \file algorithm.h
-/// \brief This header is part of the Syntropy language module. It contains extensions to standard algorithm header.
+/// \brief This header is part of the Syntropy core module. It contains definitions for basic algorithms.
 ///
 /// \author Raffaele D. Facendola - 2017
 

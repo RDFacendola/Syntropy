@@ -1,6 +1,6 @@
 
 /// \file memory.h
-/// \brief This header is part of Syntropy language module. It contains extensions to standard header <memory>
+/// \brief This header is part of Syntropy core module. It contains extensions to standard header <memory>
 ///
 /// \author Raffaele D. Facendola - 2020.
 

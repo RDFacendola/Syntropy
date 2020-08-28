@@ -8,7 +8,7 @@
 
 #include <unordered_map>
 
-#include "syntropy/language/functional.h"
+#include "syntropy/core/functional.h"
 #include "syntropy/language/utility.h"
 #include "syntropy/math/hash.h"
 

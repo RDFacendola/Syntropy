@@ -1,6 +1,6 @@
 
 /// \file event.h
-/// \brief This header is part of the Syntropy language module. It contains definitions for events that can be subscribed to.
+/// \brief This header is part of the Syntropy core module. It contains definitions for events that can be subscribed to.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -8,7 +8,7 @@
 
 #include "syntropy/core/smart_pointers.h"
 
-#include "syntropy/language/listener.h"
+#include "syntropy/core/listener.h"
 
 namespace Syntropy
 {

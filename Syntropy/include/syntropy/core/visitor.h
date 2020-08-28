@@ -1,6 +1,6 @@
 
 /// \file visitor.h
-/// \brief Contains definition for classes used to implement visitors and visitable objects and related functionalities.
+/// \brief This header is part of the Syntropy core module. It contains definitions for visitors and visitable.
 ///
 /// \author Raffaele D. Facendola - 2019
 

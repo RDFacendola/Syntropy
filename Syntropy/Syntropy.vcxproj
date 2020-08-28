@@ -19,6 +19,7 @@
     <ClInclude Include="include\syntropy\language\foundation\pointers.h" />
     <ClInclude Include="include\syntropy\language\foundation\references.h" />
     <ClInclude Include="include\syntropy\language\foundation\types.h" />
+    <ClInclude Include="include\syntropy\language\tuple.h" />
     <ClInclude Include="include\syntropy\language\type_traits\constants.h" />
     <ClInclude Include="include\syntropy\experimental\core\polymorphic_deleter.h" />
     <ClInclude Include="include\syntropy\allocators\system_allocator.h" />
@@ -73,13 +74,13 @@
     <ClInclude Include="include\syntropy\diagnostics\stack_trace.h" />
     <ClInclude Include="include\syntropy\diagnostics\verbosity.h" />
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
-    <ClInclude Include="include\syntropy\language\event.h" />
-    <ClInclude Include="include\syntropy\language\functional.h" />
-    <ClInclude Include="include\syntropy\language\listener.h" />
+    <ClInclude Include="include\syntropy\core\event.h" />
+    <ClInclude Include="include\syntropy\core\functional.h" />
+    <ClInclude Include="include\syntropy\core\listener.h" />
     <ClInclude Include="include\syntropy\language\macro.h" />
     <ClInclude Include="include\syntropy\core\string_stream.h" />
-    <ClInclude Include="include\syntropy\language\memory.h" />
-    <ClInclude Include="include\syntropy\language\tuple.h" />
+    <ClInclude Include="include\syntropy\core\memory.h" />
+    <ClInclude Include="include\syntropy\core\tuple.h" />
     <ClInclude Include="include\syntropy\language\foundation.h" />
     <ClInclude Include="include\syntropy\language\type_traits\categories.h" />
     <ClInclude Include="include\syntropy\language\type_traits\manipulation.h" />
@@ -88,7 +89,7 @@
     <ClInclude Include="include\syntropy\language\type_traits\properties.h" />
     <ClInclude Include="include\syntropy\language\type_traits\relationships.h" />
     <ClInclude Include="include\syntropy\language\type_traits\utility.h" />
-    <ClInclude Include="include\syntropy\language\visitor.h" />
+    <ClInclude Include="include\syntropy\core\visitor.h" />
     <ClInclude Include="include\syntropy\math\bits.h" />
     <ClInclude Include="include\syntropy\math\combinatorics.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />
@@ -108,7 +109,7 @@
     <ClInclude Include="include\syntropy\math\rotation.h" />
     <ClInclude Include="include\syntropy\math\vector.h" />
     <ClInclude Include="include\syntropy\memory\memory.h" />
-    <ClInclude Include="include\syntropy\language\scope_guard.h" />
+    <ClInclude Include="include\syntropy\core\scope_guard.h" />
     <ClInclude Include="include\syntropy\language\type_traits.h" />
     <ClInclude Include="include\syntropy\language\utility.h" />
     <ClInclude Include="include\syntropy\math\math.h" />
@@ -162,7 +163,7 @@
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_threading.cpp" />
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_endianness.cpp" />
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_intrinsics.cpp" />
-    <ClCompile Include="src\syntropy\language\listener.cpp" />
+    <ClCompile Include="src\syntropy\core\listener.cpp" />
     <ClCompile Include="src\syntropy\random\pcg_random_engine.cpp" />
     <ClCompile Include="src\syntropy\memory\memory.cpp" />
     <ClCompile Include="src\syntropy\virtual_memory\virtual_memory.cpp" />

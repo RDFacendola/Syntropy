@@ -14,7 +14,6 @@
     <ClInclude Include="include\syntropy\math\hash.h" />
     <ClInclude Include="include\syntropy\core\label.h" />
     <ClInclude Include="include\syntropy\memory\memory.h" />
-    <ClInclude Include="include\syntropy\language\functional.h" />
     <ClInclude Include="include\syntropy\platform\endianness.h" />
     <ClInclude Include="src\syntropy\hal\hal_endianness.h" />
     <ClInclude Include="include\syntropy\diagnostics\stack_trace.h" />
@@ -38,10 +37,7 @@
     <ClInclude Include="include\syntropy\diagnostics\verbosity.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_manager.h" />
     <ClInclude Include="include\syntropy\core\string_stream.h" />
-    <ClInclude Include="include\syntropy\language\scope_guard.h" />
-    <ClInclude Include="include\syntropy\language\memory.h" />
     <ClInclude Include="include\syntropy\core\smart_pointers.h" />
-    <ClInclude Include="include\syntropy\language\tuple.h" />
     <ClInclude Include="include\syntropy\math\interpolations.h" />
     <ClInclude Include="include\syntropy\math\numeric.h" />
     <ClInclude Include="include\syntropy\math\vector.h" />
@@ -50,14 +46,11 @@
     <ClInclude Include="include\syntropy\math\codes.h" />
     <ClInclude Include="include\syntropy\math\quaternion.h" />
     <ClInclude Include="include\syntropy\math\combinatorics.h" />
-    <ClInclude Include="include\syntropy\language\event.h" />
-    <ClInclude Include="include\syntropy\language\listener.h" />
     <ClInclude Include="include\syntropy\unit_test\test_case.h" />
     <ClInclude Include="include\syntropy\unit_test\test_suite.h" />
     <ClInclude Include="include\syntropy\unit_test\auto_test_case.h" />
     <ClInclude Include="include\syntropy\unit_test\auto_test_suite.h" />
     <ClInclude Include="include\syntropy\unit_test\test_runner.h" />
-    <ClInclude Include="include\syntropy\language\visitor.h" />
     <ClInclude Include="include\syntropy\diagnostics\file_log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\auto_log_channel.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_macros.h" />
@@ -132,6 +125,14 @@
     <ClInclude Include="include\syntropy\language\foundation\types.h" />
     <ClInclude Include="include\syntropy\language\foundation.h" />
     <ClInclude Include="include\syntropy\core\algorithm.h" />
+    <ClInclude Include="include\syntropy\core\functional.h" />
+    <ClInclude Include="include\syntropy\core\scope_guard.h" />
+    <ClInclude Include="include\syntropy\core\event.h" />
+    <ClInclude Include="include\syntropy\core\listener.h" />
+    <ClInclude Include="include\syntropy\core\visitor.h" />
+    <ClInclude Include="include\syntropy\core\tuple.h" />
+    <ClInclude Include="include\syntropy\core\memory.h" />
+    <ClInclude Include="include\syntropy\language\tuple.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -153,7 +154,6 @@
     <ClCompile Include="src\syntropy\hal\x64\hal_x64_intrinsics.cpp" />
     <ClCompile Include="src\syntropy\time\date.cpp" />
     <ClCompile Include="src\syntropy\time\time_of_day.cpp" />
-    <ClCompile Include="src\syntropy\language\listener.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\log_event_formatter.cpp" />
     <ClCompile Include="src\syntropy\memory\memory.cpp" />
     <ClCompile Include="src\syntropy\random\pcg_random_engine.cpp" />
@@ -162,6 +162,7 @@
     <ClCompile Include="src\syntropy\allocators\virtual_stack_allocator.cpp" />
     <ClCompile Include="src\syntropy\allocators\virtual_allocator.cpp" />
     <ClCompile Include="src\syntropy\virtual_memory\virtual_memory.cpp" />
+    <ClCompile Include="src\syntropy\core\listener.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />

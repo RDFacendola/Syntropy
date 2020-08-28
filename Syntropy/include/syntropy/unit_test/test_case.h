@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#include "syntropy/language/event.h"
+#include "syntropy/core/event.h"
 #include "syntropy/language/macro.h"
 #include "syntropy/core/string.h"
 #include "syntropy/core/label.h"

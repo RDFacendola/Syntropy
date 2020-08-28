@@ -10,7 +10,7 @@
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/language/type_traits.h"
-#include "syntropy/language/memory.h"
+#include "syntropy/core/memory.h"
 #include "syntropy/allocators/allocator.h"
 
 namespace Syntropy
