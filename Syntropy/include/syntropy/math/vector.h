@@ -8,8 +8,8 @@
 
 #include <cstdint>
 
-#include "syntropy/language/tuple.h"
-#include "syntropy/language/utility.h"
+#include "syntropy/core/tuple.h"
+#include "syntropy/language/support.h"
 #include "syntropy/language/foundation.h"
 #include "syntropy/math/math.h"
 

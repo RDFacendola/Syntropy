@@ -3,7 +3,6 @@
   <ItemGroup>
     <ClInclude Include="include\syntropy\language\type_traits.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
-    <ClInclude Include="include\syntropy\language\utility.h" />
     <ClInclude Include="include\syntropy\memory\bytes.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\memory\alignment.h" />
@@ -55,7 +54,6 @@
     <ClInclude Include="include\syntropy\diagnostics\log_macros.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event_formatter.h" />
     <ClInclude Include="include\syntropy\diagnostics\log_event_filter.h" />
-    <ClInclude Include="include\syntropy\language\initializer_list.h" />
     <ClInclude Include="include\syntropy\random\pcg_random_engine.h" />
     <ClInclude Include="include\syntropy\random\random_context.h" />
     <ClInclude Include="include\syntropy\random\random_engine.h" />
@@ -134,6 +132,9 @@
     <ClInclude Include="include\syntropy\language\tuple.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
     <ClInclude Include="include\syntropy\language\preprocessor.h" />
+    <ClInclude Include="include\syntropy\language\support\utility.h" />
+    <ClInclude Include="include\syntropy\language\support.h" />
+    <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

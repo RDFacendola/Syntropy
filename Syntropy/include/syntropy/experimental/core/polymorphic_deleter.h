@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/utility.h"
+#include "syntropy/language/support.h"
 #include "syntropy/language/foundation.h"
 #include "syntropy/memory/memory.h"
 #include "syntropy/allocators/allocator.h"

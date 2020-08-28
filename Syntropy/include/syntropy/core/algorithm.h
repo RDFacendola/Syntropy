@@ -9,7 +9,7 @@
 #include <initializer_list>
 #include <algorithm>
 
-#include "syntropy/language/utility.h"
+#include "syntropy/language/support.h"
 #include "syntropy/memory/byte_span.h"
 
 namespace Syntropy

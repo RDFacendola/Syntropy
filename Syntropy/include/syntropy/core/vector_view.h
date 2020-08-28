@@ -10,7 +10,7 @@
 #include "syntropy/core/range.h"
 #include "syntropy/core/vector.h"
 #include "syntropy/language/type_traits.h"
-#include "syntropy/language/utility.h"
+#include "syntropy/language/support.h"
 
 namespace Syntropy
 {

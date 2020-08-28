@@ -1,6 +1,6 @@
 
 /// \file tuple.h
-/// \brief This header is part of Syntropy language module. It contains definitions for tuples.
+/// \brief This header is part of Syntropy core module. It contains definitions for tuples.
 ///
 /// \author Raffaele D. Facendola - 2020.
 

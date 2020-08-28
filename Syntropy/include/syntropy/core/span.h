@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/type_traits.h"
-#include "syntropy/language/tuple.h"
+#include "syntropy/core/tuple.h"
 #include "syntropy/language/foundation.h"
 #include "syntropy/math/math.h"
 
