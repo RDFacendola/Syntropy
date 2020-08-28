@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/macro.h"
+#include "syntropy/language/preprocessor.h"
 #include "syntropy/diagnostics/debugger.h"
 
 namespace Syntropy

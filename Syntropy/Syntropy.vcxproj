@@ -19,6 +19,7 @@
     <ClInclude Include="include\syntropy\language\foundation\pointers.h" />
     <ClInclude Include="include\syntropy\language\foundation\references.h" />
     <ClInclude Include="include\syntropy\language\foundation\types.h" />
+    <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
     <ClInclude Include="include\syntropy\language\tuple.h" />
     <ClInclude Include="include\syntropy\language\type_traits\constants.h" />
     <ClInclude Include="include\syntropy\experimental\core\polymorphic_deleter.h" />
@@ -77,7 +78,7 @@
     <ClInclude Include="include\syntropy\core\event.h" />
     <ClInclude Include="include\syntropy\core\functional.h" />
     <ClInclude Include="include\syntropy\core\listener.h" />
-    <ClInclude Include="include\syntropy\language\macro.h" />
+    <ClInclude Include="include\syntropy\language\preprocessor.h" />
     <ClInclude Include="include\syntropy\core\string_stream.h" />
     <ClInclude Include="include\syntropy\core\memory.h" />
     <ClInclude Include="include\syntropy\core\tuple.h" />

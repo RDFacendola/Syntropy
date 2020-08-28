@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="include\syntropy\language\macro.h" />
     <ClInclude Include="include\syntropy\language\type_traits.h" />
     <ClInclude Include="include\syntropy\syntropy.h" />
     <ClInclude Include="include\syntropy\language\utility.h" />
@@ -133,6 +132,8 @@
     <ClInclude Include="include\syntropy\core\tuple.h" />
     <ClInclude Include="include\syntropy\core\memory.h" />
     <ClInclude Include="include\syntropy\language\tuple.h" />
+    <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
+    <ClInclude Include="include\syntropy\language\preprocessor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

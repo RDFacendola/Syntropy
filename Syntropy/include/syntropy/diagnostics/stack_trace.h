@@ -9,7 +9,7 @@
 #include "syntropy/language/foundation.h"
 #include "syntropy/core/string.h"
 #include "syntropy/core/vector.h"
-#include "syntropy/language/macro.h"
+#include "syntropy/language/preprocessor.h"
 
 namespace Syntropy
 {
