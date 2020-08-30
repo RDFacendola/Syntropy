@@ -8,8 +8,9 @@
 
 #include <utility>
 
-#include "syntropy/language/foundation.h"
-#include "syntropy/language/type_traits.h"
+#include "syntropy/language/foundation/types.h"
+#include "syntropy/language/type_traits/meta.h"
+#include "syntropy/language/type_traits/relationships.h"
 
 namespace Syntropy
 {
@@ -102,14 +103,13 @@ namespace Syntropy
     using ExplicitFloat = Explicit<Float, Float>;
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* DECLVAL                                                              */
     /************************************************************************/
 
-    /// \brief Converts any type TType to a reference type, making it
-    /// possible to use member functions in decltype expressions without 
-    /// the need to go through constructors.
-    template<class TType>
-    typename Traits::AddRValueReference<TType> Declval() noexcept;
+    /// \brief Convert TType as a reference type, without calling any constructor.
+    /// \remarks this function shall never be evaluated as it has no definition.
+    template <typename TType>
+    Traits::AddRValueReference<TType> Declval() noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -129,14 +129,6 @@ namespace Syntropy
     constexpr Explicit<TTo, TFrom...>::operator TTo() const noexcept
     {
         return value_;
-    }
-
-    // Non-member functions.
-
-    template<class TType>
-    typename Traits::AddRValueReference<TType> Declval() noexcept
-    {
-        return std::declval<TType>();
     }
 
 }

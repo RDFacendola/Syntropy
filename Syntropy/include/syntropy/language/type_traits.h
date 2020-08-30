@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <tuple>
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/types.h"
 #include "syntropy/serialization/serialization_types.h"
 
 #include "syntropy/language/type_traits/constants.h"
@@ -21,7 +21,6 @@
 #include "syntropy/language/type_traits/operations.h"
 #include "syntropy/language/type_traits/meta.h"
 #include "syntropy/language/type_traits/capabilities.h"
-#include "syntropy/language/type_traits/declarations.h"
 
 namespace Syntropy
 {

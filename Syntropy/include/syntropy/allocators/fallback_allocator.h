@@ -155,7 +155,7 @@ namespace Syntropy
         }
         else
         {
-            static_assert(Traits::AlwaysFalse, "Cannot infer block owner: either TAllocator or TFallback must provide ::Owns(...) method.");
+            static_assert(Traits::AlwaysFalse<TAllocator, TFallback>, "Cannot infer block owner: either TAllocator or TFallback must provide ::Owns(...) method.");
         }
     }
 

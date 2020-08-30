@@ -135,7 +135,7 @@
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
     <ClInclude Include="include\syntropy\core\tuple.h" />
     <ClInclude Include="include\syntropy\language\type_traits\capabilities.h" />
-    <ClInclude Include="include\syntropy\language\type_traits\declarations.h" />
+    <ClInclude Include="include\syntropy\language\support\type_list.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
