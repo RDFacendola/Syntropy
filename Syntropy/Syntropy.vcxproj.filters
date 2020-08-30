@@ -143,6 +143,7 @@
     <ClInclude Include="include\syntropy\language\support\tags.h" />
     <ClInclude Include="include\syntropy\language\support\declarations.h" />
     <ClInclude Include="include\syntropy\core\algorithm\swap.h" />
+    <ClInclude Include="include\syntropy\core\algorithm\predicates.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
