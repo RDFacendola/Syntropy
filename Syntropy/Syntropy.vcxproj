@@ -22,7 +22,6 @@
     <ClInclude Include="include\syntropy\language\foundation\types.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
     <ClInclude Include="include\syntropy\language\support\utility.h" />
-    <ClInclude Include="include\syntropy\core\tuple.h" />
     <ClInclude Include="include\syntropy\language\type_traits\constants.h" />
     <ClInclude Include="include\syntropy\experimental\core\polymorphic_deleter.h" />
     <ClInclude Include="include\syntropy\allocators\system_allocator.h" />
