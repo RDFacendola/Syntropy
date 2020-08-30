@@ -13,7 +13,7 @@
 #include "syntropy/language/support.h"
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/core/span.h"
+#include "syntropy/core/sets/span.h"
 
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/bytes.h"

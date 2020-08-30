@@ -6,7 +6,7 @@
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/core/data_structures/fix_array.h"
-#include "syntropy/core/span.h"
+#include "syntropy/core/sets/span.h"
 
 #include "syntropy/unit_test/unit_test.h"
 

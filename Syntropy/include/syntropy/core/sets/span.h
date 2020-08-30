@@ -9,7 +9,7 @@
 #include <ostream>
 
 #include "syntropy/language/type_traits.h"
-#include "syntropy/core/tuple.h"
+#include "syntropy/core/sets/tuple.h"
 #include "syntropy/language/foundation.h"
 #include "syntropy/math/math.h"
 
@@ -95,11 +95,11 @@ namespace Syntropy
 
     /// \brief Get an iterator to the first element in a span.
     template <typename TElement>
-    constexpr  XPointer<TElement> begin(const SpanT<TElement>& span) noexcept;
+    constexpr XPointer<TElement> begin(const SpanT<TElement>& span) noexcept;
 
     /// \brief Get an iterator past the last element in a span.
     template <typename TElement>
-    constexpr  XPointer<TElement> end(const SpanT<TElement>& span) noexcept;
+    constexpr XPointer<TElement> end(const SpanT<TElement>& span) noexcept;
 
     /// \brief Get an iterator to the first element in a span.
     template <typename TElement>

@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-#include "syntropy/core/tuple.h"
+#include "syntropy/core/sets/tuple.h"
 #include "syntropy/language/support.h"
 #include "syntropy/language/foundation.h"
 #include "syntropy/math/math.h"

@@ -62,7 +62,6 @@
     <ClInclude Include="include\syntropy\experimental\serialization\streams\stream_buffer_transaction.h" />
     <ClInclude Include="include\syntropy\unit_test\test_context.h" />
     <ClInclude Include="include\syntropy\unit_test\auto_unit_test.h" />
-    <ClInclude Include="include\syntropy\core\span.h" />
     <ClInclude Include="include\syntropy\application\console\auto_console_output_section.h" />
     <ClInclude Include="include\syntropy\application\console\auto_console_style.h" />
     <ClInclude Include="include\syntropy\application\console\console_line_builder.h" />
@@ -108,7 +107,6 @@
     <ClInclude Include="include\syntropy\language\foundation\references.h" />
     <ClInclude Include="include\syntropy\language\foundation\types.h" />
     <ClInclude Include="include\syntropy\language\foundation.h" />
-    <ClInclude Include="include\syntropy\core\tuple.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
     <ClInclude Include="include\syntropy\language\preprocessor.h" />
     <ClInclude Include="include\syntropy\language\support.h" />
@@ -144,6 +142,8 @@
     <ClInclude Include="include\syntropy\core\architecture\visitor.h" />
     <ClInclude Include="include\syntropy\core\architecture\scope_guard.h" />
     <ClInclude Include="include\syntropy\memory\smart_pointers.h" />
+    <ClInclude Include="include\syntropy\core\sets\span.h" />
+    <ClInclude Include="include\syntropy\core\sets\tuple.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

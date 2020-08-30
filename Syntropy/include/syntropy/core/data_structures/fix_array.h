@@ -1,6 +1,6 @@
 
-/// \file array.h
-/// \brief This header is part of the Syntropy core module. It contains array definitions.
+/// \file fix_array.h
+/// \brief This header is part of the Syntropy core module. It contains definitions for fixed-size arrays.
 ///
 /// \author Raffaele D. Facendola - 2020
 

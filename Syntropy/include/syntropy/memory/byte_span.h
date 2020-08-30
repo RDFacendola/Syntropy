@@ -11,7 +11,7 @@
 #include "syntropy/diagnostics/assert.h"
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/core/span.h"
+#include "syntropy/core/sets/span.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"

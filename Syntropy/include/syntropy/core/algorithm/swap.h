@@ -43,7 +43,5 @@ namespace Syntropy::Algorithm
     {
         Swap(*lhs, *rhs);
     }
-
 }
-
 
