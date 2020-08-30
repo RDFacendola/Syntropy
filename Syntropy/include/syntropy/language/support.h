@@ -7,5 +7,6 @@
 #pragma once
 
 #include "syntropy/language/support/initializer_list.h"
+#include "syntropy/language/support/type_list.h"
 #include "syntropy/language/support/utility.h"
 

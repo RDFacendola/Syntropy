@@ -90,4 +90,13 @@ namespace Syntropy::Traits
     template <typename... TTypes>
     using CommonTypeOf = std::common_type_t<TTypes...>;
 
+    /************************************************************************/
+    /* DECAY                                                                */
+    /************************************************************************/
+
+    /// \brief Applies lvalue-to-rvalue, array-to-pointer, and function-to-pointer implicit conversions to the type TType,
+    /// removes cv-qualifiers, and defines the resulting type as the member typedef type.
+    template <typename TType>
+    using Decay = std::decay_t<TType>;
+
 }

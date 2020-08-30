@@ -86,12 +86,16 @@
     <ClInclude Include="include\syntropy\core\tuple.h" />
     <ClInclude Include="include\syntropy\language\foundation.h" />
     <ClInclude Include="include\syntropy\language\type_traits\categories.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\details\queries.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\details\sequences.h" />
     <ClInclude Include="include\syntropy\language\type_traits\manipulation.h" />
     <ClInclude Include="include\syntropy\language\type_traits\meta.h" />
     <ClInclude Include="include\syntropy\language\type_traits\operations.h" />
     <ClInclude Include="include\syntropy\language\type_traits\properties.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\queries.h" />
     <ClInclude Include="include\syntropy\language\type_traits\relationships.h" />
     <ClInclude Include="include\syntropy\core\visitor.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\sequences.h" />
     <ClInclude Include="include\syntropy\math\bits.h" />
     <ClInclude Include="include\syntropy\math\combinatorics.h" />
     <ClInclude Include="include\syntropy\math\constants.h" />

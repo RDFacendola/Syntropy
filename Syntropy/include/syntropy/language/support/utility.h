@@ -6,11 +6,10 @@
 
 #pragma once
 
-#include <utility>
-
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/type_traits/meta.h"
 #include "syntropy/language/type_traits/relationships.h"
+#include "syntropy/language/type_traits/manipulation.h"
 
 namespace Syntropy
 {

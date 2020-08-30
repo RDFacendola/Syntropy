@@ -136,6 +136,10 @@
     <ClInclude Include="include\syntropy\core\tuple.h" />
     <ClInclude Include="include\syntropy\language\type_traits\capabilities.h" />
     <ClInclude Include="include\syntropy\language\support\type_list.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\queries.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\details\queries.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\sequences.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\details\sequences.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
