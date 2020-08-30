@@ -1,5 +1,5 @@
 
-/// \file foundation.h
+/// \file declarations.h
 /// \brief This header is part of Syntropy language module. It contains language utility definitions.
 ///
 /// This header contains mostly aliases to the standard traits, eventually modified to suite Syntropy needs and to enforce code style consistency.

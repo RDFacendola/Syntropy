@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "syntropy/language/type_traits/utility.h"
+#include "syntropy/language/type_traits/declarations.h"
 
 namespace Syntropy::Traits
 {

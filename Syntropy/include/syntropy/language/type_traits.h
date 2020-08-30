@@ -21,7 +21,7 @@
 #include "syntropy/language/type_traits/operations.h"
 #include "syntropy/language/type_traits/meta.h"
 #include "syntropy/language/type_traits/capabilities.h"
-#include "syntropy/language/type_traits/utility.h"
+#include "syntropy/language/type_traits/declarations.h"
 
 namespace Syntropy
 {

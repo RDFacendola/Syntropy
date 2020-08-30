@@ -116,7 +116,6 @@
     <ClInclude Include="include\syntropy\language\type_traits\meta.h" />
     <ClInclude Include="include\syntropy\language\type_traits\constants.h" />
     <ClInclude Include="include\syntropy\core\core.h" />
-    <ClInclude Include="include\syntropy\language\type_traits\utility.h" />
     <ClInclude Include="include\syntropy\language\foundation\pointers.h" />
     <ClInclude Include="include\syntropy\language\foundation\references.h" />
     <ClInclude Include="include\syntropy\language\foundation\types.h" />
@@ -136,6 +135,7 @@
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
     <ClInclude Include="include\syntropy\core\tuple.h" />
     <ClInclude Include="include\syntropy\language\type_traits\capabilities.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\declarations.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
