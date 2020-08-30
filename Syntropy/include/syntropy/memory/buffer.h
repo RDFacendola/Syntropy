@@ -7,6 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation.h"
+#include "syntropy/core/algorithm/swap.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -144,7 +145,9 @@ namespace Syntropy::Memory
         : allocator_(rhs.allocator_)
         , alignment_(rhs.alignment_)
     {
-        std::swap(data_, rhs.data_);
+        using Algorithm::Swap;
+
+        Swap(data_, rhs.data_);
     }
 
     inline Buffer::Buffer(Buffer&& rhs, Allocator& allocator) noexcept
@@ -155,7 +158,9 @@ namespace Syntropy::Memory
 
         if (allocator_ == rhs.allocator_)
         {
-            std::swap(data_, rhs.data_);
+            using Algorithm::Swap;
+
+            Swap(data_, rhs.data_);
         }
         else
         {
@@ -221,8 +226,10 @@ namespace Syntropy::Memory
     {
         SYNTROPY_UNDEFINED_BEHAVIOR(allocator_ == rhs.allocator_, "Buffers must share the same allocator.");
 
-        std::swap(data_, rhs.data_);
-        std::swap(alignment_, rhs.alignment_);
+        using Algorithm::Swap;
+
+        Swap(data_, rhs.data_);
+        Swap(alignment_, rhs.alignment_);
     }
 
     // Non-member functions.

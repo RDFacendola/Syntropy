@@ -170,11 +170,11 @@ namespace Syntropy
 
     inline void VirtualStackAllocator::Swap(VirtualStackAllocator& rhs) noexcept
     {
-        using std::swap;
+        using Algorithm::Swap;
 
-        swap(virtual_span_, rhs.virtual_span_);
-        swap(unallocated_span_, rhs.unallocated_span_);
-        swap(uncommitted_span_, rhs.uncommitted_span_);
+        Swap(virtual_span_, rhs.virtual_span_);
+        Swap(unallocated_span_, rhs.unallocated_span_);
+        Swap(uncommitted_span_, rhs.uncommitted_span_);
     }
 
     inline VirtualStackAllocator::TCheckpoint VirtualStackAllocator::Checkpoint() const noexcept

@@ -242,11 +242,9 @@ namespace Syntropy
     template <typename TAllocator>
     inline void StackAllocator<TAllocator>::Swap(StackAllocator& rhs) noexcept
     {
-        using std::swap;
-
-        swap(allocator_, rhs.allocator_);
-        swap(granularity_, rhs.granularity_);
-        swap(chunk_, rhs.chunk_);
+        Swap(allocator_, rhs.allocator_);
+        Swap(granularity_, rhs.granularity_);
+        Swap(chunk_, rhs.chunk_);
     }
 
     template <typename TAllocator>

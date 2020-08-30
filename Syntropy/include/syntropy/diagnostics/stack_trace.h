@@ -7,6 +7,8 @@
 #pragma once
 
 #include "syntropy/language/foundation.h"
+#include "syntropy/core/algorithm/swap.h"
+
 #include "syntropy/core/string.h"
 #include "syntropy/core/vector.h"
 #include "syntropy/language/preprocessor.h"
@@ -123,9 +125,6 @@ namespace Syntropy
     /// \brief Output a stack trace inside a stream.
     std::ostream& operator<< (std::ostream &out, const StackTrace& stack_trace);
 
-    /// \brief Swaps two stack traces.
-    void swap(StackTrace& lhs, StackTrace& rhs);
-
     /// \brief Equality comparison for StackTraceElement.
     Bool operator==(const StackTraceElement& lhs, const StackTraceElement& rhs);
 
@@ -188,9 +187,9 @@ namespace Syntropy
 
     inline void StackTrace::Swap(StackTrace& other) noexcept
     {
-        using std::swap;
+        using Algorithm::Swap;
 
-        swap(stack_trace_, other.stack_trace_);
+        Swap(stack_trace_, other.stack_trace_);
     }
 
     inline const StackTraceElement& StackTrace::GetFunction() const
@@ -227,11 +226,6 @@ namespace Syntropy
     inline Bool operator!=(const StackTraceElement& lhs, const StackTraceElement& rhs)
     {
         return !(lhs == rhs);
-    }
-
-    inline void swap(StackTrace& lhs, StackTrace& rhs)
-    {
-        lhs.Swap(rhs);
     }
 
 }

@@ -8,6 +8,7 @@
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/core/string.h"
+#include "syntropy/core/algorithm/swap.h"
 
 #include "syntropy/memory/memory.h"
 
@@ -87,9 +88,6 @@ namespace Syntropy
     /// \brief Get a label hash.
     Int Hash64(const Label& rhs);
 
-    /// \brief Swaps two labels.
-    void swap(Label& lhs, Label& rhs) noexcept;
-
     /// \brief Stream insertion for labels.
     std::ostream& operator<<(std::ostream& out, const Label& rhs);
 
@@ -137,9 +135,9 @@ namespace Syntropy
 
     inline void Label::Swap(Label& other) noexcept
     {
-        using std::swap;
+        using Algorithm::Swap;
 
-        swap(characters_, other.characters_);
+        Swap(characters_, other.characters_);
     }
 
     // Non-member functions.
@@ -159,11 +157,6 @@ namespace Syntropy
         // Labels are never deallocated, hence their memory location is unique.
 
         return Memory::NumericAddressOf(rhs.GetCharacters());
-    }
-
-    inline void swap(Label& lhs, Label& rhs) noexcept
-    {
-        lhs.Swap(rhs);
     }
 
     inline std::ostream& operator<<(std::ostream& out, const Label& rhs)

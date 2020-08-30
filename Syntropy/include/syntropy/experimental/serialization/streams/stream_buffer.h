@@ -7,6 +7,8 @@
 #pragma once
 
 #include "syntropy/language/foundation.h"
+#include "syntropy/core/algorithm/swap.h"
+
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/language/support.h"
 #include "syntropy/core/algorithm.h"
@@ -156,13 +158,6 @@ namespace Syntropy
     };
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Swaps two memory stream buffer.
-    void swap(StreamBuffer& lhs, StreamBuffer& rhs);
-
-    /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
@@ -261,18 +256,11 @@ namespace Syntropy
 
     inline void StreamBuffer::Swap(StreamBuffer& other) noexcept
     {
-        using std::swap;
+        using Algorithm::Swap;
 
-        swap(buffer_, other.buffer_);
-        swap(base_pointer_, other.base_pointer_);
-        swap(size_, other.size_);
-    }
-
-    // Non-member functions.
-
-    inline void swap(StreamBuffer& lhs, StreamBuffer& rhs)
-    {
-        lhs.Swap(rhs);
+        Swap(buffer_, other.buffer_);
+        Swap(base_pointer_, other.base_pointer_);
+        Swap(size_, other.size_);
     }
 
 }

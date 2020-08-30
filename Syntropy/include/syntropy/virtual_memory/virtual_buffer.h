@@ -7,6 +7,8 @@
 #pragma once
 
 #include "syntropy/language/foundation.h"
+#include "syntropy/core/algorithm/swap.h"
+
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/virtual_memory/virtual_memory.h"
@@ -141,7 +143,9 @@ namespace Syntropy
 
     inline void VirtualBuffer::Swap(VirtualBuffer& rhs) noexcept
     {
-        std::swap(buffer_, rhs.buffer_);
+        using Algorithm::Swap;
+
+        Swap(buffer_, rhs.buffer_);
     }
 
     inline ByteSpan VirtualBuffer::GetData() const noexcept

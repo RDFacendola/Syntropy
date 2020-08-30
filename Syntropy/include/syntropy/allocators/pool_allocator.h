@@ -282,13 +282,11 @@ namespace Syntropy
     template <typename TAllocator>
     inline void PoolAllocator<TAllocator>::Swap(PoolAllocator& rhs) noexcept
     {
-        using std::swap;
-
-        swap(allocator_, rhs.allocator_);
-        swap(chunk_size_, rhs.chunk_size_);
-        swap(block_size_, rhs.block_size_);
-        swap(available_chunks_, rhs.available_chunks_);
-        swap(unavailable_chunks_, rhs.unavailable_chunks_);
+        Swap(allocator_, rhs.allocator_);
+        Swap(chunk_size_, rhs.chunk_size_);
+        Swap(block_size_, rhs.block_size_);
+        Swap(available_chunks_, rhs.available_chunks_);
+        Swap(unavailable_chunks_, rhs.unavailable_chunks_);
     }
 
     template <typename TAllocator>
