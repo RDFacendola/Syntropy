@@ -9,7 +9,7 @@
 #include <typeinfo>
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/core/string.h"
+#include "syntropy/core/strings/string.h"
 
 #include "syntropy/application/console/console_output_section.h"
 #include "syntropy/application/console/auto_console_output_section.h"

@@ -7,10 +7,10 @@
 
 #include <algorithm>
 
-#include "syntropy/core/string.h"
-#include "syntropy/core/label.h"
+#include "syntropy/core/strings/string.h"
+#include "syntropy/core/strings/label.h"
 #include "syntropy/language/foundation.h"
-#include "syntropy/core/vector.h"
+#include "syntropy/core/data_structures/vector.h"
 #include "syntropy/application/command_line_argument.h"
 
 namespace Syntropy

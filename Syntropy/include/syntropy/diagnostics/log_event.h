@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "syntropy/core/context.h"
-#include "syntropy/core/string.h"
+#include "syntropy/core/strings/context.h"
+#include "syntropy/core/strings/string.h"
 #include "syntropy/core/string_stream.h"
 #include "syntropy/core/scope_guard.h"
 

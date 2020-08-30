@@ -7,10 +7,10 @@
 #pragma once
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/core/string.h"
+#include "syntropy/core/strings/string.h"
 #include "syntropy/core/string_stream.h"
 #include "syntropy/memory/memory.h"
-#include "syntropy/core/algorithm.h"
+#include "syntropy/core/algorithm/algorithm.h"
 
 #include "syntropy/math/math.h"
 

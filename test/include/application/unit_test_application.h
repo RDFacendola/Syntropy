@@ -13,7 +13,7 @@
 
 #include "syntropy/core/string_stream.h"
 #include "syntropy/language/foundation.h"
-#include "syntropy/core/listener.h"
+#include "syntropy/core/events/listener.h"
 #include "syntropy/unit_test/test_runner.h"
 
 #include "syntropy/application/console/console_output.h"

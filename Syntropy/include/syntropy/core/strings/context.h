@@ -9,8 +9,8 @@
 #include <ostream>
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/core/label.h"
-#include "syntropy/core/string.h"
+#include "syntropy/core/strings/label.h"
+#include "syntropy/core/strings/string.h"
 
 namespace Syntropy
 {

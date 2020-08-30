@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/core/string.h"
+#include "syntropy/core/strings/string.h"
 
 #include "syntropy/application/console/auto_console_style.h"
 #include "syntropy/application/console/console_output_sections.h"

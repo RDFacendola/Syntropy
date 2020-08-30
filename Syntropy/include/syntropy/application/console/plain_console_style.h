@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/core/string.h"
+#include "syntropy/core/strings/string.h"
 
 namespace Syntropy
 {

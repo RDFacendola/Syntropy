@@ -8,10 +8,10 @@
 
 #include <type_traits>
 
-#include "syntropy/core/event.h"
+#include "syntropy/core/events/event.h"
 #include "syntropy/language/preprocessor.h"
-#include "syntropy/core/string.h"
-#include "syntropy/core/label.h"
+#include "syntropy/core/strings/string.h"
+#include "syntropy/core/strings/label.h"
 #include "syntropy/core/string_stream.h"
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/diagnostics/stack_trace.h"

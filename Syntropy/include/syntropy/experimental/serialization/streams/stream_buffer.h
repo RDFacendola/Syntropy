@@ -11,7 +11,7 @@
 
 #include "syntropy/core/smart_pointers.h"
 #include "syntropy/language/support.h"
-#include "syntropy/core/algorithm.h"
+#include "syntropy/core/algorithm/algorithm.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/byte_span.h"

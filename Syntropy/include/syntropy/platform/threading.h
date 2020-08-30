@@ -8,7 +8,7 @@
 #include <thread>
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/core/vector.h"
+#include "syntropy/core/data_structures/vector.h"
 
 namespace Syntropy
 {

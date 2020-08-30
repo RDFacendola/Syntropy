@@ -9,8 +9,8 @@
 #include "syntropy/language/foundation.h"
 #include "syntropy/diagnostics/log_event.h"
 #include "syntropy/diagnostics/verbosity.h"
-#include "syntropy/core/context.h"
-#include "syntropy/core/vector.h"
+#include "syntropy/core/strings/context.h"
+#include "syntropy/core/data_structures/vector.h"
 
 namespace Syntropy
 {

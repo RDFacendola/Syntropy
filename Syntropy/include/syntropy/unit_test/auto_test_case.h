@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/core/label.h"
+#include "syntropy/core/strings/label.h"
 #include "syntropy/core/smart_pointers.h"
 
 #include "syntropy/unit_test/test_case.h"

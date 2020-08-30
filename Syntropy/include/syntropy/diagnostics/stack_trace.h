@@ -9,8 +9,8 @@
 #include "syntropy/language/foundation.h"
 #include "syntropy/core/algorithm/swap.h"
 
-#include "syntropy/core/string.h"
-#include "syntropy/core/vector.h"
+#include "syntropy/core/strings/string.h"
+#include "syntropy/core/data_structures/vector.h"
 #include "syntropy/language/preprocessor.h"
 
 namespace Syntropy

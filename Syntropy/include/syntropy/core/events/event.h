@@ -8,7 +8,7 @@
 
 #include "syntropy/core/smart_pointers.h"
 
-#include "syntropy/core/listener.h"
+#include "syntropy/core/events/listener.h"
 
 namespace Syntropy
 {

@@ -1,8 +1,8 @@
-#include "syntropy/core/context.h"
+#include "syntropy/core/strings/context.h"
 
 #include <tuple>
 
-#include "syntropy/core/map.h"
+#include "syntropy/core/data_structures/map.h"
 
 #include "syntropy/allocators/virtual_stack_allocator.h"
 #include "syntropy/allocators/fallback_allocator.h"
