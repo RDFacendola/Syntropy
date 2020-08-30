@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/types.h"
 
 namespace Syntropy::Traits
 {

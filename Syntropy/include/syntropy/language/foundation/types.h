@@ -2,8 +2,6 @@
 /// \file types.h
 /// \brief This header is part of Syntropy language module. It contains fundamental definitions of types.
 ///
-/// ***This header shall not depend on any header other than standard ones as it will likely create circular dependencies.***
-/// 
 /// \author Raffaele D. Facendola - August  2020
 
 #pragma once
