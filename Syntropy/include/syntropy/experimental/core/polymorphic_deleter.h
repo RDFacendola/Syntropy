@@ -29,7 +29,7 @@ namespace Syntropy
 
         /// \brief Create a new polymorphic deleter with explicit memory resource.
         template <typename TType>
-        PolymorphicDeleter(TypeT<TType>, Allocator& allocator) noexcept;
+        PolymorphicDeleter(Tags::Type<TType>, Allocator& allocator) noexcept;
 
         /// \brief Destroy an object allocated on the underlying memory resource.
         void operator()(RWTypelessPtr object);
@@ -68,7 +68,7 @@ namespace Syntropy
     // PolymorphicDeleter<TType>.
 
     template <typename TType>
-    inline PolymorphicDeleter::PolymorphicDeleter(TypeT<TType>, Allocator& allocator) noexcept
+    inline PolymorphicDeleter::PolymorphicDeleter(Tags::Type<TType>, Allocator& allocator) noexcept
         : destructor_(&Destroy<TType>)
         , allocator_(&allocator)
     {
@@ -100,7 +100,7 @@ namespace Syntropy
     template <typename TType>
     inline PolymorphicDeleter MakePolymorphicDeleter(Allocator& allocator)
     {
-        return PolymorphicDeleter(kType<TType>, allocator);
+        return PolymorphicDeleter(Tags::kType<TType>, allocator);
     }
 
 }

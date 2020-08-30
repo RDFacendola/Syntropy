@@ -62,7 +62,7 @@ namespace Syntropy
     }
 
     Context::Registry::Registry()
-        : memory_resource_(std::forward_as_tuple(1_MiBytes, 64_KiBytes), kDefaultConstruct)
+        : memory_resource_(std::forward_as_tuple(1_MiBytes, 64_KiBytes), Tags::kDefaultConstruct)
         , contexts_(memory_resource_)
     {
         // #TODO Configure memory resource from data.

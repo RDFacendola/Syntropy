@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/type_traits.h"
-#include "syntropy/language/support.h"
+#include "syntropy/language/support/tags.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/language/foundation.h"
 #include "syntropy/memory/bytes.h"
@@ -43,11 +43,11 @@ namespace Syntropy
 
         /// \brief Create a new allocator by initializing the primary allocator explicitly and default-constructing the fallback one.
         template <typename TArguments>
-        FallbackAllocator(TArguments&& arguments, DefaultConstructT) noexcept;
+        FallbackAllocator(TArguments&& arguments, Tags::DefaultConstruct) noexcept;
 
         /// \brief Create a new allocator by initializing the fallback allocator explicitly and default-constructing the primary one.
         template <typename TFallbackArguments>
-        FallbackAllocator(DefaultConstructT, TFallbackArguments&& fallback_arguments) noexcept;
+        FallbackAllocator(Tags::DefaultConstruct, TFallbackArguments&& fallback_arguments) noexcept;
 
         /// \brief Default destructor.
         ~FallbackAllocator() noexcept = default;
@@ -103,7 +103,7 @@ namespace Syntropy
     }
     template <typename TAllocator, typename TFallback>
     template <typename TArguments>
-    inline FallbackAllocator<TAllocator, TFallback>::FallbackAllocator(TArguments&& arguments, DefaultConstructT) noexcept
+    inline FallbackAllocator<TAllocator, TFallback>::FallbackAllocator(TArguments&& arguments, Tags::DefaultConstruct) noexcept
         : allocator_(std::make_from_tuple<TAllocator>(Forward<TArguments>(arguments)))
     {
 
@@ -111,7 +111,7 @@ namespace Syntropy
 
     template <typename TAllocator, typename TFallback>
     template <typename TFallbackArguments>
-    inline FallbackAllocator<TAllocator, TFallback>::FallbackAllocator(DefaultConstructT, TFallbackArguments&& fallback_arguments) noexcept
+    inline FallbackAllocator<TAllocator, TFallback>::FallbackAllocator(Tags::DefaultConstruct, TFallbackArguments&& fallback_arguments) noexcept
         : fallback_(std::make_from_tuple<TFallback>(Forward<TFallbackArguments>(fallback_arguments)))
     {
 

@@ -130,7 +130,6 @@
     <ClInclude Include="include\syntropy\core\memory.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
     <ClInclude Include="include\syntropy\language\preprocessor.h" />
-    <ClInclude Include="include\syntropy\language\support\utility.h" />
     <ClInclude Include="include\syntropy\language\support.h" />
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
     <ClInclude Include="include\syntropy\core\tuple.h" />
@@ -140,6 +139,10 @@
     <ClInclude Include="include\syntropy\language\type_traits\details\queries.h" />
     <ClInclude Include="include\syntropy\language\type_traits\sequences.h" />
     <ClInclude Include="include\syntropy\language\type_traits\details\sequences.h" />
+    <ClInclude Include="include\syntropy\language\support\explicit.h" />
+    <ClInclude Include="include\syntropy\language\support\placeholders.h" />
+    <ClInclude Include="include\syntropy\language\support\tags.h" />
+    <ClInclude Include="include\syntropy\language\support\declarations.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
