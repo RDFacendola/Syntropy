@@ -164,8 +164,8 @@ namespace Syntropy
     template <typename TType, typename TAllocator, typename TTuple1, typename TTuple2, typename>
     constexpr decltype(auto) UsesAllocatorConstructionArgs(const TAllocator& allocator, std::piecewise_construct_t, TTuple1&& tuple1, TTuple2&& tuple2)
     {
-        using TFirst = decltype(std::declval<TType>().first);
-        using TSecond = decltype(std::declval<TType>().second);
+        using TFirst = decltype(Declval<TType>().first);
+        using TSecond = decltype(Declval<TType>().second);
 
         auto forward_tuple1 = [&allocator](auto&&... arguments)
         { 

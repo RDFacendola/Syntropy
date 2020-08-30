@@ -39,10 +39,10 @@ namespace Syntropy
         using TVector = ConditionalT<Traits::IsConst<TElement>, const Array<Traits::RemoveConst<TElement>>, Array<TElement>>;
 
         /// \brief Type of a range in the vector view.
-        using TRange = decltype(MakeRange(std::declval<TVector&>()));
+        using TRange = decltype(MakeRange(Declval<TVector&>()));
 
         /// \brief Type of a const range in the vector view.
-        using TConstRange = decltype(MakeConstRange(std::declval<TVector&>()));
+        using TConstRange = decltype(MakeConstRange(Declval<TVector&>()));
 
         /// \brief Create a view into a non-const vector.
         template <typename UElement>

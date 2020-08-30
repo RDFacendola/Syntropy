@@ -180,11 +180,11 @@ namespace Syntropy
 
         /// \brief Detector for UTestFixture::After() member function.
         template <typename UTestFixture>
-        using HasAfter = decltype(std::declval<UTestFixture>().After());
+        using HasAfter = decltype(Declval<UTestFixture>().After());
 
         /// \brief Detector for UTestFixture::Before() member function.
         template <typename UTestFixture>
-        using HasBefore = decltype(std::declval<UTestFixture>().Before());
+        using HasBefore = decltype(Declval<UTestFixture>().Before());
 
         /// \brief Run a test case.
         void Run(const TestCase<TTestFixture>& test_case) const;

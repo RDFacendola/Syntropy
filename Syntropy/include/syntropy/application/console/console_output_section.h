@@ -110,38 +110,38 @@ namespace Syntropy
         /// \brief Check if the style defines a method PushSection(USection{}, StringView{}) (either const or non-const).
         /// This method, if any, has precedence over any other Push alternative.
         template <typename UStyle, typename USection>
-        using HasPushSection = decltype(std::declval<UStyle>().PushSection(std::declval<USection>(), StringView{}));
+        using HasPushSection = decltype(Declval<UStyle>().PushSection(Declval<USection>(), StringView{}));
 
         /// \brief Check if the style defines a method PushSection(StringView{}) (either const or non-const).
         /// This method, if any, has precedence only if no section-specific Push method is provided by the underlying style.
         template <typename UStyle>
-        using HasGenericPushSection = decltype(std::declval<UStyle>().PushSection(StringView{}));
+        using HasGenericPushSection = decltype(Declval<UStyle>().PushSection(StringView{}));
 
         /// \brief Check if the style defines a method PopSection(USection{}) (either const or non-const).
         /// This method, if any, has precedence over any other Pop alternative.
         template <typename UStyle, typename USection>
-        using HasPopSection = decltype(std::declval<UStyle>().PopSection(std::declval<USection>()));
+        using HasPopSection = decltype(Declval<UStyle>().PopSection(Declval<USection>()));
 
         /// \brief Check if the style defines a method PopSection() (either const or non-const).
         /// This method, if any, has precedence only if no section-specific Pop method is provided by the underlying style.
         template <typename UStyle>
-        using HasGenericPopSection = decltype(std::declval<UStyle>().PopSection());
+        using HasGenericPopSection = decltype(Declval<UStyle>().PopSection());
 
         /// \brief Check if the style defines a method Print(USection{}, StringView{}) (either const or non-const).
         template <typename UStyle, typename USection>
-        using HasPrint = decltype(std::declval<UStyle>().Print(std::declval<USection>(), StringView{}));
+        using HasPrint = decltype(Declval<UStyle>().Print(Declval<USection>(), StringView{}));
 
         /// \brief Check if the style defines a method Print(StringView{}) (either const or non-const).
         template <typename UStyle>
-        using HasGenericPrint = decltype(std::declval<UStyle>().Print(StringView{}));
+        using HasGenericPrint = decltype(Declval<UStyle>().Print(StringView{}));
 
         /// \brief Check if the style defines a method LineFeed() (either const or non-const).
         template <typename UStyle, typename USection>
-        using HasLineFeed = decltype(std::declval<UStyle>().LineFeed(std::declval<USection>()));
+        using HasLineFeed = decltype(Declval<UStyle>().LineFeed(Declval<USection>()));
 
         /// \brief Check if the style defines a method LineFeed() (either const or non-const).
         template <typename UStyle>
-        using HasGenericLineFeed = decltype(std::declval<UStyle>().LineFeed());
+        using HasGenericLineFeed = decltype(Declval<UStyle>().LineFeed());
 
     };
 

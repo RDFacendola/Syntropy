@@ -1,6 +1,6 @@
 
 /// \file bytes.h
-/// \brief This header is part of the Syntropy memory module. It contains the definition of bytes memory unit types and related functions.
+/// \brief This header is part of the Syntropy memory module. It contains definitions of memory unit types and related functions.
 ///
 /// \author Raffaele D. Facendola - August 2018
 

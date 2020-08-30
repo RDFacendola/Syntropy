@@ -62,13 +62,11 @@ namespace Syntropy
     /* TYPE CAST                                                            */
     /************************************************************************/
 
-    // Convenient casts to convert to and from address types.
-
     /// \brief Convert a typeless pointer to a read-only memory region numeric address value.
     Address ToAddress(TypelessPtr rhs) noexcept;
 
     /// \brief Convert a typeless pointer to a read-write memory region numeric address value.
-    RWAddress ToRWAddress(RWTypelessPtr rhs) noexcept;
+    RWAddress ToRWAddress(TypelessPtr rhs) noexcept;
 
     /// \brief Convert an address to a read-only location to a read-only strongly-typed pointer.
     /// If the pointed object is not an instance of TType, the behavior of this method is undefined.
@@ -162,7 +160,7 @@ namespace Syntropy
         return static_cast<Address>(address);
     }
 
-    inline RWAddress ToRWAddress(RWTypelessPtr rhs) noexcept
+    inline RWAddress ToRWAddress(TypelessPtr rhs) noexcept
     {
         auto address = reinterpret_cast<std::intptr_t>(rhs);
 

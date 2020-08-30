@@ -75,7 +75,7 @@ namespace Syntropy
 
         /// \brief Predicate used to detect whether the underlying stream buffer supports the "Grow(Byte)" interface.
         template <typename UStreamBuffer>
-        using IsGrowSupported = decltype(std::declval<UStreamBuffer>().Grow(Bytes{}));
+        using IsGrowSupported = decltype(Declval<UStreamBuffer>().Grow(Bytes{}));
 
         /// \brief Underlying stream buffer.
         RWPointer<TStreamBuffer> stream_buffer_{ nullptr };
