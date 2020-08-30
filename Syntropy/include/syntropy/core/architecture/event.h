@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "syntropy/core/smart_pointers.h"
+#include "syntropy/memory/smart_pointers.h"
 
-#include "syntropy/core/events/listener.h"
+#include "syntropy/core/architecture/listener.h"
 
 namespace Syntropy
 {

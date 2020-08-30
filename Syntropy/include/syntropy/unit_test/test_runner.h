@@ -8,7 +8,7 @@
 
 #include "syntropy/core/strings/context.h"
 
-#include "syntropy/core/events/event.h"
+#include "syntropy/core/architecture/event.h"
 
 #include "syntropy/unit_test/test_suite.h"
 #include "syntropy/unit_test/auto_test_suite.h"

@@ -10,7 +10,7 @@
 
 #include "syntropy/diagnostics/log_event.h"
 #include "syntropy/core/strings/string.h"
-#include "syntropy/core/smart_pointers.h"
+#include "syntropy/memory/smart_pointers.h"
 #include "syntropy/time/time_of_day.h"
 #include "syntropy/time/date.h"
 

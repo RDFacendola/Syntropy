@@ -8,8 +8,8 @@
 
 #include "syntropy/core/strings/context.h"
 #include "syntropy/core/strings/string.h"
-#include "syntropy/core/string_stream.h"
-#include "syntropy/core/scope_guard.h"
+#include "syntropy/serialization/string_stream.h"
+#include "syntropy/core/architecture/scope_guard.h"
 
 #include "syntropy/diagnostics/severity.h"
 #include "syntropy/diagnostics/stack_trace.h"

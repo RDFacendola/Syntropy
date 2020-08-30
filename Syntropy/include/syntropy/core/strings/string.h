@@ -14,7 +14,7 @@
 #include "syntropy/language/foundation.h"
 #include "syntropy/experimental/core/polymorphic_allocator.h"
 
-#include "syntropy/core/string_stream.h"
+#include "syntropy/serialization/string_stream.h"
 
 namespace Syntropy
 {
