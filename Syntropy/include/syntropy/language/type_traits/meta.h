@@ -32,6 +32,22 @@ namespace Syntropy::Traits
     using EnableIf = std::enable_if_t<kEnable, TType>;
 
     /************************************************************************/
+    /* LOGIC                                                                */
+    /************************************************************************/
+
+    /// \brief Boolean value equal to the conjunction (logical AND) on a sequence of traits.
+    template <typename... TPredicates>
+    inline constexpr Bool Conjunction = std::conjunction_v<TPredicates...>;
+
+    /// \brief Boolean value equal to the disjunction (logical OR) on a sequence of traits.
+    template <typename... TPredicates>
+    inline constexpr Bool Disjunction = std::disjunction_v<TPredicates...>;
+
+    /// \brief Boolean value equal to the negation (logical NOT) of a type traits.
+    template <typename TPredicate>
+    inline constexpr Bool Negation = std::negation_v<TPredicate>;
+
+    /************************************************************************/
     /* IS VALID EXPRESSION                                                  */
     /************************************************************************/
 

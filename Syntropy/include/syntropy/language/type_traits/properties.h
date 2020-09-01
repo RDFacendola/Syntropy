@@ -22,6 +22,14 @@ namespace Syntropy::Traits
     template <typename TType>
     inline constexpr Bool IsConst = std::is_const_v<TType>;
 
+    /// \brief Constant equal to true if TType is constant (read-only), equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsReadOnly = IsConst<TType>;
+
+    /// \brief Constant equal to true if TType is non-constant (read-write), equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsReadWrite = !IsConst<TType>;
+
     /************************************************************************/
     /* IS TRIVIAL                                                           */
     /************************************************************************/
