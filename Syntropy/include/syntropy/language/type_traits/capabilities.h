@@ -9,6 +9,7 @@
 #pragma once
 
 #include "syntropy/language/support/declarations.h"
+#include "syntropy/language/type_traits/details/capabilities.h"
 
 namespace Syntropy::Traits
 {
@@ -23,4 +24,13 @@ namespace Syntropy::Traits
     /// \brief Check an instance of TType can be compared equal to an instance of UType.
     template <typename TType, typename UType>
     using HasInequalityComparison = decltype(Declval<TType>() != Declval<UType>());
+
+    /************************************************************************/
+    /* SWAP                                                                 */
+    /************************************************************************/
+
+    /// \brief Check whether exists an ADL-aware function Swap for TType.
+    template <typename TType>
+    using HasSwap = Details::HasSwapDetector::Detect<TType>;
+
 }

@@ -111,7 +111,6 @@
     <ClInclude Include="include\syntropy\language\preprocessor.h" />
     <ClInclude Include="include\syntropy\language\support.h" />
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
-    <ClInclude Include="include\syntropy\core\tuple.h" />
     <ClInclude Include="include\syntropy\language\type_traits\capabilities.h" />
     <ClInclude Include="include\syntropy\language\support\type_list.h" />
     <ClInclude Include="include\syntropy\language\type_traits\queries.h" />
@@ -144,6 +143,7 @@
     <ClInclude Include="include\syntropy\memory\smart_pointers.h" />
     <ClInclude Include="include\syntropy\core\sets\span.h" />
     <ClInclude Include="include\syntropy\core\sets\tuple.h" />
+    <ClInclude Include="include\syntropy\language\type_traits\details\capabilities.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

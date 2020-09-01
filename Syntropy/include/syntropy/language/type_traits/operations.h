@@ -11,6 +11,8 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
+#include "syntropy/language/type_traits/capabilities.h"
+#include "syntropy/language/type_traits/meta.h"
 
 namespace Syntropy::Traits
 {
@@ -88,6 +90,6 @@ namespace Syntropy::Traits
 
     /// \brief Constant equal to true if swapping two instances of TType results in trivial operations only, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsTriviallySwappable = Conjunction<IsTriviallyDestructible<TType>, IsTriviallyMoveConstructible<TType>, IsTriviallyMoveAssignable<TType>>;
+    inline constexpr Bool IsTriviallySwappable = Conjunction<IsTriviallyDestructible<TType>, IsTriviallyMoveConstructible<TType>, IsTriviallyMoveAssignable<TType>, Negation<IsValidExpression<HasSwap, TType>>>;
 
 }

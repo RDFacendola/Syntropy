@@ -45,7 +45,7 @@ namespace Syntropy::unit_test
     {
         using namespace Literals;
 
-        auto span = Span<Fix64>{ nullptr, 10 };
+        auto span = Span<Fix64>{ &fixture.union_.elements_[0], 10 };
 
         SYNTROPY_UNIT_EQUAL(Memory::Size(span), Bytes{ 80 });
     })
@@ -119,16 +119,16 @@ namespace Syntropy::unit_test
 
     .TestCase("Byte spans can be converted to typed spans.", [](auto& fixture)
     {
-        auto span = Span<Fix64>{ fixture.union_.elements_.data(), 4 };
-        auto byte_span = ByteSpan{ fixture.union_.raw_.data(), 32 };
+        auto span = fixture.union_.elements_.GetData();
+        auto byte_span = fixture.union_.raw_.GetData();
 
         SYNTROPY_UNIT_EQUAL(ToSpan<Fix64>(byte_span), span);
     })
 
     .TestCase("Typed spans can be converted to byte spans.", [](auto& fixture)
     {
-        auto span = Span<Fix64>{ fixture.union_.elements_.data(), 4 };
-        auto byte_span = ByteSpan{ fixture.union_.raw_.data(), 32 };
+        auto span = fixture.union_.elements_.GetData();
+        auto byte_span = fixture.union_.raw_.GetData();
 
         SYNTROPY_UNIT_EQUAL(ToByteSpan(span), byte_span);
     });
