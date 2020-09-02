@@ -71,17 +71,17 @@ namespace Syntropy
     /// \brief Convert an address to a read-only location to a read-only strongly-typed pointer.
     /// If the pointed object is not an instance of TType, the behavior of this method is undefined.
     template <typename TType = Traits::AddConst<Byte>>
-    Pointer<const TType> FromAddress(Address rhs) noexcept;
+    Pointer<TType> FromAddress(Address rhs) noexcept;
 
     /// \brief Convert an address to a read-only location to a read-only strongly-typed pointer.
     /// If the pointed object is not an instance of TType, the behavior of this method is undefined.
     template <typename TType = Traits::AddConst<Byte>>
-    Pointer<const TType> FromAddress(RWAddress rhs) noexcept;
+    Pointer<TType> FromAddress(RWAddress rhs) noexcept;
 
     /// \brief Convert an address to a read-write location to a read-write strongly-typed pointer.
     /// If the pointed object is not an instance of const TType, the behavior of this method is undefined.
     template <typename TType = Byte>
-    Pointer<TType> FromRWAddress(RWAddress rhs) noexcept;
+    RWPointer<TType> FromRWAddress(RWAddress rhs) noexcept;
 
     /************************************************************************/
     /* STREAM INSERTION                                                     */
@@ -168,27 +168,27 @@ namespace Syntropy
     }
 
     template <typename TType>
-    inline Pointer<const TType> FromAddress(Address rhs) noexcept
-    {
-        auto address = static_cast<std::intptr_t>(rhs);
-
-        return reinterpret_cast<Pointer<const TType>>(address);
-    }
-
-    template <typename TType>
-    inline Pointer<const TType> FromAddress(RWAddress rhs) noexcept
-    {
-        auto address = static_cast<std::intptr_t>(rhs);
-
-        return reinterpret_cast<Pointer<const TType>>(address);
-    }
-
-    template <typename TType>
-    inline Pointer<TType> FromRWAddress(RWAddress rhs) noexcept
+    inline Pointer<TType> FromAddress(Address rhs) noexcept
     {
         auto address = static_cast<std::intptr_t>(rhs);
 
         return reinterpret_cast<Pointer<TType>>(address);
+    }
+
+    template <typename TType>
+    inline Pointer<TType> FromAddress(RWAddress rhs) noexcept
+    {
+        auto address = static_cast<std::intptr_t>(rhs);
+
+        return reinterpret_cast<Pointer<TType>>(address);
+    }
+
+    template <typename TType>
+    inline RWPointer<TType> FromRWAddress(RWAddress rhs) noexcept
+    {
+        auto address = static_cast<std::intptr_t>(rhs);
+
+        return reinterpret_cast<RWPointer<TType>>(address);
     }
 
     // Stream insertion.
