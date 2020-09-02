@@ -63,19 +63,16 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Shift an alignment value right.
-    constexpr Alignment& operator>>=(Alignment& lhs, Int rhs) noexcept;
+    constexpr RWReference<Alignment> operator>>=(RWReference<Alignment> lhs, Int rhs) noexcept;
 
     /// \brief Shift an alignment value left.
-    constexpr Alignment& operator<<=(Alignment& lhs, Int rhs) noexcept;
+    constexpr RWReference<Alignment> operator<<=(RWReference<Alignment> lhs, Int rhs) noexcept;
 
-    /// \return Shift an alignment value right.
-    constexpr Alignment operator>>(const Alignment& lhs, Int rhs) noexcept;
+    /// \brief Shift an alignment value right.
+    constexpr Alignment operator>>(Reference<Alignment> lhs, Int rhs) noexcept;
 
     /// \brief Shift an alignment value left.
-    constexpr Alignment operator<<(const Alignment& lhs, Int rhs) noexcept;
-
-    /// \brief Stream insertion for Alignment.
-    std::ostream& operator<<(std::ostream& lhs, const Alignment& rhs);
+    constexpr Alignment operator<<(Reference<Alignment> lhs, Int rhs) noexcept;
 
     /************************************************************************/
     /* TYPE CAST                                                            */
@@ -94,6 +91,13 @@ namespace Syntropy
     /// \brief Convert a byte amount to an alignment value.
     /// If lhs is not a power of 2, the result of this method is undefined.
     constexpr Alignment ToAlignment(Bytes lhs) noexcept;
+
+    /************************************************************************/
+    /* STREAM INSERTION                                                     */
+    /************************************************************************/
+
+    /// \brief Stream insertion for Alignment.
+    std::ostream& operator<<(std::ostream& lhs, Reference<Alignment> rhs);
 
     /************************************************************************/
     /* LITERALS                                                             */
@@ -172,31 +176,31 @@ namespace Syntropy
     // Non-member functions.
     // =====================
 
-    constexpr Alignment& operator>>=(Alignment& lhs, Int rhs) noexcept
+    constexpr RWReference<Alignment> operator>>=(RWReference<Alignment> lhs, Int rhs) noexcept
     {
         lhs = lhs >> rhs;
 
         return lhs;
     }
 
-    constexpr Alignment& operator<<=(Alignment& lhs, Int rhs) noexcept
+    constexpr RWReference<Alignment> operator<<=(RWReference<Alignment> lhs, Int rhs) noexcept
     {
         lhs = lhs << rhs;
 
         return lhs;
     }
 
-    constexpr Alignment operator>>(const Alignment& lhs, Int rhs) noexcept
+    constexpr Alignment operator>>(Reference<Alignment> lhs, Int rhs) noexcept
     {
         return (rhs >= 0) ? ToAlignment(ToInt(lhs) >> rhs) : (lhs << -rhs);
     }
 
-    constexpr Alignment operator<<(const Alignment& lhs, Int rhs) noexcept
+    constexpr Alignment operator<<(Reference<Alignment> lhs, Int rhs) noexcept
     {
         return (rhs >= 0) ? ToAlignment(ToInt(lhs) << rhs) : (lhs >> -rhs);
     }
 
-    inline std::ostream& operator<<(std::ostream& lhs, const Alignment& rhs)
+    inline std::ostream& operator<<(std::ostream& lhs, Reference<Alignment> rhs)
     {
         return lhs << ToInt(rhs);
     }
