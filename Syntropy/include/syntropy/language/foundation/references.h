@@ -9,10 +9,10 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/type_traits/meta.h"
-#include "syntropy/language/type_traits/manipulation.h"
-#include "syntropy/language/type_traits/properties.h"
-#include "syntropy/language/type_traits/categories.h"
+#include "syntropy/language/traits/sfinae.h"
+#include "syntropy/language/traits/manipulation.h"
+#include "syntropy/language/traits/properties.h"
+#include "syntropy/language/traits/categories.h"
 
 namespace Syntropy
 {

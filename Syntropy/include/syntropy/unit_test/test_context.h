@@ -13,7 +13,7 @@
 #include "syntropy/serialization/string_stream.h"
 #include "syntropy/memory/smart_pointers.h"
 #include "syntropy/core/architecture/event.h"
-#include "syntropy/language/type_traits.h"
+#include "syntropy/language/traits.h"
 
 namespace Syntropy
 {

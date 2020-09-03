@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/type_traits/details/sequences.h"
+#include "syntropy/language/traits/details/sequences.h"
 
 namespace Syntropy::Traits
 {
@@ -18,6 +18,6 @@ namespace Syntropy::Traits
 
     /// \brief Constant equal to true if the sequence [kInts...] is contiguous.
     template <Int... kInts>
-    constexpr Bool IsContiguousSequence = Details::IsContiguousSequence<kInts...>::Value;
+    constexpr Bool IsContiguousSequence = Details::IsContiguousSequence<kInts...>::value_;
 
 }

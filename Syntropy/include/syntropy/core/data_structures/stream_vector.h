@@ -12,7 +12,7 @@
 #include "syntropy/language/foundation.h"
 #include "syntropy/core/data_structures/vector.h"
 #include "syntropy/core/vector_view.h"
-#include "syntropy/language/type_traits.h"
+#include "syntropy/language/traits.h"
 
 namespace Syntropy
 {

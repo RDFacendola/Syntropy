@@ -2,8 +2,6 @@
 /// \file properties.h
 /// \brief This header is part of Syntropy language module. It contains properties-related type traits.
 ///
-/// This header contains mostly aliases to the standard traits, eventually modified to suite Syntropy needs and to enforce code style consistency.
-///
 /// \author Raffaele D. Facendola - 2020.
 
 #pragma once

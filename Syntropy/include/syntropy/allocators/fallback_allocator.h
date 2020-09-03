@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/type_traits.h"
+#include "syntropy/language/traits.h"
 #include "syntropy/language/support/tags.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/language/foundation.h"
@@ -155,7 +155,7 @@ namespace Syntropy
         }
         else
         {
-            static_assert(Traits::AlwaysFalse<TAllocator, TFallback>, "Cannot infer block owner: either TAllocator or TFallback must provide ::Owns(...) method.");
+            static_assert(Templates::AlwaysFalse<TAllocator, TFallback>, "Cannot infer block owner: either TAllocator or TFallback must provide ::Owns(...) method.");
         }
     }
 

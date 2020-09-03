@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/language/type_traits.h"
+#include "syntropy/language/traits.h"
 #include "syntropy/language/support/initializer_list.h"
 
 #include "syntropy/core/sets/span.h"

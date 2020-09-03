@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/hal/hal_macro.h"
-#include "syntropy/language/type_traits/constants.h"
+#include "syntropy/language/templates/constants.h"
 
 namespace Syntropy
 {
@@ -26,7 +26,7 @@ namespace Syntropy
     ///  #undef MY_MACRO
     ///  #define MY_MACRO(arg0, arg1) (arg0 + arg1)
     #define SYNTROPY_MACRO_DECLARATION(...) \
-    []() { static_assert(AlwaysFalseV<#__VA_ARGS__>, "Undefined macro!"); }
+    []() { static_assert(Syntropy::Templates::AlwaysFalse<#__VA_ARGS__>, "Undefined macro!"); }
 
     /// \brief Use x as part of an expression to suppress unused warning.
     #define SYNTROPY_UNUSED(x) \

@@ -8,7 +8,7 @@
 
 #include <ostream>
 
-#include "syntropy/language/type_traits.h"
+#include "syntropy/language/traits.h"
 #include "syntropy/core/sets/tuple.h"
 #include "syntropy/language/foundation.h"
 #include "syntropy/math/math.h"

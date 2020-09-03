@@ -2,8 +2,6 @@
 /// \file categories.h
 /// \brief This header is part of Syntropy language module. It contains categories-related type traits.
 ///
-/// This header contains mostly aliases to the standard traits, eventually modified to suite Syntropy needs and to enforce code style consistency.
-///
 /// \author Raffaele D. Facendola - 2020.
 
 #pragma once
@@ -11,7 +9,7 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/type_traits/relationships.h"
+#include "syntropy/language/traits/relationships.h"
 
 namespace Syntropy::Traits
 {

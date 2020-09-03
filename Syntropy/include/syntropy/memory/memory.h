@@ -9,7 +9,7 @@
 #include <cstring>
 #include <algorithm>
 
-#include "syntropy/language/type_traits.h"
+#include "syntropy/language/traits.h"
 #include "syntropy/language/support.h"
 
 #include "syntropy/language/foundation.h"

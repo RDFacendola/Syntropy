@@ -2,14 +2,12 @@
 /// \file capabilities.h
 /// \brief This header is part of Syntropy language module. It contains type capabilities query.
 ///
-/// Definitions here are candidate for conversion to upcoming C++20 concepts.
-/// 
 /// \author Raffaele D. Facendola - August  2020
 
 #pragma once
 
 #include "syntropy/language/support/declarations.h"
-#include "syntropy/language/type_traits/details/capabilities.h"
+#include "syntropy/language/traits/details/capabilities.h"
 
 namespace Syntropy::Traits
 {

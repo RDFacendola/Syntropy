@@ -1,8 +1,6 @@
 
 /// \file constants.h
-/// \brief This header is part of Syntropy language module. It contains template constant type traits.
-///
-/// This header contains mostly aliases to the standard traits, eventually modified to suite Syntropy needs and to enforce code style consistency.
+/// \brief This header is part of Syntropy language module. It contains constant-related template machinery.
 ///
 /// \author Raffaele D. Facendola - 2020.
 
@@ -10,7 +8,7 @@
 
 #include "syntropy/language/foundation/types.h"
 
-namespace Syntropy::Traits
+namespace Syntropy::Templates
 {
     /************************************************************************/
     /* CONSTANT                                                             */
@@ -20,7 +18,18 @@ namespace Syntropy::Traits
     template <typename TType, TType kValue>
     struct Constant
     {
-        static constexpr TType Value = kValue;
+        static constexpr TType value_ = kValue;
+    };
+
+    /************************************************************************/
+    /* ALIAS                                                                */
+    /************************************************************************/
+
+    /// \brief Wraps an alias type Type.
+    template <typename TType>
+    struct Alias
+    {
+        using Type = typename TType;
     };
 
     /************************************************************************/

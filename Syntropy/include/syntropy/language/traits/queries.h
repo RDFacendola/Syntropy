@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/type_traits/details/queries.h"
+#include "syntropy/language/traits/details/queries.h"
 
 namespace Syntropy::Traits
 {
@@ -28,7 +28,7 @@ namespace Syntropy::Traits
     /// \brief Constant equal to the index of the element with type TMatch among a list of types [TTypes...].
     /// If no matching element could be found, the program is ill-formed.
     template <typename TMatch, typename... TTypes>
-    constexpr Int ElementIndex = Details::ElementIndex<TMatch, TTypes...>::Value;
+    constexpr Int ElementIndex = Details::ElementIndex<TMatch, TTypes...>::value_;
 
     /************************************************************************/
     /* FUNCTION ARGUMENTS                                                   */

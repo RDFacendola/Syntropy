@@ -2,8 +2,6 @@
 /// \file categories.h
 /// \brief This header is part of Syntropy language module. It contains class-operations-related type traits.
 ///
-/// This header contains mostly aliases to the standard traits, eventually modified to suite Syntropy needs and to enforce code style consistency.
-///
 /// \author Raffaele D. Facendola - 2020.
 
 #pragma once
@@ -11,8 +9,9 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/type_traits/capabilities.h"
-#include "syntropy/language/type_traits/meta.h"
+#include "syntropy/language/templates/logic.h"
+#include "syntropy/language/traits/capabilities.h"
+#include "syntropy/language/traits/sfinae.h"
 
 namespace Syntropy::Traits
 {
@@ -90,6 +89,6 @@ namespace Syntropy::Traits
 
     /// \brief Constant equal to true if swapping two instances of TType results in trivial operations only, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsTriviallySwappable = Conjunction<IsTriviallyDestructible<TType>, IsTriviallyMoveConstructible<TType>, IsTriviallyMoveAssignable<TType>, Negation<IsValidExpression<HasSwap, TType>>>;
+    inline constexpr Bool IsTriviallySwappable = Templates::Conjunction<IsTriviallyDestructible<TType>, IsTriviallyMoveConstructible<TType>, IsTriviallyMoveAssignable<TType>, Negation<IsValidExpression<HasSwap, TType>>>;
 
 }

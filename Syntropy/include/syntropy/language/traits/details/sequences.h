@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/type_traits/constants.h"
+#include "syntropy/language/templates/constants.h"
 
 namespace Syntropy::Traits::Details
 {
@@ -19,7 +19,7 @@ namespace Syntropy::Traits::Details
     /// \brief Provide a member constant Value equal to true if the sequence [kInts...] is contiguous, equal to false otherwise.
     /// Partial specialization for non-contiguous sequences.
     template <Int... kInts>
-    struct IsContiguousSequence : False
+    struct IsContiguousSequence : Templates::False
     {
     
     };
@@ -27,7 +27,7 @@ namespace Syntropy::Traits::Details
     /// \brief Provide a member constant Value equal to true if the sequence [kInt] is contiguous, equal to false otherwise.
     /// Partial specialization for sequences of one element.
     template <Int kInt>
-    struct IsContiguousSequence<kInt> : True
+    struct IsContiguousSequence<kInt> : Templates::True
     {
 
     };
