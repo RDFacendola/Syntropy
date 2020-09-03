@@ -29,6 +29,9 @@ namespace Syntropy
         /// \brief Create an empty span.
         constexpr SpanT() noexcept = default;
 
+        /// \brief Create an empty span.
+        constexpr SpanT(Null) noexcept;
+
         /// \brief Create a span given a pointer to the first element and the number of elements.
         template <typename TBegin>
         constexpr SpanT(TBegin begin, Int count) noexcept;
@@ -125,12 +128,12 @@ namespace Syntropy
     /// \brief Access the first element in a span.
     /// \remarks Accessing the first element of an empty span results in undefined behavior.
     template <typename TElement>
-    [[nodiscard]]  constexpr TElement& Front(const SpanT<TElement>& span) noexcept;
+    [[nodiscard]] constexpr TElement& Front(const SpanT<TElement>& span) noexcept;
 
     /// \brief Access the last element in a span.
     /// \remarks Accessing the last element of an empty span results in undefined behavior.
     template <typename TElement>
-    [[nodiscard]]  constexpr TElement& Back(const SpanT<TElement>& span) noexcept;
+    [[nodiscard]] constexpr TElement& Back(const SpanT<TElement>& span) noexcept;
 
     /// \brief Obtain a span consisting of the first elements of another span.
     /// \remarks Exceeding span boundaries results in undefined behavior.
@@ -280,6 +283,12 @@ namespace Syntropy
 
     // Span<TElement>.
     // ===============
+
+    template <typename TElement>
+    constexpr SpanT<TElement>::SpanT(Null) noexcept
+    {
+
+    }
 
     template <typename TElement>
     template <typename TBegin>
