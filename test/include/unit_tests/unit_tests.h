@@ -6,8 +6,10 @@
 
 #pragma once
 
-#include "unit_tests/syntropy/core/span_unit_test.h"
+//#include "unit_tests/syntropy/core/span_unit_test.h"
+//
+//#include "unit_tests/syntropy/memory/bytes_unit_test.h"
+//#include "unit_tests/syntropy/memory/alignment_unit_test.h"
+//#include "unit_tests/syntropy/memory/byte_span_unit_test.h"
 
-#include "unit_tests/syntropy/memory/bytes_unit_test.h"
-#include "unit_tests/syntropy/memory/alignment_unit_test.h"
-#include "unit_tests/syntropy/memory/byte_span_unit_test.h"
+#include "unit_tests/syntropy/language/templates/math_unit_test.h"

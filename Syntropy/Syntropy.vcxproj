@@ -17,6 +17,9 @@
     <ClInclude Include="include\syntropy\allocators\virtual_stack_allocator.h" />
     <ClInclude Include="include\syntropy\core\algorithm\predicates.h" />
     <ClInclude Include="include\syntropy\core\algorithm\swap.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\rational.h" />
+    <ClInclude Include="include\syntropy\language\templates\rational.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\math.h" />
     <ClInclude Include="include\syntropy\language\templates\logic.h" />
     <ClInclude Include="include\syntropy\language\templates\branch.h" />
     <ClInclude Include="include\syntropy\language\support\explicit.h" />
@@ -24,6 +27,7 @@
     <ClInclude Include="include\syntropy\language\support\tags.h" />
     <ClInclude Include="include\syntropy\language\support\type_list.h" />
     <ClInclude Include="include\syntropy\language\templates.h" />
+    <ClInclude Include="include\syntropy\language\templates\math.h" />
     <ClInclude Include="include\syntropy\language\traits\capabilities.h" />
     <ClInclude Include="include\syntropy\language\foundation\pointers.h" />
     <ClInclude Include="include\syntropy\language\foundation\references.h" />

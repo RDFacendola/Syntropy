@@ -148,6 +148,10 @@
     <ClInclude Include="include\syntropy\language\templates.h" />
     <ClInclude Include="include\syntropy\language\templates\branch.h" />
     <ClInclude Include="include\syntropy\language\traits\details\sfinae.h" />
+    <ClInclude Include="include\syntropy\language\templates\math.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\math.h" />
+    <ClInclude Include="include\syntropy\language\templates\rational.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\rational.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
