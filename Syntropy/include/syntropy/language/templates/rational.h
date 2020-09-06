@@ -61,10 +61,10 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     /// \brief "nano" IS ratio.
-    using Nano = Rational<1, 1000000000>;
+    using Nano = Rational<1, 1000 * 1000 * 1000>;
 
     /// \brief "micro" IS ratio.
-    using Micro = Rational<1, 1000000>;
+    using Micro = Rational<1, 1000 * 1000>;
 
     /// \brief "milli" IS ratio.
     using Milli = Rational<1, 1000>;
@@ -85,18 +85,18 @@ namespace Syntropy::Templates
     using Kilo = Rational<1000, 1>;
 
     /// \brief "mega" IS ratio.
-    using Mega = Rational<1000000, 1>;
+    using Mega = Rational<1000 * 1000, 1>;
 
     /// \brief "giga" IS ratio.
-    using Giga = Rational<1000000000, 1>;
+    using Giga = Rational<1000 * 1000 * 1000, 1>;
 
     /// \brief "tera" IS ratio.
-    using Tera = Rational<1000000000000, 1>;
+    using Tera = Rational<1000 * 1000 * 1000 * 1000, 1>;
 
     /// \brief "peta" IS ratio.
-    using Peta = Rational<1000000000000000, 1>;
+    using Peta = Rational<1000 * 1000 * 1000 * 1000 * 1000, 1>;
 
     /// \brief "exa" IS ratio.
-    using Exa = Rational<10000000000000000000, 1>;
+    using Exa = Rational<1000 * 1000 * 1000 * 1000 * 1000 * 1000, 1>;
 
 }

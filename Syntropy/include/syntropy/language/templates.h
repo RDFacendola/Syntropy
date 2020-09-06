@@ -9,3 +9,5 @@
 #include "syntropy/language/templates/branch.h"
 #include "syntropy/language/templates/constants.h"
 #include "syntropy/language/templates/logic.h"
+#include "syntropy/language/templates/math.h"
+#include "syntropy/language/templates/rational.h"
