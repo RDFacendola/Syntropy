@@ -16,15 +16,15 @@ namespace Syntropy::Traits::Details
     /* ELEMENT TYPE                                                         */
     /************************************************************************/
 
-    /// \brief Provides a type alias Type which is equal to the kIndex-th type in a type list.
+    /// \brief Provides a type alias Type which is equal to the VIndex-th type in a type list.
     /// If the provided index exceeds the type-list range, the program is ill-formed.
-    template <Int kIndex, typename TType, typename... TTypes>
-    struct ElementType : ElementType<kIndex - 1, TTypes...>
+    template <Int VIndex, typename TType, typename... TTypes>
+    struct ElementType : ElementType<VIndex - 1, TTypes...>
     {
-        static_assert(kIndex >= 0, "Invalid index");
+        static_assert(VIndex >= 0, "Invalid index");
     };
 
-    /// \brief Provides a type alias Type which is equal to the kIndex-th type in a type list.
+    /// \brief Provides a type alias Type which is equal to the VIndex-th type in a type list.
     /// Partial specialization which returns the first type in a type list.
     template <typename TType, typename... TTypes>
     struct ElementType<0, TType, TTypes...> : Templates::Alias<TType>
@@ -32,10 +32,10 @@ namespace Syntropy::Traits::Details
 
     };
 
-    /// \brief Provides a type alias Type which is equal to the kIndex-th type in a type list.
+    /// \brief Provides a type alias Type which is equal to the VIndex-th type in a type list.
     /// Partial specialization for type lists.
-    template <Int kIndex, typename... TTypes>
-    struct ElementType<kIndex, TypeList<TTypes...>> : ElementType<kIndex, TTypes...>
+    template <Int VIndex, typename... TTypes>
+    struct ElementType<VIndex, TypeList<TTypes...>> : ElementType<VIndex, TTypes...>
     {
 
     };

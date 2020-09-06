@@ -17,8 +17,8 @@ namespace Syntropy::Traits
     /************************************************************************/
 
     /// \brief Constant equal to true if TType is equal to UType, equal to false otherwise.
-    template <typename TType, typename UType>
-    inline constexpr Bool IsSame = std::is_same_v<TType, UType>;
+    template <typename T0Type, typename T1Type>
+    inline constexpr Bool IsSame = std::is_same_v<T0Type, T1Type>;
 
     /************************************************************************/
     /* IS BASE OF                                                           */

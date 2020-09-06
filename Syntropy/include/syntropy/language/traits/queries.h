@@ -18,8 +18,8 @@ namespace Syntropy::Traits
 
     /// \brief Type alias equal to the kIndex-th type in a type list.
     /// If the provided index exceeds the type-list range, the program is ill-formed.
-    template <Int kIndex, typename... TTypes>
-    using ElementType = typename Details::ElementType<kIndex, TTypes...>::Type;
+    template <Int VIndex, typename... TTypes>
+    using ElementType = typename Details::ElementType<VIndex, TTypes...>::Type;
 
     /************************************************************************/
     /* ELEMENT INDEX                                                        */
@@ -44,7 +44,7 @@ namespace Syntropy::Traits
     /************************************************************************/
 
     /// \brief Type alias for the kIndex-th argument a callable object can be called with.
-    template <Int kIndex, typename TCallable>
-    using FunctionArgument = ElementType<kIndex, FunctionArguments<TCallable>>;
+    template <Int VIndex, typename TCallable>
+    using FunctionArgument = ElementType<VIndex, FunctionArguments<TCallable>>;
 
 }

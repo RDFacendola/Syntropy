@@ -18,9 +18,9 @@ namespace Syntropy::Traits
     /* ENABLE IF                                                            */
     /************************************************************************/
 
-    /// \brief Type equal to TType if kEnable is true, otherwise there's no such type.
-    template <Bool kEnable, typename TType = void>
-    using EnableIf = std::enable_if_t<kEnable, TType>;
+    /// \brief Type equal to TType if VEnable is true, otherwise there's no such type.
+    template <Bool VEnable, typename TType = void>
+    using EnableIf = std::enable_if_t<VEnable, TType>;
 
     /************************************************************************/
     /* IS VALID EXPRESSION                                                  */

@@ -16,8 +16,8 @@ namespace Syntropy::Traits
     /* IS CONTIGUOUS SEQUENCE                                               */
     /************************************************************************/
 
-    /// \brief Constant equal to true if the sequence [kInts...] is contiguous.
-    template <Int... kInts>
-    constexpr Bool IsContiguousSequence = Details::IsContiguousSequence<kInts...>::kValue;
+    /// \brief Constant equal to true if the sequence [VInts...] is contiguous.
+    template <Int... VInts>
+    constexpr Bool IsContiguousSequence = Details::IsContiguousSequence<VInts...>::kValue;
 
 }

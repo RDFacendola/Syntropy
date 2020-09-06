@@ -16,8 +16,8 @@ namespace Syntropy::Templates
     /* CONDITIONAL                                                          */
     /************************************************************************/
 
-    /// \brief Type equal to TTrue if kCondition is true, equal to TFalse otherwise.
-    template <Bool kCondition, typename TTrue, typename TFalse>
-    using Conditional = std::conditional_t<kCondition, TTrue, TFalse>;
+    /// \brief Type equal to TTrue if VCondition is true, equal to TFalse otherwise.
+    template <Bool VCondition, typename TTrue, typename TFalse>
+    using Conditional = std::conditional_t<VCondition, TTrue, TFalse>;
 
 }
