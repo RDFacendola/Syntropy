@@ -58,3 +58,12 @@ rather than float is supported.
 
 C++ has literally dozen of char-like types, but those require a chapter on their own therefore we'll skip that for now.
 
+### Rationals
+
+Wrapping <ratio> won't save much work.
+
+### Naming convention
+
+Constants kBlah
+Template typenames T[N]Whatever after first (T if single, after T0 T1 T2 ...)
+Template values VWhatever after first (V if single, after V0 V1 V2 ...)

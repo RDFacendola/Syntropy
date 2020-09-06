@@ -19,7 +19,7 @@ namespace Syntropy::Templates
 
     /// \brief Get the greatest common divisor between kLeft and kRight.
     template <Int kLeft, Int kRight>
-    using GCD = Details::GCD<kLeft, kRight>;
+    inline constexpr Int GCD = Details::GCD<kLeft, kRight>::kValue;
 
     /************************************************************************/
     /* LCM                                                                  */
@@ -27,5 +27,5 @@ namespace Syntropy::Templates
 
     /// \brief Get the lowest common multiple between kLeft and kRight.
     template <Int kLeft, Int kRight>
-    using LCM = Details::LCM<kLeft, kRight>;
+    inline constexpr Int LCM = Details::LCM<kLeft, kRight>::kValue;
 }

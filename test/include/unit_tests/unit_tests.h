@@ -13,3 +13,4 @@
 //#include "unit_tests/syntropy/memory/byte_span_unit_test.h"
 
 #include "unit_tests/syntropy/language/templates/math_unit_test.h"
+#include "unit_tests/syntropy/language/templates/rational_unit_test.h"

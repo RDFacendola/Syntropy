@@ -15,10 +15,10 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     /// \brief Wraps a static constant of type TType.
-    template <typename TType, TType kValue>
+    template <typename TType, TType VValue>
     struct Constant
     {
-        static constexpr TType value_ = kValue;
+        static constexpr TType kValue = VValue;
     };
 
     /************************************************************************/

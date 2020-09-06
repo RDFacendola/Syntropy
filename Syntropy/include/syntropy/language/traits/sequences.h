@@ -18,6 +18,6 @@ namespace Syntropy::Traits
 
     /// \brief Constant equal to true if the sequence [kInts...] is contiguous.
     template <Int... kInts>
-    constexpr Bool IsContiguousSequence = Details::IsContiguousSequence<kInts...>::value_;
+    constexpr Bool IsContiguousSequence = Details::IsContiguousSequence<kInts...>::kValue;
 
 }

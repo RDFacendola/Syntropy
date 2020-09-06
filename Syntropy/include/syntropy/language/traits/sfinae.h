@@ -28,7 +28,7 @@ namespace Syntropy::Traits
 
     /// \brief Boolean value equal to true if TExpression<TTypes...> is a valid expression, false otherwise.
     template <template<typename...> typename TExpression, typename... TTypes>
-    inline constexpr Bool IsValidExpression = Details::DetectValidExpression<void, TExpression, TTypes...>::value_;
+    inline constexpr Bool IsValidExpression = Details::DetectValidExpression<void, TExpression, TTypes...>::kValue;
 
     /************************************************************************/
     /* ENABLE IF VALID EXPRESSION                                           */

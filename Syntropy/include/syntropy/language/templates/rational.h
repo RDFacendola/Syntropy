@@ -10,6 +10,7 @@
 
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/math.h"
+#include "syntropy/language/templates/details/rational.h"
 
 namespace Syntropy::Templates
 {
@@ -18,22 +19,34 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     /// \brief A rational number of the form Numerator / Denominator
-    template <Int kNumerator, Int kDenominator>
+    template <Int VNumerator, Int VDenominator>
     struct Rational
     {
         /// \brief Rational number numerator.
-        static constexpr Int numerator_ = kNumerator;
+        static constexpr Int kNumerator = VNumerator;
 
         /// \brief Rational number denominator.
-        static constexpr Int denominator_ = kDenominator;
+        static constexpr Int kDenominator = VDenominator;
     };
 
     /************************************************************************/
     /* RATIONAL ARITHMETIC                                                  */
     /************************************************************************/
 
-    /// \brief Add two rational numbers together.
-    template <typename TRatio, typename URatio>
-    using RationalAdd = Details::RationalAdd<TRatio, URatio>;
+    /// \brief Alias type for the sum of two rational numbers.
+    template <typename T0Ratio, typename T1Ratio>
+    using RationalSum = typename Details::RationalSum<T0Ratio, T1Ratio>::Type;
+
+    /// \brief Alias type for the difference of two rational numbers.
+    template <typename T0Ratio, typename T1Ratio>
+    using RationalDifference = typename Details::RationalDifference<T0Ratio, T1Ratio>::Type;
+
+    /// \brief Alias type for the product of two rational numbers.
+    template <typename T0Ratio, typename T1Ratio>
+    using RationalProduct = typename Details::RationalProduct<T0Ratio, T1Ratio>::Type;
+
+    /// \brief Alias type for the quotient of two rational numbers.
+    template <typename T0Ratio, typename T1Ratio>
+    using RationalQuotient = typename Details::RationalQuotient<T0Ratio, T1Ratio>::Type;
 
 }

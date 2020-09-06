@@ -16,15 +16,15 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Euler's algorithm for greatest common divisor.
-    template <Int kLeft, Int kRight>
-    struct GCD : GCD<kRight, kLeft % kRight>
+    template <Int VLeft, Int VRight>
+    struct GCD : GCD<VRight, VLeft % VRight>
     {
 
     };
 
     /// \brief Specialization for terminal case.
-    template <Int kLeft>
-    struct GCD<kLeft, 0> : Constant<Int, kLeft>
+    template <Int VLeft>
+    struct GCD<VLeft, 0> : Constant<Int, VLeft>
     {
 
     };
@@ -34,8 +34,8 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Euler's algorithm for lowest common multiple.
-    template <Int kLeft, Int kRight>
-    struct LCM : Constant<Int, (kLeft * kRight) / GCD<kLeft, kRight>::value_>
+    template <Int VLeft, Int VRight>
+    struct LCM : Constant<Int, (VLeft * VRight) / GCD<VLeft, VRight>::kValue>
     {
 
     };
