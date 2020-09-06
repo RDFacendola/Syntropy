@@ -22,7 +22,7 @@ namespace Syntropy::Templates::Details
     template <typename T0Ratio, typename T1Ratio>
     struct RationalSum
     {
-        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "Expect Ratio<N, D> type.");
+        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "T0Ratio and T1Ratio are both expected to have Ratio<N, D> type.");
     };
 
     /// \brief Specialization for rationals.
@@ -51,7 +51,7 @@ namespace Syntropy::Templates::Details
     template <typename T0Ratio, typename T1Ratio>
     struct RationalDifference
     {
-        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "Expect Ratio<N, D> type.");
+        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "T0Ratio and T1Ratio are both expected to have Ratio<N, D> type.");
     };
 
     /// \brief Specialization for rationals.
@@ -80,7 +80,7 @@ namespace Syntropy::Templates::Details
     template <typename T0Ratio, typename T1Ratio>
     struct RationalProduct
     {
-        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "Expect Ratio<N, D> type.");
+        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "T0Ratio and T1Ratio are both expected to have Ratio<N, D> type.");
     };
 
     /// \brief Specialization for rationals.
@@ -109,7 +109,7 @@ namespace Syntropy::Templates::Details
     template <typename T0Ratio, typename T1Ratio>
     struct RationalQuotient
     {
-        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "Expect Ratio<N, D> type.");
+        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "T0Ratio and T1Ratio are both expected to have Ratio<N, D> type.");
     };
 
     /// \brief Specialization for rationals.
@@ -129,5 +129,35 @@ namespace Syntropy::Templates::Details
         using Type = typename TRational<kNumerator, kDenominator>;
 
     };
+
+    /************************************************************************/
+    /* RATIONAL REDUCE                                                      */
+    /************************************************************************/
+
+    /// \brief Exposes a public member alias Type equal to the reduced value of a rational number.
+    template <typename TRatio>
+    struct RationalReduce
+    {
+        static_assert(AlwaysFalse<TRatio>, "TRatio is expected to have Ratio<N, D> type.");
+    };
+
+    /// \brief Specialization for rationals.
+    template <template<Int, Int> typename TRational, Int VNumerator, Int VDenominator>
+    struct RationalReduce<TRational<VNumerator, VDenominator>>
+    {
+    private:
+
+        /// \brief Reduced denominator.
+        static constexpr Int kDenominator = VDenominator / Details::GCD<VNumerator, VDenominator>::kValue;
+
+        /// \brief Reduced numerator.
+        static constexpr Int kNumerator = VNumerator / Details::GCD<VNumerator, VDenominator>::kValue;
+
+    public:
+
+        using Type = typename TRational<kNumerator, kDenominator>;
+
+    };
+
 
 }

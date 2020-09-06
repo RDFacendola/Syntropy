@@ -49,4 +49,8 @@ namespace Syntropy::Templates
     template <typename T0Ratio, typename T1Ratio>
     using RationalQuotient = typename Details::RationalQuotient<T0Ratio, T1Ratio>::Type;
 
+    /// \brief ALias type for the reduced value of a rational number.
+    template <typename TRatio>
+    using RationalReduce = typename Details::RationalReduce<TRatio>::Type;
+
 }
