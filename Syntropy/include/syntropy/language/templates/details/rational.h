@@ -73,7 +73,7 @@ namespace Syntropy::Templates::Details
 
     public:
 
-        using Type = typename RationalReduce<typename TRational<kNumerator, kDenominator>>::Type;
+        using Type = typename TRational<kNumerator, kDenominator>;
 
     };
 
@@ -103,7 +103,7 @@ namespace Syntropy::Templates::Details
 
     public:
 
-        using Type = typename RationalReduce<typename TRational<kNumerator, kDenominator>>::Type;
+        using Type = typename TRational<kNumerator, kDenominator>;
 
     };
 
@@ -133,7 +133,7 @@ namespace Syntropy::Templates::Details
 
     public:
 
-        using Type = typename RationalReduce<typename TRational<kNumerator, kDenominator>>::Type;
+        using Type = typename TRational<kNumerator, kDenominator>;
 
     };
 
@@ -163,7 +163,7 @@ namespace Syntropy::Templates::Details
 
     public:
 
-        using Type = typename RationalReduce<typename TRational<kNumerator, kDenominator>>::Type;
+        using Type = typename TRational<kNumerator, kDenominator>;
 
     };
 
