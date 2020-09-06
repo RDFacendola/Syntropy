@@ -1,4 +1,4 @@
-/// \file math_unit_test.h
+#/// \file math_unit_test.h
 ///
 /// \author Raffaele D. Facendola - 2020.
 
@@ -22,6 +22,22 @@ namespace Syntropy::Templates::UnitTest
     /************************************************************************/
 
     inline const auto& kMathTest = MakeAutoUnitTest<MathTestFixture>("math.templates.language.syntropy")
+
+    .TestCase("The absolute value of a positive or zero number is the number itself.", [](auto& fixture)
+    {
+        constexpr auto Abs_10 = Templates::Abs<10>;
+        constexpr auto Abs_0 = Templates::Abs<0>;
+
+        SYNTROPY_UNIT_EQUAL(Abs_10, 10);
+        SYNTROPY_UNIT_EQUAL(Abs_0, 0);
+    })
+
+    .TestCase("The absolute value of a negative number is the opposite of the number.", [](auto& fixture)
+    {
+        constexpr auto Abs_Minus10 = Templates::Abs<-10>;
+
+        SYNTROPY_UNIT_EQUAL(Abs_Minus10, 10);
+    })
 
     .TestCase("GCD returns the largest integer which divides both numbers.", [](auto& fixture)
     {

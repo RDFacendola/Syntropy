@@ -18,7 +18,7 @@ namespace Syntropy::Templates
     /* RATIONAL                                                             */
     /************************************************************************/
 
-    /// \brief A rational number of the form Numerator / Denominator.
+    /// \brief A reduced rational number of the form Numerator / Denominator.
     template <Int VNumerator, Int VDenominator>
     struct Rational
     {
@@ -32,6 +32,10 @@ namespace Syntropy::Templates
     /************************************************************************/
     /* RATIONAL ARITHMETIC                                                  */
     /************************************************************************/
+
+    /// \brief ALias type for the reduced value of a rational number.
+    template <typename TRational>
+    using RationalReduce = typename Details::RationalReduce<TRational>::Type;
 
     /// \brief Alias type for the sum of two rational numbers.
     template <typename T0Rational, typename T1Rational>
@@ -49,8 +53,5 @@ namespace Syntropy::Templates
     template <typename T0Rational, typename T1Rational>
     using RationalQuotient = typename Details::RationalQuotient<T0Rational, T1Rational>::Type;
 
-    /// \brief ALias type for the reduced value of a rational number.
-    template <typename TRational>
-    using RationalReduce = typename Details::RationalReduce<TRational>::Type;
 
 }

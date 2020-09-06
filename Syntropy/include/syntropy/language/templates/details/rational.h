@@ -15,10 +15,44 @@
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
+    /* RATIONAL REDUCE                                                      */
+    /************************************************************************/
+
+    /// \brief Exposes a public member alias Type equal to the reduced value of a rational number.
+    /// \author Raffaele D. Facendola - September 2020.
+    template <typename TRational>
+    struct RationalReduce
+    {
+        static_assert(AlwaysFalse<TRational>, "TRational is expected to have Rational<N, D> type.");
+    };
+
+    /// \brief Specialization for rationals.
+    template <template<Int, Int> typename TRational, Int VNumerator, Int VDenominator>
+    struct RationalReduce<TRational<VNumerator, VDenominator>>
+    {
+    private:
+
+        ///\brief Greatest common divisor between the numerator and the denominator.
+        static constexpr Int kGCD = Abs<Details::GCD<VNumerator, VDenominator>::kValue>;
+
+        /// \brief Reduced denominator.
+        static constexpr Int kDenominator = VDenominator / kGCD;
+
+        /// \brief Reduced numerator.
+        static constexpr Int kNumerator = VNumerator / kGCD;
+
+    public:
+
+        using Type = typename TRational<kNumerator, kDenominator>;
+
+    };
+
+    /************************************************************************/
     /* RATIONAL SUM                                                         */
     /************************************************************************/
 
     /// \brief Exposes a public member alias Type equal to the unreduced sum of two rational numbers.
+    /// \author Raffaele D. Facendola - September 2020.
     template <typename T0Rational, typename T1Rational>
     struct RationalSum
     {
@@ -39,7 +73,7 @@ namespace Syntropy::Templates::Details
 
     public:
 
-        using Type = typename TRational<kNumerator, kDenominator>;
+        using Type = typename RationalReduce<typename TRational<kNumerator, kDenominator>>::Type;
 
     };
 
@@ -48,6 +82,7 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Exposes a public member alias Type equal to the unreduced difference of two rational numbers.
+    /// \author Raffaele D. Facendola - September 2020.
     template <typename T0Rational, typename T1Rational>
     struct RationalDifference
     {
@@ -68,7 +103,7 @@ namespace Syntropy::Templates::Details
 
     public:
 
-        using Type = typename TRational<kNumerator, kDenominator>;
+        using Type = typename RationalReduce<typename TRational<kNumerator, kDenominator>>::Type;
 
     };
 
@@ -77,6 +112,7 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Exposes a public member alias Type equal to the unreduced product of two rational numbers.
+    /// \author Raffaele D. Facendola - September 2020.
     template <typename T0Rational, typename T1Rational>
     struct RationalProduct
     {
@@ -97,7 +133,7 @@ namespace Syntropy::Templates::Details
 
     public:
 
-        using Type = typename TRational<kNumerator, kDenominator>;
+        using Type = typename RationalReduce<typename TRational<kNumerator, kDenominator>>::Type;
 
     };
 
@@ -106,6 +142,7 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Exposes a public member alias Type equal to the unreduced product of two rational numbers.
+    /// \author Raffaele D. Facendola - September 2020.
     template <typename T0Rational, typename T1Rational>
     struct RationalQuotient
     {
@@ -126,38 +163,8 @@ namespace Syntropy::Templates::Details
 
     public:
 
-        using Type = typename TRational<kNumerator, kDenominator>;
+        using Type = typename RationalReduce<typename TRational<kNumerator, kDenominator>>::Type;
 
     };
-
-    /************************************************************************/
-    /* RATIONAL REDUCE                                                      */
-    /************************************************************************/
-
-    /// \brief Exposes a public member alias Type equal to the reduced value of a rational number.
-    template <typename TRational>
-    struct RationalReduce
-    {
-        static_assert(AlwaysFalse<TRational>, "TRational is expected to have Rational<N, D> type.");
-    };
-
-    /// \brief Specialization for rationals.
-    template <template<Int, Int> typename TRational, Int VNumerator, Int VDenominator>
-    struct RationalReduce<TRational<VNumerator, VDenominator>>
-    {
-    private:
-
-        /// \brief Reduced denominator.
-        static constexpr Int kDenominator = VDenominator / Details::GCD<VNumerator, VDenominator>::kValue;
-
-        /// \brief Reduced numerator.
-        static constexpr Int kNumerator = VNumerator / Details::GCD<VNumerator, VDenominator>::kValue;
-
-    public:
-
-        using Type = typename TRational<kNumerator, kDenominator>;
-
-    };
-
 
 }
