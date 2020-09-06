@@ -18,7 +18,7 @@ namespace Syntropy::Templates
     /* RATIONAL                                                             */
     /************************************************************************/
 
-    /// \brief A rational number of the form Numerator / Denominator
+    /// \brief A rational number of the form Numerator / Denominator.
     template <Int VNumerator, Int VDenominator>
     struct Rational
     {
@@ -34,23 +34,23 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     /// \brief Alias type for the sum of two rational numbers.
-    template <typename T0Ratio, typename T1Ratio>
-    using RationalSum = typename Details::RationalSum<T0Ratio, T1Ratio>::Type;
+    template <typename T0Rational, typename T1Rational>
+    using RationalSum = typename Details::RationalSum<T0Rational, T1Rational>::Type;
 
     /// \brief Alias type for the difference of two rational numbers.
-    template <typename T0Ratio, typename T1Ratio>
-    using RationalDifference = typename Details::RationalDifference<T0Ratio, T1Ratio>::Type;
+    template <typename T0Rational, typename T1Rational>
+    using RationalDifference = typename Details::RationalDifference<T0Rational, T1Rational>::Type;
 
     /// \brief Alias type for the product of two rational numbers.
-    template <typename T0Ratio, typename T1Ratio>
-    using RationalProduct = typename Details::RationalProduct<T0Ratio, T1Ratio>::Type;
+    template <typename T0Rational, typename T1Rational>
+    using RationalProduct = typename Details::RationalProduct<T0Rational, T1Rational>::Type;
 
     /// \brief Alias type for the quotient of two rational numbers.
-    template <typename T0Ratio, typename T1Ratio>
-    using RationalQuotient = typename Details::RationalQuotient<T0Ratio, T1Ratio>::Type;
+    template <typename T0Rational, typename T1Rational>
+    using RationalQuotient = typename Details::RationalQuotient<T0Rational, T1Rational>::Type;
 
     /// \brief ALias type for the reduced value of a rational number.
-    template <typename TRatio>
-    using RationalReduce = typename Details::RationalReduce<TRatio>::Type;
+    template <typename TRational>
+    using RationalReduce = typename Details::RationalReduce<TRational>::Type;
 
 }

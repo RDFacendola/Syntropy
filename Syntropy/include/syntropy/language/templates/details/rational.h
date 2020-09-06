@@ -19,10 +19,10 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Exposes a public member alias Type equal to the unreduced sum of two rational numbers.
-    template <typename T0Ratio, typename T1Ratio>
+    template <typename T0Rational, typename T1Rational>
     struct RationalSum
     {
-        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "T0Ratio and T1Ratio are both expected to have Ratio<N, D> type.");
+        static_assert(AlwaysFalse<T0Rational, T1Rational>, "T0Rational and T1Rational are both expected to have Rational<N, D> type.");
     };
 
     /// \brief Specialization for rationals.
@@ -48,10 +48,10 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Exposes a public member alias Type equal to the unreduced difference of two rational numbers.
-    template <typename T0Ratio, typename T1Ratio>
+    template <typename T0Rational, typename T1Rational>
     struct RationalDifference
     {
-        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "T0Ratio and T1Ratio are both expected to have Ratio<N, D> type.");
+        static_assert(AlwaysFalse<T0Rational, T1Rational>, "T0Rational and T1Rational are both expected to have Rational<N, D> type.");
     };
 
     /// \brief Specialization for rationals.
@@ -77,10 +77,10 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Exposes a public member alias Type equal to the unreduced product of two rational numbers.
-    template <typename T0Ratio, typename T1Ratio>
+    template <typename T0Rational, typename T1Rational>
     struct RationalProduct
     {
-        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "T0Ratio and T1Ratio are both expected to have Ratio<N, D> type.");
+        static_assert(AlwaysFalse<T0Rational, T1Rational>, "T0Rational and T1Rational are both expected to have Rational<N, D> type.");
     };
 
     /// \brief Specialization for rationals.
@@ -106,10 +106,10 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Exposes a public member alias Type equal to the unreduced product of two rational numbers.
-    template <typename T0Ratio, typename T1Ratio>
+    template <typename T0Rational, typename T1Rational>
     struct RationalQuotient
     {
-        static_assert(AlwaysFalse<T0Ratio, T1Ratio>, "T0Ratio and T1Ratio are both expected to have Ratio<N, D> type.");
+        static_assert(AlwaysFalse<T0Rational, T1Rational>, "T0Rational and T1Rational are both expected to have Rational<N, D> type.");
     };
 
     /// \brief Specialization for rationals.
@@ -135,10 +135,10 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Exposes a public member alias Type equal to the reduced value of a rational number.
-    template <typename TRatio>
+    template <typename TRational>
     struct RationalReduce
     {
-        static_assert(AlwaysFalse<TRatio>, "TRatio is expected to have Ratio<N, D> type.");
+        static_assert(AlwaysFalse<TRational>, "TRational is expected to have Rational<N, D> type.");
     };
 
     /// \brief Specialization for rationals.
