@@ -7,164 +7,73 @@
 #pragma once
 
 #include <type_traits>
+#include <ratio>
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/constants.h"
-#include "syntropy/language/templates/math.h"
+
+namespace Syntropy::Templates
+{
+    /************************************************************************/
+    /* RATIONAL                                                             */
+    /************************************************************************/
+
+    template <Int VNumerator, Int VDenominator>
+    struct Rational;
+}
 
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
-    /* RATIONAL REDUCE                                                      */
+    /* IS RATIONAL                                                          */
     /************************************************************************/
 
-    /// \brief Exposes a public member alias Type equal to the reduced value of a rational number.
-    /// \author Raffaele D. Facendola - September 2020.
+    /// \brief Constant equal to true if TRational is a Rational type, equal to false otherwise.
     template <typename TRational>
-    struct RationalReduce
-    {
-        static_assert(AlwaysFalse<TRational>, "TRational is expected to have Rational<N, D> type.");
-    };
+    constexpr bool IsRational = false;
 
-    /// \brief Specialization for rationals.
-    template <template<Int, Int> typename TRational, Int VNumerator, Int VDenominator>
-    struct RationalReduce<TRational<VNumerator, VDenominator>>
-    {
-    private:
-
-        ///\brief Greatest common divisor between the numerator and the denominator.
-        static constexpr Int kGCD = Abs<Details::GCD<VNumerator, VDenominator>::kValue>;
-
-        /// \brief Reduced denominator.
-        static constexpr Int kDenominator = VDenominator / kGCD;
-
-        /// \brief Reduced numerator.
-        static constexpr Int kNumerator = VNumerator / kGCD;
-
-    public:
-
-        using Type = typename TRational<kNumerator, kDenominator>;
-
-    };
+    /// \brief Specialization for rational types.
+    template <Int VNumerator, Int VDenominator>
+    constexpr bool IsRational<Rational<VNumerator, VDenominator>> = true;
 
     /************************************************************************/
-    /* RATIONAL SUM                                                         */
+    /* IS STD RATIO                                                         */
     /************************************************************************/
 
-    /// \brief Exposes a public member alias Type equal to the unreduced sum of two rational numbers.
-    /// \author Raffaele D. Facendola - September 2020.
-    template <typename T0Rational, typename T1Rational>
-    struct RationalSum
-    {
-        static_assert(AlwaysFalse<T0Rational, T1Rational>, "T0Rational and T1Rational are both expected to have Rational<N, D> type.");
-    };
+    /// \brief Constant equal to true if TRational is a std::ratio< type, equal to false otherwise.
+    template <typename TRational>
+    constexpr bool IsStdRatio = false;
 
-    /// \brief Specialization for rationals.
-    template <template<Int, Int> typename TRational, Int VLeftNumerator, Int VLeftDenominator, Int VRightNumerator, Int VRightDenominator>
-    struct RationalSum<TRational<VLeftNumerator, VLeftDenominator>, TRational<VRightNumerator, VRightDenominator>>
-    {
-    private:
-
-        /// \brief Unreduced denominator.
-        static constexpr Int kDenominator = Details::LCM<VLeftDenominator, VRightDenominator>::kValue;
-
-        /// \brief Unreduced numerator.
-        static constexpr Int kNumerator = VLeftNumerator * (kDenominator / VLeftDenominator) + VRightNumerator * (kDenominator / VRightDenominator);
-
-    public:
-
-        using Type = typename TRational<kNumerator, kDenominator>;
-
-    };
+    /// \brief Specialization for std::ratio.
+    template <Int VNumerator, Int VDenominator>
+    constexpr bool IsStdRatio<std::ratio<VNumerator, VDenominator>> = true;
 
     /************************************************************************/
-    /* RATIONAL DIFFERENCE                                                  */
+    /* WRAP \ UNWRAP RATIONAL                                               */
     /************************************************************************/
 
-    /// \brief Exposes a public member alias Type equal to the unreduced difference of two rational numbers.
-    /// \author Raffaele D. Facendola - September 2020.
-    template <typename T0Rational, typename T1Rational>
-    struct RationalDifference
+    /// \brief Exposes a member type Type equal to the std::ratio type represented by TRational.
+    template <typename TRational>
+    struct RationalWrapper
     {
-        static_assert(AlwaysFalse<T0Rational, T1Rational>, "T0Rational and T1Rational are both expected to have Rational<N, D> type.");
+        static_assert(IsRational<TRational>, "TRational must be a rational type.");
+
+        using Type = std::ratio<TRational::kNumerator, TRational::kDenominator>;
     };
 
-    /// \brief Specialization for rationals.
-    template <template<Int, Int> typename TRational, Int VLeftNumerator, Int VLeftDenominator, Int VRightNumerator, Int VRightDenominator>
-    struct RationalDifference<TRational<VLeftNumerator, VLeftDenominator>, TRational<VRightNumerator, VRightDenominator>>
+    /// \brief Exposes a member type Type equal to the Rational type represented by TRatio.
+    template <typename TRatio>
+    struct RationalUnwrapper
     {
-    private:
+        static_assert(IsStdRatio<TRatio>, "TRatio must be a std::ratio type.");
 
-        /// \brief Unreduced denominator.
-        static constexpr Int kDenominator = Details::LCM<VLeftDenominator, VRightDenominator>::kValue;
-
-        /// \brief Unreduced numerator.
-        static constexpr Int kNumerator = VLeftNumerator * (kDenominator / VLeftDenominator) - VRightNumerator * (kDenominator / VRightDenominator);
-
-    public:
-
-        using Type = typename TRational<kNumerator, kDenominator>;
-
+        using Type = Rational<TRatio::num, TRatio::den>;
     };
 
-    /************************************************************************/
-    /* RATIONAL PRODUCT                                                     */
-    /************************************************************************/
+    /// \brief Wraps a rational number type to standard's std::ratio.
+    template <typename TRational>
+    using WrapRational = typename RationalWrapper<TRational>::Type;
 
-    /// \brief Exposes a public member alias Type equal to the unreduced product of two rational numbers.
-    /// \author Raffaele D. Facendola - September 2020.
-    template <typename T0Rational, typename T1Rational>
-    struct RationalProduct
-    {
-        static_assert(AlwaysFalse<T0Rational, T1Rational>, "T0Rational and T1Rational are both expected to have Rational<N, D> type.");
-    };
-
-    /// \brief Specialization for rationals.
-    template <template<Int, Int> typename TRational, Int VLeftNumerator, Int VLeftDenominator, Int VRightNumerator, Int VRightDenominator>
-    struct RationalProduct<TRational<VLeftNumerator, VLeftDenominator>, TRational<VRightNumerator, VRightDenominator>>
-    {
-    private:
-
-        /// \brief Unreduced denominator.
-        static constexpr Int kDenominator = VLeftDenominator * VRightDenominator;
-
-        /// \brief Unreduced numerator.
-        static constexpr Int kNumerator = VLeftNumerator * VRightNumerator;
-
-    public:
-
-        using Type = typename TRational<kNumerator, kDenominator>;
-
-    };
-
-    /************************************************************************/
-    /* RATIONAL QUOTIENT                                                    */
-    /************************************************************************/
-
-    /// \brief Exposes a public member alias Type equal to the unreduced product of two rational numbers.
-    /// \author Raffaele D. Facendola - September 2020.
-    template <typename T0Rational, typename T1Rational>
-    struct RationalQuotient
-    {
-        static_assert(AlwaysFalse<T0Rational, T1Rational>, "T0Rational and T1Rational are both expected to have Rational<N, D> type.");
-    };
-
-    /// \brief Specialization for rationals.
-    template <template<Int, Int> typename TRational, Int VLeftNumerator, Int VLeftDenominator, Int VRightNumerator, Int VRightDenominator>
-    struct RationalQuotient<TRational<VLeftNumerator, VLeftDenominator>, TRational<VRightNumerator, VRightDenominator>>
-    {
-    private:
-
-        /// \brief Unreduced denominator.
-        static constexpr Int kDenominator = VLeftDenominator * VRightNumerator;
-
-        /// \brief Unreduced numerator.
-        static constexpr Int kNumerator = VLeftNumerator * VRightDenominator;
-
-    public:
-
-        using Type = typename TRational<kNumerator, kDenominator>;
-
-    };
-
+    /// \brief Unwrap a rational number type from standard's std::ratio.
+    template <typename TRatio>
+    using UnwrapRational = typename RationalUnwrapper<TRatio>::Type;
 }

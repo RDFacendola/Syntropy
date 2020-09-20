@@ -131,22 +131,6 @@ namespace Syntropy::Templates::UnitTest
 
         SYNTROPY_UNIT_EQUAL(Quotient_1o1_6o7::kNumerator, 7);
         SYNTROPY_UNIT_EQUAL(Quotient_1o1_6o7::kDenominator, 6);
-    })
-
-    .TestCase("Reducing a rational whose numerator and denominator are coprime returns the same rational.", [](auto& fixture)
-    {
-        using Reduce_7o9 = RationalReduce<Rational<7, 9>>;
-
-        SYNTROPY_UNIT_EQUAL(Reduce_7o9::kNumerator, 7);
-        SYNTROPY_UNIT_EQUAL(Reduce_7o9::kDenominator, 9);
-    })
-
-    .TestCase("Reducing a rational whose numerator and denominator are NOT coprime returns an equivalent rational whose numerator and denominator are coprime.", [](auto& fixture)
-    {
-        using Reduce_55o22 = RationalReduce<Rational<55, 22>>;
-
-        SYNTROPY_UNIT_EQUAL(Reduce_55o22::kNumerator, 5);
-        SYNTROPY_UNIT_EQUAL(Reduce_55o22::kDenominator, 2);
     });
 
 }

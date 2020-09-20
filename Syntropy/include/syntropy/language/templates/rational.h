@@ -7,6 +7,7 @@
 #pragma once
 
 #include <type_traits>
+#include <ratio>
 
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/math.h"
@@ -18,22 +19,15 @@ namespace Syntropy::Templates
     /* RATIONAL                                                             */
     /************************************************************************/
 
-    /// \brief ALias type for the reduced value of a rational number.
-    template <typename TRational>
-    using RationalReduce = typename Details::RationalReduce<TRational>::Type;
-
     /// \brief A reduced rational number of the form Numerator / Denominator.
     template <Int VNumerator, Int VDenominator>
     struct Rational
     {
-        /// \brief Alias type for the reduced version of the represented fraction.
-        using TReduced = RationalReduce<Rational<VNumerator, VDenominator>>;
+        /// \brief Rational numerator.
+        static constexpr Int kNumerator = std::ratio<VNumerator, VDenominator>::num;
 
-        /// \brief Rational number numerator.
-        static constexpr Int kNumerator = VNumerator;
-
-        /// \brief Rational number denominator.
-        static constexpr Int kDenominator = VDenominator;
+        /// \brief Rational denominator.
+        static constexpr Int kDenominator = std::ratio<VNumerator, VDenominator>::den;
     };
 
     /************************************************************************/
@@ -42,61 +36,89 @@ namespace Syntropy::Templates
 
     /// \brief Alias type for the sum of two rational numbers.
     template <typename T0Rational, typename T1Rational>
-    using RationalSum = typename Details::RationalSum<T0Rational, T1Rational>::Type::TReduced;
+    using RationalSum = Details::UnwrapRational<std::ratio_add<Details::WrapRational<T0Rational>, Details::WrapRational<T1Rational>>>;
 
     /// \brief Alias type for the difference of two rational numbers.
     template <typename T0Rational, typename T1Rational>
-    using RationalDifference = typename Details::RationalDifference<T0Rational, T1Rational>::Type::TReduced;
+    using RationalDifference = Details::UnwrapRational<std::ratio_subtract<Details::WrapRational<T0Rational>, Details::WrapRational<T1Rational>>>;
 
     /// \brief Alias type for the product of two rational numbers.
     template <typename T0Rational, typename T1Rational>
-    using RationalProduct = typename Details::RationalProduct<T0Rational, T1Rational>::Type::TReduced;
+    using RationalProduct = Details::UnwrapRational<std::ratio_multiply<Details::WrapRational<T0Rational>, Details::WrapRational<T1Rational>>>;
 
     /// \brief Alias type for the quotient of two rational numbers.
     template <typename T0Rational, typename T1Rational>
-    using RationalQuotient = typename Details::RationalQuotient<T0Rational, T1Rational>::Type::TReduced;
+    using RationalQuotient = Details::UnwrapRational<std::ratio_divide<Details::WrapRational<T0Rational>, Details::WrapRational<T1Rational>>>;
+
+    /************************************************************************/
+    /* RATIONAL COMPARISON                                                  */
+    /************************************************************************/
+
+    /// \brief Boolean constant equal to true if T0Rational and T1Rational represent the same amount, equal to false otherwise.
+    template <typename T0Rational, typename T1Rational>
+    inline constexpr Bool RationalEqual = std::ratio_equal_v<Details::WrapRational<T0Rational>, Details::WrapRational<T1Rational>>;
+
+    /// \brief Boolean constant equal to true if T0Rational and T1Rational don't represent the same amount, equal to false otherwise.
+    template <typename T0Rational, typename T1Rational>
+    inline constexpr Bool RationalNotEqual = std::ratio_not_equal_v<Details::WrapRational<T0Rational>, Details::WrapRational<T1Rational>>;
+
+    /// \brief Boolean constant equal to true if T0Rational represents an amount smaller than T1Rational, equal to false otherwise.
+    template <typename T0Rational, typename T1Rational>
+    inline constexpr Bool RationalLess = std::ratio_less_v<Details::WrapRational<T0Rational>, Details::WrapRational<T1Rational>>;
+
+    /// \brief Boolean constant equal to true if T0Rational represents an amount smaller-than or equal-to T1Rational, equal to false otherwise.
+    template <typename T0Rational, typename T1Rational>
+    inline constexpr Bool RationalLessEqual = std::ratio_less_equal_v<Details::WrapRational<T0Rational>, Details::WrapRational<T1Rational>>;
+
+    /// \brief Boolean constant equal to true if T0Rational represents an amount greater than T1Rational, equal to false otherwise.
+    template <typename T0Rational, typename T1Rational>
+    inline constexpr Bool RationalGreater = std::ratio_greater_v<Details::WrapRational<T0Rational>, Details::WrapRational<T1Rational>>;
+
+    /// \brief Boolean constant equal to true if T0Rational represents an amount greater-than or equal-to T1Rational, equal to false otherwise.
+    template <typename T0Rational, typename T1Rational>
+    inline constexpr Bool RationalGreaterEqual = std::ratio_greater_equal_v<Details::WrapRational<T0Rational>, Details::WrapRational<T1Rational>>;
 
     /************************************************************************/
     /* RATIONAL UNITS                                                       */
     /************************************************************************/
 
-    /// \brief "nano" IS ratio.
-    using Nano = Rational<1, 1000 * 1000 * 1000>;
+    /// \brief "Nano" IS ratio.
+    using Nano = Details::UnwrapRational<std::nano>;
 
-    /// \brief "micro" IS ratio.
-    using Micro = Rational<1, 1000 * 1000>;
+    /// \brief "Micro" IS ratio.
+    using Micro = Details::UnwrapRational<std::micro>;
 
-    /// \brief "milli" IS ratio.
-    using Milli = Rational<1, 1000>;
+    /// \brief "Milli" IS ratio.
+    using Milli = Details::UnwrapRational<std::milli>;
 
-    /// \brief "centi" IS ratio.
-    using Centi = Rational<1, 100>;
+    /// \brief "Centi" IS ratio.
+    using Centi = Details::UnwrapRational<std::centi>;
 
-    /// \brief "deci" IS ratio.
-    using Deci = Rational<1, 10>;
+    /// \brief "Deci" IS ratio.
+    using Deci = Details::UnwrapRational<std::deci>;
 
-    /// \brief "deca" IS ratio.
-    using Deca = Rational<10, 1>;
+    /// \brief "Deca" IS ratio.
+    using Deca = Details::UnwrapRational<std::deca>;
 
-    /// \brief "hecto" IS ratio.
-    using Hecto = Rational<100, 1>;
+    /// \brief "Hecto" IS ratio.
+    using Hecto = Details::UnwrapRational<std::hecto>;
 
-    /// \brief "kilo" IS ratio.
-    using Kilo = Rational<1000, 1>;
+    /// \brief "Kilo" IS ratio.
+    using Kilo = Details::UnwrapRational<std::kilo>;
 
-    /// \brief "mega" IS ratio.
-    using Mega = Rational<1000 * 1000, 1>;
+    /// \brief "Mega" IS ratio.
+    using Mega = Details::UnwrapRational<std::mega>;
 
-    /// \brief "giga" IS ratio.
-    using Giga = Rational<1000 * 1000 * 1000, 1>;
+    /// \brief "Giga" IS ratio.
+    using Giga = Details::UnwrapRational<std::giga>;
 
-    /// \brief "tera" IS ratio.
-    using Tera = Rational<1000 * 1000 * 1000 * 1000, 1>;
+    /// \brief "Tera" IS ratio.
+    using Tera = Details::UnwrapRational<std::tera>;
 
-    /// \brief "peta" IS ratio.
-    using Peta = Rational<1000 * 1000 * 1000 * 1000 * 1000, 1>;
+    /// \brief "Peta" IS ratio.
+    using Peta = Details::UnwrapRational<std::peta>;
 
-    /// \brief "exa" IS ratio.
-    using Exa = Rational<1000 * 1000 * 1000 * 1000 * 1000 * 1000, 1>;
+    /// \brief "Exa" IS ratio.
+    using Exa = Details::UnwrapRational<std::exa>;
 
 }
