@@ -12,7 +12,7 @@
 #include "syntropy/language/traits/details/sfinae.h"
 #include "syntropy/language/templates/constants.h"
 
-namespace Syntropy::Traits
+namespace Syntropy::Templates
 {
     /************************************************************************/
     /* ENABLE IF                                                            */

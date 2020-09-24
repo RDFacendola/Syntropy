@@ -8,7 +8,7 @@
 
 #include "syntropy/language/support/declarations.h"
 
-namespace Syntropy::Traits::Details
+namespace Syntropy::Templates::Details
 {
     /************************************************************************/
     /* HAS SWAP DETECTOR                                                    */

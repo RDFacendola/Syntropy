@@ -10,7 +10,7 @@
 
 #include "syntropy/language/foundation/types.h"
 
-namespace Syntropy::Traits
+namespace Syntropy::Templates
 {
     /************************************************************************/
     /* IS SAME                                                              */

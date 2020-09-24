@@ -13,7 +13,7 @@
 #include "syntropy/language/traits/capabilities.h"
 #include "syntropy/language/traits/sfinae.h"
 
-namespace Syntropy::Traits
+namespace Syntropy::Templates
 {
     /************************************************************************/
     /* IS DEFAULT CONSTRUCTIBLE                                             */

@@ -68,12 +68,12 @@ namespace Syntropy
 
         /// \brief Deallocate each allocation performed so far.
         /// This method only participates in overload resolution if both allocators implement ::DeallocateAll() method.
-        template<typename = Traits::EnableIf<Traits::IsValidExpression<AllocatorImplementsDeallocateAll, TAllocator> && Traits::IsValidExpression<AllocatorImplementsDeallocateAll, TFallback>>>
+        template<typename = Templates::EnableIf<Templates::IsValidExpression<AllocatorImplementsDeallocateAll, TAllocator> && Templates::IsValidExpression<AllocatorImplementsDeallocateAll, TFallback>>>
         void DeallocateAll() noexcept;
 
         /// \brief Check whether either allocator owns a memory block.
         /// This method only participates in overload resolution if both allocator implement ::Own(block) method.
-        template<typename = Traits::EnableIf<Traits::IsValidExpression<AllocatorImplementsOwn, TAllocator>&& Traits::IsValidExpression<AllocatorImplementsOwn, TFallback>>>
+        template<typename = Templates::EnableIf<Templates::IsValidExpression<AllocatorImplementsOwn, TAllocator>&& Templates::IsValidExpression<AllocatorImplementsOwn, TFallback>>>
         Bool Owns(const ByteSpan& block) const noexcept;
 
     private:
@@ -131,7 +131,7 @@ namespace Syntropy
     template <typename TAllocator, typename TFallback>
     inline void FallbackAllocator<TAllocator, TFallback>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
     {
-        if constexpr (Traits::IsValidExpression<AllocatorImplementsOwn, TAllocator>)
+        if constexpr (Templates::IsValidExpression<AllocatorImplementsOwn, TAllocator>)
         {
             if (allocator_.Owns(block))
             {
@@ -142,7 +142,7 @@ namespace Syntropy
                 fallback_.Deallocate(block, alignment);
             }
         }
-        else if constexpr (Traits::IsValidExpression<AllocatorImplementsOwn, TFallback>)
+        else if constexpr (Templates::IsValidExpression<AllocatorImplementsOwn, TFallback>)
         {
             if (fallback_.Owns(block))
             {

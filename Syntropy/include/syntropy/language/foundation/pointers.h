@@ -27,7 +27,7 @@ namespace Syntropy
     /// \brief Type alias for a pointer to a *read-write* pointee. This pointer doesn't participate to pointee life-time.
     /// This alias may be used for declaring variables with the syntax: auto p = RWPointer<...>{ nullptr }.
     /// \remarks This alias is expected not to be used with templates as it will clutter syntax.
-    template <typename TType, typename = Traits::EnableIf<!Traits::IsConst<TType>>>
+    template <typename TType, typename = Templates::EnableIf<!Templates::IsConst<TType>>>
     using RWPointer = TType*;
 
     /// \brief Type alias for a pointer to either a *read-write* or *read-only* pointee. This pointer doesn't participate to pointee life-time.

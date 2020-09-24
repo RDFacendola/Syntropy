@@ -23,7 +23,7 @@ namespace Syntropy
     template <typename TElement, Int kRank>
     class FixArray
     {
-        static_assert(Traits::IsReadWrite<TElement>, "TElement must be read-write.");
+        static_assert(Templates::IsReadWrite<TElement>, "TElement must be read-write.");
 
     public:
 

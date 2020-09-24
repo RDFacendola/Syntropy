@@ -112,7 +112,7 @@ namespace Syntropy
     template <typename TStreamBuffer>
     inline void AppendStreamBufferT<TStreamBuffer>::Grow(Bytes capacity)
     {
-        if constexpr (Traits::IsValidExpression<IsGrowSupported, TStreamBuffer>)
+        if constexpr (Templates::IsValidExpression<IsGrowSupported, TStreamBuffer>)
         {
             stream_buffer_->Grow(capacity);
         }

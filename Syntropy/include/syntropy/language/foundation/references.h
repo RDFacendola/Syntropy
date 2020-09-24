@@ -27,7 +27,7 @@ namespace Syntropy
 
     /// \brief Type alias for a lvalue reference to a *read-write* object.
     /// \remarks This alias is expected not to be used with templates as it will clutter syntax.
-    template <typename TType, typename = Traits::EnableIf<!Traits::IsConst<Traits::RemoveReference<TType&>>>>
+    template <typename TType, typename = Templates::EnableIf<!Templates::IsConst<Templates::RemoveReference<TType&>>>>
     using RWReference = TType&;
 
     /// \brief Type alias for a lvalue reference to either a *read-write* or *read-only* object.
@@ -43,15 +43,15 @@ namespace Syntropy
 
     /// \brief Indicate that rhs may be "moved from", allowing for efficient transfer of resources from rhs to another object.
     template <typename TType>
-    [[nodiscard]] constexpr Traits::RemoveReference<TType>&& Move(TType&& rhs) noexcept;
+    [[nodiscard]] constexpr Templates::RemoveReference<TType>&& Move(TType&& rhs) noexcept;
 
     /// brief Forward an lvalue as either a lvalue or rvalue and rvalues to rvalues. Forwarding a rvalue as a lvalue is forbidden.
     template <typename TType>
-    [[nodiscard]] constexpr TType&& Forward(Traits::RemoveReference<TType>& rhs) noexcept;
+    [[nodiscard]] constexpr TType&& Forward(Templates::RemoveReference<TType>& rhs) noexcept;
 
     /// brief Forward an lvalue as either a lvalue or rvalue and rvalues to rvalues. Forwarding a rvalue as a lvalue is forbidden.
     template <typename TType>
-    [[nodiscard]] constexpr TType&& Forward(Traits::RemoveReference<TType>&& rhs) noexcept;
+    [[nodiscard]] constexpr TType&& Forward(Templates::RemoveReference<TType>&& rhs) noexcept;
 
     // Read-only \ Read-write.
 
@@ -84,19 +84,19 @@ namespace Syntropy
     // Move \ Forward.
 
     template <typename TType>
-    constexpr Traits::RemoveReference<TType>&& Move(TType&& rhs) noexcept
+    constexpr Templates::RemoveReference<TType>&& Move(TType&& rhs) noexcept
     {
-        return static_cast<Traits::RemoveReference<TType>&&>(rhs);
+        return static_cast<Templates::RemoveReference<TType>&&>(rhs);
     }
 
     template <typename TType>
-    constexpr TType&& Forward(Traits::RemoveReference<TType>& rhs) noexcept
+    constexpr TType&& Forward(Templates::RemoveReference<TType>& rhs) noexcept
     {
         return static_cast<TType&&>(rhs);
     }
 
     template <typename TType>
-    constexpr TType&& Forward(Traits::RemoveReference<TType>&& rhs) noexcept
+    constexpr TType&& Forward(Templates::RemoveReference<TType>&& rhs) noexcept
     {
         return static_cast<TType&&>(rhs);
     }

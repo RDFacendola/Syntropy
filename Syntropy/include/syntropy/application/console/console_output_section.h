@@ -168,11 +168,11 @@ namespace Syntropy
     template <typename TStyle, typename TSection>
     inline String ConsoleOutputSectionT<TStyle, TSection>::Push(TStyle& style, const StringView& text) const
     {
-        if constexpr (Traits::IsValidExpression<HasPushSection, TStyle, TSection>)
+        if constexpr (Templates::IsValidExpression<HasPushSection, TStyle, TSection>)
         {
             return style.PushSection(TSection{}, text);
         }
-        else if constexpr (Traits::IsValidExpression<HasGenericPushSection, TStyle>)
+        else if constexpr (Templates::IsValidExpression<HasGenericPushSection, TStyle>)
         {
             return style.PushSection(text);
         }
@@ -185,11 +185,11 @@ namespace Syntropy
     template <typename TStyle, typename TSection>
     inline String ConsoleOutputSectionT<TStyle, TSection>::Pop(TStyle& style) const
     {
-        if constexpr (Traits::IsValidExpression<HasPopSection, TStyle, TSection>)
+        if constexpr (Templates::IsValidExpression<HasPopSection, TStyle, TSection>)
         {
             return style.PopSection(TSection{});
         }
-        else if constexpr (Traits::IsValidExpression<HasGenericPopSection, TStyle>)
+        else if constexpr (Templates::IsValidExpression<HasGenericPopSection, TStyle>)
         {
             return style.PopSection();
         }
@@ -202,11 +202,11 @@ namespace Syntropy
     template <typename TStyle, typename TSection>
     inline String ConsoleOutputSectionT<TStyle, TSection>::Print(TStyle& style, const StringView& text) const
     {
-        if constexpr (Traits::IsValidExpression<HasPrint, TStyle, TSection>)
+        if constexpr (Templates::IsValidExpression<HasPrint, TStyle, TSection>)
         {
             return style.Print(TSection{}, text);
         }
-        else if constexpr (Traits::IsValidExpression<HasGenericPrint, TStyle>)
+        else if constexpr (Templates::IsValidExpression<HasGenericPrint, TStyle>)
         {
             return style.Print(text);
         }
@@ -219,11 +219,11 @@ namespace Syntropy
     template <typename TStyle, typename TSection>
     inline String ConsoleOutputSectionT<TStyle, TSection>::LineFeed(TStyle& style) const
     {
-        if constexpr (Traits::IsValidExpression<HasLineFeed, TStyle, TSection>)
+        if constexpr (Templates::IsValidExpression<HasLineFeed, TStyle, TSection>)
         {
             return style.LineFeed(TSection{});
         }
-        else if constexpr (Traits::IsValidExpression<HasGenericLineFeed, TStyle>)
+        else if constexpr (Templates::IsValidExpression<HasGenericLineFeed, TStyle>)
         {
             return style.LineFeed();
         }

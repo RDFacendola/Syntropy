@@ -17,6 +17,6 @@ namespace Syntropy
     /// \brief Convert TType as a reference type, without calling any constructor.
     /// \remarks this function shall never be evaluated as it has no definition.
     template <typename TType>
-    Traits::AddRValueReference<TType> Declval() noexcept;
+    Templates::AddRValueReference<TType> Declval() noexcept;
 
 }

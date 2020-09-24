@@ -11,7 +11,7 @@
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/traits/relationships.h"
 
-namespace Syntropy::Traits
+namespace Syntropy::Templates
 {
     /************************************************************************/
     /* IS VOID                                                              */

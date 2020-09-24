@@ -10,7 +10,7 @@
 
 #include "syntropy/language/traits/details/queries.h"
 
-namespace Syntropy::Traits
+namespace Syntropy::Templates
 {
     /************************************************************************/
     /* ELEMENT TYPE                                                         */

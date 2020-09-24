@@ -36,7 +36,7 @@ namespace Syntropy
 
         /// \brief Type of the underlying vector.
         /// Const elements are not supported: propagate the constness outside the container.
-        using TVector = ConditionalT<Traits::IsConst<TElement>, const Array<Traits::RemoveConst<TElement>>, Array<TElement>>;
+        using TVector = ConditionalT<Templates::IsConst<TElement>, const Array<Templates::RemoveConst<TElement>>, Array<TElement>>;
 
         /// \brief Type of a range in the vector view.
         using TRange = decltype(MakeRange(Declval<TVector&>()));
@@ -147,7 +147,7 @@ namespace Syntropy
     inline VectorView<TElement>::VectorView(const Array<UElement>& vector)
         : vector_(&vector)
     {
-        static_assert(Traits::IsConst<TElement>, "Conversion loses const qualifiers.");
+        static_assert(Templates::IsConst<TElement>, "Conversion loses const qualifiers.");
     }
 
     template <typename TElement>
@@ -155,7 +155,7 @@ namespace Syntropy
     inline VectorView<TElement>::VectorView(const VectorView<UElement>& rhs)
         : vector_(rhs.vector_)
     {
-        static_assert(Traits::IsConst<TElement> || !Traits::IsConst<UElement>, "Conversion loses const qualifiers.");
+        static_assert(Templates::IsConst<TElement> || !Templates::IsConst<UElement>, "Conversion loses const qualifiers.");
     }
 
     template <typename TElement>

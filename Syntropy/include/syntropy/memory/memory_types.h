@@ -32,7 +32,7 @@ namespace Syntropy
     using RWBytePtr = RWPointer<Byte>;
 
     /// \brief A non-owning raw pointer to a memory location.
-    template <typename TByte, typename = Traits::EnableIf<Traits::IsSame<TByte, Traits::RemoveConst<Byte>>>>
+    template <typename TByte, typename = Templates::EnableIf<Templates::IsSame<TByte, Templates::RemoveConst<Byte>>>>
     using XBytePtr = XPointer<TByte>;
 
     /// \brief A non-owning pointer to a typeless read-only memory location.

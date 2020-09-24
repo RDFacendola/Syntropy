@@ -10,7 +10,7 @@
 
 #include "syntropy/language/traits/details/sequences.h"
 
-namespace Syntropy::Traits
+namespace Syntropy::Templates
 {
     /************************************************************************/
     /* IS CONTIGUOUS SEQUENCE                                               */

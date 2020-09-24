@@ -9,7 +9,7 @@
 #include "syntropy/language/support/declarations.h"
 #include "syntropy/language/traits/details/capabilities.h"
 
-namespace Syntropy::Traits
+namespace Syntropy::Templates
 {
     /************************************************************************/
     /* COMPARISON                                                           */

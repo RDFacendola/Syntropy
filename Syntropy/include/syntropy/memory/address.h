@@ -70,12 +70,12 @@ namespace Syntropy
 
     /// \brief Convert an address to a read-only location to a read-only strongly-typed pointer.
     /// If the pointed object is not an instance of TType, the behavior of this method is undefined.
-    template <typename TType = Traits::AddConst<Byte>>
+    template <typename TType = Templates::AddConst<Byte>>
     Pointer<TType> FromAddress(Address rhs) noexcept;
 
     /// \brief Convert an address to a read-only location to a read-only strongly-typed pointer.
     /// If the pointed object is not an instance of TType, the behavior of this method is undefined.
-    template <typename TType = Traits::AddConst<Byte>>
+    template <typename TType = Templates::AddConst<Byte>>
     Pointer<TType> FromAddress(RWAddress rhs) noexcept;
 
     /// \brief Convert an address to a read-write location to a read-write strongly-typed pointer.

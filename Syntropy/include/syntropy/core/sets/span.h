@@ -37,7 +37,7 @@ namespace Syntropy
         constexpr SpanT(TBegin begin, Int count) noexcept;
 
         /// \brief Create a span given a pointer to the first element and a pointer past the last element.
-        template <typename TBegin, typename TEnd, typename = Traits::EnableIf<!Traits::IsConvertible<TEnd, Int>>>
+        template <typename TBegin, typename TEnd, typename = Templates::EnableIf<!Templates::IsConvertible<TEnd, Int>>>
         constexpr SpanT(TBegin begin, TEnd end) noexcept;
 
         /// \brief Copy constructor.
@@ -83,12 +83,12 @@ namespace Syntropy
     using Span = SpanT<const TType>;
 
     /// \brief Alias for a span of read-write elements.
-    template <typename TType, typename = Traits::EnableIf<!Traits::IsConst<TType>>>
+    template <typename TType, typename = Templates::EnableIf<!Templates::IsConst<TType>>>
     using RWSpan = SpanT<TType>;
 
     /// \brief Alias for a common type between two or more spans.
     template <typename... TElements>
-    using CommonSpan = SpanT<Traits::RemovePointer<Traits::CommonTypeOf<Traits::AddPointer<TElements>...>>>;
+    using CommonSpan = SpanT<Templates::RemovePointer<Templates::CommonTypeOf<Templates::AddPointer<TElements>...>>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -270,12 +270,12 @@ namespace Syntropy
     /// \brief Convert a read-only span to its read-write equivalent.
     /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
     template <typename TElement>
-    [[nodiscard]] constexpr RWSpan<Traits::RemoveConst<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept;
+    [[nodiscard]] constexpr RWSpan<Templates::RemoveConst<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept;
 
     /// \brief Convert a read-only span to its read-write equivalent.
     /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
     template <typename TElement>
-    [[nodiscard]] constexpr RWSpan<Traits::RemoveConst<TElement>> ReadWrite(SpanT<TElement>&& rhs) noexcept;
+    [[nodiscard]] constexpr RWSpan<Templates::RemoveConst<TElement>> ReadWrite(SpanT<TElement>&& rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -547,7 +547,7 @@ namespace Syntropy
             return false;                           // Early out if spans sizes are different.
         }
 
-        if constexpr (Traits::IsValidExpression<Traits::HasEqualityComparison, Pointer<TElement>, Pointer<UElement>>)
+        if constexpr (Templates::IsValidExpression<Templates::HasEqualityComparison, Pointer<TElement>, Pointer<UElement>>)
         {
             if (lhs.GetData() == rhs.GetData())
             {
@@ -626,7 +626,7 @@ namespace Syntropy
     template <typename TBegin, typename TEnd>
     constexpr auto MakeSpan(XPointer<TBegin> begin, XPointer<TEnd> end) noexcept
     {
-        using TSpan = Traits::CommonTypeOf<TBegin, TEnd>;
+        using TSpan = Templates::CommonTypeOf<TBegin, TEnd>;
 
         return Span<TSpan>{ begin, end };
     }
@@ -646,9 +646,9 @@ namespace Syntropy
     }
 
     template <typename TElement>
-    constexpr RWSpan<Traits::RemoveConst<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept
+    constexpr RWSpan<Templates::RemoveConst<TElement>> ReadWrite(const SpanT<TElement>& rhs) noexcept
     {
-        using TPointer = XPointer<Traits::RemoveConst<TElement>>;
+        using TPointer = XPointer<Templates::RemoveConst<TElement>>;
 
         auto begin = const_cast<TPointer>(Begin(rhs));
         auto end = const_cast<TPointer>(End(rhs));
@@ -657,7 +657,7 @@ namespace Syntropy
     }
 
     template <typename TElement>
-    constexpr RWSpan<Traits::RemoveConst<TElement>> ReadWrite(SpanT<TElement>&& rhs) noexcept
+    constexpr RWSpan<Templates::RemoveConst<TElement>> ReadWrite(SpanT<TElement>&& rhs) noexcept
     {
         return ReadWrite(rhs);
     }
