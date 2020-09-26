@@ -48,22 +48,22 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Reserve a new memory block.
         /// Reserved blocks must be committed via Memory::Commit before accessing them.
         /// If a memory block could not be reserved, returns an empty block.
-        RWByteSpan Reserve(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Reserve(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
 
         /// \brief Deallocate every allocation performed on this allocator so far.
         void DeallocateAll() noexcept;
 
         /// \brief Check whether this allocator owns a memory block.
-        Bool Owns(const ByteSpan& block) const noexcept;
+        Bool Owns(const Memory::ByteSpan& block) const noexcept;
 
         /// \brief Swap this allocator with the provided instance.
         void Swap(VirtualAllocator& rhs) noexcept;
@@ -74,7 +74,7 @@ namespace Syntropy
         struct FreePageIndex;
 
         /// \brief Reserve a chunk and return its range.
-        RWByteSpan Reserve() noexcept;
+        Memory::RWByteSpan Reserve() noexcept;
 
         /// \brief Size of each allocation. This value is a multiple of the system virtual memory page size.
         Bytes page_size_;
@@ -123,7 +123,7 @@ namespace Syntropy
         free_page_index_ = nullptr;
     }
 
-    inline Bool VirtualAllocator::Owns(const ByteSpan& block) const noexcept
+    inline Bool VirtualAllocator::Owns(const Memory::ByteSpan& block) const noexcept
     {
         return allocator_.Owns(block);
     }

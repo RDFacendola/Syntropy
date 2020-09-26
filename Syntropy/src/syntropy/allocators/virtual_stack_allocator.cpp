@@ -6,7 +6,7 @@ namespace Syntropy
     /* VIRTUAL STACK ALLOCATOR                                              */
     /************************************************************************/
 
-    RWByteSpan VirtualStackAllocator::Allocate(Bytes size, Alignment alignment) noexcept
+    Memory::RWByteSpan VirtualStackAllocator::Allocate(Bytes size, Alignment alignment) noexcept
     {
         // Committing at higher granularity to reduce overall kernel calls.
 
@@ -29,7 +29,7 @@ namespace Syntropy
         return {};
     }
 
-    RWByteSpan VirtualStackAllocator::Reserve(Bytes size, Alignment alignment) noexcept
+    Memory::RWByteSpan VirtualStackAllocator::Reserve(Bytes size, Alignment alignment) noexcept
     {
         // Reserve a span aligned to virtual memory's page to avoid interferences with adjacent blocks when committing\decommitting.
 

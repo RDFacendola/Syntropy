@@ -15,7 +15,7 @@
 
 /// \brief Allocate requested number of bytes inside byte span.
 /// If the byte span could not fit the requested size, returns nullptr.
-Syntropy::Memory::RWTypelessPtr operator new(std::size_t size, const Syntropy::RWByteSpan& byte_span);
+Syntropy::Memory::RWTypelessPtr operator new(std::size_t size, const Syntropy::Memory::RWByteSpan& byte_span);
 
 /************************************************************************/
 /* IMPLEMENTATION                                                       */
@@ -24,7 +24,7 @@ Syntropy::Memory::RWTypelessPtr operator new(std::size_t size, const Syntropy::R
 // Operator New.
 // =============
 
-inline Syntropy::Memory::RWTypelessPtr operator new(std::size_t size, const Syntropy::RWByteSpan& byte_span)
+inline Syntropy::Memory::RWTypelessPtr operator new(std::size_t size, const Syntropy::Memory::RWByteSpan& byte_span)
 {
     if (Syntropy::ToInt(size) <= Syntropy::ToInt(Syntropy::Memory::Size(byte_span)))
     {

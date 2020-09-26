@@ -42,7 +42,7 @@ namespace Syntropy
         return ToAlignment(PageSize());
     }
 
-    RWByteSpan HALVirtualMemory::Allocate(Bytes size) noexcept
+    Memory::RWByteSpan HALVirtualMemory::Allocate(Bytes size) noexcept
     {
         // Allocate up to the next page boundary.
 
@@ -56,7 +56,7 @@ namespace Syntropy
         return {};
     }
 
-    RWByteSpan HALVirtualMemory::Reserve(Bytes size) noexcept
+    Memory::RWByteSpan HALVirtualMemory::Reserve(Bytes size) noexcept
     {
         // Reserve up to the next page boundary.
 
@@ -70,7 +70,7 @@ namespace Syntropy
         return {};
     }
 
-    Bool HALVirtualMemory::Release(const RWByteSpan& byte_span) noexcept
+    Bool HALVirtualMemory::Release(const Memory::RWByteSpan& byte_span) noexcept
     {
         if (byte_span)
         {
@@ -82,7 +82,7 @@ namespace Syntropy
         return true;
     }
 
-    Bool HALVirtualMemory::Commit(const RWByteSpan& byte_span) noexcept
+    Bool HALVirtualMemory::Commit(const Memory::RWByteSpan& byte_span) noexcept
     {
         if (byte_span)
         {
@@ -96,7 +96,7 @@ namespace Syntropy
         return true;
     }
 
-    Bool HALVirtualMemory::Decommit(const RWByteSpan& byte_span) noexcept
+    Bool HALVirtualMemory::Decommit(const Memory::RWByteSpan& byte_span) noexcept
     {
         if (byte_span)
         {

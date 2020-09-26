@@ -17,23 +17,23 @@ namespace Syntropy
         RWPointer<FreePageIndex> next_{ nullptr };
 
         /// \brief Memory span covering the free page index chunk.
-        RWByteSpan self_;
+        Memory::RWByteSpan self_;
 
         /// \brief Memory span enclosing the payload.
-        RWByteSpan payload_;
+        Memory::RWByteSpan payload_;
 
         /// \brief Free entries in the index.
-        RWSpan<RWByteSpan> free_entries_;
+        RWSpan<Memory::RWByteSpan> free_entries_;
 
         /// \brief Free pages.
-        RWSpan<RWByteSpan> free_pages_;
+        RWSpan<Memory::RWByteSpan> free_pages_;
     };
 
     /************************************************************************/
     /* VIRTUAL ALLOCATOR                                                    */
     /************************************************************************/
 
-    RWByteSpan VirtualAllocator::Allocate(Bytes size, Alignment alignment) noexcept
+    Memory::RWByteSpan VirtualAllocator::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if ((size <= page_size_) && (alignment <= VirtualMemory::PageAlignment()))
         {
@@ -48,7 +48,7 @@ namespace Syntropy
         return {};
     }
 
-    RWByteSpan VirtualAllocator::Reserve(Bytes size, Alignment alignment) noexcept
+    Memory::RWByteSpan VirtualAllocator::Reserve(Bytes size, Alignment alignment) noexcept
     {
         if ((size <= page_size_) && (alignment <= VirtualMemory::PageAlignment()))
         {
@@ -61,11 +61,11 @@ namespace Syntropy
         return {};
     }
 
-    void VirtualAllocator::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
+    void VirtualAllocator::Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept
     {
         SYNTROPY_ASSERT(Owns(block));
 
-        auto page = RWByteSpan{ Begin(block), ToInt(page_size_) };
+        auto page = Memory::RWByteSpan{ Begin(block), ToInt(page_size_) };
 
         if (free_page_index_ && free_page_index_->free_entries_)
         {
@@ -89,13 +89,13 @@ namespace Syntropy
             free_page_index->next_ = free_page_index_;
             free_page_index->self_ = page;
             free_page_index->payload_ = Memory::PopFront<FreePageIndex>(page);
-            free_page_index->free_entries_ = ToRWSpan<RWByteSpan>(Memory::AlignAs<RWByteSpan>(free_page_index->payload_));
+            free_page_index->free_entries_ = Memory::ToRWSpan<Memory::RWByteSpan>(Memory::AlignAs<Memory::RWByteSpan>(free_page_index->payload_));
 
             free_page_index_ = free_page_index;
         }
     }
 
-    RWByteSpan VirtualAllocator::Reserve() noexcept
+    Memory::RWByteSpan VirtualAllocator::Reserve() noexcept
     {
         // Recycle a free page in the current free page index.
 

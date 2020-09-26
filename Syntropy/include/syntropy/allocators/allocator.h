@@ -45,7 +45,7 @@ namespace Syntropy
 
     /// \brief Check whether an allocator implements the method ::Owns(block);
     template <typename TAllocator>
-    using AllocatorImplementsOwn = decltype(Declval<TAllocator>().Owns(Declval<ByteSpan>()));
+    using AllocatorImplementsOwn = decltype(Declval<TAllocator>().Owns(Declval<Memory::ByteSpan>()));
 
     /// \brief Check whether an allocator implements the method ::DeallocateAll();
     template <typename TAllocator>
@@ -82,11 +82,11 @@ namespace Syntropy
 
         /// \brief Allocate a memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        virtual RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept = 0;
+        virtual Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept = 0;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        virtual void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept = 0;
+        virtual void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept = 0;
 
     private:
 
@@ -114,19 +114,19 @@ namespace Syntropy
         /// \brief Default virtual destructor.
         virtual ~AllocatorT() = default;
 
-        virtual RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept override;
+        virtual Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept override;
 
-        virtual void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept override;
+        virtual void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept override;
 
         /// \brief Deallocate each allocation performed so far.
         /// This method only participates in overload resolution if the underlying allocator implements ::DeallocateAll() method.
-        template<typename = EnableIfValidExpressionT<AllocatorImplementsDeallocateAll, TAllocator>>
+        template<typename = Templates::EnableIfValidExpression<AllocatorImplementsDeallocateAll, TAllocator >>
         void DeallocateAll() noexcept;
 
         /// \brief Check whether a block belongs to the underlying allocator.
         /// This method only participates in overload resolution if the underlying allocator implements ::Own(block) method.
-        template<typename = EnableIfValidExpressionT<AllocatorImplementsOwn, TAllocator>>
-        Bool Owns(const ByteSpan& block) const noexcept;
+        template<typename = Templates::EnableIfValidExpression<AllocatorImplementsOwn, TAllocator>>
+        Bool Owns(const Memory::ByteSpan& block) const noexcept;
 
         /// \brief Access the underlying allocator.
         TAllocator& GetAllocator();
@@ -167,13 +167,13 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline RWByteSpan AllocatorT<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline Memory::RWByteSpan AllocatorT<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         return allocator_.Allocate(size, alignment);
     }
 
     template <typename TAllocator>
-    inline void AllocatorT<TAllocator>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
+    inline void AllocatorT<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept
     {
         allocator_.Deallocate(block, alignment);
     }
@@ -187,7 +187,7 @@ namespace Syntropy
 
     template <typename TAllocator>
     template <typename>
-    inline Bool AllocatorT<TAllocator>::Owns(const ByteSpan& block) const noexcept
+    inline Bool AllocatorT<TAllocator>::Owns(const Memory::ByteSpan& block) const noexcept
     {
         return allocator_.Owns(block);
     }

@@ -54,22 +54,22 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Reserve a new memory block.
         /// Reserved blocks must be committed via Memory::Commit before accessing them.
         /// If a memory block could not be reserved, returns an empty block.
-        RWByteSpan Reserve(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Reserve(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
 
         /// \brief Deallocate every allocation performed on this allocator so far, invalidating all outstanding checkpoints.
         void DeallocateAll() noexcept;
 
         /// \brief Check whether this allocator owns a memory block.
-        Bool Owns(const ByteSpan& block) const noexcept;
+        Bool Owns(const Memory::ByteSpan& block) const noexcept;
 
         /// \brief Swap this allocator with another one.
         void Swap(VirtualStackAllocator& rhs) noexcept;
@@ -88,10 +88,10 @@ namespace Syntropy
         VirtualBuffer virtual_span_;
 
         /// \brief Memory that hasn't been allocated yet.
-        RWByteSpan unallocated_span_;
+        Memory::RWByteSpan unallocated_span_;
 
         /// \brief Memory that hasn't been committed yet.
-        RWByteSpan uncommitted_span_;
+        Memory::RWByteSpan uncommitted_span_;
 
         /// \brief Commit granularity. This is always a multiple of the virtual memory's page size.
         Bytes commit_granularity_;
@@ -108,10 +108,10 @@ namespace Syntropy
         friend class VirtualStackAllocator;
 
         /// \brief Memory that hadn't been allocated yet when the checkpoint was initialized.
-        RWByteSpan unallocated_span_;
+        Memory::RWByteSpan unallocated_span_;
 
         /// \brief Memory that hadn't been committed yet when the checkpoint was initialized.
-        RWByteSpan uncommitted_span_;
+        Memory::RWByteSpan uncommitted_span_;
     };
 
     /************************************************************************/
@@ -146,7 +146,7 @@ namespace Syntropy
         return *this;
     }
 
-    inline void VirtualStackAllocator::Deallocate(const RWByteSpan& block, Alignment /*alignment*/) noexcept
+    inline void VirtualStackAllocator::Deallocate(const Memory::RWByteSpan& block, Alignment /*alignment*/) noexcept
     {
         SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block), "The provided block doesn't belong to this allocator instance.");
     }
@@ -161,7 +161,7 @@ namespace Syntropy
         uncommitted_span_ = unallocated_span_;
     }
 
-    inline Bool VirtualStackAllocator::Owns(const ByteSpan& block) const noexcept
+    inline Bool VirtualStackAllocator::Owns(const Memory::ByteSpan& block) const noexcept
     {
         auto allocated_span = DifferenceFront(virtual_span_.GetData(), unallocated_span_);
 

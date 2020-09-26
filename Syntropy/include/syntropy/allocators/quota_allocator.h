@@ -46,16 +46,16 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated or the allocator exceeded its quota, returns an empty block.
-        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
 
         /// \brief Check whether a block belongs to the underlying allocator.
         /// This method only participates in overload resolution if the underlying allocator implements the ::Own(block) method.
         template<typename = EnableIfValidExpressionT<AllocatorImplementsOwn, TAllocator>>
-        Bool Owns(const ByteSpan& block) const noexcept;
+        Bool Owns(const Memory::ByteSpan& block) const noexcept;
 
         /// \brief Deallocate each allocation performed so far.
         /// This method only participates in overload resolution if the underlying allocator implements ::DeallocateAll() method.
@@ -98,7 +98,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline RWByteSpan QuotaAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline Memory::RWByteSpan QuotaAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if ((allocation_size_ + size) <= quota_)
         {
@@ -113,7 +113,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline void QuotaAllocator<TAllocator>::Deallocate(const RWByteSpan& block, Alignment alignment)
+    inline void QuotaAllocator<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Alignment alignment)
     {
         allocator_.Deallocate(block, alignment);
 
@@ -134,7 +134,7 @@ namespace Syntropy
 
     template <typename TAllocator>
     template <typename>
-    inline Bool QuotaAllocator<TAllocator>::Owns(const ByteSpan& block) const noexcept
+    inline Bool QuotaAllocator<TAllocator>::Owns(const Memory::ByteSpan& block) const noexcept
     {
         return allocator_.Owns(block);
     }

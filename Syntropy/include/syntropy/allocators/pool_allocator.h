@@ -49,14 +49,14 @@ namespace Syntropy
         PoolAllocator& operator=(PoolAllocator rhs) noexcept;
 
         /// \brief Allocate a new memory block.
-        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWByteSpan& block, Alignment alignment);
+        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment);
 
         /// \brief Check whether this allocator owns a memory block.
-        Bool Owns(const ByteSpan& block) const noexcept;
+        Bool Owns(const Memory::ByteSpan& block) const noexcept;
 
         /// \brief Deallocate every allocation performed on this allocator so far, invalidating all outstanding checkpoints.
         void DeallocateAll() noexcept;
@@ -76,10 +76,10 @@ namespace Syntropy
         RWPointer<Chunk> AllocateChunk() noexcept;
 
         /// \brief Allocate a new block in a chunk.
-        RWByteSpan AllocateBlock(Chunk& chunk) noexcept;
+        Memory::RWByteSpan AllocateBlock(Chunk& chunk) noexcept;
 
         /// \brief Allocate a block on the current chunk or, if unavailable, allocate a new chunk.
-        RWByteSpan AllocateBlock() noexcept;
+        Memory::RWByteSpan AllocateBlock() noexcept;
 
         /// \brief Link a chunk to another chunk.
         void Link(Chunk& chunk, RWPointer<Chunk> next) noexcept;
@@ -113,7 +113,7 @@ namespace Syntropy
     struct PoolAllocator<TAllocator>::Chunk
     {
         /// \brief A span covering the entire chunk.
-        RWByteSpan self_;
+        Memory::RWByteSpan self_;
 
         /// \brief Pointer to the previous chunk.
         RWPointer<Chunk> previous_{ nullptr };
@@ -128,10 +128,10 @@ namespace Syntropy
         Int allocation_count_{ 0 };
 
         /// \brief A span covering the chunk payload.
-        RWByteSpan payload_;
+        Memory::RWByteSpan payload_;
 
         /// \brief List of blocks (either free or allocated).
-        RWByteSpan blocks_;
+        Memory::RWByteSpan blocks_;
     };
 
     /************************************************************************/
@@ -189,7 +189,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    RWByteSpan PoolAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    Memory::RWByteSpan PoolAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if ((size <= block_size_) && (alignment <= ToAlignment(block_size_)))
         {
@@ -203,7 +203,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    void PoolAllocator<TAllocator>::Deallocate(const RWByteSpan& block, Alignment alignment)
+    void PoolAllocator<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Alignment alignment)
     {
         SYNTROPY_UNDEFINED_BEHAVIOR((Size(block) <= block_size_) && (alignment <= Alignment(block_size_)), "The provided block doesn't belong to this allocator instance");
 
@@ -237,12 +237,12 @@ namespace Syntropy
         {
             Unlink(chunk);
 
-            allocator_.Deallocate(RWByteSpan{ chunk, chunk_size_ }, ToAlignment(chunk_size_));
+            allocator_.Deallocate(Memory::RWByteSpan{ chunk, chunk_size_ }, ToAlignment(chunk_size_));
         }
     }
 
     template <typename TAllocator>
-    inline Bool PoolAllocator<TAllocator>::Owns(const ByteSpan& block) const noexcept
+    inline Bool PoolAllocator<TAllocator>::Owns(const Memory::ByteSpan& block) const noexcept
     {
         auto owns = [](auto chunk, auto block)
         {
@@ -307,7 +307,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    RWByteSpan PoolAllocator<TAllocator>::AllocateBlock(Chunk& chunk) noexcept
+    Memory::RWByteSpan PoolAllocator<TAllocator>::AllocateBlock(Chunk& chunk) noexcept
     {
         chunk.allocation_count_++;
 
@@ -334,7 +334,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    RWByteSpan PoolAllocator<TAllocator>::AllocateBlock() noexcept
+    Memory::RWByteSpan PoolAllocator<TAllocator>::AllocateBlock() noexcept
     {
         auto chunk = (available_chunks_ ? available_chunks_ : AllocateChunk());                         // Either the first available chunk (fast path) or a new one.
 

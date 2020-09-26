@@ -45,11 +45,11 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
 
         /// \brief Deallocate each allocation performed so far.
         /// This method only participates in overload resolution if the underlying allocator implements ::DeallocateAll() method.
@@ -108,7 +108,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline RWByteSpan CountingAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline Memory::RWByteSpan CountingAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         if (auto block = allocator_.Allocate(size, alignment))
         {
@@ -123,7 +123,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline void CountingAllocator<TAllocator>::Deallocate(const RWByteSpan& block, Alignment alignment) noexcept
+    inline void CountingAllocator<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept
     {
         allocator_.Deallocate(block, alignment);
 

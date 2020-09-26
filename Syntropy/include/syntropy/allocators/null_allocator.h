@@ -41,17 +41,17 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// \return Returns an empty block.
-        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
 
         /// \brief Deallocate each allocation performed so far.
         void DeallocateAll() noexcept;
 
         /// \brief Check whether the allocator owns a memory block.
-        Bool Owns(const ByteSpan& block) const noexcept;
+        Bool Owns(const Memory::ByteSpan& block) const noexcept;
 
     };
 
@@ -62,12 +62,12 @@ namespace Syntropy
     // NullAllocator.
     // ==============
 
-    inline RWByteSpan NullAllocator::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
+    inline Memory::RWByteSpan NullAllocator::Allocate(Bytes /*size*/, Alignment /*alignment*/) noexcept
     {
         return {};
     }
 
-    inline void NullAllocator::Deallocate(const RWByteSpan& block, Alignment /*alignment*/)
+    inline void NullAllocator::Deallocate(const Memory::RWByteSpan& block, Alignment /*alignment*/)
     {
         SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block));
     }
@@ -77,7 +77,7 @@ namespace Syntropy
 
     }
 
-    inline Bool NullAllocator::Owns(const ByteSpan& block) const noexcept
+    inline Bool NullAllocator::Owns(const Memory::ByteSpan& block) const noexcept
     {
         return !block;
     }

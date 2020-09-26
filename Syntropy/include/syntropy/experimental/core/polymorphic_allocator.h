@@ -123,7 +123,7 @@ namespace Syntropy
     template <typename TType>
     inline void PolymorphicAllocator<TType>::deallocate(TType* storage, size_t count) noexcept
     {
-        auto block = RWByteSpan{ reinterpret_cast<Memory::RWBytePtr>(storage), ToInt(Memory::SizeOf<TType>() * count) };
+        auto block = Memory::RWByteSpan{ Memory::ToRWBytePtr(storage), ToInt(Memory::SizeOf<TType>() * count) };
 
         memory_resource_->Deallocate(block, Memory::AlignmentOf<TType>());
     }

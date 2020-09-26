@@ -52,11 +52,11 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
 
         /// \brief Deallocate every allocation performed on this allocator so far, invalidating all outstanding checkpoints.
         void DeallocateAll() noexcept;
@@ -84,7 +84,7 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block on the provided chunk.
         /// If the block could not be allocated, returns an empty block.
-        RWByteSpan Allocate(RWPointer<Chunk> chunk, Bytes size, Alignment alignment) const noexcept;
+        Memory::RWByteSpan Allocate(RWPointer<Chunk> chunk, Bytes size, Alignment alignment) const noexcept;
 
         /// \brief Allocate a new chunk.
         /// \param size Minimum size for the payload.
@@ -116,7 +116,7 @@ namespace Syntropy
         RWPointer<Chunk> chunk_{ nullptr };
 
         /// \brief Free memory range when the checkpoint was initially created.
-        RWByteSpan free_span_;
+        Memory::RWByteSpan free_span_;
     };
 
     /************************************************************************/
@@ -132,13 +132,13 @@ namespace Syntropy
         RWPointer<Chunk> previous_{ nullptr };
 
         /// \brief Memory span enclosing this chunk.
-        RWByteSpan self_;
+        Memory::RWByteSpan self_;
 
         /// \brief Memory span containing chunk data.
-        RWByteSpan payload_;
+        Memory::RWByteSpan payload_;
 
         /// \brief Unallocated memory span within a payload.
-        RWByteSpan unallocated_;
+        Memory::RWByteSpan unallocated_;
     };
 
     /************************************************************************/
@@ -181,7 +181,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    RWByteSpan StackAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    Memory::RWByteSpan StackAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
     {
         // Allocate on the current chunk. Fast-path.
 
@@ -206,7 +206,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline void StackAllocator<TAllocator>::Deallocate(const RWByteSpan& block, Alignment /*alignment*/) noexcept
+    inline void StackAllocator<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Alignment /*alignment*/) noexcept
     {
         SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block), "The provided block doesn't belong to this allocator instance.");
     }
@@ -226,7 +226,7 @@ namespace Syntropy
 
     template <typename TAllocator>
     template <typename>
-    inline Bool StackAllocator<TAllocator>::Owns(const ByteSpan& block) const noexcept
+    inline Bool StackAllocator<TAllocator>::Owns(const Memory::ByteSpan& block) const noexcept
     {
         for (auto chunk = chunk_; chunk; chunk = chunk->previous_)
         {
@@ -281,7 +281,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    RWByteSpan StackAllocator<TAllocator>::Allocate(RWPointer<Chunk> chunk, Bytes size, Alignment alignment) const noexcept
+    Memory::RWByteSpan StackAllocator<TAllocator>::Allocate(RWPointer<Chunk> chunk, Bytes size, Alignment alignment) const noexcept
     {
         if (chunk)
         {

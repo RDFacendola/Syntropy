@@ -22,10 +22,10 @@ namespace Syntropy
     namespace Hash
     {
         /// \brief Get the non-cryptographic 64-bit FNV1a hash of a buffer.
-        Int FNV1a64(const ByteSpan& buffer);
+        Int FNV1a64(const Memory::ByteSpan& buffer);
 
         /// \brief Get the non-cryptographic 32-bit FNV1a hash of a buffer.
-        Int FNV1a32(const ByteSpan& buffer);
+        Int FNV1a32(const Memory::ByteSpan& buffer);
     }
 
     /************************************************************************/
@@ -34,7 +34,7 @@ namespace Syntropy
 
     // Hash.
 
-    inline Int Hash::FNV1a64(const ByteSpan& buffer)
+    inline Int Hash::FNV1a64(const Memory::ByteSpan& buffer)
     {
         // Uses FNV1a 64-bit with recommended constants by Landon Curt Noll - http://www.isthe.com/chongo/
 
@@ -50,7 +50,7 @@ namespace Syntropy
         return hash;
     }
 
-    inline Int Hash::FNV1a32(const ByteSpan& buffer)
+    inline Int Hash::FNV1a32(const Memory::ByteSpan& buffer)
     {
         // Uses FNV1a 32-bit with recommended constants by Landon Curt Noll - http://www.isthe.com/chongo/
 

@@ -37,7 +37,7 @@ namespace Syntropy
 
         /// \brief Take ownership of the provided virtual memory span.
         /// If the provided span wasn't allocated from system virtual memory, the result of this method is undefined.
-        explicit VirtualBuffer(const RWByteSpan& byte_span) noexcept;
+        explicit VirtualBuffer(const Memory::RWByteSpan& byte_span) noexcept;
 
         /// \brief No copy constructor.
         VirtualBuffer(const VirtualBuffer&) = delete;
@@ -54,10 +54,10 @@ namespace Syntropy
         VirtualBuffer& operator=(VirtualBuffer rhs) noexcept;
 
         /// \brief Access the underlying byte span.
-        ByteSpan GetData() const noexcept;
+        Memory::ByteSpan GetData() const noexcept;
 
         /// \brief Access the underlying byte span.
-        RWByteSpan GetData() noexcept;
+        Memory::RWByteSpan GetData() noexcept;
 
         /// \brief Swap the content of this buffer with another one.
         void Swap(VirtualBuffer& rhs) noexcept;
@@ -65,7 +65,7 @@ namespace Syntropy
     private:
 
         /// \brief Underlying memory buffer.
-        RWByteSpan buffer_;
+        Memory::RWByteSpan buffer_;
 
     };
 
@@ -117,7 +117,7 @@ namespace Syntropy
 
     }
 
-    inline VirtualBuffer::VirtualBuffer(const RWByteSpan& byte_span) noexcept
+    inline VirtualBuffer::VirtualBuffer(const Memory::RWByteSpan& byte_span) noexcept
         : buffer_(byte_span)
     {
 
@@ -148,12 +148,12 @@ namespace Syntropy
         Swap(buffer_, rhs.buffer_);
     }
 
-    inline ByteSpan VirtualBuffer::GetData() const noexcept
+    inline Memory::ByteSpan VirtualBuffer::GetData() const noexcept
     {
         return buffer_;
     }
 
-    inline RWByteSpan VirtualBuffer::GetData() noexcept
+    inline Memory::RWByteSpan VirtualBuffer::GetData() noexcept
     {
         return buffer_;
     }

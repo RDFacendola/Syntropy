@@ -18,27 +18,27 @@ namespace Syntropy
         return HALVirtualMemory::PageAlignment();
     }
 
-    RWByteSpan VirtualMemory::Reserve(Bytes size) noexcept
+    Memory::RWByteSpan VirtualMemory::Reserve(Bytes size) noexcept
     {
         return HALVirtualMemory::Reserve(size);
     }
 
-    RWByteSpan VirtualMemory::Allocate(Bytes size) noexcept
+    Memory::RWByteSpan VirtualMemory::Allocate(Bytes size) noexcept
     {
         return HALVirtualMemory::Allocate(size);
     }
 
-    Bool VirtualMemory::Release(const RWByteSpan& byte_span) noexcept
+    Bool VirtualMemory::Release(const Memory::RWByteSpan& byte_span) noexcept
     {
         return HALVirtualMemory::Release(byte_span);
     }
 
-    Bool VirtualMemory::Commit(const RWByteSpan& byte_span) noexcept
+    Bool VirtualMemory::Commit(const Memory::RWByteSpan& byte_span) noexcept
     {
         return HALVirtualMemory::Commit(byte_span);
     }
 
-    Bool VirtualMemory::Decommit(const RWByteSpan& byte_span) noexcept
+    Bool VirtualMemory::Decommit(const Memory::RWByteSpan& byte_span) noexcept
     {
         return HALVirtualMemory::Decommit(byte_span);
     }
