@@ -15,6 +15,7 @@
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
+#include "syntropy/memory/memory_types.h"
 
 namespace Syntropy
 {
@@ -355,10 +356,8 @@ namespace Syntropy
     template <typename TElement>
     inline Span<TElement> ToSpan(const ByteSpan& rhs) noexcept
     {
-        using TPointer = XPointer<Templates::AddConst<TElement>>;
-
-        auto begin = reinterpret_cast<TPointer>(Begin(rhs));
-        auto end = reinterpret_cast<TPointer>(End(rhs));
+        auto begin = FromTypeless<TElement>(Begin(rhs));
+        auto end = FromTypeless<TElement>(End(rhs));
 
         return { begin, end };
     }
@@ -366,10 +365,8 @@ namespace Syntropy
     template <typename TElement>
     inline RWSpan<TElement> ToRWSpan(const RWByteSpan& rhs) noexcept
     {
-        using TRWPointer = XPointer<Templates::RemoveConst<TElement>>;
-
-        auto begin = reinterpret_cast<TRWPointer>(Begin(rhs));
-        auto end = reinterpret_cast<TRWPointer>(End(rhs));
+        auto begin = FromTypeless<TElement>(Begin(rhs));
+        auto end = FromTypeless<TElement>(End(rhs));
 
         return { begin, end };
     }

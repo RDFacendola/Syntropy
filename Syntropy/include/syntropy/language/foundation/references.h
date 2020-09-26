@@ -30,11 +30,6 @@ namespace Syntropy
     template <typename TType, typename = Templates::EnableIf<!Templates::IsConst<Templates::RemoveReference<TType&>>>>
     using RWReference = TType&;
 
-    /// \brief Type alias for a lvalue reference to either a *read-write* or *read-only* object.
-    /// \remarks This alias is expected not to be used with templates as it will clutter syntax.
-    template <typename TType>
-    using XReference = TType&;
-
     /************************************************************************/
     /* UTILITIES                                                             */
     /************************************************************************/
@@ -57,7 +52,7 @@ namespace Syntropy
 
     /// \brief Convert rhs to a read-only reference.
     template <typename TType>
-    [[nodiscard]] constexpr const TType& ReadOnly(Reference<TType> rhs) noexcept;
+    [[nodiscard]] constexpr Reference<TType> ReadOnly(Reference<TType> rhs) noexcept;
 
     /// \brief Rvalues shall not be converted to read-only.
     template <typename TType>
@@ -68,7 +63,7 @@ namespace Syntropy
     /// Such usage has the form: ReadWrite(F(ReadOnly(x))) where x is non-const and F(.) is a function.
     /// \remarks If rhs doesn't refer to a read-write object, accessing the result of this method results in undefined behavior.
     template <typename TType>
-    [[nodiscard]] constexpr TType& ReadWrite(Reference<TType> rhs) noexcept;
+    [[nodiscard]] constexpr RWReference<TType> ReadWrite(Reference<TType> rhs) noexcept;
 
     /// \brief Rvalues shall not be converted to read-write.
     template <typename TType>
@@ -102,6 +97,7 @@ namespace Syntropy
     }
 
     // Read-only \ Read-write.
+    // =======================
 
     template <typename TType>
     constexpr Reference<TType> ReadOnly(Reference<TType> rhs) noexcept

@@ -30,12 +30,6 @@ namespace Syntropy
     template <typename TType, typename = Templates::EnableIf<!Templates::IsConst<TType>>>
     using RWPointer = TType*;
 
-    /// \brief Type alias for a pointer to either a *read-write* or *read-only* pointee. This pointer doesn't participate to pointee life-time.
-    /// This alias may be used for declaring variables with the syntax: auto p = XPointer<...>{ nullptr }.
-    /// \remarks This alias is expected not to be used with templates as it will clutter syntax.
-    template <typename TType>
-    using XPointer = TType*;
-
     /************************************************************************/
     /* NULL                                                                 */
     /************************************************************************/
@@ -66,14 +60,14 @@ namespace Syntropy
 
      /// \brief Convert rhs to a pointer to a read-only value.
     template <typename TType>
-    [[nodiscard]] constexpr const TType* ReadOnly(const TType* rhs) noexcept;
+    [[nodiscard]] constexpr Pointer<TType> ReadOnly(Pointer<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a read-write object.
     /// The intended use for this method is to write a non-const implementation based on a const implementation, without duplicating associated code.
     /// Such usage has the form: ReadWrite(F(ReadOnly(x))) where x is non-const and F(.) is a function.
     /// \remarks If rhs pointee doesn't refer to a read-write object, accessing the result of this method results in undefined behavior.
     template <typename TType>
-    [[nodiscard]] constexpr TType* ReadWrite(const TType* rhs) noexcept;
+    [[nodiscard]] constexpr RWPointer<TType> ReadWrite(Pointer<TType> rhs) noexcept;
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -99,15 +93,15 @@ namespace Syntropy
     // Read-only / Read-write.
 
     template <typename TType>
-    constexpr const TType* ReadOnly(TType* rhs) noexcept
+    constexpr Pointer<TType> ReadOnly(Pointer<TType> rhs) noexcept
     {
         return rhs;
     }
 
     template <typename TType>
-    constexpr TType* ReadWrite(const TType* rhs) noexcept
+    constexpr RWPointer<TType> ReadWrite(Pointer<TType> rhs) noexcept
     {
-        return const_cast<TType*>(rhs);
+        return const_cast<RWPointer<TType>>(rhs);
     }
 
 }

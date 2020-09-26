@@ -31,10 +31,6 @@ namespace Syntropy
     /// \brief A non-owning raw pointer to a read-write memory location.
     using RWBytePtr = RWPointer<Byte>;
 
-    /// \brief A non-owning raw pointer to a memory location.
-    template <typename TByte, typename = Templates::EnableIf<Templates::IsSame<TByte, Templates::RemoveConst<Byte>>>>
-    using XBytePtr = XPointer<TByte>;
-
     /// \brief A non-owning pointer to a typeless read-only memory location.
     /// A typeless pointer binds to any strongly-typed pointer.
     using TypelessPtr = Pointer<void>;
