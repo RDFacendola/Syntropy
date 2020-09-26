@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/memory/smart_pointers.h"
+#include "syntropy/experimental/memory/smart_pointers.h"
 
 #include "syntropy/core/architecture/listener.h"
 

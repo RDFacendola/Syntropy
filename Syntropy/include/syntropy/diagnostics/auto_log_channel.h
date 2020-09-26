@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "syntropy/memory/smart_pointers.h"
+#include "syntropy/experimental/memory/smart_pointers.h"
 
 #include "syntropy/diagnostics/severity.h"
 #include "syntropy/diagnostics/verbosity.h"

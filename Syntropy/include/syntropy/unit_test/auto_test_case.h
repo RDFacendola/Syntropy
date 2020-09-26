@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/core/strings/label.h"
-#include "syntropy/memory/smart_pointers.h"
+#include "syntropy/experimental/memory/smart_pointers.h"
 
 #include "syntropy/unit_test/test_case.h"
 

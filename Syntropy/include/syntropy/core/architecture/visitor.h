@@ -9,7 +9,7 @@
 #include <typeinfo>
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/memory/smart_pointers.h"
+#include "syntropy/experimental/memory/smart_pointers.h"
 #include "syntropy/language/traits.h"
 
 namespace Syntropy

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/memory/smart_pointers.h"
+#include "syntropy/experimental/memory/smart_pointers.h"
 
 #include "syntropy/application/console/console_output_section.h"
 

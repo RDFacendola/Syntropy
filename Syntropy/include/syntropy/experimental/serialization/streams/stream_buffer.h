@@ -9,7 +9,7 @@
 #include "syntropy/language/foundation.h"
 #include "syntropy/core/algorithm/swap.h"
 
-#include "syntropy/memory/smart_pointers.h"
+#include "syntropy/experimental/memory/smart_pointers.h"
 #include "syntropy/language/support.h"
 #include "syntropy/core/algorithm/algorithm.h"
 #include "syntropy/diagnostics/assert.h"
@@ -64,22 +64,22 @@ namespace Syntropy
         /// \brief Write data sequentially to the stream, causing it to grow.
         /// Append operations are performed tentatively if there's an active transaction.
         /// \return Returns the range containing unwritten data.
-        ByteSpan Append(const ByteSpan& data);
+        Memory::ByteSpan Append(const Memory::ByteSpan& data);
 
         /// \brief Read data sequentially from the stream, causing it to shrink.
         /// Consume operations are performed tentatively if there's an active transaction.
         /// \return Returns the range containing read data.
-        RWByteSpan Consume(const RWByteSpan& data);
+        Memory::RWByteSpan Consume(const Memory::RWByteSpan& data);
 
         /// \brief Write data at given position from buffer start.
         /// Writes past the end of the stream are no-ops. This method does not change stream allocation.
         /// \return Returns the range containing unwritten data.
-        ByteSpan Write(Bytes position, const ByteSpan& data);
+        Memory::ByteSpan Write(Memory::Bytes position, const Memory::ByteSpan& data);
 
         /// \brief Read data at given position from buffer start.
         /// Reads past the end of the stream are no-ops. This method does not change stream allocation.
         /// \return Returns the range containing read data.
-        RWByteSpan Read(Bytes position, const RWByteSpan& data) const;
+        Memory::RWByteSpan Read(Memory::Bytes position, const Memory::RWByteSpan& data) const;
 
         /// \brief Discard data content and clear the underlying buffer.
         void Discard();
@@ -88,10 +88,10 @@ namespace Syntropy
         Memory::Buffer Release();
 
         /// \brief Increase the underlying buffer allocation up to a given size.
-        void Reserve(Bytes capacity);
+        void Reserve(Memory::Bytes capacity);
 
         /// \brief Increase the underlying buffer allocation size by a given amount.
-        void Grow(Bytes capacity);
+        void Grow(Memory::Bytes capacity);
 
         /// \brief Shrink the allocation size up to the current content size.
         void Shrink();
@@ -100,10 +100,10 @@ namespace Syntropy
         Bool IsEmpty() const;
 
         /// \brief Get the stream content size, in bytes.
-        Bytes GetSize() const;
+        Memory::Bytes GetSize() const;
 
         /// \brief Get the effective memory footprint of the underlying buffer, in bytes.
-        Bytes GetCapacity() const;
+        Memory::Bytes GetCapacity() const;
 
         /// \brief Access the memory resource the underlying buffer is allocated on.
         Allocator& GetMemoryResource() const;
@@ -123,34 +123,34 @@ namespace Syntropy
         /// \brief Reallocate the underlying buffer, filling additional bytes with zeros.
         /// This method affects only buffer capacity, not stream size.
         /// This method unfolds the previous circular content into the new buffer.
-        void Realloc(Bytes capacity);
+        void Realloc(Memory::Bytes capacity);
 
         /// \brief Get the address of a byte at given offset from the base pointer, wrapping around.
-        RWBytePtr GetAddress(Bytes offset);
+        Memory::RWBytePtr GetAddress(Memory::Bytes offset);
 
         /// \brief Get the address of a byte at given offset from the base pointer, wrapping around.
-        BytePtr GetAddress(Bytes offset) const;
+        Memory::BytePtr GetAddress(Memory::Bytes offset) const;
 
         /// \brief 
-        void Commit(Bytes append_size, Bytes consume_size);
+        void Commit(Memory::Bytes append_size, Memory::Bytes consume_size);
 
-        void Rollback(Bytes append_size, Bytes consume_size);
+        void Rollback(Memory::Bytes append_size, Memory::Bytes consume_size);
 
         /// \brief Underlying memory buffer, may be larger than current stream size.
         /// This buffer is circular to prevent reallocations from consume operations.
         Memory::Buffer buffer_;
 
         /// \brief Offset within the buffer data start from (inclusive).
-        RWBytePtr base_pointer_;
+        Memory::RWBytePtr base_pointer_;
 
         /// \brief Number of committed bytes in the underlying buffer.
-        Bytes size_;
+        Memory::Bytes size_;
 
         /// \brief Size of appended bytes, including pending ones. This value is always greater or equal to the committed size.
-        Bytes append_size_;
+        Memory::Bytes append_size_;
 
         /// \brief Size of consumed bytes, including pending ones. This value is always less or equal to the committed size.
-        Bytes consume_size_;
+        Memory::Bytes consume_size_;
 
         /// \brief Current active transaction.
         RWPointer<StreamBufferTransaction> transaction_{ nullptr };
@@ -193,10 +193,10 @@ namespace Syntropy
         Memory::Zero(buffer_.GetData());
 
         base_pointer_ = Begin(buffer_.GetData());
-        size_ = Bytes{ 0 };
+        size_ = Memory::Bytes{ 0 };
     }
 
-    inline void StreamBuffer::Reserve(Bytes capacity)
+    inline void StreamBuffer::Reserve(Memory::Bytes capacity)
     {
         if (capacity > GetCapacity())
         {
@@ -204,7 +204,7 @@ namespace Syntropy
         }
     }
 
-    inline void StreamBuffer::Grow(Bytes capacity)
+    inline void StreamBuffer::Grow(Memory::Bytes capacity)
     {
         Reserve(GetCapacity() + capacity);
     }
@@ -219,15 +219,15 @@ namespace Syntropy
 
     inline Bool StreamBuffer::IsEmpty() const
     {
-        return GetSize() == Bytes{ 0 };
+        return GetSize() == Memory::Bytes{ 0 };
     }
 
-    inline Bytes StreamBuffer::GetSize() const
+    inline Memory::Bytes StreamBuffer::GetSize() const
     {
         return size_;
     }
 
-    inline Bytes StreamBuffer::GetCapacity() const
+    inline Memory::Bytes StreamBuffer::GetCapacity() const
     {
         return Memory::Size(buffer_);
     }
@@ -249,7 +249,7 @@ namespace Syntropy
 
         buffer.Swap(buffer_);
         base_pointer_ = Begin(buffer_.GetData());
-        size_ = Bytes{};
+        size_ = Memory::Bytes{};
 
         return buffer;
     }

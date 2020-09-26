@@ -8,15 +8,15 @@ namespace Syntropy
     /* STREAM BUFFER                                                        */
     /************************************************************************/
 
-    ByteSpan StreamBuffer::Append(const ByteSpan& data)
+    Memory::ByteSpan StreamBuffer::Append(const Memory::ByteSpan& data)
     {
         auto data_size = Memory::Size(data);
 
-        if (data_size > Bytes{ 0 })
+        if (data_size > Memory::Bytes{ 0 })
         {
             if (auto size = append_size_ + data_size; size > GetCapacity())
             {
-                size = ToBytes(Math::CeilTo<Int>(ToInt(size) * kGrowthFactor + kGrowthBias));                                                   // Exponential growth to avoid continuous reallocations.
+                size = Memory::ToBytes(Math::CeilTo<Int>(ToInt(size) * kGrowthFactor + kGrowthBias));                                               // Exponential growth to avoid continuous reallocations.
 
                 Reserve(size);
             }
@@ -27,18 +27,18 @@ namespace Syntropy
 
             if (!transaction_)
             {
-                size_ += data_size;                                                                                                             // Commit immediately if there's no pending transaction.
+                size_ += data_size;                                                                                                                 // Commit immediately if there's no pending transaction.
             }
 
-            return Write(append_position, data);                                                                                                // Returned range is always empty.
+            return Write(append_position, data);                                                                                                    // Returned range is always empty.
         }
 
         return {};
     }
 
-    RWByteSpan StreamBuffer::Consume(const RWByteSpan& data)
+    Memory::RWByteSpan StreamBuffer::Consume(const Memory::RWByteSpan& data)
     {
-        auto read_range = Read(Bytes{ 0 }, data);
+        auto read_range = Read(Memory::Bytes{ 0 }, data);
 
         auto data_size = Memory::Size(read_range);
 
@@ -54,61 +54,61 @@ namespace Syntropy
         return read_range;
     }
 
-    ByteSpan StreamBuffer::Write(Bytes position, const ByteSpan& data)
+    Memory::ByteSpan StreamBuffer::Write(Memory::Bytes position, const Memory::ByteSpan& data)
     {
         auto written_data = [this, position, &data]()
         {
-            auto source = Front(data, ToInt(Math::Min(Memory::Size(data), size_ - position)));                                                          // Limit writable data to current buffer size.
+            auto source = Front(data, ToInt(Math::Min(Memory::Size(data), size_ - position)));                                                      // Limit writable data to current buffer size.
 
             auto destination_begin = GetAddress(position);
             auto destination_end = GetAddress(position + Memory::Size(source));
 
             if (destination_begin < destination_end)
             {
-                return Memory::Copy({ destination_begin, destination_end }, source);                                                            // Contiguous range.
+                return Memory::Copy({ destination_begin, destination_end }, source);                                                                // Contiguous range.
             }
             else
             {
-                return Memory::Scatter({ { destination_begin, End(buffer_.GetData()) }, { Begin(buffer_.GetData()), destination_end } }, source);                 // Wrap-around range.
+                return Memory::Scatter({ { destination_begin, End(buffer_.GetData()) }, { Begin(buffer_.GetData()), destination_end } }, source);   // Wrap-around range.
             }
         }();
 
         return { Begin(data) + written_data, End(data) };
     }
 
-    RWByteSpan StreamBuffer::Read(Bytes position, const RWByteSpan& data) const
+    Memory::RWByteSpan StreamBuffer::Read(Memory::Bytes position, const Memory::RWByteSpan& data) const
     {
         auto read_data = [this, position, &data]()
         {
-            auto destination = Front(data, ToInt(Math::Min(Memory::Size(data), size_ - position)));                                                     // Limit readable data to current buffer size.
+            auto destination = Front(data, ToInt(Math::Min(Memory::Size(data), size_ - position)));                                                 // Limit readable data to current buffer size.
 
             auto source_begin = GetAddress(position);
             auto source_end = GetAddress(position + Memory::Size(destination));
 
             if (source_begin < source_end)
             {
-                return Memory::Copy(destination, { source_begin, source_end });                                                                 // Contiguous range.
+                return Memory::Copy(destination, { source_begin, source_end });                                                                     // Contiguous range.
             }
             else
             {
-                return Memory::Gather(destination, { { source_begin, static_cast<BytePtr>(End(buffer_.GetData())) }, { static_cast<BytePtr>(Begin(buffer_.GetData())), source_end } });     // Wrap-around range.
+                return Memory::Gather(destination, { { source_begin, static_cast<Memory::BytePtr>(End(buffer_.GetData())) }, { static_cast<Memory::BytePtr>(Begin(buffer_.GetData())), source_end } });     // Wrap-around range.
             }
         }();
 
         return { Begin(data), ToInt(read_data) };
     }
 
-    void StreamBuffer::Realloc(Bytes capacity)
+    void StreamBuffer::Realloc(Memory::Bytes capacity)
     {
         auto buffer = Memory::Buffer{ capacity, buffer_.GetAllocator() };
 
-        if ((Memory::SizeOf(buffer_) > Bytes{ 0 }) && (capacity > Bytes{ 0 }))
+        if ((Memory::SizeOf(buffer_) > Memory::Bytes{ 0 }) && (capacity > Memory::Bytes{ 0 }))
         {
             auto head_pointer = GetAddress(size_);
 
             if (base_pointer_ < head_pointer)
             {
-                Memory::Copy(buffer.GetData(), ByteSpan{ base_pointer_, head_pointer });                                                        // Contiguous range.
+                Memory::Copy(buffer.GetData(), Memory::ByteSpan{ base_pointer_, head_pointer });                                                        // Contiguous range.
             }
             else
             {
@@ -122,28 +122,28 @@ namespace Syntropy
         base_pointer_ = Begin(buffer_.GetData());
     }
 
-    RWBytePtr StreamBuffer::GetAddress(Bytes offset)
+    Memory::RWBytePtr StreamBuffer::GetAddress(Memory::Bytes offset)
     {
-        return const_cast<RWBytePtr>(ReadOnly(*this).GetAddress(offset));
+        return const_cast<Memory::RWBytePtr>(ReadOnly(*this).GetAddress(offset));
     }
 
-    BytePtr StreamBuffer::GetAddress(Bytes offset) const
+    Memory::BytePtr StreamBuffer::GetAddress(Memory::Bytes offset) const
     {
-        offset = ToBytes(base_pointer_ + offset - Begin(buffer_.GetData()));    // Advance.
+        offset = Memory::ToBytes(base_pointer_ + offset - Begin(buffer_.GetData()));    // Advance.
 
-        offset = ToBytes(offset % Memory::Size(buffer_));                       // Wrap-around.
+        offset = Memory::ToBytes(offset % Memory::Size(buffer_));                       // Wrap-around.
 
-        return Begin(buffer_.GetData()) + offset;                               // Offset in buffer-space.
+        return Begin(buffer_.GetData()) + offset;                                       // Offset in buffer-space.
 
         return nullptr;
     }
 
-    void StreamBuffer::Commit(Bytes append_size, Bytes consume_size)
+    void StreamBuffer::Commit(Memory::Bytes append_size, Memory::Bytes consume_size)
     {
 
     }
 
-    void StreamBuffer::Rollback(Bytes append_size, Bytes consume_size)
+    void StreamBuffer::Rollback(Memory::Bytes append_size, Memory::Bytes consume_size)
     {
 
     }

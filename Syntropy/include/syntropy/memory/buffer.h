@@ -191,7 +191,7 @@ namespace Syntropy::Memory
         }
         else
         {
-            *this = ReadOnly(rhs);              // Copy reference.
+            *this = Syntropy::ReadOnly(rhs);    // Copy reference.
         }
 
         return *this;

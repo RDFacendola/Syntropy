@@ -10,7 +10,7 @@
 
 #include "syntropy/core/strings/string.h"
 #include "syntropy/serialization/string_stream.h"
-#include "syntropy/memory/smart_pointers.h"
+#include "syntropy/experimental/memory/smart_pointers.h"
 
 #include "syntropy/application/console/default_console_style.h"
 #include "syntropy/application/console/console_style.h"
