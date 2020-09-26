@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/traits/manipulation.h"
+#include "syntropy/language/templates/manipulation.h"
 
 namespace Syntropy
 {

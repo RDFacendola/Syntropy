@@ -11,7 +11,7 @@
 
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/math.h"
-#include "syntropy/language/traits/manipulation.h"
+#include "syntropy/language/templates/manipulation.h"
 #include "syntropy/language/templates/details/ratio_details.h"
 
 namespace Syntropy::Templates

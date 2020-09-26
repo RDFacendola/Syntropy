@@ -9,7 +9,7 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/traits/relationships.h"
+#include "syntropy/language/templates/relationships.h"
 
 namespace Syntropy::Templates
 {

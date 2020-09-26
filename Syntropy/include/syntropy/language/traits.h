@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "syntropy/language/traits/capabilities.h"
-#include "syntropy/language/traits/categories.h"
-#include "syntropy/language/traits/manipulation.h"
-#include "syntropy/language/traits/operations.h"
-#include "syntropy/language/traits/properties.h"
-#include "syntropy/language/traits/queries.h"
-#include "syntropy/language/traits/relationships.h"
-#include "syntropy/language/traits/sequences.h"
-#include "syntropy/language/traits/sfinae.h"
+#include "syntropy/language/templates/capabilities.h"
+#include "syntropy/language/templates/categories.h"
+#include "syntropy/language/templates/manipulation.h"
+#include "syntropy/language/templates/operations.h"
+#include "syntropy/language/templates/properties.h"
+#include "syntropy/language/templates/queries.h"
+#include "syntropy/language/templates/relationships.h"
+#include "syntropy/language/templates/sequences.h"
+#include "syntropy/language/templates/sfinae.h"
