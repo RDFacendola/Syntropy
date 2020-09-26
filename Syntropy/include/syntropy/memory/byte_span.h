@@ -15,7 +15,7 @@
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
-#include "syntropy/memory/memory_types.h"
+#include "syntropy/memory/byte.h"
 
 namespace Syntropy
 {

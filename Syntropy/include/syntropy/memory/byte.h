@@ -1,5 +1,5 @@
 
-/// \file memory_types.h
+/// \file byte.h
 /// \brief This header is part of Syntropy memory module. It contains definitions for memory-related fundamental data types.
 ///
 /// \author Raffaele D. Facendola - August  2020

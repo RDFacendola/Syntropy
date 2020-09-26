@@ -117,7 +117,7 @@
     <ClInclude Include="include\syntropy\memory\address.h" />
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
     <ClInclude Include="include\syntropy\memory\new.h" />
-    <ClInclude Include="include\syntropy\memory\memory_types.h" />
+    <ClInclude Include="include\syntropy\memory\byte.h" />
     <ClInclude Include="include\syntropy\random\pcg_random_engine.h" />
     <ClInclude Include="include\syntropy\random\random_context.h" />
     <ClInclude Include="include\syntropy\random\random.h" />
