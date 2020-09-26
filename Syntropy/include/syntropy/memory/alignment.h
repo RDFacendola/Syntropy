@@ -134,14 +134,14 @@ namespace Syntropy
         return Alignment(std::align_val_t{ alignof(std::max_align_t) });
     }
 
-    inline Bool Memory::IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept
+    inline Bool Memory::IsAlignedTo(Memory::BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
         return (ToAddress(pointer) & mask) == Address{};
     }
 
-    inline BytePtr Memory::Align(BytePtr pointer, Alignment alignment) noexcept
+    inline Memory::BytePtr Memory::Align(Memory::BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -150,14 +150,14 @@ namespace Syntropy
         return FromAddress(aligned);
     }
 
-    inline RWBytePtr Memory::Align(RWBytePtr pointer, Alignment alignment) noexcept
+    inline Memory::RWBytePtr Memory::Align(Memory::RWBytePtr pointer, Alignment alignment) noexcept
     {
         auto aligned_pointer = Align(Syntropy::ReadOnly(pointer), alignment);
 
         return Syntropy::ReadWrite(aligned_pointer);
     }
 
-    inline BytePtr Memory::AlignDown(BytePtr pointer, Alignment alignment) noexcept
+    inline Memory::BytePtr Memory::AlignDown(Memory::BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -166,7 +166,7 @@ namespace Syntropy
         return FromAddress(aligned_pointer);
     }
 
-    inline RWBytePtr Memory::AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
+    inline Memory::RWBytePtr Memory::AlignDown(Memory::RWBytePtr pointer, Alignment alignment) noexcept
     {
         auto aligned_pointer = AlignDown(Syntropy::ReadOnly(pointer), alignment);
         

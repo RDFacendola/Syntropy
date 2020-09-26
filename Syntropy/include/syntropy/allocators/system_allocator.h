@@ -62,7 +62,7 @@ namespace Syntropy
 
         if (auto block = ::operator new(size_value, alignment_value, std::nothrow))
         {
-            return { ToRWBytePtr(block), ToInt(size) };
+            return { Memory::ToRWBytePtr(block), ToInt(size) };
         }
 
         return {};

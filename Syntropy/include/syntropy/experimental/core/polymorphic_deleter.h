@@ -32,17 +32,17 @@ namespace Syntropy
         PolymorphicDeleter(Tags::Type<TType>, Allocator& allocator) noexcept;
 
         /// \brief Destroy an object allocated on the underlying memory resource.
-        void operator()(RWTypelessPtr object);
+        void operator()(Memory::RWTypelessPtr object);
 
     private:
 
         /// \brief Type of a function used to destroy objects.
-        using TDestructor = void(*)(Allocator&, RWTypelessPtr);
+        using TDestructor = void(*)(Allocator&, Memory::RWTypelessPtr);
 
         /// \brief Function used to destroy strongly-typed objects.
         /// If the provided object's type is not equal to TType the behavior of this method is undefined.
         template <typename TType>
-        static void Destroy(Allocator& memory_resource, RWTypelessPtr object);
+        static void Destroy(Allocator& memory_resource, Memory::RWTypelessPtr object);
 
         /// \brief Destructor.
         TDestructor destructor_{ nullptr };
@@ -75,13 +75,13 @@ namespace Syntropy
 
     }
 
-    inline void PolymorphicDeleter::operator()(RWTypelessPtr object)
+    inline void PolymorphicDeleter::operator()(Memory::RWTypelessPtr object)
     {
         destructor_(*allocator_, object);
     }
 
     template <typename TType>
-    inline void PolymorphicDeleter::Destroy(Allocator& allocator, RWTypelessPtr object)
+    inline void PolymorphicDeleter::Destroy(Allocator& allocator, Memory::RWTypelessPtr object)
     {
         if (object)
         {

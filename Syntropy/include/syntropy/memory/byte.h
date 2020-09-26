@@ -11,7 +11,7 @@
 #include "syntropy/language/traits.h"
 #include "syntropy/language/foundation.h"
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* FUNDAMENTAL TYPES                                                    */
@@ -40,7 +40,7 @@ namespace Syntropy
     using RWTypelessPtr = RWPointer<void>;
 
     /************************************************************************/
-    /* TYPE CAST                                                            */
+    /* CONVERSION                                                           */
     /************************************************************************/
 
     /// \brief Convert a value to a byte value.
@@ -76,8 +76,8 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Type cast.
-    // ==========
+    // Conversion.
+    // ===========
 
     template <typename TNumber>
     constexpr Byte ToByte(TNumber rhs) noexcept

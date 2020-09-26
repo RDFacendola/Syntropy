@@ -24,10 +24,10 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Represents a span of read-only bytes.
-    using ByteSpan = Span<Byte>;
+    using ByteSpan = Span<Memory::Byte>;
 
     /// \brief Represents a span of read-write bytes.
-    using RWByteSpan = RWSpan<Byte>;
+    using RWByteSpan = RWSpan<Memory::Byte>;
 
     /************************************************************************/
     /* MEMORY                                                               */
@@ -356,8 +356,8 @@ namespace Syntropy
     template <typename TElement>
     inline Span<TElement> ToSpan(const ByteSpan& rhs) noexcept
     {
-        auto begin = FromTypeless<TElement>(Begin(rhs));
-        auto end = FromTypeless<TElement>(End(rhs));
+        auto begin = Memory::FromTypeless<TElement>(Begin(rhs));
+        auto end = Memory::FromTypeless<TElement>(End(rhs));
 
         return { begin, end };
     }
@@ -365,8 +365,8 @@ namespace Syntropy
     template <typename TElement>
     inline RWSpan<TElement> ToRWSpan(const RWByteSpan& rhs) noexcept
     {
-        auto begin = FromTypeless<TElement>(Begin(rhs));
-        auto end = FromTypeless<TElement>(End(rhs));
+        auto begin = Memory::FromTypeless<TElement>(Begin(rhs));
+        auto end = Memory::FromTypeless<TElement>(End(rhs));
 
         return { begin, end };
     }
@@ -374,8 +374,8 @@ namespace Syntropy
     template <typename TElement>
     inline ByteSpan ToByteSpan(const SpanT<TElement>& rhs) noexcept
     {
-        auto begin = ToBytePtr(Begin(rhs));
-        auto end = ToBytePtr(End(rhs));
+        auto begin = Memory::ToBytePtr(Begin(rhs));
+        auto end = Memory::ToBytePtr(End(rhs));
 
         return { begin, end };
     }
@@ -383,8 +383,8 @@ namespace Syntropy
     template <typename TElement>
     inline RWByteSpan ToRWByteSpan(const SpanT<TElement>& rhs) noexcept
     {
-        auto begin = ToRWBytePtr(Begin(rhs));
-        auto end = ToRWBytePtr(End(rhs));
+        auto begin = Memory::ToRWBytePtr(Begin(rhs));
+        auto end = Memory::ToRWBytePtr(End(rhs));
 
         return { begin, end };
     }

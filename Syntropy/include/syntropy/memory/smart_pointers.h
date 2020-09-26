@@ -69,7 +69,7 @@ namespace Syntropy
     {
         auto& memory_resource = Memory::GetAllocator();
 
-        auto object = FromTypeless<TType>(memory_resource.Allocate(Memory::SizeOf<TType>(), Memory::AlignmentOf<TType>()).GetData());
+        auto object = Memory::FromTypeless<TType>(memory_resource.Allocate(Memory::SizeOf<TType>(), Memory::AlignmentOf<TType>()).GetData());
 
         ConstructAt(object, Forward<TArguments>(arguments)...);
 

@@ -235,35 +235,35 @@ namespace Syntropy
 
     /// \brief Move a byte pointer forward by a given byte amount.
     template <typename TRatio>
-    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr Memory::RWBytePtr& operator+=(Memory::RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
     template <typename TRatio>
-    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr Memory::RWBytePtr& operator-=(Memory::RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
     template <typename TRatio>
-    constexpr RWBytePtr operator+(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr Memory::RWBytePtr operator+(Memory::RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
     template <typename TRatio>
-    constexpr RWBytePtr operator-(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr Memory::RWBytePtr operator-(Memory::RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
     template <typename TRatio>
-    constexpr BytePtr& operator+=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr Memory::BytePtr& operator+=(Memory::BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
     template <typename TRatio>
-    constexpr BytePtr& operator-=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr Memory::BytePtr& operator-=(Memory::BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
     template <typename TRatio>
-    constexpr BytePtr operator+(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr Memory::BytePtr operator+(Memory::BytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
     template <typename TRatio>
-    constexpr BytePtr operator-(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr Memory::BytePtr operator-(Memory::BytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Stream insertion for BytesT<TRatio>.
     template <typename TRatio>
@@ -554,7 +554,7 @@ namespace Syntropy
     // =========
 
     template <typename TRatio>
-    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr Memory::RWBytePtr& operator+=(Memory::RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs + ToInt(ToBytes(rhs));
 
@@ -562,7 +562,7 @@ namespace Syntropy
     }
 
     template <typename TRatio>
-    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr Memory::RWBytePtr& operator-=(Memory::RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs - ToInt(ToBytes(rhs));
 
@@ -570,19 +570,19 @@ namespace Syntropy
     }
 
     template <typename TRatio>
-    constexpr RWBytePtr operator+(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr Memory::RWBytePtr operator+(Memory::RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs + ToInt(ToBytes(rhs));
     }
 
     template <typename TRatio>
-    constexpr RWBytePtr operator-(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr Memory::RWBytePtr operator-(Memory::RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs - ToInt(ToBytes(rhs));
     }
 
     template <typename TRatio>
-    constexpr BytePtr& operator+=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr Memory::BytePtr& operator+=(Memory::BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs + rhs;
 
@@ -590,7 +590,7 @@ namespace Syntropy
     }
 
     template <typename TRatio>
-    constexpr BytePtr& operator-=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr Memory::BytePtr& operator-=(Memory::BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs - rhs;
 
@@ -598,13 +598,13 @@ namespace Syntropy
     }
 
     template <typename TRatio>
-    constexpr BytePtr operator+(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr Memory::BytePtr operator+(Memory::BytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs + ToInt(ToBytes(rhs));
     }
 
     template <typename TRatio>
-    constexpr BytePtr operator-(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr Memory::BytePtr operator-(Memory::BytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs - ToInt(ToBytes(rhs));
     }

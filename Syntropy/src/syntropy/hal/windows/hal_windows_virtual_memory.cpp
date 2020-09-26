@@ -50,7 +50,7 @@ namespace Syntropy
         {
             auto data = VirtualAlloc(0, ToInt(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-            return { ToRWBytePtr(data), ToInt(size) };
+            return { Memory::ToRWBytePtr(data), ToInt(size) };
         }
 
         return {};
@@ -64,7 +64,7 @@ namespace Syntropy
         {
             auto data = VirtualAlloc(0, ToInt(size), MEM_RESERVE, PAGE_READWRITE);
 
-            return { ToRWBytePtr(data), ToInt(size) };
+            return { Memory::ToRWBytePtr(data), ToInt(size) };
         }
 
         return {};
