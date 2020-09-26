@@ -14,7 +14,7 @@ namespace Syntropy
     /* FORWARD DECLARATIONS                                                 */
     /************************************************************************/
 
-    template <typename TUnit>
+    template <typename TRatio>
     class BytesT;
 }
 
@@ -25,28 +25,28 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Constant equal to true if TBytes is a BytesT<T> type, equal to false otherwise. Defaults to false.
-    template <typename TRational>
+    template <typename TBytes>
     constexpr bool IsBytes = false;
 
     /// \brief Specialization for TBytes<TUnit>. Defaults to true.
-    template <typename TUnit>
-    constexpr bool IsBytes<BytesT<TUnit>> = true;
+    template <typename TRatio>
+    constexpr bool IsBytes<BytesT<TRatio>> = true;
 
     /************************************************************************/
-    /* BYTE UNITS                                                           */
+    /* BYTE RATIO                                                           */
     /************************************************************************/
 
-    /// \brief If TBytes is a BytesT<TUnit> type, exposes a type alias TType equal to TUnit, otherwise there's no such alias.
+    /// \brief If TBytes is a BytesT<TRatio> type, exposes a type alias TType equal to TRatio, otherwise there's no such type.
     template <typename TBytes>
-    struct ByteUnits
+    struct ByteRatio
     {
         static_assert(AlwaysFalse<TBytes>, "TBytes is not a BytesT<> type.");
     };
 
-    /// \brief Partial template specialization for BytesT<TUnit>.
-    template <typename TUnit>
-    struct ByteUnits<BytesT<TUnit>>
+    /// \brief Partial template specialization for BytesT<TRatio>.
+    template <typename TRatio>
+    struct ByteRatio<BytesT<TRatio>>
     {
-        using TType = TUnit;
+        using Type = TRatio;
     };
 }

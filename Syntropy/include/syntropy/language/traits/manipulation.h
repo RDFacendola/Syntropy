@@ -81,12 +81,19 @@ namespace Syntropy::Templates
     using RemovePointer = std::remove_pointer_t<TType>;
 
     /************************************************************************/
-    /* COMMON TYPE OF                                                       */
+    /* COMMON TYPE                                                          */
     /************************************************************************/
+
+    /// \brief Exposes a member type TType all types among TTypes can be converted to.
+    template <typename... TTypes>
+    struct CommonTypeTrait
+    {
+        using Type = std::common_type_t<TTypes...>;
+    };
 
     /// \brief Determine the common type among all TTypes, that is the type to which all TTypes can be converted to.
     template <typename... TTypes>
-    using CommonTypeOf = std::common_type_t<TTypes...>;
+    using CommonType = typename CommonTypeTrait<TTypes...>::Type;
 
     /************************************************************************/
     /* DECAY                                                                */

@@ -9,7 +9,7 @@
 #include <ostream>
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/language/templates/rational.h"
+#include "syntropy/language/templates/ratio.h"
 #include "syntropy/memory/memory_types.h"
 
 namespace Syntropy

@@ -10,7 +10,7 @@
 #include <compare>
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/language/templates/rational.h"
+#include "syntropy/language/templates/ratio.h"
 #include "syntropy/language/traits/manipulation.h"
 #include "syntropy/memory/memory_types.h"
 #include "syntropy/memory/details/bytes_details.h"
@@ -22,9 +22,9 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Represents a bytes amount.
-    /// \tparam TUnit Type of units. Default Bytes.
+    /// \tparam TRatio Units used to express the byte amount.
     /// \author Raffaele D. Facendola - September 2020.
-    template <typename TUnit = Templates::Rational<1, 1>>
+    template <typename TRatio>
     class BytesT
     {
     public:
@@ -32,14 +32,14 @@ namespace Syntropy
         /// \brief Zero memory amount.
         constexpr BytesT() noexcept = default;
 
-        /// \brief Copy constructor with unit conversion.
-        template <typename UUnit>
-        constexpr BytesT(const BytesT<UUnit>& rhs) noexcept;
+        /// \brief Copy constructor with ratio conversion.
+        template <typename URatio>
+        constexpr BytesT(const BytesT<URatio>& rhs) noexcept;
 
-        /// \brief Create an amount of bytes, in TUnits.
+        /// \brief Create an amount of bytes, in TRatios.
         constexpr explicit BytesT(Int count) noexcept;
 
-        /// \brief Get the amount of bytes, in TUnits.
+        /// \brief Get the amount of bytes, in TRatios.
         constexpr explicit operator Int() const noexcept;
 
         /// \brief Default copy assignment operator.
@@ -50,7 +50,7 @@ namespace Syntropy
 
     private:
 
-        /// \brief Actual bytes amount, in TUnits.
+        /// \brief Actual bytes amount, in TRatios.
         Int count_{ 0 };
 
     };
@@ -60,98 +60,98 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Pre-increment a byte amount rhs by one.
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator++(BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator++(BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Post-increment a byte amount rhs by one.
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator++(BytesT<TUnit>& rhs, int) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator++(BytesT<TRatio>& rhs, int) noexcept;
 
     /// \brief Pre-decrement a byte amount by one.
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator--(BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator--(BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Post-decrement a byte amount by one.
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator--(BytesT<TUnit>& rhs, int) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator--(BytesT<TRatio>& rhs, int) noexcept;
 
     /// \brief Add a byte amount rhs to lhs and return a reference to the latter.
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator+=(BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator+=(BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Subtract a byte amount rhs to lhs and return a reference to the latter. 
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator-=(BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator-=(BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Multiply a byte amount lhs by rhs and return a reference to the former.
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator*=(BytesT<TUnit>& lhs, Int rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator*=(BytesT<TRatio>& lhs, Int rhs) noexcept;
 
     /// \brief Divide a byte amount lhs by rhs and return a reference to the former.
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator/=(BytesT<TUnit>& lhs, Int rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator/=(BytesT<TRatio>& lhs, Int rhs) noexcept;
 
     /// \brief Get the division remainder of a byte amount lhs and an integral number rhs, updating lhs with the result and returning a reference to it.
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator%=(BytesT<TUnit>& lhs, Int rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator%=(BytesT<TRatio>& lhs, Int rhs) noexcept;
 
     /// \brief Negate a byte amount.
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator-(const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator-(const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Add two byte amounts together
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator+(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator+(const BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Subtract a byte amount rhs from lhs.
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator-(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator-(const BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Multiply a byte amount by a number.
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator*(const BytesT<TUnit>& lhs, Int rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator*(const BytesT<TRatio>& lhs, Int rhs) noexcept;
 
     /// \brief Multiply a byte amount by a number.
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator*(Int lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator*(Int lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Divide a byte amount by a number, rounding the result towards zero.
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator/(const BytesT<TUnit>& lhs, Int rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator/(const BytesT<TRatio>& lhs, Int rhs) noexcept;
 
     /// \brief Divide a byte amount lhs by another byte amounts rhs, rounding the result towards zero.
-    template <typename TUnit>
-    constexpr Int operator/(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr Int operator/(const BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Get the remainder of a byte amount divided by a number.
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator%(const BytesT<TUnit>& lhs, Int rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator%(const BytesT<TRatio>& lhs, Int rhs) noexcept;
 
     /// \brief Get the remainder of a byte amount divided by another amount.
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator%(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator%(const BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /************************************************************************/
     /* COMPARISON                                                           */
     /************************************************************************/
 
     /// \brief Compare two bytes amounts.
-    template <typename T0Unit, typename T1Unit>
-    constexpr auto operator<=>(const BytesT<T0Unit>& lhs, const BytesT<T1Unit>& rhs) noexcept;
+    template <typename T0Ratio, typename T1Ratio>
+    constexpr auto operator<=>(const BytesT<T0Ratio>& lhs, const BytesT<T1Ratio>& rhs) noexcept;
 
-    /// \brief Check whether two bytes amounts refer to the same quantity.
-    template <typename T0Unit, typename T1Unit>
-    constexpr bool operator==(const BytesT<T0Unit>& lhs, const BytesT<T1Unit>& rhs) noexcept;
+    /// \brief Check whether two byte amounts refer to the same quantity.
+    template <typename T0Ratio, typename T1Ratio>
+    constexpr bool operator==(const BytesT<T0Ratio>& lhs, const BytesT<T1Ratio>& rhs) noexcept;
 
     /************************************************************************/
     /* UNITS                                                                */
     /************************************************************************/
 
     /// \brief Type alias for an amount of memory, in Bits.
-    using Bits = BytesT<Templates::Rational<1, 8>>;
+    using Bits = BytesT<Templates::Ratio<1, 8>>;
 
     /// \brief Type alias for an amount of memory, in Bytes.
-    using Bytes = BytesT<Templates::Rational<1, 1>>;
+    using Bytes = BytesT<Templates::Ratio<1, 1>>;
 
     /// \brief Type alias for an amount of memory, in KByes.
     using KiloBytes = BytesT<Templates::Kilo>;
@@ -181,21 +181,21 @@ namespace Syntropy
     /* TYPE CAST                                                            */
     /************************************************************************/
 
-    /// \brief Convert an amount of bytes to integer (in TUnits).
-    template <typename TUnit>
-    constexpr Int ToInt(const BytesT<TUnit>& rhs) noexcept;
+    /// \brief Convert an amount of bytes to integer (in TRatios).
+    template <typename TRatio>
+    constexpr Int ToInt(const BytesT<TRatio>& rhs) noexcept;
 
-    /// \brief Convert an integer number to a bytes amount (in TUnits).
+    /// \brief Convert an integer number to a bytes amount (in TRatios).
     template <typename TBytes = Bytes>
     constexpr TBytes ToBytes(Int rhs) noexcept;
 
     /// \brief Convert a bytes amount in any unit to base bytes units.
-    template <typename TUnit>
-    constexpr Bytes ToBytes(const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr Bytes ToBytes(const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Convert a bytes amount to another amount with different units, rounding the result towards zero.
-    template <typename TBytesTo, typename TUnitFrom>
-    constexpr TBytesTo FromBytes(const BytesT<TUnitFrom>& rhs) noexcept;
+    template <typename TBytesTo, typename TRatioFrom>
+    constexpr TBytesTo FromBytes(const BytesT<TRatioFrom>& rhs) noexcept;
 
     /************************************************************************/
     /* TEMPLATES                                                            */
@@ -205,12 +205,12 @@ namespace Syntropy
     namespace Templates
     {
         /// \brief Constant equal to true if TBytes is a BytesT<T> type, equal to false otherwise.
-        template <typename TRational>
-        constexpr bool IsBytes = Details::IsBytes<TRational>;
+        template <typename TRatio>
+        constexpr bool IsBytes = Details::IsBytes<TRatio>;
 
-        /// \brief Type equal to units of a BytesT<> type TBytes.
+        /// \brief If TBytes is BytesT<TRatio> this type alias is equal to TRatio, otherwise the program is ill-formed.
         template <typename TBytes>
-        using ByteUnits = typename Details::ByteUnits<TBytes>::TType;
+        using ByteRatio = typename Details::ByteRatio<TBytes>::Type;
     }
 
     /************************************************************************/
@@ -234,40 +234,40 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    template <typename TUnit>
-    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    template <typename TUnit>
-    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    template <typename TUnit>
-    constexpr RWBytePtr operator+(RWBytePtr lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr RWBytePtr operator+(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    template <typename TUnit>
-    constexpr RWBytePtr operator-(RWBytePtr lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr RWBytePtr operator-(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    template <typename TUnit>
-    constexpr BytePtr& operator+=(BytePtr& lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytePtr& operator+=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    template <typename TUnit>
-    constexpr BytePtr& operator-=(BytePtr& lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytePtr& operator-=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    template <typename TUnit>
-    constexpr BytePtr operator+(BytePtr lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytePtr operator+(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    template <typename TUnit>
-    constexpr BytePtr operator-(BytePtr lhs, const BytesT<TUnit>& rhs) noexcept;
+    template <typename TRatio>
+    constexpr BytePtr operator-(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
-    /// \brief Stream insertion for BytesT<TUnit>.
-    template <typename TUnit>
-    std::ostream& operator<<(std::ostream& lhs, const BytesT<TUnit>& rhs);
+    /// \brief Stream insertion for BytesT<TRatio>.
+    template <typename TRatio>
+    std::ostream& operator<<(std::ostream& lhs, const BytesT<TRatio>& rhs);
 
     /************************************************************************/
     /* LITERALS                                                             */
@@ -319,26 +319,26 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // BytesT<TUnit>.
+    // BytesT<TRatio>.
     // ===============
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit>::BytesT(Int count) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio>::BytesT(Int count) noexcept
         : count_(count)
     {
 
     }
 
-    template <typename TUnit>
-    template <typename UUnit>
-    constexpr BytesT<TUnit>::BytesT(const BytesT<UUnit>& rhs) noexcept
-        : count_(ToInt(FromBytes<BytesT<TUnit>>(rhs)))
+    template <typename TRatio>
+    template <typename URatio>
+    constexpr BytesT<TRatio>::BytesT(const BytesT<URatio>& rhs) noexcept
+        : count_(ToInt(FromBytes<BytesT<TRatio>>(rhs)))
     {
 
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit>::operator Int() const noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio>::operator Int() const noexcept
     {
         return count_;
     }
@@ -346,16 +346,16 @@ namespace Syntropy
     // Non-member functions.
     // =====================
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator++(BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator++(BytesT<TRatio>& rhs) noexcept
     {
-        rhs += ToBytes<TUnit>(1);
+        rhs += ToBytes<TRatio>(1);
 
         return rhs;
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator++(BytesT<TUnit>& rhs, int) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator++(BytesT<TRatio>& rhs, int) noexcept
     {
         auto copy = rhs;
 
@@ -364,16 +364,16 @@ namespace Syntropy
         return copy;
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator--(BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator--(BytesT<TRatio>& rhs) noexcept
     {
-        rhs -= ToBytes<TUnit>(1);
+        rhs -= ToBytes<TRatio>(1);
 
         return rhs;
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator--(BytesT<TUnit>& rhs, int) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator--(BytesT<TRatio>& rhs, int) noexcept
     {
         auto copy = rhs;
 
@@ -382,121 +382,121 @@ namespace Syntropy
         return copy;
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator+=(BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator+=(BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs + rhs;
 
         return lhs;
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator-=(BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator-=(BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs - rhs;
 
         return lhs;
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator*=(BytesT<TUnit>& lhs, Int rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator*=(BytesT<TRatio>& lhs, Int rhs) noexcept
     {
         lhs = lhs * rhs;
 
         return lhs;
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator/=(BytesT<TUnit>& lhs, Int rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator/=(BytesT<TRatio>& lhs, Int rhs) noexcept
     {
         lhs = lhs / rhs;
 
         return lhs;
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit>& operator%=(BytesT<TUnit>& lhs, Int rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio>& operator%=(BytesT<TRatio>& lhs, Int rhs) noexcept
     {
         lhs = lhs % rhs;
 
         return lhs;
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator-(const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator-(const BytesT<TRatio>& rhs) noexcept
     {
-        return BytesT<TUnit>{ -ToInt(rhs) };
+        return BytesT<TRatio>{ -ToInt(rhs) };
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator+(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator+(const BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept
     {
-        return BytesT<TUnit>{ ToInt(lhs) + ToInt(rhs) };
+        return BytesT<TRatio>{ ToInt(lhs) + ToInt(rhs) };
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator-(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator-(const BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept
     {
-        return BytesT<TUnit>{ ToInt(lhs) - ToInt(rhs) };
+        return BytesT<TRatio>{ ToInt(lhs) - ToInt(rhs) };
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator*(const BytesT<TUnit>& lhs, Int rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator*(const BytesT<TRatio>& lhs, Int rhs) noexcept
     {
-        return BytesT<TUnit>{ ToInt(lhs) * rhs };
+        return BytesT<TRatio>{ ToInt(lhs) * rhs };
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator*(Int lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator*(Int lhs, const BytesT<TRatio>& rhs) noexcept
     {
-        return BytesT<TUnit>{ lhs * ToInt(rhs) };
+        return BytesT<TRatio>{ lhs * ToInt(rhs) };
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator/(const BytesT<TUnit>& lhs, Int rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator/(const BytesT<TRatio>& lhs, Int rhs) noexcept
     {
-        return BytesT<TUnit>{ ToInt(lhs) / rhs };
+        return BytesT<TRatio>{ ToInt(lhs) / rhs };
     }
 
-    template <typename TUnit>
-    constexpr Int operator/(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr Int operator/(const BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return ToInt(lhs) / ToInt(rhs);
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator%(const BytesT<TUnit>& lhs, Int rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator%(const BytesT<TRatio>& lhs, Int rhs) noexcept
     {
-        return BytesT<TUnit>{ ToInt(lhs) % rhs };
+        return BytesT<TRatio>{ ToInt(lhs) % rhs };
     }
 
-    template <typename TUnit>
-    constexpr BytesT<TUnit> operator%(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytesT<TRatio> operator%(const BytesT<TRatio>& lhs, const BytesT<TRatio>& rhs) noexcept
     {
-        return BytesT<TUnit>{ ToInt(lhs) % ToInt(rhs) };
+        return BytesT<TRatio>{ ToInt(lhs) % ToInt(rhs) };
     }
 
     // Comparison.
     // ===========
 
-     template <typename T0Unit, typename T1Unit>
-     constexpr auto operator<=>(const BytesT<T0Unit>& lhs, const BytesT<T1Unit>& rhs) noexcept
+     template <typename T0Ratio, typename T1Ratio>
+     constexpr auto operator<=>(const BytesT<T0Ratio>& lhs, const BytesT<T1Ratio>& rhs) noexcept
      {
-         using TCommon = Templates::CommonRational<T0Unit, T1Unit>;
+         using TRatio = Templates::CommonRatio<T0Ratio, T1Ratio>;
  
-         auto common_lhs = FromBytes<BytesT<TCommon>>(lhs);
-         auto common_rhs = FromBytes<BytesT<TCommon>>(rhs);
+         auto common_lhs = FromBytes<BytesT<TRatio>>(lhs);
+         auto common_rhs = FromBytes<BytesT<TRatio>>(rhs);
  
          return ToInt(common_lhs) <=> ToInt(common_rhs);
      }
 
-     template <typename T0Unit, typename T1Unit>
-     constexpr bool operator==(const BytesT<T0Unit>& lhs, const BytesT<T1Unit>& rhs) noexcept
+     template <typename T0Ratio, typename T1Ratio>
+     constexpr bool operator==(const BytesT<T0Ratio>& lhs, const BytesT<T1Ratio>& rhs) noexcept
      {
-         using TCommon = Templates::CommonRational<T0Unit, T1Unit>;
+         using TRatio = Templates::CommonRatio<T0Ratio, T1Ratio>;
 
-         auto common_lhs = FromBytes<BytesT<TCommon>>(lhs);
-         auto common_rhs = FromBytes<BytesT<TCommon>>(rhs);
+         auto common_lhs = FromBytes<BytesT<TRatio>>(lhs);
+         auto common_rhs = FromBytes<BytesT<TRatio>>(rhs);
 
          return ToInt(common_lhs) == ToInt(common_rhs);
      }
@@ -504,8 +504,8 @@ namespace Syntropy
     // Type cast.
     // ==========
 
-    template <typename TUnit>
-    constexpr Int ToInt(const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr Int ToInt(const BytesT<TRatio>& rhs) noexcept
     {
         return static_cast<Int>(rhs);
     }
@@ -517,18 +517,18 @@ namespace Syntropy
         return TBytes{ rhs };
     }
 
-    template <typename TUnit>
-    constexpr Bytes ToBytes(const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr Bytes ToBytes(const BytesT<TRatio>& rhs) noexcept
     {
         return FromBytes<Bytes>(rhs);
     }
 
-    template <typename TBytesTo, typename TUnitFrom>
-    constexpr TBytesTo FromBytes(const BytesT<TUnitFrom>& rhs) noexcept
+    template <typename TBytesTo, typename TRatioFrom>
+    constexpr TBytesTo FromBytes(const BytesT<TRatioFrom>& rhs) noexcept
     {
         static_assert(Templates::IsBytes<TBytesTo>, "TBytesTo is not a ByteT<> type.");
 
-        using TRatio = Templates::RationalQuotient<TUnitFrom, Templates::ByteUnits<TBytesTo>>;
+        using TRatio = Templates::RatioQuotient<TRatioFrom, Templates::ByteRatio<TBytesTo>>;
 
         auto count = (ToInt(rhs) * TRatio::kNumerator) / TRatio::kDenominator;
 
@@ -553,64 +553,64 @@ namespace Syntropy
     // Pointers.
     // =========
 
-    template <typename TUnit>
-    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs + ToInt(ToBytes(rhs));
 
         return lhs;
     }
 
-    template <typename TUnit>
-    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs - ToInt(ToBytes(rhs));
 
         return lhs;
     }
 
-    template <typename TUnit>
-    constexpr RWBytePtr operator+(RWBytePtr lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr RWBytePtr operator+(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs + ToInt(ToBytes(rhs));
     }
 
-    template <typename TUnit>
-    constexpr RWBytePtr operator-(RWBytePtr lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr RWBytePtr operator-(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs - ToInt(ToBytes(rhs));
     }
 
-    template <typename TUnit>
-    constexpr BytePtr& operator+=(BytePtr& lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytePtr& operator+=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs + rhs;
 
         return lhs;
     }
 
-    template <typename TUnit>
-    constexpr BytePtr& operator-=(BytePtr& lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytePtr& operator-=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs - rhs;
 
         return lhs;
     }
 
-    template <typename TUnit>
-    constexpr BytePtr operator+(BytePtr lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytePtr operator+(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs + ToInt(ToBytes(rhs));
     }
 
-    template <typename TUnit>
-    constexpr BytePtr operator-(BytePtr lhs, const BytesT<TUnit>& rhs) noexcept
+    template <typename TRatio>
+    constexpr BytePtr operator-(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs - ToInt(ToBytes(rhs));
     }
 
-    template <typename TUnit>
-    inline std::ostream& operator<<(std::ostream& lhs, const BytesT<TUnit>& rhs)
+    template <typename TRatio>
+    inline std::ostream& operator<<(std::ostream& lhs, const BytesT<TRatio>& rhs)
     {
         return lhs << ToInt(rhs);
     }

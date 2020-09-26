@@ -88,7 +88,7 @@ namespace Syntropy
 
     /// \brief Alias for a common type between two or more spans.
     template <typename... TElements>
-    using CommonSpan = SpanT<Templates::RemovePointer<Templates::CommonTypeOf<Templates::AddPointer<TElements>...>>>;
+    using CommonSpan = SpanT<Templates::RemovePointer<Templates::CommonType<Templates::AddPointer<TElements>...>>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -626,7 +626,7 @@ namespace Syntropy
     template <typename TBegin, typename TEnd>
     constexpr auto MakeSpan(XPointer<TBegin> begin, XPointer<TEnd> end) noexcept
     {
-        using TSpan = Templates::CommonTypeOf<TBegin, TEnd>;
+        using TSpan = Templates::CommonType<TBegin, TEnd>;
 
         return Span<TSpan>{ begin, end };
     }
