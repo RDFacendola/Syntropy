@@ -11,7 +11,7 @@
 
 namespace Syntropy
 {
-    using namespace Literals;
+    using namespace Memory::Literals;
 
     /************************************************************************/
     /* CONTEXT :: REGISTRY                                                  */

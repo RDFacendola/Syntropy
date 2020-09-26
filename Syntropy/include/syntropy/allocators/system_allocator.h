@@ -40,11 +40,11 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept;
 
     };
 
@@ -55,7 +55,7 @@ namespace Syntropy
     // SystemAllocator.
     // ================
 
-    inline Memory::RWByteSpan SystemAllocator::Allocate(Bytes size, Alignment alignment) noexcept
+    inline Memory::RWByteSpan SystemAllocator::Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept
     {
         auto size_value = static_cast<std::size_t>(ToInt(size));
         auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
@@ -68,7 +68,7 @@ namespace Syntropy
         return {};
     }
 
-    inline void SystemAllocator::Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept
+    inline void SystemAllocator::Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept
     {
         auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
 

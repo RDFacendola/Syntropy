@@ -82,11 +82,11 @@ namespace Syntropy
 
         /// \brief Allocate a memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        virtual Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept = 0;
+        virtual Memory::RWByteSpan Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept = 0;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        virtual void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept = 0;
+        virtual void Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept = 0;
 
     private:
 
@@ -114,13 +114,13 @@ namespace Syntropy
         /// \brief Default virtual destructor.
         virtual ~AllocatorT() = default;
 
-        virtual Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept override;
+        virtual Memory::RWByteSpan Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept override;
 
-        virtual void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept override;
+        virtual void Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept override;
 
         /// \brief Deallocate each allocation performed so far.
         /// This method only participates in overload resolution if the underlying allocator implements ::DeallocateAll() method.
-        template<typename = Templates::EnableIfValidExpression<AllocatorImplementsDeallocateAll, TAllocator >>
+        template<typename = Templates::EnableIfValidExpression<AllocatorImplementsDeallocateAll, TAllocator>>
         void DeallocateAll() noexcept;
 
         /// \brief Check whether a block belongs to the underlying allocator.
@@ -167,13 +167,13 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline Memory::RWByteSpan AllocatorT<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline Memory::RWByteSpan AllocatorT<TAllocator>::Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept
     {
         return allocator_.Allocate(size, alignment);
     }
 
     template <typename TAllocator>
-    inline void AllocatorT<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept
+    inline void AllocatorT<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept
     {
         allocator_.Deallocate(block, alignment);
     }

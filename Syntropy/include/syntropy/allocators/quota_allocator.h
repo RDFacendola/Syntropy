@@ -46,11 +46,11 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated or the allocator exceeded its quota, returns an empty block.
-        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept;
 
         /// \brief Check whether a block belongs to the underlying allocator.
         /// This method only participates in overload resolution if the underlying allocator implements the ::Own(block) method.
@@ -63,10 +63,10 @@ namespace Syntropy
         void DeallocateAll() noexcept;
 
         /// \brief Get the maximum memory that can be allocated on the underlying allocator.
-        Bytes GetQuota() const noexcept;
+        Memory::Bytes GetQuota() const noexcept;
 
         /// \brief Get the amount of memory currently allocated on the underlying allocator.
-        Bytes GetAllocationSize() const noexcept;
+        Memory::Bytes GetAllocationSize() const noexcept;
 
     private:
 
@@ -74,10 +74,10 @@ namespace Syntropy
         TAllocator allocator_;
 
         /// \brief Maximum size that can be allocated from the underlying allocator.
-        Bytes quota_{ 0 };
+        Memory::Bytes quota_{ 0 };
 
         /// \brief Current allocation size.
-        Bytes allocation_size_{ 0 };
+        Memory::Bytes allocation_size_{ 0 };
 
     };
 
@@ -90,7 +90,7 @@ namespace Syntropy
 
     template <typename TAllocator>
     template <typename... TArguments>
-    inline QuotaAllocator<TAllocator>::QuotaAllocator(Bytes quota, TArguments&&... arguments) noexcept
+    inline QuotaAllocator<TAllocator>::QuotaAllocator(Memory::Bytes quota, TArguments&&... arguments) noexcept
         : allocator_(Forward<TArguments>(arguments)...)
         , quota_(quota)
     {
@@ -98,7 +98,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline Memory::RWByteSpan QuotaAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline Memory::RWByteSpan QuotaAllocator<TAllocator>::Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept
     {
         if ((allocation_size_ + size) <= quota_)
         {
@@ -113,7 +113,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline void QuotaAllocator<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Alignment alignment)
+    inline void QuotaAllocator<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment)
     {
         allocator_.Deallocate(block, alignment);
 
@@ -121,13 +121,13 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline Bytes QuotaAllocator<TAllocator>::GetQuota() const noexcept
+    inline Memory::Bytes QuotaAllocator<TAllocator>::GetQuota() const noexcept
     {
         return quota_;
     }
 
     template <typename TAllocator>
-    inline Bytes QuotaAllocator<TAllocator>::GetAllocationSize() const noexcept
+    inline Memory::Bytes QuotaAllocator<TAllocator>::GetAllocationSize() const noexcept
     {
         return allocation_size_;
     }

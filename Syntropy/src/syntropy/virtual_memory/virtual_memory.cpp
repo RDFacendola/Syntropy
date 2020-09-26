@@ -8,22 +8,22 @@ namespace Syntropy
     /* VIRTUAL MEMORY                                                       */
     /************************************************************************/
 
-    Bytes VirtualMemory::PageSize() noexcept
+    Memory::Bytes VirtualMemory::PageSize() noexcept
     {
         return HALVirtualMemory::PageSize();
     }
 
-    Alignment VirtualMemory::PageAlignment() noexcept
+    Memory::Alignment VirtualMemory::PageAlignment() noexcept
     {
         return HALVirtualMemory::PageAlignment();
     }
 
-    Memory::RWByteSpan VirtualMemory::Reserve(Bytes size) noexcept
+    Memory::RWByteSpan VirtualMemory::Reserve(Memory::Bytes size) noexcept
     {
         return HALVirtualMemory::Reserve(size);
     }
 
-    Memory::RWByteSpan VirtualMemory::Allocate(Bytes size) noexcept
+    Memory::RWByteSpan VirtualMemory::Allocate(Memory::Bytes size) noexcept
     {
         return HALVirtualMemory::Allocate(size);
     }

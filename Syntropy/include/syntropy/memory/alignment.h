@@ -15,7 +15,7 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/math/bits.h"
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* ALIGNMENT                                                            */
@@ -25,41 +25,37 @@ namespace Syntropy
     enum class Alignment : Int {};
 
     /************************************************************************/
-    /* MEMORY                                                               */
+    /* ALIGNMENT                                                            */
     /************************************************************************/
 
-    /// \brief Exposes alignment-related functions.
-    namespace Memory
-    {
-        /// \brief Get the alignment of rhs.
-        template <typename TType>
-        constexpr Alignment AlignmentOf(const TType& rhs) noexcept;
+    /// \brief Get the alignment of rhs.
+    template <typename TType>
+    constexpr Alignment AlignmentOf(const TType& rhs) noexcept;
 
-        /// \brief Get the alignment of TType.
-        template <typename TType>
-        constexpr Alignment AlignmentOf() noexcept;
+    /// \brief Get the alignment of TType.
+    template <typename TType>
+    constexpr Alignment AlignmentOf() noexcept;
 
-        /// \brief Get an alignment which is at least as large as that of every scalar type.
-        constexpr Alignment MaxAlignment() noexcept;
+    /// \brief Get an alignment which is at least as large as that of every scalar type.
+    constexpr Alignment MaxAlignment() noexcept;
 
-        /// \brief Check whether a pointer is aligned to a given boundary.
-        Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
+    /// \brief Check whether a pointer is aligned to a given boundary.
+    Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
 
-        /// \brief Move a byte pointer forwards until it gets aligned to a specified value.
-        BytePtr Align(BytePtr pointer, Alignment alignment) noexcept;
+    /// \brief Move a byte pointer forwards until it gets aligned to a specified value.
+    BytePtr Align(BytePtr pointer, Alignment alignment) noexcept;
 
-        /// \brief Move a byte pointer forwards until it gets aligned to a specified value.
-        RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept;
+    /// \brief Move a byte pointer forwards until it gets aligned to a specified value.
+    RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept;
 
-        /// \brief Move a byte pointer backwards until it gets aligned to a specified value.
-        BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept;
+    /// \brief Move a byte pointer backwards until it gets aligned to a specified value.
+    BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept;
 
-        /// \brief Move a byte pointer backwards until it gets aligned to a specified value.
-        RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept;
-    }
+    /// \brief Move a byte pointer backwards until it gets aligned to a specified value.
+    RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept;
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* BITWISE OPERATIONS                                                   */
     /************************************************************************/
 
     /// \brief Shift an alignment value right.
@@ -75,7 +71,7 @@ namespace Syntropy
     constexpr Alignment operator<<(Reference<Alignment> lhs, Int rhs) noexcept;
 
     /************************************************************************/
-    /* TYPE CAST                                                            */
+    /* CONVERSION                                                           */
     /************************************************************************/
 
     /// \brief Convert an alignment value to integer.
@@ -114,34 +110,34 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Memory.
-    // =======
+    // Alignment.
+    // ==========
 
     template <typename TType>
-    constexpr Alignment Memory::AlignmentOf(const TType& rhs) noexcept
+    constexpr Alignment AlignmentOf(const TType& rhs) noexcept
     {
         return Alignment(std::align_val_t{ alignof(TType) });
     }
 
     template <typename TType>
-    constexpr Alignment Memory::AlignmentOf() noexcept
+    constexpr Alignment AlignmentOf() noexcept
     {
         return Alignment(std::align_val_t{ alignof(TType) });
     }
 
-    constexpr Alignment Memory::MaxAlignment() noexcept
+    constexpr Alignment MaxAlignment() noexcept
     {
         return Alignment(std::align_val_t{ alignof(std::max_align_t) });
     }
 
-    inline Bool Memory::IsAlignedTo(Memory::BytePtr pointer, Alignment alignment) noexcept
+    inline Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
         return (ToAddress(pointer) & mask) == Address{};
     }
 
-    inline Memory::BytePtr Memory::Align(Memory::BytePtr pointer, Alignment alignment) noexcept
+    inline BytePtr Align(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -150,14 +146,14 @@ namespace Syntropy
         return FromAddress(aligned);
     }
 
-    inline Memory::RWBytePtr Memory::Align(Memory::RWBytePtr pointer, Alignment alignment) noexcept
+    inline RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept
     {
         auto aligned_pointer = Align(Syntropy::ReadOnly(pointer), alignment);
 
         return Syntropy::ReadWrite(aligned_pointer);
     }
 
-    inline Memory::BytePtr Memory::AlignDown(Memory::BytePtr pointer, Alignment alignment) noexcept
+    inline BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -166,15 +162,15 @@ namespace Syntropy
         return FromAddress(aligned_pointer);
     }
 
-    inline Memory::RWBytePtr Memory::AlignDown(Memory::RWBytePtr pointer, Alignment alignment) noexcept
+    inline RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
     {
         auto aligned_pointer = AlignDown(Syntropy::ReadOnly(pointer), alignment);
         
         return Syntropy::ReadWrite(aligned_pointer);
     }
 
-    // Non-member functions.
-    // =====================
+    // Bitwise operations.
+    // ===================
 
     constexpr RWReference<Alignment> operator>>=(RWReference<Alignment> lhs, Int rhs) noexcept
     {
@@ -205,8 +201,8 @@ namespace Syntropy
         return lhs << ToInt(rhs);
     }
 
-    // Type cast.
-    // ==========
+    // Conversion.
+    // ===========
 
     constexpr Int ToInt(Alignment lhs) noexcept
     {
@@ -231,7 +227,8 @@ namespace Syntropy
     }
 
     // Literals.
-    
+    // =========
+
     constexpr Alignment Literals::operator "" _Alignment(std::size_t lhs) noexcept
     {
         return Alignment(lhs);

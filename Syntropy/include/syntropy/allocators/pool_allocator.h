@@ -49,11 +49,11 @@ namespace Syntropy
         PoolAllocator& operator=(PoolAllocator rhs) noexcept;
 
         /// \brief Allocate a new memory block.
-        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment);
+        void Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment);
 
         /// \brief Check whether this allocator owns a memory block.
         Bool Owns(const Memory::ByteSpan& block) const noexcept;
@@ -91,10 +91,10 @@ namespace Syntropy
         TAllocator allocator_;
 
         /// \brief Size of each chunk.
-        Bytes chunk_size_;
+        Memory::Bytes chunk_size_;
 
         /// \brief Size of each block in a chunk.
-        Bytes block_size_;
+        Memory::Bytes block_size_;
 
         /// \brief List of chunks with at least one free block.
         RWPointer<Chunk> available_chunks_{ nullptr };
@@ -154,7 +154,7 @@ namespace Syntropy
 
     template <typename TAllocator>
     template <typename... TArguments>
-    inline PoolAllocator<TAllocator>::PoolAllocator(Bytes block_size, Bytes chunk_size, TArguments&&... arguments) noexcept
+    inline PoolAllocator<TAllocator>::PoolAllocator(Memory::Bytes block_size, Memory::Bytes chunk_size, TArguments&&... arguments) noexcept
         : allocator_(Forward<TArguments>(arguments)...)
         , chunk_size_(chunk_size)
         , block_size_(Math::Max(block_size, Memory::SizeOf<FreeBlock>()))               // Free blocks in a chunk are chained together: each block must be large enough to fit a pointer.
@@ -189,7 +189,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    Memory::RWByteSpan PoolAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    Memory::RWByteSpan PoolAllocator<TAllocator>::Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept
     {
         if ((size <= block_size_) && (alignment <= ToAlignment(block_size_)))
         {
@@ -203,9 +203,9 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    void PoolAllocator<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Alignment alignment)
+    void PoolAllocator<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment)
     {
-        SYNTROPY_UNDEFINED_BEHAVIOR((Size(block) <= block_size_) && (alignment <= Alignment(block_size_)), "The provided block doesn't belong to this allocator instance");
+        SYNTROPY_UNDEFINED_BEHAVIOR((Size(block) <= block_size_) && (alignment <= Memory::Alignment(block_size_)), "The provided block doesn't belong to this allocator instance");
 
         auto chunk = FromTypeless<Chunk>(Memory::AlignDown(Begin(block)));
 

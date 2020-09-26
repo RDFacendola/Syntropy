@@ -72,8 +72,8 @@ namespace Syntropy
                 GetDiskFreeSpaceExA(unit_path, NULL, &size, &available_space);
 
                 drive_info.label_ = unit_path;
-                drive_info.total_space_ = ToBytes(size.QuadPart);
-                drive_info.available_space_ = ToBytes(available_space.QuadPart);
+                drive_info.total_space_ = Memory::ToBytes(size.QuadPart);
+                drive_info.available_space_ = Memory::ToBytes(available_space.QuadPart);
 
                 storage_info.drives_.emplace_back(Move(drive_info));
             }
@@ -93,12 +93,12 @@ namespace Syntropy
 
         GlobalMemoryStatusEx(&memory_status);
 
-        memory_info.total_physical_memory_ = ToBytes(memory_status.ullTotalPhys);
-        memory_info.total_virtual_memory_ = ToBytes(memory_status.ullTotalVirtual);
-        memory_info.total_page_memory_ = ToBytes(memory_status.ullTotalPageFile);
-        memory_info.available_physical_memory_ = ToBytes(memory_status.ullAvailPhys);
-        memory_info.available_virtual_memory_ = ToBytes(memory_status.ullAvailVirtual);
-        memory_info.available_page_memory_ = ToBytes(memory_status.ullAvailPageFile);
+        memory_info.total_physical_memory_ = Memory::ToBytes(memory_status.ullTotalPhys);
+        memory_info.total_virtual_memory_ = Memory::ToBytes(memory_status.ullTotalVirtual);
+        memory_info.total_page_memory_ = Memory::ToBytes(memory_status.ullTotalPageFile);
+        memory_info.available_physical_memory_ = Memory::ToBytes(memory_status.ullAvailPhys);
+        memory_info.available_virtual_memory_ = Memory::ToBytes(memory_status.ullAvailVirtual);
+        memory_info.available_page_memory_ = Memory::ToBytes(memory_status.ullAvailPageFile);
 
         return memory_info;
     }

@@ -8,7 +8,7 @@
 
 #include "syntropy/language/templates/constants.h"
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* FORWARD DECLARATIONS                                                 */
@@ -18,7 +18,7 @@ namespace Syntropy
     class BytesT;
 }
 
-namespace Syntropy::Templates::Details
+namespace Syntropy::Memory::Templates::Details
 {
     /************************************************************************/
     /* IS BYTES                                                             */

@@ -32,7 +32,7 @@ namespace Syntropy
         /// \brief Create a new allocator.
         /// \param capacity Virtual memory capacity to reserve. This amount is not committed initially, therefore it can be much higher than system physical memory size.
         /// \param page_size Size of each allocation.
-        VirtualAllocator(Bytes capacity, Bytes page_size) noexcept;
+        VirtualAllocator(Memory::Bytes capacity, Memory::Bytes page_size) noexcept;
 
         /// \brief No copy constructor.
         VirtualAllocator(const VirtualAllocator&) = delete;
@@ -48,16 +48,16 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept;
 
         /// \brief Reserve a new memory block.
         /// Reserved blocks must be committed via Memory::Commit before accessing them.
         /// If a memory block could not be reserved, returns an empty block.
-        Memory::RWByteSpan Reserve(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Reserve(Memory::Bytes size, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate every allocation performed on this allocator so far.
         void DeallocateAll() noexcept;
@@ -77,7 +77,7 @@ namespace Syntropy
         Memory::RWByteSpan Reserve() noexcept;
 
         /// \brief Size of each allocation. This value is a multiple of the system virtual memory page size.
-        Bytes page_size_;
+        Memory::Bytes page_size_;
 
         /// \brief Head of the free list.
         RWPointer<FreePageIndex> free_page_index_{ nullptr };
@@ -94,7 +94,7 @@ namespace Syntropy
     // VirtualAllocator.
     // =================
 
-    inline VirtualAllocator::VirtualAllocator(Bytes capacity, Bytes page_size) noexcept
+    inline VirtualAllocator::VirtualAllocator(Memory::Bytes capacity, Memory::Bytes page_size) noexcept
         : page_size_(VirtualMemory::Ceil(page_size))
         , allocator_(capacity, page_size)
     {

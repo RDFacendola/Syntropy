@@ -15,7 +15,7 @@
 #include "syntropy/memory/byte.h"
 #include "syntropy/memory/details/bytes_details.h"
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* BYTES                                                                */
@@ -56,7 +56,7 @@ namespace Syntropy
     };
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* AIRTHMETIC OPERATIONS                                                */
     /************************************************************************/
 
     /// \brief Pre-increment a byte amount rhs by one.
@@ -148,37 +148,37 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Type alias for an amount of memory, in Bits.
-    using Bits = BytesT<Templates::Ratio<1, 8>>;
+    using Bits = BytesT<Syntropy::Templates::Ratio<1, 8>>;
 
     /// \brief Type alias for an amount of memory, in Bytes.
-    using Bytes = BytesT<Templates::Ratio<1, 1>>;
+    using Bytes = BytesT<Syntropy::Templates::Ratio<1, 1>>;
 
     /// \brief Type alias for an amount of memory, in KByes.
-    using KiloBytes = BytesT<Templates::Kilo>;
+    using KiloBytes = BytesT<Syntropy::Templates::Kilo>;
 
     /// \brief Type alias for an amount of memory, in MBytes.
-    using MegaBytes = BytesT<Templates::Mega>;
+    using MegaBytes = BytesT<Syntropy::Templates::Mega>;
 
     /// \brief Type alias for an amount of memory, in GBytes.
-    using GigaBytes = BytesT<Templates::Giga>;
+    using GigaBytes = BytesT<Syntropy::Templates::Giga>;
 
     /// \brief Type alias for an amount of memory, in TBytes.
-    using TeraBytes = BytesT<Templates::Tera>;
+    using TeraBytes = BytesT<Syntropy::Templates::Tera>;
 
     /// \brief Type alias for an amount of memory, in KiBytes.
-    using KibiBytes = BytesT<Templates::Kibi>;
+    using KibiBytes = BytesT<Syntropy::Templates::Kibi>;
 
     /// \brief Type alias for an amount of memory, in MiBytes.
-    using MebiBytes = BytesT<Templates::Mebi>;
+    using MebiBytes = BytesT<Syntropy::Templates::Mebi>;
 
     /// \brief Type alias for an amount of memory, in GiBytes.
-    using GibiBytes = BytesT<Templates::Gibi>;
+    using GibiBytes = BytesT<Syntropy::Templates::Gibi>;
 
     /// \brief Type alias for an amount of memory, in TiBytes.
-    using TebiBytes = BytesT<Templates::Tebi>;
+    using TebiBytes = BytesT<Syntropy::Templates::Tebi>;
 
     /************************************************************************/
-    /* TYPE CAST                                                            */
+    /* CONVERSION                                                           */
     /************************************************************************/
 
     /// \brief Convert an amount of bytes to integer (in TRatios).
@@ -201,7 +201,6 @@ namespace Syntropy
     /* TEMPLATES                                                            */
     /************************************************************************/
 
-    /// \brief Exposes template-related declarations.
     namespace Templates
     {
         /// \brief Constant equal to true if TBytes is a BytesT<T> type, equal to false otherwise.
@@ -214,20 +213,16 @@ namespace Syntropy
     }
 
     /************************************************************************/
-    /* MEMORY                                                               */
+    /* BASIC                                                                */
     /************************************************************************/
 
-    /// \brief Exposes bytes-related functions.
-    namespace Memory
-    {
-        /// \brief Get the size of rhs, in bytes.
-        template <typename TType>
-        constexpr Bytes SizeOf(const TType& rhs) noexcept;
+    /// \brief Get the size of rhs, in bytes.
+    template <typename TType>
+    constexpr Bytes SizeOf(const TType& rhs) noexcept;
 
-        /// \brief Get the size of TType, in bytes.
-        template <typename TType>
-        constexpr Bytes SizeOf() noexcept;
-    }
+    /// \brief Get the size of TType, in bytes.
+    template <typename TType>
+    constexpr Bytes SizeOf() noexcept;
 
     /************************************************************************/
     /* POINTERS                                                             */
@@ -235,35 +230,35 @@ namespace Syntropy
 
     /// \brief Move a byte pointer forward by a given byte amount.
     template <typename TRatio>
-    constexpr Memory::RWBytePtr& operator+=(Memory::RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
     template <typename TRatio>
-    constexpr Memory::RWBytePtr& operator-=(Memory::RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
     template <typename TRatio>
-    constexpr Memory::RWBytePtr operator+(Memory::RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr RWBytePtr operator+(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
     template <typename TRatio>
-    constexpr Memory::RWBytePtr operator-(Memory::RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr RWBytePtr operator-(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
     template <typename TRatio>
-    constexpr Memory::BytePtr& operator+=(Memory::BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr BytePtr& operator+=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
     template <typename TRatio>
-    constexpr Memory::BytePtr& operator-=(Memory::BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr BytePtr& operator-=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
     template <typename TRatio>
-    constexpr Memory::BytePtr operator+(Memory::BytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr BytePtr operator+(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
     template <typename TRatio>
-    constexpr Memory::BytePtr operator-(Memory::BytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
+    constexpr BytePtr operator-(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept;
 
     /// \brief Stream insertion for BytesT<TRatio>.
     template <typename TRatio>
@@ -313,8 +308,6 @@ namespace Syntropy
         constexpr TebiBytes operator "" _TiBytes(std::size_t lhs) noexcept;
     }
 
-
-
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -343,8 +336,8 @@ namespace Syntropy
         return count_;
     }
 
-    // Non-member functions.
-    // =====================
+    // Arithmetic.
+    // ===========
 
     template <typename TRatio>
     constexpr BytesT<TRatio>& operator++(BytesT<TRatio>& rhs) noexcept
@@ -482,7 +475,7 @@ namespace Syntropy
      template <typename T0Ratio, typename T1Ratio>
      constexpr auto operator<=>(const BytesT<T0Ratio>& lhs, const BytesT<T1Ratio>& rhs) noexcept
      {
-         using TRatio = Templates::CommonRatio<T0Ratio, T1Ratio>;
+         using TRatio = Syntropy::Templates::CommonRatio<T0Ratio, T1Ratio>;
  
          auto common_lhs = FromBytes<BytesT<TRatio>>(lhs);
          auto common_rhs = FromBytes<BytesT<TRatio>>(rhs);
@@ -493,7 +486,7 @@ namespace Syntropy
      template <typename T0Ratio, typename T1Ratio>
      constexpr bool operator==(const BytesT<T0Ratio>& lhs, const BytesT<T1Ratio>& rhs) noexcept
      {
-         using TRatio = Templates::CommonRatio<T0Ratio, T1Ratio>;
+         using TRatio = Syntropy::Templates::CommonRatio<T0Ratio, T1Ratio>;
 
          auto common_lhs = FromBytes<BytesT<TRatio>>(lhs);
          auto common_rhs = FromBytes<BytesT<TRatio>>(rhs);
@@ -501,8 +494,8 @@ namespace Syntropy
          return ToInt(common_lhs) == ToInt(common_rhs);
      }
 
-    // Type cast.
-    // ==========
+    // Conversion.
+    // ===========
 
     template <typename TRatio>
     constexpr Int ToInt(const BytesT<TRatio>& rhs) noexcept
@@ -528,24 +521,24 @@ namespace Syntropy
     {
         static_assert(Templates::IsBytes<TBytesTo>, "TBytesTo is not a ByteT<> type.");
 
-        using TRatio = Templates::RatioQuotient<TRatioFrom, Templates::ByteRatio<TBytesTo>>;
+        using TRatio = Syntropy::Templates::RatioQuotient<TRatioFrom, Templates::ByteRatio<TBytesTo>>;
 
         auto count = (ToInt(rhs) * TRatio::kNumerator) / TRatio::kDenominator;
 
         return TBytesTo{ count };
     }
 
-    // Memory.
-    // =======
+    // Basic.
+    // ======
 
     template <typename TType>
-    constexpr Bytes Memory::SizeOf(const TType& rhs) noexcept
+    constexpr Bytes SizeOf(const TType& rhs) noexcept
     {
         return Bytes{ sizeof(rhs) };
     }
 
     template <typename TType>
-    constexpr Bytes Memory::SizeOf() noexcept
+    constexpr Bytes SizeOf() noexcept
     {
         return Bytes{ sizeof(TType) };
     }
@@ -554,7 +547,7 @@ namespace Syntropy
     // =========
 
     template <typename TRatio>
-    constexpr Memory::RWBytePtr& operator+=(Memory::RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs + ToInt(ToBytes(rhs));
 
@@ -562,7 +555,7 @@ namespace Syntropy
     }
 
     template <typename TRatio>
-    constexpr Memory::RWBytePtr& operator-=(Memory::RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs - ToInt(ToBytes(rhs));
 
@@ -570,19 +563,19 @@ namespace Syntropy
     }
 
     template <typename TRatio>
-    constexpr Memory::RWBytePtr operator+(Memory::RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr RWBytePtr operator+(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs + ToInt(ToBytes(rhs));
     }
 
     template <typename TRatio>
-    constexpr Memory::RWBytePtr operator-(Memory::RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr RWBytePtr operator-(RWBytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs - ToInt(ToBytes(rhs));
     }
 
     template <typename TRatio>
-    constexpr Memory::BytePtr& operator+=(Memory::BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr BytePtr& operator+=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs + rhs;
 
@@ -590,7 +583,7 @@ namespace Syntropy
     }
 
     template <typename TRatio>
-    constexpr Memory::BytePtr& operator-=(Memory::BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr BytePtr& operator-=(BytePtr& lhs, const BytesT<TRatio>& rhs) noexcept
     {
         lhs = lhs - rhs;
 
@@ -598,13 +591,13 @@ namespace Syntropy
     }
 
     template <typename TRatio>
-    constexpr Memory::BytePtr operator+(Memory::BytePtr lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr BytePtr operator+(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs + ToInt(ToBytes(rhs));
     }
 
     template <typename TRatio>
-    constexpr Memory::BytePtr operator-(Memory::BytePtr lhs, const BytesT<TRatio>& rhs) noexcept
+    constexpr BytePtr operator-(BytePtr lhs, const BytesT<TRatio>& rhs) noexcept
     {
         return lhs - ToInt(ToBytes(rhs));
     }

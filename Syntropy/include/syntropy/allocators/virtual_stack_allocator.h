@@ -38,7 +38,7 @@ namespace Syntropy
         /// \brief Create a new allocator.
         /// \param capacity Virtual memory capacity to reserve. This amount is not committed initially, therefore it can be much higher than system physical memory size.
         /// \param granularity Granularity size when committing new virtual memory pages.
-        VirtualStackAllocator(Bytes capacity, Bytes granularity) noexcept;
+        VirtualStackAllocator(Memory::Bytes capacity, Memory::Bytes granularity) noexcept;
 
         /// \brief No copy constructor.
         VirtualStackAllocator(const VirtualStackAllocator&) = delete;
@@ -54,16 +54,16 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept;
 
         /// \brief Reserve a new memory block.
         /// Reserved blocks must be committed via Memory::Commit before accessing them.
         /// If a memory block could not be reserved, returns an empty block.
-        Memory::RWByteSpan Reserve(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Reserve(Memory::Bytes size, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate every allocation performed on this allocator so far, invalidating all outstanding checkpoints.
         void DeallocateAll() noexcept;
@@ -94,7 +94,7 @@ namespace Syntropy
         Memory::RWByteSpan uncommitted_span_;
 
         /// \brief Commit granularity. This is always a multiple of the virtual memory's page size.
-        Bytes commit_granularity_;
+        Memory::Bytes commit_granularity_;
 
     };
 
@@ -121,7 +121,7 @@ namespace Syntropy
     // VirtualStackAllocator.
     // ======================
 
-    inline VirtualStackAllocator::VirtualStackAllocator(Bytes capacity, Bytes granularity) noexcept
+    inline VirtualStackAllocator::VirtualStackAllocator(Memory::Bytes capacity, Memory::Bytes granularity) noexcept
         : virtual_span_(capacity)
         , unallocated_span_(virtual_span_.GetData())
         , uncommitted_span_(unallocated_span_)
@@ -146,7 +146,7 @@ namespace Syntropy
         return *this;
     }
 
-    inline void VirtualStackAllocator::Deallocate(const Memory::RWByteSpan& block, Alignment /*alignment*/) noexcept
+    inline void VirtualStackAllocator::Deallocate(const Memory::RWByteSpan& block, Memory::Alignment /*alignment*/) noexcept
     {
         SYNTROPY_UNDEFINED_BEHAVIOR(Owns(block), "The provided block doesn't belong to this allocator instance.");
     }

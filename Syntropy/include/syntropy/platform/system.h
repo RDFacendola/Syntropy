@@ -64,10 +64,10 @@ namespace Syntropy
         String label_;
 
         /// \brief Total drive space.
-        Bytes total_space_;
+        Memory::Bytes total_space_;
 
         /// \brief Available drive space.
-        Bytes available_space_;
+        Memory::Bytes available_space_;
     };
 
     /************************************************************************/
@@ -91,22 +91,22 @@ namespace Syntropy
     struct MemoryInfo
     {
         /// \brief Total physical memory.
-        Bytes total_physical_memory_;
+        Memory::Bytes total_physical_memory_;
 
         /// \brief Total virtual address space for this process.
-        Bytes total_virtual_memory_;
+        Memory::Bytes total_virtual_memory_;
 
         /// \brief Total page memory.
-        Bytes total_page_memory_;
+        Memory::Bytes total_page_memory_;
 
         /// \brief Available physical memory.
-        Bytes available_physical_memory_;
+        Memory::Bytes available_physical_memory_;
 
         /// \brief Available virtual address space for the process.
-        Bytes available_virtual_memory_;
+        Memory::Bytes available_virtual_memory_;
 
         /// \brief Available page memory.
-        Bytes available_page_memory_;
+        Memory::Bytes available_page_memory_;
     };
 
     /************************************************************************/

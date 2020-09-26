@@ -33,7 +33,7 @@ namespace Syntropy
         /// \brief Reserve a virtual memory buffer.
         /// \param size Size of the buffer, in bytes.
         /// \remarks The buffer starts uncommitted.
-        VirtualBuffer(Bytes size) noexcept;
+        VirtualBuffer(Memory::Bytes size) noexcept;
 
         /// \brief Take ownership of the provided virtual memory span.
         /// If the provided span wasn't allocated from system virtual memory, the result of this method is undefined.
@@ -85,7 +85,7 @@ namespace Syntropy
     {
         /// \brief Get the memory footprint of a virtual memory buffer.
         /// \return Returns the size of a virtual memory buffer, in bytes.
-        Bytes Size(const VirtualBuffer& buffer) noexcept;
+        Memory::Bytes Size(const VirtualBuffer& buffer) noexcept;
     }
 
     /************************************************************************/
@@ -111,7 +111,7 @@ namespace Syntropy
     // VirtualBuffer.
     // ==============
 
-    inline VirtualBuffer::VirtualBuffer(Bytes size) noexcept
+    inline VirtualBuffer::VirtualBuffer(Memory::Bytes size) noexcept
         : buffer_(VirtualMemory::Reserve(size))
     {
 
@@ -169,7 +169,7 @@ namespace Syntropy
     // Memory.
     // =======
 
-    inline Bytes Memory::Size(const VirtualBuffer& span) noexcept
+    inline Memory::Bytes Memory::Size(const VirtualBuffer& span) noexcept
     {
         return Memory::Size(span.GetData());
     }

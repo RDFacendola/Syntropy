@@ -33,7 +33,7 @@ namespace Syntropy
     /* VIRTUAL ALLOCATOR                                                    */
     /************************************************************************/
 
-    Memory::RWByteSpan VirtualAllocator::Allocate(Bytes size, Alignment alignment) noexcept
+    Memory::RWByteSpan VirtualAllocator::Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept
     {
         if ((size <= page_size_) && (alignment <= VirtualMemory::PageAlignment()))
         {
@@ -48,7 +48,7 @@ namespace Syntropy
         return {};
     }
 
-    Memory::RWByteSpan VirtualAllocator::Reserve(Bytes size, Alignment alignment) noexcept
+    Memory::RWByteSpan VirtualAllocator::Reserve(Memory::Bytes size, Memory::Alignment alignment) noexcept
     {
         if ((size <= page_size_) && (alignment <= VirtualMemory::PageAlignment()))
         {
@@ -61,7 +61,7 @@ namespace Syntropy
         return {};
     }
 
-    void VirtualAllocator::Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept
+    void VirtualAllocator::Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept
     {
         SYNTROPY_ASSERT(Owns(block));
 

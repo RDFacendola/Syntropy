@@ -49,6 +49,12 @@ namespace Syntropy::Memory
     /* CONVERSION                                                           */
     /************************************************************************/
 
+    /// \brief Convert a read-only address to its numeric value.
+    constexpr Int ToInt(Address rhs) noexcept;
+
+    /// \brief Convert a read-write address to its numeric value.
+    constexpr Int ToInt(RWAddress rhs) noexcept;
+
     /// \brief Convert a typeless pointer to a read-only memory region numeric address value.
     Address ToAddress(TypelessPtr rhs) noexcept;
 
@@ -57,12 +63,12 @@ namespace Syntropy::Memory
 
     /// \brief Convert an address to a read-only location to a read-only strongly-typed pointer.
     /// If the pointed object is not an instance of TType, the behavior of this method is undefined.
-    template <typename TType = Templates::AddConst<Byte>>
+    template <typename TType = Syntropy::Templates::AddConst<Byte>>
     Pointer<TType> FromAddress(Address rhs) noexcept;
 
     /// \brief Convert an address to a read-only location to a read-only strongly-typed pointer.
     /// If the pointed object is not an instance of TType, the behavior of this method is undefined.
-    template <typename TType = Templates::AddConst<Byte>>
+    template <typename TType = Syntropy::Templates::AddConst<Byte>>
     Pointer<TType> FromAddress(RWAddress rhs) noexcept;
 
     /// \brief Convert an address to a read-write location to a read-write strongly-typed pointer.
@@ -132,6 +138,16 @@ namespace Syntropy::Memory
 
     // Conversion.
     // ===========
+
+    constexpr Int ToInt(Address rhs) noexcept
+    {
+        return static_cast<Int>(rhs);
+    }
+
+    constexpr Int ToInt(RWAddress rhs) noexcept
+    {
+        return static_cast<Int>(rhs);
+    }
 
     constexpr Address ReadOnly(Address rhs) noexcept
     {

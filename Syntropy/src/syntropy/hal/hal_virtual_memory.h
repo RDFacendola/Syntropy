@@ -22,23 +22,23 @@ namespace Syntropy
     {
         /// \brief Get the virtual memory page size.
         /// \return Returns the virtual memory page size.
-        Bytes PageSize() noexcept;
+        Memory::Bytes PageSize() noexcept;
 
-        /// \brief Get the virtual memory page alignment.
-        /// \return Returns the virtual memory page alignment.
-        Alignment PageAlignment() noexcept;
+        /// \brief Get the virtual memory page Memory::Alignment.
+        /// \return Returns the virtual memory page Memory::Alignment.
+        Memory::Alignment PageAlignment() noexcept;
 
         /// \brief Reserve a range of virtual memory addresses.
         /// Reserved memory region must be committed via Commit() before accessing it.
-        /// \param size Size of the range to reserve, in bytes.
+        /// \param size Size of the range to reserve, in Memory::Bytes.
         /// \return Returns the reserved memory range. If the method fails returns an empty range.
-        Memory::RWByteSpan Reserve(Bytes size) noexcept;
+        Memory::RWByteSpan Reserve(Memory::Bytes size) noexcept;
 
         /// \brief Allocate a range of virtual memory addresses.
         /// This method has the same effect as a Reserve() followed by a Commit().
-        /// \param size Size of the range to reserve, in bytes.
+        /// \param size Size of the range to reserve, in Memory::Bytes.
         /// \return Returns the reserved virtual memory range. If the method fails returns an empty range.
-        Memory::RWByteSpan Allocate(Bytes size) noexcept;
+        Memory::RWByteSpan Allocate(Memory::Bytes size) noexcept;
 
         /// \brief Release a range of virtual memory addresses.
         /// \param byte_span Memory range to release. Must match any return value of a previous Reserve() / Allocate(), otherwise the behaviour is unspecified.

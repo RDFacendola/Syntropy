@@ -60,11 +60,11 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate each allocation performed so far.
         /// This method only participates in overload resolution if both allocators implement ::DeallocateAll() method.
@@ -118,7 +118,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator, typename TFallback>
-    inline Memory::RWByteSpan FallbackAllocator<TAllocator, TFallback>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline Memory::RWByteSpan FallbackAllocator<TAllocator, TFallback>::Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept
     {
         if (auto block = allocator_.Allocate(size, alignment))
         {
@@ -129,7 +129,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator, typename TFallback>
-    inline void FallbackAllocator<TAllocator, TFallback>::Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept
+    inline void FallbackAllocator<TAllocator, TFallback>::Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept
     {
         if constexpr (Templates::IsValidExpression<AllocatorImplementsOwn, TAllocator>)
         {

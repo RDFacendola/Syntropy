@@ -23,23 +23,23 @@ namespace Syntropy
     {
         /// \brief Get the virtual memory page size.
         /// \return Returns the virtual memory page size.
-        Bytes PageSize() noexcept;
+        Memory::Bytes PageSize() noexcept;
  
         /// \brief Get the virtual memory page alignment.
         /// \return Returns the virtual memory page alignment.
-        Alignment PageAlignment() noexcept;
+        Memory::Alignment PageAlignment() noexcept;
  
         /// \brief Reserve a range of virtual memory addresses.
         /// Reserved memory region must be committed via Commit() before accessing it.
         /// \param size Size of the range to reserve, in bytes.
         /// \return Returns the reserved memory range. If the method fails returns an empty range.
-        Memory::RWByteSpan Reserve(Bytes size) noexcept;
+        Memory::RWByteSpan Reserve(Memory::Bytes size) noexcept;
  
         /// \brief Allocate a range of virtual memory addresses.
         /// This method has the same effect as a Reserve() followed by a Commit().
         /// \param size Size of the range to reserve, in bytes.
         /// \return Returns the reserved memory range. If the method fails returns an empty range.
-        Memory::RWByteSpan Allocate(Bytes size) noexcept;
+        Memory::RWByteSpan Allocate(Memory::Bytes size) noexcept;
  
         /// \brief Release a range of virtual memory addresses.
         /// \param byte_span Memory span to release. Must match any return value of a previous Reserve() / Allocate(), otherwise the behaviour is unspecified.
@@ -59,16 +59,16 @@ namespace Syntropy
         Bool Decommit(const Memory::RWByteSpan& byte_span) noexcept;
 
         /// \brief Return the greatest size equal-to or smaller-than the provided value which is also a multiple of virtual memory's page size.
-        Bytes Floor(Bytes size) noexcept;
+        Memory::Bytes Floor(Memory::Bytes size) noexcept;
 
         /// \brief Return the greatest alignment equal-to or smaller-than the provided value which also satisfies virtual memory's page alignment.
-        Alignment Floor(Alignment alignment) noexcept;
+        Memory::Alignment Floor(Memory::Alignment alignment) noexcept;
 
         /// \brief Return the smallest size equal-to or greater-than the provided value which is also a multiple of virtual memory's page size.
-        Bytes Ceil(Bytes size) noexcept;
+        Memory::Bytes Ceil(Memory::Bytes size) noexcept;
 
         /// \brief Return the smallest alignment equal-to or greater-than the provided value which also satisfies virtual memory's page alignment.
-        Alignment Ceil(Alignment alignment) noexcept;
+        Memory::Alignment Ceil(Memory::Alignment alignment) noexcept;
 
         /// \brief Consume lhs from both sides until its first byte is aligned to virtual memory's page alignment and its size is a multiple of virtual memory's page size.
         Memory::ByteSpan Align(const Memory::ByteSpan& lhs) noexcept;
@@ -85,22 +85,22 @@ namespace Syntropy
     // VirtualMemory
     // =============
 
-    inline Bytes VirtualMemory::Floor(Bytes size) noexcept
+    inline Memory::Bytes VirtualMemory::Floor(Memory::Bytes size) noexcept
     {
         return Math::Floor(size, PageSize());
     }
 
-    inline Alignment VirtualMemory::Floor(Alignment alignment) noexcept
+    inline Memory::Alignment VirtualMemory::Floor(Memory::Alignment alignment) noexcept
     {
         return Math::Min(alignment, PageAlignment());
     }
 
-    inline Bytes VirtualMemory::Ceil(Bytes size) noexcept
+    inline Memory::Bytes VirtualMemory::Ceil(Memory::Bytes size) noexcept
     {
         return Math::Ceil(size, PageSize());
     }
 
-    inline Alignment VirtualMemory::Ceil(Alignment alignment) noexcept
+    inline Memory::Alignment VirtualMemory::Ceil(Memory::Alignment alignment) noexcept
     {
         return Math::Max(alignment, PageAlignment());
     }

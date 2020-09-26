@@ -26,27 +26,27 @@ namespace Syntropy
     /* HAL MEMORY                                                           */
     /************************************************************************/
 
-    Bytes HALVirtualMemory::PageSize() noexcept
+    Memory::Bytes HALVirtualMemory::PageSize() noexcept
     {
         SYSTEM_INFO system_info;
 
         GetSystemInfo(&system_info);
 
-        return Bytes{ system_info.dwPageSize };
+        return Memory::Bytes{ system_info.dwPageSize };
     }
 
-    Alignment HALVirtualMemory::PageAlignment() noexcept
+    Memory::Alignment HALVirtualMemory::PageAlignment() noexcept
     {
         // Virtual memory pages are aligned to page-size boundaries.
 
         return ToAlignment(PageSize());
     }
 
-    Memory::RWByteSpan HALVirtualMemory::Allocate(Bytes size) noexcept
+    Memory::RWByteSpan HALVirtualMemory::Allocate(Memory::Bytes size) noexcept
     {
         // Allocate up to the next page boundary.
 
-        if (size > Bytes{ 0 })
+        if (size > Memory::Bytes{ 0 })
         {
             auto data = VirtualAlloc(0, ToInt(size), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
@@ -56,11 +56,11 @@ namespace Syntropy
         return {};
     }
 
-    Memory::RWByteSpan HALVirtualMemory::Reserve(Bytes size) noexcept
+    Memory::RWByteSpan HALVirtualMemory::Reserve(Memory::Bytes size) noexcept
     {
         // Reserve up to the next page boundary.
 
-        if (size > Bytes{ 0 })
+        if (size > Memory::Bytes{ 0 })
         {
             auto data = VirtualAlloc(0, ToInt(size), MEM_RESERVE, PAGE_READWRITE);
 

@@ -45,11 +45,11 @@ namespace Syntropy
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        Memory::RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
+        Memory::RWByteSpan Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept;
+        void Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept;
 
         /// \brief Deallocate each allocation performed so far.
         /// This method only participates in overload resolution if the underlying allocator implements ::DeallocateAll() method.
@@ -59,7 +59,7 @@ namespace Syntropy
         /// \brief Check whether a block belongs to the underlying allocator.
         /// This method only participates in overload resolution if the underlying allocator implements the ::Own(block) method.
         template<typename = EnableIfValidExpressionT<AllocatorImplementsOwn, TAllocator>>
-        Bool Owns(const ByteSpan& block) const noexcept;
+        Bool Owns(const Memory::ByteSpan& block) const noexcept;
 
         /// \brief Get the amount of active allocations performed on the underlying allocator.
         Int GetAllocationCount() const noexcept;
@@ -82,10 +82,10 @@ namespace Syntropy
         Int deallocation_count_{ 0 };
 
         /// \brief Progressive allocated memory size.
-        Bytes allocation_size_{ ToBytes(0) };
+        Memory::Bytes allocation_size_{ ToBytes(0) };
 
         /// \brief Progressive deallocated memory size.
-        Bytes deallocation_size_{ ToBytes(0) };
+        Memory::Bytes deallocation_size_{ ToBytes(0) };
 
         /// \brief Underlying allocator.
         TAllocator allocator_;
@@ -108,7 +108,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline Memory::RWByteSpan CountingAllocator<TAllocator>::Allocate(Bytes size, Alignment alignment) noexcept
+    inline Memory::RWByteSpan CountingAllocator<TAllocator>::Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept
     {
         if (auto block = allocator_.Allocate(size, alignment))
         {
@@ -123,7 +123,7 @@ namespace Syntropy
     }
 
     template <typename TAllocator>
-    inline void CountingAllocator<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Alignment alignment) noexcept
+    inline void CountingAllocator<TAllocator>::Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept
     {
         allocator_.Deallocate(block, alignment);
 
@@ -141,7 +141,7 @@ namespace Syntropy
 
     template <typename TAllocator>
     template <typename>
-    inline Bool CountingAllocator<TAllocator>::Owns(const ByteSpan& block) const noexcept
+    inline Bool CountingAllocator<TAllocator>::Owns(const Memory::ByteSpan& block) const noexcept
     {
         return allocator_.Owns(block);
     }
