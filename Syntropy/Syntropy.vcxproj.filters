@@ -132,7 +132,6 @@
     <ClInclude Include="include\syntropy\language\templates\constants.h" />
     <ClInclude Include="include\syntropy\language\templates\logic.h" />
     <ClInclude Include="include\syntropy\language\traits.h" />
-    <ClInclude Include="include\syntropy\language\templates.h" />
     <ClInclude Include="include\syntropy\language\templates\branch.h" />
     <ClInclude Include="include\syntropy\language\templates\math.h" />
     <ClInclude Include="include\syntropy\memory\details\bytes_details.h" />
