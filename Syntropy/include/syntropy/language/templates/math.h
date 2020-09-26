@@ -9,7 +9,7 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/details/math.h"
+#include "syntropy/language/templates/details/math_details.h"
 #include "syntropy/math/math.h"
 
 namespace Syntropy::Templates

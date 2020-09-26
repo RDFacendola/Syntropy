@@ -1,5 +1,5 @@
 
-/// \file sequences.h
+/// \file sequences_details.h
 /// \brief This header is part of Syntropy language module. It contains implementation details of sequence-related type traits.
 ///
 /// \author Raffaele D. Facendola - 2020.

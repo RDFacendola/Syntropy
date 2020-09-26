@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/support/declarations.h"
-#include "syntropy/language/templates/details/capabilities.h"
+#include "syntropy/language/templates/details/capabilities_details.h"
 
 namespace Syntropy::Templates
 {

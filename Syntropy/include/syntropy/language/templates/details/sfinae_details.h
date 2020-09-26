@@ -1,5 +1,5 @@
 
-/// \file sfinae.h
+/// \file sfinae_details.h
 /// \brief This header is part of Syntropy language module. It contains implementation details of SFINAE-related type traits.
 ///
 /// \author Raffaele D. Facendola - 2020.

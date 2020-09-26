@@ -1,5 +1,5 @@
 
-/// \file capabilities.h
+/// \file capabilities_details.h
 /// \brief This header is part of Syntropy language module. It contains detail implementation for capabilities-related type traits.
 ///
 /// \author Raffaele D. Facendola - August  2020

@@ -1,5 +1,5 @@
 
-/// \file queries.h
+/// \file queries_details.h
 /// \brief This header is part of Syntropy language module. It contains implementation details of queries-related type traits.
 ///
 /// \author Raffaele D. Facendola - 2020.

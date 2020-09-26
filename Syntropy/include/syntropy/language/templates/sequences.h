@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/templates/details/sequences.h"
+#include "syntropy/language/templates/details/sequences_details.h"
 
 namespace Syntropy::Templates
 {

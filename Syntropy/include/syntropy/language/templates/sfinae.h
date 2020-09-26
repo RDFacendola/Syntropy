@@ -9,7 +9,7 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/details/sfinae.h"
+#include "syntropy/language/templates/details/sfinae_details.h"
 #include "syntropy/language/templates/constants.h"
 
 namespace Syntropy::Templates

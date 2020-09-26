@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/templates/details/queries.h"
+#include "syntropy/language/templates/details/queries_details.h"
 
 namespace Syntropy::Templates
 {
