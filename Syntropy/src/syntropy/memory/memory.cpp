@@ -3,13 +3,13 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/math/math.h"
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* MEMORY                                                               */
     /************************************************************************/
 
-    Bytes Memory::Copy(const RWByteSpan& destination, const ByteSpan& source)
+    Bytes Copy(const RWByteSpan& destination, const ByteSpan& source)
     {
         auto copy_size = Math::Min(Size(source), Size(destination));
 
@@ -31,7 +31,7 @@ namespace Syntropy
         return copy_size;
     }
 
-    Bytes Memory::Gather(const RWByteSpan& destination, InitializerList<ByteSpan> sources)
+    Bytes Gather(const RWByteSpan& destination, InitializerList<ByteSpan> sources)
     {
         auto gather = destination;
 
@@ -45,7 +45,7 @@ namespace Syntropy
         return Size(ByteSpan{ destination.GetData(), gather.GetData() });
     }
 
-    Bytes Memory::Scatter(InitializerList<RWByteSpan> destinations, const ByteSpan& source)
+    Bytes Scatter(InitializerList<RWByteSpan> destinations, const ByteSpan& source)
     {
         auto scatter = source;
 

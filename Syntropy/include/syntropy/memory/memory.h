@@ -21,44 +21,40 @@
 
 #include "syntropy/diagnostics/assert.h"
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* MEMORY                                                               */
     /************************************************************************/
 
-    /// \brief Exposes methods used to manipulate memory.
-    namespace Memory
-    {
-        /// \brief Reinterpret an object representation to another type.
-        template <typename TTo, typename TFrom>
-        TTo BitCast(const TFrom& rhs);
+    /// \brief Reinterpret an object representation to another type.
+    template <typename TTo, typename TFrom>
+    TTo BitCast(const TFrom& rhs);
 
-        /// \brief Convert a pointer to its numeric address value.
-        template <typename TType>
-        Int NumericAddressOf(Pointer<TType> pointer) noexcept;
+    /// \brief Convert a pointer to its numeric address value.
+    template <typename TType>
+    Int NumericAddressOf(Pointer<TType> pointer) noexcept;
 
-        /// \brief Copy a source memory region to a destination memory region. Neither span is exceed during the process.
-        /// \return Returns the bytes copied as a result of this call.
-        Bytes Copy(const RWByteSpan& destination, const ByteSpan& source);
+    /// \brief Copy a source memory region to a destination memory region. Neither span is exceed during the process.
+    /// \return Returns the bytes copied as a result of this call.
+    Bytes Copy(const RWByteSpan& destination, const ByteSpan& source);
 
-        /// \brief Copy a source memory region to a destination memory region repeating the source until destination span is exhausted. Neither span is exceed during the process.
-        void Repeat(const RWByteSpan& destination, const ByteSpan& source);
+    /// \brief Copy a source memory region to a destination memory region repeating the source until destination span is exhausted. Neither span is exceed during the process.
+    void Repeat(const RWByteSpan& destination, const ByteSpan& source);
 
-        /// \brief Set a value to each byte in a destination span.
-        void Set(const RWByteSpan& destination, Byte value);
+    /// \brief Set a value to each byte in a destination span.
+    void Set(const RWByteSpan& destination, Byte value);
 
-        /// \brief Zero-out a memory region.
-        void Zero(const RWByteSpan& destination);
+    /// \brief Zero-out a memory region.
+    void Zero(const RWByteSpan& destination);
 
-        /// \brief Gather data from one or more memory regions to fill a contiguous memory region sequentially. Neither span is exceeded during the process.
-        /// \return Returns the bytes copied as a result of this call.
-        Bytes Gather(const RWByteSpan& destination, InitializerList<ByteSpan> sources);
+    /// \brief Gather data from one or more memory regions to fill a contiguous memory region sequentially. Neither span is exceeded during the process.
+    /// \return Returns the bytes copied as a result of this call.
+    Bytes Gather(const RWByteSpan& destination, InitializerList<ByteSpan> sources);
 
-        /// \brief Scatter a contiguous memory region to one or more memory regions sequentially. Neither span is exceeded during the process.
-        /// \return Returns the bytes copied as a result of this call.
-        Bytes Scatter(InitializerList<RWByteSpan> destinations, const ByteSpan& source);
-    };
+    /// \brief Scatter a contiguous memory region to one or more memory regions sequentially. Neither span is exceeded during the process.
+    /// \return Returns the bytes copied as a result of this call.
+    Bytes Scatter(InitializerList<RWByteSpan> destinations, const ByteSpan& source);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -68,7 +64,7 @@ namespace Syntropy
     // =======
 
     template <typename TTo, typename TFrom>
-    inline TTo Memory::BitCast(const TFrom& rhs)
+    inline TTo BitCast(const TFrom& rhs)
     {
         static_assert(sizeof(TTo) == sizeof(TFrom), "TTo and TFrom must have the same size.");
         static_assert(IsTriviallyCopyableV<TFrom>, "TFrom must be trivially copyable.");
@@ -84,12 +80,12 @@ namespace Syntropy
     }
 
     template <typename TType>
-    inline Int Memory::NumericAddressOf(Pointer<TType> pointer) noexcept
+    inline Int NumericAddressOf(Pointer<TType> pointer) noexcept
     {
         return reinterpret_cast<Int>(pointer);
     }
 
-    inline void Memory::Repeat(const RWByteSpan& destination, const ByteSpan& source)
+    inline void Repeat(const RWByteSpan& destination, const ByteSpan& source)
     {
         for (auto span = destination; !IsEmpty(span);)
         {
@@ -99,12 +95,12 @@ namespace Syntropy
         }
     }
 
-    inline void Memory::Set(const RWByteSpan& destination, Byte value)
+    inline void Set(const RWByteSpan& destination, Byte value)
     {
         std::memset(destination.GetData(), static_cast<int>(value), ToInt(Size(destination)));
     }
 
-    inline void Memory::Zero(const RWByteSpan& destination)
+    inline void Zero(const RWByteSpan& destination)
     {
         Set(destination, Byte{ 0 });
     }
