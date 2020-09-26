@@ -11,7 +11,7 @@
 #include "syntropy/language/traits.h"
 #include "syntropy/language/foundation.h"
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* ADDRESS                                                              */
@@ -24,7 +24,7 @@ namespace Syntropy
     enum class RWAddress : std::intptr_t {};
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* ARITHMETIC                                                           */
     /************************************************************************/
 
     /// \brief Move the address forwards.
@@ -45,21 +45,8 @@ namespace Syntropy
     /// \brief Bit-wise mask of a numeric address to a read-write location.
     constexpr RWAddress operator&(RWAddress lhs, Int rhs) noexcept;
 
-    /// \brief Convert a numeric address to a numeric address to a read-only location.
-    [[nodiscard]] constexpr Address ReadOnly(Address rhs) noexcept;
-
-    /// \brief Convert a numeric address to a numeric address to a read-only location.
-    [[nodiscard]] constexpr Address ReadOnly(RWAddress rhs) noexcept;
-
-    /// \brief Convert a numeric address to a numeric address to a read-write location.
-    /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
-    [[nodiscard]] constexpr RWAddress ReadWrite(Address rhs) noexcept;
-
-    /// \brief Convert a numeric address to a numeric address to a read-write location.
-    [[nodiscard]] constexpr RWAddress ReadWrite(RWAddress rhs) noexcept;
-
     /************************************************************************/
-    /* TYPE CAST                                                            */
+    /* CONVERSION                                                           */
     /************************************************************************/
 
     /// \brief Convert a typeless pointer to a read-only memory region numeric address value.
@@ -83,6 +70,19 @@ namespace Syntropy
     template <typename TType = Byte>
     RWPointer<TType> FromRWAddress(RWAddress rhs) noexcept;
 
+    /// \brief Convert a numeric address to a numeric address to a read-only location.
+    [[nodiscard]] constexpr Address ReadOnly(Address rhs) noexcept;
+
+    /// \brief Convert a numeric address to a numeric address to a read-only location.
+    [[nodiscard]] constexpr Address ReadOnly(RWAddress rhs) noexcept;
+
+    /// \brief Convert a numeric address to a numeric address to a read-write location.
+    /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
+    [[nodiscard]] constexpr RWAddress ReadWrite(Address rhs) noexcept;
+
+    /// \brief Convert a numeric address to a numeric address to a read-write location.
+    [[nodiscard]] constexpr RWAddress ReadWrite(RWAddress rhs) noexcept;
+
     /************************************************************************/
     /* STREAM INSERTION                                                     */
     /************************************************************************/
@@ -97,8 +97,8 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Non-member functions.
-    // =====================
+    // Arithmetic.
+    // ===========
 
     constexpr Address operator+(Address lhs, Int rhs) noexcept
     {
@@ -130,6 +130,9 @@ namespace Syntropy
         return RWAddress{ ToInt(lhs) & rhs };
     }
 
+    // Conversion.
+    // ===========
+
     constexpr Address ReadOnly(Address rhs) noexcept
     {
         return rhs;
@@ -149,9 +152,6 @@ namespace Syntropy
     {
         return rhs;
     }
-
-    // Type cast.
-    // ==========
 
     inline Address ToAddress(TypelessPtr rhs) noexcept
     {

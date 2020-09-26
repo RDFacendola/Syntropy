@@ -152,25 +152,25 @@ namespace Syntropy
 
     inline RWBytePtr Memory::Align(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        auto x = Align(ReadOnly(pointer), alignment);
+        auto aligned_pointer = Align(Syntropy::ReadOnly(pointer), alignment);
 
-        return ReadWrite(x);
+        return Syntropy::ReadWrite(aligned_pointer);
     }
 
     inline BytePtr Memory::AlignDown(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
-        auto aligned = ToAddress(pointer) & ~mask;
+        auto aligned_pointer = ToAddress(pointer) & ~mask;
 
-        return FromAddress(aligned);
+        return FromAddress(aligned_pointer);
     }
 
     inline RWBytePtr Memory::AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        auto x = AlignDown(ReadOnly(pointer), alignment);
+        auto aligned_pointer = AlignDown(Syntropy::ReadOnly(pointer), alignment);
         
-        return ReadWrite(x);
+        return Syntropy::ReadWrite(aligned_pointer);
     }
 
     // Non-member functions.
