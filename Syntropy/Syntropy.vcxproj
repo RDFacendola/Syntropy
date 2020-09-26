@@ -75,6 +75,7 @@
     <ClInclude Include="include\syntropy\core\strings\label.h" />
     <ClInclude Include="include\syntropy\language\traits\details\capabilities.h" />
     <ClInclude Include="include\syntropy\language\traits\details\sfinae.h" />
+    <ClInclude Include="include\syntropy\memory\details\bytes_details.h" />
     <ClInclude Include="include\syntropy\memory\smart_pointers.h" />
     <ClInclude Include="include\syntropy\core\strings\string.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />

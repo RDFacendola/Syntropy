@@ -152,7 +152,8 @@ namespace Syntropy
     template <typename TNumber>
     constexpr TNumber Math::Floor(TNumber rhs, TNumber multiple)
     {
-        return DivFloor(rhs, multiple) * multiple;
+        return rhs;
+        //return DivFloor(rhs, multiple) * multiple;
     }
 
     template <typename TNumber, typename UNumber>
@@ -179,10 +180,10 @@ namespace Syntropy
         auto quotient = lhs / rhs;
         auto remainder = lhs % rhs;
 
-        if ((remainder != decltype(remainder){ 0 }) && ((lhs < TNumber{ 0 }) ^ (rhs < TNumber{ 0 })))
-        {
-            quotient -= decltype(quotient){ 1 };
-        }
+//         if ((remainder != decltype(remainder){ 0 }) && ((lhs < TNumber{ 0 }) ^ (rhs < TNumber{ 0 })))
+//         {
+//             quotient -= decltype(quotient){ 1 };
+//         }
 
         return quotient;
     }

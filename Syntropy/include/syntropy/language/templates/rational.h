@@ -12,6 +12,7 @@
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/math.h"
 #include "syntropy/language/templates/details/rational.h"
+#include "syntropy/language/traits/manipulation.h"
 
 namespace Syntropy::Templates
 {
@@ -29,6 +30,26 @@ namespace Syntropy::Templates
         /// \brief Rational denominator.
         static constexpr Int kDenominator = std::ratio<VNumerator, VDenominator>::den;
     };
+
+    /************************************************************************/
+    /* COMMON TYPE OF                                                       */
+    /************************************************************************/
+
+    /// \brief Common type two ratios can be losslessy-converted to.
+    template <typename T0Rational, typename T1Rational, typename = EnableIf<IsRational<T0Rational>&& IsRational<T1Rational>>>
+    using CommonRational = typename Details::CommonRational<T0Rational, T1Rational>::TType;
+
+    /************************************************************************/
+    /* IS RATIONAL                                                          */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TRational is a Rational type, equal to false otherwise.
+    template <typename TRational>
+    constexpr bool IsRational = false;
+
+    /// \brief Specialization for rational types.
+    template <Int VNumerator, Int VDenominator>
+    constexpr bool IsRational<Rational<VNumerator, VDenominator>> = true;
 
     /************************************************************************/
     /* RATIONAL ARITHMETIC                                                  */
@@ -120,5 +141,17 @@ namespace Syntropy::Templates
 
     /// \brief "Exa" IS ratio.
     using Exa = Details::UnwrapRational<std::exa>;
+
+    /// \brief "Kibi" binary ratio.
+    using Kibi = Rational<0x400LL, 1>;
+
+    /// \brief "Mebi" binary ratio.
+    using Mebi = Rational<0x100000LL, 1>;
+
+    /// \brief "Gibi" binary ratio.
+    using Gibi = Rational<0x40000000LL, 1>;
+
+    /// \brief "Tebi" binary ratio.
+    using Tebi = Rational<0x10000000000LL, 1>;
 
 }

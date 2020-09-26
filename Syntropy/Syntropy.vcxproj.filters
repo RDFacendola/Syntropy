@@ -152,6 +152,7 @@
     <ClInclude Include="include\syntropy\language\templates\details\math.h" />
     <ClInclude Include="include\syntropy\language\templates\rational.h" />
     <ClInclude Include="include\syntropy\language\templates\details\rational.h" />
+    <ClInclude Include="include\syntropy\memory\details\bytes_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

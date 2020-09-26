@@ -10,6 +10,7 @@
 #include <ratio>
 
 #include "syntropy/language/foundation/types.h"
+#include "syntropy/language/templates/math.h"
 
 namespace Syntropy::Templates
 {
@@ -23,18 +24,6 @@ namespace Syntropy::Templates
 
 namespace Syntropy::Templates::Details
 {
-    /************************************************************************/
-    /* IS RATIONAL                                                          */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TRational is a Rational type, equal to false otherwise.
-    template <typename TRational>
-    constexpr bool IsRational = false;
-
-    /// \brief Specialization for rational types.
-    template <Int VNumerator, Int VDenominator>
-    constexpr bool IsRational<Rational<VNumerator, VDenominator>> = true;
-
     /************************************************************************/
     /* IS STD RATIO                                                         */
     /************************************************************************/
@@ -76,4 +65,29 @@ namespace Syntropy::Templates::Details
     /// \brief Unwrap a rational number type from standard's std::ratio.
     template <typename TRatio>
     using UnwrapRational = typename RationalUnwrapper<TRatio>::Type;
+
+    /************************************************************************/
+    /* COMMON RATIONAL                                                      */
+    /************************************************************************/
+
+    /// \brief Exposes a member type Type equal to the common rational type that can convert both T0Ratio and T1Ratio without loss.
+    /// \author Raffaele D. Facendola - September 2020.
+    template <typename T0Rational, typename T1Rational>
+    struct CommonRational
+    {
+        static_assert(IsRational<T0Rational>, "T0Rational must be a rational type.");
+        static_assert(IsRational<T1Rational>, "T1Rational must be a rational type.");
+
+    private:
+
+        static constexpr Int kNumerator = Templates::GCD<T0Rational::kNumerator, T1Rational::kNumerator>;
+
+        static constexpr Int kDenominator = Templates::LCM<T0Rational::kDenominator, T1Rational::kDenominator>;
+
+    public:
+
+        using TType = Rational<kNumerator, kDenominator>;
+
+    };
+
 }

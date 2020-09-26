@@ -7,9 +7,13 @@
 #pragma once
 
 #include <ostream>
+#include <compare>
 
 #include "syntropy/language/foundation.h"
+#include "syntropy/language/templates/rational.h"
+#include "syntropy/language/traits/manipulation.h"
 #include "syntropy/memory/memory_types.h"
+#include "syntropy/memory/details/bytes_details.h"
 
 namespace Syntropy
 {
@@ -18,7 +22,196 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Represents a bytes amount.
-    enum class Bytes : Int {};
+    /// \tparam TUnit Type of units. Default Bytes.
+    /// \author Raffaele D. Facendola - September 2020.
+    template <typename TUnit = Templates::Rational<1, 1>>
+    class BytesT
+    {
+    public:
+
+        /// \brief Zero memory amount.
+        constexpr BytesT() noexcept = default;
+
+        /// \brief Copy constructor with unit conversion.
+        template <typename UUnit>
+        constexpr BytesT(const BytesT<UUnit>& rhs) noexcept;
+
+        /// \brief Create an amount of bytes, in TUnits.
+        constexpr explicit BytesT(Int count) noexcept;
+
+        /// \brief Get the amount of bytes, in TUnits.
+        constexpr explicit operator Int() const noexcept;
+
+        /// \brief Default copy assignment operator.
+        constexpr BytesT& operator=(const BytesT&) noexcept = default;
+
+        /// \brief Trivial destructor.
+        ~BytesT() noexcept = default;
+
+    private:
+
+        /// \brief Actual bytes amount, in TUnits.
+        Int count_{ 0 };
+
+    };
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Pre-increment a byte amount rhs by one.
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator++(BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Post-increment a byte amount rhs by one.
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator++(BytesT<TUnit>& rhs, int) noexcept;
+
+    /// \brief Pre-decrement a byte amount by one.
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator--(BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Post-decrement a byte amount by one.
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator--(BytesT<TUnit>& rhs, int) noexcept;
+
+    /// \brief Add a byte amount rhs to lhs and return a reference to the latter.
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator+=(BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Subtract a byte amount rhs to lhs and return a reference to the latter. 
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator-=(BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Multiply a byte amount lhs by rhs and return a reference to the former.
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator*=(BytesT<TUnit>& lhs, Int rhs) noexcept;
+
+    /// \brief Divide a byte amount lhs by rhs and return a reference to the former.
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator/=(BytesT<TUnit>& lhs, Int rhs) noexcept;
+
+    /// \brief Get the division remainder of a byte amount lhs and an integral number rhs, updating lhs with the result and returning a reference to it.
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator%=(BytesT<TUnit>& lhs, Int rhs) noexcept;
+
+    /// \brief Negate a byte amount.
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator-(const BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Add two byte amounts together
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator+(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Subtract a byte amount rhs from lhs.
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator-(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Multiply a byte amount by a number.
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator*(const BytesT<TUnit>& lhs, Int rhs) noexcept;
+
+    /// \brief Multiply a byte amount by a number.
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator*(Int lhs, const BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Divide a byte amount by a number, rounding the result towards zero.
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator/(const BytesT<TUnit>& lhs, Int rhs) noexcept;
+
+    /// \brief Divide a byte amount lhs by another byte amounts rhs, rounding the result towards zero.
+    template <typename TUnit>
+    constexpr Int operator/(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Get the remainder of a byte amount divided by a number.
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator%(const BytesT<TUnit>& lhs, Int rhs) noexcept;
+
+    /// \brief Get the remainder of a byte amount divided by another amount.
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator%(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept;
+
+    /************************************************************************/
+    /* COMPARISON                                                           */
+    /************************************************************************/
+
+    /// \brief Compare two bytes amounts.
+    template <typename T0Unit, typename T1Unit>
+    constexpr auto operator<=>(const BytesT<T0Unit>& lhs, const BytesT<T1Unit>& rhs) noexcept;
+
+    /// \brief Check whether two bytes amounts refer to the same quantity.
+    template <typename T0Unit, typename T1Unit>
+    constexpr bool operator==(const BytesT<T0Unit>& lhs, const BytesT<T1Unit>& rhs) noexcept;
+
+    /************************************************************************/
+    /* UNITS                                                                */
+    /************************************************************************/
+
+    /// \brief Type alias for an amount of memory, in Bits.
+    using Bits = BytesT<Templates::Rational<1, 8>>;
+
+    /// \brief Type alias for an amount of memory, in Bytes.
+    using Bytes = BytesT<Templates::Rational<1, 1>>;
+
+    /// \brief Type alias for an amount of memory, in KByes.
+    using KiloBytes = BytesT<Templates::Kilo>;
+
+    /// \brief Type alias for an amount of memory, in MBytes.
+    using MegaBytes = BytesT<Templates::Mega>;
+
+    /// \brief Type alias for an amount of memory, in GBytes.
+    using GigaBytes = BytesT<Templates::Giga>;
+
+    /// \brief Type alias for an amount of memory, in TBytes.
+    using TeraBytes = BytesT<Templates::Tera>;
+
+    /// \brief Type alias for an amount of memory, in KiBytes.
+    using KibiBytes = BytesT<Templates::Kibi>;
+
+    /// \brief Type alias for an amount of memory, in MiBytes.
+    using MebiBytes = BytesT<Templates::Mebi>;
+
+    /// \brief Type alias for an amount of memory, in GiBytes.
+    using GibiBytes = BytesT<Templates::Gibi>;
+
+    /// \brief Type alias for an amount of memory, in TiBytes.
+    using TebiBytes = BytesT<Templates::Tebi>;
+
+    /************************************************************************/
+    /* TYPE CAST                                                            */
+    /************************************************************************/
+
+    /// \brief Convert an amount of bytes to integer (in TUnits).
+    template <typename TUnit>
+    constexpr Int ToInt(const BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Convert an integer number to a bytes amount (in TUnits).
+    template <typename TBytes = Bytes>
+    constexpr TBytes ToBytes(Int rhs) noexcept;
+
+    /// \brief Convert a bytes amount in any unit to base bytes units.
+    template <typename TUnit>
+    constexpr Bytes ToBytes(const BytesT<TUnit>& rhs) noexcept;
+
+    /// \brief Convert a bytes amount to another amount with different units, rounding the result towards zero.
+    template <typename TBytesTo, typename TUnitFrom>
+    constexpr TBytesTo FromBytes(const BytesT<TUnitFrom>& rhs) noexcept;
+
+    /************************************************************************/
+    /* TEMPLATES                                                            */
+    /************************************************************************/
+
+    /// \brief Exposes template-related declarations.
+    namespace Templates
+    {
+        /// \brief Constant equal to true if TBytes is a BytesT<T> type, equal to false otherwise.
+        template <typename TRational>
+        constexpr bool IsBytes = Details::IsBytes<TRational>;
+
+        /// \brief Type equal to units of a BytesT<> type TBytes.
+        template <typename TBytes>
+        using ByteUnits = typename Details::ByteUnits<TBytes>::TType;
+    }
 
     /************************************************************************/
     /* MEMORY                                                               */
@@ -37,175 +230,310 @@ namespace Syntropy
     }
 
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* POINTERS                                                             */
     /************************************************************************/
 
-    /// \brief Sum a byte amount to an existing value.
-    constexpr Bytes& operator+=(Bytes& lhs, Bytes rhs) noexcept;
-
-    /// \brief Subtract a byte amount from an existing value.
-    constexpr Bytes& operator-=(Bytes& lhs, Bytes rhs) noexcept;
-
-    /// \brief Multiply a byte amount by a integer number.
-    constexpr Bytes& operator*=(Bytes& lhs, Int rhs) noexcept;
-
-    /// \brief Divide a byte amount by an integer value and round the result towards zero.
-    constexpr Bytes& operator/=(Bytes& lhs, Int rhs) noexcept;
-
-    /// \brief Division remainder of a bytes amount by an integer value.
-    constexpr Bytes& operator%=(Bytes& lhs, Int rhs) noexcept;
-
-    /// \brief Shift a byte amount right.
-    constexpr Bytes& operator>>=(Bytes& lhs, Int rhs) noexcept;
-
-    /// \brief Shift a bytes amount left.
-    constexpr Bytes& operator<<=(Bytes& lhs, Int rhs) noexcept;
-
-    /// \brief Bitwise-and operator.
-    constexpr Bytes& operator&=(Bytes& lhs, Bytes rhs) noexcept;
-
-    /// \brief Bitwise-or operator.
-    constexpr Bytes& operator|=(Bytes& lhs, Bytes rhs) noexcept;
-
-    /// \brief Bitwise-xor operator.
-    constexpr Bytes& operator^=(Bytes& lhs, Bytes rhs) noexcept;
-
-    /// \brief Pre-increment a bytes amount by one.
-    constexpr Bytes& operator++(Bytes& rhs) noexcept;
-
-    /// \brief Post-increment a bytes amount by one.
-    constexpr Bytes operator++(Bytes& rhs, int) noexcept;
-
-    /// \brief Pre-decrement a bytes amount by one.
-    constexpr Bytes& operator--(Bytes& rhs) noexcept;
-
-    /// \brief Post-decrement a bytes amount by one.
-    constexpr Bytes operator--(Bytes& rhs, int) noexcept;
-
-    /// \brief Sum two bytes amount.
-    /// \return Returns a memory amount which is the sum of lhs and rhs.
-    constexpr Bytes operator+(Bytes lhs, Bytes rhs) noexcept;
-
-    /// \brief Subtract two bytes amount.
-    /// \return Returns a memory amount which is the difference of lhs and rhs.
-    constexpr Bytes operator-(Bytes lhs, Bytes rhs) noexcept;
-
-    /// \brief Multiply a byte amount by a number.
-    /// \return Returns a memory amount which is equal to lhs times rhs.
-    constexpr Bytes operator*(Bytes lhs, Int rhs) noexcept;
-
-    /// \brief Multiply a byte amount by a number.
-    /// \return Returns a memory amount which is equal to rhs times lhs.
-    constexpr Bytes operator*(Int lhs, Bytes rhs) noexcept;
-
-    /// \brief Divide a byte amount by a number.
-    /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
-    constexpr Bytes operator/(Bytes lhs, Int rhs) noexcept;
-
-    /// \brief Divide a byte amount by another byte amount.
-    /// \return Returns a memory amount which is equal to lhs divided by rhs. The result is rounded towards zero.
-    constexpr Int operator/(Bytes lhs, Bytes rhs) noexcept;
-
-    /// \brief Get the remainder of a byte amount divided by a number.
-    /// \return Returns a memory amount which is equal to lhs modulus rhs.
-    constexpr Bytes operator%(Bytes lhs, Int rhs) noexcept;
-
-    /// \brief Get the remainder of a byte amount divided by another byte amount.
-    /// \return Returns a memory amount which is equal to lhs modulus rhs.
-    constexpr Int operator%(Bytes lhs, Bytes rhs) noexcept;
-
-    /// \brief Right-shift a bytes amount.
-    /// \return Returns a memory amount which is equal to lhs right-shifted by rhs.
-    constexpr Bytes operator>>(Bytes lhs, Int rhs) noexcept;
-
-    /// \brief Left-shift a bytes amount.
-    /// \return Returns a memory amount which is equal to lhs left-shifted by rhs.
-    constexpr Bytes operator<<(Bytes lhs, Int rhs) noexcept;
-
-    /// \brief Bitwise not of a byte quantity.
-    /// \return Returns a memory amount which is the bitwise not of rhs.
-    constexpr Bytes operator~(Bytes rhs) noexcept;
-
-    /// \brief Bitwise and between two bytes quantities.
-    /// \return Returns a memory amount which is equal to the bitwise and between lhs and rhs.
-    constexpr Bytes operator&(Bytes lhs, Bytes rhs) noexcept;
-
-    /// \brief Bitwise or between two bytes quantities.
-    /// \return Returns a memory amount which is equal to the bitwise or between lhs and rhs.
-    constexpr Bytes operator|(Bytes lhs, Bytes rhs) noexcept;
-
-    /// \brief Bitwise xor between two bytes quantities.
-    /// \return Returns a memory amount which is equal to the bitwise xor between lhs and rhs.
-    constexpr Bytes operator^(Bytes lhs, Bytes rhs) noexcept;
-
     /// \brief Move a byte pointer forward by a given byte amount.
-    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, Bytes rhs) noexcept;
+    template <typename TUnit>
+    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, const BytesT<TUnit>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, Bytes rhs) noexcept;
+    template <typename TUnit>
+    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, const BytesT<TUnit>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    constexpr RWBytePtr operator+(RWBytePtr lhs, Bytes rhs) noexcept;
+    template <typename TUnit>
+    constexpr RWBytePtr operator+(RWBytePtr lhs, const BytesT<TUnit>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    constexpr RWBytePtr operator-(RWBytePtr lhs, Bytes rhs) noexcept;
+    template <typename TUnit>
+    constexpr RWBytePtr operator-(RWBytePtr lhs, const BytesT<TUnit>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    constexpr BytePtr& operator+=(BytePtr& lhs, Bytes rhs) noexcept;
+    template <typename TUnit>
+    constexpr BytePtr& operator+=(BytePtr& lhs, const BytesT<TUnit>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    constexpr BytePtr& operator-=(BytePtr& lhs, Bytes rhs) noexcept;
+    template <typename TUnit>
+    constexpr BytePtr& operator-=(BytePtr& lhs, const BytesT<TUnit>& rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given byte amount.
-    constexpr BytePtr operator+(BytePtr lhs, Bytes rhs) noexcept;
+    template <typename TUnit>
+    constexpr BytePtr operator+(BytePtr lhs, const BytesT<TUnit>& rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given byte amount.
-    constexpr BytePtr operator-(BytePtr lhs, Bytes rhs) noexcept;
+    template <typename TUnit>
+    constexpr BytePtr operator-(BytePtr lhs, const BytesT<TUnit>& rhs) noexcept;
 
-    /// \brief Stream insertion for Bytes.
-    std::ostream& operator<<(std::ostream& lhs, Bytes rhs);
-
-    /************************************************************************/
-    /* TYPE CAST                                                            */
-    /************************************************************************/
-
-    /// \brief Convert an amount of bytes to integer.
-    constexpr Int ToInt(Bytes lhs) noexcept;
-
-    /// \brief Convert an integer number to a bytes amount.
-    constexpr Bytes ToBytes(Int lhs) noexcept;
+    /// \brief Stream insertion for BytesT<TUnit>.
+    template <typename TUnit>
+    std::ostream& operator<<(std::ostream& lhs, const BytesT<TUnit>& rhs);
 
     /************************************************************************/
     /* LITERALS                                                             */
     /************************************************************************/
 
-    /// \brief Exposes memory unit literals.
+    /// \brief Memory unit literals.
     namespace Literals
     {
         /// \brief User-defined literal used to convert a number from Bytes to Bytes.
         /// \param number Number to convert.
         constexpr Bytes operator "" _Bytes(std::size_t lhs) noexcept;
 
-        /// \brief User-defined literal used to convert a number from KibiBytes to Bytes.
+        /// \brief User-defined literal used to declare an amount of memory in KiloBytes.
         /// \param number Number to convert.
-        constexpr Bytes operator "" _KiBytes(std::size_t lhs) noexcept;
+        constexpr KiloBytes operator "" _KBytes(std::size_t lhs) noexcept;
 
-        /// \brief User-defined literal used to convert a number from MebiBytes to Bytes.
+        /// \brief User-defined literal used to declare an amount of memory in MegaBytes.
         /// \param number Number to convert.
-        constexpr Bytes operator "" _MiBytes(std::size_t lhs) noexcept;
+        constexpr MegaBytes operator "" _MBytes(std::size_t lhs) noexcept;
 
-        /// \brief User-defined literal used to convert a number from GibiBytes to Bytes.
+        /// \brief User-defined literal used to declare an amount of memory in GigaBytes.
         /// \param number Number to convert.
-        constexpr Bytes operator "" _GiBytes(std::size_t lhs) noexcept;
+        constexpr GigaBytes operator "" _GBytes(std::size_t lhs) noexcept;
 
-        /// \brief User-defined literal used to convert a number from TebiBytes to Bytes.
+        /// \brief User-defined literal used to declare an amount of memory in TeraBytes.
         /// \param number Number to convert.
-        constexpr Bytes operator "" _TiBytes(std::size_t lhs) noexcept;
+        constexpr TeraBytes operator "" _TBytes(std::size_t lhs) noexcept;
+
+        /// \brief User-defined literal used to declare an amount of memory in KibiBytes.
+        /// \param number Number to convert.
+        constexpr KibiBytes operator "" _KiBytes(std::size_t lhs) noexcept;
+
+        /// \brief User-defined literal used to declare an amount of memory in MebiBytes.
+        /// \param number Number to convert.
+        constexpr MebiBytes operator "" _MiBytes(std::size_t lhs) noexcept;
+
+        /// \brief User-defined literal used to declare an amount of memory in GibiBytes.
+        /// \param number Number to convert.
+        constexpr GibiBytes operator "" _GiBytes(std::size_t lhs) noexcept;
+
+        /// \brief User-defined literal used to declare an amount of memory in TebiBytes.
+        /// \param number Number to convert.
+        constexpr TebiBytes operator "" _TiBytes(std::size_t lhs) noexcept;
     }
+
+
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
+
+    // BytesT<TUnit>.
+    // ===============
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit>::BytesT(Int count) noexcept
+        : count_(count)
+    {
+
+    }
+
+    template <typename TUnit>
+    template <typename UUnit>
+    constexpr BytesT<TUnit>::BytesT(const BytesT<UUnit>& rhs) noexcept
+        : count_(ToInt(FromBytes<BytesT<TUnit>>(rhs)))
+    {
+
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit>::operator Int() const noexcept
+    {
+        return count_;
+    }
+
+    // Non-member functions.
+    // =====================
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator++(BytesT<TUnit>& rhs) noexcept
+    {
+        rhs += ToBytes<TUnit>(1);
+
+        return rhs;
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator++(BytesT<TUnit>& rhs, int) noexcept
+    {
+        auto copy = rhs;
+
+        ++rhs;
+
+        return copy;
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator--(BytesT<TUnit>& rhs) noexcept
+    {
+        rhs -= ToBytes<TUnit>(1);
+
+        return rhs;
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator--(BytesT<TUnit>& rhs, int) noexcept
+    {
+        auto copy = rhs;
+
+        --rhs;
+
+        return copy;
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator+=(BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        lhs = lhs + rhs;
+
+        return lhs;
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator-=(BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        lhs = lhs - rhs;
+
+        return lhs;
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator*=(BytesT<TUnit>& lhs, Int rhs) noexcept
+    {
+        lhs = lhs * rhs;
+
+        return lhs;
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator/=(BytesT<TUnit>& lhs, Int rhs) noexcept
+    {
+        lhs = lhs / rhs;
+
+        return lhs;
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit>& operator%=(BytesT<TUnit>& lhs, Int rhs) noexcept
+    {
+        lhs = lhs % rhs;
+
+        return lhs;
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator-(const BytesT<TUnit>& rhs) noexcept
+    {
+        return BytesT<TUnit>{ -ToInt(rhs) };
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator+(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        return BytesT<TUnit>{ ToInt(lhs) + ToInt(rhs) };
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator-(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        return BytesT<TUnit>{ ToInt(lhs) - ToInt(rhs) };
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator*(const BytesT<TUnit>& lhs, Int rhs) noexcept
+    {
+        return BytesT<TUnit>{ ToInt(lhs) * rhs };
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator*(Int lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        return BytesT<TUnit>{ lhs * ToInt(rhs) };
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator/(const BytesT<TUnit>& lhs, Int rhs) noexcept
+    {
+        return BytesT<TUnit>{ ToInt(lhs) / rhs };
+    }
+
+    template <typename TUnit>
+    constexpr Int operator/(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        return ToInt(lhs) / ToInt(rhs);
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator%(const BytesT<TUnit>& lhs, Int rhs) noexcept
+    {
+        return BytesT<TUnit>{ ToInt(lhs) % rhs };
+    }
+
+    template <typename TUnit>
+    constexpr BytesT<TUnit> operator%(const BytesT<TUnit>& lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        return BytesT<TUnit>{ ToInt(lhs) % ToInt(rhs) };
+    }
+
+    // Comparison.
+    // ===========
+
+     template <typename T0Unit, typename T1Unit>
+     constexpr auto operator<=>(const BytesT<T0Unit>& lhs, const BytesT<T1Unit>& rhs) noexcept
+     {
+         using TCommon = Templates::CommonRational<T0Unit, T1Unit>;
+ 
+         auto common_lhs = FromBytes<BytesT<TCommon>>(lhs);
+         auto common_rhs = FromBytes<BytesT<TCommon>>(rhs);
+ 
+         return ToInt(common_lhs) <=> ToInt(common_rhs);
+     }
+
+     template <typename T0Unit, typename T1Unit>
+     constexpr bool operator==(const BytesT<T0Unit>& lhs, const BytesT<T1Unit>& rhs) noexcept
+     {
+         using TCommon = Templates::CommonRational<T0Unit, T1Unit>;
+
+         auto common_lhs = FromBytes<BytesT<TCommon>>(lhs);
+         auto common_rhs = FromBytes<BytesT<TCommon>>(rhs);
+
+         return ToInt(common_lhs) == ToInt(common_rhs);
+     }
+
+    // Type cast.
+    // ==========
+
+    template <typename TUnit>
+    constexpr Int ToInt(const BytesT<TUnit>& rhs) noexcept
+    {
+        return static_cast<Int>(rhs);
+    }
+
+    template <typename TBytes>
+    constexpr TBytes ToBytes(Int rhs) noexcept
+    {
+        static_assert(Templates::IsBytes<TBytes>, "TBytes is not a ByteT<> type.");
+        return TBytes{ rhs };
+    }
+
+    template <typename TUnit>
+    constexpr Bytes ToBytes(const BytesT<TUnit>& rhs) noexcept
+    {
+        return FromBytes<Bytes>(rhs);
+    }
+
+    template <typename TBytesTo, typename TUnitFrom>
+    constexpr TBytesTo FromBytes(const BytesT<TUnitFrom>& rhs) noexcept
+    {
+        static_assert(Templates::IsBytes<TBytesTo>, "TBytesTo is not a ByteT<> type.");
+
+        using TRatio = Templates::RationalQuotient<TUnitFrom, Templates::ByteUnits<TBytesTo>>;
+
+        auto count = (ToInt(rhs) * TRatio::kNumerator) / TRatio::kDenominator;
+
+        return TBytesTo{ count };
+    }
 
     // Memory.
     // =======
@@ -222,276 +550,119 @@ namespace Syntropy
         return Bytes{ sizeof(TType) };
     }
 
-    // Non-member functions.
-    // =====================
+    // Pointers.
+    // =========
 
-    constexpr Bytes& operator+=(Bytes& lhs, Bytes rhs) noexcept
+    template <typename TUnit>
+    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        lhs = lhs + ToInt(ToBytes(rhs));
+
+        return lhs;
+    }
+
+    template <typename TUnit>
+    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        lhs = lhs - ToInt(ToBytes(rhs));
+
+        return lhs;
+    }
+
+    template <typename TUnit>
+    constexpr RWBytePtr operator+(RWBytePtr lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        return lhs + ToInt(ToBytes(rhs));
+    }
+
+    template <typename TUnit>
+    constexpr RWBytePtr operator-(RWBytePtr lhs, const BytesT<TUnit>& rhs) noexcept
+    {
+        return lhs - ToInt(ToBytes(rhs));
+    }
+
+    template <typename TUnit>
+    constexpr BytePtr& operator+=(BytePtr& lhs, const BytesT<TUnit>& rhs) noexcept
     {
         lhs = lhs + rhs;
 
         return lhs;
     }
 
-    constexpr Bytes& operator-=(Bytes& lhs, Bytes rhs) noexcept
+    template <typename TUnit>
+    constexpr BytePtr& operator-=(BytePtr& lhs, const BytesT<TUnit>& rhs) noexcept
     {
         lhs = lhs - rhs;
 
         return lhs;
     }
 
-    constexpr Bytes& operator*=(Bytes& lhs, Int rhs) noexcept
+    template <typename TUnit>
+    constexpr BytePtr operator+(BytePtr lhs, const BytesT<TUnit>& rhs) noexcept
     {
-        lhs = lhs * rhs;
-
-        return lhs;
+        return lhs + ToInt(ToBytes(rhs));
     }
 
-    constexpr Bytes& operator/=(Bytes& lhs, Int rhs) noexcept
+    template <typename TUnit>
+    constexpr BytePtr operator-(BytePtr lhs, const BytesT<TUnit>& rhs) noexcept
     {
-        lhs = lhs / rhs;
-
-        return lhs;
+        return lhs - ToInt(ToBytes(rhs));
     }
 
-    constexpr Bytes& operator%=(Bytes& lhs, Int rhs) noexcept
-    {
-        lhs = lhs % rhs;
-
-        return lhs;
-    }
-
-    constexpr Bytes& operator>>=(Bytes& lhs, Int rhs) noexcept
-    {
-        lhs = lhs >> rhs;
-
-        return lhs;
-    }
-
-    constexpr Bytes& operator<<=(Bytes& lhs, Int rhs) noexcept
-    {
-        lhs = lhs << rhs;
-
-        return lhs;
-    }
-
-    constexpr Bytes& operator&=(Bytes& lhs, Bytes rhs) noexcept
-    {
-        lhs = lhs & rhs;
-
-        return lhs;
-    }
-
-    constexpr Bytes& operator|=(Bytes& lhs, Bytes rhs) noexcept
-    {
-        lhs = lhs | rhs;
-
-        return lhs;
-    }
-
-    constexpr Bytes& operator^=(Bytes& lhs, Bytes rhs) noexcept
-    {
-        lhs = lhs ^ rhs;
-
-        return lhs;
-    }
-
-    constexpr Bytes& operator++(Bytes& rhs) noexcept
-    {
-        using namespace Literals;
-
-        rhs += 1_Bytes;
-
-        return rhs;
-    }
-
-    constexpr Bytes operator++(Bytes& rhs, int) noexcept
-    {
-        auto copy = rhs;
-
-        ++rhs;
-
-        return copy;
-    }
-
-    constexpr Bytes& operator--(Bytes& rhs) noexcept
-    {
-        using namespace Literals;
-
-        rhs -= 1_Bytes;
-
-        return rhs;
-    }
-
-    constexpr Bytes operator--(Bytes& rhs, int) noexcept
-    {
-        auto copy = rhs;
-
-        --rhs;
-
-        return copy;
-    }
-
-    constexpr Bytes operator+(Bytes lhs, Bytes rhs) noexcept
-    {
-        return ToBytes(ToInt(lhs) + ToInt(rhs));
-    }
-
-    constexpr Bytes operator-(Bytes lhs, Bytes rhs) noexcept
-    {
-        return ToBytes(ToInt(lhs) - ToInt(rhs));
-    }
-
-    constexpr Bytes operator*(Bytes lhs, Int rhs) noexcept
-    {
-        return ToBytes(ToInt(lhs) * rhs);
-    }
-
-    constexpr Bytes operator*(Int lhs, Bytes rhs) noexcept
-    {
-        return ToBytes(lhs * ToInt(rhs));
-    }
-
-    constexpr Bytes operator/(Bytes lhs, Int rhs) noexcept
-    {
-        return ToBytes(ToInt(lhs) / rhs);
-    }
-
-    constexpr Int operator/(Bytes lhs, Bytes rhs) noexcept
-    {
-        return ToInt(lhs) / ToInt(rhs);
-    }
-
-    constexpr Bytes operator%(Bytes lhs, Int rhs) noexcept
-    {
-        return ToBytes(ToInt(lhs) % rhs);
-    }
-
-    constexpr Int operator%(Bytes lhs, Bytes rhs) noexcept
-    {
-        return ToInt(lhs) % ToInt(rhs);
-    }
-
-    constexpr Bytes operator>>(Bytes lhs, Int rhs) noexcept
-    {
-        return (rhs >= 0) ? ToBytes(ToInt(lhs) >> rhs) : (lhs << -rhs);
-    }
-
-    constexpr Bytes operator<<(Bytes lhs, Int rhs) noexcept
-    {
-        return (rhs >= 0) ? ToBytes(ToInt(lhs) << rhs) : (lhs >> -rhs);
-    }
-
-    constexpr Bytes operator~(Bytes rhs) noexcept
-    {
-        return ToBytes(~ToInt(rhs));
-    }
-
-    constexpr Bytes operator&(Bytes lhs, Bytes rhs) noexcept
-    {
-        return ToBytes(ToInt(lhs) & ToInt(rhs));
-    }
-
-    constexpr Bytes operator|(Bytes lhs, Bytes rhs) noexcept
-    {
-        return ToBytes(ToInt(lhs) | ToInt(rhs));
-    }
-
-    constexpr Bytes operator^(Bytes lhs, Bytes rhs) noexcept
-    {
-        return ToBytes(ToInt(lhs) ^ ToInt(rhs));
-    }
-
-    constexpr RWBytePtr& operator+=(RWBytePtr& lhs, Bytes rhs) noexcept
-    {
-        lhs = lhs + rhs;
-
-        return lhs;
-    }
-
-    constexpr RWBytePtr& operator-=(RWBytePtr& lhs, Bytes rhs) noexcept
-    {
-        lhs = lhs - rhs;
-
-        return lhs;
-    }
-
-    constexpr RWBytePtr operator+(RWBytePtr lhs, Bytes rhs) noexcept
-    {
-        return lhs + ToInt(rhs);
-    }
-
-    constexpr RWBytePtr operator-(RWBytePtr lhs, Bytes rhs) noexcept
-    {
-        return lhs - ToInt(rhs);
-    }
-
-    constexpr BytePtr& operator+=(BytePtr& lhs, Bytes rhs) noexcept
-    {
-        lhs = lhs + rhs;
-
-        return lhs;
-    }
-
-    constexpr BytePtr& operator-=(BytePtr& lhs, Bytes rhs) noexcept
-    {
-        lhs = lhs - rhs;
-
-        return lhs;
-    }
-
-    constexpr BytePtr operator+(BytePtr lhs, Bytes rhs) noexcept
-    {
-        return lhs + ToInt(rhs);
-    }
-
-    constexpr BytePtr operator-(BytePtr lhs, Bytes rhs) noexcept
-    {
-        return lhs - ToInt(rhs);
-    }
-
-    inline std::ostream& operator<<(std::ostream& lhs, Bytes rhs)
+    template <typename TUnit>
+    inline std::ostream& operator<<(std::ostream& lhs, const BytesT<TUnit>& rhs)
     {
         return lhs << ToInt(rhs);
     }
 
-    // Type cast.
-
-    constexpr Int ToInt(Bytes lhs) noexcept
-    {
-        return static_cast<Int>(lhs);
-    }
-
-    constexpr Bytes ToBytes(Int lhs) noexcept
-    {
-        return Bytes{ lhs };
-    }
-
     // Literals.
+    // =========
 
     constexpr Bytes Literals::operator "" _Bytes(std::size_t lhs) noexcept
     {
         return Bytes(lhs);
     }
 
-    constexpr Bytes Literals::operator "" _KiBytes(std::size_t lhs) noexcept
+    constexpr KiloBytes Literals::operator "" _KBytes(std::size_t lhs) noexcept
     {
-        return Bytes(lhs * 0x400ull);
+        return KiloBytes(lhs);
     }
 
-    constexpr Bytes Literals::operator "" _MiBytes(std::size_t lhs) noexcept
+    constexpr MegaBytes Literals::operator "" _MBytes(std::size_t lhs) noexcept
     {
-        return Bytes(lhs * 0x400ull * 0x400ull);
+        return MegaBytes(lhs);
     }
 
-    constexpr Bytes Literals::operator "" _GiBytes(std::size_t lhs) noexcept
+    constexpr GigaBytes Literals::operator "" _GBytes(std::size_t lhs) noexcept
     {
-        return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull);
+        return GigaBytes(lhs);
     }
 
-    constexpr Bytes Literals::operator "" _TiBytes(std::size_t lhs) noexcept
+    constexpr TeraBytes Literals::operator "" _TBytes(std::size_t lhs) noexcept
     {
-        return Bytes(lhs * 0x400ull * 0x400ull * 0x400ull * 0x400ull);
+        return TeraBytes(lhs);
     }
+
+    constexpr KibiBytes Literals::operator "" _KiBytes(std::size_t lhs) noexcept
+    {
+        return KibiBytes(lhs);
+    }
+
+    constexpr MebiBytes Literals::operator "" _MiBytes(std::size_t lhs) noexcept
+    {
+        return MebiBytes(lhs);
+    }
+
+    constexpr GibiBytes Literals::operator "" _GiBytes(std::size_t lhs) noexcept
+    {
+        return GibiBytes(lhs);
+    }
+
+    constexpr TebiBytes Literals::operator "" _TiBytes(std::size_t lhs) noexcept
+    {
+        return TebiBytes(lhs);
+    }
+
 
 }
 
