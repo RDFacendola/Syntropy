@@ -95,6 +95,7 @@ namespace Syntropy
     /************************************************************************/
 
     // Iterators.
+    // ==========
 
     /// \brief Get an iterator to the first element in a span.
     template <typename TElement>
@@ -113,6 +114,7 @@ namespace Syntropy
     constexpr TElement* End(const SpanT<TElement>& span) noexcept;
 
     // Observers.
+    // ==========
 
     /// \brief Check whether a span is empty.
     /// \return Returns true if the span is empty, returns false otherwise.
@@ -123,7 +125,7 @@ namespace Syntropy
     template <typename TElement>
     constexpr Int Count(const SpanT<TElement>& span) noexcept;
 
-    // Accessors.
+    // Manipulation.
 
     /// \brief Access the first element in a span.
     /// \remarks Accessing the first element of an empty span results in undefined behavior.
@@ -181,14 +183,14 @@ namespace Syntropy
     [[nodiscard]] constexpr Tuple<SpanT<TElement>, SpanT<TElement>> SliceBack(const SpanT<TElement>& span, Int count) noexcept;
 
     // Set operations.
+    // ===============
 
-    /// \brief Extend lhs to the smallest smallest span which includes both itself and rhs.
-    /// \remarks This function may introduce elements that do not belong to either lhs and rhs. If those elements refer
-    ///          to an invalid memory region, the behavior of this method is undefined.
+    /// \brief Get the smallest span including both lhs and rhs.
+    /// \remarks This function may introduce elements that do not belong to either lhs and rhs. If those elements refer to an invalid memory region, the behavior of this method is undefined.
     template <typename TElement, typename UElement>
     [[nodiscard]] constexpr CommonSpan<TElement, UElement> Union(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
-    /// \brief Reduce lhs to the smallest span shared between itself and rhs.
+    /// \brief Get the largest span shared between lhs and rhs.
     template <typename TElement, typename UElement>
     [[nodiscard]] constexpr CommonSpan<TElement, UElement> Intersection(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
@@ -205,14 +207,11 @@ namespace Syntropy
     constexpr Bool Contains(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
     // Comparisons.
+    // ============
 
     /// \brief Check whether lhs and rhs are identical.
     template <typename TElement, typename UElement>
     constexpr Bool operator==(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
-
-    /// \brief Check whether lhs and rhs are different.
-    template <typename TElement, typename UElement>
-    constexpr Bool operator!=(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
     /// \brief Check whether two spans are element-wise equivalent.
     template <typename TElement, typename UElement>
@@ -240,6 +239,7 @@ namespace Syntropy
     constexpr SpanT<TElement> Find(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
     // Utilities.
+    // ==========
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TBegin>
@@ -248,16 +248,6 @@ namespace Syntropy
     /// \brief Create a new span by deducing template from arguments.
     template <typename TBegin, typename TEnd>
     constexpr auto MakeSpan(TBegin* begin, TEnd* end) noexcept;
-
-    /// \brief Return either lhs if non-empty or lhs otherwise.
-    template <typename TElement, typename UElement>
-    [[nodiscard]] constexpr CommonSpan<TElement, UElement> Either(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
-
-    /// \brief Stream insertion for Spans.
-    template <typename TElement>
-    std::ostream& operator<<(std::ostream& lhs, const SpanT<TElement>& rhs);
-
-    // Read-only \ read-write.
 
     /// \brief Convert a span to its read-only equivalent.
     template <typename TElement>
@@ -276,6 +266,10 @@ namespace Syntropy
     /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
     template <typename TElement>
     [[nodiscard]] constexpr RWSpan<Templates::RemoveConst<TElement>> ReadWrite(SpanT<TElement>&& rhs) noexcept;
+
+    /// \brief Stream insertion for Spans.
+    template <typename TElement>
+    std::ostream& operator<<(std::ostream& lhs, const SpanT<TElement>& rhs);
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -354,7 +348,7 @@ namespace Syntropy
     // =====================
 
     // Iterators.
-
+    
     template <typename TElement>
     constexpr TElement* begin(const SpanT<TElement>& span) noexcept
     {
@@ -474,7 +468,7 @@ namespace Syntropy
             return { begin, end };
         }
 
-        return Either(lhs, rhs);
+        return lhs ? lhs : rhs;
     }
 
     template <typename TElement, typename UElement>
@@ -531,12 +525,6 @@ namespace Syntropy
     constexpr Bool operator==(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
     {
         return (lhs.GetData() == rhs.GetData()) && (lhs.GetCount() == rhs.GetCount());
-    }
-
-    template <typename TElement, typename UElement>
-    constexpr Bool operator!=(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
-    {
-        return !(lhs == rhs);
     }
 
     template <typename TElement, typename UElement>
@@ -631,8 +619,6 @@ namespace Syntropy
         return Span<TSpan>{ begin, end };
     }
 
-    // Read-only \ read-write.
-
     template <typename TElement>
     constexpr Span<TElement> ReadOnly(const SpanT<TElement>& rhs) noexcept
     {
@@ -658,19 +644,6 @@ namespace Syntropy
     constexpr RWSpan<Templates::RemoveConst<TElement>> ReadWrite(SpanT<TElement>&& rhs) noexcept
     {
         return ReadWrite(rhs);
-    }
-
-    template <typename TElement, typename UElement>
-    constexpr CommonSpan<TElement, UElement> Either(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
-    {
-        if (lhs)
-        {
-            return lhs;
-        }
-        else
-        {
-            return rhs;
-        }
     }
 
     template <typename TElement>
