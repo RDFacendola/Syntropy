@@ -53,7 +53,7 @@
     <ClInclude Include="include\syntropy\core\data_structures\stream_vector_view.h" />
     <ClInclude Include="include\syntropy\core\data_structures\vector.h" />
     <ClInclude Include="include\syntropy\core\data_structures\vector_view.h" />
-    <ClInclude Include="include\syntropy\core\sets\span.h" />
+    <ClInclude Include="include\syntropy\core\foundation\span.h" />
     <ClInclude Include="include\syntropy\application\console\auto_console_output_section.h" />
     <ClInclude Include="include\syntropy\application\console\auto_console_style.h" />
     <ClInclude Include="include\syntropy\application\console\console_line_builder.h" />
@@ -96,7 +96,7 @@
     <ClInclude Include="include\syntropy\language\preprocessor.h" />
     <ClInclude Include="include\syntropy\serialization\string_stream.h" />
     <ClInclude Include="include\syntropy\experimental\core\memory.h" />
-    <ClInclude Include="include\syntropy\core\sets\tuple.h" />
+    <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\language\foundation.h" />
     <ClInclude Include="include\syntropy\language\templates\categories.h" />
     <ClInclude Include="include\syntropy\language\templates\details\queries_details.h" />

@@ -10,7 +10,7 @@
 #include "syntropy/language/traits.h"
 #include "syntropy/language/support/initializer_list.h"
 
-#include "syntropy/core/sets/span.h"
+#include "syntropy/core/foundation/span.h"
 
 namespace Syntropy
 {
