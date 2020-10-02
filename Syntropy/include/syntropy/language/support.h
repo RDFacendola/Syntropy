@@ -11,5 +11,4 @@
 #include "syntropy/language/support/initializer_list.h"
 #include "syntropy/language/support/placeholders.h"
 #include "syntropy/language/support/tags.h"
-#include "syntropy/language/support/type_list.h"
 

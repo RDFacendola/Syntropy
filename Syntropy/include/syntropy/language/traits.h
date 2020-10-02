@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "syntropy/language/templates/type_list.h"
 #include "syntropy/language/templates/capabilities.h"
 #include "syntropy/language/templates/categories.h"
 #include "syntropy/language/templates/manipulation.h"
