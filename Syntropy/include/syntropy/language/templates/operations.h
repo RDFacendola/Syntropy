@@ -14,6 +14,8 @@
 #include "syntropy/language/templates/sfinae.h"
 #include "syntropy/language/templates/templates.h"
 
+#include "syntropy/language/templates/details/operations_details.h"
+
 namespace Syntropy::Templates
 {
     /************************************************************************/
@@ -27,6 +29,14 @@ namespace Syntropy::Templates
     /// \brief Constant equal to true if TType is trivially default constructible, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsTriviallyDefaultConstructible = std::is_trivially_default_constructible_v<TType>;
+
+    /************************************************************************/
+    /* ARE DEFAULT CONSTRUCTIBLE                                            */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if all types in TTypeList are default constructible, false otherwise.
+    template <typename TTypeList>
+    inline constexpr Bool AreDefaultConstructible = Details::AreDefaultConstructible<TTypeList>::kValue;
 
     /************************************************************************/
     /* IS COPY CONSTRUCTIBLE                                                */

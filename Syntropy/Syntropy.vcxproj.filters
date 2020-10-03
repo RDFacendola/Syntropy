@@ -152,6 +152,7 @@
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\language\templates\templates.h" />
     <ClInclude Include="include\syntropy\language\templates\details\templates_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\operations_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
