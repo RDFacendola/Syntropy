@@ -18,12 +18,16 @@ namespace Syntropy::Templates
 
     /// \brief Represents a ordered sequence of types.
     /// \author Raffaele D. Facendola - August 2020.
-    template <typename... TTyes>
+    template <typename... TTypes>
     struct TypeList {};
 
     /// \brief Constant equal to true if TType is a TypeList<>, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsTypeList = Details::IsTypeList<TType>;
+
+    /// \brief Type equal to TypeList if TType is a TypeList, otherwise the program is ill-formed.
+    template <typename TType>
+    using ExpectTypeList = Details::ExpectTypeList<TType>;
 
     /************************************************************************/
     /* CONSTANT                                                             */
