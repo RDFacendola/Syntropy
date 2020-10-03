@@ -59,6 +59,14 @@ namespace Syntropy::Templates
     inline constexpr Bool IsTriviallyCopyConstructible = std::is_trivially_copy_constructible_v<TType>;
 
     /************************************************************************/
+    /* ARE COPY CONSTRUCTIBLE                                               */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if all types in TTypeList are copy-constructible, false otherwise.
+    template <typename TTypeList>
+    inline constexpr Bool AreCopyConstructible = Details::AreCopyConstructible<TTypeList>::kValue;
+
+    /************************************************************************/
     /* IS MOVE CONSTRUCTIBLE                                                */
     /************************************************************************/
 

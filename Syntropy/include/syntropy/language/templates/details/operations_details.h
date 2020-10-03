@@ -62,4 +62,21 @@ namespace Syntropy::Templates::Details
         static inline constexpr Bool kValue = (IsImplicitlyDefaultConstructible<TTypes> && ...);
     };
 
+    /************************************************************************/
+    /* ARE COPY CONSTRUCTIBLE                                               */
+    /************************************************************************/
+
+    /// \brief If each type in the type list TTypeList is copy-constructible exposes a member constant Value equal to true, otherwise equal to false.
+    template <typename TTypeList>
+    struct AreCopyConstructible
+    {
+        static_assert(AlwaysFalse<TTypeList>, "Not a TypeList.");
+    };
+
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct AreCopyConstructible<TypeList<TTypes...>>
+    {
+        static inline constexpr Bool kValue = std::conjunction_v<std::is_copy_constructible<TTypes>...>;
+    };
 }
