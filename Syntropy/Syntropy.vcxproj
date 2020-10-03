@@ -25,7 +25,6 @@
     <ClInclude Include="include\syntropy\language\support\explicit.h" />
     <ClInclude Include="include\syntropy\language\support\placeholders.h" />
     <ClInclude Include="include\syntropy\language\support\tags.h" />
-    <ClInclude Include="include\syntropy\language\templates\type_list.h" />
     <ClInclude Include="include\syntropy\language\templates\math.h" />
     <ClInclude Include="include\syntropy\language\templates\capabilities.h" />
     <ClInclude Include="include\syntropy\language\foundation\pointers.h" />

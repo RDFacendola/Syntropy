@@ -150,7 +150,6 @@
     <ClInclude Include="include\syntropy\experimental\memory\smart_pointers.h" />
     <ClInclude Include="include\syntropy\core\foundation\span.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
-    <ClInclude Include="include\syntropy\language\templates\type_list.h" />
     <ClInclude Include="include\syntropy\language\templates\templates.h" />
   </ItemGroup>
   <ItemGroup>
