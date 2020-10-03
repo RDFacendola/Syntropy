@@ -12,7 +12,7 @@
 #include "syntropy/language/templates/logic.h"
 #include "syntropy/language/templates/capabilities.h"
 #include "syntropy/language/templates/sfinae.h"
-#include "syntropy/language/templates/type_list.h"
+#include "syntropy/language/templates/templates.h"
 
 namespace Syntropy::Templates
 {

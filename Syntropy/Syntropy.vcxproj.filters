@@ -125,7 +125,6 @@
     <ClInclude Include="include\syntropy\core\architecture\listener.h" />
     <ClInclude Include="include\syntropy\core\architecture\visitor.h" />
     <ClInclude Include="include\syntropy\core\architecture\scope_guard.h" />
-    <ClInclude Include="include\syntropy\language\templates\constants.h" />
     <ClInclude Include="include\syntropy\language\templates\logic.h" />
     <ClInclude Include="include\syntropy\language\traits.h" />
     <ClInclude Include="include\syntropy\language\templates\branch.h" />
@@ -152,6 +151,7 @@
     <ClInclude Include="include\syntropy\core\foundation\span.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\language\templates\type_list.h" />
+    <ClInclude Include="include\syntropy\language\templates\templates.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

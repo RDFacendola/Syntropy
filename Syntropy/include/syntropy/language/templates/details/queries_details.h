@@ -7,8 +7,8 @@
 #pragma once
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/type_list.h"
-#include "syntropy/language/templates/constants.h"
+#include "syntropy/language/templates/templates.h"
+#include "syntropy/language/templates/templates.h"
 
 namespace Syntropy::Templates::Details
 {

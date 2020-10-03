@@ -1,6 +1,6 @@
 
-/// \file constants.h
-/// \brief This header is part of Syntropy language module. It contains constant-related template machinery.
+/// \file templates.h
+/// \brief This header is part of Syntropy language module. It contains basic definitions for template machinery.
 ///
 /// \author Raffaele D. Facendola - 2020.
 
@@ -10,6 +10,15 @@
 
 namespace Syntropy::Templates
 {
+    /************************************************************************/
+    /* TYPE LIST                                                            */
+    /************************************************************************/
+
+    /// \brief Represents a ordered sequence of types.
+    /// \author Raffaele D. Facendola - August 2020.
+    template <typename... TTyes>
+    struct TypeList {};
+
     /************************************************************************/
     /* CONSTANT                                                             */
     /************************************************************************/
