@@ -18,10 +18,13 @@ namespace Syntropy::Templates::UnitTest
     /// \brief Traits test fixture.
     struct TraitsTestFixture
     {
-        struct Bar {};
-
+        /// \brief Generic struct definition.
         struct Foo {};
 
+        /// \brief Generic struct definition.
+        struct Bar {};
+
+        /// \brief Non-default constructible struct definition.
         struct NonDefaultConstructibleFoo
         {
             NonDefaultConstructibleFoo() = delete;
@@ -29,6 +32,7 @@ namespace Syntropy::Templates::UnitTest
             NonDefaultConstructibleFoo(Int) {};
         };
 
+        /// \brief Default constructible struct definition.
         struct DefaultConstructibleFoo
         {
             DefaultConstructibleFoo() = default;
@@ -36,36 +40,43 @@ namespace Syntropy::Templates::UnitTest
             DefaultConstructibleFoo(Float) {};
         };
 
+        /// \brief Explicit default constructor struct definition.
         struct ExplicitDefaultConstructibleFoo
         {
             explicit ExplicitDefaultConstructibleFoo() {};
         };
 
+        /// \brief Implicit default constructor struct definition.
         struct ImplicitDefaultConstructibleFoo
         {
             ImplicitDefaultConstructibleFoo() {};
         };
 
+        /// \brief Copyable struct definition.
         struct CopyableFoo
         {
             CopyableFoo(const CopyableFoo&) = default;
         };
 
+        /// \brief Non-copyable struct definition.
         struct NonCopyableFoo
         {
             NonCopyableFoo(const NonCopyableFoo&) = delete;
         };
 
-        struct ConstructibleFromBar
-        {
-            ConstructibleFromBar(const Bar&) {};
-        };
-
+        /// \brief Definition for a class that can be constructed from Foo.
         struct ConstructibleFromFoo
         {
             ConstructibleFromFoo(const Foo&) {};
         };
 
+        /// \brief Definition for a class that can be constructed from Bar.
+        struct ConstructibleFromBar
+        {
+            ConstructibleFromBar(const Bar&) {};
+        };
+
+        /// \brief Definition for a class that can be constructed from Foo and Bar.
         struct ConstructibleFromFooAndBar
         {
             ConstructibleFromFooAndBar(const Foo&, const Bar&) {};
@@ -80,31 +91,43 @@ namespace Syntropy::Templates::UnitTest
 
     .TestCase("Are default-constructible type-trait.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<TraitsTestFixture::NonDefaultConstructibleFoo, TraitsTestFixture::DefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<TraitsTestFixture::DefaultConstructibleFoo, TraitsTestFixture::NonDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<TraitsTestFixture::DefaultConstructibleFoo, TraitsTestFixture::DefaultConstructibleFoo>>), true);
+        using NonDefaultConstructibleFoo = TraitsTestFixture::NonDefaultConstructibleFoo;
+        using DefaultConstructibleFoo = TraitsTestFixture::DefaultConstructibleFoo;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<NonDefaultConstructibleFoo, DefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<DefaultConstructibleFoo, NonDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<DefaultConstructibleFoo, DefaultConstructibleFoo>>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<>>), true);
     })
 
     .TestCase("Is implicitly default-constructible type-trait.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TraitsTestFixture::ExplicitDefaultConstructibleFoo>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TraitsTestFixture::ImplicitDefaultConstructibleFoo>), true);
+        using ExplicitDefaultConstructibleFoo = TraitsTestFixture::ExplicitDefaultConstructibleFoo;
+        using ImplicitDefaultConstructibleFoo = TraitsTestFixture::ImplicitDefaultConstructibleFoo;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<ExplicitDefaultConstructibleFoo>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<ImplicitDefaultConstructibleFoo>), true);
     })
 
     .TestCase("Are implicitly default-constructible type-trait.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<TraitsTestFixture::ExplicitDefaultConstructibleFoo, TraitsTestFixture::ImplicitDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<TraitsTestFixture::ImplicitDefaultConstructibleFoo, TraitsTestFixture::ExplicitDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<TraitsTestFixture::ImplicitDefaultConstructibleFoo, TraitsTestFixture::ImplicitDefaultConstructibleFoo>>), true);
+        using ExplicitDefaultConstructibleFoo = TraitsTestFixture::ExplicitDefaultConstructibleFoo;
+        using ImplicitDefaultConstructibleFoo = TraitsTestFixture::ImplicitDefaultConstructibleFoo;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<ExplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<ImplicitDefaultConstructibleFoo, ExplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<ImplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<>>), true);
     })
 
     .TestCase("Are copy-constructible type-trait.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<TraitsTestFixture::NonCopyableFoo, TraitsTestFixture::CopyableFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<TraitsTestFixture::CopyableFoo, TraitsTestFixture::NonCopyableFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<TraitsTestFixture::CopyableFoo, TraitsTestFixture::CopyableFoo>>), true);
+        using NonCopyableFoo = TraitsTestFixture::NonCopyableFoo;
+        using CopyableFoo = TraitsTestFixture::CopyableFoo;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<NonCopyableFoo, CopyableFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<CopyableFoo, NonCopyableFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<CopyableFoo, CopyableFoo>>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<>>), true);
     })
 
