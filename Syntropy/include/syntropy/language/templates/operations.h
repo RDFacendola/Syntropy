@@ -103,6 +103,23 @@ namespace Syntropy::Templates
     inline constexpr Bool IsTriviallyMoveAssignable = std::is_trivially_move_assignable_v<TType>;
 
     /************************************************************************/
+    /* IS CONSTRUCTIBLE                                                     */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType can be constructed by TArguments... arguments, equal to false otherwise.
+    template <typename TType, typename... TArguments>
+    inline constexpr Bool IsConstructible = std::is_constructible_v<TType, TArguments...>;
+
+    /************************************************************************/
+    /* ARE CONSTRUCTIBLE                                                    */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if each type in TTypeList can be constructed via the respective argument in the list TArgumentList, equal to false otherwise.
+    /// \remarks If TTyleList and TArgumentList rank are different, this constant is false.
+    template <typename TTypeList, typename TArgumentList>
+    inline constexpr Bool AreConstructible = Details::AreConstructible<TTypeList, TArgumentList>::kValue;
+
+    /************************************************************************/
     /* IS DESTRUCTIBLE                                                      */
     /************************************************************************/
 

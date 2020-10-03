@@ -102,4 +102,44 @@ namespace Syntropy::Templates::Details
     {
         static inline constexpr Bool kValue = std::conjunction_v<std::is_copy_constructible<TType>, std::is_copy_constructible<TTypes>...>;
     };
+
+    /************************************************************************/
+    /* ARE CONSTRUCTIBLE                                                    */
+    /************************************************************************/
+
+    /// \brief If each type in the type list TTypeList is copy-constructible exposes a member constant Value equal to true, otherwise equal to false.
+    template <typename TTypeList, typename TArgumentList>
+    struct AreConstructible
+    {
+        static_assert(AlwaysFalse<TTypeList, TArgumentList>, "Not a TypeList.");
+    };
+
+    /// \brief Specialization for empty lists.
+    template <>
+    struct AreConstructible<TypeList<>, TypeList<>>
+    {
+        static inline constexpr Bool kValue = true;
+    };
+
+    /// \brief Specialization for when type list is exhausted before the argument list.
+    template <typename TArgument, typename... TArguments>
+    struct AreConstructible<TypeList<>, TypeList<TArgument, TArguments...>>
+    {
+        static inline constexpr Bool kValue = false;
+    };
+
+    /// \brief Specialization for when argument list is exhausted before the type list.
+    template <typename TType, typename... TTypes>
+    struct AreConstructible<TypeList<TType, TTypes...>, TypeList<>>
+    {
+        static inline constexpr Bool kValue = false;
+    };
+
+    /// \brief Partial template specialization for type lists. Type is constructed by a list of types.
+    template <typename TType, typename... TTypes, typename... TArguments, typename... UArguments>
+    struct AreConstructible<TypeList<TType, TTypes...>, TypeList<TypeList<UArguments...>, TArguments...>>
+    {
+        static inline constexpr Bool kValue = std::is_constructible_v<TType, UArguments...> && AreConstructible<TypeList<TTypes...>, TypeList<TArguments...>>::kValue;
+    };
+
 }

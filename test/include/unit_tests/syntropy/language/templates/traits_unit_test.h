@@ -18,6 +18,10 @@ namespace Syntropy::Templates::UnitTest
     /// \brief Traits test fixture.
     struct TraitsTestFixture
     {
+        struct Bar {};
+
+        struct Foo {};
+
         struct NonDefaultConstructibleFoo
         {
             NonDefaultConstructibleFoo() = delete;
@@ -50,6 +54,21 @@ namespace Syntropy::Templates::UnitTest
         struct NonCopyableFoo
         {
             NonCopyableFoo(const NonCopyableFoo&) = delete;
+        };
+
+        struct ConstructibleFromBar
+        {
+            ConstructibleFromBar(const Bar&) {};
+        };
+
+        struct ConstructibleFromFoo
+        {
+            ConstructibleFromFoo(const Foo&) {};
+        };
+
+        struct ConstructibleFromFooAndBar
+        {
+            ConstructibleFromFooAndBar(const Foo&, const Bar&) {};
         };
     };
 
@@ -87,5 +106,22 @@ namespace Syntropy::Templates::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<TraitsTestFixture::CopyableFoo, TraitsTestFixture::NonCopyableFoo>>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<TraitsTestFixture::CopyableFoo, TraitsTestFixture::CopyableFoo>>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<>>), true);
+    })
+
+    .TestCase("Are constructible type-traits", [](auto& fixture)
+    {
+        using Foo = TraitsTestFixture::Foo;
+        using Bar = TraitsTestFixture::Bar;
+        using ConstructibleFromFoo = TraitsTestFixture::ConstructibleFromFoo;
+        using ConstructibleFromBar = TraitsTestFixture::ConstructibleFromBar;
+        using ConstructibleFromFooAndBar = TraitsTestFixture::ConstructibleFromFooAndBar;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConstructible<TypeList<>, TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConstructible<TypeList<>, TypeList<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConstructible<TypeList<Float>, TypeList<>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConstructible<TypeList<Float>, TypeList<TypeList<Int>>>), true);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConstructible<TypeList<ConstructibleFromFoo, ConstructibleFromBar, ConstructibleFromFooAndBar>, TypeList<TypeList<Foo>, TypeList<Bar>, TypeList<Foo, Bar>>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConstructible<TypeList<ConstructibleFromFoo, ConstructibleFromBar, ConstructibleFromFooAndBar>, TypeList<TypeList<Bar>, TypeList<Foo, Bar>, TypeList<Foo>>>), false);
     });
 }
