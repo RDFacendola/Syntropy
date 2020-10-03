@@ -8,6 +8,8 @@
 
 #include "syntropy/language/foundation/types.h"
 
+#include "syntropy/language/templates/details/templates_details.h"
+
 namespace Syntropy::Templates
 {
     /************************************************************************/
@@ -18,6 +20,10 @@ namespace Syntropy::Templates
     /// \author Raffaele D. Facendola - August 2020.
     template <typename... TTyes>
     struct TypeList {};
+
+    /// \brief Constant equal to true if TType is a TypeList<>, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsTypeList = Details::IsTypeList<TType>;
 
     /************************************************************************/
     /* CONSTANT                                                             */
