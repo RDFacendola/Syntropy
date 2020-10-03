@@ -47,12 +47,6 @@ namespace Syntropy::Templates::UnitTest
 
     .TestCase("Are default constructible type-trait.", [](auto& fixture)
     {
-        // Ill-formed commented out.
-
-        // auto r00 = Syntropy::Templates::AreDefaultConstructible<float>;
-        // auto r01 = Syntropy::Templates::AreDefaultConstructible<float, int>;
-
-        // SYNTROPY_UNIT_EQUAL(Syntropy::Templates::AreDefaultConstructible<TypeList<>>, true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<int>>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<float, float, float>>), true);
 
@@ -64,6 +58,11 @@ namespace Syntropy::Templates::UnitTest
     {
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TraitsTestFixture::ExplicitFoo>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TraitsTestFixture::ImplicitFoo>), true);
-    });
+    })
 
+    .TestCase("Are implicitly default constructible type-trait.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<TraitsTestFixture::ExplicitFoo, TraitsTestFixture::ImplicitFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<TraitsTestFixture::ImplicitFoo, TraitsTestFixture::ImplicitFoo>>), true);
+    });
 }

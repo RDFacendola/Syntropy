@@ -11,6 +11,7 @@
 #include "syntropy/language/foundation.h"
 
 #include "syntropy/language/templates/templates.h"
+#include "syntropy/language/templates/sfinae.h"
 
 namespace Syntropy::Templates::Details
 {
@@ -24,7 +25,10 @@ namespace Syntropy::Templates::Details
 
     /// \brief Check if TType is implicitly default constructible from an empty list.
     template <typename TType>
-    using IsImplicitlyDefaultConstructible = decltype(CopyConstruct<TType>({}));
+    using TestIsImplicitlyDefaultConstructible = decltype(CopyConstruct<TType>({}));
+
+    template <typename TType>
+    inline constexpr Bool IsImplicitlyDefaultConstructible = IsValidExpression<TestIsImplicitlyDefaultConstructible, TType>;
 
     /************************************************************************/
     /* ARE DEFAULT CONSTRUCTIBLE                                            */
@@ -42,6 +46,20 @@ namespace Syntropy::Templates::Details
     struct AreDefaultConstructible<TypeList<TTypes...>>
     {
         static inline constexpr Bool kValue = std::conjunction_v<std::is_default_constructible<TTypes>...>;
+    };
+
+    /// \brief If each type in the type list TTypeList is implicitly default constructible exposes a member constant Value equal to true, otherwise equal to false.
+    template <typename TTypeList>
+    struct AreImplicitlyDefaultConstructible
+    {
+        static_assert(AlwaysFalse<TTypeList>, "Not a TypeList.");
+    };
+
+    /// \brief Partial template specialization for type lists.
+    template <typename... TTypes>
+    struct AreImplicitlyDefaultConstructible<TypeList<TTypes...>>
+    {
+        static inline constexpr Bool kValue = (IsImplicitlyDefaultConstructible<TTypes> && ...);
     };
 
 }

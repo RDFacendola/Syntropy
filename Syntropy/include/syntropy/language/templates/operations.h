@@ -32,7 +32,7 @@ namespace Syntropy::Templates
 
     /// \brief Constant equal to true if TType is implicitly default constructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsImplicitlyDefaultConstructible = IsValidExpression<Details::IsImplicitlyDefaultConstructible, TType>;
+    inline constexpr Bool IsImplicitlyDefaultConstructible = Details::IsImplicitlyDefaultConstructible<TType>;
 
     /************************************************************************/
     /* ARE DEFAULT CONSTRUCTIBLE                                            */
@@ -41,6 +41,10 @@ namespace Syntropy::Templates
     /// \brief Constant equal to true if all types in TTypeList are default constructible, false otherwise.
     template <typename TTypeList>
     inline constexpr Bool AreDefaultConstructible = Details::AreDefaultConstructible<TTypeList>::kValue;
+
+    /// \brief Constant equal to true if all types in TTypeList are implicitly default constructible, false otherwise.
+    template <typename TTypeList>
+    inline constexpr Bool AreImplicitlyDefaultConstructible = Details::AreImplicitlyDefaultConstructible<TTypeList>::kValue;
 
     /************************************************************************/
     /* IS COPY CONSTRUCTIBLE                                                */
