@@ -15,6 +15,18 @@
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
+    /* IS IMPLICITLY DEFAULT CONSTRUCTIBLE                                  */
+    /************************************************************************/
+
+    /// \brief Dummy method used to copy construct an argument.
+    template <typename TType>
+    void CopyConstruct(const TType&);
+
+    /// \brief Check if TType is implicitly default constructible from an empty list.
+    template <typename TType>
+    using IsImplicitlyDefaultConstructible = decltype(CopyConstruct<TType>({}));
+
+    /************************************************************************/
     /* ARE DEFAULT CONSTRUCTIBLE                                            */
     /************************************************************************/
 

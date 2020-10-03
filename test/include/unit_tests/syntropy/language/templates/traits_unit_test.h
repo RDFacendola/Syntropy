@@ -27,6 +27,16 @@ namespace Syntropy::Templates::UnitTest
         {
             Bar(Float) {};
         };
+
+        struct ExplicitFoo
+        {
+            explicit ExplicitFoo() {};
+        };
+
+        struct ImplicitFoo
+        {
+            ImplicitFoo() {};
+        };
     };
 
     /************************************************************************/
@@ -35,7 +45,7 @@ namespace Syntropy::Templates::UnitTest
 
     inline const auto& kTraitsUnitTest = MakeAutoUnitTest<TraitsTestFixture>("traits.templates.language.syntropy")
 
-    .TestCase("Test", [](auto& fixture)
+    .TestCase("Are default constructible type-trait.", [](auto& fixture)
     {
         // Ill-formed commented out.
 
@@ -48,6 +58,12 @@ namespace Syntropy::Templates::UnitTest
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<TraitsTestFixture::Foo, TraitsTestFixture::Bar>>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<TraitsTestFixture::Foo, TraitsTestFixture::Bar, int>>), false);
+    })
+
+    .TestCase("Is implicitly default constructible type-trait.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TraitsTestFixture::ExplicitFoo>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TraitsTestFixture::ImplicitFoo>), true);
     });
 
 }

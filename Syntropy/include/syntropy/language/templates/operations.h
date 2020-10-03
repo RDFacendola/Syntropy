@@ -30,6 +30,10 @@ namespace Syntropy::Templates
     template <typename TType>
     inline constexpr Bool IsTriviallyDefaultConstructible = std::is_trivially_default_constructible_v<TType>;
 
+    /// \brief Constant equal to true if TType is implicitly default constructible, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsImplicitlyDefaultConstructible = IsValidExpression<Details::IsImplicitlyDefaultConstructible, TType>;
+
     /************************************************************************/
     /* ARE DEFAULT CONSTRUCTIBLE                                            */
     /************************************************************************/
