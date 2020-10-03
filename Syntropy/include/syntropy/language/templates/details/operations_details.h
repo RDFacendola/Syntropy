@@ -41,12 +41,21 @@ namespace Syntropy::Templates::Details
         static_assert(AlwaysFalse<TTypeList>, "Not a TypeList.");
     };
 
-    /// \brief Partial template specialization for type lists.
-    template <typename... TTypes>
-    struct AreDefaultConstructible<TypeList<TTypes...>>
+    /// \brief Specialization for empty lists.
+    template <>
+    struct AreDefaultConstructible<TypeList<>>
     {
-        static inline constexpr Bool kValue = std::conjunction_v<std::is_default_constructible<TTypes>...>;
+        static inline constexpr Bool kValue = true;
     };
+
+    /// \brief Partial template specialization for type lists.
+    template <typename TType, typename... TTypes>
+    struct AreDefaultConstructible<TypeList<TType, TTypes...>>
+    {
+        static inline constexpr Bool kValue = std::conjunction_v<std::is_default_constructible<TType>, std::is_default_constructible<TTypes>...>;
+    };
+
+    //
 
     /// \brief If each type in the type list TTypeList is implicitly default constructible exposes a member constant Value equal to true, otherwise equal to false.
     template <typename TTypeList>
@@ -55,11 +64,18 @@ namespace Syntropy::Templates::Details
         static_assert(AlwaysFalse<TTypeList>, "Not a TypeList.");
     };
 
-    /// \brief Partial template specialization for type lists.
-    template <typename... TTypes>
-    struct AreImplicitlyDefaultConstructible<TypeList<TTypes...>>
+    /// \brief Specialization for empty lists.
+    template <>
+    struct AreImplicitlyDefaultConstructible<TypeList<>>
     {
-        static inline constexpr Bool kValue = (IsImplicitlyDefaultConstructible<TTypes> && ...);
+        static inline constexpr Bool kValue = true;
+    };
+
+    /// \brief Partial template specialization for type lists.
+    template <typename TType, typename... TTypes>
+    struct AreImplicitlyDefaultConstructible<TypeList<TType, TTypes...>>
+    {
+        static inline constexpr Bool kValue = IsImplicitlyDefaultConstructible<TType> && (IsImplicitlyDefaultConstructible<TTypes> && ...);
     };
 
     /************************************************************************/
@@ -73,10 +89,17 @@ namespace Syntropy::Templates::Details
         static_assert(AlwaysFalse<TTypeList>, "Not a TypeList.");
     };
 
-    /// \brief Partial template specialization for type lists.
-    template <typename... TTypes>
-    struct AreCopyConstructible<TypeList<TTypes...>>
+    /// \brief Specialization for empty lists.
+    template <>
+    struct AreCopyConstructible<TypeList<>>
     {
-        static inline constexpr Bool kValue = std::conjunction_v<std::is_copy_constructible<TTypes>...>;
+        static inline constexpr Bool kValue = true;
+    };
+
+    /// \brief Partial template specialization for type lists.
+    template <typename TType, typename... TTypes>
+    struct AreCopyConstructible<TypeList<TType, TTypes...>>
+    {
+        static inline constexpr Bool kValue = std::conjunction_v<std::is_copy_constructible<TType>, std::is_copy_constructible<TTypes>...>;
     };
 }

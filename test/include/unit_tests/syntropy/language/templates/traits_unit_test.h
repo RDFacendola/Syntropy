@@ -64,6 +64,7 @@ namespace Syntropy::Templates::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<TraitsTestFixture::NonDefaultConstructibleFoo, TraitsTestFixture::DefaultConstructibleFoo>>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<TraitsTestFixture::DefaultConstructibleFoo, TraitsTestFixture::NonDefaultConstructibleFoo>>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<TraitsTestFixture::DefaultConstructibleFoo, TraitsTestFixture::DefaultConstructibleFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<>>), true);
     })
 
     .TestCase("Is implicitly default-constructible type-trait.", [](auto& fixture)
@@ -77,6 +78,7 @@ namespace Syntropy::Templates::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<TraitsTestFixture::ExplicitDefaultConstructibleFoo, TraitsTestFixture::ImplicitDefaultConstructibleFoo>>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<TraitsTestFixture::ImplicitDefaultConstructibleFoo, TraitsTestFixture::ExplicitDefaultConstructibleFoo>>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<TraitsTestFixture::ImplicitDefaultConstructibleFoo, TraitsTestFixture::ImplicitDefaultConstructibleFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<>>), true);
     })
 
     .TestCase("Are copy-constructible type-trait.", [](auto& fixture)
@@ -84,5 +86,6 @@ namespace Syntropy::Templates::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<TraitsTestFixture::NonCopyableFoo, TraitsTestFixture::CopyableFoo>>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<TraitsTestFixture::CopyableFoo, TraitsTestFixture::NonCopyableFoo>>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<TraitsTestFixture::CopyableFoo, TraitsTestFixture::CopyableFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreCopyConstructible<TypeList<>>), true);
     });
 }

@@ -14,7 +14,7 @@
 
 namespace Syntropy::Templates
 {
-    template <typename TType, typename... TTyes>
+    template <typename... TTyes>
     struct TypeList;
 }
 
