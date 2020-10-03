@@ -29,7 +29,7 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     struct AreDefaultConstructible<TypeList<TTypes...>>
     {
-        static inline constexpr Bool kValue = std::conjunction_v<std::is_default_constructible_v<TTypes>...>;
+        static inline constexpr Bool kValue = std::conjunction_v<std::is_default_constructible<TTypes>...>;
     };
 
 }

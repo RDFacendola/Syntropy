@@ -16,7 +16,18 @@ namespace Syntropy::Templates::UnitTest
     /************************************************************************/
 
     /// \brief Traits test fixture.
-    struct TraitsTestFixture {};
+    struct TraitsTestFixture
+    {
+        struct Foo
+        {
+            Foo(Int) {};
+        };
+
+        struct Bar
+        {
+            Bar(Float) {};
+        };
+    };
 
     /************************************************************************/
     /* UNIT TESTS                                                           */
@@ -26,7 +37,17 @@ namespace Syntropy::Templates::UnitTest
 
     .TestCase("Test", [](auto& fixture)
     {
+        // Ill-formed commented out.
 
+        // auto r00 = Syntropy::Templates::AreDefaultConstructible<float>;
+        // auto r01 = Syntropy::Templates::AreDefaultConstructible<float, int>;
+
+        // SYNTROPY_UNIT_EQUAL(Syntropy::Templates::AreDefaultConstructible<TypeList<>>, true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<int>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<float, float, float>>), true);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<TraitsTestFixture::Foo, TraitsTestFixture::Bar>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreDefaultConstructible<TypeList<TraitsTestFixture::Foo, TraitsTestFixture::Bar, int>>), false);
     });
 
 }
