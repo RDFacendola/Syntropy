@@ -18,7 +18,7 @@ namespace Syntropy::Templates
 
     /// \brief Represents a ordered sequence of types.
     /// \author Raffaele D. Facendola - August 2020.
-    template <typename... TTypes>
+    template <typename TType, typename... TTypes>
     struct TypeList {};
 
     /// \brief Constant equal to true if TType is a TypeList<>, equal to false otherwise.
