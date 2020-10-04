@@ -125,7 +125,6 @@
     <ClInclude Include="include\syntropy\core\architecture\listener.h" />
     <ClInclude Include="include\syntropy\core\architecture\visitor.h" />
     <ClInclude Include="include\syntropy\core\architecture\scope_guard.h" />
-    <ClInclude Include="include\syntropy\language\templates\logic.h" />
     <ClInclude Include="include\syntropy\language\traits.h" />
     <ClInclude Include="include\syntropy\language\templates\branch.h" />
     <ClInclude Include="include\syntropy\language\templates\math.h" />

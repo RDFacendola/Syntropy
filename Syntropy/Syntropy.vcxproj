@@ -22,7 +22,6 @@
     <ClInclude Include="include\syntropy\language\templates\details\templates_details.h" />
     <ClInclude Include="include\syntropy\language\templates\ratio.h" />
     <ClInclude Include="include\syntropy\language\templates\details\math_details.h" />
-    <ClInclude Include="include\syntropy\language\templates\logic.h" />
     <ClInclude Include="include\syntropy\language\templates\branch.h" />
     <ClInclude Include="include\syntropy\language\support\explicit.h" />
     <ClInclude Include="include\syntropy\language\support\placeholders.h" />
