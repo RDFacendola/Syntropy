@@ -54,7 +54,7 @@ namespace Syntropy::Templates::Details
     template<typename TType, template <typename...> typename TTemplate>
     constexpr Bool IsTemplateSpecializationOf = false;
 
-    /// \brief Constant equal to true if TType is a specialization of TTemplate, equal to false otherwise.
+    /// \brief Partial template specialization for template specializations (duh...).
     template<template <typename...> typename TTemplate, typename... TTypes>
     constexpr Bool IsTemplateSpecializationOf<TTemplate<TTypes...>, TTemplate> = true;
 }
