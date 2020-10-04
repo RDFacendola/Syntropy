@@ -7,6 +7,7 @@
 #pragma once
 
 #include "unit_tests/syntropy/core/foundation/span_unit_test.h"
+#include "unit_tests/syntropy/core/foundation/tuple_unit_test.h"
 
 #include "unit_tests/syntropy/memory/bytes_unit_test.h"
 #include "unit_tests/syntropy/memory/alignment_unit_test.h"

@@ -153,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\application\unit_test_application.h" />
+    <ClInclude Include="include\unit_tests\syntropy\core\foundation\tuple_unit_test.h" />
     <ClInclude Include="include\unit_tests\syntropy\core\foundation\span_unit_test.h">
       <SubType>
       </SubType>

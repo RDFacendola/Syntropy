@@ -10,7 +10,7 @@
 
 #include "syntropy/unit_test/unit_test.h"
 
-namespace Syntropy::unit_test
+namespace Syntropy::UnitTest
 {
     /************************************************************************/
     /* SPAN TEST FIXTURE                                                    */
@@ -39,7 +39,7 @@ namespace Syntropy::unit_test
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline const auto& span_unit_test = MakeAutoUnitTest<SpanTestFixture>("span.core.syntropy")
+    inline const auto& span_unit_test = MakeAutoUnitTest<SpanTestFixture>("span.foundation.core.syntropy")
 
     .TestCase("Default-constructed spans are empty.", [](auto& fixture)
     {
