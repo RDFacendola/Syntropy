@@ -151,13 +151,13 @@ namespace Syntropy
     // Accessors.
 
     template <typename TElement, Int kRank>
-    constexpr XPointer<TElement> begin(Reference<FixArray<TElement, kRank>> fix_array) noexcept
+    constexpr Pointer<TElement> begin(Reference<FixArray<TElement, kRank>> fix_array) noexcept
     {
         return Begin(fix_array.GetData());
     }
 
     template <typename TElement, Int kRank>
-    constexpr XPointer<TElement> end(Reference<FixArray<TElement, kRank>> fix_array) noexcept
+    constexpr Pointer<TElement> end(Reference<FixArray<TElement, kRank>> fix_array) noexcept
     {
         return End(fix_array.GetData());
     }

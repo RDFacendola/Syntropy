@@ -213,6 +213,10 @@ namespace Syntropy
     template <typename TElement, typename UElement>
     constexpr Bool operator==(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
 
+    /// \brief Check whether lhs and rhs are different.
+    template <typename TElement, typename UElement>
+    constexpr Bool operator!=(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
+
     /// \brief Check whether two spans are element-wise equivalent.
     template <typename TElement, typename UElement>
     constexpr Bool Equals(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept;
@@ -525,6 +529,12 @@ namespace Syntropy
     constexpr Bool operator==(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
     {
         return (lhs.GetData() == rhs.GetData()) && (lhs.GetCount() == rhs.GetCount());
+    }
+
+    template <typename TElement, typename UElement>
+    constexpr Bool operator!=(const SpanT<TElement>& lhs, const SpanT<UElement>& rhs) noexcept
+    {
+        return !(lhs == rhs);
     }
 
     template <typename TElement, typename UElement>

@@ -5,7 +5,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\unit_tests\unit_tests.h" />
-    <ClInclude Include="include\unit_tests\syntropy\core\span_unit_test.h" />
     <ClInclude Include="include\application\unit_test_application.h" />
     <ClInclude Include="include\unit_tests\syntropy\memory\bytes_unit_test.h" />
     <ClInclude Include="include\unit_tests\syntropy\memory\alignment_unit_test.h" />
@@ -13,5 +12,6 @@
     <ClInclude Include="include\unit_tests\syntropy\language\templates\math_unit_test.h" />
     <ClInclude Include="include\unit_tests\syntropy\language\templates\ratio_unit_test.h" />
     <ClInclude Include="include\unit_tests\syntropy\language\templates\traits_unit_test.h" />
+    <ClInclude Include="include\unit_tests\syntropy\core\foundation\span_unit_test.h" />
   </ItemGroup>
 </Project>
