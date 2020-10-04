@@ -342,7 +342,7 @@ namespace Syntropy::Memory
     template <typename TRatio>
     constexpr BytesT<TRatio>& operator++(BytesT<TRatio>& rhs) noexcept
     {
-        rhs += ToBytes<TRatio>(1);
+        rhs += BytesT<TRatio>{ 1 };
 
         return rhs;
     }
@@ -360,7 +360,7 @@ namespace Syntropy::Memory
     template <typename TRatio>
     constexpr BytesT<TRatio>& operator--(BytesT<TRatio>& rhs) noexcept
     {
-        rhs -= ToBytes<TRatio>(1);
+        rhs -= BytesT<TRatio>{ 1 };
 
         return rhs;
     }
