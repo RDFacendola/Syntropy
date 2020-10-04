@@ -7,8 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/type_list.h"
-#include "syntropy/language/templates/logic.h"
+#include "syntropy/language/templates/templates.h"
 
 namespace Syntropy::Templates::Details
 {
@@ -21,16 +20,16 @@ namespace Syntropy::Templates::Details
     inline constexpr Bool IsConvertible = std::is_convertible_v<TFrom, TTo>;
 
     /************************************************************************/
-    /* ALL CONVERTIBLE                                                      */
+    /* ARE CONVERTIBLE                                                      */
     /************************************************************************/
 
     /// \brief Constant equal to true if TFromList and TToList have the same rank and each type in the former is convertible to its respective type in the latter, equal to false otherwise.
     template <Bool VSame, typename TFromList, typename TToList>
-    inline constexpr Bool PairwiseConvertible = false;
+    inline constexpr Bool ArePairwiseConvertible = false;
 
     /// \brief Specialization for same rank type lists.
     template <typename... TFromList, typename... TToList>
-    inline constexpr Bool PairwiseConvertible <true, TypeList<TFromList...>, TypeList<TToList...>> = !Templates::Conjunction<IsConvertible<TFromList, TToList>...>;
+    inline constexpr Bool ArePairwiseConvertible <true, TypeList<TFromList...>, TypeList<TToList...>> = (IsConvertible<TFromList, TToList> && ...);
 
     /// \brief Constant equal to true if all element in TFromList are implicitly convertible to their respective element in TToList, equal to false otherwise.
     /// TFromList and TToList are expected to be same-ranked type lists, otherwise this constant is equal to false.
@@ -44,7 +43,7 @@ namespace Syntropy::Templates::Details
     template <typename... TFroms, typename... TTos>
     struct AreConvertible<TypeList<TFroms...>, TypeList<TTos...>>
     {
-        static constexpr Bool kValue = PairwiseConvertible<sizeof...(TFroms) == sizeof...(TTos), TypeList<TFroms...>, TypeList<TTos...>>;
+        static constexpr Bool kValue = ArePairwiseConvertible<sizeof...(TFroms) == sizeof...(TTos), TypeList<TFroms...>, TypeList<TTos...>>;
     };
 
     /************************************************************************/

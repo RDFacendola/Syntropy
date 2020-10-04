@@ -81,6 +81,18 @@ namespace Syntropy::Templates::UnitTest
         {
             ConstructibleFromFooAndBar(const Foo&, const Bar&) {};
         };
+
+        /// \brief Definition for a class that can be converted to Bar.
+        struct ConvertibleToBar : public Bar
+        {
+
+        };
+
+        /// \brief Definition for a class that can be converted to Foo.
+        struct ConvertibleToFoo : public Foo
+        {
+
+        };
     };
 
     /************************************************************************/
@@ -146,5 +158,30 @@ namespace Syntropy::Templates::UnitTest
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConstructible<TypeList<ConstructibleFromFoo, ConstructibleFromBar, ConstructibleFromFooAndBar>, TypeList<TypeList<Foo>, TypeList<Bar>, TypeList<Foo, Bar>>>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConstructible<TypeList<ConstructibleFromFoo, ConstructibleFromBar, ConstructibleFromFooAndBar>, TypeList<TypeList<Bar>, TypeList<Foo, Bar>, TypeList<Foo>>>), false);
+    })
+
+    .TestCase("Are constructible type-traits", [](auto& fixture)
+    {
+        using Foo = TraitsTestFixture::Foo;
+        using Bar = TraitsTestFixture::Bar;
+        using ConstructibleFromFoo = TraitsTestFixture::ConstructibleFromFoo;
+        using ConstructibleFromBar = TraitsTestFixture::ConstructibleFromBar;
+        using ConvertibleToFoo = TraitsTestFixture::ConvertibleToFoo;
+        using ConvertibleToBar = TraitsTestFixture::ConvertibleToBar;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<>, TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<Int>, TypeList<Int, Float>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<Int>, TypeList<Float>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<Float>, TypeList<Int>>), true);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<>, TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<>, TypeList<Int>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<Float>, TypeList<>>), false);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<ConvertibleToFoo, ConvertibleToBar>, TypeList<Foo, Bar>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<ConvertibleToFoo, ConvertibleToBar>, TypeList<Bar, Foo>>), false);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<Foo, Bar>, TypeList<ConstructibleFromFoo, ConstructibleFromBar>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreConvertible<TypeList<Foo, Bar>, TypeList<ConstructibleFromBar, ConstructibleFromFoo>>), false);
     });
 }

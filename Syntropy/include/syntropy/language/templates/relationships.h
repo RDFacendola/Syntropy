@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
+#include "syntropy/language/templates/details/relationships_details.h"
 
 namespace Syntropy::Templates
 {
@@ -34,7 +35,15 @@ namespace Syntropy::Templates
 
     /// \brief Constant equal to true if TFrom is implicitly convertible to TTo, equal to false otherwise.
     template <typename TFrom, typename TTo>
-    inline constexpr Bool IsConvertible = std::is_convertible_v<TFrom, TTo>;
+    inline constexpr Bool IsConvertible = Details::IsConvertible<TFrom, TTo>;
+
+    /************************************************************************/
+    /* ARE CONVERTIBLE                                                      */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if all types in TFromList are convertible each to their relative type in TToList, false otherwise.
+    template <typename TFromList, typename TToList>
+    inline constexpr Bool AreConvertible = Details::AreConvertible<TFromList, TToList>::kValue;
 
     /************************************************************************/
     /* IS TEMPLATE SPECIALIZATION OF                                        */
