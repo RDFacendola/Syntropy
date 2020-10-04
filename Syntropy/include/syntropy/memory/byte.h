@@ -7,6 +7,7 @@
 #pragma once
 
 #include <ostream>
+#include <cstddef>
 
 #include "syntropy/language/traits.h"
 #include "syntropy/language/foundation.h"
@@ -19,7 +20,7 @@ namespace Syntropy::Memory
 
     /// \brief Represents a single byte.
     /// This type is neither a character type, nor an arithmetic type.
-    using Byte = std::byte;
+    enum class Byte : std::int8_t {};
 
     /************************************************************************/
     /* POINTER TYPES                                                        */
@@ -118,7 +119,5 @@ namespace Syntropy::Memory
 
         return out;
     }
-
 }
-
 

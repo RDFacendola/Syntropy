@@ -7,11 +7,15 @@
 #include "syntropy/serialization/serialization_types.h"
 #include "syntropy/language/foundation.h"
 #include "syntropy/core/data_structures/fix_array.h"
+#include "syntropy/memory/byte.h"
 #include "syntropy/memory/byte_span.h"
-
+#include "syntropy/memory/bytes.h"
+#include "syntropy/memory/alignment.h"
 #include "syntropy/unit_test/unit_test.h"
 
-namespace Syntropy::unit_test
+#include <iostream>
+
+namespace Syntropy::Memory::UnitTest
 {
     /************************************************************************/
     /* BYTE SPAN TEST FIXTURE                                               */
