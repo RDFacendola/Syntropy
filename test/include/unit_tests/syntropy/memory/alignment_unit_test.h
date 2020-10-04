@@ -9,7 +9,7 @@
 
 #include "syntropy/unit_test/unit_test.h"
 
-namespace Syntropy::unit_test
+namespace Syntropy::Memory::UnitTest
 {
     /************************************************************************/
     /* ALIGNMENT TEST FIXTURE                                               */
