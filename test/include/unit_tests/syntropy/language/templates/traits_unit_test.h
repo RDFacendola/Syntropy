@@ -52,6 +52,18 @@ namespace Syntropy::Templates::UnitTest
             ImplicitDefaultConstructibleFoo() {};
         };
 
+        /// \brief Optionally implicit default constructor struct definition.
+        struct OptionalImplicitDefaultConstructibleFoo
+        {
+            OptionalImplicitDefaultConstructibleFoo(Int = 0) {};
+        };
+
+        /// \brief Optionally explicit default constructor struct definition.
+        struct OptionalExplicitDefaultConstructibleFoo
+        {
+            explicit OptionalExplicitDefaultConstructibleFoo(Int = 0) {};
+        };
+
         /// \brief Copyable struct definition.
         struct CopyableFoo
         {
@@ -116,19 +128,31 @@ namespace Syntropy::Templates::UnitTest
     {
         using ExplicitDefaultConstructibleFoo = TraitsTestFixture::ExplicitDefaultConstructibleFoo;
         using ImplicitDefaultConstructibleFoo = TraitsTestFixture::ImplicitDefaultConstructibleFoo;
+        using OptionalExplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalExplicitDefaultConstructibleFoo;
+        using OptionalImplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalImplicitDefaultConstructibleFoo;
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<ExplicitDefaultConstructibleFoo>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<ImplicitDefaultConstructibleFoo>), true);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<OptionalExplicitDefaultConstructibleFoo>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<OptionalImplicitDefaultConstructibleFoo>), true);
     })
 
     .TestCase("Are implicitly default-constructible type-trait.", [](auto& fixture)
     {
         using ExplicitDefaultConstructibleFoo = TraitsTestFixture::ExplicitDefaultConstructibleFoo;
         using ImplicitDefaultConstructibleFoo = TraitsTestFixture::ImplicitDefaultConstructibleFoo;
+        using OptionalExplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalExplicitDefaultConstructibleFoo;
+        using OptionalImplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalImplicitDefaultConstructibleFoo;
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<ExplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<ImplicitDefaultConstructibleFoo, ExplicitDefaultConstructibleFoo>>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<ImplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), true);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<OptionalExplicitDefaultConstructibleFoo, OptionalImplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<OptionalImplicitDefaultConstructibleFoo, OptionalExplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<OptionalImplicitDefaultConstructibleFoo, OptionalImplicitDefaultConstructibleFoo>>), true);
+
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::AreImplicitlyDefaultConstructible<TypeList<>>), true);
     })
 
