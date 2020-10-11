@@ -37,13 +37,15 @@ namespace Syntropy::Templates
     /* ARE DEFAULT CONSTRUCTIBLE                                            */
     /************************************************************************/
 
-    /// \brief Constant equal to true if all types in TTypeList are default constructible, false otherwise.
-    template <typename TTypeList>
-    inline constexpr Bool AreDefaultConstructible = Details::AreDefaultConstructible<TTypeList>::kValue;
+    /// \brief Constant equal to true if all types in TTypes are default constructible, false otherwise.
+    /// \remarks Provided TypeLists are flattened during evaluation.
+    template <typename... TTypes>
+    inline constexpr Bool AreDefaultConstructible = Details::AreDefaultConstructible<TTypes...>::kValue;
 
     /// \brief Constant equal to true if all types in TTypeList are implicitly default constructible, false otherwise.
-    template <typename TTypeList>
-    inline constexpr Bool AreImplicitlyDefaultConstructible = Details::AreImplicitlyDefaultConstructible<TTypeList>::kValue;
+        /// \remarks Provided TypeLists are flattened during evaluation.
+    template <typename... TTypes>
+    inline constexpr Bool AreImplicitlyDefaultConstructible = Details::AreImplicitlyDefaultConstructible<TTypes...>::kValue;
 
     /************************************************************************/
     /* IS COPY CONSTRUCTIBLE                                                */
@@ -62,8 +64,9 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     /// \brief Constant equal to true if all types in TTypeList are copy-constructible, false otherwise.
-    template <typename TTypeList>
-    inline constexpr Bool AreCopyConstructible = Details::AreCopyConstructible<TTypeList>::kValue;
+    /// \remarks Provided TypeLists are flattened during evaluation.
+    template <typename... TTypes>
+    inline constexpr Bool AreCopyConstructible = Details::AreCopyConstructible<TTypes...>::kValue;
 
     /************************************************************************/
     /* IS MOVE CONSTRUCTIBLE                                                */

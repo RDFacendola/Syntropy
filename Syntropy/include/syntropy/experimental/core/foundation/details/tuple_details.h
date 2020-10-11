@@ -12,9 +12,6 @@
 
 namespace Syntropy::Experimental::Details
 {
-    template <typename... TTypes>
-    using TypeList = Templates::TypeList<TTypes...>;
-
     /************************************************************************/
     /* TUPLE CONSTRUCTOR CONDITIONAL EXPLICIT                               */
     /************************************************************************/
@@ -22,8 +19,8 @@ namespace Syntropy::Experimental::Details
     //// (1)
 
     /// \brief False if all types in TTypeList are copy-list-initializable from {}, true otherwise.
-    template <typename TTypeList>
-    inline constexpr Bool IsTupleDefaultConstructorExplicit = !Templates::AreImplicitlyDefaultConstructible<TTypeList>;
+    template <typename... TTypes>
+    inline constexpr Bool IsTupleDefaultConstructorExplicit = !Templates::AreImplicitlyDefaultConstructible<TTypes...>;
 
     //// (2)
 
@@ -74,11 +71,11 @@ namespace Syntropy::Experimental::Details
 
     /// \brief Enable explicit default tuple constructor if all types in TTypeList are default constructible and there's at least one type whose default constructor is explicit.
     template <typename TType, typename... TTypes>
-    using EnableTupleExplicitDefaultConstructor = Templates::EnableIf<Templates::AreDefaultConstructible<TypeList<TType, TTypes...>> && IsTupleDefaultConstructorExplicit<TypeList<TType, TTypes...>>>*;
+    using EnableTupleExplicitDefaultConstructor = Templates::EnableIf<Templates::AreDefaultConstructible<TType, TTypes...> && IsTupleDefaultConstructorExplicit<TType, TTypes...>>*;
 
     /// \brief Enable (implicit) default tuple constructor if all types in TTypeList are default constructible and all types have implicit default constructor.
     template <typename TType, typename... TTypes>
-    using EnableTupleImplicitDefaultConstructor = Templates::EnableIf<Templates::AreDefaultConstructible<TypeList<TType, TTypes...>> && !IsTupleDefaultConstructorExplicit<TypeList<TType, TTypes...>>>*;
+    using EnableTupleImplicitDefaultConstructor = Templates::EnableIf<Templates::AreDefaultConstructible<TType, TTypes...> && !IsTupleDefaultConstructorExplicit<TType, TTypes...>>*;
     
     //// (2)
 
