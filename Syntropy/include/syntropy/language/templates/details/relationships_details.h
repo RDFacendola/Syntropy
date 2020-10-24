@@ -19,32 +19,21 @@ namespace Syntropy::Templates::Details
     template <typename TFrom, typename TTo>
     inline constexpr Bool IsConvertible = std::is_convertible_v<TFrom, TTo>;
 
-    /************************************************************************/
-    /* ARE CONVERTIBLE                                                      */
-    /************************************************************************/
+    /// \brief Specialization for type lists.
+    template <typename TFrom, typename... TFroms, typename TTo, typename... TTos>
+    inline constexpr Bool IsConvertible<TypeList<TFrom, TFroms...>, TypeList<TTo, TTos...>> = (IsConvertible<TFrom, TTo> && IsConvertible<TypeList<TFroms...>, TypeList<TTos...>>);
 
-    /// \brief Constant equal to true if TFromList and TToList have the same rank and each type in the former is convertible to its respective type in the latter, equal to false otherwise.
-    template <Bool VSame, typename TFromList, typename TToList>
-    inline constexpr Bool ArePairwiseConvertible = false;
+    /// \brief Specialization for empty type lists. Defaults to true.
+    template <>
+    inline constexpr Bool IsConvertible<TypeList<>, TypeList<>> = true;
 
-    /// \brief Specialization for same rank type lists.
-    template <typename... TFromList, typename... TToList>
-    inline constexpr Bool ArePairwiseConvertible <true, TypeList<TFromList...>, TypeList<TToList...>> = (IsConvertible<TFromList, TToList> && ...);
+    /// \brief Specialization for type lists of different ranks. Defaults to false.
+    template <typename TFrom, typename... TFroms>
+    inline constexpr Bool IsConvertible<TypeList<TFrom, TFroms...>, TypeList<>> = false;
 
-    /// \brief Constant equal to true if all element in TFromList are implicitly convertible to their respective element in TToList, equal to false otherwise.
-    /// TFromList and TToList are expected to be same-ranked type lists, otherwise this constant is equal to false.
-    template <typename TFromList, typename TToList>
-    struct AreConvertible
-    {
-        static_assert(AlwaysFalse<TFromList, TToList>, "TFromList and TToList must be type lists.");
-    };
-    
-    /// \brief Partial template specialization for type lists.
-    template <typename... TFroms, typename... TTos>
-    struct AreConvertible<TypeList<TFroms...>, TypeList<TTos...>>
-    {
-        static constexpr Bool kValue = ArePairwiseConvertible<sizeof...(TFroms) == sizeof...(TTos), TypeList<TFroms...>, TypeList<TTos...>>;
-    };
+    /// \brief Specialization for type lists of different ranks. Defaults to false.
+    template <typename TTo, typename... TTos>
+    inline constexpr Bool IsConvertible<TypeList<>, TypeList<TTo, TTos...>> = false;
 
     /************************************************************************/
     /* IS TEMPLATE SPECIALIZATION OF                                        */

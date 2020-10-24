@@ -23,29 +23,15 @@ namespace Syntropy::Templates
 
     /// \brief Constant equal to true if TType is default-constructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsDefaultConstructible = std::is_default_constructible_v<TType>;
+    inline constexpr Bool IsDefaultConstructible = Details::IsDefaultConstructible<TType>;
 
     /// \brief Constant equal to true if TType is trivially default constructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsTriviallyDefaultConstructible = std::is_trivially_default_constructible_v<TType>;
+    inline constexpr Bool IsTriviallyDefaultConstructible = Details::IsTriviallyDefaultConstructible<TType>;
 
     /// \brief Constant equal to true if TType is implicitly default constructible, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsImplicitlyDefaultConstructible = Details::IsImplicitlyDefaultConstructible<TType>;
-
-    /************************************************************************/
-    /* ARE DEFAULT CONSTRUCTIBLE                                            */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if all types in TTypes are default constructible, false otherwise.
-    /// \remarks Provided TypeLists are flattened during evaluation.
-    template <typename... TTypes>
-    inline constexpr Bool AreDefaultConstructible = Details::AreDefaultConstructible<TTypes...>::kValue;
-
-    /// \brief Constant equal to true if all types in TTypeList are implicitly default constructible, false otherwise.
-        /// \remarks Provided TypeLists are flattened during evaluation.
-    template <typename... TTypes>
-    inline constexpr Bool AreImplicitlyDefaultConstructible = Details::AreImplicitlyDefaultConstructible<TTypes...>::kValue;
 
     /************************************************************************/
     /* IS COPY CONSTRUCTIBLE                                                */
@@ -53,20 +39,11 @@ namespace Syntropy::Templates
 
     /// \brief Constant equal to true if TType is copy-constructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsCopyConstructible = std::is_copy_constructible_v<TType>;
+    inline constexpr Bool IsCopyConstructible = Details::IsCopyConstructible<TType>;
 
     /// \brief Constant equal to true if TType is trivially-copy-constructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsTriviallyCopyConstructible = std::is_trivially_copy_constructible_v<TType>;
-
-    /************************************************************************/
-    /* ARE COPY CONSTRUCTIBLE                                               */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if all types in TTypeList are copy-constructible, false otherwise.
-    /// \remarks Provided TypeLists are flattened during evaluation.
-    template <typename... TTypes>
-    inline constexpr Bool AreCopyConstructible = Details::AreCopyConstructible<TTypes...>::kValue;
+    inline constexpr Bool IsTriviallyCopyConstructible = Details::IsTriviallyCopyConstructible<TType>;
 
     /************************************************************************/
     /* IS MOVE CONSTRUCTIBLE                                                */
@@ -74,11 +51,11 @@ namespace Syntropy::Templates
 
     /// \brief Constant equal to true if TType is move-constructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsMoveConstructible = std::is_move_constructible_v<TType>;
+    inline constexpr Bool IsMoveConstructible = Details::IsMoveConstructible<TType>;
 
     /// \brief Constant equal to true if TType is trivially-move-constructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsTriviallyMoveConstructible = std::is_trivially_move_constructible_v<TType>;
+    inline constexpr Bool IsTriviallyMoveConstructible = Details::IsTriviallyMoveConstructible<TType>;
 
     /************************************************************************/
     /* IS COPY ASSIGNABLE                                                   */
@@ -86,11 +63,11 @@ namespace Syntropy::Templates
 
     /// \brief Constant equal to true if TType is copy-assignable, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsCopyAssignable = std::is_copy_assignable_v<TType>;
+    inline constexpr Bool IsCopyAssignable = Details::IsCopyAssignable<TType>;
 
     /// \brief Constant equal to true if TType is trivially-copy-constructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsTriviallyCopyAssignable = std::is_trivially_copy_assignable_v<TType>;
+    inline constexpr Bool IsTriviallyCopyAssignable = Details::IsTriviallyCopyAssignable<TType>;
 
     /************************************************************************/
     /* IS MOVE ASSIGNABLE                                                   */
@@ -98,28 +75,21 @@ namespace Syntropy::Templates
 
     /// \brief Constant equal to true if TType is move-assignable, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsMoveAssignable = std::is_move_assignable_v<TType>;
+    inline constexpr Bool IsMoveAssignable = Details::IsMoveAssignable<TType>;
 
     /// \brief Constant equal to true if TType is trivially-move-constructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsTriviallyMoveAssignable = std::is_trivially_move_assignable_v<TType>;
+    inline constexpr Bool IsTriviallyMoveAssignable = Details::IsTriviallyMoveAssignable<TType>;
 
     /************************************************************************/
     /* IS CONSTRUCTIBLE                                                     */
     /************************************************************************/
 
     /// \brief Constant equal to true if TType can be constructed by TArguments... arguments, equal to false otherwise.
+    /// This trait supports TypeLists in the form IsConstructible<TypeList<A,B,C>, TypeList<a>, TypeList<b>, TypeList<>>.
+    /// Type-lists TArguments must have the same exact rank as the number of elements in TType, otherwise the program is ill-formed.
     template <typename TType, typename... TArguments>
-    inline constexpr Bool IsConstructible = std::is_constructible_v<TType, TArguments...>;
-
-    /************************************************************************/
-    /* ARE CONSTRUCTIBLE                                                    */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if each type in TTypeList can be constructed via the respective argument in the list TArgumentList, equal to false otherwise.
-    /// \remarks If TTyleList and TArgumentList rank are different, this constant is false.
-    template <typename TTypeList, typename TArgumentList>
-    inline constexpr Bool AreConstructible = Details::AreConstructible<TTypeList, TArgumentList>::kValue;
+    inline constexpr Bool IsConstructible = Details::IsConstructible<TType, TArguments...>;
 
     /************************************************************************/
     /* IS DESTRUCTIBLE                                                      */
@@ -127,7 +97,7 @@ namespace Syntropy::Templates
 
     /// \brief Constant equal to true if TType is trivially-destructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsTriviallyDestructible = std::is_trivially_destructible_v<TType>;
+    inline constexpr Bool IsTriviallyDestructible = Details::IsTriviallyDestructible<TType>;
 
     /************************************************************************/
     /* IS TRIVIALLY SWAPPABLE                                               */

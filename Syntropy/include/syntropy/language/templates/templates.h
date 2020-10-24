@@ -25,10 +25,6 @@ namespace Syntropy::Templates
     template <typename TType>
     inline constexpr Bool IsTypeList = Details::IsTypeList<TType>;
 
-    /// \brief Type equal to TypeList if TType is a TypeList, otherwise the program is ill-formed.
-    template <typename TType>
-    using ExpectTypeList = Details::ExpectTypeList<TType>;
-
     /************************************************************************/
     /* CONSTANT                                                             */
     /************************************************************************/
@@ -80,6 +76,16 @@ namespace Syntropy::Templates
     /// \brief Boolean constant which consume any template argument and evaluates to false.
     template <typename...>
     inline constexpr Bool AlwaysFalse = false;
+
+    /************************************************************************/
+    /* ILL-FORMED                                                           */
+    /************************************************************************/
+
+    template <typename... TTypes>
+    struct IllFormed
+    {
+        static_assert(AlwaysFalse<TTypes...>, "The program is ill-formed.");
+    };
 
     /************************************************************************/
     /* VOID                                                                 */

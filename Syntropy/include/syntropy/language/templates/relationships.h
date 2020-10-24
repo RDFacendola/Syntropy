@@ -38,14 +38,6 @@ namespace Syntropy::Templates
     inline constexpr Bool IsConvertible = Details::IsConvertible<TFrom, TTo>;
 
     /************************************************************************/
-    /* ARE CONVERTIBLE                                                      */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if all types in TFromList are convertible each to their relative type in TToList, false otherwise.
-    template <typename TFromList, typename TToList>
-    inline constexpr Bool AreConvertible = Details::AreConvertible<TFromList, TToList>::kValue;
-
-    /************************************************************************/
     /* IS TEMPLATE SPECIALIZATION OF                                        */
     /************************************************************************/
 

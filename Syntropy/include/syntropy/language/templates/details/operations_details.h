@@ -16,8 +16,24 @@
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
-    /* IS IMPLICITLY DEFAULT CONSTRUCTIBLE                                  */
+    /* IS DEFAULT CONSTRUCTIBLE                                             */
     /************************************************************************/
+
+    /// \brief Constant equal to true if TType is default-constructible, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsDefaultConstructible = std::is_default_constructible_v<TType>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsDefaultConstructible<TypeList<TTypes...>> = (IsDefaultConstructible<TTypes> && ...);
+
+    /// \brief Constant equal to true if TType is trivially default constructible, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsTriviallyDefaultConstructible = std::is_trivially_default_constructible_v<TType>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsTriviallyDefaultConstructible<TypeList<TTypes...>> = (IsTriviallyDefaultConstructible<TTypes> && ...);
 
     /// \brief Dummy method used to copy construct an argument.
     template <typename TType>
@@ -27,140 +43,129 @@ namespace Syntropy::Templates::Details
     template <typename TType>
     using TestIsImplicitlyDefaultConstructible = decltype(CopyConstruct<TType>({}));
 
+    /// \brief Constant equal to true if TType is implicitly default constructible, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsImplicitlyDefaultConstructible = IsValidExpression<TestIsImplicitlyDefaultConstructible, TType>;
 
-    /************************************************************************/
-    /* ARE DEFAULT CONSTRUCTIBLE                                            */
-    /************************************************************************/
-
-    /// \brief If each type in TTypes is default constructible exposes a member constant Value equal to true, otherwise equal to false.
+    /// \brief Specialization for type lists.
     template <typename... TTypes>
-    struct AreDefaultConstructible
-    {
-        static inline constexpr Bool kValue = (AreDefaultConstructible<TTypes>::kValue && ...);
-    };
+    inline constexpr Bool IsImplicitlyDefaultConstructible<TypeList<TTypes...>> = (IsImplicitlyDefaultConstructible<TTypes> && ...);
 
-    /// \brief Specialization for individual types.
+    /************************************************************************/
+    /* IS COPY CONSTRUCTIBLE                                                */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is copy-constructible, equal to false otherwise.
     template <typename TType>
-    struct AreDefaultConstructible<TType>
-    {
-        static inline constexpr Bool kValue = std::is_default_constructible_v<TType>;
-    };
+    inline constexpr Bool IsCopyConstructible = std::is_copy_constructible_v<TType>;
 
-    /// \brief Specialization for empty type lists.
-    template <>
-    struct AreDefaultConstructible<TypeList<>>
-    {
-        static inline constexpr Bool kValue = true;
-    };
-
-    /// \brief Partial template specialization for type lists.
-    template <typename TType, typename... TTypes>
-    struct AreDefaultConstructible<TypeList<TType, TTypes...>> : AreDefaultConstructible<TType, TTypes...>
-    {
-
-    };
-
-    //
-
-    /// \brief If each type in TTypes is implicitly default constructible exposes a member constant Value equal to true, otherwise equal to false.
+    /// \brief Specialization for type lists.
     template <typename... TTypes>
-    struct AreImplicitlyDefaultConstructible
-    {
-        static inline constexpr Bool kValue = (AreImplicitlyDefaultConstructible<TTypes>::kValue && ...);
-    };
+    inline constexpr Bool IsCopyConstructible<TypeList<TTypes...>> = (IsCopyConstructible<TTypes> && ...);
 
-    /// \brief Specialization for individual types.
+    /// \brief Constant equal to true if TType is trivially-copy-constructible, equal to false otherwise.
     template <typename TType>
-    struct AreImplicitlyDefaultConstructible<TType>
-    {
-        static inline constexpr Bool kValue = IsImplicitlyDefaultConstructible<TType>;
-    };
+    inline constexpr Bool IsTriviallyCopyConstructible = std::is_trivially_copy_constructible_v<TType>;
 
-    /// \brief Specialization for empty type lists.
-    template <>
-    struct AreImplicitlyDefaultConstructible<TypeList<>>
-    {
-        static inline constexpr Bool kValue = true;
-    };
-
-    /// \brief Partial template specialization for type lists.
-    template <typename TType, typename... TTypes>
-    struct AreImplicitlyDefaultConstructible<TypeList<TType, TTypes...>> : AreImplicitlyDefaultConstructible<TType, TTypes...>
-    {
-
-    };
-
-    /************************************************************************/
-    /* ARE COPY CONSTRUCTIBLE                                               */
-    /************************************************************************/
-
-    /// \brief If each type in TTypes is copy-constructible exposes a member constant Value equal to true, otherwise equal to false.
+    /// \brief Specialization for type lists.
     template <typename... TTypes>
-    struct AreCopyConstructible
-    {
-        static inline constexpr Bool kValue = (AreCopyConstructible<TTypes>::kValue && ...);
-    };
+    inline constexpr Bool IsTriviallyCopyConstructible<TypeList<TTypes...>> = (IsTriviallyCopyConstructible<TTypes> && ...);
 
-    /// \brief Specialization for individual types.
+    /************************************************************************/
+    /* IS MOVE CONSTRUCTIBLE                                                */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is move-constructible, equal to false otherwise.
     template <typename TType>
-    struct AreCopyConstructible<TType>
-    {
-        static inline constexpr Bool kValue = std::is_copy_constructible_v<TType>;
-    };
+    inline constexpr Bool IsMoveConstructible = std::is_move_constructible_v<TType>;
 
-    /// \brief Specialization for empty type lists.
-    template <>
-    struct AreCopyConstructible<TypeList<>>
-    {
-        static inline constexpr Bool kValue = true;
-    };
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsMoveConstructible<TypeList<TTypes...>> = (IsMoveConstructible<TTypes> && ...);
 
-    /// \brief Partial template specialization for type lists.
-    template <typename TType, typename... TTypes>
-    struct AreCopyConstructible<TypeList<TType, TTypes...>> : AreCopyConstructible<TType, TTypes...>
-    {
+    /// \brief Constant equal to true if TType is trivially-move-constructible, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsTriviallyMoveConstructible = std::is_trivially_move_constructible_v<TType>;
 
-    };
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsTriviallyMoveConstructible<TypeList<TTypes...>> = (IsTriviallyMoveConstructible<TTypes> && ...);
 
     /************************************************************************/
-    /* ARE CONSTRUCTIBLE                                                    */
+    /* IS COPY ASSIGNABLE                                                   */
     /************************************************************************/
 
-    /// \brief If each type in the type list TTypeList is copy-constructible exposes a member constant Value equal to true, otherwise equal to false.
-    template <typename TTypeList, typename TArgumentList>
-    struct AreConstructible
-    {
-        static_assert(AlwaysFalse<TTypeList, TArgumentList>, "Not a TypeList.");
-    };
+    /// \brief Constant equal to true if TType is copy-assignable, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsCopyAssignable = std::is_copy_assignable_v<TType>;
 
-    /// \brief Specialization for empty lists.
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsCopyAssignable<TypeList<TTypes...>> = (IsCopyAssignable<TTypes> && ...);
+
+    /// \brief Constant equal to true if TType is trivially-copy-constructible, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsTriviallyCopyAssignable = std::is_trivially_copy_assignable_v<TType>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsTriviallyCopyAssignable<TypeList<TTypes...>> = (IsTriviallyCopyAssignable<TTypes> && ...);
+
+    /************************************************************************/
+    /* IS MOVE ASSIGNABLE                                                   */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is move-assignable, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsMoveAssignable = std::is_move_assignable_v<TType>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsMoveAssignable<TypeList<TTypes...>> = (IsMoveAssignable<TTypes> && ...);
+
+    /// \brief Constant equal to true if TType is trivially-move-constructible, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsTriviallyMoveAssignable = std::is_trivially_move_assignable_v<TType>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsTriviallyMoveAssignable<TypeList<TTypes...>> = (IsTriviallyMoveAssignable<TTypes> && ...);
+
+    /************************************************************************/
+    /* IS CONSTRUCTIBLE                                                     */
+    /************************************************************************/
+
+    /// \brief Helper constant used to unwrap a type list to a variable number of template arguments.
+    template <Bool VEnabled, typename TType, typename... TArguments>
+    inline constexpr Bool IsConstructibleHelper = IllFormed<TType, TArguments...>::kValue;
+
+    /// \brief Specialization for arguments wrapped in type lists.
+    /// Tests the first type with the first argument set and the remaining types with remaining argument sets recursively.
+    template <typename TType, typename... TTypes, typename... TArguments, typename... TArgumentLists>
+    inline constexpr Bool IsConstructibleHelper<true, TypeList<TType, TTypes...>, TypeList<TArguments...>, TArgumentLists...> = std::is_constructible_v<TType, TArguments...> && IsConstructibleHelper<true, TypeList<TTypes...>, TArgumentLists...>;
+
+    // \brief Specialization for empty type list.
     template <>
-    struct AreConstructible<TypeList<>, TypeList<>>
-    {
-        static inline constexpr Bool kValue = true;
-    };
+    inline constexpr Bool IsConstructibleHelper<true, TypeList<>> = true;
 
-    /// \brief Specialization for when type list is exhausted before the argument list.
-    template <typename TArgument, typename... TArguments>
-    struct AreConstructible<TypeList<>, TypeList<TArgument, TArguments...>>
-    {
-        static inline constexpr Bool kValue = false;
-    };
+    /// \brief Constant equal to true if TType can be constructed by TArguments... arguments, equal to false otherwise.
+    template <typename TType, typename... TArguments>
+    inline constexpr Bool IsConstructible = std::is_constructible_v<TType, TArguments...>;
 
-    /// \brief Specialization for when argument list is exhausted before the type list.
-    template <typename TType, typename... TTypes>
-    struct AreConstructible<TypeList<TType, TTypes...>, TypeList<>>
-    {
-        static inline constexpr Bool kValue = false;
-    };
+    /// \brief Specialization for type lists.
+    template <typename... TTypes, typename... TArgumentLists>
+    inline constexpr Bool IsConstructible<TypeList<TTypes...>, TArgumentLists...> = IsConstructibleHelper<sizeof...(TTypes) == sizeof...(TArgumentLists), TypeList<TTypes...>, TArgumentLists...>;
 
-    /// \brief Partial template specialization for type lists. Type is constructed by a list of types.
-    template <typename TType, typename... TTypes, typename... TArguments, typename... UArguments>
-    struct AreConstructible<TypeList<TType, TTypes...>, TypeList<TypeList<UArguments...>, TArguments...>>
-    {
-        static inline constexpr Bool kValue = std::is_constructible_v<TType, UArguments...> && AreConstructible<TypeList<TTypes...>, TypeList<TArguments...>>::kValue;
-    };
+    /************************************************************************/
+    /* IS DESTRUCTIBLE                                                      */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is trivially-destructible, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsTriviallyDestructible = std::is_trivially_destructible_v<TType>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsTriviallyDestructible<TypeList<TTypes...>> = (IsTriviallyDestructible<TTypes> && ...);
 
 }

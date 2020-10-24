@@ -40,23 +40,4 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     inline constexpr Bool IsTypeList<TypeList<TTypes...>> = true;
 
-    /************************************************************************/
-    /* EXPECT TYPE LIST                                                     */
-    /************************************************************************/
-
-    /// \brief If TType is a TypeList, exposes a member type Type equal to that type list, otherwise the program is ill-formed.
-    template <typename TType>
-    struct ExpectTypeList
-    {
-        static_assert(AlwaysFalse<TType>, "TType is not a type list.");
-    };
-
-    /// \brief Specialization for actual type lists.
-    template <typename... TTypes>
-    struct ExpectTypeList<TypeList<TTypes...>>
-    {
-        using Type = TypeList<TTypes...>;
-    };
-
-
 }

@@ -155,6 +155,7 @@
     <ClInclude Include="include\syntropy\language\templates\details\relationships_details.h" />
     <ClInclude Include="include\syntropy\experimental\core\foundation\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\experimental\core\foundation\tuple.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\manipulation_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
