@@ -81,6 +81,7 @@ namespace Syntropy::Templates
     /* ILL-FORMED                                                           */
     /************************************************************************/
 
+    /// \brief An alias type that results in an ill-formed program.
     template <typename... TTypes>
     struct IllFormed
     {
