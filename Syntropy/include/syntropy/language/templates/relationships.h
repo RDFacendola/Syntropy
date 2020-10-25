@@ -34,8 +34,10 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     /// \brief Constant equal to true if TFrom is implicitly convertible to TTo, equal to false otherwise.
-    template <typename TFrom, typename TTo>
-    inline constexpr Bool IsConvertible = Details::IsConvertible<TFrom, TTo>;
+    /// This traits support TypeLists in the form IsConvertible<TypeList<A,B,C>, E, F, G>.
+    /// TTos size is expected to have the same rank as the number of elements in TFrom, otherwise the program is ill-formed.
+    template <typename TFrom, typename... TTos>
+    inline constexpr Bool IsConvertible = Details::IsConvertible<TFrom, TTos...>;
 
     /************************************************************************/
     /* IS TEMPLATE SPECIALIZATION OF                                        */
