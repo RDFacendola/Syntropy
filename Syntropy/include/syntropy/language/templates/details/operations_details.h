@@ -16,6 +16,22 @@
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
+    /* HELPERS                                                              */
+    /************************************************************************/
+
+    /// \brief Dummy method used to copy construct an instance.
+    template <typename TType>
+    void CopyConstruct(const TType&);
+
+    /// \brief Check if TType is implicitly default constructible from an empty list.
+    template <typename TType>
+    using TestIsImplicitlyDefaultConstructible = decltype(CopyConstruct<TType>({}));
+
+    /// \brief Check if TType is implicitly direct-constructible from a list of arguments.
+    template <typename TType, typename... TArguments>
+    using TestIsImplicitlyDirectConstructible = decltype(CopyConstruct<TType>({std::declval<TArguments>()...}));
+
+    /************************************************************************/
     /* IS DEFAULT CONSTRUCTIBLE                                             */
     /************************************************************************/
 
@@ -34,14 +50,6 @@ namespace Syntropy::Templates::Details
     /// \brief Specialization for type lists.
     template <typename... TTypes>
     inline constexpr Bool IsTriviallyDefaultConstructible<TypeList<TTypes...>> = (IsTriviallyDefaultConstructible<TTypes> && ...);
-
-    /// \brief Dummy method used to copy construct an argument.
-    template <typename TType>
-    void CopyConstruct(const TType&);
-
-    /// \brief Check if TType is implicitly default constructible from an empty list.
-    template <typename TType>
-    using TestIsImplicitlyDefaultConstructible = decltype(CopyConstruct<TType>({}));
 
     /// \brief Constant equal to true if TType is implicitly default constructible, equal to false otherwise.
     template <typename TType>
@@ -135,6 +143,9 @@ namespace Syntropy::Templates::Details
     /* IS CONSTRUCTIBLE                                                     */
     /************************************************************************/
 
+    // IsConstructible.
+    // ================
+
     /// \brief Helper constant used to unwrap a type list to a variable number of template arguments.
     template <Bool VEnabled, typename TType, typename... TArguments>
     inline constexpr Bool IsConstructibleHelper = IllFormed<TType, TArguments...>::kValue;
@@ -155,6 +166,30 @@ namespace Syntropy::Templates::Details
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... TArgumentLists>
     inline constexpr Bool IsConstructible<TypeList<TTypes...>, TArgumentLists...> = IsConstructibleHelper<sizeof...(TTypes) == sizeof...(TArgumentLists), TypeList<TTypes...>, TArgumentLists...>;
+
+    // IsImplicitlyConstructible.
+    // ==========================
+
+    /// \brief Helper constant used to unwrap a type list to a variable number of template arguments.
+    template <Bool VEnabled, typename TType, typename... TArguments>
+    inline constexpr Bool IsImplicitlyConstructibleHelper = IllFormed<TType, TArguments...>::kValue;
+
+    /// \brief Specialization for arguments wrapped in type lists.
+    /// Tests the first type with the first argument set and the remaining types with remaining argument sets recursively.
+    template <typename TType, typename... TTypes, typename... TArguments, typename... TArgumentLists>
+    inline constexpr Bool IsImplicitlyConstructibleHelper<true, TypeList<TType, TTypes...>, TypeList<TArguments...>, TArgumentLists...> = IsValidExpression<TestIsImplicitlyDirectConstructible, TType, TArguments...> && IsImplicitlyConstructibleHelper<true, TypeList<TTypes...>, TArgumentLists...>;
+
+    // \brief Specialization for empty type list.
+    template <>
+    inline constexpr Bool IsImplicitlyConstructibleHelper<true, TypeList<>> = true;
+
+    /// \brief Constant equal to true if TType is implicitly default constructible, equal to false otherwise.
+    template <typename TType, typename... TArguments>
+    inline constexpr Bool IsImplicitlyConstructible = IsValidExpression<TestIsImplicitlyDirectConstructible, TType, TArguments...>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes, typename... TArgumentLists>
+    inline constexpr Bool IsImplicitlyConstructible<TypeList<TTypes...>, TArgumentLists...> = IsImplicitlyConstructibleHelper<sizeof...(TTypes) == sizeof...(TArgumentLists), TypeList<TTypes...>, TArgumentLists...>;
 
     /************************************************************************/
     /* IS DESTRUCTIBLE                                                      */

@@ -91,6 +91,13 @@ namespace Syntropy::Templates
     template <typename TType, typename... TArguments>
     inline constexpr Bool IsConstructible = Details::IsConstructible<TType, TArguments...>;
 
+    /// \brief Constant equal to true if TType can be constructed from an initializer list of TArguments, equal to false otherwise.
+    /// This trait supports TypeLists in the form IsImplicitlyConstructible<TypeList<A,B,C>, TypeList<a>, TypeList<b>, TypeList<>>.
+    /// Type-lists TArguments must have the same exact rank as the number of elements in TType, otherwise the program is ill-formed.
+    /// [i] Given a function Foo(const TType&), TType is implicitly constructible if calling Foo({arguments...}) is well-formed.
+    template <typename TType, typename... TArguments>
+    inline constexpr Bool IsImplicitlyConstructible = Details::IsImplicitlyConstructible<TType, TArguments...>;
+
     /************************************************************************/
     /* IS DESTRUCTIBLE                                                      */
     /************************************************************************/
