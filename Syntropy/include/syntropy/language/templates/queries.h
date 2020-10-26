@@ -47,4 +47,12 @@ namespace Syntropy::Templates
     template <Int VIndex, typename TCallable>
     using FunctionArgument = ElementType<VIndex, FunctionArguments<TCallable>>;
 
+    /************************************************************************/
+    /* TEMPLATE ARGUMENTS RANK                                              */
+    /************************************************************************/
+
+    /// \brief Constant equal to the rank (number) of TType template arguments.
+    template <typename TType>
+    inline constexpr Int TemplateArgumentsRank = Details::TemplateArgumentsRank<TType>;
+
 }

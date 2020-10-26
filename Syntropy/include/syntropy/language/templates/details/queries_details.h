@@ -95,4 +95,16 @@ namespace Syntropy::Templates::Details
 
     };
 
+    /************************************************************************/
+    /* TEMPLATE ARGUMENTS RANK                                              */
+    /************************************************************************/
+
+    /// \brief Constant equal to the rank (number) of TType template arguments.
+    template <typename TType>
+    inline constexpr Int TemplateArgumentsRank = IllFormed<TType>;
+
+    /// \brief Partial template specialization for TypeLists.
+    template <template <typename...> typename TTemplate, typename... TTypes>
+    inline constexpr Int TemplateArgumentsRank<TTemplate<TTypes...>> = sizeof...(TTypes);
+
 }
