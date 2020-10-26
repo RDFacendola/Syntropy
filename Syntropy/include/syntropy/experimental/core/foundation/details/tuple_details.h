@@ -10,6 +10,8 @@
 #include "syntropy/language/templates/operations.h"
 #include "syntropy/language/traits.h"
 
+// ===========================================================================
+
 namespace Syntropy::Experimental
 {
     /************************************************************************/
@@ -19,6 +21,8 @@ namespace Syntropy::Experimental
     template <typename... TTypes>
     struct Tuple;
 }
+
+// ===========================================================================
 
 namespace Syntropy::Experimental::Details
 {
@@ -153,6 +157,8 @@ namespace Syntropy::Experimental::Details
     //}
 }
 
+// ===========================================================================
+
 namespace Syntropy::Experimental::Templates::Details
 {
     /************************************************************************/
@@ -161,19 +167,39 @@ namespace Syntropy::Experimental::Templates::Details
 
     /// \brief Provides indexed access to tuple elements' types.
     template <Int VIndex, typename TTuple>
-    struct TupleElementByIndex;
+    struct TupleElementHelper;
 
     /// \brief Specialization for tuples.
     template <Int VIndex, typename TElement, typename... TElements>
-    struct TupleElementByIndex<VIndex, Tuple<TElement, TElements...>> : TupleElementByIndex<VIndex - 1, Tuple<TElements...>> {};
+    struct TupleElementHelper<VIndex, Tuple<TElement, TElements...>> : TupleElementHelper<VIndex - 1, Tuple<TElements...>> {};
 
     /// \brief End of recursion.
     template <typename TElement, typename... TElements>
-    struct TupleElementByIndex<0, Tuple<TElement, TElements...>> : Syntropy::Templates::Alias<TElement> {};
+    struct TupleElementHelper<0, Tuple<TElement, TElements...>> : Syntropy::Templates::Alias<TElement> {};
 
     /// \brief Provides indexed access to tuple elements' types.
     template <Int VIndex, typename TTuple>
-    using TupleElement = typename TupleElementByIndex<VIndex, TTuple>::Type;
+    using TupleElement = typename TupleElementHelper<VIndex, TTuple>::Type;
+
+    /************************************************************************/
+    /* TUPLE POP FRONT                                                      */
+    /************************************************************************/
+
+    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
+    template <Int VCount, typename TTuple>
+    struct TuplePopFrontHelper;
+
+    /// \brief Specialization for tuples.
+    template <Int VCount, typename TElement, typename... TElements>
+    struct TuplePopFrontHelper<VCount, Tuple<TElement, TElements...>> : TuplePopFrontHelper<VCount - 1, Tuple<TElements...>> {};
+
+    /// \brief End of recursion.
+    template <typename TTuple>
+    struct TuplePopFrontHelper<0, TTuple> : Syntropy::Templates::Alias<TTuple> {};
+
+    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
+    template <Int VCount, typename TTuple>
+    using TuplePopFront = typename Details::TuplePopFrontHelper<VCount, TTuple>::Type;
 
     /************************************************************************/
     /* TUPLE SIZE                                                           */

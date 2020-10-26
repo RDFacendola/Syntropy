@@ -261,6 +261,19 @@ namespace Syntropy::Experimental::UnitTest
         SYNTROPY_UNIT_EQUAL((Templates::TupleSize<Tuple<Int, Float>>), 2);
     })
 
+    .TestCase("Discarding no elements from a tuple returns the tuple unchanged.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<0, Tuple<Int>>, Tuple<Int>>), true);
+    })
+
+    .TestCase("Discarding elements from a tuple returns the tuple of the remaining elements.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<1, Tuple<Int, Float, Bool>>, Tuple<Float, Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<2, Tuple<Int, Float, Bool>>, Tuple<Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<3, Tuple<Int, Float, Bool>>, Tuple<>>), true);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<1, Tuple<Int>>, Tuple<>>), true);
+    })
     .TestCase("TupleElement trait is used to get the type a tuple element by index.", [](auto& fixture)
     {
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<0, Tuple<Bool>>, Bool>), true);

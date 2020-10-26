@@ -10,6 +10,8 @@
 
 #include "syntropy/experimental/core/foundation/details/tuple_details.h"
 
+// ===========================================================================
+
 namespace Syntropy::Experimental
 {
     /************************************************************************/
@@ -28,6 +30,8 @@ namespace Syntropy::Experimental
     template <typename TType, typename... TTypes>
     struct Tuple<TType, TTypes...> : private Tuple<TTypes...>
     {
+    public:
+
         /// \brief Type of the base class.
         using TBaseClass = Tuple<TTypes...>;
 
@@ -118,6 +122,8 @@ namespace Syntropy::Experimental
 
 }
 
+// ===========================================================================
+
 namespace Syntropy::Experimental::Templates
 {
     /************************************************************************/
@@ -127,6 +133,14 @@ namespace Syntropy::Experimental::Templates
     /// \brief Provides indexed access to tuple elements' types.
     template <Int VIndex, typename TTuple>
     using TupleElement = Details::TupleElement<VIndex, TTuple>;
+
+    /************************************************************************/
+    /* TUPLE POP FRONT                                                      */
+    /************************************************************************/
+
+    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
+    template <Int VCount, typename TTuple>
+    using TuplePopFront = Details::TuplePopFront<VCount, TTuple>;
 
     /************************************************************************/
     /* TUPLE SIZE                                                           */
@@ -145,5 +159,8 @@ namespace Syntropy::Experimental
 
     // Tuple<Elements...>.
     // ===================
+
+    // Non-member functions.
+    // =====================
 
 }
