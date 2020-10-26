@@ -12,6 +12,35 @@
 
 // ===========================================================================
 
+namespace Syntropy::Experimental::Templates
+{
+    /************************************************************************/
+    /* TUPLE ELEMENT                                                        */
+    /************************************************************************/
+
+    /// \brief Provides indexed access to tuple elements' types.
+    template <Int VIndex, typename TTuple>
+    using TupleElement = Details::TupleElement<VIndex, TTuple>;
+
+    /************************************************************************/
+    /* TUPLE POP FRONT                                                      */
+    /************************************************************************/
+
+    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
+    template <Int VCount, typename TTuple>
+    using TuplePopFront = Details::TuplePopFront<VCount, TTuple>;
+
+    /************************************************************************/
+    /* TUPLE SIZE                                                           */
+    /************************************************************************/
+
+    /// \brief Constant equal to the size (rank) of a tuple.
+    template <typename TTuple>
+    inline constexpr Int TupleSize = Details::TupleSize<TTuple>;
+}
+
+// ===========================================================================
+
 namespace Syntropy::Experimental
 {
     /************************************************************************/
@@ -30,6 +59,18 @@ namespace Syntropy::Experimental
     template <typename TType, typename... TTypes>
     struct Tuple<TType, TTypes...> : private Tuple<TTypes...>
     {
+        template <Int VIndex, typename... TTypes>
+        friend constexpr Templates::TupleElement<VIndex, Tuple<TTypes...>>& Get(Tuple<TTypes...>& tuple) noexcept;
+
+        template <Int VIndex, typename... TTypes>
+        friend constexpr Templates::TupleElement<VIndex, Tuple<TTypes...>>&& Get(Tuple<TTypes...>&& tuple) noexcept;
+
+        template <Int VIndex, typename... TTypes>
+        friend constexpr const Templates::TupleElement<VIndex, Tuple<TTypes...>>& Get(const Tuple<TTypes...>& tuple) noexcept;
+
+        template <Int VIndex, typename... TTypes>
+        friend constexpr const Templates::TupleElement<VIndex, Tuple<TTypes...>>&& Get(const Tuple<TTypes...>&& tuple) noexcept;
+
     public:
 
         /// \brief Type of the base class.
@@ -120,36 +161,33 @@ namespace Syntropy::Experimental
         constexpr Tuple& operator=(const Tuple&) noexcept = default;
     };
 
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks VIndex must be in the range [0, sizeof(TTypes...)).
+    template <Int VIndex, typename... TTypes>
+    constexpr Templates::TupleElement<VIndex, Tuple<TTypes...>>& Get(Tuple<TTypes...>& tuple) noexcept;
+
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks VIndex must be in the range [0, sizeof(TTypes...)).
+    template <Int VIndex, typename... TTypes>
+    constexpr Templates::TupleElement<VIndex, Tuple<TTypes...>>&& Get(Tuple<TTypes...>&& tuple) noexcept;
+
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks VIndex must be in the range [0, sizeof(TTypes...)).
+    template <Int VIndex, typename... TTypes>
+    constexpr const Templates::TupleElement<VIndex, Tuple<TTypes...>>& Get(const Tuple<TTypes...>& tuple) noexcept;
+
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks VIndex must be in the range [0, sizeof(TTypes...)).
+    template <Int VIndex, typename... TTypes>
+    constexpr const Templates::TupleElement<VIndex, Tuple<TTypes...>>&& Get(const Tuple<TTypes...>&& tuple) noexcept;
+
 }
 
 // ===========================================================================
-
-namespace Syntropy::Experimental::Templates
-{
-    /************************************************************************/
-    /* TUPLE ELEMENT                                                        */
-    /************************************************************************/
-
-    /// \brief Provides indexed access to tuple elements' types.
-    template <Int VIndex, typename TTuple>
-    using TupleElement = Details::TupleElement<VIndex, TTuple>;
-
-    /************************************************************************/
-    /* TUPLE POP FRONT                                                      */
-    /************************************************************************/
-
-    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
-    template <Int VCount, typename TTuple>
-    using TuplePopFront = Details::TuplePopFront<VCount, TTuple>;
-
-    /************************************************************************/
-    /* TUPLE SIZE                                                           */
-    /************************************************************************/
-
-    /// \brief Constant equal to the size (rank) of a tuple.
-    template <typename TTuple>
-    inline constexpr Int TupleSize = Details::TupleSize<TTuple>;
-}
 
 namespace Syntropy::Experimental
 {
@@ -157,10 +195,41 @@ namespace Syntropy::Experimental
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Tuple<Elements...>.
-    // ===================
-
     // Non-member functions.
     // =====================
+
+    template <Int VIndex, typename... TTypes>
+    constexpr Templates::TupleElement<VIndex, Tuple<TTypes...>>& Get(Tuple<TTypes...>& tuple) noexcept
+    {
+        using TTuple = Templates::TuplePopFront<VIndex, Tuple<TTypes...>>;
+
+        return static_cast<TTuple&>(tuple).element_;
+    }
+
+    template <Int VIndex, typename... TTypes>
+    constexpr Templates::TupleElement<VIndex, Tuple<TTypes...>>&& Get(Tuple<TTypes...>&& tuple) noexcept
+    {
+        using TTuple = Templates::TuplePopFront<VIndex, Tuple<TTypes...>>;
+        using TElement = Templates::TupleElement<VIndex, Tuple<TTypes...>>;
+
+        return static_cast<TElement&&>(static_cast<TTuple&>(tuple).element_);
+    }
+
+    template <Int VIndex, typename... TTypes>
+    constexpr const Templates::TupleElement<VIndex, Tuple<TTypes...>>& Get(const Tuple<TTypes...>& tuple) noexcept
+    {
+        using TTuple = Templates::TuplePopFront<VIndex, Tuple<TTypes...>>;
+
+        return static_cast<const TTuple&>(tuple).element_;
+    }
+
+    template <Int VIndex, typename... TTypes>
+    constexpr const Templates::TupleElement<VIndex, Tuple<TTypes...>>&& Get(const Tuple<TTypes...>&& tuple) noexcept
+    {
+        using TTuple = Templates::TuplePopFront<VIndex, Tuple<TTypes...>>;
+        using TElement = Templates::TupleElement<VIndex, Tuple<TTypes...>>;
+
+        return static_cast<const TElement&&>(static_cast<const TTuple&>(tuple).element_);
+    }
 
 }
