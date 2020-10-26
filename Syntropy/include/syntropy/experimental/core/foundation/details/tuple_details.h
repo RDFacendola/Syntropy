@@ -10,6 +10,16 @@
 #include "syntropy/language/templates/operations.h"
 #include "syntropy/language/traits.h"
 
+namespace Syntropy::Experimental
+{
+    /************************************************************************/
+    /* TUPLE <ELEMENTS...>                                                  */
+    /************************************************************************/
+
+    template <typename... TTypes>
+    struct Tuple;
+}
+
 namespace Syntropy::Experimental::Details
 {
     /************************************************************************/
@@ -20,44 +30,44 @@ namespace Syntropy::Experimental::Details
 
     /// \brief False if all types in TTypeList are copy-list-initializable from {}, true otherwise.
     template <typename... TTypes>
-    inline constexpr Bool ExplicitIfTupleDefaultConstructor = !Templates::IsImplicitlyDefaultConstructible<Templates::TypeList<TTypes...>>;
+    inline constexpr Bool ExplicitIfTupleDefaultConstructor = !Syntropy::Templates::IsImplicitlyDefaultConstructible<Syntropy::Templates::TypeList<TTypes...>>;
 
     // (2)
 
     /// \brief False if all types in TTypeList are copy-constructible, true otherwise.
     template <typename... TTypes>
-    inline constexpr Bool ExplicitIfTupleDirectConstructor = !Templates::IsConvertible<Templates::TypeList<const TTypes&...>, TTypes...>;
+    inline constexpr Bool ExplicitIfTupleDirectConstructor = !Syntropy::Templates::IsConvertible<Syntropy::Templates::TypeList<const TTypes&...>, TTypes...>;
 
     // (3)
 
 
     /// \brief False if each type in TTypeList can be constructed via their respective type in UTypeList, true otherwise.
     template <typename TTypeList, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingConstructor = Templates::IllFormed<TTypeList, UTypes...>;
+    inline constexpr Bool ExplicitIfTupleConvertingConstructor = Syntropy::Templates::IllFormed<TTypeList, UTypes...>;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<UTypes&&...>, TTypes...>;
+    inline constexpr Bool ExplicitIfTupleConvertingConstructor<Syntropy::Templates::TypeList<TTypes...>, UTypes...> = !Syntropy::Templates::IsConvertible<Syntropy::Templates::TypeList<UTypes&&...>, TTypes...>;
 
     // (4)
 
     /// \brief False if each type in TTypeList can be constructed via their respective const-referenced-qualified type in UTypeList, true otherwise.
     template <typename TTypeList, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor = Templates::IllFormed<TTypeList, UTypes...>;
+    inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor = Syntropy::Templates::IllFormed<TTypeList, UTypes...>;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<const UTypes&...>, TTypes...>;
+    inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor<Syntropy::Templates::TypeList<TTypes...>, UTypes...> = !Syntropy::Templates::IsConvertible<Syntropy::Templates::TypeList<const UTypes&...>, TTypes...>;
 
     // (5)
 
     /// \brief False if each type in TTypeList can be constructed via their respective type in UTypeList, true otherwise.
     template <typename TTypeList, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor = Templates::IllFormed<TTypeList, UTypes...>;
+    inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor = Syntropy::Templates::IllFormed<TTypeList, UTypes...>;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<UTypes&&...>, TTypes...>;
+    inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor<Syntropy::Templates::TypeList<TTypes...>, UTypes...> = !Syntropy::Templates::IsConvertible<Syntropy::Templates::TypeList<UTypes&&...>, TTypes...>;
 
     /************************************************************************/
     /* ENABLE IF - TUPLE CONSTRUCTOR                                        */
@@ -67,13 +77,13 @@ namespace Syntropy::Experimental::Details
 
     /// \brief Enable (implicit) default tuple constructor if all types TTypes are default constructible and all types have implicit default constructor.
     template <typename TTypeList>
-    using EnableIfTupleDefaultConstructor = typename Templates::EnableIf<Templates::IsDefaultConstructible<TTypeList>>*;
+    using EnableIfTupleDefaultConstructor = typename Syntropy::Templates::EnableIf<Syntropy::Templates::IsDefaultConstructible<TTypeList>>*;
 
     // (2)
 
     /// \brief Enable direct tuple constructor if all types TTypes are implicitly copy-constructible.
     template <typename TTypeList>
-    using EnableIfTupleDirectConstructor = typename Templates::EnableIf<Templates::IsCopyConstructible<TTypeList>>*;
+    using EnableIfTupleDirectConstructor = typename Syntropy::Templates::EnableIf<Syntropy::Templates::IsCopyConstructible<TTypeList>>*;
 
     // (3)
 
@@ -83,11 +93,11 @@ namespace Syntropy::Experimental::Details
 
     /// \brief Partial specialization for same-rank type lists.
     template <typename TTypeList, typename... UTypeLists>
-    inline constexpr Bool EnableIfTupleConvertingConstructorHelper<true, TTypeList, UTypeLists...> = Templates::IsConstructible<TTypeList, Templates::AddRValueReference<UTypeLists>...>;
+    inline constexpr Bool EnableIfTupleConvertingConstructorHelper<true, TTypeList, UTypeLists...> = Syntropy::Templates::IsConstructible<TTypeList, Syntropy::Templates::AddRValueReference<UTypeLists>...>;
 
     /// \brief Enable converting tuple constructor.
     template <typename TTypeList, typename... UTypes>
-    using EnableIfTupleConvertingConstructor = typename Templates::EnableIf<EnableIfTupleConvertingConstructorHelper<Templates::TemplateArgumentsRank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>*;
+    using EnableIfTupleConvertingConstructor = typename Syntropy::Templates::EnableIf<EnableIfTupleConvertingConstructorHelper<Syntropy::Templates::TemplateArgumentsRank<TTypeList> == sizeof...(UTypes), TTypeList, Syntropy::Templates::TypeList<UTypes>...>>*;
 
     // (4)
 
@@ -97,18 +107,18 @@ namespace Syntropy::Experimental::Details
 
     /// \brief Partial specialization for same-rank type lists.
     template <typename TTypeList, typename... UTypeLists>
-    inline constexpr Bool EnableIfTupleConvertingCopyConstructorHelper<true, TTypeList, UTypeLists...> = Templates::IsConstructible<TTypeList, Templates::AddLValueConstReference<UTypeLists>...>;
+    inline constexpr Bool EnableIfTupleConvertingCopyConstructorHelper<true, TTypeList, UTypeLists...> = Syntropy::Templates::IsConstructible<TTypeList, Syntropy::Templates::AddLValueConstReference<UTypeLists>...>;
 
     /// \brief Specialization for 1-tuples. True if TType can be constructed from UType and the overload doesn't reduce to a copy-constructor.
     template <typename TType, typename UType>
-    inline constexpr Bool EnableIfTupleConvertingCopyConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, const UType&>
-        && !Templates::IsConvertible<const Tuple<UType>&, TType>
-        && !Templates::IsConstructible<TType, const Tuple<UType>&>
-        && !Templates::IsSame<TType, UType>;
+    inline constexpr Bool EnableIfTupleConvertingCopyConstructorHelper<true, Syntropy::Templates::TypeList<TType>, Syntropy::Templates::TypeList<UType>> = Syntropy::Templates::IsConstructible<TType, const UType&>
+        && !Syntropy::Templates::IsConvertible<const Tuple<UType>&, TType>
+        && !Syntropy::Templates::IsConstructible<TType, const Tuple<UType>&>
+        && !Syntropy::Templates::IsSame<TType, UType>;
 
     /// \brief Enable converting tuple copy-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-copy-constructed from the respective UType and the overload does not reduce to a copy-constructor.
     template <typename TTypeList, typename... UTypes>
-    using EnableIfTupleConvertingCopyConstructor = typename Templates::EnableIf<EnableIfTupleConvertingCopyConstructorHelper<Templates::TemplateArgumentsRank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>*;
+    using EnableIfTupleConvertingCopyConstructor = typename Syntropy::Templates::EnableIf<EnableIfTupleConvertingCopyConstructorHelper<Syntropy::Templates::TemplateArgumentsRank<TTypeList> == sizeof...(UTypes), TTypeList, Syntropy::Templates::TypeList<UTypes>...>>*;
 
     // (5)
 
@@ -118,18 +128,18 @@ namespace Syntropy::Experimental::Details
 
     /// \brief Partial specialization for same-rank type lists.
     template <typename TTypeList, typename... UTypeLists>
-    inline constexpr Bool EnableIfTupleConvertingMoveConstructorHelper<true, TTypeList, UTypeLists...> = Templates::IsConstructible<TTypeList, Templates::AddRValueReference<UTypeLists>...>;
+    inline constexpr Bool EnableIfTupleConvertingMoveConstructorHelper<true, TTypeList, UTypeLists...> = Syntropy::Templates::IsConstructible<TTypeList, Syntropy::Templates::AddRValueReference<UTypeLists>...>;
 
     /// \brief Specialization for 1-tuples. True if TType can be constructed from UType and the overload doesn't reduce to a move-constructor.
     template <typename TType, typename UType>
-    inline constexpr Bool EnableIfTupleConvertingMoveConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, UType&&>
-        && !Templates::IsConvertible<Tuple<UType>, TType>
-        && !Templates::IsConstructible<TType, Tuple<UType>>
-        && !Templates::IsSame<TType, UType>;
+    inline constexpr Bool EnableIfTupleConvertingMoveConstructorHelper<true, Syntropy::Templates::TypeList<TType>, Syntropy::Templates::TypeList<UType>> = Syntropy::Templates::IsConstructible<TType, UType&&>
+        && !Syntropy::Templates::IsConvertible<Tuple<UType>, TType>
+        && !Syntropy::Templates::IsConstructible<TType, Tuple<UType>>
+        && !Syntropy::Templates::IsSame<TType, UType>;
 
     /// \brief Enable converting tuple move-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-move-constructed from the respective UType and the overload does not reduce to a move-constructor.
     template <typename TTypeList, typename... UTypes>
-    using EnableIfTupleConvertingMoveConstructor = typename Templates::EnableIf<EnableIfTupleConvertingMoveConstructorHelper<Templates::TemplateArgumentsRank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>*;
+    using EnableIfTupleConvertingMoveConstructor = typename Syntropy::Templates::EnableIf<EnableIfTupleConvertingMoveConstructorHelper<Syntropy::Templates::TemplateArgumentsRank<TTypeList> == sizeof...(UTypes), TTypeList, Syntropy::Templates::TypeList<UTypes>...>>*;
 
     ///************************************************************************/
     ///* LOCKSTEP APPLY                                                       */
@@ -141,4 +151,40 @@ namespace Syntropy::Experimental::Details
     //{
     //    (LockstepApplyAt<Is>(Forward<TFunction>(function), Forward<TTuples>(tuples)...), ...);
     //}
+}
+
+namespace Syntropy::Experimental::Templates::Details
+{
+    /************************************************************************/
+    /* TUPLE ELEMENT                                                        */
+    /************************************************************************/
+
+    /// \brief Provides indexed access to tuple elements' types.
+    template <Int VIndex, typename TTuple>
+    struct TupleElementByIndex;
+
+    /// \brief Specialization for tuples.
+    template <Int VIndex, typename TElement, typename... TElements>
+    struct TupleElementByIndex<VIndex, Tuple<TElement, TElements...>> : TupleElementByIndex<VIndex - 1, Tuple<TElements...>> {};
+
+    /// \brief End of recursion.
+    template <typename TElement, typename... TElements>
+    struct TupleElementByIndex<0, Tuple<TElement, TElements...>> : Syntropy::Templates::Alias<TElement> {};
+
+    /// \brief Provides indexed access to tuple elements' types.
+    template <Int VIndex, typename TTuple>
+    using TupleElement = typename TupleElementByIndex<VIndex, TTuple>::Type;
+
+    /************************************************************************/
+    /* TUPLE SIZE                                                           */
+    /************************************************************************/
+
+    /// \brief Constant equal to the rank (size) of a tuple.
+    template <typename TTuple>
+    inline constexpr Int TupleSize = Syntropy::Templates::IllFormed<TTuple>;
+
+    /// \brief Specialization for tuples.
+    template <typename... TElements>
+    inline constexpr Int TupleSize<Tuple<TElements...>> = sizeof...(TElements);
+
 }
