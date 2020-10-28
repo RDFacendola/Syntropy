@@ -10,34 +10,54 @@
 
 #include "syntropy/language/templates/templates.h"
 
+// ===========================================================================
+
+namespace Syntropy::Templates
+{
+    /************************************************************************/
+    /* FORWARD DECLARATIONS                                                 */
+    /************************************************************************/
+
+    template <Int... VIndexes>
+    struct IntegerSequence;
+}
+
+// ===========================================================================
+
 namespace Syntropy::Templates::Details
 {
+    /************************************************************************/
+    /* MAKE INTEGER SEQUENCE                                                */
+    /************************************************************************/
+
+    /// \brief Helper alias template used to generate a contiguous sequence of increasing integers, from 0 to VCount-1.
+    template <Int VCount, Int... VSequence>
+    struct MakeIntegerSequenceHelper : MakeIntegerSequenceHelper<VCount - 1, VCount - 1, VSequence...> {};
+
+    /// \brief Specialization to end recursive definition.
+    template <Int... VSequence>
+    struct MakeIntegerSequenceHelper<0, VSequence...> : Alias<IntegerSequence<VSequence...>> {};
+
+    /// \brief Helper alias template used to generate a contiguous sequence of increasing integers, from 0 to VCount-1.
+    template <Int VCount>
+    using MakeIntegerSequence = typename MakeIntegerSequenceHelper<VCount>::Type;
+
     /************************************************************************/
     /* IS CONTIGUOUS SEQUENCE                                               */
     /************************************************************************/
 
-    /// \brief Provide a member constant Value equal to true if the sequence [VInts...] is contiguous, equal to false otherwise.
-    /// Partial specialization for non-contiguous sequences.
-    template <Int... VInt>
-    struct IsContiguousSequence : Templates::False
-    {
-    
-    };
+    /// \brief Constant equals to true if VSequence... is a monotonically increasing contiguous sequence, equals to false otherwise.
+    template <Int... VSequence>
+    inline constexpr Bool IsContiguousSequence = false;
 
-    /// \brief Provide a member constant Value equal to true if the sequence [VInt] is contiguous, equal to false otherwise.
-    /// Partial specialization for sequences of one element.
-    template <Int VInt>
-    struct IsContiguousSequence<VInt> : Templates::True
-    {
+    /// \brief Partial specialization for sequences whose first two elements are contiguous.
+    template <Int VFirst, Int VSecond, Int... VSequence>
+    inline constexpr Bool IsContiguousSequence<VFirst, VSecond, VSequence...> = (VSecond == (VFirst+1)) && IsContiguousSequence<VSecond, VSequence...>;
 
-    };
-
-    /// \brief Provide a member constant Value equal to true if the sequence [VInt, VInts...] is contiguous, equal to false otherwise.
-    /// \brief Partial specialization for two-element sequences or more.
-    template <Int VInt, Int... VInts>
-    struct IsContiguousSequence<VInt, VInt + 1, VInts...> : IsContiguousSequence<VInt + 1, VInts...>
-    {
-
-    };
+    /// \brief Partial specialization for 1-sequences. True by definition.
+    template <Int VLast>
+    inline constexpr Bool IsContiguousSequence<VLast> = true;
 
 }
+
+// ===========================================================================
