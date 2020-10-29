@@ -271,15 +271,16 @@ namespace Syntropy::Experimental::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<1, Tuple<Int, Float, Bool>>, Tuple<Float, Bool>>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<2, Tuple<Int, Float, Bool>>, Tuple<Bool>>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<3, Tuple<Int, Float, Bool>>, Tuple<>>), true);
-
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<1, Tuple<Int>>, Tuple<>>), true);
     })
+
     .TestCase("TupleElement trait is used to get the type a tuple element by index.", [](auto& fixture)
     {
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<0, Tuple<Bool>>, Bool>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<0, Tuple<Int, Float>>, Int>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<1, Tuple<Int, Float>>, Float>), true);
     })
+
     .TestCase("Tuples provide read-access to their elements.", [](auto& fixture)
     {
         auto scalar = Int{ 3 };
@@ -299,8 +300,8 @@ namespace Syntropy::Experimental::UnitTest
         SYNTROPY_UNIT_EQUAL((Get<2>(tuple_a)), 300);
         SYNTROPY_UNIT_EQUAL((Get<3>(Move(ReadOnly(tuple_a)))), 400.0f);
         SYNTROPY_UNIT_EQUAL((Get<3>(Move(tuple_a))), 400.0f);
-
     })
+
     .TestCase("Tuples provide read-write access to their elements.", [](auto& fixture)
     {
         auto scalar = Int{ 3 };
@@ -318,5 +319,27 @@ namespace Syntropy::Experimental::UnitTest
         SYNTROPY_UNIT_EQUAL((Get<3>(tuple)), 400.0f);
 
         SYNTROPY_UNIT_EQUAL(scalar, 300);
+    })
+
+    .TestCase("Tuples with the same elements are equal.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((Tuple<Int, Float>{ 10, 20.0f } == Tuple<Int, Float>{ 10, 20.0f }), true);
+        SYNTROPY_UNIT_EQUAL((Tuple<Int, Float>{ 10, 20.0f } != Tuple<Int, Float>{ 20, 10.0f }), true);
+
+        auto x = (Tuple<Int, Float>{ 10, 20.0f } != Tuple<Int, Float>{ 20, 10.0f });
+    })
+
+    .TestCase("Tuples whose elements compare equivalent are equal, even if they have different types.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((Tuple<Int, Float>{ 10, 20.0f } == Tuple<Float, Int>{ 10.0f, 20 }), true);
+    })
+
+    .TestCase("Copy-constructed tuples are equal to each other.", [](auto& fixture)
+    {
+        auto tuple_source = Tuple<Int, Float>{ 10, 20.0f };
+        auto tuple_copy = tuple_source;
+
+        SYNTROPY_UNIT_EQUAL(tuple_copy == tuple_source, true);
     });
+
 }

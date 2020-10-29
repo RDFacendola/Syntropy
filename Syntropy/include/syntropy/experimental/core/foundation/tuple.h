@@ -7,6 +7,7 @@
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/language/templates/templates.h"
+#include "syntropy/language/templates/sequences.h"
 
 #include "syntropy/experimental/core/foundation/details/tuple_details.h"
 
@@ -20,7 +21,7 @@ namespace Syntropy::Experimental::Templates
 
     /// \brief Provides indexed access to tuple elements' types.
     template <Int VIndex, typename TTuple>
-    using TupleElement = Details::TupleElement<VIndex, TTuple>;
+    using TupleElement = Details::TupleElement<VIndex, Syntropy::Templates::RemoveConstReference<TTuple>>;
 
     /************************************************************************/
     /* TUPLE POP FRONT                                                      */
@@ -28,7 +29,7 @@ namespace Syntropy::Experimental::Templates
 
     /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
     template <Int VCount, typename TTuple>
-    using TuplePopFront = Details::TuplePopFront<VCount, TTuple>;
+    using TuplePopFront = Details::TuplePopFront<VCount, Syntropy::Templates::RemoveConstReference<TTuple>>;
 
     /************************************************************************/
     /* TUPLE SIZE                                                           */
@@ -36,7 +37,7 @@ namespace Syntropy::Experimental::Templates
 
     /// \brief Constant equal to the size (rank) of a tuple.
     template <typename TTuple>
-    inline constexpr Int TupleSize = Details::TupleSize<TTuple>;
+    inline constexpr Int TupleSize = Details::TupleSize<Syntropy::Templates::RemoveConstReference<TTuple>>;
 }
 
 // ===========================================================================
@@ -82,10 +83,13 @@ namespace Syntropy::Experimental
         /// \brief Tag type used to construct a tuple element-wise.
         struct ElementwiseConstructor {};
 
+        /// \brief Tag type used to construct a tuple by unwinding another tuple.
+        struct UnwindConstructor {};
+
         /// \brief Tuple default constructor. Enabled if all elements are default-constructible.
         template<typename UType = TType, Details::EnableIfTupleDefaultConstructor<Syntropy::Templates::TypeList<UType, TTypes...>> = nullptr>
         explicit (Details::ExplicitIfTupleDefaultConstructor<UType, TTypes...>)
-            constexpr Tuple() noexcept
+        constexpr Tuple() noexcept
             : TBaseClass{}
             , element_{}
         {
@@ -95,7 +99,7 @@ namespace Syntropy::Experimental
         /// \brief Tuple direct constructor. Enabled if all elements are copy-constructible.
         template<typename UType = TType, Details::EnableIfTupleDirectConstructor<Syntropy::Templates::TypeList<UType, TTypes...>> = nullptr>
         explicit (Details::ExplicitIfTupleDirectConstructor<UType, TTypes...>)
-            constexpr Tuple(const TType& element, const TTypes&... elements) noexcept
+        constexpr Tuple(const TType& element, const TTypes&... elements) noexcept
             : Tuple(ElementwiseConstructor{}, Forward<TType>(element), Forward<TTypes>(elements)...)
         {
 
@@ -104,7 +108,7 @@ namespace Syntropy::Experimental
         /// \brief Tuple converting constructor. Enabled if all tuple elements are copy-constructible.
         template<typename UType, typename... UTypes, Details::EnableIfTupleConvertingConstructor<TTypeList, UType, UTypes...> = nullptr>
         explicit (Details::ExplicitIfTupleConvertingConstructor<TTypeList, UType, UTypes...>)
-            constexpr Tuple(UType&& element, UTypes&&... elements) noexcept
+        constexpr Tuple(UType&& element, UTypes&&... elements) noexcept
             : Tuple(ElementwiseConstructor{}, Forward<UType>(element), Forward<UTypes>(elements)...)
         {
 
@@ -113,7 +117,8 @@ namespace Syntropy::Experimental
         /// \brief Tuple converting copy constructor. Enabled if all tuple elements are copy-constructible.
         template<typename UType, typename... UTypes, Details::EnableIfTupleConvertingCopyConstructor<TTypeList, UType, UTypes...> = nullptr>
         explicit (Details::ExplicitIfTupleConvertingCopyConstructor<TTypeList, UType, UTypes...>)
-            constexpr Tuple(const Tuple<UType, UTypes...>& rhs) noexcept
+        constexpr Tuple(const Tuple<UType, UTypes...>& rhs) noexcept
+            : Tuple(UnwindConstructor{}, Syntropy::Templates::IntegerSequenceFor<UType, UTypes...>, rhs)
         {
 
         }
@@ -121,20 +126,19 @@ namespace Syntropy::Experimental
         /// \brief Tuple converting copy constructor. Enabled if all tuple elements are copy-constructible.
         template<typename UType, typename... UTypes, Details::EnableIfTupleConvertingMoveConstructor<TTypeList, UType, UTypes...> = nullptr>
         explicit (Details::ExplicitIfTupleConvertingMoveConstructor<TTypeList, UType, UTypes...>)
-            constexpr Tuple(Tuple<UType, UTypes...>&& rhs) noexcept
+        constexpr Tuple(Tuple<UType, UTypes...>&& rhs) noexcept
+            : Tuple(UnwindConstructor{}, Syntropy::Templates::IntegerSequenceFor<UType, UTypes...>, Move(rhs))
         {
 
         }
 
         /// \brief Construct a tuple forwarding explicit arguments.
         template<typename UType, typename... UTypes>
-        explicit (Details::ExplicitIfTupleConvertingConstructor<TTypeList, UType, UTypes...>)
-            constexpr Tuple(ElementwiseConstructor, UType&& element, UTypes&&... elements) noexcept
-            : TBaseClass(std::forward<UTypes>(elements)...)
-            , element_(Forward<UType>(element))
-        {
+        constexpr Tuple(ElementwiseConstructor, UType&& element, UTypes&&... elements) noexcept;
 
-        }
+        /// \brief Construct a tuple unwinding another tuple elements.
+        template<typename TTuple, Int... VIndexes>
+        constexpr Tuple(UnwindConstructor, Syntropy::Templates::IntegerSequence<VIndexes...>, TTuple&& tuple) noexcept;
 
         /// \brief Default copy-constructor.
         constexpr Tuple(const Tuple& other) = default;
@@ -165,6 +169,11 @@ namespace Syntropy::Experimental
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
+    /// \brief Compare two tuples.
+    /// \return Returns true if each element in lhs compares equal to the corresponding element in rhs, returns false otherwise.
+    template <typename... TTypes, typename... UTypes>
+    constexpr Bool operator==(const Tuple<TTypes...>& lhs, const Tuple<UTypes...>& rhs) noexcept;
+
     /// \brief Access the VIndex-th element in a tuple.
     /// \remarks VIndex must be in the range [0, sizeof(TTypes...)).
     template <Int VIndex, typename... TTypes>
@@ -185,6 +194,14 @@ namespace Syntropy::Experimental
     template <Int VIndex, typename... TTypes>
     constexpr const Templates::TupleElement<VIndex, Tuple<TTypes...>>&& Get(const Tuple<TTypes...>&& tuple) noexcept;
 
+    /// \brief Project the VIndex-th element of the provided tuples, in the same order, and apply a function to the argument list generated this way.
+    template <Int VIndex, typename TFunction, typename... TTuples>
+    constexpr decltype(auto) ProjectionApply(TFunction&& function, TTuples&&... tuples) noexcept;
+
+    /// \brief Apply a function to all argument list generated by projecting the i-th element of all provided tuples, in the same order, for each index i.
+    template <typename TFunction, typename TTuple, typename... TTuples>
+    constexpr void LockstepApply(TFunction&& function, TTuple&& tuple, TTuples&&... tuples) noexcept;
+
 }
 
 // ===========================================================================
@@ -195,8 +212,42 @@ namespace Syntropy::Experimental
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
+    // Tuple.
+    // ======
+
+    template <typename TType, typename... TTypes>
+    template <typename UType, typename... UTypes>
+    constexpr Tuple<TType, TTypes...>::Tuple(ElementwiseConstructor, UType&& element, UTypes&&... elements) noexcept
+        : TBaseClass(Forward<UTypes>(elements)...)
+        , element_(Forward<UType>(element))
+    {
+
+    }
+
+    template <typename TType, typename... TTypes>
+    template<typename TTuple, Int... VIndexes>
+    constexpr Tuple<TType, TTypes...>::Tuple(UnwindConstructor, Syntropy::Templates::IntegerSequence<VIndexes...>, TTuple&& tuple) noexcept
+        : Tuple(ElementwiseConstructor, Get<VIndexes>(Forward<TTuple>(tuple))...)
+    {
+
+    }
+
+    // 
     // Non-member functions.
     // =====================
+
+    template <typename... TTypes, typename... UTypes>
+    constexpr Bool operator==(const Tuple<TTypes...>& lhs, const Tuple<UTypes...>& rhs) noexcept
+    {
+        auto result = true;
+
+        LockstepApply([&result](const auto& lhs_element, const auto& rhs_element)
+        {
+            result &= (lhs_element == rhs_element);
+        }, lhs, rhs);
+
+        return result;
+    }
 
     template <Int VIndex, typename... TTypes>
     constexpr Templates::TupleElement<VIndex, Tuple<TTypes...>>& Get(Tuple<TTypes...>& tuple) noexcept
@@ -232,4 +283,22 @@ namespace Syntropy::Experimental
         return static_cast<const TElement&&>(static_cast<const TTuple&>(tuple).element_);
     }
 
+    template <Int VIndex, typename TFunction, typename... TTuples>
+    constexpr decltype(auto) ProjectionApply(TFunction&& function, TTuples&&... tuples) noexcept
+    {
+        return function(Get<VIndex>(Forward<TTuples>(tuples))...);
+    }
+
+     template <typename TFunction, typename TTuple, typename... TTuples>
+     constexpr void LockstepApply(TFunction&& function, TTuple&& tuple, TTuples&&... tuples) noexcept
+     {
+          static_assert(((Templates::TupleSize<TTuple> == Templates::TupleSize<TTuples>) && ...), "Tuples must have the same size.");
+  
+          using TSequence = Syntropy::Templates::MakeIntegerSequence<Templates::TupleSize<TTuple>>;
+
+          Details::LockstepApply(TSequence{}, Forward<TFunction>(function), Forward<TTuple>(tuple), Forward<TTuples>(tuples)...);
+     }
+
 }
+
+// ===========================================================================
