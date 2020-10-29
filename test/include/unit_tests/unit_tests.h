@@ -16,3 +16,4 @@
 #include "unit_tests/syntropy/language/templates/math_unit_test.h"
 #include "unit_tests/syntropy/language/templates/ratio_unit_test.h"
 #include "unit_tests/syntropy/language/templates/traits_unit_test.h"
+#include "unit_tests/syntropy/language/templates/sequences_unit_test.h"
