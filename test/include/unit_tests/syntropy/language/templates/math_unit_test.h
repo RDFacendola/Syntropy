@@ -11,10 +11,10 @@
 namespace Syntropy::Templates::UnitTest
 {
     /************************************************************************/
-    /* RATIONAL TEST FIXTURE                                                */
+    /* MATH TEST FIXTURE                                                    */
     /************************************************************************/
 
-    /// \brief Rational test fixture.
+    /// \brief Math test fixture.
     struct MathTestFixture {};
 
     /************************************************************************/
