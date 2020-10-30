@@ -10,6 +10,8 @@
 
 #include "syntropy/language/templates/details/templates_details.h"
 
+// ===========================================================================
+
 namespace Syntropy::Templates
 {
     /************************************************************************/
@@ -70,7 +72,7 @@ namespace Syntropy::Templates
     inline constexpr Bool AlwaysTrue = false;
 
     /************************************************************************/
-    /* ALWAYS FALSE                                                        */
+    /* ALWAYS FALSE                                                         */
     /************************************************************************/
 
     /// \brief Boolean constant which consume any template argument and evaluates to false.
@@ -95,4 +97,16 @@ namespace Syntropy::Templates
     /// \brief Metafunction that maps a sequence of types to void.
     template <typename...>
     using Void = void;
+
+    /************************************************************************/
+    /* IDENTITY                                                             */
+    /************************************************************************/
+
+    /// \brief Type equal to TType.
+    /// \remarks The identity transform is meant to establish non-deduced contexts in template argument deduction.
+    template <typename TType>
+    using Identity = typename Details::Identity<TType>::Type;
+
 }
+
+// ===========================================================================
