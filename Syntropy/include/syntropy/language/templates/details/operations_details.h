@@ -13,6 +13,8 @@
 #include "syntropy/language/templates/templates.h"
 #include "syntropy/language/templates/sfinae.h"
 
+// ===========================================================================
+
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
@@ -140,6 +142,18 @@ namespace Syntropy::Templates::Details
     inline constexpr Bool IsTriviallyMoveAssignable<TypeList<TTypes...>> = (IsTriviallyMoveAssignable<TTypes> && ...);
 
     /************************************************************************/
+    /* IS ASSIGNABLE                                                        */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is assignable from UType in unevaluated context, equal to false otherwise.
+    template <typename TType, typename UType>
+    inline constexpr Bool IsAssignable = std::is_assignable_v<TType, UType>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes, typename... UTypes>
+    inline constexpr Bool IsAssignable<TypeList<TTypes...>, TypeList<UTypes...>> = (IsAssignable<TTypes, UTypes> && ...);
+
+    /************************************************************************/
     /* IS CONSTRUCTIBLE                                                     */
     /************************************************************************/
 
@@ -204,3 +218,5 @@ namespace Syntropy::Templates::Details
     inline constexpr Bool IsTriviallyDestructible<TypeList<TTypes...>> = (IsTriviallyDestructible<TTypes> && ...);
 
 }
+
+// ===========================================================================

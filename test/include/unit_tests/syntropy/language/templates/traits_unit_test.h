@@ -9,6 +9,8 @@
 
 #include "syntropy/unit_test/unit_test.h"
 
+// ===========================================================================
+
 namespace Syntropy::Templates::UnitTest
 {
     /************************************************************************/
@@ -105,6 +107,31 @@ namespace Syntropy::Templates::UnitTest
         {
 
         };
+
+        /// \brief Definition for a class that can be copy-assigned from foo.
+        struct CopyAssignableFromFoo
+        {
+            CopyAssignableFromFoo(const Foo&) = delete;
+
+            CopyAssignableFromFoo(Foo&&) = delete;
+
+            CopyAssignableFromFoo& operator=(const Foo&) { return *this; };
+
+            CopyAssignableFromFoo& operator=(Foo&&) = delete;
+        };
+
+        /// \brief Definition for a class that can be move-assigned from foo.
+        struct MoveAssignableFromFoo
+        {
+            MoveAssignableFromFoo(const Foo&) = delete;
+
+            MoveAssignableFromFoo(Foo&&) = delete;
+
+            MoveAssignableFromFoo& operator=(const Foo&) = delete;
+
+            MoveAssignableFromFoo& operator=(Foo&&) { return *this; };
+        };
+
     };
 
     /************************************************************************/
@@ -213,5 +240,26 @@ namespace Syntropy::Templates::UnitTest
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<TypeList<Foo, Bar>, ConstructibleFromFoo, ConstructibleFromBar>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<TypeList<Foo, Bar>, ConstructibleFromBar, ConstructibleFromFoo>), false);
+        })
+
+    .TestCase("Is assignable type-traits.", [](auto& fixture)
+    {
+        using Foo = TraitsTestFixture::Foo;
+        using Bar = TraitsTestFixture::Bar;
+        using CopyAssignableFromFoo = TraitsTestFixture::CopyAssignableFromFoo;
+        using MoveAssignableFromFoo = TraitsTestFixture::MoveAssignableFromFoo;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<CopyAssignableFromFoo, const Foo&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<CopyAssignableFromFoo, const Bar&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<CopyAssignableFromFoo, Foo&&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<CopyAssignableFromFoo, Bar&&>), false);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, const Foo&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, const Bar&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, Foo&&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, Bar&&>), false);
     });
+
 }
+
+// ===========================================================================

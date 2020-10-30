@@ -15,6 +15,8 @@
 
 #include "syntropy/language/templates/details/operations_details.h"
 
+// ===========================================================================
+
 namespace Syntropy::Templates
 {
     /************************************************************************/
@@ -82,6 +84,14 @@ namespace Syntropy::Templates
     inline constexpr Bool IsTriviallyMoveAssignable = Details::IsTriviallyMoveAssignable<TType>;
 
     /************************************************************************/
+    /* IS ASSIGNABLE                                                        */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is assignable from UType in unevaluated context, equal to false otherwise.
+    template <typename TType, typename UType>
+    inline constexpr Bool IsAssignable = Details::IsAssignable<TType, UType>;
+
+    /************************************************************************/
     /* IS CONSTRUCTIBLE                                                     */
     /************************************************************************/
 
@@ -115,3 +125,5 @@ namespace Syntropy::Templates
     inline constexpr Bool IsTriviallySwappable = (IsTriviallyDestructible<TType> && IsTriviallyMoveConstructible<TType> && IsTriviallyMoveAssignable<TType> && (!IsValidExpression<HasSwap, TType>));
 
 }
+
+// ===========================================================================
