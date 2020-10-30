@@ -40,4 +40,16 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     inline constexpr Bool IsTypeList<TypeList<TTypes...>> = true;
 
+    /************************************************************************/
+    /* IDENTITY                                                             */
+    /************************************************************************/
+
+    /// \brief Exposes a member type equal to TType
+    /// \remarks The identity transform is meant to establish non-deduced contexts in template argument deduction.
+    template <typename TType>
+    struct Identity
+    {
+        using Type = TType;
+    };
+
 }
