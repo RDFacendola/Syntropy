@@ -132,6 +132,25 @@ namespace Syntropy::Experimental
 
         }
 
+        /// \brief Fallback case for when no assignment operator could be found.
+        constexpr Tuple& operator=(const volatile Tuple&) = delete;
+
+        /// \brief Copy-assignment operator.
+        template <typename TSelf = Tuple, typename TSelfList = TTypeList, Details::EnableIfTupleCopyAssignment<TSelfList> = nullptr>
+        constexpr Tuple& operator=(Syntropy::Templates::Identity<const TSelf&> rhs) noexcept;
+
+        /// \brief Move-assignment operator.
+        template <typename TSelf = Tuple, typename TSelfList = TTypeList, Details::EnableIfTupleMoveAssignment<TSelfList> = nullptr>
+        constexpr Tuple& operator=(Syntropy::Templates::Identity<TSelf&&> rhs) noexcept;
+
+        /// \brief Tuple converting copy-assignment operator.
+        template <typename... UTypes, typename TSelfList = TTypeList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, Syntropy::Templates::TypeList<UTypes...>> = nullptr>
+        constexpr Tuple& operator=(const Tuple<UTypes...>& rhs) noexcept;
+
+        /// \brief Tuple converting move-assignment operator.
+        template <typename... UTypes, typename TSelfList = TTypeList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Syntropy::Templates::TypeList<UTypes...>> = nullptr>
+        constexpr Tuple& operator=(Tuple<UTypes...>&& rhs) noexcept;
+
         /// \brief Construct a tuple forwarding explicit arguments.
         template<typename UType, typename... UTypes>
         constexpr Tuple(ElementwiseConstructor, UType&& element, UTypes&&... elements) noexcept;
@@ -231,6 +250,42 @@ namespace Syntropy::Experimental
     {
 
     }
+
+    template <typename TType, typename... TTypes>
+    template <typename TSelf, typename TSelfList, Details::EnableIfTupleCopyAssignment<TSelfList>>
+    constexpr Tuple<TType, TTypes...>& Tuple<TType, TTypes...>::operator=(Syntropy::Templates::Identity<const TSelf&> rhs) noexcept
+    {
+        LockstepApply([&rhs](auto& lhs_element, const auto& rhs_element){ lhs_element = rhs_element; }, *this, rhs);
+
+        return *this;
+    }
+
+    template <typename TType, typename... TTypes>
+    template <typename TSelf, typename TSelfList, Details::EnableIfTupleMoveAssignment<TSelfList>>
+    constexpr Tuple<TType, TTypes...>& Tuple<TType, TTypes...>::operator=(Syntropy::Templates::Identity<TSelf&&> rhs) noexcept
+    {
+        LockstepApply([&rhs](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
+
+        return *this;
+    }
+
+     template <typename TType, typename... TTypes>
+     template <typename... UTypes, typename TSelfList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, Syntropy::Templates::TypeList<UTypes...>>>
+     constexpr Tuple<TType, TTypes...>& Tuple<TType, TTypes...>::operator=(const Tuple<UTypes...>& rhs) noexcept
+     {
+         LockstepApply([&rhs](auto& lhs_element, const auto& rhs_element) { lhs_element = rhs_element; }, *this, rhs);
+ 
+         return *this;
+     }
+ 
+     template <typename TType, typename... TTypes>
+     template <typename... UTypes, typename TSelfList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Syntropy::Templates::TypeList<UTypes...>>>
+     constexpr Tuple<TType, TTypes...>& Tuple<TType, TTypes...>::operator=(Tuple<UTypes...>&& rhs) noexcept
+     {
+         LockstepApply([&rhs](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
+ 
+         return *this;
+     }
 
     // 
     // Non-member functions.

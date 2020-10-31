@@ -99,6 +99,46 @@ namespace Syntropy::Experimental::UnitTest
             ImplicitlyConvertibleFoo(ExplicitMoveConstructibleFoo&&) {};
             ImplicitlyConvertibleFoo(ImplicitMoveConstructibleFoo&&) {};
         };
+
+        /// \brief Definition for a movable-only structure.
+        struct MovableOnlyFoo
+        {
+            MovableOnlyFoo() = default;
+            MovableOnlyFoo(MovableOnlyFoo&&) {};
+            MovableOnlyFoo(const MovableOnlyFoo&) = delete;
+
+            MovableOnlyFoo& operator=(MovableOnlyFoo&&) { return *this; };
+            MovableOnlyFoo& operator=(const MovableOnlyFoo&) = delete;
+        };
+
+        /// \brief Definition for a copyable structure.
+        struct CopyableOnlyFoo
+        {
+            CopyableOnlyFoo() = default;
+            CopyableOnlyFoo(const CopyableOnlyFoo&) {};
+
+            CopyableOnlyFoo& operator=(const CopyableOnlyFoo&) { return *this; };
+        };
+
+        /// \brief Movable class which verifies if it was moved from.
+        struct TestMovableOnlyFoo
+        {
+            TestMovableOnlyFoo() = default;
+            TestMovableOnlyFoo(TestMovableOnlyFoo&& rhs) { rhs.moved_ = true; }
+            TestMovableOnlyFoo(const TestMovableOnlyFoo&) = delete;
+            
+            TestMovableOnlyFoo& operator=(TestMovableOnlyFoo&&) { return *this; };
+            TestMovableOnlyFoo& operator=(const TestMovableOnlyFoo&) = delete;
+
+            bool moved_{ false };
+        };
+
+        /// \brief Movable class which can be constructed by moving a TestMovableOnlyFoo instance.
+        struct TestMovableOnlyBar
+        {
+            TestMovableOnlyBar() = default;
+            TestMovableOnlyBar(TestMovableOnlyFoo&& rhs) { rhs.moved_ = true; }
+        };
     };
 
     /************************************************************************/
@@ -325,8 +365,6 @@ namespace Syntropy::Experimental::UnitTest
     {
         SYNTROPY_UNIT_EQUAL((Tuple<Int, Float>{ 10, 20.0f } == Tuple<Int, Float>{ 10, 20.0f }), true);
         SYNTROPY_UNIT_EQUAL((Tuple<Int, Float>{ 10, 20.0f } != Tuple<Int, Float>{ 20, 10.0f }), true);
-
-        auto x = (Tuple<Int, Float>{ 10, 20.0f } != Tuple<Int, Float>{ 20, 10.0f });
     })
 
     .TestCase("Tuples whose elements compare equivalent are equal, even if they have different types.", [](auto& fixture)
@@ -340,6 +378,93 @@ namespace Syntropy::Experimental::UnitTest
         auto tuple_copy = tuple_source;
 
         SYNTROPY_UNIT_EQUAL(tuple_copy == tuple_source, true);
+    })
+    
+    .TestCase("Empty tuples are trivially copy-assignable.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<Tuple<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsTriviallyCopyAssignable<Tuple<>>), true);
+    })
+    
+    .TestCase("Empty tuples are trivially move-assignable.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<Tuple<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsTriviallyMoveAssignable<Tuple<>>), true);
+    })
+
+    .TestCase("Tuples with copy-assignable elements are copy-assignable themselves.", [](auto& fixture)
+    {
+        using MovableOnlyFoo = TupleTestFixture::MovableOnlyFoo;
+        using CopyableOnlyFoo = TupleTestFixture::CopyableOnlyFoo;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<Tuple<Int, Float>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<Tuple<Int, Float, CopyableOnlyFoo>>), true);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<Tuple<Int, Float, MovableOnlyFoo >>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<Tuple<Int, Float, MovableOnlyFoo, CopyableOnlyFoo >>), false);
+    })
+        
+    .TestCase("Tuples with move-assignable elements are move-assignable themselves.", [](auto& fixture)
+    {
+        using MovableOnlyFoo = TupleTestFixture::MovableOnlyFoo;
+        using CopyableOnlyFoo = TupleTestFixture::CopyableOnlyFoo;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<Tuple<Int, Float>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<Tuple<Int, Float, MovableOnlyFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<Tuple<Int, Float, CopyableOnlyFoo>>), true);                     // Will fallback on the copy constructor.
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<Tuple<Int, Float, MovableOnlyFoo, CopyableOnlyFoo >>), true);    // Will fallback on the copy constructor.
+    })
+
+    .TestCase("Copy-constructing and copy-assigning a tuple the same values produces two equal tuples.", [](auto& fixture)
+    {
+        auto copy_construct_tuple = Tuple<Int, Float>{ 10, 30.0f };
+
+        auto copy_assign_tuple = Tuple<Int, Float>{};
+
+        copy_assign_tuple = copy_construct_tuple;
+
+        SYNTROPY_UNIT_EQUAL(copy_construct_tuple == copy_assign_tuple, true);
+    })
+
+    .TestCase("Elements are moved from a tuple to another by means of a move-constructor.", [](auto& fixture)
+    {
+        using TestMovableOnlyFoo = TupleTestFixture::TestMovableOnlyFoo;
+
+        auto source_tuple = Tuple<TestMovableOnlyFoo>{};
+        auto destination_tuple = Tuple<TestMovableOnlyFoo>{ Move(source_tuple) };       // @rfacendola Accessing source_tuple after this point results in undefined behavior.
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(source_tuple).moved_), true);
+    })
+        
+    .TestCase("Tuples can implicitly convert elements during copy assignment.", [](auto& fixture)
+    {
+        using MovableOnlyFoo = TupleTestFixture::MovableOnlyFoo;
+
+        auto tuple_int = Tuple<Int>{ 10 };
+        auto tuple_float = Tuple<Float>{ 20.0f };
+
+        // tuple_float = tuple_int;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<Int>&, const Tuple<Float>&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<Float>&, const Tuple<Int>&>), true);
+
+        // SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(tuple_int) == Syntropy::Experimental::Get<0>(tuple_float)), true);
+    })
+
+    .TestCase("Tuples can implicitly convert elements during move assignment.", [](auto& fixture)
+    {
+        using TestMovableOnlyFoo = TupleTestFixture::TestMovableOnlyFoo;
+        using TestMovableOnlyBar = TupleTestFixture::TestMovableOnlyBar;
+
+        auto tuple_foo = Tuple<TestMovableOnlyFoo>{};
+        auto tuple_bar = Tuple<TestMovableOnlyBar>{};
+
+        tuple_bar = Move(tuple_foo);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<TestMovableOnlyBar>&, Tuple<TestMovableOnlyFoo>&&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<TestMovableOnlyFoo>&, Tuple<TestMovableOnlyBar>&&>), false);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(tuple_foo).moved_), true);
     });
 
 }

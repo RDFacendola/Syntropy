@@ -149,6 +149,34 @@ namespace Syntropy::Experimental::Details
     using EnableIfTupleConvertingMoveConstructor = typename Syntropy::Templates::EnableIf<EnableIfTupleConvertingMoveConstructorHelper<Syntropy::Templates::TemplateArgumentsRank<TTypeList> == sizeof...(UTypes), TTypeList, Syntropy::Templates::TypeList<UTypes>...>>*;
 
     /************************************************************************/
+    /* ENABLE IF - TUPLE ASSIGNMENT                                         */
+    /************************************************************************/
+
+    // (1)
+
+    /// \brief Enable tuple copy assignment operator if all types in TTypeList are copy-assignable.
+    template <typename TTypeList>
+    using EnableIfTupleCopyAssignment = typename Syntropy::Templates::EnableIf<Syntropy::Templates::IsCopyAssignable<TTypeList>>*;
+
+    // (2)
+
+    /// \brief Enable tuple copy assignment operator if all types in TTypeList are move-assignable.
+    template <typename TTypeList>
+    using EnableIfTupleMoveAssignment = typename Syntropy::Templates::EnableIf<Syntropy::Templates::IsMoveAssignable<TTypeList>>*;
+
+    // (3)
+
+    /// \brief Enable tuple converting copy assignment operator if all types in TTypeList can be converting-copy-assigned from the corresponding element in UTypeList.
+    template <typename TTypeList, typename UTypeList>
+    using EnableIfTupleConvertingCopyAssignment = typename Syntropy::Templates::EnableIf<!Syntropy::Templates::IsSame<TTypeList, UTypeList> && Syntropy::Templates::IsAssignable<Syntropy::Templates::AddLValueReference<TTypeList>, Syntropy::Templates::AddLValueConstReference<UTypeList>>>*;
+
+    // (4)
+
+    /// \brief Enable tuple converting move assignment operator if all types in TTypeList can be converting-move-assigned from the corresponding element in UTypeList.
+    template <typename TTypeList, typename UTypeList>
+    using EnableIfTupleConvertingMoveAssignment = typename Syntropy::Templates::EnableIf<!Syntropy::Templates::IsSame<TTypeList, UTypeList> && Syntropy::Templates::IsAssignable<Syntropy::Templates::AddLValueReference<TTypeList>, UTypeList>>*;
+
+    /************************************************************************/
     /* LOCKSTEP APPLY                                                       */
     /************************************************************************/
 
