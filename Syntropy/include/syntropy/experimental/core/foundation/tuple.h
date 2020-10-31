@@ -225,6 +225,10 @@ namespace Syntropy::Experimental
     template <typename... TTypes>
     constexpr void Swap(Tuple<TTypes...>& lhs, Tuple<TTypes...>& rhs) noexcept;
 
+    /// \brief Create a tuple instance, deducing template types from arguments.
+    template <typename... TTypes>
+    constexpr Tuple<TTypes...> MakeTuple(TTypes&&... elements) noexcept;
+
     /// \brief Project the VIndex-th element of the provided tuples, in the same order, and apply a function to the argument list generated this way.
     template <Int VIndex, typename TFunction, typename... TTuples>
     constexpr decltype(auto) ProjectionApply(TFunction&& function, TTuples&&... tuples) noexcept;
@@ -371,6 +375,12 @@ namespace Syntropy::Experimental
     constexpr void Swap(Tuple<TTypes...>& lhs, Tuple<TTypes...>& rhs) noexcept
     {
         lhs.Swap(rhs);
+    }
+
+    template <typename... TTypes>
+    constexpr Tuple<TTypes...> MakeTuple(TTypes&&... elements) noexcept
+    {
+        return { Forward<TTypes>(elements)... };
     }
 
     template <Int VIndex, typename TFunction, typename... TTuples>

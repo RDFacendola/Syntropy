@@ -469,20 +469,20 @@ namespace Syntropy::Experimental::UnitTest
 
     .TestCase("Swapping an empty tuple with another empty tuple has no effect.", [](auto& fixture)
     {
-        auto lhs = Tuple<>{};
-        auto rhs = Tuple<>{};
+        auto lhs = MakeTuple();
+        auto rhs = MakeTuple();
 
         Syntropy::Experimental::Swap(lhs, rhs);
 
         SYNTROPY_UNIT_EQUAL(lhs == rhs, true);
-        SYNTROPY_UNIT_EQUAL(lhs == Tuple<>{}, true);
-        SYNTROPY_UNIT_EQUAL(rhs == Tuple<>{}, true);
+        SYNTROPY_UNIT_EQUAL(lhs == MakeTuple(), true);
+        SYNTROPY_UNIT_EQUAL(rhs == MakeTuple(), true);
     })
 
     .TestCase("Swapping an two tuples swaps each element in the first with the corresponding element in the latter.", [](auto& fixture)
     {
-        auto lhs = Tuple<Int, Float>{10, 20.0f};
-        auto rhs = Tuple<Int, Float>{30, 40.0f};
+        auto lhs = MakeTuple(10, 20.0f);
+        auto rhs = MakeTuple(30, 40.0f);
 
         Syntropy::Experimental::Swap(lhs, rhs);
 
