@@ -23,9 +23,46 @@ namespace Syntropy::Templates
     template <typename... TTypes>
     struct TypeList {};
 
+    /************************************************************************/
+    /* IS TYPE LIST                                                         */
+    /************************************************************************/
+
     /// \brief Constant equal to true if TType is a TypeList<>, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsTypeList = Details::IsTypeList<TType>;
+
+    /************************************************************************/
+    /* TYPE LIST INDEX                                                      */
+    /************************************************************************/
+
+    /// \brief Integer constant equal to the index of the first occurrence TType in TTypeList.
+    /// \remarks If TType doesn't appear in TTypeList the program is ill-formed.
+    template <typename TType, typename TTypeList>
+    inline constexpr Int TypeListIndex = Details::TypeListIndex<TType, TTypeList>;
+
+    /************************************************************************/
+    /* TYPE LIST ELEMENT                                                    */
+    /************************************************************************/
+
+    /// \brief Provides indexed access to type list elements' types.
+    template <Int VIndex, typename TTypeList>
+    using TypeListElement = Details::TypeListElement<VIndex, TTypeList>;
+
+    /************************************************************************/
+    /* TYPE LIST POP FRONT                                                  */
+    /************************************************************************/
+
+    /// \brief Discards the first VCount elements in a type list and provides a type list with the remaining elements.
+    template <Int VCount, typename TTypeList>
+    using TypeListPopFront = Details::TypeListPopFront<VCount, TTypeList>;
+
+    /************************************************************************/
+    /* TYPE LIST SIZE                                                       */
+    /************************************************************************/
+
+    /// \brief Constant equal to the number of elements in a type list.
+    template <typename TTypeList>
+    inline constexpr Int TypeListSize = Details::TypeListSize<TTypeList>;
 
     /************************************************************************/
     /* CONSTANT                                                             */

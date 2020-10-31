@@ -258,6 +258,35 @@ namespace Syntropy::Templates::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, const Bar&>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, Foo&&>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, Bar&&>), false);
+    })
+            
+    .TestCase("TypeListIndex returns the index of the first occurrence in a type list.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((TypeListIndex<Int, TypeList<Int, Int, Int>>), 0);
+        SYNTROPY_UNIT_EQUAL((TypeListIndex<Int, TypeList<Float, Float, Int>>), 2);
+    })
+
+    .TestCase("TypeListElement returns the type of an element in a type list by index.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((IsSame<TypeListElement<0, TypeList<Int, Float, Bool>>, Int>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<TypeListElement<1, TypeList<Int, Float, Bool>>, Float>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<TypeListElement<2, TypeList<Int, Float, Bool>>, Bool>), true);
+    })
+
+    .TestCase("Removing elements from a type list by means of TypeListPopFront return a new type list which is equal to the remaining elements in the original type list.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<0, TypeList<Int, Float, Bool>>, TypeList<Int, Float, Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<1, TypeList<Int, Float, Bool>>, TypeList<Float, Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<2, TypeList<Int, Float, Bool>>, TypeList<Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<3, TypeList<Int, Float, Bool>>, TypeList<>>), true);
+    })
+
+    .TestCase("TypeListSize returns the number of elements in a type list.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL((TypeListSize<TypeList<Int, Float, Bool>>), 3);
+        SYNTROPY_UNIT_EQUAL((TypeListSize<TypeList<Int, Float>>), 2);
+        SYNTROPY_UNIT_EQUAL((TypeListSize<TypeList<Int>>), 1);
+        SYNTROPY_UNIT_EQUAL((TypeListSize<TypeList<>>), 0);
     });
 
 }
