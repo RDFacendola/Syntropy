@@ -494,6 +494,7 @@ namespace Syntropy::Experimental::UnitTest
 
     .TestCase("Modifying an elment of a tuple created by means of ::Tie, reflects on the original argument.", [](auto& fixture)
     {
+
         auto element_a = 10;
         auto element_b = 20;
 
@@ -506,6 +507,23 @@ namespace Syntropy::Experimental::UnitTest
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(tuple)), 100);
         SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(tuple)), 20);
-    });
+    })
+
+    .TestCase("When forwarding-as-tuple, all elements get perfectly-forwarded.", [](auto& fixture)
+    {
+        using TestMovableOnlyFoo = TupleTestFixture::TestMovableOnlyFoo;
+
+        auto movable_bar = TestMovableOnlyFoo{};
+        auto reference_foo = 100.0f;
+
+        auto tuple = Syntropy::Experimental::ForwardAsTuple(Move(movable_bar), reference_foo);
+
+        auto movable_foo = Move(Syntropy::Experimental::Get<0>(tuple));     // Preserve rvalues.
+        Syntropy::Experimental::Get<1>(tuple) = 10.0f;                      // Preserve lvalues.
+
+        SYNTROPY_UNIT_EQUAL(reference_foo, 10.0f);
+        SYNTROPY_UNIT_EQUAL(movable_bar.moved_, true);
+    })
+        ;
 
 }

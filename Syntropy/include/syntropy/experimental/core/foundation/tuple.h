@@ -233,6 +233,10 @@ namespace Syntropy::Experimental
     template <typename... TElements>
     constexpr Tuple<TElements&...> Tie(TElements&... elements) noexcept;
 
+    /// \brief Create a tuple of the perfectly-forwarded elements provided.
+    template <typename... TElements>
+    constexpr Tuple<TElements&&...> ForwardAsTuple(TElements&&... elements) noexcept;
+
     /// \brief Project the VIndex-th element of the provided tuples, in the same order, and apply a function to the argument list generated this way.
     template <Int VIndex, typename TFunction, typename... TTuples>
     constexpr decltype(auto) ProjectionApply(TFunction&& function, TTuples&&... tuples) noexcept;
@@ -391,6 +395,12 @@ namespace Syntropy::Experimental
     constexpr Tuple<TElements&...> Tie(TElements&... elements) noexcept
     {
         return Tuple<TElements&...>(elements...);
+    }
+
+    template <typename... TElements>
+    constexpr Tuple<TElements&&...> ForwardAsTuple(TElements&&... elements) noexcept
+    {
+        return Tuple<TElements&&...>(Forward<TElements>(elements)...);
     }
 
     template <Int VIndex, typename TFunction, typename... TTuples>
