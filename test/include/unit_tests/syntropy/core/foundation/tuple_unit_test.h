@@ -465,6 +465,31 @@ namespace Syntropy::Experimental::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<TestMovableOnlyFoo>&, Tuple<TestMovableOnlyBar>&&>), false);
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(tuple_foo).moved_), true);
+    })
+
+    .TestCase("Swapping an empty tuple with another empty tuple has no effect.", [](auto& fixture)
+    {
+        auto lhs = Tuple<>{};
+        auto rhs = Tuple<>{};
+
+        Syntropy::Experimental::Swap(lhs, rhs);
+
+        SYNTROPY_UNIT_EQUAL(lhs == rhs, true);
+        SYNTROPY_UNIT_EQUAL(lhs == Tuple<>{}, true);
+        SYNTROPY_UNIT_EQUAL(rhs == Tuple<>{}, true);
+    })
+
+    .TestCase("Swapping an two tuples swaps each element in the first with the corresponding element in the latter.", [](auto& fixture)
+    {
+        auto lhs = Tuple<Int, Float>{10, 20.0f};
+        auto rhs = Tuple<Int, Float>{30, 40.0f};
+
+        Syntropy::Experimental::Swap(lhs, rhs);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(lhs)), 30);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(lhs)), 40.0f);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(rhs)), 10);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(rhs)), 20);
     });
 
 }
