@@ -18,6 +18,14 @@
 namespace Syntropy::Experimental::Templates
 {
     /************************************************************************/
+    /* TUPLE ELEMENT LIST                                                   */
+    /************************************************************************/
+
+    /// \brief Type alias equal to a type list of all elements in TTuple.
+    template <typename TTuple>
+    using TupleElementList = Details::TupleElementList<Syntropy::Templates::RemoveConstReference<TTuple>>;
+
+    /************************************************************************/
     /* TUPLE ELEMENT                                                        */
     /************************************************************************/
 
@@ -201,25 +209,37 @@ namespace Syntropy::Experimental
     template <typename... TTypes, typename... UTypes>
     constexpr Bool operator==(const Tuple<TTypes...>& lhs, const Tuple<UTypes...>& rhs) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple.
-    /// \remarks VIndex must be in the range [0, sizeof(TTypes...)).
+    /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TTypes>
     constexpr Templates::TupleElement<VIndex, Tuple<TTypes...>>& Get(Tuple<TTypes...>& tuple) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple.
-    /// \remarks VIndex must be in the range [0, sizeof(TTypes...)).
+    /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TTypes>
     constexpr Templates::TupleElement<VIndex, Tuple<TTypes...>>&& Get(Tuple<TTypes...>&& tuple) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple.
-    /// \remarks VIndex must be in the range [0, sizeof(TTypes...)).
+    /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TTypes>
     constexpr const Templates::TupleElement<VIndex, Tuple<TTypes...>>& Get(const Tuple<TTypes...>& tuple) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple.
-    /// \remarks VIndex must be in the range [0, sizeof(TTypes...)).
+    /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TTypes>
     constexpr const Templates::TupleElement<VIndex, Tuple<TTypes...>>&& Get(const Tuple<TTypes...>&& tuple) noexcept;
+
+    /// \brief Access an element of a tuple by type. The program is ill-formed unless the tuple has exactly one occurrence of TType.
+    template <typename TType, typename... TTypes>
+    constexpr TType& Get(Tuple<TTypes...>& tuple) noexcept;
+
+    /// \brief Access an element of a tuple by type. The program is ill-formed unless the tuple has exactly one occurrence of TType.
+    template <typename TType, typename... TTypes>
+    constexpr TType&& Get(Tuple<TTypes...>&& tuple) noexcept;
+
+    /// \brief Access an element of a tuple by type. The program is ill-formed unless the tuple has exactly one occurrence of TType.
+    template <typename TType, typename... TTypes>
+    constexpr const TType& Get(const Tuple<TTypes...>& tuple) noexcept;
+
+    /// \brief Access an element of a tuple by type. The program is ill-formed unless the tuple has exactly one occurrence of TType.
+    template <typename TType, typename... TTypes>
+    constexpr const TType&& Get(const Tuple<TTypes...>&& tuple) noexcept;
 
     /// \brief Swap two tuples by means of element-wise Swap.
     template <typename... TTypes>
@@ -377,6 +397,38 @@ namespace Syntropy::Experimental
         using TElement = Templates::TupleElement<VIndex, Tuple<TTypes...>>;
 
         return static_cast<const TElement&&>(static_cast<const TTuple&>(tuple).element_);
+    }
+
+    template <typename TType, typename... TTypes>
+    constexpr TType& Get(Tuple<TTypes...>& tuple) noexcept
+    {
+        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<TType, Syntropy::Templates::TypeList<TTypes...>>;
+
+        return Get<kIndex>(tuple);
+    }
+
+    template <typename TType, typename... TTypes>
+    constexpr TType&& Get(Tuple<TTypes...>&& tuple) noexcept
+    {
+        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<TType, Syntropy::Templates::TypeList<TTypes...>>;
+
+        return Get<kIndex>(Move(tuple));
+    }
+
+    template <typename TType, typename... TTypes>
+    constexpr const TType& Get(const Tuple<TTypes...>& tuple) noexcept
+    {
+        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<TType, Syntropy::Templates::TypeList<TTypes...>>;
+
+        return Get<kIndex>(tuple);
+    }
+
+    template <typename TType, typename... TTypes>
+    constexpr const TType&& Get(const Tuple<TTypes...>&& tuple) noexcept
+    {
+        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<TType, Syntropy::Templates::TypeList<TTypes...>>;
+
+        return Get<kIndex>(Move(tuple));
     }
 
     template <typename... TTypes>

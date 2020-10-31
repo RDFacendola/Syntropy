@@ -321,7 +321,7 @@ namespace Syntropy::Experimental::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<1, Tuple<Int, Float>>, Float>), true);
     })
 
-    .TestCase("Tuples provide read-access to their elements.", [](auto& fixture)
+    .TestCase("Tuples provide read-access by index to their elements.", [](auto& fixture)
     {
         auto scalar = Int{ 3 };
 
@@ -342,7 +342,7 @@ namespace Syntropy::Experimental::UnitTest
         SYNTROPY_UNIT_EQUAL((Get<3>(Move(tuple_a))), 400.0f);
     })
 
-    .TestCase("Tuples provide read-write access to their elements.", [](auto& fixture)
+    .TestCase("Tuples provide read-write access by index to their elements.", [](auto& fixture)
     {
         auto scalar = Int{ 3 };
 
@@ -357,6 +357,46 @@ namespace Syntropy::Experimental::UnitTest
         SYNTROPY_UNIT_EQUAL((Get<1>(tuple)), 200);
         SYNTROPY_UNIT_EQUAL((Get<2>(tuple)), 300);
         SYNTROPY_UNIT_EQUAL((Get<3>(tuple)), 400.0f);
+
+        SYNTROPY_UNIT_EQUAL(scalar, 300);
+    })
+
+    .TestCase("Tuples provide read-access by type to their elements.", [](auto& fixture)
+    {
+        auto scalar = Int{ 3 };
+
+        auto tuple_a = Tuple<const Int, Int, Int&, Float>{ 100, 200, scalar, 400.0f };
+        auto tuple_b = Tuple<const Int, Int, Int&, Float>{ 100, 200, scalar, 400.0f };
+
+        scalar = 300;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<decltype(Get<const Int>(tuple_a)), const Int&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<decltype(Get<Int>(tuple_a)), Int&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<decltype(Get<Int&>(tuple_a)), Int&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<decltype(Get<Float>(tuple_a)), float&>), true);
+
+        SYNTROPY_UNIT_EQUAL((Get<const Int>(tuple_a)), 100);
+        SYNTROPY_UNIT_EQUAL((Get<Int>(ReadOnly(tuple_a))), 200);
+        SYNTROPY_UNIT_EQUAL((Get<Int&>(tuple_a)), 300);
+        SYNTROPY_UNIT_EQUAL((Get<Float>(Move(ReadOnly(tuple_a)))), 400.0f);
+        SYNTROPY_UNIT_EQUAL((Get<Float>(Move(tuple_a))), 400.0f);
+    })
+
+    .TestCase("Tuples provide read-write access by type to their elements.", [](auto& fixture)
+    {
+        auto scalar = Int{ 3 };
+
+        auto tuple = Tuple<const Int, Int, Int&, Float>{ 1, 2, scalar, 4.0f };
+
+        // Get<0>(tuple) = 100;
+        Get<1>(tuple) = 200;
+        Get<2>(tuple) = 300;
+        Get<3>(tuple) = 400.0f;
+
+        SYNTROPY_UNIT_EQUAL((Get<const Int>(tuple)), 1);
+        SYNTROPY_UNIT_EQUAL((Get<Int>(tuple)), 200);
+        SYNTROPY_UNIT_EQUAL((Get<Int&>(tuple)), 300);
+        SYNTROPY_UNIT_EQUAL((Get<Float>(tuple)), 400.0f);
 
         SYNTROPY_UNIT_EQUAL(scalar, 300);
     })
@@ -523,7 +563,6 @@ namespace Syntropy::Experimental::UnitTest
 
         SYNTROPY_UNIT_EQUAL(reference_foo, 10.0f);
         SYNTROPY_UNIT_EQUAL(movable_bar.moved_, true);
-    })
-        ;
+    });
 
 }
