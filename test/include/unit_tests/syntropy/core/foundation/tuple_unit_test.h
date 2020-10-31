@@ -490,6 +490,22 @@ namespace Syntropy::Experimental::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(lhs)), 40.0f);
         SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(rhs)), 10);
         SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(rhs)), 20);
+    })
+
+    .TestCase("Modifying an elment of a tuple created by means of ::Tie, reflects on the original argument.", [](auto& fixture)
+    {
+        auto element_a = 10;
+        auto element_b = 20;
+
+        auto tuple = Syntropy::Experimental::Tie(element_a, element_b);
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(tuple)), 10);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(tuple)), 20);
+
+        Syntropy::Experimental::Get<0>(tuple) = 100;
+
+        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(tuple)), 100);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(tuple)), 20);
     });
 
 }
