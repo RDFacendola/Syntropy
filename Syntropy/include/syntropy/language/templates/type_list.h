@@ -7,7 +7,6 @@
 #pragma once
 
 #include "syntropy/language/foundation/types.h"
-
 #include "syntropy/language/templates/rank.h"
 
 #include "syntropy/language/templates/details/type_list_details.h"
@@ -23,7 +22,7 @@ namespace Syntropy::Templates
     /// \brief Represents a ordered sequence of types.
     /// \author Raffaele D. Facendola - August 2020.
     template <typename... TTypes>
-    struct TypeList {};
+    using TypeList = Details::TypeList<TTypes...>;
 
     /************************************************************************/
     /* TYPE TRAITS                                                          */

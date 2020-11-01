@@ -8,25 +8,21 @@
 
 #include "syntropy/language/foundation/types.h"
 
-// ===========================================================================
-
-namespace Syntropy::Templates
-{
-    /************************************************************************/
-    /* FORWARD DECLARATIONS                                                 */
-    /************************************************************************/
-
-    // TypeList.
-    // =========
-
-    template <typename... TTyes>
-    struct TypeList;
-}
+#include "syntropy/language/templates/details/templates_details.h"
 
 // ===========================================================================
 
 namespace Syntropy::Templates::Details
 {
+    /************************************************************************/
+    /* TYPE LIST                                                            */
+    /************************************************************************/
+
+    /// \brief Represents a ordered sequence of types.
+    /// \author Raffaele D. Facendola - August 2020.
+    template <typename... TTypes>
+    struct TypeList {};
+
     /************************************************************************/
     /* TYPE TRAITS                                                          */
     /************************************************************************/
