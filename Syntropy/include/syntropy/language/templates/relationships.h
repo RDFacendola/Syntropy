@@ -6,10 +6,8 @@
 
 #pragma once
 
-#include <type_traits>
-
-#include "syntropy/language/templates/type_list.h"
 #include "syntropy/language/foundation/types.h"
+
 #include "syntropy/language/templates/details/relationships_details.h"
 
 // ===========================================================================
@@ -30,7 +28,7 @@ namespace Syntropy::Templates
 
     /// \brief Constant equal to true if TBase is a base class for TDerived or both are the same non-union class, equal to false otherwise.
     template <typename TBase, typename TDerived>
-    inline constexpr Bool IsBaseOf = std::is_base_of_v<TBase, TDerived>;
+    inline constexpr Bool IsBaseOf = Details::IsBaseOf<TBase, TDerived>;
 
     /************************************************************************/
     /* IS CONVERTIBLE                                                       */

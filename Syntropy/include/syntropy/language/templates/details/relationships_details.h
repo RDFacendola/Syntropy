@@ -6,10 +6,13 @@
 
 #pragma once
 
-#include "syntropy/language/templates/type_list.h"
+#include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/templates.h"
+
+#include "syntropy/language/templates/type_list.h"
+
+// ===========================================================================
 
 namespace Syntropy::Templates::Details
 {
@@ -24,6 +27,14 @@ namespace Syntropy::Templates::Details
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
     inline constexpr Bool IsSame<TypeList<TTypes...>, TypeList<UTypes...>> = (IsSame<TTypes, UTypes> && ...);
+
+    /************************************************************************/
+    /* IS BASE OF                                                           */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TBase is a base class for TDerived or both are the same non-union class, equal to false otherwise.
+    template <typename TBase, typename TDerived>
+    inline constexpr Bool IsBaseOf = std::is_base_of_v<TBase, TDerived>;
 
     /************************************************************************/
     /* IS CONVERTIBLE                                                       */
@@ -53,3 +64,5 @@ namespace Syntropy::Templates::Details
     template<template <typename...> typename TTemplate, typename... TTypes>
     constexpr Bool IsTemplateSpecializationOf<TTemplate<TTypes...>, TTemplate> = true;
 }
+
+// ===========================================================================
