@@ -8,10 +8,24 @@
 
 #include "syntropy/language/support/declarations.h"
 
+// ===========================================================================
+
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
-    /* HAS SWAP DETECTOR                                                    */
+    /* HAS EQUALITY \ INEQUALITY                                            */
+    /************************************************************************/
+
+    /// \brief Check an instance of TType can be compared equal to an instance of UType.
+    template <typename TType, typename UType>
+    using HasEqualityComparison = decltype(Declval<TType>() == Declval<UType>());
+
+    /// \brief Check an instance of TType can be compared equal to an instance of UType.
+    template <typename TType, typename UType>
+    using HasInequalityComparison = decltype(Declval<TType>() != Declval<UType>());
+
+    /************************************************************************/
+    /* HAS SWAP                                                             */
     /************************************************************************/
 
     /// \brief Self-contained namespace used to determine whether a type has an ADL-aware Swap implementation.
@@ -25,4 +39,10 @@ namespace Syntropy::Templates::Details
         using Detect = decltype(Swap(Declval<TType&>(), Declval<TType&>));
     }
 
+    /// \brief Check whether exists an ADL-aware function Swap for TType.
+    template <typename TType>
+    using HasSwap = HasSwapDetector::Detect<TType>;
+
 }
+
+// ===========================================================================

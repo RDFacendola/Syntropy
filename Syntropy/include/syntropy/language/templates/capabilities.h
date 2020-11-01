@@ -6,29 +6,32 @@
 
 #pragma once
 
-#include "syntropy/language/support/declarations.h"
 #include "syntropy/language/templates/details/capabilities_details.h"
+
+// ===========================================================================
 
 namespace Syntropy::Templates
 {
     /************************************************************************/
-    /* COMPARISON                                                           */
+    /* HAS EQUALITY \ INEQUALITY                                            */
     /************************************************************************/
 
-    /// \brief Check an instance of TType can be compared equal to an instance of T1Type.
-    template <typename T0Type, typename T1Type>
-    using HasEqualityComparison = decltype(Declval<T0Type>() == Declval<T1Type>());
+    /// \brief Check an instance of TType can be compared equal to an instance of UType.
+    template <typename TType, typename UType>
+    using HasEqualityComparison = Details::HasEqualityComparison<TType, UType>;
 
-    /// \brief Check an instance of TType can be compared equal to an instance of T1Type.
-    template <typename T0Type, typename T1Type>
-    using HasInequalityComparison = decltype(Declval<T0Type>() != Declval<T1Type>());
+    /// \brief Check an instance of TType can be compared equal to an instance of UType.
+    template <typename TType, typename UType>
+    using HasInequalityComparison = Details::HasInequalityComparison<TType, UType>;
 
     /************************************************************************/
-    /* SWAP                                                                 */
+    /* HAS SWAP                                                             */
     /************************************************************************/
 
     /// \brief Check whether exists an ADL-aware function Swap for TType.
     template <typename TType>
-    using HasSwap = Details::HasSwapDetector::Detect<TType>;
+    using HasSwap = Details::HasSwap<TType>;
 
 }
+
+// ===========================================================================
