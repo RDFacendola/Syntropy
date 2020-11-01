@@ -11,6 +11,8 @@
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/details/relationships_details.h"
 
+// ===========================================================================
+
 namespace Syntropy::Templates
 {
     /************************************************************************/
@@ -18,8 +20,8 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     /// \brief Constant equal to true if TType is equal to UType, equal to false otherwise.
-    template <typename T0Type, typename T1Type>
-    inline constexpr Bool IsSame = std::is_same_v<T0Type, T1Type>;
+    template <typename TType, typename UType>
+    inline constexpr Bool IsSame = Details::IsSame<TType, UType>;
 
     /************************************************************************/
     /* IS BASE OF                                                           */
@@ -48,3 +50,5 @@ namespace Syntropy::Templates
     constexpr Bool IsTemplateSpecializationOf = Details::IsTemplateSpecializationOf<TType, TTemplate>;
 
 }
+
+// ===========================================================================

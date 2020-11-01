@@ -48,6 +48,8 @@ namespace Syntropy::Templates::Details
     template <typename TType, typename... UTypes>
     struct TypeListIndexHelper<TType, TType, UTypes...>
     {
+        static_assert((!std::is_same_v<TType, UTypes> && ...), "TType must appear exactly once in the type list.");
+
         static constexpr Int kValue = sizeof...(UTypes);
     };
 

@@ -35,8 +35,8 @@ namespace Syntropy::Templates
     /* TYPE LIST INDEX                                                      */
     /************************************************************************/
 
-    /// \brief Integer constant equal to the index of the first occurrence TType in TTypeList.
-    /// \remarks If TType doesn't appear in TTypeList the program is ill-formed.
+    /// \brief Integer constant equal to the index a type TType in TTypeList.
+    /// \remarks If TType doesn't appear exactly once in TTypeList the program is ill-formed.
     template <typename TType, typename TTypeList>
     inline constexpr Int TypeListIndex = Details::TypeListIndex<TType, TTypeList>;
 

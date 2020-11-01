@@ -262,8 +262,8 @@ namespace Syntropy::Templates::UnitTest
             
     .TestCase("TypeListIndex returns the index of the first occurrence in a type list.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((TypeListIndex<Int, TypeList<Int, Int, Int>>), 0);
-        SYNTROPY_UNIT_EQUAL((TypeListIndex<Int, TypeList<Float, Float, Int>>), 2);
+        SYNTROPY_UNIT_EQUAL((TypeListIndex<Int, TypeList<Int, Float, Bool>>), 0);
+        SYNTROPY_UNIT_EQUAL((TypeListIndex<Int, TypeList<Float, Bool, Int>>), 2);
     })
 
     .TestCase("TypeListElement returns the type of an element in a type list by index.", [](auto& fixture)

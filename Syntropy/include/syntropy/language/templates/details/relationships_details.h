@@ -12,6 +12,18 @@
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
+    /* IS SAME                                                              */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is equal to UType, equal to false otherwise.
+    template <typename TType, typename UType>
+    inline constexpr Bool IsSame = std::is_same_v<TType, UType>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes, typename... UTypes>
+    inline constexpr Bool IsSame<TypeList<TTypes...>, TypeList<UTypes...>> = (IsSame<TTypes, UTypes> && ...);
+
+    /************************************************************************/
     /* IS CONVERTIBLE                                                       */
     /************************************************************************/
 
