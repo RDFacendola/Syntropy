@@ -41,16 +41,16 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Constant equal to true if TFrom is implicitly convertible to TTo, equal to false otherwise.
-    template <typename TFrom, typename... TTos>
-    inline constexpr Bool IsConvertible = std::is_convertible_v<TFrom, TTos...>;
+    template <typename TFrom, typename TTo>
+    inline constexpr Bool IsConvertible = std::is_convertible_v<TFrom, TTo>;
 
     /// \brief Specialization for type lists.
     template <typename TFrom, typename... TFroms, typename TTo, typename... TTos>
-    inline constexpr Bool IsConvertible<TypeList<TFrom, TFroms...>, TTo, TTos...> = std::is_convertible_v<TFrom, TTo> && IsConvertible<TypeList<TFroms...>, TTos...>;
+    inline constexpr Bool IsConvertible<TypeList<TFrom, TFroms...>, TypeList<TTo, TTos...>> = std::is_convertible_v<TFrom, TTo> && IsConvertible<TypeList<TFroms...>, TypeList<TTos...>>;
 
     /// \brief Specialization for empty type-lists.
     template <>
-    inline constexpr Bool IsConvertible<TypeList<>> = true;
+    inline constexpr Bool IsConvertible<TypeList<>, TypeList<>> = true;
 
     /************************************************************************/
     /* IS TEMPLATE SPECIALIZATION OF                                        */

@@ -93,7 +93,7 @@ namespace Syntropy::Details
 
     /// \brief False if all types in TTypeList are copy-constructible, true otherwise.
     template <typename... TTypes>
-    inline constexpr Bool ExplicitIfTupleDirectConstructor = !Templates::IsConvertible<Templates::TypeList<const TTypes&...>, TTypes...>;
+    inline constexpr Bool ExplicitIfTupleDirectConstructor = !Templates::IsConvertible<Templates::TypeList<const TTypes&...>, Templates::TypeList<TTypes...>>;
 
     // (3)
 
@@ -104,7 +104,7 @@ namespace Syntropy::Details
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<UTypes&&...>, TTypes...>;
+    inline constexpr Bool ExplicitIfTupleConvertingConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<UTypes&&...>, Templates::TypeList<TTypes...>>;
 
     // (4)
 
@@ -114,7 +114,7 @@ namespace Syntropy::Details
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<const UTypes&...>, TTypes...>;
+    inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<const UTypes&...>, Templates::TypeList<TTypes...>>;
 
     // (5)
 
@@ -124,7 +124,7 @@ namespace Syntropy::Details
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<UTypes&&...>, TTypes...>;
+    inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<UTypes&&...>, Templates::TypeList<TTypes...>>;
 
     /************************************************************************/
     /* ENABLE IF - TUPLE CONSTRUCTOR                                        */
