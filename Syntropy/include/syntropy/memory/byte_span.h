@@ -143,19 +143,19 @@ namespace Syntropy::Memory
 
     /// \brief Slice lhs returning a span to the first "size" bytes and a span to the remaining elements of lhs.
     /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] constexpr Tuple<ByteSpan, ByteSpan> SliceFront(const ByteSpan& lhs, Bytes size) noexcept;
+    [[nodiscard]] constexpr TupleT<ByteSpan, ByteSpan> SliceFront(const ByteSpan& lhs, Bytes size) noexcept;
 
     /// \brief Slice lhs returning a span to the first "size" bytes and a span to the remaining elements of lhs.
     /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] constexpr Tuple<RWByteSpan, RWByteSpan> SliceFront(const RWByteSpan& lhs, Bytes size) noexcept;
+    [[nodiscard]] constexpr TupleT<RWByteSpan, RWByteSpan> SliceFront(const RWByteSpan& lhs, Bytes size) noexcept;
 
     /// \brief Slice lhs returning a span to the last "size" bytes and a span to the remaining elements of lhs.
     /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] constexpr Tuple<ByteSpan, ByteSpan> SliceBack(const ByteSpan& lhs, Bytes size) noexcept;
+    [[nodiscard]] constexpr TupleT<ByteSpan, ByteSpan> SliceBack(const ByteSpan& lhs, Bytes size) noexcept;
 
     /// \brief Slice lhs returning a span to the last "size" bytes and a span to the remaining elements of lhs.
     /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] constexpr Tuple<RWByteSpan, RWByteSpan> SliceBack(const RWByteSpan& lhs, Bytes size) noexcept;
+    [[nodiscard]] constexpr TupleT<RWByteSpan, RWByteSpan> SliceBack(const RWByteSpan& lhs, Bytes size) noexcept;
 
     /************************************************************************/
     /* CONVERSION                                                           */
@@ -340,22 +340,22 @@ namespace Syntropy::Memory
         return PopBack(lhs, SizeOf(lhs));
     }
 
-    inline constexpr Tuple<ByteSpan, ByteSpan> SliceFront(const ByteSpan& lhs, Bytes size) noexcept
+    inline constexpr TupleT<ByteSpan, ByteSpan> SliceFront(const ByteSpan& lhs, Bytes size) noexcept
     {
         return SliceFront(lhs, ToInt(size));
     }
 
-    inline constexpr Tuple<RWByteSpan, RWByteSpan> SliceFront(const RWByteSpan& lhs, Bytes size) noexcept
+    inline constexpr TupleT<RWByteSpan, RWByteSpan> SliceFront(const RWByteSpan& lhs, Bytes size) noexcept
     {
         return SliceFront(lhs, ToInt(size));
     }
 
-    inline constexpr Tuple<ByteSpan, ByteSpan> SliceBack(const ByteSpan& lhs, Bytes size) noexcept
+    inline constexpr TupleT<ByteSpan, ByteSpan> SliceBack(const ByteSpan& lhs, Bytes size) noexcept
     {
         return SliceBack(lhs, ToInt(size));
     }
 
-    inline constexpr Tuple<RWByteSpan, RWByteSpan> SliceBack(const RWByteSpan& lhs, Bytes size) noexcept
+    inline constexpr TupleT<RWByteSpan, RWByteSpan> SliceBack(const RWByteSpan& lhs, Bytes size) noexcept
     {
         return SliceBack(lhs, ToInt(size));
     }

@@ -13,6 +13,8 @@
 #include "syntropy/language/foundation.h"
 #include "syntropy/math/math.h"
 
+// ===========================================================================
+
 namespace Syntropy
 {
     /************************************************************************/
@@ -165,22 +167,22 @@ namespace Syntropy
     /// \brief Slice a span returning the first element and a subspan to the remaining ones.
     /// \remarks If the span is empty the behavior of this method is undefined.
     template <typename TElement>
-    [[nodiscard]] constexpr Tuple<TElement&, SpanT<TElement>> SliceFront(const SpanT<TElement>& span) noexcept;
+    [[nodiscard]] constexpr TupleT<TElement&, SpanT<TElement>> SliceFront(const SpanT<TElement>& span) noexcept;
 
     /// \brief Slice a span returning the last element and a subspan to the remaining ones.
     /// \remarks If the span is empty the behavior of this method is undefined.
     template <typename TElement>
-    [[nodiscard]] constexpr Tuple<TElement&, SpanT<TElement>> SliceBack(const SpanT<TElement>& span) noexcept;
+    [[nodiscard]] constexpr TupleT<TElement&, SpanT<TElement>> SliceBack(const SpanT<TElement>& span) noexcept;
 
     /// \brief Slice a span returning a subspan to the first count-elements and a subspan to the remaining ones.
     /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
     template <typename TElement>
-    [[nodiscard]] constexpr Tuple<SpanT<TElement>, SpanT<TElement>> SliceFront(const SpanT<TElement>& span, Int count) noexcept;
+    [[nodiscard]] constexpr TupleT<SpanT<TElement>, SpanT<TElement>> SliceFront(const SpanT<TElement>& span, Int count) noexcept;
 
     /// \brief Slice a span returning a subspan to the last-count elements and a subspan to the remaining ones.
     /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
     template <typename TElement>
-    [[nodiscard]] constexpr Tuple<SpanT<TElement>, SpanT<TElement>> SliceBack(const SpanT<TElement>& span, Int count) noexcept;
+    [[nodiscard]] constexpr TupleT<SpanT<TElement>, SpanT<TElement>> SliceBack(const SpanT<TElement>& span, Int count) noexcept;
 
     // Set operations.
     // ===============
@@ -275,6 +277,12 @@ namespace Syntropy
     template <typename TElement>
     std::ostream& operator<<(std::ostream& lhs, const SpanT<TElement>& rhs);
 
+}
+
+// ===========================================================================
+
+namespace Syntropy
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -436,25 +444,25 @@ namespace Syntropy
     }
 
     template <typename TElement>
-    constexpr Tuple<TElement&, SpanT<TElement>> SliceFront(const SpanT<TElement>& span) noexcept
+    constexpr TupleT<TElement&, SpanT<TElement>> SliceFront(const SpanT<TElement>& span) noexcept
     {
         return { Front(span), PopFront(span) };
     }
 
     template <typename TElement>
-    constexpr Tuple<TElement&, SpanT<TElement>> SliceBack(const SpanT<TElement>& span) noexcept
+    constexpr TupleT<TElement&, SpanT<TElement>> SliceBack(const SpanT<TElement>& span) noexcept
     {
         return { Back(span), PopBack(span) };
     }
 
     template <typename TElement>
-    constexpr Tuple<SpanT<TElement>, SpanT<TElement>> SliceFront(const SpanT<TElement>& span, Int count) noexcept
+    constexpr TupleT<SpanT<TElement>, SpanT<TElement>> SliceFront(const SpanT<TElement>& span, Int count) noexcept
     {
         return { Front(span, count), PopFront(span, count) };
     }
 
     template <typename TElement>
-    constexpr Tuple<SpanT<TElement>, SpanT<TElement>> SliceBack(const SpanT<TElement>& span, Int count) noexcept
+    constexpr TupleT<SpanT<TElement>, SpanT<TElement>> SliceBack(const SpanT<TElement>& span, Int count) noexcept
     {
         return { Back(span, count), PopBack(span, count) };
     }
@@ -677,3 +685,5 @@ namespace Syntropy
     }
 
 }
+
+// ===========================================================================
