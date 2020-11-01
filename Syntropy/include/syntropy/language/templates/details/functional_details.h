@@ -52,7 +52,7 @@ namespace Syntropy::Templates::Details
     // ==============
 
     template <typename TFunction, typename... TTuples, Int... VIndexes>
-    constexpr void ApplyLockstep(IntegerSequence<VIndexes...>, TFunction&& function, TTuples&&... tuples) noexcept
+    constexpr void ApplyLockstep(Sequence<VIndexes...>, TFunction&& function, TTuples&&... tuples) noexcept
     {
         (ApplyAt<VIndexes>(Forward<TFunction>(function), Forward<TTuples>(tuples)...), ...);
     }

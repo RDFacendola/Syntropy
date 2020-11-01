@@ -26,21 +26,21 @@ namespace Syntropy::Templates::UnitTest
 
     inline const auto& kSequencesUnitTest = MakeAutoUnitTest<MathTestFixture>("sequences.templates.language.syntropy")
 
-    .TestCase("Templates::MakeIntegerSequence<N> returns a contiguous integer sequence from 0 to N-1.", [](auto& fixture)
+    .TestCase("Templates::MakeSequence<N> returns a contiguous integer sequence from 0 to N-1.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::MakeIntegerSequence<1>, Templates::IntegerSequence<0>>), true);
-        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::MakeIntegerSequence<5>, Templates::IntegerSequence<0, 1, 2, 3, 4>>), true);
+        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::MakeSequence<1>, Templates::Sequence<0>>), true);
+        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::MakeSequence<5>, Templates::Sequence<0, 1, 2, 3, 4>>), true);
     })
 
-    .TestCase("Templates::IntegerSequenceFor<T...> returns a contiguous integer sequence from 0 to sizeof...(T)", [](auto& fixture)
+    .TestCase("Templates::SequenceFor<T...> returns a contiguous integer sequence from 0 to sizeof...(T)", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::IntegerSequenceFor<Int, Float, Bool>, Templates::IntegerSequence<0, 1, 2>>), true);
-        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::IntegerSequenceFor<Int>, Templates::IntegerSequence<0>>), true);
+        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::SequenceFor<Int, Float, Bool>, Templates::Sequence<0, 1, 2>>), true);
+        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::SequenceFor<Int>, Templates::Sequence<0>>), true);
     })
 
-    .TestCase("Templates::IntegerSequenceFor returns an empty integer sequence if the parameter pack size is zero.", [](auto& fixture)
+    .TestCase("Templates::SequenceFor returns an empty integer sequence if the parameter pack size is zero.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::IntegerSequenceFor<>, Templates::IntegerSequence<>>), true);
+        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::SequenceFor<>, Templates::Sequence<>>), true);
     })
 
     .TestCase("Templates::IsContiguousSequence returns true for contiguous sequences and false otherwise.", [](auto& fixture)

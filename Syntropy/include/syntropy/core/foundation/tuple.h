@@ -149,7 +149,7 @@ namespace Syntropy
         template<typename UType, typename... UTypes, Details::EnableIfTupleConvertingCopyConstructor<TTypeList, UType, UTypes...> = nullptr>
         explicit (Details::ExplicitIfTupleConvertingCopyConstructor<TTypeList, UType, UTypes...>)
         constexpr TupleT(const TupleT<UType, UTypes...>& rhs) noexcept
-            : TupleT(UnwindConstructor{}, Templates::IntegerSequenceFor<UType, UTypes...>, rhs)
+            : TupleT(UnwindConstructor{}, Templates::SequenceFor<UType, UTypes...>, rhs)
         {
 
         }
@@ -158,7 +158,7 @@ namespace Syntropy
         template<typename UType, typename... UTypes, Details::EnableIfTupleConvertingMoveConstructor<TTypeList, UType, UTypes...> = nullptr>
         explicit (Details::ExplicitIfTupleConvertingMoveConstructor<TTypeList, UType, UTypes...>)
         constexpr TupleT(TupleT<UType, UTypes...>&& rhs) noexcept
-            : TupleT(UnwindConstructor{}, Templates::IntegerSequenceFor<UType, UTypes...>, Move(rhs))
+            : TupleT(UnwindConstructor{}, Templates::SequenceFor<UType, UTypes...>, Move(rhs))
         {
 
         }
@@ -191,7 +191,7 @@ namespace Syntropy
 
         /// \brief Construct a tuple unwinding another tuple elements.
         template<typename TTuple, Int... VIndexes>
-        constexpr TupleT(UnwindConstructor, Templates::IntegerSequence<VIndexes...>, TTuple&& tuple) noexcept;
+        constexpr TupleT(UnwindConstructor, Templates::Sequence<VIndexes...>, TTuple&& tuple) noexcept;
 
         /// \brief Default copy-constructor.
         constexpr TupleT(const TupleT& other) = default;
@@ -343,7 +343,7 @@ namespace Syntropy
 
     template <typename TType, typename... TTypes>
     template<typename TTuple, Int... VIndexes>
-    constexpr TupleT<TType, TTypes...>::TupleT(UnwindConstructor, Templates::IntegerSequence<VIndexes...>, TTuple&& tuple) noexcept
+    constexpr TupleT<TType, TTypes...>::TupleT(UnwindConstructor, Templates::Sequence<VIndexes...>, TTuple&& tuple) noexcept
         : TupleT(ElementwiseConstructor, Get<VIndexes>(Forward<TTuple>(tuple))...)
     {
 

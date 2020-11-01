@@ -63,7 +63,7 @@ namespace Syntropy::Templates
     {
         static_assert(SameRank<TTuple, TTuples...>, "Tuples must have the same rank.");
 
-        using TSequence = MakeIntegerSequence<Rank<TTuple>>;
+        using TSequence = MakeSequence<Rank<TTuple>>;
 
         Details::ApplyLockstep(TSequence{}, Forward<TFunction>(function), Forward<TTuple>(tuple), Forward<TTuples>(tuples)...);
     }

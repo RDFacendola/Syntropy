@@ -8,39 +8,39 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/templates/templates.h"
-
-// ===========================================================================
-
-namespace Syntropy::Templates
-{
-    /************************************************************************/
-    /* FORWARD DECLARATIONS                                                 */
-    /************************************************************************/
-
-    template <Int... VIndexes>
-    struct IntegerSequence;
-}
+#include "syntropy/language/templates/details/templates_details.h"
 
 // ===========================================================================
 
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
-    /* MAKE INTEGER SEQUENCE                                                */
+    /* SEQUENCE                                                             */
+    /************************************************************************/
+
+    /// \brief A compile-time sequence of integers.
+    template <Int... VSequence>
+    struct Sequence {};
+
+    /************************************************************************/
+    /* UTILITIES                                                            */
     /************************************************************************/
 
     /// \brief Helper alias template used to generate a contiguous sequence of increasing integers, from 0 to VCount-1.
     template <Int VCount, Int... VSequence>
-    struct MakeIntegerSequenceHelper : MakeIntegerSequenceHelper<VCount - 1, VCount - 1, VSequence...> {};
+    struct MakeSequenceHelper : MakeSequenceHelper<VCount - 1, VCount - 1, VSequence...> {};
 
     /// \brief Specialization to end recursive definition.
     template <Int... VSequence>
-    struct MakeIntegerSequenceHelper<0, VSequence...> : Alias<IntegerSequence<VSequence...>> {};
+    struct MakeSequenceHelper<0, VSequence...> : Alias<Sequence<VSequence...>> {};
 
     /// \brief Helper alias template used to generate a contiguous sequence of increasing integers, from 0 to VCount-1.
     template <Int VCount>
-    using MakeIntegerSequence = typename MakeIntegerSequenceHelper<VCount>::Type;
+    using MakeSequence = typename MakeSequenceHelper<VCount>::Type;
+
+    /// \brief Helper alias template used to convert a parameter pack to an integer sequence of the same size.
+    template <typename... TTypes>
+    using SequenceFor = MakeSequence<sizeof...(TTypes)>;
 
     /************************************************************************/
     /* IS CONTIGUOUS SEQUENCE                                               */

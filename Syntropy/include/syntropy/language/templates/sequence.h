@@ -15,29 +15,25 @@
 namespace Syntropy::Templates
 {
     /************************************************************************/
-    /* INTEGER SEQUENCE                                                     */
+    /* SEQUENCE                                                             */
     /************************************************************************/
 
     /// \brief A compile-time sequence of integers.
     template <Int... VSequence>
-    struct IntegerSequence {};
+    using Sequence = Details::Sequence<VSequence...>;
 
     /************************************************************************/
-    /* MAKE INTEGER SEQUENCE                                                */
+    /* UTILITIES                                                            */
     /************************************************************************/
 
     /// \brief Helper alias template used to generate a contiguous sequence of increasing integers, from 0 to VCount-1.
     /// \remarks If VCount is 0, this type is equal to an empty sequence.
     template <Int VCount>
-    using MakeIntegerSequence = Details::MakeIntegerSequence<VCount>;
+    using MakeSequence = Details::MakeSequence<VCount>;
 
     /// \brief Helper alias template used to convert a parameter pack to an integer sequence of the same size.
     template <typename... TTypes>
-    using IntegerSequenceFor = MakeIntegerSequence<sizeof...(TTypes)>;
-
-    /************************************************************************/
-    /* IS CONTIGUOUS SEQUENCE                                               */
-    /************************************************************************/
+    using SequenceFor = Details::SequenceFor<TTypes...>;
 
     /// \brief Constant equal to true if the sequence [VInts...] is a monotonically increasing contiguous sequence, equal to false otherwise.
     template <Int... VSequence>
