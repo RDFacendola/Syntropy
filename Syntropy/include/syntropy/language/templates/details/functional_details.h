@@ -26,6 +26,25 @@ namespace Syntropy::Templates
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
+    /* FUNCTION ARGUMENTS                                                   */
+    /************************************************************************/
+
+    /// \brief Provides the a type alias Type, which is the argument types a callable object can be called with.
+    /// Partial specialization for lambdas and callable objects.
+    template <typename TCallable>
+    struct FunctionArguments : FunctionArguments<decltype(&Decay<TCallable>::operator())> {};
+
+    /// \brief Provides the a type alias Type, which is the argument types a callable object can be called with.
+    /// Partial specialization for non-const member functions.
+    template <typename TCallable, typename TReturn, typename... TArguments>
+    struct FunctionArguments<TReturn(TCallable::*)(TArguments...)> : Templates::Alias<TypeList<TArguments...>> {};
+
+    /// \brief Provides the a type alias Type, which is the argument types a callable object can be called with.
+    /// Partial specialization for const member functions.
+    template <typename TCallable, typename TReturn, typename... TArguments>
+    struct FunctionArguments<TReturn(TCallable::*)(TArguments...) const> : Templates::Alias<TypeList<TArguments...>> {};
+
+    /************************************************************************/
     /* LOCKSTEP                                                             */
     /************************************************************************/
 

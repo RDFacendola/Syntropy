@@ -109,13 +109,11 @@
     <ClInclude Include="include\syntropy\experimental\core\memory.h" />
     <ClInclude Include="include\syntropy\language\foundation.h" />
     <ClInclude Include="include\syntropy\language\templates\categories.h" />
-    <ClInclude Include="include\syntropy\language\templates\details\queries_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\sequences_details.h" />
     <ClInclude Include="include\syntropy\language\templates\manipulation.h" />
     <ClInclude Include="include\syntropy\language\templates\sfinae.h" />
     <ClInclude Include="include\syntropy\language\templates\operations.h" />
     <ClInclude Include="include\syntropy\language\templates\properties.h" />
-    <ClInclude Include="include\syntropy\language\templates\queries.h" />
     <ClInclude Include="include\syntropy\language\templates\relationships.h" />
     <ClInclude Include="include\syntropy\core\architecture\visitor.h" />
     <ClInclude Include="include\syntropy\language\templates\sequences.h" />

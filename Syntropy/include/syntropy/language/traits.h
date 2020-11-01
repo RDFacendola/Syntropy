@@ -12,7 +12,6 @@
 #include "syntropy/language/templates/manipulation.h"
 #include "syntropy/language/templates/operations.h"
 #include "syntropy/language/templates/properties.h"
-#include "syntropy/language/templates/queries.h"
 #include "syntropy/language/templates/relationships.h"
 #include "syntropy/language/templates/sequences.h"
 #include "syntropy/language/templates/sfinae.h"

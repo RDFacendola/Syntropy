@@ -18,6 +18,15 @@
 namespace Syntropy::Templates
 {
     /************************************************************************/
+    /* FUNCTION ARGUMENTS                                                   */
+    /************************************************************************/
+
+    /// \brief Type alias equal to the argument types a callable object can be called with.
+    /// If no matching element could be found, the program is ill-formed.
+    template <typename TCallable>
+    using FunctionArguments = Details::FunctionArguments<TCallable>;
+
+    /************************************************************************/
     /* LOCKSTEP                                                             */
     /************************************************************************/
 
