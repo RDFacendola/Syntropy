@@ -8,12 +8,11 @@
 
 #include <type_traits>
 
-#include "syntropy/language/templates/type_list.h"
-
 #include "syntropy/language/foundation.h"
 
-#include "syntropy/language/templates/templates.h"
-#include "syntropy/language/templates/sfinae.h"
+#include "syntropy/language/templates/details/type_list_details.h"
+#include "syntropy/language/templates/details/sfinae_details.h"
+#include "syntropy/language/templates/details/templates_details.h"
 
 // ===========================================================================
 
@@ -218,6 +217,14 @@ namespace Syntropy::Templates::Details
     /// \brief Specialization for type lists.
     template <typename... TTypes>
     inline constexpr Bool IsTriviallyDestructible<TypeList<TTypes...>> = (IsTriviallyDestructible<TTypes> && ...);
+
+    /************************************************************************/
+    /* IS TRIVIALLY SWAPPABLE                                               */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if swapping two instances of TType results in trivial operations only, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsTriviallySwappable = (IsTriviallyDestructible<TType> && IsTriviallyMoveConstructible<TType> && IsTriviallyMoveAssignable<TType> && (!IsValidExpression<HasSwap, TType>));
 
 }
 

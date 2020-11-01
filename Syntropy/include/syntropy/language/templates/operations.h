@@ -6,14 +6,7 @@
 
 #pragma once
 
-#include <type_traits>
-
-#include "syntropy/language/templates/type_list.h"
-
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/capabilities.h"
-#include "syntropy/language/templates/sfinae.h"
-#include "syntropy/language/templates/templates.h"
 
 #include "syntropy/language/templates/details/operations_details.h"
 
@@ -124,7 +117,7 @@ namespace Syntropy::Templates
 
     /// \brief Constant equal to true if swapping two instances of TType results in trivial operations only, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsTriviallySwappable = (IsTriviallyDestructible<TType> && IsTriviallyMoveConstructible<TType> && IsTriviallyMoveAssignable<TType> && (!IsValidExpression<HasSwap, TType>));
+    inline constexpr Bool IsTriviallySwappable = Details::IsTriviallySwappable<TType>;
 
 }
 
