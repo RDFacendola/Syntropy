@@ -6,11 +6,10 @@
 
 #pragma once
 
-#include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
+
 #include "syntropy/language/templates/details/sfinae_details.h"
-#include "syntropy/language/templates/templates.h"
 
 namespace Syntropy::Templates
 {
@@ -19,8 +18,8 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     /// \brief Type equal to TType if VEnable is true, otherwise there's no such type.
-    template <Bool VEnable, typename TType = void>
-    using EnableIf = std::enable_if_t<VEnable, TType>;
+    template <Bool VEnable>
+    using EnableIf = Details::EnableIf<VEnable>;
 
     /************************************************************************/
     /* IS VALID EXPRESSION                                                  */
@@ -28,7 +27,7 @@ namespace Syntropy::Templates
 
     /// \brief Boolean value equal to true if TExpression<TTypes...> is a valid expression, false otherwise.
     template <template<typename...> typename TExpression, typename... TTypes>
-    inline constexpr Bool IsValidExpression = Details::DetectValidExpression<void, TExpression, TTypes...>::kValue;
+    inline constexpr Bool IsValidExpression = Details::IsValidExpression<TExpression, TTypes...>;
 
     /************************************************************************/
     /* ENABLE IF VALID EXPRESSION                                           */
@@ -36,6 +35,6 @@ namespace Syntropy::Templates
 
     /// \brief If TExpression<TTypes> is a valid expression, exposes a member typedef equal to void, otherwise there's no such type.
     template <template<typename...> typename TExpression, typename... TTypes>
-    using EnableIfValidExpression = EnableIf<IsValidExpression<TExpression, TTypes...>>;
+    using EnableIfValidExpression = Details::EnableIfValidExpression<TExpression, TTypes...>;
 
 }
