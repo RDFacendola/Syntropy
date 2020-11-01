@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/templates.h"
+
 #include "syntropy/language/templates/details/manipulation_details.h"
 
 namespace Syntropy::Templates

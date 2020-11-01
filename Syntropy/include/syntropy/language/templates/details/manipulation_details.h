@@ -8,9 +8,12 @@
 
 #include <type_traits>
 
-#include "syntropy/language/templates/type_list.h"
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/templates.h"
+
+#include "syntropy/language/templates/details/type_list_details.h"
+#include "syntropy/language/templates/details/templates_details.h"
+
+// ===========================================================================
 
 namespace Syntropy::Templates::Details
 {
@@ -148,3 +151,5 @@ namespace Syntropy::Templates::Details
     struct Decay<TypeList<TTypes...>> : Alias<TypeList<std::decay_t<TTypes>...>> {};
 
 }
+
+// ===========================================================================
