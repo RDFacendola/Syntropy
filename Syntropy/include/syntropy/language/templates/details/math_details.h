@@ -7,7 +7,10 @@
 #pragma once
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/templates.h"
+
+#include "syntropy/language/templates/details/templates_details.h"
+
+// ===========================================================================
 
 namespace Syntropy::Templates::Details
 {
@@ -17,17 +20,11 @@ namespace Syntropy::Templates::Details
 
     /// \brief Euler's algorithm for greatest common divisor.
     template <Int VLeft, Int VRight>
-    struct GCD : GCD<VRight, VLeft % VRight>
-    {
-
-    };
+    struct GCD : GCD<VRight, VLeft % VRight> {};
 
     /// \brief Specialization for terminal case.
     template <Int VLeft>
-    struct GCD<VLeft, 0> : Constant<Int, VLeft>
-    {
-
-    };
+    struct GCD<VLeft, 0> : Constant<Int, VLeft> {};
 
     /************************************************************************/
     /* LCM                                                                  */
@@ -35,15 +32,11 @@ namespace Syntropy::Templates::Details
 
     /// \brief Euler's algorithm for lowest common multiple.
     template <Int VLeft, Int VRight>
-    struct LCM : Constant<Int, (VLeft * VRight) / GCD<VLeft, VRight>::kValue>
-    {
-
-    };
+    struct LCM : Constant<Int, (VLeft * VRight) / GCD<VLeft, VRight>::kValue> {};
 
     /// \brief Special case where both numbers are 0.
     template <>
-    struct LCM<0, 0> : Constant<Int, 0>
-    {
-
-    };
+    struct LCM<0, 0> : Constant<Int, 0> {};
 }
+
+// ===========================================================================

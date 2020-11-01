@@ -6,16 +6,19 @@
 
 #pragma once
 
-#include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/details/math_details.h"
+
 #include "syntropy/math/math.h"
+
+#include "syntropy/language/templates/details/math_details.h"
+
+// ===========================================================================
 
 namespace Syntropy::Templates
 {
     /************************************************************************/
-    /* ABS                                                                  */
+    /* ABSOLUTE VALUE                                                       */
     /************************************************************************/
 
     /// \brief Get the absolute value of VValue.
@@ -23,7 +26,7 @@ namespace Syntropy::Templates
     inline constexpr Int Abs = Math::Abs(VValue);
 
     /************************************************************************/
-    /* GCD                                                                  */
+    /* GREATEST COMMON DIVISOR                                              */
     /************************************************************************/
 
     /// \brief Get the greatest common divisor between VLeft and VRight.
@@ -31,10 +34,12 @@ namespace Syntropy::Templates
     inline constexpr Int GCD = Details::GCD<VLeft, VRight>::kValue;
 
     /************************************************************************/
-    /* LCM                                                                  */
+    /* LOWEST COMMON MULTIPLE                                               */
     /************************************************************************/
 
     /// \brief Get the lowest common multiple between VLeft and VRight.
     template <Int VLeft, Int VRight>
     inline constexpr Int LCM = Details::LCM<VLeft, VRight>::kValue;
 }
+
+// ===========================================================================
