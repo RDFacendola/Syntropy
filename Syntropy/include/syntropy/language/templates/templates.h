@@ -15,56 +15,46 @@
 namespace Syntropy::Templates
 {
     /************************************************************************/
-    /* CONSTANT                                                             */
+    /* CONSTANT \ ALIAS                                                     */
     /************************************************************************/
 
     /// \brief Wraps a static constant of type TType.
     template <typename TType, TType VValue>
-    struct Constant
-    {
-        static constexpr TType kValue = VValue;
-    };
-
-    /************************************************************************/
-    /* ALIAS                                                                */
-    /************************************************************************/
+    using Constant = Details::Constant<TType, VValue>;
 
     /// \brief Wraps an alias type Type.
     template <typename TType>
-    struct Alias
-    {
-        using Type = typename TType;
-    };
+    using Alias = Details::Alias<TType>;
 
     /************************************************************************/
-    /* TRUE                                                                 */
+    /* TRUE \ FALSE                                                         */
     /************************************************************************/
 
     /// \brief Boolean constant equal to true.
-    using True = Constant<Bool, true>;
-
-    /************************************************************************/
-    /* FALSE                                                                */
-    /************************************************************************/
+    using True = Details::True;
 
     /// \brief Boolean constant equal to false.
-    using False = Constant<Bool, false>;
+    using False = Details::False;
 
     /************************************************************************/
-    /* ALWAYS TRUE                                                          */
+    /* ALWAYS TRUE \ FALSE                                                  */
     /************************************************************************/
 
     /// \brief Boolean constant which consume any template argument and evaluates to true.
-    template <typename...>
-    inline constexpr Bool AlwaysTrue = false;
-
-    /************************************************************************/
-    /* ALWAYS FALSE                                                         */
-    /************************************************************************/
+    template <typename... TTypes>
+    inline constexpr Bool AlwaysTrue = Details::AlwaysTrue<TTypes...>;
 
     /// \brief Boolean constant which consume any template argument and evaluates to false.
-    template <typename...>
-    inline constexpr Bool AlwaysFalse = false;
+    template <typename... TTypes>
+    inline constexpr Bool AlwaysFalse = Details::AlwaysFalse<TTypes...>;
+
+    /************************************************************************/
+    /* VOID                                                                 */
+    /************************************************************************/
+
+    /// \brief Metafunction that maps a sequence of types to void.
+    template <typename... TTypes>
+    using Void = Details::Void<TTypes...>;
 
     /************************************************************************/
     /* ILL-FORMED                                                           */
@@ -72,18 +62,7 @@ namespace Syntropy::Templates
 
     /// \brief An alias type that results in an ill-formed program.
     template <typename... TTypes>
-    struct IllFormed
-    {
-        static_assert(AlwaysFalse<TTypes...>, "The program is ill-formed.");
-    };
-
-    /************************************************************************/
-    /* VOID                                                                 */
-    /************************************************************************/
-
-    /// \brief Metafunction that maps a sequence of types to void.
-    template <typename...>
-    using Void = void;
+    using IllFormed = Details::IllFormed<TTypes...>;
 
     /************************************************************************/
     /* IDENTITY                                                             */
