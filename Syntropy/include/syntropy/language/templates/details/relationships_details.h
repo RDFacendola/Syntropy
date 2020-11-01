@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "syntropy/language/templates/type_list.h"
+
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/templates.h"
 

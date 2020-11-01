@@ -8,6 +8,8 @@
 
 #include <type_traits>
 
+#include "syntropy/language/templates/type_list.h"
+
 #include "syntropy/language/foundation.h"
 
 #include "syntropy/language/templates/templates.h"
