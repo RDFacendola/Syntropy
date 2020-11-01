@@ -9,7 +9,7 @@
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/foundation/references.h"
 #include "syntropy/language/templates/rank.h"
-#include "syntropy/language/templates/sequences.h"
+#include "syntropy/language/templates/sequence.h"
 
 #include "syntropy/language/templates/details/functional_details.h"
 

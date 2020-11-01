@@ -12,7 +12,7 @@
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/language/templates/templates.h"
-#include "syntropy/language/templates/sequences.h"
+#include "syntropy/language/templates/sequence.h"
 #include "syntropy/language/templates/functional.h"
 
 #include "syntropy/core/foundation/details/tuple_details.h"

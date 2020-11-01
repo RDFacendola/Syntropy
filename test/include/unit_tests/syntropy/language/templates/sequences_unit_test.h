@@ -5,7 +5,7 @@
 #pragma once
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/language/templates/sequences.h"
+#include "syntropy/language/templates/sequence.h"
 #include "syntropy/language/traits.h"
 #include "syntropy/unit_test/unit_test.h"
 

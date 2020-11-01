@@ -1,6 +1,6 @@
 
-/// \file sequences.h
-/// \brief This header is part of Syntropy language module. It contains query-related type traits.
+/// \file sequence.h
+/// \brief This header is part of Syntropy language module. It contains template definitions for sequences.
 ///
 /// \author Raffaele D. Facendola - 2020.
 
@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/templates/details/sequences_details.h"
+#include "syntropy/language/templates/details/sequence_details.h"
 
 // ===========================================================================
 

@@ -138,10 +138,8 @@
     <ClInclude Include="include\syntropy\language\templates\operations.h" />
     <ClInclude Include="include\syntropy\language\templates\properties.h" />
     <ClInclude Include="include\syntropy\language\templates\relationships.h" />
-    <ClInclude Include="include\syntropy\language\templates\sequences.h" />
     <ClInclude Include="include\syntropy\language\templates\details\capabilities_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\math_details.h" />
-    <ClInclude Include="include\syntropy\language\templates\details\sequences_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\sfinae_details.h" />
     <ClInclude Include="include\syntropy\memory\byte.h" />
     <ClInclude Include="include\syntropy\experimental\memory\smart_pointers.h" />
@@ -160,6 +158,8 @@
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\properties_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\sequence.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\sequence_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
