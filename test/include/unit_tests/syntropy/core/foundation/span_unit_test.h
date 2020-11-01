@@ -224,9 +224,9 @@ namespace Syntropy::UnitTest
         auto span1_9 = SpanT<Int>{ &fixture.ints_[1], 9 };
 
         auto [front, back] = SliceFront(span0_10);
-
-        SYNTROPY_UNIT_EQUAL(front, 0);
-        SYNTROPY_UNIT_EQUAL(back, span1_9);
+ 
+         SYNTROPY_UNIT_EQUAL(front, 0);
+         SYNTROPY_UNIT_EQUAL(back, span1_9);
     })
 
     .TestCase("Slicing a span from the back returns the back element and a sequence to the remaining ones.", [](auto& fixture)
@@ -246,10 +246,10 @@ namespace Syntropy::UnitTest
         auto span0_3 = SpanT<Int>{ &fixture.ints_[0], 3 };
         auto span3_7 = SpanT<Int>{ &fixture.ints_[3], 7 };
 
-        auto [front, back] = SliceFront(span0_10, 3);
-
-        SYNTROPY_UNIT_EQUAL(front, span0_3);
-        SYNTROPY_UNIT_EQUAL(back, span3_7);
+         auto [front, back] = SliceFront(span0_10, 3);
+ 
+         SYNTROPY_UNIT_EQUAL(front, span0_3);
+         SYNTROPY_UNIT_EQUAL(back, span3_7);
     })
 
     .TestCase("Slicing a span from the back returns two sequences, one with the last elements and one with the remaining ones.", [](auto& fixture)

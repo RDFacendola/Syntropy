@@ -17,8 +17,8 @@
     <ClInclude Include="include\syntropy\allocators\virtual_stack_allocator.h" />
     <ClInclude Include="include\syntropy\core\algorithm\predicates.h" />
     <ClInclude Include="include\syntropy\core\algorithm\swap.h" />
-    <ClInclude Include="include\syntropy\experimental\core\foundation\details\tuple_details.h" />
-    <ClInclude Include="include\syntropy\experimental\core\foundation\tuple.h" />
+    <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
+    <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\language\templates\details\functional_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\manipulation_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\operations_details.h" />
@@ -106,7 +106,6 @@
     <ClInclude Include="include\syntropy\language\preprocessor.h" />
     <ClInclude Include="include\syntropy\serialization\string_stream.h" />
     <ClInclude Include="include\syntropy\experimental\core\memory.h" />
-    <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\language\foundation.h" />
     <ClInclude Include="include\syntropy\language\templates\categories.h" />
     <ClInclude Include="include\syntropy\language\templates\details\queries_details.h" />

@@ -10,11 +10,11 @@
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/language/traits.h"
-#include "syntropy/experimental/core/foundation/tuple.h"
+#include "syntropy/core/foundation/tuple.h"
 
 #include "syntropy/unit_test/unit_test.h"
 
-namespace Syntropy::Experimental::UnitTest
+namespace Syntropy::UnitTest
 {
     /************************************************************************/
     /* TUPLE TEST FIXTURE                                                   */
@@ -475,7 +475,7 @@ namespace Syntropy::Experimental::UnitTest
         auto source_tuple = Tuple<TestMovableOnlyFoo>{};
         auto destination_tuple = Tuple<TestMovableOnlyFoo>{ Move(source_tuple) };       // @rfacendola Accessing source_tuple after this point results in undefined behavior.
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(source_tuple).moved_), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Get<0>(source_tuple).moved_), true);
     })
         
     .TestCase("Tuples can implicitly convert elements during copy assignment.", [](auto& fixture)
@@ -489,8 +489,6 @@ namespace Syntropy::Experimental::UnitTest
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<Int>&, const Tuple<Float>&>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<Float>&, const Tuple<Int>&>), true);
-
-        // SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(tuple_int) == Syntropy::Experimental::Get<0>(tuple_float)), true);
     })
 
     .TestCase("Tuples can implicitly convert elements during move assignment.", [](auto& fixture)
@@ -506,7 +504,7 @@ namespace Syntropy::Experimental::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<TestMovableOnlyBar>&, Tuple<TestMovableOnlyFoo>&&>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<TestMovableOnlyFoo>&, Tuple<TestMovableOnlyBar>&&>), false);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(tuple_foo).moved_), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Get<0>(tuple_foo).moved_), true);
     })
 
     .TestCase("Swapping an empty tuple with another empty tuple has no effect.", [](auto& fixture)
@@ -514,7 +512,7 @@ namespace Syntropy::Experimental::UnitTest
         auto lhs = MakeTuple();
         auto rhs = MakeTuple();
 
-        Syntropy::Experimental::Swap(lhs, rhs);
+        Syntropy::Swap(lhs, rhs);
 
         SYNTROPY_UNIT_EQUAL(lhs == rhs, true);
         SYNTROPY_UNIT_EQUAL(lhs == MakeTuple(), true);
@@ -526,12 +524,12 @@ namespace Syntropy::Experimental::UnitTest
         auto lhs = MakeTuple(10, 20.0f);
         auto rhs = MakeTuple(30, 40.0f);
 
-        Syntropy::Experimental::Swap(lhs, rhs);
+        Syntropy::Swap(lhs, rhs);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(lhs)), 30);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(lhs)), 40.0f);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(rhs)), 10);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(rhs)), 20);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Get<0>(lhs)), 30);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Get<1>(lhs)), 40.0f);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Get<0>(rhs)), 10);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Get<1>(rhs)), 20);
     })
 
     .TestCase("Modifying an elment of a tuple created by means of ::Tie, reflects on the original argument.", [](auto& fixture)
@@ -540,15 +538,15 @@ namespace Syntropy::Experimental::UnitTest
         auto element_a = 10;
         auto element_b = 20;
 
-        auto tuple = Syntropy::Experimental::Tie(element_a, element_b);
+        auto tuple = Syntropy::Tie(element_a, element_b);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(tuple)), 10);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(tuple)), 20);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Get<0>(tuple)), 10);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Get<1>(tuple)), 20);
 
-        Syntropy::Experimental::Get<0>(tuple) = 100;
+        Syntropy::Get<0>(tuple) = 100;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<0>(tuple)), 100);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Experimental::Get<1>(tuple)), 20);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Get<0>(tuple)), 100);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Get<1>(tuple)), 20);
     })
 
     .TestCase("When forwarding-as-tuple, all elements get perfectly-forwarded.", [](auto& fixture)
@@ -558,10 +556,10 @@ namespace Syntropy::Experimental::UnitTest
         auto movable_bar = TestMovableOnlyFoo{};
         auto reference_foo = 100.0f;
 
-        auto tuple = Syntropy::Experimental::ForwardAsTuple(Move(movable_bar), reference_foo);
+        auto tuple = Syntropy::ForwardAsTuple(Move(movable_bar), reference_foo);
 
-        auto movable_foo = Move(Syntropy::Experimental::Get<0>(tuple));     // Preserve rvalues.
-        Syntropy::Experimental::Get<1>(tuple) = 10.0f;                      // Preserve lvalues.
+        auto movable_foo = Move(Syntropy::Get<0>(tuple));           // Preserve rvalues.
+        Syntropy::Get<1>(tuple) = 10.0f;                            // Preserve lvalues.
 
         SYNTROPY_UNIT_EQUAL(reference_foo, 10.0f);
         SYNTROPY_UNIT_EQUAL(movable_bar.moved_, true);

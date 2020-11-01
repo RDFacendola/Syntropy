@@ -14,7 +14,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Experimental
+namespace Syntropy
 {
     /************************************************************************/
     /* FORWARD DECLARATIONS                                                 */
@@ -27,7 +27,7 @@ namespace Syntropy::Experimental
 
 // ===========================================================================
 
-namespace Syntropy::Experimental::Templates::Details
+namespace Syntropy::Templates::Details
 {
     /************************************************************************/
     /* TUPLE ELEMENT LIST                                                   */
@@ -77,7 +77,7 @@ namespace Syntropy::Experimental::Templates::Details
 
 // ===========================================================================
 
-namespace Syntropy::Experimental::Details
+namespace Syntropy::Details
 {
     /************************************************************************/
     /* EXPLICIT IF - TUPLE CONSTRUCTOR                                      */
