@@ -25,6 +25,7 @@
     <ClInclude Include="include\syntropy\language\templates\details\relationships_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\templates_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\type_list_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\rank.h" />
     <ClInclude Include="include\syntropy\language\templates\ratio.h" />
     <ClInclude Include="include\syntropy\language\templates\details\math_details.h" />
     <ClInclude Include="include\syntropy\language\templates\branch.h" />
