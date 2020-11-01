@@ -46,8 +46,6 @@ namespace Syntropy::Templates
     template <Int VIndex, typename TFunction, typename... TTuples>
     constexpr decltype(auto) ApplyAt(TFunction&& function, TTuples&&... tuples) noexcept
     {
-        using Syntropy::Get;
-
         return function(Get<VIndex>(Forward<TTuples>(tuples))...);
     }
 
