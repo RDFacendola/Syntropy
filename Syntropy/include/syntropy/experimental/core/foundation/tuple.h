@@ -6,6 +6,7 @@
 #pragma once
 
 #include "syntropy/language/templates/type_list.h"
+#include "syntropy/language/templates/rank.h"
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/language/templates/templates.h"
@@ -17,39 +18,57 @@
 
 // ===========================================================================
 
+namespace Syntropy::Experimental
+{
+    /************************************************************************/
+    /* FORWARD DECLARATIONS                                                 */
+    /************************************************************************/
+
+    // Tuple.
+    // ======
+
+    template <typename... TTypes>
+    struct Tuple;
+}
+
+// ===========================================================================
+
 namespace Syntropy::Experimental::Templates
 {
     /************************************************************************/
-    /* TUPLE ELEMENT LIST                                                   */
+    /* TYPE TRAITS                                                          */
     /************************************************************************/
+
+    // TupleElementList.
+    // =================
 
     /// \brief Type alias equal to a type list of all elements in TTuple.
     template <typename TTuple>
     using TupleElementList = Details::TupleElementList<Syntropy::Templates::RemoveConstReference<TTuple>>;
 
-    /************************************************************************/
-    /* TUPLE ELEMENT                                                        */
-    /************************************************************************/
+    // TupleElement.
+    // =============
 
     /// \brief Provides indexed access to tuple elements' types.
     template <Int VIndex, typename TTuple>
     using TupleElement = Details::TupleElement<VIndex, Syntropy::Templates::RemoveConstReference<TTuple>>;
 
-    /************************************************************************/
-    /* TUPLE POP FRONT                                                      */
-    /************************************************************************/
+    // TuplePoPFront.
+    // ==============
 
     /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
     template <Int VCount, typename TTuple>
     using TuplePopFront = Details::TuplePopFront<VCount, Syntropy::Templates::RemoveConstReference<TTuple>>;
+}
 
-    /************************************************************************/
-    /* TUPLE SIZE                                                           */
-    /************************************************************************/
+namespace Syntropy::Templates
+{
+    // Rank.
+    // =====
 
-    /// \brief Constant equal to the size (rank) of a tuple.
-    template <typename TTuple>
-    inline constexpr Int TupleSize = Details::TupleSize<Syntropy::Templates::RemoveConstReference<TTuple>>;
+    /// \brief Partial template specialization for tuples.
+    template <typename... TTypes>
+    inline constexpr Int RankImplementation<Syntropy::Experimental::Tuple<TTypes...>> = sizeof...(TTypes);
 }
 
 // ===========================================================================
@@ -463,15 +482,15 @@ namespace Syntropy::Experimental
         return function(Get<VIndex>(Forward<TTuples>(tuples))...);
     }
 
-     template <typename TFunction, typename TTuple, typename... TTuples>
-     constexpr void LockstepApply(TFunction&& function, TTuple&& tuple, TTuples&&... tuples) noexcept
-     {
-          static_assert(((Templates::TupleSize<TTuple> == Templates::TupleSize<TTuples>) && ...), "Tuples must have the same size.");
+    template <typename TFunction, typename TTuple, typename... TTuples>
+    constexpr void LockstepApply(TFunction&& function, TTuple&& tuple, TTuples&&... tuples) noexcept
+    {
+        static_assert(Syntropy::Templates::SameRank<TTuple, TTuples...>, "Tuples must have the same size.");
   
-          using TSequence = Syntropy::Templates::MakeIntegerSequence<Templates::TupleSize<TTuple>>;
+        using TSequence = Syntropy::Templates::MakeIntegerSequence<Syntropy::Templates::Rank<TTuple>>;
 
-          Details::LockstepApply(TSequence{}, Forward<TFunction>(function), Forward<TTuple>(tuple), Forward<TTuples>(tuples)...);
-     }
+        Details::LockstepApply(TSequence{}, Forward<TFunction>(function), Forward<TTuple>(tuple), Forward<TTuples>(tuples)...);
+    }
 
 }
 

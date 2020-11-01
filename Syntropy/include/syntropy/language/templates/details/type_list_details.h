@@ -2,7 +2,7 @@
 /// \file templates_details.h
 /// \brief This header is part of Syntropy language module. It contains implementation details of type list template machinery.
 ///
-/// \author Raffaele D. Facendola - 2020.
+/// \author Raffaele D. Facendola - November 2020.
 
 #pragma once
 
@@ -55,17 +55,6 @@ namespace Syntropy::Templates::Details
     /// \brief Specialization for type lists.
     template <typename TType, typename... UTypes>
     inline constexpr Int TypeListIndex<TType, TypeList<UTypes...>> = sizeof...(UTypes) - TypeListIndexHelper<TType, UTypes...>::kValue - 1;
-
-    // TypeListSize.
-    // =============
-
-    /// \brief Constant equal to the rank (size) of a type list.
-    template <typename TTuple>
-    inline constexpr Int TypeListSize = -1;
-
-    /// \brief Specialization for type lists.
-    template <typename... TElements>
-    inline constexpr Int TypeListSize<TypeList<TElements...>> = sizeof...(TElements);
 
     // TypeListElement.
     // ================

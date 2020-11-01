@@ -298,9 +298,9 @@ namespace Syntropy::Experimental::UnitTest
 
     .TestCase("A tuple size is equal to the number of elements it can store.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Templates::TupleSize<Tuple<>>), 0);
-        SYNTROPY_UNIT_EQUAL((Templates::TupleSize<Tuple<Int>>), 1);
-        SYNTROPY_UNIT_EQUAL((Templates::TupleSize<Tuple<Int, Float>>), 2);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::Rank<Tuple<>>), 0);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::Rank<Tuple<Int>>), 1);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::Rank<Tuple<Int, Float>>), 2);
     })
 
     .TestCase("Discarding no elements from a tuple returns the tuple unchanged.", [](auto& fixture)

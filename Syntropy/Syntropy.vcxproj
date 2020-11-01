@@ -21,6 +21,7 @@
     <ClInclude Include="include\syntropy\experimental\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\language\templates\details\manipulation_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\operations_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\rank_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\ratio_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\relationships_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\templates_details.h" />

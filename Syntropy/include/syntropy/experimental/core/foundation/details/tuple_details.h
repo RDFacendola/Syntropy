@@ -75,14 +75,6 @@ namespace Syntropy::Experimental::Templates::Details
     template <Int VCount, typename TTuple>
     using TuplePopFront = typename Details::TuplePopFrontHelper<VCount, TTuple>::Type;
 
-    /************************************************************************/
-    /* TUPLE SIZE                                                           */
-    /************************************************************************/
-
-    /// \brief Constant equal to the rank (size) of a tuple.
-    template <typename TTuple>
-    inline constexpr Int TupleSize = Syntropy::Templates::TypeListSize<TupleElementList<TTuple>>;
-
 }
 
 // ===========================================================================

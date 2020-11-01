@@ -2,11 +2,13 @@
 /// \file type_list.h
 /// \brief This header is part of Syntropy language module. It contains definitions for type list templates.
 ///
-/// \author Raffaele D. Facendola - 2020.
+/// \author Raffaele D. Facendola - November 2020.
 
 #pragma once
 
 #include "syntropy/language/foundation/types.h"
+
+#include "syntropy/language/templates/rank.h"
 
 #include "syntropy/language/templates/details/type_list_details.h"
 
@@ -32,10 +34,6 @@ namespace Syntropy::Templates
     template <typename TType, typename TTypeList>
     inline constexpr Int TypeListIndex = Details::TypeListIndex<TType, TTypeList>;
 
-    /// \brief Constant equal to the number of elements in a type list.
-    template <typename TTypeList>
-    inline constexpr Int TypeListSize = Details::TypeListSize<TTypeList>;
-
     /// \brief Provides indexed access to type list elements' types.
     template <Int VIndex, typename TTypeList>
     using TypeListElement = Details::TypeListElement<VIndex, TTypeList>;
@@ -44,6 +42,9 @@ namespace Syntropy::Templates
     template <Int VCount, typename TTypeList>
     using TypeListPopFront = Details::TypeListPopFront<VCount, TTypeList>;
 
+    /// \brief Partial template specialization for TypeLists.
+    template <typename... TTypes>
+    inline constexpr Int RankImplementation<TypeList<TTypes...>> = sizeof...(TTypes);
 }
 
 // ===========================================================================
