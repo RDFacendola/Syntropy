@@ -160,6 +160,8 @@
     <ClInclude Include="include\syntropy\language\templates\details\type_list_details.h" />
     <ClInclude Include="include\syntropy\language\templates\rank.h" />
     <ClInclude Include="include\syntropy\language\templates\details\rank_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\functional.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\functional_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

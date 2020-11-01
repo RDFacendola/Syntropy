@@ -19,6 +19,7 @@
     <ClInclude Include="include\syntropy\core\algorithm\swap.h" />
     <ClInclude Include="include\syntropy\experimental\core\foundation\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\experimental\core\foundation\tuple.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\functional_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\manipulation_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\operations_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\rank_details.h" />
@@ -26,6 +27,7 @@
     <ClInclude Include="include\syntropy\language\templates\details\relationships_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\templates_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\type_list_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\functional.h" />
     <ClInclude Include="include\syntropy\language\templates\rank.h" />
     <ClInclude Include="include\syntropy\language\templates\ratio.h" />
     <ClInclude Include="include\syntropy\language\templates\details\math_details.h" />
