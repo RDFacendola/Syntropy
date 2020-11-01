@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/templates/type_list.h"
+#include "syntropy/language/templates/details/type_list_details.h"
 
 // ===========================================================================
 
