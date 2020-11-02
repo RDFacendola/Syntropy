@@ -8,20 +8,24 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/templates/details/templates_details.h"
+// ===========================================================================
+
+namespace Syntropy::Templates
+{
+    /************************************************************************/
+    /* FORWARD DECLARATION                                                  */
+    /************************************************************************/
+
+    /// \brief A compile-time list of integers.
+    template <Int... VSequence>
+    struct Sequence;
+
+}
 
 // ===========================================================================
 
 namespace Syntropy::Templates::Details
 {
-    /************************************************************************/
-    /* SEQUENCE                                                             */
-    /************************************************************************/
-
-    /// \brief A compile-time sequence of integers.
-    template <Int... VSequence>
-    struct Sequence {};
-
     /************************************************************************/
     /* UTILITIES                                                            */
     /************************************************************************/
@@ -32,7 +36,10 @@ namespace Syntropy::Templates::Details
 
     /// \brief Specialization to end recursive definition.
     template <Int... VSequence>
-    struct MakeSequenceHelper<0, VSequence...> : Alias<Sequence<VSequence...>> {};
+    struct MakeSequenceHelper<0, VSequence...>
+    {
+        using Type = Sequence<VSequence...>;
+    };
 
     /// \brief Helper alias template used to generate a contiguous sequence of increasing integers, from 0 to VCount-1.
     template <Int VCount>
@@ -46,17 +53,17 @@ namespace Syntropy::Templates::Details
     /* IS CONTIGUOUS SEQUENCE                                               */
     /************************************************************************/
 
-    /// \brief Constant equals to true if VSequence... is a monotonically increasing contiguous sequence, equals to false otherwise.
-    template <Int... VSequence>
-    inline constexpr Bool IsContiguousSequence = false;
+    /// \brief Constant equal to true if TSequence is a monotonically increasing contiguous sequence, equal to false otherwise.
+    template <typename TSequence>
+    inline constexpr Bool IsContiguousSequence;
 
     /// \brief Partial specialization for sequences whose first two elements are contiguous.
     template <Int VFirst, Int VSecond, Int... VSequence>
-    inline constexpr Bool IsContiguousSequence<VFirst, VSecond, VSequence...> = (VSecond == (VFirst+1)) && IsContiguousSequence<VSecond, VSequence...>;
+    inline constexpr Bool IsContiguousSequence<Sequence<VFirst, VSecond, VSequence...>> = (VSecond == (VFirst+1)) && IsContiguousSequence<Sequence<VSecond, VSequence...>>;
 
     /// \brief Partial specialization for 1-sequences. True by definition.
     template <Int VLast>
-    inline constexpr Bool IsContiguousSequence<VLast> = true;
+    inline constexpr Bool IsContiguousSequence<Sequence<VLast>> = true;
 
 }
 

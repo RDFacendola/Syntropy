@@ -26,32 +26,32 @@ namespace Syntropy::Templates::UnitTest
 
     inline const auto& kSequencesUnitTest = MakeAutoUnitTest<MathTestFixture>("sequences.templates.language.syntropy")
 
-    .TestCase("Templates::MakeSequence<N> returns a contiguous integer sequence from 0 to N-1.", [](auto& fixture)
+    .TestCase("MakeSequence<N> returns a contiguous integer sequence from 0 to N-1.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::MakeSequence<1>, Templates::Sequence<0>>), true);
-        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::MakeSequence<5>, Templates::Sequence<0, 1, 2, 3, 4>>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<MakeSequence<1>, Sequence<0>>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<MakeSequence<5>, Sequence<0, 1, 2, 3, 4>>), true);
     })
 
-    .TestCase("Templates::SequenceFor<T...> returns a contiguous integer sequence from 0 to sizeof...(T)", [](auto& fixture)
+    .TestCase("SequenceFor<T...> returns a contiguous integer sequence from 0 to sizeof...(T)", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::SequenceFor<Int, Float, Bool>, Templates::Sequence<0, 1, 2>>), true);
-        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::SequenceFor<Int>, Templates::Sequence<0>>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<SequenceFor<Int, Float, Bool>, Sequence<0, 1, 2>>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<SequenceFor<Int>, Sequence<0>>), true);
     })
 
-    .TestCase("Templates::SequenceFor returns an empty integer sequence if the parameter pack size is zero.", [](auto& fixture)
+    .TestCase("SequenceFor returns an empty integer sequence if the parameter pack size is zero.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Templates::IsSame<Templates::SequenceFor<>, Templates::Sequence<>>), true);
+        SYNTROPY_UNIT_EQUAL((IsSame<SequenceFor<>, Sequence<>>), true);
     })
 
-    .TestCase("Templates::IsContiguousSequence returns true for contiguous sequences and false otherwise.", [](auto& fixture)
+    .TestCase("IsContiguousSequence returns true for contiguous sequences and false otherwise.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Templates::IsContiguousSequence<2, 3, 4>), true);
-        SYNTROPY_UNIT_EQUAL((Templates::IsContiguousSequence<2, 5, 4>), false);
+        SYNTROPY_UNIT_EQUAL((IsContiguousSequence<Sequence<2, 3, 4>>), true);
+        SYNTROPY_UNIT_EQUAL((IsContiguousSequence<Sequence<2, 5, 4>>), false);
     })
 
-    .TestCase("Templates::IsContiguousSequence returns true for 1-sequences.", [](auto& fixture)
+    .TestCase("IsContiguousSequence returns true for 1-sequences.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Templates::IsContiguousSequence<2>), true);
+        SYNTROPY_UNIT_EQUAL((IsContiguousSequence<Sequence<2>>), true);
     });
 
 }

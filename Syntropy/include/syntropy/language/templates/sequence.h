@@ -18,9 +18,9 @@ namespace Syntropy::Templates
     /* SEQUENCE                                                             */
     /************************************************************************/
 
-    /// \brief A compile-time sequence of integers.
+    /// \brief A compile-time list of integers.
     template <Int... VSequence>
-    using Sequence = Details::Sequence<VSequence...>;
+    struct Sequence {};
 
     /************************************************************************/
     /* UTILITIES                                                            */
@@ -35,9 +35,9 @@ namespace Syntropy::Templates
     template <typename... TTypes>
     using SequenceFor = Details::SequenceFor<TTypes...>;
 
-    /// \brief Constant equal to true if the sequence [VInts...] is a monotonically increasing contiguous sequence, equal to false otherwise.
-    template <Int... VSequence>
-    constexpr Bool IsContiguousSequence = Details::IsContiguousSequence<VSequence...>;
+    /// \brief Constant equal to true if TSequence is a monotonically increasing contiguous sequence, equal to false otherwise.
+    template <typename TSequence>
+    inline constexpr Bool IsContiguousSequence = Details::IsContiguousSequence<TSequence>;
 
 }
 
