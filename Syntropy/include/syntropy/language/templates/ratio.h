@@ -14,6 +14,8 @@
 #include "syntropy/language/templates/manipulation.h"
 #include "syntropy/language/templates/details/ratio_details.h"
 
+// ===========================================================================
+
 namespace Syntropy::Templates
 {
     /************************************************************************/
@@ -151,3 +153,5 @@ namespace Syntropy::Templates
     using Tebi = Ratio<0x10000000000LL, 1>;
 
 }
+
+// ===========================================================================

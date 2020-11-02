@@ -19,6 +19,7 @@
     <ClInclude Include="include\syntropy\core\algorithm\swap.h" />
     <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\categories_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\functional_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\manipulation_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\operations_details.h" />

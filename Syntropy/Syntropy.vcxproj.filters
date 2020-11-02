@@ -160,6 +160,7 @@
     <ClInclude Include="include\syntropy\language\templates\details\properties_details.h" />
     <ClInclude Include="include\syntropy\language\templates\sequence.h" />
     <ClInclude Include="include\syntropy\language\templates\details\sequence_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\categories_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
