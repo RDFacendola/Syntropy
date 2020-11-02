@@ -7,7 +7,7 @@
 #include "syntropy/language/templates/type_list.h"
 
 #include "syntropy/language/foundation.h"
-#include "syntropy/language/traits.h"
+#include "syntropy/language/templates/traits.h"
 
 #include "syntropy/unit_test/unit_test.h"
 

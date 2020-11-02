@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/traits.h"
+#include "syntropy/language/templates/traits.h"
 #include "syntropy/language/support/tags.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/language/foundation.h"

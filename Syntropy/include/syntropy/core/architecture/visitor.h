@@ -10,7 +10,7 @@
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/experimental/memory/smart_pointers.h"
-#include "syntropy/language/traits.h"
+#include "syntropy/language/templates/traits.h"
 
 namespace Syntropy
 {

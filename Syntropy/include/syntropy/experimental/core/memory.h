@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <tuple>
 
-#include "syntropy/language/traits.h"
+#include "syntropy/language/templates/traits.h"
 
 namespace Syntropy
 {
