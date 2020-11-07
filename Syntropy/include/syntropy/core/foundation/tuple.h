@@ -7,12 +7,8 @@
 
 #include <tuple>
 
-#include "syntropy/language/templates/type_list.h"
-#include "syntropy/language/templates/rank.h"
-
 #include "syntropy/language/foundation.h"
-#include "syntropy/language/templates/templates.h"
-#include "syntropy/language/templates/sequence.h"
+#include "syntropy/language/templates/traits.h"
 #include "syntropy/language/templates/functional.h"
 
 #include "syntropy/core/foundation/details/tuple_details.h"
@@ -42,33 +38,21 @@ namespace Syntropy::Templates
     /* TYPE TRAITS                                                          */
     /************************************************************************/
 
-    // TupleElementList.
-    // =================
-
     /// \brief Type alias equal to a type list of all elements in TTuple.
     template <typename TTuple>
     using TupleElementList = Details::TupleElementList<RemoveConstReference<TTuple>>;
-
-    // TupleElement.
-    // =============
 
     /// \brief Provides indexed access to tuple elements' types.
     template <Int VIndex, typename TTuple>
     using TupleElement = Details::TupleElement<VIndex, RemoveConstReference<TTuple>>;
 
-    // TuplePoPFront.
-    // ==============
-
     /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
     template <Int VCount, typename TTuple>
     using TuplePopFront = Details::TuplePopFront<VCount, RemoveConstReference<TTuple>>;
 
-    // Rank.
-    // =====
-
     /// \brief Partial template specialization for tuples.
     template <typename... TTypes>
-    inline constexpr Int RankImplementation<TupleT<TTypes...>> = sizeof...(TTypes);
+    inline constexpr Int Rank<TupleT<TTypes...>> = sizeof...(TTypes);
 }
 
 // ===========================================================================

@@ -8,8 +8,7 @@
 
 #include <memory>
 
-#include "syntropy/language/templates/sfinae.h"
-#include "syntropy/language/templates/properties.h"
+#include "syntropy/language/templates/traits.h"
 #include "syntropy/language/foundation/references.h"
 
 namespace Syntropy

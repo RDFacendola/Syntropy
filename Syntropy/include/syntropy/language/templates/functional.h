@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/foundation/references.h"
-#include "syntropy/language/templates/rank.h"
+#include "syntropy/language/templates/traits.h"
 #include "syntropy/language/templates/sequence.h"
 
 #include "syntropy/language/templates/details/functional_details.h"
@@ -17,15 +17,6 @@
 
 namespace Syntropy::Templates
 {
-    /************************************************************************/
-    /* FUNCTION ARGUMENTS                                                   */
-    /************************************************************************/
-
-    /// \brief Type alias equal to the argument types a callable object can be called with.
-    /// If no matching element could be found, the program is ill-formed.
-    template <typename TCallable>
-    using FunctionArguments = Details::FunctionArguments<TCallable>;
-
     /************************************************************************/
     /* LOCKSTEP                                                             */
     /************************************************************************/
@@ -61,9 +52,9 @@ namespace Syntropy::Templates
     template <typename TFunction, typename TTuple, typename... TTuples>
     constexpr void ApplyLockstep(TFunction&& function, TTuple&& tuple, TTuples&&... tuples) noexcept
     {
-        static_assert(SameRank<TTuple, TTuples...>, "Tuples must have the same rank.");
+        static_assert(SameRank<Decay<TTuple>, Decay<TTuples>...>, "Tuples must have the same rank.");
 
-        using TSequence = MakeSequence<Rank<TTuple>>;
+        using TSequence = MakeSequence<Rank<Decay<TTuple>>>;
 
         Details::ApplyLockstep(TSequence{}, Forward<TFunction>(function), Forward<TTuple>(tuple), Forward<TTuples>(tuples)...);
     }

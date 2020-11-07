@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/templates/templates.h"
+#include "syntropy/language/templates/traits.h"
 
 namespace Syntropy::Memory
 {

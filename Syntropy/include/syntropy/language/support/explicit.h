@@ -7,8 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/sfinae.h"
-#include "syntropy/language/templates/relationships.h"
+#include "syntropy/language/templates/traits.h"
 
 namespace Syntropy
 {

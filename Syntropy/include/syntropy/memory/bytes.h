@@ -11,7 +11,7 @@
 
 #include "syntropy/language/foundation.h"
 #include "syntropy/language/templates/ratio.h"
-#include "syntropy/language/templates/manipulation.h"
+#include "syntropy/language/templates/traits.h"
 #include "syntropy/memory/byte.h"
 #include "syntropy/memory/details/bytes_details.h"
 

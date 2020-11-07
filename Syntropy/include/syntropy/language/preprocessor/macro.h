@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/hal/hal_macro.h"
-#include "syntropy/language/templates/templates.h"
+#include "syntropy/language/templates/traits.h"
 
 namespace Syntropy
 {

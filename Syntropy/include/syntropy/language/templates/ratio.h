@@ -10,8 +10,8 @@
 #include <ratio>
 
 #include "syntropy/language/foundation/types.h"
+#include "syntropy/language/templates/traits.h"
 #include "syntropy/language/templates/math.h"
-#include "syntropy/language/templates/manipulation.h"
 #include "syntropy/language/templates/details/ratio_details.h"
 
 // ===========================================================================
