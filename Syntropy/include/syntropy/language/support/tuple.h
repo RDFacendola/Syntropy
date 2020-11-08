@@ -1,5 +1,5 @@
 /// \file tuple.h
-/// \brief This header is part of Syntropy core module. It contains definitions for tuples.
+/// \brief This header is part of Syntropy language module. It contains definitions for tuples.
 ///
 /// \author Raffaele D. Facendola - 2020.
 
@@ -11,7 +11,7 @@
 #include "syntropy/language/templates/traits.h"
 #include "syntropy/language/templates/functional.h"
 
-#include "syntropy/core/foundation/details/tuple_details.h"
+#include "syntropy/language/support/details/tuple_details.h"
 
 #include "syntropy/core/algorithm/swap.h"
 

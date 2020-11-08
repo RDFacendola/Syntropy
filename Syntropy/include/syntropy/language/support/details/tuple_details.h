@@ -1,6 +1,6 @@
 
 /// \file tuple_details.h
-/// \brief This header is part of Syntropy core module. It contains implementation details of tuple classes and definitions.
+/// \brief This header is part of Syntropy language module. It contains implementation details for tuples.
 ///
 /// \author Raffaele D. Facendola - 2020.
 

@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/traits.h"
-#include "syntropy/core/foundation/tuple.h"
+#include "syntropy/language/support/tuple.h"
 
 #include "syntropy/unit_test/unit_test.h"
 
