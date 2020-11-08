@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include <tuple>
-
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/traits.h"
 #include "syntropy/language/templates/functional.h"
@@ -240,10 +238,6 @@ namespace Syntropy::Templates
     template <Int VIndex, typename TTuple>
     using TupleElement = TypeListElement<VIndex, typename TTuple::TTypeList>;
 
-    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
-    template <Int VCount, typename TTuple>
-    using TuplePopFront = Details::TuplePopFront<VCount, RemoveConstReference<TTuple>>;
-
     /// \brief Partial template specialization for tuples.
     template <typename... TTypes>
     inline constexpr Int Rank<TupleT<TTypes...>> = sizeof...(TTypes);
@@ -387,35 +381,35 @@ namespace Syntropy
     template <Int VIndex, typename... TTypes>
     constexpr Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>& Get(TupleT<TTypes...>& tuple) noexcept
     {
-        using TTuple = Templates::TuplePopFront<VIndex, TupleT<TTypes...>>;
+        using TTupleBase = Details::TupleBase<VIndex, TupleT<TTypes...>>;
 
-        return static_cast<TTuple&>(tuple).element_;
+        return static_cast<TTupleBase&>(tuple).element_;
     }
 
     template <Int VIndex, typename... TTypes>
     constexpr Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>&& Get(TupleT<TTypes...>&& tuple) noexcept
     {
-        using TTuple = Templates::TuplePopFront<VIndex, TupleT<TTypes...>>;
+        using TTupleBase = Details::TupleBase<VIndex, TupleT<TTypes...>>;
         using TElement = Templates::TupleElement<VIndex, TupleT<TTypes...>>;
 
-        return static_cast<TElement&&>(static_cast<TTuple&>(tuple).element_);
+        return static_cast<TElement&&>(static_cast<TTupleBase&>(tuple).element_);
     }
 
     template <Int VIndex, typename... TTypes>
     constexpr const Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>& Get(const TupleT<TTypes...>& tuple) noexcept
     {
-        using TTuple = Templates::TuplePopFront<VIndex, TupleT<TTypes...>>;
+        using TTupleBase = Details::TupleBase<VIndex, TupleT<TTypes...>>;
 
-        return static_cast<const TTuple&>(tuple).element_;
+        return static_cast<const TTupleBase&>(tuple).element_;
     }
 
     template <Int VIndex, typename... TTypes>
     constexpr const Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>&& Get(const TupleT<TTypes...>&& tuple) noexcept
     {
-        using TTuple = Templates::TuplePopFront<VIndex, TupleT<TTypes...>>;
+        using TTupleBase = Details::TupleBase<VIndex, TupleT<TTypes...>>;
         using TElement = Templates::TupleElement<VIndex, TupleT<TTypes...>>;
 
-        return static_cast<const TElement&&>(static_cast<const TTuple&>(tuple).element_);
+        return static_cast<const TElement&&>(static_cast<const TTupleBase&>(tuple).element_);
     }
 
     template <typename TType, typename... TTypes>

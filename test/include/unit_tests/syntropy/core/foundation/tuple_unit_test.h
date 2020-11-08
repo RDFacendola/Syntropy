@@ -301,19 +301,6 @@ namespace Syntropy::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::Rank<TupleT<Int, Float>>), 2);
     })
 
-    .TestCase("Discarding no elements from a tuple returns the tuple unchanged.", [](auto& fixture)
-    {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<0, TupleT<Int>>, TupleT<Int>>), true);
-    })
-
-    .TestCase("Discarding elements from a tuple returns the tuple of the remaining elements.", [](auto& fixture)
-    {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<1, TupleT<Int, Float, Bool>>, TupleT<Float, Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<2, TupleT<Int, Float, Bool>>, TupleT<Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<3, TupleT<Int, Float, Bool>>, TupleT<>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TuplePopFront<1, TupleT<Int>>, TupleT<>>), true);
-    })
-
     .TestCase("TupleElement trait is used to get the type a tuple element by index.", [](auto& fixture)
     {
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<0, TupleT<Bool>>, Bool>), true);

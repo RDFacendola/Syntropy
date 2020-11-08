@@ -173,35 +173,28 @@ namespace Syntropy::Details
     template <typename TTypeList, typename UTypeList>
     using EnableIfTupleConvertingMoveAssignment = typename Templates::EnableIf<!Templates::IsSame<TTypeList, UTypeList> && Templates::IsAssignable<Templates::AddLValueReference<TTypeList>, UTypeList>>*;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Templates::Details
-{
     /************************************************************************/
-    /* TUPLE POP FRONT                                                      */
+    /* TUPLE BASE                                                           */
     /************************************************************************/
 
-    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
+    /// \brief Access a tuple base type by index.
     template <Int VCount, typename TTuple>
-    struct TuplePopFrontHelper;
+    struct TupleBaseHelper;
 
     /// \brief Specialization for tuples.
     template <Int VCount, typename TElement, typename... TElements>
-    struct TuplePopFrontHelper<VCount, TupleT<TElement, TElements...>> : TuplePopFrontHelper<VCount - 1, TupleT<TElements...>> {};
+    struct TupleBaseHelper<VCount, TupleT<TElement, TElements...>> : TupleBaseHelper<VCount - 1, TupleT<TElements...>> {};
 
     /// \brief End of recursion.
     template <typename TTuple>
-    struct TuplePopFrontHelper<0, TTuple>
+    struct TupleBaseHelper<0, TTuple>
     {
         using Type = TTuple;
     };
 
-    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
+    /// \brief Access a tuple base type by index.
     template <Int VCount, typename TTuple>
-    using TuplePopFront = typename TuplePopFrontHelper<VCount, TTuple>::Type;
-
+    using TupleBase = typename TupleBaseHelper<VCount, TTuple>::Type;
 }
 
 // ===========================================================================
