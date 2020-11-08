@@ -8,6 +8,8 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
+// ===========================================================================
+
 namespace Syntropy::Algorithm
 {
     /************************************************************************/
@@ -21,7 +23,12 @@ namespace Syntropy::Algorithm
     /// \brief Swaps the values of the elements lhs and rhs are pointing to.
     template <typename TType, typename UType>
     constexpr void IterSwap(TType lhs, TType rhs) noexcept;
+}
 
+// ===========================================================================
+
+namespace Syntropy::Algorithm
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -45,3 +52,4 @@ namespace Syntropy::Algorithm
     }
 }
 
+// ===========================================================================

@@ -245,43 +245,6 @@ namespace Syntropy::Templates
 
 // ===========================================================================
 
-namespace std
-{
-    /************************************************************************/
-    /* STRUCTURED BINDINGS                                                  */
-    /************************************************************************/
-
-    /// \brief Size of a Syntropy::TupleT.
-    template <typename... TTypes>
-    struct std::tuple_size<Syntropy::TupleT<TTypes...>>
-    {
-        static constexpr std::size_t value = sizeof...(TTypes);
-    };
-
-    /// \brief Type of the VIndex-th element of a Syntropy::TupleT.
-    template <std::size_t VIndex, typename... TTypes>
-    struct std::tuple_element<VIndex, Syntropy::TupleT<TTypes...>>
-    {
-        using type = Syntropy::Templates::TupleElement<VIndex, Syntropy::TupleT<TTypes...>>;
-    };
-
-    /// \brief Get the VIndex-th element of a tuple.
-    template <std::size_t VIndex, typename... TTypes>
-    decltype(auto) get(const Syntropy::TupleT<TTypes...>& tuple)
-    {
-        return Syntropy::Get<VIndex>(tuple);
-    }
-
-    /// \brief Get the VIndex-th element of a tuple.
-    template <std::size_t VIndex, typename... TTypes>
-    decltype(auto) get(Syntropy::TupleT<TTypes...>&& tuple)
-    {
-        return Syntropy::Get<VIndex>(std::move(tuple));
-    }
-}
-
-// ===========================================================================
-
 namespace Syntropy
 {
     /************************************************************************/
@@ -468,6 +431,43 @@ namespace Syntropy
         return TupleT<TElements&&...>(Forward<TElements>(elements)...);
     }
 
+}
+
+// ===========================================================================
+
+namespace std
+{
+    /************************************************************************/
+    /* STRUCTURED BINDINGS                                                  */
+    /************************************************************************/
+
+    /// \brief Size of a Syntropy::TupleT.
+    template <typename... TTypes>
+    struct std::tuple_size<Syntropy::TupleT<TTypes...>>
+    {
+        static constexpr std::size_t value = sizeof...(TTypes);
+    };
+
+    /// \brief Type of the VIndex-th element of a Syntropy::TupleT.
+    template <std::size_t VIndex, typename... TTypes>
+    struct std::tuple_element<VIndex, Syntropy::TupleT<TTypes...>>
+    {
+        using type = Syntropy::Templates::TypeListElement<VIndex, Syntropy::Templates::TypeList<TTypes...>>;
+    };
+
+    /// \brief Get the VIndex-th element of a tuple.
+    template <std::size_t VIndex, typename... TTypes>
+    decltype(auto) get(const Syntropy::TupleT<TTypes...>& tuple)
+    {
+        return Syntropy::Get<VIndex>(tuple);
+    }
+
+    /// \brief Get the VIndex-th element of a tuple.
+    template <std::size_t VIndex, typename... TTypes>
+    decltype(auto) get(Syntropy::TupleT<TTypes...>&& tuple)
+    {
+        return Syntropy::Get<VIndex>(std::move(tuple));
+    }
 }
 
 // ===========================================================================
