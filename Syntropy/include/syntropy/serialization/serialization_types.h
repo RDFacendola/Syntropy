@@ -8,7 +8,7 @@
 
 #include <ostream>
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 
 namespace Syntropy
 {

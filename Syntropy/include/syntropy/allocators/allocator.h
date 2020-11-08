@@ -9,7 +9,7 @@
 #include "syntropy/syntropy.h"
 #include "syntropy/language/templates/traits.h"
 #include "syntropy/language/support.h"
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"

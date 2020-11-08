@@ -9,7 +9,7 @@
 #include <ostream>
 #include <compare>
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/ratio.h"
 #include "syntropy/language/templates/traits.h"
 #include "syntropy/memory/byte.h"

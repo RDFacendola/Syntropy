@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cmath>
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/math/vector.h"
 #include "syntropy/math/numeric.h"

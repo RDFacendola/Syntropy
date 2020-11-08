@@ -10,7 +10,7 @@
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/allocators/allocator.h"
 #include "syntropy/allocators/null_allocator.h"
 

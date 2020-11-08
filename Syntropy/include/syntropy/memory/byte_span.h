@@ -10,7 +10,7 @@
 
 #include "syntropy/diagnostics/assert.h"
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/foundation/span.h"
 
 #include "syntropy/memory/bytes.h"

@@ -8,7 +8,7 @@
 
 #include "syntropy/language/templates/traits.h"
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/experimental/memory/smart_pointers.h"
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/experimental/serialization/consume_stream_buffer.h"

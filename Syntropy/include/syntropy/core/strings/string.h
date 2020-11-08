@@ -11,7 +11,7 @@
 #include <string_view>
 #include <iterator>
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/experimental/core/polymorphic_allocator.h"
 
 #include "syntropy/serialization/string_stream.h"

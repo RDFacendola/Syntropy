@@ -12,7 +12,7 @@
 #include "syntropy/language/templates/traits.h"
 #include "syntropy/language/support.h"
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/foundation/span.h"
 
 #include "syntropy/memory/byte_span.h"

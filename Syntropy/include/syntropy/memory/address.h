@@ -9,7 +9,7 @@
 #include <cstdint>
 
 #include "syntropy/language/templates/traits.h"
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 
 namespace Syntropy::Memory
 {

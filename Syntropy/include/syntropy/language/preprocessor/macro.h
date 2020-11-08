@@ -9,6 +9,8 @@
 #include "syntropy/hal/hal_macro.h"
 #include "syntropy/language/templates/traits.h"
 
+// ===========================================================================
+
 namespace Syntropy
 {
     /************************************************************************/
@@ -103,3 +105,5 @@ namespace Syntropy
     #define SYNTROPY_FUNCTION \
         SYNTROPY_HAL_FUNCTION
 }
+
+// ===========================================================================

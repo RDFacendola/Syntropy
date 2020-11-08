@@ -12,7 +12,7 @@
 #include "syntropy/application/command_line.h"
 
 #include "syntropy/serialization/string_stream.h"
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/architecture/listener.h"
 #include "syntropy/unit_test/test_runner.h"
 

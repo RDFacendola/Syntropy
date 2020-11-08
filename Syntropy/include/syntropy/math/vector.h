@@ -10,7 +10,7 @@
 
 #include "syntropy/core/foundation/tuple.h"
 #include "syntropy/language/support.h"
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/math/math.h"
 
 namespace Syntropy

@@ -91,10 +91,10 @@
     <ClInclude Include="include\syntropy\core\architecture\event.h" />
     <ClInclude Include="include\syntropy\serialization\hashing\hash.h" />
     <ClInclude Include="include\syntropy\core\architecture\listener.h" />
-    <ClInclude Include="include\syntropy\language\preprocessor.h" />
+    <ClInclude Include="include\syntropy\language\preprocessor\preprocessor.h" />
     <ClInclude Include="include\syntropy\serialization\string_stream.h" />
     <ClInclude Include="include\syntropy\experimental\core\memory.h" />
-    <ClInclude Include="include\syntropy\language\foundation.h" />
+    <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
     <ClInclude Include="include\syntropy\language\templates\details\sequence_details.h" />
     <ClInclude Include="include\syntropy\core\architecture\visitor.h" />
     <ClInclude Include="include\syntropy\language\templates\sequence.h" />

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/ratio.h"
 #include "syntropy/unit_test/unit_test.h"
 

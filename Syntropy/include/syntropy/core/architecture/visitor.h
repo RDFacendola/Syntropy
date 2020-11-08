@@ -8,7 +8,7 @@
 
 #include <typeinfo>
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/experimental/memory/smart_pointers.h"
 #include "syntropy/language/templates/traits.h"
 

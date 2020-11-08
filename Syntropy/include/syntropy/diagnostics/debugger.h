@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "syntropy/language/foundation.h"
-#include "syntropy/language/preprocessor.h"
+#include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/preprocessor/preprocessor.h"
 #include "syntropy/hal/hal_macro.h"
 
 namespace Syntropy

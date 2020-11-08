@@ -9,7 +9,7 @@
 #include <chrono>
 #include <ostream>
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/serialization/serialization_types.h"
 
 namespace Syntropy

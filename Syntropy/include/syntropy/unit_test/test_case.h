@@ -9,7 +9,7 @@
 #include <type_traits>
 
 #include "syntropy/core/architecture/event.h"
-#include "syntropy/language/preprocessor.h"
+#include "syntropy/language/preprocessor/preprocessor.h"
 #include "syntropy/core/strings/string.h"
 #include "syntropy/core/strings/label.h"
 #include "syntropy/serialization/string_stream.h"

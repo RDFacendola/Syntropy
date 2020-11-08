@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/random/pcg_random_engine.h"
 
 namespace Syntropy

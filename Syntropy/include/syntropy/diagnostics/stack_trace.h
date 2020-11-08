@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/algorithm/swap.h"
 
 #include "syntropy/core/strings/string.h"
 #include "syntropy/core/data_structures/vector.h"
-#include "syntropy/language/preprocessor.h"
+#include "syntropy/language/preprocessor/preprocessor.h"
 
 namespace Syntropy
 {

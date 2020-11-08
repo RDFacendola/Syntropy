@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/foundation.h"
+#include "syntropy/language/foundation/foundation.h"
 #include "syntropy/allocators/virtual_stack_allocator.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
