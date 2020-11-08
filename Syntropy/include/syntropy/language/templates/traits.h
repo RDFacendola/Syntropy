@@ -247,6 +247,10 @@ namespace Syntropy::Templates
     template <typename TType>
     using HasSwap = Details::HasSwap<TType>;
 
+    /// \brief Constant equal to true if TType can be swapped by means of a member function ::Swap(TType&), equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool HasMemberSwap = Details::HasMemberSwap<TType>;
+
     /************************************************************************/
     /* TYPE OPERATIONS                                                      */
     /************************************************************************/

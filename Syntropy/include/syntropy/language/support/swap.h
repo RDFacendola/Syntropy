@@ -7,6 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/templates/traits.h"
 
 // ===========================================================================
 
@@ -16,7 +17,7 @@ namespace Syntropy
     /* SWAP                                                                 */
     /************************************************************************/
 
-    /// \brief Swap lhs with rhs.
+    /// \brief Swap lhs with rhs, accounting for any member function TType::Swap, if present.
     template <typename TType>
     constexpr void Swap(TType& lhs, TType& rhs) noexcept;
 }
@@ -35,10 +36,17 @@ namespace Syntropy
     template <typename TType>
     constexpr void Swap(TType& lhs, TType& rhs) noexcept
     {
-        auto xhs = Move(lhs);
+        if constexpr (Templates::HasMemberSwap<TType>)
+        {
+            lhs.Swap(rhs);
+        }
+        else
+        {
+            auto xhs = Move(lhs);
 
-        lhs = Move(rhs);
-        rhs = Move(xhs);
+            lhs = Move(rhs);
+            rhs = Move(xhs);
+        }
     }
 }
 

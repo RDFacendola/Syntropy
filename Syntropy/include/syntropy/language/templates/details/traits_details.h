@@ -15,6 +15,11 @@
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
+    /* PREDICATES                                                           */
+    /************************************************************************/
+
+
+    /************************************************************************/
     /* RANK                                                                 */
     /************************************************************************/
 
@@ -424,6 +429,38 @@ namespace Syntropy::Templates::Details
     inline constexpr Bool IsFinal = std::is_final_v<TType>;
 
     /************************************************************************/
+    /* META                                                                 */
+    /************************************************************************/
+
+    /// \brief Type equal to TType if VEnable is true, otherwise there's no such type.
+    template <Bool VEnable>
+    using EnableIf = std::enable_if_t<VEnable>;
+
+    /// \brief If TExpression<TTypes...> is a valid expression, exposes a member value equal to true, otherwise exposes a member value equal to false.
+    /// Default trait for invalid expressions.
+    /// \see Based on std::experimental::is_detected.
+    template <typename TVoid, template<typename...> typename TExpression, typename... TTypes>
+    struct IsValidExpressionHelper
+    {
+        static constexpr Bool kValue = false;
+    };
+
+    /// \brief Partial specialization for valid expressions.
+    template <template<typename...> typename TExpression, typename... TTypes>
+    struct IsValidExpressionHelper<Void<TExpression<TTypes...>>, TExpression, TTypes...>
+    {
+        static constexpr Bool kValue = true;
+    };
+
+    /// \brief Boolean value equal to true if TExpression<TTypes...> is a valid expression, false otherwise.
+    template <template<typename...> typename TExpression, typename... TTypes>
+    inline constexpr Bool IsValidExpression = IsValidExpressionHelper<void, TExpression, TTypes...>::kValue;
+
+    /// \brief If TExpression<TTypes> is a valid expression, exposes a member typedef equal to void, otherwise there's no such type.
+    template <template<typename...> typename TExpression, typename... TTypes>
+    using EnableIfValidExpression = EnableIf<IsValidExpression<TExpression, TTypes...>>;
+
+    /************************************************************************/
     /* CONCEPTS                                                             */
     /************************************************************************/
 
@@ -454,6 +491,14 @@ namespace Syntropy::Templates::Details
     template <typename TType>
     using HasSwap = HasSwapDetector::Detect<TType>;
 
+    /// \brief Predicate used to test whether TType can be swapped by means of a member function ::Swap(TType&).
+    template <typename TType>
+    using DetectMemberSwap = decltype(Declval<TType&>().Swap(Declval<TType&>()));
+
+    /// \brief Constant equal to true if TType can be swapped by means of a member function ::Swap(TType&), equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool HasMemberSwap = IsValidExpression<DetectMemberSwap, TType>;
+
     /************************************************************************/
     /* TYPE OPERATIONS                                                      */
     /************************************************************************/
@@ -464,11 +509,11 @@ namespace Syntropy::Templates::Details
 
     /// \brief Check if TType is implicitly default constructible from an empty list.
     template <typename TType>
-    using TestIsImplicitlyDefaultConstructible = decltype(CopyConstruct<TType>({}));
+    using DetectIsImplicitlyDefaultConstructible = decltype(CopyConstruct<TType>({}));
 
     /// \brief Check if TType is implicitly direct-constructible from a list of arguments.
     template <typename TType, typename... TArguments>
-    using TestIsImplicitlyDirectConstructible = decltype(CopyConstruct<TType>({std::declval<TArguments>()...}));
+    using DetectIsImplicitlyDirectConstructible = decltype(CopyConstruct<TType>({std::declval<TArguments>()...}));
 
     /// \brief Constant equal to true if TType is default-constructible, equal to false otherwise.
     template <typename TType>
@@ -480,7 +525,7 @@ namespace Syntropy::Templates::Details
 
     /// \brief Constant equal to true if TType is implicitly default constructible, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsImplicitlyDefaultConstructible = IsValidExpression<TestIsImplicitlyDefaultConstructible, TType>;
+    inline constexpr Bool IsImplicitlyDefaultConstructible = IsValidExpression<DetectIsImplicitlyDefaultConstructible, TType>;
 
     // ===========================================================================
 
@@ -558,7 +603,7 @@ namespace Syntropy::Templates::Details
     /// \brief Specialization for arguments wrapped in type lists.
     /// Tests the first type with the first argument set and the remaining types with remaining argument sets recursively.
     template <typename TType, typename... TTypes, typename... TArguments, typename... TArgumentLists>
-    inline constexpr Bool IsImplicitlyConstructibleHelper<true, TypeList<TType, TTypes...>, TypeList<TArguments...>, TArgumentLists...> = IsValidExpression<TestIsImplicitlyDirectConstructible, TType, TArguments...> && IsImplicitlyConstructibleHelper<true, TypeList<TTypes...>, TArgumentLists...>;
+    inline constexpr Bool IsImplicitlyConstructibleHelper<true, TypeList<TType, TTypes...>, TypeList<TArguments...>, TArgumentLists...> = IsValidExpression<DetectIsImplicitlyDirectConstructible, TType, TArguments...> && IsImplicitlyConstructibleHelper<true, TypeList<TTypes...>, TArgumentLists...>;
 
     // \brief Specialization for empty type list.
     template <>
@@ -566,7 +611,7 @@ namespace Syntropy::Templates::Details
 
     /// \brief Constant equal to true if TType is implicitly default constructible, equal to false otherwise.
     template <typename TType, typename... TArguments>
-    inline constexpr Bool IsImplicitlyConstructible = IsValidExpression<TestIsImplicitlyDirectConstructible, TType, TArguments...>;
+    inline constexpr Bool IsImplicitlyConstructible = IsValidExpression<DetectIsImplicitlyDirectConstructible, TType, TArguments...>;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... TArgumentLists>
@@ -647,38 +692,6 @@ namespace Syntropy::Templates::Details
     {
         using Type = TypeList<TArguments...>;
     };
-
-    /************************************************************************/
-    /* META                                                                 */
-    /************************************************************************/
-
-    /// \brief Type equal to TType if VEnable is true, otherwise there's no such type.
-    template <Bool VEnable>
-    using EnableIf = std::enable_if_t<VEnable>;
-
-    /// \brief If TExpression<TTypes...> is a valid expression, exposes a member value equal to true, otherwise exposes a member value equal to false.
-    /// Default trait for invalid expressions.
-    /// \see Based on std::experimental::is_detected.
-    template <typename TVoid, template<typename...> typename TExpression, typename... TTypes>
-    struct IsValidExpressionHelper
-    {
-        static constexpr Bool kValue = false;
-    };
-
-    /// \brief Partial specialization for valid expressions.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    struct IsValidExpressionHelper<Void<TExpression<TTypes...>>, TExpression, TTypes...>
-    {
-        static constexpr Bool kValue = true;
-    };
-
-    /// \brief Boolean value equal to true if TExpression<TTypes...> is a valid expression, false otherwise.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    inline constexpr Bool IsValidExpression = IsValidExpressionHelper<void, TExpression, TTypes...>::kValue;
-
-    /// \brief If TExpression<TTypes> is a valid expression, exposes a member typedef equal to void, otherwise there's no such type.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    using EnableIfValidExpression = EnableIf<IsValidExpression<TExpression, TTypes...>>;
 
 }
 
