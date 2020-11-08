@@ -11,7 +11,7 @@
 
 #include "syntropy/language/support/details/tuple_details.h"
 
-#include "syntropy/language/support/swap.h"
+#include "syntropy/language/support/support.h"
 
 // ===========================================================================
 

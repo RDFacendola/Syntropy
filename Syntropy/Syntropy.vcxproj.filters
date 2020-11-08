@@ -137,7 +137,6 @@
     <ClInclude Include="include\syntropy\language\support\support.h" />
     <ClInclude Include="include\syntropy\language\support\tuple.h" />
     <ClInclude Include="include\syntropy\language\support\details\tuple_details.h" />
-    <ClInclude Include="include\syntropy\language\support\swap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

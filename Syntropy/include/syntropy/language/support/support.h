@@ -22,6 +22,14 @@ namespace Syntropy
     Templates::AddRValueReference<TType> Declval() noexcept;
 
     /************************************************************************/
+    /* SWAP                                                                 */
+    /************************************************************************/
+
+    /// \brief Swap lhs with rhs, accounting for any member function TType::Swap, if present.
+    template <typename TType>
+    constexpr void Swap(TType& lhs, TType& rhs) noexcept;
+
+    /************************************************************************/
     /* IGNORE                                                               */
     /************************************************************************/
 
@@ -55,14 +63,34 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    /// \brief Construct from any argument number and types.
+    // Swap.
+    // =====
+
+    template <typename TType>
+    constexpr void Swap(TType& lhs, TType& rhs) noexcept
+    {
+        if constexpr (Templates::HasMemberSwap<TType>)
+        {
+            lhs.Swap(rhs);
+        }
+        else
+        {
+            auto xhs = Move(lhs);
+
+            lhs = Move(rhs);
+            rhs = Move(xhs);
+        }
+    }
+
+    // Ignore.
+    // =======
+
     template <typename... TArguments>
     constexpr Ignore::Ignore(TArguments&&...) noexcept
     {
 
     }
 
-    /// \brief Assign from any argument number and types.
     template <typename... TArguments>
     constexpr Ignore& Ignore::operator=(TArguments&&...) const noexcept
     {
