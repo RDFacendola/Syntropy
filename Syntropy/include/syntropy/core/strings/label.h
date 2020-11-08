@@ -135,9 +135,7 @@ namespace Syntropy
 
     inline void Label::Swap(Label& other) noexcept
     {
-        using Algorithm::Swap;
-
-        Swap(characters_, other.characters_);
+        Syntropy::Swap(characters_, other.characters_);
     }
 
     // Non-member functions.

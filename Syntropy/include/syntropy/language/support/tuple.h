@@ -208,10 +208,6 @@ namespace Syntropy
     template <typename TType, typename... TTypes>
     constexpr const TType&& Get(const TupleT<TTypes...>&& tuple) noexcept;
 
-    /// \brief Swap two tuples by means of element-wise Swap.
-    template <typename... TTypes>
-    constexpr void Swap(TupleT<TTypes...>& lhs, TupleT<TTypes...>& rhs) noexcept;
-
     /// \brief Create a tuple instance, deducing template types from arguments.
     template <typename... TTypes>
     constexpr TupleT<TTypes...> MakeTuple(TTypes&&... elements) noexcept;
@@ -310,9 +306,7 @@ namespace Syntropy
     template <typename TType, typename... TTypes>
     constexpr TupleT<TType, TTypes...>& TupleT<TType, TTypes...>::Swap(TupleT<TType, TTypes...>& rhs) noexcept
     {
-        using Algorithm::Swap;
-
-        Swap(element_, rhs.element_);
+        Syntropy::Swap(element_, rhs.element_);
 
         static_cast<TBaseClass&>(*this).Swap(static_cast<TBaseClass&>(rhs));
 
@@ -405,12 +399,6 @@ namespace Syntropy
         constexpr auto kIndex = Templates::TypeListIndex<TType, Templates::TypeList<TTypes...>>;
 
         return Get<kIndex>(Move(tuple));
-    }
-
-    template <typename... TTypes>
-    constexpr void Swap(TupleT<TTypes...>& lhs, TupleT<TTypes...>& rhs) noexcept
-    {
-        lhs.Swap(rhs);
     }
 
     template <typename... TTypes>

@@ -187,9 +187,7 @@ namespace Syntropy
 
     inline void StackTrace::Swap(StackTrace& other) noexcept
     {
-        using Algorithm::Swap;
-
-        Swap(stack_trace_, other.stack_trace_);
+        Syntropy::Swap(stack_trace_, other.stack_trace_);
     }
 
     inline const StackTraceElement& StackTrace::GetFunction() const

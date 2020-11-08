@@ -10,7 +10,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Algorithm
+namespace Syntropy
 {
     /************************************************************************/
     /* SWAP                                                                 */
@@ -19,15 +19,11 @@ namespace Syntropy::Algorithm
     /// \brief Swap lhs with rhs.
     template <typename TType>
     constexpr void Swap(TType& lhs, TType& rhs) noexcept;
-
-    /// \brief Swaps the values of the elements lhs and rhs are pointing to.
-    template <typename TType, typename UType>
-    constexpr void IterSwap(TType lhs, TType rhs) noexcept;
 }
 
 // ===========================================================================
 
-namespace Syntropy::Algorithm
+namespace Syntropy
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -43,12 +39,6 @@ namespace Syntropy::Algorithm
 
         lhs = Move(rhs);
         rhs = Move(xhs);
-    }
-
-    template <typename TType, typename UType>
-    constexpr void IterSwap(TType lhs, TType rhs) noexcept
-    {
-        Swap(*lhs, *rhs);
     }
 }
 

@@ -255,11 +255,9 @@ namespace Syntropy
 
     inline void StreamBuffer::Swap(StreamBuffer& other) noexcept
     {
-        using Algorithm::Swap;
-
-        Swap(buffer_, other.buffer_);
-        Swap(base_pointer_, other.base_pointer_);
-        Swap(size_, other.size_);
+        Syntropy::Swap(buffer_, other.buffer_);
+        Syntropy::Swap(base_pointer_, other.base_pointer_);
+        Syntropy::Swap(size_, other.size_);
     }
 
 }
