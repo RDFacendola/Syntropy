@@ -9,7 +9,7 @@
 #include <iterator>
 
 #include "syntropy/core/range.h"
-#include "syntropy/core/algorithm/swap.h"
+#include "syntropy/language/support/swap.h"
 
 #include "syntropy/math/random_distributions.h"
 

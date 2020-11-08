@@ -100,7 +100,6 @@
     <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
     <ClInclude Include="include\syntropy\language\support\explicit.h" />
-    <ClInclude Include="include\syntropy\core\algorithm\swap.h" />
     <ClInclude Include="include\syntropy\core\algorithm\predicates.h" />
     <ClInclude Include="include\syntropy\core\data_structures\fix_array.h" />
     <ClInclude Include="include\syntropy\core\data_structures\map.h" />
@@ -138,6 +137,7 @@
     <ClInclude Include="include\syntropy\language\support\support.h" />
     <ClInclude Include="include\syntropy\language\support\tuple.h" />
     <ClInclude Include="include\syntropy\language\support\details\tuple_details.h" />
+    <ClInclude Include="include\syntropy\language\support\swap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

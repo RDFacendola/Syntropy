@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/strings/string.h"
-#include "syntropy/core/algorithm/swap.h"
+#include "syntropy/language/support/swap.h"
 
 #include "syntropy/memory/memory.h"
 

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/core/algorithm/swap.h"
+#include "syntropy/language/support/swap.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/byte_span.h"
