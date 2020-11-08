@@ -24,62 +24,6 @@ namespace Syntropy
 
 // ===========================================================================
 
-namespace Syntropy::Templates::Details
-{
-    /************************************************************************/
-    /* TUPLE ELEMENT LIST                                                   */
-    /************************************************************************/
-
-    /// \brief Type alias equal to a type list of all elements in TTuple.
-    template <typename TTuple>
-    struct TupleElementListHelper;
-
-    /// \brief Type alias equal to a type list of all elements in TTuple.
-    template <typename... TElements>
-    struct TupleElementListHelper<TupleT<TElements...>>
-    {
-        using Type = TypeList<TElements...>;
-    };
-
-    /// \brief Type alias equal to a type list of all elements in TTuple.
-    template <typename TTuple>
-    using TupleElementList = typename TupleElementListHelper<TTuple>::Type;
-
-    /************************************************************************/
-    /* TUPLE ELEMENT                                                        */
-    /************************************************************************/
-
-    /// \brief Provides indexed access to tuple elements' types.
-    template <Int VIndex, typename TTuple>
-    using TupleElement = TypeListElement<VIndex, TupleElementList<TTuple>>;
-
-    /************************************************************************/
-    /* TUPLE POP FRONT                                                      */
-    /************************************************************************/
-
-    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
-    template <Int VCount, typename TTuple>
-    struct TuplePopFrontHelper;
-
-    /// \brief Specialization for tuples.
-    template <Int VCount, typename TElement, typename... TElements>
-    struct TuplePopFrontHelper<VCount, TupleT<TElement, TElements...>> : TuplePopFrontHelper<VCount - 1, TupleT<TElements...>> {};
-
-    /// \brief End of recursion.
-    template <typename TTuple>
-    struct TuplePopFrontHelper<0, TTuple>
-    {
-        using Type = TTuple;
-    };
-
-    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
-    template <Int VCount, typename TTuple>
-    using TuplePopFront = typename TuplePopFrontHelper<VCount, TTuple>::Type;
-
-}
-
-// ===========================================================================
-
 namespace Syntropy::Details
 {
     /************************************************************************/
@@ -228,6 +172,35 @@ namespace Syntropy::Details
     /// \brief Enable tuple converting move assignment operator if all types in TTypeList can be converting-move-assigned from the corresponding element in UTypeList.
     template <typename TTypeList, typename UTypeList>
     using EnableIfTupleConvertingMoveAssignment = typename Templates::EnableIf<!Templates::IsSame<TTypeList, UTypeList> && Templates::IsAssignable<Templates::AddLValueReference<TTypeList>, UTypeList>>*;
+
+}
+
+// ===========================================================================
+
+namespace Syntropy::Templates::Details
+{
+    /************************************************************************/
+    /* TUPLE POP FRONT                                                      */
+    /************************************************************************/
+
+    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
+    template <Int VCount, typename TTuple>
+    struct TuplePopFrontHelper;
+
+    /// \brief Specialization for tuples.
+    template <Int VCount, typename TElement, typename... TElements>
+    struct TuplePopFrontHelper<VCount, TupleT<TElement, TElements...>> : TuplePopFrontHelper<VCount - 1, TupleT<TElements...>> {};
+
+    /// \brief End of recursion.
+    template <typename TTuple>
+    struct TuplePopFrontHelper<0, TTuple>
+    {
+        using Type = TTuple;
+    };
+
+    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
+    template <Int VCount, typename TTuple>
+    using TuplePopFront = typename TuplePopFrontHelper<VCount, TTuple>::Type;
 
 }
 

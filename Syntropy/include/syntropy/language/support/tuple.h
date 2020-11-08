@@ -20,46 +20,6 @@
 namespace Syntropy
 {
     /************************************************************************/
-    /* FORWARD DECLARATIONS                                                 */
-    /************************************************************************/
-
-    // TupleT.
-    // ======
-
-    template <typename... TTypes>
-    struct TupleT;
-}
-
-// ===========================================================================
-
-namespace Syntropy::Templates
-{
-    /************************************************************************/
-    /* TYPE TRAITS                                                          */
-    /************************************************************************/
-
-    /// \brief Type alias equal to a type list of all elements in TTuple.
-    template <typename TTuple>
-    using TupleElementList = Details::TupleElementList<RemoveConstReference<TTuple>>;
-
-    /// \brief Provides indexed access to tuple elements' types.
-    template <Int VIndex, typename TTuple>
-    using TupleElement = Details::TupleElement<VIndex, RemoveConstReference<TTuple>>;
-
-    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
-    template <Int VCount, typename TTuple>
-    using TuplePopFront = Details::TuplePopFront<VCount, RemoveConstReference<TTuple>>;
-
-    /// \brief Partial template specialization for tuples.
-    template <typename... TTypes>
-    inline constexpr Int Rank<TupleT<TTypes...>> = sizeof...(TTypes);
-}
-
-// ===========================================================================
-
-namespace Syntropy
-{
-    /************************************************************************/
     /* TUPLE                                                                */
     /************************************************************************/
 
@@ -76,16 +36,16 @@ namespace Syntropy
     struct TupleT<TType, TTypes...> : private TupleT<TTypes...>
     {
         template <Int VIndex, typename... TTypes>
-        friend constexpr Templates::TupleElement<VIndex, TupleT<TTypes...>>& Get(TupleT<TTypes...>& tuple) noexcept;
+        friend constexpr Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>& Get(TupleT<TTypes...>& tuple) noexcept;
 
         template <Int VIndex, typename... TTypes>
-        friend constexpr Templates::TupleElement<VIndex, TupleT<TTypes...>>&& Get(TupleT<TTypes...>&& tuple) noexcept;
+        friend constexpr Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>&& Get(TupleT<TTypes...>&& tuple) noexcept;
 
         template <Int VIndex, typename... TTypes>
-        friend constexpr const Templates::TupleElement<VIndex, TupleT<TTypes...>>& Get(const TupleT<TTypes...>& tuple) noexcept;
+        friend constexpr const Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>& Get(const TupleT<TTypes...>& tuple) noexcept;
 
         template <Int VIndex, typename... TTypes>
-        friend constexpr const Templates::TupleElement<VIndex, TupleT<TTypes...>>&& Get(const TupleT<TTypes...>&& tuple) noexcept;
+        friend constexpr const Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>&& Get(const TupleT<TTypes...>&& tuple) noexcept;
 
     public:
 
@@ -220,19 +180,19 @@ namespace Syntropy
 
     /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TTypes>
-    constexpr Templates::TupleElement<VIndex, TupleT<TTypes...>>& Get(TupleT<TTypes...>& tuple) noexcept;
+    constexpr Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>& Get(TupleT<TTypes...>& tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TTypes>
-    constexpr Templates::TupleElement<VIndex, TupleT<TTypes...>>&& Get(TupleT<TTypes...>&& tuple) noexcept;
+    constexpr Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>&& Get(TupleT<TTypes...>&& tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TTypes>
-    constexpr const Templates::TupleElement<VIndex, TupleT<TTypes...>>& Get(const TupleT<TTypes...>& tuple) noexcept;
+    constexpr const Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>& Get(const TupleT<TTypes...>& tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TTypes>
-    constexpr const Templates::TupleElement<VIndex, TupleT<TTypes...>>&& Get(const TupleT<TTypes...>&& tuple) noexcept;
+    constexpr const Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>&& Get(const TupleT<TTypes...>&& tuple) noexcept;
 
     /// \brief Access an element of a tuple by type. The program is ill-formed unless the tuple has exactly one occurrence of TType.
     template <typename TType, typename... TTypes>
@@ -266,6 +226,27 @@ namespace Syntropy
     template <typename... TElements>
     constexpr TupleT<TElements&&...> ForwardAsTuple(TElements&&... elements) noexcept;
 
+}
+
+// ===========================================================================
+
+namespace Syntropy::Templates
+{
+    /************************************************************************/
+    /* TYPE TRAITS                                                          */
+    /************************************************************************/
+
+    /// \brief Provides indexed access to tuple elements' types.
+    template <Int VIndex, typename TTuple>
+    using TupleElement = TypeListElement<VIndex, typename TTuple::TTypeList>;
+
+    /// \brief Discards the first VCount elements in a tuple and provides a type alias equal to a tuple with the remaining elements.
+    template <Int VCount, typename TTuple>
+    using TuplePopFront = Details::TuplePopFront<VCount, RemoveConstReference<TTuple>>;
+
+    /// \brief Partial template specialization for tuples.
+    template <typename... TTypes>
+    inline constexpr Int Rank<TupleT<TTypes...>> = sizeof...(TTypes);
 }
 
 // ===========================================================================
@@ -404,7 +385,7 @@ namespace Syntropy
     }
 
     template <Int VIndex, typename... TTypes>
-    constexpr Templates::TupleElement<VIndex, TupleT<TTypes...>>& Get(TupleT<TTypes...>& tuple) noexcept
+    constexpr Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>& Get(TupleT<TTypes...>& tuple) noexcept
     {
         using TTuple = Templates::TuplePopFront<VIndex, TupleT<TTypes...>>;
 
@@ -412,7 +393,7 @@ namespace Syntropy
     }
 
     template <Int VIndex, typename... TTypes>
-    constexpr Templates::TupleElement<VIndex, TupleT<TTypes...>>&& Get(TupleT<TTypes...>&& tuple) noexcept
+    constexpr Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>&& Get(TupleT<TTypes...>&& tuple) noexcept
     {
         using TTuple = Templates::TuplePopFront<VIndex, TupleT<TTypes...>>;
         using TElement = Templates::TupleElement<VIndex, TupleT<TTypes...>>;
@@ -421,7 +402,7 @@ namespace Syntropy
     }
 
     template <Int VIndex, typename... TTypes>
-    constexpr const Templates::TupleElement<VIndex, TupleT<TTypes...>>& Get(const TupleT<TTypes...>& tuple) noexcept
+    constexpr const Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>& Get(const TupleT<TTypes...>& tuple) noexcept
     {
         using TTuple = Templates::TuplePopFront<VIndex, TupleT<TTypes...>>;
 
@@ -429,7 +410,7 @@ namespace Syntropy
     }
 
     template <Int VIndex, typename... TTypes>
-    constexpr const Templates::TupleElement<VIndex, TupleT<TTypes...>>&& Get(const TupleT<TTypes...>&& tuple) noexcept
+    constexpr const Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>&& Get(const TupleT<TTypes...>&& tuple) noexcept
     {
         using TTuple = Templates::TuplePopFront<VIndex, TupleT<TTypes...>>;
         using TElement = Templates::TupleElement<VIndex, TupleT<TTypes...>>;
