@@ -12,6 +12,7 @@
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/traits.h"
 #include "syntropy/language/templates/math.h"
+
 #include "syntropy/language/templates/details/ratio_details.h"
 
 // ===========================================================================
@@ -23,122 +24,110 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     /// \brief A reduced rational number of the form Numerator / Denominator.
-    template <Int VNumerator, Int VDenominator>
+    template <Int VNumerator, Int VDenominator = 1>
     struct Ratio
     {
         /// \brief Ratio numerator.
-        static constexpr Int kNumerator = std::ratio<VNumerator, VDenominator>::num;
+        static constexpr Int kNumerator = Details::ReducedRatioNumerator<VNumerator, VDenominator>;
 
         /// \brief Ratio denominator.
-        static constexpr Int kDenominator = std::ratio<VNumerator, VDenominator>::den;
+        static constexpr Int kDenominator = Details::ReducedRatioDenominator<VNumerator, VDenominator>;
     };
 
-    /************************************************************************/
-    /* IS RATIO                                                             */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TRatio is a Ratio<T> type, equal to false otherwise.
-    template <typename TRatio>
-    constexpr bool IsRatio = Details::IsRatio<TRatio>;
-
-    /************************************************************************/
-    /* COMMON TYPE                                                          */
-    /************************************************************************/
-
     /// \brief Common type two ratios can be losslessy-converted to.
-    template <typename T0Ratio, typename T1Ratio, typename = EnableIf<Templates::IsRatio<T0Ratio>&& Templates::IsRatio<T1Ratio>>>
-    using CommonRatio = typename Details::CommonRatio<T0Ratio, T1Ratio>::Type;
+    template <typename TRatio, typename URatio>
+    using CommonRatio = Ratio<Details::CommonRatioNumerator<TRatio, URatio>, Details::CommondRatioDenominator<TRatio, URatio>>;
 
     /************************************************************************/
     /* RATIO ARITHMETIC                                                     */
     /************************************************************************/
 
     /// \brief Alias type for the sum of two ratios.
-    template <typename T0Ratio, typename T1Ratio>
-    using RatioSum = Details::UnwrapRatio<std::ratio_add<Details::WrapRatio<T0Ratio>, Details::WrapRatio<T1Ratio>>>;
+    template <typename TRatio, typename URatio>
+    using RatioAdd = Ratio<Details::AddRatioNumerator<TRatio, URatio>, Details::AddRatioDenominator<TRatio, URatio>>;
 
     /// \brief Alias type for the difference of two ratios.
-    template <typename T0Ratio, typename T1Ratio>
-    using RatioDifference = Details::UnwrapRatio<std::ratio_subtract<Details::WrapRatio<T0Ratio>, Details::WrapRatio<T1Ratio>>>;
+    template <typename TRatio, typename URatio>
+    using RatioSubtract = Ratio<Details::SubtractRatioNumerator<TRatio, URatio>, Details::SubtractRatioDenominator<TRatio, URatio>>;
 
     /// \brief Alias type for the product of two ratios.
-    template <typename T0Ratio, typename T1Ratio>
-    using RatioProduct = Details::UnwrapRatio<std::ratio_multiply<Details::WrapRatio<T0Ratio>, Details::WrapRatio<T1Ratio>>>;
+    template <typename TRatio, typename URatio>
+    using RatioMultiply = Ratio<Details::MultiplyRatioNumerator<TRatio, URatio>, Details::MultiplyRatioDenominator<TRatio, URatio>>;
 
     /// \brief Alias type for the quotient of two ratios.
-    template <typename T0Ratio, typename T1Ratio>
-    using RatioQuotient = Details::UnwrapRatio<std::ratio_divide<Details::WrapRatio<T0Ratio>, Details::WrapRatio<T1Ratio>>>;
+    template <typename TRatio, typename URatio>
+    using RatioDivide = Ratio<Details::DivideRatioNumerator<TRatio, URatio>, Details::DivideRatioDenominator<TRatio, URatio>>;
 
     /************************************************************************/
     /* RATIO COMPARISON                                                     */
     /************************************************************************/
 
-    /// \brief Boolean constant equal to true if T0Ratio and T1Ratio represent the same amount, equal to false otherwise.
-    template <typename T0Ratio, typename T1Ratio>
-    inline constexpr Bool RatioEqual = std::ratio_equal_v<Details::WrapRatio<T0Ratio>, Details::WrapRatio<T1Ratio>>;
+    /// \brief Boolean constant equal to true if TRatio and URatio represent the same amount, equal to false otherwise.
+    template <typename TRatio, typename URatio>
+    inline constexpr Bool RatioEqual = Details::RatioEqual<TRatio, URatio>;
 
-    /// \brief Boolean constant equal to true if T0Ratio and T1Ratio don't represent the same amount, equal to false otherwise.
-    template <typename T0Ratio, typename T1Ratio>
-    inline constexpr Bool RatioNotEqual = std::ratio_not_equal_v<Details::WrapRatio<T0Ratio>, Details::WrapRatio<T1Ratio>>;
+    /// \brief Boolean constant equal to true if TRatio and URatio don't represent the same amount, equal to false otherwise.
+    template <typename TRatio, typename URatio>
+    inline constexpr Bool RatioNotEqual = Details::RatioNotEqual<TRatio, URatio>;
 
-    /// \brief Boolean constant equal to true if T0Ratio represents an amount smaller than T1Ratio, equal to false otherwise.
-    template <typename T0Ratio, typename T1Ratio>
-    inline constexpr Bool RatioLess = std::ratio_less_v<Details::WrapRatio<T0Ratio>, Details::WrapRatio<T1Ratio>>;
+    /// \brief Boolean constant equal to true if TRatio represents an amount smaller than URatio, equal to false otherwise.
+    template <typename TRatio, typename URatio>
+    inline constexpr Bool RatioLess = Details::RatioLess<TRatio, URatio>;
 
-    /// \brief Boolean constant equal to true if T0Ratio represents an amount smaller-than or equal-to T1Ratio, equal to false otherwise.
-    template <typename T0Ratio, typename T1Ratio>
-    inline constexpr Bool RatioLessEqual = std::ratio_less_equal_v<Details::WrapRatio<T0Ratio>, Details::WrapRatio<T1Ratio>>;
+    /// \brief Boolean constant equal to true if TRatio represents an amount smaller-than or equal-to URatio, equal to false otherwise.
+    template <typename TRatio, typename URatio>
+    inline constexpr Bool RatioLessEqual = Details::RatioLessEqual<TRatio, URatio>;
 
-    /// \brief Boolean constant equal to true if T0Ratio represents an amount greater than T1Ratio, equal to false otherwise.
-    template <typename T0Ratio, typename T1Ratio>
-    inline constexpr Bool RatioGreater = std::ratio_greater_v<Details::WrapRatio<T0Ratio>, Details::WrapRatio<T1Ratio>>;
+    /// \brief Boolean constant equal to true if TRatio represents an amount greater than URatio, equal to false otherwise.
+    template <typename TRatio, typename URatio>
+    inline constexpr Bool RatioGreater = Details::RatioGreater<TRatio, URatio>;
 
-    /// \brief Boolean constant equal to true if T0Ratio represents an amount greater-than or equal-to T1Ratio, equal to false otherwise.
-    template <typename T0Ratio, typename T1Ratio>
-    inline constexpr Bool RatioGreaterEqual = std::ratio_greater_equal_v<Details::WrapRatio<T0Ratio>, Details::WrapRatio<T1Ratio>>;
+    /// \brief Boolean constant equal to true if TRatio represents an amount greater-than or equal-to URatio, equal to false otherwise.
+    template <typename TRatio, typename URatio>
+    inline constexpr Bool RatioGreaterEqual = Details::RatioGreaterEqual<TRatio, URatio>;
 
     /************************************************************************/
     /* RATIO UNITS                                                          */
     /************************************************************************/
 
     /// \brief "Nano" IS ratio.
-    using Nano = Details::UnwrapRatio<std::nano>;
+    using Nano = Ratio<1, 1000000000>;
 
     /// \brief "Micro" IS ratio.
-    using Micro = Details::UnwrapRatio<std::micro>;
+    using Micro = Ratio<1, 1000000>;
 
     /// \brief "Milli" IS ratio.
-    using Milli = Details::UnwrapRatio<std::milli>;
+    using Milli = Ratio<1, 1000>;
 
     /// \brief "Centi" IS ratio.
-    using Centi = Details::UnwrapRatio<std::centi>;
+    using Centi = Ratio<1, 100>;
 
     /// \brief "Deci" IS ratio.
-    using Deci = Details::UnwrapRatio<std::deci>;
+    using Deci = Ratio<1, 10>;
 
     /// \brief "Deca" IS ratio.
-    using Deca = Details::UnwrapRatio<std::deca>;
+    using Deca = Ratio<10, 1>;
 
     /// \brief "Hecto" IS ratio.
-    using Hecto = Details::UnwrapRatio<std::hecto>;
+    using Hecto = Ratio<100, 1>;
 
     /// \brief "Kilo" IS ratio.
-    using Kilo = Details::UnwrapRatio<std::kilo>;
+    using Kilo = Ratio<10000, 1>;
 
     /// \brief "Mega" IS ratio.
-    using Mega = Details::UnwrapRatio<std::mega>;
+    using Mega = Ratio<1000000, 1>;
 
     /// \brief "Giga" IS ratio.
-    using Giga = Details::UnwrapRatio<std::giga>;
+    using Giga = Ratio<1000000000, 1>;
 
     /// \brief "Tera" IS ratio.
-    using Tera = Details::UnwrapRatio<std::tera>;
+    using Tera = Ratio<1000000000000LL, 1>;
 
     /// \brief "Peta" IS ratio.
-    using Peta = Details::UnwrapRatio<std::peta>;
+    using Peta = Ratio<1000000000000000LL, 1>;
 
     /// \brief "Exa" IS ratio.
-    using Exa = Details::UnwrapRatio<std::exa>;
+    using Exa = Ratio<1000000000000000000LL, 1>;
 
     /// \brief "Kibi" binary ratio.
     using Kibi = Ratio<0x400LL, 1>;

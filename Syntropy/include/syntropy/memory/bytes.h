@@ -521,7 +521,7 @@ namespace Syntropy::Memory
     {
         static_assert(Templates::IsBytes<TBytesTo>, "TBytesTo is not a ByteT<> type.");
 
-        using TRatio = Syntropy::Templates::RatioQuotient<TRatioFrom, Templates::ByteRatio<TBytesTo>>;
+        using TRatio = Syntropy::Templates::RatioDivide<TRatioFrom, Templates::ByteRatio<TBytesTo>>;
 
         auto count = (ToInt(rhs) * TRatio::kNumerator) / TRatio::kDenominator;
 
