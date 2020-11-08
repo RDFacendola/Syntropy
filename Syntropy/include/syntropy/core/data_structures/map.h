@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "syntropy/serialization/hashing/hash.h"
-#include "syntropy/language/support.h"
 #include "syntropy/math/hash.h"
 
 #include "syntropy/experimental/core/polymorphic_allocator.h"

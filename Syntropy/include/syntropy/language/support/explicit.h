@@ -9,6 +9,8 @@
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/traits.h"
 
+// ===========================================================================
+
 namespace Syntropy
 {
     /************************************************************************/
@@ -45,6 +47,12 @@ namespace Syntropy
     /// \brief Explicit floating-point type.
     using ExplicitFloat = Explicit<Float, Float>;
 
+}
+
+// ===========================================================================
+
+namespace Syntropy
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -65,5 +73,6 @@ namespace Syntropy
     {
         return value_;
     }
-
 }
+
+// ===========================================================================

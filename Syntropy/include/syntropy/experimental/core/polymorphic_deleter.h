@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "syntropy/language/support.h"
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/memory/memory.h"
 #include "syntropy/allocators/allocator.h"
@@ -22,22 +21,24 @@ namespace Syntropy
     /// \author Raffaele D. Facendola - May 2020.
     class PolymorphicDeleter
     {
+        template <typename TType>
+        friend PolymorphicDeleter MakePolymorphicDeleter(Allocator& allocator);
+
     public:
+
+        /// \brief Type of a function used to destroy objects.
+        using TDestructor = void(*)(Allocator&, Memory::RWTypelessPtr);
 
         /// \brief Default constructor with implicit default memory resource.
         PolymorphicDeleter() = default;
 
         /// \brief Create a new polymorphic deleter with explicit memory resource.
-        template <typename TType>
-        PolymorphicDeleter(Tags::Type<TType>, Allocator& allocator) noexcept;
+        PolymorphicDeleter(TDestructor destructor, Allocator& allocator) noexcept;
 
         /// \brief Destroy an object allocated on the underlying memory resource.
         void operator()(Memory::RWTypelessPtr object);
 
     private:
-
-        /// \brief Type of a function used to destroy objects.
-        using TDestructor = void(*)(Allocator&, Memory::RWTypelessPtr);
 
         /// \brief Function used to destroy strongly-typed objects.
         /// If the provided object's type is not equal to TType the behavior of this method is undefined.
@@ -67,9 +68,8 @@ namespace Syntropy
 
     // PolymorphicDeleter<TType>.
 
-    template <typename TType>
-    inline PolymorphicDeleter::PolymorphicDeleter(Tags::Type<TType>, Allocator& allocator) noexcept
-        : destructor_(&Destroy<TType>)
+    inline PolymorphicDeleter::PolymorphicDeleter(TDestructor destructor, Allocator& allocator) noexcept
+        : destructor_(destructor)
         , allocator_(&allocator)
     {
 
@@ -100,7 +100,7 @@ namespace Syntropy
     template <typename TType>
     inline PolymorphicDeleter MakePolymorphicDeleter(Allocator& allocator)
     {
-        return PolymorphicDeleter(Tags::kType<TType>, allocator);
+        return PolymorphicDeleter(&PolymorphicDeleter::Destroy<TType>, allocator);
     }
 
 }

@@ -1,7 +1,5 @@
 #include "syntropy/experimental/serialization/streams/stream_buffer.h"
 
-#include "syntropy/language/support.h"
-
 namespace Syntropy
 {
     /************************************************************************/

@@ -11,6 +11,8 @@
 #include "syntropy/language/foundation/pointers.h"
 #include "syntropy/language/foundation/references.h"
 
+// ===========================================================================
+
 namespace Syntropy
 {
     /************************************************************************/
@@ -22,6 +24,12 @@ namespace Syntropy
     template <typename TElement>
     class InitializerList
     {
+        template <typename TElement>
+        friend constexpr Pointer<TElement> begin(Reference<InitializerList<TElement>> rhs) noexcept;
+
+        template <typename TElement>
+        friend constexpr Pointer<TElement> end(Reference<InitializerList<TElement>> rhs) noexcept;
+
     public:
 
         /// \brief Create a new empty list.
@@ -32,12 +40,6 @@ namespace Syntropy
 
         /// \brief Create an initializer list from a standard initializer list.
         constexpr InitializerList(const std::initializer_list<TElement>& initializer_list) noexcept;
-
-        /// \brief Get an iterator to the first element in the list.
-        constexpr Pointer<TElement> GetBegin() const noexcept;
-
-        /// \brief Get an iterator past the last element in the list.
-        constexpr Pointer<TElement> GetEnd() const noexcept;
 
     private:
 
@@ -50,28 +52,30 @@ namespace Syntropy
     };
 
     /************************************************************************/
-    /* NON MEMBER FUNCTIONS                                                 */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Iterators.
+    template <typename TElement>
+    [[nodiscard]] constexpr Pointer<TElement> begin(Reference<InitializerList<TElement>> rhs) noexcept;
 
     template <typename TElement>
-    constexpr Pointer<TElement> begin(Reference<InitializerList<TElement>> rhs) noexcept;
-
-    template <typename TElement>
-    constexpr Pointer<TElement> end(Reference<InitializerList<TElement>> rhs) noexcept;
-
-    // Observers.
+    [[nodiscard]] constexpr Pointer<TElement> end(Reference<InitializerList<TElement>> rhs) noexcept;
 
     /// \brief Check whether an initializer list is empty.
     /// \return Returns true if the list is empty, returns false otherwise.
     template <typename TElement>
-    constexpr Bool IsEmpty(Reference<InitializerList<TElement>> rhs) noexcept;
+    [[nodiscard]] constexpr Bool IsEmpty(Reference<InitializerList<TElement>> rhs) noexcept;
 
     /// \brief Get the number of elements in an initializer list.
     template <typename TElement>
-    constexpr Int Count(Reference<InitializerList<TElement>> rhs) noexcept;
+    [[nodiscard]] constexpr Int Count(Reference<InitializerList<TElement>> rhs) noexcept;
 
+}
+
+// ===========================================================================
+
+namespace Syntropy
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -95,36 +99,20 @@ namespace Syntropy
 
     }
 
-    template <typename TElement>
-    constexpr Pointer<TElement> InitializerList<TElement>::GetBegin() const noexcept
-    {
-        return begin_;
-    }
-
-    template <typename TElement>
-    constexpr Pointer<TElement> InitializerList<TElement>::GetEnd() const noexcept
-    {
-        return end_;
-    }
-
     // Non-member functions.
     // =====================
-
-    // Iterators.
 
     template <typename TElement>
     constexpr Pointer<TElement> begin(Reference<InitializerList<TElement>> rhs) noexcept
     {
-        return rhs.GetBegin();
+        return rhs.begin_;
     }
 
     template <typename TElement>
     constexpr Pointer<TElement> end(Reference<InitializerList<TElement>> rhs) noexcept
     {
-        return rhs.GetEnd();
+        return rhs.end_;
     }
-
-    // Observers.
 
     template <typename TElement>
     constexpr Bool IsEmpty(Reference<InitializerList<TElement>> rhs) noexcept

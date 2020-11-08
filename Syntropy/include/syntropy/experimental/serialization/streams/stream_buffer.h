@@ -10,7 +10,6 @@
 #include "syntropy/core/algorithm/swap.h"
 
 #include "syntropy/experimental/memory/smart_pointers.h"
-#include "syntropy/language/support.h"
 #include "syntropy/core/algorithm/algorithm.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"

@@ -10,7 +10,7 @@
 #include <algorithm>
 
 #include "syntropy/language/templates/traits.h"
-#include "syntropy/language/support.h"
+#include "syntropy/language/support/initializer_list.h"
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/foundation/span.h"

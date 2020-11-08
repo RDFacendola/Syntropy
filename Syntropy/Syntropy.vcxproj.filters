@@ -98,12 +98,8 @@
     <ClInclude Include="include\syntropy\language\foundation\references.h" />
     <ClInclude Include="include\syntropy\language\foundation\types.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
-    <ClInclude Include="include\syntropy\language\support.h" />
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
     <ClInclude Include="include\syntropy\language\support\explicit.h" />
-    <ClInclude Include="include\syntropy\language\support\placeholders.h" />
-    <ClInclude Include="include\syntropy\language\support\tags.h" />
-    <ClInclude Include="include\syntropy\language\support\declarations.h" />
     <ClInclude Include="include\syntropy\core\algorithm\swap.h" />
     <ClInclude Include="include\syntropy\core\algorithm\predicates.h" />
     <ClInclude Include="include\syntropy\core\data_structures\fix_array.h" />
@@ -141,6 +137,7 @@
     <ClInclude Include="include\syntropy\language\templates\details\traits_details.h" />
     <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\preprocessor.h" />
+    <ClInclude Include="include\syntropy\language\support\support.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

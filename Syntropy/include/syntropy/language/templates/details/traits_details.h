@@ -427,6 +427,10 @@ namespace Syntropy::Templates::Details
     /* CONCEPTS                                                             */
     /************************************************************************/
 
+    /// \brief Get a rvalue-reference to TType without calling any constructor.
+    template <typename TType>
+    AddRValueReference<TType> Declval() noexcept;
+
     /// \brief Check an instance of TType can be compared equal to an instance of UType.
     template <typename TType, typename UType>
     using HasEqualityComparison = decltype(Declval<TType>() == Declval<UType>());
