@@ -9,6 +9,8 @@
 #include <cstdint>
 #include <cstddef>
 
+// ===========================================================================
+
 namespace Syntropy
 {
     /************************************************************************/
@@ -47,32 +49,38 @@ namespace Syntropy
 
     /// \brief Convert rhs to a boolean.
     template <typename TType>
-    constexpr Bool ToBool(TType rhs) noexcept;
+    [[nodiscard]]  constexpr Bool ToBool(TType rhs) noexcept;
 
     /// \brief Truncate rhs to an integer value.
     template <typename TNumber>
-    constexpr Int ToInt(TNumber rhs) noexcept;
+    [[nodiscard]]  constexpr Int ToInt(TNumber rhs) noexcept;
 
     /// \brief Convert rhs to a floating point value.
     template <typename TNumber>
-    constexpr Float ToFloat(TNumber rhs) noexcept;
+    [[nodiscard]]  constexpr Float ToFloat(TNumber rhs) noexcept;
 
     /// \brief Cast rhs to a 8-bit integer value.
     template <typename TNumber>
-    constexpr Fix8 ToFix8(TNumber rhs) noexcept;
+    [[nodiscard]]  constexpr Fix8 ToFix8(TNumber rhs) noexcept;
 
     /// \brief Cast rhs to a 16-bit integer value.
     template <typename TNumber>
-    constexpr Fix16 ToFix16(TNumber rhs) noexcept;
+    [[nodiscard]]  constexpr Fix16 ToFix16(TNumber rhs) noexcept;
 
     /// \brief Cast rhs to a 32-bit integer value.
     template <typename TNumber>
-    constexpr Fix32 ToFix32(TNumber rhs) noexcept;
+    [[nodiscard]]  constexpr Fix32 ToFix32(TNumber rhs) noexcept;
 
     /// \brief Cast rhs to a 64-bit integer value.
     template <typename TNumber>
-    constexpr Fix64 ToFix64(TNumber rhs) noexcept;
+    [[nodiscard]] constexpr Fix64 ToFix64(TNumber rhs) noexcept;
 
+}
+
+// ===========================================================================
+
+namespace Syntropy
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -122,3 +130,5 @@ namespace Syntropy
         return static_cast<Fix64>(rhs);
     }
 }
+
+// ===========================================================================

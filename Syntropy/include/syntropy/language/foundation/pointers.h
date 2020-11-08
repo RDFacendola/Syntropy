@@ -9,12 +9,13 @@
 #include <memory>
 
 #include "syntropy/language/templates/traits.h"
-#include "syntropy/language/foundation/references.h"
+
+// ===========================================================================
 
 namespace Syntropy
 {
     /************************************************************************/
-    /* POINTER                                                              */
+    /* POINTER TYPES                                                        */
     /************************************************************************/
 
     /// \brief Type alias for a pointer to a *read-only* pointee. This pointer doesn't participate to pointee life-time.
@@ -24,14 +25,9 @@ namespace Syntropy
     using Pointer = const TType*;
 
     /// \brief Type alias for a pointer to a *read-write* pointee. This pointer doesn't participate to pointee life-time.
-    /// This alias may be used for declaring variables with the syntax: auto p = RWPointer<...>{ nullptr }.
-    /// \remarks This alias is expected not to be used with templates as it will clutter syntax.
+    /// This alias may be used for declaring variables using the syntax: auto p = RWPointer<...>{ nullptr }.
     template <typename TType, typename = Templates::EnableIf<!Templates::IsConst<TType>>>
     using RWPointer = TType*;
-
-    /************************************************************************/
-    /* NULL                                                                 */
-    /************************************************************************/
 
     /// \brief Type of the null pointer literal (nullptr).
     using Null = std::nullptr_t;
@@ -39,8 +35,6 @@ namespace Syntropy
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
-
-    // Utilities.
 
     /// \brief Convert rhs to a pointer to UType.
     /// \remarks If the pointee type is not related to UType, the program is ill-formed.
@@ -55,27 +49,28 @@ namespace Syntropy
     template <typename TType>
     [[nodiscard]] constexpr void AddressOf(const TType&& rhs) noexcept = delete;
 
-    // Read-only / Read-write.
-
-     /// \brief Convert rhs to a pointer to a read-only value.
+    /// \brief Convert rhs to a pointer to a read-only value.
     template <typename TType>
     [[nodiscard]] constexpr Pointer<TType> ReadOnly(Pointer<TType> rhs) noexcept;
 
-    /// \brief Convert rhs to a pointer to a read-write object.
+    /// \brief Convert rhs to a pointer to a read-write value.
     /// The intended use for this method is to write a non-const implementation based on a const implementation, without duplicating associated code.
     /// Such usage has the form: ReadWrite(F(ReadOnly(x))) where x is non-const and F(.) is a function.
-    /// \remarks If rhs pointee doesn't refer to a read-write object, accessing the result of this method results in undefined behavior.
+    /// \remarks If rhs pointee doesn't refer to a read-write value, accessing the result of this method results in undefined behavior.
     template <typename TType>
     [[nodiscard]] constexpr RWPointer<TType> ReadWrite(Pointer<TType> rhs) noexcept;
+}
 
+// ===========================================================================
+
+namespace Syntropy
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
     // Non-member functions.
     // =====================
-
-    // Utilities.
 
     template <typename TType, typename UType>
     constexpr TType* ToPointer(UType* rhs) noexcept
@@ -88,8 +83,6 @@ namespace Syntropy
     {
         return std::addressof(rhs);
     }
-
-    // Read-only / Read-write.
 
     template <typename TType>
     constexpr Pointer<TType> ReadOnly(Pointer<TType> rhs) noexcept
@@ -105,4 +98,4 @@ namespace Syntropy
 
 }
 
-
+// ===========================================================================

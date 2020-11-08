@@ -9,6 +9,7 @@
 #include <initializer_list>
 
 #include "syntropy/language/foundation/pointers.h"
+#include "syntropy/language/foundation/references.h"
 
 namespace Syntropy
 {

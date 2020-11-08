@@ -6,32 +6,27 @@
 
 #pragma once
 
-#include <type_traits>
-
-#include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/traits.h"
+
+// ===========================================================================
 
 namespace Syntropy
 {
     /************************************************************************/
-    /* REFERENCE                                                            */
+    /* REFERENCE TYPES                                                      */
     /************************************************************************/
 
     /// \brief Type alias for a lvalue reference to a *read-only* object.
-    /// \remarks This alias is expected not to be used with templates as it will clutter syntax.
     template <typename TType>
     using Reference = const TType&;
 
     /// \brief Type alias for a lvalue reference to a *read-write* object.
-    /// \remarks This alias is expected not to be used with templates as it will clutter syntax.
     template <typename TType, typename = Templates::EnableIf<!Templates::IsConst<Templates::RemoveReference<TType&>>>>
     using RWReference = TType&;
 
     /************************************************************************/
-    /* UTILITIES                                                             */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
-
-    // Move \ Forward.
 
     /// \brief Indicate that rhs may be "moved from", allowing for efficient transfer of resources from rhs to another object.
     template <typename TType>
@@ -44,8 +39,6 @@ namespace Syntropy
     /// brief Forward an lvalue as either a lvalue or rvalue and rvalues to rvalues. Forwarding a rvalue as a lvalue is forbidden.
     template <typename TType>
     [[nodiscard]] constexpr TType&& Forward(Templates::RemoveReference<TType>&& rhs) noexcept;
-
-    // Read-only \ Read-write.
 
     /// \brief Convert rhs to a read-only reference.
     template <typename TType>
@@ -65,15 +58,18 @@ namespace Syntropy
     /// \brief Rvalues shall not be converted to read-write.
     template <typename TType>
     [[nodiscard]] constexpr void ReadWrite(const TType&& rhs) noexcept = delete;
+}
 
+// ===========================================================================
+
+namespace Syntropy
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Utilities.
-    // =========
-
-    // Move \ Forward.
+    // Non-member functions.
+    // =====================
 
     template <typename TType>
     constexpr Templates::RemoveReference<TType>&& Move(TType&& rhs) noexcept
@@ -93,9 +89,6 @@ namespace Syntropy
         return static_cast<TType&&>(rhs);
     }
 
-    // Read-only \ Read-write.
-    // =======================
-
     template <typename TType>
     constexpr Reference<TType> ReadOnly(Reference<TType> rhs) noexcept
     {
@@ -110,4 +103,4 @@ namespace Syntropy
 
 }
 
-
+// ===========================================================================
