@@ -13,40 +13,48 @@
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
-    /* GCD                                                                  */
+    /* GREATEST COMMON DIVISOR                                              */
     /************************************************************************/
 
     /// \brief Euler's algorithm for greatest common divisor.
     template <Int VLeft, Int VRight>
-    struct GCD : GCD<VRight, VLeft % VRight>
+    struct GCDHelper : GCDHelper<VRight, VLeft % VRight>
     {
     
     };
 
     /// \brief Specialization for terminal case.
     template <Int VLeft>
-    struct GCD<VLeft, 0>
+    struct GCDHelper<VLeft, 0>
     {
         static constexpr Int kValue = VLeft;
     };
 
+    /// \brief Get the greatest common divisor between VLeft and VRight.
+    template <Int VLeft, Int VRight>
+    inline constexpr Int GCD = GCDHelper<VLeft, VRight>::kValue;
+
     /************************************************************************/
-    /* LCM                                                                  */
+    /* LOWEST COMMON MULTIPLE                                               */
     /************************************************************************/
 
     /// \brief Euler's algorithm for lowest common multiple.
     template <Int VLeft, Int VRight>
-    struct LCM
+    struct LCMHelper
     {
-        static constexpr Int kValue = (VLeft * VRight) / GCD<VLeft, VRight>::kValue;
+        static constexpr Int kValue = (VLeft * VRight) / GCDHelper<VLeft, VRight>::kValue;
     };
 
     /// \brief Special case where both numbers are 0.
     template <>
-    struct LCM<0, 0>
+    struct LCMHelper<0, 0>
     {
         static constexpr Int kValue = 0;
     };
+
+    /// \brief Get the lowest common multiple between VLeft and VRight.
+    template <Int VLeft, Int VRight>
+    inline constexpr Int LCM = LCMHelper<VLeft, VRight>::kValue;
 }
 
 // ===========================================================================

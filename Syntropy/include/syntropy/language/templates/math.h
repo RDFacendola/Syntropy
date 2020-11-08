@@ -31,7 +31,7 @@ namespace Syntropy::Templates
 
     /// \brief Get the greatest common divisor between VLeft and VRight.
     template <Int VLeft, Int VRight>
-    inline constexpr Int GCD = Details::GCD<VLeft, VRight>::kValue;
+    inline constexpr Int GCD = Details::GCD<VLeft, VRight>;
 
     /************************************************************************/
     /* LOWEST COMMON MULTIPLE                                               */
@@ -39,7 +39,7 @@ namespace Syntropy::Templates
 
     /// \brief Get the lowest common multiple between VLeft and VRight.
     template <Int VLeft, Int VRight>
-    inline constexpr Int LCM = Details::LCM<VLeft, VRight>::kValue;
+    inline constexpr Int LCM = Details::LCM<VLeft, VRight>;
 }
 
 // ===========================================================================
