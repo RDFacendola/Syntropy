@@ -13,7 +13,7 @@
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
-    /* GREATEST COMMON DIVISOR                                              */
+    /* COMPILE-TIME MATH                                                    */
     /************************************************************************/
 
     /// \brief Euler's algorithm for greatest common divisor.
@@ -34,9 +34,7 @@ namespace Syntropy::Templates::Details
     template <Int VLeft, Int VRight>
     inline constexpr Int GCD = GCDHelper<VLeft, VRight>::kValue;
 
-    /************************************************************************/
-    /* LOWEST COMMON MULTIPLE                                               */
-    /************************************************************************/
+    // ===========================================================================
 
     /// \brief Euler's algorithm for lowest common multiple.
     template <Int VLeft, Int VRight>
