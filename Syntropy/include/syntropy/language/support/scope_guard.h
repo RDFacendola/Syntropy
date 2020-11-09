@@ -1,18 +1,19 @@
 
 /// \file scope_guard.h
-/// \brief This header is part of the Syntropy core module. It contains definitions for scope-based guards.
+/// \brief This header is part of the Syntropy language module. It contains definitions for scope-based guards.
 ///
 /// \author Raffaele D. Facendola - 2016
 
 #pragma once
 
-#include "syntropy/language/support.h"
 #include "syntropy/language/foundation/foundation.h"
+
+// ===========================================================================
 
 namespace Syntropy
 {
     /************************************************************************/
-    /* SCOPE GUARD <TFUNCTOR>                                               */
+    /* SCOPE GUARD                                                          */
     /************************************************************************/
 
     /// \brief Guards that executes a routine upon destruction unless it was dismissed.
@@ -31,19 +32,19 @@ namespace Syntropy
         ScopeGuard(const ScopeGuard&) = delete;
 
         /// \brief No assignment operator.
-        ScopeGuard & operator=(const ScopeGuard&) = delete;
+        ScopeGuard& operator=(const ScopeGuard&) = delete;
 
         /// \brief Create a new scope guard.
-        ScopeGuard(TFunctor functor);
+        ScopeGuard(TFunctor functor) noexcept;
 
         /// \brief Move constructor. The original copy gets dismissed.
-        ScopeGuard(ScopeGuard&& other);
+        ScopeGuard(ScopeGuard&& other) noexcept;
 
         /// \brief Destroy this instance and calls the functor unless the guard has been dismissed.
         ~ScopeGuard();
 
         /// \brief Dismiss the scope guard.
-        void Dismiss();
+        void Dismiss() noexcept;
 
     private:
 
@@ -61,16 +62,23 @@ namespace Syntropy
 
     /// \brief Create a new scope guard.
     template <typename TFunctor>
-    ScopeGuard<TFunctor> MakeScopeGuard(TFunctor functor);
+    ScopeGuard<TFunctor> MakeScopeGuard(TFunctor functor) noexcept;
 
+}
+
+// ===========================================================================
+
+namespace Syntropy
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
     // ScopeGuard<TFunctor>.
+    // =====================
 
     template <typename TFunctor>
-    inline ScopeGuard<TFunctor>::ScopeGuard(TFunctor functor)
+    inline ScopeGuard<TFunctor>::ScopeGuard(TFunctor functor) noexcept
         : functor_(Move(functor))
         , dismissed_(false) 
     {
@@ -78,7 +86,7 @@ namespace Syntropy
     }
 
     template <typename TFunctor>
-    inline ScopeGuard<TFunctor>::ScopeGuard(ScopeGuard && other)
+    inline ScopeGuard<TFunctor>::ScopeGuard(ScopeGuard && other) noexcept
         : functor_(Move(other.functor_))
         , dismissed_(other.dismissed_)
     {
@@ -86,7 +94,7 @@ namespace Syntropy
     }
 
     template <typename TFunctor>
-    inline ScopeGuard<TFunctor>::~ScopeGuard() 
+    inline ScopeGuard<TFunctor>::~ScopeGuard()
     {
         if (!dismissed_) 
         {
@@ -95,17 +103,20 @@ namespace Syntropy
     }
 
     template <typename TFunctor>
-    inline  void ScopeGuard<TFunctor>::Dismiss()
+    inline  void ScopeGuard<TFunctor>::Dismiss() noexcept
     {
         dismissed_ = true;
     }
 
     // Non-member function.
+    // ====================
 
     template <typename TFunctor>
-    inline  ScopeGuard<TFunctor> MakeScopeGuard(TFunctor functor)
+    inline ScopeGuard<TFunctor> MakeScopeGuard(TFunctor functor) noexcept
     {
         return ScopeGuard<TFunctor>(Move(functor));
     }
 
 }
+
+// ===========================================================================
