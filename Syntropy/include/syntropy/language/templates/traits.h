@@ -15,6 +15,38 @@
 namespace Syntropy::Templates
 {
     /************************************************************************/
+    /* META                                                                 */
+    /************************************************************************/
+
+    /// \brief Identity transform meant to establish non-deduced contexts in template argument deduction.
+    template <typename TType>
+    using Identity = Details::Identity<TType>;
+
+    /// \brief Boolean constant which consume any template argument and evaluates to false. Useful for static_assert that should always trigger a compilation error.
+    template <typename... TTypes>
+    inline constexpr Bool AlwaysFalse = false;
+
+    /// \brief Metafunction that maps a sequence of types to void.
+    template <typename... TTypes>
+    using Void = Details::Void<TTypes...>;
+
+    /// \brief Type equal to TTrue if VCondition is true, equal to TFalse otherwise.
+    template <Bool VCondition, typename TTrue, typename TFalse>
+    using Conditional = Details::Conditional<VCondition, TTrue, TFalse>;
+
+    /// \brief Type equal to TType if VEnable is true, otherwise there's no such type.
+    template <Bool VEnable>
+    using EnableIf = Details::EnableIf<VEnable>;
+
+    /// \brief Boolean value equal to true if TExpression<TTypes...> is a valid expression, false otherwise.
+    template <template<typename...> typename TExpression, typename... TTypes>
+    inline constexpr Bool IsValidExpression = Details::IsValidExpression<TExpression, TTypes...>;
+
+    /// \brief If TExpression<TTypes> is a valid expression, exposes a member typedef equal to void, otherwise there's no such type.
+    template <template<typename...> typename TExpression, typename... TTypes>
+    using EnableIfValidExpression = Details::EnableIfValidExpression<TExpression, TTypes...>;
+
+    /************************************************************************/
     /* RANK                                                                 */
     /************************************************************************/
 
@@ -56,19 +88,6 @@ namespace Syntropy::Templates
     /************************************************************************/
     /* MISCELLANEOUS                                                        */
     /************************************************************************/
-
-    /// \brief Type equal to TType.
-    /// \remarks The identity transform is meant to establish non-deduced contexts in template argument deduction.
-    template <typename TType>
-    using Identity = Details::Identity<TType>;
-
-    /// \brief Boolean constant which consume any template argument and evaluates to false.
-    template <typename... TTypes>
-    inline constexpr Bool AlwaysFalse = false;
-
-    /// \brief Metafunction that maps a sequence of types to void.
-    template <typename... TTypes>
-    using Void = Details::Void<TTypes...>;
 
     /// \brief Applies lvalue-to-rvalue, array-to-pointer, and function-to-pointer implicit conversions to the type TType,
     /// removes cv-qualifiers, and defines the resulting type as the member typedef type.
@@ -232,26 +251,6 @@ namespace Syntropy::Templates
     inline constexpr Bool IsFinal<TypeList<TTypes...>> = (IsFinal<TTypes> && ...);
 
     /************************************************************************/
-    /* TYPE CONCEPTS                                                        */
-    /************************************************************************/
-
-    /// \brief Check an instance of TType can be compared equal to an instance of UType.
-    template <typename TType, typename UType>
-    using HasEqualityComparison = Details::HasEqualityComparison<TType, UType>;
-
-    /// \brief Check an instance of TType can be compared equal to an instance of UType.
-    template <typename TType, typename UType>
-    using HasInequalityComparison = Details::HasInequalityComparison<TType, UType>;
-
-    /// \brief Check whether exists an ADL-aware function Swap for TType.
-    template <typename TType>
-    using HasSwap = Details::HasSwap<TType>;
-
-    /// \brief Constant equal to true if TType can be swapped by means of a member function ::Swap(TType&), equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool HasMemberSwap = Details::HasMemberSwap<TType>;
-
-    /************************************************************************/
     /* TYPE OPERATIONS                                                      */
     /************************************************************************/
 
@@ -380,13 +379,9 @@ namespace Syntropy::Templates
     template <typename... TTypes>
     inline constexpr Bool IsTriviallyDestructible<TypeList<TTypes...>> = (IsTriviallyDestructible<TTypes> && ...);
 
-    /// \brief Constant equal to true if swapping two instances of TType results in trivial operations only, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsTriviallySwappable = Details::IsTriviallySwappable<TType>;
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    inline constexpr Bool IsTriviallySwappable<TypeList<TTypes...>> = (IsTriviallySwappable<TTypes> && ...);
+    /// \brief Constant equal to true if an instance of type TType can be compared equal to an instance of type UType, equal to false otherwise.
+    template <typename TType, typename UType>
+    inline constexpr Bool IsComparableForEquality = Details::IsComparableForEquality<TType, UType>;
 
     /************************************************************************/
     /* TYPE RELATIONSHIPS                                                   */
@@ -416,26 +411,6 @@ namespace Syntropy::Templates
     /// If no matching element could be found, the program is ill-formed.
     template <typename TCallable>
     using FunctionArguments = Details::FunctionArguments<TCallable>;
-
-    /************************************************************************/
-    /* META                                                                 */
-    /************************************************************************/
-
-    /// \brief Type equal to TTrue if VCondition is true, equal to TFalse otherwise.
-    template <Bool VCondition, typename TTrue, typename TFalse>
-    using Conditional = std::conditional_t<VCondition, TTrue, TFalse>;
-
-    /// \brief Type equal to TType if VEnable is true, otherwise there's no such type.
-    template <Bool VEnable>
-    using EnableIf = Details::EnableIf<VEnable>;
-
-    /// \brief Boolean value equal to true if TExpression<TTypes...> is a valid expression, false otherwise.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    inline constexpr Bool IsValidExpression = Details::IsValidExpression<TExpression, TTypes...>;
-
-    /// \brief If TExpression<TTypes> is a valid expression, exposes a member typedef equal to void, otherwise there's no such type.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    using EnableIfValidExpression = Details::EnableIfValidExpression<TExpression, TTypes...>;
 
 }
 

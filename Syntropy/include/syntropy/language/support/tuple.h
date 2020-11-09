@@ -220,6 +220,9 @@ namespace Syntropy
     template <typename... TElements>
     constexpr TupleT<TElements&&...> ForwardAsTuple(TElements&&... elements) noexcept;
 
+    /// \brief Swap two tuples
+    template <typename... TTypes>
+    constexpr void Swap(TupleT<TTypes...>& lhs, TupleT<TTypes...>& rhs) noexcept;
 }
 
 // ===========================================================================
@@ -419,6 +422,11 @@ namespace Syntropy
         return TupleT<TElements&&...>(Forward<TElements>(elements)...);
     }
 
+    template <typename... TTypes>
+    constexpr void Swap(TupleT<TTypes...>& lhs, TupleT<TTypes...>& rhs) noexcept
+    {
+        lhs.Swap(rhs);
+    }
 }
 
 // ===========================================================================

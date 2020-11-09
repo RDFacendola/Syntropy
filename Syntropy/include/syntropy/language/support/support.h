@@ -25,8 +25,8 @@ namespace Syntropy
     /* SWAP                                                                 */
     /************************************************************************/
 
-    /// \brief Swap lhs with rhs, accounting for any member function TType::Swap, if present.
-    template <typename TType>
+    /// \brief Swap lhs with rhs.
+    template <typename TType, typename = Templates::EnableIf<Templates::IsMoveAssignable<TType> && Templates::IsMoveConstructible<TType>>>
     constexpr void Swap(TType& lhs, TType& rhs) noexcept;
 
     /************************************************************************/
@@ -66,20 +66,13 @@ namespace Syntropy
     // Swap.
     // =====
 
-    template <typename TType>
+    template <typename TType, typename>
     constexpr void Swap(TType& lhs, TType& rhs) noexcept
     {
-        if constexpr (Templates::HasMemberSwap<TType>)
-        {
-            lhs.Swap(rhs);
-        }
-        else
-        {
-            auto xhs = Move(lhs);
+        auto xhs = Move(lhs);
 
-            lhs = Move(rhs);
-            rhs = Move(xhs);
-        }
+        lhs = Move(rhs);
+        rhs = Move(xhs);
     }
 
     // Ignore.
