@@ -8,7 +8,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Functional
 {
     /************************************************************************/
     /* FORWARD DECLARATIONS                                                 */
@@ -20,7 +20,7 @@ namespace Syntropy::Templates
 
 // ===========================================================================
 
-namespace Syntropy::Templates::Details
+namespace Syntropy::Functional::Details
 {
     /************************************************************************/
     /* LOCKSTEP                                                             */
@@ -30,7 +30,7 @@ namespace Syntropy::Templates::Details
     // ==============
 
     template <typename TFunction, typename... TTuples, Int... VIndexes>
-    constexpr void ApplyLockstep(Sequence<VIndexes...>, TFunction&& function, TTuples&&... tuples) noexcept
+    constexpr void ApplyLockstep(Templates::Sequence<VIndexes...>, TFunction&& function, TTuples&&... tuples) noexcept
     {
         (ApplyAt<VIndexes>(Forward<TFunction>(function), Forward<TTuples>(tuples)...), ...);
     }

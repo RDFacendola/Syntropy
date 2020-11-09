@@ -15,10 +15,10 @@
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Functional
 {
     /************************************************************************/
-    /* LOCKSTEP                                                             */
+    /* FUNCTIONAL                                                           */
     /************************************************************************/
 
     /// \brief Apply a function passing the VIndex-th element of each tuple-like object as function arguments.
@@ -34,14 +34,14 @@ namespace Syntropy::Templates
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Functional
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Lockstep.
-    // =========
+    // Functional.
+    // ==========
 
     template <Int VIndex, typename TFunction, typename... TTuples>
     constexpr decltype(auto) ApplyAt(TFunction&& function, TTuples&&... tuples) noexcept
@@ -52,9 +52,9 @@ namespace Syntropy::Templates
     template <typename TFunction, typename TTuple, typename... TTuples>
     constexpr void ApplyLockstep(TFunction&& function, TTuple&& tuple, TTuples&&... tuples) noexcept
     {
-        static_assert(SameRank<Decay<TTuple>, Decay<TTuples>...>, "Tuples must have the same rank.");
+        static_assert(Templates::SameRank<Templates::Decay<TTuple>, Templates::Decay<TTuples>...>, "Tuples must have the same rank.");
 
-        using TSequence = MakeSequence<Rank<Decay<TTuple>>>;
+        using TSequence = Templates::MakeSequence<Templates::Rank<Templates::Decay<TTuple>>>;
 
         Details::ApplyLockstep(TSequence{}, Forward<TFunction>(function), Forward<TTuple>(tuple), Forward<TTuples>(tuples)...);
     }

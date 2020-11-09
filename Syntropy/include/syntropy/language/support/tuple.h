@@ -274,7 +274,7 @@ namespace Syntropy
     template <typename TSelf, typename TSelfList, Details::EnableIfTupleCopyAssignment<TSelfList>>
     constexpr TupleT<TType, TTypes...>& TupleT<TType, TTypes...>::operator=(Templates::Identity<const TSelf&> rhs) noexcept
     {
-        Templates::ApplyLockstep([&rhs](auto& lhs_element, const auto& rhs_element){ lhs_element = rhs_element; }, *this, rhs);
+        Functional::ApplyLockstep([&rhs](auto& lhs_element, const auto& rhs_element){ lhs_element = rhs_element; }, *this, rhs);
 
         return *this;
     }
@@ -283,7 +283,7 @@ namespace Syntropy
     template <typename TSelf, typename TSelfList, Details::EnableIfTupleMoveAssignment<TSelfList>>
     constexpr TupleT<TType, TTypes...>& TupleT<TType, TTypes...>::operator=(Templates::Identity<TSelf&&> rhs) noexcept
     {
-        Templates::ApplyLockstep([&rhs](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
+        Functional::ApplyLockstep([&rhs](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
 
         return *this;
     }
@@ -292,7 +292,7 @@ namespace Syntropy
     template <typename... UTypes, typename TSelfList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, Templates::TypeList<UTypes...>>>
     constexpr TupleT<TType, TTypes...>& TupleT<TType, TTypes...>::operator=(const TupleT<UTypes...>& rhs) noexcept
     {
-        Templates::ApplyLockstep([&rhs](auto& lhs_element, const auto& rhs_element) { lhs_element = rhs_element; }, *this, rhs);
+        Functional::ApplyLockstep([&rhs](auto& lhs_element, const auto& rhs_element) { lhs_element = rhs_element; }, *this, rhs);
 
         return *this;
     }
@@ -301,7 +301,7 @@ namespace Syntropy
     template <typename... UTypes, typename TSelfList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Templates::TypeList<UTypes...>>>
     constexpr TupleT<TType, TTypes...>& TupleT<TType, TTypes...>::operator=(TupleT<UTypes...>&& rhs) noexcept
     {
-        Templates::ApplyLockstep([&rhs](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
+        Functional::ApplyLockstep([&rhs](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
 
         return *this;
     }
@@ -330,7 +330,7 @@ namespace Syntropy
     {
         auto result = true;
 
-        Templates::ApplyLockstep([&result](const auto& lhs_element, const auto& rhs_element)
+        Functional::ApplyLockstep([&result](const auto& lhs_element, const auto& rhs_element)
         {
             result &= (lhs_element == rhs_element);
         }, lhs, rhs);
