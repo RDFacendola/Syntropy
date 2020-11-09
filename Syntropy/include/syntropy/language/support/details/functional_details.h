@@ -15,7 +15,7 @@ namespace Syntropy::Functional
     /************************************************************************/
 
     template <Int VIndex, typename TFunction, typename... TTuples>
-    constexpr decltype(auto) ApplyAt(TFunction&& function, TTuples&&... tuples) noexcept;
+    constexpr decltype(auto) SliceApply(TFunction&& function, TTuples&&... tuples) noexcept;
 }
 
 // ===========================================================================
@@ -26,13 +26,13 @@ namespace Syntropy::Functional::Details
     /* LOCKSTEP                                                             */
     /************************************************************************/
 
-    // ApplyLockstep.
+    // LockstepApply.
     // ==============
 
     template <typename TFunction, typename... TTuples, Int... VIndexes>
-    constexpr void ApplyLockstep(Templates::Sequence<VIndexes...>, TFunction&& function, TTuples&&... tuples) noexcept
+    constexpr void LockstepApply(Templates::Sequence<VIndexes...>, TFunction&& function, TTuples&&... tuples) noexcept
     {
-        (ApplyAt<VIndexes>(Forward<TFunction>(function), Forward<TTuples>(tuples)...), ...);
+        (SliceApply<VIndexes>(Forward<TFunction>(function), Forward<TTuples>(tuples)...), ...);
     }
 }
 
