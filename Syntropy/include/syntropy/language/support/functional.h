@@ -11,7 +11,7 @@
 #include "syntropy/language/templates/traits.h"
 #include "syntropy/language/templates/sequence.h"
 
-#include "syntropy/language/templates/details/functional_details.h"
+#include "syntropy/language/support/details/functional_details.h"
 
 // ===========================================================================
 

@@ -18,10 +18,10 @@
     <ClInclude Include="include\syntropy\core\algorithm\predicates.h" />
     <ClInclude Include="include\syntropy\language\support\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\language\support\tuple.h" />
-    <ClInclude Include="include\syntropy\language\templates\details\functional_details.h" />
+    <ClInclude Include="include\syntropy\language\support\details\functional_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\ratio_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\traits_details.h" />
-    <ClInclude Include="include\syntropy\language\templates\functional.h" />
+    <ClInclude Include="include\syntropy\language\support\functional.h" />
     <ClInclude Include="include\syntropy\language\templates\ratio.h" />
     <ClInclude Include="include\syntropy\language\templates\details\math_details.h" />
     <ClInclude Include="include\syntropy\language\support\explicit.h" />

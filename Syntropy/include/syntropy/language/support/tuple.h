@@ -7,7 +7,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/traits.h"
-#include "syntropy/language/templates/functional.h"
+#include "syntropy/language/support/functional.h"
 
 #include "syntropy/language/support/details/tuple_details.h"
 

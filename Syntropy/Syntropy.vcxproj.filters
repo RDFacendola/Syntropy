@@ -126,8 +126,6 @@
     <ClInclude Include="include\syntropy\memory\byte.h" />
     <ClInclude Include="include\syntropy\experimental\memory\smart_pointers.h" />
     <ClInclude Include="include\syntropy\core\foundation\span.h" />
-    <ClInclude Include="include\syntropy\language\templates\functional.h" />
-    <ClInclude Include="include\syntropy\language\templates\details\functional_details.h" />
     <ClInclude Include="include\syntropy\language\templates\sequence.h" />
     <ClInclude Include="include\syntropy\language\templates\details\sequence_details.h" />
     <ClInclude Include="include\syntropy\language\templates\traits.h" />
@@ -137,6 +135,8 @@
     <ClInclude Include="include\syntropy\language\support\support.h" />
     <ClInclude Include="include\syntropy\language\support\tuple.h" />
     <ClInclude Include="include\syntropy\language\support\details\tuple_details.h" />
+    <ClInclude Include="include\syntropy\language\support\functional.h" />
+    <ClInclude Include="include\syntropy\language\support\details\functional_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
