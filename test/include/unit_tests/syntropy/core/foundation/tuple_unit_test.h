@@ -8,7 +8,8 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/traits.h"
-#include "syntropy/language/support/tuple.h"
+
+#include "syntropy/core/foundation/tuple.h"
 
 #include "syntropy/unit_test/unit_test.h"
 
@@ -145,7 +146,7 @@ namespace Syntropy::UnitTest
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline const auto& alignment_unit_test = MakeAutoUnitTest<TupleTestFixture>("tuple.experimental.foundation.core.syntropy")
+    inline const auto& kTupleUnitTest = MakeAutoUnitTest<TupleTestFixture>("tuple.foundation.core.syntropy")
 
     .TestCase("Empty tuples are always implicitly-default-constructible.", [](auto& fixture)
     {

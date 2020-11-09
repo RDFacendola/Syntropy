@@ -132,11 +132,11 @@
     <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\preprocessor.h" />
     <ClInclude Include="include\syntropy\language\support\support.h" />
-    <ClInclude Include="include\syntropy\language\support\tuple.h" />
-    <ClInclude Include="include\syntropy\language\support\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\language\support\functional.h" />
     <ClInclude Include="include\syntropy\language\support\details\functional_details.h" />
     <ClInclude Include="include\syntropy\language\support\scope_guard.h" />
+    <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
+    <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
