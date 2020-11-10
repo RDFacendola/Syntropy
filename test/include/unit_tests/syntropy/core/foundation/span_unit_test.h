@@ -43,52 +43,42 @@ namespace Syntropy::UnitTest
 
     .TestCase("Default-constructed spans are empty.", [](auto& fixture)
     {
-        auto empty = SpanT<Int>{};
-
-        SYNTROPY_UNIT_EQUAL(!empty, true);
-        SYNTROPY_UNIT_EQUAL(empty.GetCount(), 0);
-        SYNTROPY_UNIT_EQUAL(empty.GetData(), nullptr);
-        SYNTROPY_UNIT_EQUAL(IsEmpty(empty), true);
-        SYNTROPY_UNIT_EQUAL(Count(empty), 0);
+        SYNTROPY_UNIT_EQUAL(!(SpanT<Int>{}), true);
+        SYNTROPY_UNIT_EQUAL((SpanT<Int>{}).GetCount(), 0);
+        SYNTROPY_UNIT_EQUAL((SpanT<Int>{}).GetData(), nullptr);
+        SYNTROPY_UNIT_EQUAL(IsEmpty((SpanT<Int>{})), true);
+        SYNTROPY_UNIT_EQUAL(Count((SpanT<Int>{})), 0);
     })
 
     .TestCase("Spans with zero elements are empty.", [](auto& fixture)
     {
-        auto empty = SpanT<Int>{&fixture.ints_[0], 0};
-
-        SYNTROPY_UNIT_EQUAL(!empty, true);
-        SYNTROPY_UNIT_EQUAL(empty.GetData(), nullptr);
+        SYNTROPY_UNIT_EQUAL(!(SpanT<Int>{&fixture.ints_[0], 0}), true);
+        SYNTROPY_UNIT_EQUAL((SpanT<Int>{&fixture.ints_[0], 0}).GetData(), nullptr);
     })
 
     .TestCase("Spans constructed by a pair of equal iterators are empty.", [](auto& fixture)
     {
-        auto empty = SpanT<Int>{ &fixture.ints_[0], &fixture.ints_[0] };
-
-        SYNTROPY_UNIT_EQUAL(!empty, true);
-        SYNTROPY_UNIT_EQUAL(empty.GetData(), nullptr);
+        SYNTROPY_UNIT_EQUAL(!(SpanT<Int>{ &fixture.ints_[0], & fixture.ints_[0] }), true);
+        SYNTROPY_UNIT_EQUAL((SpanT<Int>{ &fixture.ints_[0], & fixture.ints_[0] }).GetData(), nullptr);
     })
 
     .TestCase("Spans constructed from an iterator and a non-zero number of elements are non-empty.", [](auto& fixture)
     {
-        auto span0_10 = SpanT<Int>{ &fixture.ints_[0], 10 };
-
-        SYNTROPY_UNIT_EQUAL(span0_10, true);
-        SYNTROPY_UNIT_EQUAL(span0_10.GetCount(), 10);
-        SYNTROPY_UNIT_EQUAL(span0_10.GetData(), &fixture.ints_[0]);
+        SYNTROPY_UNIT_EQUAL((SpanT<Int>{ &fixture.ints_[0], 10 }), true);
+        SYNTROPY_UNIT_EQUAL((SpanT<Int>{ &fixture.ints_[0], 10 }).GetCount(), 10);
+        SYNTROPY_UNIT_EQUAL((SpanT<Int>{ &fixture.ints_[0], 10 }).GetData(), &fixture.ints_[0]);
     })
 
     .TestCase("Spans constructed from a pair of non-equal iterators are non-empty.", [](auto& fixture)
     {
-        auto span0_10 = SpanT<Int>{ &fixture.ints_[0], &fixture.ints_[0] + 10 };
-
-        SYNTROPY_UNIT_EQUAL(!!span0_10, true);
-        SYNTROPY_UNIT_EQUAL(span0_10.GetCount(), 10);
-        SYNTROPY_UNIT_EQUAL(span0_10.GetData(), &fixture.ints_[0]);
+        SYNTROPY_UNIT_EQUAL(!!(SpanT<Int>{ &fixture.ints_[0], & fixture.ints_[0] + 10 }), true);
+        SYNTROPY_UNIT_EQUAL((SpanT<Int>{ &fixture.ints_[0], & fixture.ints_[0] + 10 }).GetCount(), 10);
+        SYNTROPY_UNIT_EQUAL((SpanT<Int>{ &fixture.ints_[0], & fixture.ints_[0] + 10 }).GetData(), &fixture.ints_[0]);
     })
 
     .TestCase("Copy-constructed spans are identical.", [](auto& fixture)
     {
-        auto span0_10 = SpanT<Int>{ &fixture.ints_[0], 10 };
+        auto span0_10 = (SpanT<Int>{ &fixture.ints_[0], 10 });
         auto span_copy = SpanT<Int>(span0_10);
 
         SYNTROPY_UNIT_EQUAL(span0_10, span_copy);
@@ -112,9 +102,7 @@ namespace Syntropy::UnitTest
 
     .TestCase("Spans provide read-only access to elements.", [](auto& fixture)
     {
-        auto span0_10 = SpanT<Int>{ &fixture.ints_[0], 10 };
-
-        SYNTROPY_UNIT_EQUAL(span0_10[5], 5);
+        SYNTROPY_UNIT_EQUAL((SpanT<Int>{ &fixture.ints_[0], 10 })[5], 5);
     })
 
     .TestCase("Read-write spans provide read-write access to elements.", [](auto& fixture)
