@@ -100,23 +100,12 @@
     <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
     <ClInclude Include="include\syntropy\language\support\explicit.h" />
-    <ClInclude Include="include\syntropy\core\algorithm\predicates.h" />
-    <ClInclude Include="include\syntropy\core\data_structures\fix_array.h" />
-    <ClInclude Include="include\syntropy\core\data_structures\map.h" />
-    <ClInclude Include="include\syntropy\core\data_structures\vector.h" />
-    <ClInclude Include="include\syntropy\core\data_structures\stream_vector.h" />
-    <ClInclude Include="include\syntropy\core\data_structures\stream_vector_view.h" />
-    <ClInclude Include="include\syntropy\core\data_structures\vector_view.h" />
-    <ClInclude Include="include\syntropy\core\algorithm\algorithm.h" />
     <ClInclude Include="include\syntropy\core\strings\string.h" />
     <ClInclude Include="include\syntropy\core\strings\label.h" />
     <ClInclude Include="include\syntropy\core\strings\context.h" />
     <ClInclude Include="include\syntropy\experimental\core\memory.h" />
     <ClInclude Include="include\syntropy\serialization\string_stream.h" />
     <ClInclude Include="include\syntropy\serialization\hashing\hash.h" />
-    <ClInclude Include="include\syntropy\core\architecture\event.h" />
-    <ClInclude Include="include\syntropy\core\architecture\listener.h" />
-    <ClInclude Include="include\syntropy\core\architecture\visitor.h" />
     <ClInclude Include="include\syntropy\language\templates\math.h" />
     <ClInclude Include="include\syntropy\memory\details\bytes_details.h" />
     <ClInclude Include="include\syntropy\language\templates\ratio.h" />
@@ -137,6 +126,17 @@
     <ClInclude Include="include\syntropy\language\support\scope_guard.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
+    <ClInclude Include="include\syntropy\core\containers\fix_array.h" />
+    <ClInclude Include="include\syntropy\core\containers\map.h" />
+    <ClInclude Include="include\syntropy\core\containers\stream_vector.h" />
+    <ClInclude Include="include\syntropy\core\containers\stream_vector_view.h" />
+    <ClInclude Include="include\syntropy\core\containers\vector.h" />
+    <ClInclude Include="include\syntropy\core\containers\vector_view.h" />
+    <ClInclude Include="include\syntropy\core\patterns\event.h" />
+    <ClInclude Include="include\syntropy\core\patterns\listener.h" />
+    <ClInclude Include="include\syntropy\core\patterns\visitor.h" />
+    <ClInclude Include="include\syntropy\core\algorithms\predicates.h" />
+    <ClInclude Include="include\syntropy\deprecated\core\algorithms\algorithm.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
@@ -166,7 +166,7 @@
     <ClCompile Include="src\syntropy\virtual_memory\virtual_memory.cpp" />
     <ClCompile Include="src\syntropy\core\strings\context.cpp" />
     <ClCompile Include="src\syntropy\core\strings\label.cpp" />
-    <ClCompile Include="src\syntropy\core\architecture\listener.cpp" />
+    <ClCompile Include="src\syntropy\core\patterns\listener.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />

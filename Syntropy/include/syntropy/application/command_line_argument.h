@@ -10,7 +10,7 @@
 #include "syntropy/core/strings/string.h"
 #include "syntropy/core/strings/label.h"
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/core/data_structures/vector.h"
+#include "syntropy/core/containers/vector.h"
 
 namespace Syntropy
 {

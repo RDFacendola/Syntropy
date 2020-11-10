@@ -143,9 +143,7 @@ namespace Syntropy
 
     inline void VirtualBuffer::Swap(VirtualBuffer& rhs) noexcept
     {
-        using Algorithm::Swap;
-
-        Swap(buffer_, rhs.buffer_);
+        Syntropy::Swap(buffer_, rhs.buffer_);
     }
 
     inline Memory::ByteSpan VirtualBuffer::GetData() const noexcept

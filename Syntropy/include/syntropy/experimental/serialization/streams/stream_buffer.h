@@ -9,8 +9,9 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/support/support.h"
 
+#include "syntropy/deprecated/core/algorithms/algorithm.h"
+
 #include "syntropy/experimental/memory/smart_pointers.h"
-#include "syntropy/core/algorithm/algorithm.h"
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/byte_span.h"

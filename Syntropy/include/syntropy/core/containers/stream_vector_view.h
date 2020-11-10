@@ -11,7 +11,7 @@
 #include <algorithm>
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/core/data_structures/vector.h"
+#include "syntropy/core/containers/vector.h"
 #include "syntropy/core/stream_vector.h"
 #include "syntropy/core/vector_view.h"
 #include "syntropy/language/templates/traits.h"

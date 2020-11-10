@@ -6,11 +6,12 @@
 
 #pragma once
 
+#include "syntropy/deprecated/core/algorithms/algorithm.h"
+
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/strings/string.h"
 #include "syntropy/serialization/string_stream.h"
 #include "syntropy/memory/memory.h"
-#include "syntropy/core/algorithm/algorithm.h"
 
 #include "syntropy/math/math.h"
 

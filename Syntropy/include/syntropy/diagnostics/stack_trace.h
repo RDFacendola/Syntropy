@@ -10,7 +10,7 @@
 #include "syntropy/language/support/support.h"
 
 #include "syntropy/core/strings/string.h"
-#include "syntropy/core/data_structures/vector.h"
+#include "syntropy/core/containers/vector.h"
 #include "syntropy/language/preprocessor/preprocessor.h"
 
 namespace Syntropy

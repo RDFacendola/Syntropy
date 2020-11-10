@@ -7,7 +7,7 @@
 
 #include <thread>
 
-#include "syntropy/core/data_structures/vector.h"
+#include "syntropy/core/containers/vector.h"
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/platform/threading.h"
 

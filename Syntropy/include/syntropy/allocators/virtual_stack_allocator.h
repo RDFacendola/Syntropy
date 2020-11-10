@@ -7,6 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/support/support.h"
 
 #include "syntropy/memory/bytes.h"
 #include "syntropy/memory/alignment.h"
@@ -170,11 +171,9 @@ namespace Syntropy
 
     inline void VirtualStackAllocator::Swap(VirtualStackAllocator& rhs) noexcept
     {
-        using Algorithm::Swap;
-
-        Swap(virtual_span_, rhs.virtual_span_);
-        Swap(unallocated_span_, rhs.unallocated_span_);
-        Swap(uncommitted_span_, rhs.uncommitted_span_);
+        Syntropy::Swap(virtual_span_, rhs.virtual_span_);
+        Syntropy::Swap(unallocated_span_, rhs.unallocated_span_);
+        Syntropy::Swap(uncommitted_span_, rhs.uncommitted_span_);
     }
 
     inline VirtualStackAllocator::TCheckpoint VirtualStackAllocator::Checkpoint() const noexcept

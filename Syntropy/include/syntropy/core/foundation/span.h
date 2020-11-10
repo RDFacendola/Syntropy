@@ -20,7 +20,7 @@
 namespace Syntropy
 {
     /************************************************************************/
-    /* SPAN <ELEMENT>                                                       */
+    /* SPAN                                                                 */
     /************************************************************************/
 
     /// \brief Represents a contiguous, non-owning, range of elements.

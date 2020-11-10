@@ -5,7 +5,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/core/data_structures/fix_array.h"
+#include "syntropy/core/containers/fix_array.h"
 #include "syntropy/core/foundation/span.h"
 
 #include "syntropy/unit_test/unit_test.h"

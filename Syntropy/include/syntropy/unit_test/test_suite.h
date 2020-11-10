@@ -8,7 +8,7 @@
 
 #include "syntropy/core/strings/context.h"
 #include "syntropy/core/strings/label.h"
-#include "syntropy/core/architecture/event.h"
+#include "syntropy/core/patterns/event.h"
 
 #include "syntropy/unit_test/test_case.h"
 #include "syntropy/unit_test/auto_test_case.h"

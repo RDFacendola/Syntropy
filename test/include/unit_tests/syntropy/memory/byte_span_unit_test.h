@@ -6,7 +6,7 @@
 
 #include "syntropy/serialization/serialization_types.h"
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/core/data_structures/fix_array.h"
+#include "syntropy/core/containers/fix_array.h"
 #include "syntropy/memory/byte.h"
 #include "syntropy/memory/byte_span.h"
 #include "syntropy/memory/bytes.h"

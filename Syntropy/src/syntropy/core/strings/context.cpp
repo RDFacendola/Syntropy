@@ -2,7 +2,7 @@
 
 #include <tuple>
 
-#include "syntropy/core/data_structures/map.h"
+#include "syntropy/core/containers/map.h"
 
 #include "syntropy/allocators/virtual_stack_allocator.h"
 #include "syntropy/allocators/fallback_allocator.h"
