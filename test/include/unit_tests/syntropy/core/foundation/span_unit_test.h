@@ -696,6 +696,17 @@ namespace Syntropy::UnitTest
         auto empty = SpanT<Int>{};
 
         SYNTROPY_UNIT_EQUAL(Find(empty, span0_10), empty);
+    })
+
+    .TestCase("Swapping two spans makes the first refer to the second's elements and vice-versa.", [](auto& fixture)
+    {
+        auto span0_4 = SpanT<Int>{ &fixture.ints_[0], 5 };
+        auto span5_8 = SpanT<Int>{ &fixture.ints_[5], 4 };
+
+        Swap(span0_4, span5_8);
+
+        SYNTROPY_UNIT_EQUAL(span0_4, (SpanT<Int>{ &fixture.ints_[5], 4 }));
+        SYNTROPY_UNIT_EQUAL(span5_8, (SpanT<Int>{ &fixture.ints_[0], 5 }));
     });
 
     /************************************************************************/
