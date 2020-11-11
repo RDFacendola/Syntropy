@@ -16,5 +16,6 @@
     <ClInclude Include="include\unit_tests\syntropy\core\foundation\tuple_unit_test.h" />
     <ClInclude Include="include\unit_tests\syntropy\language\templates\sequences_unit_test.h" />
     <ClInclude Include="include\unit_tests\syntropy\core\foundation\range_unit_test.h" />
+    <ClInclude Include="include\unit_tests\syntropy\core\algorithm\search_unit_test.h" />
   </ItemGroup>
 </Project>

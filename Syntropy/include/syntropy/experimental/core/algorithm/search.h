@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/core/foundation/range.h"
+#include "syntropy/experimental/core/foundation/range.h"
 
 // ===========================================================================
 

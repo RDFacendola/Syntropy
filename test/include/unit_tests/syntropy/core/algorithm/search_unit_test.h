@@ -14,14 +14,14 @@
 
 // ===========================================================================
 
-namespace Syntropy::UnitTest
+namespace Syntropy::Algorithm::UnitTest
 {
     /************************************************************************/
-    /* RANGE TEST FIXTURE                                                   */
+    /* SEARCH TEST FIXTURE                                                  */
     /************************************************************************/
 
-    /// \brief Span test fixture.
-    struct RangeTestFixture
+    /// \brief Search test fixture.
+    struct SearchTestFixture
     {
         /// \brief Integer sequence.
         FixArray<Int, 10> ints_ = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -40,37 +40,20 @@ namespace Syntropy::UnitTest
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline const auto& range_unit_test = MakeAutoUnitTest<RangeTestFixture>("range.foundation.core.syntropy")
+    inline const auto& search_unit_test = MakeAutoUnitTest<RangeTestFixture>("search.algorithm.core.syntropy")
 
-    .TestCase("Iterating an empty range calls the provided function exactly 0 times.", [](auto& fixture)
+    .TestCase("???", [](auto& fixture)
     {
-        Algorithm::ForEach(fixture.empty_span_, [](Int)
-        {
-            SYNTROPY_UNIT_EQUAL(true, false);
-        });
-    })
 
-    .TestCase("Iterating a range visits each element in the same order specified by the range.", [](auto& fixture)
-    {
-        auto index = ToInt(0);
-
-        Algorithm::ForEach(fixture.ints_span_, [&index](Int element)
-        {
-            SYNTROPY_UNIT_EQUAL(element, index);
-
-            ++index;
-        });
-
-        SYNTROPY_UNIT_EQUAL(index, 10);
     });
 
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // SpanTestFixture.
+    // SearchTestFixture.
 
-    inline void RangeTestFixture::Before()
+    inline void SearchTestFixture::Before()
     {
         ints_span_ = { &ints_[0], 10 };
         empty_span_ = {};
