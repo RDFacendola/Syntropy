@@ -135,8 +135,11 @@
     <ClInclude Include="include\syntropy\core\patterns\event.h" />
     <ClInclude Include="include\syntropy\core\patterns\listener.h" />
     <ClInclude Include="include\syntropy\core\patterns\visitor.h" />
-    <ClInclude Include="include\syntropy\core\algorithms\predicates.h" />
     <ClInclude Include="include\syntropy\deprecated\core\algorithms\algorithm.h" />
+    <ClInclude Include="include\syntropy\core\algorithms\quantifiers.h" />
+    <ClInclude Include="include\syntropy\core\algorithms\counting.h" />
+    <ClInclude Include="include\syntropy\core\algorithms\searching.h" />
+    <ClInclude Include="include\syntropy\core\foundation\range.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
