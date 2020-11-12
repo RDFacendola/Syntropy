@@ -55,7 +55,7 @@ namespace Syntropy::Algorithm
     {
         auto result = range;
 
-        for (; result && (Front(result) != element); result = PopFront(result));
+        for (; !IsEmpty(result) && (Front(result) != element); result = PopFront(result));
 
         return result;
     }
@@ -65,7 +65,7 @@ namespace Syntropy::Algorithm
     {
         auto result = range;
 
-        for (; result && !predicate(ReadOnly(Front(result))); result = PopFront(result));
+        for (; !IsEmpty(result) && !predicate(ReadOnly(Front(result))); result = PopFront(result));
 
         return result;
     }

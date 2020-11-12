@@ -44,9 +44,24 @@ namespace Syntropy::Algorithm::UnitTest
 
     inline const auto& search_unit_test = MakeAutoUnitTest<SearchTestFixture>("search.algorithm.core.syntropy")
 
-    .TestCase("???", [](auto& fixture)
+    .TestCase("Searching a range for a value returns a range starting with that value and the remaining ones.", [](auto& fixture)
     {
+        SYNTROPY_UNIT_EQUAL(Algorithm::Find(fixture.ints_span_, 4), (SpanT<Int>{ &fixture.ints_[4], 6}));
+    })
 
+    .TestCase("Searching a range for a non-existent value returns an empty range.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithm::Find(fixture.ints_span_, 11)), true);
+    })
+
+    .TestCase("Reverse-searching a range for a value returns a range ending with that value and all elements prior to that.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL(Algorithm::FindReverse(fixture.ints_span_, 4), (SpanT<Int>{ &fixture.ints_[0], 5}));
+    })
+
+    .TestCase("Searching a reverse range for a non-existent value returns an empty range.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithm::FindReverse(fixture.ints_span_, 11)), true);
     });
 
     /************************************************************************/
