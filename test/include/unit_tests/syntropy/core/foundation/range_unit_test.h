@@ -84,6 +84,20 @@ namespace Syntropy::UnitTest
         });
 
         SYNTROPY_UNIT_EQUAL(index, -1);
+    })
+
+    .TestCase("Reversing a range twice returns the original range.", [](auto& fixture)
+    {
+        auto index = ToInt(0);
+
+        ForEach(Reverse(Reverse(fixture.ints_span_)), [&index](Int element)
+        {
+            SYNTROPY_UNIT_EQUAL(element, index);
+
+            ++index;
+        });
+
+        SYNTROPY_UNIT_EQUAL(index, 10);
     });
 
     /************************************************************************/

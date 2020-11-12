@@ -80,6 +80,9 @@ namespace Syntropy
         template <Concepts::BidirectionalRangeT TRange>
         friend constexpr ReverseRange<TRange> PopBack(const ReverseRange<TRange>& range, Int count) noexcept;
 
+        template <Concepts::BidirectionalRangeT TRange>
+        friend constexpr TRange Reverse(const ReverseRange<TRange>& range) noexcept;
+
     public:
 
         /// \brief Create a new reverse range.
@@ -123,6 +126,10 @@ namespace Syntropy
     /// \brief Reverse a bidirectional range.
     template <Concepts::BidirectionalRangeT TRange>
     constexpr ReverseRange<TRange> Reverse(const TRange& range) noexcept;
+
+    /// \brief Reverse a reversed range.
+    template <Concepts::BidirectionalRangeT TRange>
+    constexpr TRange Reverse(const ReverseRange<TRange>& range) noexcept;
 
     /// \brief Apply a function to each element in the range.
     template <Concepts::RangeT TRange, typename TFunction>
@@ -185,6 +192,12 @@ namespace Syntropy
     constexpr ReverseRange<TRange> Reverse(const TRange& range) noexcept
     {
         return range;
+    }
+
+    template <Concepts::BidirectionalRangeT TRange>
+    constexpr TRange Reverse(const ReverseRange<TRange>& range) noexcept
+    {
+        return range.range_;
     }
 
     template <Concepts::RangeT TRange, typename TFunction>
