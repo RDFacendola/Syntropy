@@ -22,16 +22,16 @@ namespace Syntropy::Concepts
     template <typename TRange>
     concept RangeT = requires(TRange& range)
     {
-        /// \brief Access the first element in a span.
-        /// \remarks Accessing the first element of an empty span results in undefined behavior.
+        /// \brief Access the first element in a range.
+        /// \remarks Accessing the first element of an empty range results in undefined behavior.
         Front(range);
 
-        /// \brief Discard the first count elements in a span and return the resulting subspan.
-        /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+        /// \brief Discard the first count elements in a range and return the resulting subrange.
+        /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
         PopFront(range);
 
-        /// \brief Check whether a span is empty.
-        /// \return Returns true if the span is empty, returns false otherwise.
+        /// \brief Check whether a range is empty.
+        /// \return Returns true if the range is empty, returns false otherwise.
         IsEmpty(range);
     };
 
@@ -44,12 +44,12 @@ namespace Syntropy::Concepts
     template <typename TRange>
     concept BidirectionalRangeT = RangeT<TRange> && requires(TRange & range)
     {
-        /// \brief Access the last element in a span.
-        /// \remarks Accessing the last element of an empty span results in undefined behavior.
+        /// \brief Access the last element in a range.
+        /// \remarks Accessing the last element of an empty range results in undefined behavior.
         Back(range);
 
-        /// \brief Discard the last count elements in a span and return the resulting subspan.
-        /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+        /// \brief Discard the last count elements in a range and return the resulting subrange.
+        /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
         PopBack(range);
     };
 }
@@ -119,12 +119,12 @@ namespace Syntropy
     constexpr Bool IsEmpty(const ReverseRange<TRange>& range) noexcept;
 
     /// \brief Access the first element in a range.
-    /// \remarks Accessing the first element of an empty span results in undefined behavior.
+    /// \remarks Accessing the first element of an empty range results in undefined behavior.
     template <Concepts::BidirectionalRangeT TRange>
     constexpr Traits::RangeElement<TRange>& Front(const ReverseRange<TRange>& range) noexcept;
 
-    /// \brief Access the last element in a span.
-    /// \remarks Accessing the last element of an empty span results in undefined behavior.
+    /// \brief Access the last element in a range.
+    /// \remarks Accessing the last element of an empty range results in undefined behavior.
     template <Concepts::BidirectionalRangeT TRange>
     constexpr Traits::RangeElement<TRange>& Back(const ReverseRange<TRange>& range) noexcept;
 
@@ -133,8 +133,8 @@ namespace Syntropy
     template <Concepts::BidirectionalRangeT TRange>
     constexpr ReverseRange<TRange> PopFront(const ReverseRange<TRange>& range, Int count = 1) noexcept;
 
-    /// \brief Discard the last count elements in a span and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+    /// \brief Discard the last count elements in a range and return the resulting subrange.
+    /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
     template <Concepts::BidirectionalRangeT TRange>
     constexpr ReverseRange<TRange> PopBack(const ReverseRange<TRange>& range, Int count = 1) noexcept;
 
