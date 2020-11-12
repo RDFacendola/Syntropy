@@ -11,21 +11,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Traits
-{
-    /************************************************************************/
-    /* TRAITS                                                               */
-    /************************************************************************/
-
-    /// \brief Type of a range element.
-    template <typename TRange>
-    using RangeElement = decltype(Front(Declval<TRange>()));
-
-}
-
-// ===========================================================================
-
-namespace Syntropy::Algorithm
+namespace Syntropy
 {
     /************************************************************************/
     /* RANGE                                                                */
@@ -37,9 +23,20 @@ namespace Syntropy::Algorithm
 
 }
 
+namespace Syntropy::Traits
+{
+    /************************************************************************/
+    /* TRAITS                                                               */
+    /************************************************************************/
+
+    /// \brief Type of a range element.
+    template <typename TRange>
+    using RangeElement = decltype(Front(Declval<TRange>()));
+}
+
 // ===========================================================================
 
-namespace Syntropy::Algorithm
+namespace Syntropy
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */

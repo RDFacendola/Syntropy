@@ -44,7 +44,7 @@ namespace Syntropy::UnitTest
 
     .TestCase("Iterating an empty range calls the provided function exactly 0 times.", [](auto& fixture)
     {
-        Algorithm::ForEach(fixture.empty_span_, [](Int)
+        ForEach(fixture.empty_span_, [](Int)
         {
             SYNTROPY_UNIT_EQUAL(true, false);
         });
@@ -54,7 +54,7 @@ namespace Syntropy::UnitTest
     {
         auto index = ToInt(0);
 
-        Algorithm::ForEach(fixture.ints_span_, [&index](Int element)
+        ForEach(fixture.ints_span_, [&index](Int element)
         {
             SYNTROPY_UNIT_EQUAL(element, index);
 
