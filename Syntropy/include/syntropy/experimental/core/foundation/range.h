@@ -22,8 +22,16 @@ namespace Syntropy::Concepts
     template <typename TRange>
     concept RangeT = requires(TRange& range)
     {
+        /// \brief Access the first element in a span.
+        /// \remarks Accessing the first element of an empty span results in undefined behavior.
         Front(range);
+
+        /// \brief Discard the first count elements in a span and return the resulting subspan.
+        /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
         PopFront(range);
+
+        /// \brief Check whether a span is empty.
+        /// \return Returns true if the span is empty, returns false otherwise.
         IsEmpty(range);
     };
 
@@ -36,7 +44,12 @@ namespace Syntropy::Concepts
     template <typename TRange>
     concept BidirectionalRangeT = RangeT<TRange> && requires(TRange & range)
     {
+        /// \brief Access the last element in a span.
+        /// \remarks Accessing the last element of an empty span results in undefined behavior.
         Back(range);
+
+        /// \brief Discard the last count elements in a span and return the resulting subspan.
+        /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
         PopBack(range);
     };
 }
@@ -62,6 +75,8 @@ namespace Syntropy
     /* REVERSE RANGE                                                        */
     /************************************************************************/
 
+    /// \brief Adapter class used to reverse a bidirectional range.
+    /// \author Raffaele D. Facendola - November 2020.
     template <Concepts::BidirectionalRangeT TRange>
     class ReverseRange
     {
