@@ -2,6 +2,8 @@
 /// \file ranges.h
 /// \brief This header is part of the Syntropy core module. It contains definitions for ranges and basic ranges functionalities.
 ///
+/// Ranges specifications based on the awesome https://www.slideshare.net/rawwell/iteratorsmustgo
+/// 
 /// \author Raffaele D. Facendola - 2020
 
 #pragma once

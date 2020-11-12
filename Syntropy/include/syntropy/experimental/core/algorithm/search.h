@@ -15,18 +15,28 @@
 namespace Syntropy::Algorithm
 {
     /************************************************************************/
-    /* SEARCHING                                                             */
+    /* FIND                                                                 */
     /************************************************************************/
 
-    /// \brief Reduce range until element becomes the first element in the range or the range is exhausted.
-    /// \return Returns the reduced range starting from the first occurrence of the element in the range or an empty range if no occurrence was found.
-    template <typename TRange, typename TElement>
+    /// \brief Reduce range from the front until element compares equal to the front element in the range or the range is exhausted.
+    /// \return Returns the reduced range starting from the first occurrence of element in the range or an empty range if no occurrence was found.
+    template <Concepts::RangeT TRange, typename TElement>
     constexpr TRange Find(const TRange& range, const TElement& element) noexcept;
 
-    /// \brief Count the number of elements in a range for which a predicate holds true.
-    template <typename TRange, typename TPredicate>
+    /// \brief Reduce range from the front until the predicate holds true for the front element or the range is exhausted.
+    /// \return Returns the reduced range starting from the first occurrence of an element in the range for which predicate holds true or an empty range if no such occurrence was found.
+    template <Concepts::RangeT TRange, typename TPredicate>
     constexpr TRange FindIf(const TRange& range, TPredicate predicate) noexcept;
 
+    /// \brief Reduce range from the back until element compares equal to the rear element in the range or the range is exhausted.
+    /// \return Returns the reduced range ending with the last occurrence of element in the range or an empty range if no such occurrence was found.
+    template <Concepts::BidirectionalRangeT TRange, typename TElement>
+    constexpr TRange FindReverse(const TRange& range, const TElement& element) noexcept;
+
+    /// \brief Reduce range from the back until the predicate holds true for the rear element or the range is exhausted.
+    /// \return Returns the reduced range ending with the last occurrence of an element in the range for which predicate holds true or an empty range if no such occurrence was found.
+    template <Concepts::BidirectionalRangeT TRange, typename TPredicate>
+    constexpr TRange FindIfReverse(const TRange& range, TPredicate&& predicate) noexcept;
 }
 
 // ===========================================================================
@@ -37,7 +47,10 @@ namespace Syntropy::Algorithm
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    template <typename TRange, typename TElement>
+    // Find.
+    // =====
+
+    template <Concepts::RangeT TRange, typename TElement>
     constexpr TRange Find(const TRange& range, const TElement& element) noexcept
     {
         auto result = range;
@@ -47,7 +60,7 @@ namespace Syntropy::Algorithm
         return result;
     }
 
-    template <typename TRange, typename TPredicate>
+    template <Concepts::RangeT TRange, typename TPredicate>
     constexpr TRange FindIf(const TRange& range, TPredicate predicate) noexcept
     {
         auto result = range;
@@ -57,6 +70,17 @@ namespace Syntropy::Algorithm
         return result;
     }
 
+    template <Concepts::BidirectionalRangeT TRange, typename TElement>
+    constexpr TRange FindReverse(const TRange& range, const TElement& element) noexcept
+    {
+        return Reverse(Find(Reverse(range), element));
+    }
+
+    template <Concepts::BidirectionalRangeT TRange, typename TPredicate>
+    constexpr TRange FindIfReverse(const TRange& range, TPredicate&& predicate) noexcept
+    {
+        return Reverse(FindIf(Reverse(range), Forward<TPredicate>(predicate)));
+    }
 }
 
 // ===========================================================================

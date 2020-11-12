@@ -10,6 +10,8 @@
 #include "unit_tests/syntropy/core/foundation/tuple_unit_test.h"
 #include "unit_tests/syntropy/core/foundation/range_unit_test.h"
 
+#include "unit_tests/syntropy/core/algorithm/search_unit_test.h"
+
 #include "unit_tests/syntropy/memory/bytes_unit_test.h"
 #include "unit_tests/syntropy/memory/alignment_unit_test.h"
 #include "unit_tests/syntropy/memory/byte_span_unit_test.h"

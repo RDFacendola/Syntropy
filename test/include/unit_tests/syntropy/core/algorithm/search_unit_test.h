@@ -8,7 +8,9 @@
 
 #include "syntropy/core/containers/fix_array.h"
 #include "syntropy/core/foundation/span.h"
+
 #include "syntropy/experimental/core/foundation/range.h"
+#include "syntropy/experimental/core/algorithm/search.h"
 
 #include "syntropy/unit_test/unit_test.h"
 
@@ -40,7 +42,7 @@ namespace Syntropy::Algorithm::UnitTest
     /* UNIT TEST                                                            */
     /************************************************************************/
 
-    inline const auto& search_unit_test = MakeAutoUnitTest<RangeTestFixture>("search.algorithm.core.syntropy")
+    inline const auto& search_unit_test = MakeAutoUnitTest<SearchTestFixture>("search.algorithm.core.syntropy")
 
     .TestCase("???", [](auto& fixture)
     {
