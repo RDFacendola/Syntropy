@@ -62,6 +62,28 @@ namespace Syntropy::UnitTest
         });
 
         SYNTROPY_UNIT_EQUAL(index, 10);
+    })
+
+    .TestCase("Iterating a reverse empty range calls the provided function exactly 0 times.", [](auto& fixture)
+    {
+        ForEach(Reverse(fixture.empty_span_), [](Int)
+        {
+            SYNTROPY_UNIT_EQUAL(true, false);
+        });
+    })
+
+    .TestCase("Iterating a reversed range visits each element in the reverse order specified by the original range.", [](auto& fixture)
+    {
+        auto index = ToInt(9);
+
+        ForEach(Reverse(fixture.ints_span_), [&index](Int element)
+        {
+            SYNTROPY_UNIT_EQUAL(element, index);
+
+            --index;
+        });
+
+        SYNTROPY_UNIT_EQUAL(index, -1);
     });
 
     /************************************************************************/
