@@ -18,13 +18,13 @@
 namespace Syntropy::Concepts
 {
     /************************************************************************/
-    /* RANGE                                                                */
+    /* FORWARD RANGE                                                        */
     /************************************************************************/
 
-    /// \brief Models a view on a range that can be visited in one direction.
+    /// \brief Models a view on a range that can be visited sequentially.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept RangeT = requires(TRange& range)
+    concept ForwardRangeT = requires(TRange& range)
     {
         /// \brief Access the first element in a range.
         /// \remarks Accessing the first element of an empty range results in undefined behavior.
@@ -46,10 +46,10 @@ namespace Syntropy::Concepts
     /// \brief Models a range whose size can be computed efficiently in constant time.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept SizedRangeT = RangeT<TRange> && requires(TRange & range)
+    concept SizedRangeT = ForwardRangeT<TRange> && requires(TRange & range)
     {
         /// \brief Get the number of elements in the range.
-        { Count(range) } ->Concepts::SameAs<Int>;
+        { Count(range) } -> Concepts::SameAs<Int>;
     };
 
     /************************************************************************/
@@ -59,7 +59,7 @@ namespace Syntropy::Concepts
     /// \brief Models a view on a range that can be visited in both directions.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept BidirectionalRangeT = RangeT<TRange> && requires(TRange & range)
+    concept BidirectionalRangeT = ForwardRangeT<TRange> && requires(TRange & range)
     {
         /// \brief Access the last element in a range.
         /// \remarks Accessing the last element of an empty range results in undefined behavior.
@@ -67,8 +67,36 @@ namespace Syntropy::Concepts
 
         /// \brief Discard the last count elements in a range and return the resulting subrange.
         /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
-        PopBack(range);
+        { PopBack(range) } -> Concepts::ConvertibleTo<TRange>;
     };
+
+    /************************************************************************/
+    /* RANDOM ACCESS RANGE                                                  */
+    /************************************************************************/
+
+    /// \brief Models a view on a range that can be visited in any (random) order.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept RandomAccessRangeT = BidirectionalRangeT<TRange> && requires(TRange& range, Int offset, Int count)
+    {
+        /// \brief Obtain a sub-range given an offset and a number of elements.
+        /// \remarks Exceeding range boundaries results in undefined behavior.
+        { Select(range, offset, count) } -> Concepts::ConvertibleTo<TRange>;
+    };
+
+    /************************************************************************/
+    /* CONTIGUOUS RANGE                                                     */
+    /************************************************************************/
+
+    /// \brief Models a view on a range whose elements are allocated contiguously.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept ContiguousRangeT = RandomAccessRangeT<TRange> && requires(TRange & range)
+    {
+        /// \brief Access raw range data.
+        Data(range);
+    };
+
 }
 
 // ===========================================================================
@@ -80,7 +108,7 @@ namespace Syntropy::Traits
     /************************************************************************/
 
     /// \brief Type of a range element.
-    template <Concepts::RangeT TRange>
+    template <Concepts::ForwardRangeT TRange>
     using RangeElement = decltype(Front(Declval<TRange>()));
 }
 
@@ -164,7 +192,7 @@ namespace Syntropy
     constexpr TRange Reverse(const ReverseRange<TRange>& range) noexcept;
 
     /// \brief Apply a function to each element in the range.
-    template <Concepts::RangeT TRange, typename TFunction>
+    template <Concepts::ForwardRangeT TRange, typename TFunction>
     constexpr void ForEach(const TRange& range, TFunction function) noexcept;
 
 }
@@ -232,7 +260,7 @@ namespace Syntropy
         return range.range_;
     }
 
-    template <Concepts::RangeT TRange, typename TFunction>
+    template <Concepts::ForwardRangeT TRange, typename TFunction>
     constexpr void ForEach(const TRange& range, TFunction function) noexcept
     {
         for (auto rest = range; !IsEmpty(rest); rest = PopFront(rest))
