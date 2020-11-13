@@ -11,6 +11,8 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/support/support.h"
 
+#include "syntropy/experimental/language/concepts/concepts.h"
+
 // ===========================================================================
 
 namespace Syntropy::Concepts
@@ -30,11 +32,11 @@ namespace Syntropy::Concepts
 
         /// \brief Discard the first count elements in a range and return the resulting subrange.
         /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
-        PopFront(range);
+        { PopFront(range) } -> Concepts::SameAs<TRange>;
 
         /// \brief Check whether a range is empty.
         /// \return Returns true if the range is empty, returns false otherwise.
-        IsEmpty(range);
+        { IsEmpty(range) } -> Concepts::SameAs<Bool>;
     };
 
     /************************************************************************/

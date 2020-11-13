@@ -140,6 +140,8 @@
     <ClInclude Include="include\syntropy\experimental\core\algorithm\search.h" />
     <ClInclude Include="include\syntropy\experimental\core\foundation\range.h" />
     <ClInclude Include="include\syntropy\experimental\core\algorithm\count.h" />
+    <ClInclude Include="include\syntropy\experimental\language\concepts\concepts.h" />
+    <ClInclude Include="include\syntropy\experimental\language\concepts\details\concepts_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
