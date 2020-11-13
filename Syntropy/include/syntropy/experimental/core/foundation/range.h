@@ -40,6 +40,19 @@ namespace Syntropy::Concepts
     };
 
     /************************************************************************/
+    /* SIZED RANGE                                                          */
+    /************************************************************************/
+
+    /// \brief Models a range whose size can be computed efficiently in constant time.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept SizedRangeT = RangeT<TRange> && requires(TRange & range)
+    {
+        /// \brief Get the number of elements in the range.
+        { Count(range) } ->Concepts::SameAs<Int>;
+    };
+
+    /************************************************************************/
     /* BIDIRECTIONAL RANGE                                                  */
     /************************************************************************/
 
