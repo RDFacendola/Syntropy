@@ -22,7 +22,10 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept satisfied only if TType is convertible to UType.
     template <typename TType, typename UType>
-    concept ConvertibleTo = Templates::IsConvertible<TType, UType>;
+    concept ConvertibleTo = Templates::IsConvertible<TType, UType> && requires(Templates::AddRValueReference<TType>(&function)())
+    {
+        static_cast<UType>(function());
+    };
 
 }
 

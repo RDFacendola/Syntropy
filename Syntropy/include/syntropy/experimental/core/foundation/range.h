@@ -32,7 +32,7 @@ namespace Syntropy::Concepts
 
         /// \brief Discard the first count elements in a range and return the resulting subrange.
         /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
-        { PopFront(range) } -> Concepts::SameAs<TRange>;
+        { PopFront(range) } -> Concepts::ConvertibleTo<TRange>;
 
         /// \brief Check whether a range is empty.
         /// \return Returns true if the range is empty, returns false otherwise.
