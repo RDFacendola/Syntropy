@@ -10,8 +10,8 @@
 
 #include "syntropy/language/templates/traits.h"
 #include "syntropy/language/foundation/foundation.h"
-
 #include "syntropy/core/foundation/tuple.h"
+#include "syntropy/experimental/core/algorithm/search.h"
 
 #include "syntropy/math/math.h"
 
@@ -235,11 +235,6 @@ namespace Syntropy
     /// \remarks If lhs ends with rhs, return true, otherwise return false.
     template <typename TType, typename UType>
     constexpr Bool EndsWith(const SpanT<TType>& lhs, const SpanT<UType>& rhs) noexcept;
-
-    /// \brief Reduce lhs until rhs becomes the first element in lhs or lhs is exhausted.
-    /// \return Returns the reduced range starting from the first occurrence of rhs in lhs or an empty range if no occurrence was found.
-    template <typename TType, typename UType>
-    constexpr SpanT<TType> Find(const SpanT<TType>& lhs, const UType& rhs) noexcept;
 
     /// \brief Reduce lhs until lhs starts with rhs or lhs is exhausted.
     /// \return Returns the reduced range starting from the first occurrence of rhs in lhs or an empty range if no occurrence was found.
@@ -605,23 +600,13 @@ namespace Syntropy
     }
 
     template <typename TType, typename UType>
-    constexpr SpanT<TType> Find(const SpanT<TType>& lhs, const UType& rhs) noexcept
-    {
-        auto result = lhs;
-
-        for (; result && (Front(result) != rhs); result = PopFront(result));
-
-        return result;
-    }
-
-    template <typename TType, typename UType>
     constexpr SpanT<TType> Find(const SpanT<TType>& lhs, const SpanT<UType>& rhs) noexcept
     {
         if (rhs)
         {
-            auto result = Find(lhs, Front(rhs));
+            auto result = Algorithm::Find(lhs, Front(rhs));
 
-            for (; Count(result) >= Count(rhs); result = Find(PopFront(result), Front(rhs)))
+            for (; Count(result) >= Count(rhs); result = Algorithm::Find(PopFront(result), Front(rhs)))
             {
                 if (StartsWith(result, rhs))
                 {

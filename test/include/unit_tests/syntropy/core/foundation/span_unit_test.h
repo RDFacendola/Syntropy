@@ -7,6 +7,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/containers/fix_array.h"
 #include "syntropy/core/foundation/span.h"
+#include "syntropy/experimental/core/algorithm/search.h"
 
 #include "syntropy/unit_test/unit_test.h"
 
@@ -632,7 +633,7 @@ namespace Syntropy::UnitTest
         auto span0_10 = SpanT<Int>{ &fixture.ints_[0], 10 };
         auto span3_9 = SpanT<Int>{ &fixture.ints_[3], 7 };
 
-        SYNTROPY_UNIT_EQUAL(Find(span0_10, 3), span3_9);
+        SYNTROPY_UNIT_EQUAL(Algorithm::Find(span0_10, 3), span3_9);
     })
 
     .TestCase("Searching a span for an element reduce the first until its front element is implicitly convertible to the provided element.", [](auto& fixture)
@@ -640,7 +641,7 @@ namespace Syntropy::UnitTest
         auto span0_10 = SpanT<Int>{ &fixture.ints_[0], 10 };
         auto span_3_7 = SpanT<Int>{ &fixture.ints_[3], 7 };
 
-        SYNTROPY_UNIT_EQUAL(Find(span0_10, 3.0f), span_3_7);
+        SYNTROPY_UNIT_EQUAL(Algorithm::Find(span0_10, 3.0f), span_3_7);
     })
 
     .TestCase("Searching a span for a sub-span reduces the former until it starts-with the latter.", [](auto& fixture)
