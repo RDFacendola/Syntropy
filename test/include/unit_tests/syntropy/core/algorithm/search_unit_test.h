@@ -36,6 +36,15 @@ namespace Syntropy::Algorithm::UnitTest
 
         /// \brief Executed before each test case.
         void Before();
+
+        /// \brief Predicates which is defined true if the provided argument is odd, false otherwise.
+        static Bool IsOdd(Int x) noexcept;
+
+        /// \brief Predicates which is defined true if the provided argument is even, false otherwise.
+        static Bool IsEven(Int x) noexcept;
+
+        /// \brief Predicates which is defined false for every provided argument.
+        static Bool Never(Int x) noexcept;
     };
 
     /************************************************************************/
@@ -62,6 +71,26 @@ namespace Syntropy::Algorithm::UnitTest
     .TestCase("Searching a reverse range for a non-existent value returns an empty range.", [](auto& fixture)
     {
         SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithm::FindReverse(fixture.ints_span_, 11)), true);
+    })
+
+     .TestCase("Searching a range by predicate returns a range starting with the first element for which the predicate holds true and all values after that.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL(Algorithm::FindIf(fixture.ints_span_, &SearchTestFixture::IsOdd), (SpanT<Int>{ &fixture.ints_[1], 9}));
+    })
+
+    .TestCase("Searching a range by a predicate which is false for all the range elements returns an empty range.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithm::FindIf(fixture.ints_span_, &SearchTestFixture::Never)), true);
+    })
+
+    .TestCase("Reverse-searching a range by predicate returns a range ending with the last element for which the predicate holds true and all values before that.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL(Algorithm::FindIfReverse(fixture.ints_span_, &SearchTestFixture::IsEven), (SpanT<Int>{ &fixture.ints_[0], 9}));
+    })
+
+    .TestCase("Reverse-searching a range by a predicate which is false for all the range elements returns an empty range.", [](auto& fixture)
+    {
+        SYNTROPY_UNIT_EQUAL(IsEmpty(Algorithm::FindIfReverse(fixture.ints_span_, &SearchTestFixture::Never)), true);
     });
 
     /************************************************************************/
@@ -76,6 +105,20 @@ namespace Syntropy::Algorithm::UnitTest
         empty_span_ = {};
     }
 
+    inline Bool SearchTestFixture::IsOdd(Int x) noexcept
+    {
+        return (x % 2) == 1;
+    }
+
+    inline Bool SearchTestFixture::IsEven(Int x) noexcept
+    {
+        return (x % 2) == 0;
+    }
+
+    inline Bool SearchTestFixture::Never(Int x) noexcept
+    {
+        return false;
+    }
 }
 
 // ===========================================================================
