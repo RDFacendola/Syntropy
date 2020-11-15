@@ -94,9 +94,13 @@ namespace Syntropy::Templates
     template <typename TType>
     using Decay = typename Details::Decay<TType>;
 
-    /// \brief Determine the common type among all TTypes, that is the type to which all TTypes can be converted to.
+    /// \brief Type equal to the type all types among TTypes can be converted to.
     template <typename... TTypes>
     using CommonType = Details::CommonType<TTypes...>;
+
+    /// \brief Type equal to the type all types among TTypes can be converted or bound to.
+    template <typename... TTypes>
+    using CommonReference = Details::CommonReference<TTypes...>;
 
     /************************************************************************/
     /* TYPE MANIPULATION                                                    */
@@ -157,7 +161,7 @@ namespace Syntropy::Templates
     inline constexpr Bool IsBoolean = Details::IsBoolean<TType>;
 
     /// \brief Constant equal to true if TType is integral, equal to false otherwise.
-    /// \remarks Note that this trait is fundamentally different than std::is_integral as it only yields true for int and fixed-size ints. Booleans, characters and bytes are not considered to be integrals.
+    /// \remarks Note that this trait is fundamentally different than std::is_integral as it only yields true for int and fixed-size ints. Booleans, unsigned integral, characters and bytes are not considered to be integrals.
     template <typename TType>
     inline constexpr Bool IsIntegral = Details::IsIntegral<TType>;
 
@@ -181,6 +185,18 @@ namespace Syntropy::Templates
     /// \brief Constant equal to true if TType is a rvalue reference, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsRValueReference = Details::IsRValueReference<TType>;
+
+    /************************************************************************/
+    /* COMPOSITE TYPE CATEGORIES                                            */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is an object type, equal  o false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsObject = Details::IsObject<TType>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsObject<TypeList<TTypes...>> = (IsObject<TTypes> && ...);
 
     /************************************************************************/
     /* TYPE PROPERTIES                                                      */
@@ -371,7 +387,17 @@ namespace Syntropy::Templates
     template <typename... TTypes, typename... TArguments>
     inline constexpr Bool IsImplicitlyConstructible<TypeList<TTypes...>, TypeList<TArguments...>> = Details::IsImplicitlyConstructible<TypeList<TTypes...>, TypeList<TArguments...>>;
 
-    /// \brief Constant equal to true if TType is trivially-destructible, equal to false otherwise.
+    /// \brief Constant equal to true if TType is destructible, equal to false otherwise.
+    /// A type is destructible if it is a reference type or, if equal to an object-type, if calling its destructor by means of t.~TType() in unevaluated context is well-formed.
+    /// A type is *not* destructible if it is equal to void, a function type or an array type of unknown bounds. It is not destructible also if its destructor is ill-formed in unevaluated context.
+    template <typename TType>
+    inline constexpr Bool IsDestructible = Details::IsDestructible<TType>;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Bool IsDestructible<TypeList<TTypes...>> = (IsDestructible<TTypes> && ...);
+
+    /// \brief Constant equal to true if TType is both destructible and trivially-destructible, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsTriviallyDestructible = Details::IsTriviallyDestructible<TType>;
 
@@ -412,6 +438,9 @@ namespace Syntropy::Templates
     template <typename TCallable>
     using FunctionArguments = Details::FunctionArguments<TCallable>;
 
+    /// \brief Type alias for the return type of a callable object invocation with provided arguments.
+    template <typename TCallable, typename... TArguments>
+    using InvokeResult = Details::InvokeResult<TCallable, TArguments...>;
 }
 
 // ===========================================================================

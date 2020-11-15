@@ -201,9 +201,13 @@ namespace Syntropy::Templates::Details
     template <typename TType>
     using Decay = typename DecayHelper<TType>::Type;
 
-    /// \brief Exposes a member type TType all types among TTypes can be converted to.
+    /// \brief Type equal to the type all types among TTypes can be converted to.
     template <typename... TTypes>
     using CommonType = std::common_type_t<TTypes...>;
+
+    /// \brief Type equal to the type all types among TTypes can be converted or bound to.
+    template <typename... TTypes>
+    using CommonReference = std::common_reference_t<TTypes...>;
 
     /************************************************************************/
     /* TYPE MANIPULATION                                                    */
@@ -434,6 +438,14 @@ namespace Syntropy::Templates::Details
     inline constexpr Bool IsRValueReference = std::is_rvalue_reference_v<TType>;
 
     /************************************************************************/
+    /* COMPOSITE TYPE CATEGORIES                                            */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is an object type, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsObject = std::is_object_v<TType>;
+
+    /************************************************************************/
     /* TYPE PROPERTIES                                                      */
     /************************************************************************/
 
@@ -599,6 +611,12 @@ namespace Syntropy::Templates::Details
 
     // ===========================================================================
 
+    /// \brief Constant equal to true if TType is destructible, equal to false otherwise.
+    /// A type is destructible if it is a reference type or, if equal to an object-type, if calling its destructor by means of t.~TType() in unevaluated context is well-formed.
+    /// A type is *not* destructible if it is equal to void, a function type or an array type of unknown bounds. It is not destructible also if its destructor is ill-formed in unevaluated context.
+    template <typename TType>
+    inline constexpr Bool IsDestructible = std::is_destructible_v<TType>;
+
     /// \brief Constant equal to true if TType is trivially-destructible, equal to false otherwise.
     template <typename TType>
     inline constexpr Bool IsTriviallyDestructible = std::is_trivially_destructible_v<TType>;
@@ -672,6 +690,10 @@ namespace Syntropy::Templates::Details
     {
         using Type = TypeList<TArguments...>;
     };
+
+    /// \brief Type alias for the return type of a callable object invocation.
+    template <typename TCallable, typename... TArguments>
+    using InvokeResult = std::invoke_result<TCallable, TArguments...>;
 
 }
 
