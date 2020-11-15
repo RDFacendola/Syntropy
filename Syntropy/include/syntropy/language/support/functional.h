@@ -15,6 +15,20 @@
 
 // ===========================================================================
 
+namespace Syntropy
+{
+    /************************************************************************/
+    /* INVOKE                                                               */
+    /************************************************************************/
+
+    /// \brief Invoke a callable object with provided arguments.
+    template <typename TCallable, typename... TArguments>
+    constexpr Templates::InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept;
+
+}
+
+// ===========================================================================
+
 namespace Syntropy::Functional
 {
     /************************************************************************/
@@ -30,6 +44,22 @@ namespace Syntropy::Functional
     /// \remarks Tuple elements are accessed by means of Get<Int>(tuple) function, which is expected to be defined for each type in TTuples.
     template <typename TFunction, typename TTuple, typename... TTuples>
     constexpr void LockstepApply(TFunction&& function, TTuple&& tuple, TTuples&&... tuples) noexcept;
+}
+
+// ===========================================================================
+
+namespace Syntropy
+{
+    /************************************************************************/
+    /* INVOKE                                                               */
+    /************************************************************************/
+
+    /// \brief Invoke a callable object with provided arguments.
+    template <typename TCallable, typename... TArguments>
+    constexpr Templates::InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept
+    {
+        return Details::Invoke(Forward<TCallable>(callable), Forward<TArguments>(arguments)...);
+    }
 }
 
 // ===========================================================================

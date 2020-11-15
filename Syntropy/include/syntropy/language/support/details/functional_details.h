@@ -8,6 +8,22 @@
 
 // ===========================================================================
 
+namespace Syntropy::Details
+{
+    /************************************************************************/
+    /* INVOKE                                                               */
+    /************************************************************************/
+
+    template <typename TCallable, typename... TArguments>
+    constexpr Templates::InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept
+    {
+        return std::invoke(Forward<TCallable>(callable), Forward<TArguments>(arguments)...);
+    }
+
+}
+
+// ===========================================================================
+
 namespace Syntropy::Functional
 {
     /************************************************************************/
