@@ -11,7 +11,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/support/support.h"
 
-#include "syntropy/experimental/language/concepts/concepts.h"
+#include "syntropy/language/concepts/concepts.h"
 
 // ===========================================================================
 

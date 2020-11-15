@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "syntropy/experimental/language/concepts/details/concepts_details.h"
+#include "syntropy/language/concepts/details/concepts_details.h"
 
 // ===========================================================================
 

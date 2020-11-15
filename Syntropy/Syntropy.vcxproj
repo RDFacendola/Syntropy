@@ -21,8 +21,8 @@
     <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\experimental\core\foundation\range.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
-    <ClInclude Include="include\syntropy\experimental\language\concepts\concepts.h" />
-    <ClInclude Include="include\syntropy\experimental\language\concepts\details\concepts_details.h" />
+    <ClInclude Include="include\syntropy\language\concepts\concepts.h" />
+    <ClInclude Include="include\syntropy\language\concepts\details\concepts_details.h" />
     <ClInclude Include="include\syntropy\language\support\details\functional_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\ratio_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\traits_details.h" />
