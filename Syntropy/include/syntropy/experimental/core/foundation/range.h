@@ -160,6 +160,17 @@ namespace Syntropy
     template <Concepts::RandomAccessRangeT TRange>
     constexpr TupleT<TRange, TRange> SliceBack(const TRange& range, Int count) noexcept;
 
+    // Contiguous range.
+    // =================
+
+    /// \brief Get an iterator to the first element in a contiguous range.
+    template <Concepts::ContiguousRangeT TRange>
+    constexpr auto Begin(const TRange& span) noexcept;
+
+    /// \brief Get an iterator past the last element in a contiguous range.
+    template <Concepts::ContiguousRangeT TRange>
+    constexpr auto End(const TRange& span) noexcept;
+
 }
 
 // ===========================================================================
@@ -213,13 +224,13 @@ namespace Syntropy
     template <Concepts::RandomAccessRangeT TRange>
     constexpr auto SliceFront(const TRange& range) noexcept
     {
-        return { Front(range), PopFront(range) };
+        return MakeTuple(Front(range), PopFront(range));
     }
 
     template <Concepts::RandomAccessRangeT TRange>
     constexpr auto SliceBack(const TRange& range) noexcept
     {
-        return { Back(range), PopBack(range) };
+        return MakeTuple(Back(range), PopBack(range));
     }
 
     template <Concepts::RandomAccessRangeT TRange>
@@ -233,6 +244,21 @@ namespace Syntropy
     {
         return { Back(range, count), PopBack(range, count) };
     }
+
+    // Contiguous range.
+
+    template <Concepts::ContiguousRangeT TRange>
+    constexpr auto Begin(const TRange& range) noexcept
+    {
+        return Data(range);
+    }
+
+    template <Concepts::ContiguousRangeT TRange>
+    constexpr auto End(const TRange& range) noexcept
+    {
+        return Data(range) + Count(range);
+    }
+
 }
 
 // ===========================================================================

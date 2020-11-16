@@ -113,14 +113,6 @@ namespace Syntropy
     template <typename TType>
     constexpr TType* end(const SpanT<TType>& span) noexcept;
 
-    /// \brief Get an iterator to the first element in a span.
-    template <typename TType>
-    constexpr TType* Begin(const SpanT<TType>& span) noexcept;
-
-    /// \brief Get an iterator past the last element in a span.
-    template <typename TType>
-    constexpr TType* End(const SpanT<TType>& span) noexcept;
-
     // Forward range.
     // ==============
 
@@ -176,40 +168,6 @@ namespace Syntropy
     /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
     template <typename TType>
     constexpr TType* Data(const SpanT<TType>& span) noexcept;
-
-
-    // Everything else.
-    // ================
-
-    /// \brief Discard the first count elements in a span and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TType>
-    constexpr SpanT<TType> PopFront(const SpanT<TType>& span, Int count) noexcept;
-
-    /// \brief Discard the last count elements in a span and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TType>
-    constexpr SpanT<TType> PopBack(const SpanT<TType>& span, Int count) noexcept;
-
-    /// \brief Slice a span returning the first element and a subspan to the remaining ones.
-    /// \remarks If the span is empty the behavior of this method is undefined.
-    template <typename TType>
-    constexpr TupleT<TType&, SpanT<TType>> SliceFront(const SpanT<TType>& span) noexcept;
-
-    /// \brief Slice a span returning the last element and a subspan to the remaining ones.
-    /// \remarks If the span is empty the behavior of this method is undefined.
-    template <typename TType>
-    constexpr TupleT<TType&, SpanT<TType>> SliceBack(const SpanT<TType>& span) noexcept;
-
-    /// \brief Slice a span returning a subspan to the first count-elements and a subspan to the remaining ones.
-    /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
-    template <typename TType>
-    constexpr TupleT<SpanT<TType>, SpanT<TType>> SliceFront(const SpanT<TType>& span, Int count) noexcept;
-
-    /// \brief Slice a span returning a subspan to the last-count elements and a subspan to the remaining ones.
-    /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
-    template <typename TType>
-    constexpr TupleT<SpanT<TType>, SpanT<TType>> SliceBack(const SpanT<TType>& span, Int count) noexcept;
 
     // Set operations.
     // ===============
@@ -403,18 +361,6 @@ namespace Syntropy
         return End(span);
     }
 
-    template <typename TType>
-    constexpr TType* Begin(const SpanT<TType>& span) noexcept
-    {
-        return span.GetData();
-    }
-
-    template <typename TType>
-    constexpr TType* End(const SpanT<TType>& span) noexcept
-    {
-        return Begin(span) + Count(span);
-    }
-
     // Forward Range.
 
     template <typename TType>
@@ -475,61 +421,6 @@ namespace Syntropy
     constexpr TType* Data(const SpanT<TType>& span) noexcept
     {
         return span.GetData();
-    }
-
-
-
-
-
-
-    // Everything else.
-
-    template <typename TType>
-    constexpr SpanT<TType> PopFront(const SpanT<TType>& span, Int count) noexcept
-    {
-        return Select(span, count, Count(span) - count);
-    }
-
-    template <typename TType>
-    constexpr SpanT<TType> PopBack(const SpanT<TType>& span, Int count) noexcept
-    {
-        return Select(span, 0, Count(span) - count);
-    }
-
-    template <typename TType>
-    constexpr SpanT<TType> Front(const SpanT<TType>& span, Int count) noexcept
-    {
-        return PopBack(span, Count(span) - count);
-    }
-
-    template <typename TType>
-    constexpr SpanT<TType> Back(const SpanT<TType>& span, Int count) noexcept
-    {
-        return PopFront(span, Count(span) - count);
-    }
-
-    template <typename TType>
-    constexpr TupleT<TType&, SpanT<TType>> SliceFront(const SpanT<TType>& span) noexcept
-    {
-        return { Front(span), PopFront(span) };
-    }
-
-    template <typename TType>
-    constexpr TupleT<TType&, SpanT<TType>> SliceBack(const SpanT<TType>& span) noexcept
-    {
-        return { Back(span), PopBack(span) };
-    }
-
-    template <typename TType>
-    constexpr TupleT<SpanT<TType>, SpanT<TType>> SliceFront(const SpanT<TType>& span, Int count) noexcept
-    {
-        return { Front(span, count), PopFront(span, count) };
-    }
-
-    template <typename TType>
-    constexpr TupleT<SpanT<TType>, SpanT<TType>> SliceBack(const SpanT<TType>& span, Int count) noexcept
-    {
-        return { Back(span, count), PopBack(span, count) };
     }
 
     // Set operations.
