@@ -121,54 +121,75 @@ namespace Syntropy
     template <typename TType>
     constexpr TType* End(const SpanT<TType>& span) noexcept;
 
-    // Observers.
-    // ==========
-
-    /// \brief Check whether a span is empty.
-    /// \return Returns true if the span is empty, returns false otherwise.
-    template <typename TType>
-    constexpr Bool IsEmpty(const SpanT<TType>& span) noexcept;
-
-    /// \brief Get the number of elements in a span.
-    template <typename TType>
-    constexpr Int Count(const SpanT<TType>& span) noexcept;
-
-    // Manipulation.
+    // Forward range.
+    // ==============
 
     /// \brief Access the first element in a span.
     /// \remarks Accessing the first element of an empty span results in undefined behavior.
     template <typename TType>
     constexpr TType& Front(const SpanT<TType>& span) noexcept;
 
+    /// \brief Discard the first count elements in a span and return the resulting subspan.
+    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+    template <typename TType>
+    constexpr SpanT<TType> PopFront(const SpanT<TType>& span) noexcept;
+
+    /// \brief Check whether a span is empty.
+    /// \return Returns true if the span is empty, returns false otherwise.
+    template <typename TType>
+    constexpr Bool IsEmpty(const SpanT<TType>& span) noexcept;
+
+    // Bidirectional range.
+    // ====================
+
     /// \brief Access the last element in a span.
     /// \remarks Accessing the last element of an empty span results in undefined behavior.
     template <typename TType>
     constexpr TType& Back(const SpanT<TType>& span) noexcept;
 
-    /// \brief Obtain a span consisting of the first elements of another span.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
+    /// \brief Discard the last count elements in a span and return the resulting subspan.
+    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TType>
-    constexpr SpanT<TType> Front(const SpanT<TType>& span, Int count) noexcept;
+    constexpr SpanT<TType> PopBack(const SpanT<TType>& span) noexcept;
 
-    /// \brief Obtain a span consisting of the last elements of another span.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
+    // Random access range.
+    // ====================
+
+    /// \brief Get the number of elements in a span.
     template <typename TType>
-    constexpr SpanT<TType> Back(const SpanT<TType>& span, Int count) noexcept;
+    constexpr Int Count(const SpanT<TType>& span) noexcept;
 
     /// \brief Obtain a sub-span given an offset and a number of elements.
     /// \remarks Exceeding span boundaries results in undefined behavior.
     template <typename TType>
     constexpr SpanT<TType> Select(const SpanT<TType>& span, Int offset, Int count) noexcept;
 
+    /// \brief Obtain a span element at given index.
+    /// \remarks Exceeding span boundaries results in undefined behavior.
+    template <typename TType>
+    constexpr TType& Select(const SpanT<TType>& span, Int index) noexcept;
+
+    // Contiguous range.
+    // =================
+
+    /// \brief Access underlying span data.
+    /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
+    template <typename TType>
+    constexpr TType* Data(const SpanT<TType>& span) noexcept;
+
+
+    // Everything else.
+    // ================
+
     /// \brief Discard the first count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TType>
-    constexpr SpanT<TType> PopFront(const SpanT<TType>& span, Int count = 1) noexcept;
+    constexpr SpanT<TType> PopFront(const SpanT<TType>& span, Int count) noexcept;
 
     /// \brief Discard the last count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TType>
-    constexpr SpanT<TType> PopBack(const SpanT<TType>& span, Int count = 1) noexcept;
+    constexpr SpanT<TType> PopBack(const SpanT<TType>& span, Int count) noexcept;
 
     /// \brief Slice a span returning the first element and a subspan to the remaining ones.
     /// \remarks If the span is empty the behavior of this method is undefined.
@@ -394,21 +415,7 @@ namespace Syntropy
         return Begin(span) + Count(span);
     }
 
-    // Observers.
-
-    template <typename TType>
-    constexpr Bool IsEmpty(const SpanT<TType>& span) noexcept
-    {
-        return !span;
-    }
-
-    template <typename TType>
-    constexpr Int Count(const SpanT<TType>& span) noexcept
-    {
-        return span.GetCount();
-    }
-
-    // Accessors.
+    // Forward Range.
 
     template <typename TType>
     constexpr TType& Front(const SpanT<TType>& span) noexcept
@@ -417,9 +424,76 @@ namespace Syntropy
     }
 
     template <typename TType>
+    constexpr SpanT<TType> PopFront(const SpanT<TType>& span) noexcept
+    {
+        return PopFront(span, 1);
+    }
+
+    template <typename TType>
+    constexpr Bool IsEmpty(const SpanT<TType>& span) noexcept
+    {
+        return !span;
+    }
+
+    // Bidirectional range.
+
+    template <typename TType>
     constexpr TType& Back(const SpanT<TType>& span) noexcept
     {
         return *(Begin(span) + Count(span) - 1);
+    }
+
+    template <typename TType>
+    constexpr SpanT<TType> PopBack(const SpanT<TType>& span) noexcept
+    {
+        return PopBack(span, 1);
+    }
+
+    // Random access range.
+
+    template <typename TType>
+    constexpr Int Count(const SpanT<TType>& span) noexcept
+    {
+        return span.GetCount();
+    }
+
+    template <typename TType>
+    constexpr SpanT<TType> Select(const SpanT<TType>& span, Int offset, Int count) noexcept
+    {
+        return { Begin(span) + offset, count };
+    }
+
+    template <typename TType>
+    constexpr TType& Select(const SpanT<TType>& span, Int index) noexcept
+    {
+        return span[index];
+    }
+
+    // Contiguous range.
+
+    template <typename TType>
+    constexpr TType* Data(const SpanT<TType>& span) noexcept
+    {
+        return span.GetData();
+    }
+
+
+
+
+
+
+    // Everything else.
+
+    template <typename TType>
+    constexpr SpanT<TType> PopFront(const SpanT<TType>& span, Int count) noexcept
+    {
+        return Select(span, count, Count(span) - count);
+    }
+
+    template <typename TType>
+    constexpr SpanT<TType> PopBack(const SpanT<TType>& span, Int count) noexcept
+    {
+        return Select(span, 0, Count(span) - count);
     }
 
     template <typename TType>
@@ -432,24 +506,6 @@ namespace Syntropy
     constexpr SpanT<TType> Back(const SpanT<TType>& span, Int count) noexcept
     {
         return PopFront(span, Count(span) - count);
-    }
-
-    template <typename TType>
-    constexpr SpanT<TType> Select(const SpanT<TType>& span, Int offset, Int count) noexcept
-    {
-        return { Begin(span) + offset, count };
-    }
-
-    template <typename TType>
-    constexpr SpanT<TType> PopFront(const SpanT<TType>& span, Int count) noexcept
-    {
-        return Select(span, count, Count(span) - count);
-    }
-
-    template <typename TType>
-    constexpr SpanT<TType> PopBack(const SpanT<TType>& span, Int count) noexcept
-    {
-        return Select(span, 0, Count(span) - count);
     }
 
     template <typename TType>
