@@ -102,17 +102,6 @@ namespace Syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Iterators.
-    // ==========
-
-    /// \brief Get an iterator to the first element in a span.
-    template <typename TType>
-    constexpr TType* begin(const SpanT<TType>& span) noexcept;
-
-    /// \brief Get an iterator past the last element in a span.
-    template <typename TType>
-    constexpr TType* end(const SpanT<TType>& span) noexcept;
-
     // Forward range.
     // ==============
 
@@ -346,20 +335,6 @@ namespace Syntropy
 
     // Non-member functions.
     // =====================
-
-    // Iterators.
-    
-    template <typename TType>
-    constexpr TType* begin(const SpanT<TType>& span) noexcept
-    {
-        return Begin(span);
-    }
-
-    template <typename TType>
-    constexpr TType* end(const SpanT<TType>& span) noexcept
-    {
-        return End(span);
-    }
 
     // Forward Range.
 

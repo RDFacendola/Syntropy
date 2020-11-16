@@ -163,13 +163,21 @@ namespace Syntropy
     // Contiguous range.
     // =================
 
+    /// \brief Get an iterator to the first element in a range.
+    template <Concepts::ContiguousRangeT TRange>
+    constexpr auto* begin(const TRange& span) noexcept;
+
+    /// \brief Get an iterator past the last element in a range.
+    template <Concepts::ContiguousRangeT TRange>
+    constexpr auto* end(const TRange& span) noexcept;
+
     /// \brief Get an iterator to the first element in a contiguous range.
     template <Concepts::ContiguousRangeT TRange>
-    constexpr auto Begin(const TRange& span) noexcept;
+    constexpr auto* Begin(const TRange& span) noexcept;
 
     /// \brief Get an iterator past the last element in a contiguous range.
     template <Concepts::ContiguousRangeT TRange>
-    constexpr auto End(const TRange& span) noexcept;
+    constexpr auto* End(const TRange& span) noexcept;
 
 }
 
@@ -248,13 +256,25 @@ namespace Syntropy
     // Contiguous range.
 
     template <Concepts::ContiguousRangeT TRange>
-    constexpr auto Begin(const TRange& range) noexcept
+    constexpr auto* begin(const TRange& range) noexcept
     {
         return Data(range);
     }
 
     template <Concepts::ContiguousRangeT TRange>
-    constexpr auto End(const TRange& range) noexcept
+    constexpr auto* end(const TRange& range) noexcept
+    {
+        return Data(range) + Count(range);
+    }
+
+    template <Concepts::ContiguousRangeT TRange>
+    constexpr auto* Begin(const TRange& range) noexcept
+    {
+        return Data(range);
+    }
+
+    template <Concepts::ContiguousRangeT TRange>
+    constexpr auto* End(const TRange& range) noexcept
     {
         return Data(range) + Count(range);
     }
