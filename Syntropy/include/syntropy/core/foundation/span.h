@@ -341,7 +341,7 @@ namespace Syntropy
     template <typename TType>
     constexpr TType& Front(const SpanT<TType>& span) noexcept
     {
-        return *Begin(span);
+        return *Data(span);
     }
 
     template <typename TType>
@@ -361,7 +361,7 @@ namespace Syntropy
     template <typename TType>
     constexpr TType& Back(const SpanT<TType>& span) noexcept
     {
-        return *(Begin(span) + Count(span) - 1);
+        return *(Data(span) + Count(span) - 1);
     }
 
     template <typename TType>
@@ -381,7 +381,7 @@ namespace Syntropy
     template <typename TType>
     constexpr SpanT<TType> Select(const SpanT<TType>& span, Int offset, Int count) noexcept
     {
-        return { Begin(span) + offset, count };
+        return { Data(span) + offset, count };
     }
 
     template <typename TType>
@@ -468,12 +468,6 @@ namespace Syntropy
     constexpr Bool operator==(const SpanT<TType>& lhs, const SpanT<UType>& rhs) noexcept
     {
         return (lhs.GetData() == rhs.GetData()) && (lhs.GetCount() == rhs.GetCount());
-    }
-
-    template <typename TType, typename UType>
-    constexpr Bool operator!=(const SpanT<TType>& lhs, const SpanT<UType>& rhs) noexcept
-    {
-        return !(lhs == rhs);
     }
 
     template <typename TType, typename UType>
