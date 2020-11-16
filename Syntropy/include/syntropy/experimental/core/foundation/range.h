@@ -100,6 +100,20 @@ namespace Syntropy::Concepts
             Data(range);
         };
 
+    /************************************************************************/
+    /* SIZED RANGE                                                          */
+    /************************************************************************/
+
+    /// \brief Models a range whose size can be computed in constant time.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept SizeRangeT = ForwardRangeT<TRange>
+        && requires(TRange & range)
+        {
+            /// \brief Get the number of elements in the range.
+            { Count(range) } -> Concepts::Integral;
+        };
+
 }
 
 // ===========================================================================
