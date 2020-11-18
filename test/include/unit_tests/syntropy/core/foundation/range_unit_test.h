@@ -29,8 +29,14 @@ namespace Syntropy::UnitTest
         /// \brief Integer sequence.
         FixArray<Int, 10> ints_ = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
+        /// \brief Float sequence.
+        FixArray<Float, 10> floats_ = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f };
+
         /// \brief Integer sequence span.
         SpanT<Int> ints_span_;
+
+        /// \brief Float sequence span.
+        SpanT<Float> floats_span_;
 
         /// \brief Empty integer sequence span.
         SpanT<Int> empty_span_;
@@ -101,6 +107,17 @@ namespace Syntropy::UnitTest
         });
 
         SYNTROPY_UNIT_EQUAL(index, 10);
+    })
+        
+    .TestCase("Zipping together two forward ranges generate a new forward range that can be visited forward in lockstep.", [](auto& fixture)
+    {
+        auto s0 = SpanT<Int>{ fixture.ints_span_ };
+        auto s1 = SpanT<Float>{ fixture.floats_span_ };
+
+        auto z = Zip(s0, s1);
+
+        z = z;
+
     });
 
     /************************************************************************/
@@ -112,6 +129,7 @@ namespace Syntropy::UnitTest
     inline void RangeTestFixture::Before()
     {
         ints_span_ = { &ints_[0], 10 };
+        floats_span_ = { &floats_[0], 10 };
         empty_span_ = {};
     }
 

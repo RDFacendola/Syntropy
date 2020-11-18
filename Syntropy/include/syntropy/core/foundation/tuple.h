@@ -72,7 +72,7 @@ namespace Syntropy
         template<typename UType = TType, Details::EnableIfTupleDirectConstructor<Templates::TypeList<UType, TTypes...>> = nullptr>
         explicit (Details::ExplicitIfTupleDirectConstructor<UType, TTypes...>)
         constexpr TupleT(const TType& element, const TTypes&... elements) noexcept
-            : TupleT(ElementwiseConstructor{}, Forward<TType>(element), Forward<TTypes>(elements)...)
+            : TupleT(ElementwiseConstructor{}, element, elements...)
         {
 
         }
