@@ -219,6 +219,10 @@ namespace Syntropy
     template <typename... TElements>
     constexpr TupleT<TElements&&...> ForwardAsTuple(TElements&&... elements) noexcept;
 
+    /// \brief Invoke a callable object with arguments provided as tuple.
+    template <typename TCallable, typename TArguments>
+    constexpr decltype(auto) Apply(TCallable&& callable, TArguments&& arguments) noexcept;
+
     /// \brief Swap two tuples
     template <typename... TTypes>
     constexpr void Swap(TupleT<TTypes...>& lhs, TupleT<TTypes...>& rhs) noexcept;
@@ -419,6 +423,12 @@ namespace Syntropy
     constexpr TupleT<TElements&&...> ForwardAsTuple(TElements&&... elements) noexcept
     {
         return TupleT<TElements&&...>(Forward<TElements>(elements)...);
+    }
+
+    template <typename TCallable, typename TArguments>
+    constexpr decltype(auto) Apply(TCallable&& callable, TArguments&& arguments) noexcept
+    {
+        return Details::Apply(Forward<TCallable>(callable), Forward<TArguments>(arguments), Templates::MakeSequence<Templates::Rank<Templates::RemoveConstReference<TArguments>>>{});
     }
 
     template <typename... TTypes>

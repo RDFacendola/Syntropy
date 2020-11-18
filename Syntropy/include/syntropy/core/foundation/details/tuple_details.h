@@ -7,7 +7,9 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/support/functional.h"
 #include "syntropy/language/templates/traits.h"
+#include "syntropy/language/templates/sequence.h"
 
 // ===========================================================================
 
@@ -195,6 +197,17 @@ namespace Syntropy::Details
     /// \brief Access a tuple base type by index.
     template <Int VCount, typename TTuple>
     using TupleBase = typename TupleBaseHelper<VCount, TTuple>::Type;
+
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    template <typename TCallable, typename TArguments, Int... VIndexes>
+    constexpr decltype(auto) Apply(TCallable&& callable, TArguments&& arguments, Templates::Sequence<VIndexes...>) noexcept
+    {
+        return Syntropy::Invoke(Forward<TCallable>(callable), Get<VIndexes>(Forward<TArguments>(arguments))...);
+    }
+
 }
 
 // ===========================================================================

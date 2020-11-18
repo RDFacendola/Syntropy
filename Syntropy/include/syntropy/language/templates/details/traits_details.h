@@ -693,7 +693,7 @@ namespace Syntropy::Templates::Details
 
     /// \brief Type alias for the return type of a callable object invocation.
     template <typename TCallable, typename... TArguments>
-    using InvokeResult = std::invoke_result<TCallable, TArguments...>;
+    using InvokeResult = std::invoke_result_t<TCallable, TArguments...>;
 
 }
 
