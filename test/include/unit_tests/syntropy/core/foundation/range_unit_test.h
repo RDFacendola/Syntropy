@@ -8,8 +8,10 @@
 
 #include "syntropy/core/containers/fix_array.h"
 #include "syntropy/core/foundation/span.h"
+
 #include "syntropy/experimental/core/foundation/range.h"
 #include "syntropy/experimental/core/foundation/reverse_range.h"
+#include "syntropy/experimental/core/foundation/zip_range.h"
 
 #include "syntropy/unit_test/unit_test.h"
 
