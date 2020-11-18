@@ -14,10 +14,38 @@
 
 #include "syntropy/core/foundation/tuple.h"
 
+namespace Syntropy::Templates
+{
+    /************************************************************************/
+    /* RANGE TRAITS                                                         */
+    /************************************************************************/
+
+    /// \brief Exposes relevant traits of a range type TRange.
+    /// \remarks Clients must provide their own specialization of this structure.
+    template <typename TRange>
+    struct RangeTraits;
+
+    /// \brief Type of a reference to an element in a range TRange.
+    template <typename TRange>
+    using RangeElementReferenceType = typename RangeTraits<TRange>::ElementReferenceType;
+}
+
 // ===========================================================================
 
 namespace Syntropy::Concepts
 {
+    /************************************************************************/
+    /* RANGE                                                                */
+    /************************************************************************/
+
+    /// \brief Models a view on a range.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept RangeT = requires(const TRange & range)
+    {
+        typename Templates::RangeTraits<TRange>;
+    };
+
     /************************************************************************/
     /* FORWARD RANGE                                                        */
     /************************************************************************/
@@ -29,15 +57,15 @@ namespace Syntropy::Concepts
     {
         /// \brief Access the first element in a range.
         /// \remarks Accessing the first element of an empty range results in undefined behavior.
-        Front(range);
+        { Front(range) } -> SameAs<Templates::RangeElementReferenceType<TRange>>;
 
         /// \brief Discard the first count elements in a range and return the resulting subrange.
         /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
-        { PopFront(range) } -> Concepts::ConvertibleTo<TRange>;
+        { PopFront(range) } -> ConvertibleTo<TRange>;
 
         /// \brief Check whether a range is empty.
         /// \return Returns true if the range is empty, returns false otherwise.
-        { IsEmpty(range) } -> Concepts::Boolean;
+        { IsEmpty(range) } -> Boolean;
     };
 
     /************************************************************************/
@@ -52,11 +80,11 @@ namespace Syntropy::Concepts
         {
             /// \brief Access the last element in a range.
             /// \remarks Accessing the last element of an empty range results in undefined behavior.
-            Back(range);
+            { Back(range) } -> SameAs<decltype(Front(range))>;
 
             /// \brief Discard the last count elements in a range and return the resulting subrange.
             /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
-            { PopBack(range) } -> Concepts::ConvertibleTo<TRange>;
+            { PopBack(range) } -> ConvertibleTo<TRange>;
         };
 
     /************************************************************************/
@@ -70,13 +98,13 @@ namespace Syntropy::Concepts
         && requires(TRange& range)
         {
             /// \brief Get the number of elements in the range.
-            { Count(range) } -> Concepts::Integral;
+            { Count(range) } -> Integral;
         }
         && requires(TRange& range, Int offset, Int count)
         {
             /// \brief Obtain a sub-range given an offset and a number of elements.
             /// \remarks Exceeding range boundaries results in undefined behavior.
-            { Select(range, offset, count) } -> Concepts::ConvertibleTo<TRange>;
+            { Select(range, offset, count) } -> ConvertibleTo<TRange>;
         }
         && requires(TRange& range, Int index)
         {
@@ -107,11 +135,11 @@ namespace Syntropy::Concepts
     /// \brief Models a range whose size can be computed in constant time.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept SizeRangeT = ForwardRangeT<TRange>
+    concept SizedRangeT = ForwardRangeT<TRange>
         && requires(TRange & range)
         {
             /// \brief Get the number of elements in the range.
-            { Count(range) } -> Concepts::Integral;
+            { Count(range) } -> Integral;
         };
 
 }

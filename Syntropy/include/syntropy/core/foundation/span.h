@@ -10,7 +10,9 @@
 
 #include "syntropy/language/templates/traits.h"
 #include "syntropy/language/foundation/foundation.h"
+
 #include "syntropy/core/foundation/tuple.h"
+#include "syntropy/experimental/core/foundation/range.h"
 #include "syntropy/experimental/core/algorithm/search.h"
 
 #include "syntropy/math/math.h"
@@ -247,6 +249,23 @@ namespace Syntropy
     template <typename TType>
     std::ostream& operator<<(std::ostream& lhs, const SpanT<TType>& rhs);
 
+}
+
+// ===========================================================================
+
+namespace Syntropy::Templates
+{
+    /************************************************************************/
+    /* RANGE TRAITS                                                         */
+    /************************************************************************/
+
+    /// \brief Specialization for spans.
+    template <typename TType>
+    struct RangeTraits<SpanT<TType>>
+    {
+        /// \brief Type of a reference to a range element.
+        using ElementReferenceType = TType&;
+    };
 }
 
 // ===========================================================================

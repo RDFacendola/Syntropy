@@ -100,6 +100,23 @@ namespace Syntropy
 
 // ===========================================================================
 
+namespace Syntropy::Templates
+{
+    /************************************************************************/
+    /* RANGE TRAITS                                                         */
+    /************************************************************************/
+
+    /// \brief Specialization for reverse ranges.
+    template <Concepts::BidirectionalRangeT TRange>
+    struct RangeTraits<ReverseRange<TRange>>
+    {
+        /// \brief Type of a reference to a reverse range element.
+        using ElementReferenceType = RangeElementReferenceType<TRange>;
+    };
+}
+
+// ===========================================================================
+
 namespace Syntropy
 {
     /************************************************************************/
