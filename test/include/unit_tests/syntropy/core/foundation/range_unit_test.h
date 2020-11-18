@@ -111,13 +111,16 @@ namespace Syntropy::UnitTest
         
     .TestCase("Zipping together two forward ranges generate a new forward range that can be visited forward in lockstep.", [](auto& fixture)
     {
-        auto s0 = SpanT<Int>{ fixture.ints_span_ };
-        auto s1 = SpanT<Float>{ fixture.floats_span_ };
+        auto s0 = SpanT<const Int>{ fixture.ints_span_ };
+        auto s1 = SpanT<const Float>{ fixture.floats_span_ };
 
         auto z = Zip(s0, s1);
 
-        z = z;
+        auto [a, b] = Front(z);
 
+        auto [c, d] = Front(z);
+
+        z = z;
     });
 
     /************************************************************************/

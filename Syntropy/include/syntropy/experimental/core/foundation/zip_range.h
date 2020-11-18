@@ -9,6 +9,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/templates/sequence.h"
 
 #include "syntropy/experimental/core/foundation/range.h"
 
@@ -29,8 +30,11 @@ namespace Syntropy
     {
     public:
 
-        // Create a new range by zipping together one or more ranges.
+        /// \brief Create a new range by zipping together one or more ranges.
         constexpr ZipRange(const TRanges&... ranges) noexcept;
+
+        /// \brief Access the zipped ranges.
+        constexpr const TupleT<TRanges...>& GetRanges() const noexcept;
 
     private:
 
@@ -57,7 +61,12 @@ namespace Syntropy
     /// \brief Access the first element in a zip-range.
     /// \remarks Accessing the first element of an empty zip-range results in undefined behavior.
     template <Concepts::ForwardRangeT... TRanges>
-    constexpr TupleT<TRanges...>& Front(const ZipRange<TRanges...>& zip_range) noexcept;
+    constexpr TupleT<Templates::RangeElementReferenceType<TRanges>...> Front(const ZipRange<TRanges...>& zip_range) noexcept;
+
+    /// \brief Access the first element in each range and zip the result in a tuple,
+    /// \remarks Accessing the first element when any of the provided ranges is empty results results in undefined behavior.
+    template <Concepts::ForwardRangeT... TRanges>
+    constexpr TupleT<Templates::RangeElementReferenceType<TRanges>...> ZipFront(const TRanges&... ranges) noexcept;
 
     /// \brief Discard the first count elements in a zip-range and return the resulting sub-zip-range.
     /// \remarks If this method would cause the sub-zip-range to exceed the original zip-range, the behavior of this method is undefined.
@@ -147,13 +156,37 @@ namespace Syntropy
 
     }
 
+    template <Concepts::RangeT... TRanges>
+    constexpr const TupleT<TRanges...>& ZipRange<TRanges...>::GetRanges() const noexcept
+    {
+        return ranges_;
+    }
+
     // Non-member functions.
     // =====================
+
+    // Range.
 
     template <Concepts::RangeT... TRanges>
     ZipRange<TRanges...> Zip(const TRanges&... ranges) noexcept
     {
         return ZipRange{ ranges... };
+    }
+
+    // Forward range.
+
+    template <Concepts::ForwardRangeT... TRanges>
+    constexpr TupleT<Templates::RangeElementReferenceType<TRanges>...> Front(const ZipRange<TRanges...>& zip_range) noexcept
+    {
+        auto& ranges = zip_range.GetRanges();
+
+        return Apply(ZipFront<TRanges...>, ranges);
+    }
+
+    template <Concepts::ForwardRangeT... TRanges>
+    constexpr TupleT<Templates::RangeElementReferenceType<TRanges>...> ZipFront(const TRanges&... ranges) noexcept
+    {
+        return { Front(ranges)... };
     }
 
 }
