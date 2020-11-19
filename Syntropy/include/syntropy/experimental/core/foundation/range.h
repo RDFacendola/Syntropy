@@ -53,20 +53,35 @@ namespace Syntropy::Concepts
     /// \brief Models a view on a range that can be visited sequentially.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept ForwardRangeT = requires(const TRange& range)
-    {
-        /// \brief Access the first element in a range.
-        /// \remarks Accessing the first element of an empty range results in undefined behavior.
-        { Front(range) } -> SameAs<Templates::RangeElementReferenceType<TRange>>;
+    concept ForwardRangeT = RangeT<TRange>
+        && requires(const TRange& range)
+        {
+            /// \brief Access the first element in a range.
+            /// \remarks Accessing the first element of an empty range results in undefined behavior.
+            { Front(range) } -> SameAs<Templates::RangeElementReferenceType<TRange>>;
 
-        /// \brief Discard the first count elements in a range and return the resulting subrange.
-        /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
-        { PopFront(range) } -> ConvertibleTo<TRange>;
+            /// \brief Discard the first count elements in a range and return the resulting subrange.
+            /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
+            { PopFront(range) } -> ConvertibleTo<TRange>;
 
-        /// \brief Check whether a range is empty.
-        /// \return Returns true if the range is empty, returns false otherwise.
-        { IsEmpty(range) } -> Boolean;
-    };
+            /// \brief Check whether a range is empty.
+            /// \return Returns true if the range is empty, returns false otherwise.
+            { IsEmpty(range) } -> Boolean;
+        };
+
+    /************************************************************************/
+    /* SIZED RANGE                                                          */
+    /************************************************************************/
+
+    /// \brief Models a range whose size can be computed in constant time.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept SizedRangeT = ForwardRangeT<TRange>
+        && requires(TRange & range)
+        {
+            /// \brief Get the number of elements in the range.
+            { Count(range) } -> Integral;
+        };
 
     /************************************************************************/
     /* BIDIRECTIONAL RANGE                                                  */
@@ -94,12 +109,7 @@ namespace Syntropy::Concepts
     /// \brief Models a view on a range that can be visited in any (random) order.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept RandomAccessRangeT = BidirectionalRangeT<TRange>
-        && requires(TRange& range)
-        {
-            /// \brief Get the number of elements in the range.
-            { Count(range) } -> Integral;
-        }
+    concept RandomAccessRangeT = BidirectionalRangeT<TRange> && SizedRangeT<TRange>
         && requires(TRange& range, Int offset, Int count)
         {
             /// \brief Obtain a sub-range given an offset and a number of elements.
@@ -110,7 +120,7 @@ namespace Syntropy::Concepts
         {
             /// \brief Access a range element by index.
             /// \remarks Exceeding range boundaries results in undefined behavior.
-            { Select(range, index) };
+            { Select(range, index) } -> SameAs<Templates::RangeElementReferenceType<TRange>>;
         };
 
     /************************************************************************/
@@ -125,21 +135,7 @@ namespace Syntropy::Concepts
         {
             /// \brief Access contiguous range data.
             /// \remarks If the range is empty the returned value is unspecified.
-            Data(range);
-        };
-
-    /************************************************************************/
-    /* SIZED RANGE                                                          */
-    /************************************************************************/
-
-    /// \brief Models a range whose size can be computed in constant time.
-    /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRange>
-    concept SizedRangeT = ForwardRangeT<TRange>
-        && requires(TRange & range)
-        {
-            /// \brief Get the number of elements in the range.
-            { Count(range) } -> Integral;
+            { Data(range) } -> SameAs<Templates::AddPointer<Templates::RemoveReference<Templates::RangeElementReferenceType<TRange>>>>;
         };
 
 }
