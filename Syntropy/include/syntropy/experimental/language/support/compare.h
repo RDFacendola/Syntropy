@@ -476,7 +476,7 @@ namespace Syntropy
 
     constexpr Bool operator==(Reference<StrongOrdering> lhs, Null rhs) noexcept
     {
-        return (lhs.value_ == Details::ComparisonResult::kEqual) || (lhs.value_ == Details::ComparisonResult::kEquivalent);
+        return (lhs.value_ == Details::ComparisonResult::kEqual) /*|| (lhs.value_ == Details::ComparisonResult::kEquivalent)*/;
     }
 
     constexpr Bool operator==(Reference<StrongOrdering> lhs, Reference<StrongOrdering> rhs) noexcept

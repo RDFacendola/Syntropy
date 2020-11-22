@@ -28,7 +28,7 @@ namespace Syntropy::UnitTest
 
     .TestCase("", [](auto& fixture)
     {
-        // SYNTROPY_UNIT_EQUAL((Templates::LCM<17, 23>), 391);
+
     });
 
 }
