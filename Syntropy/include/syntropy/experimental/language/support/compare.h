@@ -204,7 +204,7 @@ namespace Syntropy
     constexpr Bool operator==(Reference<StrongOrdering> lhs, Null rhs) noexcept;
 
     /// \brief Compare lhs to rhs for equality-comparison.
-    constexpr Bool operator==(Reference<StrongOrdering> lhs, Reference<StrongOrdering> rhs) noexcept = default;
+    constexpr Bool operator==(Reference<StrongOrdering> lhs, Reference<StrongOrdering> rhs) noexcept;
 
     /// \brief Compare lhs to the null literal for less-than comparison.
     constexpr Bool operator<(Reference<StrongOrdering> lhs, Null rhs) noexcept;
@@ -243,7 +243,7 @@ namespace Syntropy
     constexpr Bool operator==(Reference<WeakOrdering> lhs, Null rhs) noexcept;
 
     /// \brief Compare lhs to rhs for equality-comparison.
-    constexpr Bool operator==(Reference<WeakOrdering> lhs, Reference<WeakOrdering> rhs) noexcept = default;
+    constexpr Bool operator==(Reference<WeakOrdering> lhs, Reference<WeakOrdering> rhs) noexcept;
 
     /// \brief Compare lhs to the null literal for less-than comparison.
     constexpr Bool operator<(Reference<WeakOrdering> lhs, Null rhs) noexcept;
@@ -282,7 +282,7 @@ namespace Syntropy
     constexpr Bool operator==(Reference<PartialOrdering> lhs, Null rhs) noexcept;
 
     /// \brief Compare lhs to rhs for equality-comparison.
-    constexpr Bool operator==(Reference<PartialOrdering> lhs, Reference<PartialOrdering> rhs) noexcept = default;
+    constexpr Bool operator==(Reference<PartialOrdering> lhs, Reference<PartialOrdering> rhs) noexcept;
 
     /// \brief Compare lhs to the null literal for less-than comparison.
     constexpr Bool operator<(Reference<PartialOrdering> lhs, Null rhs) noexcept;
@@ -479,6 +479,11 @@ namespace Syntropy
         return (lhs.value_ == Details::ComparisonResult::kEqual) || (lhs.value_ == Details::ComparisonResult::kEquivalent);
     }
 
+    constexpr Bool operator==(Reference<StrongOrdering> lhs, Reference<StrongOrdering> rhs) noexcept
+    {
+        return lhs.value_ == rhs.value_;
+    }
+
     constexpr Bool operator<(Reference<StrongOrdering> lhs, Null rhs) noexcept
     {
         return (lhs.value_ == Details::ComparisonResult::kLess);
@@ -546,6 +551,11 @@ namespace Syntropy
         return (lhs.value_ == Details::ComparisonResult::kEquivalent);
     }
 
+    constexpr Bool operator==(Reference<WeakOrdering> lhs, Reference<WeakOrdering> rhs) noexcept
+    {
+        return lhs.value_ == rhs.value_;
+    }
+
     constexpr Bool operator<(Reference<WeakOrdering> lhs, Null rhs) noexcept
     {
         return (lhs.value_ == Details::ComparisonResult::kLess);
@@ -611,6 +621,11 @@ namespace Syntropy
     constexpr Bool operator==(Reference<PartialOrdering> lhs, Null rhs) noexcept
     {
         return (lhs.value_ == Details::ComparisonResult::kEquivalent);
+    }
+
+    constexpr Bool operator==(Reference<PartialOrdering> lhs, Reference<PartialOrdering> rhs) noexcept
+    {
+        return lhs.value_ == rhs.value_;
     }
 
     constexpr Bool operator<(Reference<PartialOrdering> lhs, Null rhs) noexcept

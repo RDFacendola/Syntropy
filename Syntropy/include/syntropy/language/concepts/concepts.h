@@ -83,25 +83,6 @@ namespace Syntropy::Concepts
     template <typename TType>
     concept CopyConstructible = Details::CopyConstructible<TType>;
 
-    // Comparison concepts.
-    // ====================
-
-    /// \brief Concepts for types whose instances that can be equality-comparable with themselves.
-    template <typename TType>
-    concept EqualityComparable = Details::EqualityComparable<TType>;
-
-    /// \brief Concepts for types whose instances that can be equality-comparable with themselves.
-    template <typename TType, typename UType>
-    concept EqualityComparableWith = Details::EqualityComparableWith<TType, UType>;
-
-    /// \brief Concepts for types whose instances can be compared to each other and yield results consistent with a strict total order on TType.
-    template <typename TType>
-    concept TotallyOrdered = Details::TotallyOrdered<TType>;
-
-    /// \brief Concepts for types whose instances can be compared to instances of type UType and yield results consistent with a strict total order on TType.
-    template <typename TType, typename UType>
-    concept TotallyOrderedWith = Details::TotallyOrderedWith<TType, UType>;
-
     // Object concepts.
     // ================
 

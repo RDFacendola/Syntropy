@@ -115,7 +115,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Models a type TType for which the equality and inequality operators are defined.
     template <typename TType>
-    concept EqualityComparable = EqualityComparableHelper<TType, TType>;
+    concept EqualityComparable = EqualityComparableWithHelper<TType, TType>;
 
     /// \brief Models a type TType for which the equality and inequality operators against the (possibly different) type UType are defined.
     template <typename TType, typename UType>

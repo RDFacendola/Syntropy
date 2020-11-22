@@ -123,59 +123,6 @@ namespace Syntropy::Concepts::Details
         && ConstructibleFrom<TType, const TType>
         && ConvertibleTo<const TType, TType>;
 
-    // Comparison concepts.
-    // ====================
-
-    template <typename TType, typename UType>
-    concept EqualityComparableHelper = requires(const Templates::RemoveReference<TType>& lhs, const Templates::RemoveReference<UType>& rhs)
-    {
-        { lhs == rhs } -> Boolean;
-        { lhs != rhs } -> Boolean;
-        { rhs == lhs } -> Boolean;
-        { rhs != lhs } -> Boolean;
-    };
-
-    /// \brief Concepts for types whose instances that can be equality-comparable with themselves.
-    template <typename TType>
-    concept EqualityComparable = EqualityComparableHelper<TType, TType>;
-
-    /// \brief Concepts for types whose instances that can be equality-comparable with themselves.
-    template <typename TType, typename UType>
-    concept EqualityComparableWith = EqualityComparable<TType>
-        && EqualityComparable<UType>
-        && CommonReferenceWith<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>
-        && EqualityComparable<Templates::CommonReference<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>>
-        && EqualityComparableHelper<TType, UType>;
-
-    /// \brief Concepts for types whose instances can be compared to each other and yield results consistent with a strict total order on TType.
-    template <typename TType>
-    concept TotallyOrdered = EqualityComparable<TType>
-        && requires(const Templates::RemoveReference<TType> & lhs, const Templates::RemoveReference<TType> & rhs)
-    {
-        { lhs < rhs } -> Boolean;
-        { lhs > rhs } -> Boolean;
-        { lhs <= rhs } -> Boolean;
-        { lhs >= rhs } -> Boolean;
-    };
-
-    /// \brief Concepts for types whose instances can be compared to instances of type UType and yield results consistent with a strict total order on TType.
-    template <typename TType, typename UType>
-    concept TotallyOrderedWith = TotallyOrdered<TType>
-        && TotallyOrdered<UType>
-        && EqualityComparableWith<TType, UType>
-        && TotallyOrdered<Templates::CommonReference<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>>
-        && requires(const Templates::RemoveReference<TType> & lhs, const Templates::RemoveReference<UType> & rhs)
-    {
-        { lhs < rhs } -> Boolean;
-        { lhs > rhs } -> Boolean;
-        { lhs <= rhs } -> Boolean;
-        { lhs >= rhs } -> Boolean;
-        { rhs < lhs } -> Boolean;
-        { rhs > lhs } -> Boolean;
-        { rhs <= lhs } -> Boolean;
-        { rhs >= lhs } -> Boolean;
-    };
-
     // Object concepts.
     // ================
 
