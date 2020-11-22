@@ -44,6 +44,22 @@ namespace Syntropy
     enum class Fix64 : std::int64_t {};
 
     /************************************************************************/
+    /* ENUMERATION CLASS TYPES                                              */
+    /************************************************************************/
+
+    /// \brief 8-bit enum class type.
+    using Enum8 = std::int8_t;
+
+    /// \brief 16-bit enum class type.
+    using Enum16 = std::int16_t;
+
+    /// \brief 32-bit enum class type.
+    using Enum32 = std::int32_t;
+
+    /// \brief 64-bit enum class type.
+    using Enum64 = std::int64_t;
+
+    /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
