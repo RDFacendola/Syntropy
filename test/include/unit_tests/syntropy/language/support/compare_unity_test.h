@@ -27,14 +27,14 @@ namespace Syntropy::UnitTest
         {
             Int value_;
 
-            Bool operator==(Reference<StrongComparable> rhs)
+            Bool operator==(Reference<StrongComparable> rhs) const noexcept
             {
-                return true;
+                return value_ == rhs.value_;
             }
 
             StrongOrdering operator<=>(Reference<StrongComparable> rhs) const noexcept
             {
-                return StrongOrdering::Equal;
+                return  value_ <=> rhs.value_;
             }
         };
     };
@@ -63,7 +63,7 @@ namespace Syntropy::UnitTest
         SYNTROPY_UNIT_EQUAL(foo >= bar, true);
     })
 
-    .TestCase("Instances of a strongly-comparable in which the left-hand-side is less than the right-hand- side class compare less-than. ", [](auto& fixture)
+    .TestCase("Instances of a strongly-comparable in which the left-hand-side is less than the right-hand- side class compare less-than.", [](auto& fixture)
     {
         auto foo = CompareTestFixture::StrongComparable{ 0 };
         auto bar = CompareTestFixture::StrongComparable{ 1 };
@@ -80,7 +80,7 @@ namespace Syntropy::UnitTest
         SYNTROPY_UNIT_EQUAL(foo >= bar, false);
     })
 
-    .TestCase("Instances of a strongly-comparable in which the left-hand-side is greater than the right-hand- side class compare greater-than. ", [](auto& fixture)
+    .TestCase("Instances of a strongly-comparable in which the left-hand-side is greater than the right-hand-side class compare greater-than.", [&](auto& fixture)
     {
         auto foo = CompareTestFixture::StrongComparable{ 1 };
         auto bar = CompareTestFixture::StrongComparable{ 0 };

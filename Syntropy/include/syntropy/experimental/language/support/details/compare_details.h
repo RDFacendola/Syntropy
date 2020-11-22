@@ -49,6 +49,20 @@ namespace Syntropy::Details
         /// \brief Incomparable-with result.
         kIncomparable = -128,
     };
+
+    /************************************************************************/
+    /* CONVERSIONS                                                          */
+    /************************************************************************/
+
+    /// \brief Convert a std::strong_ordering value to a ComparisonResult.
+    constexpr ComparisonResult ToComparisonResult(Reference<std::strong_ordering>) noexcept;
+
+    /// \brief Convert a std::strong_ordering value to a ComparisonResult.
+    constexpr ComparisonResult ToComparisonResult(Reference<std::weak_ordering>) noexcept;
+
+    /// \brief Convert a std::strong_ordering value to a ComparisonResult.
+    constexpr ComparisonResult ToComparisonResult(Reference<std::partial_ordering>) noexcept;
+
 }
 
 // ===========================================================================
@@ -218,3 +232,72 @@ namespace Syntropy::Concepts::Details
 }
 
 // ===========================================================================
+
+namespace Syntropy::Details
+{
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Conversions.
+    // ============
+
+    constexpr ComparisonResult ToComparisonResult(Reference<std::strong_ordering> rhs) noexcept
+    {
+        if (rhs == std::strong_ordering::equivalent)
+        {
+            return Details::ComparisonResult::kEquivalent;
+        }
+
+        if (rhs == std::strong_ordering::greater)
+        {
+            return Details::ComparisonResult::kGreater;
+        }
+        
+        /*if (rhs == std::strong_ordering::less)*/
+        {
+            return  Details::ComparisonResult::kLess;
+        }
+    }
+
+    constexpr ComparisonResult ToComparisonResult(Reference<std::weak_ordering> rhs) noexcept
+    {
+        if (rhs == std::weak_ordering::equivalent)
+        {
+            return Details::ComparisonResult::kEquivalent;
+        }
+
+        if (rhs == std::weak_ordering::greater)
+        {
+            return Details::ComparisonResult::kGreater;
+        }
+
+        /*if (rhs == std::weak_ordering::less)*/
+        {
+            return  Details::ComparisonResult::kLess;
+        }
+    }
+
+    constexpr ComparisonResult ToComparisonResult(Reference<std::partial_ordering> rhs) noexcept
+    {
+        if (rhs == std::partial_ordering::equivalent)
+        {
+            return Details::ComparisonResult::kEquivalent;
+        }
+
+        if (rhs == std::partial_ordering::greater)
+        {
+            return Details::ComparisonResult::kGreater;
+        }
+
+        if (rhs == std::partial_ordering::less)
+        {
+            return Details::ComparisonResult::kLess;
+        }
+
+        /*if (rhs == std::partial_ordering::unordered)*/
+        {
+            return Details::ComparisonResult::kIncomparable;
+        }
+    }
+}

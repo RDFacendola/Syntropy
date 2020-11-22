@@ -10,6 +10,8 @@
 
 #include "syntropy/experimental/language/support/details/compare_details.h"
 
+#include <compare>
+
 // ===========================================================================
 
 namespace Syntropy
@@ -64,10 +66,18 @@ namespace Syntropy
         /// \brief Implicit conversion to partial ordering relationship.
         constexpr operator PartialOrdering() const noexcept;
 
+        /// \brief Convert from std::strong_ordering to StrongOrdering.
+        /// \remarks Allows better interoperability with STL.
+        constexpr StrongOrdering(Reference<std::strong_ordering> value) noexcept;
+
     private:
 
         /// \brief Create a new strong ordering result value.
-        constexpr explicit StrongOrdering(Reference<Details::ComparisonResult> value) noexcept;
+        constexpr explicit StrongOrdering(Reference<Details::ComparisonResult> value) noexcept
+            : value_(value)
+        {
+            // @rfacendola Apparently in VS2019 using the explicit keyword requires both declaration and definition at the same time, otherwise it will ignore that and zero-initialize the instance.
+        }
 
         /// \brief Underlying compare result.
         Details::ComparisonResult value_;
@@ -112,10 +122,22 @@ namespace Syntropy
         /// \brief Implicit conversion to partial ordering relationship.
         constexpr operator PartialOrdering() const noexcept;
 
+        /// \brief Convert from std::strong_ordering to StrongOrdering.
+        /// \remarks Allows better interoperability with STL.
+        constexpr WeakOrdering(Reference<std::strong_ordering> value) noexcept;
+
+        /// \brief Convert from std::weak_ordering to StrongOrdering.
+        /// \remarks Allows better interoperability with STL.
+        constexpr WeakOrdering(Reference<std::weak_ordering> value) noexcept;
+
     private:
 
         /// \brief Create a new weak ordering result value.
-        constexpr explicit WeakOrdering(Reference<Details::ComparisonResult> value) noexcept;
+        constexpr explicit WeakOrdering(Reference<Details::ComparisonResult> value) noexcept
+            : value_(value)
+        {
+            // @rfacendola Apparently in VS2019 using the explicit keyword requires both declaration and definition at the same time, otherwise it will ignore that and zero-initialize the instance.
+        }
 
         /// \brief Underlying compare result.
         Details::ComparisonResult value_;
@@ -161,10 +183,26 @@ namespace Syntropy
         /// \brief Indicates that two elements are incomparable.
         static const PartialOrdering Unordered;
 
+        /// \brief Convert from std::strong_ordering to StrongOrdering.
+        /// \remarks Allows better interoperability with STL.
+        constexpr PartialOrdering(Reference<std::strong_ordering> value) noexcept;
+
+        /// \brief Convert from std::weak_ordering to StrongOrdering.
+        /// \remarks Allows better interoperability with STL.
+        constexpr PartialOrdering(Reference<std::weak_ordering> value) noexcept;
+
+        /// \brief Convert from std::partial_ordering to StrongOrdering.
+        /// \remarks Allows better interoperability with STL.
+        constexpr PartialOrdering(Reference<std::partial_ordering> value) noexcept;
+
     private:
 
         /// \brief Create a new partial ordering result value.
-        constexpr explicit PartialOrdering(Reference<Details::ComparisonResult> value) noexcept;
+        constexpr explicit PartialOrdering(Reference<Details::ComparisonResult> value) noexcept
+            : value_(value)
+        {
+            // @rfacendola Apparently in VS2019 using the explicit keyword requires both declaration and definition at the same time, otherwise it will ignore that and zero-initialize the instance.
+        }
 
         /// \brief Underlying compare result.
         Details::ComparisonResult value_;
@@ -391,12 +429,6 @@ namespace Syntropy
     inline constexpr StrongOrdering StrongOrdering::Equal{ Details::ComparisonResult::kEqual };
     inline constexpr StrongOrdering StrongOrdering::Greater{ Details::ComparisonResult::kGreater };
 
-    constexpr StrongOrdering::StrongOrdering(Reference<Details::ComparisonResult> value) noexcept
-        : value_(value)
-    {
-
-    }
-
     constexpr StrongOrdering::operator WeakOrdering() const noexcept
     {
         return WeakOrdering{ value_ };
@@ -407,6 +439,12 @@ namespace Syntropy
         return PartialOrdering{ value_ };
     }
 
+    constexpr StrongOrdering::StrongOrdering(Reference<std::strong_ordering> value) noexcept
+        : value_(Details::ToComparisonResult(value))
+    {
+
+    }
+
     // Weak ordering.
     // ==============
 
@@ -414,15 +452,21 @@ namespace Syntropy
     inline constexpr WeakOrdering WeakOrdering::Equivalent{ Details::ComparisonResult::kEquivalent };
     inline constexpr WeakOrdering WeakOrdering::Greater{ Details::ComparisonResult::kGreater };
 
-    constexpr WeakOrdering::WeakOrdering(Reference<Details::ComparisonResult> value) noexcept
-        : value_(value)
+    constexpr WeakOrdering::operator PartialOrdering() const noexcept
+    {
+        return PartialOrdering{ value_ };
+    }
+
+    constexpr WeakOrdering::WeakOrdering(Reference<std::strong_ordering> value) noexcept
+        : value_(Details::ToComparisonResult(value))
     {
 
     }
 
-    constexpr WeakOrdering::operator PartialOrdering() const noexcept
+    constexpr WeakOrdering::WeakOrdering(Reference<std::weak_ordering> value) noexcept
+        : value_(Details::ToComparisonResult(value))
     {
-        return PartialOrdering{ value_ };
+
     }
 
     // Partial ordering.
@@ -433,11 +477,24 @@ namespace Syntropy
     inline constexpr PartialOrdering PartialOrdering::Greater{ Details::ComparisonResult::kGreater };
     inline constexpr PartialOrdering PartialOrdering::Unordered{ Details::ComparisonResult::kIncomparable };
 
-    constexpr PartialOrdering::PartialOrdering(Reference<Details::ComparisonResult> value) noexcept
-        : value_(value)
+    constexpr PartialOrdering::PartialOrdering(Reference<std::strong_ordering> value) noexcept
+        : value_(Details::ToComparisonResult(value))
     {
 
     }
+
+    constexpr PartialOrdering::PartialOrdering(Reference<std::weak_ordering> value) noexcept
+        : value_(Details::ToComparisonResult(value))
+    {
+
+    }
+
+    constexpr PartialOrdering::PartialOrdering(Reference<std::partial_ordering> value) noexcept
+        : value_(Details::ToComparisonResult(value))
+    {
+
+    }
+
 
     // Non-member functions.
     // =====================
