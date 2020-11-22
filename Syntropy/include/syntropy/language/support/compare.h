@@ -318,6 +318,65 @@ namespace Syntropy
 
 // ===========================================================================
 
+namespace Syntropy::Templates
+{
+    /************************************************************************/
+    /* TRAITS                                                               */
+    /************************************************************************/
+
+    // \brief Determine the strongest ordering category to which all instances in TOrdering can be implicitly converted to.
+    template <typename... TOrderings>
+    using CommonOrdering = Details::CommonOrdering<TOrderings...>;
+}
+
+// ===========================================================================
+
+namespace Syntropy::Concepts
+{
+    /************************************************************************/
+    /* CONCEPTS                                                             */
+    /************************************************************************/
+
+    /// \brief Models an ordering category TOrdering which is at least as strong as UOrdering.
+    template <typename TOrdering, typename UOrdering>
+    concept CompareAs = Details::CompareAs<TOrdering, UOrdering>;
+
+    /// \brief Models a type TType for which the equality and inequality operators are defined.
+    template <typename TType>
+    concept EqualityComparable = Details::EqualityComparable<TType>;
+
+    /// \brief Models a type TType for which the equality and inequality operators against the (possibly different) type UType are defined.
+    template <typename TType, typename UType>
+    concept EqualityComparableWith = Details::EqualityComparableWith<TType, UType>;
+
+    /// \brief Models a type TType for which the less-than, greater-than, less-than-or-equal-to and greater-than-or-equal-to operators are defined.
+    template <typename TType>
+    concept PartiallyOrdered = Details::PartiallyOrdered<TType>;
+
+    /// \brief Models a type TType for which the less-than, greater-than, less-than-or-equal-to and greater-than-or-equal-to operators against the (possibly different) type UType are defined.
+    template <typename TType, typename UType>
+    concept PartiallyOrderedWith = Details::PartiallyOrderedWith<TType, UType>;
+
+    /// \brief Models a class TType which is both equality-comparable and partially-ordered.
+    template <typename TType>
+    concept TotallyOrdered = Details::TotallyOrdered<TType>;
+
+    /// \brief Models a class TType which is both equality-comparable and partially-ordered against the (possibly different) type UType.
+    template <typename TType, typename UType>
+    concept TotallyOrderedWith = Details::TotallyOrderedWith<TType, UType>;
+
+    /// \brief Models a totally-ordered class TType whose comparison results are consistent with a ordering category implied by TOrdering.
+    template <typename TType, typename TOrdering = PartialOrdering>
+    concept ThreeWayComparable = Details::ThreeWayComparable<TType, TOrdering>;
+
+    /// \brief Models a totally-ordered class TType whose comparison results against the (possibly different) type UType are consistent with a ordering category implied by TOrdering.
+    template <typename TType, typename UType, typename TOrdering = PartialOrdering>
+    concept ThreeWayComparableWith = Details::ThreeWayComparableWith<TType, UType, TOrdering>;
+
+}
+
+// ===========================================================================
+
 namespace Syntropy
 {
     /************************************************************************/
