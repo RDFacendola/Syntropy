@@ -144,8 +144,8 @@
     <ClInclude Include="include\syntropy\language\concepts\concepts.h" />
     <ClInclude Include="include\syntropy\experimental\core\foundation\reverse_range.h" />
     <ClInclude Include="include\syntropy\experimental\core\foundation\zip_range.h" />
-    <ClInclude Include="include\syntropy\language\support\compare.h" />
-    <ClInclude Include="include\syntropy\language\support\details\compare_details.h" />
+    <ClInclude Include="include\syntropy\experimental\language\support\details\compare_details.h" />
+    <ClInclude Include="include\syntropy\experimental\language\support\compare.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

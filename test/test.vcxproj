@@ -160,6 +160,7 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="include\unit_tests\syntropy\language\support\compare_unity_test.h" />
     <ClInclude Include="include\unit_tests\syntropy\language\templates\sequences_unit_test.h" />
     <ClInclude Include="include\unit_tests\syntropy\language\templates\traits_unit_test.h" />
     <ClInclude Include="include\unit_tests\syntropy\language\templates\math_unit_test.h" />

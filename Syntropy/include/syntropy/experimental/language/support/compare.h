@@ -8,7 +8,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/support/details/compare_details.h"
+#include "syntropy/experimental/language/support/details/compare_details.h"
 
 // ===========================================================================
 
