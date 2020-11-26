@@ -3,7 +3,7 @@
 ///
 /// \author Raffaele D. Facendola - June 2020.
 
-#include "application/unit_test_application.h"
+#include <iostream>
 
 /************************************************************************/
 /* ENTRY POINT                                                          */
@@ -11,11 +11,11 @@
 
 int main(int argc, char **argv)
 {
-    auto result = static_cast<int>(Syntropy::UnitTestApplication({ argc, argv }).Run());
+    std::cout << "Hello Syntropy!\n";
 
     system("pause");
 
-    return result;
+    return 0;
 }
 
 

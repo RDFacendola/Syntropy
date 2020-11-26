@@ -19,13 +19,23 @@ namespace Syntropy
 
     /// \brief Boolean value.
     /// \remarks Standard booleans bind also to numeric values.
-    using Bool = bool;
+    using Bool = const bool;
 
     /// \brief 64-bit integer value.
-    using Int = std::int64_t;
+    using Int = const std::int64_t;
 
     /// \brief 32-bit floating point value.
-    using Float = float;
+    using Float = const float;
+
+    /// \brief Boolean value.
+    /// \remarks Standard booleans bind also to numeric values.
+    using RWBool = bool;
+
+    /// \brief 64-bit integer value.
+    using RWInt = std::int64_t;
+
+    /// \brief 32-bit floating point value.
+    using RWFloat = float;
 
     /************************************************************************/
     /* FIXED-SIZE TYPES                                                     */
@@ -65,27 +75,27 @@ namespace Syntropy
 
     /// \brief Convert rhs to a boolean.
     template <typename TType>
-    [[nodiscard]]  constexpr Bool ToBool(TType rhs) noexcept;
+    [[nodiscard]] constexpr Bool ToBool(TType rhs) noexcept;
 
     /// \brief Truncate rhs to an integer value.
     template <typename TNumber>
-    [[nodiscard]]  constexpr Int ToInt(TNumber rhs) noexcept;
+    [[nodiscard]] constexpr Int ToInt(TNumber rhs) noexcept;
 
     /// \brief Convert rhs to a floating point value.
     template <typename TNumber>
-    [[nodiscard]]  constexpr Float ToFloat(TNumber rhs) noexcept;
+    [[nodiscard]] constexpr Float ToFloat(TNumber rhs) noexcept;
 
     /// \brief Cast rhs to a 8-bit integer value.
     template <typename TNumber>
-    [[nodiscard]]  constexpr Fix8 ToFix8(TNumber rhs) noexcept;
+    [[nodiscard]] constexpr Fix8 ToFix8(TNumber rhs) noexcept;
 
     /// \brief Cast rhs to a 16-bit integer value.
     template <typename TNumber>
-    [[nodiscard]]  constexpr Fix16 ToFix16(TNumber rhs) noexcept;
+    [[nodiscard]] constexpr Fix16 ToFix16(TNumber rhs) noexcept;
 
     /// \brief Cast rhs to a 32-bit integer value.
     template <typename TNumber>
-    [[nodiscard]]  constexpr Fix32 ToFix32(TNumber rhs) noexcept;
+    [[nodiscard]] constexpr Fix32 ToFix32(TNumber rhs) noexcept;
 
     /// \brief Cast rhs to a 64-bit integer value.
     template <typename TNumber>

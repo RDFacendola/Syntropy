@@ -143,7 +143,9 @@ namespace Syntropy
 
         auto count = Int{ 0 };
 
-        for (; rhs != 0; rhs &= (rhs - 1))
+        auto test = RWInt{ rhs };
+
+        for (; test != 0; test &= (test - 1))
         {
             ++count;
         }
