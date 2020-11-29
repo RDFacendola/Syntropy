@@ -20,6 +20,7 @@
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
     <ClInclude Include="include\syntropy\language\support\scope_guard.h" />
     <ClInclude Include="include\syntropy\language\support\ignore.h" />
+    <ClInclude Include="include\syntropy\language\support\swap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

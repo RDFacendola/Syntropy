@@ -19,6 +19,7 @@
 #include "syntropy/language/support/initializer_list.h"
 #include "syntropy/language/support/scope_guard.h"
 #include "syntropy/language/support/ignore.h"
+#include "syntropy/language/support/swap.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */

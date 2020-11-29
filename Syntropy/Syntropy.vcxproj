@@ -19,6 +19,7 @@
     <ClInclude Include="include\syntropy\language\support\ignore.h" />
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
     <ClInclude Include="include\syntropy\language\support\scope_guard.h" />
+    <ClInclude Include="include\syntropy\language\support\swap.h" />
     <ClInclude Include="include\syntropy\language\templates\concepts.h" />
     <ClInclude Include="include\syntropy\language\templates\details\concepts_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\math_details.h" />
