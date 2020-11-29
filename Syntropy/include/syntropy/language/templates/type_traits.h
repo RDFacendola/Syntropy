@@ -2,13 +2,15 @@
 /// \file traits.h
 /// \brief This header is part of Syntropy language module. It contains definitions for type traits.
 ///
-/// \author Raffaele D. Facendola - 2020.
+/// \author Raffaele D. Facendola - Nov 2020.
 
 #pragma once
 
-#include "syntropy/language/foundation/types.h"
+#include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/templates/details/traits_details.h"
+#include "syntropy/language/templates/type_transform.h"
+
+#include "syntropy/language/templates/details/type_traits_details.h"
 
 // ===========================================================================
 
@@ -17,10 +19,6 @@ namespace Syntropy::Templates
     /************************************************************************/
     /* META                                                                 */
     /************************************************************************/
-
-    /// \brief Identity transform meant to establish non-deduced contexts in template argument deduction.
-    template <typename TType>
-    using Identity = Details::Identity<TType>;
 
     /// \brief Boolean constant which consume any template argument and evaluates to false. Useful for static_assert that should always trigger a compilation error.
     template <typename... TTypes>
@@ -63,11 +61,6 @@ namespace Syntropy::Templates
     /* TYPE LIST                                                            */
     /************************************************************************/
 
-    /// \brief Represents a ordered sequence of types.
-    /// \author Raffaele D. Facendola - August 2020.
-    template <typename... TTypes>
-    using TypeList = Details::TypeList<TTypes...>;
-
     /// \brief Integer constant equal to the index a type TType in TTypeList.
     /// \remarks If TType doesn't appear exactly once in TTypeList the program is ill-formed.
     template <typename TType, typename TTypeList>
@@ -89,11 +82,6 @@ namespace Syntropy::Templates
     /* MISCELLANEOUS                                                        */
     /************************************************************************/
 
-    /// \brief Applies lvalue-to-rvalue, array-to-pointer, and function-to-pointer implicit conversions to the type TType,
-    /// removes cv-qualifiers, and defines the resulting type as the member typedef type.
-    template <typename TType>
-    using Decay = typename Details::Decay<TType>;
-
     /// \brief Type equal to the type all types among TTypes can be converted to.
     template <typename... TTypes>
     using CommonType = Details::CommonType<TTypes...>;
@@ -101,48 +89,6 @@ namespace Syntropy::Templates
     /// \brief Type equal to the type all types among TTypes can be converted or bound to.
     template <typename... TTypes>
     using CommonReference = Details::CommonReference<TTypes...>;
-
-    /************************************************************************/
-    /* TYPE MANIPULATION                                                    */
-    /************************************************************************/
-
-    /// \brief Type equal to TType without const qualifier.
-    template <typename TType>
-    using RemoveConst = typename Details::RemoveConst<TType>;
-
-    /// \brief Type equal to TType with const qualifiers applied.
-    template <typename TType>
-    using AddConst = typename Details::AddConst<TType>;
-
-    /// \brief Type equal to TType without top-most reference if present, or equal to TType otherwise.
-    template <typename TType>
-    using RemoveReference = typename Details::RemoveReference<TType>;
-
-    /// \brief Type equal to TType without top-most reference and qualifiers.
-    template <typename TType>
-    using RemoveConstReference = typename Details::RemoveConstReference<TType>;
-
-    /// \brief Type of an lvalue reference to TType if possible, or equal to TType otherwise.
-    /// This trait honors reference collapsing rule.
-    template <typename TType>
-    using AddLValueReference = typename Details::AddLValueReference<TType>;
-
-    /// \brief Type of an rvalue reference to TType if possible, or equal to TType otherwise.
-    /// This trait honors reference collapsing rule.
-    template <typename TType>
-    using AddRValueReference = typename Details::AddRValueReference<TType>;
-
-    /// \brief Type equal to TType with const lvalue reference applied.
-    template <typename TType>
-    using AddLValueConstReference = typename Details::AddLValueConstReference<TType>;
-
-    /// \brief Type equal to a pointer to TType if possible, or equal to TType otherwise.
-    template <typename TType>
-    using AddPointer = typename Details::AddPointer<TType>;
-
-    /// \brief Type equal the pointee's type to TType if TType is a pointer type, or equal to TType otherwise.
-    template <typename TType>
-    using RemovePointer = typename Details::RemovePointer<TType>;
 
     /************************************************************************/
     /* TYPE CATEGORIES                                                      */
