@@ -2,16 +2,11 @@
 /// \file ratio.h
 /// \brief This header is part of Syntropy language module. It contains rational numbers (ratios) template machinery.
 ///
-/// \author Raffaele D. Facendola - 2020.
+/// \author Raffaele D. Facendola - Sep 2020.
 
 #pragma once
 
-#include <type_traits>
-#include <ratio>
-
-#include "syntropy/language/foundation/types.h"
-#include "syntropy/language/templates/traits.h"
-#include "syntropy/language/templates/math.h"
+#include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/language/templates/details/ratio_details.h"
 

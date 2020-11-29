@@ -8,8 +8,11 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-
+#include "syntropy/language/templates/type_transform.h"
 #include "syntropy/language/templates/type_traits.h"
+#include "syntropy/language/templates/math.h"
+#include "syntropy/language/templates/ratio.h"
+
 
 /************************************************************************/
 /* ENTRY POINT                                                          */

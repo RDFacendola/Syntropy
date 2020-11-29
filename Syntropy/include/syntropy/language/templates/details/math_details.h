@@ -2,11 +2,11 @@
 /// \file math_details.h
 /// \brief This header is part of Syntropy language module. It contains implementation details of math-related template metaprogramming definitions.
 ///
-/// \author Raffaele D. Facendola - 2020.
+/// \author Raffaele D. Facendola - Sep 2020.
 
 #pragma once
 
-#include "syntropy/language/foundation/types.h"
+#include "syntropy/language/foundation/foundation.h"
 
 // ===========================================================================
 
