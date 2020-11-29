@@ -1,6 +1,6 @@
 
-/// \file functional_details.h
-/// \brief This header is part of Syntropy language module. It contains implementation details for functional-related templates.
+/// \file functions_details.h
+/// \brief This header is part of Syntropy language module. It contains implementation details for fundamental functions.
 ///
 /// \author Raffaele D. Facendola - 2020.
 
@@ -8,7 +8,7 @@
 
 #include <functional>
 
-#include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/type_traits.h"
 
 // ===========================================================================

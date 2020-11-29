@@ -91,15 +91,16 @@
     <ClInclude Include="include\syntropy\experimental\core\foundation\zip_range.h" />
     <ClInclude Include="include\syntropy\experimental\language\support\details\compare_details.h" />
     <ClInclude Include="include\syntropy\experimental\language\support\compare.h" />
-    <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
     <ClInclude Include="include\syntropy\language\templates\type_transform.h" />
     <ClInclude Include="include\syntropy\language\templates\details\type_transform_details.h" />
     <ClInclude Include="include\syntropy\language\templates\type_traits.h" />
     <ClInclude Include="include\syntropy\language\templates\details\type_traits_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\concepts_details.h" />
     <ClInclude Include="include\syntropy\language\templates\concepts.h" />
-    <ClInclude Include="include\syntropy\language\foundation\functional.h" />
-    <ClInclude Include="include\syntropy\language\foundation\details\functional_details.h" />
+    <ClInclude Include="include\syntropy\language\foundation\types.h" />
+    <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
+    <ClInclude Include="include\syntropy\language\foundation\functions.h" />
+    <ClInclude Include="include\syntropy\language\foundation\details\functions_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
