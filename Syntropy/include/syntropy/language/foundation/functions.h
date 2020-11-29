@@ -7,10 +7,8 @@
 #pragma once
 
 #include "syntropy/language/templates/type_traits.h"
-#include "syntropy/language/templates/type_transform.h"
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/foundation/details/functions_details.h"
 
 // ===========================================================================
 
@@ -126,19 +124,6 @@ namespace Syntropy
     /// brief Forward an lvalue as either a lvalue or rvalue and rvalues to rvalues. Forwarding a rvalue as a lvalue is forbidden.
     template <typename TType>
     constexpr ForwardRef<TType> Forward(Templates::RemoveReference<TType>&& rhs) noexcept;
-
-    /************************************************************************/
-    /* TEMPLATES                                                            */
-    /************************************************************************/
-
-    /// \brief Convert TType as a reference type, without calling any constructor.
-    /// \remarks this function shall never be evaluated as it has no definition.
-    template <typename TType>
-    Templates::AddRValueReference<TType> Declval() noexcept;
-
-    /// \brief Invoke a callable object with provided arguments.
-    template <typename TCallable, typename... TArguments>
-    constexpr Templates::InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept;
 
 }
 
@@ -279,14 +264,6 @@ namespace Syntropy
         return static_cast<ForwardRef<TType>>(rhs);
     }
 
-    // Templates.
-    // ==========
-
-    template <typename TCallable, typename... TArguments>
-    constexpr Templates::InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept
-    {
-        return Details::Invoke(Forward<TCallable>(callable), Forward<TArguments>(arguments)...);
-    }
 }
 
 // ===========================================================================

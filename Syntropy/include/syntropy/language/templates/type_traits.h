@@ -6,9 +6,7 @@
 
 #pragma once
 
-#include "syntropy/language/foundation/foundation.h"
-
-#include "syntropy/language/templates/type_transform.h"
+#include "syntropy/language/foundation/types.h"
 
 #include "syntropy/language/templates/details/type_traits_details.h"
 
@@ -61,6 +59,11 @@ namespace Syntropy::Templates
     /* TYPE LIST                                                            */
     /************************************************************************/
 
+    /// \brief Represents a ordered sequence of types.
+    /// \author Raffaele D. Facendola - August 2020.
+    template <typename... TTypes>
+    struct TypeList {};
+
     /// \brief Integer constant equal to the index a type TType in TTypeList.
     /// \remarks If TType doesn't appear exactly once in TTypeList the program is ill-formed.
     template <typename TType, typename TTypeList>
@@ -89,6 +92,57 @@ namespace Syntropy::Templates
     /// \brief Type equal to the type all types among TTypes can be converted or bound to.
     template <typename... TTypes>
     using CommonReference = Details::CommonReference<TTypes...>;
+
+    /************************************************************************/
+    /* TYPE TRANSFORM                                                       */
+    /************************************************************************/
+
+    /// \brief Identity transform meant to establish non-deduced contexts in template argument deduction.
+    template <typename TType>
+    using Identity = Details::Identity<TType>;
+
+    /// \brief Applies lvalue-to-rvalue, array-to-pointer, and function-to-pointer implicit conversions to the type TType,
+    /// removes cv-qualifiers, and defines the resulting type as the member typedef type.
+    template <typename TType>
+    using Decay = Details::Decay<TType>;
+
+    /// \brief Type equal to TType without const qualifier.
+    template <typename TType>
+    using RemoveConst = Details::RemoveConst<TType>;
+
+    /// \brief Type equal to TType with const qualifiers applied.
+    template <typename TType>
+    using AddConst = Details::AddConst<TType>;
+
+    /// \brief Type equal to TType without top-most reference if present, or equal to TType otherwise.
+    template <typename TType>
+    using RemoveReference = Details::RemoveReference<TType>;
+
+    /// \brief Type equal to TType without top-most reference and qualifiers.
+    template <typename TType>
+    using RemoveConstReference = Details::RemoveConstReference<TType>;
+
+    /// \brief Type of an lvalue reference to TType if possible, or equal to TType otherwise.
+    /// This trait honors reference collapsing rule.
+    template <typename TType>
+    using AddLValueReference = Details::AddLValueReference<TType>;
+
+    /// \brief Type of an rvalue reference to TType if possible, or equal to TType otherwise.
+    /// This trait honors reference collapsing rule.
+    template <typename TType>
+    using AddRValueReference = Details::AddRValueReference<TType>;
+
+    /// \brief Type equal to TType with const lvalue reference applied.
+    template <typename TType>
+    using AddLValueConstReference = Details::AddLValueConstReference<TType>;
+
+    /// \brief Type equal to a pointer to TType if possible, or equal to TType otherwise.
+    template <typename TType>
+    using AddPointer = Details::AddPointer<TType>;
+
+    /// \brief Type equal the pointee's type to TType if TType is a pointer type, or equal to TType otherwise.
+    template <typename TType>
+    using RemovePointer = Details::RemovePointer<TType>;
 
     /************************************************************************/
     /* TYPE CATEGORIES                                                      */
@@ -379,6 +433,11 @@ namespace Syntropy::Templates
     /* FUNCTIONAL                                                           */
     /************************************************************************/
 
+        /// \brief Convert TType as a reference type, without calling any constructor.
+    /// \remarks this function shall never be evaluated as it has no definition.
+    template <typename TType>
+    Templates::AddRValueReference<TType> Declval() noexcept;
+
     /// \brief Type alias equal to the argument types a callable object can be called with.
     /// If no matching element could be found, the program is ill-formed.
     template <typename TCallable>
@@ -387,6 +446,29 @@ namespace Syntropy::Templates
     /// \brief Type alias for the return type of a callable object invocation with provided arguments.
     template <typename TCallable, typename... TArguments>
     using InvokeResult = Details::InvokeResult<TCallable, TArguments...>;
+
+    /// \brief Invoke a callable object with provided arguments.
+    template <typename TCallable, typename... TArguments>
+    constexpr InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept;
+}
+
+// ===========================================================================
+
+namespace Syntropy::Templates
+{
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Functional.
+    // ===========
+
+    template <typename TCallable, typename... TArguments>
+    constexpr InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept
+    {
+        return Details::Invoke(Forward<TCallable>(callable), Forward<TArguments>(arguments)...);
+    }
+
 }
 
 // ===========================================================================

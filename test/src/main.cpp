@@ -8,7 +8,6 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/templates/type_transform.h"
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/sequence.h"
 #include "syntropy/language/templates/ratio.h"
