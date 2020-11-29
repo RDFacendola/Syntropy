@@ -2,9 +2,11 @@
 /// \file hal_macro.h
 /// \brief This header is part of Syntropy hardware abstraction layer module. It contains platform-specific macros.
 ///
-/// \author Raffaele D. Facendola - 2020
+/// \author Raffaele D. Facendola - May 2020
 
 #pragma once
+
+// ===========================================================================
 
 namespace Syntropy
 {
@@ -34,3 +36,5 @@ namespace Syntropy
     #endif
 
 }
+
+// ===========================================================================

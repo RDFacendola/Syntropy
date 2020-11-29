@@ -14,6 +14,8 @@
 #include "syntropy/language/templates/math.h"
 #include "syntropy/language/templates/concepts.h"
 
+#include "syntropy/language/preprocessor/macro.h"
+
 /************************************************************************/
 /* ENTRY POINT                                                          */
 /************************************************************************/
