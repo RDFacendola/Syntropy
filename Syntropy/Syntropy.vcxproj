@@ -16,6 +16,7 @@
     <ClInclude Include="include\syntropy\language\foundation\functions.h" />
     <ClInclude Include="include\syntropy\language\foundation\types.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
+    <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
     <ClInclude Include="include\syntropy\language\templates\concepts.h" />
     <ClInclude Include="include\syntropy\language\templates\details\concepts_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\math_details.h" />

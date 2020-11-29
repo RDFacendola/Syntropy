@@ -16,6 +16,8 @@
 
 #include "syntropy/language/preprocessor/macro.h"
 
+#include "syntropy/language/support/initializer_list.h"
+
 /************************************************************************/
 /* ENTRY POINT                                                          */
 /************************************************************************/
