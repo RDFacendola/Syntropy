@@ -27,10 +27,11 @@
     <ClInclude Include="include\syntropy\language\concepts\details\concepts_details.h" />
     <ClInclude Include="include\syntropy\experimental\language\support\compare.h" />
     <ClInclude Include="include\syntropy\experimental\language\support\details\compare_details.h" />
+    <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
     <ClInclude Include="include\syntropy\language\support\details\functional_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\ratio_details.h" />
-    <ClInclude Include="include\syntropy\language\templates\details\traits_details.h" />
     <ClInclude Include="include\syntropy\language\support\functional.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\type_transform_details.h" />
     <ClInclude Include="include\syntropy\language\templates\ratio.h" />
     <ClInclude Include="include\syntropy\language\templates\details\math_details.h" />
     <ClInclude Include="include\syntropy\language\support\explicit.h" />
@@ -95,15 +96,14 @@
     <ClInclude Include="include\syntropy\core\patterns\listener.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\preprocessor.h" />
     <ClInclude Include="include\syntropy\experimental\core\memory.h" />
-    <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
     <ClInclude Include="include\syntropy\language\templates\details\sequence_details.h" />
     <ClInclude Include="include\syntropy\core\patterns\visitor.h" />
     <ClInclude Include="include\syntropy\language\templates\sequence.h" />
     <ClInclude Include="include\syntropy\language\support\scope_guard.h" />
-    <ClInclude Include="include\syntropy\language\templates\traits.h" />
     <ClInclude Include="include\syntropy\language\support\support.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\consume_stream.h" />
     <ClInclude Include="include\syntropy\experimental\serialization\streams\append_stream.h" />
+    <ClInclude Include="include\syntropy\language\templates\type_transform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

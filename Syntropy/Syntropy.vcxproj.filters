@@ -65,9 +65,6 @@
     <ClInclude Include="include\syntropy\core\foundation\span.h" />
     <ClInclude Include="include\syntropy\language\templates\sequence.h" />
     <ClInclude Include="include\syntropy\language\templates\details\sequence_details.h" />
-    <ClInclude Include="include\syntropy\language\templates\traits.h" />
-    <ClInclude Include="include\syntropy\language\templates\details\traits_details.h" />
-    <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\preprocessor.h" />
     <ClInclude Include="include\syntropy\language\support\support.h" />
     <ClInclude Include="include\syntropy\language\support\functional.h" />
@@ -94,6 +91,9 @@
     <ClInclude Include="include\syntropy\experimental\core\foundation\zip_range.h" />
     <ClInclude Include="include\syntropy\experimental\language\support\details\compare_details.h" />
     <ClInclude Include="include\syntropy\experimental\language\support\compare.h" />
+    <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
+    <ClInclude Include="include\syntropy\language\templates\type_transform.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\type_transform_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

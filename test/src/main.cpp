@@ -4,6 +4,9 @@
 /// \author Raffaele D. Facendola - June 2020.
 
 #include <iostream>
+#include <string>
+
+#include "syntropy/language/foundation/foundation.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */
