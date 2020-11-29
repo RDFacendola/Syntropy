@@ -2,11 +2,11 @@
 /// \file sequence.h
 /// \brief This header is part of Syntropy language module. It contains template definitions for sequences.
 ///
-/// \author Raffaele D. Facendola - 2020.
+/// \author Raffaele D. Facendola - Sep 2020.
 
 #pragma once
 
-#include "syntropy/language/foundation/types.h"
+#include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/language/templates/details/sequence_details.h"
 
