@@ -17,6 +17,7 @@
 #include "syntropy/language/preprocessor/macro.h"
 
 #include "syntropy/language/support/initializer_list.h"
+#include "syntropy/language/support/scope_guard.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */

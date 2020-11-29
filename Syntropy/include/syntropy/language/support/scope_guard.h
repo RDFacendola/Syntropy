@@ -2,7 +2,7 @@
 /// \file scope_guard.h
 /// \brief This header is part of the Syntropy language module. It contains definitions for scope-based guards.
 ///
-/// \author Raffaele D. Facendola - 2016
+/// \author Raffaele D. Facendola - Dec 2016
 
 #pragma once
 
@@ -29,16 +29,16 @@ namespace Syntropy
         ScopeGuard() = delete;
 
         /// \brief No copy constructor.
-        ScopeGuard(const ScopeGuard&) = delete;
+        ScopeGuard(Ref<ScopeGuard>) = delete;
 
         /// \brief No assignment operator.
-        ScopeGuard& operator=(const ScopeGuard&) = delete;
+        ScopeGuard& operator=(Ref<ScopeGuard>) = delete;
 
         /// \brief Create a new scope guard.
         ScopeGuard(TFunctor functor) noexcept;
 
         /// \brief Move constructor. The original copy gets dismissed.
-        ScopeGuard(ScopeGuard&& other) noexcept;
+        ScopeGuard(MoveRef<ScopeGuard> other) noexcept;
 
         /// \brief Destroy this instance and calls the functor unless the guard has been dismissed.
         ~ScopeGuard();
@@ -52,7 +52,7 @@ namespace Syntropy
         TFunctor functor_;
 
         ///< \brief Whether the scope guard was dismissed.
-        Bool dismissed_{ false };
+        MutableBool dismissed_{ false };
 
     };
 
@@ -86,7 +86,7 @@ namespace Syntropy
     }
 
     template <typename TFunctor>
-    inline ScopeGuard<TFunctor>::ScopeGuard(ScopeGuard && other) noexcept
+    inline ScopeGuard<TFunctor>::ScopeGuard(MoveRef<ScopeGuard> other) noexcept
         : functor_(Move(other.functor_))
         , dismissed_(other.dismissed_)
     {
@@ -114,7 +114,7 @@ namespace Syntropy
     template <typename TFunctor>
     inline ScopeGuard<TFunctor> MakeScopeGuard(TFunctor functor) noexcept
     {
-        return ScopeGuard<TFunctor>(Move(functor));
+        return ScopeGuard<TFunctor>{ Move(functor) };
     }
 
 }
