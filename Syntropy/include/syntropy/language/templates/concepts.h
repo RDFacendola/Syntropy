@@ -2,11 +2,11 @@
 /// \file concepts.h
 /// \brief This header is part of the Syntropy language module. It contains definitions for fundamental concepts.
 ///
-/// \author Raffaele D. Facendola - 2020
+/// \author Raffaele D. Facendola - Nov 2020
 
 #pragma once
 
-#include "syntropy/language/concepts/details/concepts_details.h"
+#include "syntropy/language/templates/details/concepts_details.h"
 
 // ===========================================================================
 

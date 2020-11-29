@@ -96,6 +96,10 @@
     <ClInclude Include="include\syntropy\language\templates\details\type_transform_details.h" />
     <ClInclude Include="include\syntropy\language\templates\type_traits.h" />
     <ClInclude Include="include\syntropy\language\templates\details\type_traits_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\concepts_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\concepts.h" />
+    <ClInclude Include="include\syntropy\language\foundation\functional.h" />
+    <ClInclude Include="include\syntropy\language\foundation\details\functional_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

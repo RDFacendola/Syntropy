@@ -27,8 +27,12 @@
     <ClInclude Include="include\syntropy\language\concepts\details\concepts_details.h" />
     <ClInclude Include="include\syntropy\experimental\language\support\compare.h" />
     <ClInclude Include="include\syntropy\experimental\language\support\details\compare_details.h" />
+    <ClInclude Include="include\syntropy\language\foundation\details\functional_details.h" />
     <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
+    <ClInclude Include="include\syntropy\language\foundation\functional.h" />
     <ClInclude Include="include\syntropy\language\support\details\functional_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\concepts.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\concepts_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\ratio_details.h" />
     <ClInclude Include="include\syntropy\language\support\functional.h" />
     <ClInclude Include="include\syntropy\language\templates\details\type_traits_details.h" />

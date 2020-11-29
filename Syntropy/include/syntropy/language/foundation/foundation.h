@@ -286,6 +286,14 @@ namespace Syntropy
     /// brief Forward an lvalue as either a lvalue or rvalue and rvalues to rvalues. Forwarding a rvalue as a lvalue is forbidden.
     template <typename TType>
     constexpr ForwardRef<TType> Forward(Templates::RemoveReference<TType>&& rhs) noexcept;
+
+    // Declval.
+    // ========
+
+    /// \brief Convert TType as a reference type, without calling any constructor.
+    /// \remarks this function shall never be evaluated as it has no definition.
+    template <typename TType>
+    Templates::AddRValueReference<TType> Declval() noexcept;
 }
 
 // ===========================================================================

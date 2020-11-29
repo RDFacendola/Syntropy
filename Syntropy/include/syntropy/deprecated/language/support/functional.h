@@ -15,20 +15,6 @@
 
 // ===========================================================================
 
-namespace Syntropy
-{
-    /************************************************************************/
-    /* INVOKE                                                               */
-    /************************************************************************/
-
-    /// \brief Invoke a callable object with provided arguments.
-    template <typename TCallable, typename... TArguments>
-    constexpr Templates::InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept;
-
-}
-
-// ===========================================================================
-
 namespace Syntropy::Functional
 {
     /************************************************************************/

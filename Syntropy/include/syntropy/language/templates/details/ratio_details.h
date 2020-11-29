@@ -9,6 +9,7 @@
 #include <ratio>
 
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/templates/math.h"
 
 // ===========================================================================
 
