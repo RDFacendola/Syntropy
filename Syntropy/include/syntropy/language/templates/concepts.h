@@ -83,6 +83,33 @@ namespace Syntropy::Concepts
     template <typename TType>
     concept CopyConstructible = Details::CopyConstructible<TType>;
 
+    // Comparison concepts.
+    // ====================
+
+    /// \brief Models a type TType for which the equality and inequality operators are defined.
+    template <typename TType>
+    concept EqualityComparable = Details::EqualityComparable<TType>;
+
+    /// \brief Models a type TType for which the equality and inequality operators against the (possibly different) type UType are defined.
+    template <typename TType, typename UType>
+    concept EqualityComparableWith = Details::EqualityComparableWith<TType, UType>;
+
+    /// \brief Models a type TType for which the less-than, greater-than, less-than-or-equal-to and greater-than-or-equal-to operators are defined.
+    template <typename TType>
+    concept PartiallyOrdered = Details::PartiallyOrdered<TType>;
+
+    /// \brief Models a type TType for which the less-than, greater-than, less-than-or-equal-to and greater-than-or-equal-to operators against the (possibly different) type UType are defined.
+    template <typename TType, typename UType>
+    concept PartiallyOrderedWith = Details::PartiallyOrderedWith<TType, UType>;
+
+    /// \brief Models a class TType which is both equality-comparable and partially-ordered.
+    template <typename TType>
+    concept TotallyOrdered = Details::TotallyOrdered<TType>;
+
+    /// \brief Models a class TType which is both equality-comparable and partially-ordered against the (possibly different) type UType.
+    template <typename TType, typename UType>
+    concept TotallyOrderedWith = Details::TotallyOrderedWith<TType, UType>;
+
     // Object concepts.
     // ================
 
@@ -133,6 +160,7 @@ namespace Syntropy::Concepts
     /// \remarks The distinction between this and Relation is purely semantic.
     template <typename TPredicate, typename TType, typename UType>
     concept StrictWeakOrder = Details::StrictWeakOrder<TPredicate, TType, UType>;
+
 }
 
 // ===========================================================================

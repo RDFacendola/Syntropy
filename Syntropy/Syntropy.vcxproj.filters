@@ -21,6 +21,8 @@
     <ClInclude Include="include\syntropy\language\support\scope_guard.h" />
     <ClInclude Include="include\syntropy\language\support\ignore.h" />
     <ClInclude Include="include\syntropy\language\support\swap.h" />
+    <ClInclude Include="include\syntropy\language\support\compare.h" />
+    <ClInclude Include="include\syntropy\language\support\details\compare_details.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

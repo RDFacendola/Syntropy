@@ -123,6 +123,96 @@ namespace Syntropy::Concepts::Details
         && ConstructibleFrom<TType, const TType>
         && ConvertibleTo<const TType, TType>;
 
+    // Comparison concepts.
+    // ====================
+
+    /// \brief Models a type TType for which the equality and inequality operators against the (possibly different) type UType are defined.
+    template <typename TType, typename UType>
+    concept EqualityComparableWithHelper = requires(const Templates::RemoveReference<TType>&lhs, const Templates::RemoveReference<UType>&rhs)
+    {
+        /// \brief Compare lhs and rhs for equality.
+        { lhs == rhs } -> Boolean;
+
+        /// \brief Compare lhs and rhs for inequality.
+        { lhs != rhs } -> Boolean;
+
+        /// \brief Compare rhs and lhs for equality.
+        { rhs == lhs } -> Boolean;
+
+        /// \brief Compare rhs and lhs for inequality.
+        { rhs != lhs } -> Boolean;
+    };
+
+    /// \brief Models a type TType for which the equality and inequality operators are defined.
+    template <typename TType>
+    concept EqualityComparable = EqualityComparableWithHelper<TType, TType>;
+
+    /// \brief Models a type TType for which the equality and inequality operators against the (possibly different) type UType are defined.
+    template <typename TType, typename UType>
+    concept EqualityComparableWith = EqualityComparable<TType>
+        && EqualityComparable<UType>
+        && CommonReferenceWith<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>
+        && EqualityComparable<Templates::CommonReference<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>>
+        && EqualityComparableWithHelper<TType, UType>;
+
+    /// \brief Models a type TType for which the less-than, greater-than, less-than-or-equal-to and greater-than-or-equal-to operators against the (possibly different) type UType are defined.
+    template <typename TType, typename UType>
+    concept PartiallyOrderedWithHelper = requires(const Templates::RemoveReference<TType> &lhs, const Templates::RemoveReference<UType> &rhs)
+    {
+        /// \brief Check whether lhs is less-than rhs.
+        { lhs < rhs } -> Boolean;
+
+        /// \brief Check whether lhs is greater-than rhs.
+        { lhs > rhs } -> Boolean;
+
+        /// \brief Check whether lhs is less-than or equal-to rhs.
+        { lhs <= lhs } -> Boolean;
+
+        /// \brief Check whether lhs is greater-than or equal-to rhs.
+        { lhs >= lhs } -> Boolean;
+
+        /// \brief Check whether rhs is less-than lhs.
+        { rhs < lhs } -> Boolean;
+
+        /// \brief Check whether rhs is greater-than lhs.
+        { rhs > lhs } -> Boolean;
+
+        /// \brief Check whether rhs is less-than or equal-to lhs.
+        { rhs <= lhs } -> Boolean;
+
+        /// \brief Check whether rhs is greater-than or equal-to lhs.
+        { rhs >= lhs } -> Boolean;
+    };
+
+    /// \brief Models a type TType for which the less-than, greater-than, less-than-or-equal-to and greater-than-or-equal-to operators are defined.
+    template <typename TType>
+    concept PartiallyOrdered = PartiallyOrderedWithHelper<TType, TType>;
+
+    /// \brief Models a type TType for which the less-than, greater-than, less-than-or-equal-to and greater-than-or-equal-to operators against the (possibly different) type UType are defined.
+    template <typename TType, typename UType>
+    concept PartiallyOrderedWith = PartiallyOrdered<TType>
+        && PartiallyOrdered<UType>
+        && CommonReferenceWith<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>
+        && PartiallyOrdered<Templates::CommonReference<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>>
+        && PartiallyOrderedWithHelper<TType, UType>;
+
+    /// \brief Models a class TType which is both equality-comparable and partially-ordered against the (possibly different) type UType.
+    template <typename TType, typename UType>
+    concept TotallyOrderedWithHelper = EqualityComparableWith<TType, UType> && PartiallyOrderedWith<TType, UType>;
+
+    /// \brief Models a class TType which is both equality-comparable and partially-ordered.
+    template <typename TType>
+    concept TotallyOrdered = TotallyOrderedWithHelper<TType, TType>;
+
+    /// \brief Models a class TType which is both equality-comparable and partially-ordered against the (possibly different) type UType.
+    template <typename TType, typename UType>
+    concept TotallyOrderedWith = TotallyOrdered<TType>
+        && TotallyOrdered<UType>
+        && CommonReferenceWith<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>
+        && TotallyOrdered<Templates::CommonReference<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>>
+        && TotallyOrderedWithHelper<TType, UType>;
+
+
     // Object concepts.
     // ================
 
