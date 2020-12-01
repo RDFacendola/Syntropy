@@ -23,6 +23,7 @@
     <ClInclude Include="include\syntropy\language\support\compare.h" />
     <ClInclude Include="include\syntropy\language\support\details\compare_details.h" />
     <ClInclude Include="include\syntropy\core\support\scope_guard.h" />
+    <ClInclude Include="include\syntropy\core\support\visitor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
