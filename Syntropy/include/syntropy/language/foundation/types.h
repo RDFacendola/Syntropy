@@ -170,4 +170,22 @@ namespace Syntropy
     template <typename TType>
     using XMutablePtr = TType*;
 
+    /************************************************************************/
+    /* TYPELESS POINTER TYPES                                               */
+    /************************************************************************/
+
+    /// \brief Constant non-owning pointer to a mutable typeless object.
+    using TypelessPtr = void* const;
+
+    /// \brief Constant non-owning pointer to a typeless immutable object.
+    /// \remarks In C++ pointer-to-references are not a thing! The "Ref" suffix in the name simply highlights the "immutable" nature of the pointee. See Ref<T>.
+    using TypelessPtrRef = const void* const;
+
+    /// \brief Mutable non-owning pointer to a mutable typeless object.
+    using MutableTypelessPtr = void*;
+
+    /// \brief Mutable non-owning pointer to an immutable typeless object.
+    /// \remarks In C++ pointer-to-references are not a thing! The "Ref" suffix in the name simply highlights the "immutable" nature of the pointee. See Ref<T>.
+    using MutableTypelessPtrRef = const void*;
+
 }

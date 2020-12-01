@@ -32,14 +32,6 @@ namespace Syntropy::Memory
     /// \brief A non-owning raw pointer to a read-write memory location.
     using RWBytePtr = RWPointer<Byte>;
 
-    /// \brief A non-owning pointer to a typeless read-only memory location.
-    /// A typeless pointer binds to any strongly-typed pointer.
-    using TypelessPtr = Pointer<void>;
-
-    /// \brief A non-owning pointer to a typeless read-write memory location.
-    /// A read-write typeless pointer binds to any non-const strongly-typed pointer.
-    using RWTypelessPtr = RWPointer<void>;
-
     /************************************************************************/
     /* CONVERSION                                                           */
     /************************************************************************/
@@ -55,16 +47,6 @@ namespace Syntropy::Memory
     /// \brief Convert rhs to a read-write byte pointer.
     template <typename TType>
     constexpr RWBytePtr ToRWBytePtr(RWPointer<TType> rhs) noexcept;
-
-    /// \brief Convert rhs to a strongly-typed read-only pointer type.
-    /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
-    template <typename TType>
-    Pointer<TType> FromTypeless(TypelessPtr rhs) noexcept;
-
-    /// \brief Convert rhs to a strongly-typed read-write pointer type.
-    /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
-    template <typename TType>
-    RWPointer<TType> FromTypeless(RWTypelessPtr rhs) noexcept;
 
     /************************************************************************/
     /* STREAM INSERTION                                                     */
@@ -96,18 +78,6 @@ namespace Syntropy::Memory
     constexpr RWBytePtr ToRWBytePtr(RWPointer<TType> rhs) noexcept
     {
         return reinterpret_cast<RWBytePtr>(rhs);
-    }
-
-    template <typename TType>
-    Pointer<TType> FromTypeless(TypelessPtr rhs) noexcept
-    {
-        return reinterpret_cast<Pointer<const TType>>(rhs);
-    }
-
-    template <typename TType>
-    RWPointer<TType> FromTypeless(RWTypelessPtr rhs) noexcept
-    {
-        return reinterpret_cast<RWPointer<TType>>(rhs);
     }
 
     // Stream insertion.

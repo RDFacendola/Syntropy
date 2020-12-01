@@ -73,6 +73,16 @@ namespace Syntropy
     template <typename TType, typename UType>
     constexpr XRef<TType> ToRef(XRef<UType> rhs) noexcept;
 
+    /// \brief Convert rhs to a strongly-typed immutable pointer type.
+    /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
+    template <typename TType>
+    PtrRef<TType> FromTypeless(TypelessPtrRef rhs) noexcept;
+
+    /// \brief Convert rhs to a strongly-typed mutable pointer type.
+    /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
+    template <typename TType>
+    Ptr<TType> FromTypeless(TypelessPtr rhs) noexcept;
+
     /************************************************************************/
     /* ACCESS                                                               */
     /************************************************************************/
@@ -202,6 +212,18 @@ namespace Syntropy
     constexpr XRef<TType> ToRef(XRef<UType> rhs) noexcept
     {
         return static_cast<XRef<TType>>(rhs);
+    }
+
+    template <typename TType>
+    inline PtrRef<TType> FromTypeless(TypelessPtrRef rhs) noexcept
+    {
+        return reinterpret_cast<PtrRef<TType>>(rhs);
+    }
+
+    template <typename TType>
+    inline Ptr<TType> FromTypeless(TypelessPtr rhs) noexcept
+    {
+        return reinterpret_cast<Ptr<TType>>(rhs);
     }
 
     // Access.
