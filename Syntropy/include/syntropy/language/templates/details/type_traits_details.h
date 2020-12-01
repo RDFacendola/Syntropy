@@ -497,7 +497,7 @@ namespace Syntropy::Templates::Details
 
     /// \brief Dummy method used to copy construct an instance.
     template <typename TType>
-    void CopyConstruct(const TType&);
+    void CopyConstruct(Ref<TType>);
 
     /// \brief Detect whether TType is implicitly default constructible from an empty list.
     template <typename TType>
@@ -702,7 +702,7 @@ namespace Syntropy::Templates::Details
     using InvokeResult = std::invoke_result_t<TCallable, TArguments...>;
 
     template <typename TCallable, typename... TArguments>
-    constexpr InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept
+    constexpr InvokeResult<TCallable, TArguments...> Invoke(ForwardRef<TCallable> callable, ForwardRef<TArguments>... arguments) noexcept
     {
         return std::invoke(Forward<TCallable>(callable), Forward<TArguments>(arguments)...);
     }

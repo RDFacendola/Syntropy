@@ -27,7 +27,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for types deriving from TBase ignoring constant-qualifiers.
     template <typename TDerived, typename TBase>
-    concept DerivedFrom = Templates::IsBaseOf<TBase, TDerived> && Templates::IsConvertible<const TDerived*, const TBase*>;
+    concept DerivedFrom = Templates::IsBaseOf<TBase, TDerived> && Templates::IsConvertible<PtrRef<TDerived>, PtrRef<TBase>>;
 
     /// \brief Concept for types convertible to UType.
     template <typename TType, typename UType>
@@ -69,15 +69,15 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for an expression type which can be assigned from UType
     template <typename TType, typename UType>
     concept AssignableFrom = Templates::IsLValueReference<TType>
-        && CommonReferenceWith<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>
-        && requires(TType lhs, UType && rhs)
+        && CommonReferenceWith<Ref<Templates::RemoveReference<TType>>, Ref<Templates::RemoveReference<UType>>>
+        && requires(TType lhs, ForwardRef<UType> rhs)
     {
         { lhs = Forward<UType>(rhs) } -> SameAs<TType>;
     };
 
     /// \brief Concept for a type whose instances are swappable.
     template <typename TType>
-    concept Swappable = requires(TType & lhs, TType & rhs)
+    concept Swappable = requires(MutableRef<TType> lhs, MutableRef<TType> rhs)
     {
         Swap(lhs, rhs);
     };
@@ -85,7 +85,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for a type whose instances can be swapped with instances of type UType.
     template <typename TType, typename UType>
     concept SwappableWith = CommonReferenceWith<TType, UType>
-        && requires(TType && lhs, UType && rhs)
+        && requires(ForwardRef<TType> lhs, ForwardRef<UType> rhs)
     {
         Swap(Forward<TType>(lhs), Forward<TType>(rhs));
         Swap(Forward<TType>(lhs), Forward<UType>(rhs));
@@ -116,19 +116,19 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for types that are either lvalue references or, if move-constructible, copy-constructible by means of direct and copy-initialization that leave the source unchanged afte the copy.
     template <typename TType>
     concept CopyConstructible = MoveConstructible<TType>
-        && ConstructibleFrom<TType, TType&>
-        && ConvertibleTo<TType&, TType>
-        && ConstructibleFrom<TType, const TType&>
-        && ConvertibleTo<const TType&, TType>
-        && ConstructibleFrom<TType, const TType>
-        && ConvertibleTo<const TType, TType>;
+        && ConstructibleFrom<TType, MutableRef<TType>>
+        && ConvertibleTo<MutableRef<TType>, TType>
+        && ConstructibleFrom<TType, Ref<TType>>
+        && ConvertibleTo<Ref<TType>, TType>
+        && ConstructibleFrom<TType, Val<TType>>
+        && ConvertibleTo<Val<TType>, TType>;
 
     // Comparison concepts.
     // ====================
 
     /// \brief Models a type TType for which the equality and inequality operators against the (possibly different) type UType are defined.
     template <typename TType, typename UType>
-    concept EqualityComparableWithHelper = requires(const Templates::RemoveReference<TType>&lhs, const Templates::RemoveReference<UType>&rhs)
+    concept EqualityComparableWithHelper = requires(Ref<Templates::RemoveReference<TType>> lhs, Ref<Templates::RemoveReference<UType>>rhs)
     {
         /// \brief Compare lhs and rhs for equality.
         { lhs == rhs } -> Boolean;
@@ -151,13 +151,13 @@ namespace Syntropy::Concepts::Details
     template <typename TType, typename UType>
     concept EqualityComparableWith = EqualityComparable<TType>
         && EqualityComparable<UType>
-        && CommonReferenceWith<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>
-        && EqualityComparable<Templates::CommonReference<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>>
+        && CommonReferenceWith<Ref<Templates::RemoveReference<TType>>,Ref<Templates::RemoveReference<UType>>>
+        && EqualityComparable<Templates::CommonReference<Ref<Templates::RemoveReference<TType>>, Ref<Templates::RemoveReference<UType>>>>
         && EqualityComparableWithHelper<TType, UType>;
 
     /// \brief Models a type TType for which the less-than, greater-than, less-than-or-equal-to and greater-than-or-equal-to operators against the (possibly different) type UType are defined.
     template <typename TType, typename UType>
-    concept PartiallyOrderedWithHelper = requires(const Templates::RemoveReference<TType> &lhs, const Templates::RemoveReference<UType> &rhs)
+    concept PartiallyOrderedWithHelper = requires(Ref<Templates::RemoveReference<TType>> lhs, Ref<Templates::RemoveReference<UType>> rhs)
     {
         /// \brief Check whether lhs is less-than rhs.
         { lhs < rhs } -> Boolean;
@@ -192,8 +192,8 @@ namespace Syntropy::Concepts::Details
     template <typename TType, typename UType>
     concept PartiallyOrderedWith = PartiallyOrdered<TType>
         && PartiallyOrdered<UType>
-        && CommonReferenceWith<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>
-        && PartiallyOrdered<Templates::CommonReference<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>>
+        && CommonReferenceWith<Ref<Templates::RemoveReference<TType>>, Ref<Templates::RemoveReference<UType>>>
+        && PartiallyOrdered<Templates::CommonReference<Ref<Templates::RemoveReference<TType>>, Ref<Templates::RemoveReference<UType>>>>
         && PartiallyOrderedWithHelper<TType, UType>;
 
     /// \brief Models a class TType which is both equality-comparable and partially-ordered against the (possibly different) type UType.
@@ -208,10 +208,9 @@ namespace Syntropy::Concepts::Details
     template <typename TType, typename UType>
     concept TotallyOrderedWith = TotallyOrdered<TType>
         && TotallyOrdered<UType>
-        && CommonReferenceWith<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>
-        && TotallyOrdered<Templates::CommonReference<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>>
+        && CommonReferenceWith<Ref<Templates::RemoveReference<TType>>, Ref<Templates::RemoveReference<UType>>>
+        && TotallyOrdered<Templates::CommonReference<Ref<Templates::RemoveReference<TType>>, Ref<Templates::RemoveReference<UType>>>>
         && TotallyOrderedWithHelper<TType, UType>;
-
 
     // Object concepts.
     // ================
@@ -220,7 +219,7 @@ namespace Syntropy::Concepts::Details
     template <typename TType>
     concept Movable = Templates::IsObject<TType>
         && MoveConstructible<TType>
-        && AssignableFrom<TType&, TType>
+        && AssignableFrom<MutableRef<TType>, TType>
         && Swappable<TType>;
 
 
@@ -228,9 +227,9 @@ namespace Syntropy::Concepts::Details
     template <typename TType>
     concept Copyable = CopyConstructible<TType>
         && Movable<TType>
-        && AssignableFrom<TType&, TType&>
-        && AssignableFrom<TType&, const TType&>
-        && AssignableFrom<TType&, const TType>;
+        && AssignableFrom<MutableRef<TType>, MutableRef<TType>>
+        && AssignableFrom<MutableRef<TType>, Ref<TType>>
+        && AssignableFrom<MutableRef<TType>, Val<TType>>;
 
     /// \brief Concept for types that are both copyable and default constructible.
     template <typename TType>
@@ -245,7 +244,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for callable types that can be called with a set of arguments TArguments.
     template <typename TCallable, typename... TArguments>
-    concept Invocable = requires(TCallable && callable, TArguments&&... arguments)
+    concept Invocable = requires(ForwardRef<TCallable> callable, TArguments&&... arguments)
     {
         Invoke(Forward<TCallable>, Forward<TArguments>(arguments)...);
     };

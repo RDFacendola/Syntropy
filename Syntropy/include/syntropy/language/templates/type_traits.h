@@ -449,7 +449,7 @@ namespace Syntropy::Templates
 
     /// \brief Invoke a callable object with provided arguments.
     template <typename TCallable, typename... TArguments>
-    constexpr InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept;
+    constexpr InvokeResult<TCallable, TArguments...> Invoke(ForwardRef<TCallable> callable, ForwardRef<TArguments>... arguments) noexcept;
 }
 
 // ===========================================================================
@@ -464,7 +464,7 @@ namespace Syntropy::Templates
     // ===========
 
     template <typename TCallable, typename... TArguments>
-    constexpr InvokeResult<TCallable, TArguments...> Invoke(TCallable&& callable, TArguments&&... arguments) noexcept
+    constexpr InvokeResult<TCallable, TArguments...> Invoke(ForwardRef<TCallable> callable, ForwardRef<TArguments>... arguments) noexcept
     {
         return Details::Invoke(Forward<TCallable>(callable), Forward<TArguments>(arguments)...);
     }
