@@ -433,7 +433,7 @@ namespace Syntropy::Templates
     /* FUNCTIONAL                                                           */
     /************************************************************************/
 
-        /// \brief Convert TType as a reference type, without calling any constructor.
+    /// \brief Convert TType as a reference type, without calling any constructor.
     /// \remarks this function shall never be evaluated as it has no definition.
     template <typename TType>
     Templates::AddRValueReference<TType> Declval() noexcept;
@@ -442,6 +442,10 @@ namespace Syntropy::Templates
     /// If no matching element could be found, the program is ill-formed.
     template <typename TCallable>
     using FunctionArguments = Details::FunctionArguments<TCallable>;
+
+    /// \brief Provides indexed access to function arguments' types.
+    template <Int VIndex, typename TCallable >
+    using FunctionArgumentsElement = TypeListElement<VIndex, FunctionArguments<TCallable>>;
 
     /// \brief Type alias for the return type of a callable object invocation with provided arguments.
     template <typename TCallable, typename... TArguments>

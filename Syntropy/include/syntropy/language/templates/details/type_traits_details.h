@@ -676,7 +676,7 @@ namespace Syntropy::Templates::Details
     /// \brief Provides the a type alias Type, which is the argument types a callable object can be called with.
     /// Partial specialization for lambdas and callable objects.
     template <typename TCallable>
-    struct FunctionArguments : FunctionArguments<decltype(&Decay<TCallable>::operator())>
+    struct FunctionArgumentsHelper : FunctionArgumentsHelper<decltype(&Decay<TCallable>::operator())>
     {
     
     };
@@ -684,7 +684,7 @@ namespace Syntropy::Templates::Details
     /// \brief Provides the a type alias Type, which is the argument types a callable object can be called with.
     /// Partial specialization for non-const member functions.
     template <typename TCallable, typename TReturn, typename... TArguments>
-    struct FunctionArguments<TReturn(TCallable::*)(TArguments...)>
+    struct FunctionArgumentsHelper<TReturn(TCallable::*)(TArguments...)>
     {
         using Type = TypeList<TArguments...>;
     };
@@ -692,10 +692,15 @@ namespace Syntropy::Templates::Details
     /// \brief Provides the a type alias Type, which is the argument types a callable object can be called with.
     /// Partial specialization for const member functions.
     template <typename TCallable, typename TReturn, typename... TArguments>
-    struct FunctionArguments<TReturn(TCallable::*)(TArguments...) const>
+    struct FunctionArgumentsHelper<TReturn(TCallable::*)(TArguments...) const>
     {
         using Type = TypeList<TArguments...>;
     };
+
+    /// \brief Type alias equal to the argument types a callable object can be called with.
+    /// If no matching element could be found, the program is ill-formed.
+    template <typename TCallable>
+    using FunctionArguments = typename Details::FunctionArgumentsHelper<TCallable>::Type;
 
     /// \brief Type alias for the return type of a callable object invocation.
     template <typename TCallable, typename... TArguments>
