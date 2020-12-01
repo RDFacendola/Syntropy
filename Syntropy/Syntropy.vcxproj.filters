@@ -18,11 +18,11 @@
     <ClInclude Include="include\syntropy\language\templates\sequence.h" />
     <ClInclude Include="include\syntropy\language\templates\type_traits.h" />
     <ClInclude Include="include\syntropy\language\support\initializer_list.h" />
-    <ClInclude Include="include\syntropy\language\support\scope_guard.h" />
     <ClInclude Include="include\syntropy\language\support\ignore.h" />
     <ClInclude Include="include\syntropy\language\support\swap.h" />
     <ClInclude Include="include\syntropy\language\support\compare.h" />
     <ClInclude Include="include\syntropy\language\support\details\compare_details.h" />
+    <ClInclude Include="include\syntropy\core\support\scope_guard.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

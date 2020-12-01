@@ -1,6 +1,6 @@
 
 /// \file scope_guard.h
-/// \brief This header is part of the Syntropy language module. It contains definitions for scope-based guards.
+/// \brief This header is part of the Syntropy core module. It contains definitions for scope-based guards.
 ///
 /// \author Raffaele D. Facendola - Dec 2016
 
@@ -16,7 +16,7 @@ namespace Syntropy
     /* SCOPE GUARD                                                          */
     /************************************************************************/
 
-    /// \brief Guards that executes a routine upon destruction unless it was dismissed.
+    /// \brief Guard that executes a routine upon destruction unless it was dismissed.
     /// C++ and Beyond 2012: Systematic Error Handling in C++ - Andrei Alexandrescu
     /// http://channel9.msdn.com/Shows/Going+Deep/C-and-Beyond-2012-Andrei-Alexandrescu-Systematic-Error-Handling-in-C
     /// \author Raffaele D. Facendola - December 2016
