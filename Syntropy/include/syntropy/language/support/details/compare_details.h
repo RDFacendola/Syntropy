@@ -65,7 +65,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Models a class TType which is both equality-comparable and partially-ordered against the (possibly different) type UType.
     template <typename TType, typename UType>
     concept ThreeWayComparableWithHelper = TotallyOrderedWith<TType, UType>
-        && requires(const Templates::RemoveReference<TType> & lhs, const Templates::RemoveReference<UType> & rhs)
+        && requires(Ref<Templates::RemoveReference<TType>> lhs, Ref<Templates::RemoveReference<UType>> rhs)
     {
         /// \brief Compare lhs with rhs.
         { lhs <=> rhs } -> SameAs<Ordering>;
@@ -82,8 +82,8 @@ namespace Syntropy::Concepts::Details
     template <typename TType, typename UType>
     concept ThreeWayComparableWith = ThreeWayComparable<TType>
         && ThreeWayComparable<UType>
-        && CommonReferenceWith<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>
-        && ThreeWayComparable<Templates::CommonReference<const Templates::RemoveReference<TType>&, const Templates::RemoveReference<UType>&>>
+        && CommonReferenceWith<Ref<Templates::RemoveReference<TType>>, Ref<Templates::RemoveReference<UType>>>
+        && ThreeWayComparable<Templates::CommonReference<Ref<Templates::RemoveReference<TType>>, Ref<Templates::RemoveReference<UType>>>>
         && ThreeWayComparableWithHelper<TType, UType>;
 
 }
