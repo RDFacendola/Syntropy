@@ -25,6 +25,7 @@
 
 #include "syntropy/core/foundation/tuple.h"
 #include "syntropy/core/foundation/range.h"
+#include "syntropy/core/foundation/reverse_range.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */
