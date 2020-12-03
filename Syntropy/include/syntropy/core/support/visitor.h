@@ -39,12 +39,12 @@ namespace Syntropy
         /// \brief Attempt to visit an element via a visitor functor.
         /// \return Returns true if the visit was successful, returns false otherwise.
         template <typename TFunction, typename TVisitor>
-        Bool TryVisit(Ref<TVisitor> visitor, TypelessPtr visitable, Ref<std::type_info> type) const;
+        Bool TryVisit(Ref<TVisitor> visitor, TypelessPtr visitable, Ref<std::type_info> type) const noexcept;
 
     private:
 
         /// \brief Visit an element.
-        virtual void VirtualVisit(TypelessPtr visitable, Ref<std::type_info> type) const = 0;
+        virtual void VirtualVisit(TypelessPtr visitable, Ref<std::type_info> type) const noexcept = 0;
 
     };
 
@@ -73,7 +73,7 @@ namespace Syntropy
     // ========
 
     template <typename TVisitable>
-    inline void Visitor::Visit(TVisitable visitable) const
+    inline void Visitor::Visit(TVisitable visitable) const noexcept
     {
         if constexpr (!Templates::IsPolymorphic<TVisitable> || Templates::IsFinal<TVisitable>)
         {
@@ -86,7 +86,7 @@ namespace Syntropy
     }
 
     template <typename TFunction, typename TVisitor>
-    inline Bool Visitor::TryVisit(Ref<TVisitor> visitor, TypelessPtr visitable, Ref<std::type_info> type) const
+    inline Bool Visitor::TryVisit(Ref<TVisitor> visitor, TypelessPtr visitable, Ref<std::type_info> type) const noexcept
     {
         using TArgument = Templates::FunctionArgumentsElement<0, TFunction>;
         using TVisitable = Templates::RemoveReference<TArgument>;
@@ -104,7 +104,7 @@ namespace Syntropy
     // =====================
 
     template <typename... TFunctions>
-    inline auto MakeVisitor(TFunctions... functions)
+    inline auto MakeVisitor(TFunctions... functions) noexcept
     {
         struct LambdaVisitor : public Visitor, public TFunctions...
         {
@@ -119,7 +119,7 @@ namespace Syntropy
             using TFunctions::operator()...;
 
             // Attempt to visit with each of the lambdas.
-            void VirtualVisit(TypelessPtr visitable, Ref<std::type_info> type) const override
+            void VirtualVisit(TypelessPtr visitable, Ref<std::type_info> type) const noexcept override
             {
                 (TryVisit<TFunctions>(ToRef(this), visitable, type) || ...);
             }
