@@ -24,6 +24,7 @@
 #include "syntropy/core/support/visitor.h"
 
 #include "syntropy/core/foundation/tuple.h"
+#include "syntropy/core/foundation/range.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */

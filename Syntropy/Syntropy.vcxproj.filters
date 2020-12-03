@@ -26,6 +26,7 @@
     <ClInclude Include="include\syntropy\core\support\visitor.h" />
     <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
+    <ClInclude Include="include\syntropy\core\foundation\range.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
+    <ClInclude Include="include\syntropy\core\foundation\range.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\core\support\visitor.h" />
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
