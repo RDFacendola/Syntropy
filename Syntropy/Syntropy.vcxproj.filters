@@ -29,6 +29,7 @@
     <ClInclude Include="include\syntropy\core\foundation\range.h" />
     <ClInclude Include="include\syntropy\core\foundation\reverse_range.h" />
     <ClInclude Include="include\syntropy\core\foundation\zip_range.h" />
+    <ClInclude Include="include\syntropy\core\foundation\span.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
