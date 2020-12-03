@@ -21,6 +21,9 @@
 #include "syntropy/language/support/swap.h"
 
 #include "syntropy/core/support/scope_guard.h"
+#include "syntropy/core/support/visitor.h"
+
+#include "syntropy/core/foundation/tuple.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */
