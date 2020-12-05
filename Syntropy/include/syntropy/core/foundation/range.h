@@ -190,12 +190,12 @@ namespace Syntropy
     /// \brief Slice a range returning a subrange to the first count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeT TRange>
-    constexpr TupleT<TRange, TRange> SliceFront(Ref<TRange> range, Int count) noexcept;
+    constexpr Tuple<TRange, TRange> SliceFront(Ref<TRange> range, Int count) noexcept;
 
     /// \brief Slice a range returning a subrange to the last count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeT TRange>
-    constexpr TupleT<TRange, TRange> SliceBack(Ref<TRange> range, Int count) noexcept;
+    constexpr Tuple<TRange, TRange> SliceBack(Ref<TRange> range, Int count) noexcept;
 
     // Contiguous range.
     // =================
@@ -279,13 +279,13 @@ namespace Syntropy
     }
 
     template <Concepts::RandomAccessRangeT TRange>
-    constexpr TupleT<TRange, TRange> SliceFront(Ref<TRange> range, Int count) noexcept
+    constexpr Tuple<TRange, TRange> SliceFront(Ref<TRange> range, Int count) noexcept
     {
         return { Front(range, count), PopFront(range, count) };
     }
 
     template <Concepts::RandomAccessRangeT TRange>
-    constexpr TupleT<TRange, TRange> SliceBack(Ref<TRange> range, Int count) noexcept
+    constexpr Tuple<TRange, TRange> SliceBack(Ref<TRange> range, Int count) noexcept
     {
         return { Back(range, count), PopBack(range, count) };
     }

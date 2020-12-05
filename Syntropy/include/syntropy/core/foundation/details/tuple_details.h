@@ -20,7 +20,7 @@ namespace Syntropy
     /************************************************************************/
 
     template <typename... TTypes>
-    struct TupleT;
+    struct Tuple;
 
     template <Int VIndex, typename TFunction, typename... TTuples>
     constexpr decltype(auto) LockstepApplyAt(ForwardRef<TFunction> function, ForwardRef<TTuples>... tuples) noexcept;
@@ -121,8 +121,8 @@ namespace Syntropy::Details
     /// \brief Specialization for 1-tuples. True if TType can be constructed from UType and the overload doesn't reduce to a copy-constructor.
     template <typename TType, typename UType>
     inline constexpr Bool EnableIfTupleConvertingCopyConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, Ref<UType>>
-        && !Templates::IsConvertible<Ref<TupleT<UType>>, TType>
-        && !Templates::IsConstructible<TType, Ref<TupleT<UType>>>
+        && !Templates::IsConvertible<Ref<Tuple<UType>>, TType>
+        && !Templates::IsConstructible<TType, Ref<Tuple<UType>>>
         && !Templates::IsSame<TType, UType>;
 
     /// \brief Enable converting tuple copy-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-copy-constructed from the respective UType and the overload does not reduce to a copy-constructor.
@@ -142,8 +142,8 @@ namespace Syntropy::Details
     /// \brief Specialization for 1-tuples. True if TType can be constructed from UType and the overload doesn't reduce to a move-constructor.
     template <typename TType, typename UType>
     inline constexpr Bool EnableIfTupleConvertingMoveConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, MoveRef<UType>>
-        && !Templates::IsConvertible<TupleT<UType>, TType>
-        && !Templates::IsConstructible<TType, TupleT<UType>>
+        && !Templates::IsConvertible<Tuple<UType>, TType>
+        && !Templates::IsConstructible<TType, Tuple<UType>>
         && !Templates::IsSame<TType, UType>;
 
     /// \brief Enable converting tuple move-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-move-constructed from the respective UType and the overload does not reduce to a move-constructor.
@@ -188,7 +188,7 @@ namespace Syntropy::Details
 
     /// \brief Specialization for tuples.
     template <Int VCount, typename TElement, typename... TElements>
-    struct TupleBaseHelper<VCount, TupleT<TElement, TElements...>> : TupleBaseHelper<VCount - 1, TupleT<TElements...>> {};
+    struct TupleBaseHelper<VCount, Tuple<TElement, TElements...>> : TupleBaseHelper<VCount - 1, Tuple<TElements...>> {};
 
     /// \brief End of recursion.
     template <typename TTuple>

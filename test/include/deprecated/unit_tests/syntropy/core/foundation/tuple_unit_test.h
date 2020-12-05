@@ -19,7 +19,7 @@ namespace Syntropy::UnitTest
     /* TUPLE TEST FIXTURE                                                   */
     /************************************************************************/
 
-    /// \brief TupleT test fixture.
+    /// \brief Tuple test fixture.
     struct TupleTestFixture
     {
         /// \brief Default constructible struct definition.
@@ -150,7 +150,7 @@ namespace Syntropy::UnitTest
 
     .TestCase("Empty tuples are always implicitly-default-constructible.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(Syntropy::Templates::IsImplicitlyDefaultConstructible<TupleT<>>, true);
+        SYNTROPY_UNIT_EQUAL(Syntropy::Templates::IsImplicitlyDefaultConstructible<Tuple<>>, true);
     })
 
     .TestCase("A tuple is explicitly default constructible if any of its elements is explicitly default-constructible.", [](auto& fixture)
@@ -160,7 +160,7 @@ namespace Syntropy::UnitTest
         using OptionalExplicitDefaultConstructibleFoo = TupleTestFixture::OptionalExplicitDefaultConstructibleFoo;
         using OptionalImplicitDefaultConstructibleFoo = TupleTestFixture::OptionalImplicitDefaultConstructibleFoo;
 
-        // [i] Explicit default ctor: TupleT<T> t{};
+        // [i] Explicit default ctor: Tuple<T> t{};
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<ExplicitDefaultConstructibleFoo>), false);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsDefaultConstructible<ExplicitDefaultConstructibleFoo>), true);
@@ -182,7 +182,7 @@ namespace Syntropy::UnitTest
         using OptionalExplicitDefaultConstructibleFoo = TupleTestFixture::OptionalExplicitDefaultConstructibleFoo;
         using OptionalImplicitDefaultConstructibleFoo = TupleTestFixture::OptionalImplicitDefaultConstructibleFoo;
 
-        // [i] Implicit default ctor: TupleT<T> t = {};
+        // [i] Implicit default ctor: Tuple<T> t = {};
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<ImplicitDefaultConstructibleFoo>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsDefaultConstructible<ImplicitDefaultConstructibleFoo>), true);
@@ -203,16 +203,16 @@ namespace Syntropy::UnitTest
         using ImplicitCopyConstructibleFoo = TupleTestFixture::ImplicitCopyConstructibleFoo;
         using ExplicitlyConvertibleFoo = TupleTestFixture::ExplicitlyConvertibleFoo;
 
-        // [i] Explicit direct ctor: TupleT<U> t{u};
+        // [i] Explicit direct ctor: Tuple<U> t{u};
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ExplicitCopyConstructibleFoo>, ExplicitCopyConstructibleFoo>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ExplicitCopyConstructibleFoo>, ExplicitCopyConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ExplicitCopyConstructibleFoo>, ExplicitCopyConstructibleFoo>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ExplicitCopyConstructibleFoo>, ExplicitCopyConstructibleFoo>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>, ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>, ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>, ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>, ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ExplicitlyConvertibleFoo>, ImplicitCopyConstructibleFoo>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ExplicitlyConvertibleFoo>, ImplicitCopyConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ExplicitlyConvertibleFoo>, ImplicitCopyConstructibleFoo>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ExplicitlyConvertibleFoo>, ImplicitCopyConstructibleFoo>), true);
     })
 
     .TestCase("A tuple is implicitly direct-constructible if all of its elements are implicitly direct-constructible.", [](auto& fixture)
@@ -221,16 +221,16 @@ namespace Syntropy::UnitTest
         using ImplicitCopyConstructibleFoo = TupleTestFixture::ImplicitCopyConstructibleFoo;
         using ImplicitlyConvertibleFoo = TupleTestFixture::ImplicitlyConvertibleFoo;
 
-        // [i] Implicit direct ctor: TupleT<U> t = {u};
+        // [i] Implicit direct ctor: Tuple<U> t = {u};
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ImplicitCopyConstructibleFoo>, ImplicitCopyConstructibleFoo>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ImplicitCopyConstructibleFoo>, ImplicitCopyConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ImplicitCopyConstructibleFoo>, ImplicitCopyConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ImplicitCopyConstructibleFoo>, ImplicitCopyConstructibleFoo>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ImplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>, ImplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ImplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>, ImplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ImplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>, ImplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ImplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>, ImplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ImplicitlyConvertibleFoo>, ExplicitCopyConstructibleFoo>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ImplicitlyConvertibleFoo>, ExplicitCopyConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ImplicitlyConvertibleFoo>, ExplicitCopyConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ImplicitlyConvertibleFoo>, ExplicitCopyConstructibleFoo>), true);
      })
 
     .TestCase("A tuple is explicitly converting-copy-constructible if any of its elements is explicitly direct-constructible or copy-constructible.", [](auto& fixture)
@@ -240,13 +240,13 @@ namespace Syntropy::UnitTest
         using ExplicitlyConvertibleFoo = TupleTestFixture::ExplicitlyConvertibleFoo;
         using ImplicitlyConvertibleFoo = TupleTestFixture::ImplicitlyConvertibleFoo;
 
-        // [i] Explicit converting-copy ctor: TupleT<U> t { TupleT<V>(v) };
+        // [i] Explicit converting-copy ctor: Tuple<U> t { Tuple<V>(v) };
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ExplicitlyConvertibleFoo>, const TupleT<ExplicitCopyConstructibleFoo>&>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ExplicitlyConvertibleFoo>, const TupleT<ExplicitCopyConstructibleFoo>&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ExplicitlyConvertibleFoo>, const Tuple<ExplicitCopyConstructibleFoo>&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ExplicitlyConvertibleFoo>, const Tuple<ExplicitCopyConstructibleFoo>&>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ExplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, const TupleT<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>&>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ExplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, const TupleT<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ExplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, const Tuple<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ExplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, const Tuple<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>>), true);
      })
 
     .TestCase("A tuple is implicitly converting-copy-constructible if all of its elements are explicitly direct-constructible or copy-constructible.", [](auto& fixture)
@@ -255,13 +255,13 @@ namespace Syntropy::UnitTest
         using ImplicitCopyConstructibleFoo = TupleTestFixture::ImplicitCopyConstructibleFoo;
         using ImplicitlyConvertibleFoo = TupleTestFixture::ImplicitlyConvertibleFoo;
 
-        // [i] Implicit converting-copy ctor: TupleT<U> t = { TupleT<V>(v) };
+        // [i] Implicit converting-copy ctor: Tuple<U> t = { Tuple<V>(v) };
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ImplicitlyConvertibleFoo>, const TupleT<ImplicitCopyConstructibleFoo>&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ImplicitlyConvertibleFoo>, const TupleT<ImplicitCopyConstructibleFoo>&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ImplicitlyConvertibleFoo>, const Tuple<ImplicitCopyConstructibleFoo>&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ImplicitlyConvertibleFoo>, const Tuple<ImplicitCopyConstructibleFoo>&>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ImplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, const TupleT<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ImplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, const TupleT<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ImplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, const Tuple<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ImplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, const Tuple<ExplicitCopyConstructibleFoo, ImplicitCopyConstructibleFoo>&>), true);
      })
 
     .TestCase("A tuple is explicitly converting-move-constructible if any of its elements is explicitly direct-constructible or move-constructible.", [](auto& fixture)
@@ -271,13 +271,13 @@ namespace Syntropy::UnitTest
         using ExplicitlyConvertibleFoo = TupleTestFixture::ExplicitlyConvertibleFoo;
         using ImplicitlyConvertibleFoo = TupleTestFixture::ImplicitlyConvertibleFoo;
 
-        // [i] Explicit converting-copy ctor: TupleT<U> t { TupleT<V>(v) };
+        // [i] Explicit converting-copy ctor: Tuple<U> t { Tuple<V>(v) };
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ExplicitlyConvertibleFoo>, TupleT<ExplicitMoveConstructibleFoo>&&>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ExplicitlyConvertibleFoo>, TupleT<ExplicitMoveConstructibleFoo>&&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ExplicitlyConvertibleFoo>, Tuple<ExplicitMoveConstructibleFoo>&&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ExplicitlyConvertibleFoo>, Tuple<ExplicitMoveConstructibleFoo>&&>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ExplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, TupleT<ExplicitMoveConstructibleFoo, ImplicitMoveConstructibleFoo>&&>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ExplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, TupleT<ExplicitMoveConstructibleFoo, ImplicitMoveConstructibleFoo>&&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ExplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, Tuple<ExplicitMoveConstructibleFoo, ImplicitMoveConstructibleFoo>&&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ExplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, Tuple<ExplicitMoveConstructibleFoo, ImplicitMoveConstructibleFoo>&&>), true);
      })
 
     .TestCase("A tuple is implicitly converting-move-constructible if all of its elements are explicitly direct-constructible or move-constructible.", [](auto& fixture)
@@ -286,35 +286,35 @@ namespace Syntropy::UnitTest
         using ImplicitMoveConstructibleFoo = TupleTestFixture::ImplicitMoveConstructibleFoo;
         using ImplicitlyConvertibleFoo = TupleTestFixture::ImplicitlyConvertibleFoo;
 
-        // [i] Implicit converting-copy ctor: TupleT<U> t = { TupleT<V>(v) };
+        // [i] Implicit converting-copy ctor: Tuple<U> t = { Tuple<V>(v) };
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ImplicitlyConvertibleFoo>, TupleT<ImplicitMoveConstructibleFoo>&&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ImplicitlyConvertibleFoo>, TupleT<ImplicitMoveConstructibleFoo>&&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ImplicitlyConvertibleFoo>, Tuple<ImplicitMoveConstructibleFoo>&&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ImplicitlyConvertibleFoo>, Tuple<ImplicitMoveConstructibleFoo>&&>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<TupleT<ImplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, TupleT<ExplicitMoveConstructibleFoo, ImplicitMoveConstructibleFoo>&&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TupleT<ImplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, TupleT<ExplicitMoveConstructibleFoo, ImplicitMoveConstructibleFoo>&&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyConstructible<Tuple<ImplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, Tuple<ExplicitMoveConstructibleFoo, ImplicitMoveConstructibleFoo>&&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<Tuple<ImplicitlyConvertibleFoo, ImplicitlyConvertibleFoo>, Tuple<ExplicitMoveConstructibleFoo, ImplicitMoveConstructibleFoo>&&>), true);
      })
 
     .TestCase("A tuple size is equal to the number of elements it can store.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::Rank<TupleT<>>), 0);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::Rank<TupleT<Int>>), 1);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::Rank<TupleT<Int, Float>>), 2);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::Rank<Tuple<>>), 0);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::Rank<Tuple<Int>>), 1);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::Rank<Tuple<Int, Float>>), 2);
     })
 
     .TestCase("TupleElement trait is used to get the type a tuple element by index.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<0, TupleT<Bool>>, Bool>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<0, TupleT<Int, Float>>, Int>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<1, TupleT<Int, Float>>, Float>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<0, Tuple<Bool>>, Bool>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<0, Tuple<Int, Float>>, Int>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsSame<Templates::TupleElement<1, Tuple<Int, Float>>, Float>), true);
     })
 
     .TestCase("Tuples provide read-access by index to their elements.", [](auto& fixture)
     {
         auto scalar = Int{ 3 };
 
-        auto tuple_a = TupleT<const Int, Int, Int&, Float>{ 100, 200, scalar, 400.0f };
-        auto tuple_b = TupleT<const Int, Int, Int&, Float>{ 100, 200, scalar, 400.0f };
+        auto tuple_a = Tuple<const Int, Int, Int&, Float>{ 100, 200, scalar, 400.0f };
+        auto tuple_b = Tuple<const Int, Int, Int&, Float>{ 100, 200, scalar, 400.0f };
 
         scalar = 300;
 
@@ -334,7 +334,7 @@ namespace Syntropy::UnitTest
     {
         auto scalar = Int{ 3 };
 
-        auto tuple = TupleT<const Int, Int, Int&, Float>{ 1, 2, scalar, 4.0f };
+        auto tuple = Tuple<const Int, Int, Int&, Float>{ 1, 2, scalar, 4.0f };
 
         // Get<0>(tuple) = 100;
         Get<1>(tuple) = 200;
@@ -353,8 +353,8 @@ namespace Syntropy::UnitTest
     {
         auto scalar = Int{ 3 };
 
-        auto tuple_a = TupleT<const Int, Int, Int&, Float>{ 100, 200, scalar, 400.0f };
-        auto tuple_b = TupleT<const Int, Int, Int&, Float>{ 100, 200, scalar, 400.0f };
+        auto tuple_a = Tuple<const Int, Int, Int&, Float>{ 100, 200, scalar, 400.0f };
+        auto tuple_b = Tuple<const Int, Int, Int&, Float>{ 100, 200, scalar, 400.0f };
 
         scalar = 300;
 
@@ -374,7 +374,7 @@ namespace Syntropy::UnitTest
     {
         auto scalar = Int{ 3 };
 
-        auto tuple = TupleT<const Int, Int, Int&, Float>{ 1, 2, scalar, 4.0f };
+        auto tuple = Tuple<const Int, Int, Int&, Float>{ 1, 2, scalar, 4.0f };
 
         // Get<0>(tuple) = 100;
         Get<1>(tuple) = 200;
@@ -391,18 +391,18 @@ namespace Syntropy::UnitTest
 
     .TestCase("Tuples with the same elements are equal.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((TupleT<Int, Float>{ 10, 20.0f } == TupleT<Int, Float>{ 10, 20.0f }), true);
-        SYNTROPY_UNIT_EQUAL((TupleT<Int, Float>{ 10, 20.0f } != TupleT<Int, Float>{ 20, 10.0f }), true);
+        SYNTROPY_UNIT_EQUAL((Tuple<Int, Float>{ 10, 20.0f } == Tuple<Int, Float>{ 10, 20.0f }), true);
+        SYNTROPY_UNIT_EQUAL((Tuple<Int, Float>{ 10, 20.0f } != Tuple<Int, Float>{ 20, 10.0f }), true);
     })
 
     .TestCase("Tuples whose elements compare equivalent are equal, even if they have different types.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((TupleT<Int, Float>{ 10, 20.0f } == TupleT<Float, Int>{ 10.0f, 20 }), true);
+        SYNTROPY_UNIT_EQUAL((Tuple<Int, Float>{ 10, 20.0f } == Tuple<Float, Int>{ 10.0f, 20 }), true);
     })
 
     .TestCase("Copy-constructed tuples are equal to each other.", [](auto& fixture)
     {
-        auto tuple_source = TupleT<Int, Float>{ 10, 20.0f };
+        auto tuple_source = Tuple<Int, Float>{ 10, 20.0f };
         auto tuple_copy = tuple_source;
 
         SYNTROPY_UNIT_EQUAL(tuple_copy == tuple_source, true);
@@ -410,14 +410,14 @@ namespace Syntropy::UnitTest
     
     .TestCase("Empty tuples are trivially copy-assignable.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<TupleT<>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsTriviallyCopyAssignable<TupleT<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<Tuple<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsTriviallyCopyAssignable<Tuple<>>), true);
     })
     
     .TestCase("Empty tuples are trivially move-assignable.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<TupleT<>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsTriviallyMoveAssignable<TupleT<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<Tuple<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsTriviallyMoveAssignable<Tuple<>>), true);
     })
 
     .TestCase("Tuples with copy-assignable elements are copy-assignable themselves.", [](auto& fixture)
@@ -425,11 +425,11 @@ namespace Syntropy::UnitTest
         using MovableOnlyFoo = TupleTestFixture::MovableOnlyFoo;
         using CopyableOnlyFoo = TupleTestFixture::CopyableOnlyFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<TupleT<Int, Float>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<TupleT<Int, Float, CopyableOnlyFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<Tuple<Int, Float>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<Tuple<Int, Float, CopyableOnlyFoo>>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<TupleT<Int, Float, MovableOnlyFoo >>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<TupleT<Int, Float, MovableOnlyFoo, CopyableOnlyFoo >>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<Tuple<Int, Float, MovableOnlyFoo >>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyAssignable<Tuple<Int, Float, MovableOnlyFoo, CopyableOnlyFoo >>), false);
     })
         
     .TestCase("Tuples with move-assignable elements are move-assignable themselves.", [](auto& fixture)
@@ -437,17 +437,17 @@ namespace Syntropy::UnitTest
         using MovableOnlyFoo = TupleTestFixture::MovableOnlyFoo;
         using CopyableOnlyFoo = TupleTestFixture::CopyableOnlyFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<TupleT<Int, Float>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<TupleT<Int, Float, MovableOnlyFoo>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<TupleT<Int, Float, CopyableOnlyFoo>>), true);                     // Will fallback on the copy constructor.
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<TupleT<Int, Float, MovableOnlyFoo, CopyableOnlyFoo >>), true);    // Will fallback on the copy constructor.
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<Tuple<Int, Float>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<Tuple<Int, Float, MovableOnlyFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<Tuple<Int, Float, CopyableOnlyFoo>>), true);                     // Will fallback on the copy constructor.
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsMoveAssignable<Tuple<Int, Float, MovableOnlyFoo, CopyableOnlyFoo >>), true);    // Will fallback on the copy constructor.
     })
 
     .TestCase("Copy-constructing and copy-assigning a tuple the same values produces two equal tuples.", [](auto& fixture)
     {
-        auto copy_construct_tuple = TupleT<Int, Float>{ 10, 30.0f };
+        auto copy_construct_tuple = Tuple<Int, Float>{ 10, 30.0f };
 
-        auto copy_assign_tuple = TupleT<Int, Float>{};
+        auto copy_assign_tuple = Tuple<Int, Float>{};
 
         copy_assign_tuple = copy_construct_tuple;
 
@@ -458,8 +458,8 @@ namespace Syntropy::UnitTest
     {
         using TestMovableOnlyFoo = TupleTestFixture::TestMovableOnlyFoo;
 
-        auto source_tuple = TupleT<TestMovableOnlyFoo>{};
-        auto destination_tuple = TupleT<TestMovableOnlyFoo>{ Move(source_tuple) };       // @rfacendola Accessing source_tuple after this point results in undefined behavior.
+        auto source_tuple = Tuple<TestMovableOnlyFoo>{};
+        auto destination_tuple = Tuple<TestMovableOnlyFoo>{ Move(source_tuple) };       // @rfacendola Accessing source_tuple after this point results in undefined behavior.
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Get<0>(source_tuple).moved_), true);
     })
@@ -468,13 +468,13 @@ namespace Syntropy::UnitTest
     {
         using MovableOnlyFoo = TupleTestFixture::MovableOnlyFoo;
 
-        auto tuple_int = TupleT<Int>{ 10 };
-        auto tuple_float = TupleT<Float>{ 20.0f };
+        auto tuple_int = Tuple<Int>{ 10 };
+        auto tuple_float = Tuple<Float>{ 20.0f };
 
         // tuple_float = tuple_int;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<TupleT<Int>&, const TupleT<Float>&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<TupleT<Float>&, const TupleT<Int>&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<Int>&, const Tuple<Float>&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<Float>&, const Tuple<Int>&>), true);
     })
 
     .TestCase("Tuples can implicitly convert elements during move assignment.", [](auto& fixture)
@@ -482,13 +482,13 @@ namespace Syntropy::UnitTest
         using TestMovableOnlyFoo = TupleTestFixture::TestMovableOnlyFoo;
         using TestMovableOnlyBar = TupleTestFixture::TestMovableOnlyBar;
 
-        auto tuple_foo = TupleT<TestMovableOnlyFoo>{};
-        auto tuple_bar = TupleT<TestMovableOnlyBar>{};
+        auto tuple_foo = Tuple<TestMovableOnlyFoo>{};
+        auto tuple_bar = Tuple<TestMovableOnlyBar>{};
 
         tuple_bar = Move(tuple_foo);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<TupleT<TestMovableOnlyBar>&, TupleT<TestMovableOnlyFoo>&&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<TupleT<TestMovableOnlyFoo>&, TupleT<TestMovableOnlyBar>&&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<TestMovableOnlyBar>&, Tuple<TestMovableOnlyFoo>&&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<Tuple<TestMovableOnlyFoo>&, Tuple<TestMovableOnlyBar>&&>), false);
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Get<0>(tuple_foo).moved_), true);
     })

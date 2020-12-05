@@ -34,12 +34,12 @@ namespace Syntropy
         constexpr ZipRange(Ref<TRanges>... ranges) noexcept;
 
         /// \brief Access the zipped ranges.
-        constexpr Ref<TupleT<TRanges...>> GetRanges() const noexcept;
+        constexpr Ref<Tuple<TRanges...>> GetRanges() const noexcept;
 
     private:
 
         /// \brief Underlying ranges.
-        TupleT<TRanges...> ranges_;
+        Tuple<TRanges...> ranges_;
 
     };
 
@@ -61,12 +61,12 @@ namespace Syntropy
     /// \brief Access the first element in a zip-range.
     /// \remarks Accessing the first element of an empty zip-range results in undefined behavior.
     template <Concepts::ForwardRangeT... TRanges>
-    constexpr TupleT<Templates::RangeElementReferenceType<TRanges>...> Front(Ref<ZipRange<TRanges...>> zip_range) noexcept;
+    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Front(Ref<ZipRange<TRanges...>> zip_range) noexcept;
 
     /// \brief Access the first element in each range and zip the result in a tuple,
     /// \remarks Accessing the first element when any of the provided ranges is empty results results in undefined behavior.
     template <Concepts::ForwardRangeT... TRanges>
-    constexpr TupleT<Templates::RangeElementReferenceType<TRanges>...> ZipFront(Ref<TRanges>... ranges) noexcept;
+    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> ZipFront(Ref<TRanges>... ranges) noexcept;
 
     /// \brief Discard the first count elements in a zip-range and return the resulting sub-zip-range.
     /// \remarks If this method would cause the sub-zip-range to exceed the original zip-range, the behavior of this method is undefined.
@@ -84,7 +84,7 @@ namespace Syntropy
     /// \brief Access the last element in a zip-range.
     /// \remarks Accessing the last element of an empty zip-range results in undefined behavior.
     template <Concepts::BidirectionalRangeT... TRanges>
-    constexpr MutableRef<TupleT<TRanges...>> Back(Ref<ZipRange<TRanges...>> zip_range) noexcept;
+    constexpr MutableRef<Tuple<TRanges...>> Back(Ref<ZipRange<TRanges...>> zip_range) noexcept;
 
     /// \brief Discard the last count elements in a zip-range and return the resulting sub-zip-range.
     /// \remarks If this method would cause the sub-zip-range to exceed the original zip-range, the behavior of this method is undefined.
@@ -109,7 +109,7 @@ namespace Syntropy
     /// \brief Obtain a zip-range element at given index.
     /// \remarks Exceeding zip-range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeT... TRanges>
-    constexpr TupleT<TRanges...>& Select(Ref<ZipRange<TRanges...>> zip_range, Int index) noexcept;
+    constexpr Tuple<TRanges...>& Select(Ref<ZipRange<TRanges...>> zip_range, Int index) noexcept;
 
     // Contiguous range.
     // =================
@@ -117,7 +117,7 @@ namespace Syntropy
     /// \brief Access underlying zip-range data.
     /// \remarks Accessing data of an empty zip-range is allowed but the returned value is unspecified.
     template <Concepts::ContiguousRangeT... TRanges>
-    constexpr TupleT<TRanges*...> Data(Ref<ZipRange<TRanges...>> zip_range) noexcept;
+    constexpr Tuple<TRanges*...> Data(Ref<ZipRange<TRanges...>> zip_range) noexcept;
 
 }
 
@@ -134,7 +134,7 @@ namespace Syntropy::Templates
     struct RangeTraits<ZipRange<TRanges...>>
     {
         /// \brief Type of a reference to a range element.
-        using ElementReferenceType = TupleT<RangeElementReferenceType<TRanges>...>;
+        using ElementReferenceType = Tuple<RangeElementReferenceType<TRanges>...>;
     };
 }
 
@@ -157,7 +157,7 @@ namespace Syntropy
     }
 
     template <Concepts::RangeT... TRanges>
-    constexpr const TupleT<TRanges...>& ZipRange<TRanges...>::GetRanges() const noexcept
+    constexpr const Tuple<TRanges...>& ZipRange<TRanges...>::GetRanges() const noexcept
     {
         return ranges_;
     }
@@ -176,7 +176,7 @@ namespace Syntropy
     // Forward range.
 
     template <Concepts::ForwardRangeT... TRanges>
-    constexpr TupleT<Templates::RangeElementReferenceType<TRanges>...> Front(Ref<ZipRange<TRanges...>> zip_range) noexcept
+    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Front(Ref<ZipRange<TRanges...>> zip_range) noexcept
     {
         auto& ranges = zip_range.GetRanges();
 
@@ -184,7 +184,7 @@ namespace Syntropy
     }
 
     template <Concepts::ForwardRangeT... TRanges>
-    constexpr TupleT<Templates::RangeElementReferenceType<TRanges>...> ZipFront(Ref<TRanges>... ranges) noexcept
+    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> ZipFront(Ref<TRanges>... ranges) noexcept
     {
         return { Front(ranges)... };
     }
