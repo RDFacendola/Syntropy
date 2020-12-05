@@ -14,28 +14,26 @@
 namespace Syntropy
 {
     /************************************************************************/
+    /* VALUE TYPES                                                          */
+    /************************************************************************/
+
+    /// \brief Constant value type.
+    template <typename TType>
+    using Const = const TType;
+
+    /************************************************************************/
     /* FUNDAMENTAL TYPES                                                    */
     /************************************************************************/
 
-    /// \brief Mutable boolean value.
+    /// \brief Boolean value.
     /// \remarks Standard booleans bind also to numeric values.
-    using MutableBool = bool;
+    using Bool = bool;
 
-    /// \brief Mutable 64-bit integer value.
-    using MutableInt = std::int64_t;
+    /// \brief 64-bit integer value.
+    using Int = std::int64_t;
 
-    /// \brief Mutable 32-bit single-precision floating point value.
-    using MutableFloat = float;
-
-    /// \brief Constant boolean value.
-    /// \remarks Standard booleans bind also to numeric values.
-    using Bool = const bool;
-
-    /// \brief Constant 64-bit integer value.
-    using Int = const std::int64_t;
-
-    /// \brief Constant 32-bit single-precision floating point value.
-    using Float = const float;
+    /// \brief 32-bit single-precision floating point value.
+    using Float = float;
 
     /************************************************************************/
     /* FIXED-SIZE TYPES                                                     */
@@ -44,45 +42,16 @@ namespace Syntropy
     // Fixed-size integer types to reduce storage utilization. These types shall be converted to "Int" when evaluating expressions.
 
     /// \brief Signed 8-bit integer value.
-    enum class MutableFix8 : std::int8_t {};
+    enum class Fix8 : std::int8_t {};
 
     /// \brief Signed 16-bit integer value.
-    enum class MutableFix16 : std::int16_t {};
+    enum class Fix16 : std::int16_t {};
 
     /// \brief Signed 32-bit integer value.
-    enum class MutableFix32 : std::int32_t {};
+    enum class Fix32 : std::int32_t {};
 
     /// \brief Signed 64-bit integer value.
-    enum class MutableFix64 : std::int64_t {};
-
-    /// \brief Constant signed 8-bit integer value.
-    using Fix8 = const MutableFix8;
-
-    /// \brief Constant signed 16-bit integer value.
-    using Fix16 = const MutableFix16;
-
-    /// \brief Constant signed 32-bit integer value.
-    using Fix32 = const MutableFix32;
-
-    /// \brief Constant signed 64-bit integer value.
-    using Fix64 = const MutableFix64;
-
-    /************************************************************************/
-    /* VALUE TYPES                                                          */
-    /************************************************************************/
-
-    /// \brief Immutable value type.
-    template <typename TType>
-    using Val = const TType;
-
-    /// \brief Mutable value type.
-    template <typename TType>
-    using MutableVal = TType;
-
-    /// \brief Reference to either a constant or a mutable object.
-    /// This type is an alias for either Ref<T> or Mutable<T>.
-    template <typename TType>
-    using Reference = TType&;
+    enum class Fix64 : std::int64_t {};
 
     /************************************************************************/
     /* TYPE CASTS                                                           */
@@ -121,7 +90,6 @@ namespace Syntropy
     /// \brief Cast rhs to a 64-bit integer value.
     template <typename TNumber>
     constexpr Fix64 ToFix64(TNumber rhs) noexcept;
-
 }
 
 // ===========================================================================

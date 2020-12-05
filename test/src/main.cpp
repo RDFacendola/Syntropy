@@ -37,8 +37,8 @@ int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    auto t = Syntropy::MakeTuple<Syntropy::MutableInt, Syntropy::MutableFloat>(1, 20.3f);
-    auto u = Syntropy::MakeTuple<Syntropy::MutableInt, Syntropy::MutableFloat>(2, 40.3f);
+    auto t = Syntropy::MakeTuple<Syntropy::Int, Syntropy::Float>(1, 20.3f);
+    auto u = Syntropy::MakeTuple<Syntropy::Int, Syntropy::Float>(2, 40.3f);
 
     Syntropy::Swap(t, u);
 

@@ -52,7 +52,7 @@ namespace Syntropy
         TFunctor functor_;
 
         ///< \brief Whether the scope guard was dismissed.
-        MutableBool dismissed_{ false };
+        Bool dismissed_{ false };
 
     };
 

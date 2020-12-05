@@ -33,8 +33,13 @@ namespace Syntropy
     using Movable = TType&&;
 
     /************************************************************************/
-    /* FORWARDING REFERENCE TYPES                                           */
+    /* TEMPLATES                                                            */
     /************************************************************************/
+
+    /// \brief Lvalue reference to either a mutable or immutable instance of type TType.
+    /// The difference between this type and Mutable<T> is purely semantic.
+    template <typename TType>
+    using Reference = TType&;
 
     /// \brief A forwarding reference that propagates rvalues as rvalues and lvalues as either lvalues or rvalues.
     /// \remarks The difference between this type and Movable<T> is purely semantic.

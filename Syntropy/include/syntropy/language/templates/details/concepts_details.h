@@ -121,8 +121,8 @@ namespace Syntropy::Concepts::Details
         && ConvertibleTo<Mutable<TType>, TType>
         && ConstructibleFrom<TType, Immutable<TType>>
         && ConvertibleTo<Immutable<TType>, TType>
-        && ConstructibleFrom<TType, Val<TType>>
-        && ConvertibleTo<Val<TType>, TType>;
+        && ConstructibleFrom<TType, Const<TType>>
+        && ConvertibleTo<Const<TType>, TType>;
 
     // Comparison concepts.
     // ====================
@@ -230,7 +230,7 @@ namespace Syntropy::Concepts::Details
         && Movable<TType>
         && AssignableFrom<Mutable<TType>, Mutable<TType>>
         && AssignableFrom<Mutable<TType>, Immutable<TType>>
-        && AssignableFrom<Mutable<TType>, Val<TType>>;
+        && AssignableFrom<Mutable<TType>, Const<TType>>;
 
     /// \brief Concept for types that are both copyable and default constructible.
     template <typename TType>
