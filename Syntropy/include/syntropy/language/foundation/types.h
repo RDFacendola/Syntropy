@@ -112,10 +112,10 @@ namespace Syntropy
     /// \brief Reference to a mutable object.
     /// \remarks In C++ mutable references are not a thing! The prefix "Mutable" highlights the non-constant nature of the referenced object.
     template <typename TType>
-    using MutableRef = TType&;
+    using Mutable = TType&;
 
     /// \brief Reference to either a constant or a mutable object.
-    /// This type is an alias for either Ref<T> or MutableRef<T>.
+    /// This type is an alias for either Ref<T> or Mutable<T>.
     template <typename TType>
     using XRef = TType&;
 

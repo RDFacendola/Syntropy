@@ -51,7 +51,7 @@ namespace Syntropy
 
         /// \brief Copy assignment operator.
         template <typename UType>
-        constexpr MutableRef<SpanT> operator=(Ref<SpanT<UType>> rhs) noexcept;
+        constexpr Mutable<SpanT> operator=(Ref<SpanT<UType>> rhs) noexcept;
 
         /// \brief Check whether the span is non-empty.
         constexpr operator Bool() const noexcept;
@@ -67,7 +67,7 @@ namespace Syntropy
         constexpr XPtr<TType> GetData() const noexcept;
 
         /// \brief Swap this span with rhs.
-        constexpr void Swap(MutableRef<SpanT> rhs) noexcept;
+        constexpr void Swap(Mutable<SpanT> rhs) noexcept;
 
     private:
 
@@ -220,7 +220,7 @@ namespace Syntropy
 
     /// \brief Swap two spans
     template <typename TType>
-    constexpr void Swap(MutableRef<SpanT<TType>> lhs, MutableRef<SpanT<TType>> rhs) noexcept;
+    constexpr void Swap(Mutable<SpanT<TType>> lhs, Mutable<SpanT<TType>> rhs) noexcept;
 
     /// \brief Convert a span to its read-only equivalent.
     template <typename TType>
@@ -304,7 +304,7 @@ namespace Syntropy
 
     template <typename TType>
     template <typename UType>
-    constexpr MutableRef<SpanT<TType>> SpanT<TType>::operator=(Ref<SpanT<UType>> rhs) noexcept
+    constexpr Mutable<SpanT<TType>> SpanT<TType>::operator=(Ref<SpanT<UType>> rhs) noexcept
     {
         data_ = ToPtr<TType>(rhs.GetData());
         count_ = rhs.GetCount();
@@ -337,7 +337,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr void SpanT<TType>::Swap(MutableRef<SpanT<TType>> rhs) noexcept
+    constexpr void SpanT<TType>::Swap(Mutable<SpanT<TType>> rhs) noexcept
     {
         Syntropy::Swap(data_, rhs.data_);
         Syntropy::Swap(count_, rhs.count_);
@@ -561,7 +561,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr void Swap(MutableRef<SpanT<TType>> lhs, MutableRef<SpanT<TType>> rhs) noexcept
+    constexpr void Swap(Mutable<SpanT<TType>> lhs, Mutable<SpanT<TType>> rhs) noexcept
     {
         lhs.Swap(rhs);
     }

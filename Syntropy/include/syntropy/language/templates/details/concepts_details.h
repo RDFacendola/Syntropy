@@ -77,7 +77,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for a type whose instances are swappable.
     template <typename TType>
-    concept Swappable = requires(MutableRef<TType> lhs, MutableRef<TType> rhs)
+    concept Swappable = requires(Mutable<TType> lhs, Mutable<TType> rhs)
     {
         Swap(lhs, rhs);
     };
@@ -116,8 +116,8 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for types that are either lvalue references or, if move-constructible, copy-constructible by means of direct and copy-initialization that leave the source unchanged afte the copy.
     template <typename TType>
     concept CopyConstructible = MoveConstructible<TType>
-        && ConstructibleFrom<TType, MutableRef<TType>>
-        && ConvertibleTo<MutableRef<TType>, TType>
+        && ConstructibleFrom<TType, Mutable<TType>>
+        && ConvertibleTo<Mutable<TType>, TType>
         && ConstructibleFrom<TType, Ref<TType>>
         && ConvertibleTo<Ref<TType>, TType>
         && ConstructibleFrom<TType, Val<TType>>
@@ -219,7 +219,7 @@ namespace Syntropy::Concepts::Details
     template <typename TType>
     concept Movable = Templates::IsObject<TType>
         && MoveConstructible<TType>
-        && AssignableFrom<MutableRef<TType>, TType>
+        && AssignableFrom<Mutable<TType>, TType>
         && Swappable<TType>;
 
 
@@ -227,9 +227,9 @@ namespace Syntropy::Concepts::Details
     template <typename TType>
     concept Copyable = CopyConstructible<TType>
         && Movable<TType>
-        && AssignableFrom<MutableRef<TType>, MutableRef<TType>>
-        && AssignableFrom<MutableRef<TType>, Ref<TType>>
-        && AssignableFrom<MutableRef<TType>, Val<TType>>;
+        && AssignableFrom<Mutable<TType>, Mutable<TType>>
+        && AssignableFrom<Mutable<TType>, Ref<TType>>
+        && AssignableFrom<Mutable<TType>, Val<TType>>;
 
     /// \brief Concept for types that are both copyable and default constructible.
     template <typename TType>

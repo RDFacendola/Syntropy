@@ -18,12 +18,12 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Swap lhs with rhs.
-    template <typename TType> requires Concepts::AssignableFrom<MutableRef<TType>, MoveRef<TType>> && Concepts::MoveConstructible<TType>
-    constexpr void Swap(MutableRef<TType> lhs, MutableRef<TType> rhs) noexcept;
+    template <typename TType> requires Concepts::AssignableFrom<Mutable<TType>, MoveRef<TType>> && Concepts::MoveConstructible<TType>
+    constexpr void Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
-    template <typename TType, typename UType = TType> requires Concepts::AssignableFrom<MutableRef<TType>, ForwardRef<UType>> && Concepts::MoveConstructible<TType>
-    constexpr TType Exchange(MutableRef<TType> lhs, ForwardRef<UType> rhs) noexcept;
+    template <typename TType, typename UType = TType> requires Concepts::AssignableFrom<Mutable<TType>, ForwardRef<UType>> && Concepts::MoveConstructible<TType>
+    constexpr TType Exchange(Mutable<TType> lhs, ForwardRef<UType> rhs) noexcept;
 
 }
 
@@ -38,8 +38,8 @@ namespace Syntropy
     // Swap.
     // =====
 
-    template <typename TType> requires Concepts::AssignableFrom<MutableRef<TType>, MoveRef<TType>> && Concepts::MoveConstructible<TType>
-    constexpr void Swap(MutableRef<TType> lhs, MutableRef<TType> rhs) noexcept
+    template <typename TType> requires Concepts::AssignableFrom<Mutable<TType>, MoveRef<TType>> && Concepts::MoveConstructible<TType>
+    constexpr void Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
     {
         auto xhs = Move(lhs);
 
@@ -47,8 +47,8 @@ namespace Syntropy
         rhs = Move(xhs);
     }
 
-    template <typename TType, typename UType> requires Concepts::AssignableFrom<MutableRef<TType>, ForwardRef<UType>> && Concepts::MoveConstructible<TType>
-    constexpr TType Exchange(MutableRef<TType> lhs, ForwardRef<UType> rhs) noexcept
+    template <typename TType, typename UType> requires Concepts::AssignableFrom<Mutable<TType>, ForwardRef<UType>> && Concepts::MoveConstructible<TType>
+    constexpr TType Exchange(Mutable<TType> lhs, ForwardRef<UType> rhs) noexcept
     {
         auto result = Move(lhs);
 

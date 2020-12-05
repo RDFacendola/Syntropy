@@ -96,7 +96,7 @@ namespace Syntropy
     /// Such usage has the form: ReadWrite(F(ReadOnly(x))) where x is non-const and F(.) is a function.
     /// \remarks If rhs doesn't refer to a read-write object, accessing the result of this method results in undefined behavior.
     template <typename TType>
-    constexpr MutableRef<TType> ToMutable(Ref<TType> rhs) noexcept;
+    constexpr Mutable<TType> ToMutable(Ref<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a mutable value.
     /// \remarks This method move-constructs a new constant value since rvalue references may cease to exists when the method returns.
@@ -221,9 +221,9 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr MutableRef<TType> ToMutable(Ref<TType> rhs) noexcept
+    constexpr Mutable<TType> ToMutable(Ref<TType> rhs) noexcept
     {
-        return const_cast<MutableRef<TType>>(rhs);
+        return const_cast<Mutable<TType>>(rhs);
     }
 
     template <typename TType>

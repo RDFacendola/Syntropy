@@ -84,7 +84,7 @@ namespace Syntropy
     /// \brief Access the last element in a zip-range.
     /// \remarks Accessing the last element of an empty zip-range results in undefined behavior.
     template <Concepts::BidirectionalRangeT... TRanges>
-    constexpr MutableRef<Tuple<TRanges...>> Back(Ref<ZipRange<TRanges...>> zip_range) noexcept;
+    constexpr Mutable<Tuple<TRanges...>> Back(Ref<ZipRange<TRanges...>> zip_range) noexcept;
 
     /// \brief Discard the last count elements in a zip-range and return the resulting sub-zip-range.
     /// \remarks If this method would cause the sub-zip-range to exceed the original zip-range, the behavior of this method is undefined.

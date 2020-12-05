@@ -31,7 +31,7 @@ namespace Syntropy
 
         /// \brief Assign from any argument number and types.
         template <typename... TArguments>
-        constexpr MutableRef<Ignore> operator=(ForwardRef<TArguments>...) noexcept;
+        constexpr Mutable<Ignore> operator=(ForwardRef<TArguments>...) noexcept;
     };
 
     /// \brief Constant of the placeholder type Ignore used to discard any number of arguments.
@@ -56,7 +56,7 @@ namespace Syntropy
     }
 
     template <typename... TArguments>
-    constexpr MutableRef<Ignore> Ignore::operator=(ForwardRef<TArguments>...) noexcept
+    constexpr Mutable<Ignore> Ignore::operator=(ForwardRef<TArguments>...) noexcept
     {
         return *this;
     }
