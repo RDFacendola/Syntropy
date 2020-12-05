@@ -56,7 +56,7 @@ namespace Syntropy::Details
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<MoveRef<UTypes>...>, Templates::TypeList<TTypes...>>;
+    inline constexpr Bool ExplicitIfTupleConvertingConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<Movable<UTypes>...>, Templates::TypeList<TTypes...>>;
 
     // (4)
 
@@ -76,7 +76,7 @@ namespace Syntropy::Details
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<MoveRef<UTypes>...>, Templates::TypeList<TTypes...>>;
+    inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<Movable<UTypes>...>, Templates::TypeList<TTypes...>>;
 
     /************************************************************************/
     /* ENABLE IF - TUPLE CONSTRUCTOR                                        */
@@ -141,7 +141,7 @@ namespace Syntropy::Details
 
     /// \brief Specialization for 1-tuples. True if TType can be constructed from UType and the overload doesn't reduce to a move-constructor.
     template <typename TType, typename UType>
-    inline constexpr Bool EnableIfTupleConvertingMoveConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, MoveRef<UType>>
+    inline constexpr Bool EnableIfTupleConvertingMoveConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, Movable<UType>>
         && !Templates::IsConvertible<Tuple<UType>, TType>
         && !Templates::IsConstructible<TType, Tuple<UType>>
         && !Templates::IsSame<TType, UType>;

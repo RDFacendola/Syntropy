@@ -38,7 +38,7 @@ namespace Syntropy
         ScopeGuard(TFunctor functor) noexcept;
 
         /// \brief Move constructor. The original copy gets dismissed.
-        ScopeGuard(MoveRef<ScopeGuard> other) noexcept;
+        ScopeGuard(Movable<ScopeGuard> other) noexcept;
 
         /// \brief Destroy this instance and calls the functor unless the guard has been dismissed.
         ~ScopeGuard();
@@ -86,7 +86,7 @@ namespace Syntropy
     }
 
     template <typename TFunctor>
-    inline ScopeGuard<TFunctor>::ScopeGuard(MoveRef<ScopeGuard> other) noexcept
+    inline ScopeGuard<TFunctor>::ScopeGuard(Movable<ScopeGuard> other) noexcept
         : functor_(Move(other.functor_))
         , dismissed_(other.dismissed_)
     {

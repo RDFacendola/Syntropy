@@ -46,10 +46,15 @@ namespace Syntropy
     template <typename TNumber>
     constexpr Fix64 ToFix64(TNumber rhs) noexcept;
 
-    /// \brief Convert a reference to a pointer, preserving constness.
-    /// The returned value is guaranteed to be the actual address of rhs, even in presence of an overloaded operator&.
+    /// \brief Obtain the pointer to an immutable object referred via rhs.
+    /// The returned value is guaranteed to produce the actual address of rhs, even when operator& is overloaded.
     template <typename TType>
-    constexpr XPtr<TType> ToPtr(XRef<TType> rhs) noexcept;
+    constexpr Ptr<TType> ToPtr(Ref<TType> rhs) noexcept;
+
+    /// \brief Obtain the pointer to an immutable object referred via rhs.
+    /// The returned value is guaranteed to produce the actual address of rhs, even when operator& is overloaded.
+    template <typename TType>
+    constexpr MutablePtr<TType> ToPtr(Mutable<TType> rhs) noexcept;
 
     /// \brief Disabled overload for rvalue reference since they have no associated address.
     template <typename TType>
@@ -62,7 +67,7 @@ namespace Syntropy
 
     /// \brief Prevent from getting the address of a rvalue-reference type.
     template <typename TType>
-    constexpr void ToPtr(MoveRef<TType> rhs) noexcept = delete;
+    constexpr void ToPtr(Movable<TType> rhs) noexcept = delete;
 
     /// \brief Convert rhs to a strongly-typed immutable pointer type.
     /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
@@ -85,7 +90,7 @@ namespace Syntropy
     /// \brief Convert rhs to a const value.
     /// \remarks This method move-constructs a new constant value since rvalue references may cease to exists when the method returns.
     template <typename TType>
-    constexpr Val<TType> ToConst(MoveRef<TType> rhs) noexcept;
+    constexpr Val<TType> ToConst(Movable<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a const value.
     template <typename TType>
@@ -101,7 +106,7 @@ namespace Syntropy
     /// \brief Convert rhs to a mutable value.
     /// \remarks This method move-constructs a new constant value since rvalue references may cease to exists when the method returns.
     template <typename TType>
-    constexpr TType ToMutable(MoveRef<TType> rhs) noexcept;
+    constexpr TType ToMutable(Movable<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a mutable value.
     /// The intended use for this method is to write a mutable implementation based on a const implementation, without duplicating associated code.
@@ -182,7 +187,13 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr XPtr<TType> ToPtr(XRef<TType> rhs) noexcept
+    constexpr Ptr<TType> ToPtr(Ref<TType> rhs) noexcept
+    {
+        return std::addressof(rhs);
+    }
+
+    template <typename TType>
+    constexpr MutablePtr<TType> ToPtr(Mutable<TType> rhs) noexcept
     {
         return std::addressof(rhs);
     }
@@ -215,7 +226,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr Val<TType> ToConst(MoveRef<TType> rhs) noexcept
+    constexpr Val<TType> ToConst(Movable<TType> rhs) noexcept
     {
         return Val<TType>{ Move(rhs) };
     }
@@ -227,7 +238,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr TType ToMutable(MoveRef<TType> rhs) noexcept
+    constexpr TType ToMutable(Movable<TType> rhs) noexcept
     {
         return TType{ Move(rhs) };
     }

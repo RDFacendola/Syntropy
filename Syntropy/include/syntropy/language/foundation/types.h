@@ -114,23 +114,26 @@ namespace Syntropy
     template <typename TType>
     using Mutable = TType&;
 
+    /// \brief A rvalue reference to an object whose resources can be moved from.
+    /// \remarks The difference between this type and ForwardRef<T> is purely semantic.
+    template <typename TType>
+    using Movable = TType&&;
+
+
+
+
     /// \brief Reference to either a constant or a mutable object.
     /// This type is an alias for either Ref<T> or Mutable<T>.
     template <typename TType>
     using XRef = TType&;
 
-    /// \brief A rvalue reference to an object whose resources can be moved from.
-    /// \remarks The difference between this type and ForwardRef<T> is purely semantic.
-    template <typename TType>
-    using MoveRef = TType&&;
-
     /// \brief A rvalue reference to a const object.
-    /// \remarks Differently than MoveRef, this type is never a forwarding reference, therefore it can be used to delete function overloads for rvalue references.
+    /// \remarks Differently than Movable, this type is never a forwarding reference, therefore it can be used to delete function overloads for rvalue references.
     template <typename TType>
     using ConstMoveRef = const TType&&;
 
     /// \brief A forwarding reference that propagates rvalues as rvalues and lvalues to either lvalues or rvalues.
-    /// \remarks The difference between this type and MoveRef<T> is purely semantic.
+    /// \remarks The difference between this type and Movable<T> is purely semantic.
     template <typename TType>
     using ForwardRef = TType&&;
 

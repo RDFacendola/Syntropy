@@ -18,7 +18,7 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Swap lhs with rhs.
-    template <typename TType> requires Concepts::AssignableFrom<Mutable<TType>, MoveRef<TType>> && Concepts::MoveConstructible<TType>
+    template <typename TType> requires Concepts::AssignableFrom<Mutable<TType>, Movable<TType>> && Concepts::MoveConstructible<TType>
     constexpr void Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
@@ -38,7 +38,7 @@ namespace Syntropy
     // Swap.
     // =====
 
-    template <typename TType> requires Concepts::AssignableFrom<Mutable<TType>, MoveRef<TType>> && Concepts::MoveConstructible<TType>
+    template <typename TType> requires Concepts::AssignableFrom<Mutable<TType>, Movable<TType>> && Concepts::MoveConstructible<TType>
     constexpr void Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
     {
         auto xhs = Move(lhs);

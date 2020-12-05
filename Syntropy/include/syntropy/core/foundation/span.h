@@ -228,7 +228,7 @@ namespace Syntropy
 
     /// \brief Convert a span to its read-only equivalent.
     template <typename TType>
-    constexpr Span<TType> ReadOnly(MoveRef<SpanT<TType>> rhs) noexcept;
+    constexpr Span<TType> ReadOnly(Movable<SpanT<TType>> rhs) noexcept;
 
     /// \brief Convert a read-only span to its read-write equivalent.
     /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
@@ -238,7 +238,7 @@ namespace Syntropy
     /// \brief Convert a read-only span to its read-write equivalent.
     /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
     template <typename TType>
-    constexpr RWSpan<Templates::RemoveConst<TType>> ReadWrite(MoveRef<SpanT<TType>> rhs) noexcept;
+    constexpr RWSpan<Templates::RemoveConst<TType>> ReadWrite(Movable<SpanT<TType>> rhs) noexcept;
 
 }
 
@@ -573,7 +573,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr Span<TType> ReadOnly(MoveRef<SpanT<TType>> rhs) noexcept
+    constexpr Span<TType> ReadOnly(Movable<SpanT<TType>> rhs) noexcept
     {
         return rhs;
     }
@@ -588,7 +588,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr RWSpan<Templates::RemoveConst<TType>> ReadWrite(MoveRef<SpanT<TType>> rhs) noexcept
+    constexpr RWSpan<Templates::RemoveConst<TType>> ReadWrite(Movable<SpanT<TType>> rhs) noexcept
     {
         return ReadWrite(rhs);
     }

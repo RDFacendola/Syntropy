@@ -36,7 +36,7 @@ namespace Syntropy
         friend constexpr Mutable<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(Mutable<Tuple<TElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... TElements>
-        friend constexpr MoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(MoveRef<Tuple<TElements...>> tuple) noexcept;
+        friend constexpr Movable<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... TElements>
         friend constexpr Ref<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(Ref<Tuple<TElements...>> tuple) noexcept;
@@ -102,7 +102,7 @@ namespace Syntropy
         /// \brief Tuple converting move constructor. Enabled if all tuple elements are move-constructible.
         template<typename UElement, typename... UElements, Details::EnableIfTupleConvertingMoveConstructor<ElementList, UElement, UElements...> = nullptr>
         explicit (Details::ExplicitIfTupleConvertingMoveConstructor<ElementList, UElement, UElements...>)
-        constexpr Tuple(MoveRef<Tuple<UElement, UElements...>> rhs) noexcept
+        constexpr Tuple(Movable<Tuple<UElement, UElements...>> rhs) noexcept
             : Tuple(UnwindTag{}, Templates::SequenceFor<UElement, UElements...>, Move(rhs))
         {
 
@@ -125,7 +125,7 @@ namespace Syntropy
 
         /// \brief Move-assignment operator.
         template <typename TSelf = Tuple, typename TSelfList = ElementList, Details::EnableIfTupleMoveAssignment<TSelfList> = nullptr>
-        constexpr Mutable<Tuple> operator=(Templates::Identity<MoveRef<TSelf>> rhs) noexcept;
+        constexpr Mutable<Tuple> operator=(Templates::Identity<Movable<TSelf>> rhs) noexcept;
 
         /// \brief Tuple converting copy-assignment operator.
         template <typename... UElements, typename TSelfList = ElementList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
@@ -133,13 +133,13 @@ namespace Syntropy
 
         /// \brief Tuple converting move-assignment operator.
         template <typename... UElements, typename TSelfList = ElementList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
-        constexpr Mutable<Tuple> operator=(MoveRef<Tuple<UElements...>> rhs) noexcept;
+        constexpr Mutable<Tuple> operator=(Movable<Tuple<UElements...>> rhs) noexcept;
 
         /// \brief Default copy-constructor.
-        constexpr Tuple(Ref<Tuple> other) = default;
+        constexpr Tuple(Ref<Tuple> rhs) = default;
 
         /// \brief Default move-constructor.
-        constexpr Tuple(MoveRef<Tuple> other) = default;
+        constexpr Tuple(Movable<Tuple> rhs) = default;
 
         /// \brief Swap this tuple with rhs by means of element-wise Swap.
         constexpr Mutable<Tuple> Swap(Mutable<Tuple> rhs) noexcept;
@@ -193,7 +193,7 @@ namespace Syntropy
     /// \brief Access the VIndex-th element in a tuple.
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
-    constexpr MoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(MoveRef<Tuple<TElements...>> tuple) noexcept;
+    constexpr Movable<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
     /// \remarks The program is ill-formed if no such element exists.
@@ -213,7 +213,7 @@ namespace Syntropy
     /// \brief Access an element of a tuple by type.
     /// \remarks The program is ill-formed unless the tuple has exactly one occurrence of TElement.
     template <typename TElement, typename... TElements>
-    constexpr MoveRef<TElement> Get(MoveRef<Tuple<TElements...>> tuple) noexcept;
+    constexpr Movable<TElement> Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access an element of a tuple by type.
     /// \remarks The program is ill-formed unless the tuple has exactly one occurrence of TElement.
@@ -322,7 +322,7 @@ namespace Syntropy
 
     template <typename TElement, typename... TElements>
     template <typename TSelf, typename TSelfList, Details::EnableIfTupleMoveAssignment<TSelfList>>
-    constexpr Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>::operator=(Templates::Identity<MoveRef<TSelf>> rhs) noexcept
+    constexpr Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>::operator=(Templates::Identity<Movable<TSelf>> rhs) noexcept
     {
         LockstepApply([&rhs](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
 
@@ -340,7 +340,7 @@ namespace Syntropy
 
     template <typename TElement, typename... TElements>
     template <typename... UElements, typename TSelfList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Templates::TypeList<UElements...>>>
-    constexpr Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>::operator=(MoveRef<Tuple<UElements...>> rhs) noexcept
+    constexpr Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>::operator=(Movable<Tuple<UElements...>> rhs) noexcept
     {
         LockstepApply([&rhs](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
 
@@ -391,12 +391,12 @@ namespace Syntropy
     }
 
     template <Int VIndex, typename... TElements>
-    constexpr MoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(MoveRef<Tuple<TElements...>> tuple) noexcept
+    constexpr Movable<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
         using TElement = Templates::TupleElement<VIndex, Tuple<TElements...>>;
 
-        return static_cast<MoveRef<TElement>>(static_cast<Mutable<TTupleBase>>(tuple).element_);
+        return static_cast<Movable<TElement>>(static_cast<Mutable<TTupleBase>>(tuple).element_);
     }
 
     template <Int VIndex, typename... TElements>
@@ -425,7 +425,7 @@ namespace Syntropy
     }
 
     template <typename TElement, typename... TElements>
-    constexpr MoveRef<TElement> Get(MoveRef<Tuple<TElements...>> tuple) noexcept
+    constexpr Movable<TElement> Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
         constexpr auto kIndex = Templates::TypeListIndex<TElement, Templates::TypeList<TElements...>>;
 
@@ -534,7 +534,7 @@ namespace std
 
     /// \brief Get the VIndex-th element of a tuple.
     template <std::size_t VIndex, typename... TElements>
-    decltype(auto) get(Syntropy::MoveRef<Syntropy::Tuple<TElements...>> tuple)
+    decltype(auto) get(Syntropy::Movable<Syntropy::Tuple<TElements...>> tuple)
     {
         return Syntropy::Get<VIndex>(Syntropy::Move(tuple));
     }
