@@ -6,11 +6,8 @@
 
 #pragma once
 
-#include <cstdint>
-#include <cstddef>
-
 #include "syntropy/language/templates/type_traits.h"
-
+ 
 // ===========================================================================
 
 namespace Syntropy
@@ -36,6 +33,15 @@ namespace Syntropy
     using Movable = TType&&;
 
     /************************************************************************/
+    /* FORWARDING REFERENCE TYPES                                           */
+    /************************************************************************/
+
+    /// \brief A forwarding reference that propagates rvalues as rvalues and lvalues as either lvalues or rvalues.
+    /// \remarks The difference between this type and Movable<T> is purely semantic.
+    template <typename TType>
+    using Forwarding = TType&&;
+
+    /************************************************************************/
     /* FUNCTIONS                                                            */
     /************************************************************************/
 
@@ -44,29 +50,38 @@ namespace Syntropy
 
     /// \brief Indicate that rhs may be "moved from", allowing for efficient transfer of resources from rhs to another object.
     template <typename TType>
-    constexpr Templates::RemoveReference<TType>&& Move(TType&& rhs) noexcept;
+    constexpr Forwarding<Templates::RemoveReference<TType>> Move(Forwarding<TType> rhs) noexcept;
+
+    // Perfect forwarding.
+    // ===================
+
+    /// brief Forward an lvalue as either a lvalue or rvalue and rvalues to rvalues. Forwarding a rvalue as a lvalue is forbidden.
+    template <typename TType>
+    constexpr Forwarding<TType> Forward(Mutable<Templates::RemoveReference<TType>> rhs) noexcept;
+
+    /// brief Forward an lvalue as either a lvalue or rvalue and rvalues to rvalues. Forwarding a rvalue as a lvalue is forbidden.
+    template <typename TType>
+    constexpr Forwarding<TType> Forward(Movable<Templates::RemoveReference<TType>> rhs) noexcept;
 
     // Access.
     // =======
 
-    /// \brief Convert rhs to a const reference.
+    /// \brief Convert rhs to a reference to an immutable instance of type TType.
     template <typename TType>
-    constexpr Immutable<TType> ToConst(Immutable<TType> rhs) noexcept;
+    constexpr Immutable<TType> ToImmutable(Immutable<TType> rhs) noexcept;
 
-    /// \brief Convert rhs to a const value.
-    /// \remarks This method move-constructs a new constant value since rvalue references may cease to exists when the method returns.
+    /// \brief Deleted overload to disallow rvalue arguments.
     template <typename TType>
-    constexpr Val<TType> ToConst(Movable<TType> rhs) noexcept;
+    constexpr void ToImmutable(Immovable<TType> rhs) noexcept = delete;
 
-    /// \brief Convert rhs to a read-write reference.
+    /// \brief Convert rhs to a reference to a mutable instance of type TType.
     /// The intended use for this method is to write a non-const implementation based on a const implementation, without duplicating code.
-    /// Such usage has the form: ReadWrite(F(ReadOnly(x))) where x is non-const and F(.) is a function.
-    /// \remarks If rhs doesn't refer to a read-write object, accessing the result of this method results in undefined behavior.
+    /// Such usage has the form: ToMutable(F(ToImmutable(x))) where x is non-const and F(.) is a function.
+    /// \remarks If rhs doesn't refer to a mutable object, accessing the result of this method results in undefined behavior.
     template <typename TType>
     constexpr Mutable<TType> ToMutable(Immutable<TType> rhs) noexcept;
 
-    /// \brief Convert rhs to a mutable value.
-    /// \remarks This method move-constructs a new constant value since rvalue references may cease to exists when the method returns.
+    /// \brief Deleted overload to disallow rvalue arguments.
     template <typename TType>
     constexpr TType ToMutable(Movable<TType> rhs) noexcept;
 
@@ -84,36 +99,39 @@ namespace Syntropy
     // =====
 
     template <typename TType>
-    constexpr Templates::RemoveReference<TType>&& Move(TType&& rhs) noexcept
+    constexpr Forwarding<Templates::RemoveReference<TType>> Move(Forwarding<TType> rhs) noexcept
     {
-        return static_cast<Templates::RemoveReference<TType>&&>(rhs);
+        return static_cast<Movable<Templates::RemoveReference<TType>>>(rhs);
+    }
+
+    // Perfect forwarding.
+    // ===================
+
+    template <typename TType>
+    constexpr Forwarding<TType> Forward(Templates::RemoveReference<TType>& rhs) noexcept
+    {
+        return static_cast<Forwarding<TType>>(rhs);
+    }
+
+    template <typename TType>
+    constexpr Forwarding<TType> Forward(Templates::RemoveReference<TType>&& rhs) noexcept
+    {
+        return static_cast<Forwarding<TType>>(rhs);
     }
 
     // Access.
     // =======
 
     template <typename TType>
-    constexpr Immutable<TType> ToConst(Immutable<TType> rhs) noexcept
+    constexpr Immutable<TType> ToImmutable(Immutable<TType> rhs) noexcept
     {
         return rhs;
-    }
-
-    template <typename TType>
-    constexpr Val<TType> ToConst(Movable<TType> rhs) noexcept
-    {
-        return Val<TType>{ Move(rhs) };
     }
 
     template <typename TType>
     constexpr Mutable<TType> ToMutable(Immutable<TType> rhs) noexcept
     {
         return const_cast<Mutable<TType>>(rhs);
-    }
-
-    template <typename TType>
-    constexpr TType ToMutable(Movable<TType> rhs) noexcept
-    {
-        return TType{ Move(rhs) };
     }
 
 }

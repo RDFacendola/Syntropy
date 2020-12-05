@@ -10,5 +10,3 @@
 #include "syntropy/language/foundation/references.h"
 #include "syntropy/language/foundation/pointers.h"
 #include "syntropy/language/foundation/enumerations.h"
-
-#include "syntropy/language/templates/templates.h"

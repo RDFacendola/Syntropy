@@ -115,11 +115,11 @@ namespace Syntropy
 
     /// \brief Convert rhs to a pointer to a const value.
     template <typename TType>
-    constexpr PtrRef<TType> ToConst(PtrRef<TType> rhs) noexcept;
+    constexpr PtrRef<TType> ToImmutable(PtrRef<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a mutable value.
     /// The intended use for this method is to write a mutable implementation based on a const implementation, without duplicating associated code.
-    /// Such usage has the form: ToMutable(F(ToConst(x))) where x is non-const and F(.) is a function.
+    /// Such usage has the form: ToMutable(F(ToImmutable(x))) where x is non-const and F(.) is a function.
     /// \remarks If rhs pointee doesn't refer to a mutable value, accessing the result of this method results in undefined behavior.
     template <typename TType>
     constexpr Ptr<TType> ToMutable(PtrRef<TType> rhs) noexcept;
@@ -174,7 +174,7 @@ namespace Syntropy
     // =======
 
     template <typename TType>
-    constexpr PtrRef<TType> ToConst(PtrRef<TType> rhs) noexcept
+    constexpr PtrRef<TType> ToImmutable(PtrRef<TType> rhs) noexcept
     {
         return rhs;
     }

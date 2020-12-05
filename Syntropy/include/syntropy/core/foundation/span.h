@@ -58,7 +58,7 @@ namespace Syntropy
 
         /// \brief Access an element by index.
         /// If the provided index is not within the span the behavior of this method is undefined.
-        constexpr XRef<TType> operator[](Int index) const noexcept;
+        constexpr Reference<TType> operator[](Int index) const noexcept;
 
         /// \brief Get the number of elements in the span.
         constexpr Int GetCount() const noexcept;
@@ -105,7 +105,7 @@ namespace Syntropy
     /// \brief Access the first element in a span.
     /// \remarks Accessing the first element of an empty span results in undefined behavior.
     template <typename TType>
-    constexpr XRef<TType> Front(Immutable<SpanT<TType>> rhs) noexcept;
+    constexpr Reference<TType> Front(Immutable<SpanT<TType>> rhs) noexcept;
 
     /// \brief Discard the first count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
@@ -123,7 +123,7 @@ namespace Syntropy
     /// \brief Access the last element in a span.
     /// \remarks Accessing the last element of an empty span results in undefined behavior.
     template <typename TType>
-    constexpr XRef<TType> Back(Immutable<SpanT<TType>> rhs) noexcept;
+    constexpr Reference<TType> Back(Immutable<SpanT<TType>> rhs) noexcept;
 
     /// \brief Discard the last count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
@@ -145,7 +145,7 @@ namespace Syntropy
     /// \brief Obtain a span element at given index.
     /// \remarks Exceeding span boundaries results in undefined behavior.
     template <typename TType>
-    constexpr XRef<TType> Select(Immutable<SpanT<TType>> rhs, Int index) noexcept;
+    constexpr Reference<TType> Select(Immutable<SpanT<TType>> rhs, Int index) noexcept;
 
     // Contiguous range.
     // =================
@@ -153,7 +153,7 @@ namespace Syntropy
     /// \brief Access underlying span data.
     /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
     template <typename TType>
-    constexpr XPtr<TType> Data(XRef<SpanT<TType>> rhs) noexcept;
+    constexpr XPtr<TType> Data(Reference<SpanT<TType>> rhs) noexcept;
 
     // Set operations.
     // ===============
@@ -255,7 +255,7 @@ namespace Syntropy::Templates
     struct RangeTraits<SpanT<TType>>
     {
         /// \brief Type of a reference to a range element.
-        using ElementReferenceType = XRef<TType>;
+        using ElementReferenceType = Reference<TType>;
     };
 }
 
@@ -319,7 +319,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr XRef<TType> SpanT<TType>::operator[](Int index) const noexcept
+    constexpr Reference<TType> SpanT<TType>::operator[](Int index) const noexcept
     {
         return data_[index];
     }
@@ -349,7 +349,7 @@ namespace Syntropy
     // Forward Range.
 
     template <typename TType>
-    constexpr XRef<TType> Front(Immutable<SpanT<TType>> rhs) noexcept
+    constexpr Reference<TType> Front(Immutable<SpanT<TType>> rhs) noexcept
     {
         return *Data(rhs);
     }
@@ -369,7 +369,7 @@ namespace Syntropy
     // Bidirectional range.
 
     template <typename TType>
-    constexpr XRef<TType> Back(Immutable<SpanT<TType>> rhs) noexcept
+    constexpr Reference<TType> Back(Immutable<SpanT<TType>> rhs) noexcept
     {
         return *(Data(rhs) + Count(rhs) - 1);
     }
@@ -395,7 +395,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr XRef<TType> Select(Immutable<SpanT<TType>> rhs, Int index) noexcept
+    constexpr Reference<TType> Select(Immutable<SpanT<TType>> rhs, Int index) noexcept
     {
         return rhs[index];
     }
@@ -403,7 +403,7 @@ namespace Syntropy
     // Contiguous range.
 
     template <typename TType>
-    constexpr XPtr<TType> Data(XRef<SpanT<TType>> rhs) noexcept
+    constexpr XPtr<TType> Data(Reference<SpanT<TType>> rhs) noexcept
     {
         return rhs.GetData();
     }

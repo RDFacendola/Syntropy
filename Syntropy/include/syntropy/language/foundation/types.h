@@ -82,12 +82,7 @@ namespace Syntropy
     /// \brief Reference to either a constant or a mutable object.
     /// This type is an alias for either Ref<T> or Mutable<T>.
     template <typename TType>
-    using XRef = TType&;
-
-    /// \brief A forwarding reference that propagates rvalues as rvalues and lvalues to either lvalues or rvalues.
-    /// \remarks The difference between this type and Movable<T> is purely semantic.
-    template <typename TType>
-    using ForwardRef = TType&&;
+    using Reference = TType&;
 
     /************************************************************************/
     /* TYPE CASTS                                                           */

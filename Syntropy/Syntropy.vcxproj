@@ -21,7 +21,6 @@
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
     <ClInclude Include="include\syntropy\language\foundation\enumerations.h" />
     <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
-    <ClInclude Include="include\syntropy\language\templates\templates.h" />
     <ClInclude Include="include\syntropy\language\foundation\pointers.h" />
     <ClInclude Include="include\syntropy\language\foundation\references.h" />
     <ClInclude Include="include\syntropy\language\foundation\types.h" />
@@ -34,10 +33,12 @@
     <ClInclude Include="include\syntropy\language\support\swap.h" />
     <ClInclude Include="include\syntropy\language\templates\concepts.h" />
     <ClInclude Include="include\syntropy\language\templates\details\concepts_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\details\invoke_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\math_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\ratio_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\sequence_details.h" />
     <ClInclude Include="include\syntropy\language\templates\details\type_traits_details.h" />
+    <ClInclude Include="include\syntropy\language\templates\invoke.h" />
     <ClInclude Include="include\syntropy\language\templates\math.h" />
     <ClInclude Include="include\syntropy\language\templates\ratio.h" />
     <ClInclude Include="include\syntropy\language\templates\sequence.h" />

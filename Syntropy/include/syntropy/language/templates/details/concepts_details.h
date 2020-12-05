@@ -8,6 +8,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
+#include "syntropy/language/templates/invoke.h"
 
 // ===========================================================================
 
@@ -70,7 +71,7 @@ namespace Syntropy::Concepts::Details
     template <typename TType, typename UType>
     concept AssignableFrom = Templates::IsLValueReference<TType>
         && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>, Immutable<Templates::RemoveReference<UType>>>
-        && requires(TType lhs, ForwardRef<UType> rhs)
+        && requires(TType lhs, Forwarding<UType> rhs)
     {
         { lhs = Forward<UType>(rhs) } -> SameAs<TType>;
     };
@@ -85,7 +86,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for a type whose instances can be swapped with instances of type UType.
     template <typename TType, typename UType>
     concept SwappableWith = CommonReferenceWith<TType, UType>
-        && requires(ForwardRef<TType> lhs, ForwardRef<UType> rhs)
+        && requires(Forwarding<TType> lhs, Forwarding<UType> rhs)
     {
         Swap(Forward<TType>(lhs), Forward<TType>(rhs));
         Swap(Forward<TType>(lhs), Forward<UType>(rhs));
@@ -244,7 +245,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for callable types that can be called with a set of arguments TArguments.
     template <typename TCallable, typename... TArguments>
-    concept Invocable = requires(ForwardRef<TCallable> callable, TArguments&&... arguments)
+    concept Invocable = requires(Forwarding<TCallable> callable, TArguments&&... arguments)
     {
         Invoke(Forward<TCallable>, Forward<TArguments>(arguments)...);
     };
