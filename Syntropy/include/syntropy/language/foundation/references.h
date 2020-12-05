@@ -39,6 +39,13 @@ namespace Syntropy
     /* FUNCTIONS                                                            */
     /************************************************************************/
 
+    // Move.
+    // =====
+
+    /// \brief Indicate that rhs may be "moved from", allowing for efficient transfer of resources from rhs to another object.
+    template <typename TType>
+    constexpr Templates::RemoveReference<TType>&& Move(TType&& rhs) noexcept;
+
     // Access.
     // =======
 
@@ -72,6 +79,15 @@ namespace Syntropy
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
+
+    // Move.
+    // =====
+
+    template <typename TType>
+    constexpr Templates::RemoveReference<TType>&& Move(TType&& rhs) noexcept
+    {
+        return static_cast<Templates::RemoveReference<TType>&&>(rhs);
+    }
 
     // Access.
     // =======
