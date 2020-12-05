@@ -1,6 +1,6 @@
 
-/// \file functional.h
-/// \brief This header is part of the Syntropy language module. It contains definitions for fundamental functions.
+/// \file templates.h
+/// \brief This header is part of the Syntropy language module. It contains fundamental template definitions.
 ///
 /// \author Raffaele D. Facendola - November 2020
 
