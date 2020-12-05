@@ -7,4 +7,5 @@
 #pragma once
 
 #include "syntropy/language/foundation/types.h"
+#include "syntropy/language/foundation/references.h"
 #include "syntropy/language/foundation/functions.h"

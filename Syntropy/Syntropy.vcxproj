@@ -21,6 +21,7 @@
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
     <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
     <ClInclude Include="include\syntropy\language\foundation\functions.h" />
+    <ClInclude Include="include\syntropy\language\foundation\references.h" />
     <ClInclude Include="include\syntropy\language\foundation\types.h" />
     <ClInclude Include="include\syntropy\language\preprocessor\macro.h" />
     <ClInclude Include="include\syntropy\language\support\compare.h" />

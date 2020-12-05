@@ -90,26 +90,6 @@ namespace Syntropy
     using Enum64 = std::int64_t;
 
     /************************************************************************/
-    /* REFERENCE TYPES                                                      */
-    /************************************************************************/
-
-    /// \brief Lvalue reference to an immutable instance of type TType.
-    template <typename TType>
-    using Immutable = const TType&;
-
-    /// \brief LValue reference to a mutable instance of type TType.
-    template <typename TType>
-    using Mutable = TType&;
-
-    /// \brief RValue reference to an immutable instance of type TType.
-    template <typename TType>
-    using Immovable = const TType&&;
-
-    /// \brief RValue reference to an mutable instance of type TType.
-    template <typename TType>
-    using Movable = TType&&;
-
-    /************************************************************************/
     /* VALUE TYPES                                                          */
     /************************************************************************/
 
