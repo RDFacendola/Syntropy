@@ -25,18 +25,18 @@ namespace Syntropy
     /// \author Raffaele D. Facendola - Nov 2020.
     class Ordering
     {
-        friend constexpr Bool operator==(Ref<Ordering> lhs, Null rhs) noexcept;
-        friend constexpr Bool operator==(Ref<Ordering> lhs, Ref<Ordering> rhs) noexcept;
-        friend constexpr Bool operator<(Ref<Ordering> lhs, Null rhs) noexcept;
-        friend constexpr Bool operator>(Ref<Ordering> lhs, Null rhs) noexcept;
-        friend constexpr Bool operator<=(Ref<Ordering> lhs, Null rhs) noexcept;
-        friend constexpr Bool operator>=(Ref<Ordering> lhs, Null rhs) noexcept;
-        friend constexpr Bool operator<(Null, Ref<Ordering> rhs) noexcept;
-        friend constexpr Bool operator>(Null, Ref<Ordering> rhs) noexcept;
-        friend constexpr Bool operator<=(Null, Ref<Ordering> rhs) noexcept;
-        friend constexpr Bool operator>=(Null, Ref<Ordering> rhs) noexcept;
-        friend constexpr Ordering operator<=>(Ref<Ordering> lhs, Null rhs) noexcept;
-        friend constexpr Ordering operator<=>(Null lhs, Ref<Ordering> rhs) noexcept;
+        friend constexpr Bool operator==(Immutable<Ordering> lhs, Null rhs) noexcept;
+        friend constexpr Bool operator==(Immutable<Ordering> lhs, Immutable<Ordering> rhs) noexcept;
+        friend constexpr Bool operator<(Immutable<Ordering> lhs, Null rhs) noexcept;
+        friend constexpr Bool operator>(Immutable<Ordering> lhs, Null rhs) noexcept;
+        friend constexpr Bool operator<=(Immutable<Ordering> lhs, Null rhs) noexcept;
+        friend constexpr Bool operator>=(Immutable<Ordering> lhs, Null rhs) noexcept;
+        friend constexpr Bool operator<(Null, Immutable<Ordering> rhs) noexcept;
+        friend constexpr Bool operator>(Null, Immutable<Ordering> rhs) noexcept;
+        friend constexpr Bool operator<=(Null, Immutable<Ordering> rhs) noexcept;
+        friend constexpr Bool operator>=(Null, Immutable<Ordering> rhs) noexcept;
+        friend constexpr Ordering operator<=>(Immutable<Ordering> lhs, Null rhs) noexcept;
+        friend constexpr Ordering operator<=>(Null lhs, Immutable<Ordering> rhs) noexcept;
 
     public:
 
@@ -51,12 +51,12 @@ namespace Syntropy
 
         /// \brief Convert from std::strong_ordering to Ordering.
         /// \remarks Allows better interoperability with STL.
-        constexpr Ordering(Ref<std::strong_ordering> value) noexcept;
+        constexpr Ordering(Immutable<std::strong_ordering> value) noexcept;
 
     private:
 
         /// \brief Create a new weak ordering result value.
-        constexpr explicit Ordering(Ref<Details::ComparisonResult> value) noexcept
+        constexpr explicit Ordering(Immutable<Details::ComparisonResult> value) noexcept
             : value_(value)
         {
             // @rfacendola Apparently in VS2019 using the explicit keyword requires both declaration and definition at the same time, otherwise it will ignore that and zero-initialize the instance.
@@ -72,22 +72,22 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Check whether rhs represents equal-to compare result.
-    constexpr Bool IsEqual(Ref<Ordering> rhs) noexcept;
+    constexpr Bool IsEqual(Immutable<Ordering> rhs) noexcept;
 
     /// \brief Check whether rhs represents not-equal-to compare result.
-    constexpr Bool IsNotEqual(Ref<Ordering> rhs) noexcept;
+    constexpr Bool IsNotEqual(Immutable<Ordering> rhs) noexcept;
 
     /// \brief Check whether rhs represents less-than compare result.
-    constexpr Bool IsLessThan(Ref<Ordering> rhs) noexcept;
+    constexpr Bool IsLessThan(Immutable<Ordering> rhs) noexcept;
 
     /// \brief Check whether rhs represents less-than or equal-to compare result.
-    constexpr Bool IsLessEqualTo(Ref<Ordering> rhs) noexcept;
+    constexpr Bool IsLessEqualTo(Immutable<Ordering> rhs) noexcept;
 
     /// \brief Check whether rhs represents greater-than compare result.
-    constexpr Bool IsGreaterThan(Ref<Ordering> rhs) noexcept;
+    constexpr Bool IsGreaterThan(Immutable<Ordering> rhs) noexcept;
 
     /// \brief Check whether rhs represents greater-than or equal-to compare result.
-    constexpr Bool IsGreaterEqualTo(Ref<Ordering> rhs) noexcept;
+    constexpr Bool IsGreaterEqualTo(Immutable<Ordering> rhs) noexcept;
 
     /************************************************************************/
     /* COMPARISON OPERATORS                                                 */
@@ -97,40 +97,40 @@ namespace Syntropy
     // =========
 
     /// \brief Compare lhs to the null literal for equality-comparison.
-    constexpr Bool operator==(Ref<Ordering> lhs, Null rhs) noexcept;
+    constexpr Bool operator==(Immutable<Ordering> lhs, Null rhs) noexcept;
 
     /// \brief Compare lhs to rhs for equality-comparison.
-    constexpr Bool operator==(Ref<Ordering> lhs, Ref<Ordering> rhs) noexcept;
+    constexpr Bool operator==(Immutable<Ordering> lhs, Immutable<Ordering> rhs) noexcept;
 
     /// \brief Compare lhs to the null literal for less-than comparison.
-    constexpr Bool operator<(Ref<Ordering> lhs, Null rhs) noexcept;
+    constexpr Bool operator<(Immutable<Ordering> lhs, Null rhs) noexcept;
 
     /// \brief Compare lhs to the null literal for greater-than comparison.
-    constexpr Bool operator>(Ref<Ordering> lhs, Null rhs) noexcept;
+    constexpr Bool operator>(Immutable<Ordering> lhs, Null rhs) noexcept;
 
     /// \brief Compare lhs to the null literal for less-than or equal-to comparison.
-    constexpr Bool operator<=(Ref<Ordering> lhs, Null rhs) noexcept;
+    constexpr Bool operator<=(Immutable<Ordering> lhs, Null rhs) noexcept;
 
     /// \brief Compare lhs to the null literal for greater-than or equal-to comparison.
-    constexpr Bool operator>=(Ref<Ordering> lhs, Null rhs) noexcept;
+    constexpr Bool operator>=(Immutable<Ordering> lhs, Null rhs) noexcept;
 
     /// \brief Compare the null literal to rhs for less-than comparison.
-    constexpr Bool operator<(Null lhs, Ref<Ordering> rhs) noexcept;
+    constexpr Bool operator<(Null lhs, Immutable<Ordering> rhs) noexcept;
 
     /// \brief Compare the null literal to rhs for greater-than comparison.
-    constexpr Bool operator>(Null lhs, Ref<Ordering> rhs) noexcept;
+    constexpr Bool operator>(Null lhs, Immutable<Ordering> rhs) noexcept;
 
     /// \brief Compare the null literal to rhs for less-than or equal-to comparison.
-    constexpr Bool operator<=(Null lhs, Ref<Ordering> rhs) noexcept;
+    constexpr Bool operator<=(Null lhs, Immutable<Ordering> rhs) noexcept;
 
     /// \brief Compare the null literal to rhs for greater-than or equal-to comparison.
-    constexpr Bool operator>=(Null lhs, Ref<Ordering> rhs) noexcept;
+    constexpr Bool operator>=(Null lhs, Immutable<Ordering> rhs) noexcept;
 
     /// \brief Three-way-comparison of lhs against the null literal.
-    constexpr Ordering operator<=>(Ref<Ordering> lhs, Null rhs) noexcept;
+    constexpr Ordering operator<=>(Immutable<Ordering> lhs, Null rhs) noexcept;
 
     /// \brief Three-way-comparison of the null literal against rhs.
-    constexpr Ordering operator<=>(Null lhs, Ref<Ordering> rhs) noexcept;
+    constexpr Ordering operator<=>(Null lhs, Immutable<Ordering> rhs) noexcept;
 
 }
 
@@ -167,7 +167,7 @@ namespace Syntropy
     inline constexpr Ordering Ordering::Equivalent{ Details::ComparisonResult::kEquivalent };
     inline constexpr Ordering Ordering::Greater{ Details::ComparisonResult::kGreater };
 
-    constexpr Ordering::Ordering(Ref<std::strong_ordering> value) noexcept
+    constexpr Ordering::Ordering(Immutable<std::strong_ordering> value) noexcept
         : value_(Details::ToComparisonResult(value))
     {
 
@@ -176,94 +176,94 @@ namespace Syntropy
     // Non-member functions.
     // =====================
 
-    constexpr Bool IsEqual(Ref<Ordering> rhs) noexcept
+    constexpr Bool IsEqual(Immutable<Ordering> rhs) noexcept
     {
         return rhs == 0;
     }
 
-    constexpr Bool IsNotEqual(Ref<Ordering> rhs) noexcept
+    constexpr Bool IsNotEqual(Immutable<Ordering> rhs) noexcept
     {
         return rhs != 0;
     }
 
-    constexpr Bool IsLessThan(Ref<Ordering> rhs) noexcept
+    constexpr Bool IsLessThan(Immutable<Ordering> rhs) noexcept
     {
         return rhs < 0;
     }
 
-    constexpr Bool IsLessEqualTo(Ref<Ordering> rhs) noexcept
+    constexpr Bool IsLessEqualTo(Immutable<Ordering> rhs) noexcept
     {
         return rhs <= 0;
     }
 
-    constexpr Bool IsGreaterThan(Ref<Ordering> rhs) noexcept
+    constexpr Bool IsGreaterThan(Immutable<Ordering> rhs) noexcept
     {
         return rhs > 0;
     }
 
-    constexpr Bool IsGreaterEqualTo(Ref<Ordering> rhs) noexcept
+    constexpr Bool IsGreaterEqualTo(Immutable<Ordering> rhs) noexcept
     {
         return rhs >= 0;
     }
 
     // Ordering.
 
-    constexpr Bool operator==(Ref<Ordering> lhs, Null rhs) noexcept
+    constexpr Bool operator==(Immutable<Ordering> lhs, Null rhs) noexcept
     {
         return (lhs.value_ == Details::ComparisonResult::kEquivalent);
     }
 
-    constexpr Bool operator==(Ref<Ordering> lhs, Ref<Ordering> rhs) noexcept
+    constexpr Bool operator==(Immutable<Ordering> lhs, Immutable<Ordering> rhs) noexcept
     {
         return (lhs.value_ == rhs.value_);
     }
 
-    constexpr Bool operator<(Ref<Ordering> lhs, Null rhs) noexcept
+    constexpr Bool operator<(Immutable<Ordering> lhs, Null rhs) noexcept
     {
         return (lhs.value_ == Details::ComparisonResult::kLess);
     }
 
-    constexpr Bool operator>(Ref<Ordering> lhs, Null rhs) noexcept
+    constexpr Bool operator>(Immutable<Ordering> lhs, Null rhs) noexcept
     {
         return (lhs.value_ == Details::ComparisonResult::kGreater);
     }
 
-    constexpr Bool operator<=(Ref<Ordering> lhs, Null rhs) noexcept
+    constexpr Bool operator<=(Immutable<Ordering> lhs, Null rhs) noexcept
     {
         return (lhs.value_ == Details::ComparisonResult::kLess) || (lhs.value_ == Details::ComparisonResult::kEquivalent);
     }
 
-    constexpr Bool operator>=(Ref<Ordering> lhs, Null rhs) noexcept
+    constexpr Bool operator>=(Immutable<Ordering> lhs, Null rhs) noexcept
     {
         return (lhs.value_ == Details::ComparisonResult::kGreater) || (lhs.value_ == Details::ComparisonResult::kEquivalent);
     }
 
-    constexpr Bool operator<(Null lhs, Ref<Ordering> rhs) noexcept
+    constexpr Bool operator<(Null lhs, Immutable<Ordering> rhs) noexcept
     {
         return (rhs.value_ == Details::ComparisonResult::kGreater);
     }
 
-    constexpr Bool operator>(Null lhs, Ref<Ordering> rhs) noexcept
+    constexpr Bool operator>(Null lhs, Immutable<Ordering> rhs) noexcept
     {
         return (rhs.value_ == Details::ComparisonResult::kLess);
     }
 
-    constexpr Bool operator<=(Null lhs, Ref<Ordering> rhs) noexcept
+    constexpr Bool operator<=(Null lhs, Immutable<Ordering> rhs) noexcept
     {
         return (rhs.value_ == Details::ComparisonResult::kGreater) || (rhs.value_ == Details::ComparisonResult::kEquivalent);
     }
 
-    constexpr Bool operator>=(Null lhs, Ref<Ordering> rhs) noexcept
+    constexpr Bool operator>=(Null lhs, Immutable<Ordering> rhs) noexcept
     {
         return (rhs.value_ == Details::ComparisonResult::kLess) || (rhs.value_ == Details::ComparisonResult::kEquivalent);
     }
 
-    constexpr Ordering operator<=>(Ref<Ordering> lhs, Null rhs) noexcept
+    constexpr Ordering operator<=>(Immutable<Ordering> lhs, Null rhs) noexcept
     {
         return lhs;
     }
 
-    constexpr Ordering operator<=>(Null lhs, Ref<Ordering> rhs) noexcept
+    constexpr Ordering operator<=>(Null lhs, Immutable<Ordering> rhs) noexcept
     {
         if (rhs.value_ == Details::ComparisonResult::kLess)
         {

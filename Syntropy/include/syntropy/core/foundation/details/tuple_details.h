@@ -45,7 +45,7 @@ namespace Syntropy::Details
 
     /// \brief False if all types in TTypeList are copy-constructible, true otherwise.
     template <typename... TTypes>
-    inline constexpr Bool ExplicitIfTupleDirectConstructor = !Templates::IsConvertible<Templates::TypeList<Ref<TTypes>...>, Templates::TypeList<TTypes...>>;
+    inline constexpr Bool ExplicitIfTupleDirectConstructor = !Templates::IsConvertible<Templates::TypeList<Immutable<TTypes>...>, Templates::TypeList<TTypes...>>;
 
     // (3)
 
@@ -66,7 +66,7 @@ namespace Syntropy::Details
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<Ref<UTypes>...>, Templates::TypeList<TTypes...>>;
+    inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<Immutable<UTypes>...>, Templates::TypeList<TTypes...>>;
 
     // (5)
 
@@ -120,9 +120,9 @@ namespace Syntropy::Details
 
     /// \brief Specialization for 1-tuples. True if TType can be constructed from UType and the overload doesn't reduce to a copy-constructor.
     template <typename TType, typename UType>
-    inline constexpr Bool EnableIfTupleConvertingCopyConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, Ref<UType>>
-        && !Templates::IsConvertible<Ref<Tuple<UType>>, TType>
-        && !Templates::IsConstructible<TType, Ref<Tuple<UType>>>
+    inline constexpr Bool EnableIfTupleConvertingCopyConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, Immutable<UType>>
+        && !Templates::IsConvertible<Immutable<Tuple<UType>>, TType>
+        && !Templates::IsConstructible<TType, Immutable<Tuple<UType>>>
         && !Templates::IsSame<TType, UType>;
 
     /// \brief Enable converting tuple copy-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-copy-constructed from the respective UType and the overload does not reduce to a copy-constructor.

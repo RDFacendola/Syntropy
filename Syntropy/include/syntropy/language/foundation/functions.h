@@ -49,7 +49,7 @@ namespace Syntropy
     /// \brief Obtain the pointer to an immutable object referred via rhs.
     /// The returned value is guaranteed to produce the actual address of rhs, even when operator& is overloaded.
     template <typename TType>
-    constexpr Ptr<TType> ToPtr(Ref<TType> rhs) noexcept;
+    constexpr Ptr<TType> ToPtr(Immutable<TType> rhs) noexcept;
 
     /// \brief Obtain the pointer to an immutable object referred via rhs.
     /// The returned value is guaranteed to produce the actual address of rhs, even when operator& is overloaded.
@@ -58,7 +58,7 @@ namespace Syntropy
 
     /// \brief Disabled overload for rvalue reference since they have no associated address.
     template <typename TType>
-    constexpr XPtr<TType> ToPtr(ConstMoveRef<TType> rhs) noexcept = delete;
+    constexpr XPtr<TType> ToPtr(Immovable<TType> rhs) noexcept = delete;
 
     /// \brief Convert rhs to a pointer to UType, preserving constness.
     /// \remarks If the pointee type is not related to UType, the program is ill-formed.
@@ -85,7 +85,7 @@ namespace Syntropy
 
     /// \brief Convert rhs to a const reference.
     template <typename TType>
-    constexpr Ref<TType> ToConst(Ref<TType> rhs) noexcept;
+    constexpr Immutable<TType> ToConst(Immutable<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a const value.
     /// \remarks This method move-constructs a new constant value since rvalue references may cease to exists when the method returns.
@@ -101,7 +101,7 @@ namespace Syntropy
     /// Such usage has the form: ReadWrite(F(ReadOnly(x))) where x is non-const and F(.) is a function.
     /// \remarks If rhs doesn't refer to a read-write object, accessing the result of this method results in undefined behavior.
     template <typename TType>
-    constexpr Mutable<TType> ToMutable(Ref<TType> rhs) noexcept;
+    constexpr Mutable<TType> ToMutable(Immutable<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a mutable value.
     /// \remarks This method move-constructs a new constant value since rvalue references may cease to exists when the method returns.
@@ -187,7 +187,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr Ptr<TType> ToPtr(Ref<TType> rhs) noexcept
+    constexpr Ptr<TType> ToPtr(Immutable<TType> rhs) noexcept
     {
         return std::addressof(rhs);
     }
@@ -220,7 +220,7 @@ namespace Syntropy
     // =======
 
     template <typename TType>
-    constexpr Ref<TType> ToConst(Ref<TType> rhs) noexcept
+    constexpr Immutable<TType> ToConst(Immutable<TType> rhs) noexcept
     {
         return rhs;
     }
@@ -232,7 +232,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr Mutable<TType> ToMutable(Ref<TType> rhs) noexcept
+    constexpr Mutable<TType> ToMutable(Immutable<TType> rhs) noexcept
     {
         return const_cast<Mutable<TType>>(rhs);
     }

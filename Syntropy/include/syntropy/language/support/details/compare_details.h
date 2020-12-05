@@ -47,7 +47,7 @@ namespace Syntropy::Details
     /************************************************************************/
 
     /// \brief Convert a std::strong_ordering value to a ComparisonResult.
-    constexpr ComparisonResult ToComparisonResult(Ref<std::strong_ordering>) noexcept;
+    constexpr ComparisonResult ToComparisonResult(Immutable<std::strong_ordering>) noexcept;
 
 }
 
@@ -65,7 +65,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Models a class TType which is both equality-comparable and partially-ordered against the (possibly different) type UType.
     template <typename TType, typename UType>
     concept ThreeWayComparableWithHelper = TotallyOrderedWith<TType, UType>
-        && requires(Ref<Templates::RemoveReference<TType>> lhs, Ref<Templates::RemoveReference<UType>> rhs)
+        && requires(Immutable<Templates::RemoveReference<TType>> lhs, Immutable<Templates::RemoveReference<UType>> rhs)
     {
         /// \brief Compare lhs with rhs.
         { lhs <=> rhs } -> SameAs<Ordering>;
@@ -82,8 +82,8 @@ namespace Syntropy::Concepts::Details
     template <typename TType, typename UType>
     concept ThreeWayComparableWith = ThreeWayComparable<TType>
         && ThreeWayComparable<UType>
-        && CommonReferenceWith<Ref<Templates::RemoveReference<TType>>, Ref<Templates::RemoveReference<UType>>>
-        && ThreeWayComparable<Templates::CommonReference<Ref<Templates::RemoveReference<TType>>, Ref<Templates::RemoveReference<UType>>>>
+        && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>, Immutable<Templates::RemoveReference<UType>>>
+        && ThreeWayComparable<Templates::CommonReference<Immutable<Templates::RemoveReference<TType>>, Immutable<Templates::RemoveReference<UType>>>>
         && ThreeWayComparableWithHelper<TType, UType>;
 
 }
@@ -99,7 +99,7 @@ namespace Syntropy::Details
     // Conversions.
     // ============
 
-    constexpr ComparisonResult ToComparisonResult(Ref<std::strong_ordering> rhs) noexcept
+    constexpr ComparisonResult ToComparisonResult(Immutable<std::strong_ordering> rhs) noexcept
     {
         if (rhs == std::strong_ordering::equivalent)
         {

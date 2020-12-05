@@ -29,10 +29,10 @@ namespace Syntropy
         ScopeGuard() = delete;
 
         /// \brief No copy constructor.
-        ScopeGuard(Ref<ScopeGuard>) = delete;
+        ScopeGuard(Immutable<ScopeGuard>) = delete;
 
         /// \brief No assignment operator.
-        ScopeGuard& operator=(Ref<ScopeGuard>) = delete;
+        ScopeGuard& operator=(Immutable<ScopeGuard>) = delete;
 
         /// \brief Create a new scope guard.
         ScopeGuard(TFunctor functor) noexcept;

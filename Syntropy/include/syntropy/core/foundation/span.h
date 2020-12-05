@@ -44,14 +44,14 @@ namespace Syntropy
 
         /// \brief Copy constructor.
         template <typename UType>
-        constexpr SpanT(Ref<SpanT<UType>> rhs) noexcept;
+        constexpr SpanT(Immutable<SpanT<UType>> rhs) noexcept;
 
         /// \brief Default destructor.
         ~SpanT() noexcept = default;
 
         /// \brief Copy assignment operator.
         template <typename UType>
-        constexpr Mutable<SpanT> operator=(Ref<SpanT<UType>> rhs) noexcept;
+        constexpr Mutable<SpanT> operator=(Immutable<SpanT<UType>> rhs) noexcept;
 
         /// \brief Check whether the span is non-empty.
         constexpr operator Bool() const noexcept;
@@ -105,17 +105,17 @@ namespace Syntropy
     /// \brief Access the first element in a span.
     /// \remarks Accessing the first element of an empty span results in undefined behavior.
     template <typename TType>
-    constexpr XRef<TType> Front(Ref<SpanT<TType>> rhs) noexcept;
+    constexpr XRef<TType> Front(Immutable<SpanT<TType>> rhs) noexcept;
 
     /// \brief Discard the first count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TType>
-    constexpr SpanT<TType> PopFront(Ref<SpanT<TType>> rhs) noexcept;
+    constexpr SpanT<TType> PopFront(Immutable<SpanT<TType>> rhs) noexcept;
 
     /// \brief Check whether a span is empty.
     /// \return Returns true if the span is empty, returns false otherwise.
     template <typename TType>
-    constexpr Bool IsEmpty(Ref<SpanT<TType>> rhs) noexcept;
+    constexpr Bool IsEmpty(Immutable<SpanT<TType>> rhs) noexcept;
 
     // Bidirectional range.
     // ====================
@@ -123,29 +123,29 @@ namespace Syntropy
     /// \brief Access the last element in a span.
     /// \remarks Accessing the last element of an empty span results in undefined behavior.
     template <typename TType>
-    constexpr XRef<TType> Back(Ref<SpanT<TType>> rhs) noexcept;
+    constexpr XRef<TType> Back(Immutable<SpanT<TType>> rhs) noexcept;
 
     /// \brief Discard the last count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TType>
-    constexpr SpanT<TType> PopBack(Ref<SpanT<TType>> rhs) noexcept;
+    constexpr SpanT<TType> PopBack(Immutable<SpanT<TType>> rhs) noexcept;
 
     // Random access range.
     // ====================
 
     /// \brief Get the number of elements in a span.
     template <typename TType>
-    constexpr Int Count(Ref<SpanT<TType>> rhs) noexcept;
+    constexpr Int Count(Immutable<SpanT<TType>> rhs) noexcept;
 
     /// \brief Obtain a sub-span given an offset and a number of elements.
     /// \remarks Exceeding span boundaries results in undefined behavior.
     template <typename TType>
-    constexpr SpanT<TType> Select(Ref<SpanT<TType>> rhs, Int offset, Int count) noexcept;
+    constexpr SpanT<TType> Select(Immutable<SpanT<TType>> rhs, Int offset, Int count) noexcept;
 
     /// \brief Obtain a span element at given index.
     /// \remarks Exceeding span boundaries results in undefined behavior.
     template <typename TType>
-    constexpr XRef<TType> Select(Ref<SpanT<TType>> rhs, Int index) noexcept;
+    constexpr XRef<TType> Select(Immutable<SpanT<TType>> rhs, Int index) noexcept;
 
     // Contiguous range.
     // =================
@@ -161,51 +161,51 @@ namespace Syntropy
     /// \brief Get the smallest span including both lhs and rhs.
     /// \remarks This function may introduce elements that do not belong to either lhs and rhs. If those elements refer to an invalid memory region, accessing those elements results in undefined behavior.
     template <typename TType, typename UType>
-    constexpr CommonSpan<TType, UType> Union(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept;
+    constexpr CommonSpan<TType, UType> Union(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept;
 
     /// \brief Get the largest span shared between lhs and rhs.
     /// \remarks If lhs and rhs are disjoint, this method returns an unspecified empty span.
     template <typename TType, typename UType>
-    constexpr CommonSpan<TType, UType> Intersection(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept;
+    constexpr CommonSpan<TType, UType> Intersection(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept;
 
     /// \brief Reduce lhs from the back until the intersection between lhs and rhs becomes empty or lhs is exhausted.
     template <typename TType, typename UType>
-    constexpr CommonSpan<TType, UType> DifferenceFront(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept;
+    constexpr CommonSpan<TType, UType> DifferenceFront(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept;
 
     /// \brief Reduce lhs from the front until the intersection between lhs and rhs becomes empty or lhs is exhausted.
     template <typename TType, typename UType>
-    constexpr CommonSpan<TType, UType> DifferenceBack(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept;
+    constexpr CommonSpan<TType, UType> DifferenceBack(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept;
 
     /// \brief Check whether rhs is identical to any subset in lhs.
     template <typename TType, typename UType>
-    constexpr Bool Contains(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept;
+    constexpr Bool Contains(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept;
 
     // Comparisons.
     // ============
 
     /// \brief Check whether lhs and rhs are identical.
     template <typename TType, typename UType>
-    constexpr Bool operator==(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept;
+    constexpr Bool operator==(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept;
 
     /// \brief Check whether two spans are element-wise equivalent.
     template <typename TType, typename UType>
-    constexpr Bool Equals(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept;
+    constexpr Bool Equals(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept;
 
     /// \brief Check whether lhs starts with rhs.
     /// \remarks If lhs starts with rhs, return true, otherwise return false.
     template <typename TType, typename UType>
-    constexpr Bool StartsWith(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept;
+    constexpr Bool StartsWith(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept;
 
     /// \brief Check whether lhs ends with lhs.
     /// \remarks If lhs ends with rhs, return true, otherwise return false.
     template <typename TType, typename UType>
-    constexpr Bool EndsWith(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept;
+    constexpr Bool EndsWith(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept;
 
     /// \brief Reduce lhs until lhs starts with rhs or lhs is exhausted.
     /// \return Returns the reduced range starting from the first occurrence of rhs in lhs or an empty range if no occurrence was found.
     ///         If rhs is empty lhs is returned instead.
     template <typename TType, typename UType>
-    constexpr SpanT<TType> Find(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept;
+    constexpr SpanT<TType> Find(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept;
 
     // Utilities.
     // ==========
@@ -224,7 +224,7 @@ namespace Syntropy
 
     /// \brief Convert a span to its read-only equivalent.
     template <typename TType>
-    constexpr Span<TType> ReadOnly(Ref<SpanT<TType>> rhs) noexcept;
+    constexpr Span<TType> ReadOnly(Immutable<SpanT<TType>> rhs) noexcept;
 
     /// \brief Convert a span to its read-only equivalent.
     template <typename TType>
@@ -233,7 +233,7 @@ namespace Syntropy
     /// \brief Convert a read-only span to its read-write equivalent.
     /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
     template <typename TType>
-    constexpr RWSpan<Templates::RemoveConst<TType>> ReadWrite(Ref<SpanT<TType>> rhs) noexcept;
+    constexpr RWSpan<Templates::RemoveConst<TType>> ReadWrite(Immutable<SpanT<TType>> rhs) noexcept;
 
     /// \brief Convert a read-only span to its read-write equivalent.
     /// If rhs doesn't refer to an original read-write memory location, the behavior of this method is undefined.
@@ -295,7 +295,7 @@ namespace Syntropy
 
     template <typename TType>
     template <typename UType>
-    constexpr SpanT<TType>::SpanT(Ref<SpanT<UType>> rhs) noexcept
+    constexpr SpanT<TType>::SpanT(Immutable<SpanT<UType>> rhs) noexcept
         : data_(ToPtr<TType>(rhs.GetData()))
         , count_(rhs.GetCount())
     {
@@ -304,7 +304,7 @@ namespace Syntropy
 
     template <typename TType>
     template <typename UType>
-    constexpr Mutable<SpanT<TType>> SpanT<TType>::operator=(Ref<SpanT<UType>> rhs) noexcept
+    constexpr Mutable<SpanT<TType>> SpanT<TType>::operator=(Immutable<SpanT<UType>> rhs) noexcept
     {
         data_ = ToPtr<TType>(rhs.GetData());
         count_ = rhs.GetCount();
@@ -349,19 +349,19 @@ namespace Syntropy
     // Forward Range.
 
     template <typename TType>
-    constexpr XRef<TType> Front(Ref<SpanT<TType>> rhs) noexcept
+    constexpr XRef<TType> Front(Immutable<SpanT<TType>> rhs) noexcept
     {
         return *Data(rhs);
     }
 
     template <typename TType>
-    constexpr SpanT<TType> PopFront(Ref<SpanT<TType>> rhs) noexcept
+    constexpr SpanT<TType> PopFront(Immutable<SpanT<TType>> rhs) noexcept
     {
         return PopFront(rhs, 1);
     }
 
     template <typename TType>
-    constexpr Bool IsEmpty(Ref<SpanT<TType>> rhs) noexcept
+    constexpr Bool IsEmpty(Immutable<SpanT<TType>> rhs) noexcept
     {
         return !rhs;
     }
@@ -369,13 +369,13 @@ namespace Syntropy
     // Bidirectional range.
 
     template <typename TType>
-    constexpr XRef<TType> Back(Ref<SpanT<TType>> rhs) noexcept
+    constexpr XRef<TType> Back(Immutable<SpanT<TType>> rhs) noexcept
     {
         return *(Data(rhs) + Count(rhs) - 1);
     }
 
     template <typename TType>
-    constexpr SpanT<TType> PopBack(Ref<SpanT<TType>> rhs) noexcept
+    constexpr SpanT<TType> PopBack(Immutable<SpanT<TType>> rhs) noexcept
     {
         return PopBack(rhs, 1);
     }
@@ -383,19 +383,19 @@ namespace Syntropy
     // Random access range.
 
     template <typename TType>
-    constexpr Int Count(Ref<SpanT<TType>> rhs) noexcept
+    constexpr Int Count(Immutable<SpanT<TType>> rhs) noexcept
     {
         return rhs.GetCount();
     }
 
     template <typename TType>
-    constexpr SpanT<TType> Select(Ref<SpanT<TType>> rhs, Int offset, Int count) noexcept
+    constexpr SpanT<TType> Select(Immutable<SpanT<TType>> rhs, Int offset, Int count) noexcept
     {
         return { Data(rhs) + offset, count };
     }
 
     template <typename TType>
-    constexpr XRef<TType> Select(Ref<SpanT<TType>> rhs, Int index) noexcept
+    constexpr XRef<TType> Select(Immutable<SpanT<TType>> rhs, Int index) noexcept
     {
         return rhs[index];
     }
@@ -411,7 +411,7 @@ namespace Syntropy
     // Set operations.
 
     template <typename TType, typename UType>
-    constexpr CommonSpan<TType, UType> Union(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept
+    constexpr CommonSpan<TType, UType> Union(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept
     {
         if (lhs && rhs)
         {
@@ -425,7 +425,7 @@ namespace Syntropy
     }
 
     template <typename TType, typename UType>
-    constexpr CommonSpan<TType, UType> Intersection(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept
+    constexpr CommonSpan<TType, UType> Intersection(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept
     {
         if (lhs && rhs)
         {
@@ -439,7 +439,7 @@ namespace Syntropy
     }
 
     template <typename TType, typename UType>
-    constexpr CommonSpan<TType, UType> DifferenceFront(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept
+    constexpr CommonSpan<TType, UType> DifferenceFront(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept
     {
         if (rhs)
         {
@@ -453,7 +453,7 @@ namespace Syntropy
     }
 
     template <typename TType, typename UType>
-    constexpr CommonSpan<TType, UType> DifferenceBack(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept
+    constexpr CommonSpan<TType, UType> DifferenceBack(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept
     {
         if (rhs)
         {
@@ -467,7 +467,7 @@ namespace Syntropy
     }
 
     template <typename TType, typename UType>
-    constexpr Bool Contains(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept
+    constexpr Bool Contains(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept
     {
         return Intersection(lhs, rhs) == rhs;
     }
@@ -475,13 +475,13 @@ namespace Syntropy
     // Comparisons.
 
     template <typename TType, typename UType>
-    constexpr Bool operator==(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept
+    constexpr Bool operator==(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept
     {
         return (lhs.GetData() == rhs.GetData()) && (lhs.GetCount() == rhs.GetCount());
     }
 
     template <typename TType, typename UType>
-    constexpr Bool Equals(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept
+    constexpr Bool Equals(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept
     {
         if (Count(lhs) != Count(rhs))
         {
@@ -508,7 +508,7 @@ namespace Syntropy
     }
 
     template <typename TType, typename UType>
-    constexpr Bool StartsWith(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept
+    constexpr Bool StartsWith(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept
     {
         auto lhs_count = Count(lhs);
         auto rhs_count = Count(rhs);
@@ -517,7 +517,7 @@ namespace Syntropy
     }
 
     template <typename TType, typename UType>
-    constexpr Bool EndsWith(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept
+    constexpr Bool EndsWith(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept
     {
         auto lhs_count = Count(lhs);
         auto rhs_count = Count(rhs);
@@ -526,7 +526,7 @@ namespace Syntropy
     }
 
     //template <typename TType, typename UType>
-    //constexpr SpanT<TType> Find(Ref<SpanT<TType>> lhs, Ref<SpanT<UType>> rhs) noexcept
+    //constexpr SpanT<TType> Find(Immutable<SpanT<TType>> lhs, Immutable<SpanT<UType>> rhs) noexcept
     //{
     //    if (rhs)
     //    {
@@ -567,7 +567,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr Span<TType> ReadOnly(Ref<SpanT<TType>> rhs) noexcept
+    constexpr Span<TType> ReadOnly(Immutable<SpanT<TType>> rhs) noexcept
     {
         return rhs;
     }
@@ -579,7 +579,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr RWSpan<Templates::RemoveConst<TType>> ReadWrite(Ref<SpanT<TType>> rhs) noexcept
+    constexpr RWSpan<Templates::RemoveConst<TType>> ReadWrite(Immutable<SpanT<TType>> rhs) noexcept
     {
         auto begin = ReadWrite(Begin(rhs));
         auto end = ReadWrite(End(rhs));

@@ -497,7 +497,7 @@ namespace Syntropy::Templates::Details
 
     /// \brief Dummy method used to copy construct an instance.
     template <typename TType>
-    void CopyConstruct(Ref<TType>);
+    void CopyConstruct(Immutable<TType>);
 
     /// \brief Detect whether TType is implicitly default constructible from an empty list.
     template <typename TType>

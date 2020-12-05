@@ -24,10 +24,10 @@ namespace Syntropy
     class InitializerList
     {
         template <typename TElement>
-        friend constexpr Ptr<TElement> begin(Ref<InitializerList<TElement>> rhs) noexcept;
+        friend constexpr Ptr<TElement> begin(Immutable<InitializerList<TElement>> rhs) noexcept;
 
         template <typename TElement>
-        friend constexpr Ptr<TElement> end(Ref<InitializerList<TElement>> rhs) noexcept;
+        friend constexpr Ptr<TElement> end(Immutable<InitializerList<TElement>> rhs) noexcept;
 
     public:
 
@@ -38,7 +38,7 @@ namespace Syntropy
         constexpr InitializerList(Ptr<TElement> begin, Ptr<TElement> end) noexcept;
 
         /// \brief Create an initializer list from a standard initializer list.
-        constexpr InitializerList(Ref<std::initializer_list<TElement>> initializer_list) noexcept;
+        constexpr InitializerList(Immutable<std::initializer_list<TElement>> initializer_list) noexcept;
 
     private:
 
@@ -55,19 +55,19 @@ namespace Syntropy
     /************************************************************************/
 
     template <typename TElement>
-    constexpr Ptr<TElement> begin(Ref<InitializerList<TElement>> rhs) noexcept;
+    constexpr Ptr<TElement> begin(Immutable<InitializerList<TElement>> rhs) noexcept;
 
     template <typename TElement>
-    constexpr Ptr<TElement> end(Ref<InitializerList<TElement>> rhs) noexcept;
+    constexpr Ptr<TElement> end(Immutable<InitializerList<TElement>> rhs) noexcept;
 
     /// \brief Check whether an initializer list is empty.
     /// \return Returns true if the list is empty, returns false otherwise.
     template <typename TElement>
-    constexpr Bool IsEmpty(Ref<InitializerList<TElement>> rhs) noexcept;
+    constexpr Bool IsEmpty(Immutable<InitializerList<TElement>> rhs) noexcept;
 
     /// \brief Get the number of elements in an initializer list.
     template <typename TElement>
-    constexpr Int Count(Ref<InitializerList<TElement>> rhs) noexcept;
+    constexpr Int Count(Immutable<InitializerList<TElement>> rhs) noexcept;
 
 }
 
@@ -91,7 +91,7 @@ namespace Syntropy
     }
 
     template <typename TElement>
-    constexpr InitializerList<TElement>::InitializerList(Ref<std::initializer_list<TElement>> initializer_list) noexcept
+    constexpr InitializerList<TElement>::InitializerList(Immutable<std::initializer_list<TElement>> initializer_list) noexcept
         : begin_(initializer_list.begin())
         , end_(initializer_list.end())
     {
@@ -102,25 +102,25 @@ namespace Syntropy
     // =====================
 
     template <typename TElement>
-    constexpr Ptr<TElement> begin(Ref<InitializerList<TElement>> rhs) noexcept
+    constexpr Ptr<TElement> begin(Immutable<InitializerList<TElement>> rhs) noexcept
     {
         return rhs.begin_;
     }
 
     template <typename TElement>
-    constexpr Ptr<TElement> end(Ref<InitializerList<TElement>> rhs) noexcept
+    constexpr Ptr<TElement> end(Immutable<InitializerList<TElement>> rhs) noexcept
     {
         return rhs.end_;
     }
 
     template <typename TElement>
-    constexpr Bool IsEmpty(Ref<InitializerList<TElement>> rhs) noexcept
+    constexpr Bool IsEmpty(Immutable<InitializerList<TElement>> rhs) noexcept
     {
         return (Count(rhs) == 0);
     }
 
     template <typename TElement>
-    constexpr Int Count(Ref<InitializerList<TElement>> rhs) noexcept
+    constexpr Int Count(Immutable<InitializerList<TElement>> rhs) noexcept
     {
         return ToInt(End(rhs) - Begin(rhs));
     }

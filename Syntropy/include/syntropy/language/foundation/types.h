@@ -90,6 +90,26 @@ namespace Syntropy
     using Enum64 = std::int64_t;
 
     /************************************************************************/
+    /* REFERENCE TYPES                                                      */
+    /************************************************************************/
+
+    /// \brief Lvalue reference to an immutable instance of type TType.
+    template <typename TType>
+    using Immutable = const TType&;
+
+    /// \brief LValue reference to a mutable instance of type TType.
+    template <typename TType>
+    using Mutable = TType&;
+
+    /// \brief RValue reference to an immutable instance of type TType.
+    template <typename TType>
+    using Immovable = const TType&&;
+
+    /// \brief RValue reference to an mutable instance of type TType.
+    template <typename TType>
+    using Movable = TType&&;
+
+    /************************************************************************/
     /* VALUE TYPES                                                          */
     /************************************************************************/
 
@@ -101,36 +121,10 @@ namespace Syntropy
     template <typename TType>
     using MutableVal = TType;
 
-    /************************************************************************/
-    /* REFERENCE TYPES                                                      */
-    /************************************************************************/
-
-    /// \brief Reference to an immutable object.
-    template <typename TType>
-    using Ref = const TType&;
-
-    /// \brief Reference to a mutable object.
-    /// \remarks In C++ mutable references are not a thing! The prefix "Mutable" highlights the non-constant nature of the referenced object.
-    template <typename TType>
-    using Mutable = TType&;
-
-    /// \brief A rvalue reference to an object whose resources can be moved from.
-    /// \remarks The difference between this type and ForwardRef<T> is purely semantic.
-    template <typename TType>
-    using Movable = TType&&;
-
-
-
-
     /// \brief Reference to either a constant or a mutable object.
     /// This type is an alias for either Ref<T> or Mutable<T>.
     template <typename TType>
     using XRef = TType&;
-
-    /// \brief A rvalue reference to a const object.
-    /// \remarks Differently than Movable, this type is never a forwarding reference, therefore it can be used to delete function overloads for rvalue references.
-    template <typename TType>
-    using ConstMoveRef = const TType&&;
 
     /// \brief A forwarding reference that propagates rvalues as rvalues and lvalues to either lvalues or rvalues.
     /// \remarks The difference between this type and Movable<T> is purely semantic.
