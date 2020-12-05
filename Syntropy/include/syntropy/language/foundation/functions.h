@@ -64,15 +64,6 @@ namespace Syntropy
     template <typename TType>
     constexpr void ToPtr(MoveRef<TType> rhs) noexcept = delete;
 
-    /// \brief Convert rhs to a reference to UType, preserving constness.
-    template <typename UType>
-    constexpr XRef<UType> ToRef(XPtr<UType> rhs) noexcept;
-
-    /// \brief Convert rhs to a reference to UType, preserving constness.
-    /// \remarks If the pointee type is not related to UType, the program is ill-formed.
-    template <typename TType, typename UType>
-    constexpr XRef<TType> ToRef(XRef<UType> rhs) noexcept;
-
     /// \brief Convert rhs to a strongly-typed immutable pointer type.
     /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
     template <typename TType>
@@ -200,18 +191,6 @@ namespace Syntropy
     constexpr XPtr<TType> ToPtr(XPtr<UType> rhs) noexcept
     {
         return static_cast<XPtr<TType>>(rhs);
-    }
-
-    template <typename UType>
-    constexpr XRef<UType> ToRef(XPtr<UType> rhs) noexcept
-    {
-        return *rhs;
-    }
-
-    template <typename TType, typename UType>
-    constexpr XRef<TType> ToRef(XRef<UType> rhs) noexcept
-    {
-        return static_cast<XRef<TType>>(rhs);
     }
 
     template <typename TType>

@@ -93,7 +93,7 @@ namespace Syntropy
 
         if (type == typeid(TVisitable))
         {
-            visitor(ToRef(FromTypeless<TVisitable>(visitable)));
+            visitor(*FromTypeless<TVisitable>(visitable));
             return true;
         }
 
@@ -121,7 +121,7 @@ namespace Syntropy
             // Attempt to visit with each of the lambdas.
             void VirtualVisit(TypelessPtr visitable, Ref<std::type_info> type) const noexcept override
             {
-                (TryVisit<TFunctions>(ToRef(this), visitable, type) || ...);
+                (TryVisit<TFunctions>(*this, visitable, type) || ...);
             }
         };
 

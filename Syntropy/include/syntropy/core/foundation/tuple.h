@@ -8,6 +8,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/sequence.h"
+#include "syntropy/language/support/swap.h"
 
 #include "syntropy/core/foundation/details/tuple_details.h"
 
@@ -24,114 +25,115 @@ namespace Syntropy
 
      /// \brief Represents a fixed-size collection of heterogeneous elements.
      /// \author Raffaele D. Facendola - September 2020.
-    template <typename... TTypes>
+    template <typename... TElements>
     struct TupleT;
 
     /// \brief Recursive tuple definition.
-    template <typename TType, typename... TTypes>
-    struct TupleT<TType, TTypes...> : private TupleT<TTypes...>
+    template <typename TElement, typename... TElements>
+    struct TupleT<TElement, TElements...> : private TupleT<TElements...>
     {
-        template <Int VIndex, typename... TTypes>
-        friend constexpr MutableRef<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(MutableRef<TupleT<TTypes...>> tuple) noexcept;
+        template <Int VIndex, typename... TElements>
+        friend constexpr MutableRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(MutableRef<TupleT<TElements...>> tuple) noexcept;
 
-        template <Int VIndex, typename... TTypes>
-        friend constexpr MoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(MoveRef<TupleT<TTypes...>> tuple) noexcept;
+        template <Int VIndex, typename... TElements>
+        friend constexpr MoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(MoveRef<TupleT<TElements...>> tuple) noexcept;
 
-        template <Int VIndex, typename... TTypes>
-        friend constexpr Ref<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(Ref<TupleT<TTypes...>> tuple) noexcept;
+        template <Int VIndex, typename... TElements>
+        friend constexpr Ref<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(Ref<TupleT<TElements...>> tuple) noexcept;
 
-        template <Int VIndex, typename... TTypes>
-        friend constexpr ConstMoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(ConstMoveRef<TupleT<TTypes...>> tuple) noexcept;
+        template <Int VIndex, typename... TElements>
+        friend constexpr ConstMoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(ConstMoveRef<TupleT<TElements...>> tuple) noexcept;
 
     public:
 
         /// \brief Type of the base class.
-        using TBaseClass = TupleT<TTypes...>;
+        using BaseClass = TupleT<TElements...>;
 
         /// \brief Types of tuple elements.
-        using TTypeList = Syntropy::Templates::TypeList<TType, TTypes...>;
+        using ElementList = Templates::TypeList<TElement, TElements...>;
+
+        /// \brief Types of arguments.
+        template <typename... UElements>
+        using ArgumentList = Templates::TypeList<UElements...>;
 
         /// \brief Tag type used to construct a tuple element-wise.
-        struct ElementwiseConstructor {};
+        struct ElementwiseTag {};
 
         /// \brief Tag type used to construct a tuple by unwinding another tuple.
-        struct UnwindConstructor {};
+        struct UnwindTag {};
 
         /// \brief Tuple default constructor. Enabled if all elements are default-constructible.
-        template<typename UType = TType, Details::EnableIfTupleDefaultConstructor<Templates::TypeList<UType, TTypes...>> = nullptr>
-        explicit (Details::ExplicitIfTupleDefaultConstructor<UType, TTypes...>)
+        template<typename UElement = TElement, Details::EnableIfTupleDefaultConstructor<ArgumentList<UElement, TElements...>> = nullptr>
+        explicit (Details::ExplicitIfTupleDefaultConstructor<UElement, TElements...>)
         constexpr TupleT() noexcept
-            : TBaseClass{}
+            : BaseClass{}
             , element_{}
         {
 
         }
 
         /// \brief Tuple direct constructor. Enabled if all elements are copy-constructible.
-        template<typename UType = TType, Details::EnableIfTupleDirectConstructor<Templates::TypeList<UType, TTypes...>> = nullptr>
-        explicit (Details::ExplicitIfTupleDirectConstructor<UType, TTypes...>)
-        constexpr TupleT(Ref<TType> element, Ref<TTypes>... elements) noexcept
-            : TupleT(ElementwiseConstructor{}, element, elements...)
+        template<typename UElement = TElement, Details::EnableIfTupleDirectConstructor<ArgumentList<UElement, TElements...>> = nullptr>
+        explicit (Details::ExplicitIfTupleDirectConstructor<UElement, TElements...>)
+        constexpr TupleT(Ref<TElement> element, Ref<TElements>... elements) noexcept
+            : TupleT(ElementwiseTag{}, element, elements...)
         {
 
         }
 
         /// \brief Tuple converting constructor. Enabled if all tuple elements are copy-constructible.
-        template<typename UType, typename... UTypes, Details::EnableIfTupleConvertingConstructor<TTypeList, UType, UTypes...> = nullptr>
-        explicit (Details::ExplicitIfTupleConvertingConstructor<TTypeList, UType, UTypes...>)
-        constexpr TupleT(ForwardRef<UType> element, ForwardRef<UTypes>... elements) noexcept
-            : TupleT(ElementwiseConstructor{}, Forward<UType>(element), Forward<UTypes>(elements)...)
+        template<typename UElement, typename... UElements, Details::EnableIfTupleConvertingConstructor<ElementList, UElement, UElements...> = nullptr>
+        explicit (Details::ExplicitIfTupleConvertingConstructor<ElementList, UElement, UElements...>)
+        constexpr TupleT(ForwardRef<UElement> element, ForwardRef<UElements>... elements) noexcept
+            : TupleT(ElementwiseTag{}, Forward<UElement>(element), Forward<UElements>(elements)...)
         {
 
         }
 
         /// \brief Tuple converting copy constructor. Enabled if all tuple elements are copy-constructible.
-        template<typename UType, typename... UTypes, Details::EnableIfTupleConvertingCopyConstructor<TTypeList, UType, UTypes...> = nullptr>
-        explicit (Details::ExplicitIfTupleConvertingCopyConstructor<TTypeList, UType, UTypes...>)
-        constexpr TupleT(Ref<TupleT<UType, UTypes...>> rhs) noexcept
-            : TupleT(UnwindConstructor{}, Templates::SequenceFor<UType, UTypes...>, rhs)
+        template<typename UElement, typename... UElements, Details::EnableIfTupleConvertingCopyConstructor<ElementList, UElement, UElements...> = nullptr>
+        explicit (Details::ExplicitIfTupleConvertingCopyConstructor<ElementList, UElement, UElements...>)
+        constexpr TupleT(Ref<TupleT<UElement, UElements...>> rhs) noexcept
+            : TupleT(UnwindTag{}, Templates::SequenceFor<UElement, UElements...>, rhs)
         {
 
         }
 
         /// \brief Tuple converting move constructor. Enabled if all tuple elements are move-constructible.
-        template<typename UType, typename... UTypes, Details::EnableIfTupleConvertingMoveConstructor<TTypeList, UType, UTypes...> = nullptr>
-        explicit (Details::ExplicitIfTupleConvertingMoveConstructor<TTypeList, UType, UTypes...>)
-        constexpr TupleT(MoveRef<TupleT<UType, UTypes...>> rhs) noexcept
-            : TupleT(UnwindConstructor{}, Templates::SequenceFor<UType, UTypes...>, Move(rhs))
+        template<typename UElement, typename... UElements, Details::EnableIfTupleConvertingMoveConstructor<ElementList, UElement, UElements...> = nullptr>
+        explicit (Details::ExplicitIfTupleConvertingMoveConstructor<ElementList, UElement, UElements...>)
+        constexpr TupleT(MoveRef<TupleT<UElement, UElements...>> rhs) noexcept
+            : TupleT(UnwindTag{}, Templates::SequenceFor<UElement, UElements...>, Move(rhs))
         {
 
         }
 
-        /// \brief Swap this tuple with rhs by means of element-wise Swap.
-        constexpr MutableRef<TupleT> Swap(MutableRef<TupleT> rhs) noexcept;
+        /// \brief Construct a tuple forwarding explicit arguments.
+        template<typename UElement, typename... UElements>
+        constexpr TupleT(ElementwiseTag, ForwardRef<UElement> element, ForwardRef<UElements>... elements) noexcept;
+
+        /// \brief Construct a tuple unwinding another tuple elements.
+        template<typename TTuple, Int... VIndexes>
+        constexpr TupleT(UnwindTag, Templates::Sequence<VIndexes...>, ForwardRef<TTuple> tuple) noexcept;
 
         /// \brief Fallback case for when no assignment operator could be found.
         constexpr MutableRef<TupleT> operator=(volatile Ref<TupleT>) = delete;
 
         /// \brief Copy-assignment operator.
-        template <typename TSelf = TupleT, typename TSelfList = TTypeList, Details::EnableIfTupleCopyAssignment<TSelfList> = nullptr>
+        template <typename TSelf = TupleT, typename TSelfList = ElementList, Details::EnableIfTupleCopyAssignment<TSelfList> = nullptr>
         constexpr MutableRef<TupleT> operator=(Templates::Identity<Ref<TSelf>> rhs) noexcept;
 
         /// \brief Move-assignment operator.
-        template <typename TSelf = TupleT, typename TSelfList = TTypeList, Details::EnableIfTupleMoveAssignment<TSelfList> = nullptr>
+        template <typename TSelf = TupleT, typename TSelfList = ElementList, Details::EnableIfTupleMoveAssignment<TSelfList> = nullptr>
         constexpr MutableRef<TupleT> operator=(Templates::Identity<MoveRef<TSelf>> rhs) noexcept;
 
         /// \brief Tuple converting copy-assignment operator.
-        template <typename... UTypes, typename TSelfList = TTypeList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, Templates::TypeList<UTypes...>> = nullptr>
-        constexpr MutableRef<TupleT> operator=(Ref<TupleT<UTypes...>> rhs) noexcept;
+        template <typename... UElements, typename TSelfList = ElementList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
+        constexpr MutableRef<TupleT> operator=(Ref<TupleT<UElements...>> rhs) noexcept;
 
         /// \brief Tuple converting move-assignment operator.
-        template <typename... UTypes, typename TSelfList = TTypeList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Templates::TypeList<UTypes...>> = nullptr>
-        constexpr MutableRef<TupleT> operator=(MoveRef<TupleT<UTypes...>> rhs) noexcept;
-
-        /// \brief Construct a tuple forwarding explicit arguments.
-        template<typename UType, typename... UTypes>
-        constexpr TupleT(ElementwiseConstructor, ForwardRef<UType> element, ForwardRef<UTypes>... elements) noexcept;
-
-        /// \brief Construct a tuple unwinding another tuple elements.
-        template<typename TTuple, Int... VIndexes>
-        constexpr TupleT(UnwindConstructor, Templates::Sequence<VIndexes...>, ForwardRef<TTuple> tuple) noexcept;
+        template <typename... UElements, typename TSelfList = ElementList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
+        constexpr MutableRef<TupleT> operator=(MoveRef<TupleT<UElements...>> rhs) noexcept;
 
         /// \brief Default copy-constructor.
         constexpr TupleT(Ref<TupleT> other) = default;
@@ -139,8 +141,11 @@ namespace Syntropy
         /// \brief Default move-constructor.
         constexpr TupleT(MoveRef<TupleT> other) = default;
 
+        /// \brief Swap this tuple with rhs by means of element-wise Swap.
+        constexpr MutableRef<TupleT> Swap(MutableRef<TupleT> rhs) noexcept;
+
         /// \brief Head element.
-        TType element_;
+        TElement element_;
     };
 
     /// \brief Empty tuple.
@@ -162,53 +167,70 @@ namespace Syntropy
     };
 
     /// \brief Deduction rule.
-    template <typename... TTypes>
-    TupleT(TTypes...) ->TupleT<TTypes...>;
+    template <typename... TElements>
+    TupleT(TElements...) ->TupleT<TElements...>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
+    // Comparison.
+    // ===========
+
     /// \brief Compare two tuples.
     /// \return Returns true if each element in lhs compares equal to the corresponding element in rhs, returns false otherwise.
-    template <typename... TTypes, typename... UTypes>
-    constexpr Bool operator==(Ref<TupleT<TTypes...>> lhs, Ref<TupleT<UTypes...>> rhs) noexcept;
+    template <typename... TElements, typename... UElements>
+    constexpr Bool operator==(Ref<TupleT<TElements...>> lhs, Ref<TupleT<UElements...>> rhs) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
-    template <Int VIndex, typename... TTypes>
-    constexpr MutableRef<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(MutableRef<TupleT<TTypes...>> tuple) noexcept;
+    // Tuple element access.
+    // =====================
 
-    /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
-    template <Int VIndex, typename... TTypes>
-    constexpr MoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(MoveRef<TupleT<TTypes...>> tuple) noexcept;
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks The program is ill-formed if no such element exists.
+    template <Int VIndex, typename... TElements>
+    constexpr MutableRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(MutableRef<TupleT<TElements...>> tuple) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
-    template <Int VIndex, typename... TTypes>
-    constexpr Ref<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(Ref<TupleT<TTypes...>> tuple) noexcept;
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks The program is ill-formed if no such element exists.
+    template <Int VIndex, typename... TElements>
+    constexpr MoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(MoveRef<TupleT<TElements...>> tuple) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple. The program is ill-formed if no such element exists.
-    template <Int VIndex, typename... TTypes>
-    constexpr ConstMoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(ConstMoveRef<TupleT<TTypes...>> tuple) noexcept;
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks The program is ill-formed if no such element exists.
+    template <Int VIndex, typename... TElements>
+    constexpr Ref<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(Ref<TupleT<TElements...>> tuple) noexcept;
 
-    /// \brief Access an element of a tuple by type. The program is ill-formed unless the tuple has exactly one occurrence of TType.
-    template <typename TType, typename... TTypes>
-    constexpr MutableRef<TType> Get(MutableRef<TupleT<TTypes...>> tuple) noexcept;
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks The program is ill-formed if no such element exists.
+    template <Int VIndex, typename... TElements>
+    constexpr ConstMoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(ConstMoveRef<TupleT<TElements...>> tuple) noexcept;
 
-    /// \brief Access an element of a tuple by type. The program is ill-formed unless the tuple has exactly one occurrence of TType.
-    template <typename TType, typename... TTypes>
-    constexpr MoveRef<TType> Get(MoveRef<TupleT<TTypes...>> tuple) noexcept;
+    /// \brief Access an element of a tuple by type.
+    /// \remarks The program is ill-formed unless the tuple has exactly one occurrence of TElement.
+    template <typename TElement, typename... TElements>
+    constexpr MutableRef<TElement> Get(MutableRef<TupleT<TElements...>> tuple) noexcept;
 
-    /// \brief Access an element of a tuple by type. The program is ill-formed unless the tuple has exactly one occurrence of TType.
-    template <typename TType, typename... TTypes>
-    constexpr Ref<TType> Get(Ref<TupleT<TTypes...>> tuple) noexcept;
+    /// \brief Access an element of a tuple by type.
+    /// \remarks The program is ill-formed unless the tuple has exactly one occurrence of TElement.
+    template <typename TElement, typename... TElements>
+    constexpr MoveRef<TElement> Get(MoveRef<TupleT<TElements...>> tuple) noexcept;
 
-    /// \brief Access an element of a tuple by type. The program is ill-formed unless the tuple has exactly one occurrence of TType.
-    template <typename TType, typename... TTypes>
-    constexpr ConstMoveRef<TType> Get(ConstMoveRef<TupleT<TTypes...>> tuple) noexcept;
+    /// \brief Access an element of a tuple by type.
+    /// \remarks The program is ill-formed unless the tuple has exactly one occurrence of TElement.
+    template <typename TElement, typename... TElements>
+    constexpr Ref<TElement> Get(Ref<TupleT<TElements...>> tuple) noexcept;
+
+    /// \brief Access an element of a tuple by type.
+    /// \remarks The program is ill-formed unless the tuple has exactly one occurrence of TElement.
+    template <typename TElement, typename... TElements>
+    constexpr ConstMoveRef<TElement> Get(ConstMoveRef<TupleT<TElements...>> tuple) noexcept;
+
+    // Construction utilities.
+    // =======================
 
     /// \brief Create a tuple instance, deducing template types from arguments.
-    template <typename... TTypes>
-    constexpr TupleT<TTypes...> MakeTuple(ForwardRef<TTypes>... elements) noexcept;
+    template <typename... TElements>
+    constexpr TupleT<TElements...> MakeTuple(ForwardRef<TElements>... elements) noexcept;
 
     /// \brief Create a tuple of lvalue references to provided arguments.
     template <typename... TElements>
@@ -217,6 +239,16 @@ namespace Syntropy
     /// \brief Create a tuple of the perfectly-forwarded elements provided.
     template <typename... TElements>
     constexpr TupleT<ForwardRef<TElements>...> ForwardAsTuple(ForwardRef<TElements>... elements) noexcept;
+
+    // Swap.
+    // =====
+
+    /// \brief Swap two tuples.
+    template <typename... TElements>
+    constexpr void Swap(MutableRef<TupleT<TElements...>> lhs, MutableRef<TupleT<TElements...>> rhs) noexcept;
+
+    // Functional.
+    // ===========
 
     /// \brief Invoke a callable object with arguments provided as tuple.
     template <typename TCallable, typename TArguments>
@@ -232,9 +264,6 @@ namespace Syntropy
     template <typename TFunction, typename TTuple, typename... TTuples>
     constexpr void LockstepApply(ForwardRef<TFunction> function, ForwardRef<TTuple> tuple, ForwardRef<TTuples>... tuples) noexcept;
 
-    /// \brief Swap two tuples.
-    template <typename... TTypes>
-    constexpr void Swap(MutableRef<TupleT<TTypes...>> lhs, MutableRef<TupleT<TTypes...>> rhs) noexcept;
 }
 
 // ===========================================================================
@@ -247,11 +276,11 @@ namespace Syntropy::Templates
 
     /// \brief Provides indexed access to tuple elements' types.
     template <Int VIndex, typename TTuple>
-    using TupleElement = TypeListElement<VIndex, typename TTuple::TTypeList>;
+    using TupleElement = TypeListElement<VIndex, typename TTuple::TElementList>;
 
     /// \brief Partial template specialization for tuples.
-    template <typename... TTypes>
-    inline constexpr Int Rank<TupleT<TTypes...>> = sizeof...(TTypes);
+    template <typename... TElements>
+    inline constexpr Int Rank<TupleT<TElements...>> = sizeof...(TElements);
 }
 
 // ===========================================================================
@@ -265,65 +294,65 @@ namespace Syntropy
     // TupleT.
     // ======
 
-    template <typename TType, typename... TTypes>
-    template <typename UType, typename... UTypes>
-    constexpr TupleT<TType, TTypes...>::TupleT(ElementwiseConstructor, ForwardRef<UType> element, ForwardRef<UTypes>... elements) noexcept
-        : TBaseClass(Forward<UTypes>(elements)...)
-        , element_(Forward<UType>(element))
+    template <typename TElement, typename... TElements>
+    template <typename UElement, typename... UElements>
+    constexpr TupleT<TElement, TElements...>::TupleT(ElementwiseTag, ForwardRef<UElement> element, ForwardRef<UElements>... elements) noexcept
+        : BaseClass(Forward<UElements>(elements)...)
+        , element_(Forward<UElement>(element))
     {
 
     }
 
-    template <typename TType, typename... TTypes>
+    template <typename TElement, typename... TElements>
     template<typename TTuple, Int... VIndexes>
-    constexpr TupleT<TType, TTypes...>::TupleT(UnwindConstructor, Templates::Sequence<VIndexes...>, ForwardRef<TTuple> tuple) noexcept
-        : TupleT(ElementwiseConstructor, Get<VIndexes>(Forward<TTuple>(tuple))...)
+    constexpr TupleT<TElement, TElements...>::TupleT(UnwindTag, Templates::Sequence<VIndexes...>, ForwardRef<TTuple> tuple) noexcept
+        : TupleT(ElementwiseTag, Get<VIndexes>(Forward<TTuple>(tuple))...)
     {
 
     }
 
-    template <typename TType, typename... TTypes>
+    template <typename TElement, typename... TElements>
     template <typename TSelf, typename TSelfList, Details::EnableIfTupleCopyAssignment<TSelfList>>
-    constexpr MutableRef<TupleT<TType, TTypes...>> TupleT<TType, TTypes...>::operator=(Templates::Identity<Ref<TSelf>> rhs) noexcept
+    constexpr MutableRef<TupleT<TElement, TElements...>> TupleT<TElement, TElements...>::operator=(Templates::Identity<Ref<TSelf>> rhs) noexcept
     {
         LockstepApply([&rhs](auto& lhs_element, const auto& rhs_element){ lhs_element = rhs_element; }, *this, rhs);
 
         return *this;
     }
 
-    template <typename TType, typename... TTypes>
+    template <typename TElement, typename... TElements>
     template <typename TSelf, typename TSelfList, Details::EnableIfTupleMoveAssignment<TSelfList>>
-    constexpr MutableRef<TupleT<TType, TTypes...>> TupleT<TType, TTypes...>::operator=(Templates::Identity<MoveRef<TSelf>> rhs) noexcept
+    constexpr MutableRef<TupleT<TElement, TElements...>> TupleT<TElement, TElements...>::operator=(Templates::Identity<MoveRef<TSelf>> rhs) noexcept
     {
         LockstepApply([&rhs](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
 
         return *this;
     }
 
-    template <typename TType, typename... TTypes>
-    template <typename... UTypes, typename TSelfList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, Templates::TypeList<UTypes...>>>
-    constexpr MutableRef<TupleT<TType, TTypes...>> TupleT<TType, TTypes...>::operator=(Ref<TupleT<UTypes...>> rhs) noexcept
+    template <typename TElement, typename... TElements>
+    template <typename... UElements, typename TSelfList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, Templates::TypeList<UElements...>>>
+    constexpr MutableRef<TupleT<TElement, TElements...>> TupleT<TElement, TElements...>::operator=(Ref<TupleT<UElements...>> rhs) noexcept
     {
         LockstepApply([&rhs](auto& lhs_element, const auto& rhs_element) { lhs_element = rhs_element; }, *this, rhs);
 
         return *this;
     }
 
-    template <typename TType, typename... TTypes>
-    template <typename... UTypes, typename TSelfList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Templates::TypeList<UTypes...>>>
-    constexpr MutableRef<TupleT<TType, TTypes...>> TupleT<TType, TTypes...>::operator=(MoveRef<TupleT<UTypes...>> rhs) noexcept
+    template <typename TElement, typename... TElements>
+    template <typename... UElements, typename TSelfList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Templates::TypeList<UElements...>>>
+    constexpr MutableRef<TupleT<TElement, TElements...>> TupleT<TElement, TElements...>::operator=(MoveRef<TupleT<UElements...>> rhs) noexcept
     {
         LockstepApply([&rhs](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
 
         return *this;
     }
 
-    template <typename TType, typename... TTypes>
-    constexpr MutableRef<TupleT<TType, TTypes...>> TupleT<TType, TTypes...>::Swap(MutableRef<TupleT> rhs) noexcept
+    template <typename TElement, typename... TElements>
+    constexpr MutableRef<TupleT<TElement, TElements...>> TupleT<TElement, TElements...>::Swap(MutableRef<TupleT> rhs) noexcept
     {
         Syntropy::Swap(element_, rhs.element_);
 
-        static_cast<TBaseClass&>(*this).Swap(static_cast<TBaseClass&>(rhs));
+        static_cast<MutableRef<BaseClass>>(*this).Swap(static_cast<MutableRef<BaseClass>>(rhs));
 
         return *this;
     }
@@ -333,12 +362,13 @@ namespace Syntropy
         return *this;
     }
 
-    // 
     // Non-member functions.
     // =====================
 
-    template <typename... TTypes, typename... UTypes>
-    constexpr Bool operator==(Ref<TupleT<TTypes...>> lhs, Ref<TupleT<UTypes...>> rhs) noexcept
+    // Comparison.
+
+    template <typename... TElements, typename... UElements>
+    constexpr Bool operator==(Ref<TupleT<TElements...>> lhs, Ref<TupleT<UElements...>> rhs) noexcept
     {
         auto result = true;
 
@@ -350,76 +380,80 @@ namespace Syntropy
         return result;
     }
 
-    template <Int VIndex, typename... TTypes>
-    constexpr MutableRef<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(MutableRef<TupleT<TTypes...>> tuple) noexcept
+    // Tuple element access.
+
+    template <Int VIndex, typename... TElements>
+    constexpr MutableRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(MutableRef<TupleT<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<VIndex, TupleT<TTypes...>>;
+        using TTupleBase = Details::TupleBase<VIndex, TupleT<TElements...>>;
 
         return static_cast<MutableRef<TTupleBase>>(tuple).element_;
     }
 
-    template <Int VIndex, typename... TTypes>
-    constexpr MoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(MoveRef<TupleT<TTypes...>> tuple) noexcept
+    template <Int VIndex, typename... TElements>
+    constexpr MoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(MoveRef<TupleT<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<VIndex, TupleT<TTypes...>>;
-        using TElement = Templates::TupleElement<VIndex, TupleT<TTypes...>>;
+        using TTupleBase = Details::TupleBase<VIndex, TupleT<TElements...>>;
+        using TElement = Templates::TupleElement<VIndex, TupleT<TElements...>>;
 
         return static_cast<MoveRef<TElement>>(static_cast<MutableRef<TTupleBase>>(tuple).element_);
     }
 
-    template <Int VIndex, typename... TTypes>
-    constexpr Ref<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(Ref<TupleT<TTypes...>> tuple) noexcept
+    template <Int VIndex, typename... TElements>
+    constexpr Ref<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(Ref<TupleT<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<VIndex, TupleT<TTypes...>>;
+        using TTupleBase = Details::TupleBase<VIndex, TupleT<TElements...>>;
 
         return static_cast<Ref<TTupleBase>>(tuple).element_;
     }
 
-    template <Int VIndex, typename... TTypes>
-    constexpr ConstMoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TTypes...>>> Get(ConstMoveRef<TupleT<TTypes...>> tuple) noexcept
+    template <Int VIndex, typename... TElements>
+    constexpr ConstMoveRef<Templates::TypeListElement<VIndex, Templates::TypeList<TElements...>>> Get(ConstMoveRef<TupleT<TElements...>> tuple) noexcept
     {
-        using TTupleBase = Details::TupleBase<VIndex, TupleT<TTypes...>>;
-        using TElement = Templates::TupleElement<VIndex, TupleT<TTypes...>>;
+        using TTupleBase = Details::TupleBase<VIndex, TupleT<TElements...>>;
+        using TElement = Templates::TupleElement<VIndex, TupleT<TElements...>>;
 
         return static_cast<ConstMoveRef<TElement>>(static_cast<Ref<TTupleBase>>(tuple).element_);
     }
 
-    template <typename TType, typename... TTypes>
-    constexpr MutableRef<TType> Get(MutableRef<TupleT<TTypes...>> tuple) noexcept
+    template <typename TElement, typename... TElements>
+    constexpr MutableRef<TElement> Get(MutableRef<TupleT<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Templates::TypeListIndex<TType, Templates::TypeList<TTypes...>>;
+        constexpr auto kIndex = Templates::TypeListIndex<TElement, Templates::TypeList<TElements...>>;
 
         return Get<kIndex>(tuple);
     }
 
-    template <typename TType, typename... TTypes>
-    constexpr MoveRef<TType> Get(MoveRef<TupleT<TTypes...>> tuple) noexcept
+    template <typename TElement, typename... TElements>
+    constexpr MoveRef<TElement> Get(MoveRef<TupleT<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Templates::TypeListIndex<TType, Templates::TypeList<TTypes...>>;
+        constexpr auto kIndex = Templates::TypeListIndex<TElement, Templates::TypeList<TElements...>>;
 
         return Get<kIndex>(Move(tuple));
     }
 
-    template <typename TType, typename... TTypes>
-    constexpr Ref<TType> Get(Ref<TupleT<TTypes...>> tuple) noexcept
+    template <typename TElement, typename... TElements>
+    constexpr Ref<TElement> Get(Ref<TupleT<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Templates::TypeListIndex<TType, Templates::TypeList<TTypes...>>;
+        constexpr auto kIndex = Templates::TypeListIndex<TElement, Templates::TypeList<TElements...>>;
 
         return Get<kIndex>(tuple);
     }
 
-    template <typename TType, typename... TTypes>
-    constexpr ConstMoveRef<TType> Get(ConstMoveRef<TupleT<TTypes...>> tuple) noexcept
+    template <typename TElement, typename... TElements>
+    constexpr ConstMoveRef<TElement> Get(ConstMoveRef<TupleT<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Templates::TypeListIndex<TType, Templates::TypeList<TTypes...>>;
+        constexpr auto kIndex = Templates::TypeListIndex<TElement, Templates::TypeList<TElements...>>;
 
         return Get<kIndex>(Move(tuple));
     }
 
-    template <typename... TTypes>
-    constexpr TupleT<TTypes...> MakeTuple(ForwardRef<TTypes>... elements) noexcept
+    // Construction utilities.
+
+    template <typename... TElements>
+    constexpr TupleT<TElements...> MakeTuple(ForwardRef<TElements>... elements) noexcept
     {
-        return { Forward<TTypes>(elements)... };
+        return { Forward<TElements>(elements)... };
     }
 
     template <typename... TElements>
@@ -433,6 +467,16 @@ namespace Syntropy
     {
         return TupleT<TElements&&...>(Forward<TElements>(elements)...);
     }
+
+    // Swap.
+
+    template <typename... TElements>
+    constexpr void Swap(MutableRef<TupleT<TElements...>> lhs, MutableRef<TupleT<TElements...>> rhs) noexcept
+    {
+        lhs.Swap(rhs);
+    }
+
+    // Functional.
 
     template <typename TCallable, typename TArguments>
     constexpr decltype(auto) Apply(ForwardRef<TCallable> callable, ForwardRef<TArguments> arguments) noexcept
@@ -456,11 +500,7 @@ namespace Syntropy
         Details::LockstepApply(TSequence{}, Forward<TFunction>(function), Forward<TTuple>(tuple), Forward<TTuples>(tuples)...);
     }
 
-    template <typename... TTypes>
-    constexpr void Swap(MutableRef<TupleT<TTypes...>> lhs, MutableRef<TupleT<TTypes...>> rhs) noexcept
-    {
-        lhs.Swap(rhs);
-    }
+
 }
 
 // ===========================================================================
@@ -472,29 +512,29 @@ namespace std
     /************************************************************************/
 
     /// \brief Size of a Syntropy::TupleT.
-    template <typename... TTypes>
-    struct std::tuple_size<Syntropy::TupleT<TTypes...>>
+    template <typename... TElements>
+    struct std::tuple_size<Syntropy::TupleT<TElements...>>
     {
-        static constexpr std::size_t value = sizeof...(TTypes);
+        static constexpr std::size_t value = sizeof...(TElements);
     };
 
     /// \brief Type of the VIndex-th element of a Syntropy::TupleT.
-    template <std::size_t VIndex, typename... TTypes>
-    struct std::tuple_element<VIndex, Syntropy::TupleT<TTypes...>>
+    template <std::size_t VIndex, typename... TElements>
+    struct std::tuple_element<VIndex, Syntropy::TupleT<TElements...>>
     {
-        using type = Syntropy::Templates::TypeListElement<VIndex, Syntropy::Templates::TypeList<TTypes...>>;
+        using type = Syntropy::Templates::TypeListElement<VIndex, Syntropy::Templates::TypeList<TElements...>>;
     };
 
     /// \brief Get the VIndex-th element of a tuple.
-    template <std::size_t VIndex, typename... TTypes>
-    decltype(auto) get(Syntropy::Ref<Syntropy::TupleT<TTypes...>> tuple)
+    template <std::size_t VIndex, typename... TElements>
+    decltype(auto) get(Syntropy::Ref<Syntropy::TupleT<TElements...>> tuple)
     {
         return Syntropy::Get<VIndex>(tuple);
     }
 
     /// \brief Get the VIndex-th element of a tuple.
-    template <std::size_t VIndex, typename... TTypes>
-    decltype(auto) get(Syntropy::MoveRef<Syntropy::TupleT<TTypes...>> tuple)
+    template <std::size_t VIndex, typename... TElements>
+    decltype(auto) get(Syntropy::MoveRef<Syntropy::TupleT<TElements...>> tuple)
     {
         return Syntropy::Get<VIndex>(Syntropy::Move(tuple));
     }

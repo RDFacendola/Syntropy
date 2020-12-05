@@ -51,7 +51,7 @@ namespace Syntropy
 
         /// \brief Copy assignment operator.
         template <typename UType>
-        constexpr SpanT& operator=(Ref<SpanT<UType>> rhs) noexcept;
+        constexpr MutableRef<SpanT> operator=(Ref<SpanT<UType>> rhs) noexcept;
 
         /// \brief Check whether the span is non-empty.
         constexpr operator Bool() const noexcept;
