@@ -459,13 +459,13 @@ namespace Syntropy
     template <typename... TElements>
     constexpr Tuple<MutableRef<TElements>...> Tie(MutableRef<TElements>... elements) noexcept
     {
-        return Tuple<TElements&...>(elements...);
+        return Tuple<MutableRef<TElements>...>(elements...);
     }
 
     template <typename... TElements>
     constexpr Tuple<ForwardRef<TElements>...> ForwardAsTuple(ForwardRef<TElements>... elements) noexcept
     {
-        return Tuple<TElements&&...>(Forward<TElements>(elements)...);
+        return Tuple<ForwardRef<TElements>...>(Forward<TElements>(elements)...);
     }
 
     // Swap.
