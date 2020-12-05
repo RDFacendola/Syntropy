@@ -31,6 +31,8 @@
     <ClInclude Include="include\syntropy\core\foundation\zip_range.h" />
     <ClInclude Include="include\syntropy\core\foundation\span.h" />
     <ClInclude Include="include\syntropy\language\foundation\references.h" />
+    <ClInclude Include="include\syntropy\language\foundation\pointers.h" />
+    <ClInclude Include="include\syntropy\language\foundation\enumerations.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

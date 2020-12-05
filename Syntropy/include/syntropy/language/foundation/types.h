@@ -68,28 +68,6 @@ namespace Syntropy
     using Fix64 = const MutableFix64;
 
     /************************************************************************/
-    /* ENUMERATION CLASS TYPES                                              */
-    /************************************************************************/
-
-    // Fixed underlying types for enumeration classes. For fixed-size integers see Fix8, Fix16, Fix32, Fix64.
-
-    /// \brief 8-bit enum class type.
-    /// \usage enum class MyEnum : Enum8 { ... };
-    using Enum8 = std::int8_t;
-
-    /// \brief 16-bit enum class type.
-    /// \usage enum class MyEnum : Enum16 { ... };
-    using Enum16 = std::int16_t;
-
-    /// \brief 32-bit enum class type.
-    /// \usage enum class MyEnum : Enum32 { ... };
-    using Enum32 = std::int32_t;
-
-    /// \brief 64-bit enum class type.
-    /// \usage enum class MyEnum : Enum64 { ... };
-    using Enum64 = std::int64_t;
-
-    /************************************************************************/
     /* VALUE TYPES                                                          */
     /************************************************************************/
 
@@ -112,57 +90,101 @@ namespace Syntropy
     using ForwardRef = TType&&;
 
     /************************************************************************/
-    /* POINTER TYPES                                                        */
+    /* TYPE CASTS                                                           */
     /************************************************************************/
 
-    /// \brief Type of the nullptr constant.
-    using Null = std::nullptr_t;
+    // Fundamental types.
+    // ==================
 
-    /// \brief Constant non-owning pointer to a mutable object.
-    /// \remarks Please note that if TType provides an immutable interface, this type will behave as a pointer to a const object (e.g.: In Ptr<Int> the pointee is const).
+    /// \brief Convert rhs to a boolean.
     template <typename TType>
-    using Ptr = TType* const;
+    constexpr Bool ToBool(TType rhs) noexcept;
 
-    /// \brief Constant non-owning pointer to an immutable object.
-    /// \remarks In C++ pointer-to-references are not a thing! The "Ref" suffix in the name simply highlights the "immutable" nature of the pointee. See Ref<T>.
-    template <typename TType>
-    using PtrRef = const TType* const;
+    /// \brief Truncate rhs to an integer value.
+    template <typename TNumber>
+    constexpr Int ToInt(TNumber rhs) noexcept;
 
-    /// \brief A constant pointer to either a mutable or immutable object.
-    /// This type is an alias for either Ptr<T> or PtrRef<T>.
-    template <typename TType>
-    using XPtr = TType* const;
+    /// \brief Convert rhs to a floating point value.
+    template <typename TNumber>
+    constexpr Float ToFloat(TNumber rhs) noexcept;
 
-    /// \brief Mutable non-owning pointer to a mutable object.
-    template <typename TType>
-    using MutablePtr = TType*;
+    // Fixed-size types.
+    // =================
 
-    /// \brief Constant non-owning pointer to an immutable object.
-    /// \remarks In C++ pointer-to-references are not a thing! The "Ref" suffix in the name simply highlights the "immutable" nature of the pointee. See Ref<T>.
-    template <typename TType>
-    using MutablePtrRef = const TType*;
+    /// \brief Cast rhs to a 8-bit integer value.
+    template <typename TNumber>
+    constexpr Fix8 ToFix8(TNumber rhs) noexcept;
 
-    /// \brief A mutable pointer to either a mutable or immutable object.
-    /// This type is an alias for either MutablePtr<T> or MutablePtrRef<T>.
-    template <typename TType>
-    using XMutablePtr = TType*;
+    /// \brief Cast rhs to a 16-bit integer value.
+    template <typename TNumber>
+    constexpr Fix16 ToFix16(TNumber rhs) noexcept;
 
-    /************************************************************************/
-    /* TYPELESS POINTER TYPES                                               */
-    /************************************************************************/
+    /// \brief Cast rhs to a 32-bit integer value.
+    template <typename TNumber>
+    constexpr Fix32 ToFix32(TNumber rhs) noexcept;
 
-    /// \brief Constant non-owning pointer to a mutable typeless object.
-    using TypelessPtr = void* const;
-
-    /// \brief Constant non-owning pointer to a typeless immutable object.
-    /// \remarks In C++ pointer-to-references are not a thing! The "Ref" suffix in the name simply highlights the "immutable" nature of the pointee. See Ref<T>.
-    using TypelessPtrRef = const void* const;
-
-    /// \brief Mutable non-owning pointer to a mutable typeless object.
-    using MutableTypelessPtr = void*;
-
-    /// \brief Mutable non-owning pointer to an immutable typeless object.
-    /// \remarks In C++ pointer-to-references are not a thing! The "Ref" suffix in the name simply highlights the "immutable" nature of the pointee. See Ref<T>.
-    using MutableTypelessPtrRef = const void*;
+    /// \brief Cast rhs to a 64-bit integer value.
+    template <typename TNumber>
+    constexpr Fix64 ToFix64(TNumber rhs) noexcept;
 
 }
+
+// ===========================================================================
+
+namespace Syntropy
+{
+    /************************************************************************/
+    /* TYPE CASTS                                                           */
+    /************************************************************************/
+
+    // Fundamental types.
+    // ==================
+
+    template <typename TType>
+    constexpr Bool ToBool(TType rhs) noexcept
+    {
+        return !!rhs;
+    }
+
+    template <typename TNumber>
+    constexpr Int ToInt(TNumber rhs) noexcept
+    {
+        return static_cast<Int>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Float ToFloat(TNumber rhs) noexcept
+    {
+        return static_cast<Float>(rhs);
+    }
+
+    // Fixed-size types.
+    // =================
+
+    template <typename TNumber>
+    constexpr Fix8 ToFix8(TNumber rhs) noexcept
+    {
+        return static_cast<Fix8>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Fix16 ToFix16(TNumber rhs) noexcept
+    {
+        return static_cast<Fix16>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Fix32 ToFix32(TNumber rhs) noexcept
+    {
+        return static_cast<Fix32>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Fix64 ToFix64(TNumber rhs) noexcept
+    {
+        return static_cast<Fix64>(rhs);
+    }
+
+}
+
+// ===========================================================================
