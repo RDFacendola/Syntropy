@@ -25,6 +25,8 @@ namespace Syntropy
     template <Concepts::BidirectionalRangeT TRange>
     class ReverseRange
     {
+        // Forward range.
+
         template <Concepts::BidirectionalRangeT TRange, Concepts::BidirectionalRangeT URange>
         friend constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
@@ -32,19 +34,25 @@ namespace Syntropy
         friend constexpr Templates::RangeElementReferenceType<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept;
 
         template <Concepts::BidirectionalRangeT TRange>
-        friend constexpr ReverseRange<TRange> PopFront(Immutable<ReverseRange<TRange>> range, Int count) noexcept;
+        friend constexpr ReverseRange<TRange> PopFront(Immutable<ReverseRange<TRange>> range) noexcept;
 
         template <Concepts::BidirectionalRangeT TRange>
         friend constexpr Bool IsEmpty(Immutable<ReverseRange<TRange>> range) noexcept;
 
+        // Sized range.
+
         template <Concepts::SizedRangeT TRange>
         friend constexpr Int Count(Immutable<ReverseRange<TRange>> rhs) noexcept;
+
+        // Bidirectional range.
 
         template <Concepts::BidirectionalRangeT TRange>
         friend constexpr Templates::RangeElementReferenceType<TRange> Back(Immutable<ReverseRange<TRange>> range) noexcept;
 
         template <Concepts::BidirectionalRangeT TRange>
-        friend constexpr ReverseRange<TRange> PopBack(Immutable<ReverseRange<TRange>> range, Int count) noexcept;
+        friend constexpr ReverseRange<TRange> PopBack(Immutable<ReverseRange<TRange>> range) noexcept;
+
+        // Random access range.
 
         template <Concepts::RandomAccessRangeT TRange>
         friend constexpr ReverseRange<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Int offset, Int count) noexcept;
@@ -94,9 +102,9 @@ namespace Syntropy
     constexpr Templates::RangeElementReferenceType<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept;
 
     /// \brief Discard the first count elements in a range and return the resulting subrange.
-    /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
+    /// \remarks If the provided range is empty, the behavior of this method is undefined.
     template <Concepts::BidirectionalRangeT TRange>
-    constexpr ReverseRange<TRange> PopFront(Immutable<ReverseRange<TRange>> range, Int count = 1) noexcept;
+    constexpr ReverseRange<TRange> PopFront(Immutable<ReverseRange<TRange>> range) noexcept;
 
     /// \brief Check whether a reverse range is empty.
     /// \return Returns true if the range is empty, returns false otherwise.
@@ -121,7 +129,7 @@ namespace Syntropy
     /// \brief Discard the last count elements in a range and return the resulting subrange.
     /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
     template <Concepts::BidirectionalRangeT TRange>
-    constexpr ReverseRange<TRange> PopBack(Immutable<ReverseRange<TRange>> range, Int count = 1) noexcept;
+    constexpr ReverseRange<TRange> PopBack(Immutable<ReverseRange<TRange>> range) noexcept;
 
     // Random access range.
     // ====================
@@ -173,6 +181,11 @@ namespace Syntropy::Templates
     {
         /// \brief Type of a reference to a reverse range element.
         using ElementReferenceType = RangeElementReferenceType<TRange>;
+
+        /// \brief Type of a reference to an element in a range TRange.
+        template <typename TRange>
+        using ElementPointerType = RangeElementPointerType<TRange>;
+
     };
 }
 
@@ -228,9 +241,9 @@ namespace Syntropy
     }
 
     template <Concepts::BidirectionalRangeT TRange>
-    constexpr ReverseRange<TRange> PopFront(Immutable<ReverseRange<TRange>> range, Int count) noexcept
+    constexpr ReverseRange<TRange> PopFront(Immutable<ReverseRange<TRange>> range) noexcept
     {
-        return PopBack(range.range_, count);
+        return PopBack(range.range_);
     }
 
     template <Concepts::BidirectionalRangeT TRange>
@@ -257,9 +270,9 @@ namespace Syntropy
     }
 
     template <Concepts::BidirectionalRangeT TRange>
-    constexpr ReverseRange<TRange> PopBack(Immutable<ReverseRange<TRange>> range, Int count) noexcept
+    constexpr ReverseRange<TRange> PopBack(Immutable<ReverseRange<TRange>> range) noexcept
     {
-        return PopFront(range.range_, count);
+        return PopFront(range.range_);
     }
 
     // Random access range.
