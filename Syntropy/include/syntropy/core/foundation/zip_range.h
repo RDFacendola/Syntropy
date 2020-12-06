@@ -44,14 +44,18 @@ namespace Syntropy
         template <Concepts::ForwardRangeT... TRanges>
         friend constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> range) noexcept;
 
+        // Sized range.
+
         template <Concepts::SizedRangeT... TRanges>
         friend constexpr Int Count(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-        //template <Concepts::BidirectionalRangeT TRange>
-        //friend constexpr Templates::RangeElementReferenceType<TRange> Back(Immutable<TRange> range) noexcept;
+        // Bidirectional range.
 
-        //template <Concepts::BidirectionalRangeT TRange>
-        //friend constexpr TRange PopBack(Immutable<TRange> range, Int count) noexcept;
+        template <Concepts::BidirectionalRangeT... TRanges>
+        friend constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Back(Immutable<ZipRange<TRanges...>> range) noexcept;
+
+        template <Concepts::BidirectionalRangeT... TRanges>
+        friend constexpr ZipRange<TRanges...> PopBack(Immutable<ZipRange<TRanges...>> range) noexcept;
 
         //template <Concepts::RandomAccessRangeT TRange>
         //friend constexpr TRange Select(Immutable<TRange> rhs, Int offset, Int count) noexcept;
@@ -212,6 +216,30 @@ namespace Syntropy
         };
 
         return Apply(zip_min_count, range.ranges_);
+    }
+
+    // Bidirectional range.
+
+    template <Concepts::BidirectionalRangeT... TRanges>
+    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Back(Immutable<ZipRange<TRanges...>> range) noexcept
+    {
+        auto zip_back = []<typename...>(const auto&... ranges)
+        {
+            return Tuple<Templates::RangeElementReferenceType<TRanges>...>{ Back(ranges)... };
+        };
+
+        return Apply(zip_back, range.ranges_);
+    }
+
+    template <Concepts::BidirectionalRangeT... TRanges>
+    constexpr ZipRange<TRanges...> PopBack(Immutable<ZipRange<TRanges...>> range) noexcept
+    {
+        auto zip_pop_back = []<typename...>(const auto&... ranges)
+        {
+            return ZipRange<TRanges...>{ PopBack(ranges)... };
+        };
+
+        return Apply(zip_pop_back, range.ranges_);
     }
 
     // Utilities.

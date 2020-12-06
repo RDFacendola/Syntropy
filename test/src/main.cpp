@@ -55,7 +55,12 @@ int main(int argc, char **argv)
 
     auto f = Syntropy::Front(zz);
     auto pf = Syntropy::PopFront(zz);
+    
     auto e = Syntropy::IsEmpty(zz);
+
+    auto b = Syntropy::Back(zz);
+    auto pb = Syntropy::PopBack(zz);
+
     auto c = Syntropy::Count(zz);
 
     system("pause");
