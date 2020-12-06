@@ -25,6 +25,14 @@ namespace Syntropy
     template <typename TType>
     class Span
     {
+        template <typename TType>
+        friend constexpr Int Count(Immutable<Span<TType>> rhs) noexcept;
+
+        template <typename TType>
+        friend constexpr ImmutablePtr<TType> Data(Immutable<Span<TType>> rhs) noexcept;
+
+        template <typename TType>
+        friend constexpr MutablePtr<TType> Data(Mutable<Span<TType>> rhs) noexcept;
 
     public:
 
@@ -59,12 +67,6 @@ namespace Syntropy
         /// \brief Access an element by index.
         /// If the provided index is not within the span the behavior of this method is undefined.
         constexpr Reference<TType> operator[](Int index) const noexcept;
-
-        /// \brief Get the number of elements in the span.
-        constexpr Int GetCount() const noexcept;
-
-        /// \brief Access the underlying memory.
-        constexpr Pointer<TType> GetData() const noexcept;
 
         /// \brief Swap this span with rhs.
         constexpr void Swap(Mutable<Span> rhs) noexcept;
@@ -145,7 +147,12 @@ namespace Syntropy
     /// \brief Access underlying span data.
     /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
     template <typename TType>
-    constexpr Pointer<TType> Data(Reference<Span<TType>> rhs) noexcept;
+    constexpr ImmutablePtr<TType> Data(Immutable<Span<TType>> rhs) noexcept;
+
+    /// \brief Access underlying span data.
+    /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
+    template <typename TType>
+    constexpr MutablePtr<TType> Data(Mutable<Span<TType>> rhs) noexcept;
 
     // Comparisons.
     // ============
@@ -254,18 +261,6 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr Int Span<TType>::GetCount() const noexcept
-    {
-        return count_;
-    }
-
-    template <typename TType>
-    constexpr Pointer<TType> Span<TType>::GetData() const noexcept
-    {
-        return data_;
-    }
-
-    template <typename TType>
     constexpr void Span<TType>::Swap(Mutable<Span<TType>> rhs) noexcept
     {
         Syntropy::Swap(data_, rhs.data_);
@@ -314,7 +309,7 @@ namespace Syntropy
     template <typename TType>
     constexpr Int Count(Immutable<Span<TType>> rhs) noexcept
     {
-        return rhs.GetCount();
+        return rhs.count_;
     }
 
     template <typename TType>
@@ -332,11 +327,16 @@ namespace Syntropy
     // Contiguous range.
 
     template <typename TType>
-    constexpr Pointer<TType> Data(Reference<Span<TType>> rhs) noexcept
+    constexpr ImmutablePtr<TType> Data(Immutable<Span<TType>> rhs) noexcept
     {
-        return rhs.GetData();
+        return rhs.data_;
     }
 
+    template <typename TType>
+    constexpr MutablePtr<TType> Data(Mutable<Span<TType>> rhs) noexcept
+    {
+        return rhs.data_;
+    }
 
     // Comparisons.
 

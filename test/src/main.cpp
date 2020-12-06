@@ -45,17 +45,12 @@ int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    auto t0 = Syntropy::MakeTuple(2);
-    auto t1 = Syntropy::MakeTuple(2, 3);
-    auto t2 = Syntropy::MakeTuple(4, 5);
+    Syntropy::Int array[] = { 0, 1, 2, 3, 4, 5 };
 
-    auto tl = Syntropy::Templates::TypeList<Syntropy::Int, Syntropy::Float>{};
+    auto s = Syntropy::MakeSpan(&array[0], 6);
 
-    Foo(t0);
-    Foo(t1);
-    Foo(t2);
-
-    Syntropy::LockstepApply([](auto& lhs, auto& rhs) { lhs += rhs; }, t1, t2);
+    auto c = Count(s);
+    auto d = Data(s);
 
     // Foo(tl);
 
