@@ -154,6 +154,10 @@ namespace Syntropy
     template <Concepts::ForwardRangeT TRange, typename TFunction>
     constexpr void ForEach(Immutable<TRange> range, TFunction function) noexcept;
 
+    /// \brief Check whether lhs and rhs are equivalent.
+    template <Concepts::ForwardRangeT TRange, Concepts::ForwardRangeT URange>
+    constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
     // Random access range.
     // ====================
 
@@ -216,6 +220,10 @@ namespace Syntropy
     template <Concepts::ContiguousRangeT TRange>
     constexpr auto* End(Immutable<TRange> range) noexcept;
 
+    /// \brief Check whether lhs and rhs are equal.
+    template <Concepts::ContiguousRangeT TRange, Concepts::ContiguousRangeT URange>
+    constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
 }
 
 // ===========================================================================
@@ -238,6 +246,33 @@ namespace Syntropy
         {
             function(Front(rest));
         }
+    }
+
+    template <Concepts::ForwardRangeT TRange, Concepts::ForwardRangeT URange>
+    constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    {
+        if (Count(lhs) == Count(rhs))
+        {
+            auto lhs_copy = lhs;
+            auto rhs_copy = rhs;
+
+            for (; !IsEmpty(lhs) && !IsEmpty(rhs); )
+            {
+                if (Front(lhs_copy) != Front(rhs_copy))
+                {
+                    return false;
+                }
+                else
+                {
+                    lhs_copy = PopFront(lhs_copy);
+                    rhs_copy = PopFront(rhs_copy);
+                }
+            }
+
+            return IsEmpty(lhs_copy) && IsEmpty(rhs_copy);
+        }
+
+        return false;
     }
 
     // Random access range.
@@ -316,6 +351,12 @@ namespace Syntropy
         return Data(range) + Count(range);
     }
 
+    template <Concepts::ContiguousRangeT TRange, Concepts::ContiguousRangeT URange>
+    constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    {
+        // All empty ranges are equal.
+        return (Count(lhs) == Count(rhs)) && (IsEmpty(lhs) || (Data(lhs) == Data(rhs)));
+    }
 }
 
 // ===========================================================================

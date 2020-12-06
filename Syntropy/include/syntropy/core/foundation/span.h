@@ -29,10 +29,7 @@ namespace Syntropy
         friend constexpr Int Count(Immutable<Span<TType>> rhs) noexcept;
 
         template <typename TType>
-        friend constexpr ImmutablePtr<TType> Data(Immutable<Span<TType>> rhs) noexcept;
-
-        template <typename TType>
-        friend constexpr MutablePtr<TType> Data(Mutable<Span<TType>> rhs) noexcept;
+        friend constexpr Pointer<TType> Data(Immutable<Span<TType>> rhs) noexcept;
 
     public:
 
@@ -80,14 +77,6 @@ namespace Syntropy
         Int count_{ 0 };
 
     };
-
-    /************************************************************************/
-    /* TYPE ALIASES                                                         */
-    /************************************************************************/
-
-    /// \brief Alias for a common type between two or more spans.
-    template <typename... TTypes>
-    using CommonSpan = Span<Templates::RemovePointer<Templates::CommonType<Templates::AddPointer<TTypes>...>>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -147,17 +136,12 @@ namespace Syntropy
     /// \brief Access underlying span data.
     /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
     template <typename TType>
-    constexpr ImmutablePtr<TType> Data(Immutable<Span<TType>> rhs) noexcept;
-
-    /// \brief Access underlying span data.
-    /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
-    template <typename TType>
-    constexpr MutablePtr<TType> Data(Mutable<Span<TType>> rhs) noexcept;
+    constexpr Pointer<TType> Data(Immutable<Span<TType>> rhs) noexcept;
 
     // Comparisons.
     // ============
 
-    /// \brief Check whether lhs and rhs are identical.
+    /// \brief Check whether lhs and rhs are equivalent.
     template <typename TType, typename UType>
     constexpr Bool operator==(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept;
 
@@ -170,7 +154,7 @@ namespace Syntropy
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TBegin, typename TEnd>
-    constexpr Templates::CommonType<TBegin, TEnd> MakeSpan(Pointer<TBegin> begin, Pointer<TEnd> end) noexcept;
+    constexpr Span<Templates::CommonType<TBegin, TEnd>> MakeSpan(Pointer<TBegin> begin, Pointer<TEnd> end) noexcept;
 
     /// \brief Swap two spans
     template <typename TType>
@@ -215,7 +199,7 @@ namespace Syntropy
     template <typename TType>
     template <typename TBegin>
     constexpr Span<TType>::Span(TBegin begin, Int count) noexcept
-        : data_((count > 0) ? begin : nullptr)
+        : data_(begin)
         , count_(count)
     {
 
@@ -232,8 +216,8 @@ namespace Syntropy
     template <typename TType>
     template <typename UType>
     constexpr Span<TType>::Span(Immutable<Span<UType>> rhs) noexcept
-        : data_(ToPtr<TType>(rhs.GetData()))
-        , count_(rhs.GetCount())
+        : data_(ToPointer<TType>(Data(rhs)))
+        , count_(Count(rhs))
     {
 
     }
@@ -242,12 +226,12 @@ namespace Syntropy
     template <typename UType>
     constexpr Mutable<Span<TType>> Span<TType>::operator=(Immutable<Span<UType>> rhs) noexcept
     {
-        data_ = ToPtr<TType>(rhs.GetData());
-        count_ = rhs.GetCount();
+        data_ = ToPointer<TType>(Data(rhs));
+        count_ = Count(rhs);
 
         return *this;
     }
-
+    
     template <typename TType>
     constexpr Span<TType>::operator Bool() const noexcept
     {
@@ -327,13 +311,7 @@ namespace Syntropy
     // Contiguous range.
 
     template <typename TType>
-    constexpr ImmutablePtr<TType> Data(Immutable<Span<TType>> rhs) noexcept
-    {
-        return rhs.data_;
-    }
-
-    template <typename TType>
-    constexpr MutablePtr<TType> Data(Mutable<Span<TType>> rhs) noexcept
+    constexpr Pointer<TType> Data(Immutable<Span<TType>> rhs) noexcept
     {
         return rhs.data_;
     }
@@ -343,7 +321,7 @@ namespace Syntropy
     template <typename TType, typename UType>
     constexpr Bool operator==(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept
     {
-        return (lhs.GetData() == rhs.GetData()) && (lhs.GetCount() == rhs.GetCount());
+        return AreEquivalent(lhs, rhs);
     }
 
     // Utilities.
@@ -355,7 +333,7 @@ namespace Syntropy
     }
 
     template <typename TBegin, typename TEnd>
-    constexpr Templates::CommonType<TBegin, TEnd> MakeSpan(Pointer<TBegin> begin, Pointer<TEnd> end) noexcept
+    constexpr Span<Templates::CommonType<TBegin, TEnd>> MakeSpan(Pointer<TBegin> begin, Pointer<TEnd> end) noexcept
     {
         return { begin, end };
     }
