@@ -28,13 +28,42 @@ namespace Syntropy
     template <Concepts::RangeT... TRanges>
     class ZipRange
     {
+        // Forward range.
+
+        template <Concepts::ForwardRangeT... TRanges, Concepts::ForwardRangeT... URanges>
+        friend constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
+
+        template <Concepts::ForwardRangeT... TRanges>
+        friend constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Front(Immutable<ZipRange<TRanges...>> range) noexcept;
+
+        template <Concepts::ForwardRangeT... TRanges>
+        friend constexpr ZipRange<TRanges...> PopFront(Immutable<ZipRange<TRanges...>> range) noexcept;
+
+        template <Concepts::ForwardRangeT... TRanges>
+        friend constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> range) noexcept;
+
+        //template <Concepts::SizedRangeT TRange>
+        //friend constexpr Int Count(Immutable<TRange> rhs) noexcept;
+
+        //template <Concepts::BidirectionalRangeT TRange>
+        //friend constexpr Templates::RangeElementReferenceType<TRange> Back(Immutable<TRange> range) noexcept;
+
+        //template <Concepts::BidirectionalRangeT TRange>
+        //friend constexpr TRange PopBack(Immutable<TRange> range, Int count) noexcept;
+
+        //template <Concepts::RandomAccessRangeT TRange>
+        //friend constexpr TRange Select(Immutable<TRange> rhs, Int offset, Int count) noexcept;
+
+        //template <Concepts::RandomAccessRangeT TRange>
+        //friend constexpr Templates::RangeElementReferenceType<TRange> Select(Immutable<TRange> rhs, Int index) noexcept;
+
+        //template <Concepts::ContiguousRangeT TRange>
+        //friend constexpr Templates::RangeElementPointerType<TRange> Data(Immutable<TRange> rhs) noexcept;
+
     public:
 
         /// \brief Create a new range by zipping together one or more ranges.
         constexpr ZipRange(Immutable<TRanges>... ranges) noexcept;
-
-        /// \brief Access the zipped ranges.
-        constexpr Immutable<Tuple<TRanges...>> GetRanges() const noexcept;
 
     private:
 
@@ -47,13 +76,11 @@ namespace Syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Range.
-    // ======
+    // Comparison.
+    // ===========
 
-    /// \brief Create a new range by joining together multiple ranges.
-    /// The range is considered to be non-empty until at least one of the ranges becomes empty.
-    template <Concepts::RangeT... TRanges>
-    ZipRange<TRanges...> Zip(Immutable<TRanges>... ranges) noexcept;
+    template <Concepts::ForwardRangeT... TRanges, Concepts::ForwardRangeT... URanges>
+    constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
 
     // Forward range.
     // ==============
@@ -61,63 +88,23 @@ namespace Syntropy
     /// \brief Access the first element in a zip-range.
     /// \remarks Accessing the first element of an empty zip-range results in undefined behavior.
     template <Concepts::ForwardRangeT... TRanges>
-    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Front(Immutable<ZipRange<TRanges...>> zip_range) noexcept;
+    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Front(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-    /// \brief Access the first element in each range and zip the result in a tuple,
-    /// \remarks Accessing the first element when any of the provided ranges is empty results results in undefined behavior.
+    /// \brief Discard the first count elements in a zip-range and return the resulting zip-subrange.
+    /// \remarks If the provided range is empty, the behavior of this method is undefined.
     template <Concepts::ForwardRangeT... TRanges>
-    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> ZipFront(Immutable<TRanges>... ranges) noexcept;
+    constexpr ZipRange<TRanges...> PopFront(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-    /// \brief Discard the first count elements in a zip-range and return the resulting sub-zip-range.
-    /// \remarks If this method would cause the sub-zip-range to exceed the original zip-range, the behavior of this method is undefined.
     template <Concepts::ForwardRangeT... TRanges>
-    constexpr ZipRange<TRanges...> PopFront(Immutable<ZipRange<TRanges...>> zip_range) noexcept;
+    constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-    /// \brief Check whether a zip-range is empty.
-    /// \return Returns true if the zip-range is empty, returns false otherwise.
-    template <Concepts::ForwardRangeT... TRanges>
-    constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> zip_range) noexcept;
+    // Utilities.
+    // ==========
 
-    // Bidirectional range.
-    // ====================
-
-    /// \brief Access the last element in a zip-range.
-    /// \remarks Accessing the last element of an empty zip-range results in undefined behavior.
-    template <Concepts::BidirectionalRangeT... TRanges>
-    constexpr Mutable<Tuple<TRanges...>> Back(Immutable<ZipRange<TRanges...>> zip_range) noexcept;
-
-    /// \brief Discard the last count elements in a zip-range and return the resulting sub-zip-range.
-    /// \remarks If this method would cause the sub-zip-range to exceed the original zip-range, the behavior of this method is undefined.
-    template <Concepts::BidirectionalRangeT... TRanges>
-    constexpr ZipRange<TRanges...> PopBack(Immutable<ZipRange<TRanges...>> zip_range) noexcept;
-
-    // Sized range.
-    // ============
-
-    /// \brief Get the number of elements in a zip-range.
-    template <Concepts::SizedRangeT... TRanges>
-    constexpr Int Count(Immutable<ZipRange<TRanges...>> zip_range) noexcept;
-
-    // Random access range.
-    // ====================
-
-    /// \brief Obtain a sub-zip-range given an offset and a number of elements.
-    /// \remarks Exceeding zip-range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeT... TRanges>
-    constexpr ZipRange<TRanges...> Select(Immutable<ZipRange<TRanges...>> zip_range, Int offset, Int count) noexcept;
-
-    /// \brief Obtain a zip-range element at given index.
-    /// \remarks Exceeding zip-range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeT... TRanges>
-    constexpr Tuple<TRanges...>& Select(Immutable<ZipRange<TRanges...>> zip_range, Int index) noexcept;
-
-    // Contiguous range.
-    // =================
-
-    /// \brief Access underlying zip-range data.
-    /// \remarks Accessing data of an empty zip-range is allowed but the returned value is unspecified.
-    template <Concepts::ContiguousRangeT... TRanges>
-    constexpr Tuple<TRanges*...> Data(Immutable<ZipRange<TRanges...>> zip_range) noexcept;
+    /// \brief Create a new range by element-wise joining source ranges.
+    /// \remarks The smallest range determines the size of the result.
+    template <Concepts::RangeT... TRanges>
+    constexpr ZipRange<TRanges...> Zip(Immutable<TRanges>... ranges) noexcept;
 
 }
 
@@ -135,6 +122,9 @@ namespace Syntropy::Templates
     {
         /// \brief Type of a reference to a range element.
         using ElementReferenceType = Tuple<RangeElementReferenceType<TRanges>...>;
+
+        /// \brief Type of a pointer to a range element.
+        using ElementPointerType = Tuple<RangeElementPointerType<TRanges>...>;
     };
 }
 
@@ -150,43 +140,64 @@ namespace Syntropy
     // =========
 
     template <Concepts::RangeT... TRanges>
-    inline constexpr ZipRange<TRanges...>::ZipRange(Immutable<TRanges>... ranges) noexcept
-        : ranges_(ranges...)
+    constexpr ZipRange<TRanges...>::ZipRange(Immutable<TRanges>... ranges) noexcept
+        : ranges_{ ranges... }
     {
 
-    }
-
-    template <Concepts::RangeT... TRanges>
-    constexpr const Tuple<TRanges...>& ZipRange<TRanges...>::GetRanges() const noexcept
-    {
-        return ranges_;
     }
 
     // Non-member functions.
     // =====================
 
-    // Range.
+    // Comparison.
 
-    template <Concepts::RangeT... TRanges>
-    ZipRange<TRanges...> Zip(Immutable<TRanges>... ranges) noexcept
+    template <Concepts::ForwardRangeT... TRanges, Concepts::ForwardRangeT... URanges>
+    constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
     {
-        return ZipRange{ ranges... };
+        return false;
     }
 
     // Forward range.
 
     template <Concepts::ForwardRangeT... TRanges>
-    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Front(Immutable<ZipRange<TRanges...>> zip_range) noexcept
+    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Front(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        auto& ranges = zip_range.GetRanges();
+        auto zip_front = []<typename...>(const auto&... ranges)
+        {
+            return Tuple<Templates::RangeElementReferenceType<TRanges>...>{ Front(ranges)... };
+        };
 
-        return Apply(ZipFront<TRanges...>, ranges);
+        return Apply(zip_front, range.ranges_);
     }
 
     template <Concepts::ForwardRangeT... TRanges>
-    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> ZipFront(Immutable<TRanges>... ranges) noexcept
+    constexpr ZipRange<TRanges...> PopFront(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        return { Front(ranges)... };
+        auto zip_pop_front = []<typename...>(const auto&... ranges)
+        {
+            return ZipRange<TRanges...>{ PopFront(ranges)... };
+        };
+
+        return Apply(zip_pop_front, range.ranges_);
+    }
+
+    template <Concepts::ForwardRangeT... TRanges>
+    constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> range) noexcept
+    {
+        auto zip_is_empty = []<typename...>(const auto&... ranges)
+        {
+            return (sizeof...(TRanges) == 0) || (IsEmpty(ranges) || ...);
+        };
+
+        return Apply(zip_is_empty, range.ranges_);
+    }
+
+    // Utilities.
+
+    template <Concepts::RangeT... TRanges>
+    constexpr ZipRange<TRanges...> Zip(Immutable<TRanges>... ranges) noexcept
+    {
+        return ZipRange{ ranges... };
     }
 
 }

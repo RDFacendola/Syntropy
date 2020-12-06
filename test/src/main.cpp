@@ -45,16 +45,17 @@ int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    Syntropy::Int array0[] = { 0, 1, 2, 3, 4, 5 };
-    Syntropy::Int array1[] = { 0, 1, 2, 3, 4, 5 };
+    Syntropy::Int array0[] = { 42, 1, 2, 3, 4, 5 };
+    Syntropy::Int array1[] = { 40, 2, 4, 6, 8, 10 };
 
     auto s = Syntropy::MakeSpan(&array0[0], 6);
-    auto sp = Syntropy::MakeSpan(&array1[0], 6);
-    auto t = Syntropy::Reverse(s);
-    auto tp = Syntropy::Reverse(sp);
+    auto t = Syntropy::MakeSpan(&array1[0], 6);
 
-    auto x = (s == sp);
-    auto z = (t == tp);
+    auto zz = Syntropy::Zip(s, t);
+
+    auto f = Syntropy::Front(zz);
+    auto pf = Syntropy::PopFront(zz);
+    auto e = Syntropy::IsEmpty(zz);
 
     system("pause");
 
