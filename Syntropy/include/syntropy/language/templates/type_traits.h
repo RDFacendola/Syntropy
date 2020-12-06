@@ -438,6 +438,18 @@ namespace Syntropy::Templates
     template <typename TType>
     Templates::AddRValueReference<TType> Declval() noexcept;
 
+     /************************************************************************/
+    /* TUPLE-LIKE                                                           */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TTuple provides compile-time access to the VIndex-th element via the non-member function Get<Index>(TTuple&&), equal to false otherwise.
+    template <typename TTuple, Int VIndex>
+    inline constexpr Bool HasTupleGetter = Details::HasTupleGetter<TTuple, VIndex>;
+
+    /// \brief Constant equal to true if TTuple provides compile-time access by index to all its elements via the non-member function Get<Index>(TTuple&&), equal to false otherwise.
+    template <typename TTuple>
+    inline constexpr Bool HasTupleGetters = Details::HasTupleGetters<TTuple>;
+
 }
 
 // ===========================================================================

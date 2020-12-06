@@ -161,6 +161,13 @@ namespace Syntropy::Concepts
     template <typename TPredicate, typename TType, typename UType>
     concept StrictWeakOrder = Details::StrictWeakOrder<TPredicate, TType, UType>;
 
+    // Tuple-related concepts.
+    // =======================
+
+    /// \brief Concept for types that provide compile-time access by index to their elements.
+    template <typename TTuple>
+    concept TupleLike = Details::TupleLike<Templates::RemoveConstReference<TTuple>>;
+
 }
 
 // ===========================================================================

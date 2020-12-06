@@ -33,16 +33,31 @@
 /* ENTRY POINT                                                          */
 /************************************************************************/
 
+
+
+template <Syntropy::Concepts::TupleLike T>
+void Foo(Syntropy::Immutable<T> foo)
+{
+
+}
+
 int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    auto t = Syntropy::MakeTuple<Syntropy::Int, Syntropy::Float>(1, 20.3f);
-    auto u = Syntropy::MakeTuple<Syntropy::Int, Syntropy::Float>(2, 40.3f);
+    auto t0 = Syntropy::MakeTuple(2);
+    auto t1 = Syntropy::MakeTuple(2, 3);
+    auto t2 = Syntropy::MakeTuple(4, 5);
 
-    Syntropy::Swap(t, u);
+    auto tl = Syntropy::Templates::TypeList<Syntropy::Int, Syntropy::Float>{};
 
-    
+    Foo(t0);
+    Foo(t1);
+    Foo(t2);
+
+    Syntropy::LockstepApply([](auto& lhs, auto& rhs) { lhs += rhs; }, t1, t2);
+
+    // Foo(tl);
 
     system("pause");
 
