@@ -154,9 +154,16 @@ namespace Syntropy
     template <Concepts::ForwardRangeT TRange, typename TFunction>
     constexpr void ForEach(Immutable<TRange> range, TFunction function) noexcept;
 
+    // Sized range.
+    // ============
+
     /// \brief Check whether lhs and rhs are equivalent.
-    template <Concepts::ForwardRangeT TRange, Concepts::ForwardRangeT URange>
+    template <Concepts::SizedRangeT TRange, Concepts::SizedRangeT URange>
     constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
+    /// \brief Check whether lhs and rhs are equivalent.
+    template <Concepts::SizedRangeT TRange, Concepts::SizedRangeT URange>
+    constexpr Bool operator==(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     // Random access range.
     // ====================
@@ -248,7 +255,7 @@ namespace Syntropy
         }
     }
 
-    template <Concepts::ForwardRangeT TRange, Concepts::ForwardRangeT URange>
+    template <Concepts::SizedRangeT TRange, Concepts::SizedRangeT URange>
     constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         if (Count(lhs) == Count(rhs))
@@ -273,6 +280,12 @@ namespace Syntropy
         }
 
         return false;
+    }
+
+    template <Concepts::SizedRangeT TRange, Concepts::SizedRangeT URange>
+    constexpr Bool operator==(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    {
+        return AreEquivalent(lhs, rhs);
     }
 
     // Random access range.

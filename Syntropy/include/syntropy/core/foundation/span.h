@@ -100,6 +100,13 @@ namespace Syntropy
     template <typename TType>
     constexpr Bool IsEmpty(Immutable<Span<TType>> rhs) noexcept;
 
+    // Sized range.
+    // ============
+
+    /// \brief Get the number of elements in a span.
+    template <typename TType>
+    constexpr Int Count(Immutable<Span<TType>> rhs) noexcept;
+
     // Bidirectional range.
     // ====================
 
@@ -115,10 +122,6 @@ namespace Syntropy
 
     // Random access range.
     // ====================
-
-    /// \brief Get the number of elements in a span.
-    template <typename TType>
-    constexpr Int Count(Immutable<Span<TType>> rhs) noexcept;
 
     /// \brief Obtain a sub-span given an offset and a number of elements.
     /// \remarks Exceeding span boundaries results in undefined behavior.
@@ -137,13 +140,6 @@ namespace Syntropy
     /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
     template <typename TType>
     constexpr Pointer<TType> Data(Immutable<Span<TType>> rhs) noexcept;
-
-    // Comparisons.
-    // ============
-
-    /// \brief Check whether lhs and rhs are equivalent.
-    template <typename TType, typename UType>
-    constexpr Bool operator==(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept;
 
     // Utilities.
     // ==========
@@ -274,6 +270,14 @@ namespace Syntropy
         return !rhs;
     }
 
+    // Sized range.
+
+    template <typename TType>
+    constexpr Int Count(Immutable<Span<TType>> rhs) noexcept
+    {
+        return rhs.count_;
+    }
+
     // Bidirectional range.
 
     template <typename TType>
@@ -289,12 +293,6 @@ namespace Syntropy
     }
 
     // Random access range.
-
-    template <typename TType>
-    constexpr Int Count(Immutable<Span<TType>> rhs) noexcept
-    {
-        return rhs.count_;
-    }
 
     template <typename TType>
     constexpr Span<TType> Select(Immutable<Span<TType>> rhs, Int offset, Int count) noexcept
@@ -314,14 +312,6 @@ namespace Syntropy
     constexpr Pointer<TType> Data(Immutable<Span<TType>> rhs) noexcept
     {
         return rhs.data_;
-    }
-
-    // Comparisons.
-
-    template <typename TType, typename UType>
-    constexpr Bool operator==(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept
-    {
-        return AreEquivalent(lhs, rhs);
     }
 
     // Utilities.
