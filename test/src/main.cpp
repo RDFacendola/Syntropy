@@ -49,11 +49,13 @@ int main(int argc, char **argv)
     Syntropy::Int array1[] = { 0, 1, 2, 3, 4, 5 };
 
     auto s = Syntropy::MakeSpan(&array0[0], 6);
-    auto p = Syntropy::MakeSpan(&array1[0], 6);
-    auto q = p;
+    auto sp = Syntropy::MakeSpan(&array1[0], 6);
+    auto t = Syntropy::Reverse(s);
+    auto tp = Syntropy::Reverse(sp);
 
-    auto x = (s == p);
-    auto y = (q == p);
+    auto x = (s == sp);
+    auto y = (s == t);
+    auto z = (t == tp);
 
     system("pause");
 

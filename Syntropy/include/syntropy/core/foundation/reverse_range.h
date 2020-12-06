@@ -25,6 +25,9 @@ namespace Syntropy
     template <Concepts::BidirectionalRangeT TRange>
     class ReverseRange
     {
+        template <Concepts::BidirectionalRangeT TRange, Concepts::BidirectionalRangeT URange>
+        friend constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+
         template <Concepts::BidirectionalRangeT TRange>
         friend constexpr decltype(auto) Front(Immutable<ReverseRange<TRange>> range) noexcept;
 
@@ -65,6 +68,21 @@ namespace Syntropy
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
+
+    // Comparison.
+    // ===========
+
+    /// \brief Check whether lhs and rhs are equivalent.
+    template <Concepts::BidirectionalRangeT TRange, Concepts::RangeT URange>
+    constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<URange> rhs) noexcept;
+
+    /// \brief Check whether lhs and rhs are equivalent.
+    template <Concepts::RangeT TRange, Concepts::BidirectionalRangeT URange>
+    constexpr Bool operator==(Immutable<TRange> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+
+    /// \brief Check whether lhs and rhs are equivalent.
+    template <Concepts::BidirectionalRangeT TRange, Concepts::BidirectionalRangeT URange>
+    constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
     // Forward range.
     // ==============
@@ -177,6 +195,28 @@ namespace Syntropy
 
     // Non-member functions.
     // =====================
+
+    // Comparison.
+
+    template <Concepts::BidirectionalRangeT TRange, Concepts::RangeT URange>
+    constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<URange> rhs) noexcept
+    {
+        return AreEquivalent(lhs, rhs);
+    }
+
+    template <Concepts::RangeT TRange, Concepts::BidirectionalRangeT URange>
+    constexpr Bool operator==(Immutable<TRange> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
+    {
+        return AreEquivalent(lhs, rhs);
+    }
+
+    template <Concepts::BidirectionalRangeT TRange, Concepts::BidirectionalRangeT URange>
+    constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
+    {
+        // Trick! If both are reversed then we'll just compare the non-reversed ranges, in case there's an efficient way of comparing them.
+
+        return lhs.range_ == rhs.range_;
+    }
 
     // Forward range.
 

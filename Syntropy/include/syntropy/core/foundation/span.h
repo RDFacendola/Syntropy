@@ -82,6 +82,13 @@ namespace Syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
+    // Comparison.
+    // ===========
+
+    /// \brief Check whether lhs and rhs are equivalent.
+    template <typename TType, typename UType>
+    constexpr Bool operator==(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept;
+
     // Forward range.
     // ==============
 
@@ -249,6 +256,14 @@ namespace Syntropy
 
     // Non-member functions.
     // =====================
+
+    // Comparison.
+
+    template <typename TType, typename UType>
+    constexpr Bool operator==(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept
+    {
+        return AreEqual(lhs, rhs) || AreEquivalent(lhs, rhs);
+    }
 
     // Forward Range.
 
