@@ -213,7 +213,7 @@ namespace Syntropy
     template <Concepts::BidirectionalRangeT TRange, Concepts::BidirectionalRangeT URange>
     constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
     {
-        // Trick! If both are reversed then we'll just compare the non-reversed ranges, in case there's an efficient way of comparing them.
+        // Trick! Comparing non-reversed ranges allows for more efficient comparison (if provided).
 
         return lhs.range_ == rhs.range_;
     }

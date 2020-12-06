@@ -54,7 +54,6 @@ int main(int argc, char **argv)
     auto tp = Syntropy::Reverse(sp);
 
     auto x = (s == sp);
-    auto y = (s == t);
     auto z = (t == tp);
 
     system("pause");
