@@ -20,82 +20,76 @@ namespace Syntropy
     /// \brief Type of the nullptr constant.
     using Null = std::nullptr_t;
 
-    /// \brief Constant non-owning pointer to a mutable object.
-    /// \remarks Please note that if TType provides an immutable interface, this type will behave as a pointer to a const object (e.g.: In Ptr<Int> the pointee is const).
+    /// \brief Non-owning pointer to an immutable instance of type TType.
     template <typename TType>
-    using Ptr = TType* const;
+    using ImmutablePtr = const TType*;
 
-    /// \brief Constant non-owning pointer to an immutable object.
-    /// \remarks In C++ pointer-to-references are not a thing! The "Ref" suffix in the name simply highlights the "immutable" nature of the pointee. See Ref<T>.
-    template <typename TType>
-    using PtrRef = const TType* const;
-
-    /// \brief A constant pointer to either a mutable or immutable object.
-    /// This type is an alias for either Ptr<T> or PtrRef<T>.
-    template <typename TType>
-    using XPtr = TType* const;
-
-    /// \brief Mutable non-owning pointer to a mutable object.
+    /// \brief Non-owning pointer to a mutable instance of type TType.
     template <typename TType>
     using MutablePtr = TType*;
 
-    /// \brief Constant non-owning pointer to an immutable object.
-    /// \remarks In C++ pointer-to-references are not a thing! The "Ref" suffix in the name simply highlights the "immutable" nature of the pointee. See Ref<T>.
-    template <typename TType>
-    using MutablePtrRef = const TType*;
+    /************************************************************************/
+    /* TEMPLATES                                                            */
+    /************************************************************************/
 
-    /// \brief A mutable pointer to either a mutable or immutable object.
-    /// This type is an alias for either MutablePtr<T> or MutablePtrRef<T>.
+    /// \brief A pointer to either a mutable or immutable instance of type TType.
+    /// The difference between this type and MutablePtr<T> is purely semantic.
     template <typename TType>
-    using XMutablePtr = TType*;
+    using Pointer = TType*;
 
     /************************************************************************/
     /* TYPELESS POINTER TYPES                                               */
     /************************************************************************/
 
-    /// \brief Constant non-owning pointer to a mutable typeless object.
-    using TypelessPtr = void* const;
+    /// \brief Non-owning pointer to a typeless mutable object.
+    using MutableTypelessPtr = MutablePtr<void>;
 
-    /// \brief Constant non-owning pointer to a typeless immutable object.
-    /// \remarks In C++ pointer-to-references are not a thing! The "Ref" suffix in the name simply highlights the "immutable" nature of the pointee. See Ref<T>.
-    using TypelessPtrRef = const void* const;
-
-    /// \brief Mutable non-owning pointer to a mutable typeless object.
-    using MutableTypelessPtr = void*;
-
-    /// \brief Mutable non-owning pointer to an immutable typeless object.
-    /// \remarks In C++ pointer-to-references are not a thing! The "Ref" suffix in the name simply highlights the "immutable" nature of the pointee. See Ref<T>.
-    using MutableTypelessPtrRef = const void*;
+    /// \brief Non-owning pointer to a typeless immutable object.
+    using ImmutableTypelessPtr = ImmutablePtr<void>;
 
     /************************************************************************/
-    /* FUNCTIONS                                                            */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
     // Pointer types.
     // ==============
 
-    /// \brief Obtain the pointer to an immutable object referred via rhs.
+    /// \brief Obtain the pointer to an immutable instance of type TType.
     /// The returned value is guaranteed to produce the actual address of rhs, even when operator& is overloaded.
     template <typename TType>
-    constexpr Ptr<TType> ToPtr(Immutable<TType> rhs) noexcept;
+    constexpr ImmutablePtr<TType> AddressOf(Immutable<TType> rhs) noexcept;
 
-    /// \brief Obtain the pointer to an immutable object referred via rhs.
+    /// \brief Obtain the pointer to a mutable instance of type TType.
     /// The returned value is guaranteed to produce the actual address of rhs, even when operator& is overloaded.
     template <typename TType>
-    constexpr MutablePtr<TType> ToPtr(Mutable<TType> rhs) noexcept;
+    constexpr MutablePtr<TType> AddressOf(Mutable<TType> rhs) noexcept;
 
     /// \brief Disabled overload for rvalue reference since they have no associated address.
     template <typename TType>
-    constexpr XPtr<TType> ToPtr(Immovable<TType> rhs) noexcept = delete;
+    constexpr Pointer<TType> AddressOf(Immovable<TType> rhs) noexcept = delete;
 
     /// \brief Convert rhs to a pointer to UType, preserving constness.
     /// \remarks If the pointee type is not related to UType, the program is ill-formed.
     template <typename TType, typename UType>
-    constexpr XPtr<TType> ToPtr(XPtr<UType> rhs) noexcept;
+    constexpr Pointer<TType> ToPointer(Pointer<UType> rhs) noexcept;
 
     /// \brief Prevent from getting the address of a rvalue-reference type.
     template <typename TType>
-    constexpr void ToPtr(Movable<TType> rhs) noexcept = delete;
+    constexpr void ToPointer(Immovable<TType> rhs) noexcept = delete;
+
+    // Access.
+    // =======
+
+    /// \brief Convert rhs to a pointer to an immutable instance of type TType.
+    template <typename TType>
+    constexpr ImmutablePtr<TType> ToImmutable(ImmutablePtr<TType> rhs) noexcept;
+
+    /// \brief Convert rhs to a pointer to a mutable instance of type TType.
+    /// The intended use for this method is to write a non-const implementation based on a const implementation, without duplicating associated code.
+    /// Such usage has the form: ToMutable(F(ToImmutable(x))) where x is non-const and F(.) is a function.
+    /// \remarks If rhs pointee doesn't refer to a mutable value, accessing the result of this method results in undefined behavior.
+    template <typename TType>
+    constexpr MutablePtr<TType> ToMutable(ImmutablePtr<TType> rhs) noexcept;
 
     // Typeless pointer types.
     // =======================
@@ -103,27 +97,12 @@ namespace Syntropy
     /// \brief Convert rhs to a strongly-typed immutable pointer type.
     /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
     template <typename TType>
-    PtrRef<TType> FromTypeless(TypelessPtrRef rhs) noexcept;
+    ImmutablePtr<TType> FromTypeless(ImmutableTypelessPtr rhs) noexcept;
 
     /// \brief Convert rhs to a strongly-typed mutable pointer type.
     /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
     template <typename TType>
-    Ptr<TType> FromTypeless(TypelessPtr rhs) noexcept;
-
-    // Access.
-    // =======
-
-    /// \brief Convert rhs to a pointer to a const value.
-    template <typename TType>
-    constexpr PtrRef<TType> ToImmutable(PtrRef<TType> rhs) noexcept;
-
-    /// \brief Convert rhs to a pointer to a mutable value.
-    /// The intended use for this method is to write a mutable implementation based on a const implementation, without duplicating associated code.
-    /// Such usage has the form: ToMutable(F(ToImmutable(x))) where x is non-const and F(.) is a function.
-    /// \remarks If rhs pointee doesn't refer to a mutable value, accessing the result of this method results in undefined behavior.
-    template <typename TType>
-    constexpr Ptr<TType> ToMutable(PtrRef<TType> rhs) noexcept;
-
+    MutablePtr<TType> FromTypeless(MutableTypelessPtr rhs) noexcept;
 }
 
 // ===========================================================================
@@ -134,55 +113,55 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
+    // Non-member functions.
+    // =====================
+
     // Pointer types.
-    // ==============
 
     template <typename TType>
-    constexpr Ptr<TType> ToPtr(Immutable<TType> rhs) noexcept
+    constexpr MutablePtr<TType> AddressOf(Immutable<TType> rhs) noexcept
     {
         return std::addressof(rhs);
     }
 
     template <typename TType>
-    constexpr MutablePtr<TType> ToPtr(Mutable<TType> rhs) noexcept
+    constexpr MutablePtr<TType> AddressOf(Mutable<TType> rhs) noexcept
     {
         return std::addressof(rhs);
     }
 
     template <typename TType, typename UType>
-    constexpr XPtr<TType> ToPtr(XPtr<UType> rhs) noexcept
+    constexpr Pointer<TType> ToPointer(Pointer<UType> rhs) noexcept
     {
-        return static_cast<XPtr<TType>>(rhs);
+        return static_cast<Pointer<TType>>(rhs);
     }
 
     // Typeless pointer types.
-    // =======================
 
     template <typename TType>
-    inline PtrRef<TType> FromTypeless(TypelessPtrRef rhs) noexcept
+    inline ImmutablePtr<TType> FromTypeless(ImmutableTypelessPtr rhs) noexcept
     {
-        return reinterpret_cast<PtrRef<TType>>(rhs);
+        return reinterpret_cast<ImmutablePtr<TType>>(rhs);
     }
 
     template <typename TType>
-    inline Ptr<TType> FromTypeless(TypelessPtr rhs) noexcept
+    inline MutablePtr<TType> FromTypeless(MutableTypelessPtr rhs) noexcept
     {
-        return reinterpret_cast<Ptr<TType>>(rhs);
+        return reinterpret_cast<MutablePtr<TType>>(rhs);
     }
 
     // Access.
-    // =======
 
     template <typename TType>
-    constexpr PtrRef<TType> ToImmutable(PtrRef<TType> rhs) noexcept
+    constexpr ImmutablePtr<TType> ToImmutable(ImmutablePtr<TType> rhs) noexcept
     {
         return rhs;
     }
 
     template <typename TType>
-    constexpr Ptr<TType> ToMutable(PtrRef<TType> rhs) noexcept
+    constexpr MutablePtr<TType> ToMutable(ImmutablePtr<TType> rhs) noexcept
     {
-        return const_cast<Ptr<TType>>(rhs);
+        return const_cast<MutablePtr<TType>>(rhs);
     }
 
 }

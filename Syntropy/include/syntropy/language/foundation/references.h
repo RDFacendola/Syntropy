@@ -25,6 +25,8 @@ namespace Syntropy
     using Mutable = TType&;
 
     /// \brief RValue reference to an immutable instance of type TType.
+    /// This type binds to rvalues and rvalues only as it is never interpreted as a forwarding reference,
+    /// making it the ideal tool to delete functions overloads (see: AddressOf()).
     template <typename TType>
     using Immovable = const TType&&;
 
@@ -47,7 +49,7 @@ namespace Syntropy
     using Forwarding = TType&&;
 
     /************************************************************************/
-    /* FUNCTIONS                                                            */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
     // Move.
@@ -100,8 +102,10 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
+    // Non-member functions.
+    // =====================
+
     // Move.
-    // =====
 
     template <typename TType>
     constexpr Forwarding<Templates::RemoveReference<TType>> Move(Forwarding<TType> rhs) noexcept
@@ -110,7 +114,6 @@ namespace Syntropy
     }
 
     // Perfect forwarding.
-    // ===================
 
     template <typename TType>
     constexpr Forwarding<TType> Forward(Templates::RemoveReference<TType>& rhs) noexcept
@@ -125,7 +128,6 @@ namespace Syntropy
     }
 
     // Access.
-    // =======
 
     template <typename TType>
     constexpr Immutable<TType> ToImmutable(Immutable<TType> rhs) noexcept

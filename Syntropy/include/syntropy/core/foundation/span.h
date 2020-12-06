@@ -64,7 +64,7 @@ namespace Syntropy
         constexpr Int GetCount() const noexcept;
 
         /// \brief Access the underlying memory.
-        constexpr XPtr<TType> GetData() const noexcept;
+        constexpr Pointer<TType> GetData() const noexcept;
 
         /// \brief Swap this span with rhs.
         constexpr void Swap(Mutable<SpanT> rhs) noexcept;
@@ -72,7 +72,7 @@ namespace Syntropy
     private:
 
         /// \brief Pointer to the first element in the range.
-        XPtr<TType> data_{ nullptr };
+        Pointer<TType> data_{ nullptr };
 
         /// \brief Number of elements in the span.
         Int count_{ 0 };
@@ -153,7 +153,7 @@ namespace Syntropy
     /// \brief Access underlying span data.
     /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
     template <typename TType>
-    constexpr XPtr<TType> Data(Reference<SpanT<TType>> rhs) noexcept;
+    constexpr Pointer<TType> Data(Reference<SpanT<TType>> rhs) noexcept;
 
     // Set operations.
     // ===============
@@ -212,11 +212,11 @@ namespace Syntropy
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TBegin>
-    constexpr SpanT<TBegin> MakeSpan(XPtr<TBegin> begin, Int count) noexcept;
+    constexpr SpanT<TBegin> MakeSpan(Pointer<TBegin> begin, Int count) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TBegin, typename TEnd>
-    constexpr Templates::CommonType<TBegin, TEnd> MakeSpan(XPtr<TBegin> begin, XPtr<TEnd> end) noexcept;
+    constexpr Templates::CommonType<TBegin, TEnd> MakeSpan(Pointer<TBegin> begin, Pointer<TEnd> end) noexcept;
 
     /// \brief Swap two spans
     template <typename TType>
@@ -331,7 +331,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr XPtr<TType> SpanT<TType>::GetData() const noexcept
+    constexpr Pointer<TType> SpanT<TType>::GetData() const noexcept
     {
         return data_;
     }
@@ -403,7 +403,7 @@ namespace Syntropy
     // Contiguous range.
 
     template <typename TType>
-    constexpr XPtr<TType> Data(Reference<SpanT<TType>> rhs) noexcept
+    constexpr Pointer<TType> Data(Reference<SpanT<TType>> rhs) noexcept
     {
         return rhs.GetData();
     }
@@ -549,13 +549,13 @@ namespace Syntropy
     // Utilities.
 
     template <typename TBegin>
-    constexpr SpanT<TBegin> MakeSpan(XPtr<TBegin> begin, Int count) noexcept
+    constexpr SpanT<TBegin> MakeSpan(Pointer<TBegin> begin, Int count) noexcept
     {
         return { begin, count };
     }
 
     template <typename TBegin, typename TEnd>
-    constexpr Templates::CommonType<TBegin, TEnd> MakeSpan(XPtr<TBegin> begin, XPtr<TEnd> end) noexcept
+    constexpr Templates::CommonType<TBegin, TEnd> MakeSpan(Pointer<TBegin> begin, Pointer<TEnd> end) noexcept
     {
         return { begin, end };
     }

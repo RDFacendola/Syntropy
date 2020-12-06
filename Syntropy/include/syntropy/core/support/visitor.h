@@ -39,12 +39,12 @@ namespace Syntropy
         /// \brief Attempt to visit an element via a visitor functor.
         /// \return Returns true if the visit was successful, returns false otherwise.
         template <typename TFunction, typename TVisitor>
-        Bool TryVisit(Immutable<TVisitor> visitor, TypelessPtr visitable, Immutable<std::type_info> type) const noexcept;
+        Bool TryVisit(Immutable<TVisitor> visitor, MutableTypelessPtr visitable, Immutable<std::type_info> type) const noexcept;
 
     private:
 
         /// \brief Visit an element.
-        virtual void VirtualVisit(TypelessPtr visitable, Immutable<std::type_info> type) const noexcept = 0;
+        virtual void VirtualVisit(MutableTypelessPtr visitable, Immutable<std::type_info> type) const noexcept = 0;
 
     };
 
@@ -77,16 +77,16 @@ namespace Syntropy
     {
         if constexpr (!Templates::IsPolymorphic<TVisitable> || Templates::IsFinal<TVisitable>)
         {
-            VirtualVisit(ToPtr(visitable), typeid(visitable));
+            VirtualVisit(AddressOf(visitable), typeid(visitable));
         }
         else
         {
-            VirtualVisit(dynamic_cast<TypelessPtr>(ToPtr(visitable)), typeid(visitable));       // Downcast to the most derived class since typeid will return the dynamic type of visitable.
+            VirtualVisit(dynamic_cast<MutableTypelessPtr>(AddressOf(visitable)), typeid(visitable));       // Downcast to the most derived class since typeid will return the dynamic type of visitable.
         }
     }
 
     template <typename TFunction, typename TVisitor>
-    inline Bool Visitor::TryVisit(Immutable<TVisitor> visitor, TypelessPtr visitable, Immutable<std::type_info> type) const noexcept
+    inline Bool Visitor::TryVisit(Immutable<TVisitor> visitor, MutableTypelessPtr visitable, Immutable<std::type_info> type) const noexcept
     {
         using TArgument = Templates::FunctionArgumentsElement<0, TFunction>;
         using TVisitable = Templates::RemoveReference<TArgument>;
@@ -119,7 +119,7 @@ namespace Syntropy
             using TFunctions::operator()...;
 
             // Attempt to visit with each of the lambdas.
-            void VirtualVisit(TypelessPtr visitable, Immutable<std::type_info> type) const noexcept override
+            void VirtualVisit(MutableTypelessPtr visitable, Immutable<std::type_info> type) const noexcept override
             {
                 (TryVisit<TFunctions>(*this, visitable, type) || ...);
             }

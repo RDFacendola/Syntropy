@@ -86,13 +86,13 @@ namespace Syntropy::Details
 
     /// \brief Enable (implicit) default tuple constructor if all types TTypes are default constructible and all types have implicit default constructor.
     template <typename TTypeList>
-    using EnableIfTupleDefaultConstructor = Ptr<Templates::EnableIf<Templates::IsDefaultConstructible<TTypeList>>>;
+    using EnableIfTupleDefaultConstructor = MutablePtr<Templates::EnableIf<Templates::IsDefaultConstructible<TTypeList>>>;
 
     // (2)
 
     /// \brief Enable direct tuple constructor if all types TTypes are implicitly copy-constructible.
     template <typename TTypeList>
-    using EnableIfTupleDirectConstructor = Ptr<Templates::EnableIf<Templates::IsCopyConstructible<TTypeList>>>;
+    using EnableIfTupleDirectConstructor = MutablePtr<Templates::EnableIf<Templates::IsCopyConstructible<TTypeList>>>;
 
     // (3)
 
@@ -106,7 +106,7 @@ namespace Syntropy::Details
 
     /// \brief Enable converting tuple constructor.
     template <typename TTypeList, typename... UTypes>
-    using EnableIfTupleConvertingConstructor = Ptr<Templates::EnableIf<EnableIfTupleConvertingConstructorHelper<Templates::Rank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
+    using EnableIfTupleConvertingConstructor = MutablePtr<Templates::EnableIf<EnableIfTupleConvertingConstructorHelper<Templates::Rank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
 
     // (4)
 
@@ -127,7 +127,7 @@ namespace Syntropy::Details
 
     /// \brief Enable converting tuple copy-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-copy-constructed from the respective UType and the overload does not reduce to a copy-constructor.
     template <typename TTypeList, typename... UTypes>
-    using EnableIfTupleConvertingCopyConstructor = Ptr<Templates::EnableIf<EnableIfTupleConvertingCopyConstructorHelper<Templates::Rank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
+    using EnableIfTupleConvertingCopyConstructor = MutablePtr<Templates::EnableIf<EnableIfTupleConvertingCopyConstructorHelper<Templates::Rank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
 
     // (5)
 
@@ -148,7 +148,7 @@ namespace Syntropy::Details
 
     /// \brief Enable converting tuple move-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-move-constructed from the respective UType and the overload does not reduce to a move-constructor.
     template <typename TTypeList, typename... UTypes>
-    using EnableIfTupleConvertingMoveConstructor = Ptr<Templates::EnableIf<EnableIfTupleConvertingMoveConstructorHelper<Templates::Rank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
+    using EnableIfTupleConvertingMoveConstructor = MutablePtr<Templates::EnableIf<EnableIfTupleConvertingMoveConstructorHelper<Templates::Rank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
 
     /************************************************************************/
     /* ENABLE IF - TUPLE ASSIGNMENT                                         */
@@ -158,25 +158,25 @@ namespace Syntropy::Details
 
     /// \brief Enable tuple copy assignment operator if all types in TTypeList are copy-assignable.
     template <typename TTypeList>
-    using EnableIfTupleCopyAssignment = Ptr<Templates::EnableIf<Templates::IsCopyAssignable<TTypeList>>>;
+    using EnableIfTupleCopyAssignment = MutablePtr<Templates::EnableIf<Templates::IsCopyAssignable<TTypeList>>>;
 
     // (2)
 
     /// \brief Enable tuple copy assignment operator if all types in TTypeList are move-assignable.
     template <typename TTypeList>
-    using EnableIfTupleMoveAssignment = Ptr<Templates::EnableIf<Templates::IsMoveAssignable<TTypeList>>>;
+    using EnableIfTupleMoveAssignment = MutablePtr<Templates::EnableIf<Templates::IsMoveAssignable<TTypeList>>>;
 
     // (3)
 
     /// \brief Enable tuple converting copy assignment operator if all types in TTypeList can be converting-copy-assigned from the corresponding element in UTypeList.
     template <typename TTypeList, typename UTypeList>
-    using EnableIfTupleConvertingCopyAssignment = Ptr<Templates::EnableIf<!Templates::IsSame<TTypeList, UTypeList> && Templates::IsAssignable<Templates::AddLValueReference<TTypeList>, Templates::AddLValueConstReference<UTypeList>>>>;
+    using EnableIfTupleConvertingCopyAssignment = MutablePtr<Templates::EnableIf<!Templates::IsSame<TTypeList, UTypeList> && Templates::IsAssignable<Templates::AddLValueReference<TTypeList>, Templates::AddLValueConstReference<UTypeList>>>>;
 
     // (4)
 
     /// \brief Enable tuple converting move assignment operator if all types in TTypeList can be converting-move-assigned from the corresponding element in UTypeList.
     template <typename TTypeList, typename UTypeList>
-    using EnableIfTupleConvertingMoveAssignment = Ptr<Templates::EnableIf<!Templates::IsSame<TTypeList, UTypeList> && Templates::IsAssignable<Templates::AddLValueReference<TTypeList>, UTypeList>>>;
+    using EnableIfTupleConvertingMoveAssignment = MutablePtr<Templates::EnableIf<!Templates::IsSame<TTypeList, UTypeList> && Templates::IsAssignable<Templates::AddLValueReference<TTypeList>, UTypeList>>>;
 
     /************************************************************************/
     /* TUPLE BASE                                                           */

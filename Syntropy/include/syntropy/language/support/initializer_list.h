@@ -24,10 +24,10 @@ namespace Syntropy
     class InitializerList
     {
         template <typename TElement>
-        friend constexpr Ptr<TElement> begin(Immutable<InitializerList<TElement>> rhs) noexcept;
+        friend constexpr MutablePtr<TElement> begin(Immutable<InitializerList<TElement>> rhs) noexcept;
 
         template <typename TElement>
-        friend constexpr Ptr<TElement> end(Immutable<InitializerList<TElement>> rhs) noexcept;
+        friend constexpr MutablePtr<TElement> end(Immutable<InitializerList<TElement>> rhs) noexcept;
 
     public:
 
@@ -35,7 +35,7 @@ namespace Syntropy
         constexpr InitializerList() noexcept = default;
 
         /// \brief Create a list from a pointer to the first and past the last element.
-        constexpr InitializerList(Ptr<TElement> begin, Ptr<TElement> end) noexcept;
+        constexpr InitializerList(MutablePtr<TElement> begin, MutablePtr<TElement> end) noexcept;
 
         /// \brief Create an initializer list from a standard initializer list.
         constexpr InitializerList(Immutable<std::initializer_list<TElement>> initializer_list) noexcept;
@@ -43,10 +43,10 @@ namespace Syntropy
     private:
 
         /// \brief Pointer to the first element in the list.
-        Ptr<TElement> begin_{ nullptr };
+        MutablePtr<TElement> begin_{ nullptr };
 
         /// \brief Pointer past the last element in the list.
-        Ptr<TElement> end_{ nullptr };
+        MutablePtr<TElement> end_{ nullptr };
 
     };
 
@@ -55,10 +55,10 @@ namespace Syntropy
     /************************************************************************/
 
     template <typename TElement>
-    constexpr Ptr<TElement> begin(Immutable<InitializerList<TElement>> rhs) noexcept;
+    constexpr MutablePtr<TElement> begin(Immutable<InitializerList<TElement>> rhs) noexcept;
 
     template <typename TElement>
-    constexpr Ptr<TElement> end(Immutable<InitializerList<TElement>> rhs) noexcept;
+    constexpr MutablePtr<TElement> end(Immutable<InitializerList<TElement>> rhs) noexcept;
 
     /// \brief Check whether an initializer list is empty.
     /// \return Returns true if the list is empty, returns false otherwise.
@@ -83,7 +83,7 @@ namespace Syntropy
     // ==========================
 
     template <typename TElement>
-    constexpr InitializerList<TElement>::InitializerList(Ptr<TElement> begin, Ptr<TElement> end) noexcept
+    constexpr InitializerList<TElement>::InitializerList(MutablePtr<TElement> begin, MutablePtr<TElement> end) noexcept
         : begin_(begin)
         , end_(end)
     {
@@ -102,13 +102,13 @@ namespace Syntropy
     // =====================
 
     template <typename TElement>
-    constexpr Ptr<TElement> begin(Immutable<InitializerList<TElement>> rhs) noexcept
+    constexpr MutablePtr<TElement> begin(Immutable<InitializerList<TElement>> rhs) noexcept
     {
         return rhs.begin_;
     }
 
     template <typename TElement>
-    constexpr Ptr<TElement> end(Immutable<InitializerList<TElement>> rhs) noexcept
+    constexpr MutablePtr<TElement> end(Immutable<InitializerList<TElement>> rhs) noexcept
     {
         return rhs.end_;
     }
