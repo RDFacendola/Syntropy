@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
+#include "syntropy/language/foundation/enumerations.h"
 
 // ===========================================================================
 
@@ -415,17 +416,26 @@ namespace Syntropy::Templates::Details
 
     /// \brief Constant equal to true if TType is boolean, equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool IsBoolean = std::is_same_v<TType, Bool>;
+    inline constexpr Bool IsBooleanHelper = std::is_same_v<TType, Bool>;
+
+    /// \brief Constant equal to true if TType is boolean, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsBoolean = IsBooleanHelper<RemoveConstReference<TType>>;
+
+    /// \brief Constant equal to true if TType is equal to any off the provided types in UType, equal to false otherwise.
+    /// \remarks Note that this trait is fundamentally different than std::is_integral as it only yields true for int and fixed-size ints. Booleans, characters and bytes are not considered to be integrals.
+    template <typename TType, typename... UTypes>
+    inline constexpr Bool IsAnyOfHelper = (std::is_same_v<TType, UTypes> || ...);
 
     /// \brief Constant equal to true if TType is integral, equal to false otherwise.
     /// \remarks Note that this trait is fundamentally different than std::is_integral as it only yields true for int and fixed-size ints. Booleans, characters and bytes are not considered to be integrals.
     template <typename TType>
-    inline constexpr Bool IsIntegral = std::is_same_v<TType, Int> || std::is_same_v<TType, Fix8> || std::is_same_v<TType, Fix16> || std::is_same_v<TType, Fix32> || std::is_same_v<TType, Fix64>;
+    inline constexpr Bool IsIntegral = IsAnyOfHelper<RemoveConstReference<TType>, Int, Fix8, Fix16, Fix32, Fix64, Enum8, Enum16, Enum32, Enum64>;
 
     /// \brief Constant equal to true if TType is a real number, equal to false otherwise.
     /// \remarks Note that this traits is different than std::is_floating_point as it only yields true for floats. Doubles are not supported.
     template <typename TType>
-    inline constexpr Bool IsReal = std::is_same_v<TType, Float>;
+    inline constexpr Bool IsReal = IsAnyOfHelper<RemoveConstReference<TType>, Float>;
 
     /// \brief Constant equal to true if TType is an enumeration type, equal to false otherwise.
     template <typename TType>
