@@ -33,13 +33,13 @@ namespace Syntropy::UnitTest
         FixArray<Float, 10> floats_ = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f };
 
         /// \brief Integer sequence span.
-        SpanT<Int> ints_span_;
+        Span<Int> ints_span_;
 
         /// \brief Float sequence span.
-        SpanT<Float> floats_span_;
+        Span<Float> floats_span_;
 
         /// \brief Empty integer sequence span.
-        SpanT<Int> empty_span_;
+        Span<Int> empty_span_;
 
         /// \brief Executed before each test case.
         void Before();
@@ -111,8 +111,8 @@ namespace Syntropy::UnitTest
         
     .TestCase("Zipping together two forward ranges generate a new forward range that can be visited forward in lockstep.", [](auto& fixture)
     {
-        auto s0 = SpanT<const Int>{ fixture.ints_span_ };
-        auto s1 = SpanT<const Float>{ fixture.floats_span_ };
+        auto s0 = Span<const Int>{ fixture.ints_span_ };
+        auto s1 = Span<const Float>{ fixture.floats_span_ };
 
         auto z = Zip(s0, s1);
 

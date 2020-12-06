@@ -29,10 +29,10 @@ namespace Syntropy::Algorithm::UnitTest
         FixArray<Int, 10> ints_ = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
         /// \brief Integer sequence span.
-        SpanT<Int> ints_span_;
+        Span<Int> ints_span_;
 
         /// \brief Empty integer sequence span.
-        SpanT<Int> empty_span_;
+        Span<Int> empty_span_;
 
         /// \brief Executed before each test case.
         void Before();
@@ -55,7 +55,7 @@ namespace Syntropy::Algorithm::UnitTest
 
     .TestCase("Searching a range for a value returns a range starting with that value and the remaining ones.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(Algorithm::Find(fixture.ints_span_, 4), (SpanT<Int>{ &fixture.ints_[4], 6}));
+        SYNTROPY_UNIT_EQUAL(Algorithm::Find(fixture.ints_span_, 4), (Span<Int>{ &fixture.ints_[4], 6}));
     })
 
     .TestCase("Searching a range for a non-existent value returns an empty range.", [](auto& fixture)
@@ -65,7 +65,7 @@ namespace Syntropy::Algorithm::UnitTest
 
     .TestCase("Reverse-searching a range for a value returns a range ending with that value and all elements prior to that.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(Algorithm::FindReverse(fixture.ints_span_, 4), (SpanT<Int>{ &fixture.ints_[0], 5}));
+        SYNTROPY_UNIT_EQUAL(Algorithm::FindReverse(fixture.ints_span_, 4), (Span<Int>{ &fixture.ints_[0], 5}));
     })
 
     .TestCase("Searching a reverse range for a non-existent value returns an empty range.", [](auto& fixture)
@@ -75,7 +75,7 @@ namespace Syntropy::Algorithm::UnitTest
 
      .TestCase("Searching a range by predicate returns a range starting with the first element for which the predicate holds true and all values after that.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(Algorithm::FindIf(fixture.ints_span_, &SearchTestFixture::IsOdd), (SpanT<Int>{ &fixture.ints_[1], 9}));
+        SYNTROPY_UNIT_EQUAL(Algorithm::FindIf(fixture.ints_span_, &SearchTestFixture::IsOdd), (Span<Int>{ &fixture.ints_[1], 9}));
     })
 
     .TestCase("Searching a range by a predicate which is false for all the range elements returns an empty range.", [](auto& fixture)
@@ -85,7 +85,7 @@ namespace Syntropy::Algorithm::UnitTest
 
     .TestCase("Reverse-searching a range by predicate returns a range ending with the last element for which the predicate holds true and all values before that.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(Algorithm::FindIfReverse(fixture.ints_span_, &SearchTestFixture::IsEven), (SpanT<Int>{ &fixture.ints_[0], 9}));
+        SYNTROPY_UNIT_EQUAL(Algorithm::FindIfReverse(fixture.ints_span_, &SearchTestFixture::IsEven), (Span<Int>{ &fixture.ints_[0], 9}));
     })
 
     .TestCase("Reverse-searching a range by a predicate which is false for all the range elements returns an empty range.", [](auto& fixture)
