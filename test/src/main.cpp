@@ -50,8 +50,10 @@ int main(int argc, char **argv)
 
     auto s = Syntropy::MakeSpan(&array0[0], 6);
     auto p = Syntropy::MakeSpan(&array1[0], 6);
+    auto q = p;
 
     auto x = (s == p);
+    auto y = (q == p);
 
     system("pause");
 
