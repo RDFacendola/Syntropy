@@ -14,6 +14,8 @@
 #include "syntropy/core/foundation/range.h"
 #include "syntropy/core/foundation/tuple.h"
 
+#include "syntropy/math/math.h"
+
 // ===========================================================================
 
 namespace Syntropy
@@ -42,8 +44,8 @@ namespace Syntropy
         template <Concepts::ForwardRangeT... TRanges>
         friend constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-        //template <Concepts::SizedRangeT TRange>
-        //friend constexpr Int Count(Immutable<TRange> rhs) noexcept;
+        template <Concepts::SizedRangeT... TRanges>
+        friend constexpr Int Count(Immutable<ZipRange<TRanges...>> range) noexcept;
 
         //template <Concepts::BidirectionalRangeT TRange>
         //friend constexpr Templates::RangeElementReferenceType<TRange> Back(Immutable<TRange> range) noexcept;
@@ -97,6 +99,13 @@ namespace Syntropy
 
     template <Concepts::ForwardRangeT... TRanges>
     constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> range) noexcept;
+
+    // Sized range.
+    // ============
+
+    /// \brief Get the number of elements in a span.
+    template <Concepts::SizedRangeT... TRanges>
+    constexpr Int Count(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     // Utilities.
     // ==========
@@ -190,6 +199,19 @@ namespace Syntropy
         };
 
         return Apply(zip_is_empty, range.ranges_);
+    }
+
+    // Sized range.
+
+    template <Concepts::SizedRangeT... TRanges>
+    constexpr Int Count(Immutable<ZipRange<TRanges...>> range) noexcept
+    {
+        auto zip_min_count = []<typename...>(const auto&... ranges)
+        {
+            return Math::Min(Count(ranges)...);
+        };
+
+        return Apply(zip_min_count, range.ranges_);
     }
 
     // Utilities.

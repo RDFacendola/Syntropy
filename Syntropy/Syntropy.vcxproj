@@ -44,6 +44,7 @@
     <ClInclude Include="include\syntropy\language\templates\ratio.h" />
     <ClInclude Include="include\syntropy\language\templates\sequence.h" />
     <ClInclude Include="include\syntropy\language\templates\type_traits.h" />
+    <ClInclude Include="include\syntropy\math\math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

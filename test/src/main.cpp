@@ -49,13 +49,14 @@ int main(int argc, char **argv)
     Syntropy::Int array1[] = { 40, 2, 4, 6, 8, 10 };
 
     auto s = Syntropy::MakeSpan(&array0[0], 6);
-    auto t = Syntropy::MakeSpan(&array1[0], 6);
+    auto t = Syntropy::MakeSpan(&array1[0], 4);
 
     auto zz = Syntropy::Zip(s, t);
 
     auto f = Syntropy::Front(zz);
     auto pf = Syntropy::PopFront(zz);
     auto e = Syntropy::IsEmpty(zz);
+    auto c = Syntropy::Count(zz);
 
     system("pause");
 
