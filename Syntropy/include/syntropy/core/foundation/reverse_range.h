@@ -42,6 +42,7 @@ namespace Syntropy
 
         template <Concepts::BidirectionalRangeT TRange>
         friend constexpr decltype(auto) Back(Immutable<ReverseRange<TRange>> range) noexcept;
+
         template <Concepts::BidirectionalRangeT TRange>
         friend constexpr ReverseRange<TRange> PopBack(Immutable<ReverseRange<TRange>> range, Int count) noexcept;
 
@@ -90,7 +91,7 @@ namespace Syntropy
     /// \brief Access the first element in a range.
     /// \remarks Accessing the first element of an empty range results in undefined behavior.
     template <Concepts::BidirectionalRangeT TRange>
-    constexpr decltype(auto) Front(Immutable<ReverseRange<TRange>> range) noexcept;
+    constexpr Templates::RangeElementReferenceType<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept;
 
     /// \brief Discard the first count elements in a range and return the resulting subrange.
     /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
@@ -115,7 +116,7 @@ namespace Syntropy
     /// \brief Access the last element in a range.
     /// \remarks Accessing the last element of an empty range results in undefined behavior.
     template <Concepts::BidirectionalRangeT TRange>
-    constexpr decltype(auto) Back(Immutable<ReverseRange<TRange>> range) noexcept;
+    constexpr Templates::RangeElementReferenceType<TRange> Back(Immutable<ReverseRange<TRange>> range) noexcept;
 
     /// \brief Discard the last count elements in a range and return the resulting subrange.
     /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
@@ -221,7 +222,7 @@ namespace Syntropy
     // Forward range.
 
     template <Concepts::BidirectionalRangeT TRange>
-    constexpr decltype(auto) Front(Immutable<ReverseRange<TRange>> range) noexcept
+    constexpr Templates::RangeElementReferenceType<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept
     {
         return Back(range.range_);
     }
@@ -250,7 +251,7 @@ namespace Syntropy
     // Bidirectional range.
 
     template <Concepts::BidirectionalRangeT TRange>
-    constexpr decltype(auto) Back(Immutable<ReverseRange<TRange>> range) noexcept
+    constexpr Templates::RangeElementReferenceType<TRange> Back(Immutable<ReverseRange<TRange>> range) noexcept
     {
         return Front(range.range_);
     }
