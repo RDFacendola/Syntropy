@@ -27,6 +27,10 @@ namespace Syntropy::Templates
     /// \brief Type of a reference to an element in a range TRange.
     template <typename TRange>
     using RangeElementReferenceType = typename RangeTraits<TRange>::ElementReferenceType;
+
+    /// \brief Type of a reference to an element in a range TRange.
+    template <typename TRange>
+    using RangeElementPointerType = typename RangeTraits<TRange>::ElementPointerType;
 }
 
 // ===========================================================================
@@ -134,7 +138,7 @@ namespace Syntropy::Concepts
         {
             /// \brief Access contiguous range data.
             /// \remarks If the range is empty the returned value is unspecified.
-            { Data(range) } -> SameAs<Templates::AddPointer<Templates::RemoveReference<Templates::RangeElementReferenceType<TRange>>>>;
+            { Data(range) } -> SameAs<Templates::RangeElementPointerType<TRange>>;
         };
 
 }

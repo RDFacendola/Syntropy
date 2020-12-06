@@ -29,7 +29,7 @@ namespace Syntropy
         friend constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
         template <Concepts::BidirectionalRangeT TRange>
-        friend constexpr decltype(auto) Front(Immutable<ReverseRange<TRange>> range) noexcept;
+        friend constexpr Templates::RangeElementReferenceType<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept;
 
         template <Concepts::BidirectionalRangeT TRange>
         friend constexpr ReverseRange<TRange> PopFront(Immutable<ReverseRange<TRange>> range, Int count) noexcept;
@@ -41,7 +41,7 @@ namespace Syntropy
         friend constexpr Int Count(Immutable<ReverseRange<TRange>> rhs) noexcept;
 
         template <Concepts::BidirectionalRangeT TRange>
-        friend constexpr decltype(auto) Back(Immutable<ReverseRange<TRange>> range) noexcept;
+        friend constexpr Templates::RangeElementReferenceType<TRange> Back(Immutable<ReverseRange<TRange>> range) noexcept;
 
         template <Concepts::BidirectionalRangeT TRange>
         friend constexpr ReverseRange<TRange> PopBack(Immutable<ReverseRange<TRange>> range, Int count) noexcept;

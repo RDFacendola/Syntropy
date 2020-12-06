@@ -179,6 +179,9 @@ namespace Syntropy::Templates
     {
         /// \brief Type of a reference to a range element.
         using ElementReferenceType = Reference<TType>;
+
+        /// \brief Type of a pointer to a range element.
+        using ElementPointerType = Pointer<TType>;
     };
 }
 
