@@ -248,9 +248,9 @@ namespace Syntropy
     // Functional.
     // ===========
 
-    /// \brief Invoke a callable object with arguments provided as tuple.
-    template <typename TCallable, Concepts::TupleLike TArguments>
-    constexpr decltype(auto) Apply(Forwarding<TCallable> callable, Forwarding<TArguments> arguments) noexcept;
+    /// \brief Invoke a function with arguments provided as tuple.
+    template <typename TFunction, Concepts::TupleLike TArguments>
+    constexpr decltype(auto) Apply(Forwarding<TFunction> function, Forwarding<TArguments> arguments) noexcept;
 
     /// \brief Apply a function passing the VIndex-th element of each tuple-like object as function arguments.
     /// \remarks Tuple elements are accessed by means of Get<Int>(tuple) function, which is expected to be defined for each type in TTuples.
@@ -476,10 +476,10 @@ namespace Syntropy
 
     // Functional.
 
-    template <typename TCallable, Concepts::TupleLike TArguments>
-    constexpr decltype(auto) Apply(Forwarding<TCallable> callable, Forwarding<TArguments> arguments) noexcept
+    template <typename TFunction, Concepts::TupleLike TArguments>
+    constexpr decltype(auto) Apply(Forwarding<TFunction> function, Forwarding<TArguments> arguments) noexcept
     {
-        return Details::Apply(Forward<TCallable>(callable), Forward<TArguments>(arguments), Templates::MakeSequence<Templates::Rank<Templates::RemoveConstReference<TArguments>>>{});
+        return Details::Apply(Forward<TFunction>(function), Forward<TArguments>(arguments), Templates::MakeSequence<Templates::Rank<Templates::RemoveConstReference<TArguments>>>{});
     }
 
     template <Int VIndex, typename TFunction, Concepts::TupleLike... TTuples>

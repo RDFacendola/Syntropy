@@ -205,12 +205,14 @@ namespace Syntropy::Details
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    template <typename TCallable, Concepts::TupleLike TArguments, Int... VIndexes>
-    constexpr decltype(auto) Apply(Forwarding<TCallable> callable, Forwarding<TArguments> arguments, Templates::Sequence<VIndexes...>) noexcept
+    /// \brief Invoke a function with arguments passed as tuple.
+    template <typename TFunction, Concepts::TupleLike TArguments, Int... VIndexes>
+    constexpr decltype(auto) Apply(Forwarding<TFunction> function, Forwarding<TArguments> arguments, Templates::Sequence<VIndexes...>) noexcept
     {
-        return Templates::Invoke(Forward<TCallable>(callable), Get<VIndexes>(Forward<TArguments>(arguments))...);
+        return Templates::Invoke(Forward<TFunction>(function), Get<VIndexes>(Forward<TArguments>(arguments))...);
     }
 
+    /// \brief Apply a function to each element in each tuple in locksteps.
     template <typename TFunction, Concepts::TupleLike... TTuples, Int... VIndexes>
     constexpr void LockstepApply(Templates::Sequence<VIndexes...>, Forwarding<TFunction> function, TTuples&&... tuples) noexcept
     {
