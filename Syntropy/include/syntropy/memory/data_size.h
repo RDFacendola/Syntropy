@@ -13,8 +13,6 @@
 
 #include "syntropy/memory/byte.h"
 
-#include "syntropy/memory/details/data_size_details.h"
-
 // ===========================================================================
 
 namespace Syntropy
@@ -199,8 +197,8 @@ namespace Syntropy
     constexpr Bytes ToBytes(Immutable<DataSize<TUnit>> rhs) noexcept;
 
     /// \brief Convert a data size amount to another amount with different units, rounding the result towards zero.
-    template <typename TBytesTo, typename TRatioFrom>
-    constexpr TBytesTo FromDataSize(Immutable<DataSize<TRatioFrom>> rhs) noexcept;
+    template <typename TDataSizeTo, typename TUnitFrom>
+    constexpr TDataSizeTo FromDataSize(Immutable<DataSize<TUnitFrom>> rhs) noexcept;
 
     /************************************************************************/
     /* BASIC                                                                */
@@ -250,23 +248,6 @@ namespace Syntropy
     template <typename TUnit>
     constexpr ImmutableBytePtr operator-(ImmutableBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Templates
-{
-    /************************************************************************/
-    /* TEMPLATES                                                            */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TBytes is a DataSize<T> type, equal to false otherwise.
-    template <typename TUnit>
-    constexpr bool IsBytes = Details::IsBytes<TUnit>;
-
-    /// \brief If TBytes is DataSize<TUnit> this type alias is equal to TUnit, otherwise the program is ill-formed.
-    template <typename TBytes>
-    using ByteRatio = Details::ByteRatio<TBytes>;
 }
 
 // ===========================================================================
@@ -513,11 +494,10 @@ namespace Syntropy
         return static_cast<Int>(rhs);
     }
 
-    template <typename TBytes>
-    constexpr TBytes ToDataSize(Int rhs) noexcept
+    template <typename TDataSize>
+    constexpr TDataSize ToDataSize(Int rhs) noexcept
     {
-        static_assert(Templates::IsBytes<TBytes>, "TBytes is not a ByteT<> type.");
-        return TBytes{ rhs };
+        return TDataSize{ rhs };
     }
 
     template <typename TUnit>
@@ -526,16 +506,14 @@ namespace Syntropy
         return FromDataSize<Bytes>(rhs);
     }
 
-    template <typename TBytesTo, typename TRatioFrom>
-    constexpr TBytesTo FromDataSize(Immutable<DataSize<TRatioFrom>> rhs) noexcept
+    template <typename TDataSizeTo, typename TUnitFrom>
+    constexpr TDataSizeTo FromDataSize(Immutable<DataSize<TUnitFrom>> rhs) noexcept
     {
-        static_assert(Templates::IsBytes<TBytesTo>, "TBytesTo is not a ByteT<> type.");
-
-        using TUnit = Templates::RatioDivide<TRatioFrom, Templates::ByteRatio<TBytesTo>>;
+        using TUnit = Templates::RatioDivide<TUnitFrom, typename TDataSizeTo::Unit>;
 
         auto count = (ToInt(rhs) * TUnit::kNumerator) / TUnit::kDenominator;
 
-        return TBytesTo{ count };
+        return TDataSizeTo{ count };
     }
 
     // Basic.
