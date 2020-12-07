@@ -65,8 +65,10 @@ namespace Syntropy
         template <Concepts::RandomAccessRangeT... TRanges>
         friend constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Select(Immutable<ZipRange<TRanges...>> range, Int index) noexcept;
 
-        //template <Concepts::ContiguousRangeT TRange>
-        //friend constexpr Templates::RangeElementPointerType<TRange> Data(Immutable<TRange> range) noexcept;
+        // Contiguous range.
+
+        template <Concepts::ContiguousRangeT... TRanges>
+        friend constexpr Tuple<Templates::RangeElementPointerType<TRanges>...> Data(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     public:
 
@@ -109,7 +111,7 @@ namespace Syntropy
     // Sized range.
     // ============
 
-    /// \brief Get the number of elements in a span.
+    /// \brief Get the number of elements in a range.
     template <Concepts::SizedRangeT... TRanges>
     constexpr Int Count(Immutable<ZipRange<TRanges...>> range) noexcept;
 
@@ -129,15 +131,23 @@ namespace Syntropy
     // Random access range.
     // ====================
 
-    /// \brief Obtain a sub-span given an offset and a number of elements.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
+    /// \brief Obtain a sub-range given an offset and a number of elements.
+    /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeT... TRanges>
     constexpr ZipRange<TRanges...> Select(Immutable<ZipRange<TRanges...>> range, Int offset, Int count) noexcept;
 
-    /// \brief Obtain a span element at given index.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
+    /// \brief Obtain a range element at given index.
+    /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeT... TRanges>
     constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Select(Immutable<ZipRange<TRanges...>> range, Int index) noexcept;
+
+    // Contiguous range.
+    // =================
+
+    /// \brief Access underlying range data.
+    /// \remarks Accessing data of an empty range is allowed but the returned value is unspecified.
+    template <Concepts::ContiguousRangeT... TRanges>
+    constexpr Tuple<Templates::RangeElementPointerType<TRanges>...> Data(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     // Utilities.
     // ==========
@@ -292,6 +302,19 @@ namespace Syntropy
         };
 
         return Apply(zip_select, range.ranges_);
+    }
+
+    // Contiguous range.
+
+    template <Concepts::ContiguousRangeT... TRanges>
+    constexpr Tuple<Templates::RangeElementPointerType<TRanges>...> Data(Immutable<ZipRange<TRanges...>> range) noexcept
+    {
+        auto zip_data = []<typename...>(const auto&... ranges)
+        {
+            return Tuple<Templates::RangeElementPointerType<TRanges>...>{ Data(ranges)... };
+        };
+
+        return Apply(zip_data, range.ranges_);
     }
 
     // Utilities.

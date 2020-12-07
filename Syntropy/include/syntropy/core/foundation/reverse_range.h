@@ -114,7 +114,7 @@ namespace Syntropy
     // Sized range.
     // ============
 
-    /// \brief Get the number of elements in a span.
+    /// \brief Get the number of elements in a range.
     template <Concepts::SizedRangeT TRange>
     constexpr Int Count(Immutable<ReverseRange<TRange>> rhs) noexcept;
 
@@ -134,13 +134,13 @@ namespace Syntropy
     // Random access range.
     // ====================
 
-    /// \brief Obtain a sub-span given an offset and a number of elements.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
+    /// \brief Obtain a sub-range given an offset and a number of elements.
+    /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeT TRange>
     constexpr ReverseRange<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Int offset, Int count) noexcept;
 
-    /// \brief Obtain a span element at given index.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
+    /// \brief Obtain a range element at given index.
+    /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeT TRange>
     constexpr Templates::RangeElementReferenceType<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Int index) noexcept;
 
@@ -148,10 +148,10 @@ namespace Syntropy
     // =================
 
     // #REMINDER A reverse pointer is feasible (incrementing it will actually decrement it and vice-versa), however that pointer won't be safe
-    //           to be used with memcpy-like functions, which is the main purpose of a contiguous span.
+    //           to be used with memcpy-like functions, which is the main purpose of a contiguous range.
     //
-    // /// \brief Access underlying span data.
-    // /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
+    // /// \brief Access underlying range data.
+    // /// \remarks Accessing data of an empty range is allowed but the returned value is unspecified.
     // template <Concepts::RandomAccessRangeT TRange>
     // constexpr ReversePointer<TType> Data(Immutable<ReverseRange<TRange>> rhs) noexcept;
 

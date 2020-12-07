@@ -65,6 +65,10 @@ int main(int argc, char **argv)
     auto l = Syntropy::Select(zz, 1, 2);
     auto ll = Syntropy::Select(Reverse(zz), 3);
 
+    auto d = Syntropy::Data(zz);
+
+    *Get<0>(d) = 2;
+
     Get<0>(ll) = 100;
     Get<1>(ll) = 130;
 
