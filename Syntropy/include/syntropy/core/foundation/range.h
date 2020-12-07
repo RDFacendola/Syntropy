@@ -44,7 +44,7 @@ namespace Syntropy::Concepts
     /// \brief Models a view on a range.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept RangeT = requires(Immutable<TRange> range)
+    concept Range = requires(Immutable<TRange> range)
     {
         typename Templates::RangeTraits<TRange>;
     };
@@ -56,7 +56,7 @@ namespace Syntropy::Concepts
     /// \brief Models a view on a range that can be visited sequentially.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept ForwardRangeT = RangeT<TRange>
+    concept ForwardRange = Range<TRange>
         && requires(Immutable<TRange> range)
         {
             /// \brief Access the first element in a range.
@@ -79,7 +79,7 @@ namespace Syntropy::Concepts
     /// \brief Models a range whose size can be computed in constant time.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept SizedRangeT = ForwardRangeT<TRange>
+    concept SizedRange = ForwardRange<TRange>
         && requires(Immutable<TRange> range)
         {
             /// \brief Get the number of elements in the range.
@@ -93,7 +93,7 @@ namespace Syntropy::Concepts
     /// \brief Models a view on a range that can be visited in both directions.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept BidirectionalRangeT = ForwardRangeT<TRange>
+    concept BidirectionalRange = ForwardRange<TRange>
         && requires(Immutable<TRange> range)
         {
             /// \brief Access the last element in a range.
@@ -112,7 +112,7 @@ namespace Syntropy::Concepts
     /// \brief Models a view on a range that can be visited in any (random) order.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept RandomAccessRangeT = BidirectionalRangeT<TRange> && SizedRangeT<TRange>
+    concept RandomAccessRange = BidirectionalRange<TRange> && SizedRange<TRange>
         && requires(Immutable<TRange> range, Int offset, Int count)
         {
             /// \brief Obtain a sub-range given an offset and a number of elements.
@@ -133,7 +133,7 @@ namespace Syntropy::Concepts
     /// \brief Models a view on a range whose elements are allocated contiguously.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept ContiguousRangeT = RandomAccessRangeT<TRange>
+    concept ContiguousRange = RandomAccessRange<TRange>
         && requires(Immutable<TRange> range)
         {
             /// \brief Access contiguous range data.
@@ -155,18 +155,18 @@ namespace Syntropy
     // ==============
 
     /// \brief Apply a function to each element in the range.
-    template <Concepts::ForwardRangeT TRange, typename TFunction>
+    template <Concepts::ForwardRange TRange, typename TFunction>
     constexpr void ForEach(Immutable<TRange> range, TFunction function) noexcept;
 
     // Sized range.
     // ============
 
     /// \brief Check whether lhs and rhs are equal.
-    template <Concepts::SizedRangeT TRange, Concepts::SizedRangeT URange>
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
-    template <Concepts::SizedRangeT TRange, Concepts::SizedRangeT URange>
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     // Random access range.
@@ -174,65 +174,65 @@ namespace Syntropy
 
     /// \brief Obtain a subrange consisting of the first elements of a range.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr TRange Front(Immutable<TRange> range, Int count) noexcept;
 
     /// \brief Obtain a subrange consisting of the last elements of a range.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr TRange Back(Immutable<TRange> range, Int count) noexcept;
 
     /// \brief Discard the first elements in a range and return the resulting subrange.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr TRange PopFront(Immutable<TRange> range, Int count) noexcept;
 
     /// \brief Discard the last elements in a range and return the resulting subrange.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr TRange PopBack(Immutable<TRange> range, Int count) noexcept;
 
     /// \brief Slice a range returning the first element and a subrange to the remaining ones.
     /// \remarks Calling this method with an empty range results in undefined behavior.
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr auto SliceFront(Immutable<TRange> range) noexcept;
 
     /// \brief Slice a range returning the last element and a subrange to the remaining ones.
     /// \remarks Calling this method with an empty range results in undefined behavior.
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr auto SliceBack(Immutable<TRange> range) noexcept;
 
     /// \brief Slice a range returning a subrange to the first count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Int count) noexcept;
 
     /// \brief Slice a range returning a subrange to the last count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Int count) noexcept;
 
     // Contiguous range.
     // =================
 
     /// \brief Get an iterator to the first element in a range.
-    template <Concepts::ContiguousRangeT TRange>
+    template <Concepts::ContiguousRange TRange>
     constexpr auto* begin(Immutable<TRange> range) noexcept;
 
     /// \brief Get an iterator past the last element in a range.
-    template <Concepts::ContiguousRangeT TRange>
+    template <Concepts::ContiguousRange TRange>
     constexpr auto* end(Immutable<TRange> range) noexcept;
 
     /// \brief Get an iterator to the first element in a contiguous range.
-    template <Concepts::ContiguousRangeT TRange>
+    template <Concepts::ContiguousRange TRange>
     constexpr auto* Begin(Immutable<TRange> range) noexcept;
 
     /// \brief Get an iterator past the last element in a contiguous range.
-    template <Concepts::ContiguousRangeT TRange>
+    template <Concepts::ContiguousRange TRange>
     constexpr auto* End(Immutable<TRange> range) noexcept;
 
     /// \brief Check whether lhs and rhs are equal.
-    template <Concepts::ContiguousRangeT TRange, Concepts::ContiguousRangeT URange>
+    template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
     constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
 }
@@ -250,7 +250,7 @@ namespace Syntropy
 
     // Forward range.
 
-    template <Concepts::ForwardRangeT TRange, typename TFunction>
+    template <Concepts::ForwardRange TRange, typename TFunction>
     constexpr void ForEach(Immutable<TRange> range, TFunction function) noexcept
     {
         for (auto rest = range; !IsEmpty(rest); rest = PopFront(rest))
@@ -261,13 +261,13 @@ namespace Syntropy
 
     // Sized range.
 
-    template <Concepts::SizedRangeT TRange, Concepts::SizedRangeT URange>
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         return AreEquivalent(lhs, rhs);
     }
 
-    template <Concepts::SizedRangeT TRange, Concepts::SizedRangeT URange>
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         if (Count(lhs) == Count(rhs))
@@ -289,49 +289,49 @@ namespace Syntropy
 
     // Random access range.
 
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr TRange Front(Immutable<TRange> range, Int count) noexcept
     {
         return Select(range, 0, count);
     }
 
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr TRange Back(Immutable<TRange> range, Int count) noexcept
     {
         return Select(range, Count(range) - count, count);
     }
 
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr TRange PopFront(Immutable<TRange> range, Int count) noexcept
     {
         return Select(range, count, Count(range) - count);
     }
 
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr TRange PopBack(Immutable<TRange> range, Int count) noexcept
     {
         return Select(range, 0, Count(range) - count);
     }
 
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr auto SliceFront(Immutable<TRange> range) noexcept
     {
         return MakeTuple(Front(range), PopFront(range));
     }
 
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr auto SliceBack(Immutable<TRange> range) noexcept
     {
         return MakeTuple(Back(range), PopBack(range));
     }
 
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Int count) noexcept
     {
         return { Front(range, count), PopFront(range, count) };
     }
 
-    template <Concepts::RandomAccessRangeT TRange>
+    template <Concepts::RandomAccessRange TRange>
     constexpr Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Int count) noexcept
     {
         return { Back(range, count), PopBack(range, count) };
@@ -339,31 +339,31 @@ namespace Syntropy
 
     // Contiguous range.
 
-    template <Concepts::ContiguousRangeT TRange>
+    template <Concepts::ContiguousRange TRange>
     constexpr auto* begin(Immutable<TRange> range) noexcept
     {
         return Data(range);
     }
 
-    template <Concepts::ContiguousRangeT TRange>
+    template <Concepts::ContiguousRange TRange>
     constexpr auto* end(Immutable<TRange> range) noexcept
     {
         return Data(range) + Count(range);
     }
 
-    template <Concepts::ContiguousRangeT TRange>
+    template <Concepts::ContiguousRange TRange>
     constexpr auto* Begin(Immutable<TRange> range) noexcept
     {
         return Data(range);
     }
 
-    template <Concepts::ContiguousRangeT TRange>
+    template <Concepts::ContiguousRange TRange>
     constexpr auto* End(Immutable<TRange> range) noexcept
     {
         return Data(range) + Count(range);
     }
 
-    template <Concepts::ContiguousRangeT TRange, Concepts::ContiguousRangeT URange>
+    template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
     constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         // Note that empty ranges are equal to each other empty range.

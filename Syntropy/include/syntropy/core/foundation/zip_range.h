@@ -27,61 +27,61 @@ namespace Syntropy
     /// \brief Adapter class used to zip two or more ranges together.
     /// The new range has elements equal to the Tuple consisting of each element in each source range, tied together.
     /// \author Raffaele D. Facendola - November 2020.
-    template <Concepts::RangeT... TRanges>
+    template <Concepts::Range... TRanges>
     class ZipRange
     {
         // Tuple-like.
 
-        template <Int VIndex, Concepts::RangeT... TRanges>
+        template <Int VIndex, Concepts::Range... TRanges>
         friend constexpr Immutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-        template <Int VIndex, Concepts::RangeT... TRanges>
+        template <Int VIndex, Concepts::Range... TRanges>
         friend constexpr Mutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept;
 
-        template <Int VIndex, Concepts::RangeT... TRanges>
+        template <Int VIndex, Concepts::Range... TRanges>
         friend constexpr Immovable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept;
 
-        template <Int VIndex, Concepts::RangeT... TRanges>
+        template <Int VIndex, Concepts::Range... TRanges>
         friend constexpr Movable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept;
 
         // Forward range.
 
-        template <Concepts::ForwardRangeT... TRanges, Concepts::ForwardRangeT... URanges>
+        template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
         friend constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
 
-        template <Concepts::ForwardRangeT... TRanges>
+        template <Concepts::ForwardRange... TRanges>
         friend constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Front(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-        template <Concepts::ForwardRangeT... TRanges>
+        template <Concepts::ForwardRange... TRanges>
         friend constexpr ZipRange<TRanges...> PopFront(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-        template <Concepts::ForwardRangeT... TRanges>
+        template <Concepts::ForwardRange... TRanges>
         friend constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> range) noexcept;
 
         // Sized range.
 
-        template <Concepts::SizedRangeT... TRanges>
+        template <Concepts::SizedRange... TRanges>
         friend constexpr Int Count(Immutable<ZipRange<TRanges...>> range) noexcept;
 
         // Bidirectional range.
 
-        template <Concepts::BidirectionalRangeT... TRanges>
+        template <Concepts::BidirectionalRange... TRanges>
         friend constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Back(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-        template <Concepts::BidirectionalRangeT... TRanges>
+        template <Concepts::BidirectionalRange... TRanges>
         friend constexpr ZipRange<TRanges...> PopBack(Immutable<ZipRange<TRanges...>> range) noexcept;
 
         // Random access range.
 
-        template <Concepts::RandomAccessRangeT... TRanges>
+        template <Concepts::RandomAccessRange... TRanges>
         friend constexpr ZipRange<TRanges...> Select(Immutable<ZipRange<TRanges...>> range, Int offset, Int count) noexcept;
 
-        template <Concepts::RandomAccessRangeT... TRanges>
+        template <Concepts::RandomAccessRange... TRanges>
         friend constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Select(Immutable<ZipRange<TRanges...>> range, Int index) noexcept;
 
         // Contiguous range.
 
-        template <Concepts::ContiguousRangeT... TRanges>
+        template <Concepts::ContiguousRange... TRanges>
         friend constexpr Tuple<Templates::RangeElementPointerType<TRanges>...> Data(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     public:
@@ -104,7 +104,7 @@ namespace Syntropy
     // ===========
 
     /// \brief Check whether lhs and rhs are equivalent.
-    template <Concepts::ForwardRangeT... TRanges, Concepts::ForwardRangeT... URanges>
+    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
     constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
 
     // Zip-range element access.
@@ -112,22 +112,22 @@ namespace Syntropy
 
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
-    template <Int VIndex, Concepts::RangeT... TRanges>
+    template <Int VIndex, Concepts::Range... TRanges>
     constexpr Immutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
-    template <Int VIndex, Concepts::RangeT... TRanges>
+    template <Int VIndex, Concepts::Range... TRanges>
     constexpr Mutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
-    template <Int VIndex, Concepts::RangeT... TRanges>
+    template <Int VIndex, Concepts::Range... TRanges>
     constexpr Immovable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
-    template <Int VIndex, Concepts::RangeT... TRanges>
+    template <Int VIndex, Concepts::Range... TRanges>
     constexpr Movable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept;
 
     // Forward range.
@@ -135,22 +135,22 @@ namespace Syntropy
 
     /// \brief Access the first element in a zip-range.
     /// \remarks Accessing the first element of an empty zip-range results in undefined behavior.
-    template <Concepts::ForwardRangeT... TRanges>
+    template <Concepts::ForwardRange... TRanges>
     constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Front(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Discard the first count elements in a zip-range and return the resulting zip-subrange.
     /// \remarks If the provided range is empty, the behavior of this method is undefined.
-    template <Concepts::ForwardRangeT... TRanges>
+    template <Concepts::ForwardRange... TRanges>
     constexpr ZipRange<TRanges...> PopFront(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-    template <Concepts::ForwardRangeT... TRanges>
+    template <Concepts::ForwardRange... TRanges>
     constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     // Sized range.
     // ============
 
     /// \brief Get the number of elements in a range.
-    template <Concepts::SizedRangeT... TRanges>
+    template <Concepts::SizedRange... TRanges>
     constexpr Int Count(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     // Bidirectional range.
@@ -158,12 +158,12 @@ namespace Syntropy
 
     /// \brief Access the last element in a range.
     /// \remarks Accessing the last element of an empty range results in undefined behavior.
-    template <Concepts::BidirectionalRangeT... TRanges>
+    template <Concepts::BidirectionalRange... TRanges>
     constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Back(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Discard the last count elements in a range and return the resulting subrange.
     /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
-    template <Concepts::BidirectionalRangeT... TRanges>
+    template <Concepts::BidirectionalRange... TRanges>
     constexpr ZipRange<TRanges...> PopBack(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     // Random access range.
@@ -171,12 +171,12 @@ namespace Syntropy
 
     /// \brief Obtain a sub-range given an offset and a number of elements.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeT... TRanges>
+    template <Concepts::RandomAccessRange... TRanges>
     constexpr ZipRange<TRanges...> Select(Immutable<ZipRange<TRanges...>> range, Int offset, Int count) noexcept;
 
     /// \brief Obtain a range element at given index.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeT... TRanges>
+    template <Concepts::RandomAccessRange... TRanges>
     constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Select(Immutable<ZipRange<TRanges...>> range, Int index) noexcept;
 
     // Contiguous range.
@@ -184,7 +184,7 @@ namespace Syntropy
 
     /// \brief Access underlying range data.
     /// \remarks Accessing data of an empty range is allowed but the returned value is unspecified.
-    template <Concepts::ContiguousRangeT... TRanges>
+    template <Concepts::ContiguousRange... TRanges>
     constexpr Tuple<Templates::RangeElementPointerType<TRanges>...> Data(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     // Utilities.
@@ -192,7 +192,7 @@ namespace Syntropy
 
     /// \brief Create a new range by element-wise joining source ranges.
     /// \remarks The smallest range determines the size of the result.
-    template <Concepts::RangeT... TRanges>
+    template <Concepts::Range... TRanges>
     constexpr ZipRange<TRanges...> Zip(Immutable<TRanges>... ranges) noexcept;
 
 }
@@ -206,7 +206,7 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     /// \brief Specialization for zip-ranges.
-    template <Concepts::RangeT... TRanges>
+    template <Concepts::Range... TRanges>
     struct RangeTraits<ZipRange<TRanges...>>
     {
         /// \brief Type of a reference to a range element.
@@ -225,7 +225,7 @@ namespace Syntropy::Templates
     using ZipRangeElement = TypeListElement<VIndex, typename TTuple::TElementList>;
 
     /// \brief Partial template specialization for tuples.
-    template <Concepts::RangeT... TRanges>
+    template <Concepts::Range... TRanges>
     inline constexpr Int Rank<ZipRange<TRanges...>> = sizeof...(TRanges);
 }
 
@@ -240,7 +240,7 @@ namespace Syntropy
     // ZipRange.
     // =========
 
-    template <Concepts::RangeT... TRanges>
+    template <Concepts::Range... TRanges>
     constexpr ZipRange<TRanges...>::ZipRange(Immutable<TRanges>... ranges) noexcept
         : ranges_{ ranges... }
     {
@@ -252,7 +252,7 @@ namespace Syntropy
 
     // Comparison.
 
-    template <Concepts::ForwardRangeT... TRanges, Concepts::ForwardRangeT... URanges>
+    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
     constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
     {
         static_assert(Templates::SameRank<ZipRange<TRanges...>, ZipRange<URanges...>>, "Both lhs and rhs must have the same rank.");
@@ -267,25 +267,25 @@ namespace Syntropy
 
     // Tuple-like.
 
-    template <Int VIndex, Concepts::RangeT... TRanges>
+    template <Int VIndex, Concepts::Range... TRanges>
     constexpr Immutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(range.ranges_);
     }
 
-    template <Int VIndex, Concepts::RangeT... TRanges>
+    template <Int VIndex, Concepts::Range... TRanges>
     constexpr Mutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(range.ranges_);
     }
 
-    template <Int VIndex, Concepts::RangeT... TRanges>
+    template <Int VIndex, Concepts::Range... TRanges>
     constexpr Immovable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(range.ranges_);
     }
 
-    template <Int VIndex, Concepts::RangeT... TRanges>
+    template <Int VIndex, Concepts::Range... TRanges>
     constexpr Movable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(range.ranges_);
@@ -293,7 +293,7 @@ namespace Syntropy
 
     // Forward range.
 
-    template <Concepts::ForwardRangeT... TRanges>
+    template <Concepts::ForwardRange... TRanges>
     constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Front(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         auto zip_front = []<typename...>(const auto&... ranges)
@@ -304,7 +304,7 @@ namespace Syntropy
         return Apply(zip_front, range.ranges_);
     }
 
-    template <Concepts::ForwardRangeT... TRanges>
+    template <Concepts::ForwardRange... TRanges>
     constexpr ZipRange<TRanges...> PopFront(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         auto zip_pop_front = []<typename...>(const auto&... ranges)
@@ -315,7 +315,7 @@ namespace Syntropy
         return Apply(zip_pop_front, range.ranges_);
     }
 
-    template <Concepts::ForwardRangeT... TRanges>
+    template <Concepts::ForwardRange... TRanges>
     constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         auto zip_is_empty = []<typename...>(const auto&... ranges)
@@ -328,7 +328,7 @@ namespace Syntropy
 
     // Sized range.
 
-    template <Concepts::SizedRangeT... TRanges>
+    template <Concepts::SizedRange... TRanges>
     constexpr Int Count(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         auto zip_min_count = []<typename...>(const auto&... ranges)
@@ -341,7 +341,7 @@ namespace Syntropy
 
     // Bidirectional range.
 
-    template <Concepts::BidirectionalRangeT... TRanges>
+    template <Concepts::BidirectionalRange... TRanges>
     constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Back(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         auto zip_back = []<typename...>(const auto&... ranges)
@@ -352,7 +352,7 @@ namespace Syntropy
         return Apply(zip_back, range.ranges_);
     }
 
-    template <Concepts::BidirectionalRangeT... TRanges>
+    template <Concepts::BidirectionalRange... TRanges>
     constexpr ZipRange<TRanges...> PopBack(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         auto zip_pop_back = []<typename...>(const auto&... ranges)
@@ -365,7 +365,7 @@ namespace Syntropy
 
     // Random access range.
 
-    template <Concepts::RandomAccessRangeT... TRanges>
+    template <Concepts::RandomAccessRange... TRanges>
     constexpr ZipRange<TRanges...> Select(Immutable<ZipRange<TRanges...>> range, Int offset, Int count) noexcept
     {
         auto zip_select = [offset, count]<typename...>(const auto&... ranges)
@@ -376,7 +376,7 @@ namespace Syntropy
         return Apply(zip_select, range.ranges_);
     }
 
-    template <Concepts::RandomAccessRangeT... TRanges>
+    template <Concepts::RandomAccessRange... TRanges>
     constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Select(Immutable<ZipRange<TRanges...>> range, Int index) noexcept
     {
         auto zip_select = [index]<typename...>(const auto&... ranges)
@@ -389,7 +389,7 @@ namespace Syntropy
 
     // Contiguous range.
 
-    template <Concepts::ContiguousRangeT... TRanges>
+    template <Concepts::ContiguousRange... TRanges>
     constexpr Tuple<Templates::RangeElementPointerType<TRanges>...> Data(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         auto zip_data = []<typename...>(const auto&... ranges)
@@ -402,7 +402,7 @@ namespace Syntropy
 
     // Utilities.
 
-    template <Concepts::RangeT... TRanges>
+    template <Concepts::Range... TRanges>
     constexpr ZipRange<TRanges...> Zip(Immutable<TRanges>... ranges) noexcept
     {
         return ZipRange{ ranges... };
