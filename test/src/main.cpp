@@ -52,6 +52,9 @@ int main(int argc, char **argv)
     auto t = Syntropy::MakeSpan(&array1[0], 4);
 
     auto zz = Syntropy::Zip(s, t);
+    auto xx = Syntropy::Zip(s, t);
+
+    auto bb = (zz == xx);
 
     auto f = Syntropy::Front(zz);
     auto pf = Syntropy::PopFront(zz);
