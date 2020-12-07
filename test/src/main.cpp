@@ -31,12 +31,11 @@
 
 #include "syntropy/memory/byte.h"
 #include "syntropy/memory/address.h"
+#include "syntropy/memory/bytes.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */
 /************************************************************************/
-
-
 
 template <Syntropy::Concepts::TupleLike T>
 void Foo(Syntropy::Immutable<T> foo)
@@ -48,7 +47,11 @@ int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    auto x = Syntropy::ToBytePtr(&std::cout);
+    using namespace Syntropy::Literals;
+
+    auto x = 10_KBytes;
+    auto y = Syntropy::SizeOf(x);
+    auto z = Syntropy::ToBytes(x);
 
     system("pause");
 

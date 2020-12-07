@@ -6,9 +6,11 @@
 
 #pragma once
 
-#include "syntropy/language/templates/traits.h"
+#include "syntropy/language/templates/type_traits.h"
 
-namespace Syntropy::Memory
+// ===========================================================================
+
+namespace Syntropy
 {
     /************************************************************************/
     /* FORWARD DECLARATIONS                                                 */
@@ -18,7 +20,9 @@ namespace Syntropy::Memory
     class BytesT;
 }
 
-namespace Syntropy::Memory::Templates::Details
+// ===========================================================================
+
+namespace Syntropy::Templates::Details
 {
     /************************************************************************/
     /* IS BYTES                                                             */
@@ -38,15 +42,21 @@ namespace Syntropy::Memory::Templates::Details
 
     /// \brief If TBytes is a BytesT<TRatio> type, exposes a type alias TType equal to TRatio, otherwise there's no such type.
     template <typename TBytes>
-    struct ByteRatio
+    struct ByteRatioHelper
     {
         static_assert(AlwaysFalse<TBytes>, "TBytes is not a BytesT<> type.");
     };
 
     /// \brief Partial template specialization for BytesT<TRatio>.
     template <typename TRatio>
-    struct ByteRatio<BytesT<TRatio>>
+    struct ByteRatioHelper<BytesT<TRatio>>
     {
         using Type = TRatio;
     };
+
+    /// \brief If TBytes is BytesT<TRatio> this type alias is equal to TRatio, otherwise the program is ill-formed.
+    template <typename TBytes>
+    using ByteRatio = typename ByteRatioHelper<TBytes>::Type;
 }
+
+// ===========================================================================
