@@ -255,16 +255,14 @@ namespace Syntropy
     template <Concepts::ForwardRangeT... TRanges, Concepts::ForwardRangeT... URanges>
     constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
     {
-//         auto zip = Zip(lhs, rhs);
-// 
-//         auto zip_equivalent = []<typename...>(const auto&... ranges)
-//         {
-//             return ((Get<0>(ranges) == Get<1>(ranges)) && ...);
-//         };
-// 
-//         return Apply(zip_equivalent, zip.ranges_);
+        static_assert(Templates::SameRank<ZipRange<TRanges...>, ZipRange<URanges...>>, "Both lhs and rhs must have the same rank.");
 
-        return false;
+        auto zip_equivalent = [&lhs, &rhs]<Int... VIndex>(Templates::Sequence<VIndex...>)
+        {
+            return ((Get<VIndex>(lhs) == Get<VIndex>(rhs)) && ...);
+        };
+
+        return zip_equivalent(Templates::SequenceFor<TRanges...>{});
     }
 
     // Tuple-like.
