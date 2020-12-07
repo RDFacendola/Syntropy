@@ -1,6 +1,6 @@
 
 /// \file byte.h
-/// \brief This header is part of Syntropy memory module. It contains definitions for memory-related fundamental data types.
+/// \brief This header is part of Syntropy memory module. It contains definitions for byte definitions.
 ///
 /// \author Raffaele D. Facendola - Aug 2020
 
@@ -44,11 +44,11 @@ namespace Syntropy
 
     /// \brief Convert rhs to an immutable byte pointer.
     template <typename TType>
-    constexpr ImmutableBytePtr ToBytePtr(ImmutablePtr<TType> rhs) noexcept;
+    constexpr ImmutableBytePtr ToImmutableBytePtr(ImmutablePtr<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a mutable byte pointer.
     template <typename TType>
-    constexpr MutableBytePtr ToRWBytePtr(MutablePtr<TType> rhs) noexcept;
+    constexpr MutableBytePtr ToMutableBytePtr(MutablePtr<TType> rhs) noexcept;
 
 }
 
@@ -72,13 +72,13 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr ImmutableBytePtr ToBytePtr(ImmutablePtr<TType> rhs) noexcept
+    constexpr ImmutableBytePtr ToImmutableBytePtr(ImmutablePtr<TType> rhs) noexcept
     {
         return reinterpret_cast<ImmutableBytePtr>(rhs);
     }
 
     template <typename TType>
-    constexpr MutableBytePtr ToRWBytePtr(MutablePtr<TType> rhs) noexcept
+    constexpr MutableBytePtr ToMutableBytePtr(MutablePtr<TType> rhs) noexcept
     {
         return reinterpret_cast<MutableBytePtr>(rhs);
     }
