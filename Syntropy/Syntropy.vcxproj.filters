@@ -34,7 +34,6 @@
     <ClInclude Include="include\syntropy\language\foundation\enumerations.h" />
     <ClInclude Include="include\syntropy\language\templates\invoke.h" />
     <ClInclude Include="include\syntropy\language\templates\details\invoke_details.h" />
-    <ClInclude Include="include\syntropy\core\algorithm\wip_span.h" />
     <ClInclude Include="include\syntropy\math\math.h" />
   </ItemGroup>
   <ItemGroup>

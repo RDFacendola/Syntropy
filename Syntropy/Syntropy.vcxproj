@@ -11,7 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\syntropy\core\algorithm\wip_span.h" />
     <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\core\foundation\range.h" />
     <ClInclude Include="include\syntropy\core\foundation\reverse_range.h" />
