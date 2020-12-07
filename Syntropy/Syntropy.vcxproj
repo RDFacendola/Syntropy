@@ -44,6 +44,7 @@
     <ClInclude Include="include\syntropy\language\templates\sequence.h" />
     <ClInclude Include="include\syntropy\language\templates\type_traits.h" />
     <ClInclude Include="include\syntropy\math\math.h" />
+    <ClInclude Include="include\syntropy\memory\address.h" />
     <ClInclude Include="include\syntropy\memory\byte.h" />
   </ItemGroup>
   <ItemGroup>

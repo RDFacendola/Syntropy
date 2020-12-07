@@ -30,6 +30,7 @@
 #include "syntropy/core/foundation/span.h"
 
 #include "syntropy/memory/byte.h"
+#include "syntropy/memory/address.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */
