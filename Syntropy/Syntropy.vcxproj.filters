@@ -35,6 +35,7 @@
     <ClInclude Include="include\syntropy\language\templates\invoke.h" />
     <ClInclude Include="include\syntropy\language\templates\details\invoke_details.h" />
     <ClInclude Include="include\syntropy\math\math.h" />
+    <ClInclude Include="include\syntropy\memory\byte.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

@@ -29,6 +29,8 @@
 #include "syntropy/core/foundation/zip_range.h"
 #include "syntropy/core/foundation/span.h"
 
+#include "syntropy/memory/byte.h"
+
 /************************************************************************/
 /* ENTRY POINT                                                          */
 /************************************************************************/
@@ -45,37 +47,7 @@ int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    Syntropy::Int array0[] = { 42, 1, 2, 3, 4, 5 };
-    Syntropy::Int array1[] = { 42, 1, 2, 3, 4, 5 };
-
-    auto s = Syntropy::MakeSpan(&array0[0], 6);
-    auto t = Syntropy::MakeSpan(&array1[0], 6);
-
-    auto zz = Syntropy::Zip(s, t);
-    auto xx = Syntropy::Zip(s, t);
-    auto yy = Syntropy::Zip(t, s);
-
-    auto bb = (zz == xx);
-    auto dd = (xx == yy);
-
-    auto f = Syntropy::Front(zz);
-    auto pf = Syntropy::PopFront(zz);
-    auto e = Syntropy::IsEmpty(zz);
-
-    auto c = Syntropy::Count(zz);
-
-    auto b = Syntropy::Back(zz);
-    auto pb = Syntropy::PopBack(zz);
-
-    auto l = Syntropy::Select(zz, 1, 2);
-    auto ll = Syntropy::Select(Reverse(zz), 3);
-
-    auto d = Syntropy::Data(zz);
-
-    *Get<0>(d) = 2;
-
-    Get<0>(ll) = 100;
-    Get<1>(ll) = 130;
+    auto x = Syntropy::ToBytePtr(&std::cout);
 
     system("pause");
 

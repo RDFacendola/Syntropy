@@ -2,17 +2,16 @@
 /// \file byte.h
 /// \brief This header is part of Syntropy memory module. It contains definitions for memory-related fundamental data types.
 ///
-/// \author Raffaele D. Facendola - August  2020
+/// \author Raffaele D. Facendola - Aug 2020
 
 #pragma once
 
-#include <ostream>
-#include <cstddef>
-
-#include "syntropy/language/templates/traits.h"
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/templates/type_traits.h"
 
-namespace Syntropy::Memory
+// ===========================================================================
+
+namespace Syntropy
 {
     /************************************************************************/
     /* FUNDAMENTAL TYPES                                                    */
@@ -26,41 +25,45 @@ namespace Syntropy::Memory
     /* POINTER TYPES                                                        */
     /************************************************************************/
 
-    /// \brief A non-owning raw pointer to a read-only memory location.
-    using BytePtr = Pointer<Byte>;
+    /// \brief A non-owning raw pointer to an immutable memory location.
+    using ImmutableBytePtr = ImmutablePtr<Byte>;
 
-    /// \brief A non-owning raw pointer to a read-write memory location.
-    using RWBytePtr = RWPointer<Byte>;
+    /// \brief A non-owning raw pointer to a mutable memory location.
+    using MutableBytePtr = MutablePtr<Byte>;
 
     /************************************************************************/
-    /* CONVERSION                                                           */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Convert a value to a byte value.
+    // Byte pointer casts.
+    // ===================
+
+    /// \brief Convert rhs to a byte value.
     template <typename TNumber>
     constexpr Byte ToByte(TNumber rhs) noexcept;
 
-    /// \brief Convert rhs to a read-only byte pointer.
+    /// \brief Convert rhs to an immutable byte pointer.
     template <typename TType>
-    constexpr BytePtr ToBytePtr(Pointer<TType> rhs) noexcept;
+    constexpr ImmutableBytePtr ToBytePtr(ImmutablePtr<TType> rhs) noexcept;
 
-    /// \brief Convert rhs to a read-write byte pointer.
+    /// \brief Convert rhs to a mutable byte pointer.
     template <typename TType>
-    constexpr RWBytePtr ToRWBytePtr(RWPointer<TType> rhs) noexcept;
+    constexpr MutableBytePtr ToRWBytePtr(MutablePtr<TType> rhs) noexcept;
 
-    /************************************************************************/
-    /* STREAM INSERTION                                                     */
-    /************************************************************************/
+}
 
-    /// \brief Stream insertion for byte types.
-    std::ostream& operator<<(std::ostream& out, Byte rhs) noexcept;
+// ===========================================================================
 
+namespace Syntropy
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Conversion.
-    // ===========
+    // Non-member functions.
+    // =====================
+
+    // Byte pointer casts.
 
     template <typename TNumber>
     constexpr Byte ToByte(TNumber rhs) noexcept
@@ -69,25 +72,16 @@ namespace Syntropy::Memory
     }
 
     template <typename TType>
-    constexpr BytePtr ToBytePtr(Pointer<TType> rhs) noexcept
+    constexpr ImmutableBytePtr ToBytePtr(ImmutablePtr<TType> rhs) noexcept
     {
-        return reinterpret_cast<BytePtr>(rhs);
+        return reinterpret_cast<ImmutableBytePtr>(rhs);
     }
 
     template <typename TType>
-    constexpr RWBytePtr ToRWBytePtr(RWPointer<TType> rhs) noexcept
+    constexpr MutableBytePtr ToRWBytePtr(MutablePtr<TType> rhs) noexcept
     {
-        return reinterpret_cast<RWBytePtr>(rhs);
-    }
-
-    // Stream insertion.
-    // =================
-
-    inline std::ostream& operator<<(std::ostream& out, Byte rhs) noexcept
-    {
-        out << ToInt(rhs);
-
-        return out;
+        return reinterpret_cast<MutableBytePtr>(rhs);
     }
 }
 
+// ===========================================================================
