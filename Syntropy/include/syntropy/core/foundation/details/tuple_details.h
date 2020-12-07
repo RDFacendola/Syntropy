@@ -21,10 +21,6 @@ namespace Syntropy
 
     template <typename... TTypes>
     struct Tuple;
-
-    template <Int VIndex, typename TFunction, Concepts::TupleLike... TTuples>
-    constexpr decltype(auto) LockstepApplyAt(Forwarding<TFunction> function, Forwarding<TTuples>... tuples) noexcept;
-
 }
 
 // ===========================================================================
@@ -200,24 +196,6 @@ namespace Syntropy::Details
     /// \brief Access a tuple base type by index.
     template <Int VCount, typename TTuple>
     using TupleBase = typename TupleBaseHelper<VCount, TTuple>::Type;
-
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    /// \brief Invoke a function with arguments passed as tuple.
-    template <typename TFunction, Concepts::TupleLike TArguments, Int... VIndexes>
-    constexpr decltype(auto) Apply(Forwarding<TFunction> function, Forwarding<TArguments> arguments, Templates::Sequence<VIndexes...>) noexcept
-    {
-        return Templates::Invoke(Forward<TFunction>(function), Get<VIndexes>(Forward<TArguments>(arguments))...);
-    }
-
-    /// \brief Apply a function to each element in each tuple in locksteps.
-    template <typename TFunction, Concepts::TupleLike... TTuples, Int... VIndexes>
-    constexpr void LockstepApply(Templates::Sequence<VIndexes...>, Forwarding<TFunction> function, TTuples&&... tuples) noexcept
-    {
-        (LockstepApplyAt<VIndexes>(Forward<TFunction>(function), Forward<TTuples>(tuples)...), ...);
-    }
 
 }
 
