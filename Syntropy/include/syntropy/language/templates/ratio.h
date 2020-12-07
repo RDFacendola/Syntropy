@@ -29,6 +29,10 @@ namespace Syntropy::Templates
         static constexpr Int kDenominator = Details::ReducedRatioDenominator<VNumerator, VDenominator>;
     };
 
+    /// \brief Constant equal to true if TRatio is a specialization of Ratio, equal to false otherwise.
+    template <typename TRatio>
+    inline constexpr Bool IsRatio = Details::IsRatio<TRatio>;
+
     /// \brief Common type two ratios can be losslessy-converted to.
     template <typename TRatio, typename URatio>
     using CommonRatio = Ratio<Details::CommonRatioNumerator<TRatio, URatio>, Details::CommondRatioDenominator<TRatio, URatio>>;

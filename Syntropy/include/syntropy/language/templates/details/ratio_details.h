@@ -13,6 +13,17 @@
 
 // ===========================================================================
 
+namespace Syntropy::Templates
+{
+    /************************************************************************/
+    /* FORWARD DECLARATIONS                                                 */
+    /************************************************************************/
+
+    template <Int VNumerator, Int VDenominator>
+    struct Ratio;
+}
+// ===========================================================================
+
 namespace Syntropy::Templates::Details
 {
     /************************************************************************/
@@ -34,6 +45,18 @@ namespace Syntropy::Templates::Details
     /// \brief Reduced ratio denominator.
     template <Int VNumerator, Int VDenominator>
     inline constexpr Int ReducedRatioDenominator = std::ratio<VNumerator, VDenominator>::den;
+
+    /************************************************************************/
+    /* IS RATIO                                                             */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is a specialization of Ratio, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool IsRatio = false;
+
+    /// \brief Specialization for Ratio<>.
+    template <Int VNumerator, Int VDenominator>
+    inline constexpr Bool IsRatio<Templates::Ratio<VNumerator, VDenominator>> = true;
 
     /************************************************************************/
     /* COMMON RATIO                                                         */
