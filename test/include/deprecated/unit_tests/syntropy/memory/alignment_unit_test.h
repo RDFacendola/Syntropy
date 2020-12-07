@@ -39,7 +39,7 @@ namespace Syntropy::Memory::UnitTest
 
     .TestCase("Alignment are convertible to and from Bytes.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL(ToBytes(fixture.alignment8_), Bytes{ 8 });
+        SYNTROPY_UNIT_EQUAL(ToDataSize(fixture.alignment8_), Bytes{ 8 });
         SYNTROPY_UNIT_EQUAL(ToAlignment(Bytes{ 8 }), fixture.alignment8_);
     })
 

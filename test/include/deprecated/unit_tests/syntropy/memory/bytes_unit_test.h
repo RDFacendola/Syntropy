@@ -60,7 +60,7 @@ namespace Syntropy::Memory::UnitTest
     .TestCase("Bytes are convertible to and from integers.", [](auto& fixture)
     {
         SYNTROPY_UNIT_EQUAL(ToInt(fixture.bytes2_), 2);
-        SYNTROPY_UNIT_EQUAL(ToBytes(2), fixture.bytes2_);
+        SYNTROPY_UNIT_EQUAL(ToDataSize(2), fixture.bytes2_);
     })
 
     .TestCase("SizeOf return a bytes amount equal to the size of a type, converted to a bytes amount.", [](auto& fixture)
