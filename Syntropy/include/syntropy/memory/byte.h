@@ -26,29 +26,30 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief A non-owning raw pointer to an immutable memory location.
+    /// \remarks The pointee is expected to be a generic memory location: see ImmutableTypelessPtr for object instances.
     using ImmutableBytePtr = ImmutablePtr<Byte>;
 
     /// \brief A non-owning raw pointer to a mutable memory location.
+    /// \remarks The pointee is expected to be a generic memory location: see MutableTypelessPtr for object instances.
     using MutableBytePtr = MutablePtr<Byte>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Byte pointer casts.
-    // ===================
+    // Conversions.
+    // ============
 
     /// \brief Convert rhs to a byte value.
     template <typename TNumber>
     constexpr Byte ToByte(TNumber rhs) noexcept;
 
-    /// \brief Convert rhs to an immutable byte pointer.
-    template <typename TType>
-    constexpr ImmutableBytePtr ToBytePtr(ImmutablePtr<TType> rhs) noexcept;
+    /// \brief Convert rhs to a pointer to an immutable memory location.
+    ImmutableBytePtr ToBytePtr(ImmutableTypelessPtr rhs) noexcept;
 
-    /// \brief Convert rhs to a mutable byte pointer.
-    template <typename TType>
-    constexpr MutableBytePtr ToBytePtr(MutablePtr<TType> rhs) noexcept;
+    /// \brief Convert rhs to a pointer to a mutable memory location.
+    /// \remarks If rhs doesn't refer to a mutable memory location, accessing the returned value results in undefined behavior.
+    MutableBytePtr ToBytePtr(MutableTypelessPtr rhs) noexcept;
 
 }
 
@@ -71,14 +72,12 @@ namespace Syntropy
         return static_cast<Byte>(rhs);
     }
 
-    template <typename TType>
-    constexpr ImmutableBytePtr ToBytePtr(ImmutablePtr<TType> rhs) noexcept
+    inline ImmutableBytePtr ToBytePtr(ImmutableTypelessPtr rhs) noexcept
     {
         return reinterpret_cast<ImmutableBytePtr>(rhs);
     }
 
-    template <typename TType>
-    constexpr MutableBytePtr ToBytePtr(MutablePtr<TType> rhs) noexcept
+    inline MutableBytePtr ToBytePtr(MutableTypelessPtr rhs) noexcept
     {
         return reinterpret_cast<MutableBytePtr>(rhs);
     }

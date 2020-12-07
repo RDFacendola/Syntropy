@@ -41,34 +41,25 @@ namespace Syntropy
     /* TYPELESS POINTER TYPES                                               */
     /************************************************************************/
 
-    /// \brief Non-owning pointer to a typeless mutable object.
-    using MutableTypelessPtr = MutablePtr<void>;
-
     /// \brief Non-owning pointer to a typeless immutable object.
     using ImmutableTypelessPtr = ImmutablePtr<void>;
+
+    /// \brief Non-owning pointer to a typeless mutable object.
+    using MutableTypelessPtr = MutablePtr<void>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Pointer types.
-    // ==============
+    // Conversions.
+    // ============
 
-    /// \brief Obtain the pointer to an immutable instance of type TType.
+    /// \brief Obtain the pointer to an instance of type TType.
     /// The returned value is guaranteed to produce the actual address of rhs, even when operator& is overloaded.
     template <typename TType>
-    constexpr ImmutablePtr<TType> AddressOf(Immutable<TType> rhs) noexcept;
+    constexpr Pointer<TType> ToPointer(Reference<TType> rhs) noexcept;
 
-    /// \brief Obtain the pointer to a mutable instance of type TType.
-    /// The returned value is guaranteed to produce the actual address of rhs, even when operator& is overloaded.
-    template <typename TType>
-    constexpr MutablePtr<TType> AddressOf(Mutable<TType> rhs) noexcept;
-
-    /// \brief Disabled overload for rvalue reference since they have no associated address.
-    template <typename TType>
-    constexpr Pointer<TType> AddressOf(Immovable<TType> rhs) noexcept = delete;
-
-    /// \brief Convert rhs to a pointer to UType, preserving constness.
+    /// \brief Convert rhs to a pointer to UType.
     /// \remarks If the pointee type is not related to UType, the program is ill-formed.
     template <typename TType, typename UType>
     constexpr Pointer<TType> ToPointer(Pointer<UType> rhs) noexcept;
@@ -94,6 +85,13 @@ namespace Syntropy
     // Typeless pointer types.
     // =======================
 
+    /// \brief Convert rhs to a pointer to a typeless immutable object.
+    ImmutableTypelessPtr ToTypeless(ImmutableTypelessPtr rhs) noexcept;
+
+    /// \brief Convert rhs to a pointer to a typeless mutable object.
+    /// \remarks If the pointee refers to an immutable object, accessing the result of this method results in undefined behavior.
+    MutableTypelessPtr ToTypeless(MutableTypelessPtr rhs) noexcept;
+
     /// \brief Convert rhs to a strongly-typed immutable pointer type.
     /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
     template <typename TType>
@@ -116,16 +114,10 @@ namespace Syntropy
     // Non-member functions.
     // =====================
 
-    // Pointer types.
+    // Conversions.
 
     template <typename TType>
-    constexpr MutablePtr<TType> AddressOf(Immutable<TType> rhs) noexcept
-    {
-        return std::addressof(rhs);
-    }
-
-    template <typename TType>
-    constexpr MutablePtr<TType> AddressOf(Mutable<TType> rhs) noexcept
+    constexpr Pointer<TType> ToPointer(Reference<TType> rhs) noexcept
     {
         return std::addressof(rhs);
     }
@@ -134,20 +126,6 @@ namespace Syntropy
     constexpr Pointer<TType> ToPointer(Pointer<UType> rhs) noexcept
     {
         return static_cast<Pointer<TType>>(rhs);
-    }
-
-    // Typeless pointer types.
-
-    template <typename TType>
-    inline ImmutablePtr<TType> FromTypeless(ImmutableTypelessPtr rhs) noexcept
-    {
-        return reinterpret_cast<ImmutablePtr<TType>>(rhs);
-    }
-
-    template <typename TType>
-    inline MutablePtr<TType> FromTypeless(MutableTypelessPtr rhs) noexcept
-    {
-        return reinterpret_cast<MutablePtr<TType>>(rhs);
     }
 
     // Access.
@@ -162,6 +140,30 @@ namespace Syntropy
     constexpr MutablePtr<TType> ToMutable(ImmutablePtr<TType> rhs) noexcept
     {
         return const_cast<MutablePtr<TType>>(rhs);
+    }
+
+    // Typeless pointer types.
+
+    inline ImmutableTypelessPtr ToTypeless(ImmutableTypelessPtr rhs) noexcept
+    {
+        return rhs;
+    }
+
+    inline MutableTypelessPtr ToTypeless(MutableTypelessPtr rhs) noexcept
+    {
+        return const_cast<MutableTypelessPtr>(rhs);
+    }
+
+    template <typename TType>
+    inline ImmutablePtr<TType> FromTypeless(ImmutableTypelessPtr rhs) noexcept
+    {
+        return reinterpret_cast<ImmutablePtr<TType>>(rhs);
+    }
+
+    template <typename TType>
+    inline MutablePtr<TType> FromTypeless(MutableTypelessPtr rhs) noexcept
+    {
+        return reinterpret_cast<MutablePtr<TType>>(rhs);
     }
 
 }
