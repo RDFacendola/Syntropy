@@ -55,13 +55,18 @@ int main(int argc, char **argv)
 
     auto f = Syntropy::Front(zz);
     auto pf = Syntropy::PopFront(zz);
-    
     auto e = Syntropy::IsEmpty(zz);
+
+    auto c = Syntropy::Count(zz);
 
     auto b = Syntropy::Back(zz);
     auto pb = Syntropy::PopBack(zz);
 
-    auto c = Syntropy::Count(zz);
+    auto l = Syntropy::Select(zz, 1, 2);
+    auto ll = Syntropy::Select(Reverse(zz), 3);
+
+    Get<0>(ll) = 100;
+    Get<1>(ll) = 130;
 
     system("pause");
 

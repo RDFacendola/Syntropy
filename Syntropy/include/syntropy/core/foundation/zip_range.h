@@ -57,14 +57,16 @@ namespace Syntropy
         template <Concepts::BidirectionalRangeT... TRanges>
         friend constexpr ZipRange<TRanges...> PopBack(Immutable<ZipRange<TRanges...>> range) noexcept;
 
-        //template <Concepts::RandomAccessRangeT TRange>
-        //friend constexpr TRange Select(Immutable<TRange> rhs, Int offset, Int count) noexcept;
+        // Random access range.
 
-        //template <Concepts::RandomAccessRangeT TRange>
-        //friend constexpr Templates::RangeElementReferenceType<TRange> Select(Immutable<TRange> rhs, Int index) noexcept;
+        template <Concepts::RandomAccessRangeT... TRanges>
+        friend constexpr ZipRange<TRanges...> Select(Immutable<ZipRange<TRanges...>> range, Int offset, Int count) noexcept;
+
+        template <Concepts::RandomAccessRangeT... TRanges>
+        friend constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Select(Immutable<ZipRange<TRanges...>> range, Int index) noexcept;
 
         //template <Concepts::ContiguousRangeT TRange>
-        //friend constexpr Templates::RangeElementPointerType<TRange> Data(Immutable<TRange> rhs) noexcept;
+        //friend constexpr Templates::RangeElementPointerType<TRange> Data(Immutable<TRange> range) noexcept;
 
     public:
 
@@ -110,6 +112,32 @@ namespace Syntropy
     /// \brief Get the number of elements in a span.
     template <Concepts::SizedRangeT... TRanges>
     constexpr Int Count(Immutable<ZipRange<TRanges...>> range) noexcept;
+
+    // Bidirectional range.
+    // ====================
+
+    /// \brief Access the last element in a range.
+    /// \remarks Accessing the last element of an empty range results in undefined behavior.
+    template <Concepts::BidirectionalRangeT... TRanges>
+    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Back(Immutable<ZipRange<TRanges...>> range) noexcept;
+
+    /// \brief Discard the last count elements in a range and return the resulting subrange.
+    /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
+    template <Concepts::BidirectionalRangeT... TRanges>
+    constexpr ZipRange<TRanges...> PopBack(Immutable<ZipRange<TRanges...>> range) noexcept;
+
+    // Random access range.
+    // ====================
+
+    /// \brief Obtain a sub-span given an offset and a number of elements.
+    /// \remarks Exceeding span boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRangeT... TRanges>
+    constexpr ZipRange<TRanges...> Select(Immutable<ZipRange<TRanges...>> range, Int offset, Int count) noexcept;
+
+    /// \brief Obtain a span element at given index.
+    /// \remarks Exceeding span boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRangeT... TRanges>
+    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Select(Immutable<ZipRange<TRanges...>> range, Int index) noexcept;
 
     // Utilities.
     // ==========
@@ -240,6 +268,30 @@ namespace Syntropy
         };
 
         return Apply(zip_pop_back, range.ranges_);
+    }
+
+    // Random access range.
+
+    template <Concepts::RandomAccessRangeT... TRanges>
+    constexpr ZipRange<TRanges...> Select(Immutable<ZipRange<TRanges...>> range, Int offset, Int count) noexcept
+    {
+        auto zip_select = [offset, count]<typename...>(const auto&... ranges)
+        {
+            return ZipRange<TRanges...>{ Select(ranges, offset, count)... };
+        };
+
+        return Apply(zip_select, range.ranges_);
+    }
+
+    template <Concepts::RandomAccessRangeT... TRanges>
+    constexpr Tuple<Templates::RangeElementReferenceType<TRanges>...> Select(Immutable<ZipRange<TRanges...>> range, Int index) noexcept
+    {
+        auto zip_select = [index]<typename...>(const auto&... ranges)
+        {
+            return Tuple<Templates::RangeElementReferenceType<TRanges>...>{ Select(ranges, index)... };
+        };
+
+        return Apply(zip_select, range.ranges_);
     }
 
     // Utilities.
