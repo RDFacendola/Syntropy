@@ -202,6 +202,9 @@ namespace Syntropy
     constexpr Int ToInt(Immutable<DataSize<TUnit>> rhs) noexcept;
 
     /// \brief Convert a data size amount in any unit to bytes units.
+    constexpr Bytes ToBytes(Int rhs) noexcept;
+
+    /// \brief Convert a data size amount in any unit to bytes units.
     template <Concepts::DataSizeUnit TUnit>
     constexpr Bytes ToBytes(Immutable<DataSize<TUnit>> rhs) noexcept;
 
@@ -213,7 +216,7 @@ namespace Syntropy
     /// \brief Convert a data size amount to another amount with different units, rounding the result towards zero.
     template <typename TDataSize, Concepts::DataSizeUnit TUnitFrom, Concepts::DataSizeUnit TUnitTo = typename TDataSize::Unit>
     requires Concepts::SameAs<TDataSize, DataSize<TUnitTo>>
-    constexpr TDataSize FromDataSize(Immutable<DataSize<TUnitFrom>> rhs) noexcept;
+    constexpr TDataSize ToDataSize(Immutable<DataSize<TUnitFrom>> rhs) noexcept;
 
     /************************************************************************/
     /* BASIC                                                                */
@@ -509,10 +512,15 @@ namespace Syntropy
         return static_cast<Int>(rhs);
     }
 
+    constexpr Bytes ToBytes(Int rhs) noexcept
+    {
+        return ToDataSize<Bytes>(rhs);
+    }
+
     template <Concepts::DataSizeUnit TUnit>
     constexpr Bytes ToBytes(Immutable<DataSize<TUnit>> rhs) noexcept
     {
-        return FromDataSize<Bytes>(rhs);
+        return ToDataSize<Bytes>(rhs);
     }
 
     template <typename TDataSize, Concepts::DataSizeUnit TUnitTo>
@@ -524,7 +532,7 @@ namespace Syntropy
 
     template <typename TDataSize, Concepts::DataSizeUnit TUnitFrom, Concepts::DataSizeUnit TUnitTo>
     requires Concepts::SameAs<TDataSize, DataSize<TUnitTo>>
-    constexpr TDataSize FromDataSize(Immutable<DataSize<TUnitFrom>> rhs) noexcept
+    constexpr TDataSize ToDataSize(Immutable<DataSize<TUnitFrom>> rhs) noexcept
     {
         using TUnit = Templates::RatioDivide<TUnitFrom, TUnitTo>;
 

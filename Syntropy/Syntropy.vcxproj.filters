@@ -38,6 +38,7 @@
     <ClInclude Include="include\syntropy\memory\byte.h" />
     <ClInclude Include="include\syntropy\memory\address.h" />
     <ClInclude Include="include\syntropy\memory\data_size.h" />
+    <ClInclude Include="include\syntropy\memory\alignment.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />

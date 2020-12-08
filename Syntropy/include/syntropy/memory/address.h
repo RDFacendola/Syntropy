@@ -38,6 +38,9 @@ namespace Syntropy
         /// \brief Access the numeric address value.
         constexpr explicit operator Int() const noexcept;
 
+        /// \brief Check whether the address refers to a valid location.
+        constexpr operator Bool() const noexcept;
+
     private:
 
         // Numeric address value.
@@ -62,6 +65,9 @@ namespace Syntropy
 
         /// \brief Implicit conversion to ImmutableAddress.
         constexpr operator ImmutableAddress() const noexcept;
+
+        /// \brief Check whether the address refers to a valid location.
+        constexpr operator Bool() const noexcept;
 
     private:
 
@@ -147,6 +153,11 @@ namespace Syntropy
         return address_;
     }
 
+    constexpr ImmutableAddress::operator Bool() const noexcept
+    {
+        return address_ != ToInt(0);
+    }
+
     // MutableAddress.
     // ===============
 
@@ -164,6 +175,11 @@ namespace Syntropy
     constexpr  MutableAddress::operator ImmutableAddress() const noexcept
     {
         return ImmutableAddress(address_);
+    }
+
+    constexpr MutableAddress::operator Bool() const noexcept
+    {
+        return address_ != ToInt(0);
     }
 
     // Arithmetic.
