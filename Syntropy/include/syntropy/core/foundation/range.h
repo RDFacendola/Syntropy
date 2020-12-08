@@ -337,7 +337,7 @@ namespace Syntropy
     template <Concepts::RandomAccessRange TRange>
     constexpr TRange PopBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
-        return Select(range, 0, Count(range) - count);
+        return Select(range, Templates::RangeElementCount<TRange>{ 0 }, Count(range) - count);
     }
 
     template <Concepts::RandomAccessRange TRange>
