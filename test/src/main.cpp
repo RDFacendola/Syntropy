@@ -33,6 +33,7 @@
 #include "syntropy/memory/address.h"
 #include "syntropy/memory/data_size.h"
 #include "syntropy/memory/alignment.h"
+#include "syntropy/memory/byte_span.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */

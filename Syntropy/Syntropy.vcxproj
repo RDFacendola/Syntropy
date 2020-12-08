@@ -47,6 +47,7 @@
     <ClInclude Include="include\syntropy\memory\address.h" />
     <ClInclude Include="include\syntropy\memory\alignment.h" />
     <ClInclude Include="include\syntropy\memory\byte.h" />
+    <ClInclude Include="include\syntropy\memory\byte_span.h" />
     <ClInclude Include="include\syntropy\memory\data_size.h" />
   </ItemGroup>
   <ItemGroup>

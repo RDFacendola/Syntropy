@@ -484,10 +484,10 @@ namespace Syntropy
      template <Concepts::DataSizeUnit TUnit, Concepts::DataSizeUnit UUnit>
      constexpr Ordering operator<=>(Immutable<DataSize<TUnit>> lhs, Immutable<DataSize<UUnit>> rhs) noexcept
      {
-         using TUnit = Templates::CommonRatio<TUnit, UUnit>;
+         using TCommonUnit = Templates::CommonRatio<TUnit, UUnit>;
  
-         auto common_lhs = FromDataSize<DataSize<TUnit>>(lhs);
-         auto common_rhs = FromDataSize<DataSize<TUnit>>(rhs);
+         auto common_lhs = ToDataSize<DataSize<TCommonUnit>>(lhs);
+         auto common_rhs = ToDataSize<DataSize<TCommonUnit>>(rhs);
  
          return ToInt(common_lhs) <=> ToInt(common_rhs);
      }
@@ -495,10 +495,10 @@ namespace Syntropy
      template <Concepts::DataSizeUnit TUnit, Concepts::DataSizeUnit UUnit>
      constexpr Bool operator==(Immutable<DataSize<TUnit>> lhs, Immutable<DataSize<UUnit>> rhs) noexcept
      {
-         using TUnit = Templates::CommonRatio<TUnit, UUnit>;
+         using TCommonUnit = Templates::CommonRatio<TUnit, UUnit>;
 
-         auto common_lhs = FromDataSize<DataSize<TUnit>>(lhs);
-         auto common_rhs = FromDataSize<DataSize<TUnit>>(rhs);
+         auto common_lhs = ToDataSize<DataSize<TCommonUnit>>(lhs);
+         auto common_rhs = ToDataSize<DataSize<TCommonUnit>>(rhs);
 
          return ToInt(common_lhs) == ToInt(common_rhs);
      }
