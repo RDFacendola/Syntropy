@@ -201,17 +201,19 @@ namespace Syntropy
     template <Concepts::DataSizeUnit TUnit>
     constexpr Int ToInt(Immutable<DataSize<TUnit>> rhs) noexcept;
 
-    /// \brief Convert an integer number to a data size amount (in TDataSize::Unit).
-    template <typename TDataSize = Bytes>
-    constexpr TDataSize ToDataSize(Int rhs) noexcept;
-
     /// \brief Convert a data size amount in any unit to bytes units.
     template <Concepts::DataSizeUnit TUnit>
     constexpr Bytes ToBytes(Immutable<DataSize<TUnit>> rhs) noexcept;
 
+    /// \brief Convert an integer number to a data size amount (in TDataSize::Unit).
+    template <typename TDataSize, Concepts::DataSizeUnit TUnitTo = typename TDataSize::Unit>
+    requires Concepts::SameAs<TDataSize, DataSize<TUnitTo>>
+    constexpr TDataSize ToDataSize(Int rhs) noexcept;
+
     /// \brief Convert a data size amount to another amount with different units, rounding the result towards zero.
-    template <typename TDataSizeTo, Concepts::DataSizeUnit TUnitFrom>
-    constexpr TDataSizeTo FromDataSize(Immutable<DataSize<TUnitFrom>> rhs) noexcept;
+    template <typename TDataSize, Concepts::DataSizeUnit TUnitFrom, Concepts::DataSizeUnit TUnitTo = typename TDataSize::Unit>
+    requires Concepts::SameAs<TDataSize, DataSize<TUnitTo>>
+    constexpr TDataSize FromDataSize(Immutable<DataSize<TUnitFrom>> rhs) noexcept;
 
     /************************************************************************/
     /* BASIC                                                                */
@@ -507,26 +509,28 @@ namespace Syntropy
         return static_cast<Int>(rhs);
     }
 
-    template <typename TDataSize>
-    constexpr TDataSize ToDataSize(Int rhs) noexcept
-    {
-        return TDataSize{ rhs };
-    }
-
     template <Concepts::DataSizeUnit TUnit>
     constexpr Bytes ToBytes(Immutable<DataSize<TUnit>> rhs) noexcept
     {
         return FromDataSize<Bytes>(rhs);
     }
 
-    template <typename TDataSizeTo, Concepts::DataSizeUnit TUnitFrom>
-    constexpr TDataSizeTo FromDataSize(Immutable<DataSize<TUnitFrom>> rhs) noexcept
+    template <typename TDataSize, Concepts::DataSizeUnit TUnitTo>
+    requires Concepts::SameAs<TDataSize, DataSize<TUnitTo>>
+    constexpr TDataSize ToDataSize(Int rhs) noexcept
     {
-        using TUnit = Templates::RatioDivide<TUnitFrom, typename TDataSizeTo::Unit>;
+        return DataSize<TUnitTo>{ rhs };
+    }
+
+    template <typename TDataSize, Concepts::DataSizeUnit TUnitFrom, Concepts::DataSizeUnit TUnitTo>
+    requires Concepts::SameAs<TDataSize, DataSize<TUnitTo>>
+    constexpr TDataSize FromDataSize(Immutable<DataSize<TUnitFrom>> rhs) noexcept
+    {
+        using TUnit = Templates::RatioDivide<TUnitFrom, TUnitTo>;
 
         auto count = (ToInt(rhs) * TUnit::kNumerator) / TUnit::kDenominator;
 
-        return TDataSizeTo{ count };
+        return TDataSize{ count };
     }
 
     // Basic.

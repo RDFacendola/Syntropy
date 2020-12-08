@@ -37,12 +37,6 @@
 /* ENTRY POINT                                                          */
 /************************************************************************/
 
-template <Syntropy::Concepts::TupleLike T>
-void Foo(Syntropy::Immutable<T> foo)
-{
-
-}
-
 int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
@@ -52,7 +46,8 @@ int main(int argc, char **argv)
     auto x = 10_KBytes;
     auto y = Syntropy::SizeOf(x);
     auto z = Syntropy::ToBytes(x);
-    auto zz = Syntropy::FromDataSize<Syntropy::Bits>(z);
+    auto zz = Syntropy::FromDataSize<Syntropy::Bytes>(10_KBytes);
+    auto xx = Syntropy::ToDataSize<Syntropy::KiloBytes>(10);
 
     system("pause");
 
