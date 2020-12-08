@@ -143,7 +143,16 @@ namespace Syntropy::Concepts
         {
             /// \brief TRange shall provide a way to access any element by index (aka offset from the start).
             { Select(range, index) } -> SameAs<Templates::RangeElementReference<TRange>>;
-        };
+        }
+        && requires(Immutable<Templates::RangeElementCount<TRange>> lhs, Immutable<Templates::RangeElementCount<TRange>> rhs)
+        {
+            /// \brief Range element count type shall be closed under addition.
+            { lhs + rhs } -> SameAs<Templates::RangeElementCount<TRange>>;
+
+            /// \brief Range element count type shall be closed under subtraction.
+            { lhs - rhs } -> SameAs<Templates::RangeElementCount<TRange>>;
+        }
+        && Templates::IsConstructible<Templates::RangeElementCount<TRange>, Int>;
 
     /************************************************************************/
     /* CONTIGUOUS RANGE                                                     */
@@ -161,11 +170,14 @@ namespace Syntropy::Concepts
             /// \brief TRange shall provide a way to access the memory elements are contiguously stored on.
             { Data(range) } -> SameAs<Templates::RangeElementPointer<TRange>>;
 
-            /// \brief TRange shall provide a way to access any element from the data storage via pointer increment.
-            { Data(range) + Templates::Declval<Immutable<Templates::RangeElementCount<TRange>>> } -> SameAs<Templates::RangeElementPointer<TRange>>;
+        }
+        && requires(Immutable<Templates::RangeElementPointer<TRange>> data, Immutable<Templates::RangeElementCount<TRange>> count)
+        {
+            /// \brief Accessing elements after a range element given its pointer shall be possible via positive offset.
+            { data + count } -> SameAs<Templates::RangeElementPointer<TRange>>;
 
-            /// \brief TRange shall provide a way to move to any element from the data storage via pointer decrement.
-            { Data(range) - Templates::Declval<Immutable<Templates::RangeElementCount<TRange>>> } -> SameAs<Templates::RangeElementPointer<TRange>>;
+            /// \brief Accessing elements prior to a range element shall be obtainable via a base data pointer and a negative offset.
+            { data - count } -> SameAs<Templates::RangeElementPointer<TRange>>;
         };
 }
 
