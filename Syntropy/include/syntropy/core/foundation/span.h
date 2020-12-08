@@ -175,14 +175,19 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for spans.
     template <typename TType>
-    struct RangeTraits<Span<TType>>
-    {
-        /// \brief Type of a reference to a range element.
-        using ElementReferenceType = Reference<TType>;
+    struct EnableRangeTraits<Span<TType>> : Alias<void> {};
 
-        /// \brief Type of a pointer to a range element.
-        using ElementPointerType = Pointer<TType>;
-    };
+    /// \brief Specialization for spans.
+    template <typename TType>
+    struct RangeTraitsElementReferenceType<Span<TType>> : Alias<Reference<TType>> {};
+
+    /// \brief Specialization for spans.
+    template <typename TType>
+    struct RangeTraitsElementPointerType<Span<TType>> : Alias<Pointer<TType>> {};
+
+    /// \brief Specialization for spans.
+    template <typename TType>
+    struct RangeTraitsElementCountType<Span<TType>> : Alias<Int> {};
 }
 
 // ===========================================================================
