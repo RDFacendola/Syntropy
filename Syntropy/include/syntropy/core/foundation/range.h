@@ -104,6 +104,9 @@ namespace Syntropy::Concepts
             typename Templates::RangeElementCount<TRange>;
 
             /// \brief Get the number of elements in the range.
+            { Count(range) } -> TotallyOrdered;
+
+            /// \brief Get the number of elements in the range.
             { Count(range) } -> SameAs<Templates::RangeElementCount<TRange>>;
         };
 
