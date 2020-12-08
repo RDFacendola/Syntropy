@@ -318,7 +318,7 @@ namespace Syntropy
     template <Concepts::RandomAccessRange TRange>
     constexpr TRange Front(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
-        return Select(range, Templates::RangeElementCount<TRange>{}, count);
+        return Select(range, Templates::RangeElementCount<TRange>{ 0 }, count);
     }
 
     template <Concepts::RandomAccessRange TRange>
