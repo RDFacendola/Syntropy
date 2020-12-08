@@ -13,6 +13,8 @@
 
 #include "syntropy/core/foundation/tuple.h"
 
+// ===========================================================================
+
 namespace Syntropy::Templates
 {
     /************************************************************************/
@@ -77,16 +79,13 @@ namespace Syntropy::Concepts
             /// \brief Type of a reference to an element in a range TRange.
             typename Templates::RangeElementReference<TRange>;
 
-            /// \brief Access the first element in a range.
-            /// \remarks Accessing the first element of an empty range results in undefined behavior.
+            /// \brief TRange shall provide access to its front element.
             { Front(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
 
-            /// \brief Discard the first count elements in a range and return the resulting subrange.
-            /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
+            /// \brief TRange shall provide a way to consume it from the front.
             { PopFront(range) } -> ConvertibleTo<TRange>;
 
-            /// \brief Check whether a range is empty.
-            /// \return Returns true if the range is empty, returns false otherwise.
+            /// \brief TRange shall provide a way to determine if it still has elements.
             { IsEmpty(range) } -> Boolean;
         };
 
@@ -103,11 +102,11 @@ namespace Syntropy::Concepts
             /// \brief Type of the number of elements in a range TRange.
             typename Templates::RangeElementCount<TRange>;
 
-            /// \brief Get the number of elements in the range.
-            { Count(range) } -> TotallyOrdered;
-
-            /// \brief Get the number of elements in the range.
+            /// \brief TRange shall provide a way to know its current size.
             { Count(range) } -> SameAs<Templates::RangeElementCount<TRange>>;
+
+            /// \brief TRange shall provide a way to compare its size to other ranges'.
+            { Count(range) } -> TotallyOrdered;
         };
 
     /************************************************************************/
@@ -120,12 +119,10 @@ namespace Syntropy::Concepts
     concept BidirectionalRange = ForwardRange<TRange>
         && requires(Immutable<TRange> range)
         {
-            /// \brief Access the last element in a range.
-            /// \remarks Accessing the last element of an empty range results in undefined behavior.
+            /// \brief TRange shall provide access to its rear element.
             { Back(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
 
-            /// \brief Discard the last count elements in a range and return the resulting subrange.
-            /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
+            /// \brief TRange shall provide a way to consume it from the back.
             { PopBack(range) } -> ConvertibleTo<TRange>;
         };
 
@@ -139,14 +136,12 @@ namespace Syntropy::Concepts
     concept RandomAccessRange = BidirectionalRange<TRange> && SizedRange<TRange>
         && requires(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> offset, Immutable<Templates::RangeElementCount<TRange>> count)
         {
-            /// \brief Obtain a sub-range given an offset and a number of elements.
-            /// \remarks Exceeding range boundaries results in undefined behavior.
+            /// \brief TRange shall provide a way to obtain any sub-range using an offset and its size.
             { Select(range, offset, count) } -> ConvertibleTo<TRange>;
         }
         && requires(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> index)
         {
-            /// \brief Access a range element by index.
-            /// \remarks Exceeding range boundaries results in undefined behavior.
+            /// \brief TRange shall provide a way to access any element by index (aka offset from the start).
             { Select(range, index) } -> SameAs<Templates::RangeElementReference<TRange>>;
         };
 
@@ -163,11 +158,15 @@ namespace Syntropy::Concepts
             /// \brief Type of a number of elements in a range TRange.
             typename Templates::RangeElementPointer<TRange>;
 
-            /// \brief Access contiguous range data.
-            /// \remarks If the range is empty the returned value is unspecified.
+            /// \brief TRange shall provide a way to access the memory elements are contiguously stored on.
             { Data(range) } -> SameAs<Templates::RangeElementPointer<TRange>>;
-        };
 
+            /// \brief TRange shall provide a way to access any element from the data storage via pointer increment.
+            { Data(range) + Templates::Declval<Immutable<Templates::RangeElementCount<TRange>>> } -> SameAs<Templates::RangeElementPointer<TRange>>;
+
+            /// \brief TRange shall provide a way to move to any element from the data storage via pointer decrement.
+            { Data(range) - Templates::Declval<Immutable<Templates::RangeElementCount<TRange>>> } -> SameAs<Templates::RangeElementPointer<TRange>>;
+        };
 }
 
 // ===========================================================================
