@@ -173,10 +173,10 @@ namespace Syntropy::Concepts
         }
         && requires(Immutable<Templates::RangeElementPointer<TRange>> data, Immutable<Templates::RangeElementCount<TRange>> offset)
         {
-            /// \brief Accessing elements after a range element given its pointer shall be possible via positive offset.
+            /// \brief It shall be possible to access range elements via a data pointer and a positive offset.
             { data + offset } -> SameAs<Templates::RangeElementPointer<TRange>>;
 
-            /// \brief Accessing elements prior to a range element shall be obtainable via a base data pointer and a negative offset.
+            /// \brief It shall be possible to access range elements via a data pointer and a negative offset.
             { data - offset } -> SameAs<Templates::RangeElementPointer<TRange>>;
         };
 }
