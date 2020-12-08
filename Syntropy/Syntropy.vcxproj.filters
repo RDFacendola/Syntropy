@@ -42,9 +42,9 @@
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\syntropy\syntropy.cpp" />
+    <None Include="include\syntropy\language\language.md" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\syntropy\language\language.md" />
+    <ClCompile Include="src\syntropy\syntropy.cpp" />
   </ItemGroup>
 </Project>

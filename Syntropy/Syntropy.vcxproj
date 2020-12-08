@@ -51,10 +51,10 @@
     <ClInclude Include="include\syntropy\memory\data_size.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\syntropy\syntropy.cpp" />
+    <None Include="include\syntropy\language\language.md" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\syntropy\language\language.md" />
+    <ClCompile Include="src\syntropy\syntropy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
