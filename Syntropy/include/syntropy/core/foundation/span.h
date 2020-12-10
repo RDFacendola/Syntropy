@@ -9,7 +9,6 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
 
-#include "syntropy/core/foundation/tuple.h"
 #include "syntropy/core/foundation/range.h"
 
 // ===========================================================================
@@ -42,7 +41,7 @@ namespace Syntropy
         /// \brief Create a span given a pointer to the first element and their number.
         constexpr Span(Pointer<TType> begin, Int count) noexcept;
 
-        /// \brief Create a span given a pointer to the first element and their number.
+        /// \brief Create a span given a pointer to both the first and past the last element.
         constexpr Span(Pointer<TType> begin, Pointer<TType> end) noexcept;
 
         /// \brief Copy constructor.
