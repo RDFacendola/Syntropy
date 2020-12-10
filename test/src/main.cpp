@@ -45,10 +45,16 @@ int main(int argc, char **argv)
 
     using namespace Syntropy::Literals;
 
-    int x[] = { 1,2,3,4,5,6 };
+    Syntropy::Byte x[] = { Syntropy::ToByte(1) };
+    Syntropy::Int y[] = { 1 };
 
-    auto s = Syntropy::Span<int>(&x[0], &x[3]);
-    auto t = Syntropy::Span<int>(&x[0], &x[3]);
+    auto s = Syntropy::Span<Syntropy::Byte>(&x[0], 3);
+    auto t = Syntropy::Span<Syntropy::Byte>(&x[0], 3);
+
+    auto w = Syntropy::MakeSpan(&x[0], 3);
+    auto ww = Syntropy::Span<Syntropy::Byte>(w);
+
+    s = PopBack(s, 10);
 
     auto rs = Syntropy::Reverse(s);
     auto rt = Syntropy::Reverse(t);
