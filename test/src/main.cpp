@@ -33,7 +33,7 @@
 #include "syntropy/memory/address.h"
 #include "syntropy/memory/data_size.h"
 #include "syntropy/memory/alignment.h"
-// #include "syntropy/memory/byte_span.h"
+#include "syntropy/memory/byte_span.h"
 
 /************************************************************************/
 /* ENTRY POINT                                                          */
@@ -46,24 +46,17 @@ int main(int argc, char **argv)
     using namespace Syntropy::Literals;
 
     Syntropy::Byte x[] = { Syntropy::ToByte(1) };
-    Syntropy::Int y[] = { 1 };
+    Syntropy::Byte y[] = { Syntropy::ToByte(1) };
 
-    auto s = Syntropy::Span<Syntropy::Byte>(&x[0], 3);
-    auto t = Syntropy::Span<Syntropy::Byte>(&x[0], 3);
+    float power = 534.0f;
 
-    auto w = Syntropy::MakeSpan(&x[0], 3);
-    auto ww = Syntropy::Span<Syntropy::Byte>(w);
+    auto bx = Syntropy::BytesOf(x);
+    auto by = Syntropy::BytesOf(y);
+    auto bp = Syntropy::BytesOf(power);
 
-    s = PopBack(s, 10);
+    auto b = bx == by;
 
-    auto rs = Syntropy::Reverse(s);
-    auto rt = Syntropy::Reverse(t);
-
-    auto cs = Count(s);
-
-    Syntropy::AreEquivalent(s, t);
-
-    auto ae = Syntropy::AreEquivalent(s, rt);
+    auto power2 = Syntropy::FromBytesOf<float>(bp);
 
     system("pause");
 

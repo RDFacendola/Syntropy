@@ -1,16 +1,17 @@
 
 /// \file byte_span.h
-/// \brief This header is part of Syntropy memory module. It contains definitions for byte spans and related utility functions.
+/// \brief This header is part of Syntropy memory module. It contains definitions for byte spans.
 ///
 /// \author Raffaele D. Facendola - July 2020
 
 #pragma once
 
-#include <typeinfo>
-
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/core/foundation/span.h"
-#include "syntropy/core/foundation/tuple.h"
+#include "syntropy/language/templates/type_traits.h"
+
+#include "syntropy/core/foundation/range.h"
+
+#include "syntropy/math/math.h"
 
 #include "syntropy/memory/data_size.h"
 #include "syntropy/memory/alignment.h"
@@ -21,22 +22,217 @@
 namespace Syntropy
 {
     /************************************************************************/
+    /* BASE BYTE SPAN                                                       */
+    /************************************************************************/
+
+    struct ByteSpanTypeTraits;
+
+    /// \brief Represents a contiguous, non-owning, range of bytes.
+    /// \author Raffaele D. Facendola - December 2020.
+    template <typename TTraits>
+    class BaseByteSpan
+    {
+        template <typename TTraits>
+        friend constexpr Bytes Count(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+        template <typename TTraits>
+        friend constexpr typename TTraits::TPointer Data(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    public:
+
+        /// \brief Pointer type.
+        using TPointer = typename TTraits::TPointer;
+
+        /// \brief Reference type.
+        using TReference = typename TTraits::TReference;
+
+        /// \brief Create an empty byte span.
+        constexpr BaseByteSpan() noexcept = default;
+
+        /// \brief Create an empty byte span.
+        constexpr BaseByteSpan(Null) noexcept;
+
+        /// \brief Create a byte span given a pointer to the first byte and span size.
+        constexpr BaseByteSpan(TPointer begin, Immutable<Bytes> size) noexcept;
+
+        /// \brief Create a byte span given a pointer to both the first and past the last byte.
+        constexpr BaseByteSpan(TPointer begin, TPointer end) noexcept;
+
+        /// \brief Default copy constructor.
+        constexpr BaseByteSpan(Immutable<BaseByteSpan> rhs) noexcept = default;
+
+        /// \brief Converting copy constructor.
+        template <typename UTraits>
+        requires (!Concepts::SameAs<TTraits, UTraits>)
+        constexpr BaseByteSpan(Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
+
+        /// \brief Default destructor.
+        ~BaseByteSpan() noexcept = default;
+
+        /// \brief Copy assignment operator.
+        template <typename UTraits>
+        constexpr Mutable<BaseByteSpan> operator=(Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
+
+        ///  \brief Check whether the byte span is non-empty.
+        constexpr explicit operator Bool() const noexcept;
+
+        /// \brief Access a byte by offset.
+        /// If the provided offset is not within the byte span the behavior of this method is undefined.
+        constexpr TReference operator[](Immutable<Bytes> offset) const noexcept;
+
+        /// \brief Swap this byte span with rhs.
+        constexpr void Swap(Mutable<BaseByteSpan> rhs) noexcept;
+
+    private:
+
+        /// \brief Pointer to the first element.
+        TPointer data_{ nullptr };
+
+        /// \brief Span size.
+        Bytes size_{ 0 };
+
+    };
+
+    /************************************************************************/
     /* BYTE SPAN                                                            */
     /************************************************************************/
 
+    /// \brief Tag for read-only byte spans.
+    struct ByteSpanTypeTraits
+    {
+        /// \brief Pointer type.
+        using TPointer = ImmutableBytePtr;
+
+        /// \brief Reference type.
+        using TReference = Immutable<Byte>;
+    };
+
     /// \brief Represents a span of read-only bytes.
-    using ByteSpan = Span<const Byte>;
+    using ByteSpan = BaseByteSpan<ByteSpanTypeTraits>;
+
+    /************************************************************************/
+    /* RW BYTE SPAN                                                         */
+    /************************************************************************/
+
+    /// \brief Tag for read-write byte spans.
+    struct RWByteSpanTypeTraits
+    {
+        /// \brief Pointer type.
+        using TPointer = MutableBytePtr;
+
+        /// \brief Reference type.
+        using TReference = Mutable<Byte>;
+    };
 
     /// \brief Represents a span of read-write bytes.
-    using RWByteSpan = Span<Byte>;
+    using RWByteSpan = BaseByteSpan<RWByteSpanTypeTraits>;
 
     /************************************************************************/
-    /* BASIC                                                                */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Get the memory footprint of rhs.
-    template <typename TElement>
-    constexpr Bytes Size(Immutable<Span<TElement>> rhs) noexcept;
+    // Comparison.
+    // ===========
+
+    /// \brief Check whether lhs and rhs are equivalent.
+    constexpr Bool operator==(Immutable<ByteSpan> lhs, Immutable<ByteSpan> rhs) noexcept;
+
+    // Forward range.
+    // ==============
+
+    /// \brief Access the first byte in a byte span.
+    /// \remarks Accessing the first byte of an empty span results in undefined behavior.
+    template <typename TTraits>
+    constexpr typename TTraits::TReference Front(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    /// \brief Discard the first bytes in a byte span and return the resulting subspan.
+    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+    template <typename TTraits>
+    constexpr BaseByteSpan<TTraits> PopFront(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    /// \brief Check whether a byte span is empty.
+    /// \return Returns true if the span is empty, returns false otherwise.
+    constexpr Bool IsEmpty(Immutable<ByteSpan> rhs) noexcept;
+
+    // Sized range.
+    // ============
+
+    /// \brief Get the size of a byte span.
+    template <typename TTraits>
+    constexpr Bytes Count(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    // Bidirectional range.
+    // ====================
+
+    /// \brief Access the last byte in a byte span.
+    /// \remarks Accessing the last byte of an empty span results in undefined behavior.
+    template <typename TTraits>
+    constexpr typename TTraits::TReference Back(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    /// \brief Discard the last bytes in a byte span and return the resulting subspan.
+    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
+    template <typename TTraits>
+    constexpr BaseByteSpan<TTraits> PopBack(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    // Random access range.
+    // ====================
+
+    /// \brief Obtain a sub-span given an offset and a size.
+    /// \remarks Exceeding span boundaries results in undefined behavior.
+    template <typename TTraits>
+    constexpr BaseByteSpan<TTraits> Select(Immutable<BaseByteSpan<TTraits>> rhs, Immutable<Bytes> offset, Immutable<Bytes> size) noexcept;
+
+    /// \brief Obtain a span element at given index.
+    /// \remarks Exceeding span boundaries results in undefined behavior.
+    template <typename TTraits>
+    constexpr typename TTraits::TReference Select(Immutable<BaseByteSpan<TTraits>> rhs, Immutable<Bytes> offset) noexcept;
+
+    // Contiguous range.
+    // =================
+
+    /// \brief Access underlying span data.
+    /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
+    template <typename TTraits>
+    constexpr typename TTraits::TPointer Data(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    // Utilities.
+    // ==========
+
+    /// \brief Create a new read-only byte span given a pointer to its first byte and its size.
+    constexpr ByteSpan MakeByteSpan(ImmutableBytePtr begin, Immutable<Bytes> size) noexcept;
+
+    /// \brief Create a new read-only span given a pointer to its first byte and past its last one.
+    template <typename TType>
+    constexpr ByteSpan MakeByteSpan(ImmutableBytePtr begin, ImmutableBytePtr end) noexcept;
+
+    /// \brief Create a new read-write byte span given a pointer to its first byte and its size.
+    constexpr RWByteSpan MakeByteSpan(MutableBytePtr begin, Immutable<Bytes> size) noexcept;
+
+    /// \brief Create a new read-write span given a pointer to its first byte and past its last one.
+    constexpr RWByteSpan MakeByteSpan(MutableBytePtr begin, MutableBytePtr end) noexcept;
+
+    /************************************************************************/
+    /* ALIGNMENT                                                            */
+    /************************************************************************/
+
+    /// \brief Consume lhs from the front until its first byte is aligned to rhs or lhs is exhausted.
+    template <typename TTraits>
+    BaseByteSpan<TTraits> Align(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Alignment> alignment) noexcept;
+
+    /// \brief Consume lhs from the back until its size is a multiple of size or lhs is exhausted.
+    template <typename TTraits>
+    BaseByteSpan<TTraits> Floor(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Bytes> size) noexcept;
+
+    /************************************************************************/
+    /* CONVERSION                                                           */
+    /************************************************************************/
+
+    /// \brief Convert rhs to a read-only byte span.
+    ByteSpan ToReadOnly(Immutable<ByteSpan> rhs) noexcept;
+
+    /// \brief Convert rhs to a read-write byte span.
+    /// \remarks If the original memory location is not read-writable, accessing the returned values results in undefined behavior.
+    RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept;
 
     /// \brief Get the read-only object representation of rhs.
     /// An object representation is the sequence of bytes starting from the object address.
@@ -48,138 +244,52 @@ namespace Syntropy
     /// An object representation is the sequence of bytes starting from the object address.
     /// If rhs type is not exactly TObject, the behavior of this method is undefined.
     template <typename TObject>
-    RWByteSpan RWBytesOf(Mutable<TObject> rhs) noexcept;
+    RWByteSpan BytesOf(Mutable<TObject> rhs) noexcept;
 
+    /// \brief Get an object TObject from its object representation.
+    /// \remarks If rhs is not exactly TObject, accessing the returned value results in undefined behavior.
+    template <typename TObject, typename TTraits>
+    Reference<TObject> FromBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    /// \brief Get the object representation of bytes in the contiguous range rhs.
+    template <Concepts::ContiguousRange TRange>
+    auto RangeBytesOf(Immutable<TRange> rhs) noexcept;
+
+    /// \brief Get the object representation of bytes in the contiguous range rhs.
+    /// \remarks The range-byte representation of a BaseByteSpan is the span itself.
+    template <typename TTraits>
+    BaseByteSpan<TTraits> RangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    /// \brief Get a contiguous range of strongly-typed elements from its range object representation.
+    /// \remarks If rhs is not exactly a range TRange, accessing the returned value results in undefined behavior.
+    template <Concepts::ContiguousRange TRange, typename TTraits>
+    TRange FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+    
+}
+
+// ===========================================================================
+
+namespace Syntropy::Templates
+{
     /************************************************************************/
-    /* ALIGNMENT                                                            */
-    /************************************************************************/
-
-    /// \brief Check whether the first byte in lhs is aligned to rhs
-    /// If the provided span is empty the behavior of this method is undefined.
-    Bool IsAlignedTo(Immutable<ByteSpan> lhs, Immutable<Alignment> rhs) noexcept;
-
-    /// \brief Consume lhs from the front until its first byte is aligned to rhs or lhs is exhausted.
-    ByteSpan Align(Immutable<ByteSpan> lhs, Immutable<Alignment> rhs) noexcept;
-
-    /// \brief Consume lhs from the front until its first byte is aligned to rhs or lhs is exhausted.
-    RWByteSpan Align(Immutable<RWByteSpan> lhs, Immutable<Alignment> rhs) noexcept;
-
-    /// \brief Consume lhs from both sides until its first byte is aligned to rhs and its size is a multiple of size or lhs is exhausted.
-    ByteSpan Align(Immutable<ByteSpan> lhs, Bytes size, Immutable<Alignment> rhs) noexcept;
-
-    /// \brief Consume lhs from both sides until its first byte is aligned to rhs and its size is a multiple of size or lhs is exhausted.
-    RWByteSpan Align(Immutable<RWByteSpan> lhs, Bytes size, Immutable<Alignment> rhs) noexcept;
-
-    /// \brief Consume lhs from both sides until lhs is aligned as TType and its size is a multiple of TType size or lhs is exhausted.
-    template <typename TType>
-    ByteSpan AlignAs(Immutable<ByteSpan> lhs) noexcept;
-
-    /// \brief Consume lhs from both sides until lhs is aligned as TType and its size is a multiple of TType size or lhs is exhausted.
-    template <typename TType>
-    RWByteSpan AlignAs(Immutable<RWByteSpan> lhs) noexcept;
-
-    /************************************************************************/
-    /* SPAN OPERATIONS                                                      */
+    /* RANGE TRAITS                                                         */
     /************************************************************************/
 
-    /// \brief Obtain a span consisting of the first "size" bytes of lhs.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
-    [[nodiscard]] constexpr ByteSpan Front(Immutable<ByteSpan> lhs, Bytes size) noexcept;
+    /// \brief Specialization for byte spans.
+    template <typename TTraits>
+    struct RangeEnableTypeTraits<BaseByteSpan<TTraits>> : Alias<void> {};
 
-    /// \brief Obtain a span consisting of the first "size" bytes of lhs.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
-    [[nodiscard]] constexpr RWByteSpan Front(Immutable<RWByteSpan> lhs, Bytes size) noexcept;
+    /// \brief Specialization for byte spans.
+    template <typename TTraits>
+    struct RangeElementReferenceTypeTraits<BaseByteSpan<TTraits>> : Alias<typename TTraits::TReference> {};
 
-    /// \brief Obtain a sub-span given an offset and a size.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
-    [[nodiscard]] constexpr ByteSpan Select(Immutable<ByteSpan> span, Bytes offset, Bytes count) noexcept;
+    /// \brief Specialization for byte spans.
+    template <typename TTraits>
+    struct RangeElementPointerTypeTraits<BaseByteSpan<TTraits>> : Alias<typename TTraits::TPointer> {};
 
-    /// \brief Obtain a sub-span given an offset and a size.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
-    [[nodiscard]] constexpr RWByteSpan Select(Immutable<RWByteSpan> span, Bytes offset, Bytes count) noexcept;
-
-    /// \brief Obtain a span consisting of the last "size" bytes of lhs.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
-    [[nodiscard]] constexpr ByteSpan Back(Immutable<ByteSpan> lhs, Bytes size) noexcept;
-
-    /// \brief Obtain a span consisting of the last "size" bytes of lhs.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
-    [[nodiscard]] constexpr RWByteSpan Back(Immutable<RWByteSpan> lhs, Bytes size) noexcept;
-
-    /// \brief Discard the first "size" bytes in a span and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] ByteSpan PopFront(Immutable<ByteSpan> lhs, Bytes size) noexcept;
-
-    /// \brief Discard the first "size" bytes in a span and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] RWByteSpan PopFront(Immutable<RWByteSpan> lhs, Bytes size) noexcept;
-
-    /// \brief Discard the last "size" bytes in a span and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] ByteSpan PopBack(Immutable<ByteSpan> lhs, Bytes size) noexcept;
-
-    /// \brief Discard the last  "size" bytes in a span and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] RWByteSpan PopBack(Immutable<RWByteSpan> lhs, Bytes size) noexcept;
-
-    /// \brief Discard an amount of bytes equal to the memory requirement for TType from lhs front and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TType>
-    [[nodiscard]] ByteSpan PopFront(Immutable<ByteSpan> lhs) noexcept;
-
-    /// \brief Discard an amount of bytes equal to the memory requirement for TType from lhs front and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TType>
-    [[nodiscard]] RWByteSpan PopFront(Immutable<RWByteSpan> lhs) noexcept;
-
-    /// \brief Discard an amount of bytes equal to the memory requirement for TType from lhs back and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TType>
-    [[nodiscard]] ByteSpan PopBack(Immutable<ByteSpan> lhs) noexcept;
-
-    /// \brief Discard an amount of bytes equal to the memory requirement for TType from lhs back and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TType>
-    [[nodiscard]] RWByteSpan PopBack(Immutable<RWByteSpan> lhs) noexcept;
-
-    /// \brief Slice lhs returning a span to the first "size" bytes and a span to the remaining elements of lhs.
-    /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] constexpr Tuple<ByteSpan, ByteSpan> SliceFront(Immutable<ByteSpan> lhs, Bytes size) noexcept;
-
-    /// \brief Slice lhs returning a span to the first "size" bytes and a span to the remaining elements of lhs.
-    /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] constexpr Tuple<RWByteSpan, RWByteSpan> SliceFront(Immutable<RWByteSpan> lhs, Bytes size) noexcept;
-
-    /// \brief Slice lhs returning a span to the last "size" bytes and a span to the remaining elements of lhs.
-    /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] constexpr Tuple<ByteSpan, ByteSpan> SliceBack(Immutable<ByteSpan> lhs, Bytes size) noexcept;
-
-    /// \brief Slice lhs returning a span to the last "size" bytes and a span to the remaining elements of lhs.
-    /// \remarks If this method would cause any of the two subspans to exceed the original span, the behavior of this method is undefined.
-    [[nodiscard]] constexpr Tuple<RWByteSpan, RWByteSpan> SliceBack(Immutable<RWByteSpan> lhs, Bytes size) noexcept;
-
-    /************************************************************************/
-    /* CONVERSION                                                           */
-    /************************************************************************/
-
-    /// \brief Convert rhs to a read-only typed span.
-    /// If rhs doesn't refer to a span of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
-    template <typename TElement>
-    Span<Const<TElement>> ToSpan(Immutable<ByteSpan> rhs) noexcept;
-
-    /// \brief Convert rhs to a read-write typed span.
-    /// If rhs doesn't refer to a span of TElements or it has a non-integer number of elements, the behavior of this method is undefined.
-    template <typename TElement>
-    Span<TElement> ToRWSpan(Immutable<RWByteSpan> rhs) noexcept;
-
-    /// \brief Convert an read-only span to a read-only byte span.
-    template <typename TElement>
-    ByteSpan ToByteSpan(Immutable<Span<TElement>> rhs) noexcept;
-
-    /// \brief Convert a read-write span to a read-write byte span.
-    template <typename TElement>
-    RWByteSpan ToRWByteSpan(Immutable<Span<TElement>> rhs) noexcept;
-
+    /// \brief Specialization for byte spans.
+    template <typename TTraits>
+    struct RangeElementCountTypeTraits<BaseByteSpan<TTraits>> : Alias<Bytes> {};
 }
 
 // ===========================================================================
@@ -190,221 +300,254 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Basic.
-    // ======
+    // BaseByteSpan.
 
-    template <typename TElement>
-    constexpr Bytes Size(Immutable<Span<TElement>> rhs) noexcept
+    template <typename TTraits>
+    constexpr BaseByteSpan<TTraits>::BaseByteSpan(Null) noexcept
     {
-        return Count(rhs) * SizeOf<TElement>();
+
     }
 
-    template <typename TObject>
-    inline ByteSpan BytesOf(Immutable<TObject> rhs) noexcept
+    template <typename TTraits>
+    constexpr BaseByteSpan<TTraits>::BaseByteSpan(BaseByteSpan<TTraits>::TPointer begin, Immutable<Bytes> size) noexcept
+        : data_(begin)
+        , size_(size)
     {
-        auto& type_from = typeid(rhs);
-        auto& type_to = typeid(TObject);
 
-        return ByteSpan{ ToBytePtr(&rhs), ToInt(SizeOf<TObject>()) };
     }
 
-    template <typename TObject>
-    inline RWByteSpan RWBytesOf(Mutable<TObject> rhs) noexcept
+    template <typename TTraits>
+    constexpr BaseByteSpan<TTraits>::BaseByteSpan(BaseByteSpan<TTraits>::TPointer begin, BaseByteSpan<TTraits>::TPointer end) noexcept
+        : BaseByteSpan(begin, ToBytes(end - begin))
     {
-        auto& type_from = typeid(rhs);
-        auto& type_to = typeid(TObject);
 
-        return RWByteSpan{ ToBytePtr(&rhs), ToInt(SizeOf<TObject>()) };
+    }
+
+    template <typename TTraits>
+    template <typename UTraits>
+    requires (!Concepts::SameAs<TTraits, UTraits>)
+    constexpr BaseByteSpan<TTraits>::BaseByteSpan(Immutable<BaseByteSpan<UTraits>> rhs) noexcept
+        : data_(Data(rhs))
+        , size_(Count(rhs))
+    {
+
+    }
+
+    template <typename TTraits>
+    template <typename UTraits>
+    constexpr Mutable<BaseByteSpan<TTraits>> BaseByteSpan<TTraits>::operator=(Immutable<BaseByteSpan<UTraits>> rhs) noexcept
+    {
+        data_ = Data(rhs);
+        size_ = Count(rhs);
+
+        return *this;
+    }
+
+     template <typename TTraits>
+     constexpr BaseByteSpan<TTraits>::operator Bool() const noexcept
+     {
+         return size_ > ToBytes(0);
+     }
+
+    template <typename TTraits>
+    constexpr typename BaseByteSpan<TTraits>::TReference BaseByteSpan<TTraits>::operator[](Immutable<Bytes> offset) const noexcept
+    {
+        return data_[offset];
+    }
+
+    template <typename TTraits>
+    constexpr void BaseByteSpan<TTraits>::Swap(Mutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        Syntropy::Swap(data_, rhs.data_);
+        Syntropy::Swap(size_, rhs.size_);
+    }
+
+    // Comparison.
+    // ===========
+
+    constexpr Bool operator==(Immutable<ByteSpan> lhs, Immutable<ByteSpan> rhs) noexcept
+    {
+        return AreEqual(lhs, rhs) || AreEquivalent(lhs, rhs);
+    }
+
+    // Forward Range.
+
+    template <typename TTraits>
+    constexpr typename TTraits::TReference Front(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        return *Data(rhs);
+    }
+
+    template <typename TTraits>
+    constexpr BaseByteSpan<TTraits> PopFront(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        return { Data(rhs) + ToInt(1), Data(rhs) + Count(rhs) };
+    }
+
+    constexpr Bool IsEmpty(Immutable<ByteSpan> rhs) noexcept
+    {
+        return Count(rhs) == ToBytes(0);
+    }
+
+    // Sized range.
+
+    template <typename TTraits>
+    constexpr Bytes Count(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        return rhs.size_;
+    }
+
+    // Bidirectional range.
+
+    template <typename TTraits>
+    constexpr typename TTraits::TReference Back(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        return *(Data(rhs) + Count(rhs) - ToBytes(1));
+    }
+
+    template <typename TTraits>
+    constexpr BaseByteSpan<TTraits> PopBack(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        return { Data(rhs), Data(rhs) + Count(rhs) - ToBytes(1) };
+    }
+
+    // Random access range.
+
+    template <typename TTraits>
+    constexpr BaseByteSpan<TTraits> Select(Immutable<BaseByteSpan<TTraits>> rhs, Immutable<Bytes> offset, Immutable<Bytes> size) noexcept
+    {
+        return { Data(rhs) + offset, size };
+    }
+
+    template <typename TTraits>
+    constexpr typename TTraits::TReference Select(Immutable<BaseByteSpan<TTraits>> rhs, Immutable<Bytes> offset) noexcept
+    {
+        return rhs[ToInt(offset)];
+    }
+
+    // Contiguous range.
+
+    template <typename TTraits>
+    constexpr typename TTraits::TPointer Data(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        return rhs.data_;
+    }
+
+    // Utilities.
+
+    constexpr ByteSpan MakeByteSpan(ImmutableBytePtr begin, Immutable<Bytes> size) noexcept
+    {
+        return { begin, size };
+    }
+
+    constexpr ByteSpan MakeByteSpan(ImmutableBytePtr begin, ImmutableBytePtr end) noexcept
+    {
+        return { begin, end };
+    }
+
+    constexpr RWByteSpan MakeByteSpan(MutableBytePtr begin, Immutable<Bytes> size) noexcept
+    {
+        return { begin, size };
+    }
+
+    constexpr RWByteSpan MakeByteSpan(MutableBytePtr begin, MutableBytePtr end) noexcept
+    {
+        return { begin, end };
     }
 
     // Alignment.
-    // ==========
 
-    inline Bool IsAlignedTo(Immutable<ByteSpan> lhs, Immutable<Alignment> rhs) noexcept
+    template <typename TTraits>
+    inline BaseByteSpan<TTraits> Align(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Alignment> alignment) noexcept
     {
-        return IsAlignedTo(Begin(lhs), rhs);
+        auto begin = Align(Data(lhs), alignment);
+        auto end = Data(lhs) + Count(lhs);
+
+        auto min_begin_end = Math::Min(begin, end);
+
+        return { min_begin_end, end };
     }
 
-    inline ByteSpan Align(Immutable<ByteSpan> lhs, Immutable<Alignment> rhs) noexcept
+    template <typename TTraits>
+    inline BaseByteSpan<TTraits> Floor(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Bytes> size) noexcept
     {
-        auto begin = Align(Data(lhs), rhs);
-        auto end = End(lhs);
+        auto floor_size = Math::Floor(Count(lhs), size);
 
-        return { Math::Min(begin, end), end };
-    }
-
-    inline RWByteSpan Align(Immutable<RWByteSpan> lhs, Immutable<Alignment> rhs) noexcept
-    {
-        auto begin = Align(Data(lhs), rhs);
-        auto end = End(lhs);
-
-        return { Math::Min(begin, end), end };
-    }
-
-    inline ByteSpan Align(Immutable<ByteSpan> lhs, Bytes size, Immutable<Alignment> rhs) noexcept
-    {
-        auto aligned_lhs = Align(lhs, rhs);
-
-        size = Math::Floor(Size(aligned_lhs), size);
-
-        return Front(aligned_lhs, size);
-    }
-
-    inline RWByteSpan Align(Immutable<RWByteSpan> lhs, Bytes size, Immutable<Alignment> rhs) noexcept
-    {
-        auto aligned_lhs = Align(lhs, rhs);
-
-        size = Math::Floor(Size(aligned_lhs), size);
-
-        return Front(aligned_lhs, size);
-    }
-
-    template <typename TType>
-    inline ByteSpan AlignAs(Immutable<ByteSpan> lhs) noexcept
-    {
-        return Align(lhs, SizeOf<TType>(), AlignmentOf<TType>());
-    }
-
-    template <typename TType>
-    inline RWByteSpan AlignAs(Immutable<RWByteSpan> lhs) noexcept
-    {
-        return Align(lhs, SizeOf<TType>(), AlignmentOf<TType>());
-    }
-
-    // Span operations.
-    // ================
-
-    inline constexpr ByteSpan Select(Immutable<ByteSpan> span, Bytes offset, Bytes count) noexcept
-    {
-        return Select(span, ToInt(offset), ToInt(count));
-    }
-
-    inline constexpr RWByteSpan Select(Immutable<RWByteSpan> span, Bytes offset, Bytes count) noexcept
-    {
-        return Select(span, ToInt(offset), ToInt(count));
-    }
-
-    inline constexpr ByteSpan Front(Immutable<ByteSpan> lhs, Bytes size) noexcept
-    {
-        return Front(lhs, ToInt(size));
-    }
-
-    inline constexpr RWByteSpan Front(Immutable<RWByteSpan> lhs, Bytes size) noexcept
-    {
-        return Front(lhs, ToInt(size));
-    }
-
-    inline constexpr ByteSpan Back(Immutable<ByteSpan> lhs, Bytes size) noexcept
-    {
-        return Back(lhs, ToInt(size));
-    }
-
-    inline constexpr RWByteSpan Back(Immutable<RWByteSpan> lhs, Bytes size) noexcept
-    {
-        return Back(lhs, ToInt(size));
-    }
-
-    inline ByteSpan PopFront(Immutable<ByteSpan> lhs, Bytes size) noexcept
-    {
-        return PopFront(lhs, ToInt(size));
-    }
-
-    inline RWByteSpan PopFront(Immutable<RWByteSpan> lhs, Bytes size) noexcept
-    {
-        return PopFront(lhs, ToInt(size));
-    }
-
-    inline ByteSpan PopBack(Immutable<ByteSpan> lhs, Bytes size) noexcept
-    {
-        return PopBack(lhs, ToInt(size));
-    }
-
-    inline RWByteSpan PopBack(Immutable<RWByteSpan> lhs, Bytes size) noexcept
-    {
-        return PopBack(lhs, ToInt(size));
-    }
-
-    template <typename TType>
-    inline ByteSpan PopFront(Immutable<ByteSpan> lhs) noexcept
-    {
-        return PopFront(lhs, SizeOf(lhs));
-    }
-
-    template <typename TType>
-    inline RWByteSpan PopFront(Immutable<RWByteSpan> lhs) noexcept
-    {
-        return PopFront(lhs, SizeOf(lhs));
-    }
-
-    template <typename TType>
-    inline ByteSpan PopBack(Immutable<ByteSpan> lhs) noexcept
-    {
-        return PopBack(lhs, SizeOf(lhs));
-    }
-
-    template <typename TType>
-    inline RWByteSpan PopBack(Immutable<RWByteSpan> lhs) noexcept
-    {
-        return PopBack(lhs, SizeOf(lhs));
-    }
-
-    inline constexpr Tuple<ByteSpan, ByteSpan> SliceFront(Immutable<ByteSpan> lhs, Bytes size) noexcept
-    {
-        return SliceFront(lhs, ToInt(size));
-    }
-
-    inline constexpr Tuple<RWByteSpan, RWByteSpan> SliceFront(Immutable<RWByteSpan> lhs, Bytes size) noexcept
-    {
-        return SliceFront(lhs, ToInt(size));
-    }
-
-    inline constexpr Tuple<ByteSpan, ByteSpan> SliceBack(Immutable<ByteSpan> lhs, Bytes size) noexcept
-    {
-        return SliceBack(lhs, ToInt(size));
-    }
-
-    inline constexpr Tuple<RWByteSpan, RWByteSpan> SliceBack(Immutable<RWByteSpan> lhs, Bytes size) noexcept
-    {
-        return SliceBack(lhs, ToInt(size));
+        return Front(lhs, floor_size);
     }
 
     // Conversion.
     // ==========
 
-    template <typename TElement>
-    inline Span<Const<TElement>> ToSpan(Immutable<ByteSpan> rhs) noexcept
+    inline ByteSpan ToReadOnly(Immutable<ByteSpan> rhs) noexcept
     {
-        auto begin = FromTypeless<TElement>(Begin(rhs));
-        auto end = FromTypeless<TElement>(End(rhs));
-
-        return { begin, end };
+        return rhs;
     }
 
-    template <typename TElement>
-    inline Span<TElement> ToRWSpan(Immutable<RWByteSpan> rhs) noexcept
+    inline RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept
     {
-        auto begin = FromTypeless<TElement>(Begin(rhs));
-        auto end = FromTypeless<TElement>(End(rhs));
-
-        return { begin, end };
+        return { ToMutable(Data(rhs)), Count(rhs) };
     }
 
-    template <typename TElement>
-    inline ByteSpan ToByteSpan(Immutable<Span<TElement>> rhs) noexcept
+    template <typename TObject>
+    inline ByteSpan BytesOf(Immutable<TObject> rhs) noexcept
     {
-        auto begin = ToBytePtr(Begin(rhs));
-        auto end = ToBytePtr(End(rhs));
+        auto data = ToBytePtr(&rhs);
+        auto size = SizeOf<TObject>();
 
-        return { begin, end };
+        return { data, size };
     }
 
-    template <typename TElement>
-    inline RWByteSpan ToRWByteSpan(Immutable<Span<TElement>> rhs) noexcept
+    template <typename TObject>
+    inline RWByteSpan BytesOf(Mutable<TObject> rhs) noexcept
     {
-        auto begin = ToBytePtr(Begin(rhs));
-        auto end = ToBytePtr(End(rhs));
+        auto data = ToBytePtr(&rhs);
+        auto size = SizeOf<TObject>();
 
-        return { begin, end };
+        return { data, size };
+    }
+
+    template <typename TObject, typename TTraits>
+    inline Reference<TObject> FromBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        return *FromTypeless<TObject>(Data(rhs));
+    }
+
+    template <Concepts::ContiguousRange TRange>
+    inline auto RangeBytesOf(Immutable<TRange> rhs) noexcept
+    {
+        using RangeElement = Templates::RangeElementPointer<TRange>;
+
+        auto data = ToBytePtr(Data(rhs));
+        auto size = SizeOf<RangeElement>() * Count(rhs);
+
+        return MakeByteSpan( data, size );
+    }
+
+    template <typename TTraits>
+    inline BaseByteSpan<TTraits> RangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        return rhs;
+    }
+
+    template <Concepts::ContiguousRange TRange, typename TTraits>
+    inline TRange FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        if constexpr (Templates::IsSame<TRange, BaseByteSpan<TTraits>>)
+        {
+            return rhs;
+        }
+        else
+        {
+            using RangeElement = Templates::RangeElementPointer<TRange>;
+
+            auto data = FromTypeless<RangeElement>(Data(rhs));
+            auto count = Count(rhs) / SizeOf<RangeElement>();
+
+            return TRange{ data, count };
+        }
     }
 
 }
+
+// ===========================================================================

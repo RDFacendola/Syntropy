@@ -56,7 +56,7 @@ namespace Syntropy
         constexpr Mutable<Span> operator=(Immutable<Span<UType>> rhs) noexcept;
 
         /// \brief Check whether the span is non-empty.
-        constexpr operator Bool() const noexcept;
+        constexpr explicit operator Bool() const noexcept;
 
         /// \brief Access an element by index.
         /// If the provided index is not within the span the behavior of this method is undefined.
