@@ -302,6 +302,9 @@ namespace Syntropy
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
+        // In some implementations comparing two instances for identity is much faster than comparing them for equality.
+        // This function is left as a customization point for those implementations.
+
         return AreEquivalent(lhs, rhs);
     }
 
