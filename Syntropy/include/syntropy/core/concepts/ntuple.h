@@ -95,7 +95,7 @@ namespace Syntropy::Tuples
     /* TUPLES                                                               */
     /************************************************************************/
 
-        /// \brief Check whether lhs and rhs are equal.
+    /// \brief Check whether lhs and rhs are equal.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
     constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
@@ -106,10 +106,6 @@ namespace Syntropy::Tuples
     /// \brief Compare two n-tuples lexicographically.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
     constexpr Ordering Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
-
-    /// \brief Member-wise swap two n-tuples.
-    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    constexpr void Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
 
     /// \brief Member-wise swap two tuples.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
