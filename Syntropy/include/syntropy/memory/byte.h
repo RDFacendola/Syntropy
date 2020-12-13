@@ -73,6 +73,8 @@ namespace Syntropy
     // Non-member functions.
     // =====================
 
+    // Conversions.
+
     template <typename TNumber>
     constexpr Byte ToByte(TNumber rhs) noexcept
     {

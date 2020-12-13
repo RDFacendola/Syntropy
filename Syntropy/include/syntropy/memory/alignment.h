@@ -147,9 +147,7 @@ namespace Syntropy
 
     inline RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        auto aligned_pointer = Align(ToReadOnly(pointer), alignment);
-
-        return ToReadWrite(aligned_pointer);
+        return ToReadWrite(Align(ToReadOnly(pointer), alignment));
     }
 
     inline BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept
@@ -163,9 +161,7 @@ namespace Syntropy
 
     inline RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        auto aligned_pointer = AlignDown(ToReadOnly(pointer), alignment);
-        
-        return ToReadWrite(aligned_pointer);
+        return ToReadWrite(AlignDown(ToReadOnly(pointer), alignment));
     }
 
     // Bitwise operations.
