@@ -343,14 +343,14 @@ namespace Syntropy
         {
             auto compare = (Front(lhs_copy) <=> Front(rhs_copy));
 
-            if (compare == Ordering::Less)
+            if (compare == Ordering::kLess)
             {
-                return Ordering::Less;
+                return Ordering::kLess;
             }
             
-            if (compare == Ordering::Greater)
+            if (compare == Ordering::kGreater)
             {
-                return Ordering::Greater;
+                return Ordering::kGreater;
             }
 
             lhs_copy = PopFront(lhs_copy);
@@ -359,10 +359,10 @@ namespace Syntropy
 
         if (IsEmpty(lhs_copy) && IsEmpty(rhs_copy))
         {
-            return Ordering::Equivalent;
+            return Ordering::kEquivalent;
         }
 
-        return IsEmpty(lhs_copy) ? Ordering::Less : Ordering::Greater;
+        return IsEmpty(lhs_copy) ? Ordering::kLess : Ordering::kGreater;
     }
 
     // Random access range.

@@ -51,7 +51,7 @@ namespace Syntropy::UnitTest
         auto bar = CompareTestFixture::StrongComparable{ 0 };
 
         SYNTROPY_UNIT_EQUAL(foo <=> bar, StrongOrdering::Equal);
-        SYNTROPY_UNIT_EQUAL(foo <=> bar, StrongOrdering::Equivalent);
+        SYNTROPY_UNIT_EQUAL(foo <=> bar, StrongOrdering::kEquivalent);
 
         //
 
@@ -68,7 +68,7 @@ namespace Syntropy::UnitTest
         auto foo = CompareTestFixture::StrongComparable{ 0 };
         auto bar = CompareTestFixture::StrongComparable{ 1 };
 
-        SYNTROPY_UNIT_EQUAL(foo <=> bar, StrongOrdering::Less);
+        SYNTROPY_UNIT_EQUAL(foo <=> bar, StrongOrdering::kLess);
 
         //
 
@@ -85,7 +85,7 @@ namespace Syntropy::UnitTest
         auto foo = CompareTestFixture::StrongComparable{ 1 };
         auto bar = CompareTestFixture::StrongComparable{ 0 };
 
-        SYNTROPY_UNIT_EQUAL(foo <=> bar, StrongOrdering::Greater);
+        SYNTROPY_UNIT_EQUAL(foo <=> bar, StrongOrdering::kGreater);
 
         //
 
