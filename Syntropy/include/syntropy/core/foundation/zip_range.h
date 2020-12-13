@@ -11,9 +11,9 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/sequence.h"
 
-#include "syntropy/core/foundation/range.h"
+#include "syntropy/core/concepts/range.h"
+#include "syntropy/core/concepts/ntuple.h"
 #include "syntropy/core/foundation/tuple.h"
-#include "syntropy/core/foundation/ntuple.h"
 
 #include "syntropy/math/math.h"
 

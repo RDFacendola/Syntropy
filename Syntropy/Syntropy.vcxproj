@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\syntropy\core\foundation\details\ntuple_details.h" />
+    <ClInclude Include="include\syntropy\core\concepts\details\ntuple_details.h" />
     <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
-    <ClInclude Include="include\syntropy\core\foundation\ntuple.h" />
-    <ClInclude Include="include\syntropy\core\foundation\range.h" />
+    <ClInclude Include="include\syntropy\core\concepts\ntuple.h" />
+    <ClInclude Include="include\syntropy\core\concepts\range.h" />
     <ClInclude Include="include\syntropy\core\foundation\reverse_range.h" />
     <ClInclude Include="include\syntropy\core\foundation\span.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />

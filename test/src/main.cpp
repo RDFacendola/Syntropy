@@ -23,9 +23,10 @@
 #include "syntropy/core/support/scope_guard.h"
 #include "syntropy/core/support/visitor.h"
 
-#include "syntropy/core/foundation/ntuple.h"
+#include "syntropy/core/concepts/ntuple.h"
+#include "syntropy/core/concepts/range.h"
+
 #include "syntropy/core/foundation/tuple.h"
-#include "syntropy/core/foundation/range.h"
 #include "syntropy/core/foundation/reverse_range.h"
 #include "syntropy/core/foundation/zip_range.h"
 #include "syntropy/core/foundation/span.h"

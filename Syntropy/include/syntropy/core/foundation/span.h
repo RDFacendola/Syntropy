@@ -9,7 +9,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
 
-#include "syntropy/core/foundation/range.h"
+#include "syntropy/core/concepts/range.h"
 
 // ===========================================================================
 

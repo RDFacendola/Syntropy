@@ -12,7 +12,7 @@
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/sequence.h"
 
-#include "syntropy/core/foundation/details/ntuple_details.h"
+#include "syntropy/core/concepts/details/ntuple_details.h"
 
 // ===========================================================================
 

@@ -11,7 +11,8 @@
 #include "syntropy/language/templates/sequence.h"
 #include "syntropy/language/support/compare.h"
 
-#include "syntropy/core/foundation/ntuple.h"
+#include "syntropy/core/concepts/ntuple.h"
+
 #include "syntropy/core/foundation/details/tuple_details.h"
 
 // ===========================================================================
