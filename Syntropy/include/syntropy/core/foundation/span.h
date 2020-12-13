@@ -191,6 +191,18 @@ namespace Syntropy
     template <typename TType, typename TTraits>
     constexpr BasePtr<TType> Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
+    // Access.
+    // =======
+
+    /// \brief Convert rhs to a read-only span.
+    template <typename TType, typename TTraits>
+    constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+
+    /// \brief Convert rhs to a read-write span.
+    /// \remarks If the original span is not read-writable, accessing the returned values results in undefined behavior.
+    template <typename TType, typename TTraits>
+    constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+
     // Utilities.
     // ==========
 
@@ -210,17 +222,6 @@ namespace Syntropy
     template <typename TType>
     constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept;
 
-    // Conversion.
-    // ===========
-
-    /// \brief Convert rhs to a read-only span.
-    template <typename TType, typename TTraits>
-    constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
-
-    /// \brief Convert rhs to a read-write span.
-    /// \remarks If the original span is not read-writable, accessing the returned values results in undefined behavior.
-    template <typename TType, typename TTraits>
-    constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 }
 
 // ===========================================================================
@@ -256,8 +257,8 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Span<TType>.
-    // ===============
+    // BaseSpan<TType>.
+    // ================
 
     template <typename TType, typename TTraits>
     constexpr BaseSpan<TType, TTraits>::BaseSpan(Null) noexcept
@@ -396,6 +397,20 @@ namespace Syntropy
         return rhs.data_;
     }
 
+    // Conversion.
+
+    template <typename TType, typename TTraits>
+    constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    {
+        return { ToReadOnly(Data(rhs)), Count(rhs) };
+    }
+
+    template <typename TType, typename TTraits>
+    constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    {
+        return { ToReadWrite(Data(rhs)), Count(rhs) };
+    }
+
     // Utilities.
 
     template <typename TType>
@@ -420,20 +435,6 @@ namespace Syntropy
     constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept
     {
         return { begin, end };
-    }
-
-    // Conversion.
-
-    template <typename TType, typename TTraits>
-    constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
-    {
-        return { ToReadOnly(Data(rhs)), Count(rhs) };
-    }
-
-    template <typename TType, typename TTraits>
-    constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
-    {
-        return { ToReadWrite(Data(rhs)), Count(rhs) };
     }
 
 }

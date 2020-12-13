@@ -93,7 +93,7 @@ namespace Syntropy
 
         if (type == typeid(TVisitable))
         {
-            visitor(*FromTypeless<TVisitable>(visitable));
+            visitor(*FromTypelessPtr<TVisitable>(visitable));
             return true;
         }
 

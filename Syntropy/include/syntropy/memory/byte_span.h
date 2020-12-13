@@ -198,24 +198,8 @@ namespace Syntropy
     template <typename TTraits>
     constexpr typename TTraits::TPointer Data(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
 
-    // Utilities.
+    // Alignment.
     // ==========
-
-    /// \brief Create a new byte span by deducing template from arguments.
-    constexpr ByteSpan MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept;
-
-    /// \brief Create a new byte span by deducing template from arguments.
-    constexpr ByteSpan MakeByteSpan(BytePtr begin, BytePtr end) noexcept;
-
-    /// \brief Create a new byte span by deducing template from arguments.
-    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept;
-
-    /// \brief Create a new byte span by deducing template from arguments.
-    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept;
-
-    /************************************************************************/
-    /* ALIGNMENT                                                            */
-    /************************************************************************/
 
     /// \brief Consume lhs from the front until its first byte is aligned to rhs or lhs is exhausted.
     template <typename TTraits>
@@ -225,16 +209,8 @@ namespace Syntropy
     template <typename TTraits>
     BaseByteSpan<TTraits> Floor(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Bytes> size) noexcept;
 
-    /************************************************************************/
-    /* CONVERSION                                                           */
-    /************************************************************************/
-
-    /// \brief Convert rhs to a read-only byte span.
-    ByteSpan ToReadOnly(Immutable<ByteSpan> rhs) noexcept;
-
-    /// \brief Convert rhs to a read-write byte span.
-    /// \remarks If the original memory location is not read-writable, accessing the returned values results in undefined behavior.
-    RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept;
+    // Conversions.
+    // ============
 
     /// \brief Get the read-only object representation of rhs.
     /// An object representation is the sequence of bytes starting from the object address.
@@ -266,6 +242,31 @@ namespace Syntropy
     /// \remarks If rhs is not exactly a range TRange, accessing the returned value results in undefined behavior.
     template <Concepts::ContiguousRange TRange, typename TTraits>
     TRange FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    // Access.
+    // =======
+
+    /// \brief Convert rhs to a read-only byte span.
+    ByteSpan ToReadOnly(Immutable<ByteSpan> rhs) noexcept;
+
+    /// \brief Convert rhs to a read-write byte span.
+    /// \remarks If the original memory location is not read-writable, accessing the returned values results in undefined behavior.
+    RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept;
+
+    // Utilities.
+    // ==========
+
+    /// \brief Create a new byte span by deducing template from arguments.
+    constexpr ByteSpan MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept;
+
+    /// \brief Create a new byte span by deducing template from arguments.
+    constexpr ByteSpan MakeByteSpan(BytePtr begin, BytePtr end) noexcept;
+
+    /// \brief Create a new byte span by deducing template from arguments.
+    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept;
+
+    /// \brief Create a new byte span by deducing template from arguments.
+    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept;
     
 }
 
@@ -364,8 +365,10 @@ namespace Syntropy
         Syntropy::Swap(size_, rhs.size_);
     }
 
+    // Non-member functions.
+    // =====================
+
     // Comparison.
-    // ===========
 
     template <typename TTraits, typename UTraits>
     constexpr Bool operator==(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept
@@ -446,28 +449,6 @@ namespace Syntropy
         return rhs.data_;
     }
 
-    // Utilities.
-
-    constexpr ByteSpan MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept
-    {
-        return { begin, size };
-    }
-
-    constexpr ByteSpan MakeByteSpan(BytePtr begin, BytePtr end) noexcept
-    {
-        return { begin, end };
-    }
-
-    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept
-    {
-        return { begin, size };
-    }
-
-    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept
-    {
-        return { begin, end };
-    }
-
     // Alignment.
 
     template <typename TTraits>
@@ -490,17 +471,6 @@ namespace Syntropy
     }
 
     // Conversion.
-    // ==========
-
-    inline ByteSpan ToReadOnly(Immutable<ByteSpan> rhs) noexcept
-    {
-        return rhs;
-    }
-
-    inline RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept
-    {
-        return { ToReadWrite(Data(rhs)), Count(rhs) };
-    }
 
     template <typename TObject>
     inline ByteSpan BytesOf(Immutable<TObject> rhs) noexcept
@@ -523,7 +493,7 @@ namespace Syntropy
     template <typename TObject, typename TTraits>
     inline Reference<TObject> FromBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
     {
-        return *FromTypeless<TObject>(Data(rhs));
+        return *FromTypelessPtr<TObject>(Data(rhs));
     }
 
     template <Concepts::ContiguousRange TRange>
@@ -554,11 +524,45 @@ namespace Syntropy
         {
             using RangeElement = Templates::RangeElementPointer<TRange>;
 
-            auto data = FromTypeless<RangeElement>(Data(rhs));
+            auto data = FromTypelessPtr<RangeElement>(Data(rhs));
             auto count = Count(rhs) / SizeOf<RangeElement>();
 
             return TRange{ data, count };
         }
+    }
+
+    // Access.
+
+    inline ByteSpan ToReadOnly(Immutable<ByteSpan> rhs) noexcept
+    {
+        return rhs;
+    }
+
+    inline RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept
+    {
+        return { ToReadWrite(Data(rhs)), Count(rhs) };
+    }
+
+    // Utilities.
+
+    constexpr ByteSpan MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept
+    {
+        return { begin, size };
+    }
+
+    constexpr ByteSpan MakeByteSpan(BytePtr begin, BytePtr end) noexcept
+    {
+        return { begin, end };
+    }
+
+    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept
+    {
+        return { begin, size };
+    }
+
+    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept
+    {
+        return { begin, end };
     }
 
 }
