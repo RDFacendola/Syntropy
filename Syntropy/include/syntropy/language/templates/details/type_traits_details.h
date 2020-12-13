@@ -102,6 +102,15 @@ namespace Syntropy::Templates::Details
     template <typename TType, typename... UTypes>
     inline constexpr Int TypeListIndex<TType, TypeList<UTypes...>> = sizeof...(UTypes) - TypeListIndexHelper<TType, UTypes...>::kValue - 1;
 
+    /// \brief Integer constant equal to the number of types in a type list.
+    /// \remarks If TTypeList isn't a TypeList the program is ill-formed.
+    template <typename TTypeList>
+    inline constexpr Int TypeListRank;
+
+    /// \brief Specialization for type lists.
+    template <typename... TTypes>
+    inline constexpr Int TypeListRank<TypeList<TTypes...>> = sizeof...(TTypes);
+
     // ===========================================================================
 
     /// \brief Provides indexed access to type list elements' types.

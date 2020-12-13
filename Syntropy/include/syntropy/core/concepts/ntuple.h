@@ -96,17 +96,14 @@ namespace Syntropy
 
     /// \brief Check whether lhs and rhs are equal.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    requires Templates::SameRank<TTuple, UTuple>
     constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    requires Templates::SameRank<TTuple, UTuple>
     constexpr Bool AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Compare two n-tuples lexicographically.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    requires Templates::SameRank<TTuple, UTuple>
     constexpr Ordering Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Member-wise swap two n-tuples.
@@ -165,7 +162,6 @@ namespace Syntropy
     // =====================
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    requires Templates::SameRank<TTuple, UTuple>
     constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         // In some implementations comparing two instances for identity is much faster than comparing them for equality.
@@ -175,38 +171,75 @@ namespace Syntropy
     }
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    requires Templates::SameRank<TTuple, UTuple>
     constexpr Bool AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
-        auto result = true;
+        using namespace Templates;
 
-        auto are_equivalent = [&result](const auto& lhs_element, const auto& rhs_element)
+        // Early out if the two tuples have different ranks.
+
+        if constexpr (TupleRank<TTuple> != TupleRank<UTuple>)
         {
-            result &= (lhs_element == rhs_element);
-        };
-
-        LockstepApply(are_equivalent, lhs, rhs);
-
-        return result;
+            return false;
+        }
+        else
+        {
+            return Compare(lhs, rhs) == Ordering::kEquivalent;
+        }
     }
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    requires Templates::SameRank<TTuple, UTuple>
     constexpr Ordering Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
-        auto result = Ordering::Equivalent;
+        using namespace Templates;
 
-        auto compare = [&result](const auto& lhs_element, const auto& rhs_element)
+        // Lexicographic compare between two tuple elements.
+
+        auto lexicographic_compare = [&lhs, &rhs]<Int VIndex>(Ordering compare_result, IntConstant<VIndex>)
         {
-            if (result == Ordering::Equivalent)
-            {
-                result = (lhs_element) <=> (rhs_element);
-            }
+            return (compare_result == Ordering::kEquivalent) ? (Get<VIndex>(lhs) <=> Get<VIndex>(rhs)) : compare_result;
         };
 
-        LockstepApply(compare, lhs, rhs);
+        // Lexicographic compare between two same-rank tuples.
 
-        return result;
+        auto lockstep_lexicographic_compare = [&lexicographic_compare]<Int... VIndex>(Sequence<VIndex...>) mutable
+        {
+            auto compare_result = Ordering::kEquivalent;
+
+            ((compare_result = lexicographic_compare(compare_result, IntConstant<VIndex>{})), ...);
+
+            return compare_result;
+        };
+
+        // 1) Same-rank comparison.
+
+        if constexpr (TupleRank<TTuple> == TupleRank<UTuple>)
+        {
+            return lockstep_lexicographic_compare(TupleSequenceFor<TTuple>{});
+        }
+        
+        // 2) Left-to-right comparison.
+
+        if constexpr (TupleRank<TTuple> < TupleRank<UTuple>)
+        {
+            if (auto compare_result = lockstep_lexicographic_compare(TupleSequenceFor<TTuple>{}); compare_result != Ordering::kEquivalent)
+            {
+                return compare_result;
+            }
+
+            return Ordering::kLess;
+        }
+
+        // 3) Right-to-left comparison.
+
+        if constexpr (TupleRank<TTuple> > TupleRank<UTuple>)
+        {
+            if (auto compare_result = lockstep_lexicographic_compare(TupleSequenceFor<UTuple>{}); compare_result != Ordering::kEquivalent)
+            {
+                return compare_result;
+            }
+
+            return Ordering::kGreater;
+        }
     }
 
     template <Concepts::NTuple TTuple>

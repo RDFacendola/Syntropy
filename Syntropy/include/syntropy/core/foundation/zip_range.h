@@ -232,7 +232,7 @@ namespace Syntropy::Templates
 
     /// \brief Partial template specialization for tuples.
     template <Concepts::Range... TRanges>
-    struct TupleRankTypeTraits<ZipRange<TRanges...>> : Constant<Int, sizeof...(TRanges)> {};
+    struct TupleRankTypeTraits<ZipRange<TRanges...>> : IntConstant<sizeof...(TRanges)> {};
 }
 
 // ===========================================================================

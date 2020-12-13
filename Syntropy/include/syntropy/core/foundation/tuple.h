@@ -254,7 +254,7 @@ namespace Syntropy::Templates
 
     /// \brief Partial template specialization for tuples.
     template <typename... TElements>
-    struct TupleRankTypeTraits<Tuple<TElements...>> : Constant<Int, sizeof...(TElements)> {};
+    struct TupleRankTypeTraits<Tuple<TElements...>> : IntConstant<sizeof...(TElements)> {};
 }
 
 // ===========================================================================

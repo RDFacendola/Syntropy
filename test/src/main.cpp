@@ -45,21 +45,23 @@ int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-     using namespace Syntropy::Literals;
+    using namespace Syntropy::Literals;
 
-    Syntropy::Byte x[] = { Syntropy::ToByte(1) };
-    Syntropy::Byte y[] = { Syntropy::ToByte(1), Syntropy::ToByte(2) };
+    auto t = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'i', 'n', 'o');
+    auto u = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'e', 't', 't', 'o');
+    auto v = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'i', 'n', 'i');
 
-    float power = 534.0f;
+    auto tt = (t <=> t);
+    auto tu = (t <=> u);
+    auto tv = (t <=> v);
+    
+    auto ut = (u <=> t);
+    auto uu = (u <=> u);
+    auto uv = (u <=> v);
 
-    auto bx = Syntropy::BytesOf(x);
-    auto by = Syntropy::BytesOf(y);
-    auto bp = Syntropy::BytesOf(power);
-
-    auto b = (bx <=> by);
-    auto d = (by <=> bx);
-
-    auto power2 = Syntropy::FromBytesOf<float>(bp);
+    auto vt = (v <=> t);
+    auto vu = (v <=> u);
+    auto vv = (v <=> v);
 
     system("pause");
 

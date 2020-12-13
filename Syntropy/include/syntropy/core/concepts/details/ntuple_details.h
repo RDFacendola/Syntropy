@@ -44,12 +44,12 @@ namespace Syntropy::Templates::Details
     // =====================
 
     /// \brief Detect whether TType provides index compile-time access to tuple elements' types.
-    template <typename TType, Int VIndex>
-    using DetectTupleElementType = decltype(Declval<TupleElementType<VIndex, TType>::Type>());
+    template <typename TType, typename TIndex>
+    using DetectTupleElementType = decltype(Declval<TupleElementType<TIndex::kValue, TType>>());
 
     /// \brief Constant equal to true if TType provides compile-time access to the VIndex-th element's type, equal to false otherwise.
     template <typename TType, Int VIndex>
-    inline constexpr Bool HasTupleElementType = IsValidExpression<DetectTupleElementType, TType, VIndex>::kValue;
+    inline constexpr Bool HasTupleElementType = IsValidExpression<DetectTupleElementType, TType, IntConstant<VIndex>>;
 
     template <typename TType, Int VRank>
     struct HasTupleElementTypesHelper
@@ -68,12 +68,12 @@ namespace Syntropy::Templates::Details
     // ===============
 
     /// \brief Detect whether TType provides compile-time access to the VIndex-th element.
-    template <typename TType, Int VIndex>
-    using DetectTupleGetter = decltype(Get<VIndex>(Declval<TType>()));
+    template <typename TType, typename TIndex>
+    using DetectTupleGetter = decltype(Get<TIndex::kValue>(Declval<TType>()));
 
     /// \brief Constant equal to true if TType provides compile-time access to the VIndex-th element, equal to false otherwise.
     template <typename TType, Int VIndex>
-    inline constexpr Bool HasTupleGetter = IsValidExpression<DetectTupleGetter, TType, VIndex>::kValue;
+    inline constexpr Bool HasTupleGetter = IsValidExpression<DetectTupleGetter, TType, IntConstant<VIndex>>;
 
     template <typename TType, Int VRank>
     struct HasTupleGettersHelper

@@ -42,6 +42,10 @@ namespace Syntropy::Templates
     /// \brief False boolean constant.
     using False = BoolConstant<false>;
 
+    /// \brief Integer constant.
+    template <Int VValue>
+    using IntConstant = Constant<Int, VValue>;
+
     /************************************************************************/
     /* META                                                                 */
     /************************************************************************/
@@ -83,6 +87,11 @@ namespace Syntropy::Templates
     /// \remarks If TType doesn't appear exactly once in TTypeList the program is ill-formed.
     template <typename TType, typename TTypeList>
     inline constexpr Int TypeListIndex = Details::TypeListIndex<TType, TTypeList>;
+
+    /// \brief Integer constant equal to the number of types in a type list.
+    /// \remarks If TTypeList isn't a TypeList the program is ill-formed.
+    template <typename TTypeList>
+    inline constexpr Int TypeListRank = Details::TypeListRank<TTypeList>;
 
     /// \brief Provides indexed access to type list elements' types.
     template <Int VIndex, typename TTypeList>
