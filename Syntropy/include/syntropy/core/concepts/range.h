@@ -11,6 +11,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 #include "syntropy/language/support/compare.h"
+#include "syntropy/language/support/swap.h"
 
 #include "syntropy/core/foundation/tuple.h"
 
@@ -270,6 +271,13 @@ namespace Syntropy::Ranges
     template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
     constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
+    // Swap.
+    // =====
+
+    /// \brief Member-wise swap elements in two ranges until either lhs or rhs is exhausted.
+    /// \return Returns elements that were not swapped in both lhs and rhs. One of the two is guaranteed to be empty.
+    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
+    constexpr Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 }
 
 // ===========================================================================
@@ -442,11 +450,31 @@ namespace Syntropy::Ranges
     template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
     constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        // Note that empty ranges are equal to each other empty range.
+        // Note that empty ranges are equal to every other empty range.
 
         return (Count(lhs) == Count(rhs)) && (IsEmpty(lhs) || (Data(lhs) == Data(rhs)));
     }
 
+    // Swap.
+
+    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
+    constexpr Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    {
+        using Syntropy::Swap;
+
+        auto lhs_copy = lhs;
+        auto rhs_copy = rhs;
+
+        for (; !IsEmpty(lhs_copy) && !IsEmpty(rhs_copy);)
+        {
+            Swap(Front(lhs_copy), Front(rhs_copy));
+
+            lhs_copy = PopFront(lhs_copy);
+            rhs_copy = PopFront(rhs_copy);
+        }
+
+        return { lhs_copy , rhs_copy };
+    }
 }
 
 // ===========================================================================

@@ -52,23 +52,33 @@ int main(int argc, char **argv)
     auto v = Syntropy::MakeTuple('c', 'o', 'n', 'i', 'g', 'l', 'i');
 
     auto r = Syntropy::MakeSpan(&Get<6>(t), 7);
+    auto s = Syntropy::MakeSpan(&Get<7>(u), 8);
 
     for (auto&& x : r)
     {
         std::cout << x << ",";
     }
 
-    auto tt = (t <=> t);
-    auto tu = (t <=> u);
-    auto tv = (t <=> v);
-    
-    auto ut = (u <=> t);
-    auto uu = (u <=> u);
-    auto uv = (u <=> v);
+    std::cout << "\n";
 
-    auto vt = (v <=> t);
-    auto vu = (v <=> u);
-    auto vv = (v <=> v);
+    auto [a,b] = Syntropy::Ranges::MemberwiseSwap(r, s);
+
+    for (auto&& x : r)
+    {
+        std::cout << x << ",";
+    }
+
+     auto tt = (t <=> t);
+     auto tu = (t <=> u);
+     auto tv = (t <=> v);
+     
+     auto ut = (u <=> t);
+     auto uu = (u <=> u);
+     auto uv = (u <=> v);
+ 
+     auto vt = (v <=> t);
+     auto vu = (v <=> u);
+     auto vv = (v <=> v);
 
     system("pause");
 
