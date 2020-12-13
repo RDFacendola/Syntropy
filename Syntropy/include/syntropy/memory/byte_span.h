@@ -25,8 +25,6 @@ namespace Syntropy
     /* BASE BYTE SPAN                                                       */
     /************************************************************************/
 
-    struct ByteSpanTypeTraits;
-
     /// \brief Represents a contiguous, non-owning, range of bytes.
     /// \author Raffaele D. Facendola - December 2020.
     template <typename TTraits>

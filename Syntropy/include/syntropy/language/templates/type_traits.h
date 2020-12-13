@@ -25,6 +25,23 @@ namespace Syntropy::Templates
         using Type = TType;
     };
 
+    /// \brief Exposes a member Value equal to VValue.
+    template <typename TType, TType VValue>
+    struct Constant
+    {
+        static constexpr TType kValue = VValue;
+    };
+
+    /// \brief Boolean constant.
+    template <Bool VValue>
+    using BoolConstant = Constant<Bool, VValue>;
+
+    /// \brief True boolean constant.
+    using True = BoolConstant<true>;
+
+    /// \brief False boolean constant.
+    using False = BoolConstant<false>;
+
     /************************************************************************/
     /* META                                                                 */
     /************************************************************************/
@@ -54,19 +71,6 @@ namespace Syntropy::Templates
     using EnableIfValidExpression = Details::EnableIfValidExpression<TExpression, TTypes...>;
 
     /************************************************************************/
-    /* RANK                                                                 */
-    /************************************************************************/
-
-    /// \brief Constant equal to the rank of TType. The program is ill-formed if TType's rank is meaningless.
-    /// This trait is expected to be specialized by types having a "rank" concept.
-    template <typename TType>
-    inline constexpr Int Rank;
-
-    /// \brief Constant equal to true if all TTypes have the same rank, false otherwise.
-    template <typename TType, typename... TTypes>
-    inline constexpr Bool SameRank = Details::SameRank<TType, TTypes...>;
-
-    /************************************************************************/
     /* TYPE LIST                                                            */
     /************************************************************************/
 
@@ -87,10 +91,6 @@ namespace Syntropy::Templates
     /// \brief Discards the first VCount elements in a type list and provides a type list with the remaining ones.
     template <Int VCount, typename TTypeList>
     using TypeListPopFront = Details::TypeListPopFront<VCount, TTypeList>;
-
-    /// \brief Partial template specialization for TypeLists.
-    template <typename... TTypes>
-    inline constexpr Int Rank<TypeList<TTypes...>> = sizeof...(TTypes);
 
     /************************************************************************/
     /* MISCELLANEOUS                                                        */
@@ -448,18 +448,6 @@ namespace Syntropy::Templates
     /// \remarks this function shall never be evaluated as it has no definition.
     template <typename TType>
     Templates::AddRValueReference<TType> Declval() noexcept;
-
-     /************************************************************************/
-    /* TUPLE-LIKE                                                           */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TTuple provides compile-time access to the VIndex-th element via the non-member function Get<Index>(TTuple&&), equal to false otherwise.
-    template <typename TTuple, Int VIndex>
-    inline constexpr Bool HasTupleGetter = Details::HasTupleGetter<TTuple, VIndex>;
-
-    /// \brief Constant equal to true if TTuple provides compile-time access by index to all its elements via the non-member function Get<Index>(TTuple&&), equal to false otherwise.
-    template <typename TTuple>
-    inline constexpr Bool HasTupleGetters = Details::HasTupleGetters<TTuple>;
 
 }
 

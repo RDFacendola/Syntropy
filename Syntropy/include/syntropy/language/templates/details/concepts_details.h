@@ -278,18 +278,6 @@ namespace Syntropy::Concepts::Details
     template <typename TPredicate, typename TType, typename UType>
     concept StrictWeakOrder = Relation<TPredicate, TType, UType>;
 
-    // Tuple-related concepts.
-    // =======================
-
-    /// \brief Concept for types that provide compile-time access by index to their elements.
-    template <typename TTuple>
-    concept TupleLike = requires(Immutable<TTuple> tuple)
-    {
-        /// \brief Get the rank of the tuple-like object.
-        { Syntropy::Templates::Rank<TTuple> } -> Integral;
-    }
-    && Templates::HasTupleGetters<TTuple>;
-
 }
 
 // ===========================================================================

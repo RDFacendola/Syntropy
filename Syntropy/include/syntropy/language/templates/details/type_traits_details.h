@@ -75,22 +75,6 @@ namespace Syntropy::Templates::Details
     template <template<typename...> typename TExpression, typename... TTypes>
     using EnableIfValidExpression = EnableIf<IsValidExpression<TExpression, TTypes...>>;
 
-    /************************************************************************/
-    /* RANK                                                                 */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if all TTypes have the same rank, false otherwise.
-    template <typename TType, typename... TTypes>
-    inline constexpr Bool SameRank = (SameRank<TType, TTypes> && ...);
-
-    /// \brief Specialization for two types.
-    template <typename TType, typename UType>
-    inline constexpr Bool SameRank<TType, UType> = (Rank<TType> == Rank<UType>);
-
-    /// \brief Specialization for one type. Always true.
-    template <typename TType>
-    inline constexpr Bool SameRank<TType> = true;
-
     // ===========================================================================
 
     /// \brief Discards the first element of a type list until the first element is equal to TType or the list is exhausted.
@@ -677,51 +661,6 @@ namespace Syntropy::Templates::Details
     /// \brief Partial template specialization for template specializations (duh...).
     template<template <typename...> typename TTemplate, typename... TTypes>
     constexpr Bool IsTemplateSpecializationOf<TTemplate<TTypes...>, TTemplate> = true;
-
-    /************************************************************************/
-    /* TUPLE-LIKE                                                           */
-    /************************************************************************/
-
-    /// \brief Convert TType as a reference type, without calling any constructor.
-    /// \remarks this function shall never be evaluated as it has no definition.
-    template <typename TType>
-    AddRValueReference<TType> Declval() noexcept;
-
-    /// \brief Helper type which tests a single tuple getter.
-    template <typename TVoid, typename TTuple, Int VIndex>
-    struct HasTupleGetterHelper
-    {
-        static constexpr Bool kValue = false;
-    };
-
-    /// \brief Partial template specialization for valid tuple-like objects.
-    template <typename TTuple, Int VIndex>
-    struct HasTupleGetterHelper<Void<decltype(Get<VIndex>(Declval<TTuple>()))>, TTuple, VIndex>
-    {
-        static constexpr Bool kValue = true;
-    };
-
-    /// \brief Constant equal to true if TTuple provides compile-time access to the VIndex-th element, equal to false otherwise.
-    template <typename TTuple, Int VIndex>
-    inline constexpr Bool HasTupleGetter = HasTupleGetterHelper<void, TTuple, VIndex>::kValue;
-
-    /// \brief Helper type which tests tuple getters from 0 up to the tuple rank.
-    template <typename TTuple, Int VRank>
-    struct HasTupleGettersHelper : HasTupleGettersHelper<TTuple, VRank - 1>
-    {
-        static constexpr Bool kValue = HasTupleGettersHelper<TTuple, VRank - 1>::kValue && HasTupleGetter<TTuple, VRank - 1>;
-    };
-
-    /// \brief Specialization for null-tuples. End-of-recursion.
-    template <typename TTuple>
-    struct HasTupleGettersHelper<TTuple, 0>
-    {
-        static constexpr Bool kValue = true;
-    };
-
-    /// \brief Constant equal to true if TTuple provides compile-time access by index to all its elements via the non-member function Get<Index>(TTuple&&), equal to false otherwise.
-    template <typename TTuple>
-    inline constexpr Bool HasTupleGetters = HasTupleGettersHelper<RemoveConstReference<TTuple>, Rank<RemoveConstReference<TTuple>>>::kValue;
 
 }
 

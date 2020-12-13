@@ -13,6 +13,7 @@
 
 #include "syntropy/core/foundation/range.h"
 #include "syntropy/core/foundation/tuple.h"
+#include "syntropy/core/foundation/ntuple.h"
 
 #include "syntropy/math/math.h"
 
@@ -33,16 +34,16 @@ namespace Syntropy
         // Tuple-like.
 
         template <Int VIndex, Concepts::Range... TRanges>
-        friend constexpr Immutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept;
+        friend constexpr Immutable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept;
+                                   
+        template <Int VIndex, Concepts::Range... TRanges>
+        friend constexpr Mutable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept;
 
         template <Int VIndex, Concepts::Range... TRanges>
-        friend constexpr Mutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept;
+        friend constexpr Immovable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept;
 
         template <Int VIndex, Concepts::Range... TRanges>
-        friend constexpr Immovable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept;
-
-        template <Int VIndex, Concepts::Range... TRanges>
-        friend constexpr Movable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept;
+        friend constexpr Movable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept;
 
         // Forward range.
 
@@ -113,22 +114,22 @@ namespace Syntropy
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
     template <Int VIndex, Concepts::Range... TRanges>
-    constexpr Immutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept;
+    constexpr Immutable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
     template <Int VIndex, Concepts::Range... TRanges>
-    constexpr Mutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept;
+    constexpr Mutable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
     template <Int VIndex, Concepts::Range... TRanges>
-    constexpr Immovable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept;
+    constexpr Immovable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
     template <Int VIndex, Concepts::Range... TRanges>
-    constexpr Movable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept;
+    constexpr Movable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept;
 
     // Forward range.
     // ==============
@@ -222,16 +223,16 @@ namespace Syntropy::Templates
     struct RangeElementCountTypeTraits<ZipRange<TRanges...>> : Alias<CommonType<RangeElementCount<TRanges>...>> {};
 
     /************************************************************************/
-    /* TUPLE-LIKE                                                           */
+    /* NTUPLE TRAITS                                                        */
     /************************************************************************/
 
-    /// \brief Provides indexed access to zip-range ranges' types.
-    template <Int VIndex, typename TTuple>
-    using ZipRangeElement = TypeListElement<VIndex, typename TTuple::TElementList>;
+    /// \brief Partial template specialization for tuples.
+    template <Int VIndex, Concepts::Range... TRanges>
+    struct TupleElementTypeTraits<VIndex, ZipRange<TRanges...>> : Alias<TupleElementType<VIndex, ZipRange<TRanges...>>> {};
 
     /// \brief Partial template specialization for tuples.
     template <Concepts::Range... TRanges>
-    inline constexpr Int Rank<ZipRange<TRanges...>> = sizeof...(TRanges);
+    struct TupleRankTypeTraits<ZipRange<TRanges...>> : Constant<Int, sizeof...(TRanges)> {};
 }
 
 // ===========================================================================
@@ -273,25 +274,25 @@ namespace Syntropy
     // Tuple-like.
 
     template <Int VIndex, Concepts::Range... TRanges>
-    constexpr Immutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept
+    constexpr Immutable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(range.ranges_);
     }
 
     template <Int VIndex, Concepts::Range... TRanges>
-    constexpr Mutable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept
+    constexpr Mutable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(range.ranges_);
     }
 
     template <Int VIndex, Concepts::Range... TRanges>
-    constexpr Immovable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept
+    constexpr Immovable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(range.ranges_);
     }
 
     template <Int VIndex, Concepts::Range... TRanges>
-    constexpr Movable<Templates::TypeListElement<VIndex, Templates::TypeList<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept
+    constexpr Movable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(range.ranges_);
     }

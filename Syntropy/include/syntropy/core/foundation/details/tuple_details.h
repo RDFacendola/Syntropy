@@ -9,7 +9,6 @@
 #include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/language/templates/type_traits.h"
-#include "syntropy/language/templates/sequence.h"
 
 // ===========================================================================
 
@@ -102,7 +101,7 @@ namespace Syntropy::Details
 
     /// \brief Enable converting tuple constructor.
     template <typename TTypeList, typename... UTypes>
-    using EnableIfTupleConvertingConstructor = MutablePtr<Templates::EnableIf<EnableIfTupleConvertingConstructorHelper<Templates::Rank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
+    using EnableIfTupleConvertingConstructor = MutablePtr<Templates::EnableIf<EnableIfTupleConvertingConstructorHelper<Templates::TupleRank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
 
     // (4)
 
@@ -123,7 +122,7 @@ namespace Syntropy::Details
 
     /// \brief Enable converting tuple copy-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-copy-constructed from the respective UType and the overload does not reduce to a copy-constructor.
     template <typename TTypeList, typename... UTypes>
-    using EnableIfTupleConvertingCopyConstructor = MutablePtr<Templates::EnableIf<EnableIfTupleConvertingCopyConstructorHelper<Templates::Rank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
+    using EnableIfTupleConvertingCopyConstructor = MutablePtr<Templates::EnableIf<EnableIfTupleConvertingCopyConstructorHelper<Templates::TupleRank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
 
     // (5)
 
@@ -144,7 +143,7 @@ namespace Syntropy::Details
 
     /// \brief Enable converting tuple move-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-move-constructed from the respective UType and the overload does not reduce to a move-constructor.
     template <typename TTypeList, typename... UTypes>
-    using EnableIfTupleConvertingMoveConstructor = MutablePtr<Templates::EnableIf<EnableIfTupleConvertingMoveConstructorHelper<Templates::Rank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
+    using EnableIfTupleConvertingMoveConstructor = MutablePtr<Templates::EnableIf<EnableIfTupleConvertingMoveConstructorHelper<Templates::TupleRank<TTypeList> == sizeof...(UTypes), TTypeList, Templates::TypeList<UTypes>...>>>;
 
     /************************************************************************/
     /* ENABLE IF - TUPLE ASSIGNMENT                                         */

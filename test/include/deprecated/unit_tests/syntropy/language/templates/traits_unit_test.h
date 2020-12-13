@@ -275,14 +275,6 @@ namespace Syntropy::Templates::UnitTest
         SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<1, TypeList<Int, Float, Bool>>, TypeList<Float, Bool>>), true);
         SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<2, TypeList<Int, Float, Bool>>, TypeList<Bool>>), true);
         SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<3, TypeList<Int, Float, Bool>>, TypeList<>>), true);
-    })
-
-    .TestCase("Rank returns the number of elements in a type list.", [](auto& fixture)
-    {
-        SYNTROPY_UNIT_EQUAL((Rank<TypeList<Int, Float, Bool>>), 3);
-        SYNTROPY_UNIT_EQUAL((Rank<TypeList<Int, Float>>), 2);
-        SYNTROPY_UNIT_EQUAL((Rank<TypeList<Int>>), 1);
-        SYNTROPY_UNIT_EQUAL((Rank<TypeList<>>), 0);
     });
 
 }

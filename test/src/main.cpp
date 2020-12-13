@@ -23,6 +23,7 @@
 #include "syntropy/core/support/scope_guard.h"
 #include "syntropy/core/support/visitor.h"
 
+#include "syntropy/core/foundation/ntuple.h"
 #include "syntropy/core/foundation/tuple.h"
 #include "syntropy/core/foundation/range.h"
 #include "syntropy/core/foundation/reverse_range.h"
@@ -43,7 +44,7 @@ int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    using namespace Syntropy::Literals;
+     using namespace Syntropy::Literals;
 
     Syntropy::Byte x[] = { Syntropy::ToByte(1) };
     Syntropy::Byte y[] = { Syntropy::ToByte(1) };
