@@ -10,6 +10,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
+#include "syntropy/language/support/compare.h"
 
 #include "syntropy/core/foundation/tuple.h"
 
@@ -207,6 +208,10 @@ namespace Syntropy
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
+    /// \brief Compare two ranges lexicographically.
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    constexpr Ordering Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
     // Random access range.
     // ====================
 
@@ -326,6 +331,38 @@ namespace Syntropy
         }
 
         return false;
+    }
+
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    constexpr Ordering Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    {
+        auto lhs_copy = lhs;
+        auto rhs_copy = rhs;
+
+        for (; !IsEmpty(lhs_copy) && !IsEmpty(rhs_copy); )
+        {
+            auto compare = (Front(lhs_copy) <=> Front(rhs_copy));
+
+            if (compare == Ordering::Less)
+            {
+                return Ordering::Less;
+            }
+            
+            if (compare == Ordering::Greater)
+            {
+                return Ordering::Greater;
+            }
+
+            lhs_copy = PopFront(lhs_copy);
+            rhs_copy = PopFront(rhs_copy);
+        }
+
+        if (IsEmpty(lhs_copy) && IsEmpty(rhs_copy))
+        {
+            return Ordering::Equivalent;
+        }
+
+        return IsEmpty(lhs_copy) ? Ordering::Less : Ordering::Greater;
     }
 
     // Random access range.

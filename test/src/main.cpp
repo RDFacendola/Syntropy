@@ -48,7 +48,7 @@ int main(int argc, char **argv)
      using namespace Syntropy::Literals;
 
     Syntropy::Byte x[] = { Syntropy::ToByte(1) };
-    Syntropy::Byte y[] = { Syntropy::ToByte(1) };
+    Syntropy::Byte y[] = { Syntropy::ToByte(1), Syntropy::ToByte(2) };
 
     float power = 534.0f;
 
@@ -56,7 +56,8 @@ int main(int argc, char **argv)
     auto by = Syntropy::BytesOf(y);
     auto bp = Syntropy::BytesOf(power);
 
-    auto b = bx == by;
+    auto b = (bx <=> by);
+    auto d = (by <=> bx);
 
     auto power2 = Syntropy::FromBytesOf<float>(bp);
 

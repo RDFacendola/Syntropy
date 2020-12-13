@@ -8,6 +8,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
+#include "syntropy/language/support/compare.h"
 
 #include "syntropy/core/concepts/range.h"
 
@@ -85,6 +86,10 @@ namespace Syntropy
     /// \brief Check whether lhs and rhs are equivalent.
     template <typename TType, typename UType>
     constexpr Bool operator==(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept;
+
+    /// \brief Compare two spans lexicographically.
+    template <typename TType, typename UType>
+    constexpr Ordering operator<=>(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept;
 
     // Forward range.
     // ==============
@@ -258,6 +263,12 @@ namespace Syntropy
     constexpr Bool operator==(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept
     {
         return AreEqual(lhs, rhs) || AreEquivalent(lhs, rhs);
+    }
+
+    template <typename TType, typename UType>
+    constexpr Ordering operator<=>(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept
+    {
+        return Compare(lhs, rhs);
     }
 
     // Forward Range.

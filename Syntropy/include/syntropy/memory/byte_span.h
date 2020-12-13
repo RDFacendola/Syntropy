@@ -133,7 +133,12 @@ namespace Syntropy
     // ===========
 
     /// \brief Check whether lhs and rhs are equivalent.
-    constexpr Bool operator==(Immutable<ByteSpan> lhs, Immutable<ByteSpan> rhs) noexcept;
+    template <typename TTraits, typename UTraits>
+    constexpr Bool operator==(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
+
+    /// \brief Compare two spans lexicographically.
+    template <typename TTraits, typename UTraits>
+    constexpr Ordering operator<=>(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
 
     // Forward range.
     // ==============
@@ -363,9 +368,16 @@ namespace Syntropy
     // Comparison.
     // ===========
 
-    constexpr Bool operator==(Immutable<ByteSpan> lhs, Immutable<ByteSpan> rhs) noexcept
+    template <typename TTraits, typename UTraits>
+    constexpr Bool operator==(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept
     {
         return AreEqual(lhs, rhs) || AreEquivalent(lhs, rhs);
+    }
+
+    template <typename TTraits, typename UTraits>
+    constexpr Ordering operator<=>(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept
+    {
+        return Compare(lhs, rhs);
     }
 
     // Forward Range.
