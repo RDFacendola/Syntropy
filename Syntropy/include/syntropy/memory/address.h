@@ -7,6 +7,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/support/compare.h"
 #include "syntropy/language/templates/type_traits.h"
 
 // ===========================================================================
@@ -14,66 +15,73 @@
 namespace Syntropy
 {
     /************************************************************************/
-    /* FORWARD DECLARATIONS                                                 */
+    /* BASE ADDRESS                                                         */
     /************************************************************************/
 
-    class ImmutableAddress;
-    class MutableAddress;
-
-    /************************************************************************/
-    /* IMMUTABLE ADDRESS                                                    */
-    /************************************************************************/
-
-    /// \brief Numeric representation of an address to an immutable memory location.
+    /// \brief Numeric representation of a memory location address.
     /// \author Raffaele D. Facendola - August 2020.
-    class ImmutableAddress
+    template <typename TTraits>
+    class BaseAddress
     {
-        friend constexpr Int ToInt(ImmutableAddress rhs) noexcept;
+        template <typename TTraits>
+        friend constexpr Int ToInt(Immutable<BaseAddress<TTraits>> rhs) noexcept;
 
     public:
 
-        /// \brief Create an immutable address from a numeric value.
-        explicit constexpr ImmutableAddress(Int address) noexcept;
+        /// \brief Pointer type.
+        using TPointer = typename TTraits::TPointer;
 
-        /// \brief Access the numeric address value.
-        constexpr explicit operator Int() const noexcept;
+        /// \brief Create a null-address.
+        constexpr BaseAddress() noexcept = default;
+
+        /// \brief Create a null-address.
+        constexpr BaseAddress(Null) noexcept;
+
+        /// \brief Create an address from a pointer.
+        constexpr BaseAddress(Immutable<TPointer> pointer) noexcept;
+
+        /// \brief Create an address from its numeric value.
+        explicit constexpr BaseAddress(Int address) noexcept;
+
+        /// \brief Default copy-constructor.
+        constexpr const BaseAddress(Immutable<BaseAddress>) noexcept = default;
 
         /// \brief Check whether the address refers to a valid location.
-        constexpr operator Bool() const noexcept;
+        explicit constexpr operator Bool() const noexcept;
 
     private:
 
         // Numeric address value.
-        Int address_;
+        Int address_{ 0 };
     };
 
     /************************************************************************/
-    /* MUTABLE ADDRESS                                                      */
+    /* ADDRESS                                                              */
     /************************************************************************/
 
-    /// \brief Numeric representation of an address to a mutable memory location.
-    /// \author Raffaele D. Facendola - August 2020.
-    class MutableAddress
+    /// \brief Tag for read-only addresses.
+    struct AddressTypeTraits
     {
-    public:
-
-        /// \brief Create an immutable address from a numeric value.
-        explicit constexpr MutableAddress(Int address) noexcept;
-
-        /// \brief Access the numeric address value.
-        constexpr explicit operator Int() const noexcept;
-
-        /// \brief Implicit conversion to ImmutableAddress.
-        constexpr operator ImmutableAddress() const noexcept;
-
-        /// \brief Check whether the address refers to a valid location.
-        constexpr operator Bool() const noexcept;
-
-    private:
-
-        // Numeric address value.
-        Int address_;
+        /// \brief Pointer to a memory location.
+        using TPointer = ImmutableTypelessPtr;
     };
+
+    /// \brief Represents a read-only memory location address.
+    using Address = BaseAddress<AddressTypeTraits>;
+
+    /************************************************************************/
+    /* RW ADDRESS                                                           */
+    /************************************************************************/
+
+    /// \brief Tag for read-only addresses.
+    struct RWAddressTypeTraits
+    {
+        /// \brief Pointer to a memory location.
+        using TPointer = MutableTypelessPtr;
+    };
+
+    /// \brief Represents a read-only memory location address.
+    using RWAddress = BaseAddress<RWAddressTypeTraits>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -83,51 +91,71 @@ namespace Syntropy
     // ===========
 
     /// \brief Move the address forwards.
-    constexpr ImmutableAddress operator+(ImmutableAddress lhs, Int rhs) noexcept;
+    template <typename TTraits>
+    constexpr BaseAddress<TTraits> operator+(BaseAddress<TTraits> lhs, Int rhs) noexcept;
 
-    /// \brief Move the address backwards
-    constexpr ImmutableAddress operator-(ImmutableAddress lhs, Int rhs) noexcept;
+    /// \brief Move the address backwards.
+    template <typename TTraits>
+    constexpr BaseAddress<TTraits> operator-(BaseAddress<TTraits> lhs, Int rhs) noexcept;
 
-    /// \brief Bit-wise mask of a numeric address to an immutable memory location.
-    constexpr ImmutableAddress operator&(ImmutableAddress lhs, Int rhs) noexcept;
+    /// \brief Bit-wise mask of a numeric address.
+    template <typename TTraits>
+    constexpr BaseAddress<TTraits> operator&(BaseAddress<TTraits> lhs, Int rhs) noexcept;
 
-    /// \brief Move the address forwards.
-    constexpr MutableAddress operator+(MutableAddress lhs, Int rhs) noexcept;
+    // Comparison.
+    // ===========
 
-    /// \brief Move the address backwards
-    constexpr MutableAddress operator-(MutableAddress lhs, Int rhs) noexcept;
+    /// \brief Check whether two address are equivalent.
+    template <typename TTraits, typename UTraits>
+    constexpr Bool operator==(Immutable<BaseAddress<TTraits>> lhs, Immutable<BaseAddress<UTraits>> rhs) noexcept;
 
-    /// \brief Bit-wise mask of a numeric address to a mutable memory location.
-    constexpr MutableAddress operator&(MutableAddress lhs, Int rhs) noexcept;
+    /// \brief Compare two addresses.
+    template <typename TTraits, typename UTraits>
+    constexpr Ordering operator<=>(Immutable<BaseAddress<TTraits>> lhs, Immutable<BaseAddress<UTraits>> rhs) noexcept;
 
     // Conversions.
     // ============
 
-    /// \brief Get the address of a pointer to an immutable memory location.
-    ImmutableAddress ToAddress(ImmutableTypelessPtr rhs) noexcept;
+    /// \brief Get the numeric value of an address.
+    template <typename TTraits>
+    constexpr Int ToInt(Immutable<BaseAddress<TTraits>> rhs) noexcept;
 
-    /// \brief Get the address of a pointer to a mutable memory location.
-    MutableAddress ToAddress(MutableTypelessPtr rhs) noexcept;
+    /// \brief Get the address to a read-only memory location.
+    Address ToAddress(ImmutableTypelessPtr rhs) noexcept;
 
-    /// \brief Convert an address to an immutable memory location to a strongly-typed pointer to an immutable instance of type TType.
-    /// If the memory location doesn't refer to an instance of TType, accessing the returned value results in undefined behavior.
-    template <typename TType = Byte>
-    ImmutablePtr<TType> FromAddress(ImmutableAddress rhs) noexcept;
+    /// \brief Get the address to a read-write memory location.
+    RWAddress ToAddress(MutableTypelessPtr rhs) noexcept;
 
-    /// \brief Convert an address to a mutable memory location to a strongly-typed pointer to a mutable instance of type TType.
-    /// If the memory location doesn't refer to a mutable instance of TType, accessing the returned value results in undefined behavior.
-    template <typename TType = Byte>
-    MutablePtr<TType> FromAddress(MutableAddress rhs) noexcept;
+    /// \brief Convert an address to a strongly-typed read-only instance of TType.
+    template <typename TType>
+    ImmutablePtr<TType> FromAddress(Immutable<Address> rhs) noexcept;
+
+    /// \brief Convert an address to a strongly-typed read-write instance of TType.
+    template <typename TType>
+    MutablePtr<TType> FromAddress(Immutable<RWAddress> rhs) noexcept;
 
     // Access.
     // =======
 
-    /// \brief Convert rhs to an address to an immutable memory location.
-    constexpr ImmutableAddress ToImmutable(ImmutableAddress rhs) noexcept;
+    /// \brief Convert rhs to an address to a read-only memory location.
+    template <typename TTraits>
+    constexpr Address ToReadOnly(Immutable<BaseAddress<TTraits>> rhs) noexcept;
 
-    /// \brief Convert rhs to an address to a mutable memory location.
-    /// \remarks If rhs doesn't refer to a mutable memory location, accessing the result of this method results in undefined behavior.
-    constexpr MutableAddress ToMutable(ImmutableAddress rhs) noexcept;
+    /// \brief Convert rhs to an address to a read-write memory location.
+    /// \remarks If rhs doesn't refer to a read-write memory location, accessing the returned value results in undefined behavior.
+    template <typename TTraits>
+    constexpr RWAddress ToReadWrite(Immutable<BaseAddress<TTraits>> rhs) noexcept;
+
+    // Utilities.
+    // ==========
+
+    /// \brief Create an address by deducing templates from arguments.
+    template <typename TReference>
+    constexpr Address MakeAddress(Immutable<TReference> rhs) noexcept;
+    
+    /// \brief Create an address by deducing templates from arguments.
+    template <typename TReference>
+    constexpr RWAddress MakeAddress(Mutable<TReference> rhs) noexcept;
 
 }
 
@@ -139,129 +167,128 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // ImmutableAddress.
-    // =================
+    // BaseAddress.
+    // ============
 
-    constexpr  ImmutableAddress::ImmutableAddress(Int address) noexcept
+    template <typename TTraits>
+    constexpr BaseAddress<TTraits>::BaseAddress(Null) noexcept
+    {
+
+    }
+
+    template <typename TTraits>
+    constexpr BaseAddress<TTraits>::BaseAddress(Immutable<TPointer> pointer) noexcept
+        : address_(reinterpret_cast<Int>(pointer))
+    {
+
+    }
+
+    template <typename TTraits>
+    constexpr BaseAddress<TTraits>::BaseAddress(Int address) noexcept
         : address_(address)
     {
 
     }
 
-    constexpr ImmutableAddress::operator Int() const noexcept
+    template <typename TTraits>
+    constexpr BaseAddress<TTraits>::operator Bool() const noexcept
     {
-        return address_;
+        return !!address_;
     }
 
-    constexpr ImmutableAddress::operator Bool() const noexcept
-    {
-        return address_ != ToInt(0);
-    }
-
-    // MutableAddress.
-    // ===============
-
-    constexpr  MutableAddress::MutableAddress(Int address) noexcept
-        : address_(address)
-    {
-
-    }
-
-    constexpr MutableAddress::operator Int() const noexcept
-    {
-        return address_;
-    }
-
-    constexpr  MutableAddress::operator ImmutableAddress() const noexcept
-    {
-        return ImmutableAddress(address_);
-    }
-
-    constexpr MutableAddress::operator Bool() const noexcept
-    {
-        return address_ != ToInt(0);
-    }
+    // Non-member functions.
+    // =====================
 
     // Arithmetic.
-    // ===========
 
-    constexpr ImmutableAddress operator+(ImmutableAddress lhs, Int rhs) noexcept
+    template <typename TTraits>
+    constexpr BaseAddress<TTraits> operator+(BaseAddress<TTraits> lhs, Int rhs) noexcept
     {
-        return ImmutableAddress{ ToInt(lhs) + rhs };
+        return BaseAddress<TTraits>{ ToInt(ToInt(lhs) + rhs) };
     }
 
-    constexpr ImmutableAddress operator-(ImmutableAddress lhs, Int rhs) noexcept
+    template <typename TTraits>
+    constexpr BaseAddress<TTraits> operator-(BaseAddress<TTraits> lhs, Int rhs) noexcept
     {
-        return ImmutableAddress{ ToInt(lhs) - rhs };
+        return BaseAddress<TTraits>{ ToInt(ToInt(lhs) - rhs) };
     }
 
-    constexpr ImmutableAddress operator&(ImmutableAddress lhs, Int rhs) noexcept
+    template <typename TTraits>
+    constexpr BaseAddress<TTraits> operator&(BaseAddress<TTraits> lhs, Int rhs) noexcept
     {
-        return ImmutableAddress{ ToInt(lhs) & rhs };
+        return BaseAddress<TTraits>{ ToInt(ToInt(lhs) & rhs) };
     }
 
-    constexpr MutableAddress operator+(MutableAddress lhs, Int rhs) noexcept
+    // Comparison.
+
+    template <typename TTraits, typename UTraits>
+    constexpr Bool operator==(Immutable<BaseAddress<TTraits>> lhs, Immutable<BaseAddress<UTraits>> rhs) noexcept
     {
-        return MutableAddress{ ToInt(lhs) + rhs };
+        return ToInt(lhs) == ToInt(rhs);
     }
 
-    constexpr MutableAddress operator-(MutableAddress lhs, Int rhs) noexcept
+    template <typename TTraits, typename UTraits>
+    constexpr Ordering operator<=>(Immutable<BaseAddress<TTraits>> lhs, Immutable<BaseAddress<UTraits>> rhs) noexcept
     {
-        return MutableAddress{ ToInt(lhs) - rhs };
-    }
-
-    constexpr MutableAddress operator&(MutableAddress lhs, Int rhs) noexcept
-    {
-        return MutableAddress{ ToInt(lhs) & rhs };
+        return ToInt(lhs) <=> ToInt(rhs);
     }
 
     // Conversions.
 
-    constexpr Int ToInt(ImmutableAddress rhs) noexcept
+    template <typename TTraits>
+    constexpr Int ToInt(Immutable<BaseAddress<TTraits>> rhs) noexcept
     {
         return rhs.address_;
     }
 
-    inline ImmutableAddress ToAddress(ImmutableTypelessPtr rhs) noexcept
+    inline Address ToAddress(ImmutableTypelessPtr rhs) noexcept
     {
-        auto address = reinterpret_cast<std::intptr_t>(rhs);
-
-        return static_cast<ImmutableAddress>(address);
+        return Address{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
     }
 
-    inline MutableAddress ToAddress(MutableTypelessPtr rhs) noexcept
+    inline RWAddress ToAddress(MutableTypelessPtr rhs) noexcept
     {
-        auto address = reinterpret_cast<std::intptr_t>(rhs);
-
-        return static_cast<MutableAddress>(address);
+        return RWAddress{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
     }
 
     template <typename TType>
-    inline ImmutablePtr<TType> FromAddress(ImmutableAddress rhs) noexcept
+    inline ImmutablePtr<TType> FromAddress(Immutable<Address> rhs) noexcept
     {
-        auto address = ToInt(rhs);
-
-        return reinterpret_cast<ImmutablePtr<TType>>(address);
+        return reinterpret_cast<ImmutablePtr<TType>>(ToInt(rhs));
     }
 
     template <typename TType>
-    inline MutablePtr<TType> FromAddress(MutableAddress rhs) noexcept
+    inline MutablePtr<TType> FromAddress(Immutable<RWAddress> rhs) noexcept
     {
-        auto address = ToInt(rhs);
-
-        return reinterpret_cast<MutablePtr<TType>>(address);
+        return reinterpret_cast<MutablePtr<TType>>(ToInt(rhs));
     }
 
     // Access.
 
-    constexpr ImmutableAddress ToImmutable(ImmutableAddress rhs) noexcept
+    template <typename TTraits>
+    constexpr Address ToReadOnly(Immutable<BaseAddress<TTraits>> rhs) noexcept
     {
-        return rhs;
+        return Address{ ToInt(rhs) };
     }
 
-    constexpr MutableAddress ToMutable(ImmutableAddress rhs) noexcept
+    template <typename TTraits>
+    constexpr RWAddress ToReadWrite(Immutable<BaseAddress<TTraits>> rhs) noexcept
     {
-        return static_cast<MutableAddress>(ToInt(rhs));
+        return RWAddress{ ToInt(rhs) };
+    }
+
+    // Utilities.
+
+    template <typename TReference>
+    constexpr Address MakeAddress(Immutable<TReference> rhs) noexcept
+    {
+        return Address{ ToPointer(rhs) };
+    }
+
+    template <typename TReference>
+    constexpr RWAddress MakeAddress(Mutable<TReference> rhs) noexcept
+    {
+        return RWAddress{ ToPointer(rhs) };
     }
 
 }

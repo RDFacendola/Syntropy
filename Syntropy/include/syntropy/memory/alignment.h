@@ -142,7 +142,7 @@ namespace Syntropy
 
         auto aligned = (ToAddress(pointer) + mask) & ~mask;
 
-        return FromAddress(aligned);
+        return FromAddress<Byte>(aligned);
     }
 
     inline MutableBytePtr Align(MutableBytePtr pointer, Alignment alignment) noexcept
@@ -158,7 +158,7 @@ namespace Syntropy
 
         auto aligned_pointer = ToAddress(pointer) & ~mask;
 
-        return FromAddress(aligned_pointer);
+        return FromAddress<Byte>(aligned_pointer);
     }
 
     inline MutableBytePtr AlignDown(MutableBytePtr pointer, Alignment alignment) noexcept
