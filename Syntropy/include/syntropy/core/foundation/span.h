@@ -276,7 +276,7 @@ namespace Syntropy
 
     template <typename TType, typename TTraits>
     constexpr BaseSpan<TType, TTraits>::BaseSpan(Immutable<BaseSpan<TType, TTraits>::TPointer> begin, Immutable<BaseSpan<TType, TTraits>::TPointer> end) noexcept
-        : Span(begin, ToInt(end - begin))
+        : BaseSpan(begin, ToInt(end - begin))
     {
 
     }
