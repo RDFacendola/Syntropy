@@ -218,12 +218,16 @@ namespace Syntropy
     template <Concepts::BidirectionalRange TRange, Concepts::Range URange>
     constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<URange> rhs) noexcept
     {
+        using namespace Ranges;
+
         return AreEquivalent(lhs, rhs);
     }
 
     template <Concepts::Range TRange, Concepts::BidirectionalRange URange>
     constexpr Bool operator==(Immutable<TRange> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
     {
+        using namespace Ranges;
+
         return AreEquivalent(lhs, rhs);
     }
 

@@ -329,12 +329,16 @@ namespace Syntropy
     template <typename... TElements, typename... UElements>
     constexpr Bool operator==(Immutable<Tuple<TElements...>> lhs, Immutable<Tuple<UElements...>> rhs) noexcept
     {
+        using namespace Tuples;
+
         return AreEquivalent(lhs, rhs);
     }
 
     template <typename... TElements, typename... UElements>
     constexpr Ordering operator<=>(Immutable<Tuple<TElements...>> lhs, Immutable<Tuple<UElements...>> rhs) noexcept
     {
+        using namespace Tuples;
+
         return Compare(lhs, rhs);
     }
 

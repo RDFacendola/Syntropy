@@ -371,12 +371,16 @@ namespace Syntropy
     template <typename TTraits, typename UTraits>
     constexpr Bool operator==(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept
     {
+        using namespace Ranges;
+
         return AreEqual(lhs, rhs) || AreEquivalent(lhs, rhs);
     }
 
     template <typename TTraits, typename UTraits>
     constexpr Ordering operator<=>(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept
     {
+        using namespace Ranges;
+
         return Compare(lhs, rhs);
     }
 

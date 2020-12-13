@@ -10,6 +10,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/sequence.h"
+#include "syntropy/language/support/compare.h"
 
 #include "syntropy/core/concepts/range.h"
 #include "syntropy/core/concepts/ntuple.h"
@@ -31,7 +32,7 @@ namespace Syntropy
     template <Concepts::Range... TRanges>
     class ZipRange
     {
-        // Tuple-like.
+        // N-tuple.
 
         template <Int VIndex, Concepts::Range... TRanges>
         friend constexpr Immutable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept;
@@ -107,6 +108,10 @@ namespace Syntropy
     /// \brief Check whether lhs and rhs are equivalent.
     template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
     constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
+
+    /// \brief Compare two zip-ranges lexicographically.
+    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
+    constexpr Ordering operator<=>(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
 
     // Zip-range element access.
     // =========================
@@ -261,14 +266,17 @@ namespace Syntropy
     template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
     constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
     {
-        static_assert(Templates::SameRank<ZipRange<TRanges...>, ZipRange<URanges...>>, "Both lhs and rhs must have the same rank.");
+        using namespace Ranges;
 
-        auto zip_equivalent = [&lhs, &rhs]<Int... VIndex>(Templates::Sequence<VIndex...>)
-        {
-            return ((Get<VIndex>(lhs) == Get<VIndex>(rhs)) && ...);
-        };
+        return AreEquivalent(lhs, rhs);
+    }
 
-        return zip_equivalent(Templates::SequenceFor<TRanges...>{});
+    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
+    constexpr Ordering operator<=>(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
+    {
+        using namespace Ranges;
+
+        return Compare(lhs, rhs);
     }
 
     // Tuple-like.

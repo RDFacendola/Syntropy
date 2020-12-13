@@ -88,13 +88,13 @@ namespace Syntropy::Templates
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Tuples
 {
     /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
+    /* TUPLES                                                               */
     /************************************************************************/
 
-    /// \brief Check whether lhs and rhs are equal.
+        /// \brief Check whether lhs and rhs are equal.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
     constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
@@ -152,14 +152,14 @@ namespace std
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Tuples
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Non-member functions.
-    // =====================
+    // Tuples.
+    // =======
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
     constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept

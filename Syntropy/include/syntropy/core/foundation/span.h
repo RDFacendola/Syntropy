@@ -262,12 +262,16 @@ namespace Syntropy
     template <typename TType, typename UType>
     constexpr Bool operator==(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept
     {
+        using namespace Ranges;
+
         return AreEqual(lhs, rhs) || AreEquivalent(lhs, rhs);
     }
 
     template <typename TType, typename UType>
     constexpr Ordering operator<=>(Immutable<Span<TType>> lhs, Immutable<Span<UType>> rhs) noexcept
     {
+        using namespace Ranges;
+
         return Compare(lhs, rhs);
     }
 
