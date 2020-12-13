@@ -93,6 +93,18 @@ namespace Syntropy
     template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
     constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
+    /// \brief Compare a reverse range against any range lexicographically.
+    template <Concepts::BidirectionalRange TRange, Concepts::Range URange>
+    constexpr Ordering operator<=>(Immutable<ReverseRange<TRange>> lhs, Immutable<URange> rhs) noexcept;
+
+    /// \brief Compare a any range against a reverse range lexicographically.
+    template <Concepts::Range TRange, Concepts::BidirectionalRange URange>
+    constexpr Ordering operator<=>(Immutable<TRange> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+
+    /// \brief Compare two reverse ranges lexicographically.
+    template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
+    constexpr Ordering operator<=>(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+
     // Forward range.
     // ==============
 
@@ -237,6 +249,46 @@ namespace Syntropy
         // Trick! Comparing non-reversed ranges allows for more efficient comparison (if provided).
 
         return lhs.range_ == rhs.range_;
+    }
+
+    template <Concepts::BidirectionalRange TRange, Concepts::Range URange>
+    constexpr Ordering operator<=>(Immutable<ReverseRange<TRange>> lhs, Immutable<URange> rhs) noexcept
+    {
+        using namespace Ranges;
+
+        return Compare(lhs, rhs);
+    }
+
+    template <Concepts::Range TRange, Concepts::BidirectionalRange URange>
+    constexpr Ordering operator<=>(Immutable<TRange> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
+    {
+        using namespace Ranges;
+
+        return Compare(lhs, rhs);
+    }
+
+    template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
+    constexpr Ordering operator<=>(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
+    {
+        // Trick! Comparing non-reversed ranges allows for more efficient comparison (if provided). 
+
+        using namespace Ranges;
+
+        auto compare_result = Compare(lhs.range_, rhs.range_);
+
+        // Since compared ranges are reversed, the ordering has to be reversed too.
+
+        if (compare_result == Ordering::kLess)
+        {
+            return Ordering::kGreater;
+        }
+        
+        if (compare_result == Ordering::kGreater)
+        {
+            return Ordering::kLess;
+        }
+
+        return Ordering::kEquivalent;
     }
 
     // Forward range.
