@@ -63,7 +63,7 @@ namespace Syntropy
     struct AddressTypeTraits
     {
         /// \brief Pointer to a memory location.
-        using TPointer = ImmutableTypelessPtr;
+        using TPointer = TypelessPtr;
     };
 
     /// \brief Represents a read-only memory location address.
@@ -77,7 +77,7 @@ namespace Syntropy
     struct RWAddressTypeTraits
     {
         /// \brief Pointer to a memory location.
-        using TPointer = MutableTypelessPtr;
+        using TPointer = RWTypelessPtr;
     };
 
     /// \brief Represents a read-only memory location address.
@@ -121,18 +121,18 @@ namespace Syntropy
     constexpr Int ToInt(Immutable<BaseAddress<TTraits>> rhs) noexcept;
 
     /// \brief Get the address to a read-only memory location.
-    Address ToAddress(ImmutableTypelessPtr rhs) noexcept;
+    Address ToAddress(TypelessPtr rhs) noexcept;
 
     /// \brief Get the address to a read-write memory location.
-    RWAddress ToAddress(MutableTypelessPtr rhs) noexcept;
+    RWAddress ToAddress(RWTypelessPtr rhs) noexcept;
 
     /// \brief Convert an address to a strongly-typed read-only instance of TType.
     template <typename TType>
-    ImmutablePtr<TType> FromAddress(Immutable<Address> rhs) noexcept;
+    Ptr<TType> FromAddress(Immutable<Address> rhs) noexcept;
 
     /// \brief Convert an address to a strongly-typed read-write instance of TType.
     template <typename TType>
-    MutablePtr<TType> FromAddress(Immutable<RWAddress> rhs) noexcept;
+    RWPtr<TType> FromAddress(Immutable<RWAddress> rhs) noexcept;
 
     // Access.
     // =======
@@ -241,26 +241,26 @@ namespace Syntropy
         return rhs.address_;
     }
 
-    inline Address ToAddress(ImmutableTypelessPtr rhs) noexcept
+    inline Address ToAddress(TypelessPtr rhs) noexcept
     {
         return Address{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
     }
 
-    inline RWAddress ToAddress(MutableTypelessPtr rhs) noexcept
+    inline RWAddress ToAddress(RWTypelessPtr rhs) noexcept
     {
         return RWAddress{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
     }
 
     template <typename TType>
-    inline ImmutablePtr<TType> FromAddress(Immutable<Address> rhs) noexcept
+    inline Ptr<TType> FromAddress(Immutable<Address> rhs) noexcept
     {
-        return reinterpret_cast<ImmutablePtr<TType>>(ToInt(rhs));
+        return reinterpret_cast<Ptr<TType>>(ToInt(rhs));
     }
 
     template <typename TType>
-    inline MutablePtr<TType> FromAddress(Immutable<RWAddress> rhs) noexcept
+    inline RWPtr<TType> FromAddress(Immutable<RWAddress> rhs) noexcept
     {
-        return reinterpret_cast<MutablePtr<TType>>(ToInt(rhs));
+        return reinterpret_cast<RWPtr<TType>>(ToInt(rhs));
     }
 
     // Access.

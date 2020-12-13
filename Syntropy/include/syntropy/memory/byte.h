@@ -26,12 +26,12 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief A non-owning raw pointer to an immutable memory location.
-    /// \remarks The pointee is expected to be a generic memory location: see ImmutableTypelessPtr for object instances.
-    using ImmutableBytePtr = ImmutablePtr<Byte>;
+    /// \remarks The pointee is expected to be a generic memory location: see TypelessPtr for object instances.
+    using ImmutableBytePtr = Ptr<Byte>;
 
     /// \brief A non-owning raw pointer to a mutable memory location.
-    /// \remarks The pointee is expected to be a generic memory location: see MutableTypelessPtr for object instances.
-    using MutableBytePtr = MutablePtr<Byte>;
+    /// \remarks The pointee is expected to be a generic memory location: see RWTypelessPtr for object instances.
+    using MutableBytePtr = RWPtr<Byte>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -45,11 +45,11 @@ namespace Syntropy
     constexpr Byte ToByte(TNumber rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to an immutable memory location.
-    ImmutableBytePtr ToBytePtr(ImmutableTypelessPtr rhs) noexcept;
+    ImmutableBytePtr ToBytePtr(TypelessPtr rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a mutable memory location.
     /// \remarks If rhs doesn't refer to a mutable memory location, accessing the returned value results in undefined behavior.
-    MutableBytePtr ToBytePtr(MutableTypelessPtr rhs) noexcept;
+    MutableBytePtr ToBytePtr(RWTypelessPtr rhs) noexcept;
 
 }
 
@@ -72,12 +72,12 @@ namespace Syntropy
         return static_cast<Byte>(rhs);
     }
 
-    inline ImmutableBytePtr ToBytePtr(ImmutableTypelessPtr rhs) noexcept
+    inline ImmutableBytePtr ToBytePtr(TypelessPtr rhs) noexcept
     {
         return reinterpret_cast<ImmutableBytePtr>(rhs);
     }
 
-    inline MutableBytePtr ToBytePtr(MutableTypelessPtr rhs) noexcept
+    inline MutableBytePtr ToBytePtr(RWTypelessPtr rhs) noexcept
     {
         return reinterpret_cast<MutableBytePtr>(rhs);
     }

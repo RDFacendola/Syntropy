@@ -29,7 +29,7 @@ namespace Syntropy
         friend constexpr Int Count(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
         template <typename TType, typename TTraits>
-        friend constexpr Pointer<TType> Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+        friend constexpr BasePtr<TType> Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     public:
 
@@ -88,7 +88,7 @@ namespace Syntropy
     struct SpanTypeTraits
     {
         /// \brief Pointer type.
-        using TPointer = ImmutablePtr<TType>;
+        using TPointer = Ptr<TType>;
 
         /// \brief Reference type.
         using TReference = Immutable<TType>;
@@ -107,7 +107,7 @@ namespace Syntropy
     struct RWSpanTypeTraits
     {
         /// \brief Pointer type.
-        using TPointer = MutablePtr<TType>;
+        using TPointer = RWPtr<TType>;
 
         /// \brief Reference type.
         using TReference = Immutable <TType>;
@@ -189,26 +189,26 @@ namespace Syntropy
     /// \brief Access underlying span data.
     /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
     template <typename TType, typename TTraits>
-    constexpr Pointer<TType> Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    constexpr BasePtr<TType> Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     // Utilities.
     // ==========
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    constexpr Span<TType> MakeSpan(ImmutablePtr<TType> begin, Int count) noexcept;
+    constexpr Span<TType> MakeSpan(Ptr<TType> begin, Int count) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    constexpr Span<TType> MakeSpan(ImmutablePtr<TType> begin, ImmutablePtr<TType> end) noexcept;
+    constexpr Span<TType> MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    constexpr RWSpan<TType> MakeSpan(MutablePtr<TType> begin, Int count) noexcept;
+    constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, Int count) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    constexpr RWSpan<TType> MakeSpan(MutablePtr<TType> begin, MutablePtr<TType> end) noexcept;
+    constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept;
 
     // Conversion.
     // ===========
@@ -241,7 +241,7 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
-    struct RangeElementPointerTypeTraits<BaseSpan<TType, TTraits>> : Alias<Pointer<TType>> {};
+    struct RangeElementPointerTypeTraits<BaseSpan<TType, TTraits>> : Alias<BasePtr<TType>> {};
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
@@ -391,7 +391,7 @@ namespace Syntropy
     // Contiguous range.
 
     template <typename TType, typename TTraits>
-    constexpr Pointer<TType> Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    constexpr BasePtr<TType> Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return rhs.data_;
     }
@@ -399,25 +399,25 @@ namespace Syntropy
     // Utilities.
 
     template <typename TType>
-    constexpr Span<TType> MakeSpan(ImmutablePtr<TType> begin, Int count) noexcept
+    constexpr Span<TType> MakeSpan(Ptr<TType> begin, Int count) noexcept
     {
         return { begin, count };
     }
 
     template <typename TType>
-    constexpr Span<TType> MakeSpan(ImmutablePtr<TType> begin, ImmutablePtr<TType> end) noexcept
+    constexpr Span<TType> MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept
     {
         return { begin, end };
     }
 
     template <typename TType>
-    constexpr RWSpan<TType> MakeSpan(MutablePtr<TType> begin, Int count) noexcept
+    constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, Int count) noexcept
     {
         return { begin, count };
     }
 
     template <typename TType>
-    constexpr RWSpan<TType> MakeSpan(MutablePtr<TType> begin, MutablePtr<TType> end) noexcept
+    constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept
     {
         return { begin, end };
     }

@@ -28,7 +28,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for types deriving from TBase ignoring constant-qualifiers.
     template <typename TDerived, typename TBase>
-    concept DerivedFrom = Templates::IsBaseOf<TBase, TDerived> && Templates::IsConvertible<ImmutablePtr<TDerived>, ImmutablePtr<TBase>>;
+    concept DerivedFrom = Templates::IsBaseOf<TBase, TDerived> && Templates::IsConvertible<Ptr<TDerived>, Ptr<TBase>>;
 
     /// \brief Concept for types convertible to UType.
     template <typename TType, typename UType>

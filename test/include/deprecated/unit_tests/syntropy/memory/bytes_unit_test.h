@@ -24,10 +24,10 @@ namespace Syntropy::Memory::UnitTest
         Byte buffer_[10];
 
         /// \brief Read-write pointer to a buffer.
-        Pointer<Byte> read_write_ptr_;
+        BasePtr<Byte> read_write_ptr_;
 
         /// \brief Read-only pointer to a buffer.
-        Pointer<const Byte> read_only_ptr_;
+        BasePtr<const Byte> read_only_ptr_;
 
         /// \brief Default constructed bytes object.
         const Bytes bytes_default_ = Bytes{};
