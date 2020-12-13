@@ -51,7 +51,12 @@ int main(int argc, char **argv)
     auto u = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'e', 't', 't', 'o');
     auto v = Syntropy::MakeTuple('c', 'o', 'n', 'i', 'g', 'l', 'i');
 
-    Exchange(t, v);
+    auto r = Syntropy::MakeSpan(&Get<6>(t), 7);
+
+    for (auto&& x : r)
+    {
+        std::cout << x << ",";
+    }
 
     auto tt = (t <=> t);
     auto tu = (t <=> u);

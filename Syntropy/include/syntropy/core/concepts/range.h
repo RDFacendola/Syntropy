@@ -258,14 +258,6 @@ namespace Syntropy::Ranges
     // Contiguous range.
     // =================
 
-    /// \brief Get an iterator to the first element in a range.
-    template <Concepts::ContiguousRange TRange>
-    constexpr auto* begin(Immutable<TRange> range) noexcept;
-
-    /// \brief Get an iterator past the last element in a range.
-    template <Concepts::ContiguousRange TRange>
-    constexpr auto* end(Immutable<TRange> range) noexcept;
-
     /// \brief Get an iterator to the first element in a contiguous range.
     template <Concepts::ContiguousRange TRange>
     constexpr auto* Begin(Immutable<TRange> range) noexcept;
@@ -277,6 +269,24 @@ namespace Syntropy::Ranges
     /// \brief Check whether lhs and rhs are equal.
     template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
     constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
+}
+
+// ===========================================================================
+
+namespace Syntropy
+{
+    /************************************************************************/
+    /* RANGE FOR                                                            */
+    /************************************************************************/
+
+    /// \brief Get an iterator to the first element in a range.
+    template <Concepts::ContiguousRange TRange>
+    constexpr auto* begin(Immutable<TRange> range) noexcept;
+
+    /// \brief Get an iterator past the last element in a range.
+    template <Concepts::ContiguousRange TRange>
+    constexpr auto* end(Immutable<TRange> range) noexcept;
 
 }
 
@@ -418,18 +428,6 @@ namespace Syntropy::Ranges
     // Contiguous range.
 
     template <Concepts::ContiguousRange TRange>
-    constexpr auto* begin(Immutable<TRange> range) noexcept
-    {
-        return Data(range);
-    }
-
-    template <Concepts::ContiguousRange TRange>
-    constexpr auto* end(Immutable<TRange> range) noexcept
-    {
-        return Data(range) + Count(range);
-    }
-
-    template <Concepts::ContiguousRange TRange>
     constexpr auto* Begin(Immutable<TRange> range) noexcept
     {
         return Data(range);
@@ -447,6 +445,31 @@ namespace Syntropy::Ranges
         // Note that empty ranges are equal to each other empty range.
 
         return (Count(lhs) == Count(rhs)) && (IsEmpty(lhs) || (Data(lhs) == Data(rhs)));
+    }
+
+}
+
+// ===========================================================================
+
+namespace Syntropy
+{
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Range for.
+    // ==========
+
+    template <Concepts::ContiguousRange TRange>
+    constexpr auto* begin(Immutable<TRange> range) noexcept
+    {
+        return Data(range);
+    }
+
+    template <Concepts::ContiguousRange TRange>
+    constexpr auto* end(Immutable<TRange> range) noexcept
+    {
+        return Data(range) + Count(range);
     }
 
 }
