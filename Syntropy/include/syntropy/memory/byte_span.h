@@ -8,6 +8,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
+#include "syntropy/language/support/swap.h"
 
 #include "syntropy/core/concepts/range.h"
 
@@ -77,9 +78,6 @@ namespace Syntropy
         /// \brief Access a byte by offset.
         /// If the provided offset is not within the byte span the behavior of this method is undefined.
         constexpr TReference operator[](Immutable<Bytes> offset) const noexcept;
-
-        /// \brief Swap this byte span with rhs.
-        constexpr void Swap(Mutable<BaseByteSpan> rhs) noexcept;
 
     private:
 
@@ -267,7 +265,7 @@ namespace Syntropy
 
     /// \brief Create a new byte span by deducing template from arguments.
     constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept;
-    
+
 }
 
 // ===========================================================================
@@ -356,13 +354,6 @@ namespace Syntropy
     constexpr typename BaseByteSpan<TTraits>::TReference BaseByteSpan<TTraits>::operator[](Immutable<Bytes> offset) const noexcept
     {
         return data_[offset];
-    }
-
-    template <typename TTraits>
-    constexpr void BaseByteSpan<TTraits>::Swap(Mutable<BaseByteSpan<TTraits>> rhs) noexcept
-    {
-        Syntropy::Swap(data_, rhs.data_);
-        Syntropy::Swap(size_, rhs.size_);
     }
 
     // Non-member functions.

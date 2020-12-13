@@ -18,11 +18,13 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Swap lhs with rhs.
-    template <typename TType> requires Concepts::AssignableFrom<Mutable<TType>, Movable<TType>> && Concepts::MoveConstructible<TType>
+    template <typename TType>
+    requires Concepts::AssignableFrom<Mutable<TType>, Movable<TType>> && Concepts::MoveConstructible<TType>
     constexpr void Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
-    template <typename TType, typename UType = TType> requires Concepts::AssignableFrom<Mutable<TType>, Forwarding<UType>> && Concepts::MoveConstructible<TType>
+    template <typename TType, typename UType = TType>
+    requires Concepts::AssignableFrom<Mutable<TType>, Forwarding<UType>> && Concepts::MoveConstructible<TType>
     constexpr TType Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
 
 }
@@ -41,10 +43,7 @@ namespace Syntropy
     template <typename TType> requires Concepts::AssignableFrom<Mutable<TType>, Movable<TType>> && Concepts::MoveConstructible<TType>
     constexpr void Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
     {
-        auto xhs = Move(lhs);
-
-        lhs = Move(rhs);
-        rhs = Move(xhs);
+        rhs = Exchange(lhs, rhs);
     }
 
     template <typename TType, typename UType> requires Concepts::AssignableFrom<Mutable<TType>, Forwarding<UType>> && Concepts::MoveConstructible<TType>

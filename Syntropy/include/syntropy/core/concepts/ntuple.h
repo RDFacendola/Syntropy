@@ -8,6 +8,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/support/compare.h"
+#include "syntropy/language/support/swap.h"
 #include "syntropy/language/templates/concepts.h"
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/sequence.h"
@@ -107,8 +108,23 @@ namespace Syntropy::Tuples
     constexpr Ordering Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Member-wise swap two n-tuples.
-    template <Concepts::NTuple TTuple>
-    constexpr void Swap(Mutable<TTuple> lhs, Mutable<TTuple> rhs) noexcept;
+    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    constexpr void Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
+
+    /// \brief Member-wise swap two tuples.
+    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    requires ( Templates::TupleRank<TTuple> == Templates::TupleRank<UTuple>)
+    constexpr void Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
+
+    /// \brief Swap lhs with rhs and return the old value of lhs.
+    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    requires (Templates::TupleRank<TTuple> == Templates::TupleRank<UTuple>)
+    constexpr TTuple Exchange(Mutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
+
+    /// \brief Swap lhs with rhs and return the old value of lhs.
+    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    requires (Templates::TupleRank<TTuple> == Templates::TupleRank<UTuple>)
+    constexpr TTuple Exchange(Mutable<TTuple> lhs, Movable<UTuple> rhs) noexcept;
 
     /// \brief Invoke a function with arguments provided in form of n-tuple.
     template <typename TFunction, Concepts::NTuple TTuple>
@@ -242,15 +258,50 @@ namespace Syntropy::Tuples
         }
     }
 
-    template <Concepts::NTuple TTuple>
-    constexpr void Swap(Mutable<TTuple> lhs, Mutable<TTuple> rhs) noexcept
+    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    requires (Templates::TupleRank<TTuple> == Templates::TupleRank<UTuple>)
+    constexpr void Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
     {
-        auto memberwise_swap = [](auto& lhs_element, auto& rhs_element)
+        using namespace Templates;
+
+        auto memberwise_swap = [&lhs, &rhs]<Int... VIndex>(Sequence<VIndex...>)
         {
-            Swap(lhs_element, rhs_element);
+            (Swap(Get<VIndex>(lhs), Get<VIndex>(rhs)), ...);
         };
 
-        LockstepApply(memberwise_swap, lhs, rhs);
+        return memberwise_swap(TupleSequenceFor<TTuple>{});
+    }
+
+    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    requires (Templates::TupleRank<TTuple> == Templates::TupleRank<UTuple>)
+    constexpr TTuple Exchange(Mutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
+    {
+        using namespace Templates;
+
+        auto memberwise_exchange = [&lhs, &rhs]<Int... VIndex>(Sequence<VIndex...>)
+        {
+            using Syntropy::Exchange;
+
+            return TTuple{ Exchange(Get<VIndex>(lhs), Get<VIndex>(rhs))... };
+        };
+
+        return memberwise_exchange(TupleSequenceFor<TTuple>{});
+    }
+
+    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    requires (Templates::TupleRank<TTuple> == Templates::TupleRank<UTuple>)
+    constexpr TTuple Exchange(Mutable<TTuple> lhs, Movable<UTuple> rhs) noexcept
+    {
+        using namespace Templates;
+
+        auto memberwise_exchange = [&lhs, &rhs]<Int... VIndex>(Sequence<VIndex...>) mutable
+        {
+            using Syntropy::Exchange;
+
+            return TTuple{ Exchange(Get<VIndex>(lhs), Get<VIndex>(Move(rhs)))... };
+        };
+
+        return memberwise_exchange(TupleSequenceFor<TTuple>{});
     }
 
     template <typename TFunction, Concepts::NTuple TTuple>
@@ -258,7 +309,7 @@ namespace Syntropy::Tuples
     {
         using namespace Templates;
 
-        auto apply = [&function, &ntuple]<Int... VIndex>(Sequence<VIndex...>) mutable
+        auto apply = [&function, &ntuple]<Int... VIndex>(Sequence<VIndex...>)
         {
             return function(Get<VIndex>(Forward<TTuple>(ntuple))...);
         };
@@ -271,7 +322,7 @@ namespace Syntropy::Tuples
     {
         using namespace Templates;
 
-        auto for_each_apply = [&function, &ntuple]<Int... VIndex>(Sequence<VIndex...>) mutable
+        auto for_each_apply = [&function, &ntuple]<Int... VIndex>(Sequence<VIndex...>)
         {
             (function(Get<VIndex>(Forward<TTuple>(ntuple))), ...);
         };
@@ -285,7 +336,7 @@ namespace Syntropy::Tuples
     {
         using namespace Templates;
 
-        auto lockstep_apply = [&function, &tuple, &tuples...]<Int... VIndex>(Sequence<VIndex...>) mutable
+        auto lockstep_apply = [&function, &tuple, &tuples...]<Int... VIndex>(Sequence<VIndex...>)
         {
             (function(Get<VIndex>(Forward<TTuple>(tuple)), Get<VIndex>(Forward<TTuples>(tuples))...), ...);
         };

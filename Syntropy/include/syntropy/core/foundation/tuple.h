@@ -223,8 +223,8 @@ namespace Syntropy
     template <typename TElement, typename... TElements>
     constexpr Movable<TElement> Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
-    // Construction utilities.
-    // =======================
+    // Utilities.
+    // ==========
 
     /// \brief Create a tuple instance, deducing template types from arguments.
     template <typename... TElements>
@@ -237,6 +237,24 @@ namespace Syntropy
     /// \brief Create a tuple of the perfectly-forwarded elements provided.
     template <typename... TElements>
     constexpr Tuple<Forwarding<TElements>...> ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
+
+    // Swap.
+    // =====
+
+    /// \brief Member-wise swap two tuples.
+    template <typename... TElements, typename... UElements>
+    requires (sizeof...(TElements) == sizeof...(UElements))
+    constexpr void Swap(Mutable<Tuple<TElements...>> lhs, Mutable<Tuple<UElements...>> rhs) noexcept;
+
+    /// \brief Swap lhs with rhs and return the old value of lhs.
+    template <typename... TElements, typename... UElements>
+    requires (sizeof...(TElements) == sizeof...(UElements))
+    constexpr Tuple<TElements...> Exchange(Mutable<Tuple<TElements...>> lhs, Immutable<Tuple<UElements...>> rhs) noexcept;
+
+    /// \brief Swap lhs with rhs and return the old value of lhs.
+    template <typename... TElements, typename... UElements>
+    requires (sizeof...(TElements) == sizeof...(UElements))
+    constexpr Tuple<TElements...> Exchange(Mutable<Tuple<TElements...>> lhs, Movable<Tuple<UElements...>> rhs) noexcept;
 
 }
 
@@ -428,6 +446,29 @@ namespace Syntropy
     constexpr Tuple<Forwarding<TElements>...> ForwardAsTuple(Forwarding<TElements>... elements) noexcept
     {
         return Tuple<Forwarding<TElements>...>(Forward<TElements>(elements)...);
+    }
+
+    // Swap.
+
+    template <typename... TElements, typename... UElements>
+    requires (sizeof...(TElements) == sizeof...(UElements))
+    constexpr void Swap(Mutable<Tuple<TElements...>> lhs, Mutable<Tuple<UElements...>> rhs) noexcept
+    {
+        Tuples::Swap(lhs, rhs);
+    }
+
+    template <typename... TElements, typename... UElements>
+    requires (sizeof...(TElements) == sizeof...(UElements))
+    constexpr Tuple<TElements...> Exchange(Mutable<Tuple<TElements...>> lhs, Immutable<Tuple<UElements...>> rhs) noexcept
+    {
+        return Tuples::Exchange(lhs, rhs);
+    }
+
+    template <typename... TElements, typename... UElements>
+    requires (sizeof...(TElements) == sizeof...(UElements))
+    constexpr Tuple<TElements...> Exchange(Mutable<Tuple<TElements...>> lhs, Movable<Tuple<UElements...>> rhs) noexcept
+    {
+        return Tuples::Exchange(lhs, Move(rhs));
     }
 
 }

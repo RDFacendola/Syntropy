@@ -49,7 +49,9 @@ int main(int argc, char **argv)
 
     auto t = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'i', 'n', 'o');
     auto u = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'e', 't', 't', 'o');
-    auto v = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'i', 'n', 'i');
+    auto v = Syntropy::MakeTuple('c', 'o', 'n', 'i', 'g', 'l', 'i');
+
+    Exchange(t, v);
 
     auto tt = (t <=> t);
     auto tu = (t <=> u);
