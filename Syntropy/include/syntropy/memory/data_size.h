@@ -236,35 +236,35 @@ namespace Syntropy
 
     /// \brief Move a byte pointer forward by a given data size amount.
     template <Concepts::DataSizeUnit TUnit>
-    constexpr Mutable<MutableBytePtr> operator+=(Mutable<MutableBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
+    constexpr Mutable<RWBytePtr> operator+=(Mutable<RWBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given data size amount.
     template <Concepts::DataSizeUnit TUnit>
-    constexpr Mutable<MutableBytePtr> operator-=(Mutable<MutableBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
+    constexpr Mutable<RWBytePtr> operator-=(Mutable<RWBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given data size amount.
     template <Concepts::DataSizeUnit TUnit>
-    constexpr MutableBytePtr operator+(MutableBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
+    constexpr RWBytePtr operator+(RWBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given data size amount.
     template <Concepts::DataSizeUnit TUnit>
-    constexpr MutableBytePtr operator-(MutableBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
+    constexpr RWBytePtr operator-(RWBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given data size amount.
     template <Concepts::DataSizeUnit TUnit>
-    constexpr Mutable<ImmutableBytePtr> operator+=(Mutable<ImmutableBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
+    constexpr Mutable<BytePtr> operator+=(Mutable<BytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given data size amount.
     template <Concepts::DataSizeUnit TUnit>
-    constexpr Mutable<ImmutableBytePtr> operator-=(Mutable<ImmutableBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
+    constexpr Mutable<BytePtr> operator-=(Mutable<BytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
 
     /// \brief Move a byte pointer forward by a given data size amount.
     template <Concepts::DataSizeUnit TUnit>
-    constexpr ImmutableBytePtr operator+(ImmutableBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
+    constexpr BytePtr operator+(BytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
 
     /// \brief Move a byte pointer backward by a given data size amount.
     template <Concepts::DataSizeUnit TUnit>
-    constexpr ImmutableBytePtr operator-(ImmutableBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
+    constexpr BytePtr operator-(BytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept;
 
 }
 
@@ -560,7 +560,7 @@ namespace Syntropy
     // =========
 
     template <Concepts::DataSizeUnit TUnit>
-    constexpr Mutable<MutableBytePtr> operator+=(Mutable<MutableBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept
+    constexpr Mutable<RWBytePtr> operator+=(Mutable<RWBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept
     {
         lhs = lhs + ToInt(ToDataSize(rhs));
 
@@ -568,7 +568,7 @@ namespace Syntropy
     }
 
     template <Concepts::DataSizeUnit TUnit>
-    constexpr Mutable<MutableBytePtr> operator-=(Mutable<MutableBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept
+    constexpr Mutable<RWBytePtr> operator-=(Mutable<RWBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept
     {
         lhs = lhs - ToInt(ToBytes(rhs));
 
@@ -576,19 +576,19 @@ namespace Syntropy
     }
 
     template <Concepts::DataSizeUnit TUnit>
-    constexpr MutableBytePtr operator+(MutableBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept
+    constexpr RWBytePtr operator+(RWBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept
     {
         return lhs + ToInt(ToBytes(rhs));
     }
 
     template <Concepts::DataSizeUnit TUnit>
-    constexpr MutableBytePtr operator-(MutableBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept
+    constexpr RWBytePtr operator-(RWBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept
     {
         return lhs - ToInt(ToBytes(rhs));
     }
 
     template <Concepts::DataSizeUnit TUnit>
-    constexpr Mutable<ImmutableBytePtr> operator+=(Mutable<ImmutableBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept
+    constexpr Mutable<BytePtr> operator+=(Mutable<BytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept
     {
         lhs = lhs + rhs;
 
@@ -596,7 +596,7 @@ namespace Syntropy
     }
 
     template <Concepts::DataSizeUnit TUnit>
-    constexpr Mutable<ImmutableBytePtr> operator-=(Mutable<ImmutableBytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept
+    constexpr Mutable<BytePtr> operator-=(Mutable<BytePtr> lhs, Immutable<DataSize<TUnit>> rhs) noexcept
     {
         lhs = lhs - rhs;
 
@@ -604,13 +604,13 @@ namespace Syntropy
     }
 
     template <Concepts::DataSizeUnit TUnit>
-    constexpr ImmutableBytePtr operator+(ImmutableBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept
+    constexpr BytePtr operator+(BytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept
     {
         return lhs + ToInt(ToBytes(rhs));
     }
 
     template <Concepts::DataSizeUnit TUnit>
-    constexpr ImmutableBytePtr operator-(ImmutableBytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept
+    constexpr BytePtr operator-(BytePtr lhs, Immutable<DataSize<TUnit>> rhs) noexcept
     {
         return lhs - ToInt(ToBytes(rhs));
     }

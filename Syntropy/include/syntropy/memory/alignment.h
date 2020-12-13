@@ -39,19 +39,19 @@ namespace Syntropy
     constexpr Alignment MaxAlignment() noexcept;
 
     /// \brief Check whether a pointer is aligned to a given boundary.
-    Bool IsAlignedTo(ImmutableBytePtr pointer, Alignment alignment) noexcept;
+    Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
 
     /// \brief Move a byte pointer forwards until it gets aligned to a specified value.
-    ImmutableBytePtr Align(ImmutableBytePtr pointer, Alignment alignment) noexcept;
+    BytePtr Align(BytePtr pointer, Alignment alignment) noexcept;
 
     /// \brief Move a byte pointer forwards until it gets aligned to a specified value.
-    MutableBytePtr Align(MutableBytePtr pointer, Alignment alignment) noexcept;
+    RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept;
 
     /// \brief Move a byte pointer backwards until it gets aligned to a specified value.
-    ImmutableBytePtr AlignDown(ImmutableBytePtr pointer, Alignment alignment) noexcept;
+    BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept;
 
     /// \brief Move a byte pointer backwards until it gets aligned to a specified value.
-    MutableBytePtr AlignDown(MutableBytePtr pointer, Alignment alignment) noexcept;
+    RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept;
 
     /************************************************************************/
     /* BITWISE OPERATIONS                                                   */
@@ -129,14 +129,14 @@ namespace Syntropy
         return Alignment(std::align_val_t{ alignof(std::max_align_t) });
     }
 
-    inline Bool IsAlignedTo(ImmutableBytePtr pointer, Alignment alignment) noexcept
+    inline Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
         return !(ToAddress(pointer) & mask);
     }
 
-    inline ImmutableBytePtr Align(ImmutableBytePtr pointer, Alignment alignment) noexcept
+    inline BytePtr Align(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -145,14 +145,14 @@ namespace Syntropy
         return FromAddress<Byte>(aligned);
     }
 
-    inline MutableBytePtr Align(MutableBytePtr pointer, Alignment alignment) noexcept
+    inline RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        auto aligned_pointer = Align(ToImmutable(pointer), alignment);
+        auto aligned_pointer = Align(ToReadOnly(pointer), alignment);
 
-        return ToMutable(aligned_pointer);
+        return ToReadWrite(aligned_pointer);
     }
 
-    inline ImmutableBytePtr AlignDown(ImmutableBytePtr pointer, Alignment alignment) noexcept
+    inline BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -161,11 +161,11 @@ namespace Syntropy
         return FromAddress<Byte>(aligned_pointer);
     }
 
-    inline MutableBytePtr AlignDown(MutableBytePtr pointer, Alignment alignment) noexcept
+    inline RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
     {
-        auto aligned_pointer = AlignDown(ToImmutable(pointer), alignment);
+        auto aligned_pointer = AlignDown(ToReadOnly(pointer), alignment);
         
-        return ToMutable(aligned_pointer);
+        return ToReadWrite(aligned_pointer);
     }
 
     // Bitwise operations.

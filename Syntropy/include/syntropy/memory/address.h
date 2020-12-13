@@ -131,6 +131,7 @@ namespace Syntropy
     Ptr<TType> FromAddress(Immutable<Address> rhs) noexcept;
 
     /// \brief Convert an address to a strongly-typed read-write instance of TType.
+    /// \remarks If the address doesn't refer to a read-writable memory location, accessing the returned value results in undefined behavior.
     template <typename TType>
     RWPtr<TType> FromAddress(Immutable<RWAddress> rhs) noexcept;
 
@@ -282,13 +283,13 @@ namespace Syntropy
     template <typename TReference>
     constexpr Address MakeAddress(Immutable<TReference> rhs) noexcept
     {
-        return Address{ ToPointer(rhs) };
+        return Address{ ToPtr(rhs) };
     }
 
     template <typename TReference>
     constexpr RWAddress MakeAddress(Mutable<TReference> rhs) noexcept
     {
-        return RWAddress{ ToPointer(rhs) };
+        return RWAddress{ ToPtr(rhs) };
     }
 
 }

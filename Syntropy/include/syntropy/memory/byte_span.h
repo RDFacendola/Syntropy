@@ -99,7 +99,7 @@ namespace Syntropy
     struct ByteSpanTypeTraits
     {
         /// \brief Pointer type.
-        using TPointer = ImmutableBytePtr;
+        using TPointer = BytePtr;
 
         /// \brief Reference type.
         using TReference = Immutable<Byte>;
@@ -116,7 +116,7 @@ namespace Syntropy
     struct RWByteSpanTypeTraits
     {
         /// \brief Pointer type.
-        using TPointer = MutableBytePtr;
+        using TPointer = RWBytePtr;
 
         /// \brief Reference type.
         using TReference = Mutable<Byte>;
@@ -202,16 +202,16 @@ namespace Syntropy
     // ==========
 
     /// \brief Create a new byte span by deducing template from arguments.
-    constexpr ByteSpan MakeByteSpan(ImmutableBytePtr begin, Immutable<Bytes> size) noexcept;
+    constexpr ByteSpan MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept;
 
     /// \brief Create a new byte span by deducing template from arguments.
-    constexpr ByteSpan MakeByteSpan(ImmutableBytePtr begin, ImmutableBytePtr end) noexcept;
+    constexpr ByteSpan MakeByteSpan(BytePtr begin, BytePtr end) noexcept;
 
     /// \brief Create a new byte span by deducing template from arguments.
-    constexpr RWByteSpan MakeByteSpan(MutableBytePtr begin, Immutable<Bytes> size) noexcept;
+    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept;
 
     /// \brief Create a new byte span by deducing template from arguments.
-    constexpr RWByteSpan MakeByteSpan(MutableBytePtr begin, MutableBytePtr end) noexcept;
+    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept;
 
     /************************************************************************/
     /* ALIGNMENT                                                            */
@@ -448,22 +448,22 @@ namespace Syntropy
 
     // Utilities.
 
-    constexpr ByteSpan MakeByteSpan(ImmutableBytePtr begin, Immutable<Bytes> size) noexcept
+    constexpr ByteSpan MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept
     {
         return { begin, size };
     }
 
-    constexpr ByteSpan MakeByteSpan(ImmutableBytePtr begin, ImmutableBytePtr end) noexcept
+    constexpr ByteSpan MakeByteSpan(BytePtr begin, BytePtr end) noexcept
     {
         return { begin, end };
     }
 
-    constexpr RWByteSpan MakeByteSpan(MutableBytePtr begin, Immutable<Bytes> size) noexcept
+    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept
     {
         return { begin, size };
     }
 
-    constexpr RWByteSpan MakeByteSpan(MutableBytePtr begin, MutableBytePtr end) noexcept
+    constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept
     {
         return { begin, end };
     }
@@ -499,7 +499,7 @@ namespace Syntropy
 
     inline RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept
     {
-        return { ToMutable(Data(rhs)), Count(rhs) };
+        return { ToReadWrite(Data(rhs)), Count(rhs) };
     }
 
     template <typename TObject>

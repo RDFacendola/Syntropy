@@ -130,7 +130,7 @@ namespace Syntropy
     // Access.
 
     template <typename TType>
-    constexpr Immutable<TType> ToImmutable(Immutable<TType> rhs) noexcept
+    constexpr Immutable<TType> ToReadOnly(Immutable<TType> rhs) noexcept
     {
         return rhs;
     }

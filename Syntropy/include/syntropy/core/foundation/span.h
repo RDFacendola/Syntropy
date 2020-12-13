@@ -283,7 +283,7 @@ namespace Syntropy
     template <typename TType, typename TTraits>
     template <typename UType, typename UTraits>
     constexpr BaseSpan<TType, TTraits>::BaseSpan(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
-        : data_(ToPointer<TType>(Data(rhs)))
+        : data_(ToPtr<TType>(Data(rhs)))
         , count_(Count(rhs))
     {
 
@@ -293,7 +293,7 @@ namespace Syntropy
     template <typename UType, typename UTraits>
     constexpr Mutable<BaseSpan<TType, TTraits>> BaseSpan<TType, TTraits>::operator=(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
-        data_ = ToPointer<TType>(Data(rhs));
+        data_ = ToPtr<TType>(Data(rhs));
         count_ = Count(rhs);
 
         return *this;
