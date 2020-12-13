@@ -201,17 +201,16 @@ namespace Syntropy
     // Utilities.
     // ==========
 
-    /// \brief Create a new read-only byte span given a pointer to its first byte and its size.
+    /// \brief Create a new byte span by deducing template from arguments.
     constexpr ByteSpan MakeByteSpan(ImmutableBytePtr begin, Immutable<Bytes> size) noexcept;
 
-    /// \brief Create a new read-only span given a pointer to its first byte and past its last one.
-    template <typename TType>
+    /// \brief Create a new byte span by deducing template from arguments.
     constexpr ByteSpan MakeByteSpan(ImmutableBytePtr begin, ImmutableBytePtr end) noexcept;
 
-    /// \brief Create a new read-write byte span given a pointer to its first byte and its size.
+    /// \brief Create a new byte span by deducing template from arguments.
     constexpr RWByteSpan MakeByteSpan(MutableBytePtr begin, Immutable<Bytes> size) noexcept;
 
-    /// \brief Create a new read-write span given a pointer to its first byte and past its last one.
+    /// \brief Create a new byte span by deducing template from arguments.
     constexpr RWByteSpan MakeByteSpan(MutableBytePtr begin, MutableBytePtr end) noexcept;
 
     /************************************************************************/
