@@ -41,13 +41,13 @@ namespace Syntropy
     public:
 
         /// \brief Indicates that an element is less-than another element.
-        static const Ordering Less;
+        static const Ordering kLess;
 
         /// \brief Indicates that an Ordering is equivalent-to another element.
-        static const Ordering Equivalent;
+        static const Ordering kEquivalent;
 
         /// \brief Indicates that an element is greater-than another element.
-        static const Ordering Greater;
+        static const Ordering kGreater;
 
         /// \brief Convert from std::strong_ordering to Ordering.
         /// \remarks Allows better interoperability with STL.
@@ -163,9 +163,9 @@ namespace Syntropy
     // Ordering.
     // =========
 
-    inline constexpr Ordering Ordering::Less{ Details::ComparisonResult::kLess };
-    inline constexpr Ordering Ordering::Equivalent{ Details::ComparisonResult::kEquivalent };
-    inline constexpr Ordering Ordering::Greater{ Details::ComparisonResult::kGreater };
+    inline constexpr Ordering Ordering::kLess{ Details::ComparisonResult::kLess };
+    inline constexpr Ordering Ordering::kEquivalent{ Details::ComparisonResult::kEquivalent };
+    inline constexpr Ordering Ordering::kGreater{ Details::ComparisonResult::kGreater };
 
     constexpr Ordering::Ordering(Immutable<std::strong_ordering> value) noexcept
         : value_(Details::ToComparisonResult(value))
