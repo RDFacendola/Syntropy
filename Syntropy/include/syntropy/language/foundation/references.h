@@ -81,16 +81,16 @@ namespace Syntropy
     template <typename TType>
     constexpr void ToImmutable(Immovable<TType> rhs) noexcept = delete;
 
-    /// \brief Convert rhs to a reference to a mutable instance of type TType.
+    /// \brief Convert rhs to a mutable reference to an instance of type TType.
     /// The intended use for this method is to write a non-const implementation based on a const implementation, without duplicating code.
     /// Such usage has the form: ToMutable(F(ToImmutable(x))) where x is non-const and F(.) is a function.
     /// \remarks If rhs doesn't refer to a mutable object, accessing the result of this method results in undefined behavior.
     template <typename TType>
-    constexpr Mutable<TType> ToMutable(Immutable<TType> rhs) noexcept;
+    constexpr Mutable<Templates::RemoveConst<TType>> ToMutable(Immutable<TType> rhs) noexcept;
 
     /// \brief Deleted overload to disallow rvalue arguments.
     template <typename TType>
-    constexpr TType ToMutable(Movable<TType> rhs) noexcept;
+    constexpr TType ToMutable(Immovable<TType> rhs) noexcept = delete;
 
 }
 
@@ -130,13 +130,13 @@ namespace Syntropy
     // Access.
 
     template <typename TType>
-    constexpr Immutable<TType> ToReadOnly(Immutable<TType> rhs) noexcept
+    constexpr Immutable<TType> ToImmutable(Immutable<TType> rhs) noexcept
     {
         return rhs;
     }
 
     template <typename TType>
-    constexpr Mutable<TType> ToMutable(Immutable<TType> rhs) noexcept
+    constexpr Mutable<Templates::RemoveConst<TType>> ToMutable(Immutable<TType> rhs) noexcept
     {
         return const_cast<Mutable<TType>>(rhs);
     }

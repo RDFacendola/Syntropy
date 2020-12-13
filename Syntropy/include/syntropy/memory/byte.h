@@ -44,21 +44,21 @@ namespace Syntropy
 
     /// \brief Convert rhs to a pointer to a read-only memory location.
     template <typename TType>
-    BytePtr ToBytePtr(Immutable<BasePtr<TType>> rhs) noexcept;
+    BytePtr ToBytePtr(BasePtr<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a read-write memory location.
     /// \remarks If rhs doesn't refer to a mutable memory location, accessing the returned value results in undefined behavior.
     template <typename TType>
-    RWBytePtr ToBytePtr(Immutable<BasePtr<TType>> rhs) noexcept;
+    RWBytePtr ToBytePtr(BasePtr<TType> rhs) noexcept;
 
     /// \brief Convert a raw-pointer to a strongly-typed read-only instance of TType.
     template <typename TType>
-    Ptr<TType> FromBytePtr(Immutable<BytePtr> rhs) noexcept;
+    Ptr<TType> FromBytePtr(BytePtr rhs) noexcept;
 
     /// \brief Convert a raw-pointer to a strongly-typed read-write instance of TType.
     /// \remarks If the raw-pointer doesn't refer to a read-writable memory location, accessing the returned value results in undefined behavior.
     template <typename TType>
-    RWPtr<TType> FromBytePtr(Immutable<RWBytePtr> rhs) noexcept;
+    RWPtr<TType> FromBytePtr(RWBytePtr rhs) noexcept;
 
 }
 
@@ -80,25 +80,25 @@ namespace Syntropy
     }
 
     template <typename TType>
-    inline BytePtr ToBytePtr(Immutable<BasePtr<TType>> rhs) noexcept
+    inline BytePtr ToBytePtr(BasePtr<TType> rhs) noexcept
     {
         return reinterpret_cast<BytePtr>(rhs);
     }
 
     template <typename TType>
-    inline RWBytePtr ToBytePtr(Immutable<BasePtr<TType>> rhs) noexcept
+    inline RWBytePtr ToBytePtr(BasePtr<TType> rhs) noexcept
     {
         return const_cast<RWBytePtr>(reinterpret_cast<BytePtr>(rhs));
     }
 
     template <typename TType>
-    inline Ptr<TType> FromBytePtr(Immutable<BytePtr> rhs) noexcept
+    inline Ptr<TType> FromBytePtr(BytePtr rhs) noexcept
     {
         return reinterpret_cast<Ptr<TType>>(rhs);
     }
 
     template <typename TType>
-    inline RWPtr<TType> FromBytePtr(Immutable<RWBytePtr> rhs) noexcept
+    inline RWPtr<TType> FromBytePtr(RWBytePtr rhs) noexcept
     {
         return const_cast<RWPtr<TType>>(reinterpret_cast<Ptr<TType>>(rhs));
     }

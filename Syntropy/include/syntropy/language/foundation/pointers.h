@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <cstddef>
 
+#include "syntropy/language/foundation/references.h"
 #include "syntropy/language/templates/type_traits.h"
 
 // ===========================================================================
@@ -58,42 +59,42 @@ namespace Syntropy
     /// \brief Convert rhs to a pointer to UType preserving constness.
     /// \remarks If the pointee type is not related to UType, the program is ill-formed.
     template <typename TType, typename UType>
-    constexpr BasePtr<TType> ToPtr(Immutable<BasePtr<UType>> rhs) noexcept;
+    constexpr BasePtr<TType> ToPtr(BasePtr<UType> rhs) noexcept;
 
-    /// \brief Convert rhs to a pointer to a typeless immutable object.
+    /// \brief Convert rhs to a pointer to a typeless read-only object.
     template <typename TType>
     requires (Templates::IsConst<TType>)
-    TypelessPtr ToTypelessPtr(Immutable<BasePtr<TType>> rhs) noexcept;
+    TypelessPtr ToTypelessPtr(BasePtr<TType> rhs) noexcept;
 
-    /// \brief Convert rhs to a pointer to a typeless mutable object.
-    /// \remarks If the pointee refers to an immutable object, accessing the result of this method results in undefined behavior.
+    /// \brief Convert rhs to a pointer to a typeless read-write object.
+    /// \remarks If the pointee refers to a read-only object, accessing the result of this method results in undefined behavior.
     template <typename TType>
     requires (!Templates::IsConst<TType>)
-    RWTypelessPtr ToTypelessPtr(Immutable<BasePtr<TType>> rhs) noexcept;
+    RWTypelessPtr ToTypelessPtr(BasePtr<TType> rhs) noexcept;
 
-    /// \brief Convert rhs to a strongly-typed immutable pointer type.
+    /// \brief Convert rhs to a strongly-typed read-only pointer type.
     /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
     template <typename TType>
-    Ptr<TType> FromTypelessPtr(Immutable<TypelessPtr> rhs) noexcept;
+    Ptr<TType> FromTypelessPtr(TypelessPtr rhs) noexcept;
 
-    /// \brief Convert rhs to a strongly-typed mutable pointer type.
+    /// \brief Convert rhs to a strongly-typed read-write pointer type.
     /// \remarks If the pointee type is not related to TType, accessing the result of this method results in undefined behavior.
     template <typename TType>
-    RWPtr<TType> FromTypelessPtr(Immutable<RWTypelessPtr> rhs) noexcept;
+    RWPtr<TType> FromTypelessPtr(RWTypelessPtr rhs) noexcept;
 
     // Access.
     // =======
 
     /// \brief Convert rhs to a pointer to a read-write instance of type TType.
     template <typename TType>
-    constexpr Ptr<TType> ToReadOnly(Immutable<BasePtr<TType>> rhs) noexcept;
+    constexpr Ptr<TType> ToReadOnly(BasePtr<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a read-write instance of type TType.
     /// The intended use for this method is to write a non-const implementation based on a const implementation, without duplicating associated code.
     /// Such usage has the form: ToReadWrite(F(ToReadOnly(x))) where x is non-const and F(.) is a function.
     /// \remarks If rhs pointee doesn't refer to a read-writable instance, accessing the result of this method results in undefined behavior.
     template <typename TType>
-    constexpr RWPtr<Templates::RemoveConst<TType>> ToReadWrite(Immutable<BasePtr<TType>> rhs) noexcept;
+    constexpr RWPtr<Templates::RemoveConst<TType>> ToReadWrite(BasePtr<TType> rhs) noexcept;
 
     // Utilities.
     // ==========
@@ -122,33 +123,33 @@ namespace Syntropy
     // Conversions.
 
     template <typename TType, typename UType>
-    constexpr BasePtr<TType> ToPtr(Immutable<BasePtr<UType>> rhs) noexcept
+    constexpr BasePtr<TType> ToPtr(BasePtr<UType> rhs) noexcept
     {
         return static_cast<BasePtr<TType>>(rhs);
     }
 
     template <typename TType>
     requires (Templates::IsConst<TType>)
-    inline TypelessPtr ToTypelessPtr(Immutable<BasePtr<TType>> rhs) noexcept
+    inline TypelessPtr ToTypelessPtr(BasePtr<TType> rhs) noexcept
     {
         return rhs;
     }
 
     template <typename TType>
     requires (!Templates::IsConst<TType>)
-    inline RWTypelessPtr ToTypelessPtr(Immutable<BasePtr<TType>> rhs) noexcept
+    inline RWTypelessPtr ToTypelessPtr(BasePtr<TType> rhs) noexcept
     {
         return const_cast<RWTypelessPtr>(rhs);
     }
 
     template <typename TType>
-    inline Ptr<TType> FromTypelessPtr(Immutable<TypelessPtr> rhs) noexcept
+    inline Ptr<TType> FromTypelessPtr(TypelessPtr rhs) noexcept
     {
         return reinterpret_cast<Ptr<TType>>(rhs);
     }
 
     template <typename TType>
-    inline RWPtr<TType> FromTypelessPtr(Immutable<RWTypelessPtr> rhs) noexcept
+    inline RWPtr<TType> FromTypelessPtr(RWTypelessPtr rhs) noexcept
     {
         return reinterpret_cast<RWPtr<TType>>(rhs);
     }
@@ -156,13 +157,13 @@ namespace Syntropy
     // Access.
 
     template <typename TType>
-    constexpr Ptr<TType> ToReadOnly(Immutable<BasePtr<TType>> rhs) noexcept
+    constexpr Ptr<TType> ToReadOnly(BasePtr<TType> rhs) noexcept
     {
         return rhs;
     }
 
     template <typename TType>
-    constexpr RWPtr<Templates::RemoveConst<TType>> ToReadWrite(Immutable<BasePtr<TType>> rhs) noexcept
+    constexpr RWPtr<Templates::RemoveConst<TType>> ToReadWrite(BasePtr<TType> rhs) noexcept
     {
         return const_cast<RWPtr<Templates::RemoveConst<TType>>>(rhs);
     }
