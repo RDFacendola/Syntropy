@@ -181,6 +181,7 @@ namespace Syntropy::Concepts
             /// \brief It shall be possible to access range elements via a data pointer and a negative offset.
             { data - offset } -> SameAs<Templates::RangeElementPointer<TRange>>;
         };
+
 }
 
 // ===========================================================================
@@ -285,16 +286,51 @@ namespace Syntropy::Ranges
 namespace Syntropy
 {
     /************************************************************************/
-    /* RANGE FOR                                                            */
+    /* RANGE ITERATOR                                                       */
+    /************************************************************************/
+
+    /// \brief Wraps a range and adapt it for iteration via range-for.
+    /// \author Raffaele D. Facendola - December 2020.
+    template <Concepts::ForwardRange TRange>
+    class RangeIterator
+    {
+    public:
+
+        /// \brief Reference to a range element.
+        using TReference = Templates::RangeElementReference<TRange>;
+
+        /// \brief Create an empty range.
+        constexpr RangeIterator() noexcept = default;
+
+        /// \brief Wrap a range for iteration.
+        constexpr RangeIterator(Immutable<TRange> range) noexcept;
+
+        /// \brief Access the front element.
+        constexpr TReference operator*() const noexcept;
+
+        /// \brief Move to the next element.
+        constexpr Mutable<RangeIterator> operator++() noexcept;
+
+        /// \brief Check whether two iterators are equal.
+        constexpr Bool operator==(Immutable<RangeIterator> other) const noexcept;
+
+    private:
+
+        /// \brief Iterable range.
+        TRange range_;
+    };
+
+    /************************************************************************/
+    /* RANGE-BASED FOR                                                      */
     /************************************************************************/
 
     /// \brief Get an iterator to the first element in a range.
-    template <Concepts::ContiguousRange TRange>
-    constexpr auto* begin(Immutable<TRange> range) noexcept;
+    template <Concepts::ForwardRange TRange>
+    constexpr RangeIterator<TRange> begin(Immutable<TRange> range) noexcept;
 
     /// \brief Get an iterator past the last element in a range.
-    template <Concepts::ContiguousRange TRange>
-    constexpr auto* end(Immutable<TRange> range) noexcept;
+    template <Concepts::ForwardRange TRange>
+    constexpr RangeIterator<TRange> end(Immutable<TRange> range) noexcept;
 
 }
 
@@ -485,19 +521,49 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // Range for.
-    // ==========
+    // RangeIterator.
+    // ==============
 
-    template <Concepts::ContiguousRange TRange>
-    constexpr auto* begin(Immutable<TRange> range) noexcept
+    template <Concepts::ForwardRange TRange>
+    constexpr RangeIterator<TRange>::RangeIterator(Immutable<TRange> range) noexcept
+        : range_(range)
     {
-        return Data(range);
+
     }
 
-    template <Concepts::ContiguousRange TRange>
-    constexpr auto* end(Immutable<TRange> range) noexcept
+    template <Concepts::ForwardRange TRange>
+    constexpr typename RangeIterator<TRange>::TReference RangeIterator<TRange>::operator*() const noexcept
     {
-        return Data(range) + Count(range);
+        return Front(range_);
+    }
+
+    template <Concepts::ForwardRange TRange>
+    constexpr Mutable<RangeIterator<TRange>> RangeIterator<TRange>::operator++() noexcept
+    {
+        range_ = PopFront(range_);
+
+        return *this;
+    }
+
+    template <Concepts::ForwardRange TRange>
+    constexpr Bool RangeIterator<TRange>::operator== (Immutable<RangeIterator> other) const noexcept
+    {
+        return Ranges::AreEquivalent(range_, other.range_);
+    }
+
+    // Range-based for.
+    // ================
+
+    template <Concepts::ForwardRange TRange>
+    constexpr RangeIterator<TRange> begin(Immutable<TRange> range) noexcept
+    {
+        return RangeIterator<TRange>{ range };
+    }
+
+    template <Concepts::ForwardRange TRange>
+    constexpr RangeIterator<TRange> end(Immutable<TRange> range) noexcept
+    {
+        return RangeIterator<TRange>{};
     }
 
 }

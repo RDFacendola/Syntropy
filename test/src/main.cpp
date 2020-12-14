@@ -53,20 +53,44 @@ int main(int argc, char **argv)
 
     auto r = Syntropy::MakeSpan(&Get<6>(t), 7);
     auto s = Syntropy::MakeSpan(&Get<7>(u), 8);
+    auto rr = Syntropy::Reverse(r);
+    auto rs = Syntropy::Reverse(s);
+
+    auto zrs = Syntropy::Zip(r, s);
+
+    static_assert(Syntropy::Templates::IsDefaultConstructible<decltype(r)>, "nein0");
+    static_assert(Syntropy::Templates::IsDefaultConstructible<decltype(rr)>, "nein1");
+    static_assert(Syntropy::Templates::IsDefaultConstructible<decltype(zrs)>, "nein2");
+
+    std::cout << "\nforward: ";
 
     for (auto&& x : r)
     {
         std::cout << x << ",";
     }
+
+    std::cout << "\nbackward: ";
+
+    for (auto&& x : rr)
+    {
+        std::cout << x << ",";
+    }
+
+    auto&& f = Front(zrs);
+
+//     for (auto&& x : zrs)
+//     {
+//         //std::cout << "(" << x << ":" << y << "), ";
+//     }
 
     std::cout << "\n";
 
     auto [a,b] = Syntropy::Ranges::MemberwiseSwap(r, s);
 
-    for (auto&& x : r)
-    {
-        std::cout << x << ",";
-    }
+//     for (auto&& x : r)
+//     {
+//         std::cout << x << ",";
+//     }
 
      auto tt = (t <=> t);
      auto tu = (t <=> u);

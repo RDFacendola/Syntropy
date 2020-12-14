@@ -37,7 +37,7 @@ namespace Syntropy::Templates
 
     /// \brief Type of the VIndex-th element of a n-tuple.
     template <Int VIndex, typename TType>
-    using TupleElementType = typename TupleElementTypeTraits<VIndex, TType>::Type;
+    using TupleElementType = Details::TupleElementType<VIndex, TType>;
 
     /// \brief Constant equal to true if TType provides compile-time access to its element types, false otherwise.
     template <typename TType>

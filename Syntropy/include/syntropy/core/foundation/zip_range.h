@@ -88,6 +88,9 @@ namespace Syntropy
 
     public:
 
+        /// \brief Create an empty zip-range.
+        constexpr ZipRange() noexcept = default;
+
         /// \brief Create a new range by zipping together one or more ranges.
         constexpr ZipRange(Immutable<TRanges>... ranges) noexcept;
 
@@ -315,7 +318,7 @@ namespace Syntropy
             return Tuple<Templates::RangeElementReference<TRanges>...>{ Front(ranges)... };
         };
 
-        return Apply(zip_front, range.ranges_);
+        return Tuples::Apply(zip_front, range.ranges_);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -326,7 +329,7 @@ namespace Syntropy
             return ZipRange<TRanges...>{ PopFront(ranges)... };
         };
 
-        return Apply(zip_pop_front, range.ranges_);
+        return Tuples::Apply(zip_pop_front, range.ranges_);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -337,7 +340,7 @@ namespace Syntropy
             return (sizeof...(TRanges) == 0) || (IsEmpty(ranges) || ...);
         };
 
-        return Apply(zip_is_empty, range.ranges_);
+        return Tuples::Apply(zip_is_empty, range.ranges_);
     }
 
     // Sized range.
@@ -350,7 +353,7 @@ namespace Syntropy
             return Math::Min(static_cast<Templates::RangeElementCount<ZipRange<TRanges...>>>(Count(ranges))...);
         };
 
-        return Apply(zip_min_count, range.ranges_);
+        return Tuples::Apply(zip_min_count, range.ranges_);
     }
 
     // Bidirectional range.
@@ -363,7 +366,7 @@ namespace Syntropy
             return Tuple<Templates::RangeElementReference<TRanges>...>{ Back(ranges)... };
         };
 
-        return Apply(zip_back, range.ranges_);
+        return Tuples::Apply(zip_back, range.ranges_);
     }
 
     template <Concepts::BidirectionalRange... TRanges>
@@ -374,7 +377,7 @@ namespace Syntropy
             return ZipRange<TRanges...>{ PopBack(ranges)... };
         };
 
-        return Apply(zip_pop_back, range.ranges_);
+        return Tuples::Apply(zip_pop_back, range.ranges_);
     }
 
     // Random access range.
@@ -387,7 +390,7 @@ namespace Syntropy
             return ZipRange<TRanges...>{ Select(ranges, offset, count)... };
         };
 
-        return Apply(zip_select, range.ranges_);
+        return Tuples::Apply(zip_select, range.ranges_);
     }
 
     template <Concepts::RandomAccessRange... TRanges>
@@ -398,7 +401,7 @@ namespace Syntropy
             return Tuple<Templates::RangeElementReference<TRanges>...>{ Select(ranges, index)... };
         };
 
-        return Apply(zip_select, range.ranges_);
+        return Tuples::Apply(zip_select, range.ranges_);
     }
 
     // Contiguous range.
@@ -411,7 +414,7 @@ namespace Syntropy
             return Tuple<Templates::RangeElementPointer<TRanges>...>{ Data(ranges)... };
         };
 
-        return Apply(zip_data, range.ranges_);
+        return Tuples::Apply(zip_data, range.ranges_);
     }
 
     // Utilities.

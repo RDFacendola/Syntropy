@@ -65,6 +65,9 @@ namespace Syntropy
 
     public:
 
+        /// \brief Create an empty reverse range.
+        constexpr ReverseRange() noexcept = default;
+
         /// \brief Create a new reverse range.
         constexpr ReverseRange(Immutable<TRange> range) noexcept;
 
