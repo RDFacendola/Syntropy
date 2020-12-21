@@ -56,7 +56,9 @@ namespace Syntropy::Templates::Details
     template <typename TSequence, typename... TSequences>
     struct SequenceCatHelper
     {
-        using Type = typename SequenceCatHelper<TSequence, typename SequenceCatHelper<TSequences...>::Type>::Type;
+        using Types = typename SequenceCatHelper<TSequences...>::Type;
+
+        using Type = typename SequenceCatHelper<TSequence, Types>::Type;
     };
 
     /// \brief Specialization for one sequence.

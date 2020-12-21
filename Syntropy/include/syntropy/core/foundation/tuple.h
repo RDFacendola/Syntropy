@@ -238,6 +238,10 @@ namespace Syntropy
     template <typename... TElements>
     constexpr Tuple<Forwarding<TElements>...> ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
+    /// \brief Concatenate a set of tuples.
+    template <typename... TTuples>
+    constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
+
     // Swap.
     // =====
 
@@ -446,6 +450,12 @@ namespace Syntropy
     constexpr Tuple<Forwarding<TElements>...> ForwardAsTuple(Forwarding<TElements>... elements) noexcept
     {
         return Tuple<Forwarding<TElements>...>(Forward<TElements>(elements)...);
+    }
+
+    template <typename... TTuples>
+    constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept
+    {
+        return Details::TupleCat(Forward<TTuples>(tuples)...);
     }
 
     // Swap.

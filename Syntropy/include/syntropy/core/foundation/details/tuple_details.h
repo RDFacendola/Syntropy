@@ -20,6 +20,11 @@ namespace Syntropy
 
     template <typename... TTypes>
     struct Tuple;
+
+    /// \brief Create a tuple instance, deducing template types from arguments.
+    template <typename... TElements>
+    constexpr Tuple<TElements...> MakeTuple(Forwarding<TElements>... elements) noexcept;
+
 }
 
 // ===========================================================================
@@ -195,6 +200,84 @@ namespace Syntropy::Details
     /// \brief Access a tuple base type by index.
     template <Int VCount, typename TTuple>
     using TupleBase = typename TupleBaseHelper<VCount, TTuple>::Type;
+
+    /************************************************************************/
+    /* TUPLE                                                                */
+    /************************************************************************/
+
+    // EnumerateTupleIndexes.
+
+    /// \brief Generate a sequence that can be used to access tuples.
+    template <Int VIndex, typename TTuple, typename... TTuples>
+    struct EnumerateTupleIndexesHelper
+    {
+        using TupleSequence = typename EnumerateTupleIndexesHelper<VIndex, TTuple>::Type;
+        using TuplesSequence = typename EnumerateTupleIndexesHelper<VIndex + 1, TTuples...>::Type;
+
+        using Type = Templates::SequenceCat<TupleSequence, TuplesSequence>;
+    };
+
+    /// \brief Generate a sequence of VIndex repeated a number of times equal to the rank of TTuple.
+    template <Int VIndex, typename TTuple>
+    struct EnumerateTupleIndexesHelper<VIndex, TTuple>
+    {
+        using Type = Templates::SequenceRepeat<VIndex, Templates::TupleRank<TTuple>>;
+    };
+
+    /// \brief Generate a sequence that can be used to access tuples.
+    template <typename... TTuples>
+    using EnumerateTupleIndexes = typename EnumerateTupleIndexesHelper<0, TTuples...>::Type;
+
+    // EnumerateTupleElementIndexes.
+
+    /// \brief Generate a sequence that can be used to access tuple elements.
+    template <typename TTuple, typename... TTuples>
+    struct EnumerateTupleElementIndexesHelper
+    {
+        using TupleSequence = typename EnumerateTupleElementIndexesHelper<TTuple>::Type;
+        using TuplesSequence = typename EnumerateTupleElementIndexesHelper<TTuples...>::Type;
+
+        using Type = Templates::SequenceCat<TupleSequence, TuplesSequence>;
+    };
+
+    /// \brief Generate an increasing sequence from 0 to the rank of TTuple (excluded).
+    template <typename TTuple>
+    struct EnumerateTupleElementIndexesHelper<TTuple>
+    {
+        using Type = Templates::TupleSequenceFor<TTuple>;
+    };
+
+    /// \brief Generate a sequence that can be used to access tuple elements.
+    template <typename TTuple, typename... TTuples>
+    using EnumerateTupleElementIndexes = typename EnumerateTupleElementIndexesHelper<TTuple, TTuples...>::Type;
+
+    /// \brief Concatenate a set of tuples.
+    template <typename... TTuples>
+    constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
+
+}
+
+// ===========================================================================
+
+namespace Syntropy::Details
+{
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Utilities.
+    // ==========
+
+    template <typename... TTuples>
+    constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept
+    {
+        auto tuple_cat = [&]<typename TTuple, Int... VTupleIndex, Int... VElementIndex>(Forwarding<TTuple> tuple, Templates::Sequence<VTupleIndex...>, Templates::Sequence<VElementIndex...>)
+        {
+            return MakeTuple((Get<VElementIndex>(Get<VTupleIndex>(Forward<TTuple>(tuple))))...);
+        };
+
+        return tuple_cat(ForwardAsTuple(tuples...), EnumerateTupleIndexes<Templates::RemoveConstReference<TTuples>...>{}, EnumerateTupleElementIndexes<Templates::RemoveConstReference<TTuples>...>{});
+    }
 
 }
 
