@@ -116,7 +116,7 @@ namespace Syntropy
         constexpr Tuple(ElementwiseTag, Forwarding<UElement> element, Forwarding<UElements>... elements) noexcept;
 
         /// \brief Construct a tuple unwinding another tuple elements.
-        template<typename TTuple, Int... VIndexes>
+        template<Concepts::NTupleReference TTuple, Int... VIndexes>
         constexpr Tuple(UnwindTag, Templates::Sequence<VIndexes...>, Forwarding<TTuple> tuple) noexcept;
 
         /// \brief Copy-assignment operator.
@@ -239,12 +239,12 @@ namespace Syntropy
     constexpr Tuple<Forwarding<TElements>...> ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <typename... TTuples>
+    template <Concepts::NTupleReference... TTuples>
     constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
 
     /// \brief Flatten a tuple recursively.
-    template <typename TTuple>
-    constexpr decltype(auto) Flat(Forwarding<TTuple> tuple) noexcept;
+    template <Concepts::NTupleReference TTuple>
+    constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept;
 
     // Swap.
     // =====
@@ -304,7 +304,7 @@ namespace Syntropy
     }
 
     template <typename TElement, typename... TElements>
-    template<typename TTuple, Int... VIndexes>
+    template<Concepts::NTupleReference TTuple, Int... VIndexes>
     constexpr Tuple<TElement, TElements...>::Tuple(UnwindTag, Templates::Sequence<VIndexes...>, Forwarding<TTuple> tuple) noexcept
         : Tuple(ElementwiseTag, Get<VIndexes>(Forward<TTuple>(tuple))...)
     {
@@ -456,16 +456,16 @@ namespace Syntropy
         return Tuple<Forwarding<TElements>...>(Forward<TElements>(elements)...);
     }
 
-    template <typename... TTuples>
+    template <Concepts::NTupleReference... TTuples>
     constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept
     {
         return Details::TupleCat(Forward<TTuples>(tuples)...);
     }
 
-    template <typename TTuple>
-    constexpr decltype(auto) Flat(Forwarding<TTuple> tuple) noexcept
+    template <Concepts::NTupleReference TTuple>
+    constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept
     {
-        return Details::Flat(Forward<TTuple>(tuple));
+        return Details::TupleFlat(Forward<TTuple>(tuple));
     }
 
     // Swap.

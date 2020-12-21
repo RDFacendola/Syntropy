@@ -24,8 +24,11 @@ namespace Syntropy
     template <typename... TElements>
     constexpr Tuple<TElements...> MakeTuple(Forwarding<TElements>... elements) noexcept;
 
-    template <typename... TTuples>
+    template <Concepts::NTupleReference... TTuples>
     constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
+
+    template <Concepts::NTupleReference TTuple>
+    constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept;
 }
 
 // ===========================================================================
@@ -184,7 +187,7 @@ namespace Syntropy::Details
     /************************************************************************/
 
     /// \brief Access a tuple base type by index.
-    template <Int VCount, typename TTuple>
+    template <Int VCount, Concepts::NTupleReference TTuple>
     struct TupleBaseHelper;
 
     /// \brief Specialization for tuples.
@@ -192,14 +195,14 @@ namespace Syntropy::Details
     struct TupleBaseHelper<VCount, Tuple<TElement, TElements...>> : TupleBaseHelper<VCount - 1, Tuple<TElements...>> {};
 
     /// \brief End of recursion.
-    template <typename TTuple>
+    template <Concepts::NTupleReference TTuple>
     struct TupleBaseHelper<0, TTuple>
     {
         using Type = TTuple;
     };
 
     /// \brief Access a tuple base type by index.
-    template <Int VCount, typename TTuple>
+    template <Int VCount, Concepts::NTupleReference TTuple>
     using TupleBase = typename TupleBaseHelper<VCount, TTuple>::Type;
 
     /************************************************************************/
@@ -212,7 +215,7 @@ namespace Syntropy::Details
     // EnumerateTupleIndexes.
 
     /// \brief Generate a sequence that can be used to access tuples.
-    template <Int VIndex, typename TTuple, typename... TTuples>
+    template <Int VIndex, Concepts::NTupleReference TTuple, Concepts::NTupleReference... TTuples>
     struct EnumerateTupleIndexesHelper
     {
         using TupleSequence = typename EnumerateTupleIndexesHelper<VIndex, TTuple>::Type;
@@ -222,20 +225,20 @@ namespace Syntropy::Details
     };
 
     /// \brief Generate a sequence of VIndex repeated a number of times equal to the rank of TTuple.
-    template <Int VIndex, typename TTuple>
+    template <Int VIndex, Concepts::NTupleReference TTuple>
     struct EnumerateTupleIndexesHelper<VIndex, TTuple>
     {
         using Type = Templates::SequenceRepeat<VIndex, Templates::TupleRank<TTuple>>;
     };
 
     /// \brief Generate a sequence that can be used to access tuples.
-    template <typename... TTuples>
+    template <Concepts::NTupleReference... TTuples>
     using EnumerateTupleIndexes = typename EnumerateTupleIndexesHelper<0, TTuples...>::Type;
 
     // EnumerateTupleElementIndexes.
 
     /// \brief Generate a sequence that can be used to access tuple elements.
-    template <typename TTuple, typename... TTuples>
+    template <Concepts::NTupleReference TTuple, Concepts::NTupleReference... TTuples>
     struct EnumerateTupleElementIndexesHelper
     {
         using TupleSequence = typename EnumerateTupleElementIndexesHelper<TTuple>::Type;
@@ -245,31 +248,30 @@ namespace Syntropy::Details
     };
 
     /// \brief Generate an increasing sequence from 0 to the rank of TTuple (excluded).
-    template <typename TTuple>
+    template <Concepts::NTupleReference TTuple>
     struct EnumerateTupleElementIndexesHelper<TTuple>
     {
         using Type = Templates::TupleSequenceFor<TTuple>;
     };
 
     /// \brief Generate a sequence that can be used to access tuple elements.
-    template <typename TTuple, typename... TTuples>
+    template <Concepts::NTupleReference TTuple, Concepts::NTupleReference... TTuples>
     using EnumerateTupleElementIndexes = typename EnumerateTupleElementIndexesHelper<TTuple, TTuples...>::Type;
 
     /// \brief Concatenate a set of tuples.
-    template <typename... TTuples>
+    template <Concepts::NTupleReference... TTuples>
     constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
 
     // Flat.
     // =====
 
     /// \brief Flatten a tuple recursively.
-    template <typename TTuple>
-    requires Concepts::NTuple<Templates::RemoveConstReference<TTuple>>
-    constexpr decltype(auto) Flat(Forwarding<TTuple> tuple) noexcept;
+    template <Concepts::NTupleReference TTuple>
+    constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept;
 
-    /// \brief Flatten a tuple recursively. End of recursion
+    /// \brief Flatten a tuple recursively. End of recursion.
     template <typename TElement>
-    constexpr decltype(auto) Flat(Forwarding<TElement> element) noexcept;
+    constexpr decltype(auto) TupleFlat(Forwarding<TElement> element) noexcept;
 
 }
 
@@ -284,10 +286,10 @@ namespace Syntropy::Details
     // Utilities.
     // ==========
 
-    template <typename... TTuples>
+    template <Concepts::NTupleReference... TTuples>
     constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept
     {
-        auto tuple_cat = [&]<typename TTuple, Int... VTupleIndex, Int... VElementIndex>(Forwarding<TTuple> tuple, Templates::Sequence<VTupleIndex...>, Templates::Sequence<VElementIndex...>)
+        auto tuple_cat = [&]<Concepts::NTupleReference TTuple, Int... VTupleIndex, Int... VElementIndex>(Forwarding<TTuple> tuple, Templates::Sequence<VTupleIndex...>, Templates::Sequence<VElementIndex...>)
         {
             return MakeTuple((Get<VElementIndex>(Get<VTupleIndex>(Forward<TTuple>(tuple))))...);
         };
@@ -295,24 +297,23 @@ namespace Syntropy::Details
         return tuple_cat(ForwardAsTuple(tuples...), EnumerateTupleIndexes<Templates::RemoveConstReference<TTuples>...>{}, EnumerateTupleElementIndexes<Templates::RemoveConstReference<TTuples>...>{});
     }
 
-    template <typename TTuple>
-    requires Concepts::NTuple<Templates::RemoveConstReference<TTuple>>
-    constexpr decltype(auto) Flat(Forwarding<TTuple> tuple) noexcept
+    template <Concepts::NTupleReference TTuple>
+    constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept
     {
         // The argument is a tuple: flatten each element recursively and return their concatenation.
 
         using Syntropy::TupleCat;
-
+        
         auto flat = [&]<Int... VTupleIndex>(Forwarding<TTuple> tuple, Templates::Sequence<VTupleIndex...>)
         {
-            return TupleCat(Flat(Get<VTupleIndex>(Forward<TTuple>(tuple)))...);
+            return TupleCat(Details::TupleFlat(Get<VTupleIndex>(Forward<TTuple>(tuple)))...);
         };
 
         return flat(Forward<TTuple>(tuple), Templates::TupleSequenceFor<Templates::RemoveConstReference<TTuple>>{});
     }
 
     template <typename TElement>
-    constexpr decltype(auto) Flat(Forwarding<TElement> element) noexcept
+    constexpr decltype(auto) TupleFlat(Forwarding<TElement> element) noexcept
     {
         // The argument is not a tuple: wrap it in a 1-tuple and end recursion.
 
