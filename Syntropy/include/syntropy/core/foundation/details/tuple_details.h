@@ -21,10 +21,11 @@ namespace Syntropy
     template <typename... TTypes>
     struct Tuple;
 
-    /// \brief Create a tuple instance, deducing template types from arguments.
     template <typename... TElements>
     constexpr Tuple<TElements...> MakeTuple(Forwarding<TElements>... elements) noexcept;
 
+    template <typename... TTuples>
+    constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
 }
 
 // ===========================================================================
@@ -205,6 +206,9 @@ namespace Syntropy::Details
     /* TUPLE                                                                */
     /************************************************************************/
 
+    // TupleCat.
+    // =========
+
     // EnumerateTupleIndexes.
 
     /// \brief Generate a sequence that can be used to access tuples.
@@ -255,6 +259,18 @@ namespace Syntropy::Details
     template <typename... TTuples>
     constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
 
+    // Flat.
+    // =====
+
+    /// \brief Flatten a tuple recursively.
+    template <typename TTuple>
+    requires Concepts::NTuple<Templates::RemoveConstReference<TTuple>>
+    constexpr decltype(auto) Flat(Forwarding<TTuple> tuple) noexcept;
+
+    /// \brief Flatten a tuple recursively. End of recursion
+    template <typename TElement>
+    constexpr decltype(auto) Flat(Forwarding<TElement> element) noexcept;
+
 }
 
 // ===========================================================================
@@ -277,6 +293,30 @@ namespace Syntropy::Details
         };
 
         return tuple_cat(ForwardAsTuple(tuples...), EnumerateTupleIndexes<Templates::RemoveConstReference<TTuples>...>{}, EnumerateTupleElementIndexes<Templates::RemoveConstReference<TTuples>...>{});
+    }
+
+    template <typename TTuple>
+    requires Concepts::NTuple<Templates::RemoveConstReference<TTuple>>
+    constexpr decltype(auto) Flat(Forwarding<TTuple> tuple) noexcept
+    {
+        // The argument is a tuple: flatten each element recursively and return their concatenation.
+
+        using Syntropy::TupleCat;
+
+        auto flat = [&]<Int... VTupleIndex>(Forwarding<TTuple> tuple, Templates::Sequence<VTupleIndex...>)
+        {
+            return TupleCat(Flat(Get<VTupleIndex>(Forward<TTuple>(tuple)))...);
+        };
+
+        return flat(Forward<TTuple>(tuple), Templates::TupleSequenceFor<Templates::RemoveConstReference<TTuple>>{});
+    }
+
+    template <typename TElement>
+    constexpr decltype(auto) Flat(Forwarding<TElement> element) noexcept
+    {
+        // The argument is not a tuple: wrap it in a 1-tuple and end recursion.
+
+        return MakeTuple(Forward<TElement>(element));
     }
 
 }

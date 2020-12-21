@@ -242,6 +242,10 @@ namespace Syntropy
     template <typename... TTuples>
     constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
 
+    /// \brief Flatten a tuple recursively.
+    template <typename TTuple>
+    constexpr decltype(auto) Flat(Forwarding<TTuple> tuple) noexcept;
+
     // Swap.
     // =====
 
@@ -456,6 +460,12 @@ namespace Syntropy
     constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept
     {
         return Details::TupleCat(Forward<TTuples>(tuples)...);
+    }
+
+    template <typename TTuple>
+    constexpr decltype(auto) Flat(Forwarding<TTuple> tuple) noexcept
+    {
+        return Details::Flat(Forward<TTuple>(tuple));
     }
 
     // Swap.
