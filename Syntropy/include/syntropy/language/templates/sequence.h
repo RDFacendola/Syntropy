@@ -39,6 +39,13 @@ namespace Syntropy::Templates
     template <typename TSequence>
     inline constexpr Bool IsContiguousSequence = Details::IsContiguousSequence<TSequence>;
 
+    /// \brief Concatenate one or more sequences together.
+    template <typename TSequence, typename... TSequences>
+    using SequenceCat = Details::SequenceCat<TSequence, TSequences...>;
+
+    /// \brief Create a sequence of a repeating value.
+    template <Int VValue, Int VRepeat>
+    using SequenceRepeat = Details::SequenceRepeat<VValue, VRepeat>;
 }
 
 // ===========================================================================

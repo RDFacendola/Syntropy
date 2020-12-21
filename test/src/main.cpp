@@ -45,6 +45,19 @@ int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
+    using Syntropy::Templates::SequenceCat;
+    using Syntropy::Templates::Sequence;
+    using Syntropy::Templates::SequenceRepeat;
+
+    //static_assert(Syntropy::Templates::IsSame<SequenceCat<Sequence<1, 2>, Sequence<3>, Sequence<4, 5, 6>>, Sequence<1, 2, 3, 4, 5, 6>>, "nope!");
+
+    using SeqA = SequenceRepeat<1, 5>;
+
+    using SeqRepeat = Sequence<1,1,1,1,1>;
+
+    static_assert(Syntropy::Templates::IsSame<SeqRepeat, SeqA>, "nope!");
+
+
     using namespace Syntropy::Literals;
 
     auto t = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'i', 'n', 'o');
@@ -57,10 +70,9 @@ int main(int argc, char **argv)
     auto rs = Syntropy::Reverse(s);
 
     auto zrs = Syntropy::Zip(r, s);
+    auto zrsrr = Syntropy::Zip(zrs, rr);
 
-    static_assert(Syntropy::Templates::IsDefaultConstructible<decltype(r)>, "nein0");
-    static_assert(Syntropy::Templates::IsDefaultConstructible<decltype(rr)>, "nein1");
-    static_assert(Syntropy::Templates::IsDefaultConstructible<decltype(zrs)>, "nein2");
+    // auto f = Front(zrsrr);
 
     std::cout << "\nforward: ";
 
@@ -76,7 +88,7 @@ int main(int argc, char **argv)
         std::cout << x << ",";
     }
 
-    auto&& f = Front(zrs);
+    
 
 //     for (auto&& x : zrs)
 //     {

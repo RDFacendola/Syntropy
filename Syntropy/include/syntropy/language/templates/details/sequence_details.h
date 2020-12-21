@@ -49,6 +49,55 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     using SequenceFor = MakeSequence<sizeof...(TTypes)>;
 
+    // SequenceCat.
+    // ============
+
+    /// \brief Concatenate one or more sequences together.
+    template <typename TSequence, typename... TSequences>
+    struct SequenceCatHelper
+    {
+        using Type = typename SequenceCatHelper<TSequence, typename SequenceCatHelper<TSequences...>::Type>::Type;
+    };
+
+    /// \brief Specialization for one sequence.
+    template <Int... VSequence>
+    struct SequenceCatHelper<Sequence<VSequence...>>
+    {
+        using Type = Sequence<VSequence...>;
+    };
+
+    /// \brief Specialization for two sequences.
+    template <Int... VSequence, Int... USequence>
+    struct SequenceCatHelper<Sequence<VSequence...>, Sequence<USequence...>>
+    {
+        using Type = Sequence<VSequence..., USequence...>;
+    };
+
+    /// \brief Concatenate zero or more sequences together.
+    template <typename TSequence, typename... TSequences>
+    using SequenceCat = typename SequenceCatHelper<TSequence, TSequences...>::Type;
+
+    // SequenceRepeat.
+    // ===============
+
+    /// \brief Create a sequence of a repeating value.
+    template <Int VValue, Int VRepeat>
+    struct SequenceRepeatHelper
+    {
+        using Type = SequenceCat<Sequence<VValue>, typename SequenceRepeatHelper<VValue, VRepeat - 1>::Type>;
+    };
+
+    /// \brief Specialization for an empty sequence.
+    template <Int VValue>
+    struct SequenceRepeatHelper<VValue, 0>
+    {
+        using Type = Sequence<>;
+    };
+
+    /// \brief Create a sequence of a repeating value.
+    template <Int VValue, Int VRepeat>
+    using SequenceRepeat = typename SequenceRepeatHelper<VValue, VRepeat>::Type;
+
     /************************************************************************/
     /* IS CONTIGUOUS SEQUENCE                                               */
     /************************************************************************/
