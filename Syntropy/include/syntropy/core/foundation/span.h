@@ -29,7 +29,7 @@ namespace Syntropy
         friend constexpr Int Count(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
         template <typename TType, typename TTraits>
-        friend constexpr BasePtr<TType> Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+        friend constexpr typename TTraits::TPointer Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     public:
 
@@ -138,7 +138,7 @@ namespace Syntropy
     /// \brief Access the first element in a span.
     /// \remarks Accessing the first element of an empty span results in undefined behavior.
     template <typename TType, typename TTraits>
-    constexpr Reference<TType> Front(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    constexpr typename TTraits::TReference Front(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     /// \brief Discard the first count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
@@ -163,7 +163,7 @@ namespace Syntropy
     /// \brief Access the last element in a span.
     /// \remarks Accessing the last element of an empty span results in undefined behavior.
     template <typename TType, typename TTraits>
-    constexpr Reference<TType> Back(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    constexpr typename TTraits::TReference Back(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     /// \brief Discard the last count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
@@ -181,7 +181,7 @@ namespace Syntropy
     /// \brief Obtain a span element at given index.
     /// \remarks Exceeding span boundaries results in undefined behavior.
     template <typename TType, typename TTraits>
-    constexpr Reference<TType> Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int index) noexcept;
+    constexpr typename TTraits::TReference Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int index) noexcept;
 
     // Contiguous range.
     // =================
@@ -189,7 +189,7 @@ namespace Syntropy
     /// \brief Access underlying span data.
     /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
     template <typename TType, typename TTraits>
-    constexpr BasePtr<TType> Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    constexpr typename TTraits::TPointer Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     // Access.
     // =======
@@ -238,11 +238,11 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
-    struct RangeElementReferenceTypeTraits<BaseSpan<TType, TTraits>> : Alias<Reference<TType>> {};
+    struct RangeElementReferenceTypeTraits<BaseSpan<TType, TTraits>> : Alias<typename TTraits::TReference> {};
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
-    struct RangeElementPointerTypeTraits<BaseSpan<TType, TTraits>> : Alias<BasePtr<TType>> {};
+    struct RangeElementPointerTypeTraits<BaseSpan<TType, TTraits>> : Alias<typename TTraits::TPointer> {};
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
@@ -336,7 +336,7 @@ namespace Syntropy
     // Forward Range.
 
     template <typename TType, typename TTraits>
-    constexpr Reference<TType> Front(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    constexpr typename TTraits::TReference Front(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return *Data(rhs);
     }
@@ -364,7 +364,7 @@ namespace Syntropy
     // Bidirectional range.
 
     template <typename TType, typename TTraits>
-    constexpr Reference<TType> Back(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    constexpr typename TTraits::TReference Back(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return *(Data(rhs) + Count(rhs) - ToInt(1));
     }
@@ -384,7 +384,7 @@ namespace Syntropy
     }
 
     template <typename TType, typename TTraits>
-    constexpr Reference<TType> Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int index) noexcept
+    constexpr typename TTraits::TReference Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int index) noexcept
     {
         return rhs[index];
     }
@@ -392,7 +392,7 @@ namespace Syntropy
     // Contiguous range.
 
     template <typename TType, typename TTraits>
-    constexpr BasePtr<TType> Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    constexpr typename TTraits::TPointer Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return rhs.data_;
     }
