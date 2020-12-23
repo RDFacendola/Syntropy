@@ -313,7 +313,7 @@ namespace Syntropy
     template <Concepts::ForwardRange... TRanges>
     constexpr Tuple<Templates::RangeElementReference<TRanges>...> Front(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        auto zip_front = []<typename...>(const auto&... ranges)
+        auto zip_front = [](Immutable<TRanges>... ranges)
         {
             return Tuple<Templates::RangeElementReference<TRanges>...>{ Front(ranges)... };
         };
@@ -324,7 +324,7 @@ namespace Syntropy
     template <Concepts::ForwardRange... TRanges>
     constexpr ZipRange<TRanges...> PopFront(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        auto zip_pop_front = []<typename...>(const auto&... ranges)
+        auto zip_pop_front = [](Immutable<TRanges>... ranges)
         {
             return ZipRange<TRanges...>{ PopFront(ranges)... };
         };
@@ -335,7 +335,7 @@ namespace Syntropy
     template <Concepts::ForwardRange... TRanges>
     constexpr Bool IsEmpty(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        auto zip_is_empty = []<typename...>(const auto&... ranges)
+        auto zip_is_empty = [](Immutable<TRanges>... ranges)
         {
             return (sizeof...(TRanges) == 0) || (IsEmpty(ranges) || ...);
         };
@@ -348,7 +348,7 @@ namespace Syntropy
     template <Concepts::SizedRange... TRanges>
     constexpr Templates::RangeElementCount<ZipRange<TRanges...>> Count(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        auto zip_min_count = []<typename...>(const auto&... ranges)
+        auto zip_min_count = [](Immutable<TRanges>... ranges)
         {
             return Math::Min(static_cast<Templates::RangeElementCount<ZipRange<TRanges...>>>(Count(ranges))...);
         };
@@ -361,7 +361,7 @@ namespace Syntropy
     template <Concepts::BidirectionalRange... TRanges>
     constexpr Tuple<Templates::RangeElementReference<TRanges>...> Back(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        auto zip_back = []<typename...>(const auto&... ranges)
+        auto zip_back = [](Immutable<TRanges>... ranges)
         {
             return Tuple<Templates::RangeElementReference<TRanges>...>{ Back(ranges)... };
         };
@@ -372,7 +372,7 @@ namespace Syntropy
     template <Concepts::BidirectionalRange... TRanges>
     constexpr ZipRange<TRanges...> PopBack(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        auto zip_pop_back = []<typename...>(const auto&... ranges)
+        auto zip_pop_back = [](Immutable<TRanges>... ranges)
         {
             return ZipRange<TRanges...>{ PopBack(ranges)... };
         };
@@ -385,7 +385,7 @@ namespace Syntropy
     template <Concepts::RandomAccessRange... TRanges>
     constexpr ZipRange<TRanges...> Select(Immutable<ZipRange<TRanges...>> range, Templates::RangeElementCount<ZipRange<TRanges...>> offset, Templates::RangeElementCount<ZipRange<TRanges...>> count) noexcept
     {
-        auto zip_select = [offset, count]<typename...>(const auto&... ranges)
+        auto zip_select = [offset, count](Immutable<TRanges>... ranges)
         {
             return ZipRange<TRanges...>{ Select(ranges, offset, count)... };
         };
@@ -396,7 +396,7 @@ namespace Syntropy
     template <Concepts::RandomAccessRange... TRanges>
     constexpr Tuple<Templates::RangeElementReference<TRanges>...> Select(Immutable<ZipRange<TRanges...>> range, Templates::RangeElementCount<ZipRange<TRanges...>> index) noexcept
     {
-        auto zip_select = [index]<typename...>(const auto&... ranges)
+        auto zip_select = [index](Immutable<TRanges>... ranges)
         {
             return Tuple<Templates::RangeElementReference<TRanges>...>{ Select(ranges, index)... };
         };
@@ -409,7 +409,7 @@ namespace Syntropy
     template <Concepts::ContiguousRange... TRanges>
     constexpr Tuple<Templates::RangeElementPointer<TRanges>...> Data(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        auto zip_data = []<typename...>(const auto&... ranges)
+        auto zip_data = [](Immutable<TRanges>... ranges)
         {
             return Tuple<Templates::RangeElementPointer<TRanges>...>{ Data(ranges)... };
         };
