@@ -153,6 +153,10 @@ namespace Syntropy::Tuples
     ///        for each index up to the minimum rank among those tuples.
     template <typename TFunction, Concepts::NTupleReference... TTuples>
     constexpr void LockstepApply(Forwarding<TFunction> function, Forwarding<TTuples>... tuples) noexcept;
+
+    /// \brief Create a new instance of type TType using TTuple as constructor arguments.
+    template <typename TType, Concepts::NTupleReference TTuple>
+    constexpr TType MakeFromTuple(Forwarding<TTuple> tuple) noexcept;
 }
 
 // ===========================================================================
@@ -371,6 +375,19 @@ namespace Syntropy::Tuples
         };
 
         lockstep_apply(MakeSequence<kMinRank>{});
+    }
+
+    template <typename TType, Concepts::NTupleReference TTuple>
+    constexpr TType MakeFromTuple(Forwarding<TTuple> tuple) noexcept
+    {
+        using namespace Templates;
+
+        auto make_from_tuple = [&]<Int... VIndex>(Sequence<VIndex...>)
+        {
+            return TType(Get<VIndex>(Forward<TTuple>(tuple))...);
+        };
+
+        return make_from_tuple(Templates::TupleSequenceFor<TTuple>{});
     }
 
 }
