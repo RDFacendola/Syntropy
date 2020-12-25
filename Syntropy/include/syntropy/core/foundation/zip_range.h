@@ -32,6 +32,8 @@ namespace Syntropy
     template <Concepts::Range... TRanges>
     class ZipRange
     {
+        static_assert((Templates::IsSame<Templates::RemoveConstReference<TRanges>, TRanges> && ...), "TRanges must be a class name.");
+
         // N-tuple.
 
         template <Int VIndex, Concepts::Range... TRanges>
@@ -101,6 +103,10 @@ namespace Syntropy
 
     };
 
+    /// \brief Deduction rule.
+    template <Concepts::Range... TRanges>
+    ZipRange(Immutable<TRanges>...)->ZipRange<TRanges...>;
+
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
@@ -146,7 +152,7 @@ namespace Syntropy
     /// \remarks Accessing the first element of an empty zip-range results in undefined behavior.
     template <Concepts::ForwardRange... TRanges>
     constexpr Tuple<Templates::RangeElementReference<TRanges>...> Front(Immutable<ZipRange<TRanges...>> range) noexcept;
-
+    
     /// \brief Discard the first count elements in a zip-range and return the resulting zip-subrange.
     /// \remarks If the provided range is empty, the behavior of this method is undefined.
     template <Concepts::ForwardRange... TRanges>
@@ -199,10 +205,13 @@ namespace Syntropy
     // Utilities.
     // ==========
 
-    /// \brief Create a new range by element-wise joining source ranges.
-    /// \remarks The smallest range determines the size of the result.
+    /// \brief Create a new ZipRange by deducing templates types from arguments.
     template <Concepts::Range... TRanges>
-    constexpr ZipRange<TRanges...> Zip(Immutable<TRanges>... ranges) noexcept;
+    constexpr ZipRange<TRanges...> MakeZipRange(Immutable<TRanges>... ranges) noexcept;
+
+    /// \brief Create a new range by element-wise joining different ranges and flattening zip-ranges on the first level.
+    template <Concepts::Range... TRanges>
+    constexpr auto Zip(Immutable<TRanges>... ranges) noexcept;
 
 }
 
@@ -236,7 +245,7 @@ namespace Syntropy::Templates
 
     /// \brief Partial template specialization for tuples.
     template <Int VIndex, Concepts::Range... TRanges>
-    struct TupleElementTypeTraits<VIndex, ZipRange<TRanges...>> : Alias<TupleElementType<VIndex, ZipRange<TRanges...>>> {};
+    struct TupleElementTypeTraits<VIndex, ZipRange<TRanges...>> : Alias<TupleElementType<VIndex, Tuple<TRanges...>>> {};
 
     /// \brief Partial template specialization for tuples.
     template <Concepts::Range... TRanges>
@@ -315,7 +324,7 @@ namespace Syntropy
     {
         auto zip_front = [](Immutable<TRanges>... ranges)
         {
-            return Tuple<Templates::RangeElementReference<TRanges>...>{ Front(ranges)... };
+            return MakeTuple(Front(ranges)...);
         };
 
         return Tuples::Apply(zip_front, range.ranges_);
@@ -420,11 +429,38 @@ namespace Syntropy
     // Utilities.
 
     template <Concepts::Range... TRanges>
-    constexpr ZipRange<TRanges...> Zip(Immutable<TRanges>... ranges) noexcept
+    constexpr ZipRange<TRanges...> MakeZipRange(Immutable<TRanges>... ranges) noexcept
     {
-        return ZipRange{ ranges... };
+        return { ranges... };
     }
 
+    template <Concepts::Range... TRanges>
+    constexpr auto Zip(Immutable<TRanges>... ranges) noexcept
+    {
+        auto zip_from_tuple = []<Concepts::Range... URanges>(Immutable<Tuple<URanges...>> tuple) noexcept
+        {
+            return Tuples::Apply(MakeZipRange<Templates::RemoveReference<URanges>...>, tuple);
+        };
+
+        auto zip_range_to_tuple = []<typename SRange, Int... VIndex>(Immutable<SRange> range, Templates::Sequence<VIndex...>)
+        {
+            return Tuple<Templates::TupleElementType<VIndex, SRange>...>(Get<VIndex>(range)...);
+        };
+
+        auto range_to_tuple = [&zip_range_to_tuple]<typename RRange>(Immutable<RRange> range)
+        {
+            if constexpr (Concepts::NTupleReference<RRange>)
+            {
+                return zip_range_to_tuple(range, Templates::TupleSequenceFor<RRange>{});
+            }
+            else
+            {
+                return Tuple<RRange>{ range };
+            }
+        };
+
+        return zip_from_tuple(TupleCat(range_to_tuple(ranges)...));
+    }
 }
 
 // ===========================================================================
