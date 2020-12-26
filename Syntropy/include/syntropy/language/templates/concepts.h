@@ -301,6 +301,13 @@ namespace Syntropy::Concepts
     template <typename TType, typename UType>
     concept ComparableForEqualityType = Details::ComparableForEqualityType<TType, UType>;
 
+    // Type relationship.
+    // ==================
+
+    /// \brief Concepts for types TType that are template specialization of TTemplate.
+    template<typename TType, template <typename...> typename TTemplate>
+    concept TemplateSpecializationOf = Details::TemplateSpecializationOf<TType, TTemplate>;
+
 }
 
-//Type ===========================================================================
+// ===========================================================================

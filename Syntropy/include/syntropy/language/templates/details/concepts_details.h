@@ -17,6 +17,166 @@
 namespace Syntropy::Concepts::Details
 {
     /************************************************************************/
+    /* TYPE TRAITS                                                          */
+    /************************************************************************/
+
+    // Type concepts.
+    // ==============
+
+    /// \brief Concept for void types.
+    template<typename TType>
+    concept VoidType = std::is_void_v<TType>;
+
+    /// \brief Concept for null types.
+    template<typename TType>
+    concept NullType = std::is_null_pointer_v<TType>;
+
+    /// \brief Concept for enum types.
+    template <typename TType>
+    concept EnumType = std::is_enum_v<TType>;
+
+    /// \brief Concept for class types.
+    template <typename TType>
+    concept ClassType = std::is_class_v<TType>;
+
+    /// \brief Concept for lvalue references.
+    template <typename TType>
+    concept LValueReferenceType = std::is_lvalue_reference_v<TType>;
+
+    /// \brief Concept for rvalue references.
+    template <typename TType>
+    concept RValueReferenceType = std::is_rvalue_reference_v<TType>;
+
+    /// \brief Concept for object types.
+    template <typename TType>
+    concept ObjectType = std::is_object_v<TType>;
+
+    // Properties concepts.
+    // ====================
+
+    /// \brief Concept for immutable types.
+    template <typename TType>
+    concept ImmutableType = std::is_const_v<TType>;
+
+    /// \brief Concept for mutable types.
+    template <typename TType>
+    concept MutableType = !std::is_const_v<TType>;
+
+    /// \brief Concept for trivial types.
+    template <typename TType>
+    concept TrivialType = std::is_trivial_v<TType>;
+
+    /// \brief Concept for trivially-copyable types.
+    template <typename TType>
+    concept TriviallyCopyableType = std::is_trivially_copyable_v<TType>;
+
+    /// \brief Concepts for standard-layout types.
+    template <typename TType>
+    concept StandardLayoutType = std::is_standard_layout_v<TType>;
+
+    /// \brief Constant for polymorphic types.
+    template <typename TType>
+    concept PolymorphicType = std::is_polymorphic_v<TType>;
+
+    /// \brief Constant for final types.
+    template <typename TType>
+    concept FinalType = std::is_final_v<TType>;
+
+    // Type operation concepts.
+    // ========================
+
+    /// \brief Dummy method used to copy construct an instance.
+    template <typename TType>
+    void CopyConstruct(const TType&);
+
+    /// \brief Detect whether TType is implicitly default constructible from an empty list.
+    template <typename TType>
+    using DetectImplicitDefaultConstructor = decltype(CopyConstruct<TType>({}));
+
+    /// \brief Detect whether TType is implicitly direct-constructible from a list of arguments.
+    template <typename TType, typename... TArguments>
+    using DetectImplicitDirectConstructor = decltype(CopyConstruct<TType>({ Declval<TArguments>()... }));
+
+    /// \brief Detect whether an instance of TType can be compared equal to an instance of type UType.
+    template <typename TType, typename UType>
+    using DetectEqualityComparison = decltype(Declval<TType>() == Declval<UType>());
+
+    /// \brief Constant equal to true if TType  default-constructible, equal to false otherwise.
+    template <typename TType>
+    concept DefaultConstructibleType = std::is_default_constructible_v<TType>;
+
+    /// \brief Constant equal to true if TType  trivially default constructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyDefaultConstructibleType = std::is_trivially_default_constructible_v<TType>;
+
+    /// \brief Constant equal to true if TType  implicitly default constructible, equal to false otherwise.
+    template <typename TType>
+    concept ImplicitlyDefaultConstructibleType = Templates::IsValidExpression<DetectImplicitDefaultConstructor, TType>;
+
+    /// \brief Constant equal to true if TType  copy-constructible, equal to false otherwise.
+    template <typename TType>
+    concept CopyConstructibleType = std::is_copy_constructible_v<TType>;
+
+    /// \brief Constant equal to true if TType  trivially-copy-constructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyCopyConstructibleType = std::is_trivially_copy_constructible_v<TType>;
+
+    /// \brief Constant equal to true if TType  move-constructible, equal to false otherwise.
+    template <typename TType>
+    concept MoveConstructibleType = std::is_move_constructible_v<TType>;
+
+    /// \brief Constant equal to true if TType  trivially-move-constructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyMoveConstructibleType = std::is_trivially_move_constructible_v<TType>;
+
+    /// \brief Constant equal to true if TType  copy-assignable, equal to false otherwise.
+    template <typename TType>
+    concept CopyAssignableType = std::is_copy_assignable_v<TType>;
+
+    /// \brief Constant equal to true if TType  trivially-copy-constructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyCopyAssignableType = std::is_trivially_copy_assignable_v<TType>;
+
+    /// \brief Constant equal to true if TType  move-assignable, equal to false otherwise.
+    template <typename TType>
+    concept MoveAssignableType = std::is_move_assignable_v<TType>;
+
+    /// \brief Constant equal to true if TType  trivially-move-constructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyMoveAssignableType = std::is_trivially_move_assignable_v<TType>;
+
+    /// \brief Constant equal to true if TType  assignable from UType in unevaluated context, equal to false otherwise.
+    template <typename TType, typename UType>
+    concept AssignableType = std::is_assignable_v<TType, UType>;
+
+    /// \brief Constant equal to true if TType can be constructed by TArguments... arguments, equal to false otherwise.
+    /// Th trait supports TypeLts in the form Constructible<TypeLt<A,B,C>, TypeLt<a>, TypeLt<b, bb>, TypeLt<>>.
+    /// TArguments must have the same exact rank as the number of elements in TType, otherwise the program  ill-formed.
+    template <typename TType, typename... TArguments>
+    concept ConstructibleType = std::is_constructible_v<TType, TArguments...>;
+
+    /// \brief Constant equal to true if TType can be constructed from an initializer lt of TArguments, equal to false otherwise.
+    /// Th trait supports TypeLts in the form ImplicitlyConstructible<TypeLt<A,B,C>, TypeLt<a>, TypeLt<b, bb>, TypeLt<>>.
+    /// TArguments must have the same exact rank as the number of elements in TType, otherwise the program  ill-formed.
+    /// [i] Given a function Foo(const TType&), TType  implicitly constructible if calling Foo({arguments...})  well-formed.
+    template <typename TType, typename... TArguments>
+    concept ImplicitlyConstructibleType = Templates::IsValidExpression<DetectImplicitDirectConstructor, TType, TArguments...>;
+
+    /// \brief Constant equal to true if TType  destructible, equal to false otherwise.
+    /// A type  destructible if it  a reference type or, if equal to an object-type, if calling its destructor by means of t.~TType() in unevaluated context  well-formed.
+    /// A type  *not* destructible if it  equal to void, a function type or an array type of unknown bounds. It  not destructible also if its destructor  ill-formed in unevaluated context.
+    template <typename TType>
+    concept DestructibleType = std::is_destructible_v<TType>;
+
+    /// \brief Constant equal to true if TType  both destructible and trivially-destructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyDestructibleType = std::is_trivially_destructible_v<TType>;
+
+    /// \brief Constant equal to true if an instance of type TType can be compared equal to an instance of type UType, equal to false otherwise.
+    template <typename TType, typename UType>
+    concept ComparableForEqualityType = Templates::IsValidExpression<DetectEqualityComparison, TType, UType>;
+
+    /************************************************************************/
     /* CONCEPTS                                                             */
     /************************************************************************/
 
@@ -111,7 +271,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for types whose instances can be initialized with a set of arguments TArgs....
     template <typename TType, typename... TArguments>
     concept ConstructibleFrom = Destructible<TType>
-        && Concepts::ConstructibleType<TType, TArguments...>;
+        && ConstructibleType<TType, TArguments...>;
 
     /// \brief Concept for types that can be value-initialized (T()), direct-list-initialized from and empty initializer list (T{}) or default-initialized (T t).
     template <typename TType>
@@ -288,161 +448,20 @@ namespace Syntropy::Concepts::Details
     template <typename TPredicate, typename TType, typename UType>
     concept StrictWeakOrder = Relation<TPredicate, TType, UType>;
 
-    // Type concepts.
-    // ==============
+    // Type relationship.
+    // ==================
 
-    /// \brief Concept for void types.
-    template<typename TType>
-    concept VoidType = std::is_void_v<TType>;
+    /// \brief Constant equal to true if TType is a specialization of TTemplate, equal to false otherwise.
+    template<typename TType, template <typename...> typename TTemplate>
+    constexpr Bool TemplateSpecializationOfHelper = false;
 
-    /// \brief Concept for null types.
-    template<typename TType>
-    concept NullType = std::is_null_pointer_v<TType>;
+    /// \brief Partial template specialization for template specializations (duh...).
+    template<template <typename...> typename TTemplate, typename... TTypes>
+    constexpr Bool TemplateSpecializationOfHelper<TTemplate<TTypes...>, TTemplate> = true;
 
-    /// \brief Concept for enum types.
-    template <typename TType>
-    concept EnumType = std::is_enum_v<TType>;
-
-    /// \brief Concept for class types.
-    template <typename TType>
-    concept ClassType = std::is_class_v<TType>;
-
-    /// \brief Concept for lvalue references.
-    template <typename TType>
-    concept LValueReferenceType = std::is_lvalue_reference_v<TType>;
-
-    /// \brief Concept for rvalue references.
-    template <typename TType>
-    concept RValueReferenceType = std::is_rvalue_reference_v<TType>;
-
-    /// \brief Concept for object types.
-    template <typename TType>
-    concept ObjectType = std::is_object_v<TType>;
-
-    // Properties concepts.
-    // ====================
-
-    /// \brief Concept for immutable types.
-    template <typename TType>
-    concept ImmutableType = std::is_const_v<TType>;
-
-    /// \brief Concept for mutable types.
-    template <typename TType>
-    concept MutableType = !std::is_const_v<TType>;
-
-    /// \brief Concept for trivial types.
-    template <typename TType>
-    concept TrivialType = std::is_trivial_v<TType>;
-
-    /// \brief Concept for trivially-copyable types.
-    template <typename TType>
-    concept TriviallyCopyableType = std::is_trivially_copyable_v<TType>;
-
-    /// \brief Concepts for standard-layout types.
-    template <typename TType>
-    concept StandardLayoutType = std::is_standard_layout_v<TType>;
-
-    /// \brief Constant for polymorphic types.
-    template <typename TType>
-    concept PolymorphicType = std::is_polymorphic_v<TType>;
-
-    /// \brief Constant for final types.
-    template <typename TType>
-    concept FinalType = std::is_final_v<TType>;
-
-    // Type operation concepts.
-    // ========================
-
-    /// \brief Dummy method used to copy construct an instance.
-    template <typename TType>
-    void CopyConstruct(const TType&);
-
-    /// \brief Detect whether TType is implicitly default constructible from an empty list.
-    template <typename TType>
-    using DetectImplicitDefaultConstructor = decltype(CopyConstruct<TType>({}));
-
-    /// \brief Detect whether TType is implicitly direct-constructible from a list of arguments.
-    template <typename TType, typename... TArguments>
-    using DetectImplicitDirectConstructor = decltype(CopyConstruct<TType>({ Declval<TArguments>()... }));
-
-    /// \brief Detect whether an instance of TType can be compared equal to an instance of type UType.
-    template <typename TType, typename UType>
-    using DetectEqualityComparison = decltype(Declval<TType>() == Declval<UType>());
-
-    /// \brief Constant equal to true if TType  default-constructible, equal to false otherwise.
-    template <typename TType>
-    concept DefaultConstructibleType = std::is_default_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  trivially default constructible, equal to false otherwise.
-    template <typename TType>
-    concept TriviallyDefaultConstructibleType = std::is_trivially_default_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  implicitly default constructible, equal to false otherwise.
-    template <typename TType>
-    concept ImplicitlyDefaultConstructibleType = Templates::IsValidExpression<DetectImplicitDefaultConstructor, TType>;
-
-    /// \brief Constant equal to true if TType  copy-constructible, equal to false otherwise.
-    template <typename TType>
-    concept CopyConstructibleType = std::is_copy_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  trivially-copy-constructible, equal to false otherwise.
-    template <typename TType>
-    concept TriviallyCopyConstructibleType = std::is_trivially_copy_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  move-constructible, equal to false otherwise.
-    template <typename TType>
-    concept MoveConstructibleType = std::is_move_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  trivially-move-constructible, equal to false otherwise.
-    template <typename TType>
-    concept TriviallyMoveConstructibleType = std::is_trivially_move_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  copy-assignable, equal to false otherwise.
-    template <typename TType>
-    concept CopyAssignableType = std::is_copy_assignable_v<TType>;
-
-    /// \brief Constant equal to true if TType  trivially-copy-constructible, equal to false otherwise.
-    template <typename TType>
-    concept TriviallyCopyAssignableType = std::is_trivially_copy_assignable_v<TType>;
-
-    /// \brief Constant equal to true if TType  move-assignable, equal to false otherwise.
-    template <typename TType>
-    concept MoveAssignableType = std::is_move_assignable_v<TType>;
-
-    /// \brief Constant equal to true if TType  trivially-move-constructible, equal to false otherwise.
-    template <typename TType>
-    concept TriviallyMoveAssignableType = std::is_trivially_move_assignable_v<TType>;
-
-    /// \brief Constant equal to true if TType  assignable from UType in unevaluated context, equal to false otherwise.
-    template <typename TType, typename UType>
-    concept AssignableType = std::is_assignable_v<TType, UType>;
-
-    /// \brief Constant equal to true if TType can be constructed by TArguments... arguments, equal to false otherwise.
-    /// Th trait supports TypeLts in the form Constructible<TypeLt<A,B,C>, TypeLt<a>, TypeLt<b, bb>, TypeLt<>>.
-    /// TArguments must have the same exact rank as the number of elements in TType, otherwise the program  ill-formed.
-    template <typename TType, typename... TArguments>
-    concept ConstructibleType = std::is_constructible_v<TType, TArguments...>;
-
-    /// \brief Constant equal to true if TType can be constructed from an initializer lt of TArguments, equal to false otherwise.
-    /// Th trait supports TypeLts in the form ImplicitlyConstructible<TypeLt<A,B,C>, TypeLt<a>, TypeLt<b, bb>, TypeLt<>>.
-    /// TArguments must have the same exact rank as the number of elements in TType, otherwise the program  ill-formed.
-    /// [i] Given a function Foo(const TType&), TType  implicitly constructible if calling Foo({arguments...})  well-formed.
-    template <typename TType, typename... TArguments>
-    concept ImplicitlyConstructibleType = Templates::IsValidExpression<DetectImplicitDirectConstructor, TType, TArguments...>;
-
-    /// \brief Constant equal to true if TType  destructible, equal to false otherwise.
-    /// A type  destructible if it  a reference type or, if equal to an object-type, if calling its destructor by means of t.~TType() in unevaluated context  well-formed.
-    /// A type  *not* destructible if it  equal to void, a function type or an array type of unknown bounds. It  not destructible also if its destructor  ill-formed in unevaluated context.
-    template <typename TType>
-    concept DestructibleType = std::is_destructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  both destructible and trivially-destructible, equal to false otherwise.
-    template <typename TType>
-    concept TriviallyDestructibleType = std::is_trivially_destructible_v<TType>;
-
-    /// \brief Constant equal to true if an instance of type TType can be compared equal to an instance of type UType, equal to false otherwise.
-    template <typename TType, typename UType>
-    concept ComparableForEqualityType = Templates::IsValidExpression<DetectEqualityComparison, TType, UType>;
+    /// \brief Concepts for types TType that are template specialization of TTemplate.
+    template<typename TType, template <typename...> typename TTemplate>
+    concept TemplateSpecializationOf = TemplateSpecializationOfHelper<TType, TTemplate>;
 
 }
 

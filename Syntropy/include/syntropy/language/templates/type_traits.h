@@ -165,14 +165,6 @@ namespace Syntropy::Templates
     using RemovePointer = Details::RemovePointer<TType>;
 
     /************************************************************************/
-    /* TYPE RELATIONSHIPS                                                   */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TType is a specialization of TTemplate, equal to false otherwise.
-    template<typename TType, template <typename...> typename TTemplate>
-    constexpr Bool IsTemplateSpecializationOf = Details::IsTemplateSpecializationOf<TType, TTemplate>;
-
-    /************************************************************************/
     /* DECLVAL                                                              */
     /************************************************************************/
 
