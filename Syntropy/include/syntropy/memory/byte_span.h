@@ -507,7 +507,7 @@ namespace Syntropy
     template <Concepts::ContiguousRange TRange, typename TTraits>
     inline TRange FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
     {
-        if constexpr (Templates::IsSame<TRange, BaseByteSpan<TTraits>>)
+        if constexpr (Concepts::SameAs<TRange, BaseByteSpan<TTraits>>)
         {
             return rhs;
         }

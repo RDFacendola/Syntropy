@@ -25,8 +25,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for types which are exactly equal to UType and vice-versa.
     template <typename TType, typename UType>
-    concept SameAs = Templates::IsSame<TType, UType>
-        && Templates::IsSame<UType, TType>;
+    concept SameAs = std::is_same_v<TType, UType> && std::is_same_v<UType, TType>;
 
     /// \brief Concept for types deriving from TBase ignoring constant-qualifiers.
     template <typename TDerived, typename TBase>
@@ -64,7 +63,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for signed integral number types.
     template <typename TType>
     concept Integral = false
-        || SameAs<TType, Int>
+        || SameAs<Templates::RemoveConstReference<TType>, Int>
         || SameAs<TType, Fix8>
         || SameAs<TType, Fix16>
         || SameAs<TType, Fix32>

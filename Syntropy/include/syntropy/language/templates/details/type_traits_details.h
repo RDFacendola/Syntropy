@@ -616,14 +616,6 @@ namespace Syntropy::Templates::Details
     /* TYPE RELATIONSHIPS                                                   */
     /************************************************************************/
 
-    /// \brief Constant equal to true if TType is equal to UType, equal to false otherwise.
-    template <typename TType, typename UType>
-    inline constexpr Bool IsSame = std::is_same_v<TType, UType>;
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool IsSame<TypeList<TTypes...>, TypeList<UTypes...>> = (IsSame<TTypes, UTypes> && ...);
-
     /// \brief Constant equal to true if TBase is a base class for TDerived or both are the same non-union class, equal to false otherwise.
     template <typename TBase, typename TDerived>
     inline constexpr Bool IsBaseOf = std::is_base_of_v<TBase, TDerived>;

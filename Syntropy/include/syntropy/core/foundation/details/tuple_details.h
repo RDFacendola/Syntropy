@@ -127,7 +127,7 @@ namespace Syntropy::Details
     inline constexpr Bool EnableIfTupleConvertingCopyConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, Immutable<UType>>
         && !Templates::IsConvertible<Immutable<Tuple<UType>>, TType>
         && !Templates::IsConstructible<TType, Immutable<Tuple<UType>>>
-        && !Templates::IsSame<TType, UType>;
+        && !Concepts::SameAs<TType, UType>;
 
     /// \brief Enable converting tuple copy-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-copy-constructed from the respective UType and the overload does not reduce to a copy-constructor.
     template <typename TTypeList, typename... UTypes>
@@ -148,7 +148,7 @@ namespace Syntropy::Details
     inline constexpr Bool EnableIfTupleConvertingMoveConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, Movable<UType>>
         && !Templates::IsConvertible<Tuple<UType>, TType>
         && !Templates::IsConstructible<TType, Tuple<UType>>
-        && !Templates::IsSame<TType, UType>;
+        && !Concepts::SameAs<TType, UType>;
 
     /// \brief Enable converting tuple move-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-move-constructed from the respective UType and the overload does not reduce to a move-constructor.
     template <typename TTypeList, typename... UTypes>
@@ -174,13 +174,13 @@ namespace Syntropy::Details
 
     /// \brief Enable tuple converting copy assignment operator if all types in TTypeList can be converting-copy-assigned from the corresponding element in UTypeList.
     template <typename TTypeList, typename UTypeList>
-    using EnableIfTupleConvertingCopyAssignment = RWPtr<Templates::EnableIf<!Templates::IsSame<TTypeList, UTypeList> && Templates::IsAssignable<Templates::AddLValueReference<TTypeList>, Templates::AddLValueConstReference<UTypeList>>>>;
+    using EnableIfTupleConvertingCopyAssignment = RWPtr<Templates::EnableIf<!Concepts::SameAs<TTypeList, UTypeList> && Templates::IsAssignable<Templates::AddLValueReference<TTypeList>, Templates::AddLValueConstReference<UTypeList>>>>;
 
     // (4)
 
     /// \brief Enable tuple converting move assignment operator if all types in TTypeList can be converting-move-assigned from the corresponding element in UTypeList.
     template <typename TTypeList, typename UTypeList>
-    using EnableIfTupleConvertingMoveAssignment = RWPtr<Templates::EnableIf<!Templates::IsSame<TTypeList, UTypeList> && Templates::IsAssignable<Templates::AddLValueReference<TTypeList>, UTypeList>>>;
+    using EnableIfTupleConvertingMoveAssignment = RWPtr<Templates::EnableIf<!Concepts::SameAs<TTypeList, UTypeList> && Templates::IsAssignable<Templates::AddLValueReference<TTypeList>, UTypeList>>>;
 
     /************************************************************************/
     /* TUPLE BASE                                                           */

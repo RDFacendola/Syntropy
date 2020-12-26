@@ -419,10 +419,6 @@ namespace Syntropy::Templates
     /* TYPE RELATIONSHIPS                                                   */
     /************************************************************************/
 
-    /// \brief Constant equal to true if TType is equal to UType, equal to false otherwise.
-    template <typename TType, typename UType>
-    inline constexpr Bool IsSame = Details::IsSame<TType, UType>;
-
     /// \brief Constant equal to true if TBase is a base class for TDerived or both are the same non-union class, equal to false otherwise.
     template <typename TBase, typename TDerived>
     inline constexpr Bool IsBaseOf = Details::IsBaseOf<TBase, TDerived>;

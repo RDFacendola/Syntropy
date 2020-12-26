@@ -264,17 +264,17 @@ namespace Syntropy::Templates::UnitTest
 
     .TestCase("TypeListElement returns the type of an element in a type list by index.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((IsSame<TypeListElement<0, TypeList<Int, Float, Bool>>, Int>), true);
-        SYNTROPY_UNIT_EQUAL((IsSame<TypeListElement<1, TypeList<Int, Float, Bool>>, Float>), true);
-        SYNTROPY_UNIT_EQUAL((IsSame<TypeListElement<2, TypeList<Int, Float, Bool>>, Bool>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListElement<0, TypeList<Int, Float, Bool>>, Int>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListElement<1, TypeList<Int, Float, Bool>>, Float>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListElement<2, TypeList<Int, Float, Bool>>, Bool>), true);
     })
 
     .TestCase("Removing elements from a type list by means of TypeListPopFront return a new type list which is equal to the remaining elements in the original type list.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<0, TypeList<Int, Float, Bool>>, TypeList<Int, Float, Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<1, TypeList<Int, Float, Bool>>, TypeList<Float, Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<2, TypeList<Int, Float, Bool>>, TypeList<Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((IsSame<TypeListPopFront<3, TypeList<Int, Float, Bool>>, TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListPopFront<0, TypeList<Int, Float, Bool>>, TypeList<Int, Float, Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListPopFront<1, TypeList<Int, Float, Bool>>, TypeList<Float, Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListPopFront<2, TypeList<Int, Float, Bool>>, TypeList<Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListPopFront<3, TypeList<Int, Float, Bool>>, TypeList<>>), true);
     });
 
 }

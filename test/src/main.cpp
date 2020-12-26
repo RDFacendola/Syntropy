@@ -41,81 +41,63 @@
 /* ENTRY POINT                                                          */
 /************************************************************************/
 
+struct Foo
+{
+    Foo(int aa, float bb, int cc)
+        : a(aa)
+        , b(bb)
+        , c(cc)
+    {}
+
+    int a;
+    float b;
+    int c;
+};
+
 int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    using Syntropy::Templates::SequenceCat;
-    using Syntropy::Templates::Sequence;
-    using Syntropy::Templates::SequenceRepeat;
-
-    //static_assert(Syntropy::Templates::IsSame<SequenceCat<Sequence<1, 2>, Sequence<3>, Sequence<4, 5, 6>>, Sequence<1, 2, 3, 4, 5, 6>>, "nope!");
-
-    using SeqA = SequenceRepeat<1, 5>;
-
-    using SeqRepeat = Sequence<1,1,1,1,1>;
-
-    static_assert(Syntropy::Templates::IsSame<SeqRepeat, SeqA>, "nope!");
-
-
     using namespace Syntropy::Literals;
+
+    auto foo = [](float, float, int) {};
 
     auto t = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'i', 'n', 'o');
     auto u = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'e', 't', 't', 'o');
     auto v = Syntropy::MakeTuple('c', 'o', 'n', 'i', 'g', 'l', 'i');
 
-    auto r = Syntropy::MakeSpan(&Get<6>(t), 7);
-    auto s = Syntropy::MakeSpan(&Get<7>(u), 8);
-    auto rr = Syntropy::Reverse(r);
-    auto rs = Syntropy::Reverse(s);
+    auto rt = Syntropy::MakeSpan(&Get<6>(t), 7);
+    auto ru = Syntropy::MakeSpan(&Get<7>(u), 8);
+    auto rv = Syntropy::MakeSpan(&Get<6>(v), 7);
 
-    auto zrs = Syntropy::Zip(r, s);
-    auto zrsrr = Syntropy::Zip(zrs, rr);
+    std::cout << "\n";
+    for (auto&& rte : rt) std::cout << rte << "|";
 
-    // auto f = Front(zrsrr);
+    std::cout << "\n";
+    for (auto&& rue : ru) std::cout << rue << "|";
 
-    std::cout << "\nforward: ";
+    std::cout << "\n";
+    for (auto&& rve : rv) std::cout << rve << "|";
 
-    for (auto&& x : r)
-    {
-        std::cout << x << ",";
-    }
+    auto ztr = Syntropy::Ranges::MakeZipRange(rt);
+    auto zur = Syntropy::Ranges::MakeZipRange(ru);
+    auto zvr = Syntropy::Ranges::MakeZipRange(rv);
 
-    std::cout << "\nbackward: ";
+    auto zt = Syntropy::Ranges::Zip(rt);
+    auto ztu = Syntropy::Ranges::Zip(zt, ru);
+    auto ztuv = Syntropy::Ranges::Zip(ztu, rv);
+    auto rztuv = Syntropy::Ranges::Reverse(ztuv);
 
-    for (auto&& x : rr)
-    {
-        std::cout << x << ",";
-    }
-
-    
-
-//     for (auto&& x : zrs)
-//     {
-//         //std::cout << "(" << x << ":" << y << "), ";
-//     }
+    auto zztuv = Syntropy::Ranges::Zip(rt, ru, rv);
 
     std::cout << "\n";
 
-    auto [a,b] = Syntropy::Ranges::MemberwiseSwap(r, s);
+    for (auto&& [a, b, c] : rztuv)
+    {
+        std::cout << a << "," << b << "," << c << "|";
+    }
 
-//     for (auto&& x : r)
-//     {
-//         std::cout << x << ",";
-//     }
-
-     auto tt = (t <=> t);
-     auto tu = (t <=> u);
-     auto tv = (t <=> v);
-     
-     auto ut = (u <=> t);
-     auto uu = (u <=> u);
-     auto uv = (u <=> v);
- 
-     auto vt = (v <=> t);
-     auto vu = (v <=> u);
-     auto vv = (v <=> v);
-
+    std::cout << "\n";
     system("pause");
 
     return 0;
