@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/invoke.h"
@@ -57,15 +59,24 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for boolean types.
     template <typename TType>
-    concept Boolean = Templates::IsBoolean<TType>;
+    concept Boolean = SameAs<TType, Bool>;
 
     /// \brief Concept for signed integral number types.
     template <typename TType>
-    concept Integral = Templates::IsIntegral<TType>;
-
+    concept Integral = false
+        || SameAs<TType, Int>
+        || SameAs<TType, Fix8>
+        || SameAs<TType, Fix16>
+        || SameAs<TType, Fix32>
+        || SameAs<TType, Fix64>
+        || SameAs<TType, Enum8>
+        || SameAs<TType, Enum16>
+        || SameAs<TType, Enum32>
+        || SameAs<TType, Enum64>;
+        
     /// \brief Concept for real number types.
     template <typename TType>
-    concept Real = Templates::IsReal<TType>;
+    concept Real = SameAs<TType, Float>;
 
     /// \brief Concept for an expression type which can be assigned from UType
     template <typename TType, typename UType>
