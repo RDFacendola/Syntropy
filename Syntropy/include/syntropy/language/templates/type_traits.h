@@ -165,46 +165,6 @@ namespace Syntropy::Templates
     using RemovePointer = Details::RemovePointer<TType>;
 
     /************************************************************************/
-    /* TYPE CATEGORIES                                                      */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TType is void-type, equal to false otherwise.
-    template<typename TType>
-    inline constexpr Bool IsVoid = Details::IsVoid<TType>;
-
-    /// \brief Constant equal to true if TType is a null-type, equal to false otherwise.
-    template<typename TType>
-    inline constexpr Bool IsNull = Details::IsNull<TType>;
-
-    /// \brief Constant equal to true if TType is an enumeration type, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsEnum = Details::IsEnum<TType>;
-
-    /// \brief Constant equal to true if TType is a non-union class type, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsClass = Details::IsClass<TType>;
-
-    /// \brief Constant equal to true if TType is a lvalue reference, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsLValueReference = Details::IsLValueReference<TType>;
-
-    /// \brief Constant equal to true if TType is a rvalue reference, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsRValueReference = Details::IsRValueReference<TType>;
-
-    /************************************************************************/
-    /* COMPOSITE TYPE CATEGORIES                                            */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TType is an object type, equal  o false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsObject = Details::IsObject<TType>;
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    inline constexpr Bool IsObject<TypeList<TTypes...>> = (IsObject<TTypes> && ...);
-
-    /************************************************************************/
     /* TYPE PROPERTIES                                                      */
     /************************************************************************/
 

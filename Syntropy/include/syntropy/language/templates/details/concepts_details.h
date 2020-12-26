@@ -79,7 +79,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for an expression type which can be assigned from UType
     template <typename TType, typename UType>
-    concept AssignableFrom = Templates::IsLValueReference<TType>
+    concept AssignableFrom = LValueReferenceType<TType>
         && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>, Immutable<Templates::RemoveReference<UType>>>
         && requires(TType lhs, Forwarding<UType> rhs)
     {
@@ -228,7 +228,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for types that can be moved in and to (move constructed, move assigned and reference-swappable).
     template <typename TType>
-    concept Movable = Templates::IsObject<TType>
+    concept Movable = ObjectType<TType>
         && MoveConstructible<TType>
         && AssignableFrom<Mutable<TType>, TType>
         && Swappable<TType>;
@@ -288,6 +288,36 @@ namespace Syntropy::Concepts::Details
     template <typename TPredicate, typename TType, typename UType>
     concept StrictWeakOrder = Relation<TPredicate, TType, UType>;
 
+    // Type concepts.
+    // ==============
+
+    /// \brief Concept for void types.
+    template<typename TType>
+    concept VoidType = std::is_void_v<TType>;
+
+    /// \brief Concept for null types.
+    template<typename TType>
+    concept NullType = std::is_null_pointer_v<TType>;
+
+    /// \brief Concept for enum types.
+    template <typename TType>
+    concept EnumType = std::is_enum_v<TType>;
+
+    /// \brief Concept for class types.
+    template <typename TType>
+    concept ClassType = std::is_class_v<TType>;
+
+    /// \brief Concept for lvalue references.
+    template <typename TType>
+    concept LValueReferenceType = std::is_lvalue_reference_v<TType>;
+
+    /// \brief Concept for rvalue references.
+    template <typename TType>
+    concept RValueReferenceType = std::is_rvalue_reference_v<TType>;
+
+    /// \brief Concept for object types.
+    template <typename TType>
+    concept ObjectType = std::is_object_v<TType>;
 }
 
 // ===========================================================================

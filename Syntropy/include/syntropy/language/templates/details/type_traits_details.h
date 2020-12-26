@@ -395,42 +395,6 @@ namespace Syntropy::Templates::Details
     using RemovePointer = typename RemovePointerHelper<TType>::Type;
 
     /************************************************************************/
-    /* TYPE CATEGORIES                                                      */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TType is void-type, equal to false otherwise.
-    template<typename TType>
-    inline constexpr Bool IsVoid = std::is_void_v<TType>;
-
-    /// \brief Constant equal to true if TType is a null-type, equal to false otherwise.
-    template<typename TType>
-    inline constexpr Bool IsNull = std::is_null_pointer_v<TType>;
-
-    /// \brief Constant equal to true if TType is an enumeration type, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsEnum = std::is_enum_v<TType>;
-
-    /// \brief Constant equal to true if TType is a non-union class type, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsClass = std::is_class_v<TType>;
-
-    /// \brief Constant equal to true if TType is a lvalue reference, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsLValueReference = std::is_lvalue_reference_v<TType>;
-
-    /// \brief Constant equal to true if TType is a rvalue reference, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsRValueReference = std::is_rvalue_reference_v<TType>;
-
-    /************************************************************************/
-    /* COMPOSITE TYPE CATEGORIES                                            */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TType is an object type, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsObject = std::is_object_v<TType>;
-
-    /************************************************************************/
     /* TYPE PROPERTIES                                                      */
     /************************************************************************/
 

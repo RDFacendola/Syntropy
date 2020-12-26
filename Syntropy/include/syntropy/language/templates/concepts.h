@@ -161,6 +161,36 @@ namespace Syntropy::Concepts
     template <typename TPredicate, typename TType, typename UType>
     concept StrictWeakOrder = Details::StrictWeakOrder<TPredicate, TType, UType>;
 
+    // Type concepts.
+    // ==============
+
+    /// \brief Concept for void types.
+    template<typename TType>
+    concept VoidType = Details::VoidType<TType>;
+
+    /// \brief Concept for null types.
+    template<typename TType>
+    concept NullType = Details::NullType<TType>;
+
+    /// \brief Concept for enum types.
+    template <typename TType>
+    concept EnumType = Details::EnumType<TType>;
+
+    /// \brief Concept for class types.
+    template <typename TType>
+    concept ClassType = Details::ClassType<TType>;
+
+    /// \brief Concept for lvalue references.
+    template <typename TType>
+    concept LValueReferenceType = Details::LValueReferenceType<TType>;
+
+    /// \brief Concept for rvalue references.
+    template <typename TType>
+    concept RValueReferenceType = Details::RValueReferenceType<TType>;
+
+    /// \brief Concept for object types.
+    template <typename TType>
+    concept ObjectType = Details::ObjectType<TType>;
 }
 
 // ===========================================================================

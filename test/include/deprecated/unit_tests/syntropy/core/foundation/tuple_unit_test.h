@@ -318,9 +318,9 @@ namespace Syntropy::UnitTest
 
         scalar = 300;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsLValueReference<decltype(Get<0>(tuple_a))>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts:LValueReferenceType<decltype(Get<0>(tuple_a))>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConst<Syntropy::Templates::RemoveReference<decltype(Get<0>(tuple_a))>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsRValueReference<decltype(Get<1>(Move(tuple_a)))>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::RValueReferenceType<decltype(Get<1>(Move(tuple_a)))>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConst<Syntropy::Templates::RemoveReference<decltype(Get<1>(Move(tuple_a)))>>), false);
 
         SYNTROPY_UNIT_EQUAL((Get<0>(tuple_a)), 100);
