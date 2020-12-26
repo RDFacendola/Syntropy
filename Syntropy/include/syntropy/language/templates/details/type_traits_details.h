@@ -35,19 +35,13 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     using Void = void;
 
-    // ===========================================================================
-
     /// \brief Type equal to TTrue if VCondition is true, equal to TFalse otherwise.
     template <Bool VCondition, typename TTrue, typename TFalse>
     using Conditional = std::conditional_t<VCondition, TTrue, TFalse>;
 
-    // ===========================================================================
-
     /// \brief Type equal to TType if VEnable is true, otherwise there's no such type.
     template <Bool VEnable>
     using EnableIf = std::enable_if_t<VEnable>;
-
-    // ===========================================================================
 
     /// \brief If TExpression<TTypes...> is a valid expression, exposes a member value equal to true, otherwise exposes a member value equal to false.
     /// Default trait for invalid expressions.
@@ -69,20 +63,35 @@ namespace Syntropy::Templates::Details
     template <template<typename...> typename TExpression, typename... TTypes>
     inline constexpr Bool IsValidExpression = IsValidExpressionHelper<void, TExpression, TTypes...>::kValue;
 
-    // ===========================================================================
-
     /// \brief If TExpression<TTypes> is a valid expression, exposes a member typedef equal to void, otherwise there's no such type.
     template <template<typename...> typename TExpression, typename... TTypes>
     using EnableIfValidExpression = EnableIf<IsValidExpression<TExpression, TTypes...>>;
 
-    // ===========================================================================
+    /************************************************************************/
+    /* TYPE LIST                                                            */
+    /************************************************************************/
+
+    /// \brief Discards the first VCount elements in a type list and provides a type alias equal to a type list with the remaining elements.
+    template <Int VCount, typename TTypeList>
+    struct TypeListPopFrontHelper;
+
+    /// \brief Specialization for type lists.
+    template <Int VCount, typename TElement, typename... TElements>
+    struct TypeListPopFrontHelper<VCount, TypeList<TElement, TElements...>> : TypeListPopFrontHelper<VCount - 1, TypeList<TElements...>>
+    {
+
+    };
+
+    /// \brief End of recursion.
+    template <typename TTypeList>
+    struct TypeListPopFrontHelper<0, TTypeList>
+    {
+        using Type = TTypeList;
+    };
 
     /// \brief Discards the first element of a type list until the first element is equal to TType or the list is exhausted.
     template <typename TType, typename TFirst, typename... UTypes>
-    struct TypeListIndexHelper : TypeListIndexHelper<TType, UTypes...>
-    {
-    
-    };
+    struct TypeListIndexHelper : TypeListIndexHelper<TType, UTypes...> {};
 
     /// \brief Specialization for type lists starting with TType.
     template <typename TType, typename... UTypes>
@@ -111,8 +120,6 @@ namespace Syntropy::Templates::Details
     template <typename... TTypes>
     inline constexpr Int TypeListRank<TypeList<TTypes...>> = sizeof...(TTypes);
 
-    // ===========================================================================
-
     /// \brief Provides indexed access to type list elements' types.
     template <Int VIndex, typename TTypeList>
     struct TypeListElementHelper;
@@ -134,26 +141,6 @@ namespace Syntropy::Templates::Details
     /// \brief Provides indexed access to type list elements' types.
     template <Int VIndex, typename TTypeList>
     using TypeListElement = typename TypeListElementHelper<VIndex, TTypeList>::Type;
-
-    // ===========================================================================
-
-    /// \brief Discards the first VCount elements in a type list and provides a type alias equal to a type list with the remaining elements.
-    template <Int VCount, typename TTypeList>
-    struct TypeListPopFrontHelper;
-
-    /// \brief Specialization for type lists.
-    template <Int VCount, typename TElement, typename... TElements>
-    struct TypeListPopFrontHelper<VCount, TypeList<TElement, TElements...>> : TypeListPopFrontHelper<VCount - 1, TypeList<TElements...>>
-    {
-
-    };
-
-    /// \brief End of recursion.
-    template <typename TTypeList>
-    struct TypeListPopFrontHelper<0, TTypeList>
-    {
-        using Type = TTypeList;
-    };
 
     /// \brief Discards the first VCount elements in a type list and provides a type alias equal to a type list with the remaining elements.
     template <Int VCount, typename TTypeList>
@@ -188,211 +175,48 @@ namespace Syntropy::Templates::Details
     template <typename TType>
     using Identity = typename IdentityHelper<TType>::Type;
 
-    // ===========================================================================
-
     /// \brief Applies lvalue-to-rvalue, array-to-pointer, and function-to-pointer implicit conversions to the type TType,
     /// removes cv-qualifiers, and defines the resulting type as the member typedef type.
     template <typename TType>
-    struct DecayHelper
-    {
-        using Type = std::decay_t<TType>;
-    };
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    struct DecayHelper<TypeList<TTypes...>>
-    {
-        using Type = TypeList<std::decay_t<TTypes>...>;
-    };
-
-    /// \brief Applies lvalue-to-rvalue, array-to-pointer, and function-to-pointer implicit conversions to the type TType,
-    /// removes cv-qualifiers, and defines the resulting type as the member typedef type.
-    template <typename TType>
-    using Decay = typename DecayHelper<TType>::Type;
-
-    // ===========================================================================
+    using Decay = std::decay_t<TType>;
 
     /// \brief Type equal to TType without const qualifier.
     template <typename TType>
-    struct RemoveConstHelper
-    {
-        using Type = std::remove_const_t<TType>;
-    };
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    struct RemoveConstHelper<TypeList<TTypes...>>
-    {
-        using Type = TypeList<std::remove_const_t<TTypes>...> ;
-    };
-
-    /// \brief Type equal to TType without const qualifier.
-    template <typename TType>
-    using RemoveConst = typename RemoveConstHelper<TType>::Type;
-
-    // ===========================================================================
+    using RemoveConst = std::remove_const_t<TType>;
 
     /// \brief Type equal to TType with const qualifiers applied.
     template <typename TType>
-    struct AddConstHelper
-    {
-        using Type = std::add_const_t<TType>;
-    };
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    struct AddConstHelper<TypeList<TTypes...>>
-    {
-        using Type = TypeList<std::add_const_t<TTypes>...>;
-    };
-
-    /// \brief Type equal to TType with const qualifiers applied.
-    template <typename TType>
-    using AddConst = typename AddConstHelper<TType>::Type;
-
-    // ===========================================================================
+    using AddConst = std::add_const_t<TType>;
 
     /// \brief Type equal to TType without top-most reference if present, or equal to TType otherwise.
     template <typename TType>
-    struct RemoveReferenceHelper
-    {
-        using Type = std::remove_reference_t<TType>;
-    };
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    struct RemoveReferenceHelper<TypeList<TTypes...>>
-    {
-        using Type = TypeList<std::remove_reference_t<TTypes>...>;
-    };
-
-    /// \brief Type equal to TType without top-most reference if present, or equal to TType otherwise.
-    template <typename TType>
-    using RemoveReference = typename RemoveReferenceHelper<TType>::Type;
-
-    // ===========================================================================
+    using RemoveReference = std::remove_reference_t<TType>;
 
     /// \brief Type equal to TType without top-most reference and qualifiers.
     template <typename TType>
-    struct RemoveConstReferenceHelper
-    {
-        using Type = std::remove_cvref_t<TType>;
-    };
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    struct RemoveConstReferenceHelper<TypeList<TTypes...>>
-    {
-        using Type = TypeList<std::remove_cvref_t<TTypes>...>;
-    };
-
-    /// \brief Type equal to TType without top-most reference and qualifiers.
-    template <typename TType>
-    using RemoveConstReference = typename RemoveConstReferenceHelper<TType>::Type;
-
-    // ===========================================================================
+    using RemoveConstReference = std::remove_cvref_t<TType>;
 
     /// \brief Type of an lvalue reference to TType if possible, or equal to TType otherwise.
     /// This trait honors reference collapsing rule.
     template <typename TType>
-    struct AddLValueReferenceHelper
-    {
-        using Type = std::add_lvalue_reference_t<TType>;
-    };
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    struct AddLValueReferenceHelper<TypeList<TTypes...>>
-    {
-        using Type = TypeList<std::add_lvalue_reference_t<TTypes>...>;
-    };
-
-    /// \brief Type of an lvalue reference to TType if possible, or equal to TType otherwise.
-    /// This trait honors reference collapsing rule.
-    template <typename TType>
-    using AddLValueReference = typename AddLValueReferenceHelper<TType>::Type;
-
-    // ===========================================================================
+    using AddLValueReference = std::add_lvalue_reference_t<TType>;
 
     /// \brief Type of an rvalue reference to TType if possible, or equal to TType otherwise.
     /// This trait honors reference collapsing rule.
     template <typename TType>
-    struct AddRValueReferenceHelper
-    {
-        using Type = std::add_rvalue_reference_t<TType>;
-    };
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    struct AddRValueReferenceHelper<TypeList<TTypes...>>
-    {
-        using Type = TypeList<std::add_rvalue_reference_t<TTypes>...>;
-    };
-
-    /// \brief Type of an rvalue reference to TType if possible, or equal to TType otherwise.
-    /// This trait honors reference collapsing rule.
-    template <typename TType>
-    using AddRValueReference = typename AddRValueReferenceHelper<TType>::Type;
-
-    // ===========================================================================
+    using AddRValueReference = std::add_rvalue_reference_t<TType>;
 
     /// \brief Type equal to TType with const lvalue reference applied.
     template <typename TType>
-    struct AddLValueConstReferenceHelper
-    {
-        using Type = std::add_lvalue_reference_t <std::add_const_t<TType>>;
-    };
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    struct AddLValueConstReferenceHelper<TypeList<TTypes...>>
-    {
-        using Type = TypeList<std::add_lvalue_reference_t<std::add_const_t<TTypes>>...>;
-    };
-
-    /// \brief Type equal to TType with const lvalue reference applied.
-    template <typename TType>
-    using AddLValueConstReference = typename AddLValueConstReferenceHelper<TType>::Type;
-
-    // ===========================================================================
+    using AddLValueConstReference = std::add_lvalue_reference_t <std::add_const_t<TType>>;
 
     /// \brief Type equal to a pointer to TType if possible, or equal to TType otherwise.
     template <typename TType>
-    struct AddPointerHelper
-    {
-        using Type = std::add_pointer_t<TType>;
-    };
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    struct AddPointerHelper<TypeList<TTypes...>>
-    {
-        using Type = TypeList<std::add_pointer_t<TTypes>...>;
-    };
-
-    /// \brief Type equal to a pointer to TType if possible, or equal to TType otherwise.
-    template <typename TType>
-    using AddPointer = typename AddPointerHelper<TType>::Type;
-
-    // ===========================================================================
+    using AddPointer = std::add_pointer_t<TType>;
 
     /// \brief Type equal the pointee's type of TType if TType is a pointer type, or equal to TType otherwise.
     template <typename TType>
-    struct RemovePointerHelper
-    {
-        using Type = std::remove_pointer_t<TType>;
-    };
-
-    /// \brief Specialization for type lists.
-    template <typename... TTypes>
-    struct RemovePointerHelper<TypeList<TTypes...>>
-    {
-        using Type = TypeList<std::remove_pointer_t<TTypes>...>;
-    };
-
-    /// \brief Type equal the pointee's type of TType if TType is a pointer type, or equal to TType otherwise.
-    template <typename TType>
-    using RemovePointer = typename RemovePointerHelper<TType>::Type;
+    using RemovePointer = std::remove_pointer_t<TType>;
 
 }
 
