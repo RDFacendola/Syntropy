@@ -154,7 +154,7 @@ namespace Syntropy::Concepts
             /// \brief Range element count type shall be closed under subtraction.
             { lhs - rhs } -> SameAs<Templates::RangeElementCount<TRange>>;
         }
-        && Templates::IsConstructible<Templates::RangeElementCount<TRange>, Int>;
+        && Concepts::ConstructibleType<Templates::RangeElementCount<TRange>, Int>;
 
     /************************************************************************/
     /* CONTIGUOUS RANGE                                                     */

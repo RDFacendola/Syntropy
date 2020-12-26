@@ -145,10 +145,10 @@ namespace Syntropy::Templates::UnitTest
         using NonDefaultConstructibleFoo = TraitsTestFixture::NonDefaultConstructibleFoo;
         using DefaultConstructibleFoo = TraitsTestFixture::DefaultConstructibleFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsDefaultConstructible<TypeList<NonDefaultConstructibleFoo, DefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsDefaultConstructible<TypeList<DefaultConstructibleFoo, NonDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsDefaultConstructible<TypeList<DefaultConstructibleFoo, DefaultConstructibleFoo>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsDefaultConstructible<TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::DefaultConstructibleType<TypeList<NonDefaultConstructibleFoo, DefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::DefaultConstructibleType<TypeList<DefaultConstructibleFoo, NonDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::DefaultConstructibleType<TypeList<DefaultConstructibleFoo, DefaultConstructibleFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::DefaultConstructibleType<TypeList<>>), true);
     })
 
     .TestCase("Is implicitly default-constructible type-trait.", [](auto& fixture)
@@ -158,11 +158,11 @@ namespace Syntropy::Templates::UnitTest
         using OptionalExplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalExplicitDefaultConstructibleFoo;
         using OptionalImplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalImplicitDefaultConstructibleFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<ExplicitDefaultConstructibleFoo>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<ImplicitDefaultConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<ExplicitDefaultConstructibleFoo>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<ImplicitDefaultConstructibleFoo>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<OptionalExplicitDefaultConstructibleFoo>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<OptionalImplicitDefaultConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<OptionalExplicitDefaultConstructibleFoo>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<OptionalImplicitDefaultConstructibleFoo>), true);
     })
 
     .TestCase("Are implicitly default-constructible type-trait.", [](auto& fixture)
@@ -172,15 +172,15 @@ namespace Syntropy::Templates::UnitTest
         using OptionalExplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalExplicitDefaultConstructibleFoo;
         using OptionalImplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalImplicitDefaultConstructibleFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TypeList<ExplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TypeList<ImplicitDefaultConstructibleFoo, ExplicitDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TypeList<ImplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<ExplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<ImplicitDefaultConstructibleFoo, ExplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<ImplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TypeList<OptionalExplicitDefaultConstructibleFoo, OptionalImplicitDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TypeList<OptionalImplicitDefaultConstructibleFoo, OptionalExplicitDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TypeList<OptionalImplicitDefaultConstructibleFoo, OptionalImplicitDefaultConstructibleFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<OptionalExplicitDefaultConstructibleFoo, OptionalImplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<OptionalImplicitDefaultConstructibleFoo, OptionalExplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<OptionalImplicitDefaultConstructibleFoo, OptionalImplicitDefaultConstructibleFoo>>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsImplicitlyDefaultConstructible<TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<>>), true);
     })
 
     .TestCase("Are copy-constructible type-trait.", [](auto& fixture)
@@ -188,10 +188,10 @@ namespace Syntropy::Templates::UnitTest
         using NonCopyableFoo = TraitsTestFixture::NonCopyableFoo;
         using CopyableFoo = TraitsTestFixture::CopyableFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyConstructible<TypeList<NonCopyableFoo, CopyableFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyConstructible<TypeList<CopyableFoo, NonCopyableFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyConstructible<TypeList<CopyableFoo, CopyableFoo>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsCopyConstructible<TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::CopyConstructibleType<TypeList<NonCopyableFoo, CopyableFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::CopyConstructibleType<TypeList<CopyableFoo, NonCopyableFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::CopyConstructibleType<TypeList<CopyableFoo, CopyableFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::CopyConstructibleType<TypeList<>>), true);
     })
 
     .TestCase("Are constructible type-traits", [](auto& fixture)
@@ -204,16 +204,16 @@ namespace Syntropy::Templates::UnitTest
 
         static_assert(std::is_constructible_v<float>, "nope!");
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TypeList<>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TypeList<Float>, TypeList<>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TypeList<Float>, TypeList<Int>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TypeList<Int>, TypeList<Float>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConstructibleType<TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConstructibleType<TypeList<Float>, TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConstructibleType<TypeList<Float>, TypeList<Int>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConstructibleType<TypeList<Int>, TypeList<Float>>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TypeList<Float, Int>, TypeList<>, TypeList<>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TypeList<Float, Int>, TypeList<Foo>, TypeList<>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConstructibleType<TypeList<Float, Int>, TypeList<>, TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConstructibleType<TypeList<Float, Int>, TypeList<Foo>, TypeList<>>), false);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TypeList<ConstructibleFromFoo, ConstructibleFromBar, ConstructibleFromFooAndBar>, TypeList<Foo>, TypeList<Bar>, TypeList<Foo, Bar>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConstructible<TypeList<ConstructibleFromFoo, ConstructibleFromBar, ConstructibleFromFooAndBar>, TypeList<Bar>, TypeList<Foo, Bar>, TypeList<Foo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConstructibleType<TypeList<ConstructibleFromFoo, ConstructibleFromBar, ConstructibleFromFooAndBar>, TypeList<Foo>, TypeList<Bar>, TypeList<Foo, Bar>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConstructibleType<TypeList<ConstructibleFromFoo, ConstructibleFromBar, ConstructibleFromFooAndBar>, TypeList<Bar>, TypeList<Foo, Bar>, TypeList<Foo>>), false);
     })
 
     .TestCase("Are constructible type-traits", [](auto& fixture)
@@ -245,15 +245,15 @@ namespace Syntropy::Templates::UnitTest
         using CopyAssignableFromFoo = TraitsTestFixture::CopyAssignableFromFoo;
         using MoveAssignableFromFoo = TraitsTestFixture::MoveAssignableFromFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<CopyAssignableFromFoo, const Foo&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<CopyAssignableFromFoo, const Bar&>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<CopyAssignableFromFoo, Foo&&>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<CopyAssignableFromFoo, Bar&&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::AssignableType<CopyAssignableFromFoo, const Foo&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::AssignableType<CopyAssignableFromFoo, const Bar&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::AssignableType<CopyAssignableFromFoo, Foo&&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::AssignableType<CopyAssignableFromFoo, Bar&&>), false);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, const Foo&>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, const Bar&>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, Foo&&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsAssignable<MoveAssignableFromFoo, Bar&&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::AssignableType<MoveAssignableFromFoo, const Foo&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::AssignableType<MoveAssignableFromFoo, const Bar&>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::AssignableType<MoveAssignableFromFoo, Foo&&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::AssignableType<MoveAssignableFromFoo, Bar&&>), false);
     })
             
     .TestCase("TypeListIndex returns the index of the first occurrence in a type list.", [](auto& fixture)

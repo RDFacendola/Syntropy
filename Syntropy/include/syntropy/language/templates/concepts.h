@@ -223,6 +223,84 @@ namespace Syntropy::Concepts
     template <typename TType>
     concept FinalType = Details::FinalType<TType>;
 
+    // Type operations.
+    // ================
+
+    /// \brief Constant equal to true if TType  default-constructible, equal to false otherwise.
+    template <typename TType>
+    concept DefaultConstructibleType = Details::DefaultConstructibleType<TType>;
+
+    /// \brief Constant equal to true if TType  trivially default constructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyDefaultConstructibleType = Details::TriviallyDefaultConstructibleType<TType>;
+
+    /// \brief Constant equal to true if TType  implicitly default constructible, equal to false otherwise.
+    template <typename TType>
+    concept ImplicitlyDefaultConstructibleType = Details::ImplicitlyDefaultConstructibleType<TType>;
+
+    /// \brief Constant equal to true if TType  copy-constructible, equal to false otherwise.
+    template <typename TType>
+    concept CopyConstructibleType = Details::CopyConstructibleType<TType>;
+
+    /// \brief Constant equal to true if TType  trivially-copy-constructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyCopyConstructibleType = Details::TriviallyCopyConstructibleType<TType>;
+
+    /// \brief Constant equal to true if TType  move-constructible, equal to false otherwise.
+    template <typename TType>
+    concept MoveConstructibleType = Details::MoveConstructibleType<TType>;
+
+    /// \brief Constant equal to true if TType  trivially-move-constructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyMoveConstructibleType = Details::TriviallyMoveConstructibleType<TType>;
+
+    /// \brief Constant equal to true if TType  copy-assignable, equal to false otherwise.
+    template <typename TType>
+    concept CopyAssignableType = Details::CopyAssignableType<TType>;
+
+    /// \brief Constant equal to true if TType  trivially-copy-constructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyCopyAssignableType = Details::TriviallyCopyAssignableType<TType>;
+
+    /// \brief Constant equal to true if TType  move-assignable, equal to false otherwise.
+    template <typename TType>
+    concept MoveAssignableType = Details::MoveAssignableType<TType>;
+
+    /// \brief Constant equal to true if TType  trivially-move-constructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyMoveAssignableType = Details::TriviallyMoveAssignableType<TType>;
+
+    /// \brief Constant equal to true if TType  assignable from UType in unevaluated context, equal to false otherwise.
+    template <typename TType, typename UType>
+    concept AssignableType = Details::AssignableType<TType, UType>;
+
+    /// \brief Constant equal to true if TType can be constructed by TArguments... arguments, equal to false otherwise.
+    /// Th trait supports TypeLts in the form Constructible<TypeLt<A,B,C>, TypeLt<a>, TypeLt<b, bb>, TypeLt<>>.
+    /// TArguments must have the same exact rank as the number of elements in TType, otherwise the program  ill-formed.
+    template <typename TType, typename... TArguments>
+    concept ConstructibleType = Details::ConstructibleType<TType, TArguments...>;
+
+    /// \brief Constant equal to true if TType can be constructed from an initializer lt of TArguments, equal to false otherwise.
+    /// Th trait supports TypeLts in the form ImplicitlyConstructible<TypeLt<A,B,C>, TypeLt<a>, TypeLt<b, bb>, TypeLt<>>.
+    /// TArguments must have the same exact rank as the number of elements in TType, otherwise the program  ill-formed.
+    /// [i] Given a function Foo(const TType&), TType  implicitly constructible if calling Foo({arguments...})  well-formed.
+    template <typename TType, typename... TArguments>
+    concept ImplicitlyConstructibleType = Details::ImplicitlyConstructibleType<TType, TArguments...>;
+
+    /// \brief Constant equal to true if TType  destructible, equal to false otherwise.
+    /// A type  destructible if it  a reference type or, if equal to an object-type, if calling its destructor by means of t.~TType() in unevaluated context  well-formed.
+    /// A type  *not* destructible if it  equal to void, a function type or an array type of unknown bounds. It  not destructible also if its destructor  ill-formed in unevaluated context.
+    template <typename TType>
+    concept DestructibleType = Details::DestructibleType<TType>;
+
+    /// \brief Constant equal to true if TType  both destructible and trivially-destructible, equal to false otherwise.
+    template <typename TType>
+    concept TriviallyDestructibleType = Details::TriviallyDestructibleType<TType>;
+
+    /// \brief Constant equal to true if an instance of type TType can be compared equal to an instance of type UType, equal to false otherwise.
+    template <typename TType, typename UType>
+    concept ComparableForEqualityType = Details::ComparableForEqualityType<TType, UType>;
+
 }
 
-// ===========================================================================
+//Type ===========================================================================
