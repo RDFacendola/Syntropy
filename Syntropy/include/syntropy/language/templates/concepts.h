@@ -191,6 +191,38 @@ namespace Syntropy::Concepts
     /// \brief Concept for object types.
     template <typename TType>
     concept ObjectType = Details::ObjectType<TType>;
+
+    // Properties concepts.
+    // ====================
+
+    /// \brief Concept for immutable types.
+    template <typename TType>
+    concept ImmutableType = Details::ImmutableType<TType>;
+    
+    /// \brief Concept for mutable types.
+    template <typename TType>
+    concept MutableType = Details::MutableType<TType>;
+
+    /// \brief Concept for trivial types.
+    template <typename TType>
+    concept TrivialType = Details::TrivialType<TType>;
+
+    /// \brief Concept for trivially-copyable types.
+    template <typename TType>
+    concept TriviallyCopyableType = Details::TriviallyCopyableType<TType>;
+
+    /// \brief Concepts for standard-layout types.
+    template <typename TType>
+    concept StandardLayoutType = Details::StandardLayoutType<TType>;
+
+    /// \brief Constant for polymorphic types.
+    template <typename TType>
+    concept PolymorphicType = Details::PolymorphicType<TType>;
+
+    /// \brief Constant for final types.
+    template <typename TType>
+    concept FinalType = Details::FinalType<TType>;
+
 }
 
 // ===========================================================================

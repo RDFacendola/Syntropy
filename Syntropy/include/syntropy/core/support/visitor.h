@@ -75,7 +75,7 @@ namespace Syntropy
     template <typename TVisitable>
     inline void Visitor::Visit(TVisitable visitable) const noexcept
     {
-        if constexpr (!Templates::IsPolymorphic<TVisitable> || Templates::IsFinal<TVisitable>)
+        if constexpr (!Concepts::PolymorphicType<TVisitable> || Concepts::FinalType<TVisitable>)
         {
             VirtualVisit(AddressOf(visitable), typeid(visitable));
         }

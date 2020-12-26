@@ -318,6 +318,37 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for object types.
     template <typename TType>
     concept ObjectType = std::is_object_v<TType>;
+
+    // Properties concepts.
+    // ====================
+
+    /// \brief Concept for immutable types.
+    template <typename TType>
+    concept ImmutableType = std::is_const_v<TType>;
+
+    /// \brief Concept for mutable types.
+    template <typename TType>
+    concept MutableType = !std::is_const_v<TType>;
+
+    /// \brief Concept for trivial types.
+    template <typename TType>
+    concept TrivialType = std::is_trivial_v<TType>;
+
+    /// \brief Concept for trivially-copyable types.
+    template <typename TType>
+    concept TriviallyCopyableType = std::is_trivially_copyable_v<TType>;
+
+    /// \brief Concepts for standard-layout types.
+    template <typename TType>
+    concept StandardLayoutType = std::is_standard_layout_v<TType>;
+
+    /// \brief Constant for polymorphic types.
+    template <typename TType>
+    concept PolymorphicType = std::is_polymorphic_v<TType>;
+
+    /// \brief Constant for final types.
+    template <typename TType>
+    concept FinalType = std::is_final_v<TType>;
 }
 
 // ===========================================================================

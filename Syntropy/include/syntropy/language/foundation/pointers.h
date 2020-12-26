@@ -11,6 +11,7 @@
 
 #include "syntropy/language/foundation/references.h"
 #include "syntropy/language/templates/type_traits.h"
+#include "syntropy/language/templates/concepts.h"
 
 // ===========================================================================
 
@@ -62,14 +63,12 @@ namespace Syntropy
     constexpr BasePtr<TType> ToPtr(BasePtr<UType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a typeless read-only object.
-    template <typename TType>
-    requires (Templates::IsConst<TType>)
+    template <Concepts::ImmutableType TType>
     TypelessPtr ToTypelessPtr(BasePtr<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a typeless read-write object.
     /// \remarks If the pointee refers to a read-only object, accessing the result of this method results in undefined behavior.
-    template <typename TType>
-    requires (!Templates::IsConst<TType>)
+    template <Concepts::MutableType TType>
     RWTypelessPtr ToTypelessPtr(BasePtr<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a strongly-typed read-only pointer type.
@@ -128,15 +127,13 @@ namespace Syntropy
         return static_cast<BasePtr<TType>>(rhs);
     }
 
-    template <typename TType>
-    requires (Templates::IsConst<TType>)
+    template <Concepts::MutableType TType>
     inline TypelessPtr ToTypelessPtr(BasePtr<TType> rhs) noexcept
     {
         return rhs;
     }
 
-    template <typename TType>
-    requires (!Templates::IsConst<TType>)
+    template <Concepts::MutableType TType>
     inline RWTypelessPtr ToTypelessPtr(BasePtr<TType> rhs) noexcept
     {
         return const_cast<RWTypelessPtr>(rhs);

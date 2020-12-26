@@ -395,42 +395,6 @@ namespace Syntropy::Templates::Details
     using RemovePointer = typename RemovePointerHelper<TType>::Type;
 
     /************************************************************************/
-    /* TYPE PROPERTIES                                                      */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TType is constant, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsConst = std::is_const_v<TType>;
-
-    /// \brief Constant equal to true if TType is constant (read-only), equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsReadOnly = std::is_const_v<TType>;
-
-    /// \brief Constant equal to true if TType is non-constant (read-write), equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsReadWrite = !std::is_const_v<TType>;
-
-    /// \brief Constant equal to true if TType is trivial, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsTrivial = std::is_trivial_v<TType>;
-
-    /// \brief Constant equal to true if TType is trivially copyable, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsTriviallyCopyable = std::is_trivially_copyable_v<TType>;
-
-    /// \brief Constant equal to true if TType is a standard-layout class, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsStandardLayout = std::is_standard_layout_v<TType>;
-
-    /// \brief Constant equal to true if TType is polymorphic class type, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsPolymorphic = std::is_polymorphic_v<TType>;
-
-    /// \brief Constant equal to true if TType is final class type, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsFinal = std::is_final_v<TType>;
-
-    /************************************************************************/
     /* TYPE OPERATIONS                                                      */
     /************************************************************************/
 
