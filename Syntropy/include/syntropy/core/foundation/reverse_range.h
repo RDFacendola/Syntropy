@@ -14,7 +14,7 @@
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Ranges
 {
     /************************************************************************/
     /* REVERSE RANGE                                                        */
@@ -26,9 +26,6 @@ namespace Syntropy
     class ReverseRange
     {
         // Forward range.
-
-        template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-        friend constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
         template <Concepts::BidirectionalRange TRange>
         friend constexpr Templates::RangeElementReference<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept;
@@ -63,6 +60,17 @@ namespace Syntropy
         template <Concepts::BidirectionalRange TRange>
         friend constexpr TRange Reverse(Immutable<ReverseRange<TRange>> range) noexcept;
 
+        // Comparison.
+
+        template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
+        constexpr Bool AreEqual(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+
+        template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
+        constexpr Bool AreEquivalent(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+
+        template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
+        constexpr Ordering Compare(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+
     public:
 
         /// \brief Create an empty reverse range.
@@ -84,29 +92,17 @@ namespace Syntropy
     // Comparison.
     // ===========
 
-    /// \brief Check whether lhs and rhs are equivalent.
-    template <Concepts::BidirectionalRange TRange, Concepts::Range URange>
-    constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<URange> rhs) noexcept;
-
-    /// \brief Check whether lhs and rhs are equivalent.
-    template <Concepts::Range TRange, Concepts::BidirectionalRange URange>
-    constexpr Bool operator==(Immutable<TRange> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+    /// \brief Check whether lhs and rhs are equal.
+    template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
+    constexpr Bool AreEqual(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
     template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-    constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
-
-    /// \brief Compare a reverse range against any range lexicographically.
-    template <Concepts::BidirectionalRange TRange, Concepts::Range URange>
-    constexpr Ordering operator<=>(Immutable<ReverseRange<TRange>> lhs, Immutable<URange> rhs) noexcept;
-
-    /// \brief Compare a any range against a reverse range lexicographically.
-    template <Concepts::Range TRange, Concepts::BidirectionalRange URange>
-    constexpr Ordering operator<=>(Immutable<TRange> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+    constexpr Bool AreEquivalent(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
     /// \brief Compare two reverse ranges lexicographically.
     template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-    constexpr Ordering operator<=>(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+    constexpr Ordering Compare(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
     // Forward range.
     // ==============
@@ -162,13 +158,11 @@ namespace Syntropy
     // Contiguous range.
     // =================
 
-    // #REMINDER A reverse pointer is feasible (incrementing it will actually decrement it and vice-versa), however that pointer won't be safe
-    //           to be used with memcpy-like functions, which is the main purpose of a contiguous range.
-    //
-    // /// \brief Access underlying range data.
-    // /// \remarks Accessing data of an empty range is allowed but the returned value is unspecified.
-    // template <Concepts::RandomAccessRange TRange>
-    // constexpr ReversePointer<TType> Data(Immutable<ReverseRange<TRange>> rhs) noexcept;
+    /// \brief Access underlying range data. Deleted method.
+    /// \remarks A reverse pointer is feasible (incrementing it will actually decrement it and vice-versa), however that pointer won't be safe
+    //           to be used with memcpy-like functions, which is the main purpose of a contiguous range. 
+    template <Concepts::RandomAccessRange TRange>
+    constexpr void Data(Immutable<ReverseRange<TRange>> rhs) noexcept = delete;
 
     // Utilities.
     // ==========
@@ -192,24 +186,24 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for reverse ranges.
     template <Concepts::BidirectionalRange TRange>
-    struct RangeEnableTypeTraits<ReverseRange<TRange>> : Alias<void> {};
+    struct RangeEnableTypeTraits<Ranges::ReverseRange<TRange>> : Alias<void> {};
 
     /// \brief Specialization for reverse ranges.
     template <Concepts::BidirectionalRange TRange>
-    struct RangeElementReferenceTypeTraits<ReverseRange<TRange>> : Alias<RangeElementReference<TRange>> {};
+    struct RangeElementReferenceTypeTraits<Ranges::ReverseRange<TRange>> : Alias<RangeElementReference<TRange>> {};
 
     /// \brief Specialization for reverse ranges.
     template <Concepts::BidirectionalRange TRange>
-    struct RangeElementPointerTypeTraits<ReverseRange<TRange>> : Alias<RangeElementPointer<TRange>> {};
+    struct RangeElementPointerTypeTraits<Ranges::ReverseRange<TRange>> : Alias<RangeElementPointer<TRange>> {};
 
     /// \brief Specialization for reverse ranges.
     template <Concepts::BidirectionalRange TRange>
-    struct RangeElementCountTypeTraits<ReverseRange<TRange>> : Alias<RangeElementCount<TRange>> {};
+    struct RangeElementCountTypeTraits<Ranges::ReverseRange<TRange>> : Alias<RangeElementCount<TRange>> {};
 }
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Ranges
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -229,69 +223,23 @@ namespace Syntropy
     // =====================
 
     // Comparison.
-
-    template <Concepts::BidirectionalRange TRange, Concepts::Range URange>
-    constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<URange> rhs) noexcept
+ 
+    template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
+    constexpr Bool AreEqual(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
     {
-        using namespace Ranges;
-
-        return AreEquivalent(lhs, rhs);
-    }
-
-    template <Concepts::Range TRange, Concepts::BidirectionalRange URange>
-    constexpr Bool operator==(Immutable<TRange> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
-    {
-        using namespace Ranges;
-
-        return AreEquivalent(lhs, rhs);
+        return Ranges::AreEqual(lhs.range_, rhs.range_);
     }
 
     template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-    constexpr Bool operator==(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
+    constexpr Bool AreEquivalent(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
     {
-        // Trick! Comparing non-reversed ranges allows for more efficient comparison (if provided).
-
-        return lhs.range_ == rhs.range_;
-    }
-
-    template <Concepts::BidirectionalRange TRange, Concepts::Range URange>
-    constexpr Ordering operator<=>(Immutable<ReverseRange<TRange>> lhs, Immutable<URange> rhs) noexcept
-    {
-        using namespace Ranges;
-
-        return Compare(lhs, rhs);
-    }
-
-    template <Concepts::Range TRange, Concepts::BidirectionalRange URange>
-    constexpr Ordering operator<=>(Immutable<TRange> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
-    {
-        using namespace Ranges;
-
-        return Compare(lhs, rhs);
+        return Ranges::AreEquivalent(lhs.range_, rhs.range_);
     }
 
     template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-    constexpr Ordering operator<=>(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
+    constexpr Ordering Compare(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
     {
-        // Trick! Comparing non-reversed ranges allows for more efficient comparison (if provided). 
-
-        using namespace Ranges;
-
-        auto compare_result = Compare(lhs.range_, rhs.range_);
-
-        // Since compared ranges are reversed, the ordering has to be reversed too.
-
-        if (compare_result == Ordering::kLess)
-        {
-            return Ordering::kGreater;
-        }
-        
-        if (compare_result == Ordering::kGreater)
-        {
-            return Ordering::kLess;
-        }
-
-        return Ordering::kEquivalent;
+        return Flip(Ranges::Compare(lhs.range_, rhs.range_));
     }
 
     // Forward range.

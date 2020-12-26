@@ -20,7 +20,7 @@
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Ranges
 {
     /************************************************************************/
     /* ZIP RANGE                                                            */
@@ -32,7 +32,16 @@ namespace Syntropy
     template <Concepts::Range... TRanges>
     class ZipRange
     {
-        static_assert((Templates::IsSame<Templates::RemoveConstReference<TRanges>, TRanges> && ...), "TRanges must be a class name.");
+        // Comparison.
+
+        template <Concepts::Range... TRanges, Concepts::Range... URanges>
+        friend constexpr Bool AreEqual(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
+
+        template <Concepts::Range... TRanges, Concepts::Range... URanges>
+        friend constexpr Bool AreEquivalent(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
+
+        template <Concepts::Range... TRanges, Concepts::Range... URanges>
+        friend constexpr Ordering Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
 
         // N-tuple.
 
@@ -49,9 +58,6 @@ namespace Syntropy
         friend constexpr Movable<Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept;
 
         // Forward range.
-
-        template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-        friend constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
 
         template <Concepts::ForwardRange... TRanges>
         friend constexpr Tuple<Templates::RangeElementReference<TRanges>...> Front(Immutable<ZipRange<TRanges...>> range) noexcept;
@@ -105,7 +111,7 @@ namespace Syntropy
 
     /// \brief Deduction rule.
     template <Concepts::Range... TRanges>
-    ZipRange(Immutable<TRanges>...)->ZipRange<TRanges...>;
+    ZipRange(Immutable<TRanges>...) -> ZipRange<TRanges...>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -114,13 +120,17 @@ namespace Syntropy
     // Comparison.
     // ===========
 
+    /// \brief Check whether lhs and rhs are equal.
+    template <Concepts::Range... TRanges, Concepts::Range... URanges>
+    constexpr Bool AreEqual(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
+
     /// \brief Check whether lhs and rhs are equivalent.
-    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-    constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
+    template <Concepts::Range... TRanges, Concepts::Range... URanges>
+    constexpr Bool AreEquivalent(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
 
     /// \brief Compare two zip-ranges lexicographically.
-    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-    constexpr Ordering operator<=>(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
+    template <Concepts::Range... TRanges, Concepts::Range... URanges>
+    constexpr Ordering Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
 
     // Zip-range element access.
     // =========================
@@ -225,19 +235,19 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for zip-ranges.
     template <Concepts::Range... TRanges>
-    struct RangeEnableTypeTraits<ZipRange<TRanges...>> : Alias<void> {};
+    struct RangeEnableTypeTraits<Ranges::ZipRange<TRanges...>> : Alias<void> {};
 
     /// \brief Specialization for zip-ranges.
     template <Concepts::Range... TRanges>
-    struct RangeElementReferenceTypeTraits<ZipRange<TRanges...>> : Alias<Tuple<RangeElementReference<TRanges>...>> {};
+    struct RangeElementReferenceTypeTraits<Ranges::ZipRange<TRanges...>> : Alias<Tuple<RangeElementReference<TRanges>...>> {};
 
     /// \brief Specialization for zip-ranges.
     template <Concepts::Range... TRanges>
-    struct RangeElementPointerTypeTraits<ZipRange<TRanges...>> : Alias<Tuple<RangeElementPointer<TRanges>...>> {};
+    struct RangeElementPointerTypeTraits<Ranges::ZipRange<TRanges...>> : Alias<Tuple<RangeElementPointer<TRanges>...>> {};
 
     /// \brief Specialization for zip-ranges.
     template <Concepts::Range... TRanges>
-    struct RangeElementCountTypeTraits<ZipRange<TRanges...>> : Alias<CommonType<RangeElementCount<TRanges>...>> {};
+    struct RangeElementCountTypeTraits<Ranges::ZipRange<TRanges...>> : Alias<CommonType<RangeElementCount<TRanges>...>> {};
 
     /************************************************************************/
     /* NTUPLE TRAITS                                                        */
@@ -245,16 +255,16 @@ namespace Syntropy::Templates
 
     /// \brief Partial template specialization for tuples.
     template <Int VIndex, Concepts::Range... TRanges>
-    struct TupleElementTypeTraits<VIndex, ZipRange<TRanges...>> : Alias<TupleElementType<VIndex, Tuple<TRanges...>>> {};
+    struct TupleElementTypeTraits<VIndex, Ranges::ZipRange<TRanges...>> : Alias<TupleElementType<VIndex, Tuple<TRanges...>>> {};
 
     /// \brief Partial template specialization for tuples.
     template <Concepts::Range... TRanges>
-    struct TupleRankTypeTraits<ZipRange<TRanges...>> : IntConstant<sizeof...(TRanges)> {};
+    struct TupleRankTypeTraits<Ranges::ZipRange<TRanges...>> : IntConstant<sizeof...(TRanges)> {};
 }
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Ranges
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -275,20 +285,22 @@ namespace Syntropy
 
     // Comparison.
 
-    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-    constexpr Bool operator==(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
+    template <Concepts::Range... TRanges, Concepts::Range... URanges>
+    constexpr Bool AreEqual(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
     {
-        using namespace Ranges;
-
-        return AreEquivalent(lhs, rhs);
+        return Ranges::AreEqual(lhs.ranges_, rhs.ranges_);
     }
 
-    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-    constexpr Ordering operator<=>(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
+    template <Concepts::Range... TRanges, Concepts::Range... URanges>
+    constexpr Bool AreEquivalent(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
     {
-        using namespace Ranges;
+        return Ranges::AreEquivalent(lhs.range_, rhs.range_);
+    }
 
-        return Compare(lhs, rhs);
+    template <Concepts::Range... TRanges, Concepts::Range... URanges>
+    constexpr Bool Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
+    {
+        return Flip(Ranges::Compare(lhs.range_, rhs.range_));
     }
 
     // Tuple-like.

@@ -89,6 +89,10 @@ namespace Syntropy
     /// \brief Check whether rhs represents greater-than or equal-to compare result.
     constexpr Bool IsGreaterEqualTo(Immutable<Ordering> rhs) noexcept;
 
+    /// \brief Obtain the comparison value the expression which resulted in rhs would return if its arguments were reversed.
+    /// \remarks This method assumes total ordering, that is a relationship which is antisymmetric, transitive
+    constexpr Ordering Flip(Immutable<Ordering> rhs) noexcept;
+
     /************************************************************************/
     /* COMPARISON OPERATORS                                                 */
     /************************************************************************/
@@ -204,6 +208,21 @@ namespace Syntropy
     constexpr Bool IsGreaterEqualTo(Immutable<Ordering> rhs) noexcept
     {
         return rhs >= 0;
+    }
+
+    constexpr Ordering Flip(Immutable<Ordering> rhs) noexcept
+    {
+        if (rhs == Ordering::kLess)
+        {
+            return Ordering::kGreater;
+        }
+
+        if (rhs == Ordering::kGreater)
+        {
+            return Ordering::kLess;
+        }
+
+        return Ordering::kEquivalent;
     }
 
     // Ordering.
