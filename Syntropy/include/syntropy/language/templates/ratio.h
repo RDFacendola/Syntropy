@@ -12,6 +12,15 @@
 
 // ===========================================================================
 
+namespace Syntropy::Concepts
+{
+    /// \brief Concepts for ratio types.
+    template <typename TType>
+    concept RatioType = Details::RatioType<TType>;
+}
+
+// ===========================================================================
+
 namespace Syntropy::Templates
 {
     /************************************************************************/
@@ -28,10 +37,6 @@ namespace Syntropy::Templates
         /// \brief Ratio denominator.
         static constexpr Int kDenominator = Details::ReducedRatioDenominator<VNumerator, VDenominator>;
     };
-
-    /// \brief Constant equal to true if TRatio is a specialization of Ratio, equal to false otherwise.
-    template <typename TRatio>
-    inline constexpr Bool IsRatio = Details::IsRatio<TRatio>;
 
     /// \brief Common type two ratios can be losslessy-converted to.
     template <typename TRatio, typename URatio>

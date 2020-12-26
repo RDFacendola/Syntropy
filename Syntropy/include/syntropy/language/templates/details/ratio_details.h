@@ -22,6 +22,28 @@ namespace Syntropy::Templates
     template <Int VNumerator, Int VDenominator>
     struct Ratio;
 }
+
+// ===========================================================================
+
+namespace Syntropy::Concepts::Details
+{
+    /************************************************************************/
+    /* IS RATIO TYPE                                                        */
+    /************************************************************************/
+
+    /// \brief Constant equal to true if TType is a specialization of Ratio, equal to false otherwise.
+    template <typename TType>
+    inline constexpr Bool RatioTypeHelper = false;
+
+    /// \brief Specialization for Ratio<>.
+    template <Int VNumerator, Int VDenominator>
+    inline constexpr Bool RatioTypeHelper<Templates::Ratio<VNumerator, VDenominator>> = true;
+
+    /// \brief Types
+    template <typename TType>
+    concept RatioType = RatioTypeHelper<TType>;
+}
+
 // ===========================================================================
 
 namespace Syntropy::Templates::Details
@@ -45,18 +67,6 @@ namespace Syntropy::Templates::Details
     /// \brief Reduced ratio denominator.
     template <Int VNumerator, Int VDenominator>
     inline constexpr Int ReducedRatioDenominator = std::ratio<VNumerator, VDenominator>::den;
-
-    /************************************************************************/
-    /* IS RATIO                                                             */
-    /************************************************************************/
-
-    /// \brief Constant equal to true if TType is a specialization of Ratio, equal to false otherwise.
-    template <typename TType>
-    inline constexpr Bool IsRatio = false;
-
-    /// \brief Specialization for Ratio<>.
-    template <Int VNumerator, Int VDenominator>
-    inline constexpr Bool IsRatio<Templates::Ratio<VNumerator, VDenominator>> = true;
 
     /************************************************************************/
     /* COMMON RATIO                                                         */
