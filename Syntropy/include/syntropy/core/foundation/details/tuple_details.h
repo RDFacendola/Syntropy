@@ -49,38 +49,38 @@ namespace Syntropy::Details
 
     /// \brief False if all types in TTypeList are copy-constructible, true otherwise.
     template <typename... TTypes>
-    inline constexpr Bool ExplicitIfTupleDirectConstructor = !Templates::IsConvertible<Templates::TypeList<Immutable<TTypes>...>, Templates::TypeList<TTypes...>>;
+    inline constexpr Bool ExplicitIfTupleDirectConstructor = !(Concepts::ConvertibleTo<Immutable<TTypes>, TTypes> && ...);
 
     // (3)
 
 
-    /// \brief False if each type in TTypeList can be constructed via their respective type in UTypeList, true otherwise.
+    /// \brief False if each type in TTypeList can be constructed via its respective type UType, true otherwise.
     template <typename TTypeList, typename... UTypes>
     inline constexpr Bool ExplicitIfTupleConvertingConstructor;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<Movable<UTypes>...>, Templates::TypeList<TTypes...>>;
+    inline constexpr Bool ExplicitIfTupleConvertingConstructor<Templates::TypeList<TTypes...>, UTypes...> = !(Concepts::ConvertibleTo<Movable<UTypes>, TTypes> && ...);
 
     // (4)
 
-    /// \brief False if each type in TTypeList can be constructed via their respective const-referenced-qualified type in UTypeList, true otherwise.
+    /// \brief False if each type in TTypeList can be constructed via its respective const-reference-qualified type UType, true otherwise.
     template <typename TTypeList, typename... UTypes>
     inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<Immutable<UTypes>...>, Templates::TypeList<TTypes...>>;
+    inline constexpr Bool ExplicitIfTupleConvertingCopyConstructor<Templates::TypeList<TTypes...>, UTypes...> = !(Concepts::ConvertibleTo<Immutable<UTypes>, TTypes> && ...);
 
     // (5)
 
-    /// \brief False if each type in TTypeList can be constructed via their respective type in UTypeList, true otherwise.
+    /// \brief False if each type in TTypeList can be constructed via its respective type UType, true otherwise.
     template <typename TTypeList, typename... UTypes>
     inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
-    inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor<Templates::TypeList<TTypes...>, UTypes...> = !Templates::IsConvertible<Templates::TypeList<Movable<UTypes>...>, Templates::TypeList<TTypes...>>;
+    inline constexpr Bool ExplicitIfTupleConvertingMoveConstructor<Templates::TypeList<TTypes...>, UTypes...> = !(Concepts::ConvertibleTo<Movable<UTypes>, TTypes> && ...);
 
     /************************************************************************/
     /* ENABLE IF - TUPLE CONSTRUCTOR                                        */
@@ -125,7 +125,7 @@ namespace Syntropy::Details
     /// \brief Specialization for 1-tuples. True if TType can be constructed from UType and the overload doesn't reduce to a copy-constructor.
     template <typename TType, typename UType>
     inline constexpr Bool EnableIfTupleConvertingCopyConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, Immutable<UType>>
-        && !Templates::IsConvertible<Immutable<Tuple<UType>>, TType>
+        && !Concepts::ConvertibleTo<Immutable<Tuple<UType>>, TType>
         && !Templates::IsConstructible<TType, Immutable<Tuple<UType>>>
         && !Concepts::SameAs<TType, UType>;
 
@@ -146,8 +146,8 @@ namespace Syntropy::Details
     /// \brief Specialization for 1-tuples. True if TType can be constructed from UType and the overload doesn't reduce to a move-constructor.
     template <typename TType, typename UType>
     inline constexpr Bool EnableIfTupleConvertingMoveConstructorHelper<true, Templates::TypeList<TType>, Templates::TypeList<UType>> = Templates::IsConstructible<TType, Movable<UType>>
-        && !Templates::IsConvertible<Tuple<UType>, TType>
-        && !Templates::IsConstructible<TType, Tuple<UType>>
+        && !Concepts::ConvertibleTo<Tuple<UType>, TType>
+        && !Concepts::ConvertibleTo<TType, Tuple<UType>>
         && !Concepts::SameAs<TType, UType>;
 
     /// \brief Enable converting tuple move-constructor if both TTypeList and UTypes have the same rank, all types in TTypeList can be member-wise converting-move-constructed from the respective UType and the overload does not reduce to a move-constructor.

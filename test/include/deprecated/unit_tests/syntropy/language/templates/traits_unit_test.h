@@ -225,17 +225,17 @@ namespace Syntropy::Templates::UnitTest
         using ConvertibleToFoo = TraitsTestFixture::ConvertibleToFoo;
         using ConvertibleToBar = TraitsTestFixture::ConvertibleToBar;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<TypeList<>, TypeList<>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<TypeList<Int>, TypeList<Float>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<TypeList<Float>, TypeList<Int>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<Int, Float>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<Float, Int>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<>, TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<Int>, TypeList<Float>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<Float>, TypeList<Int>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<Int, Float>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<Float, Int>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<TypeList<ConvertibleToFoo, ConvertibleToBar>, TypeList<Foo, Bar>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<TypeList<ConvertibleToFoo, ConvertibleToBar>, TypeList<Bar, Foo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<ConvertibleToFoo, ConvertibleToBar>, TypeList<Foo, Bar>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<ConvertibleToFoo, ConvertibleToBar>, TypeList<Bar, Foo>>), false);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<TypeList<Foo, Bar>, TypeList<ConstructibleFromFoo, ConstructibleFromBar>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Templates::IsConvertible<TypeList<Foo, Bar>, TypeList<ConstructibleFromBar, ConstructibleFromFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<Foo, Bar>, TypeList<ConstructibleFromFoo, ConstructibleFromBar>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<Foo, Bar>, TypeList<ConstructibleFromBar, ConstructibleFromFoo>>), false);
         })
 
     .TestCase("Is assignable type-traits.", [](auto& fixture)

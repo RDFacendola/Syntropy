@@ -23,13 +23,13 @@ namespace Syntropy::Concepts
     template <typename TType, typename UType>
     concept SameAs = Details::SameAs<TType, UType>;
 
-    /// \brief Concept for types deriving from TBase ignoring constant-qualifiers.
-    template <typename TDerived, typename TBase>
-    concept DerivedFrom = Details::DerivedFrom<TDerived, TBase>;
-
     /// \brief Concept for types convertible to UType.
     template <typename TType, typename UType>
     concept ConvertibleTo = Details::ConvertibleTo<TType, UType>;
+
+    /// \brief Concept for types deriving from TBase ignoring constant-qualifiers.
+    template <typename TDerived, typename TBase>
+    concept DerivedFrom = Details::DerivedFrom<TDerived, TBase>;
 
     /// \brief Concept for types that share a common reference type.
     template <typename TType, typename UType>

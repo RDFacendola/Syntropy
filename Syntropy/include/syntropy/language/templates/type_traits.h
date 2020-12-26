@@ -419,14 +419,6 @@ namespace Syntropy::Templates
     /* TYPE RELATIONSHIPS                                                   */
     /************************************************************************/
 
-    /// \brief Constant equal to true if TBase is a base class for TDerived or both are the same non-union class, equal to false otherwise.
-    template <typename TBase, typename TDerived>
-    inline constexpr Bool IsBaseOf = Details::IsBaseOf<TBase, TDerived>;
-
-    /// \brief Constant equal to true if TFrom is implicitly convertible to TTo, equal to false otherwise.
-    template <typename TFrom, typename TTo>
-    inline constexpr Bool IsConvertible = Details::IsConvertible<TFrom, TTo>;
-
     /// \brief Constant equal to true if TType is a specialization of TTemplate, equal to false otherwise.
     template<typename TType, template <typename...> typename TTemplate>
     constexpr Bool IsTemplateSpecializationOf = Details::IsTemplateSpecializationOf<TType, TTemplate>;

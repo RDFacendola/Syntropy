@@ -27,17 +27,17 @@ namespace Syntropy::Concepts::Details
     template <typename TType, typename UType>
     concept SameAs = std::is_same_v<TType, UType> && std::is_same_v<UType, TType>;
 
-    /// \brief Concept for types deriving from TBase ignoring constant-qualifiers.
-    template <typename TDerived, typename TBase>
-    concept DerivedFrom = Templates::IsBaseOf<TBase, TDerived> && Templates::IsConvertible<Ptr<TDerived>, Ptr<TBase>>;
-
     /// \brief Concept for types convertible to UType.
     template <typename TType, typename UType>
-    concept ConvertibleTo = Templates::IsConvertible<TType, UType>
+    concept ConvertibleTo = std::is_convertible_v<TType, UType>
         && requires(Templates::AddRValueReference<TType>(&function)())
     {
         static_cast<UType>(function());
     };
+
+    /// \brief Concept for types deriving from TBase ignoring constant-qualifiers.
+    template <typename TDerived, typename TBase>
+    concept DerivedFrom = std::is_base_of_v<TBase, TDerived> && std::is_convertible_v<Ptr<TDerived>, Ptr<TBase>>;
 
     /// \brief Concept for types that share a common reference type.
     template <typename TType, typename UType>
