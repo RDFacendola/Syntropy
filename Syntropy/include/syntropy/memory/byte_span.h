@@ -278,10 +278,6 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for byte spans.
     template <typename TTraits>
-    struct RangeEnableTypeTraits<BaseByteSpan<TTraits>> : Alias<void> {};
-
-    /// \brief Specialization for byte spans.
-    template <typename TTraits>
     struct RangeElementReferenceTypeTraits<BaseByteSpan<TTraits>> : Alias<typename TTraits::TReference> {};
 
     /// \brief Specialization for byte spans.

@@ -23,10 +23,6 @@ namespace Syntropy::Templates
     /* RANGE TRAITS                                                         */
     /************************************************************************/
 
-    /// \brief Enable a type TRange to be used as a range.
-    template <typename TRange>
-    struct RangeEnableTypeTraits;
-
     /// \brief Exposes a member type Type equal to a reference to an element in a range TRange.
     template <typename TRange>
     struct RangeElementReferenceTypeTraits;
@@ -56,18 +52,6 @@ namespace Syntropy::Templates
 
 namespace Syntropy::Concepts
 {
-    /************************************************************************/
-    /* RANGE                                                                */
-    /************************************************************************/
-
-    /// \brief Models a view on a range.
-    /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRange>
-    concept Range = requires(Immutable<TRange> range)
-    {
-        typename Templates::RangeEnableTypeTraits<TRange>;
-    };
-
     /************************************************************************/
     /* FORWARD RANGE                                                        */
     /************************************************************************/

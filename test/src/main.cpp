@@ -79,6 +79,9 @@ int main(int argc, char **argv)
     std::cout << "\n";
     for (auto&& rve : rv) std::cout << rve << "|";
 
+    
+    std::cout << "\n";
+
     auto ztr = Syntropy::Ranges::MakeZipRange(rt);
     auto zur = Syntropy::Ranges::MakeZipRange(ru);
     auto zvr = Syntropy::Ranges::MakeZipRange(rv);
@@ -86,11 +89,10 @@ int main(int argc, char **argv)
     auto zt = Syntropy::Ranges::Zip(rt);
     auto ztu = Syntropy::Ranges::Zip(zt, ru);
     auto ztuv = Syntropy::Ranges::Zip(ztu, rv);
+    auto zztuv = Syntropy::Ranges::Zip(rt, ru, rv);
     auto rztuv = Syntropy::Ranges::Reverse(ztuv);
 
-    auto zztuv = Syntropy::Ranges::Zip(rt, ru, rv);
-
-    std::cout << "\n";
+    static_assert(Syntropy::Concepts::SameAs<decltype(zztuv), decltype(zztuv)>, "Noope!");
 
     for (auto&& [a, b, c] : rztuv)
     {

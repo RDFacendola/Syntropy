@@ -186,10 +186,6 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for reverse ranges.
     template <Concepts::BidirectionalRange TRange>
-    struct RangeEnableTypeTraits<Ranges::ReverseRange<TRange>> : Alias<void> {};
-
-    /// \brief Specialization for reverse ranges.
-    template <Concepts::BidirectionalRange TRange>
     struct RangeElementReferenceTypeTraits<Ranges::ReverseRange<TRange>> : Alias<RangeElementReference<TRange>> {};
 
     /// \brief Specialization for reverse ranges.

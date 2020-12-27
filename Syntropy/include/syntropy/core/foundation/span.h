@@ -234,10 +234,6 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
-    struct RangeEnableTypeTraits<BaseSpan<TType, TTraits>> : Alias<void> {};
-
-    /// \brief Specialization for spans.
-    template <typename TType, typename TTraits>
     struct RangeElementReferenceTypeTraits<BaseSpan<TType, TTraits>> : Alias<typename TTraits::TReference> {};
 
     /// \brief Specialization for spans.

@@ -63,7 +63,7 @@ namespace Syntropy::Concepts
     concept NTuple = requires
     {
         /// \brief Rank of the tuple.
-        { Templates::TupleRankTypeTraits<TType>::kValue } -> Integral;
+        { Templates::TupleRankTypeTraits<Templates::RemoveConstReference<TType>>::kValue } -> Integral;
 
     }
     && Templates::HasTupleElementTypes<TType>
