@@ -263,15 +263,9 @@ namespace Syntropy::Ranges
     /// \return Returns elements that were not swapped in both lhs and rhs. One of the two is guaranteed to be empty.
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
     constexpr Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
-}
 
-// ===========================================================================
-
-namespace Syntropy
-{
-    /************************************************************************/
-    /* RANGE ITERATOR                                                       */
-    /************************************************************************/
+    // Range Iterator.
+    // ===============
 
     /// \brief Wraps a range and adapt it for iteration via range-for.
     /// \author Raffaele D. Facendola - December 2020.
@@ -499,7 +493,7 @@ namespace Syntropy::Ranges
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Ranges
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */

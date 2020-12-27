@@ -14,7 +14,7 @@
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Ranges
 {
     /************************************************************************/
     /* BASE SPAN                                                            */
@@ -234,20 +234,20 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
-    struct RangeElementReferenceTypeTraits<BaseSpan<TType, TTraits>> : Alias<typename TTraits::TReference> {};
+    struct RangeElementReferenceTypeTraits<Ranges::BaseSpan<TType, TTraits>> : Alias<typename TTraits::TReference> {};
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
-    struct RangeElementPointerTypeTraits<BaseSpan<TType, TTraits>> : Alias<typename TTraits::TPointer> {};
+    struct RangeElementPointerTypeTraits<Ranges::BaseSpan<TType, TTraits>> : Alias<typename TTraits::TPointer> {};
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
-    struct RangeElementCountTypeTraits<BaseSpan<TType, TTraits>> : Alias<Int> {};
+    struct RangeElementCountTypeTraits<Ranges::BaseSpan<TType, TTraits>> : Alias<Int> {};
 }
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Ranges
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */

@@ -66,9 +66,9 @@ int main(int argc, char **argv)
     auto u = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'e', 't', 't', 'o');
     auto v = Syntropy::MakeTuple('c', 'o', 'n', 'i', 'g', 'l', 'i');
 
-    auto rt = Syntropy::MakeSpan(&Get<6>(t), 7);
-    auto ru = Syntropy::MakeSpan(&Get<7>(u), 8);
-    auto rv = Syntropy::MakeSpan(&Get<6>(v), 7);
+    auto rt = Syntropy::Ranges::MakeSpan(&Get<6>(t), 7);
+    auto ru = Syntropy::Ranges::MakeSpan(&Get<7>(u), 8);
+    auto rv = Syntropy::Ranges::MakeSpan(&Get<6>(v), 7);
 
     std::cout << "\n";
     for (auto&& rte : rt) std::cout << rte << "|";
