@@ -9,7 +9,7 @@
 #include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/memory/byte.h"
-#include "syntropy/memory/data_size.h"
+#include "syntropy/memory/size.h"
 #include "syntropy/memory/address.h"
 
 // ===========================================================================

@@ -14,7 +14,7 @@
 
 #include "syntropy/math/math.h"
 
-#include "syntropy/memory/data_size.h"
+#include "syntropy/memory/size.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte.h"
 
