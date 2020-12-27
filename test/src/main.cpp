@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    using namespace Syntropy::Literals;
+    using namespace Syntropy::Memory::Literals;
 
     auto foo = [](float, float, int) {};
 

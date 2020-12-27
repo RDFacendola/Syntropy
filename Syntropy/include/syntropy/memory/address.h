@@ -12,7 +12,7 @@
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* BASE ADDRESS                                                         */
@@ -162,7 +162,7 @@ namespace Syntropy
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -205,18 +205,24 @@ namespace Syntropy
     template <typename TTraits>
     constexpr BaseAddress<TTraits> operator+(BaseAddress<TTraits> lhs, Int rhs) noexcept
     {
+        using Syntropy::ToInt;
+
         return BaseAddress<TTraits>{ ToInt(ToInt(lhs) + rhs) };
     }
 
     template <typename TTraits>
     constexpr BaseAddress<TTraits> operator-(BaseAddress<TTraits> lhs, Int rhs) noexcept
     {
+        using Syntropy::ToInt;
+
         return BaseAddress<TTraits>{ ToInt(ToInt(lhs) - rhs) };
     }
 
     template <typename TTraits>
     constexpr BaseAddress<TTraits> operator&(BaseAddress<TTraits> lhs, Int rhs) noexcept
     {
+        using Syntropy::ToInt;
+
         return BaseAddress<TTraits>{ ToInt(ToInt(lhs) & rhs) };
     }
 
@@ -244,11 +250,15 @@ namespace Syntropy
 
     inline Address ToAddress(TypelessPtr rhs) noexcept
     {
+        using Syntropy::ToInt;
+
         return Address{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
     }
 
     inline RWAddress ToAddress(RWTypelessPtr rhs) noexcept
     {
+        using Syntropy::ToInt;
+
         return RWAddress{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
     }
 

@@ -20,7 +20,7 @@
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* BASE BYTE SPAN                                                       */
@@ -278,20 +278,20 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for byte spans.
     template <typename TTraits>
-    struct RangeElementReferenceTypeTraits<BaseByteSpan<TTraits>> : Alias<typename TTraits::TReference> {};
+    struct RangeElementReferenceTypeTraits<Memory::BaseByteSpan<TTraits>> : Alias<typename TTraits::TReference> {};
 
     /// \brief Specialization for byte spans.
     template <typename TTraits>
-    struct RangeElementPointerTypeTraits<BaseByteSpan<TTraits>> : Alias<typename TTraits::TPointer> {};
+    struct RangeElementPointerTypeTraits<Memory::BaseByteSpan<TTraits>> : Alias<typename TTraits::TPointer> {};
 
     /// \brief Specialization for byte spans.
     template <typename TTraits>
-    struct RangeElementCountTypeTraits<BaseByteSpan<TTraits>> : Alias<Bytes> {};
+    struct RangeElementCountTypeTraits<Memory::BaseByteSpan<TTraits>> : Alias<Memory::Bytes> {};
 }
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -384,6 +384,8 @@ namespace Syntropy
     template <typename TTraits>
     constexpr BaseByteSpan<TTraits> PopFront(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
     {
+        using Syntropy::ToInt;
+
         return { Data(rhs) + ToInt(1), Data(rhs) + Count(rhs) };
     }
 
@@ -425,6 +427,8 @@ namespace Syntropy
     template <typename TTraits>
     constexpr typename TTraits::TReference Select(Immutable<BaseByteSpan<TTraits>> rhs, Immutable<Bytes> offset) noexcept
     {
+        using Syntropy::ToInt;
+
         return rhs[ToInt(offset)];
     }
 
@@ -527,6 +531,8 @@ namespace Syntropy
 
     inline RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept
     {
+        using Syntropy::ToReadWrite;
+
         return { ToReadWrite(Data(rhs)), Count(rhs) };
     }
 

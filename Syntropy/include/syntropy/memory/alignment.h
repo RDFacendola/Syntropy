@@ -14,7 +14,7 @@
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* ALIGNMENT                                                            */
@@ -91,7 +91,7 @@ namespace Syntropy
 
 // ===========================================================================
 
-namespace Syntropy::Literals
+namespace Syntropy::Memory::Literals
 {
     /************************************************************************/
     /* LITERALS                                                             */
@@ -103,7 +103,7 @@ namespace Syntropy::Literals
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -147,6 +147,9 @@ namespace Syntropy
 
     inline RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept
     {
+        using Syntropy::ToReadOnly;
+        using Syntropy::ToReadWrite;
+
         return ToReadWrite(Align(ToReadOnly(pointer), alignment));
     }
 
@@ -161,6 +164,9 @@ namespace Syntropy
 
     inline RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
     {
+        using Syntropy::ToReadOnly;
+        using Syntropy::ToReadWrite;
+
         return ToReadWrite(AlignDown(ToReadOnly(pointer), alignment));
     }
 
