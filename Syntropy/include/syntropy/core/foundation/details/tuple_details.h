@@ -12,7 +12,7 @@
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Tuples
 {
     /************************************************************************/
     /* FORWARD DECLARATIONS                                                 */
@@ -33,7 +33,7 @@ namespace Syntropy
 
 // ===========================================================================
 
-namespace Syntropy::Details
+namespace Syntropy::Tuples::Details
 {
     /************************************************************************/
     /* EXPLICIT IF - TUPLE CONSTRUCTOR                                      */
@@ -277,7 +277,7 @@ namespace Syntropy::Details
 
 // ===========================================================================
 
-namespace Syntropy::Details
+namespace Syntropy::Tuples::Details
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -302,7 +302,7 @@ namespace Syntropy::Details
     {
         // The argument is a tuple: flatten each element recursively and return their concatenation.
 
-        using Syntropy::TupleCat;
+        using Syntropy::Tuples::TupleCat;
         
         auto flat = [&]<Int... VTupleIndex>(Forwarding<TTuple> tuple, Templates::Sequence<VTupleIndex...>)
         {

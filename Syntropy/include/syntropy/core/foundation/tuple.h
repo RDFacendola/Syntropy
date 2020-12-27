@@ -17,7 +17,7 @@
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Tuples
 {
     /************************************************************************/
     /* TUPLE                                                                */
@@ -276,16 +276,16 @@ namespace Syntropy::Templates
 
     /// \brief Partial template specialization for tuples.
     template <Int VIndex, typename... TElements>
-    struct TupleElementTypeTraits<VIndex, Tuple<TElements...>> : Alias<TypeListElement<VIndex, TypeList<TElements...>>> {};
+    struct TupleElementTypeTraits<VIndex, Tuples::Tuple<TElements...>> : Alias<TypeListElement<VIndex, TypeList<TElements...>>> {};
 
     /// \brief Partial template specialization for tuples.
     template <typename... TElements>
-    struct TupleRankTypeTraits<Tuple<TElements...>> : IntConstant<sizeof...(TElements)> {};
+    struct TupleRankTypeTraits<Tuples::Tuple<TElements...>> : IntConstant<sizeof...(TElements)> {};
 }
 
 // ===========================================================================
 
-namespace Syntropy
+namespace Syntropy::Tuples
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */

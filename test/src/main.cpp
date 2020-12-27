@@ -62,9 +62,9 @@ int main(int argc, char **argv)
 
     auto foo = [](float, float, int) {};
 
-    auto t = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'i', 'n', 'o');
-    auto u = Syntropy::MakeTuple('p', 'a', 'l', 'l', 'e', 't', 't', 'o');
-    auto v = Syntropy::MakeTuple('c', 'o', 'n', 'i', 'g', 'l', 'i');
+    auto t = Syntropy::Tuples::MakeTuple('p', 'a', 'l', 'l', 'i', 'n', 'o');
+    auto u = Syntropy::Tuples::MakeTuple('p', 'a', 'l', 'l', 'e', 't', 't', 'o');
+    auto v = Syntropy::Tuples::MakeTuple('c', 'o', 'n', 'i', 'g', 'l', 'i');
 
     auto rt = Syntropy::Ranges::MakeSpan(&Get<6>(t), 7);
     auto ru = Syntropy::Ranges::MakeSpan(&Get<7>(u), 8);

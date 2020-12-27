@@ -234,12 +234,12 @@ namespace Syntropy::Ranges
     /// \brief Slice a range returning a subrange to the first count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    constexpr Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
+    constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
 
     /// \brief Slice a range returning a subrange to the last count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    constexpr Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
+    constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
 
     // Contiguous range.
     // =================
@@ -262,7 +262,7 @@ namespace Syntropy::Ranges
     /// \brief Member-wise swap elements in two ranges until either lhs or rhs is exhausted.
     /// \return Returns elements that were not swapped in both lhs and rhs. One of the two is guaranteed to be empty.
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    constexpr Tuples::Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     // Range Iterator.
     // ===============
@@ -436,13 +436,13 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::RandomAccessRange TRange>
-    constexpr Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
+    constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
         return { Front(range, count), PopFront(range, count) };
     }
 
     template <Concepts::RandomAccessRange TRange>
-    constexpr Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
+    constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
         return { Back(range, count), PopBack(range, count) };
     }
@@ -472,7 +472,7 @@ namespace Syntropy::Ranges
     // Swap.
 
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    constexpr Tuples::Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         using Syntropy::Swap;
 
