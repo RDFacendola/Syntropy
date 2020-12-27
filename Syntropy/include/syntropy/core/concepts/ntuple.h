@@ -59,11 +59,11 @@ namespace Syntropy::Concepts
     /************************************************************************/
 
     /// \brief Concept for types that behave as tuples, providing indexed compile-time access to its elements.
-    template <typename TType>
+    template <typename TType, typename UType = Templates::RemoveConstReference<TType>>
     concept NTuple = requires
     {
         /// \brief Rank of the tuple.
-        { Templates::TupleRankTypeTraits<Templates::RemoveConstReference<TType>>::kValue } -> Integral;
+        { Templates::TupleRankTypeTraits<UType>::kValue } -> Integral;
 
     }
     && Templates::HasTupleElementTypes<TType>

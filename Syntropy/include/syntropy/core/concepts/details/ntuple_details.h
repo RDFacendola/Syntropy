@@ -33,12 +33,12 @@ namespace Syntropy::Templates::Details
     /************************************************************************/
 
     /// \brief Rank of a n-tuple.
-    template <typename TType>
-    inline constexpr Int TupleRank = TupleRankTypeTraits<TType>::kValue;
+    template <typename TType, typename UType = Templates::RemoveConstReference<TType>>
+    inline constexpr Int TupleRank = TupleRankTypeTraits<UType>::kValue;
 
     /// \brief Type of the VIndex-th element of a n-tuple;
-    template <Int VIndex, typename TType>
-    using TupleElementType = typename TupleElementTypeTraits<VIndex, TType>::Type;
+    template <Int VIndex, typename TType, typename UType = Templates::RemoveConstReference<TType>>
+    using TupleElementType = typename TupleElementTypeTraits<VIndex, UType>::Type;
 
     // HasTupleElementTypes.
     // =====================

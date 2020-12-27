@@ -36,16 +36,16 @@ namespace Syntropy::Templates
     struct RangeElementCountTypeTraits;
 
     /// \brief Type of a reference to an element in a range TRange.
-    template <typename TRange>
-    using RangeElementReference = typename RangeElementReferenceTypeTraits<TRange>::Type;
+    template <typename TRange, typename URange = Templates::RemoveConstReference<TRange>>
+    using RangeElementReference = typename RangeElementReferenceTypeTraits<URange>::Type;
 
     /// \brief Type of a pointer to an element in a range TRange.
-    template <typename TRange>
-    using RangeElementPointer = typename RangeElementPointerTypeTraits<TRange>::Type;
+    template <typename TRange, typename URange = Templates::RemoveConstReference<TRange>>
+    using RangeElementPointer = typename RangeElementPointerTypeTraits<URange>::Type;
 
     /// \brief Type of a number of elements in a range TRange.
-    template <typename TRange>
-    using RangeElementCount = typename RangeElementCountTypeTraits<TRange>::Type;
+    template <typename TRange, typename URange = Templates::RemoveConstReference<TRange>>
+    using RangeElementCount = typename RangeElementCountTypeTraits<URange>::Type;
 }
 
 // ===========================================================================
