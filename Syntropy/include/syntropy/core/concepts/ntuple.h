@@ -106,15 +106,15 @@ namespace Syntropy::Tuples
 
     /// \brief Check whether lhs and rhs are equal.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
+    [[nodiscard]] constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    constexpr Bool AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
+    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Compare two n-tuples lexicographically.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    constexpr Ordering Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
+    [[nodiscard]] constexpr Ordering Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     // Swap.
     // =====
@@ -156,7 +156,7 @@ namespace Syntropy::Tuples
 
     /// \brief Create a new instance of type TType using TTuple as constructor arguments.
     template <typename TType, Concepts::NTupleReference TTuple>
-    constexpr TType MakeFromTuple(Forwarding<TTuple> tuple) noexcept;
+    [[nodiscard]] constexpr TType MakeFromTuple(Forwarding<TTuple> tuple) noexcept;
 }
 
 // ===========================================================================
@@ -198,7 +198,7 @@ namespace Syntropy::Tuples
     // Comparison.
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
+    [[nodiscard]] constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         // In some implementations comparing two instances for identity is much faster than comparing them for equality.
         // This function is left as a customization point for those implementations.
@@ -207,7 +207,7 @@ namespace Syntropy::Tuples
     }
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    constexpr Bool AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
+    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         using namespace Templates;
 
@@ -224,7 +224,7 @@ namespace Syntropy::Tuples
     }
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    constexpr Ordering Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
+    [[nodiscard]] constexpr Ordering Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         using namespace Templates;
 
@@ -378,7 +378,7 @@ namespace Syntropy::Tuples
     }
 
     template <typename TType, Concepts::NTupleReference TTuple>
-    constexpr TType MakeFromTuple(Forwarding<TTuple> tuple) noexcept
+    [[nodiscard]] constexpr TType MakeFromTuple(Forwarding<TTuple> tuple) noexcept
     {
         using namespace Templates;
 

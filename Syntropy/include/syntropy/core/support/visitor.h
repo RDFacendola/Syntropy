@@ -56,7 +56,7 @@ namespace Syntropy
     /// \usage auto visitor = MakeVistor([](Int element){...}, [](Float element){...}, [](Bool element){...});
     ///        visitor.Visit(42).
     template <typename... TFunctions>
-    auto MakeVisitor(TFunctions... functions) noexcept;
+    [[nodiscard]] auto MakeVisitor(TFunctions... functions) noexcept;
 
 }
 
@@ -104,7 +104,7 @@ namespace Syntropy
     // =====================
 
     template <typename... TFunctions>
-    inline auto MakeVisitor(TFunctions... functions) noexcept
+    [[nodiscard]] inline auto MakeVisitor(TFunctions... functions) noexcept
     {
         struct LambdaVisitor : public Visitor, public TFunctions...
         {

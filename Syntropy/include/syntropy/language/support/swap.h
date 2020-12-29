@@ -25,7 +25,7 @@ namespace Syntropy
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <typename TType, typename UType = TType>
     requires Concepts::AssignableFrom<Mutable<TType>, Forwarding<UType>> && Concepts::MoveConstructible<TType>
-    constexpr TType Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
+    [[nodiscard]] constexpr TType Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
 
 }
 
@@ -47,7 +47,7 @@ namespace Syntropy
     }
 
     template <typename TType, typename UType> requires Concepts::AssignableFrom<Mutable<TType>, Forwarding<UType>> && Concepts::MoveConstructible<TType>
-    constexpr TType Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept
+    [[nodiscard]] constexpr TType Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept
     {
         auto result = Move(lhs);
 

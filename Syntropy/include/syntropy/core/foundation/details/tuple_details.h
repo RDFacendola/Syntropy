@@ -22,13 +22,13 @@ namespace Syntropy::Tuples
     struct Tuple;
 
     template <typename... TElements>
-    constexpr Tuple<TElements...> MakeTuple(Forwarding<TElements>... elements) noexcept;
+    [[nodiscard]] constexpr Tuple<TElements...> MakeTuple(Forwarding<TElements>... elements) noexcept;
 
     template <Concepts::NTupleReference... TTuples>
-    constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
+    [[nodiscard]] constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
 
     template <Concepts::NTupleReference TTuple>
-    constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept;
+    [[nodiscard]] constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept;
 }
 
 // ===========================================================================
@@ -260,18 +260,18 @@ namespace Syntropy::Tuples::Details
 
     /// \brief Concatenate a set of tuples.
     template <Concepts::NTupleReference... TTuples>
-    constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
+    [[nodiscard]] constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
 
     // Flat.
     // =====
 
     /// \brief Flatten a tuple recursively.
     template <Concepts::NTupleReference TTuple>
-    constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept;
+    [[nodiscard]] constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept;
 
     /// \brief Flatten a tuple recursively. End of recursion.
     template <typename TElement>
-    constexpr decltype(auto) TupleFlat(Forwarding<TElement> element) noexcept;
+    [[nodiscard]] constexpr decltype(auto) TupleFlat(Forwarding<TElement> element) noexcept;
 
 }
 
@@ -287,7 +287,7 @@ namespace Syntropy::Tuples::Details
     // ==========
 
     template <Concepts::NTupleReference... TTuples>
-    constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept
+    [[nodiscard]] constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept
     {
         auto tuple_cat = [&]<Concepts::NTupleReference TTuple, Int... VTupleIndex, Int... VElementIndex>(Forwarding<TTuple> tuple, Templates::Sequence<VTupleIndex...>, Templates::Sequence<VElementIndex...>)
         {
@@ -298,7 +298,7 @@ namespace Syntropy::Tuples::Details
     }
 
     template <Concepts::NTupleReference TTuple>
-    constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept
+    [[nodiscard]] constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept
     {
         // The argument is a tuple: flatten each element recursively and return their concatenation.
 
@@ -313,7 +313,7 @@ namespace Syntropy::Tuples::Details
     }
 
     template <typename TElement>
-    constexpr decltype(auto) TupleFlat(Forwarding<TElement> element) noexcept
+    [[nodiscard]] constexpr decltype(auto) TupleFlat(Forwarding<TElement> element) noexcept
     {
         // The argument is not a tuple: wrap it in a 1-tuple and end recursion.
 

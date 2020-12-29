@@ -63,11 +63,11 @@ namespace Syntropy::Ranges
         constexpr Mutable<BaseSpan> operator=(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
 
         /// \brief Check whether the span is non-empty.
-        constexpr explicit operator Bool() const noexcept;
+        [[nodiscard]] constexpr explicit operator Bool() const noexcept;
 
         /// \brief Access an element by index.
         /// If the provided index is not within the BaseSpan the behavior of this method is undefined.
-        constexpr TReference operator[](Int index) const noexcept;
+        [[nodiscard]] constexpr TReference operator[](Int index) const noexcept;
 
     private:
 
@@ -126,11 +126,11 @@ namespace Syntropy::Ranges
 
     /// \brief Check whether lhs and rhs are equivalent.
     template <typename TType, typename TTraits, typename UType, typename UTraits>
-    constexpr Bool operator==(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr Bool operator==(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
 
     /// \brief Compare two spans lexicographically.
     template <typename TType, typename TTraits, typename UType, typename UTraits>
-    constexpr Ordering operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
 
     // Forward range.
     // ==============
@@ -138,24 +138,24 @@ namespace Syntropy::Ranges
     /// \brief Access the first element in a span.
     /// \remarks Accessing the first element of an empty span results in undefined behavior.
     template <typename TType, typename TTraits>
-    constexpr typename TTraits::TReference Front(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr typename TTraits::TReference Front(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     /// \brief Discard the first count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TType, typename TTraits>
-    constexpr BaseSpan<TType, TTraits> PopFront(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr BaseSpan<TType, TTraits> PopFront(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     /// \brief Check whether a span is empty.
     /// \return Returns true if the span is empty, returns false otherwise.
     template <typename TType, typename TTraits>
-    constexpr Bool IsEmpty(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr Bool IsEmpty(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     // Sized range.
     // ============
 
     /// \brief Get the number of elements in a span.
     template <typename TType, typename TTraits>
-    constexpr Int Count(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr Int Count(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     // Bidirectional range.
     // ====================
@@ -163,12 +163,12 @@ namespace Syntropy::Ranges
     /// \brief Access the last element in a span.
     /// \remarks Accessing the last element of an empty span results in undefined behavior.
     template <typename TType, typename TTraits>
-    constexpr typename TTraits::TReference Back(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr typename TTraits::TReference Back(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     /// \brief Discard the last count elements in a span and return the resulting subspan.
     /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
     template <typename TType, typename TTraits>
-    constexpr BaseSpan<TType, TTraits> PopBack(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr BaseSpan<TType, TTraits> PopBack(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     // Random access range.
     // ====================
@@ -176,12 +176,12 @@ namespace Syntropy::Ranges
     /// \brief Obtain a sub-span given an offset and a number of elements.
     /// \remarks Exceeding span boundaries results in undefined behavior.
     template <typename TType, typename TTraits>
-    constexpr BaseSpan<TType, TTraits> Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int offset, Int count) noexcept;
+    [[nodiscard]] constexpr BaseSpan<TType, TTraits> Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int offset, Int count) noexcept;
 
     /// \brief Obtain a span element at given index.
     /// \remarks Exceeding span boundaries results in undefined behavior.
     template <typename TType, typename TTraits>
-    constexpr typename TTraits::TReference Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int index) noexcept;
+    [[nodiscard]] constexpr typename TTraits::TReference Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int index) noexcept;
 
     // Contiguous range.
     // =================
@@ -189,38 +189,38 @@ namespace Syntropy::Ranges
     /// \brief Access underlying span data.
     /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
     template <typename TType, typename TTraits>
-    constexpr typename TTraits::TPointer Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr typename TTraits::TPointer Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     // Access.
     // =======
 
     /// \brief Convert rhs to a read-only span.
     template <typename TType, typename TTraits>
-    constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     /// \brief Convert rhs to a read-write span.
     /// \remarks If the original span is not read-writable, accessing the returned values results in undefined behavior.
     template <typename TType, typename TTraits>
-    constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     // Utilities.
     // ==========
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    constexpr Span<TType> MakeSpan(Ptr<TType> begin, Int count) noexcept;
+    [[nodiscard]] constexpr Span<TType> MakeSpan(Ptr<TType> begin, Int count) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    constexpr Span<TType> MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept;
+    [[nodiscard]] constexpr Span<TType> MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, Int count) noexcept;
+    [[nodiscard]] constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, Int count) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept;
+    [[nodiscard]] constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept;
 
 }
 
@@ -297,13 +297,13 @@ namespace Syntropy::Ranges
     }
     
     template <typename TType, typename TTraits>
-    constexpr BaseSpan<TType, TTraits>::operator Bool() const noexcept
+    [[nodiscard]] constexpr BaseSpan<TType, TTraits>::operator Bool() const noexcept
     {
         return count_ > ToInt(0);
     }
 
     template <typename TType, typename TTraits>
-    constexpr typename BaseSpan<TType, TTraits>::TReference BaseSpan<TType, TTraits>::operator[](Int index) const noexcept
+    [[nodiscard]] constexpr typename BaseSpan<TType, TTraits>::TReference BaseSpan<TType, TTraits>::operator[](Int index) const noexcept
     {
         return data_[index];
     }
@@ -314,7 +314,7 @@ namespace Syntropy::Ranges
     // Comparison.
 
     template <typename TType, typename TTraits, typename UType, typename UTraits>
-    constexpr Bool operator==(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Bool operator==(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
         using namespace Ranges;
 
@@ -322,7 +322,7 @@ namespace Syntropy::Ranges
     }
 
     template <typename TType, typename TTraits, typename UType, typename UTraits>
-    constexpr Ordering operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
         using namespace Ranges;
 
@@ -332,19 +332,19 @@ namespace Syntropy::Ranges
     // Forward Range.
 
     template <typename TType, typename TTraits>
-    constexpr typename TTraits::TReference Front(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr typename TTraits::TReference Front(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return *Data(rhs);
     }
 
     template <typename TType, typename TTraits>
-    constexpr BaseSpan<TType, TTraits> PopFront(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr BaseSpan<TType, TTraits> PopFront(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return { Data(rhs) + ToInt(1), Data(rhs) + Count(rhs) };
     }
 
     template <typename TType, typename TTraits>
-    constexpr Bool IsEmpty(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Bool IsEmpty(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return !rhs;
     }
@@ -352,7 +352,7 @@ namespace Syntropy::Ranges
     // Sized range.
 
     template <typename TType, typename TTraits>
-    constexpr Int Count(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Int Count(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return rhs.count_;
     }
@@ -360,13 +360,13 @@ namespace Syntropy::Ranges
     // Bidirectional range.
 
     template <typename TType, typename TTraits>
-    constexpr typename TTraits::TReference Back(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr typename TTraits::TReference Back(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return *(Data(rhs) + Count(rhs) - ToInt(1));
     }
 
     template <typename TType, typename TTraits>
-    constexpr BaseSpan<TType, TTraits> PopBack(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr BaseSpan<TType, TTraits> PopBack(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return { Data(rhs), Data(rhs) + Count(rhs) - ToInt(1) };
     }
@@ -374,13 +374,13 @@ namespace Syntropy::Ranges
     // Random access range.
 
     template <typename TType, typename TTraits>
-    constexpr BaseSpan<TType, TTraits> Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int offset, Int count) noexcept
+    [[nodiscard]] constexpr BaseSpan<TType, TTraits> Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int offset, Int count) noexcept
     {
         return { Data(rhs) + offset, count };
     }
 
     template <typename TType, typename TTraits>
-    constexpr typename TTraits::TReference Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int index) noexcept
+    [[nodiscard]] constexpr typename TTraits::TReference Select(Immutable<BaseSpan<TType, TTraits>> rhs, Int index) noexcept
     {
         return rhs[index];
     }
@@ -388,7 +388,7 @@ namespace Syntropy::Ranges
     // Contiguous range.
 
     template <typename TType, typename TTraits>
-    constexpr typename TTraits::TPointer Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr typename TTraits::TPointer Data(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return rhs.data_;
     }
@@ -396,13 +396,13 @@ namespace Syntropy::Ranges
     // Conversion.
 
     template <typename TType, typename TTraits>
-    constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return { ToReadOnly(Data(rhs)), Count(rhs) };
     }
 
     template <typename TType, typename TTraits>
-    constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return { ToReadWrite(Data(rhs)), Count(rhs) };
     }
@@ -410,25 +410,25 @@ namespace Syntropy::Ranges
     // Utilities.
 
     template <typename TType>
-    constexpr Span<TType> MakeSpan(Ptr<TType> begin, Int count) noexcept
+    [[nodiscard]] constexpr Span<TType> MakeSpan(Ptr<TType> begin, Int count) noexcept
     {
         return { begin, count };
     }
 
     template <typename TType>
-    constexpr Span<TType> MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept
+    [[nodiscard]] constexpr Span<TType> MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept
     {
         return { begin, end };
     }
 
     template <typename TType>
-    constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, Int count) noexcept
+    [[nodiscard]] constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, Int count) noexcept
     {
         return { begin, count };
     }
 
     template <typename TType>
-    constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept
+    [[nodiscard]] constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept
     {
         return { begin, end };
     }

@@ -62,7 +62,7 @@ namespace Syntropy
 
     /// \brief Create a new scope guard.
     template <typename TFunctor>
-    ScopeGuard<TFunctor> MakeScopeGuard(TFunctor functor) noexcept;
+    [[nodiscard]] ScopeGuard<TFunctor> MakeScopeGuard(TFunctor functor) noexcept;
 
 }
 
@@ -112,7 +112,7 @@ namespace Syntropy
     // ====================
 
     template <typename TFunctor>
-    inline ScopeGuard<TFunctor> MakeScopeGuard(TFunctor functor) noexcept
+    [[nodiscard]] inline ScopeGuard<TFunctor> MakeScopeGuard(TFunctor functor) noexcept
     {
         return ScopeGuard<TFunctor>{ Move(functor) };
     }

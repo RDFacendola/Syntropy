@@ -188,15 +188,15 @@ namespace Syntropy::Ranges
 
     /// \brief Check whether lhs and rhs are equal.
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
-    constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
-    constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     /// \brief Compare two ranges lexicographically.
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
-    constexpr Ordering Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    [[nodiscard]] constexpr Ordering Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     // Random access range.
     // ====================
@@ -204,57 +204,57 @@ namespace Syntropy::Ranges
     /// \brief Obtain a subrange consisting of the first elements of a range.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    constexpr TRange Front(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
+    [[nodiscard]] constexpr TRange Front(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
 
     /// \brief Obtain a subrange consisting of the last elements of a range.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    constexpr TRange Back(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
+    [[nodiscard]] constexpr TRange Back(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
 
     /// \brief Discard the first elements in a range and return the resulting subrange.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    constexpr TRange PopFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
+    [[nodiscard]] constexpr TRange PopFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
 
     /// \brief Discard the last elements in a range and return the resulting subrange.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    constexpr TRange PopBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
+    [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
 
     /// \brief Slice a range returning the first element and a subrange to the remaining ones.
     /// \remarks Calling this method with an empty range results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    constexpr auto SliceFront(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr auto SliceFront(Immutable<TRange> range) noexcept;
 
     /// \brief Slice a range returning the last element and a subrange to the remaining ones.
     /// \remarks Calling this method with an empty range results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    constexpr auto SliceBack(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr auto SliceBack(Immutable<TRange> range) noexcept;
 
     /// \brief Slice a range returning a subrange to the first count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
+    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
 
     /// \brief Slice a range returning a subrange to the last count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
+    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
 
     // Contiguous range.
     // =================
 
     /// \brief Get an iterator to the first element in a contiguous range.
     template <Concepts::ContiguousRange TRange>
-    constexpr auto* Begin(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr auto* Begin(Immutable<TRange> range) noexcept;
 
     /// \brief Get an iterator past the last element in a contiguous range.
     template <Concepts::ContiguousRange TRange>
-    constexpr auto* End(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr auto* End(Immutable<TRange> range) noexcept;
 
     /// \brief Check whether lhs and rhs are equal.
     template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
-    constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     // Swap.
     // =====
@@ -284,13 +284,13 @@ namespace Syntropy::Ranges
         constexpr RangeIterator(Immutable<TRange> range) noexcept;
 
         /// \brief Access the front element.
-        constexpr TReference operator*() const noexcept;
+        [[nodiscard]] constexpr TReference operator*() const noexcept;
 
         /// \brief Move to the next element.
         constexpr Mutable<RangeIterator> operator++() noexcept;
 
         /// \brief Check whether two iterators are equal.
-        constexpr Bool operator==(Immutable<RangeIterator> other) const noexcept;
+        [[nodiscard]] constexpr Bool operator==(Immutable<RangeIterator> other) const noexcept;
 
     private:
 
@@ -337,7 +337,7 @@ namespace Syntropy::Ranges
     // Sized range.
 
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
-    constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         // In some implementations comparing two instances for identity is much faster than comparing them for equality.
         // This function is left as a customization point for those implementations.
@@ -346,7 +346,7 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
-    constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         if (Count(lhs) == Count(rhs))
         {
@@ -366,7 +366,7 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
-    constexpr Ordering Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    [[nodiscard]] constexpr Ordering Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         auto lhs_copy = lhs;
         auto rhs_copy = rhs;
@@ -400,49 +400,49 @@ namespace Syntropy::Ranges
     // Random access range.
 
     template <Concepts::RandomAccessRange TRange>
-    constexpr TRange Front(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
+    [[nodiscard]] constexpr TRange Front(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
         return Select(range, Templates::RangeElementCount<TRange>{ 0 }, count);
     }
 
     template <Concepts::RandomAccessRange TRange>
-    constexpr TRange Back(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
+    [[nodiscard]] constexpr TRange Back(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
         return Select(range, Count(range) - count, count);
     }
 
     template <Concepts::RandomAccessRange TRange>
-    constexpr TRange PopFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
+    [[nodiscard]] constexpr TRange PopFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
         return Select(range, count, Count(range) - count);
     }
 
     template <Concepts::RandomAccessRange TRange>
-    constexpr TRange PopBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
+    [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
         return Select(range, Templates::RangeElementCount<TRange>{ 0 }, Count(range) - count);
     }
 
     template <Concepts::RandomAccessRange TRange>
-    constexpr auto SliceFront(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr auto SliceFront(Immutable<TRange> range) noexcept
     {
         return MakeTuple(Front(range), PopFront(range));
     }
 
     template <Concepts::RandomAccessRange TRange>
-    constexpr auto SliceBack(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr auto SliceBack(Immutable<TRange> range) noexcept
     {
         return MakeTuple(Back(range), PopBack(range));
     }
 
     template <Concepts::RandomAccessRange TRange>
-    constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
+    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
         return { Front(range, count), PopFront(range, count) };
     }
 
     template <Concepts::RandomAccessRange TRange>
-    constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
+    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
         return { Back(range, count), PopBack(range, count) };
     }
@@ -450,19 +450,19 @@ namespace Syntropy::Ranges
     // Contiguous range.
 
     template <Concepts::ContiguousRange TRange>
-    constexpr auto* Begin(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr auto* Begin(Immutable<TRange> range) noexcept
     {
         return Data(range);
     }
 
     template <Concepts::ContiguousRange TRange>
-    constexpr auto* End(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr auto* End(Immutable<TRange> range) noexcept
     {
         return Data(range) + Count(range);
     }
 
     template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
-    constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         // Note that empty ranges are equal to every other empty range.
 
@@ -472,7 +472,7 @@ namespace Syntropy::Ranges
     // Swap.
 
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Tuples::Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    [[nodiscard]] constexpr Tuples::Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         using Syntropy::Swap;
 
@@ -510,7 +510,7 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::ForwardRange TRange>
-    constexpr typename RangeIterator<TRange>::TReference RangeIterator<TRange>::operator*() const noexcept
+    [[nodiscard]] constexpr typename RangeIterator<TRange>::TReference RangeIterator<TRange>::operator*() const noexcept
     {
         return Front(range_);
     }
@@ -524,7 +524,7 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::ForwardRange TRange>
-    constexpr Bool RangeIterator<TRange>::operator== (Immutable<RangeIterator> other) const noexcept
+    [[nodiscard]] constexpr Bool RangeIterator<TRange>::operator== (Immutable<RangeIterator> other) const noexcept
     {
         return Ranges::AreEquivalent(range_, other.range_);
     }

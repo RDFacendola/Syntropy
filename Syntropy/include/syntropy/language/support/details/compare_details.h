@@ -47,7 +47,7 @@ namespace Syntropy::Details
     /************************************************************************/
 
     /// \brief Convert a std::strong_ordering value to a ComparisonResult.
-    constexpr ComparisonResult ToComparisonResult(Immutable<std::strong_ordering> rhs) noexcept;
+    [[nodiscard]] constexpr ComparisonResult ToComparisonResult(Immutable<std::strong_ordering> rhs) noexcept;
 
 }
 
@@ -99,7 +99,7 @@ namespace Syntropy::Details
     // Conversions.
     // ============
 
-    constexpr ComparisonResult ToComparisonResult(Immutable<std::strong_ordering> rhs) noexcept
+    [[nodiscard]] constexpr ComparisonResult ToComparisonResult(Immutable<std::strong_ordering> rhs) noexcept
     {
         if (rhs == std::strong_ordering::equivalent)
         {

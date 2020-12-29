@@ -70,6 +70,8 @@ int main(int argc, char **argv)
     auto ru = Syntropy::Ranges::MakeSpan(&Get<7>(u), 8);
     auto rv = Syntropy::Ranges::MakeSpan(&Get<6>(v), 7);
 
+    auto k = AreEqual(t, u);
+
     std::cout << "\n";
     for (auto&& rte : rt) std::cout << rte << "|";
 

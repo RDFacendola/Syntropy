@@ -63,11 +63,11 @@ namespace Syntropy
     /// \brief Check whether an initializer list is empty.
     /// \return Returns true if the list is empty, returns false otherwise.
     template <typename TElement>
-    constexpr Bool IsEmpty(Immutable<InitializerList<TElement>> rhs) noexcept;
+    [[nodiscard]] constexpr Bool IsEmpty(Immutable<InitializerList<TElement>> rhs) noexcept;
 
     /// \brief Get the number of elements in an initializer list.
     template <typename TElement>
-    constexpr Int Count(Immutable<InitializerList<TElement>> rhs) noexcept;
+    [[nodiscard]] constexpr Int Count(Immutable<InitializerList<TElement>> rhs) noexcept;
 
 }
 
