@@ -7,40 +7,45 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/language/preprocessor/preprocessor.h"
+#include "syntropy/language/preprocessor/macro.h"
+
 #include "syntropy/hal/hal_macro.h"
 
-namespace Syntropy
+// ===========================================================================
+
+namespace Syntropy::Diagnostics
 {
     /************************************************************************/
     /* MACROS                                                               */
     /************************************************************************/
 
     /// \brief Causes the debugger to break if attached, or the application to terminate otherwise.
-    #define SYNTROPY_TRAP \
+#define SYNTROPY_TRAP \
         SYNTROPY_MACRO_DECLARATION(empty)
 
     /// \brief Causes the debugger to break if attached.
-    #define SYNTROPY_BREAK \
+#define SYNTROPY_BREAK \
         SYNTROPY_MACRO_DECLARATION(empty)
 
     /************************************************************************/
     /* DEBUGGER                                                             */
     /************************************************************************/
 
-    /// \brief Exposes debugging functionalities.
-    /// \author Raffaele D. Facendola - May 2020.
-    namespace Debugger
-    {
-        /// \brief Check whether the debugger is attached.
-        Bool IsAttached();
-    }
+    /// \brief Check whether the debugger is attached.
+    [[nodiscard]] Bool IsDebuggerAttached() noexcept;
 
+}
+
+// ===========================================================================
+
+namespace Syntropy::Diagnostics
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
     // Macros.
+    // =======
 
     #undef SYNTROPY_TRAP
     #define SYNTROPY_TRAP \
@@ -48,6 +53,7 @@ namespace Syntropy
 
     #undef SYNTROPY_BREAK
     #define SYNTROPY_BREAK \
-        if(Syntropy::Debugger::IsAttached()){ SYNTROPY_TRAP }
-
+        if(Syntropy::Diagnostics::IsDebuggerAttached()){ SYNTROPY_TRAP }
 }
+
+// ===========================================================================

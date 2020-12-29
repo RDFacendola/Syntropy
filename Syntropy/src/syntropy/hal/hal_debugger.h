@@ -7,20 +7,17 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/diagnostics/stack_trace.h"
+
+// ===========================================================================
 
 namespace Syntropy::HAL::Diagnostics
 {
     /************************************************************************/
-    /* HAL DEBUGGER                                                         */
+    /* DEBUGGER                                                             */
     /************************************************************************/
 
-    /// \brief Exposes debugging methods.
-    /// \author Raffaele D. Facendola - May 2020.
-    namespace HALDebugger
-    {
-        /// \brief Get the stack trace on the current thread.
-        StackTrace GetStackTrace(StackTraceElement here);
-    }
-
+    /// \brief Check whether the debugger is attached.
+    [[nodiscard]] Bool IsDebuggerAttached() noexcept;
 }
+
+// ===========================================================================

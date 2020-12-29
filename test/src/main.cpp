@@ -37,6 +37,9 @@
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
 
+#include "syntropy/diagnostics/debugger.h"
+#include "syntropy/diagnostics/assert.h"
+
 /************************************************************************/
 /* ENTRY POINT                                                          */
 /************************************************************************/
@@ -70,7 +73,11 @@ int main(int argc, char **argv)
     auto ru = Syntropy::Ranges::MakeSpan(&Get<7>(u), 8);
     auto rv = Syntropy::Ranges::MakeSpan(&Get<6>(v), 7);
 
+    auto bee = Syntropy::Diagnostics::IsDebuggerAttached();
+
     auto k = AreEqual(t, u);
+
+    SYNTROPY_ASSERT(k);
 
     std::cout << "\n";
     for (auto&& rte : rt) std::cout << rte << "|";

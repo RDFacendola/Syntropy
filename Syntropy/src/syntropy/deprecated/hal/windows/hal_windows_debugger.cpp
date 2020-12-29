@@ -179,11 +179,6 @@ namespace Syntropy
     /* HAL DEBUGGER                                                         */
     /************************************************************************/
 
-    Bool HALDebugger::IsAttached()
-    {
-        return IsDebuggerPresent() != 0;
-    }
-
     StackTrace HALDebugger::GetStackTrace(StackTraceElement here)
     {
         return WindowsDebugger::GetSingleton().GetStackTrace(Move(here));

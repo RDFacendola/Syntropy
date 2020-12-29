@@ -20,6 +20,8 @@
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\core\foundation\zip_range.h" />
     <ClInclude Include="include\syntropy\core\support\visitor.h" />
+    <ClInclude Include="include\syntropy\diagnostics\assert.h" />
+    <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
     <ClInclude Include="include\syntropy\hal\hal_macro.h" />
     <ClInclude Include="include\syntropy\language\foundation\enumerations.h" />
     <ClInclude Include="include\syntropy\language\foundation\foundation.h" />
@@ -51,11 +53,14 @@
     <ClInclude Include="include\syntropy\memory\byte.h" />
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
     <ClInclude Include="include\syntropy\memory\size.h" />
+    <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />
+    <ClCompile Include="src\syntropy\hal\windows\hal_windows_debugger.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

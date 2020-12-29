@@ -42,11 +42,16 @@
     <ClInclude Include="include\syntropy\core\concepts\ntuple.h" />
     <ClInclude Include="include\syntropy\core\concepts\details\ntuple_details.h" />
     <ClInclude Include="include\syntropy\memory\size.h" />
+    <ClInclude Include="include\syntropy\diagnostics\assert.h" />
+    <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
+    <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\syntropy\syntropy.cpp" />
+    <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />
+    <ClCompile Include="src\syntropy\hal\windows\hal_windows_debugger.cpp" />
   </ItemGroup>
 </Project>

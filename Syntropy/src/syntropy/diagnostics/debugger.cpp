@@ -2,15 +2,18 @@
 
 #include "syntropy/hal/hal_debugger.h"
 
-namespace Syntropy
+// ===========================================================================
+
+namespace Syntropy::Diagnostics
 {
     /************************************************************************/
     /* DEBUGGER                                                             */
     /************************************************************************/
 
-    Bool Debugger::IsAttached()
+    [[nodiscard]] Bool IsDebuggerAttached() noexcept
     {
-        return HALDebugger::IsAttached();
+        return HAL::Diagnostics::IsDebuggerAttached();
     }
-
 }
+
+// ===========================================================================
