@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\syntropy\allocators\allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\system_allocator.h" />
     <ClInclude Include="include\syntropy\core\concepts\details\ntuple_details.h" />
     <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\core\concepts\ntuple.h" />

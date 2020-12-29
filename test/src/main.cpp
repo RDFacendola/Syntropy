@@ -36,6 +36,8 @@
 #include "syntropy/memory/size.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
+#include "syntropy/allocators/allocator.h"
+#include "syntropy/allocators/system_allocator.h"
 
 #include "syntropy/diagnostics/debugger.h"
 #include "syntropy/diagnostics/assert.h"
@@ -46,15 +48,10 @@
 
 struct Foo
 {
-    Foo(int aa, float bb, int cc)
-        : a(aa)
-        , b(bb)
-        , c(cc)
-    {}
-
-    int a;
-    float b;
-    int c;
+    Syntropy::Fix8 a_{ 0 };
+    Syntropy::Fix8 b_{ 0 };
+    Syntropy::Fix8 c_{ 0 };
+    Syntropy::Fix8 d_{ 0 };
 };
 
 int main(int argc, char **argv)
@@ -62,56 +59,11 @@ int main(int argc, char **argv)
     std::cout << "Hello Syntropy!\n";
 
     using namespace Syntropy::Memory::Literals;
-
-    auto foo = [](float, float, int) {};
-
-    auto t = Syntropy::Tuples::MakeTuple('p', 'a', 'l', 'l', 'i', 'n', 'o');
-    auto u = Syntropy::Tuples::MakeTuple('p', 'a', 'l', 'l', 'e', 't', 't', 'o');
-    auto v = Syntropy::Tuples::MakeTuple('c', 'o', 'n', 'i', 'g', 'l', 'i');
-
-    auto rt = Syntropy::Ranges::MakeSpan(&Get<6>(t), 7);
-    auto ru = Syntropy::Ranges::MakeSpan(&Get<7>(u), 8);
-    auto rv = Syntropy::Ranges::MakeSpan(&Get<6>(v), 7);
-
-    auto bee = Syntropy::Diagnostics::IsDebuggerAttached();
-
-    auto k = AreEqual(t, u);
-
-    SYNTROPY_ASSERT(k);
-
-    std::cout << "\n";
-    for (auto&& rte : rt) std::cout << rte << "|";
-
-    std::cout << "\n";
-    for (auto&& rue : ru) std::cout << rue << "|";
-
-    std::cout << "\n";
-    for (auto&& rve : rv) std::cout << rve << "|";
-
     
-    std::cout << "\n";
+    auto& a = Syntropy::Memory::GetAllocator();
 
-    auto ztr = Syntropy::Ranges::MakeZipRange(rt);
-    auto zur = Syntropy::Ranges::MakeZipRange(ru);
-    auto zvr = Syntropy::Ranges::MakeZipRange(rv);
+    auto buff = a.Allocate(32_Bytes, 8_Alignment);
 
-    auto zt = Syntropy::Ranges::Zip(rt);
-    auto ztu = Syntropy::Ranges::Zip(zt, ru);
-    auto ztuv = Syntropy::Ranges::Zip(ztu, rv);
-    auto zztuv = Syntropy::Ranges::Zip(rt, ru, rv);
-    auto rztuv = Syntropy::Ranges::Reverse(ztuv);
-
-    static_assert(Syntropy::Concepts::SameAs<decltype(zztuv), decltype(zztuv)>, "Noope!");
-
-    for (auto&& [a, b, c] : rztuv)
-    {
-        std::cout << a << "," << b << "," << c << "|";
-    }
-
-    std::cout << "\n";
-    system("pause");
-
-    return 0;
 }
 
 

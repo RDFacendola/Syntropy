@@ -45,6 +45,8 @@
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
     <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
+    <ClInclude Include="include\syntropy\allocators\allocator.h" />
+    <ClInclude Include="include\syntropy\allocators\system_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />

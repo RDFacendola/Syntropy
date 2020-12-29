@@ -7,11 +7,14 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/memory/bytes.h"
+
+#include "syntropy/memory/size.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
 
-namespace Syntropy
+// ===========================================================================
+
+namespace Syntropy::Memory
 {
     /************************************************************************/
     /* SYSTEM ALLOCATOR                                                     */
@@ -27,27 +30,33 @@ namespace Syntropy
         SystemAllocator() noexcept = default;
 
         /// \brief Default copy constructor.
-        SystemAllocator(const SystemAllocator&) noexcept = default;
+        SystemAllocator(Immutable<SystemAllocator>) noexcept = default;
 
         /// \brief Default move constructor.
-        SystemAllocator(SystemAllocator&&) noexcept = default;
+        SystemAllocator(Movable<SystemAllocator>) noexcept = default;
 
         /// \brief Default destructor.
         ~SystemAllocator() noexcept = default;
 
         /// \brief Default assignment operator.
-        SystemAllocator& operator=(const SystemAllocator&) noexcept = default;
+        SystemAllocator& operator=(Immutable<SystemAllocator>) noexcept = default;
 
         /// \brief Allocate a new memory block.
         /// If a memory block could not be allocated, returns an empty block.
-        Memory::RWByteSpan Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept;
+        RWByteSpan Allocate(Bytes size, Alignment alignment) noexcept;
 
         /// \brief Deallocate a memory block.
         /// \remarks The behavior of this function is undefined unless the provided block was returned by a previous call to ::Allocate(size, alignment).
-        void Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept;
+        void Deallocate(Immutable<RWByteSpan> block, Alignment alignment) noexcept;
 
     };
 
+}
+
+// ===========================================================================
+
+namespace Syntropy::Memory
+{
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
@@ -55,26 +64,26 @@ namespace Syntropy
     // SystemAllocator.
     // ================
 
-    inline Memory::RWByteSpan SystemAllocator::Allocate(Memory::Bytes size, Memory::Alignment alignment) noexcept
+    inline RWByteSpan SystemAllocator::Allocate(Bytes size, Alignment alignment) noexcept
     {
         auto size_value = static_cast<std::size_t>(ToInt(size));
         auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
 
         if (auto block = ::operator new(size_value, alignment_value, std::nothrow))
         {
-            return { Memory::ToRWBytePtr(block), ToInt(size) };
+            return { ToBytePtr(block), size };
         }
 
         return {};
     }
 
-    inline void SystemAllocator::Deallocate(const Memory::RWByteSpan& block, Memory::Alignment alignment) noexcept
+    inline void SystemAllocator::Deallocate(Immutable<RWByteSpan> block, Alignment alignment) noexcept
     {
         auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
 
-        ::operator delete(block.GetData(), alignment_value, std::nothrow);
+        ::operator delete(Data(block), alignment_value, std::nothrow);
     }
 
 }
 
-
+// ===========================================================================
