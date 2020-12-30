@@ -193,6 +193,8 @@ namespace Syntropy::Memory
         {
             SYNTROPY_ASSERT(!!allocator_);
 
+            pointee_->~TType();
+
             auto block = BytesOf(*pointee_);
 
             allocator_->Deallocate(block, AlignmentOf<TType>());
