@@ -36,6 +36,8 @@
 #include "syntropy/memory/size.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
+#include "syntropy/memory/unique_ptr.h"
+
 #include "syntropy/allocators/allocator.h"
 #include "syntropy/allocators/system_allocator.h"
 
@@ -54,15 +56,35 @@ struct Foo
     Syntropy::Fix8 d_{ 0 };
 };
 
+struct Bar
+{
+    std::unique_ptr<int> ptr;
+};
+
+struct FooBar
+{
+    FooBar(const FooBar&) = delete;
+    FooBar(FooBar&&) = delete;
+    FooBar& operator=(const FooBar&) = delete;
+    FooBar& operator=(FooBar&&) = delete;
+};
+
 int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
     using namespace Syntropy::Memory::Literals;
-    
-    auto& a = Syntropy::Memory::GetAllocator();
 
-    auto buff = a.Allocate(32_Bytes, 8_Alignment);
+    static_assert(Syntropy::Concepts::Movable<Foo>, "nope!");
+    static_assert(Syntropy::Concepts::Movable<Bar>, "nope!");
+    static_assert(!Syntropy::Concepts::Movable<FooBar>, "nope!");
+
+    auto k = Syntropy::Memory::MakeUnique<Foo>();
+    // auto kk = k;
+
+    auto kk = Syntropy::Memory::UniquePtr<Foo>{};
+
+    kk = Syntropy::Move(k);
 
 }
 

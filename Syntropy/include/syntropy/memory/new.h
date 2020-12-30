@@ -7,30 +7,36 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+
 #include "syntropy/memory/byte_span.h"
 
+// ===========================================================================
+
 /************************************************************************/
-/* OPERATOR NEW                                                         */
+/* NEW                                                                  */
 /************************************************************************/
 
 /// \brief Allocate requested number of bytes inside byte span.
 /// If the byte span could not fit the requested size, returns nullptr.
-Syntropy::Memory::RWTypelessPtr operator new(std::size_t size, const Syntropy::Memory::RWByteSpan& byte_span);
+Syntropy::RWTypelessPtr operator new(std::size_t size, const Syntropy::Memory::RWByteSpan& byte_span);
+
+// ===========================================================================
 
 /************************************************************************/
 /* IMPLEMENTATION                                                       */
 /************************************************************************/
 
-// Operator New.
-// =============
+// New.
+// ====
 
-inline Syntropy::Memory::RWTypelessPtr operator new(std::size_t size, const Syntropy::Memory::RWByteSpan& byte_span)
+inline Syntropy::RWTypelessPtr operator new(std::size_t size, const Syntropy::Memory::RWByteSpan& byte_span)
 {
-    if (Syntropy::ToInt(size) <= Syntropy::ToInt(Syntropy::Memory::Size(byte_span)))
+    if (Syntropy::ToInt(size) <= Syntropy::ToInt(Count(byte_span)))
     {
-        return Begin(byte_span);
+        return Data(byte_span);
     }
 
     return nullptr;
 }
 
+// ===========================================================================
