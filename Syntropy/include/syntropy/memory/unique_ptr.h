@@ -27,9 +27,12 @@ namespace Syntropy::Memory
 
     /// \brief Represents a pointer that hold exclusive ownership of an object and deletes it when going out of scope.
     /// \author Raffaele D. Facendola - December 2020.
-    template <Concepts::Movable TType>
+    template <typename TType>
     class UniquePtr
     {
+        template <typename UType>
+        friend class UniquePtr;
+
     public:
 
         /// \brief Create an empty pointer.
@@ -41,9 +44,13 @@ namespace Syntropy::Memory
         /// \brief Unique pointer cannot be copy-constructed.
         UniquePtr(Immutable<UniquePtr> rhs) noexcept = delete;
 
+        /// \brief Move constructor.
+        template <typename UType>
+        UniquePtr(Movable<UniquePtr<UType>> rhs) noexcept;
+
         /// \brief Create an unique pointer to an existing object.
         /// \remarks Accessing the object instance through the provided pointer after this call results in undefined behavior.
-        template <Concepts::Movable UType>
+        template <typename UType>
         UniquePtr(RWPtr<UType> pointee, Mutable<BaseAllocator> allocator) noexcept;
 
         /// \brief Destroy the underlying object.
@@ -96,27 +103,27 @@ namespace Syntropy::Memory
     // ===========
 
     /// \brief Check whether two unique pointers refer to the same underlying object.
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     Bool operator==(Immutable<UniquePtr<TType>> lhs, Immutable<UniquePtr<UType>> rhs) noexcept;
 
     /// \brief Check whether lhs is empty.
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     Bool operator==(Immutable<UniquePtr<TType>> lhs, Null rhs) noexcept;
 
     /// \brief Check whether rhs is empty.
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     Bool operator==(Null lhs, Immutable<UniquePtr<UType>> rhs) noexcept;
 
     /// \brief Compare two unique pointers.
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     Ordering operator<=>(Immutable<UniquePtr<TType>> lhs, Immutable<UniquePtr<UType>> rhs) noexcept;
     
     /// \brief Compare an unique pointer against a null pointer.
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     Ordering operator<=>(Immutable<UniquePtr<TType>> lhs, Null rhs) noexcept;
     
     /// \brief Compare a null pointer against an unique pointer.
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     Ordering operator<=>(Null lhs, Immutable<UniquePtr<UType>> rhs) noexcept;
 
 
@@ -124,11 +131,11 @@ namespace Syntropy::Memory
     // ==========
 
     /// \brief Allocate a new object on the active allocator.
-    template <Concepts::Movable TType, typename... TArguments>
+    template <typename TType, typename... TArguments>
     UniquePtr<TType> MakeUnique(Forwarding<TArguments>... arguments) noexcept;
 
     /// \brief Allocate a new object on the given allocator.
-    template <Concepts::Movable TType, typename...TArguments>
+    template <typename TType, typename...TArguments>
     UniquePtr<TType> MakeUniqueOnAllocator(Mutable<BaseAllocator> allocator, Forwarding<TArguments>... arguments) noexcept;
 
 }
@@ -144,15 +151,25 @@ namespace Syntropy::Memory
     // UniquePtr.
     // ==========
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     inline  UniquePtr<TType>::UniquePtr(Null rhs)
         : UniquePtr()
     {
 
     }
 
-    template <Concepts::Movable TType>
-    template <Concepts::Movable UType>
+    template <typename TType>
+    template <typename UType>
+    inline UniquePtr<TType>::UniquePtr(Movable<UniquePtr<UType>> rhs) noexcept
+        : pointee_(rhs.pointee_)
+        , allocator_(rhs.allocator_)
+    {
+        rhs.pointee_ = nullptr;
+        rhs.allocator_ = nullptr;
+    }
+
+    template <typename TType>
+    template <typename UType>
     inline  UniquePtr<TType>::UniquePtr(RWPtr<UType> pointee, Mutable<BaseAllocator> allocator) noexcept
         : pointee_(pointee)
         , allocator_(PtrOf(allocator))
@@ -160,13 +177,13 @@ namespace Syntropy::Memory
 
     }
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     inline UniquePtr<TType>::~UniquePtr() noexcept
     {
         Reset();
     }
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     template <typename UType>
     inline Mutable<UniquePtr<TType>> UniquePtr<TType>::operator=(Movable<UniquePtr<UType>> rhs) noexcept
     {
@@ -178,7 +195,7 @@ namespace Syntropy::Memory
         return *this;
     }
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     inline Mutable<UniquePtr<TType>> UniquePtr<TType>::operator=(Null rhs) noexcept
     {
         Reset();
@@ -186,12 +203,12 @@ namespace Syntropy::Memory
         return *this;
     }
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     void UniquePtr<TType>::Reset() noexcept
     {
         if (pointee_)
         {
-            SYNTROPY_ASSERT(!!allocator_);
+            SYNTROPY_ASSERT(allocator_);
 
             pointee_->~TType();
 
@@ -204,7 +221,7 @@ namespace Syntropy::Memory
         }
     }
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     inline RWPtr<TType> UniquePtr<TType>::Release() noexcept
     {
         auto pointee = pointee_;
@@ -213,13 +230,13 @@ namespace Syntropy::Memory
         allocator_ = nullptr;
     }
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     inline RWPtr<TType> UniquePtr<TType>::Get() const noexcept
     {
         return pointee_;
     }
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     inline Mutable<BaseAllocator> UniquePtr<TType>::GetAllocator() const noexcept
     {
         SYNTROPY_ASSERT(allocator_);
@@ -227,13 +244,13 @@ namespace Syntropy::Memory
         return *allocator_;
     }
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     inline UniquePtr<TType>::operator Bool() const noexcept
     {
         return !!pointee_;
     }
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     inline Mutable<TType> UniquePtr<TType>::operator*() const noexcept
     {
         SYNTROPY_ASSERT(pointee_);
@@ -241,7 +258,7 @@ namespace Syntropy::Memory
         return *pointee_;
     }
 
-    template <Concepts::Movable TType>
+    template <typename TType>
     inline RWPtr<TType> UniquePtr<TType>::operator->() const noexcept
     {
         return pointee_;
@@ -252,37 +269,37 @@ namespace Syntropy::Memory
 
     // Comparison.
 
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     inline Bool operator==(Immutable<UniquePtr<TType>> lhs, Immutable<UniquePtr<UType>> rhs) noexcept
     {
         return lhs.Get() == rhs.Get();
     }
 
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     inline Bool operator==(Immutable<UniquePtr<TType>> lhs, Null rhs) noexcept
     {
         return ToBool(lhs);
     }
 
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     inline Bool operator==(Null lhs, Immutable<UniquePtr<UType>> rhs) noexcept
     {
         return ToBool(rhs);
     }
 
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     inline Ordering operator<=>(Immutable<UniquePtr<TType>> lhs, Immutable<UniquePtr<UType>> rhs) noexcept
     {
         return (lhs.Get() <=> rhs.Get());
     }
 
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     inline Ordering operator<=>(Immutable<UniquePtr<TType>> lhs, Null rhs) noexcept
     {
         return (lhs.Get() <=> nullptr);
     }
 
-    template <Concepts::Movable TType, Concepts::Movable UType>
+    template <typename TType, typename UType>
     inline Ordering operator<=>(Null lhs, Immutable<UniquePtr<UType>> rhs) noexcept
     {
         return (nullptr <=> rhs.Get());
@@ -292,13 +309,13 @@ namespace Syntropy::Memory
     // Utilities.
     // ==========
 
-    template <Concepts::Movable TType, typename... TArguments>
+    template <typename TType, typename... TArguments>
     inline UniquePtr<TType> MakeUnique(Forwarding<TArguments>... arguments) noexcept
     {
         return MakeUniqueOnAllocator<TType>(GetAllocator(), Forward<TArguments>(arguments)...);
     }
 
-    template <Concepts::Movable TType, typename...TArguments>
+    template <typename TType, typename...TArguments>
     UniquePtr<TType> MakeUniqueOnAllocator(Mutable<BaseAllocator> allocator, Forwarding<TArguments>... arguments) noexcept
     {
         auto block = allocator.Allocate(SizeOf<TType>(), AlignmentOf<TType>());
