@@ -19,13 +19,18 @@ namespace Syntropy::Details
 
     EventChain::EventChain(Immutable<EventChain> rhs) noexcept
     {
-
+        SYNTROPY_ASSERT(false);
     }
 
     EventChain::EventChain(Movable<EventChain> rhs) noexcept
     {
         Swap(next_event_, rhs.next_event_);
         Swap(previous_event_, rhs.previous_event_);
+
+        if (next_event_)
+        {
+            next_event_->previous_event_ = this;        // Fix-up the head to point correctly to this instance and not the one being moved.
+        }
     }
 
     EventChain::~EventChain() noexcept
@@ -37,6 +42,7 @@ namespace Syntropy::Details
 
     Mutable<EventChain> EventChain::operator=(Immutable<EventChain> rhs) noexcept
     {
+        SYNTROPY_ASSERT(false);
 
         return *this;
     }
@@ -45,6 +51,11 @@ namespace Syntropy::Details
     {
         Swap(next_event_, rhs.next_event_);
         Swap(previous_event_, rhs.previous_event_);
+
+        if (next_event_)
+        {
+            next_event_->previous_event_ = this;        // Fix-up the head to point correctly to this instance and not the one being moved.
+        }
 
         return *this;
     }

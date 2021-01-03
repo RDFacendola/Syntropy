@@ -48,48 +48,36 @@
 
 struct Foo
 {
-    int f = 1999;
+    Syntropy::Event<int> int_event_;
+};
+
+struct Bar
+{
+    Syntropy::Listener listener_;
 };
 
 int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
+    auto f = Foo{};
+    auto k = Foo{};
+
+    auto b = Bar{};
+
+    b.listener_ += f.int_event_.Subscribe([](int x)
     {
-        auto l = Syntropy::Listener{};
-        auto e = Syntropy::Event<int>{};
+        std::cout << "EVENT " << x << "\n";
+    });
 
-        {
-            auto m = Syntropy::Listener{};
+    k.int_event_ = Move(f.int_event_);
 
-            l += e.Subscribe([](int x)
-                {
-                    std::cout << "L event 0 " << x << "\n";
-                });
+    k.int_event_.Notify(100);
 
-            e.Notify(0);
-            std::cout << "\n";
+    auto ff = f;
+    // auto bb = b;
 
-            l += e.Subscribe([](int x)
-                {
-                    std::cout << "L event 1 " << x << "\n";
-                });
-
-            e.Notify(1);
-            std::cout << "\n";
-
-            m += e.Subscribe([](int x)
-                {
-                    std::cout << "M event 1 " << x << "\n";
-                });
-
-            e.Notify(2);
-            std::cout << "\n";
-        }
-
-        e.Notify(3);
-        std::cout << "\n";
-    }
+    k.int_event_.Notify(200);
 
     system("pause");
 

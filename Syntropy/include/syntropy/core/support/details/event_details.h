@@ -162,15 +162,22 @@ namespace Syntropy::Details
 
     template <typename... TArguments>
     inline ListenerChain<TArguments...>::ListenerChain(Immutable<ListenerChain> rhs) noexcept
+        : EventChain(rhs)
     {
-
+        SYNTROPY_ASSERT(false);
     }
 
     template <typename... TArguments>
     inline ListenerChain<TArguments...>::ListenerChain(Movable<ListenerChain> rhs) noexcept
+        : EventChain(rhs)
     {
         Swap(next_listener_, rhs.next_listener_);
         Swap(previous_listener_, rhs.previous_listener_);
+
+        if (next_listener_)
+        {
+            next_listener_->previous_listener_ = this;          // Fix-up the head to point correctly to this instance and not the one being moved.
+        }
     }
 
     template <typename... TArguments>
@@ -192,6 +199,9 @@ namespace Syntropy::Details
     template <typename... TArguments>
     inline Mutable<ListenerChain<TArguments...>> ListenerChain<TArguments...>::operator=(Immutable<ListenerChain> rhs) noexcept
     {
+        EventChain::operator=(Move(rhs));
+
+        SYNTROPY_ASSERT(false);
 
         return *this;
     }   
@@ -199,8 +209,15 @@ namespace Syntropy::Details
     template <typename... TArguments>
     inline Mutable<ListenerChain<TArguments...>> ListenerChain<TArguments...>::operator=(Movable<ListenerChain> rhs) noexcept
     {
+        EventChain::operator=(Move(rhs));
+
         Swap(next_listener_, rhs.next_listener_);
         Swap(previous_listener_, rhs.previous_listener_);
+
+        if (next_listener_)
+        {
+            next_listener_->previous_listener_ = this;      // Fix-up the head to point correctly to this instance and not the one being moved.
+        }
 
         return *this;
     }
