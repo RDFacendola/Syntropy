@@ -84,7 +84,7 @@ namespace Syntropy
         Event(Movable<Event> rhs) noexcept = default;
 
         /// \brief Destroy the event and unsubscribe all listeners.
-        ~Event() noexcept = default;
+        ~Event() noexcept;
 
         /// \brief Copy-assignment operator. Existing listeners are preserved, whereas new listeners are ignored.
         Mutable<Event> operator=(Immutable<Event> rhs) noexcept;
@@ -148,6 +148,12 @@ namespace Syntropy
     }
 
     template <typename... TArguments>
+    inline Event<TArguments...>::~Event() noexcept
+    {
+        Reset();
+    }
+
+    template <typename... TArguments>
     inline Mutable<Event<TArguments...>> Event<TArguments...>::operator=(Immutable<Event> rhs) noexcept
     {
         // Listeners are not propagated on copy.
@@ -164,7 +170,7 @@ namespace Syntropy
     template <typename... TArguments>
     inline void Event<TArguments...>::Reset() noexcept
     {
-        listeners_ = {};
+        listeners_.ListenerReset();
     }
 
     template <typename... TArguments>

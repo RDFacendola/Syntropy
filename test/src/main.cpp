@@ -46,28 +46,49 @@
 
 #include "syntropy/core/support/event.h"
 
+struct Foo
+{
+    int f = 1999;
+};
+
 int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    auto l = Syntropy::Listener{};
-
     {
+        auto l = Syntropy::Listener{};
         auto e = Syntropy::Event<int>{};
 
-        l += e.Subscribe([](int x)
         {
-            std::cout << "Notify (0) " << x << "\n";
-        });
+            auto m = Syntropy::Listener{};
 
-        e.Notify(0);
+            l += e.Subscribe([](int x)
+                {
+                    std::cout << "L event 0 " << x << "\n";
+                });
 
-        l += e.Subscribe([](int x)
-        {
-            std::cout << "Notify (1) " << x << "\n";
-        });
+            e.Notify(0);
+            std::cout << "\n";
 
-        e.Notify(1);
+            l += e.Subscribe([](int x)
+                {
+                    std::cout << "L event 1 " << x << "\n";
+                });
+
+            e.Notify(1);
+            std::cout << "\n";
+
+            m += e.Subscribe([](int x)
+                {
+                    std::cout << "M event 1 " << x << "\n";
+                });
+
+            e.Notify(2);
+            std::cout << "\n";
+        }
+
+        e.Notify(3);
+        std::cout << "\n";
     }
 
     system("pause");

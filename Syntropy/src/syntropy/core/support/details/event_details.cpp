@@ -22,8 +22,29 @@ namespace Syntropy::Details
 
     }
 
+    EventChain::EventChain(Movable<EventChain> rhs) noexcept
+    {
+        Swap(next_event_, rhs.next_event_);
+        Swap(previous_event_, rhs.previous_event_);
+    }
+
+    EventChain::~EventChain() noexcept
+    {
+        // Only this instance is destroyed, the rest is fixed-up.
+
+        EventUnlink();
+    }
+
     Mutable<EventChain> EventChain::operator=(Immutable<EventChain> rhs) noexcept
     {
+
+        return *this;
+    }
+    
+    Mutable<EventChain> EventChain::operator=(Movable<EventChain> rhs) noexcept
+    {
+        Swap(next_event_, rhs.next_event_);
+        Swap(previous_event_, rhs.previous_event_);
 
         return *this;
     }
@@ -50,6 +71,25 @@ namespace Syntropy::Details
 
         head->previous_event_ = this;
         next_event_ = Move(head);
+    }
+
+    Memory::UniquePtr<EventChain> EventChain::EventUnlink()
+    {
+        if (next_event_)
+        {
+            next_event_->previous_event_ = previous_event_;
+        }
+
+        if (previous_event_)
+        {
+            auto unique_this = Move(previous_event_->next_event_);
+
+            previous_event_->next_event_ = Move(next_event_);
+
+            return unique_this;
+        }
+
+        return {};
     }
 
     Memory::UniquePtr<EventChain> EventChain::EventRelease() noexcept

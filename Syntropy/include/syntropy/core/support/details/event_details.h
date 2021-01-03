@@ -32,20 +32,23 @@ namespace Syntropy::Details
         EventChain(Immutable<EventChain> rhs) noexcept;
         
         /// \brief Default move-constructor.
-        EventChain(Movable<EventChain> rhs) noexcept = default;
+        EventChain(Movable<EventChain> rhs) noexcept;
 
         /// \brief Virtual destructor.
-        virtual ~EventChain() noexcept = default;
+        virtual ~EventChain() noexcept;
 
         /// \brief Copy-assignment operator.
         Mutable<EventChain> operator=(Immutable<EventChain> rhs) noexcept;
         
         /// \brief Default move-assignment operator.
-        Mutable<EventChain> operator=(Movable<EventChain> rhs) noexcept = default;
+        Mutable<EventChain> operator=(Movable<EventChain> rhs) noexcept;
 
         /// \brief Append an event chain to this.
         void EventLink(Memory::UniquePtr<EventChain> head) noexcept;
         
+        /// \brief Unlink this event from the event chain and yield the ownership to the caller.
+        Memory::UniquePtr<EventChain> EventUnlink();
+
         /// \brief Yield the ownership of the next events to the caller.
         Memory::UniquePtr<EventChain> EventRelease() noexcept;
 
@@ -77,7 +80,7 @@ namespace Syntropy::Details
         ListenerChain(Immutable<ListenerChain> rhs) noexcept;
 
         /// \brief Default move-constructor.
-        ListenerChain(Movable<ListenerChain> rhs) noexcept = default;
+        ListenerChain(Movable<ListenerChain> rhs) noexcept;
 
         /// \brief Virtual destructor.
         virtual ~ListenerChain() noexcept;
@@ -86,13 +89,16 @@ namespace Syntropy::Details
         Mutable<ListenerChain> operator=(Immutable<ListenerChain> rhs) noexcept;
 
         /// \brief Default move-assignment operator.
-        Mutable<ListenerChain> operator=(Movable<ListenerChain> rhs) noexcept = default;
+        Mutable<ListenerChain> operator=(Movable<ListenerChain> rhs) noexcept;
 
         /// \brief Notify the listener chain starting from this element.
         void Notify(Immutable<TArguments>... arguments) const noexcept;
 
         /// \brief Append an listener chain to this.
         void ListenerLink(Mutable<ListenerChain> head) noexcept;
+
+        /// \brief Reset the listener chain, causing all listeners in an event to be unsubscribed.
+        void ListenerReset() noexcept;
 
     private:
 
@@ -161,14 +167,40 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
+    inline ListenerChain<TArguments...>::ListenerChain(Movable<ListenerChain> rhs) noexcept
+    {
+        Swap(next_listener_, rhs.next_listener_);
+        Swap(previous_listener_, rhs.previous_listener_);
+    }
+
+    template <typename... TArguments>
     inline ListenerChain<TArguments...>::~ListenerChain() noexcept
     {
+        // Only this instance is destroyed, the rest is fixed-up.
 
+        if (next_listener_)
+        {
+            next_listener_->previous_listener_ = previous_listener_;
+        }
+
+        if (previous_listener_)
+        {
+            previous_listener_->next_listener_ = next_listener_;
+        }
     }
 
     template <typename... TArguments>
     inline Mutable<ListenerChain<TArguments...>> ListenerChain<TArguments...>::operator=(Immutable<ListenerChain> rhs) noexcept
     {
+
+        return *this;
+    }   
+    
+    template <typename... TArguments>
+    inline Mutable<ListenerChain<TArguments...>> ListenerChain<TArguments...>::operator=(Movable<ListenerChain> rhs) noexcept
+    {
+        Swap(next_listener_, rhs.next_listener_);
+        Swap(previous_listener_, rhs.previous_listener_);
 
         return *this;
     }
@@ -204,6 +236,19 @@ namespace Syntropy::Details
 
         head.previous_listener_ = this;
         next_listener_ = PtrOf(head);
+    }
+
+    template <typename... TArguments>
+    void ListenerChain<TArguments...>::ListenerReset() noexcept
+    {
+        SYNTROPY_ASSERT(!previous_listener_);
+
+        for (; next_listener_;)
+        {
+            next_listener_->EventUnlink();          // dtor will fix up chain linking, moving the next listener backwards.
+        }
+
+        next_listener_ = nullptr;
     }
 
     template <typename... TArguments>
