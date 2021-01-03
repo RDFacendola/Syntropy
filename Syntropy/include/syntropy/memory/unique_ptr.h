@@ -13,8 +13,6 @@
 
 #include "syntropy/diagnostics/assert.h"
 
-#include "syntropy/memory/new.h"
-
 #include "syntropy/allocators/allocator.h"
 
 // ===========================================================================
@@ -322,7 +320,7 @@ namespace Syntropy::Memory
 
         SYNTROPY_ASSERT(Count(block) == SizeOf<TType>());
 
-        auto pointee = new (block) TType(Forward<TArguments>(arguments)...);
+        auto pointee = new (Data(block)) TType(Forward<TArguments>(arguments)...);
 
         return { pointee, allocator };
     }

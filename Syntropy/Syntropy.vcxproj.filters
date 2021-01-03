@@ -48,7 +48,8 @@
     <ClInclude Include="include\syntropy\allocators\allocator.h" />
     <ClInclude Include="include\syntropy\allocators\system_allocator.h" />
     <ClInclude Include="include\syntropy\memory\unique_ptr.h" />
-    <ClInclude Include="include\syntropy\memory\new.h" />
+    <ClInclude Include="include\syntropy\core\support\event.h" />
+    <ClInclude Include="include\syntropy\core\support\details\event_details.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />
@@ -57,5 +58,6 @@
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_debugger.cpp" />
+    <ClCompile Include="src\syntropy\core\support\details\event_details.cpp" />
   </ItemGroup>
 </Project>

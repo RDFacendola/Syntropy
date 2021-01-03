@@ -21,6 +21,8 @@
     <ClInclude Include="include\syntropy\core\foundation\span.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
     <ClInclude Include="include\syntropy\core\foundation\zip_range.h" />
+    <ClInclude Include="include\syntropy\core\support\details\event_details.h" />
+    <ClInclude Include="include\syntropy\core\support\event.h" />
     <ClInclude Include="include\syntropy\core\support\visitor.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
@@ -54,7 +56,6 @@
     <ClInclude Include="include\syntropy\memory\alignment.h" />
     <ClInclude Include="include\syntropy\memory\byte.h" />
     <ClInclude Include="include\syntropy\memory\byte_span.h" />
-    <ClInclude Include="include\syntropy\memory\new.h" />
     <ClInclude Include="include\syntropy\memory\size.h" />
     <ClInclude Include="include\syntropy\memory\unique_ptr.h" />
     <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
@@ -63,6 +64,7 @@
     <None Include="include\syntropy\language\language.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\syntropy\core\support\details\event_details.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_debugger.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />

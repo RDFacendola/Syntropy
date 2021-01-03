@@ -44,47 +44,33 @@
 #include "syntropy/diagnostics/debugger.h"
 #include "syntropy/diagnostics/assert.h"
 
-/************************************************************************/
-/* ENTRY POINT                                                          */
-/************************************************************************/
-
-struct Foo
-{
-    Syntropy::Fix8 a_{ 0 };
-    Syntropy::Fix8 b_{ 0 };
-    Syntropy::Fix8 c_{ 0 };
-    Syntropy::Fix8 d_{ 0 };
-};
-
-struct Bar
-{
-    std::unique_ptr<int> ptr;
-};
-
-struct FooBar
-{
-    FooBar(const FooBar&) = delete;
-    FooBar(FooBar&&) = delete;
-    FooBar& operator=(const FooBar&) = delete;
-    FooBar& operator=(FooBar&&) = delete;
-};
+#include "syntropy/core/support/event.h"
 
 int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    using namespace Syntropy::Memory::Literals;
+    auto l = Syntropy::Listener{};
 
-    static_assert(Syntropy::Concepts::Movable<Foo>, "nope!");
-    static_assert(Syntropy::Concepts::Movable<Bar>, "nope!");
-    static_assert(!Syntropy::Concepts::Movable<FooBar>, "nope!");
+    {
+        auto e = Syntropy::Event<int>{};
 
-    auto k = Syntropy::Memory::MakeUnique<Foo>();
-    // auto kk = k;
+        l += e.Subscribe([](int x)
+        {
+            std::cout << "Notify (0) " << x << "\n";
+        });
 
-    auto kk = Syntropy::Memory::UniquePtr<Foo>{};
+        e.Notify(0);
 
-    kk = Syntropy::Move(k);
+        l += e.Subscribe([](int x)
+        {
+            std::cout << "Notify (1) " << x << "\n";
+        });
+
+        e.Notify(1);
+    }
+
+    system("pause");
 
 }
 
