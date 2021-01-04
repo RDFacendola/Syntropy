@@ -49,13 +49,10 @@ namespace Syntropy
         /// \brief Take ownership of all events bound to another listener.
         Mutable<Listener> operator+=(Movable<Listener> rhs) noexcept;
 
-        /// \brief Unsubscribe from all subscribed events.
-        void Reset() noexcept;
-
     private:
 
-        /// \brief Create a new bound listener.
-        Listener(Memory::UniquePtr<Details::EventChain> event) noexcept;
+        /// \brief Create a new listener bound to an event chain.
+        Listener(Movable<Details::EventChain> event_chain) noexcept;
 
         /// \brief Event chain.
         Details::EventChain events_;
@@ -77,26 +74,23 @@ namespace Syntropy
         /// \brief Default constructor.
         Event() noexcept = default;
 
-        /// \brief Copy constructor. Listeners are not propagated.
-        Event(Immutable<Event> rhs) noexcept;
+        /// \brief Default copy-constructor.
+        Event(Immutable<Event> rhs) noexcept = default;
 
         /// \brief Default-move constructor.
         Event(Movable<Event> rhs) noexcept = default;
 
         /// \brief Destroy the event and unsubscribe all listeners.
-        ~Event() noexcept;
+        ~Event() noexcept = default;
 
-        /// \brief Copy-assignment operator. Existing listeners are preserved, whereas new listeners are ignored.
-        Mutable<Event> operator=(Immutable<Event> rhs) noexcept;
+        /// \brief Default copy-assignment operator.
+        Mutable<Event> operator=(Immutable<Event> rhs) noexcept = default;
 
         /// \brief Default move-assignment operator.
         Mutable<Event> operator=(Movable<Event> rhs) noexcept = default;
 
         /// \brief Notify subscribed listeners.
         void Notify(Immutable<TArguments>... arguments) const noexcept;
-
-        /// \brief Unsubscribe all listeners from this event.
-        void Reset() noexcept;
 
         /// \brief Subscribe to the event and return a listener object used to keep the relationship alive.
         template <typename TDelegate>
@@ -121,67 +115,32 @@ namespace Syntropy
     // Listener.
     // =========
 
-    inline Listener::Listener(Memory::UniquePtr<Details::EventChain> event) noexcept
+    inline Listener::Listener(Movable<Details::EventChain> event_chain) noexcept
     {
-        events_.EventLink(Move(event));
+        events_ += Move(event_chain);
     }
 
     inline Mutable<Listener> Listener::operator+=(Movable<Listener> rhs) noexcept
     {
-        events_.EventLink(rhs.events_.EventRelease());
+        events_ += Move(rhs.events_);
 
         return *this;
-    }
-
-    inline void Listener::Reset() noexcept
-    {
-        events_ = {};
     }
 
     // Event.
     // ======
 
     template <typename... TArguments>
-    inline Event<TArguments...>::Event(Immutable<Event> rhs) noexcept
-    {
-        // Listeners are not propagated on copy.
-    }
-
-    template <typename... TArguments>
-    inline Event<TArguments...>::~Event() noexcept
-    {
-        Reset();
-    }
-
-    template <typename... TArguments>
-    inline Mutable<Event<TArguments...>> Event<TArguments...>::operator=(Immutable<Event> rhs) noexcept
-    {
-        // Listeners are not propagated on copy.
-
-        return *this;
-    }
-
-    template <typename... TArguments>
     inline void Event<TArguments...>::Notify(Immutable<TArguments>... arguments) const noexcept
     {
-        listeners_.Notify(arguments...);
-    }
-
-    template <typename... TArguments>
-    inline void Event<TArguments...>::Reset() noexcept
-    {
-        listeners_.ListenerReset();
+        listeners_(arguments...);
     }
 
     template <typename... TArguments>
     template <typename TDelegate>
     [[nodiscard]] inline Listener Event<TArguments...>::Subscribe(Forwarding<TDelegate> delegate) const noexcept
     {
-        auto listener_delegate = Details::MakeListenerDelegate<TArguments...>(Forward<TDelegate>(delegate));
-
-        listeners_.ListenerLink(*listener_delegate);
-
-        return Memory::UniquePtr<Details::EventChain>(Move(listener_delegate));
+        return listeners_.Emplace(Forward<TDelegate>(delegate));
     }
 
 

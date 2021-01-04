@@ -58,6 +58,5 @@
     <ClCompile Include="src\syntropy\syntropy.cpp" />
     <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_debugger.cpp" />
-    <ClCompile Include="src\syntropy\core\support\details\event_details.cpp" />
   </ItemGroup>
 </Project>

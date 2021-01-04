@@ -56,28 +56,36 @@ struct Bar
     Syntropy::Listener listener_;
 };
 
+class DebugAllocator : public Syntropy::Memory::SystemAllocator
+{
+public:
+
+
+    Syntropy::Memory::RWByteSpan Allocate(Syntropy::Memory::Bytes size, Syntropy::Memory::Alignment alignment) noexcept
+    {
+        std::cout << "Allocating " << Syntropy::ToInt(size) << " bytes\n";
+
+        return SystemAllocator::Allocate(size, alignment);
+    }
+
+    void Deallocate(Syntropy::Immutable<Syntropy::Memory::RWByteSpan> block, Syntropy::Memory::Alignment alignment) noexcept
+    {
+        SystemAllocator::Deallocate(block, alignment);
+
+        std::cout << "Deallocating " << Syntropy::ToInt(Count(block)) << " bytes\n";
+    }
+
+};
+
 int main(int argc, char **argv)
 {
     std::cout << "Hello Syntropy!\n";
 
-    auto f = Foo{};
-    auto k = Foo{};
+    auto dbga = Syntropy::Memory::PolymorphicAllocator<DebugAllocator>();
 
-    auto b = Bar{};
+    Syntropy::Memory::SetAllocator(dbga);
 
-    b.listener_ += f.int_event_.Subscribe([](int x)
-    {
-        std::cout << "EVENT " << x << "\n";
-    });
 
-    k.int_event_ = Move(f.int_event_);
-
-    k.int_event_.Notify(100);
-
-    auto ff = f;
-    // auto bb = b;
-
-    k.int_event_.Notify(200);
 
     system("pause");
 
