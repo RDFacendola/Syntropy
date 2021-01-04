@@ -65,6 +65,7 @@ namespace Syntropy::Memory
         void Reset() noexcept;
 
         /// \brief Release the pointed object and reset the pointer.
+        /// \remarks The caller is responsible for deleting the pointee.
         [[nodiscard]] RWPtr<TType> Release() noexcept;
 
         /// \brief Access the pointed object.
@@ -185,10 +186,13 @@ namespace Syntropy::Memory
     template <typename UType>
     inline Mutable<UniquePtr<TType>> UniquePtr<TType>::operator=(Movable<UniquePtr<UType>> rhs) noexcept
     {
-        using Syntropy::Swap;
+        Reset();
 
-        Swap(pointee_, rhs.pointee_);
-        Swap(allocator_, rhs.allocator_);
+        pointee_ = rhs.pointee_;
+        allocator_ = rhs.allocator_;
+
+        rhs.pointee_ = nullptr;
+        rhs.allocator_ = nullptr;
 
         return *this;
     }
@@ -226,6 +230,8 @@ namespace Syntropy::Memory
 
         pointee_ = nullptr;
         allocator_ = nullptr;
+
+        return pointee_;
     }
 
     template <typename TType>
