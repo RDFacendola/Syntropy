@@ -240,11 +240,11 @@ namespace Syntropy::Tuples
 
     /// \brief Concatenate a set of tuples.
     template <Concepts::NTupleReference... TTuples>
-    [[nodiscard]] constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept;
+    [[nodiscard]] constexpr decltype(auto) Concatenate(Forwarding<TTuples>... tuples) noexcept;
 
     /// \brief Flatten a tuple recursively.
     template <Concepts::NTupleReference TTuple>
-    [[nodiscard]] constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept;
+    [[nodiscard]] constexpr decltype(auto) Flatten(Forwarding<TTuple> tuple) noexcept;
 
     // Swap.
     // =====
@@ -457,15 +457,15 @@ namespace Syntropy::Tuples
     }
 
     template <Concepts::NTupleReference... TTuples>
-    [[nodiscard]] constexpr decltype(auto) TupleCat(Forwarding<TTuples>... tuples) noexcept
+    [[nodiscard]] constexpr decltype(auto) Concatenate(Forwarding<TTuples>... tuples) noexcept
     {
-        return Details::TupleCat(Forward<TTuples>(tuples)...);
+        return Details::Concatenate(Forward<TTuples>(tuples)...);
     }
 
     template <Concepts::NTupleReference TTuple>
-    [[nodiscard]] constexpr decltype(auto) TupleFlat(Forwarding<TTuple> tuple) noexcept
+    [[nodiscard]] constexpr decltype(auto) Flatten(Forwarding<TTuple> tuple) noexcept
     {
-        return Details::TupleFlat(Forward<TTuple>(tuple));
+        return Details::Flatten(Forward<TTuple>(tuple));
     }
 
     // Swap.

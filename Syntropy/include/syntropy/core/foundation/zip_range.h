@@ -412,7 +412,7 @@ namespace Syntropy::Ranges
     template <Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr auto Zip(Immutable<TRanges>... ranges) noexcept
     {
-        return MakeZipRangeFromTuple(TupleCat(Unzip(ranges)...));
+        return MakeZipRangeFromTuple(Concatenate(Unzip(ranges)...));
     }
 
     /// \brief Access the individual ranges in a zip range.
