@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <numeric>
+
 #include "syntropy/language/foundation/foundation.h"
 
 // ===========================================================================
@@ -16,43 +18,13 @@ namespace Syntropy::Templates::Details
     /* COMPILE-TIME MATH                                                    */
     /************************************************************************/
 
-    /// \brief Euler's algorithm for greatest common divisor.
-    template <Int VLeft, Int VRight>
-    struct GCDHelper : GCDHelper<VRight, VLeft % VRight>
-    {
-    
-    };
-
-    /// \brief Specialization for terminal case.
-    template <Int VLeft>
-    struct GCDHelper<VLeft, 0>
-    {
-        static constexpr Int kValue = VLeft;
-    };
-
     /// \brief Get the greatest common divisor between VLeft and VRight.
     template <Int VLeft, Int VRight>
-    inline constexpr Int GCD = GCDHelper<VLeft, VRight>::kValue;
-
-    // ===========================================================================
-
-    /// \brief Euler's algorithm for lowest common multiple.
-    template <Int VLeft, Int VRight>
-    struct LCMHelper
-    {
-        static constexpr Int kValue = (VLeft * VRight) / GCDHelper<VLeft, VRight>::kValue;
-    };
-
-    /// \brief Special case where both numbers are 0.
-    template <>
-    struct LCMHelper<0, 0>
-    {
-        static constexpr Int kValue = 0;
-    };
+    inline constexpr Int GCD = std::gcd(VLeft, VRight);
 
     /// \brief Get the lowest common multiple between VLeft and VRight.
     template <Int VLeft, Int VRight>
-    inline constexpr Int LCM = LCMHelper<VLeft, VRight>::kValue;
+    inline constexpr Int LCM = std::lcm(VLeft, VRight);
 }
 
 // ===========================================================================
