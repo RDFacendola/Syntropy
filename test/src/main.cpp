@@ -30,13 +30,13 @@
 #include "syntropy/core/foundation/reverse_range.h"
 #include "syntropy/core/foundation/zip_range.h"
 #include "syntropy/core/foundation/span.h"
+#include "syntropy/core/foundation/unique_ptr.h"
 
 #include "syntropy/memory/byte.h"
 #include "syntropy/memory/address.h"
 #include "syntropy/memory/size.h"
 #include "syntropy/memory/alignment.h"
 #include "syntropy/memory/byte_span.h"
-#include "syntropy/memory/unique_ptr.h"
 
 #include "syntropy/allocators/allocator.h"
 #include "syntropy/allocators/system_allocator.h"

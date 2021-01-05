@@ -1,6 +1,6 @@
 
 /// \file unique_ptr.h
-/// \brief This header is part of Syntropy memory module. It contains definitions for exclusive-ownership smart pointers.
+/// \brief This header is part of Syntropy core module. It contains definitions for exclusive-ownership smart pointers.
 ///
 /// \author Raffaele D. Facendola - August 2020
 
@@ -17,7 +17,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
     /* BASE UNIQUE PTR                                                      */
@@ -56,7 +56,7 @@ namespace Syntropy::Memory
         /// \remarks Accessing the object instance through the provided pointer after this call results in undefined behavior.
         /// \remarks The caller is responsible to fill in the allocation size and allocator, otherwise the behavior of this method is undefined.
         template <typename UType>
-        BaseUniquePtr(Immutable<RWPtr<UType>> pointee, Immutable<Bytes> size, Mutable<BaseAllocator> allocator) noexcept;
+        BaseUniquePtr(Immutable<RWPtr<UType>> pointee, Immutable<Memory::Bytes> size, Mutable<Memory::BaseAllocator> allocator) noexcept;
 
         /// \brief Destroy the underlying object.
         ~BaseUniquePtr() noexcept;
@@ -88,11 +88,11 @@ namespace Syntropy::Memory
         [[nodiscard]] TPointer Get() const noexcept;
 
         /// \brief Get the size of the pointed object, in Bytes.
-        [[nodiscard]] Bytes GetSize() const noexcept;
+        [[nodiscard]] Memory::Bytes GetSize() const noexcept;
 
         /// \brief Get the allocator the pointed object was allocated on.
         /// \remarks If the pointed object is null, accessing the returned value results in undefined behavior.
-        [[nodiscard]] Mutable<BaseAllocator> GetAllocator() const noexcept;
+        [[nodiscard]] Mutable<Memory::BaseAllocator> GetAllocator() const noexcept;
 
     private:
 
@@ -101,10 +101,10 @@ namespace Syntropy::Memory
         RWPtr<TType> pointee_{ nullptr };
 
         /// \brief Size of the pointed object.
-        Bytes size_;
+        Memory::Bytes size_;
 
         /// \brief Allocator the pointee was allocated by. Null for empty pointers.
-        RWPtr<BaseAllocator> allocator_{ nullptr };
+        RWPtr<Memory::BaseAllocator> allocator_{ nullptr };
     };
 
     /************************************************************************/
@@ -210,7 +210,7 @@ namespace Syntropy::Memory
 
     /// \brief Allocate a new object on the given allocator.
     template <typename TType, typename...TArguments>
-    [[nodiscard]]  UniquePtr<TType> MakeUniqueOnAllocator(Mutable<BaseAllocator> allocator, Forwarding<TArguments>... arguments) noexcept;
+    [[nodiscard]]  UniquePtr<TType> MakeUniqueOnAllocator(Mutable<Memory::BaseAllocator> allocator, Forwarding<TArguments>... arguments) noexcept;
     
     /// \brief Allocate a new object on the active allocator.
     template <typename TType, typename... TArguments>
@@ -218,13 +218,13 @@ namespace Syntropy::Memory
 
     /// \brief Allocate a new object on the given allocator.
     template <typename TType, typename...TArguments>
-    [[nodiscard]]  RWUniquePtr<TType> MakeRWUniqueOnAllocator(Mutable<BaseAllocator> allocator, Forwarding<TArguments>... arguments) noexcept;
+    [[nodiscard]]  RWUniquePtr<TType> MakeRWUniqueOnAllocator(Mutable<Memory::BaseAllocator> allocator, Forwarding<TArguments>... arguments) noexcept;
 
 }
 
 // ===========================================================================
 
-namespace Syntropy::Memory
+namespace Syntropy
 {
     /************************************************************************/
     /* IMPLEMENTATION                                                       */
@@ -256,7 +256,7 @@ namespace Syntropy::Memory
 
     template <typename TType, typename TTraits>
     template <typename UType>
-    inline BaseUniquePtr<TType, TTraits>::BaseUniquePtr(Immutable<RWPtr<UType>> pointee, Immutable<Bytes> size, Mutable<BaseAllocator> allocator) noexcept
+    inline BaseUniquePtr<TType, TTraits>::BaseUniquePtr(Immutable<RWPtr<UType>> pointee, Immutable<Memory::Bytes> size, Mutable<Memory::BaseAllocator> allocator) noexcept
          : pointee_(pointee)
          , size_(size)
          , allocator_(PtrOf(allocator))
@@ -328,9 +328,9 @@ namespace Syntropy::Memory
 
             pointee_->~TType();
 
-            auto block = MakeByteSpan(ToBytePtr(pointee_), size_);
+            auto block = MakeByteSpan(Memory::ToBytePtr(pointee_), size_);
 
-            allocator_->Deallocate(block, AlignmentOf<TType>());
+            allocator_->Deallocate(block, Memory::AlignmentOf<TType>());
 
             pointee_ = nullptr;
             size_ = 0_Bytes;
@@ -359,13 +359,13 @@ namespace Syntropy::Memory
     }
 
     template <typename TType, typename TTraits>
-    [[nodiscard]]  inline Bytes BaseUniquePtr<TType, TTraits>::GetSize() const noexcept
+    [[nodiscard]]  inline Memory::Bytes BaseUniquePtr<TType, TTraits>::GetSize() const noexcept
     {
         return size_;
     }
 
     template <typename TType, typename TTraits>
-    [[nodiscard]]  inline Mutable<BaseAllocator> BaseUniquePtr<TType, TTraits>::GetAllocator() const noexcept
+    [[nodiscard]]  inline Mutable<Memory::BaseAllocator> BaseUniquePtr<TType, TTraits>::GetAllocator() const noexcept
     {
         SYNTROPY_ASSERT(allocator_);
 
@@ -424,7 +424,7 @@ namespace Syntropy::Memory
             auto size = rhs.GetSize();
             auto pointee = rhs.Release();
 
-            return { Syntropy::ToReadOnly(pointee), size, *allocator };
+            return { ToReadOnly(pointee), size, *allocator };
         }
 
         return {};
@@ -445,7 +445,7 @@ namespace Syntropy::Memory
             auto size = rhs.GetSize();
             auto pointee = rhs.Release();
 
-            return { Syntropy::ToReadWrite(pointee), size, *allocator };
+            return { ToReadWrite(pointee), size, *allocator };
         }
 
         return {};
@@ -462,27 +462,27 @@ namespace Syntropy::Memory
     template <typename TType, typename... TArguments>
     [[nodiscard]] inline UniquePtr<TType> MakeUnique(Forwarding<TArguments>... arguments) noexcept
     {
-        return MakeUniqueOnAllocator<TType>(GetAllocator(), Forward<TArguments>(arguments)...);
+        return MakeUniqueOnAllocator<TType>(Memory::GetAllocator(), Forward<TArguments>(arguments)...);
     }
 
     template <typename TType, typename...TArguments>
-    [[nodiscard]] inline UniquePtr<TType> MakeUniqueOnAllocator(Mutable<BaseAllocator> allocator, Forwarding<TArguments>... arguments) noexcept
+    [[nodiscard]] inline UniquePtr<TType> MakeUniqueOnAllocator(Mutable<Memory::BaseAllocator> allocator, Forwarding<TArguments>... arguments) noexcept
     {
-        auto block = allocator.Allocate(SizeOf<TType>(), AlignmentOf<TType>());
+        auto block = allocator.Allocate(Memory::SizeOf<TType>(), Memory::AlignmentOf<TType>());
 
         auto pointee = new (Data(block)) TType(Forward<TArguments>(arguments)...);
 
-        return { pointee, SizeOf<TType>(), allocator };
+        return { pointee, Memory::SizeOf<TType>(), allocator };
     }
 
     template <typename TType, typename... TArguments>
     [[nodiscard]] inline RWUniquePtr<TType> MakeRWUnique(Forwarding<TArguments>... arguments) noexcept
     {
-        return ToReadWrite(MakeUniqueOnAllocator<TType>(GetAllocator(), Forward<TArguments>(arguments)...));
+        return ToReadWrite(MakeUniqueOnAllocator<TType>(Memory::GetAllocator(), Forward<TArguments>(arguments)...));
     }
 
     template <typename TType, typename...TArguments>
-    [[nodiscard]] inline RWUniquePtr<TType> MakeRWUniqueOnAllocator(Mutable<BaseAllocator> allocator, Forwarding<TArguments>... arguments) noexcept
+    [[nodiscard]] inline RWUniquePtr<TType> MakeRWUniqueOnAllocator(Mutable<Memory::BaseAllocator> allocator, Forwarding<TArguments>... arguments) noexcept
     {
         return ToReadWrite(MakeUniqueOnAllocator<TType>(allocator, Forward<TArguments>(arguments)...));
     }

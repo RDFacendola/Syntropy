@@ -47,9 +47,9 @@
     <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
     <ClInclude Include="include\syntropy\allocators\allocator.h" />
     <ClInclude Include="include\syntropy\allocators\system_allocator.h" />
-    <ClInclude Include="include\syntropy\memory\unique_ptr.h" />
     <ClInclude Include="include\syntropy\core\support\event.h" />
     <ClInclude Include="include\syntropy\core\support\details\event_details.h" />
+    <ClInclude Include="include\syntropy\core\foundation\unique_ptr.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />
