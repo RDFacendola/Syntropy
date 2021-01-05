@@ -40,8 +40,6 @@
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
     <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
-    <ClInclude Include="include\syntropy\allocators\allocator.h" />
-    <ClInclude Include="include\syntropy\allocators\system_allocator.h" />
     <ClInclude Include="include\syntropy\core\support\event.h" />
     <ClInclude Include="include\syntropy\core\support\details\event_details.h" />
     <ClInclude Include="include\syntropy\core\foundation\unique_ptr.h" />
@@ -50,6 +48,8 @@
     <ClInclude Include="include\syntropy\memory\foundation\byte.h" />
     <ClInclude Include="include\syntropy\memory\foundation\byte_span.h" />
     <ClInclude Include="include\syntropy\memory\foundation\size.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\allocator.h" />
+    <ClInclude Include="include\syntropy\memory\allocators\system_allocator.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />

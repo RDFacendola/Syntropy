@@ -38,8 +38,8 @@
 #include "syntropy/memory/foundation/alignment.h"
 #include "syntropy/memory/foundation/byte_span.h"
 
-#include "syntropy/allocators/allocator.h"
-#include "syntropy/allocators/system_allocator.h"
+#include "syntropy/memory/allocators/allocator.h"
+#include "syntropy/memory/allocators/system_allocator.h"
 
 #include "syntropy/diagnostics/debugger.h"
 #include "syntropy/diagnostics/assert.h"

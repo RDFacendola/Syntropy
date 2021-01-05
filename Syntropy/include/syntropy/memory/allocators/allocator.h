@@ -12,8 +12,7 @@
 #include "syntropy/memory/foundation/byte_span.h"
 #include "syntropy/memory/foundation/size.h"
 #include "syntropy/memory/foundation/alignment.h"
-
-#include "syntropy/allocators/system_allocator.h"
+#include "syntropy/memory/allocators/system_allocator.h"
 
 // ===========================================================================
 

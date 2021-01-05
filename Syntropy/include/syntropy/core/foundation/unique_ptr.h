@@ -13,7 +13,7 @@
 
 #include "syntropy/diagnostics/assert.h"
 
-#include "syntropy/allocators/allocator.h"
+#include "syntropy/memory/allocators/allocator.h"
 
 // ===========================================================================
 
