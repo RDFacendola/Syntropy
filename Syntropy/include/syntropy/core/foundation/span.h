@@ -110,7 +110,7 @@ namespace Syntropy::Ranges
         using TPointer = RWPtr<TType>;
 
         /// \brief Reference type.
-        using TReference = Immutable <TType>;
+        using TReference = Mutable<TType>;
     };
 
     /// \brief Represents a span of read-write elements.
