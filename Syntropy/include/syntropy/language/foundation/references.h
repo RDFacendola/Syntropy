@@ -52,6 +52,13 @@ namespace Syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
+    // Copy.
+    // =====
+
+    /// \brief Perform a copy of an instance by means of copy constructor.
+    template <typename TType>
+    constexpr TType Copy(Immutable<TType> rhs) noexcept;
+
     // Move.
     // =====
 
@@ -104,6 +111,14 @@ namespace Syntropy
 
     // Non-member functions.
     // =====================
+
+    // Copy.
+
+    template <typename TType>
+    constexpr TType Copy(Immutable<TType> rhs) noexcept
+    {
+        return rhs;
+    }
 
     // Move.
 

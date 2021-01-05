@@ -50,6 +50,9 @@ namespace Syntropy::Details
 
     private:
 
+        /// \brief Clone this instance, linking it to the same listener chain.
+        virtual Memory::UniquePtr<EventHandler> CloneListener() noexcept;
+
         /// \brief Next event.
         Memory::UniquePtr<EventHandler> next_event_;
 
@@ -92,6 +95,11 @@ namespace Syntropy::Details
 
     private:
 
+        virtual Memory::UniquePtr<EventHandler> CloneListener() noexcept override;
+
+        /// \brief Clone this instance.
+        virtual Memory::UniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept;
+
         /// \brief Notify the delegate.
         virtual void Notify(Immutable<TArguments>... arguments) const noexcept;
 
@@ -115,7 +123,8 @@ namespace Syntropy::Details
     public:
 
         /// \brief Create a new delegate bound to a functor.
-        ListenerHandlerDelegate(Forwarding<TDelegate> delegate);
+        template <typename UDelegate>
+        ListenerHandlerDelegate(Forwarding<UDelegate> delegate);
 
         /// \brief No copy-constructor.
         ListenerHandlerDelegate(Immutable<ListenerHandlerDelegate> rhs) noexcept = delete;
@@ -133,6 +142,8 @@ namespace Syntropy::Details
         Mutable<ListenerHandlerDelegate> operator=(Movable<ListenerHandlerDelegate> rhs) noexcept = delete;
 
     private:
+
+        virtual Memory::UniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept override;
 
         virtual void Notify(Immutable<TArguments>... arguments) const noexcept override;
 
@@ -274,10 +285,13 @@ namespace Syntropy::Details
     {
         if (previous_event_)
         {
-            auto unique_this = Move(previous_event_->next_event_);
-
-            // previous_event_->next_event_ = nullptr;         // Destructor will make this pointing to the next event (if any).
+            auto unique_this = Move(previous_event_->next_event_);      // Acquire ownership of self from the previous event and self-destroy when leaving this scope.
         }
+    }
+
+    inline Memory::UniquePtr<EventHandler> EventHandler::CloneListener() noexcept
+    {
+        return {};
     }
 
     // ListenerHandler.
@@ -300,7 +314,28 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    void ListenerHandler<TArguments...>::Notify(Immutable<TArguments>... arguments) const noexcept
+    Memory::UniquePtr<EventHandler> ListenerHandler<TArguments...>::CloneListener() noexcept
+    {
+        auto clone = Clone();
+
+        // Duplicate the listener inside the event.
+
+        clone->previous_listener_ = this;
+        clone->next_listener_ = Move(next_listener_);
+
+        next_listener_ = clone.Get();
+
+        return clone;
+    }
+
+    template <typename... TArguments>
+    inline Memory::UniquePtr<ListenerHandler<TArguments...>> ListenerHandler<TArguments...>::Clone() const noexcept
+    {
+        return {};
+    }
+
+    template <typename... TArguments>
+    inline void ListenerHandler<TArguments...>::Notify(Immutable<TArguments>... arguments) const noexcept
     {
         // Base implementation: do nothing.
     }
@@ -309,10 +344,17 @@ namespace Syntropy::Details
     // ========================
 
     template <typename TDelegate, typename... TArguments>
-    inline ListenerHandlerDelegate<TDelegate, TArguments...>::ListenerHandlerDelegate(Forwarding<TDelegate> delegate)
-        : delegate_(Forward<TDelegate>(delegate))
+    template <typename UDelegate>
+    inline ListenerHandlerDelegate<TDelegate, TArguments...>::ListenerHandlerDelegate(Forwarding<UDelegate> delegate)
+        : delegate_(Forward<UDelegate>(delegate))
     {
 
+    }
+
+    template <typename TDelegate, typename... TArguments>
+    inline Memory::UniquePtr<ListenerHandler<TArguments...>> ListenerHandlerDelegate<TDelegate, TArguments...>::Clone() const noexcept
+    {
+        return Memory::MakeUnique<ListenerHandlerDelegate<TDelegate, TArguments...>>(delegate_);
     }
 
     template <typename TDelegate, typename... TArguments>
@@ -331,7 +373,13 @@ namespace Syntropy::Details
 
     inline EventChain::EventChain(Immutable<EventChain> rhs) noexcept
     {
-        // #TODO Duplicate rhs chain.
+        auto previous_event = &events_;
+
+        for (auto event = rhs.events_.next_event_.Get(); event; event = event->next_event_.Get())
+        {
+            previous_event->next_event_ = event->CloneListener();
+            previous_event = previous_event->next_event_.Get();
+        }
     }
 
     inline EventChain::EventChain(Movable<EventChain> rhs) noexcept
@@ -348,7 +396,9 @@ namespace Syntropy::Details
     {
         if (PtrOf(rhs) != this)
         {
-            // #TODO Duplicate rhs chain and wipe lhs chain.
+            auto clone = Copy(rhs);
+
+            Link(events_, Link(clone.events_, nullptr));
         }
 
         return *this;

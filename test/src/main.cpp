@@ -46,16 +46,6 @@
 
 #include "syntropy/core/support/event.h"
 
-struct Foo
-{
-    Syntropy::Event<int> int_event_;
-};
-
-struct Bar
-{
-    Syntropy::Listener listener_;
-};
-
 class DebugAllocator : public Syntropy::Memory::SystemAllocator
 {
 public:
@@ -65,6 +55,8 @@ public:
     {
         std::cout << "Allocating " << Syntropy::ToInt(size) << " bytes\n";
 
+        allocated_ += size;
+
         return SystemAllocator::Allocate(size, alignment);
     }
 
@@ -72,8 +64,18 @@ public:
     {
         SystemAllocator::Deallocate(block, alignment);
 
+        deallocated_ += Count(block);
+
         std::cout << "Deallocating " << Syntropy::ToInt(Count(block)) << " bytes\n";
     }
+
+    ~DebugAllocator()
+    {
+        SYNTROPY_ASSERT(allocated_ == deallocated_);        // Leak!
+    }
+
+    Syntropy::Memory::Bytes allocated_;
+    Syntropy::Memory::Bytes deallocated_;
 
 };
 
@@ -85,7 +87,29 @@ int main(int argc, char **argv)
 
     Syntropy::Memory::SetAllocator(dbga);
 
+    {
+        auto event = Syntropy::Event<int>{};
 
+        auto listener = Syntropy::Listener{};
+
+        listener += event.Subscribe([](int x)
+        {
+            std::cout << "received " << x << "\n";
+        });
+
+        {
+            auto listener_copy_constructed = listener;
+
+            auto listener_copy_assigned = Syntropy::Listener{};
+
+            listener_copy_assigned = listener_copy_constructed;
+
+            event.Notify(1000);
+        }
+
+        event.Notify(2000);
+
+    }
 
     system("pause");
 
