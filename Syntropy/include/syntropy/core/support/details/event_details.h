@@ -51,7 +51,7 @@ namespace Syntropy::Details
     private:
 
         /// \brief Clone this instance, linking it to the same listener chain.
-        virtual Memory::UniquePtr<EventHandler> CloneListener() noexcept;
+        [[nodiscard]] virtual Memory::UniquePtr<EventHandler> CloneListener() noexcept;
 
         /// \brief Next event.
         Memory::UniquePtr<EventHandler> next_event_;
@@ -95,10 +95,10 @@ namespace Syntropy::Details
 
     private:
 
-        virtual Memory::UniquePtr<EventHandler> CloneListener() noexcept override;
+        [[nodiscard]] virtual Memory::UniquePtr<EventHandler> CloneListener() noexcept override;
 
         /// \brief Clone this instance.
-        virtual Memory::UniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept;
+        [[nodiscard]] virtual Memory::UniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept;
 
         /// \brief Notify the delegate.
         virtual void Notify(Immutable<TArguments>... arguments) const noexcept;
@@ -143,7 +143,7 @@ namespace Syntropy::Details
 
     private:
 
-        virtual Memory::UniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept override;
+        [[nodiscard]] virtual Memory::UniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept override;
 
         virtual void Notify(Immutable<TArguments>... arguments) const noexcept override;
 
@@ -193,7 +193,7 @@ namespace Syntropy::Details
         static Memory::UniquePtr<EventHandler> Link(Mutable<EventHandler> lhs, Memory::UniquePtr<EventHandler> rhs) noexcept;
 
         /// \brief Access the last event accessible from lhs.
-        static Mutable<EventHandler> GetTail(Mutable<EventHandler> lhs) noexcept;
+        [[nodiscard]] static Mutable<EventHandler> GetTail(Mutable<EventHandler> lhs) noexcept;
 
         /// \brief Dummy event linked to each event a listener is subscribed to.
         EventHandler events_;
@@ -234,7 +234,7 @@ namespace Syntropy::Details
 
         /// \brief Emplace a new listener to the chain and return the event chain associated to it.
         template <typename TDelegate>
-        EventChain Emplace(Forwarding<TDelegate> delegate) noexcept;
+        [[nodiscard]] EventChain Emplace(Forwarding<TDelegate> delegate) noexcept;
 
     private:
 
@@ -243,7 +243,7 @@ namespace Syntropy::Details
         static RWPtr<ListenerHandler<TArguments...>> Link(Mutable<ListenerHandler<TArguments...>> lhs, RWPtr<ListenerHandler<TArguments...>> rhs) noexcept;
 
         /// \brief Access the last listener accessible from lhs.
-        static Mutable<ListenerHandler<TArguments...>> GetTail(Mutable<ListenerHandler<TArguments...>> lhs) noexcept;
+        [[nodiscard]] static Mutable<ListenerHandler<TArguments...>> GetTail(Mutable<ListenerHandler<TArguments...>> lhs) noexcept;
 
         /// \brief Destroy all listeners accessible from lhs.
         static void Destroy(RWPtr<ListenerHandler<TArguments...>> lhs) noexcept;
@@ -314,7 +314,7 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    Memory::UniquePtr<EventHandler> ListenerHandler<TArguments...>::CloneListener() noexcept
+    [[nodiscard]] Memory::UniquePtr<EventHandler> ListenerHandler<TArguments...>::CloneListener() noexcept
     {
         auto clone = Clone();
 
@@ -329,7 +329,7 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    inline Memory::UniquePtr<ListenerHandler<TArguments...>> ListenerHandler<TArguments...>::Clone() const noexcept
+    [[nodiscard]] inline Memory::UniquePtr<ListenerHandler<TArguments...>> ListenerHandler<TArguments...>::Clone() const noexcept
     {
         return {};
     }
@@ -352,7 +352,7 @@ namespace Syntropy::Details
     }
 
     template <typename TDelegate, typename... TArguments>
-    inline Memory::UniquePtr<ListenerHandler<TArguments...>> ListenerHandlerDelegate<TDelegate, TArguments...>::Clone() const noexcept
+    [[nodiscard]] inline Memory::UniquePtr<ListenerHandler<TArguments...>> ListenerHandlerDelegate<TDelegate, TArguments...>::Clone() const noexcept
     {
         return Memory::MakeUnique<ListenerHandlerDelegate<TDelegate, TArguments...>>(delegate_);
     }
@@ -448,7 +448,7 @@ namespace Syntropy::Details
         return unlinked;
     }
 
-    inline Mutable<EventHandler> EventChain::GetTail(Mutable<EventHandler> lhs) noexcept
+    [[nodiscard]] inline Mutable<EventHandler> EventChain::GetTail(Mutable<EventHandler> lhs) noexcept
     {
         auto tail = PtrOf(lhs);
 
@@ -510,7 +510,7 @@ namespace Syntropy::Details
 
     template <typename... TArguments>
     template <typename TDelegate>
-    inline EventChain ListenerChain<TArguments...>::Emplace(Forwarding<TDelegate> delegate) noexcept
+    [[nodiscard]] inline EventChain ListenerChain<TArguments...>::Emplace(Forwarding<TDelegate> delegate) noexcept
     {
         auto listener = Memory::MakeUnique<ListenerHandlerDelegate<TDelegate, TArguments...>>(Forward<TDelegate>(delegate));
 
@@ -548,7 +548,7 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    inline Mutable<ListenerHandler<TArguments...>> ListenerChain<TArguments...>::GetTail(Mutable<ListenerHandler<TArguments...>> lhs) noexcept
+    [[nodiscard]] inline Mutable<ListenerHandler<TArguments...>> ListenerChain<TArguments...>::GetTail(Mutable<ListenerHandler<TArguments...>> lhs) noexcept
     {
         auto tail = PtrOf(lhs);
 
