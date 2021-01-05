@@ -32,11 +32,11 @@
 #include "syntropy/core/foundation/span.h"
 #include "syntropy/core/foundation/unique_ptr.h"
 
-#include "syntropy/memory/byte.h"
-#include "syntropy/memory/address.h"
-#include "syntropy/memory/size.h"
-#include "syntropy/memory/alignment.h"
-#include "syntropy/memory/byte_span.h"
+#include "syntropy/memory/foundation/byte.h"
+#include "syntropy/memory/foundation/address.h"
+#include "syntropy/memory/foundation/size.h"
+#include "syntropy/memory/foundation/alignment.h"
+#include "syntropy/memory/foundation/byte_span.h"
 
 #include "syntropy/allocators/allocator.h"
 #include "syntropy/allocators/system_allocator.h"

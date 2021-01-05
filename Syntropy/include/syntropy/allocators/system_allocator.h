@@ -8,9 +8,9 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/memory/size.h"
-#include "syntropy/memory/alignment.h"
-#include "syntropy/memory/byte_span.h"
+#include "syntropy/memory/foundation/size.h"
+#include "syntropy/memory/foundation/alignment.h"
+#include "syntropy/memory/foundation/byte_span.h"
 
 // ===========================================================================
 

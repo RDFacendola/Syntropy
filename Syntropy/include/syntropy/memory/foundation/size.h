@@ -11,7 +11,7 @@
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/support/compare.h"
 
-#include "syntropy/memory/byte.h"
+#include "syntropy/memory/foundation/byte.h"
 
 // ===========================================================================
 

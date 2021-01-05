@@ -34,14 +34,9 @@
     <ClInclude Include="include\syntropy\language\templates\invoke.h" />
     <ClInclude Include="include\syntropy\language\templates\details\invoke_details.h" />
     <ClInclude Include="include\syntropy\math\math.h" />
-    <ClInclude Include="include\syntropy\memory\byte.h" />
-    <ClInclude Include="include\syntropy\memory\address.h" />
-    <ClInclude Include="include\syntropy\memory\alignment.h" />
-    <ClInclude Include="include\syntropy\memory\byte_span.h" />
     <ClInclude Include="include\syntropy\core\concepts\range.h" />
     <ClInclude Include="include\syntropy\core\concepts\ntuple.h" />
     <ClInclude Include="include\syntropy\core\concepts\details\ntuple_details.h" />
-    <ClInclude Include="include\syntropy\memory\size.h" />
     <ClInclude Include="include\syntropy\diagnostics\assert.h" />
     <ClInclude Include="include\syntropy\diagnostics\debugger.h" />
     <ClInclude Include="src\syntropy\hal\hal_debugger.h" />
@@ -50,6 +45,11 @@
     <ClInclude Include="include\syntropy\core\support\event.h" />
     <ClInclude Include="include\syntropy\core\support\details\event_details.h" />
     <ClInclude Include="include\syntropy\core\foundation\unique_ptr.h" />
+    <ClInclude Include="include\syntropy\memory\foundation\address.h" />
+    <ClInclude Include="include\syntropy\memory\foundation\alignment.h" />
+    <ClInclude Include="include\syntropy\memory\foundation\byte.h" />
+    <ClInclude Include="include\syntropy\memory\foundation\byte_span.h" />
+    <ClInclude Include="include\syntropy\memory\foundation\size.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />

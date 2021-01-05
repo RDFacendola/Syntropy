@@ -5,10 +5,10 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/memory/bytes.h"
+#include "syntropy/memory/foundation/bytes.h"
 
 
-#include "syntropy/memory/byte.h"
+#include "syntropy/memory/foundation/byte.h"
 #include "syntropy/unit_test/unit_test.h"
 
 namespace Syntropy::Memory::UnitTest

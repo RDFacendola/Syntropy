@@ -14,9 +14,9 @@
 
 #include "syntropy/math/math.h"
 
-#include "syntropy/memory/size.h"
-#include "syntropy/memory/alignment.h"
-#include "syntropy/memory/byte.h"
+#include "syntropy/memory/foundation/size.h"
+#include "syntropy/memory/foundation/alignment.h"
+#include "syntropy/memory/foundation/byte.h"
 
 // ===========================================================================
 

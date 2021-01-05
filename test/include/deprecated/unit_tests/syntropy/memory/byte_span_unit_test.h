@@ -7,10 +7,10 @@
 #include "syntropy/serialization/serialization_types.h"
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/core/containers/fix_array.h"
-#include "syntropy/memory/byte.h"
-#include "syntropy/memory/byte_span.h"
-#include "syntropy/memory/bytes.h"
-#include "syntropy/memory/alignment.h"
+#include "syntropy/memory/foundation/byte.h"
+#include "syntropy/memory/foundation/byte_span.h"
+#include "syntropy/memory/foundation/bytes.h"
+#include "syntropy/memory/foundation/alignment.h"
 #include "syntropy/unit_test/unit_test.h"
 
 #include <iostream>
