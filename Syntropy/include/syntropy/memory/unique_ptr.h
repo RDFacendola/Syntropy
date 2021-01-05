@@ -33,23 +33,24 @@ namespace Syntropy::Memory
 
     public:
 
+        /// \brief Acquire an object's ownership.
+        /// \remarks Accessing the object instance through the provided pointer after this call results in undefined behavior.
+        /// \remarks The caller is responsible to fill in the allocation size and allocator, otherwise the behavior of this method is undefined.
+        template <typename UType>
+        UniquePtr(RWPtr<UType> pointee, Bytes size, Mutable<BaseAllocator> allocator) noexcept;
+
         /// \brief Create an empty pointer.
         UniquePtr() = default;
 
         /// \brief Create an empty pointer.
         UniquePtr(Null rhs);
 
-        /// \brief Unique pointer cannot be copy-constructed.
+        /// \brief No copy-constructor: ownership of the pointee is exclusive.
         UniquePtr(Immutable<UniquePtr> rhs) noexcept = delete;
 
         /// \brief Move constructor.
         template <typename UType>
         UniquePtr(Movable<UniquePtr<UType>> rhs) noexcept;
-
-        /// \brief Create an unique pointer to an existing object.
-        /// \remarks Accessing the object instance through the provided pointer after this call results in undefined behavior.
-        template <typename UType>
-        UniquePtr(RWPtr<UType> pointee, Mutable<BaseAllocator> allocator) noexcept;
 
         /// \brief Destroy the underlying object.
         ~UniquePtr() noexcept;
@@ -61,20 +62,6 @@ namespace Syntropy::Memory
         /// \brief Destroy the pointed object and reset the pointer.
         Mutable<UniquePtr> operator=(Null rhs) noexcept;
 
-        /// \brief Reset the pointer, destroying the pointee object (if valid).
-        void Reset() noexcept;
-
-        /// \brief Release the pointed object and reset the pointer.
-        /// \remarks The caller is responsible for deleting the pointee.
-        [[nodiscard]] RWPtr<TType> Release() noexcept;
-
-        /// \brief Access the pointed object.
-        [[nodiscard]] RWPtr<TType> Get() const noexcept;
-
-        /// \brief Get the allocator the pointed object was allocated by.
-        /// \remarks If the pointed object is null, accessing the returned value results in undefined behavior.
-        [[nodiscard]] Mutable<BaseAllocator> GetAllocator() const noexcept;
-
         /// \brief Check whether the pointed object is non-null.
         [[nodiscard]] explicit operator Bool() const noexcept;
 
@@ -85,10 +72,29 @@ namespace Syntropy::Memory
         /// \brief Access the pointed object.
         [[nodiscard]] RWPtr<TType> operator->() const noexcept;
 
+        /// \brief Reset the pointer, destroying the pointee object (if valid).
+        void Reset() noexcept;
+
+        /// \brief Transfer the ownership of the pointee to the caller.
+        [[nodiscard]] RWPtr<TType> Release() noexcept;
+
+        /// \brief Access the pointed object.
+        [[nodiscard]] RWPtr<TType> Get() const noexcept;
+
+        /// \brief Get the size of the pointed object, in Bytes.
+        [[nodiscard]] Bytes GetSize() const noexcept;
+
+        /// \brief Get the allocator the pointed object was allocated on.
+        /// \remarks If the pointed object is null, accessing the returned value results in undefined behavior.
+        [[nodiscard]] Mutable<BaseAllocator> GetAllocator() const noexcept;
+
     private:
 
         /// \brief Pointed object.
         RWPtr<TType> pointee_{ nullptr };
+
+        /// \brief Size of the pointed object.
+        Bytes size_;
 
         /// \brief Allocator the pointee was allocated by. Null for empty pointers.
         RWPtr<BaseAllocator> allocator_{ nullptr };
@@ -161,16 +167,21 @@ namespace Syntropy::Memory
     template <typename UType>
     inline UniquePtr<TType>::UniquePtr(Movable<UniquePtr<UType>> rhs) noexcept
         : pointee_(rhs.pointee_)
+        , size_(rhs.size_)
         , allocator_(rhs.allocator_)
     {
+        using namespace Syntropy::Memory::Literals;
+
         rhs.pointee_ = nullptr;
+        rhs.size_ = 0_Bytes;
         rhs.allocator_ = nullptr;
     }
 
     template <typename TType>
     template <typename UType>
-    inline  UniquePtr<TType>::UniquePtr(RWPtr<UType> pointee, Mutable<BaseAllocator> allocator) noexcept
+    inline  UniquePtr<TType>::UniquePtr(RWPtr<UType> pointee, Bytes size, Mutable<BaseAllocator> allocator) noexcept
         : pointee_(pointee)
+        , size_(size)
         , allocator_(PtrOf(allocator))
     {
 
@@ -186,12 +197,16 @@ namespace Syntropy::Memory
     template <typename UType>
     inline Mutable<UniquePtr<TType>> UniquePtr<TType>::operator=(Movable<UniquePtr<UType>> rhs) noexcept
     {
+        using namespace Syntropy::Memory::Literals;
+
         Reset();
 
         pointee_ = rhs.pointee_;
+        size_ = rhs.size_;
         allocator_ = rhs.allocator_;
 
         rhs.pointee_ = nullptr;
+        rhs.size_ = 0_Bytes;
         rhs.allocator_ = nullptr;
 
         return *this;
@@ -206,56 +221,13 @@ namespace Syntropy::Memory
     }
 
     template <typename TType>
-    void UniquePtr<TType>::Reset() noexcept
-    {
-        if (pointee_)
-        {
-            SYNTROPY_ASSERT(allocator_);
-
-            pointee_->~TType();
-
-            auto block = BytesOf(*pointee_);
-
-            allocator_->Deallocate(block, AlignmentOf<TType>());
-
-            pointee_ = nullptr;
-            allocator_ = nullptr;
-        }
-    }
-
-    template <typename TType>
-    inline RWPtr<TType> UniquePtr<TType>::Release() noexcept
-    {
-        auto pointee = pointee_;
-
-        pointee_ = nullptr;
-        allocator_ = nullptr;
-
-        return pointee_;
-    }
-
-    template <typename TType>
-    inline RWPtr<TType> UniquePtr<TType>::Get() const noexcept
-    {
-        return pointee_;
-    }
-
-    template <typename TType>
-    inline Mutable<BaseAllocator> UniquePtr<TType>::GetAllocator() const noexcept
-    {
-        SYNTROPY_ASSERT(allocator_);
-
-        return *allocator_;
-    }
-
-    template <typename TType>
-    inline UniquePtr<TType>::operator Bool() const noexcept
+    [[nodiscard]] inline UniquePtr<TType>::operator Bool() const noexcept
     {
         return !!pointee_;
     }
 
     template <typename TType>
-    inline Mutable<TType> UniquePtr<TType>::operator*() const noexcept
+    [[nodiscard]] inline Mutable<TType> UniquePtr<TType>::operator*() const noexcept
     {
         SYNTROPY_ASSERT(pointee_);
 
@@ -263,9 +235,64 @@ namespace Syntropy::Memory
     }
 
     template <typename TType>
-    inline RWPtr<TType> UniquePtr<TType>::operator->() const noexcept
+    [[nodiscard]] inline RWPtr<TType> UniquePtr<TType>::operator->() const noexcept
     {
         return pointee_;
+    }
+
+    template <typename TType>
+    void UniquePtr<TType>::Reset() noexcept
+    {
+        using namespace Syntropy::Memory::Literals;
+
+        if (pointee_)
+        {
+            SYNTROPY_ASSERT(allocator_);
+
+            pointee_->~TType();
+
+            auto block = MakeByteSpan(ToBytePtr(pointee_), size_);
+
+            allocator_->Deallocate(block, AlignmentOf<TType>());
+
+            pointee_ = nullptr;
+            size_ = 0_Bytes;
+            allocator_ = nullptr;
+        }
+    }
+
+    template <typename TType>
+    [[nodiscard]] inline RWPtr<TType> UniquePtr<TType>::Release() noexcept
+    {
+        using namespace Syntropy::Memory::Literals;
+
+        auto pointee = pointee_;
+
+        pointee_ = nullptr;
+        size_ = 0_Bytes;
+        allocator_ = nullptr;
+
+        return pointee_;
+    }
+
+    template <typename TType>
+    [[nodiscard]]  inline RWPtr<TType> UniquePtr<TType>::Get() const noexcept
+    {
+        return pointee_;
+    }
+
+    template <typename TType>
+    [[nodiscard]]  inline Bytes UniquePtr<TType>::GetSize() const noexcept
+    {
+        return size_;
+    }
+
+    template <typename TType>
+    [[nodiscard]]  inline Mutable<BaseAllocator> UniquePtr<TType>::GetAllocator() const noexcept
+    {
+        SYNTROPY_ASSERT(allocator_);
+
+        return *allocator_;
     }
 
     // Non-member functions.
@@ -324,11 +351,9 @@ namespace Syntropy::Memory
     {
         auto block = allocator.Allocate(SizeOf<TType>(), AlignmentOf<TType>());
 
-        SYNTROPY_ASSERT(Count(block) == SizeOf<TType>());
-
         auto pointee = new (Data(block)) TType(Forward<TArguments>(arguments)...);
 
-        return { pointee, allocator };
+        return { pointee, SizeOf<TType>(), allocator };
     }
 
 }
