@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "syntropy/memory/unique_ptr.h"
-
 #include "syntropy/core/support/details/event_details.h"
 
 // ===========================================================================

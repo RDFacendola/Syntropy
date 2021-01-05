@@ -108,7 +108,6 @@ int main(int argc, char **argv)
         }
 
         event.Notify(2000);
-
     }
 
     system("pause");

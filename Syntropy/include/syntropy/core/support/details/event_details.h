@@ -51,10 +51,10 @@ namespace Syntropy::Details
     private:
 
         /// \brief Clone this instance, linking it to the same listener chain.
-        [[nodiscard]] virtual Memory::UniquePtr<EventHandler> CloneListener() noexcept;
+        [[nodiscard]] virtual Memory::RWUniquePtr<EventHandler> CloneListener() noexcept;
 
         /// \brief Next event.
-        Memory::UniquePtr<EventHandler> next_event_;
+        Memory::RWUniquePtr<EventHandler> next_event_;
 
         /// \brief Previous event.
         RWPtr<EventHandler> previous_event_{ nullptr };
@@ -95,10 +95,10 @@ namespace Syntropy::Details
 
     private:
 
-        [[nodiscard]] virtual Memory::UniquePtr<EventHandler> CloneListener() noexcept override;
+        [[nodiscard]] virtual Memory::RWUniquePtr<EventHandler> CloneListener() noexcept override;
 
         /// \brief Clone this instance.
-        [[nodiscard]] virtual Memory::UniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept;
+        [[nodiscard]] virtual Memory::RWUniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept;
 
         /// \brief Notify the delegate.
         virtual void Notify(Immutable<TArguments>... arguments) const noexcept;
@@ -143,7 +143,7 @@ namespace Syntropy::Details
 
     private:
 
-        [[nodiscard]] virtual Memory::UniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept override;
+        [[nodiscard]] virtual Memory::RWUniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept override;
 
         virtual void Notify(Immutable<TArguments>... arguments) const noexcept override;
 
@@ -166,7 +166,7 @@ namespace Syntropy::Details
         EventChain() noexcept = default;
 
         /// \brief Create a new event chain with a single event.
-        EventChain(Memory::UniquePtr<EventHandler> event) noexcept;
+        EventChain(Memory::RWUniquePtr<EventHandler> event) noexcept;
 
         /// \brief Copy-constructor.
         EventChain(Immutable<EventChain> rhs) noexcept;
@@ -190,7 +190,7 @@ namespace Syntropy::Details
 
         /// \brief Link two event chains together and return the event chain that was unlinked as a result.
         /// The behavior of this method is undefined if rhs is linked to an existing event chain.
-        static Memory::UniquePtr<EventHandler> Link(Mutable<EventHandler> lhs, Memory::UniquePtr<EventHandler> rhs) noexcept;
+        static Memory::RWUniquePtr<EventHandler> Link(Mutable<EventHandler> lhs, Memory::RWUniquePtr<EventHandler> rhs) noexcept;
 
         /// \brief Access the last event accessible from lhs.
         [[nodiscard]] static Mutable<EventHandler> GetTail(Mutable<EventHandler> lhs) noexcept;
@@ -289,7 +289,7 @@ namespace Syntropy::Details
         }
     }
 
-    inline Memory::UniquePtr<EventHandler> EventHandler::CloneListener() noexcept
+    inline Memory::RWUniquePtr<EventHandler> EventHandler::CloneListener() noexcept
     {
         return {};
     }
@@ -314,7 +314,7 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    [[nodiscard]] Memory::UniquePtr<EventHandler> ListenerHandler<TArguments...>::CloneListener() noexcept
+    [[nodiscard]] Memory::RWUniquePtr<EventHandler> ListenerHandler<TArguments...>::CloneListener() noexcept
     {
         auto clone = Clone();
 
@@ -329,7 +329,7 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    [[nodiscard]] inline Memory::UniquePtr<ListenerHandler<TArguments...>> ListenerHandler<TArguments...>::Clone() const noexcept
+    [[nodiscard]] inline Memory::RWUniquePtr<ListenerHandler<TArguments...>> ListenerHandler<TArguments...>::Clone() const noexcept
     {
         return {};
     }
@@ -352,9 +352,9 @@ namespace Syntropy::Details
     }
 
     template <typename TDelegate, typename... TArguments>
-    [[nodiscard]] inline Memory::UniquePtr<ListenerHandler<TArguments...>> ListenerHandlerDelegate<TDelegate, TArguments...>::Clone() const noexcept
+    [[nodiscard]] inline Memory::RWUniquePtr<ListenerHandler<TArguments...>> ListenerHandlerDelegate<TDelegate, TArguments...>::Clone() const noexcept
     {
-        return Memory::MakeUnique<ListenerHandlerDelegate<TDelegate, TArguments...>>(delegate_);
+        return Memory::MakeRWUnique<ListenerHandlerDelegate<TDelegate, TArguments...>>(delegate_);
     }
 
     template <typename TDelegate, typename... TArguments>
@@ -366,7 +366,7 @@ namespace Syntropy::Details
     // EventChain.
     // ===========
 
-    inline EventChain::EventChain(Memory::UniquePtr<EventHandler> event) noexcept
+    inline EventChain::EventChain(Memory::RWUniquePtr<EventHandler> event) noexcept
     {
         Link(events_, Move(event));
     }
@@ -421,7 +421,7 @@ namespace Syntropy::Details
         return *this;
     }
 
-    inline Memory::UniquePtr<EventHandler> EventChain::Link(Mutable<EventHandler> lhs, Memory::UniquePtr<EventHandler> rhs) noexcept
+    inline Memory::RWUniquePtr<EventHandler> EventChain::Link(Mutable<EventHandler> lhs, Memory::RWUniquePtr<EventHandler> rhs) noexcept
     {
         SYNTROPY_ASSERT((!rhs) || (!rhs->previous_event_));
 
@@ -512,7 +512,7 @@ namespace Syntropy::Details
     template <typename TDelegate>
     [[nodiscard]] inline EventChain ListenerChain<TArguments...>::Emplace(Forwarding<TDelegate> delegate) noexcept
     {
-        auto listener = Memory::MakeUnique<ListenerHandlerDelegate<TDelegate, TArguments...>>(Forward<TDelegate>(delegate));
+        auto listener = Memory::MakeRWUnique<ListenerHandlerDelegate<TDelegate, TArguments...>>(Forward<TDelegate>(delegate));
 
         Link(GetTail(listeners_), listener.Get());
 
