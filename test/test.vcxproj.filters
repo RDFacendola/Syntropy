@@ -18,4 +18,7 @@
     <ClInclude Include="include\deprecated\unit_tests\syntropy\memory\bytes_unit_test.h" />
     <ClInclude Include="include\deprecated\unit_tests\unit_tests.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\vs\syntropy.natvis" />
+  </ItemGroup>
 </Project>

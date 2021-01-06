@@ -116,7 +116,7 @@ namespace Syntropy::Templates
     using Hecto = Ratio<100, 1>;
 
     /// \brief "Kilo" IS ratio.
-    using Kilo = Ratio<10000, 1>;
+    using Kilo = Ratio<1000, 1>;
 
     /// \brief "Mega" IS ratio.
     using Mega = Ratio<1000000, 1>;

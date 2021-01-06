@@ -69,6 +69,9 @@
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_debugger.cpp" />
     <ClCompile Include="src\syntropy\syntropy.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\vs\syntropy.natvis" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B970D1B5-1F2A-495A-BF7E-3DBBBEE1F33A}</ProjectGuid>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <!-- Size -->
+
+  <Type Name="Syntropy::Memory::Size&lt;Syntropy::Templates::Ratio&lt;1,8&gt;&gt;">
+    <DisplayString Condition="count_ == 1">{count_} Bit</DisplayString>
+    <DisplayString Condition="count_ != 1">{count_} Bits</DisplayString>
+  </Type>
+
+  <Type Name="Syntropy::Memory::Size&lt;Syntropy::Templates::Ratio&lt;1,1&gt;&gt;">
+    <DisplayString Condition="count_ == 1">{count_} Byte</DisplayString>
+    <DisplayString Condition="count_ != 1">{count_} Bytes</DisplayString>
+  </Type>
+  
+  <Type Name="Syntropy::Memory::Size&lt;Syntropy::Templates::Ratio&lt;1000,1&gt;&gt;">
+    <DisplayString Condition="count_ == 1">{count_} KByte</DisplayString>
+    <DisplayString Condition="count_ != 1">{count_} KBytes</DisplayString>
+  </Type>
+  
+  <Type Name="Syntropy::Memory::Size&lt;Syntropy::Templates::Ratio&lt;1000000,1&gt;&gt;">
+    <DisplayString Condition="count_ == 1">{count_} MByte</DisplayString>
+    <DisplayString Condition="count_ != 1">{count_} MBytes</DisplayString>
+  </Type>
+  
+  <Type Name="Syntropy::Memory::Size&lt;Syntropy::Templates::Ratio&lt;1000000000,1&gt;&gt;">
+    <DisplayString Condition="count_ == 1">{count_} GByte</DisplayString>
+    <DisplayString Condition="count_ != 1">{count_} GBytes</DisplayString>
+  </Type>
+  
+  <Type Name="Syntropy::Memory::Size&lt;Syntropy::Templates::Ratio&lt;1000000000000,1&gt;&gt;">
+    <DisplayString Condition="count_ == 1">{count_} TByte</DisplayString>
+    <DisplayString Condition="count_ != 1">{count_} TBytes</DisplayString>
+  </Type>
+  
+  <Type Name="Syntropy::Memory::Size&lt;Syntropy::Templates::Ratio&lt;1024,1&gt;&gt;">
+    <DisplayString Condition="count_ == 1">{count_} KiByte</DisplayString>
+    <DisplayString Condition="count_ != 1">{count_} KiBytes</DisplayString>
+  </Type>
+  
+  <Type Name="Syntropy::Memory::Size&lt;Syntropy::Templates::Ratio&lt;1048576,1&gt;&gt;">
+    <DisplayString Condition="count_ == 1">{count_} MiByte</DisplayString>
+    <DisplayString Condition="count_ != 1">{count_} MiBytes</DisplayString>
+  </Type>
+  
+  <Type Name="Syntropy::Memory::Size&lt;Syntropy::Templates::Ratio&lt;1073741824,1&gt;&gt;">
+    <DisplayString Condition="count_ == 1">{count_} GiByte</DisplayString>
+    <DisplayString Condition="count_ != 1">{count_} GiBytes</DisplayString>
+  </Type>
+  
+  <Type Name="Syntropy::Memory::Size&lt;Syntropy::Templates::Ratio&lt;1099511627776,1&gt;&gt;">
+    <DisplayString Condition="count_ == 1">{count_} TiByte</DisplayString>
+    <DisplayString Condition="count_ != 1">{count_} TiBytes</DisplayString>
+  </Type>
+
+</AutoVisualizer>

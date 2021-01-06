@@ -60,4 +60,7 @@
     <ClCompile Include="src\syntropy\diagnostics\debugger.cpp" />
     <ClCompile Include="src\syntropy\hal\windows\hal_windows_debugger.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\vs\syntropy.natvis" />
+  </ItemGroup>
 </Project>
