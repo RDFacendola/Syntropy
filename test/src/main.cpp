@@ -49,6 +49,7 @@
 #include "syntropy/core/support/event.h"
 
 #include <tuple>
+#include <vector>
 
 class DebugAllocator : public Syntropy::Memory::SystemAllocator
 {
@@ -110,8 +111,6 @@ int main(int argc, char** argv)
 
     auto dbga = Syntropy::Memory::PolymorphicAllocator<DebugAllocator>();
 
-    auto k = Base{};
-
     Syntropy::Memory::SetAllocator(dbga);
 
     auto t00 = Syntropy::Tuples::MakeTuple();
@@ -127,9 +126,14 @@ int main(int argc, char** argv)
     auto t10 = Syntropy::Tuples::MakeTuple(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     auto t11 = Syntropy::Tuples::MakeTuple(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
 
-    auto t1 = std::tuple<int, float>{ 10, 20.0f };
-    auto t12 = std::make_tuple(10, 20.0f, 20, 30, 100, 200, 300, 400, 40, 50, 60, 70, 80);
-    auto t2 = std::tuple<>{};
+    auto bx = Syntropy::PtrOf(Get<0>(t11)) - 19;
+
+    auto vec = std::vector<int>{ 1,2, 3 };
+    auto e = std::vector<int>{};
+
+    auto span0 = Syntropy::Ranges::RWSpan<int>(bx, 20);
+    auto span1 = Syntropy::Ranges::Span<int>(bx, 20);
+    auto span2 = Syntropy::Ranges::Span<int>(bx, Syntropy::ToInt(0));
 
     system("pause");
 

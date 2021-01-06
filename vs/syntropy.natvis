@@ -57,12 +57,12 @@
 
   <Type Name="Syntropy::BaseUniquePtr&lt;*,Syntropy::RWUniquePtrTypeTraits&lt;*&gt;&gt;">
      <DisplayString Condition="pointee_ == nullptr">nullptr</DisplayString>
-     <DisplayString Condition="pointee_ != nullptr">RWUniquePtr {*pointee_}</DisplayString>
+     <DisplayString Condition="pointee_ != nullptr">[RW] UniquePtr {*pointee_}</DisplayString>
   </Type>
   
   <Type Name="Syntropy::BaseUniquePtr&lt;*,Syntropy::UniquePtrTypeTraits&lt;*&gt;&gt;">
      <DisplayString Condition="pointee_ == nullptr">nullptr</DisplayString>
-     <DisplayString Condition="pointee_ != nullptr">UniquePtr {*pointee_}</DisplayString>
+     <DisplayString Condition="pointee_ != nullptr">[RD] UniquePtr {*pointee_}</DisplayString>
   </Type>
 
   <!-- Tuple -->
@@ -88,6 +88,28 @@
     <Expand>
       <Item Name="[#]">element_</Item>
       <ExpandedItem>*((BaseClass*)this)</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <!-- Span -->
+
+  <Type Name="Syntropy::Ranges::BaseSpan&lt;*,Syntropy::Ranges::RWSpanTypeTraits&lt;*&gt;&gt;">
+    <DisplayString>[RW] Span {{ count = {count_} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>count_</Size>
+        <ValuePointer>data_</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  
+  <Type Name="Syntropy::Ranges::BaseSpan&lt;*,Syntropy::Ranges::SpanTypeTraits&lt;*&gt;&gt;">
+    <DisplayString>[RD] Span {{ count = {count_} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>count_</Size>
+        <ValuePointer>data_</ValuePointer>
+      </ArrayItems>
     </Expand>
   </Type>
 
