@@ -32,6 +32,8 @@
 #include "syntropy/core/foundation/span.h"
 #include "syntropy/core/foundation/unique_ptr.h"
 
+#include "syntropy/core/reflection/type_id.h"
+
 #include "syntropy/memory/foundation/byte.h"
 #include "syntropy/memory/foundation/address.h"
 #include "syntropy/memory/foundation/size.h"
@@ -79,7 +81,21 @@ public:
 
 };
 
-int main(int argc, char **argv)
+struct Base
+{
+    virtual ~Base() = default;
+
+    int x;
+};
+
+struct Derived : Base
+{
+    virtual ~Derived() = default;
+
+    float y;
+};
+
+int main(int argc, char** argv)
 {
     std::cout << "Hello Syntropy!\n";
 
@@ -87,28 +103,29 @@ int main(int argc, char **argv)
 
     Syntropy::Memory::SetAllocator(dbga);
 
-    {
-        auto event = Syntropy::Event<int>{};
+    auto base = Base{};
+    auto derived = Derived{};
 
-        auto listener = Syntropy::Listener{};
+    Base& rbase = derived;
+    Derived& rderived = derived;
 
-        listener += event.Subscribe([](int x)
-        {
-            std::cout << "received " << x << "\n";
-        });
+    std::cout << typeid(base).name() << "\n";
+    std::cout << typeid(derived).name() << "\n";
 
-        {
-            auto listener_copy_constructed = listener;
+    std::cout << typeid(rbase).name() << "\n";
+    std::cout << typeid(rderived).name() << "\n";
 
-            auto listener_copy_assigned = Syntropy::Listener{};
+    std::cout << typeid(Base).name() << "\n";
 
-            listener_copy_assigned = listener_copy_constructed;
+    std::cout << "\n\n";
 
-            event.Notify(1000);
-        }
+    auto tida = Syntropy::Reflection::TypeIdOf<Derived>();
+    auto tidb = Syntropy::Reflection::TypeIdOf(rbase);
+    auto tidc = Syntropy::Reflection::TypeIdOf<void>();
 
-        event.Notify(2000);
-    }
+    std::cout << (tida == tidb) << "\n";
+
+    auto c = (tidb <=> tida);
 
     system("pause");
 

@@ -11,6 +11,8 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
 
+#include "syntropy/core/reflection/type_id.h"
+
 // ===========================================================================
 
 namespace Syntropy
@@ -39,12 +41,12 @@ namespace Syntropy
         /// \brief Attempt to visit an element via a visitor functor.
         /// \return Returns true if the visit was successful, returns false otherwise.
         template <typename TFunction, typename TVisitor>
-        Bool TryVisit(Immutable<TVisitor> visitor, RWTypelessPtr visitable, Immutable<std::type_info> type) const noexcept;
+        Bool TryVisit(Immutable<TVisitor> visitor, RWTypelessPtr visitable, Immutable<Reflection::TypeId> type) const noexcept;
 
     private:
 
         /// \brief Visit an element.
-        virtual void VirtualVisit(RWTypelessPtr visitable, Immutable<std::type_info> type) const noexcept = 0;
+        virtual void VirtualVisit(RWTypelessPtr visitable, Immutable<Reflection::TypeId> type) const noexcept = 0;
 
     };
 
@@ -77,21 +79,21 @@ namespace Syntropy
     {
         if constexpr (!Concepts::PolymorphicType<TVisitable> || Concepts::FinalType<TVisitable>)
         {
-            VirtualVisit(AddressOf(visitable), typeid(visitable));
+            VirtualVisit(PtrOf(visitable), Reflection::TypeIdOf(visitable));
         }
         else
         {
-            VirtualVisit(dynamic_cast<RWTypelessPtr>(AddressOf(visitable)), typeid(visitable));       // Downcast to the most derived class since typeid will return the dynamic type of visitable.
+            VirtualVisit(dynamic_cast<RWTypelessPtr>(PtrOf(visitable)), Reflection::TypeIdOf(visitable));         // Downcast to the most derived class since TypeIdOf will return the dynamic type of visitable.
         }
     }
 
     template <typename TFunction, typename TVisitor>
-    inline Bool Visitor::TryVisit(Immutable<TVisitor> visitor, RWTypelessPtr visitable, Immutable<std::type_info> type) const noexcept
+    inline Bool Visitor::TryVisit(Immutable<TVisitor> visitor, RWTypelessPtr visitable, Immutable<Reflection::TypeId> type) const noexcept
     {
         using TArgument = Templates::FunctionArgumentsElement<0, TFunction>;
         using TVisitable = Templates::RemoveReference<TArgument>;
 
-        if (type == typeid(TVisitable))
+        if (type == Reflection::TypeIdOf(TVisitable))
         {
             visitor(*FromTypelessPtr<TVisitable>(visitable));
             return true;
@@ -119,7 +121,7 @@ namespace Syntropy
             using TFunctions::operator()...;
 
             // Attempt to visit with each of the lambdas.
-            void VirtualVisit(RWTypelessPtr visitable, Immutable<std::type_info> type) const noexcept override
+            void VirtualVisit(RWTypelessPtr visitable, Immutable<Reflection::TypeId> type) const noexcept override
             {
                 (TryVisit<TFunctions>(*this, visitable, type) || ...);
             }

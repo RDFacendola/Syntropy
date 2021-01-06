@@ -50,6 +50,7 @@
     <ClInclude Include="include\syntropy\memory\foundation\size.h" />
     <ClInclude Include="include\syntropy\memory\allocators\allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\system_allocator.h" />
+    <ClInclude Include="include\syntropy\core\reflection\type_id.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />
