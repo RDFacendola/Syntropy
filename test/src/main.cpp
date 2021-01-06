@@ -105,44 +105,19 @@ int main(int argc, char** argv)
 
     Syntropy::Memory::SetAllocator(dbga);
 
-    auto x0 = Syntropy::Memory::Bits{ 0 };
-    auto x00 = Syntropy::Memory::Bits{ 1 };
+    auto a0 = Syntropy::Memory::Alignment{ 16 };
+    auto a1 = Syntropy::Memory::Alignment{ 1 };
 
-    auto x1 = Syntropy::Memory::Bytes{ 2 };
-    auto x10 = Syntropy::Memory::Bytes{ 1 };
-
-    auto x2 = Syntropy::Memory::KiloBytes{ 3 };
-    auto x20 = Syntropy::Memory::KiloBytes{ 1 };
-
-    auto x3 = Syntropy::Memory::MegaBytes{ 4 };
-    auto x30 = Syntropy::Memory::MegaBytes{ 1 };
+    auto rwp = Syntropy::MakeRWUnique<Derived>();
+    auto rwpe = Syntropy::MakeRWUnique<Derived>();
     
-    auto x4 = Syntropy::Memory::GigaBytes{ 5 };
-    auto x40 = Syntropy::Memory::GigaBytes{ 1 };
-    
-    auto x5 = Syntropy::Memory::TeraBytes{ 6 };
-    auto x50 = Syntropy::Memory::TeraBytes{ 1 };
-    
-    auto x6 = Syntropy::Memory::KibiBytes{ 7 };
-    auto x60 = Syntropy::Memory::KibiBytes{ 1 };
-    
-    auto x7 = Syntropy::Memory::MebiBytes{ 8 };
-    auto x70 = Syntropy::Memory::MebiBytes{ 1 };
-    
-    auto x8 = Syntropy::Memory::GibiBytes{ 9 };
-    auto x80 = Syntropy::Memory::GibiBytes{ 1 };
-    
-    auto x9 = Syntropy::Memory::TebiBytes{ 10 };
-    auto x90 = Syntropy::Memory::TebiBytes{ 1 };
+    rwpe = nullptr;
 
-    auto x010 = Syntropy::Memory::Size<Syntropy::Templates::Ratio<30, 23>>{ 10 };
+    auto p = Syntropy::MakeUnique<Derived>();
+    auto pe = Syntropy::MakeUnique<Derived>();
 
-    auto p = Syntropy::MakeRWUnique<Derived>();
-
-    auto sp = std::make_unique<Derived>();
-    auto ep = std::make_unique<Derived>();
-
-    ep.reset();
+    auto kkk = std::make_unique<Derived>();
+    pe = nullptr;
 
     system("pause");
 

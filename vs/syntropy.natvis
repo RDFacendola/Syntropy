@@ -53,4 +53,16 @@
     <DisplayString Condition="count_ != 1">{count_} TiBytes</DisplayString>
   </Type>
 
+  <!-- UniquePtr -->
+
+  <Type Name="Syntropy::BaseUniquePtr&lt;*,Syntropy::RWUniquePtrTypeTraits&lt;*&gt;&gt;">
+     <DisplayString Condition="pointee_ == nullptr">nullptr</DisplayString>
+     <DisplayString Condition="pointee_ != nullptr">RWUniquePtr {*pointee_}</DisplayString>
+  </Type>
+  
+  <Type Name="Syntropy::BaseUniquePtr&lt;*,Syntropy::UniquePtrTypeTraits&lt;*&gt;&gt;">
+     <DisplayString Condition="pointee_ == nullptr">nullptr</DisplayString>
+     <DisplayString Condition="pointee_ != nullptr">UniquePtr {*pointee_}</DisplayString>
+  </Type>
+  
 </AutoVisualizer>
