@@ -64,5 +64,31 @@
      <DisplayString Condition="pointee_ == nullptr">nullptr</DisplayString>
      <DisplayString Condition="pointee_ != nullptr">UniquePtr {*pointee_}</DisplayString>
   </Type>
+
+  <!-- Tuple -->
+
+  <Type Name="Syntropy::Tuples::Tuple&lt;&gt;">
+    <DisplayString IncludeView="payload"></DisplayString>
+    <DisplayString ExcludeView="payload">Tuple ({*this,view(payload)})</DisplayString>
+    <Expand/>
+  </Type> 
   
+  <Type Name="Syntropy::Tuples::Tuple&lt;*&gt;">
+    <DisplayString IncludeView="payload">{element_}</DisplayString>
+    <DisplayString ExcludeView="payload">Tuple ({*this,view(payload)})</DisplayString>
+
+    <Expand>
+      <Item Name="[#]">element_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="Syntropy::Tuples::Tuple&lt;*,*&gt;">
+    <DisplayString IncludeView="payload">{element_}, {*((BaseClass*)this), view(payload)}</DisplayString>
+    <DisplayString ExcludeView="payload">Tuple ({*this,view(payload)})</DisplayString>
+    <Expand>
+      <Item Name="[#]">element_</Item>
+      <ExpandedItem>*((BaseClass*)this)</ExpandedItem>
+    </Expand>
+  </Type>
+
 </AutoVisualizer>

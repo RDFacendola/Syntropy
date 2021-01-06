@@ -48,6 +48,8 @@
 
 #include "syntropy/core/support/event.h"
 
+#include <tuple>
+
 class DebugAllocator : public Syntropy::Memory::SystemAllocator
 {
 public:
@@ -86,6 +88,12 @@ struct Base
     virtual ~Base() = default;
 
     int x;
+
+    Syntropy::Tuples::Tuple<int, float> t0 { 10, 20.0f };
+    Syntropy::Tuples::Tuple<> t3 {};
+    std::tuple<int, float> t1{ 10, 20.0f };
+    std::tuple<> t2 {};
+
 };
 
 struct Derived : Base
@@ -93,6 +101,7 @@ struct Derived : Base
     virtual ~Derived() = default;
 
     float y;
+
 };
 
 int main(int argc, char** argv)
@@ -105,19 +114,22 @@ int main(int argc, char** argv)
 
     Syntropy::Memory::SetAllocator(dbga);
 
-    auto a0 = Syntropy::Memory::Alignment{ 16 };
-    auto a1 = Syntropy::Memory::Alignment{ 1 };
+    auto t00 = Syntropy::Tuples::MakeTuple();
+    auto t01 = Syntropy::Tuples::MakeTuple(1);
+    auto t02 = Syntropy::Tuples::MakeTuple(1, 2);
+    auto t03 = Syntropy::Tuples::MakeTuple(1, 2, 3);
+    auto t04 = Syntropy::Tuples::MakeTuple(1, 2, 3, 4 );
+    auto t05 = Syntropy::Tuples::MakeTuple(1, 2, 3, 4, 5 );
+    auto t06 = Syntropy::Tuples::MakeTuple(1, 2, 3, 4, 5, 6 );
+    auto t07 = Syntropy::Tuples::MakeTuple(1, 2, 3, 4, 5, 6, 7);
+    auto t08 = Syntropy::Tuples::MakeTuple(1, 2, 3, 4, 5, 6, 7, 8);
+    auto t09 = Syntropy::Tuples::MakeTuple(1, 2, 3, 4, 5, 6, 7, 8, 9);
+    auto t10 = Syntropy::Tuples::MakeTuple(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    auto t11 = Syntropy::Tuples::MakeTuple(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
 
-    auto rwp = Syntropy::MakeRWUnique<Derived>();
-    auto rwpe = Syntropy::MakeRWUnique<Derived>();
-    
-    rwpe = nullptr;
-
-    auto p = Syntropy::MakeUnique<Derived>();
-    auto pe = Syntropy::MakeUnique<Derived>();
-
-    auto kkk = std::make_unique<Derived>();
-    pe = nullptr;
+    auto t1 = std::tuple<int, float>{ 10, 20.0f };
+    auto t12 = std::make_tuple(10, 20.0f, 20, 30, 100, 200, 300, 400, 40, 50, 60, 70, 80);
+    auto t2 = std::tuple<>{};
 
     system("pause");
 
