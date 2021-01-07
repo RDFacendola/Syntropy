@@ -83,7 +83,7 @@ namespace Syntropy::Ranges
     /* SPAN                                                                 */
     /************************************************************************/
 
-    /// \brief Tag for read-only spans.
+    /// \brief Traits for read-only spans.
     template <typename TType>
     struct SpanTypeTraits
     {
@@ -102,7 +102,7 @@ namespace Syntropy::Ranges
     /* RW SPAN                                                              */
     /************************************************************************/
 
-    /// \brief Tag for read-write spans.
+    /// \brief Traits for read-write spans.
     template <typename TType>
     struct RWSpanTypeTraits
     {
