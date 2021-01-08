@@ -10,7 +10,7 @@
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/support/swap.h"
 
-#include "syntropy/core/concepts/range.h"
+#include "syntropy/core/concepts/contiguous_range.h"
 
 #include "syntropy/math/math.h"
 

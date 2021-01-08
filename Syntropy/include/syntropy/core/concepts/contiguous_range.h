@@ -62,7 +62,7 @@ namespace Syntropy::Ranges
     /// \brief Access a sub-range given an offset from the first element and the number of elements.
     /// \brief Exceeding range boundaries results in undefined behavior.
     template <Concepts::ContiguousRange TRange>
-    [[nodiscard]] constexpr decltype(auto) Select(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> offset, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
+    [[nodiscard]] constexpr auto Select(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> offset, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
 
     /// \brief Get an iterator past the last element in a contiguous range.
     /// \brief Exceeding range boundaries results in undefined behavior.
@@ -92,7 +92,7 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::ContiguousRange TRange>
-    [[nodiscard]] constexpr decltype(auto) Select(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> offset, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
+    [[nodiscard]] constexpr auto Select(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> offset, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
     {
         return TRange{ Data(range) + offset, count };
     }
