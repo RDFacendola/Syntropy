@@ -51,6 +51,12 @@
     <ClInclude Include="include\syntropy\memory\allocators\allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\system_allocator.h" />
     <ClInclude Include="include\syntropy\core\reflection\type_id.h" />
+    <ClInclude Include="include\syntropy\core\containers\fix_array.h" />
+    <ClInclude Include="include\syntropy\core\concepts\forward_range.h" />
+    <ClInclude Include="include\syntropy\core\concepts\sized_range.h" />
+    <ClInclude Include="include\syntropy\core\concepts\bidirectional_range.h" />
+    <ClInclude Include="include\syntropy\core\concepts\random_access_range.h" />
+    <ClInclude Include="include\syntropy\core\concepts\contiguous_range.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />
