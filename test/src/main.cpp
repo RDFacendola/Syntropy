@@ -103,6 +103,20 @@ int main(int argc, char** argv)
 
     Syntropy::Memory::SetAllocator(dbga);
 
+    Syntropy::Int array[] = { 0, 1, 2, 3, 4, 5 };
+
+    auto span = Syntropy::Ranges::MakeSpan(Syntropy::PtrOf(array[0]), 6);
+
+    std::cout << Front(span) << "\n";
+    std::cout << Front(PopFront(span)) << "\n";
+    std::cout << IsEmpty(span) << "\n";
+    std::cout << Back(span) << "\n";
+    std::cout << Back(PopBack(span)) << "\n";
+    std::cout << Select(span, 3) << "\n";
+    std::cout << Front(Select(span, 1, 1)) << "\n";
+    std::cout << Back(Select(span, 1, 2)) << "\n";
+
+    auto b = span == span;
 
     system("pause");
 
