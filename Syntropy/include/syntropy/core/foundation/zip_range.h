@@ -59,21 +59,6 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Comparison.
-    // ===========
-
-    /// \brief Check whether lhs and rhs are equal.
-    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-    [[nodiscard]] constexpr Bool AreEqual(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
-
-    /// \brief Check whether lhs and rhs are equivalent.
-    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
-
-    /// \brief Compare two zip-ranges lexicographically.
-    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-    [[nodiscard]] constexpr Ordering Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
-
     // Zip-range element access.
     // =========================
 
@@ -120,6 +105,14 @@ namespace Syntropy::Ranges
     template <Concepts::SizedRange... TRanges>
     [[nodiscard]] constexpr Templates::RangeElementCount<ZipRange<TRanges...>> Count(Immutable<ZipRange<TRanges...>> range) noexcept;
 
+    /// \brief Check whether lhs and rhs are equivalent.
+    template <Concepts::SizedRange... TRanges, Concepts::SizedRange... URanges>
+    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
+
+    /// \brief Compare two zip-ranges lexicographically.
+    template <Concepts::SizedRange... TRanges, Concepts::SizedRange... URanges>
+    [[nodiscard]] constexpr Ordering Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
+
     // Bidirectional range.
     // ====================
 
@@ -153,6 +146,10 @@ namespace Syntropy::Ranges
     /// \remarks Accessing data of an empty range is allowed but the returned value is unspecified.
     template <Concepts::ContiguousRange... TRanges>
     [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementPointer<TRanges>...> Data(Immutable<ZipRange<TRanges...>> range) noexcept;
+
+    /// \brief Check whether lhs and rhs are equal.
+    template <Concepts::ContiguousRange... TRanges, Concepts::ContiguousRange... URanges>
+    [[nodiscard]] constexpr Bool AreEqual(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
 
     // Utilities.
     // ==========
@@ -237,23 +234,7 @@ namespace Syntropy::Ranges
 
     // Comparison.
 
-    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-    [[nodiscard]] constexpr Bool AreEqual(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
-    {
-        return Ranges::AreEqual(Unzip(lhs), Unzip(rhs));
-    }
 
-    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
-    {
-        return Ranges::AreEquivalent(Unzip(lhs), Unzip(rhs));
-    }
-
-    template <Concepts::ForwardRange... TRanges, Concepts::ForwardRange... URanges>
-    [[nodiscard]] constexpr Bool Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
-    {
-        return Ranges::Compare(Unzip(rhs), Unzip(lhs));
-    }
 
     // Tuple-like.
 
@@ -329,6 +310,18 @@ namespace Syntropy::Ranges
         return Tuples::Apply(zip_min_count, Unzip(range));
     }
 
+    template <Concepts::SizedRange... TRanges, Concepts::SizedRange... URanges>
+    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
+    {
+        return AreEquivalent(Unzip(lhs), Unzip(rhs));
+    }
+
+    template <Concepts::SizedRange... TRanges, Concepts::SizedRange... URanges>
+    [[nodiscard]] constexpr Bool Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
+    {
+        return Compare(Unzip(rhs), Unzip(lhs));
+    }
+
     // Bidirectional range.
 
     template <Concepts::BidirectionalRange... TRanges>
@@ -388,6 +381,12 @@ namespace Syntropy::Ranges
         };
 
         return Tuples::Apply(zip_data, Unzip(range));
+    }
+
+    template <Concepts::ContiguousRange... TRanges, Concepts::ContiguousRange... URanges>
+    [[nodiscard]] constexpr Bool AreEqual(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
+    {
+        return AreEqual(Unzip(lhs), Unzip(rhs));
     }
 
     // Utilities.

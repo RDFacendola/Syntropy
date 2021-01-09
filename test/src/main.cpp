@@ -121,36 +121,19 @@ int main(int argc, char** argv)
     auto bspan = Syntropy::Memory::RangeBytesOf(span);
 
 
-    static_assert(Syntropy::Concepts::ContiguousRange<decltype(bspan)>, "Not a contiguous range.");
-    static_assert(Syntropy::Concepts::RandomAccessRange<decltype(bspan)>, "Not a random access range.");
-    static_assert(Syntropy::Concepts::BidirectionalRange<decltype(bspan)>, "Not a bidirectional access range.");
-    static_assert(Syntropy::Concepts::SizedRange<decltype(bspan)>, "Not a sized range.");
-    static_assert(Syntropy::Concepts::ForwardRange<decltype(bspan)>, "Not a forward range.");
+    for (auto&& element : Reverse(span))
+    {
+        std::cout << element << "\n";
+    }
 
+    for (auto&& element : span)
+    {
+        std::cout << element << "\n";
+    }
 
-    std::cout << Syntropy::Ranges::Select(bspan, 8_Bytes) << "\n";
-    std::cout << Syntropy::Ranges::Select(Syntropy::Ranges::Select(bspan, 1_Bytes, 1_Bytes), 0_Bytes) << "\n";
-    std::cout << Syntropy::Ranges::Select(Syntropy::Ranges::Select(bspan, 1_Bytes, 2_Bytes), 8_Bytes) << "\n";
+    // #TODO ADL functions create circular dependencies among ranges definitions. Move them outside!
 
-    std::cout << Syntropy::Ranges::IsEmpty(bspan) << "\n";
-
-    std::cout << Syntropy::Ranges::Front(bspan) << "\n";
-    std::cout << Syntropy::Ranges::Front(Syntropy::Ranges::PopFront(bspan)) << "\n";
-    std::cout << Syntropy::Ranges::Back(bspan) << "\n";
-    std::cout << Syntropy::Ranges::Back(Syntropy::Ranges::PopBack(bspan)) << "\n";
-
-    std::cout << Syntropy::Ranges::Select(span, 6) << "\n";
-    std::cout << Syntropy::Ranges::Select(Syntropy::Ranges::Select(span, 1, 1), 0) << "\n";
-    std::cout << Syntropy::Ranges::Select(Syntropy::Ranges::Select(span, 1, 2), 5) << "\n";
-
-    std::cout << Syntropy::Ranges::IsEmpty(span) << "\n";
-
-    std::cout << Syntropy::Ranges::Front(span) << "\n";
-    std::cout << Syntropy::Ranges::Front(Syntropy::Ranges::PopFront(span)) << "\n";
-    std::cout << Syntropy::Ranges::Back(span) << "\n";
-    std::cout << Syntropy::Ranges::Back(Syntropy::Ranges::PopBack(span)) << "\n";
-
-    // auto b = bspan == bspan;
+    //auto b = bspan == bspan;
 
     system("pause");
 

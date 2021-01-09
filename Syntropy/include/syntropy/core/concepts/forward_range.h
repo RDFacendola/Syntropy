@@ -12,6 +12,8 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 
+#include "syntropy/diagnostics/assert.h"
+
 #include "syntropy/core/concepts/range.h"
 #include "syntropy/core/concepts/random_access_range.h"
 #include "syntropy/core/concepts/sized_range.h"
@@ -139,8 +141,6 @@ namespace Syntropy::Ranges
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
     [[nodiscard]] constexpr Tuples::Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        using Syntropy::Swap;
-
         auto lhs_copy = lhs;
         auto rhs_copy = rhs;
 
@@ -184,7 +184,7 @@ namespace Syntropy::Ranges
     template <Concepts::ForwardRange TRange>
     [[nodiscard]] constexpr Bool RangeIterator<TRange>::operator==(Immutable<RangeIterator> other) const noexcept
     {
-        SYNTROPY_ASSERT(IsEmpty(other));
+        SYNTROPY_ASSERT(IsEmpty(other.range_));
 
         return IsEmpty(range_);
     }

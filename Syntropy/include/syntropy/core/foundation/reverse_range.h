@@ -11,6 +11,11 @@
 #include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/core/concepts/range.h"
+#include "syntropy/core/concepts/contiguous_range.h"
+#include "syntropy/core/concepts/random_access_range.h"
+#include "syntropy/core/concepts/bidirectional_range.h"
+#include "syntropy/core/concepts/sized_range.h"
+#include "syntropy/core/concepts/forward_range.h"
 
 // ===========================================================================
 
@@ -41,6 +46,12 @@ namespace Syntropy::Ranges
         template <Concepts::SizedRange TRange>
         friend constexpr Templates::RangeElementCount<ReverseRange<TRange>> Count(Immutable<ReverseRange<TRange>> rhs) noexcept;
 
+        template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+        constexpr Bool AreEquivalent(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+
+        template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+        constexpr Ordering Compare(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+
         // Bidirectional range.
 
         template <Concepts::BidirectionalRange TRange>
@@ -60,16 +71,10 @@ namespace Syntropy::Ranges
         template <Concepts::BidirectionalRange TRange>
         friend constexpr TRange Reverse(Immutable<ReverseRange<TRange>> range) noexcept;
 
-        // Comparison.
+        // Contiguous range.
 
-        template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
+        template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
         constexpr Bool AreEqual(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
-
-        template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-        constexpr Bool AreEquivalent(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
-
-        template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-        constexpr Ordering Compare(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
     public:
 
@@ -88,21 +93,6 @@ namespace Syntropy::Ranges
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
-
-    // Comparison.
-    // ===========
-
-    /// \brief Check whether lhs and rhs are equal.
-    template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-    [[nodiscard]] constexpr Bool AreEqual(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
-
-    /// \brief Check whether lhs and rhs are equivalent.
-    template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
-
-    /// \brief Compare two reverse ranges lexicographically.
-    template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-    [[nodiscard]] constexpr Ordering Compare(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
     // Forward range.
     // ==============
@@ -128,6 +118,14 @@ namespace Syntropy::Ranges
     /// \brief Get the number of elements in a range.
     template <Concepts::SizedRange TRange>
     [[nodiscard]] constexpr Templates::RangeElementCount<ReverseRange<TRange>> Count(Immutable<ReverseRange<TRange>> rhs) noexcept;
+
+    /// \brief Check whether lhs and rhs are equivalent.
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
+
+    /// \brief Compare two reverse ranges lexicographically.
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    [[nodiscard]] constexpr Ordering Compare(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
     // Bidirectional range.
     // ====================
@@ -161,8 +159,12 @@ namespace Syntropy::Ranges
     /// \brief Access underlying range data. Deleted method.
     /// \remarks A reverse pointer is feasible (incrementing it will actually decrement it and vice-versa), however that pointer won't be safe
     //           to be used with memcpy-like functions, which is the main purpose of a contiguous range. 
-    template <Concepts::RandomAccessRange TRange>
+    template <Concepts::ContiguousRange TRange>
     constexpr void Data(Immutable<ReverseRange<TRange>> rhs) noexcept = delete;
+
+    /// \brief Check whether lhs and rhs are equal.
+    template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
+    [[nodiscard]] constexpr Bool AreEqual(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
 
     // Utilities.
     // ==========
@@ -219,26 +221,6 @@ namespace Syntropy::Ranges
     // Non-member functions.
     // =====================
 
-    // Comparison.
- 
-    template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-    [[nodiscard]] constexpr Bool AreEqual(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
-    {
-        return Ranges::AreEqual(lhs.range_, rhs.range_);
-    }
-
-    template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
-    {
-        return Ranges::AreEquivalent(lhs.range_, rhs.range_);
-    }
-
-    template <Concepts::BidirectionalRange TRange, Concepts::BidirectionalRange URange>
-    [[nodiscard]] constexpr Ordering Compare(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
-    {
-        return Flip(Ranges::Compare(lhs.range_, rhs.range_));
-    }
-
     // Forward range.
 
     template <Concepts::BidirectionalRange TRange>
@@ -261,11 +243,22 @@ namespace Syntropy::Ranges
 
     // Sized range.
 
-    /// \brief Get the number of elements in a span.
     template <Concepts::SizedRange TRange>
     [[nodiscard]] constexpr Templates::RangeElementCount<ReverseRange<TRange>> Count(Immutable<ReverseRange<TRange>> rhs) noexcept
     {
         return Count(rhs.range_);
+    }
+
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
+    {
+        return AreEquivalent(lhs.range_, rhs.range_);
+    }
+
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    [[nodiscard]] constexpr Ordering Compare(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
+    {
+        return Flip(Compare(lhs.range_, rhs.range_));
     }
 
     // Bidirectional range.
@@ -294,6 +287,14 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr Templates::RangeElementReference<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::RangeElementCount<ReverseRange<TRange>> index) noexcept
     {
         return Select(rhs.range_, Count(rhs) - index - 1);
+    }
+
+    // Contiguous range.
+
+    template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
+    [[nodiscard]] constexpr Bool AreEqual(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept
+    {
+        return AreEqual(lhs.range_, rhs.range_);
     }
 
     // Utilities.
