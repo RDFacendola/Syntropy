@@ -14,6 +14,7 @@
 #include "syntropy/language/support/compare.h"
 
 #include "syntropy/core/concepts/range.h"
+#include "syntropy/core/concepts/random_access_range.h"
 
 #include "syntropy/core/foundation/tuple.h"
 
@@ -31,14 +32,14 @@ namespace Syntropy::Concepts
     concept SizedRange = Range<TRange>
         && requires(Immutable<TRange> range)
         {
-            /// \brief Access the first element in the range.
-            { Front(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
-
-            /// \brief Discard the first element in the range.
-            { PopFront(range) } -> ConvertibleTo<TRange>;
-
             /// \brief Get the number of elements in the range.
             { Count(range) } -> SameAs<Templates::RangeElementCount<TRange>>;
+
+            /// \brief Access the first element in the range.
+            { Ranges::ADL::RequiresFront(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
+
+            /// \brief Discard the first element in the range.
+            { Ranges::ADL::RequiresPopFront(range) } -> ConvertibleTo<TRange>;
         };
 }
 
@@ -65,6 +66,21 @@ namespace Syntropy::Ranges
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Ordering Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::ADL
+{
+    /************************************************************************/
+    /* SIZED RANGE                                                          */
+    /************************************************************************/
+
+    using Ranges::IsEmpty;
+
+    /// \brief Detect a "IsEmpty" function using argument-dependent lookup.
+    template <typename TRange>
+    auto RequiresIsEmpty(Immutable<TRange> range) noexcept -> decltype(IsEmpty(range));
 }
 
 // ===========================================================================

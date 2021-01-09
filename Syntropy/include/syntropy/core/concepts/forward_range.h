@@ -13,6 +13,8 @@
 #include "syntropy/language/templates/concepts.h"
 
 #include "syntropy/core/concepts/range.h"
+#include "syntropy/core/concepts/random_access_range.h"
+#include "syntropy/core/concepts/sized_range.h"
 
 #include "syntropy/core/foundation/tuple.h"
 
@@ -30,14 +32,14 @@ namespace Syntropy::Concepts
     concept ForwardRange = Range<TRange>
         && requires(Immutable<TRange> range)
         {
-            /// \brief Access the first element in the range.
-            { Front(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
+        /// \brief Access the first element in the range.
+            { Ranges::ADL::RequiresFront(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
 
             /// \brief Discard the first element in the range.
-            { PopFront(range) } -> ConvertibleTo<TRange>;
+            { Ranges::ADL::RequiresPopFront(range) } -> ConvertibleTo<TRange>;
 
             /// \brief Check whether the range is empty.
-            { IsEmpty(range) } -> Boolean;
+            { Ranges::ADL::IsEmpty(range) } -> Boolean;
         };
 }
 

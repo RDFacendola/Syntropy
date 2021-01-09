@@ -13,6 +13,8 @@
 #include "syntropy/language/templates/concepts.h"
 
 #include "syntropy/core/concepts/range.h"
+#include "syntropy/core/concepts/random_access_range.h"
+#include "syntropy/core/concepts/sized_range.h"
 
 #include "syntropy/core/foundation/tuple.h"
 
@@ -31,19 +33,19 @@ namespace Syntropy::Concepts
         && requires(Immutable<TRange> range)
         {
             /// \brief Access the first element in the range.
-            { Front(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
+            { Ranges::ADL::RequiresFront(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
 
             /// \brief Discard the first element in the range.
-            { PopFront(range) } -> ConvertibleTo<TRange>;
-
+            { Ranges::ADL::RequiresBack(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
+ 
             /// \brief Check whether the range is empty.
-            { IsEmpty(range) } -> Boolean;
-
+            { Ranges::ADL::IsEmpty(range) } -> Boolean;
+ 
             /// \brief Access the last element in the range.
-            { Back(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
-
+            { Ranges::ADL::RequiresPopFront(range) } -> ConvertibleTo<TRange>;
+ 
             /// \brief Discard the last element in the range.
-            { PopBack(range) } -> ConvertibleTo<TRange>;
+            { Ranges::ADL::RequiresPopBack(range) } -> ConvertibleTo<TRange>;
         };
 }
 

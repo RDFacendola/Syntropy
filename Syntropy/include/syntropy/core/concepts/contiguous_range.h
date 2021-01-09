@@ -72,6 +72,27 @@ namespace Syntropy::Ranges
 
 // ===========================================================================
 
+namespace Syntropy::Ranges::ADL
+{
+    /************************************************************************/
+    /* CONTIGUOUS RANGE                                                     */
+    /************************************************************************/
+
+    // These methods are used inside derived concepts to detect ADL functions.
+
+    using Ranges::Select;
+
+    /// \brief Detect a "Select" function using argument-dependent lookup.
+    template <typename TRange>
+    auto RequiresSelect(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> offset, Immutable<Templates::RangeElementCount<TRange>> count) -> decltype(Select(range, offset, count));
+
+    /// \brief Detect a "Select" function using argument-dependent lookup.
+    template <typename TRange>
+    auto RequiresSelect(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> index) -> decltype(Select(range, index));
+}
+
+// ===========================================================================
+
 namespace Syntropy::Ranges
 {
     /************************************************************************/

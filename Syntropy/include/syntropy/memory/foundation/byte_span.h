@@ -127,8 +127,17 @@ namespace Syntropy::Memory
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Comparison.
-    // ===========
+    // BaseByteSpan.
+    // =============
+
+    /// \brief Get the size of a byte span.
+    template <typename TTraits>
+    [[nodiscard]] constexpr Bytes Count(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+
+    /// \brief Access underlying span data.
+    /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
+    template <typename TTraits>
+    [[nodiscard]] constexpr typename TTraits::TPointer Data(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
     template <typename TTraits, typename UTraits>
@@ -137,64 +146,6 @@ namespace Syntropy::Memory
     /// \brief Compare two spans lexicographically.
     template <typename TTraits, typename UTraits>
     [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
-
-    // Forward range.
-    // ==============
-
-    /// \brief Access the first byte in a byte span.
-    /// \remarks Accessing the first byte of an empty span results in undefined behavior.
-    template <typename TTraits>
-    [[nodiscard]] constexpr typename TTraits::TReference Front(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
-
-    /// \brief Discard the first bytes in a byte span and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TTraits>
-    [[nodiscard]] constexpr BaseByteSpan<TTraits> PopFront(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
-
-    /// \brief Check whether a byte span is empty.
-    /// \return Returns true if the span is empty, returns false otherwise.
-    [[nodiscard]] constexpr Bool IsEmpty(Immutable<ByteSpan> rhs) noexcept;
-
-    // Sized range.
-    // ============
-
-    /// \brief Get the size of a byte span.
-    template <typename TTraits>
-    [[nodiscard]] constexpr Bytes Count(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
-
-    // Bidirectional range.
-    // ====================
-
-    /// \brief Access the last byte in a byte span.
-    /// \remarks Accessing the last byte of an empty span results in undefined behavior.
-    template <typename TTraits>
-    [[nodiscard]] constexpr typename TTraits::TReference Back(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
-
-    /// \brief Discard the last bytes in a byte span and return the resulting subspan.
-    /// \remarks If this method would cause the subspan to exceed the original span, the behavior of this method is undefined.
-    template <typename TTraits>
-    [[nodiscard]] constexpr BaseByteSpan<TTraits> PopBack(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
-
-    // Random access range.
-    // ====================
-
-    /// \brief Obtain a sub-span given an offset and a size.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
-    template <typename TTraits>
-    [[nodiscard]] constexpr BaseByteSpan<TTraits> Select(Immutable<BaseByteSpan<TTraits>> rhs, Immutable<Bytes> offset, Immutable<Bytes> size) noexcept;
-
-    /// \brief Obtain a span element at given index.
-    /// \remarks Exceeding span boundaries results in undefined behavior.
-    template <typename TTraits>
-    [[nodiscard]] constexpr typename TTraits::TReference Select(Immutable<BaseByteSpan<TTraits>> rhs, Immutable<Bytes> offset) noexcept;
-
-    // Contiguous range.
-    // =================
-
-    /// \brief Access underlying span data.
-    /// \remarks Accessing data of an empty span is allowed but the returned value is unspecified.
-    template <typename TTraits>
-    [[nodiscard]] constexpr typename TTraits::TPointer Data(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
 
     // Alignment.
     // ==========
@@ -355,7 +306,19 @@ namespace Syntropy::Memory
     // Non-member functions.
     // =====================
 
-    // Comparison.
+    // BaseByteSpan.
+
+    template <typename TTraits>
+    [[nodiscard]] constexpr typename TTraits::TPointer Data(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        return rhs.data_;
+    }
+
+    template <typename TTraits>
+    [[nodiscard]] constexpr Bytes Count(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    {
+        return rhs.size_;
+    }
 
     template <typename TTraits, typename UTraits>
     [[nodiscard]] constexpr Bool operator==(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept
@@ -371,73 +334,6 @@ namespace Syntropy::Memory
         using namespace Ranges;
 
         return Compare(lhs, rhs);
-    }
-
-    // Forward Range.
-
-    template <typename TTraits>
-    [[nodiscard]] constexpr typename TTraits::TReference Front(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
-    {
-        return *Data(rhs);
-    }
-
-    template <typename TTraits>
-    [[nodiscard]] constexpr BaseByteSpan<TTraits> PopFront(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
-    {
-        using Syntropy::ToInt;
-
-        return { Data(rhs) + ToInt(1), Data(rhs) + Count(rhs) };
-    }
-
-    [[nodiscard]] constexpr Bool IsEmpty(Immutable<ByteSpan> rhs) noexcept
-    {
-        return Count(rhs) == ToBytes(0);
-    }
-
-    // Sized range.
-
-    template <typename TTraits>
-    [[nodiscard]] constexpr Bytes Count(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
-    {
-        return rhs.size_;
-    }
-
-    // Bidirectional range.
-
-    template <typename TTraits>
-    [[nodiscard]] constexpr typename TTraits::TReference Back(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
-    {
-        return *(Data(rhs) + Count(rhs) - ToBytes(1));
-    }
-
-    template <typename TTraits>
-    [[nodiscard]] constexpr BaseByteSpan<TTraits> PopBack(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
-    {
-        return { Data(rhs), Data(rhs) + Count(rhs) - ToBytes(1) };
-    }
-
-    // Random access range.
-
-    template <typename TTraits>
-    [[nodiscard]] constexpr BaseByteSpan<TTraits> Select(Immutable<BaseByteSpan<TTraits>> rhs, Immutable<Bytes> offset, Immutable<Bytes> size) noexcept
-    {
-        return { Data(rhs) + offset, size };
-    }
-
-    template <typename TTraits>
-    [[nodiscard]] constexpr typename TTraits::TReference Select(Immutable<BaseByteSpan<TTraits>> rhs, Immutable<Bytes> offset) noexcept
-    {
-        using Syntropy::ToInt;
-
-        return rhs[ToInt(offset)];
-    }
-
-    // Contiguous range.
-
-    template <typename TTraits>
-    [[nodiscard]] constexpr typename TTraits::TPointer Data(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
-    {
-        return rhs.data_;
     }
 
     // Alignment.

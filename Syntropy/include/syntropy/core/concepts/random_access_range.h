@@ -13,6 +13,7 @@
 #include "syntropy/language/templates/concepts.h"
 
 #include "syntropy/core/concepts/range.h"
+#include "syntropy/core/concepts/contiguous_range.h"
 
 #include "syntropy/core/foundation/tuple.h"
 
@@ -35,13 +36,13 @@ namespace Syntropy::Concepts
         }
         && requires(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> offset, Immutable<Templates::RangeElementCount<TRange>> count)
         {
-            /// \brief Access a sub-range.
-            { Select(range, offset, count) } -> ConvertibleTo<TRange>;
+            /// \brief Access a sub-range. Looks for a Select(range, offset, count) method using ADL.
+            { Ranges::ADL::RequiresSelect(range, offset, count) } -> ConvertibleTo<TRange>;
         }
         && requires(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> index)
         {
-            /// \brief Access an element by index.
-            { Select(range, index) } -> SameAs<Templates::RangeElementReference<TRange>>;
+            /// \brief Access an element by index. Looks for a Select(range, index) method using ADL.
+            { Ranges::ADL::RequiresSelect(range, index) } -> SameAs<Templates::RangeElementReference<TRange>>;
         }
         && requires(Immutable<Templates::RangeElementCount<TRange>> lhs, Immutable<Templates::RangeElementCount<TRange>> rhs)
         {
@@ -124,6 +125,36 @@ namespace Syntropy::Ranges
     template <Concepts::RandomAccessRange TRange>
     [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
 
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::ADL
+{
+    /************************************************************************/
+    /* RANDOM ACCESS RANGE                                                  */
+    /************************************************************************/
+
+    using Ranges::Front;
+    using Ranges::Back;
+    using Ranges::PopFront;
+    using Ranges::PopBack;
+
+    /// \brief Detect a "Front" function using argument-dependent lookup.
+    template <typename TRange>
+    auto RequiresFront(Immutable<TRange> range) noexcept -> decltype(Front(range));
+
+    /// \brief Detect a "Back" function using argument-dependent lookup.
+    template <typename TRange>
+    auto RequiresBack(Immutable<TRange> range) noexcept -> decltype(Back(range));
+
+    /// \brief Detect a "PopFront" function using argument-dependent lookup.
+    template <typename TRange>
+    auto RequiresPopFront(Immutable<TRange> range) noexcept -> decltype(PopFront(range));
+
+    /// \brief Detect a "PopBack" function using argument-dependent lookup.
+    template <typename TRange>
+    auto RequiresPopBack(Immutable<TRange> range) noexcept -> decltype(PopBack(range));
 }
 
 // ===========================================================================
