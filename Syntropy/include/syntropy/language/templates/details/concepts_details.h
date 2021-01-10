@@ -48,6 +48,10 @@ namespace Syntropy::Concepts::Details
     template <typename TType>
     concept ClassType = std::is_class_v<TType>;
 
+    /// \brief Concept for pointer types.
+    template <typename TType>
+    concept PointerType = std::is_pointer_v<TType>;
+
     /// \brief Concept for lvalue references.
     template <typename TType>
     concept LValueReferenceType = std::is_lvalue_reference_v<TType>;

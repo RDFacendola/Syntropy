@@ -180,6 +180,10 @@ namespace Syntropy::Concepts
     template <typename TType>
     concept ClassType = Details::ClassType<TType>;
 
+    /// \brief Concept for pointer types.
+    template <typename TType>
+    concept PointerType = Details::PointerType<TType>;
+
     /// \brief Concept for lvalue references.
     template <typename TType>
     concept LValueReferenceType = Details::LValueReferenceType<TType>;
