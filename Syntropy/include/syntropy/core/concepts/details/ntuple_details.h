@@ -18,10 +18,10 @@ namespace Syntropy::Tuples::Templates
     /************************************************************************/
 
     template <typename TType>
-    struct TupleRankTypeTraits;
+    struct RankTypeTraits;
 
     template <Int VIndex, typename TType>
-    struct TupleElementTypeTraits;
+    struct ElementTypeTraits;
 }
 
 // ===========================================================================
@@ -34,37 +34,37 @@ namespace Syntropy::Tuples::Templates::Details
 
     /// \brief Rank of a n-tuple.
     template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
-    inline constexpr Int TupleRank = TupleRankTypeTraits<UType>::kValue;
+    inline constexpr Int Rank = RankTypeTraits<UType>::kValue;
 
     /// \brief Type of the VIndex-th element of a n-tuple;
     template <Int VIndex, typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
-    using TupleElementType = typename TupleElementTypeTraits<VIndex, UType>::Type;
+    using ElementType = typename ElementTypeTraits<VIndex, UType>::Type;
 
-    // HasTupleElementTypes.
+    // HasElementTypes.
     // =====================
 
     /// \brief Detect whether TType provides index compile-time access to tuple elements' types.
     template <typename TType, typename TIndex>
-    using DetectTupleElementType = decltype(Declval<TupleElementType<TIndex::kValue, TType>>());
+    using DetectElementType = decltype(Declval<ElementType<TIndex::kValue, TType>>());
 
     /// \brief Constant equal to true if TType provides compile-time access to the VIndex-th element's type, equal to false otherwise.
     template <typename TType, Int VIndex>
-    inline constexpr Bool HasTupleElementType = Syntropy::Templates::IsValidExpression<DetectTupleElementType, TType, Syntropy::Templates::IntConstant<VIndex>>;
+    inline constexpr Bool HasTupleElementType = Syntropy::Templates::IsValidExpression<DetectElementType, TType, Syntropy::Templates::IntConstant<VIndex>>;
 
     template <typename TType, Int VRank>
-    struct HasTupleElementTypesHelper
+    struct HasElementTypesHelper
     {
-        static constexpr Bool kValue = HasTupleElementType<TType, VRank - 1> && HasTupleElementTypesHelper<TType, VRank - 1>::kValue;
+        static constexpr Bool kValue = HasTupleElementType<TType, VRank - 1> && HasElementTypesHelper<TType, VRank - 1>::kValue;
     };
 
     template <typename TType>
-    struct HasTupleElementTypesHelper<TType, 0> : Syntropy::Templates::True {};
+    struct HasElementTypesHelper<TType, 0> : Syntropy::Templates::True {};
 
     /// \brief Constant equal to true if TType provides compile-time access to its element types, false otherwise.
     template <typename TType>
-    inline constexpr Bool HasTupleElementTypes = HasTupleElementTypesHelper<TType, TupleRank<TType>>::kValue;
+    inline constexpr Bool HasElementTypes = HasElementTypesHelper<TType, Rank<TType>>::kValue;
 
-    // HasTupleGetters.
+    // HasGetters.
     // ===============
 
     /// \brief Detect whether TType provides compile-time access to the VIndex-th element.
@@ -76,17 +76,17 @@ namespace Syntropy::Tuples::Templates::Details
     inline constexpr Bool HasTupleGetter = Syntropy::Templates::IsValidExpression<DetectTupleGetter, TType, IntConstant<VIndex>>;
 
     template <typename TType, Int VRank>
-    struct HasTupleGettersHelper
+    struct HasGettersHelper
     {
-        static constexpr Bool kValue = HasTupleGetter<TType, VRank - 1> && HasTupleGettersHelper<TType, VRank - 1>::kValue;
+        static constexpr Bool kValue = HasTupleGetter<TType, VRank - 1> && HasGettersHelper<TType, VRank - 1>::kValue;
     };
 
     template <typename TType>
-    struct HasTupleGettersHelper<TType, 0> : Syntropy::Templates::True {};
+    struct HasGettersHelper<TType, 0> : Syntropy::Templates::True {};
 
     /// \brief Constant equal to true if TType provides access to all its TupleRank elements, false otherwise.
     template <typename TType>
-    inline constexpr Bool HasTupleGetters = HasTupleGettersHelper<TType, TupleRank<TType>>::kValue;
+    inline constexpr Bool HasGetters = HasGettersHelper<TType, Rank<TType>>::kValue;
 
     // SameRank.
     // =========
@@ -95,7 +95,7 @@ namespace Syntropy::Tuples::Templates::Details
     template <typename TType, typename... TTypes>
     struct SameRankHelper
     {
-        static constexpr Bool kValue = ((TupleRank<TType> == TupleRank<TTypes>) && ...);
+        static constexpr Bool kValue = ((Rank<TType> == Rank<TTypes>) && ...);
     };
 
     /// \brief Specialization for a single tuple.

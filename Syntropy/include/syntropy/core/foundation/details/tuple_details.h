@@ -228,7 +228,7 @@ namespace Syntropy::Tuples::Details
     template <Int VIndex, Concepts::NTupleReference TTuple>
     struct EnumerateTupleIndexesHelper<VIndex, TTuple>
     {
-        using Type = Syntropy::Templates::SequenceRepeat<VIndex, Templates::TupleRank<TTuple>>;
+        using Type = Syntropy::Templates::SequenceRepeat<VIndex, Templates::Rank<TTuple>>;
     };
 
     /// \brief Generate a sequence that can be used to access tuples.

@@ -36,16 +36,16 @@ namespace Syntropy::Tuples
     struct Tuple<TElement, TElements...> : private Tuple<TElements...>
     {
         template <Int VIndex, typename... TElements>
-        friend constexpr Immutable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Immutable<Tuple<TElements...>> tuple) noexcept;
+        friend constexpr Immutable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Immutable<Tuple<TElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... TElements>
-        friend constexpr Mutable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Mutable<Tuple<TElements...>> tuple) noexcept;
+        friend constexpr Mutable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Mutable<Tuple<TElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... TElements>
-        friend constexpr Immovable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Immovable<Tuple<TElements...>> tuple) noexcept;
+        friend constexpr Immovable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Immovable<Tuple<TElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... TElements>
-        friend constexpr Movable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Movable<Tuple<TElements...>> tuple) noexcept;
+        friend constexpr Movable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     public:
 
@@ -186,22 +186,22 @@ namespace Syntropy::Tuples
     /// \brief Access the VIndex-th element in a tuple.
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr Immutable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Immutable<Tuple<TElements...>> tuple) noexcept;
+    [[nodiscard]] constexpr Immutable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Immutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr Mutable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Mutable<Tuple<TElements...>> tuple) noexcept;
+    [[nodiscard]] constexpr Mutable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Mutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr Immovable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Immovable<Tuple<TElements...>> tuple) noexcept;
+    [[nodiscard]] constexpr Immovable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Immovable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr Movable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Movable<Tuple<TElements...>> tuple) noexcept;
+    [[nodiscard]] constexpr Movable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access an element of a tuple by type.
     /// \remarks The program is ill-formed unless the tuple has exactly one occurrence of TElement.
@@ -276,11 +276,11 @@ namespace Syntropy::Tuples::Templates
 
     /// \brief Partial template specialization for tuples.
     template <Int VIndex, typename... TElements>
-    struct TupleElementTypeTraits<VIndex, Tuples::Tuple<TElements...>> : Syntropy::Templates::Alias<Syntropy::Templates::TypeListElement<VIndex, Syntropy::Templates::TypeList<TElements...>>> {};
+    struct ElementTypeTraits<VIndex, Tuples::Tuple<TElements...>> : Syntropy::Templates::Alias<Syntropy::Templates::TypeListElement<VIndex, Syntropy::Templates::TypeList<TElements...>>> {};
 
     /// \brief Partial template specialization for tuples.
     template <typename... TElements>
-    struct TupleRankTypeTraits<Tuples::Tuple<TElements...>> : Syntropy::Templates::IntConstant<sizeof...(TElements)> {};
+    struct RankTypeTraits<Tuples::Tuple<TElements...>> : Syntropy::Templates::IntConstant<sizeof...(TElements)> {};
 }
 
 // ===========================================================================
@@ -371,7 +371,7 @@ namespace Syntropy::Tuples
     // NTuple.
 
     template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr Immutable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Immutable<Tuple<TElements...>> tuple) noexcept
+    [[nodiscard]] constexpr Immutable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Immutable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
 
@@ -379,7 +379,7 @@ namespace Syntropy::Tuples
     }
 
     template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr Mutable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Mutable<Tuple<TElements...>> tuple) noexcept
+    [[nodiscard]] constexpr Mutable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Mutable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
 
@@ -387,19 +387,19 @@ namespace Syntropy::Tuples
     }
 
     template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr Immovable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Immovable<Tuple<TElements...>> tuple) noexcept
+    [[nodiscard]] constexpr Immovable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Immovable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
-        using TElement = Templates::TupleElementType<VIndex, Tuple<TElements...>>;
+        using TElement = Templates::ElementType<VIndex, Tuple<TElements...>>;
 
         return static_cast<Immovable<TElement>>(static_cast<Immutable<TTupleBase>>(tuple).element_);
     }
 
     template <Int VIndex, typename... TElements>
-    [[nodiscard]] constexpr Movable<Templates::TupleElementType<VIndex, Tuple<TElements...>>> Get(Movable<Tuple<TElements...>> tuple) noexcept
+    [[nodiscard]] constexpr Movable<Templates::ElementType<VIndex, Tuple<TElements...>>> Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
-        using TElement = Templates::TupleElementType<VIndex, Tuple<TElements...>>;
+        using TElement = Templates::ElementType<VIndex, Tuple<TElements...>>;
 
         return static_cast<Movable<TElement>>(static_cast<Mutable<TTupleBase>>(tuple).element_);
     }

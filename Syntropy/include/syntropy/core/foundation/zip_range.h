@@ -70,22 +70,22 @@ namespace Syntropy::Ranges
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
     template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr Immutable<Syntropy::Tuples::Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept;
+    [[nodiscard]] constexpr Immutable<Syntropy::Tuples::Templates::ElementType<VIndex, ZipRange<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
     template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr Mutable<Syntropy::Tuples::Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept;
+    [[nodiscard]] constexpr Mutable<Syntropy::Tuples::Templates::ElementType<VIndex, ZipRange<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
     template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr Immovable<Syntropy::Tuples::Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept;
+    [[nodiscard]] constexpr Immovable<Syntropy::Tuples::Templates::ElementType<VIndex, ZipRange<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept;
 
     /// \brief Access the VIndex-th range in a zip-range.
     /// \remarks The program is ill-formed if no such range exists.
     template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr Movable<Syntropy::Tuples::Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept;
+    [[nodiscard]] constexpr Movable<Syntropy::Tuples::Templates::ElementType<VIndex, ZipRange<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept;
 
     // Forward range.
     // ==============
@@ -214,11 +214,11 @@ namespace Syntropy::Tuples::Templates
 
 /// \brief Partial template specialization for tuples.
     template <Int VIndex, Ranges::Concepts::ForwardRange... TRanges>
-    struct TupleElementTypeTraits<VIndex, Ranges::ZipRange<TRanges...>> : Syntropy::Templates::Alias<TupleElementType<VIndex, Tuples::Tuple<TRanges...>>> {};
+    struct ElementTypeTraits<VIndex, Ranges::ZipRange<TRanges...>> : Syntropy::Templates::Alias<ElementType<VIndex, Tuples::Tuple<TRanges...>>> {};
 
     /// \brief Partial template specialization for tuples.
     template <Ranges::Concepts::ForwardRange... TRanges>
-    struct TupleRankTypeTraits<Ranges::ZipRange<TRanges...>> : Syntropy::Templates::IntConstant<sizeof...(TRanges)> {};
+    struct RankTypeTraits<Ranges::ZipRange<TRanges...>> : Syntropy::Templates::IntConstant<sizeof...(TRanges)> {};
 }
 
 // ===========================================================================
@@ -246,25 +246,25 @@ namespace Syntropy::Ranges
     // Tuple-like.
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr Immutable<Syntropy::Tuples::Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept
+    [[nodiscard]] constexpr Immutable<Syntropy::Tuples::Templates::ElementType<VIndex, ZipRange<TRanges...>>> Get(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(Unzip(range));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr Mutable<Syntropy::Tuples::Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept
+    [[nodiscard]] constexpr Mutable<Syntropy::Tuples::Templates::ElementType<VIndex, ZipRange<TRanges...>>> Get(Mutable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(Unzip(range));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr Immovable<Syntropy::Tuples::Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept
+    [[nodiscard]] constexpr Immovable<Syntropy::Tuples::Templates::ElementType<VIndex, ZipRange<TRanges...>>> Get(Immovable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(Unzip(range));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
-    [[nodiscard]] constexpr Movable<Syntropy::Tuples::Templates::TupleElementType<VIndex, ZipRange<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept
+    [[nodiscard]] constexpr Movable<Syntropy::Tuples::Templates::ElementType<VIndex, ZipRange<TRanges...>>> Get(Movable<ZipRange<TRanges...>> range) noexcept
     {
         return Get<VIndex>(Unzip(range));
     }
