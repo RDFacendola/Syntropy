@@ -161,7 +161,9 @@ int main(int argc, char** argv)
     Print(PopBack(Reverse(span)));
     Print(PopBack(PopFront(Reverse(span))));
 
-    auto k = (span == PopFront(span));
+    // Print(Zip(span, Reverse(span)));
+
+    auto k = Syntropy::Tuples::MakeTuple(1, 20.0f, "banane");
 
     system("pause");
 

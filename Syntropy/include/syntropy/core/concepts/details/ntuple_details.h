@@ -11,7 +11,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Tuples::Templates
 {
     /************************************************************************/
     /* FORWARD DECLARATIONS                                                 */
@@ -26,18 +26,18 @@ namespace Syntropy::Templates
 
 // ===========================================================================
 
-namespace Syntropy::Templates::Details
+namespace Syntropy::Tuples::Templates::Details
 {
     /************************************************************************/
     /* N-TUPLE                                                              */
     /************************************************************************/
 
     /// \brief Rank of a n-tuple.
-    template <typename TType, typename UType = Templates::RemoveConstReference<TType>>
+    template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
     inline constexpr Int TupleRank = TupleRankTypeTraits<UType>::kValue;
 
     /// \brief Type of the VIndex-th element of a n-tuple;
-    template <Int VIndex, typename TType, typename UType = Templates::RemoveConstReference<TType>>
+    template <Int VIndex, typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
     using TupleElementType = typename TupleElementTypeTraits<VIndex, UType>::Type;
 
     // HasTupleElementTypes.
@@ -49,7 +49,7 @@ namespace Syntropy::Templates::Details
 
     /// \brief Constant equal to true if TType provides compile-time access to the VIndex-th element's type, equal to false otherwise.
     template <typename TType, Int VIndex>
-    inline constexpr Bool HasTupleElementType = IsValidExpression<DetectTupleElementType, TType, IntConstant<VIndex>>;
+    inline constexpr Bool HasTupleElementType = Syntropy::Templates::IsValidExpression<DetectTupleElementType, TType, Syntropy::Templates::IntConstant<VIndex>>;
 
     template <typename TType, Int VRank>
     struct HasTupleElementTypesHelper
@@ -58,7 +58,7 @@ namespace Syntropy::Templates::Details
     };
 
     template <typename TType>
-    struct HasTupleElementTypesHelper<TType, 0> : True {};
+    struct HasTupleElementTypesHelper<TType, 0> : Syntropy::Templates::True {};
 
     /// \brief Constant equal to true if TType provides compile-time access to its element types, false otherwise.
     template <typename TType>
@@ -69,11 +69,11 @@ namespace Syntropy::Templates::Details
 
     /// \brief Detect whether TType provides compile-time access to the VIndex-th element.
     template <typename TType, typename TIndex>
-    using DetectTupleGetter = decltype(Get<TIndex::kValue>(Declval<TType>()));
+    using DetectTupleGetter = decltype(Get<TIndex::kValue>(Syntropy::Templates::Declval<TType>()));
 
     /// \brief Constant equal to true if TType provides compile-time access to the VIndex-th element, equal to false otherwise.
     template <typename TType, Int VIndex>
-    inline constexpr Bool HasTupleGetter = IsValidExpression<DetectTupleGetter, TType, IntConstant<VIndex>>;
+    inline constexpr Bool HasTupleGetter = Syntropy::Templates::IsValidExpression<DetectTupleGetter, TType, IntConstant<VIndex>>;
 
     template <typename TType, Int VRank>
     struct HasTupleGettersHelper
@@ -82,7 +82,7 @@ namespace Syntropy::Templates::Details
     };
 
     template <typename TType>
-    struct HasTupleGettersHelper<TType, 0> : True {};
+    struct HasTupleGettersHelper<TType, 0> : Syntropy::Templates::True {};
 
     /// \brief Constant equal to true if TType provides access to all its TupleRank elements, false otherwise.
     template <typename TType>
@@ -100,7 +100,7 @@ namespace Syntropy::Templates::Details
 
     /// \brief Specialization for a single tuple.
     template <typename TType>
-    struct SameRankHelper<TType> : True {};
+    struct SameRankHelper<TType> : Syntropy::Templates::True {};
 
     /// \brief Constant equal to true if all TTypes have the same rank, false otherwise.
     template <typename... TTypes>

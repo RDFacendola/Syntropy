@@ -53,11 +53,11 @@ namespace Syntropy::Tuples
         using BaseClass = Tuple<TElements...>;
 
         /// \brief Types of tuple elements.
-        using ElementList = Templates::TypeList<TElement, TElements...>;
+        using ElementList = Syntropy::Templates::TypeList<TElement, TElements...>;
 
         /// \brief Types of arguments.
         template <typename... UElements>
-        using ArgumentList = Templates::TypeList<UElements...>;
+        using ArgumentList = Syntropy::Templates::TypeList<UElements...>;
 
         /// \brief Tag type used to construct a tuple element-wise.
         struct ElementwiseTag {};
@@ -97,7 +97,7 @@ namespace Syntropy::Tuples
         template<typename UElement, typename... UElements, Details::EnableIfTupleConvertingCopyConstructor<ElementList, UElement, UElements...> = nullptr>
         explicit (Details::ExplicitIfTupleConvertingCopyConstructor<ElementList, UElement, UElements...>)
         constexpr Tuple(Immutable<Tuple<UElement, UElements...>> rhs) noexcept
-            : Tuple(UnwindTag{}, Templates::SequenceFor<UElement, UElements...>, rhs)
+            : Tuple(UnwindTag{}, Syntropy::Templates::SequenceFor<UElement, UElements...>, rhs)
         {
 
         }
@@ -106,7 +106,7 @@ namespace Syntropy::Tuples
         template<typename UElement, typename... UElements, Details::EnableIfTupleConvertingMoveConstructor<ElementList, UElement, UElements...> = nullptr>
         explicit (Details::ExplicitIfTupleConvertingMoveConstructor<ElementList, UElement, UElements...>)
         constexpr Tuple(Movable<Tuple<UElement, UElements...>> rhs) noexcept
-            : Tuple(UnwindTag{}, Templates::SequenceFor<UElement, UElements...>, Move(rhs))
+            : Tuple(UnwindTag{}, Syntropy::Templates::SequenceFor<UElement, UElements...>, Move(rhs))
         {
 
         }
@@ -117,15 +117,15 @@ namespace Syntropy::Tuples
 
         /// \brief Construct a tuple unwinding another tuple elements.
         template<Concepts::NTupleReference TTuple, Int... VIndexes>
-        constexpr Tuple(UnwindTag, Templates::Sequence<VIndexes...>, Forwarding<TTuple> tuple) noexcept;
+        constexpr Tuple(UnwindTag, Syntropy::Templates::Sequence<VIndexes...>, Forwarding<TTuple> tuple) noexcept;
 
         /// \brief Copy-assignment operator.
         template <typename TSelf = Tuple, typename TSelfList = ElementList, Details::EnableIfTupleCopyAssignment<TSelfList> = nullptr>
-        constexpr Mutable<Tuple> operator=(Templates::Identity<Immutable<TSelf>> rhs) noexcept;
+        constexpr Mutable<Tuple> operator=(Syntropy::Templates::Identity<Immutable<TSelf>> rhs) noexcept;
 
         /// \brief Move-assignment operator.
         template <typename TSelf = Tuple, typename TSelfList = ElementList, Details::EnableIfTupleMoveAssignment<TSelfList> = nullptr>
-        constexpr Mutable<Tuple> operator=(Templates::Identity<Movable<TSelf>> rhs) noexcept;
+        constexpr Mutable<Tuple> operator=(Syntropy::Templates::Identity<Movable<TSelf>> rhs) noexcept;
 
         /// \brief Tuple converting copy-assignment operator.
         template <typename... UElements, typename TSelfList = ElementList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, ArgumentList<UElements...>> = nullptr>
@@ -268,7 +268,7 @@ namespace Syntropy::Tuples
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Tuples::Templates
 {
     /************************************************************************/
     /* TYPE TRAITS                                                          */
@@ -276,11 +276,11 @@ namespace Syntropy::Templates
 
     /// \brief Partial template specialization for tuples.
     template <Int VIndex, typename... TElements>
-    struct TupleElementTypeTraits<VIndex, Tuples::Tuple<TElements...>> : Alias<TypeListElement<VIndex, TypeList<TElements...>>> {};
+    struct TupleElementTypeTraits<VIndex, Tuples::Tuple<TElements...>> : Syntropy::Templates::Alias<Syntropy::Templates::TypeListElement<VIndex, Syntropy::Templates::TypeList<TElements...>>> {};
 
     /// \brief Partial template specialization for tuples.
     template <typename... TElements>
-    struct TupleRankTypeTraits<Tuples::Tuple<TElements...>> : IntConstant<sizeof...(TElements)> {};
+    struct TupleRankTypeTraits<Tuples::Tuple<TElements...>> : Syntropy::Templates::IntConstant<sizeof...(TElements)> {};
 }
 
 // ===========================================================================
@@ -305,7 +305,7 @@ namespace Syntropy::Tuples
 
     template <typename TElement, typename... TElements>
     template<Concepts::NTupleReference TTuple, Int... VIndexes>
-    constexpr Tuple<TElement, TElements...>::Tuple(UnwindTag, Templates::Sequence<VIndexes...>, Forwarding<TTuple> tuple) noexcept
+    constexpr Tuple<TElement, TElements...>::Tuple(UnwindTag, Syntropy::Templates::Sequence<VIndexes...>, Forwarding<TTuple> tuple) noexcept
         : Tuple(ElementwiseTag, Get<VIndexes>(Forward<TTuple>(tuple))...)
     {
 
@@ -313,7 +313,7 @@ namespace Syntropy::Tuples
 
     template <typename TElement, typename... TElements>
     template <typename TSelf, typename TSelfList, Details::EnableIfTupleCopyAssignment<TSelfList>>
-    constexpr Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>::operator=(Templates::Identity<Immutable<TSelf>> rhs) noexcept
+    constexpr Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>::operator=(Syntropy::Templates::Identity<Immutable<TSelf>> rhs) noexcept
     {
         Tuples::LockstepApply([](auto& lhs_element, const auto& rhs_element){ lhs_element = rhs_element; }, *this, rhs);
 
@@ -321,7 +321,7 @@ namespace Syntropy::Tuples
     }
 
     template <typename TElement, typename... TElements>
-    template <typename... UElements, typename TSelfList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, Templates::TypeList<UElements...>>>
+    template <typename... UElements, typename TSelfList, Details::EnableIfTupleConvertingCopyAssignment<TSelfList, Syntropy::Templates::TypeList<UElements...>>>
     constexpr Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>::operator=(Immutable<Tuple<UElements...>> rhs) noexcept
     {
         Tuples::LockstepApply([](auto& lhs_element, const auto& rhs_element) { lhs_element = rhs_element; }, *this, rhs);
@@ -331,7 +331,7 @@ namespace Syntropy::Tuples
 
     template <typename TElement, typename... TElements>
     template <typename TSelf, typename TSelfList, Details::EnableIfTupleMoveAssignment<TSelfList>>
-    constexpr Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>::operator=(Templates::Identity<Movable<TSelf>> rhs) noexcept
+    constexpr Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>::operator=(Syntropy::Templates::Identity<Movable<TSelf>> rhs) noexcept
     {
         Tuples::LockstepApply([](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
 
@@ -339,7 +339,7 @@ namespace Syntropy::Tuples
     }
 
     template <typename TElement, typename... TElements>
-    template <typename... UElements, typename TSelfList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Templates::TypeList<UElements...>>>
+    template <typename... UElements, typename TSelfList, Details::EnableIfTupleConvertingMoveAssignment<TSelfList, Syntropy::Templates::TypeList<UElements...>>>
     constexpr Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>::operator=(Movable<Tuple<UElements...>> rhs) noexcept
     {
         Tuples::LockstepApply([](auto& lhs_element, auto&& rhs_element) { lhs_element = Move(rhs_element); }, *this, rhs);
@@ -407,7 +407,7 @@ namespace Syntropy::Tuples
     template <typename TElement, typename... TElements>
     [[nodiscard]] constexpr Immutable<TElement> Get(Immutable<Tuple<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Templates::TypeListIndex<TElement, Templates::TypeList<TElements...>>;
+        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<TElement, Syntropy::Templates::TypeList<TElements...>>;
 
         return Get<kIndex>(tuple);
     }
@@ -415,7 +415,7 @@ namespace Syntropy::Tuples
     template <typename TElement, typename... TElements>
     [[nodiscard]] constexpr Mutable<TElement> Get(Mutable<Tuple<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Templates::TypeListIndex<TElement, Templates::TypeList<TElements...>>;
+        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<TElement, Syntropy::Templates::TypeList<TElements...>>;
 
         return Get<kIndex>(tuple);
     }
@@ -423,7 +423,7 @@ namespace Syntropy::Tuples
     template <typename TElement, typename... TElements>
     [[nodiscard]] constexpr Immovable<TElement> Get(Immovable<Tuple<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Templates::TypeListIndex<TElement, Templates::TypeList<TElements...>>;
+        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<TElement, Syntropy::Templates::TypeList<TElements...>>;
 
         return Get<kIndex>(Move(tuple));
     }
@@ -431,7 +431,7 @@ namespace Syntropy::Tuples
     template <typename TElement, typename... TElements>
     [[nodiscard]] constexpr Movable<TElement> Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Templates::TypeListIndex<TElement, Templates::TypeList<TElements...>>;
+        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<TElement, Syntropy::Templates::TypeList<TElements...>>;
 
         return Get<kIndex>(Move(tuple));
     }

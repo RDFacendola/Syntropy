@@ -19,7 +19,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Tuples::Templates
 {
     /************************************************************************/
     /* N-TUPLE                                                              */
@@ -34,36 +34,36 @@ namespace Syntropy::Templates
     struct TupleElementTypeTraits;
 
     /// \brief Rank of a n-tuple.
-    template <typename TType, typename UType = Templates::RemoveConstReference<TType>>
+    template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
     inline constexpr Int TupleRank = TupleRankTypeTraits<UType>::kValue;
 
     /// \brief Type of the VIndex-th element of a n-tuple.
-    template <Int VIndex, typename TType, typename UType = Templates::RemoveConstReference<TType>>
+    template <Int VIndex, typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
     using TupleElementType = typename TupleElementTypeTraits<VIndex, UType>::Type;
 
     /// \brief Constant equal to true if TType provides compile-time access to its element types, false otherwise.
-    template <typename TType, typename UType = Templates::RemoveConstReference<TType>>
+    template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
     inline constexpr Bool HasTupleElementTypes = Details::HasTupleElementTypes<UType>;
 
     /// \brief Constant equal to true if TType provides access to all its TupleRank elements, false otherwise.
-    template <typename TType, typename UType = Templates::RemoveConstReference<TType>>
+    template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
     inline constexpr Bool HasTupleGetters = Details::HasTupleGetters<UType>;
 }
 
 // ===========================================================================
 
-namespace Syntropy::Concepts
+namespace Syntropy::Tuples::Concepts
 {
     /************************************************************************/
     /* N-TUPLE                                                              */
     /************************************************************************/
 
     /// \brief Concept for types that behave as tuples, providing indexed compile-time access to its elements.
-    template <typename TType, typename UType = Templates::RemoveConstReference<TType>>
+    template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
     concept NTuple = requires
     {
         /// \brief Rank of the tuple.
-        { Templates::TupleRankTypeTraits<UType>::kValue } -> Integral;
+        { Templates::TupleRankTypeTraits<UType>::kValue } -> Syntropy::Concepts::Integral;
 
     }
     && Templates::HasTupleElementTypes<TType>
@@ -73,24 +73,24 @@ namespace Syntropy::Concepts
     /// \remarks This concept is especially useful when working with forwarding references to tuple types,
     ///          where adding a reference would cause no type traits to be found.
     template <typename TType>
-    concept NTupleReference = NTuple<Templates::Decay<TType>>;
+    concept NTupleReference = NTuple<Syntropy::Templates::Decay<TType>>;
 }
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Tuples::Templates
 {
     /************************************************************************/
     /* N-TUPLE                                                              */
     /************************************************************************/
 
     /// \brief Constant equal to true if all TNTuples have the same rank, false otherwise.
-    template <Concepts::NTuple... TNTuples>
-    inline constexpr Bool SameRank = Details::SameRank<RemoveConstReference<TNTuples>...>;
+    template <Syntropy::Tuples::Concepts::NTuple... TNTuples>
+    inline constexpr Bool SameRank = Details::SameRank<Syntropy::Templates::RemoveConstReference<TNTuples>...>;
 
     /// \brief Generates a sequence that can be used to enumerate all elements in a given tuple.
-    template <Concepts::NTupleReference TTuple>
-    using TupleSequenceFor = MakeSequence<TupleRank<TTuple>>;
+    template <Syntropy::Tuples::Concepts::NTupleReference TTuple>
+    using TupleSequenceFor = Syntropy::Templates::MakeSequence<TupleRank<TTuple>>;
 }
 
 // ===========================================================================
@@ -168,19 +168,19 @@ namespace std
     /************************************************************************/
 
     /// \brief Size of a NTuple.
-    template <Syntropy::Concepts::NTuple TTuple>
+    template <Syntropy::Tuples::Concepts::NTuple TTuple>
     struct std::tuple_size<TTuple>;
 
     /// \brief Type of the VIndex-th element of a Syntropy::Tuple.
-    template <std::size_t VIndex, Syntropy::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Tuples::Concepts::NTuple TTuple>
     struct std::tuple_element<VIndex, TTuple>;
 
     /// \brief Get the VIndex-th element of a tuple.
-    template <std::size_t VIndex, Syntropy::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Tuples::Concepts::NTuple TTuple>
     decltype(auto) get(Syntropy::Immutable<TTuple> tuple);
 
     /// \brief Get the VIndex-th element of a tuple.
-    template <std::size_t VIndex, Syntropy::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Tuples::Concepts::NTuple TTuple>
     decltype(auto) get(Syntropy::Movable<TTuple> tuple);
 }
 
@@ -230,18 +230,18 @@ namespace Syntropy::Tuples
 
         // Lexicographic compare between two tuple elements.
 
-        auto lexicographic_compare = [&lhs, &rhs]<Int VIndex>(Ordering compare_result, IntConstant<VIndex>)
+        auto lexicographic_compare = [&lhs, &rhs]<Int VIndex>(Ordering compare_result, Syntropy::Templates::IntConstant<VIndex>)
         {
             return (compare_result == Ordering::kEquivalent) ? (Get<VIndex>(lhs) <=> Get<VIndex>(rhs)) : compare_result;
         };
 
         // Lexicographic compare between two same-rank tuples.
 
-        auto lockstep_lexicographic_compare = [&lexicographic_compare]<Int... VIndex>(Sequence<VIndex...>) mutable
+        auto lockstep_lexicographic_compare = [&lexicographic_compare]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>) mutable
         {
             auto compare_result = Ordering::kEquivalent;
 
-            ((compare_result = lexicographic_compare(compare_result, IntConstant<VIndex>{})), ...);
+            ((compare_result = lexicographic_compare(compare_result, Syntropy::Templates::IntConstant<VIndex>{})), ...);
 
             return compare_result;
         };
@@ -286,7 +286,7 @@ namespace Syntropy::Tuples
     {
         using namespace Templates;
 
-        auto memberwise_swap = [&]<Int... VIndex>(Sequence<VIndex...>)
+        auto memberwise_swap = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
         {
             (Swap(Get<VIndex>(lhs), Get<VIndex>(rhs)), ...);
         };
@@ -300,7 +300,7 @@ namespace Syntropy::Tuples
     {
         using namespace Templates;
 
-        auto memberwise_exchange = [&]<Int... VIndex>(Sequence<VIndex...>)
+        auto memberwise_exchange = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
         {
             using Syntropy::Exchange;
 
@@ -316,7 +316,7 @@ namespace Syntropy::Tuples
     {
         using namespace Templates;
 
-        auto memberwise_exchange = [&]<Int... VIndex>(Sequence<VIndex...>) mutable
+        auto memberwise_exchange = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>) mutable
         {
             using Syntropy::Exchange;
 
@@ -333,7 +333,7 @@ namespace Syntropy::Tuples
     {
         using namespace Templates;
 
-        auto apply = [&]<Int... VIndex>(Sequence<VIndex...>)
+        auto apply = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
         {
             return function(Get<VIndex>(Forward<TTuple>(ntuple))...);
         };
@@ -346,7 +346,7 @@ namespace Syntropy::Tuples
     {
         using namespace Templates;
 
-        auto for_each_apply = [&]<Int... VIndex>(Sequence<VIndex...>)
+        auto for_each_apply = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
         {
             (function(Get<VIndex>(Forward<TTuple>(ntuple))), ...);
         };
@@ -369,12 +369,12 @@ namespace Syntropy::Tuples
 
         constexpr auto kMinRank = Math::Min(TupleRank<TTuples>...);
 
-        auto lockstep_apply = [&]<Int... VIndex>(Sequence<VIndex...>)
+        auto lockstep_apply = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
         {
             (ProjectApply<VIndex>(Forward<TFunction>(function), tuples...), ...);
         };
 
-        lockstep_apply(MakeSequence<kMinRank>{});
+        lockstep_apply(Syntropy::Templates::MakeSequence<kMinRank>{});
     }
 
     template <typename TType, Concepts::NTupleReference TTuple>
@@ -382,7 +382,7 @@ namespace Syntropy::Tuples
     {
         using namespace Templates;
 
-        auto make_from_tuple = [&]<Int... VIndex>(Sequence<VIndex...>)
+        auto make_from_tuple = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
         {
             return TType(Get<VIndex>(Forward<TTuple>(tuple))...);
         };
@@ -403,25 +403,25 @@ namespace std
     // Structured bindings.
     // ====================
 
-    template <Syntropy::Concepts::NTuple TTuple>
+    template <Syntropy::Tuples::Concepts::NTuple TTuple>
     struct std::tuple_size<TTuple>
     {
-        static constexpr std::size_t value = Syntropy::Templates::TupleRank<TTuple>;
+        static constexpr std::size_t value = Syntropy::Tuples::Templates::TupleRank<TTuple>;
     };
 
-    template <std::size_t VIndex, Syntropy::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Tuples::Concepts::NTuple TTuple>
     struct std::tuple_element<VIndex, TTuple>
     {
-        using type = Syntropy::Templates::TupleElementType<VIndex, TTuple>;
+        using type = Syntropy::Tuples::Templates::TupleElementType<VIndex, TTuple>;
     };
 
-    template <std::size_t VIndex, Syntropy::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Tuples::Concepts::NTuple TTuple>
     decltype(auto) get(Syntropy::Immutable<TTuple> tuple)
     {
         return Get<VIndex>(tuple);
     }
 
-    template <std::size_t VIndex, Syntropy::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Tuples::Concepts::NTuple TTuple>
     decltype(auto) get(Syntropy::Movable<TTuple> tuple)
     {
         return Get<VIndex>(Syntropy::Move(tuple));
