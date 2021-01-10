@@ -63,7 +63,7 @@ namespace Syntropy::Tuples::Concepts
     concept NTuple = requires
     {
         /// \brief Rank of the tuple.
-        { Templates::RankTypeTraits<UType>::kValue } -> Syntropy::Concepts::Integral;
+        { Syntropy::Tuples::Templates::RankTypeTraits<UType>::kValue } -> Syntropy::Concepts::Integral;
 
     }
     && Templates::HasElementTypes<TType>
