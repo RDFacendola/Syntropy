@@ -11,11 +11,11 @@
 #include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/core/concepts/range.h"
-#include "syntropy/core/concepts/contiguous_range.h"
-#include "syntropy/core/concepts/random_access_range.h"
-#include "syntropy/core/concepts/bidirectional_range.h"
-#include "syntropy/core/concepts/sized_range.h"
 #include "syntropy/core/concepts/forward_range.h"
+#include "syntropy/core/concepts/sized_range.h"
+#include "syntropy/core/concepts/bidirectional_range.h"
+#include "syntropy/core/concepts/random_access_range.h"
+#include "syntropy/core/concepts/contiguous_range.h"
 
 // ===========================================================================
 

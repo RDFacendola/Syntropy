@@ -12,7 +12,12 @@
 #include "syntropy/language/templates/sequence.h"
 #include "syntropy/language/support/compare.h"
 
-#include "syntropy/core/concepts/range.h"
+#include "syntropy/core/concepts/forward_range.h"
+#include "syntropy/core/concepts/sized_range.h"
+#include "syntropy/core/concepts/bidirectional_range.h"
+#include "syntropy/core/concepts/random_access_range.h"
+#include "syntropy/core/concepts/contiguous_range.h"
+
 #include "syntropy/core/concepts/ntuple.h"
 #include "syntropy/core/foundation/tuple.h"
 
