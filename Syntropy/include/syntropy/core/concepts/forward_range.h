@@ -12,37 +12,47 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 
-#include "syntropy/diagnostics/assert.h"
-
 #include "syntropy/core/concepts/range.h"
-#include "syntropy/core/concepts/random_access_range.h"
-#include "syntropy/core/concepts/sized_range.h"
 
+#include "syntropy/diagnostics/assert.h"
 #include "syntropy/core/foundation/tuple.h"
 
 // ===========================================================================
 
-namespace Syntropy::Concepts
+namespace Syntropy::Ranges::Concepts
 {
+    /************************************************************************/
+    /* FORWARD RANGE INTERFACE                                              */
+    /************************************************************************/
+
+    /// \brief Minimal interface for ranges whose elements can be visited sequentially.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept ForwardRangeInterface = requires()
+        {
+            /// \brief Trait used to determine the reference type of an element inside the range.
+            typename Templates::ElementReferenceTypeTraits<TRange>::Type;
+        }
+        && requires(Immutable<TRange> range)
+        {
+            /// \brief Access the first element in the range.
+            { Front(range) } -> Syntropy::Concepts::SameAs<Templates::ElementReference<TRange>>;
+
+            /// \brief Discard the first element in the range.
+            { PopFront(range) } -> Syntropy::Concepts::ConvertibleTo<TRange>;
+
+            /// \brief Check whether the range is empty.
+            { IsEmpty(range) } -> Syntropy::Concepts::Boolean;
+        };
+
     /************************************************************************/
     /* FORWARD RANGE                                                        */
     /************************************************************************/
 
-    /// \brief Range that can be visited sequentially.
-    /// \author Raffaele D. Facendola - November 2020.
+    /// \brief Range whose element can be visited sequentially.
+    /// \author Raffaele D. Facendola - January 2021.
     template <typename TRange>
-    concept ForwardRange = Range<TRange>
-        && requires(Immutable<TRange> range)
-        {
-        /// \brief Access the first element in the range.
-            { Ranges::ADL::RequiresFront(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
-
-            /// \brief Discard the first element in the range.
-            { Ranges::ADL::RequiresPopFront(range) } -> ConvertibleTo<TRange>;
-
-            /// \brief Check whether the range is empty.
-            { Ranges::ADL::IsEmpty(range) } -> Boolean;
-        };
+    concept ForwardRange = ForwardRangeInterface<TRange>;
 }
 
 // ===========================================================================
@@ -74,13 +84,13 @@ namespace Syntropy::Ranges
 
     /// \brief Wraps a range and adapt it for iteration via range-based for loop.
     /// \author Raffaele D. Facendola - December 2020.
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeInterface TRange>
     class RangeIterator
     {
     public:
 
         /// \brief Reference to a range element.
-        using TReference = Templates::RangeElementReference<TRange>;
+        using TReference = Templates::ElementReference<TRange>;
 
         /// \brief Create an empty range.
         constexpr RangeIterator() noexcept = default;
@@ -107,11 +117,11 @@ namespace Syntropy::Ranges
     // ==========
 
     /// \brief Get an iterator to the first element in a range.
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeInterface TRange>
     constexpr RangeIterator<TRange> begin(Immutable<TRange> range) noexcept;
 
     /// \brief Get an iterator past the last element in a range.
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeInterface TRange>
     constexpr RangeIterator<TRange> end(Immutable<TRange> range) noexcept;
 
 }
@@ -160,20 +170,20 @@ namespace Syntropy::Ranges
 
     // RangeIterator.
 
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeInterface TRange>
     constexpr RangeIterator<TRange>::RangeIterator(Immutable<TRange> range) noexcept
         : range_(range)
     {
 
     }
 
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeInterface TRange>
     [[nodiscard]] constexpr typename RangeIterator<TRange>::TReference RangeIterator<TRange>::operator*() const noexcept
     {
         return Front(range_);
     }
 
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeInterface TRange>
     constexpr Mutable<RangeIterator<TRange>> RangeIterator<TRange>::operator++() noexcept
     {
         range_ = PopFront(range_);
@@ -181,7 +191,7 @@ namespace Syntropy::Ranges
         return *this;
     }
 
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeInterface TRange>
     [[nodiscard]] constexpr Bool RangeIterator<TRange>::operator==(Immutable<RangeIterator> other) const noexcept
     {
         SYNTROPY_ASSERT(IsEmpty(other.range_));
@@ -191,13 +201,13 @@ namespace Syntropy::Ranges
 
     // Iterators.
 
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeInterface TRange>
     constexpr RangeIterator<TRange> begin(Immutable<TRange> range) noexcept
     {
         return RangeIterator<TRange>{ range };
     }
 
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeInterface TRange>
     constexpr RangeIterator<TRange> end(Immutable<TRange> range) noexcept
     {
         return RangeIterator<TRange>{};

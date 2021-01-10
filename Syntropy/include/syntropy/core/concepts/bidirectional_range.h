@@ -12,41 +12,50 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 
-#include "syntropy/core/concepts/range.h"
-#include "syntropy/core/concepts/random_access_range.h"
-#include "syntropy/core/concepts/sized_range.h"
-
-#include "syntropy/core/foundation/tuple.h"
+#include "syntropy/core/concepts/forward_range.h"
 
 // ===========================================================================
 
-namespace Syntropy::Concepts
+namespace Syntropy::Ranges::Concepts
 {
+    /************************************************************************/
+    /* BIDIRECTIONAL RANGE INTERFACE                                        */
+    /************************************************************************/
+
+    /// \brief Minimal interface for ranges whose element can be visited sequentially in either direction.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept BidirectionalRangeInterface = requires()
+        {
+            /// \brief Trait used to determine the reference type of an element inside the range.
+            typename Templates::ElementReferenceTypeTraits<TRange>::Type;
+        }
+        && requires(Immutable<TRange> range)
+        {
+            /// \brief Access the first element in the range.
+            { Front(range) } -> Syntropy::Concepts::SameAs<Templates::ElementReference<TRange>>;
+
+            /// \brief Discard the first element in the range.
+            { PopFront(range) } -> Syntropy::Concepts::ConvertibleTo<TRange>;
+
+            /// \brief Access the last element in the range.
+            { Back(range) } -> Syntropy::Concepts::SameAs<Templates::ElementReference<TRange>>;
+
+            /// \brief Discard the last element in the range.
+            { PopBack(range) } -> Syntropy::Concepts::ConvertibleTo<TRange>;
+
+            /// \brief Check whether the range is empty.
+            { IsEmpty(range) } -> Syntropy::Concepts::Boolean;
+        };
+
     /************************************************************************/
     /* BIDIRECTIONAL RANGE                                                  */
     /************************************************************************/
 
-    /// \brief Range that can be visited sequentially in either direction.
-    /// \author Raffaele D. Facendola - November 2020.
+    /// \brief Range whose element can be visited sequentially in either direction.
+    /// \author Raffaele D. Facendola - January 2021.
     template <typename TRange>
-    concept BidirectionalRange = Range<TRange>
-        && requires(Immutable<TRange> range)
-        {
-            /// \brief Access the first element in the range.
-            { Ranges::ADL::RequiresFront(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
-
-            /// \brief Discard the first element in the range.
-            { Ranges::ADL::RequiresBack(range) } -> SameAs<Templates::RangeElementReference<TRange>>;
- 
-            /// \brief Check whether the range is empty.
-            { Ranges::ADL::IsEmpty(range) } -> Boolean;
- 
-            /// \brief Access the last element in the range.
-            { Ranges::ADL::RequiresPopFront(range) } -> ConvertibleTo<TRange>;
- 
-            /// \brief Discard the last element in the range.
-            { Ranges::ADL::RequiresPopBack(range) } -> ConvertibleTo<TRange>;
-        };
+    concept BidirectionalRange = BidirectionalRangeInterface<TRange> && ForwardRange<TRange>;
 }
 
 // ===========================================================================

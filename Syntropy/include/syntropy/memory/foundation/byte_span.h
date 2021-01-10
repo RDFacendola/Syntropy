@@ -179,7 +179,7 @@ namespace Syntropy::Memory
     [[nodiscard]] Reference<TObject> FromBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
 
     /// \brief Get the object representation of bytes in the contiguous range rhs.
-    template <Concepts::ContiguousRange TRange>
+    template <Ranges::Concepts::ContiguousRange TRange>
     [[nodiscard]] auto RangeBytesOf(Immutable<TRange> rhs) noexcept;
 
     /// \brief Get the object representation of bytes in the contiguous range rhs.
@@ -189,7 +189,7 @@ namespace Syntropy::Memory
 
     /// \brief Get a contiguous range of strongly-typed elements from its range object representation.
     /// \remarks If rhs is not exactly a range TRange, accessing the returned value results in undefined behavior.
-    template <Concepts::ContiguousRange TRange, typename TTraits>
+    template <Ranges::Concepts::ContiguousRange TRange, typename TTraits>
     [[nodiscard]] TRange FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
 
     // Access.
@@ -221,7 +221,7 @@ namespace Syntropy::Memory
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Ranges::Templates
 {
     /************************************************************************/
     /* RANGE TRAITS                                                         */
@@ -229,15 +229,15 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for byte spans.
     template <typename TTraits>
-    struct RangeElementReferenceTypeTraits<Memory::BaseByteSpan<TTraits>> : Alias<typename TTraits::TReference> {};
+    struct ElementReferenceTypeTraits<Memory::BaseByteSpan<TTraits>> : Syntropy::Templates::Alias<typename TTraits::TReference> {};
 
     /// \brief Specialization for byte spans.
     template <typename TTraits>
-    struct RangeElementPointerTypeTraits<Memory::BaseByteSpan<TTraits>> : Alias<typename TTraits::TPointer> {};
+    struct ElementPointerTypeTraits<Memory::BaseByteSpan<TTraits>> : Syntropy::Templates::Alias<typename TTraits::TPointer> {};
 
     /// \brief Specialization for byte spans.
     template <typename TTraits>
-    struct RangeElementCountTypeTraits<Memory::BaseByteSpan<TTraits>> : Alias<Memory::Bytes> {};
+    struct ElementCountTypeTraits<Memory::BaseByteSpan<TTraits>> : Syntropy::Templates::Alias<Memory::Bytes> {};
 }
 
 // ===========================================================================
@@ -383,10 +383,10 @@ namespace Syntropy::Memory
         return *FromTypelessPtr<TObject>(Data(rhs));
     }
 
-    template <Concepts::ContiguousRange TRange>
+    template <Ranges::Concepts::ContiguousRange TRange>
     [[nodiscard]] inline auto RangeBytesOf(Immutable<TRange> rhs) noexcept
     {
-        using RangeElement = Templates::RangeElementPointer<TRange>;
+        using RangeElement = Ranges::Templates::ElementPointer<TRange>;
 
         auto data = ToBytePtr(Data(rhs));
         auto size = SizeOf<RangeElement>() * Count(rhs);
@@ -400,7 +400,7 @@ namespace Syntropy::Memory
         return rhs;
     }
 
-    template <Concepts::ContiguousRange TRange, typename TTraits>
+    template <Ranges::Concepts::ContiguousRange TRange, typename TTraits>
     [[nodiscard]] inline TRange FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
     {
         if constexpr (Concepts::SameAs<TRange, BaseByteSpan<TTraits>>)
@@ -409,7 +409,7 @@ namespace Syntropy::Memory
         }
         else
         {
-            using RangeElement = Templates::RangeElementPointer<TRange>;
+            using RangeElement = Ranges::Templates::ElementPointer<TRange>;
 
             auto data = FromTypelessPtr<RangeElement>(Data(rhs));
             auto count = Count(rhs) / SizeOf<RangeElement>();

@@ -92,8 +92,6 @@ public:
 
 };
 
-// ==================================================================================
-
 std::ostream& operator<<(std::ostream& ss, Syntropy::Memory::Bytes rhs)
 {
     return (ss << ToInt(rhs));
@@ -102,6 +100,46 @@ std::ostream& operator<<(std::ostream& ss, Syntropy::Memory::Bytes rhs)
 std::ostream& operator<<(std::ostream& ss, Syntropy::Memory::Byte rhs)
 {
     return (ss << Syntropy::ToInt(rhs));
+}
+
+struct Whee
+{
+    Syntropy::Int value_;
+};
+
+Syntropy::Immutable<Syntropy::Int> Front(Syntropy::Immutable<Whee> whee) noexcept
+{
+    return whee.value_;
+}
+
+Whee PopFront(Syntropy::Immutable<Whee> whee) noexcept
+{
+    return Whee{ whee.value_ + 1 };
+}
+
+Syntropy::Bool IsEmpty(Syntropy::Immutable<Whee> whee) noexcept
+{
+    return false;
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Templates
+{
+    template <>
+    struct ElementReferenceTypeTraits<Whee> : Syntropy::Templates::Alias<Syntropy::Immutable<Syntropy::Int>> {};
+}
+
+template <typename TSpan>
+void Print(Syntropy::Immutable<TSpan> span)
+{
+    std::cout << ">>\n";
+
+    for (auto&& element : span)
+    {
+        std::cout << element << "\n";
+    }
+
 }
 
 int main(int argc, char** argv)
@@ -114,26 +152,16 @@ int main(int argc, char** argv)
 
     Syntropy::Memory::SetAllocator(dbga);
 
-    Syntropy::Int array[] = { 0, 1, 2, 3, 4, 5 };
+    Syntropy::Int s[] = { 0,1,2,3,4 };
 
-    auto span = Syntropy::Ranges::MakeSpan(Syntropy::PtrOf(array[0]), 6);
+    auto span = Syntropy::Ranges::MakeSpan(Syntropy::PtrOf(s[0]), 5);
 
-    auto bspan = Syntropy::Memory::RangeBytesOf(span);
+    Print(span);
+    Print(Reverse(span));
+    Print(PopBack(Reverse(span)));
+    Print(PopBack(PopFront(Reverse(span))));
 
-
-    for (auto&& element : Reverse(span))
-    {
-        std::cout << element << "\n";
-    }
-
-    for (auto&& element : span)
-    {
-        std::cout << element << "\n";
-    }
-
-    // #TODO ADL functions create circular dependencies among ranges definitions. Move them outside!
-
-    //auto b = bspan == bspan;
+    auto k = (span == PopFront(span));
 
     system("pause");
 

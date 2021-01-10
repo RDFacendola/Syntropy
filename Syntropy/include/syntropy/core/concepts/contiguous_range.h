@@ -13,35 +13,51 @@
 #include "syntropy/language/templates/concepts.h"
 
 #include "syntropy/core/concepts/range.h"
+#include "syntropy/core/concepts/random_access_range.h"
 
 // ===========================================================================
 
-namespace Syntropy::Concepts
+namespace Syntropy::Ranges::Concepts
 {
+    /************************************************************************/
+    /* CONTIGUOUS RANGE INTERFACE                                           */
+    /************************************************************************/
+
+    /// \brief Minimal interface for ranges whose elements are allocated contiguously.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept ContiguousRangeInterface = requires()
+        {
+            /// \brief Trait used to determine the reference type of an element inside the range.
+            typename Templates::ElementReferenceTypeTraits<TRange>::Type;
+
+            /// \brief Trait used to determine the pointer type of an element inside the range.
+            typename Templates::ElementPointerTypeTraits<TRange>::Type;
+
+            /// \brief Trait used to determine the type of the cardinality of the range.
+            typename Templates::ElementCountTypeTraits<TRange>::Type;
+        }
+        && RangeCardinality<Templates::ElementCount<TRange>>
+        && Syntropy::Concepts::PointerType<Templates::ElementPointer<TRange>>
+        && requires(Immutable<TRange> range)
+        {
+            /// \brief Get the number of elements in the range.
+            { Count(range) } -> Syntropy::Concepts::SameAs<Templates::ElementCount<TRange>>;
+        }
+        && requires(Immutable<TRange> range)
+        {
+            /// \brief Access the memory the elements are contiguously allocated on.
+            { Data(range) } -> Syntropy::Concepts::SameAs<Templates::ElementPointer<TRange>>;
+        };
+
     /************************************************************************/
     /* CONTIGUOUS RANGE                                                     */
     /************************************************************************/
 
-    /// \brief Range whose elements are allocated contiguously.
-    /// \author Raffaele D. Facendola - November 2020.
+    /// \brief Range whose element are allocated contiguously.
+    /// \author Raffaele D. Facendola - January 2021.
     template <typename TRange>
-    concept ContiguousRange = Range<TRange>
-        && requires(Immutable<TRange> range)
-        {
-            /// \brief Get the number of elements in the range.
-            { Count(range) } -> SameAs<Templates::RangeElementCount<TRange>>;
-
-            /// \brief Access the memory the elements are contiguously allocated on.
-            { Data(range) } -> SameAs<Templates::RangeElementPointer<TRange>>;
-        }
-        && requires(Immutable<Templates::RangeElementPointer<TRange>> data, Immutable<Templates::RangeElementCount<TRange>> offset)
-        {
-            /// \brief Range elements should be accessible via a data pointer and a positive offset.
-            { data + offset } -> SameAs<Templates::RangeElementPointer<TRange>>;
-
-            /// \brief Range elements should be accessible via a data pointer and a negative offset.
-            { data - offset } -> SameAs<Templates::RangeElementPointer<TRange>>;
-        };
+    concept ContiguousRange = ContiguousRangeInterface<TRange> && RandomAccessRange<TRange>;
 }
 
 // ===========================================================================
@@ -52,43 +68,25 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
+    // Contiguous range interface.
+    // ===========================
+
+    /// \brief Access a sub-range given an offset from the first element and the number of elements.
+    /// \brief Exceeding range boundaries results in undefined behavior.
+    template <Concepts::ContiguousRangeInterface TRange>
+    [[nodiscard]] constexpr auto Select(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> offset, Immutable<Templates::ElementCount<TRange>> count) noexcept;
+
+    /// \brief Get an iterator past the last element in a contiguous range.
+    /// \brief Exceeding range boundaries results in undefined behavior.
+    template <Concepts::ContiguousRangeInterface TRange>
+    [[nodiscard]] constexpr decltype(auto) Select(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> index) noexcept;
+
     // Contiguous range.
     // =================
 
     /// \brief Check whether lhs and rhs are equal.
     template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
     [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
-
-    /// \brief Access a sub-range given an offset from the first element and the number of elements.
-    /// \brief Exceeding range boundaries results in undefined behavior.
-    template <Concepts::ContiguousRange TRange>
-    [[nodiscard]] constexpr auto Select(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> offset, Immutable<Templates::RangeElementCount<TRange>> count) noexcept;
-
-    /// \brief Get an iterator past the last element in a contiguous range.
-    /// \brief Exceeding range boundaries results in undefined behavior.
-    template <Concepts::ContiguousRange TRange>
-    [[nodiscard]] constexpr decltype(auto) Select(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> index) noexcept;
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::ADL
-{
-    /************************************************************************/
-    /* CONTIGUOUS RANGE                                                     */
-    /************************************************************************/
-
-    // These methods are used inside derived concepts to detect ADL functions.
-
-    using Ranges::Select;
-
-    /// \brief Detect a "Select" function using argument-dependent lookup.
-    template <typename TRange>
-    auto RequiresSelect(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> offset, Immutable<Templates::RangeElementCount<TRange>> count) -> decltype(Select(range, offset, count));
-
-    /// \brief Detect a "Select" function using argument-dependent lookup.
-    template <typename TRange>
-    auto RequiresSelect(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> index) -> decltype(Select(range, index));
 }
 
 // ===========================================================================
@@ -102,28 +100,27 @@ namespace Syntropy::Ranges
     // Non-member functions.
     // =====================
 
+    // Contiguous range interface.
+
+    template <Concepts::ContiguousRangeInterface TRange>
+    [[nodiscard]] constexpr auto Select(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> offset, Immutable<Templates::ElementCount<TRange>> count) noexcept
+    {
+        return TRange{ Data(range) + offset, count };
+    }
+
+    template <Concepts::ContiguousRangeInterface TRange>
+    [[nodiscard]] constexpr decltype(auto) Select(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> index) noexcept
+    {
+        return *(Data(range) + index);
+    }
+
     // Contiguous range.
 
     template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
     [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        // Note that empty ranges are equal to every other empty range.
-
         return (Count(lhs) == Count(rhs)) && (IsEmpty(lhs) || (Data(lhs) == Data(rhs)));
     }
-
-    template <Concepts::ContiguousRange TRange>
-    [[nodiscard]] constexpr auto Select(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> offset, Immutable<Templates::RangeElementCount<TRange>> count) noexcept
-    {
-        return TRange{ Data(range) + offset, count };
-    }
-
-    template <Concepts::ContiguousRange TRange>
-    [[nodiscard]] constexpr decltype(auto) Select(Immutable<TRange> range, Immutable<Templates::RangeElementCount<TRange>> index) noexcept
-    {
-        return *(Data(range) + index);
-    }
-
 }
 
 // ===========================================================================

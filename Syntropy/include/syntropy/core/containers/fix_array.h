@@ -131,7 +131,7 @@ namespace Syntropy
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Ranges::Templates
 {
     /************************************************************************/
     /* RANGE TRAITS                                                         */
@@ -139,15 +139,15 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for fix-arrays.
     template <typename TType, Int VSize, typename TTraits>
-    struct RangeElementReferenceTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Alias<typename TTraits::TReference> {};
+    struct ElementReferenceTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Syntropy::Templates::Alias<typename TTraits::TReference> {};
 
     /// \brief Specialization for fix-arrays.
     template <typename TType, Int VSize, typename TTraits>
-    struct RangeElementPointerTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Alias<typename TTraits::TPointer> {};
+    struct ElementPointerTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Syntropy::Templates::Alias<typename TTraits::TPointer> {};
 
     /// \brief Specialization for fix-arrays.
     template <typename TType, Int VSize, typename TTraits>
-    struct RangeElementCountTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Alias<Int> {};
+    struct ElementCountTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Syntropy::Templates::Alias<Int> {};
 }
 
 // ===========================================================================

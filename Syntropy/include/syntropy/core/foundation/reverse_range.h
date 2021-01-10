@@ -33,7 +33,7 @@ namespace Syntropy::Ranges
         // Forward range.
 
         template <Concepts::BidirectionalRange TRange>
-        friend constexpr Templates::RangeElementReference<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept;
+        friend constexpr Templates::ElementReference<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept;
 
         template <Concepts::BidirectionalRange TRange>
         friend constexpr ReverseRange<TRange> PopFront(Immutable<ReverseRange<TRange>> range) noexcept;
@@ -44,7 +44,7 @@ namespace Syntropy::Ranges
         // Sized range.
 
         template <Concepts::SizedRange TRange>
-        friend constexpr Templates::RangeElementCount<ReverseRange<TRange>> Count(Immutable<ReverseRange<TRange>> rhs) noexcept;
+        friend constexpr Templates::ElementCount<ReverseRange<TRange>> Count(Immutable<ReverseRange<TRange>> rhs) noexcept;
 
         template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
         constexpr Bool AreEquivalent(Immutable<ReverseRange<TRange>> lhs, Immutable<ReverseRange<URange>> rhs) noexcept;
@@ -55,7 +55,7 @@ namespace Syntropy::Ranges
         // Bidirectional range.
 
         template <Concepts::BidirectionalRange TRange>
-        friend constexpr Templates::RangeElementReference<TRange> Back(Immutable<ReverseRange<TRange>> range) noexcept;
+        friend constexpr Templates::ElementReference<TRange> Back(Immutable<ReverseRange<TRange>> range) noexcept;
 
         template <Concepts::BidirectionalRange TRange>
         friend constexpr ReverseRange<TRange> PopBack(Immutable<ReverseRange<TRange>> range) noexcept;
@@ -63,10 +63,10 @@ namespace Syntropy::Ranges
         // Random access range.
 
         template <Concepts::RandomAccessRange TRange>
-        friend constexpr ReverseRange<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::RangeElementCount<ReverseRange<TRange>> offset, Templates::RangeElementCount<ReverseRange<TRange>> count) noexcept;
+        friend constexpr ReverseRange<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::ElementCount<ReverseRange<TRange>> offset, Templates::ElementCount<ReverseRange<TRange>> count) noexcept;
 
         template <Concepts::RandomAccessRange TRange>
-        friend constexpr Templates::RangeElementReference<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::RangeElementCount<ReverseRange<TRange>> index) noexcept;
+        friend constexpr Templates::ElementReference<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::ElementCount<ReverseRange<TRange>> index) noexcept;
 
         template <Concepts::BidirectionalRange TRange>
         friend constexpr TRange Reverse(Immutable<ReverseRange<TRange>> range) noexcept;
@@ -100,7 +100,7 @@ namespace Syntropy::Ranges
     /// \brief Access the first element in a range.
     /// \remarks Accessing the first element of an empty range results in undefined behavior.
     template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementReference<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept;
+    [[nodiscard]] constexpr Templates::ElementReference<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept;
 
     /// \brief Discard the first count elements in a range and return the resulting subrange.
     /// \remarks If the provided range is empty, the behavior of this method is undefined.
@@ -117,7 +117,7 @@ namespace Syntropy::Ranges
 
     /// \brief Get the number of elements in a range.
     template <Concepts::SizedRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementCount<ReverseRange<TRange>> Count(Immutable<ReverseRange<TRange>> rhs) noexcept;
+    [[nodiscard]] constexpr Templates::ElementCount<ReverseRange<TRange>> Count(Immutable<ReverseRange<TRange>> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
@@ -133,7 +133,7 @@ namespace Syntropy::Ranges
     /// \brief Access the last element in a range.
     /// \remarks Accessing the last element of an empty range results in undefined behavior.
     template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementReference<TRange> Back(Immutable<ReverseRange<TRange>> range) noexcept;
+    [[nodiscard]] constexpr Templates::ElementReference<TRange> Back(Immutable<ReverseRange<TRange>> range) noexcept;
 
     /// \brief Discard the last count elements in a range and return the resulting subrange.
     /// \remarks If this method would cause the subrange to exceed the original range, the behavior of this method is undefined.
@@ -146,12 +146,12 @@ namespace Syntropy::Ranges
     /// \brief Obtain a sub-range given an offset and a number of elements.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr ReverseRange<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::RangeElementCount<ReverseRange<TRange>> offset, Templates::RangeElementCount<ReverseRange<TRange>> count) noexcept;
+    [[nodiscard]] constexpr ReverseRange<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::ElementCount<ReverseRange<TRange>> offset, Templates::ElementCount<ReverseRange<TRange>> count) noexcept;
 
     /// \brief Obtain a range element at given index.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementReference<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::RangeElementCount<ReverseRange<TRange>> index) noexcept;
+    [[nodiscard]] constexpr Templates::ElementReference<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::ElementCount<ReverseRange<TRange>> index) noexcept;
 
     // Contiguous range.
     // =================
@@ -181,7 +181,7 @@ namespace Syntropy::Ranges
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Ranges::Templates
 {
     /************************************************************************/
     /* RANGE TRAITS                                                         */
@@ -189,15 +189,15 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for reverse ranges.
     template <Concepts::BidirectionalRange TRange>
-    struct RangeElementReferenceTypeTraits<Ranges::ReverseRange<TRange>> : Alias<RangeElementReference<TRange>> {};
+    struct ElementReferenceTypeTraits<Ranges::ReverseRange<TRange>> : Syntropy::Templates::Alias<ElementReference<TRange>> {};
 
     /// \brief Specialization for reverse ranges.
     template <Concepts::BidirectionalRange TRange>
-    struct RangeElementPointerTypeTraits<Ranges::ReverseRange<TRange>> : Alias<RangeElementPointer<TRange>> {};
+    struct ElementPointerTypeTraits<Ranges::ReverseRange<TRange>> : Syntropy::Templates::Alias<ElementPointer<TRange>> {};
 
     /// \brief Specialization for reverse ranges.
     template <Concepts::BidirectionalRange TRange>
-    struct RangeElementCountTypeTraits<Ranges::ReverseRange<TRange>> : Alias<RangeElementCount<TRange>> {};
+    struct ElementCountTypeTraits<Ranges::ReverseRange<TRange>> : Syntropy::Templates::Alias<ElementCount<TRange>> {};
 }
 
 // ===========================================================================
@@ -224,7 +224,7 @@ namespace Syntropy::Ranges
     // Forward range.
 
     template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementReference<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept
+    [[nodiscard]] constexpr Templates::ElementReference<TRange> Front(Immutable<ReverseRange<TRange>> range) noexcept
     {
         return Back(range.range_);
     }
@@ -244,7 +244,7 @@ namespace Syntropy::Ranges
     // Sized range.
 
     template <Concepts::SizedRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementCount<ReverseRange<TRange>> Count(Immutable<ReverseRange<TRange>> rhs) noexcept
+    [[nodiscard]] constexpr Templates::ElementCount<ReverseRange<TRange>> Count(Immutable<ReverseRange<TRange>> rhs) noexcept
     {
         return Count(rhs.range_);
     }
@@ -264,7 +264,7 @@ namespace Syntropy::Ranges
     // Bidirectional range.
 
     template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementReference<TRange> Back(Immutable<ReverseRange<TRange>> range) noexcept
+    [[nodiscard]] constexpr Templates::ElementReference<TRange> Back(Immutable<ReverseRange<TRange>> range) noexcept
     {
         return Front(range.range_);
     }
@@ -278,13 +278,13 @@ namespace Syntropy::Ranges
     // Random access range.
 
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr ReverseRange<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::RangeElementCount<ReverseRange<TRange>> offset, Templates::RangeElementCount<ReverseRange<TRange>> count) noexcept
+    [[nodiscard]] constexpr ReverseRange<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::ElementCount<ReverseRange<TRange>> offset, Templates::ElementCount<ReverseRange<TRange>> count) noexcept
     {
         return Reverse(Select(rhs.range_, Count(rhs) - offset - 1), count);
     }
 
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementReference<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::RangeElementCount<ReverseRange<TRange>> index) noexcept
+    [[nodiscard]] constexpr Templates::ElementReference<TRange> Select(Immutable<ReverseRange<TRange>> rhs, Templates::ElementCount<ReverseRange<TRange>> index) noexcept
     {
         return Select(rhs.range_, Count(rhs) - index - 1);
     }

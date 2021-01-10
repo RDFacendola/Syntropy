@@ -176,7 +176,7 @@ namespace Syntropy::Ranges
 
 // ===========================================================================
 
-namespace Syntropy::Templates
+namespace Syntropy::Ranges::Templates
 {
     /************************************************************************/
     /* RANGE TRAITS                                                         */
@@ -184,15 +184,15 @@ namespace Syntropy::Templates
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
-    struct RangeElementReferenceTypeTraits<Ranges::BaseSpan<TType, TTraits>> : Alias<typename TTraits::TReference> {};
+    struct ElementReferenceTypeTraits<Ranges::BaseSpan<TType, TTraits>> : Syntropy::Templates::Alias<typename TTraits::TReference> {};
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
-    struct RangeElementPointerTypeTraits<Ranges::BaseSpan<TType, TTraits>> : Alias<typename TTraits::TPointer> {};
+    struct ElementPointerTypeTraits<Ranges::BaseSpan<TType, TTraits>> : Syntropy::Templates::Alias<typename TTraits::TPointer> {};
 
     /// \brief Specialization for spans.
     template <typename TType, typename TTraits>
-    struct RangeElementCountTypeTraits<Ranges::BaseSpan<TType, TTraits>> : Alias<Int> {};
+    struct ElementCountTypeTraits<Ranges::BaseSpan<TType, TTraits>> : Syntropy::Templates::Alias<Int> {};
 }
 
 // ===========================================================================
@@ -278,16 +278,12 @@ namespace Syntropy::Ranges
     template <typename TType, typename TTraits, typename UType, typename UTraits>
     [[nodiscard]] constexpr Bool operator==(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
-        using namespace Ranges;
-
-        return AreEqual(lhs, rhs) || AreEquivalent(lhs, rhs);
+        return AreEqual(lhs, rhs) && AreEquivalent(lhs, rhs);
     }
 
     template <typename TType, typename TTraits, typename UType, typename UTraits>
     [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
-        using namespace Ranges;
-
         return Compare(lhs, rhs);
     }
 
