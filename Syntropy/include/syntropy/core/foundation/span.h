@@ -278,7 +278,7 @@ namespace Syntropy::Ranges
     template <typename TType, typename TTraits, typename UType, typename UTraits>
     [[nodiscard]] constexpr Bool operator==(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
-        return AreEqual(lhs, rhs) && AreEquivalent(lhs, rhs);
+        return AreEqual(lhs, rhs) || AreEquivalent(lhs, rhs);
     }
 
     template <typename TType, typename TTraits, typename UType, typename UTraits>

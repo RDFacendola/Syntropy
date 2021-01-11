@@ -19,7 +19,7 @@ namespace Syntropy
     /* BASE FIX ARRAY                                                       */
     /************************************************************************/
 
-    /// \brief Represents a fixed-size array of elements o the same type..
+    /// \brief Represents a fixed-size array of elements of the same type.
     /// \author Raffaele D. Facendola - January 2021
     template <typename TType, Int VSize, typename TTraits>
     class BaseFixArray
@@ -60,7 +60,7 @@ namespace Syntropy
         /// \brief Access the array by index.
         Immutable<TType> operator[](Int index) const noexcept;
 
-    private:
+    // private:
 
         /// \brief Array elements.
         TType elements_[VSize];
@@ -223,7 +223,7 @@ namespace Syntropy
     // ==========
 
     template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr auto RangeOf(Reference<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr auto RangeOf(Forwarding<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
     {
         return Ranges::MakeSpan(PtrOf(rhs.elements_[0]), VSize);
     }
