@@ -70,10 +70,20 @@ namespace Syntropy::Ranges
     template <Concepts::ForwardRange TRange, typename TFunction>
     constexpr void ForEach(Immutable<TRange> range, TFunction function) noexcept;
 
+    /// \brief Advance both ranges in lockstep, copy elements from lhs to rhs until either lhs or rhs is exhausted.
+    /// \return Returns the ranges to the elements that were not copied: at least one of the two is guaranteed to be empty.
+    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
+    constexpr Tuples::Tuple<TRange, URange> Copy(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
+    /// \brief Advance both ranges in lockstep, moving elements from lhs to rhs until either lhs or rhs is exhausted.
+    /// \return Returns the ranges to the elements that were not copied: at least one of the two is guaranteed to be empty.
+    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
+    constexpr Tuples::Tuple<TRange, URange> Move(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
     /// \brief Advance both ranges in lockstep, swapping elements from both until either lhs or rhs is exhausted.
     /// \return Returns the ranges to the elements that were not swapped: at least one of the two is guaranteed to be empty.
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Tuples::Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    constexpr Tuples::Tuple<TRange, URange> Swap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     /************************************************************************/
     /* RANGE-BASED FOR                                                      */
@@ -149,20 +159,54 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    [[nodiscard]] constexpr Tuples::Tuple<TRange, URange> MemberwiseSwap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    constexpr Tuples::Tuple<TRange, URange> Copy(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        auto lhs_copy = lhs;
-        auto rhs_copy = rhs;
+        auto source = lhs;
+        auto destination = rhs;
 
-        for (; !IsEmpty(lhs_copy) && !IsEmpty(rhs_copy);)
+        for (; !IsEmpty(source) && !IsEmpty(destination);)
         {
-            Swap(Front(lhs_copy), Front(rhs_copy));
+            Front(destination) = Front(source);
 
-            lhs_copy = PopFront(lhs_copy);
-            rhs_copy = PopFront(rhs_copy);
+            source = PopFront(source);
+            destination = PopFront(destination);
         }
 
-        return { lhs_copy , rhs_copy };
+        return { source , destination };
+    }
+
+    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
+    constexpr Tuples::Tuple<TRange, URange> Move(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    {
+        auto source = lhs;
+        auto destination = rhs;
+
+        for (; !IsEmpty(source) && !IsEmpty(destination);)
+        {
+            Front(destination) = Syntropy::Move(Front(source));
+
+            source = PopFront(source);
+            destination = PopFront(destination);
+        }
+
+        return { source , destination };
+    }
+
+    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
+    constexpr Tuples::Tuple<TRange, URange> Swap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    {
+        auto source = lhs;
+        auto destination = rhs;
+
+        for (; !IsEmpty(source) && !IsEmpty(destination);)
+        {
+            Swap(Front(source), Front(destination));
+
+            source = PopFront(source);
+            destination = PopFront(destination);
+        }
+
+        return { source , destination };
     }
 
     // Range-based for.
