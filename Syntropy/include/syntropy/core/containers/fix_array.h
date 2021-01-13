@@ -19,6 +19,31 @@
 namespace Syntropy
 {
     /************************************************************************/
+    /* FORWARD DECLARATIONS                                                 */
+    /************************************************************************/
+
+    template <typename TType, Int VSize, typename TTraits>
+    class BaseFixArray;
+
+    template <typename TType>
+    struct FixArrayTypeTraits;
+
+    template <typename TType>
+    struct RWFixArrayTypeTraits;
+
+    /************************************************************************/
+    /* ALIAS TYPES                                                          */
+    /************************************************************************/
+
+    /// \brief A fixed-size array of read-write elements.
+    template <typename TType, Int VSize>
+    using RWFixArray = BaseFixArray<TType, VSize, RWFixArrayTypeTraits<TType>>;
+
+    /// \brief A fixed-size array of read-only elements.
+    template <typename TType, Int VSize>
+    using FixArray = BaseFixArray<TType, VSize, FixArrayTypeTraits<TType>>;
+
+    /************************************************************************/
     /* BASE FIX ARRAY                                                       */
     /************************************************************************/
 
@@ -27,11 +52,14 @@ namespace Syntropy
     template <typename TType, Int VSize, typename TTraits>
     class BaseFixArray
     {
-        template <typename UType, Int USize, typename UTraits>
-        friend constexpr Ranges::RWSpan<UType> RangeOf(Mutable<BaseFixArray<UType, USize, UTraits>> rhs) noexcept;
 
-        template <typename UType, Int USize, typename UTraits>
-        friend constexpr Ranges::Span<UType> RangeOf(Immutable<BaseFixArray<UType, USize, UTraits>> rhs) noexcept;
+        /// \brief Get a full view of a read-write fix-array.
+        template <typename TType, Int VSize>
+        friend constexpr Ranges::RWSpan<TType> RangeOf(Mutable<typename RWFixArray<TType, VSize>> rhs) noexcept;
+
+        /// \brief Get a full view of a read-only fix-array.
+        template <typename TType, Int VSize, typename TTraits>
+        friend constexpr Ranges::Span<TType> RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
 
         template <typename UType, Int USize, typename UTraits>
         friend class BaseFixArray;
@@ -115,10 +143,6 @@ namespace Syntropy
         using TReference = Immutable<TType>;
     };
 
-    /// \brief Represents a fixed-size array of read-only elements.
-    template <typename TType, Int VSize>
-    using FixArray = BaseFixArray<TType, VSize, FixArrayTypeTraits<TType>>;
-
     /************************************************************************/
     /* RW FIX ARRAY                                                         */
     /************************************************************************/
@@ -133,10 +157,6 @@ namespace Syntropy
         /// \brief Reference type.
         using TReference = Mutable<TType>;
     };
-
-    /// \brief Represents a fixed-size array of read-write elements.
-    template <typename TType, Int VSize>
-    using RWFixArray = BaseFixArray<TType, VSize, RWFixArrayTypeTraits<TType>>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -169,21 +189,21 @@ namespace Syntropy
     // ===========
 
     /// \brief Check whether lhs and rhs are equivalent.
-    template <typename TType, Int VSize, typename TTraits, typename UType, Int USize, typename UTraits>
-    [[nodiscard]] constexpr Bool operator==(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs, Immutable<BaseFixArray<UType, USize, UTraits>> rhs) noexcept;
+    template <typename TType, typename TTraits, typename UType, typename UTraits, Int VSize>
+    [[nodiscard]] constexpr Bool operator==(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs, Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
 
     /// \brief Compare two spans lexicographically.
-    template <typename TType, Int VSize, typename TTraits, typename UType, Int USize, typename UTraits>
-    [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs, Immutable<BaseFixArray<UType, USize, UTraits>> rhs) noexcept;
+    template <typename TType, typename TTraits, typename UType, typename UTraits, Int VSize>
+    [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs, Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
 
     // Utilities.
     // ==========
 
-    /// \brief Get a full view of a fix-array.
-    template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr Ranges::RWSpan<TType> RangeOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
+    /// \brief Get a full view of a read-write fix-array.
+    template <typename TType, Int VSize>
+    [[nodiscard]] constexpr Ranges::RWSpan<TType> RangeOf(Mutable<RWFixArray<TType, VSize>> rhs) noexcept;
 
-    /// \brief Get a full view of a fix-array.
+    /// \brief Get a full view of a read-only fix-array.
     template <typename TType, Int VSize, typename TTraits>
     [[nodiscard]] constexpr Ranges::Span<TType> RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
 
@@ -329,11 +349,24 @@ namespace Syntropy
         return Move(tuple[VIndex]);
     }
 
-    // Utilities.
-    // ==========
+    // Comparison.
 
-    template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr Ranges::RWSpan<TType> RangeOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
+    template <typename TType, typename TTraits, typename UType, typename UTraits, Int VSize>
+    [[nodiscard]] constexpr Bool operator==(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs, Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept
+    {
+        return AreEquivalent(RangeOf(lhs), RangeOf(rhs));
+    }
+
+    template <typename TType, typename TTraits, typename UType, typename UTraits, Int VSize>
+    [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs, Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept
+    {
+        return Compare(RangeOf(lhs), RangeOf(rhs));
+    }
+
+    // Utilities.
+
+    template <typename TType, Int VSize>
+    [[nodiscard]] constexpr Ranges::RWSpan<TType> RangeOf(Mutable<RWFixArray<TType, VSize>> rhs) noexcept
     {
         return Ranges::MakeSpan(rhs.elements_);
     }
