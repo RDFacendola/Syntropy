@@ -172,6 +172,10 @@ namespace Syntropy::Ranges
     template <typename TType>
     [[nodiscard]] constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept;
 
+    /// \brief Create a new span by deducing template from arguments.
+    template <typename TType, Int VSize>
+    [[nodiscard]] constexpr auto MakeSpan(TType (&rhs)[VSize]) noexcept;
+
 }
 
 // ===========================================================================
@@ -325,6 +329,12 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept
     {
         return { begin, end };
+    }
+
+    template <typename TType, Int VSize>
+    [[nodiscard]] constexpr auto MakeSpan(TType(&rhs)[VSize]) noexcept
+    {
+        return MakeSpan(PtrOf(rhs[0]), VSize);
     }
 
 }
