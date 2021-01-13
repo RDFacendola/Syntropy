@@ -99,6 +99,10 @@ namespace Syntropy
     template <typename TType>
     constexpr TType ToMutable(Immovable<TType> rhs) noexcept = delete;
 
+    /// \brief Convert rhs to a reference to an immovable instance of type TType.
+    template <typename TType>
+    constexpr Immovable<TType> ToImmovable(Immutable<TType> rhs) noexcept;
+
 }
 
 // ===========================================================================
@@ -154,6 +158,12 @@ namespace Syntropy
     constexpr Mutable<Templates::RemoveConst<TType>> ToMutable(Immutable<TType> rhs) noexcept
     {
         return const_cast<Mutable<TType>>(rhs);
+    }
+
+    template <typename TType>
+    constexpr Immovable<TType> ToImmovable(Immutable<TType> rhs) noexcept
+    {
+        return static_cast<Immovable<TType>>(rhs);
     }
 
 }
