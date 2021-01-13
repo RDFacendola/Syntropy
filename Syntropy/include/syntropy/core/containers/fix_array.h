@@ -7,8 +7,11 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/templates/type_traits.h"
 
 #include "syntropy/core/concepts/range.h"
+#include "syntropy/core/concepts/ntuple.h"
+
 #include "syntropy/core/foundation/span.h"
 
 // ===========================================================================
@@ -24,43 +27,73 @@ namespace Syntropy
     template <typename TType, Int VSize, typename TTraits>
     class BaseFixArray
     {
-        template <typename TType, Int VSize, typename TTraits>
-        friend constexpr auto RangeOf(Reference<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
+        template <typename UType, Int USize, typename UTraits>
+        friend constexpr Ranges::RWSpan<UType> RangeOf(Mutable<BaseFixArray<UType, USize, UTraits>> rhs) noexcept;
+
+        template <typename UType, Int USize, typename UTraits>
+        friend constexpr Ranges::Span<UType> RangeOf(Immutable<BaseFixArray<UType, USize, UTraits>> rhs) noexcept;
+
+        template <typename UType, Int USize, typename UTraits>
+        friend class BaseFixArray;
 
     public:
 
         /// \brief Mutable reference type.
         using TReference = typename TTraits::TReference;
 
-        /// \brief Default constructor. Default-initializes each element in the array.
-        BaseFixArray() noexcept;
+        /// \brief Default constructor.
+        constexpr BaseFixArray() = default;
 
-        /// \brief Direct constructor. Direct-initializes each element in the array.
-        template <typename... TTypes>
-        BaseFixArray(Forwarding<TTypes>... elements) noexcept;
+        /// \brief Direct constructor.
+        /// \remarks This method participates in overload resolution only if the number of elements matches the array size.
+        template <typename... TTypes, typename = Templates::EnableIf<sizeof...(TTypes) == VSize>>
+        constexpr BaseFixArray(Forwarding<TTypes>... elements) noexcept;
 
-        /// \brief Element-wise copy-constructor.
-        BaseFixArray(Immutable<BaseFixArray> rhs) noexcept;
+        /// \brief Default copy constructor.
+        constexpr BaseFixArray(Immutable<BaseFixArray> rhs) noexcept = default;
 
-        /// \brief Element-wise move-constructor.
-        BaseFixArray(Movable<BaseFixArray> rhs) noexcept;
+        /// \brief Default move constructor.
+        constexpr BaseFixArray(Movable<BaseFixArray> rhs) noexcept = default;
 
-        /// \brief Destructor. Destroy each element in the array.
-        ~BaseFixArray() noexcept;
+        /// \brief Default copy-assignment operator.
+        constexpr Mutable<BaseFixArray> operator=(Immutable<BaseFixArray> rhs) noexcept = default;
 
-        /// \brief Element-wise copy-assignment operator.
-        Mutable<BaseFixArray> operator=(Immutable<BaseFixArray> rhs) noexcept;
+        /// \brief Default move-assignment operator.
+        constexpr Mutable<BaseFixArray> operator=(Movable<BaseFixArray> rhs) noexcept = default;
 
-        /// \brief Element-wise move-assignment operator.
-        Mutable<BaseFixArray> operator=(Movable<BaseFixArray> rhs) noexcept;
+        /// \brief Converting copy-constructor operator.
+        template <typename UType, typename UTraits>
+        constexpr BaseFixArray(Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
+
+        /// \brief Converting move-constructor operator.
+        template <typename UType, typename UTraits>
+        constexpr BaseFixArray(Movable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
+
+        /// \brief Converting copy-assignment operator.
+        template <typename UType, typename UTraits>
+        constexpr Mutable<BaseFixArray> operator=(Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
+
+        /// \brief Converting move-assignment operator.
+        template <typename UType, typename UTraits>
+        constexpr Mutable<BaseFixArray> operator=(Movable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
+
+        /// \brief Default destructor.
+        ~BaseFixArray() noexcept = default;
 
         /// \brief Access the array by index.
-        TReference operator[](Int index) noexcept;
+        constexpr TReference operator[](Int index) noexcept;
 
         /// \brief Access the array by index.
-        Immutable<TType> operator[](Int index) const noexcept;
+        constexpr Immutable<TType> operator[](Int index) const noexcept;
 
-    // private:
+    private:
+
+        /// \brief Tag type used to construct a fix array by unwinding another fix array.
+        struct UnwindTag {};
+
+        /// \brief Construct a fix-array by unwinding another fix array.
+        template<typename TFixArray, Int... VIndexes>
+        constexpr BaseFixArray(UnwindTag, Forwarding<TFixArray> other, Syntropy::Templates::Sequence<VIndexes...>) noexcept;
 
         /// \brief Array elements.
         TType elements_[VSize];
@@ -109,6 +142,29 @@ namespace Syntropy
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
+    // N-Tuple.
+    // ========
+
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks The program is ill-formed if no such element exists.
+    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr Immutable<TType> Get(Immutable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept;
+
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks The program is ill-formed if no such element exists.
+    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr Mutable<TType> Get(Mutable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept;
+
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks The program is ill-formed if no such element exists.
+    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr Immovable<TType> Get(Immovable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept;
+
+    /// \brief Access the VIndex-th element in a tuple.
+    /// \remarks The program is ill-formed if no such element exists.
+    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr Movable<TType> Get(Movable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept;
+
     // Comparison.
     // ===========
 
@@ -125,7 +181,11 @@ namespace Syntropy
 
     /// \brief Get a full view of a fix-array.
     template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr auto RangeOf(Forwarding<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr Ranges::RWSpan<TType> RangeOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
+
+    /// \brief Get a full view of a fix-array.
+    template <typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr Ranges::Span<TType> RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
 
 }
 
@@ -140,14 +200,23 @@ namespace Syntropy::Ranges::Templates
     /// \brief Specialization for fix-arrays.
     template <typename TType, Int VSize, typename TTraits>
     struct ElementReferenceTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Syntropy::Templates::Alias<typename TTraits::TReference> {};
+}
+
+// ===========================================================================
+
+namespace Syntropy::Tuples::Templates
+{
+    /************************************************************************/
+    /* TUPLE TRAITS                                                         */
+    /************************************************************************/
+
+    /// \brief Specialization for fix-arrays.
+    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    struct ElementTypeTraits<VIndex, BaseFixArray<TType, VSize, TTraits>> : Syntropy::Templates::Alias<TType> {};
 
     /// \brief Specialization for fix-arrays.
     template <typename TType, Int VSize, typename TTraits>
-    struct ElementPointerTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Syntropy::Templates::Alias<typename TTraits::TPointer> {};
-
-    /// \brief Specialization for fix-arrays.
-    template <typename TType, Int VSize, typename TTraits>
-    struct ElementCountTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Syntropy::Templates::Alias<Int> {};
+    struct RankTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Syntropy::Templates::IntConstant<VSize> {};
 }
 
 // ===========================================================================
@@ -162,72 +231,118 @@ namespace Syntropy
     // =============
 
     template <typename TType, Int VSize, typename TTraits>
-    inline BaseFixArray<TType, VSize, TTraits>::BaseFixArray() noexcept
-    {
-
-    }
-
-    template <typename TType, Int VSize, typename TTraits>
-    template <typename... TTypes>
-    inline BaseFixArray<TType, VSize, TTraits>::BaseFixArray(Forwarding<TTypes>... elements) noexcept
+    template <typename... TTypes, typename>
+    constexpr BaseFixArray<TType, VSize, TTraits>::BaseFixArray(Forwarding<TTypes>... elements) noexcept
         : elements_{ Forward<TTypes>(elements)... }
     {
 
     }
 
     template <typename TType, Int VSize, typename TTraits>
-    inline BaseFixArray<TType, VSize, TTraits>::BaseFixArray(Immutable<BaseFixArray> rhs) noexcept
+    template <typename UType, typename UTraits>
+    constexpr  BaseFixArray<TType, VSize, TTraits>::BaseFixArray(Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept
+        : BaseFixArray(UnwindTag{}, rhs, Syntropy::Templates::MakeSequence<VSize>{})
     {
 
     }
 
     template <typename TType, Int VSize, typename TTraits>
-    inline BaseFixArray<TType, VSize, TTraits>::BaseFixArray(Movable<BaseFixArray> rhs) noexcept
+    template <typename UType, typename UTraits>
+    constexpr  BaseFixArray<TType, VSize, TTraits>::BaseFixArray(Movable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept
+        : BaseFixArray(UnwindTag{}, Move(rhs), Syntropy::Templates::MakeSequence<VSize>{})
     {
 
     }
 
     template <typename TType, Int VSize, typename TTraits>
-    inline BaseFixArray<TType, VSize, TTraits>::~BaseFixArray() noexcept
+    template <typename UType, typename UTraits>
+    constexpr   Mutable<BaseFixArray<TType, VSize, TTraits>> BaseFixArray<TType, VSize, TTraits>::operator=(Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept
     {
-
-    }
-
-    template <typename TType, Int VSize, typename TTraits>
-    inline Mutable<BaseFixArray<TType, VSize, TTraits>> BaseFixArray<TType, VSize, TTraits>::operator=(Immutable<BaseFixArray> rhs) noexcept
-    {
+        Ranges::Copy(RangeOf(rhs), RangeOf(*this));
 
         return *this;
     }
 
     template <typename TType, Int VSize, typename TTraits>
-    inline Mutable<BaseFixArray<TType, VSize, TTraits>> BaseFixArray<TType, VSize, TTraits>::operator=(Movable<BaseFixArray> rhs) noexcept
+    template <typename UType, typename UTraits>
+    constexpr   Mutable<BaseFixArray<TType, VSize, TTraits>> BaseFixArray<TType, VSize, TTraits>::operator=(Movable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept
     {
+        Ranges::Move(RangeOf(rhs), RangeOf(*this));
 
         return *this;
     }
 
     template <typename TType, Int VSize, typename TTraits>
-    inline typename BaseFixArray<TType, VSize, TTraits>::TReference BaseFixArray<TType, VSize, TTraits>::operator[](Int index) noexcept
+    constexpr typename BaseFixArray<TType, VSize, TTraits>::TReference BaseFixArray<TType, VSize, TTraits>::operator[](Int index) noexcept
     {
         return elements_[index];
     }
 
     template <typename TType, Int VSize, typename TTraits>
-    inline Immutable<TType> BaseFixArray<TType, VSize, TTraits>::operator[](Int index) const noexcept
+    constexpr Immutable<TType> BaseFixArray<TType, VSize, TTraits>::operator[](Int index) const noexcept
     {
         return elements_[index];
+    }
+
+    template <typename TType, Int VSize, typename TTraits>
+    template<typename TFixArray, Int... VIndexes>
+    constexpr BaseFixArray<TType, VSize, TTraits>::BaseFixArray(UnwindTag, Forwarding<TFixArray> other, Syntropy::Templates::Sequence<VIndexes...>) noexcept
+        : BaseFixArray(Get<VIndexes>(Forward<TFixArray>(other))...)
+    {
+
+    }
+
+    // Non-member functions.
+    // =====================
+
+    // N-Tuple.
+
+    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr Immutable<TType> Get(Immutable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept
+    {
+        static_assert((VIndex >= 0) && (VIndex < VSize), "Index out-of-range.");
+
+        return ToImmutable(tuple[VIndex]);
+    }
+
+    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr Mutable<TType> Get(Mutable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept
+    {
+        static_assert((VIndex >= 0) && (VIndex < VSize), "Index out-of-range.");
+
+        return ToMutable(tuple[VIndex]);
+    }
+
+    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr Immovable<TType> Get(Immovable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept
+    {
+        static_assert((VIndex >= 0) && (VIndex < VSize), "Index out-of-range.");
+
+        return ToImmovable(tuple[VIndex]);
+    }
+
+    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr Movable<TType> Get(Movable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept
+    {
+        static_assert((VIndex >= 0) && (VIndex < VSize), "Index out-of-range.");
+
+        return Move(tuple[VIndex]);
     }
 
     // Utilities.
     // ==========
 
     template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr auto RangeOf(Forwarding<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Ranges::RWSpan<TType> RangeOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
     {
-        return Ranges::MakeSpan(PtrOf(rhs.elements_[0]), VSize);
+        return Ranges::MakeSpan(rhs.elements_);
     }
 
+    template <typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr Ranges::Span<TType> RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
+    {
+        return Ranges::MakeSpan(rhs.elements_);
+    }
 }
 
 // ===========================================================================
