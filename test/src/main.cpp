@@ -65,9 +65,11 @@ int main(int argc, char** argv)
 
     {
         Syntropy::Int arr[] = { 1, 2, 3 };
+        Syntropy::FixArray<Syntropy::Int, 3> arr2 = { 1,2,3 };
 
         auto span = Syntropy::Ranges::MakeSpan(arr);
         auto bspan = Syntropy::Memory::MakeByteSpan(arr);
+        auto fspan = Syntropy::RangeOf(arr2);
 
         system("pause");
     }
