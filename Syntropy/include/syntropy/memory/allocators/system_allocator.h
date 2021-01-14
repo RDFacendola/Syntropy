@@ -81,7 +81,7 @@ namespace Syntropy::Memory
     {
         auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
 
-        ::operator delete(Data(block), alignment_value, std::nothrow);
+        ::operator delete(block.GetData(), alignment_value, std::nothrow);
     }
 
 }

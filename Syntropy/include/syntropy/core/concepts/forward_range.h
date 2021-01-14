@@ -53,6 +53,20 @@ namespace Syntropy::Ranges::Concepts
     /// \author Raffaele D. Facendola - January 2021.
     template <typename TRange>
     concept ForwardRange = ForwardRangeInterface<TRange>;
+
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Templates
+{
+    /************************************************************************/
+    /* FORWARD RANGE                                                        */
+    /************************************************************************/
+
+    /// \brief Type of a range element.
+    template <Concepts::ForwardRange TRange>
+    using ElementType = Syntropy::Templates::RemoveConstReference<decltype(Front(Declval<TRange>()))>;
 }
 
 // ===========================================================================

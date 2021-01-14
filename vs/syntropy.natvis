@@ -93,24 +93,34 @@
 
   <!-- Span -->
 
-  <Type Name="Syntropy::Ranges::BaseSpan&lt;*,Syntropy::Ranges::RWSpanTypeTraits&lt;*&gt;&gt;">
-    <DisplayString>[RW] Span {{ count = {count_} }}</DisplayString>
+  <Type Name="Syntropy::Ranges::BaseSpan&lt;*,Syntropy::Ranges::RWSpanTraits&lt;*&gt;&gt;">
+    <DisplayString>[RW] Span {{ size = {size_} }}</DisplayString>
     <Expand>
       <ArrayItems>
-        <Size>count_</Size>
+        <Size>size_</Size>
         <ValuePointer>data_</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
   
-  <Type Name="Syntropy::Ranges::BaseSpan&lt;*,Syntropy::Ranges::SpanTypeTraits&lt;*&gt;&gt;">
-    <DisplayString>[RD] Span {{ count = {count_} }}</DisplayString>
+  <Type Name="Syntropy::Ranges::BaseSpan&lt;*,Syntropy::Ranges::SpanTraits&lt;*&gt;&gt;">
+    <DisplayString>[RD] Span {{ size = {size_} }}</DisplayString>
     <Expand>
       <ArrayItems>
-        <Size>count_</Size>
+        <Size>size_</Size>
         <ValuePointer>data_</ValuePointer>
       </ArrayItems>
     </Expand>
+  </Type>
+
+  <!-- ByteSpan -->
+
+  <Type Name="Syntropy::Memory::BaseByteSpan&lt;Syntropy::Memory::RWByteSpanTraits&gt;">
+    <DisplayString>[RW] ByteSpan {{ size = {size_} }}</DisplayString>
+  </Type>
+
+  <Type Name="Syntropy::Memory::BaseByteSpan&lt;Syntropy::Memory::ByteSpanTraits&gt;">
+    <DisplayString>[RD] ByteSpan {{ size = {size_} }}</DisplayString>
   </Type>
 
 </AutoVisualizer>

@@ -56,114 +56,6 @@
 
 #include "syntropy/core/containers/fix_array.h"
 
-#include <tuple>
-#include <vector>
-
-class DebugAllocator : public Syntropy::Memory::SystemAllocator
-{
-public:
-
-
-    Syntropy::Memory::RWByteSpan Allocate(Syntropy::Memory::Bytes size, Syntropy::Memory::Alignment alignment) noexcept
-    {
-        std::cout << "Allocating " << Syntropy::ToInt(size) << " bytes\n";
-
-        allocated_ += size;
-
-        return SystemAllocator::Allocate(size, alignment);
-    }
-
-    void Deallocate(Syntropy::Immutable<Syntropy::Memory::RWByteSpan> block, Syntropy::Memory::Alignment alignment) noexcept
-    {
-        SystemAllocator::Deallocate(block, alignment);
-
-        deallocated_ += Count(block);
-
-        std::cout << "Deallocating " << Syntropy::ToInt(Count(block)) << " bytes\n";
-    }
-
-    ~DebugAllocator()
-    {
-        SYNTROPY_ASSERT(allocated_ == deallocated_);        // Leak!
-    }
-
-    Syntropy::Memory::Bytes allocated_;
-    Syntropy::Memory::Bytes deallocated_;
-
-};
-
-// ===========================================================================
-
-struct Foo
-{
-    Foo() = delete;
-
-    Foo(Syntropy::Int value) noexcept 
-        : value_(value) {}
-
-    Foo(Syntropy::Immutable<Foo> rhs) noexcept
-    {
-        value_ = rhs.value_;
-    }
-
-    Foo(Syntropy::Movable<Foo> rhs) noexcept
-    {
-        value_ = rhs.value_;
-        rhs.value_ = -1;
-    }
-
-    Foo& operator=(Syntropy::Immutable<Foo> rhs) noexcept
-    {
-        value_ = rhs.value_;
-        return *this;
-    }
-
-    Foo& operator=(Syntropy::Movable<Foo> rhs) noexcept
-    {
-        value_ = rhs.value_;
-        rhs.value_ = -1;
-        return *this;
-    }
-
-    Syntropy::Bool operator==(Syntropy::Immutable<Foo> rhs) const noexcept
-    {
-        return value_ == rhs.value_;
-    }
-
-    Syntropy::Ordering operator<=>(Syntropy::Immutable<Foo> rhs) const noexcept
-    {
-        return value_ <=> rhs.value_;
-    }
-
-    ~Foo()
-    {
-        std::cout << "mega-destructor\n";
-    }
-
-    Syntropy::Int value_;
-};
-
-struct Bar
-{
-    Bar(Syntropy::Int value) : value_(value) {}
-
-    Syntropy::Int value_;
-};
-
-struct Baz
-{
-    Baz(Syntropy::Int value) : value_(value) {}
-
-    Baz(Syntropy::Immutable<Bar> bar) : value_(bar.value_) {}
-
-    Baz(Syntropy::Movable<Bar> bar)
-        : value_(bar.value_)
-    {
-        bar.value_ = -1;
-    }
-
-    Syntropy::Int value_;
-};
 
 int main(int argc, char** argv)
 {
@@ -171,23 +63,13 @@ int main(int argc, char** argv)
 
     using namespace Syntropy::Memory::Literals;
 
-    auto dbga = Syntropy::Memory::PolymorphicAllocator<DebugAllocator>();
-
-    Syntropy::Memory::SetAllocator(dbga);
-
     {
-        auto array = Syntropy::RWFixArray<Foo, 5>{ 10, 20, 30, 40, 50 };
-        // auto erray = Syntropy::RWFixArray<Foo, 5>{};
+        Syntropy::Int arr[] = { 1, 2, 3 };
 
-        auto rwarray = Syntropy::RWFixArray<Foo, 5>{ 1, 2, 3, 4, 5 };
-        auto rdarray = Syntropy::FixArray<Foo, 5>{ 1, 2, 3, 4, 5 };
-        auto rgarray = Syntropy::FixArray<Foo, 5>{ 1, 2, 4, 4, 5 };
+        auto span = Syntropy::Ranges::MakeSpan(arr);
+        auto bspan = Syntropy::Memory::MakeByteSpan(arr);
 
-        auto a0 = (rwarray == rdarray);
-        auto a1 = (rwarray == rgarray);
-        auto a2 = (rwarray <=> rgarray);
-        auto a3 = (rgarray <=> rwarray);
-
+        system("pause");
     }
 
     system("pause");
