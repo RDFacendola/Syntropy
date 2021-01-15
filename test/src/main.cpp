@@ -13,6 +13,7 @@
 #include "syntropy/language/templates/ratio.h"
 #include "syntropy/language/templates/math.h"
 #include "syntropy/language/templates/concepts.h"
+#include "syntropy/language/templates/priority.h"
 
 #include "syntropy/language/preprocessor/macro.h"
 
@@ -56,6 +57,61 @@
 
 #include "syntropy/core/containers/fix_array.h"
 
+namespace Witchery
+{
+    struct DoBar
+    {
+    public:
+
+        template <typename TType>
+        auto operator()(TType&& foo) const noexcept -> decltype((*this)(foo, Syntropy::Templates::kPriority<1>))
+        {
+            return (*this)(foo, Syntropy::Templates::kPriority<1>);
+        }
+
+    private:
+
+        template <typename TType>
+        auto operator()(TType&& foo, Syntropy::Templates::Priority<1>) const noexcept -> decltype(foo.Bar())
+        {
+            return foo.Bar();
+        }
+
+        template <typename TType>
+        auto operator()(TType&& foo, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Bar(foo))
+        {
+            return Bar(foo);
+        }
+
+    };
+
+    inline constexpr auto Bar = DoBar{};
+}
+
+namespace BlackMagic
+{
+    struct MyClass
+    {
+        void Bar()
+        {
+            std::cout << "member function, witches!\n";
+        }
+    };
+
+    struct YourClass
+    {
+        void Bar()
+        {
+            std::cout << "MOAR specialized function, witches!\n";
+        }
+    };
+
+    void Bar(const YourClass& yc)
+    {
+        std::cout << "ADL function, witches!\n";
+    }
+}
+
 
 int main(int argc, char** argv)
 {
@@ -70,6 +126,12 @@ int main(int argc, char** argv)
         auto span = Syntropy::Ranges::MakeSpan(arr);
         auto bspan = Syntropy::Memory::MakeByteSpan(arr);
         auto fspan = Syntropy::RangeOf(arr2);
+
+        auto mc = BlackMagic::MyClass{};
+        auto yc = BlackMagic::YourClass{};
+
+        Witchery::Bar(mc);
+        Witchery::Bar(yc);
 
         system("pause");
     }

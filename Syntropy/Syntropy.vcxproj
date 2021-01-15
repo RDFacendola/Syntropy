@@ -18,6 +18,7 @@
     <ClInclude Include="include\syntropy\core\concepts\sized_range.h" />
     <ClInclude Include="include\syntropy\core\containers\fix_array.h" />
     <ClInclude Include="include\syntropy\core\reflection\type_id.h" />
+    <ClInclude Include="include\syntropy\language\templates\priority.h" />
     <ClInclude Include="include\syntropy\memory\allocators\allocator.h" />
     <ClInclude Include="include\syntropy\memory\allocators\system_allocator.h" />
     <ClInclude Include="include\syntropy\core\concepts\details\ntuple_details.h" />
