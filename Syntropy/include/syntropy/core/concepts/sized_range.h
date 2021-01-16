@@ -15,9 +15,9 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/core/foundation/tuple.h"
 
-#include "syntropy/core/concepts/details/sized_range_details.h"
-
 #include "syntropy/core/concepts/forward_range.h"
+
+#include "syntropy/core/concepts/details/sized_range_details.h"
 
 // ===========================================================================
 
