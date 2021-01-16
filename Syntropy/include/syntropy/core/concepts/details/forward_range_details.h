@@ -46,123 +46,173 @@ namespace Syntropy::Ranges::Details
     // FrontRouter.
     // ============
 
+    template <typename TRange>
+    void Front(Immutable<TRange>) noexcept;
+
     /// \brief Route the "Front" function across different customization points.
-    class FrontRouter
+    struct FrontRouter
     {
-    public:
-
-        /// \brief Routes the invocation.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range))
-        {
-            return (*this)(range, Syntropy::Templates::kPriority<2>);
-        }
-
-    private:
-
         /// \brief Member-function.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.GetFront())
-        {
-            return range.GetFront();
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.GetFront());
 
         /// \brief Non-member function (via ADL).
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(Front(range))
-        {
-            // VS2019 bug (possibly) - Cannot define this method outside its declaration.
-            return Front(range);
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(Front(range));
 
         /// \brief Custom extension.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::Front<TRange>{}(range))
-        {
-            return Ranges::Extensions::Front<TRange>{}(range);
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::Front<TRange>{}(range));
+
+        /// \brief Routes the invocation.
+        template <typename TRange>
+        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>));
     };
 
     // PopFrontRouter.
     // ===============
 
+    template <typename TRange>
+    void PopFront(Immutable<TRange>) noexcept;
+
     /// \brief Route the "PopFront" function across different customization points.
-    class PopFrontRouter
+    struct PopFrontRouter
     {
-    public:
-
-        /// \brief Routes the invocation.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range))
-        {
-            return (*this)(range, Syntropy::Templates::kPriority<2>);
-        }
-
-    private:
-
         /// \brief Invokes a member function on the range.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.PopFront())
-        {
-            return range.PopFront();
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.PopFront());
 
         /// \brief Invokes a non-member function via ADL.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(PopFront(range))
-        {
-            // VS2019 bug (possibly) - Cannot define this method outside its declaration.
-            return PopFront(range);
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(PopFront(range));
 
         /// \brief Custom extension.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::PopFront<TRange>{}(range))
-        {
-            return Ranges::Extensions::PopFront<TRange>{}(range);
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::PopFront<TRange>{}(range));
+
+        /// \brief Routes the invocation.
+        template <typename TRange>
+        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>));
     };
 
     // IsEmptyRouter.
     // ==============
 
+    template <typename TRange>
+    void IsEmpty(Immutable<TRange>) noexcept;
+
     /// \brief Route the "IsEmpty" function across different customization points.
-    class IsEmptyRouter
+    struct IsEmptyRouter
     {
-    public:
-
-        /// \brief Routes the invocation.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range))
-        {
-            return (*this)(range, Syntropy::Templates::kPriority<2>);
-        }
-
-    private:
-
         /// \brief Invokes a member function on the range.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.IsEmpty())
-        {
-            return range.IsEmpty();
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.IsEmpty());
 
         /// \brief Invokes a non-member function via ADL.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(IsEmpty(range))
-        {
-            // VS2019 bug (possibly) - Cannot define this method outside its declaration.
-            return IsEmpty(range);
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(IsEmpty(range));
 
         /// \brief Custom extension.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::IsEmpty<TRange>{}(range))
-        {
-            return Ranges::Extensions::IsEmpty<TRange>{}(range);
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::IsEmpty<TRange>{}(range));
 
+        /// \brief Routes the invocation.
+        template <typename TRange>
+        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>));
     };
+
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Details
+{
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // FrontRouter.
+    // ============
+
+    template <typename TRange>
+    inline auto FrontRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.GetFront())
+    {
+        return range.GetFront();
+    }
+
+    template <typename TRange>
+    inline auto FrontRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(Front(range))
+    {
+        return Front(range);
+    }
+
+    template <typename TRange>
+    inline auto FrontRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::Front<TRange>{}(range))
+    {
+        return Ranges::Extensions::Front<TRange>{}(range);
+    }
+
+    template <typename TRange>
+    inline auto FrontRouter::operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>))
+    {
+        return (*this)(range, Syntropy::Templates::kPriority<2>);
+    }
+
+    // PopFrontRouter.
+    // ===============
+
+    template <typename TRange>
+    inline auto PopFrontRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.PopFront())
+    {
+        return range.PopFront();
+    }
+
+    template <typename TRange>
+    inline auto PopFrontRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(PopFront(range))
+    {
+        return PopFront(range);
+    }
+
+    template <typename TRange>
+    inline auto PopFrontRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::PopFront<TRange>{}(range))
+    {
+        return Ranges::Extensions::PopFront<TRange>{}(range);
+    }
+
+    template <typename TRange>
+    inline auto PopFrontRouter::operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>))
+    {
+        return (*this)(range, Syntropy::Templates::kPriority<2>);
+    }
+
+    // IsEmptyRouter.
+    // ==============
+
+    template <typename TRange>
+    inline auto IsEmptyRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.IsEmpty())
+    {
+        return range.IsEmpty();
+    }
+
+    template <typename TRange>
+    inline auto IsEmptyRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(IsEmpty(range))
+    {
+        return IsEmpty(range);
+    }
+
+    /// \brief Custom extension.
+    template <typename TRange>
+    inline auto IsEmptyRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::IsEmpty<TRange>{}(range))
+    {
+        return Ranges::Extensions::IsEmpty<TRange>{}(range);
+    }
+
+    /// \brief Routes the invocation.
+    template <typename TRange>
+    inline auto IsEmptyRouter::operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>))
+    {
+        return (*this)(range, Syntropy::Templates::kPriority<2>);
+    }
 
 }
 
