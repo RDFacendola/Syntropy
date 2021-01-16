@@ -38,42 +38,65 @@ namespace Syntropy::Ranges::Details
     // CountRouter.
     // ============
 
+    template <typename TRange>
+    void Count(Immutable<TRange>) noexcept;
+
     /// \brief Route the "Count" function across different customization points.
-    class CountRouter
+    struct CountRouter
     {
-    public:
-
-        /// \brief Routes the invocation.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range))
-        {
-            return (*this)(range, Syntropy::Templates::kPriority<2>);
-        }
-
-    private:
-
         /// \brief Member-function.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.GetCount())
-        {
-            return range.GetCount();
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.GetCount());
 
         /// \brief Non-member function (via ADL).
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(Count(range))
-        {
-            // VS2019 bug (possibly) - Cannot define this method outside its declaration.
-            return Count(range);
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(Count(range));
 
         /// \brief Custom extension.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::Count<TRange>{}(range))
-        {
-            return Ranges::Extensions::Count<TRange>{}(range);
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::Count<TRange>{}(range));
+
+        /// \brief Routes the invocation.
+        template <typename TRange>
+        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>));
     };
+
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Details
+{
+    /************************************************************************/
+    /* SIZED RANGE                                                          */
+    /************************************************************************/
+
+    template <typename TRange>
+    inline auto CountRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.GetCount())
+    {
+        return range.GetCount();
+    }
+
+    /// \brief Non-member function (via ADL).
+    template <typename TRange>
+    inline auto CountRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(Count(range))
+    {
+        return Count(range);
+    }
+
+    /// \brief Custom extension.
+    template <typename TRange>
+    inline auto CountRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::Count<TRange>{}(range))
+    {
+        return Ranges::Extensions::Count<TRange>{}(range);
+    }
+
+    /// \brief Routes the invocation.
+    template <typename TRange>
+    inline auto CountRouter::operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>))
+    {
+        return (*this)(range, Syntropy::Templates::kPriority<2>);
+    }
 
 }
 
