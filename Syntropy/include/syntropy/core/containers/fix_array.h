@@ -9,7 +9,6 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
 
-#include "syntropy/core/concepts/range.h"
 #include "syntropy/core/concepts/ntuple.h"
 
 #include "syntropy/core/foundation/span.h"
@@ -207,19 +206,6 @@ namespace Syntropy
     template <typename TType, Int VSize, typename TTraits>
     [[nodiscard]] constexpr Ranges::Span<TType> RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Templates
-{
-    /************************************************************************/
-    /* RANGE TRAITS                                                         */
-    /************************************************************************/
-
-    /// \brief Specialization for fix-arrays.
-    template <typename TType, Int VSize, typename TTraits>
-    struct ElementReferenceTypeTraits<BaseFixArray<TType, VSize, TTraits>> : Syntropy::Templates::Alias<typename TTraits::TReference> {};
 }
 
 // ===========================================================================

@@ -1,6 +1,6 @@
 
 /// \file sized_range.h
-/// \brief This header is part of the Syntropy core module. It contains definitions for ranges that can be scanned sequentially and have a well-known size.
+/// \brief This header is part of the Syntropy core module. It contains definitions for ranges whose elements can be visited sequentially and whose size can be computed in constant time.
 ///
 /// Ranges specifications based on the awesome https://www.slideshare.net/rawwell/iteratorsmustgo
 /// 
@@ -12,52 +12,45 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 
-#include "syntropy/core/concepts/range.h"
-#include "syntropy/core/concepts/forward_range.h"
-
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/core/foundation/tuple.h"
+
+#include "syntropy/core/concepts/details/sized_range_details.h"
+
+#include "syntropy/core/concepts/forward_range.h"
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Templates
+{
+    /************************************************************************/
+    /* TYPE TRAITS                                                          */
+    /************************************************************************/
+
+    /// \brief Range's count type.
+    template <typename TRange>
+    using RangeCountType = Syntropy::Templates::RemoveConstReference<decltype(Details::CountRouter{}(Syntropy::Templates::Declval<TRange>()))>;
+
+}
 
 // ===========================================================================
 
 namespace Syntropy::Ranges::Concepts
 {
     /************************************************************************/
-    /* SIZED RANGE INTERFACE                                                */
-    /************************************************************************/
-
-    /// \brief Minimal interface for ranges whose elements can be visited sequentially and whose size can be computed in constant time.
-    /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRange>
-    concept SizedRangeInterface = requires()
-        {
-            /// \brief Trait used to determine the reference type of an element inside the range.
-            typename Templates::ElementReferenceTypeTraits<TRange>::Type;
-
-            /// \brief Trait used to determine the type of the cardinality of the range.
-            typename Templates::ElementCountTypeTraits<TRange>::Type;
-        }
-        && RangeCardinality<Templates::ElementCount<TRange>>
-        && requires(Immutable<TRange> range)
-        {
-            /// \brief Access the first element in the range.
-            { Front(range) } -> Syntropy::Concepts::SameAs<Templates::ElementReference<TRange>>;
-
-            /// \brief Discard the first element in the range.
-            { PopFront(range) } -> Syntropy::Concepts::ConvertibleTo<TRange>;
-
-            /// \brief Get the number of elements in the range.
-            { Count(range) } -> Syntropy::Concepts::SameAs<Templates::ElementCount<TRange>>;
-        };
-
-    /************************************************************************/
     /* SIZED RANGE                                                          */
     /************************************************************************/
 
     /// \brief Range whose elements can be visited sequentially and whose size can be computed in constant time.
-    /// \author Raffaele D. Facendola - January 2021.
+    /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept SizedRange = SizedRangeInterface<TRange> && ForwardRange<TRange>;
+    concept SizedRange = ForwardRange<TRange>
+        && requires(Immutable<TRange> range)
+        {
+            /// \brief Get range's elements count.
+            { Details::CountRouter{}(range) };
+        };
+
 }
 
 // ===========================================================================
@@ -68,15 +61,12 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Sized range interface.
-    // ======================
-
-    /// \brief Check whether a range is empty.
-    template <Concepts::SizedRangeInterface TRange>
-    [[nodiscard]] constexpr Bool IsEmpty(Immutable<TRange> range) noexcept;
-
     // Sized range.
-    // ==============
+    // ============
+
+    /// \brief Get range's elements count.
+    template <Concepts::SizedRange TRange>
+    [[nodiscard]] constexpr Templates::RangeCountType<TRange> Count(Immutable<TRange> range) noexcept;
 
     /// \brief Check whether lhs and rhs are equal.
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
@@ -93,6 +83,21 @@ namespace Syntropy::Ranges
 
 // ===========================================================================
 
+namespace Syntropy::Ranges::Extensions
+{
+    /************************************************************************/
+    /* SIZED RANGE EXTENSIONS                                               */
+    /************************************************************************/
+
+    // Functors to extend ranges support to custom types.
+
+    /// \brief Get range's elements count.
+    template <typename TType>
+    struct Count;
+}
+
+// ===========================================================================
+
 namespace Syntropy::Ranges
 {
     /************************************************************************/
@@ -102,12 +107,12 @@ namespace Syntropy::Ranges
     // Non-member functions.
     // =====================
 
-    // Sized range interface.
+    // Sized range.
 
-    template <Concepts::SizedRangeInterface TRange>
-    [[nodiscard]] constexpr Bool IsEmpty(Immutable<TRange> range) noexcept
+    template <Concepts::SizedRange TRange>
+    [[nodiscard]] constexpr Templates::RangeCountType<TRange> Count(Immutable<TRange> range) noexcept
     {
-        return Count(range) == Templates::ElementCount<TRange>{ 0 };
+        return Details::CountRouter{}(range);
     }
 
     // Sized range.
@@ -117,24 +122,24 @@ namespace Syntropy::Ranges
     {
         // Some ranges may provide a more efficient implementation than testing for equality.
 
-        return AreEquivalent(lhs, rhs);
+        return Ranges::AreEquivalent(lhs, rhs);
     }
 
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        if (Count(lhs) == Count(rhs))
+        if (Ranges::Count(lhs) == Ranges::Count(rhs))
         {
             auto lhs_copy = lhs;
             auto rhs_copy = rhs;
 
-            for (; (!IsEmpty(lhs_copy)) && (!IsEmpty(rhs_copy)) && (Front(lhs_copy) == Front(rhs_copy)); )
+            for (; (!Ranges::IsEmpty(lhs_copy)) && (!Ranges::IsEmpty(rhs_copy)) && (Ranges::Front(lhs_copy) == Ranges::Front(rhs_copy)); )
             {
-                lhs_copy = PopFront(lhs_copy);
-                rhs_copy = PopFront(rhs_copy);
+                lhs_copy = Ranges::PopFront(lhs_copy);
+                rhs_copy = Ranges::PopFront(rhs_copy);
             }
 
-            return IsEmpty(lhs_copy);
+            return Ranges::IsEmpty(lhs_copy);
         }
 
         return false;
@@ -146,9 +151,9 @@ namespace Syntropy::Ranges
         auto lhs_copy = lhs;
         auto rhs_copy = rhs;
 
-        for (; !IsEmpty(lhs_copy) && !IsEmpty(rhs_copy); )
+        for (; !Ranges::IsEmpty(lhs_copy) && !Ranges::IsEmpty(rhs_copy); )
         {
-            auto compare = (Front(lhs_copy) <=> Front(rhs_copy));
+            auto compare = (Ranges::Front(lhs_copy) <=> Ranges::Front(rhs_copy));
 
             if (compare == Ordering::kLess)
             {
@@ -160,16 +165,16 @@ namespace Syntropy::Ranges
                 return Ordering::kGreater;
             }
 
-            lhs_copy = PopFront(lhs_copy);
-            rhs_copy = PopFront(rhs_copy);
+            lhs_copy = Ranges::PopFront(lhs_copy);
+            rhs_copy = Ranges::PopFront(rhs_copy);
         }
 
-        if (IsEmpty(lhs_copy) && IsEmpty(rhs_copy))
+        if (Ranges::IsEmpty(lhs_copy) && Ranges::IsEmpty(rhs_copy))
         {
             return Ordering::kEquivalent;
         }
 
-        return IsEmpty(lhs_copy) ? Ordering::kLess : Ordering::kGreater;
+        return Ranges::IsEmpty(lhs_copy) ? Ordering::kLess : Ordering::kGreater;
     }
 }
 

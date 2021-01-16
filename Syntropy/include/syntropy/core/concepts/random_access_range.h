@@ -1,6 +1,6 @@
 
 /// \file random_access_range.h
-/// \brief This header is part of the Syntropy core module. It contains definitions for ranges that can be accessed in random order.
+/// \brief This header is part of the Syntropy core module. It contains definitions for ranges whose elements can be visited in any order.
 ///
 /// Ranges specifications based on the awesome https://www.slideshare.net/rawwell/iteratorsmustgo
 /// 
@@ -12,55 +12,35 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 
-#include "syntropy/core/concepts/bidirectional_range.h"
-
+#include "syntropy/diagnostics/assert.h"
 #include "syntropy/core/foundation/tuple.h"
+
+#include "syntropy/core/concepts/details/random_access_range_details.h"
+
+#include "syntropy/core/concepts/bidirectional_range.h"
+#include "syntropy/core/concepts/sized_range.h"
 
 // ===========================================================================
 
 namespace Syntropy::Ranges::Concepts
 {
     /************************************************************************/
-    /* RANDOM ACCESS RANGE INTERFACE                                        */
-    /************************************************************************/
-
-    /// \brief Minimal interface for ranges whose element can be visited in any order.
-    /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRange>
-    concept RandomAccessRangeInterface = requires()
-        {
-            /// \brief Trait used to determine the reference type of an element inside the range.
-            typename Templates::ElementReferenceTypeTraits<TRange>::Type;
-
-            /// \brief Trait used to determine the type of the cardinality of the range.
-            typename Templates::ElementCountTypeTraits<TRange>::Type;
-        }
-        && RangeCardinality<Templates::ElementCount<TRange>>
-        && requires(Immutable<TRange> range)
-        {
-            /// \brief Get the number of elements in the range.
-            { Count(range) } -> Syntropy::Concepts::SameAs<Templates::ElementCount<TRange>>;
-        }
-        && requires(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> offset, Immutable<Templates::ElementCount<TRange>> count)
-        {
-            /// \brief Access a sub-range.
-            { Select(range, offset, count) } -> Syntropy::Concepts::ConvertibleTo<TRange>;
-        }
-        && requires(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> index)
-        {
-            /// \brief Access an element by index.
-            { Select(range, index) } -> Syntropy::Concepts::SameAs<Templates::ElementReference<TRange>>;
-        };
-
-
-    /************************************************************************/
     /* RANDOM ACCESS RANGE                                                  */
     /************************************************************************/
 
-    /// \brief Minimal interface for ranges whose element can be visited in any order.
-    /// \author Raffaele D. Facendola - January 2021.
+    /// \brief Range whose elements can be visited in any order.
+    /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept RandomAccessRange = RandomAccessRangeInterface<TRange> && BidirectionalRange<TRange> && SizedRange<TRange>;
+    concept RandomAccessRange = BidirectionalRange<TRange> && SizedRange<TRange>
+        && requires(Immutable<TRange> range, Immutable<Templates::RangeCountType<TRange>> index, Immutable<Templates::RangeCountType<TRange>> count)
+        {
+            /// \brief Access range's element by index.
+            { Details::AtRouter{}(range, index) };
+
+            /// \brief Obtain a view to a sub-range.
+            { Details::SliceRouter{}(range, index, count) };
+        };
+
 }
 
 // ===========================================================================
@@ -71,71 +51,77 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Random access range interface.
-    // ==============================
-
-    /// \brief Access the first element in a range.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeInterface TRange>
-    [[nodiscard]] constexpr decltype(auto) Front(Immutable<TRange> range) noexcept;
-
-    /// \brief Access the last element in a range.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeInterface TRange>
-    [[nodiscard]] constexpr decltype(auto) Back(Immutable<TRange> range) noexcept;
-
-    /// \brief Discard the first elements in a range and return the resulting subrange.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeInterface TRange>
-    [[nodiscard]] constexpr TRange PopFront(Immutable<TRange> range) noexcept;
-
-    /// \brief Discard the last elements in a range and return the resulting subrange.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRangeInterface TRange>
-    [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range) noexcept;
-
     // Random access range.
     // ====================
 
-    /// \brief Select the first elements in a range.
+    /// \brief Access range's element by index.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr TRange Front(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept;
+    template <Concepts::RandomAccessRange TRange, typename TIndex = Templates::RangeCountType<TRange>>
+    [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> At(Immutable<TRange> range, Immutable<TIndex> index) noexcept;
 
-    /// \brief Select the last elements in a range.
+    /// \brief Obtain a view to a sub-range.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr TRange Back(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept;
+    template <Concepts::RandomAccessRange TRange, typename TIndex = Templates::RangeCountType<TRange>, typename TCount = TIndex>
+    [[nodiscard]] constexpr TRange Slice(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count) noexcept;
+
+    /// \brief Take a number of elements from the range's front.
+    /// \remarks Exceeding range boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRange TRange, typename TCount = Templates::RangeCountType<TRange>>
+    [[nodiscard]] constexpr TRange Front(Immutable<TRange> range, Immutable<TCount> count) noexcept;
+
+    /// \brief Take a number of elements from the range's back.
+    /// \remarks Exceeding range boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRange TRange, typename TCount = Templates::RangeCountType<TRange>>
+    [[nodiscard]] constexpr TRange Back(Immutable<TRange> range, Immutable<TCount> count) noexcept;
 
     /// \brief Discard the first elements in a range and return the resulting subrange.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr TRange PopFront(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept;
+    template <Concepts::RandomAccessRange TRange, typename TCount = Templates::RangeCountType<TRange>>
+    [[nodiscard]] constexpr TRange PopFront(Immutable<TRange> range, Immutable<TCount> count) noexcept;
 
     /// \brief Discard the last elements in a range and return the resulting subrange.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept;
+    template <Concepts::RandomAccessRange TRange, typename TCount = Templates::RangeCountType<TRange>>
+    [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range, Immutable<TCount> count) noexcept;
 
     /// \brief Slice a range returning the first element and a subrange to the remaining ones.
     /// \remarks Calling this method with an empty range results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr auto SliceFront(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementReferenceType<TRange>, TRange> SliceFront(Immutable<TRange> range) noexcept;
 
     /// \brief Slice a range returning the last element and a subrange to the remaining ones.
     /// \remarks Calling this method with an empty range results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr auto SliceBack(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementReferenceType<TRange>, TRange> SliceBack(Immutable<TRange> range) noexcept;
 
     /// \brief Slice a range returning a subrange to the first count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept;
+    template <Concepts::RandomAccessRange TRange, typename TCount = Templates::RangeCountType<TRange>>
+    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<TCount> count) noexcept;
 
     /// \brief Slice a range returning a subrange to the last count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept;
+    template <Concepts::RandomAccessRange TRange, typename TCount = Templates::RangeCountType<TRange>>
+    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<TCount> count) noexcept;
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Extensions
+{
+    /************************************************************************/
+    /* RANDOM ACCESS RANGE EXTENSIONS                                       */
+    /************************************************************************/
+
+    // Functors to extend ranges support to custom types.
+
+    /// \brief Access range's element by index.
+    template <typename TType>
+    struct At;
+
+    /// \brief Obtain a view to a sub-range.
+    template <typename TType>
+    struct Slice;
 }
 
 // ===========================================================================
@@ -149,80 +135,66 @@ namespace Syntropy::Ranges
     // Non-member functions.
     // =====================
 
-    // Random access range interface.
-
-    template <Concepts::RandomAccessRangeInterface TRange>
-    [[nodiscard]] constexpr decltype(auto) Front(Immutable<TRange> range) noexcept
-    {
-        return Select(range, Templates::ElementCount<TRange>{ 0 });
-    }
-
-    template <Concepts::RandomAccessRangeInterface TRange>
-    [[nodiscard]] constexpr decltype(auto) Back(Immutable<TRange> range) noexcept
-    {
-        return Select(range, Count(range) - Templates::ElementCount<TRange>{ 1 });
-    }
-
-    template <Concepts::RandomAccessRangeInterface TRange>
-    [[nodiscard]] constexpr TRange PopFront(Immutable<TRange> range) noexcept
-    {
-        return PopFront(range, Templates::ElementCount<TRange>{ 1 });
-    }
-
-    template <Concepts::RandomAccessRangeInterface TRange>
-    [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range) noexcept
-    {
-        return PopBack(range, Templates::ElementCount<TRange>{ 1 });
-    }
-
     // Random access range.
 
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr TRange Front(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept
+    template <Concepts::RandomAccessRange TRange, typename TIndex>
+    [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> At(Immutable<TRange> range, Immutable<TIndex> index) noexcept
     {
-        return Select(range, Templates::ElementCount<TRange>{ 0 }, count);
+        return Details::AtRouter{}(range, index);
+    }
+
+    template <Concepts::RandomAccessRange TRange, typename TIndex, typename TCount>
+    [[nodiscard]] constexpr TRange Slice(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count) noexcept
+    {
+        return Details::SliceRouter{}(range, index, count);
+    }
+
+    template <Concepts::RandomAccessRange TRange, typename TCount>
+    [[nodiscard]] constexpr TRange Front(Immutable<TRange> range, Immutable<TCount> count) noexcept
+    {
+        return Ranges::Slice(range, Templates::RangeCountType<TRange>{ 0 }, count);
+    }
+
+    template <Concepts::RandomAccessRange TRange, typename TCount>
+    [[nodiscard]] constexpr TRange Back(Immutable<TRange> range, Immutable<TCount> count) noexcept
+    {
+        return Ranges::Slice(range, Ranges::Count(range) - count, count);
+    }
+
+    template <Concepts::RandomAccessRange TRange, typename TCount>
+    [[nodiscard]] constexpr TRange PopFront(Immutable<TRange> range, Immutable<TCount> count) noexcept
+    {
+        return Ranges::Slice(range, count, Ranges::Count(range) - count);
+    }
+
+    template <Concepts::RandomAccessRange TRange, typename TCount>
+    [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range, Immutable<TCount> count) noexcept
+    {
+        return Ranges::Slice(range, Templates::RangeCountType<TRange>{ 0 }, Ranges::Count(range) - count);
     }
 
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr TRange Back(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept
+    [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementReferenceType<TRange>, TRange> SliceFront(Immutable<TRange> range) noexcept
     {
-        return Select(range, Count(range) - count, count);
+        return Tuples::MakeTuple(Ranges::Front(range), Ranges::PopFront(range));
     }
 
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr TRange PopFront(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept
+    [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementReferenceType<TRange>, TRange> SliceBack(Immutable<TRange> range) noexcept
     {
-        return Select(range, count, Count(range) - count);
+        return Tuples::MakeTuple(Ranges::Back(range), Ranges::PopBack(range));
     }
 
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept
+    template <Concepts::RandomAccessRange TRange, typename TCount>
+    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<TCount> count) noexcept
     {
-        return Select(range, Templates::ElementCount<TRange>{ 0 }, Count(range) - count);
+        return { Ranges::Front(range, count), Ranges::PopFront(range, count) };
     }
 
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr auto SliceFront(Immutable<TRange> range) noexcept
+    template <Concepts::RandomAccessRange TRange, typename TCount>
+    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<TCount> count) noexcept
     {
-        return MakeTuple(Front(range), PopFront(range));
-    }
-
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr auto SliceBack(Immutable<TRange> range) noexcept
-    {
-        return MakeTuple(Back(range), PopBack(range));
-    }
-
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept
-    {
-        return { Front(range, count), PopFront(range, count) };
-    }
-
-    template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<Templates::ElementCount<TRange>> count) noexcept
-    {
-        return { Back(range, count), PopBack(range, count) };
+        return { Ranges::Back(range, count), Ranges::PopBack(range, count) };
     }
 
 }
