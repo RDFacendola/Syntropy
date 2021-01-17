@@ -200,11 +200,11 @@ namespace Syntropy
 
     /// \brief Get a full view of a read-write fix-array.
     template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr Ranges::RWSpan<TType> RangeOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr RWSpan<TType> RangeOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
 
     /// \brief Get a full view of a read-only fix-array.
     template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr Ranges::Span<TType> RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr Span<TType> RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
 
 }
 
@@ -370,15 +370,15 @@ namespace Syntropy
     // Utilities.
 
     template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr Ranges::RWSpan<TType> RangeOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr RWSpan<TType> RangeOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
     {
-        return Ranges::MakeSpan(rhs.GetData(), rhs.GetSize());
+        return MakeSpan(rhs.GetData(), rhs.GetSize());
     }
 
     template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr Ranges::Span<TType> RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Span<TType> RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
     {
-        return Ranges::MakeSpan(rhs.GetData(), rhs.GetSize());
+        return MakeSpan(rhs.GetData(), rhs.GetSize());
     }
 }
 
