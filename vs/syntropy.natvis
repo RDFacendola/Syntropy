@@ -93,21 +93,21 @@
 
   <!-- Span -->
 
-  <Type Name="Syntropy::Ranges::BaseSpan&lt;*,Syntropy::Ranges::RWSpanTraits&lt;*&gt;&gt;">
-    <DisplayString>[RW] Span {{ size = {size_} }}</DisplayString>
+  <Type Name="Syntropy::BaseSpan&lt;*,Syntropy::RWSpanTraits&lt;*&gt;&gt;">
+    <DisplayString>[RW] Span {{ count = {count_} }}</DisplayString>
     <Expand>
       <ArrayItems>
-        <Size>size_</Size>
+        <Size>count_</Size>
         <ValuePointer>data_</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
   
-  <Type Name="Syntropy::Ranges::BaseSpan&lt;*,Syntropy::Ranges::SpanTraits&lt;*&gt;&gt;">
-    <DisplayString>[RD] Span {{ size = {size_} }}</DisplayString>
+  <Type Name="Syntropy::BaseSpan&lt;*,Syntropy::SpanTraits&lt;*&gt;&gt;">
+    <DisplayString>[RD] Span {{ count = {count_} }}</DisplayString>
     <Expand>
       <ArrayItems>
-        <Size>size_</Size>
+        <Size>count_</Size>
         <ValuePointer>data_</ValuePointer>
       </ArrayItems>
     </Expand>

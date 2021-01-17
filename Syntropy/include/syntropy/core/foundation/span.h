@@ -75,7 +75,7 @@ namespace Syntropy
         TPointer data_{ nullptr };
 
         /// \brief Number of elements in the span.
-        Int size_{ 0 };
+        Int count_{ 0 };
 
     };
 
@@ -189,7 +189,7 @@ namespace Syntropy
     template <typename TType, typename TTraits>
     constexpr BaseSpan<TType, TTraits>::BaseSpan(Immutable<BaseSpan<TType, TTraits>::TPointer> begin, Int size) noexcept
         : data_(begin)
-        , size_(size)
+        , count_(size)
     {
 
     }
@@ -205,7 +205,7 @@ namespace Syntropy
     template <typename UType, typename UTraits>
     constexpr BaseSpan<TType, TTraits>::BaseSpan(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
         : data_(ToPtr<TType>(rhs.data_))
-        , size_(rhs.size_)
+        , count_(rhs.count_)
     {
 
     }
@@ -215,7 +215,7 @@ namespace Syntropy
     constexpr Mutable<BaseSpan<TType, TTraits>> BaseSpan<TType, TTraits>::operator=(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
         data_ = ToPtr<TType>(rhs.data_);
-        size_ = rhs.size_;
+        count_ = rhs.count_;
 
         return *this;
     }
@@ -223,7 +223,7 @@ namespace Syntropy
     template <typename TType, typename TTraits>
     [[nodiscard]] constexpr BaseSpan<TType, TTraits>::operator Bool() const noexcept
     {
-        return size_ > ToInt(0);
+        return count_ > ToInt(0);
     }
 
     template <typename TType, typename TTraits>
@@ -241,7 +241,7 @@ namespace Syntropy
     template <typename TType, typename TTraits>
     [[nodiscard]] constexpr Int BaseSpan<TType, TTraits>::GetCount() const noexcept
     {
-        return size_;
+        return count_;
     }
 
     // Non-member functions.
