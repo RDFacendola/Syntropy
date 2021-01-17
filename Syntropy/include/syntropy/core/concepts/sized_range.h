@@ -44,12 +44,16 @@ namespace Syntropy::Ranges::Concepts
     /// \brief Range whose elements can be visited sequentially and whose size can be computed in constant time.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept SizedRange = ForwardRange<TRange>
-        && requires(Immutable<TRange> range)
+    concept BaseSizedRange = requires(Immutable<TRange> range)
         {
             /// \brief Get range's elements count.
             { Details::RouteCount(range) };
         };
+
+    /// \brief Range whose elements can be visited sequentially and whose size can be computed in constant time.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept SizedRange = BaseSizedRange<TRange> && ForwardRange<TRange>;
 
 }
 
@@ -60,9 +64,6 @@ namespace Syntropy::Ranges
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
-
-    // Sized range.
-    // ============
 
     /// \brief Get range's elements count.
     template <Concepts::SizedRange TRange>
@@ -94,6 +95,13 @@ namespace Syntropy::Ranges::Extensions
     /// \brief Get range's elements count.
     template <typename TType>
     struct Count;
+
+    /// \brief Invokes a non-member function via ADL.
+    template <Concepts::BaseSizedRange TRange>
+    struct IsEmpty<TRange>
+    {
+        Bool operator()(Immutable<TRange> range) const noexcept;
+    };
 }
 
 // ===========================================================================
@@ -107,15 +115,11 @@ namespace Syntropy::Ranges
     // Non-member functions.
     // =====================
 
-    // Sized range.
-
     template <Concepts::SizedRange TRange>
     [[nodiscard]] constexpr Templates::RangeCountType<TRange> Count(Immutable<TRange> range) noexcept
     {
         return Details::RouteCount(range);
     }
-
-    // Sized range.
 
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
@@ -175,6 +179,25 @@ namespace Syntropy::Ranges
         }
 
         return Ranges::IsEmpty(lhs_copy) ? Ordering::kLess : Ordering::kGreater;
+    }
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Extensions
+{
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Sized range extensions.
+    // =======================
+
+    /// \brief Invokes a non-member function via ADL.
+    template <Concepts::BaseSizedRange TRange>
+    Bool IsEmpty<TRange>::operator()(Immutable<TRange> range) const noexcept
+    {
+        return Details::RouteCount(range) == Templates::RangeCountType<TRange>{};
     }
 }
 

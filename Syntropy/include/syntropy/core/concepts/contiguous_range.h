@@ -30,12 +30,19 @@ namespace Syntropy::Ranges::Concepts
     /// \brief Range whose elements are allocated contiguously.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept ContiguousRange = RandomAccessRange<TRange>
-        && requires(Immutable<TRange> range)
+    concept BaseContiguousRange = requires(Immutable<TRange> range)
         {
             /// \brief Access range's element storage.
             { Details::RouteData(range) };
+
+            /// \brief Get range's elements count.
+            { Details::RouteCount(range) };
         };
+
+    /// \brief Range whose elements are allocated contiguously.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept ContiguousRange = BaseContiguousRange<TRange> && RandomAccessRange<TRange>;
 
 }
 
@@ -72,6 +79,22 @@ namespace Syntropy::Ranges::Extensions
     /// \brief Access range's element storage.
     template <typename TType>
     struct Data;
+
+    /// \brief Access range's element by index.
+    template <Concepts::BaseContiguousRange TRange>
+    struct At<TRange>
+    {
+        template <typename TIndex>
+        [[nodiscard]] decltype(auto) operator()(Immutable<TRange> range, Immutable<TIndex> index) const noexcept;
+    };
+
+    /// \brief Obtain a view to a sub-range.
+    template <Concepts::BaseContiguousRange TRange>
+    struct Slice<TRange>
+    {
+        template <typename TIndex, typename TCount>
+        [[nodiscard]] TRange operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count) const noexcept;
+    };
 }
 
 // ===========================================================================
@@ -98,6 +121,32 @@ namespace Syntropy::Ranges
     {
         return (Ranges::Count(lhs) == Ranges::Count(rhs)) && (Ranges::IsEmpty(lhs) || (Ranges::Data(lhs) == Ranges::Data(rhs)));
     }
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Extensions
+{
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Random access range extensions.
+    // ===============================
+
+    template <Concepts::BaseContiguousRange TRange>
+    template <typename TIndex>
+    [[nodiscard]] inline decltype(auto) At<TRange>::operator()(Immutable<TRange> range, Immutable<TIndex> index) const noexcept
+    {
+        return *(Details::RouteData(range) + index);
+    }
+
+    template <Concepts::BaseContiguousRange TRange>
+    template <typename TIndex, typename TCount>
+    [[nodiscard]] inline TRange Slice<TRange>::operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count) const noexcept
+    {
+        return { Details::RouteData(range) + index, count };
+    };
 }
 
 // ===========================================================================

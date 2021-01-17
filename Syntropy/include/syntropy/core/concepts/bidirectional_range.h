@@ -30,15 +30,19 @@ namespace Syntropy::Ranges::Concepts
     /// \brief Range whose elements can be visited sequentially in either direction.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept BidirectionalRange = ForwardRange<TRange>
-        && requires(Immutable<TRange> range)
-        {
-            /// \brief Access range's last element.
-            { Details::RouteBack(range) };
+    concept BaseBidirectionalRange = requires(Immutable<TRange> range)
+    {
+        /// \brief Access range's last element.
+        { Details::RouteBack(range) };
 
-            /// \brief Discard range's last element and return the resulting range.
-            { Details::RoutePopBack(range) };
-        };
+        /// \brief Discard range's last element and return the resulting range.
+        { Details::RoutePopBack(range) };
+    };
+
+    /// \brief Range whose elements can be visited sequentially in either direction.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept BidirectionalRange = BaseBidirectionalRange<TRange> && ForwardRange<TRange>;
 
 }
 

@@ -49,18 +49,17 @@ namespace Syntropy::Ranges::Concepts
     /// \brief Range whose elements can be visited sequentially.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept ForwardRange = true 
-        && requires(Immutable<TRange> range)
-        {
-            /// \brief Access range's first element.
-            { Details::RouteFront(range) };
+    concept ForwardRange = requires(Immutable<TRange> range)
+    {
+        /// \brief Access range's first element.
+        { Details::RouteFront(range) };
 
-            /// \brief Discard range's first element and return the resulting range.
-            { Details::RoutePopFront(range) };
+        /// \brief Discard range's first element and return the resulting range.
+        { Details::RoutePopFront(range) };
 
-            /// \brief Check whether the range is empty.
-            { Details::RouteIsEmpty(range) };
-        };
+        /// \brief Check whether the range is empty.
+        { Details::RouteIsEmpty(range) };
+    };
 
 }
 

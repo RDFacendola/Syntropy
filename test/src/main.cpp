@@ -57,24 +57,15 @@
 #include "syntropy/core/containers/fix_array.h"
 
 
+
 struct MuhRange
 {
-    int GetFront() const { return 2; }
-    MuhRange PopFront() const { return *this; }
-    int IsEmpty() const { return 0; }
+    MuhRange() = default;
+    MuhRange(int* ptr, int size) {}
 
-    int GetCount() const { return 10; }
-
-    void* GetData() const { return nullptr; }
-
-//     int GetBack() const {};
-//     int PopBack() const {};
+    int* GetData() const { return nullptr; }
+    int GetCount() const { return 0; }
 };
-
-int Back(MuhRange mr) { return 1; }
-MuhRange PopBack(MuhRange mr) { return mr; }
-void* At(MuhRange, int) { return nullptr; };
-MuhRange Slice(MuhRange a, int, int) { return a;  };
 
 int main(int argc, char** argv)
 {
@@ -98,16 +89,25 @@ int main(int argc, char** argv)
         static_assert(Syntropy::Ranges::Concepts::RandomAccessRange<MuhRange>, "nope!");
         static_assert(Syntropy::Ranges::Concepts::ContiguousRange<MuhRange>, "nope!");
 
-        auto l0 = Syntropy::Ranges::Front(p);
-        auto l1 = Syntropy::Ranges::PopFront(p);
-        auto l2 = Syntropy::Ranges::IsEmpty(p);
-        auto l3 = Syntropy::Ranges::Count(p);
-        auto l4 = Syntropy::Ranges::Back(p);
-        auto l5 = Syntropy::Ranges::PopBack(p);
-        auto l6 = Syntropy::Ranges::At(p, 0);
-        auto l7 = Syntropy::Ranges::Slice(p, 0, 1);
-        auto l8 = Syntropy::Ranges::Data(p);
+        auto x = Syntropy::Ranges::Details::RouteFront(p);
+        auto y = Syntropy::Ranges::Details::RoutePopFront(p);
+        auto z = Syntropy::Ranges::Details::RouteIsEmpty(p);
+        auto w = Syntropy::Ranges::Details::RouteCount(p);
+        auto xx = Syntropy::Ranges::Details::RouteBack(p);
+        auto yy = Syntropy::Ranges::Details::RoutePopBack(p);
+        auto zz = Syntropy::Ranges::Details::RouteAt(p, 0);
+        auto ww = Syntropy::Ranges::Details::RouteSlice(p, 0, 2);
+        auto xxx = Syntropy::Ranges::Details::RouteData(p);
 
+        auto x0 = Syntropy::Ranges::Front(p);
+        auto y0 = Syntropy::Ranges::PopFront(p);
+        auto z0 = Syntropy::Ranges::IsEmpty(p);
+        auto w0 = Syntropy::Ranges::Count(p);
+        auto xx0 = Syntropy::Ranges::Back(p);
+        auto yy0 = Syntropy::Ranges::PopBack(p);
+        auto zz0 = Syntropy::Ranges::At(p, 0);
+        auto ww0 = Syntropy::Ranges::Slice(p, 0, 2);
+        auto xxx0 = Syntropy::Ranges::Data(p);
 
         system("pause");
     }

@@ -31,15 +31,22 @@ namespace Syntropy::Ranges::Concepts
     /// \brief Range whose elements can be visited in any order.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept RandomAccessRange = BidirectionalRange<TRange> && SizedRange<TRange>
-        && requires(Immutable<TRange> range, Immutable<Templates::RangeCountType<TRange>> index, Immutable<Templates::RangeCountType<TRange>> count)
-        {
-            /// \brief Access range's element by index.
-            { Details::RouteAt(range, index) };
+    concept BaseRandomAccessRange = requires(Immutable<TRange> range, Immutable<Templates::RangeCountType<TRange>> index, Immutable<Templates::RangeCountType<TRange>> count)
+    {
+        /// \brief Access range's element by index.
+        { Details::RouteAt(range, index) };
 
-            /// \brief Obtain a view to a sub-range.
-            { Details::RouteSlice(range, index, count) };
-        };
+        /// \brief Obtain a view to a sub-range.
+        { Details::RouteSlice(range, index, count) };
+
+        /// \brief Get range's elements count.
+        { Details::RouteCount(range) };
+    };
+
+    /// \brief Range whose elements can be visited in any order.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept RandomAccessRange = BaseRandomAccessRange<TRange> && BidirectionalRange<TRange> && SizedRange<TRange>;
 
 }
 
@@ -122,6 +129,34 @@ namespace Syntropy::Ranges::Extensions
     /// \brief Obtain a view to a sub-range.
     template <typename TType>
     struct Slice;
+
+    /// \brief Invokes a non-member function via ADL.
+    template <Concepts::BaseRandomAccessRange TRange>
+    struct Front<TRange>
+    {
+        [[nodiscard]] decltype(auto) operator()(Immutable<TRange> range) const noexcept;
+    };
+
+    /// \brief Invokes a non-member function via ADL.
+    template <Concepts::BaseRandomAccessRange TRange>
+    struct PopFront<TRange>
+    {
+        [[nodiscard]] TRange operator()(Immutable<TRange> range) const noexcept;
+    };
+
+    /// \brief Invokes a non-member function via ADL.
+    template <Concepts::BaseRandomAccessRange TRange>
+    struct Back<TRange>
+    {
+        [[nodiscard]] decltype(auto) operator()(Immutable<TRange> range) const noexcept;
+    };
+
+    /// \brief Invokes a non-member function via ADL.
+    template <Concepts::BaseRandomAccessRange TRange>
+    struct PopBack<TRange>
+    {
+        [[nodiscard]] TRange operator()(Immutable<TRange> range) const noexcept;
+    };
 }
 
 // ===========================================================================
@@ -197,6 +232,50 @@ namespace Syntropy::Ranges
         return { Ranges::Back(range, count), Ranges::PopBack(range, count) };
     }
 
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Extensions
+{
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Random access range extensions.
+    // ===============================
+
+    template <Concepts::BaseRandomAccessRange TRange>
+    [[nodiscard]] inline decltype(auto) Front<TRange>::operator()(Immutable<TRange> range) const noexcept
+    {
+        using TCount = Templates::RangeCountType<TRange>;
+
+        return Details::RouteAt(range, TCount{ 0 });
+    }
+
+    template <Concepts::BaseRandomAccessRange TRange>
+    [[nodiscard]] inline TRange PopFront<TRange>::operator()(Immutable<TRange> range) const noexcept
+    {
+        using TCount = Templates::RangeCountType<TRange>;
+
+        return Details::RouteSlice(range, TCount{ 1 }, Details::RouteCount(range) - TCount{ 1 });
+    };
+
+    template <Concepts::BaseRandomAccessRange TRange>
+    [[nodiscard]] inline decltype(auto) Back<TRange>::operator()(Immutable<TRange> range) const noexcept
+    {
+        using TCount = Templates::RangeCountType<TRange>;
+
+        return Details::RouteAt(range, Details::RouteCount(range) - TCount{ 1 });
+    };
+
+    template <Concepts::BaseRandomAccessRange TRange>
+    [[nodiscard]] inline TRange PopBack<TRange>::operator()(Immutable<TRange> range) const noexcept
+    {
+        using TCount = Templates::RangeCountType<TRange>;
+
+        return Details::RouteSlice(range, TCount{ 0 }, Details::RouteCount(range) - TCount{ 1 });
+    }
 }
 
 // ===========================================================================
