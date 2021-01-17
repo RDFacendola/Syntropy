@@ -220,9 +220,9 @@ namespace Syntropy::Ranges
     template <Concepts::ForwardRange TRange, typename TFunction>
     constexpr void ForEach(Immutable<TRange> range, TFunction function) noexcept
     {
-        for (auto rest = range; !Ranges::IsEmpty(rest); rest = Ranges::PopFront(rest))
+        for (auto rest = range; !Details::RouteIsEmpty(rest); rest = Details::RoutePopFront(rest))
         {
-            function(Ranges::Front(rest));
+            function(Details::RouteFront(rest));
         }
     }
 
@@ -232,12 +232,12 @@ namespace Syntropy::Ranges
         auto source = lhs;
         auto destination = rhs;
 
-        for (; !Ranges::IsEmpty(source) && !Ranges::IsEmpty(destination);)
+        for (; !Details::RouteIsEmpty(source) && !Details::RouteIsEmpty(destination);)
         {
-            Ranges::Front(destination) = Ranges::Front(source);
+            Details::RouteFront(destination) = Details::RouteFront(source);
 
-            source = Ranges::PopFront(source);
-            destination = Ranges::PopFront(destination);
+            source = Details::RoutePopFront(source);
+            destination = Details::RoutePopFront(destination);
         }
 
         return { source , destination };
@@ -249,12 +249,12 @@ namespace Syntropy::Ranges
         auto source = lhs;
         auto destination = rhs;
 
-        for (; !Ranges::IsEmpty(source) && !Ranges::IsEmpty(destination);)
+        for (; !Details::RouteIsEmpty(source) && !Details::RouteIsEmpty(destination);)
         {
-            Ranges::Front(destination) = Syntropy::Move(Ranges::Front(source));
+            Details::RouteFront(destination) = Syntropy::Move(Details::RouteFront(source));
 
-            source = Ranges::PopFront(source);
-            destination = Ranges::PopFront(destination);
+            source = Details::RoutePopFront(source);
+            destination = Details::RoutePopFront(destination);
         }
 
         return { source , destination };
@@ -266,12 +266,12 @@ namespace Syntropy::Ranges
         auto source = lhs;
         auto destination = rhs;
 
-        for (; !Ranges::IsEmpty(source) && !Ranges::IsEmpty(destination);)
+        for (; !Details::RouteIsEmpty(source) && !Details::RouteIsEmpty(destination);)
         {
-            Swap(Ranges::Front(source), Ranges::Front(destination));
+            Swap(Details::RouteFront(source), Details::RouteFront(destination));
 
-            source = Ranges::PopFront(source);
-            destination = Ranges::PopFront(destination);
+            source = Details::RoutePopFront(source);
+            destination = Details::RoutePopFront(destination);
         }
 
         return { source , destination };
@@ -298,7 +298,7 @@ namespace Syntropy::Ranges
     template <Concepts::ForwardRange TRange>
     constexpr Mutable<RangeIterator<TRange>> RangeIterator<TRange>::operator++() noexcept
     {
-        range_ = Ranges::PopFront(range_);
+        range_ = Details::RoutePopFront(range_);
 
         return *this;
     }
@@ -306,9 +306,9 @@ namespace Syntropy::Ranges
     template <Concepts::ForwardRange TRange>
     [[nodiscard]] constexpr Bool RangeIterator<TRange>::operator==(Immutable<RangeIterator> other) const noexcept
     {
-        SYNTROPY_ASSERT(Ranges::IsEmpty(other.range_));
+        SYNTROPY_ASSERT(Details::RouteIsEmpty(other.range_));
 
-        return Ranges::IsEmpty(range_);
+        return Details::RouteIsEmpty(range_);
     }
 
     // Iterators.

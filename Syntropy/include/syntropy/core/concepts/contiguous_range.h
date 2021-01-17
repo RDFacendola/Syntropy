@@ -121,7 +121,9 @@ namespace Syntropy::Ranges
     template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
     [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        return (Ranges::Count(lhs) == Ranges::Count(rhs)) && (Ranges::IsEmpty(lhs) || (Ranges::Data(lhs) == Ranges::Data(rhs)));
+        return (PtrOf(lhs) == PtrOf(rhs)) 
+            && (Details::RouteCount(lhs) == Details::RouteCount(rhs)) 
+            && (Details::RouteIsEmpty(lhs) || (Details::RouteData(lhs) == Details::RouteData(rhs)));
     }
 }
 

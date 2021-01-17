@@ -68,10 +68,12 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr Templates::RangeCountType<TRange> Count(Immutable<TRange> range) noexcept;
 
     /// \brief Check whether lhs and rhs are equal.
+    /// \remarks Equality implies equivalence, therefore if this method returns true AreEquivalent also returns true.
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
+    /// \remarks Equality implies equivalence but not the other way around! If AreEqual returns false this method can either return true or false.
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
@@ -121,26 +123,29 @@ namespace Syntropy::Ranges
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        // Some ranges may provide a more efficient implementation than testing for equality.
-
-        return Ranges::AreEquivalent(lhs, rhs);
+        return (PtrOf(lhs) == PtrOf(rhs));
     }
 
     template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Bool AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        if (Ranges::Count(lhs) == Ranges::Count(rhs))
+        if (AreEqual(lhs, rhs))
+        {
+            return true;
+        }
+
+        if (Details::RouteCount(lhs) == Details::RouteCount(rhs))
         {
             auto lhs_copy = lhs;
             auto rhs_copy = rhs;
 
-            for (; (!Ranges::IsEmpty(lhs_copy)) && (!Ranges::IsEmpty(rhs_copy)) && (Ranges::Front(lhs_copy) == Ranges::Front(rhs_copy)); )
+            for (; (!Details::RouteIsEmpty(lhs_copy)) && (!Details::RouteIsEmpty(rhs_copy)) && (Details::RouteFront(lhs_copy) == Details::RouteFront(rhs_copy)); )
             {
-                lhs_copy = Ranges::PopFront(lhs_copy);
-                rhs_copy = Ranges::PopFront(rhs_copy);
+                lhs_copy = Details::RoutePopFront(lhs_copy);
+                rhs_copy = Details::RoutePopFront(rhs_copy);
             }
 
-            return Ranges::IsEmpty(lhs_copy);
+            return Details::RouteIsEmpty(lhs_copy);
         }
 
         return false;
@@ -152,9 +157,9 @@ namespace Syntropy::Ranges
         auto lhs_copy = lhs;
         auto rhs_copy = rhs;
 
-        for (; !Ranges::IsEmpty(lhs_copy) && !Ranges::IsEmpty(rhs_copy); )
+        for (; !Details::RouteIsEmpty(lhs_copy) && !Details::RouteIsEmpty(rhs_copy); )
         {
-            auto compare = (Ranges::Front(lhs_copy) <=> Ranges::Front(rhs_copy));
+            auto compare = (Details::RouteFront(lhs_copy) <=> Details::RouteFront(rhs_copy));
 
             if (compare == Ordering::kLess)
             {
@@ -166,16 +171,16 @@ namespace Syntropy::Ranges
                 return Ordering::kGreater;
             }
 
-            lhs_copy = Ranges::PopFront(lhs_copy);
-            rhs_copy = Ranges::PopFront(rhs_copy);
+            lhs_copy = Details::RoutePopFront(lhs_copy);
+            rhs_copy = Details::RoutePopFront(rhs_copy);
         }
 
-        if (Ranges::IsEmpty(lhs_copy) && Ranges::IsEmpty(rhs_copy))
+        if (Details::RouteIsEmpty(lhs_copy) && Details::RouteIsEmpty(rhs_copy))
         {
             return Ordering::kEquivalent;
         }
 
-        return Ranges::IsEmpty(lhs_copy) ? Ordering::kLess : Ordering::kGreater;
+        return Details::RouteIsEmpty(lhs_copy) ? Ordering::kLess : Ordering::kGreater;
     }
 }
 

@@ -57,14 +57,17 @@
 #include "syntropy/core/containers/fix_array.h"
 
 
+int jay = 10;
 
 struct MuhRange
 {
     MuhRange() = default;
     MuhRange(int* ptr, int size) {}
 
-    int* GetData() const { return nullptr; }
-    int GetCount() const { return 0; }
+    int* GetData() const { return k; }
+    int GetCount() const { return 1; }
+
+    int* k = &jay;
 };
 
 int main(int argc, char** argv)
@@ -82,6 +85,7 @@ int main(int argc, char** argv)
         auto fspan = Syntropy::RangeOf(arr2);
 
         auto p = MuhRange();
+        auto q = MuhRange();
 
         static_assert(Syntropy::Ranges::Concepts::ForwardRange<MuhRange>, "nope!");
         static_assert(Syntropy::Ranges::Concepts::SizedRange<MuhRange>, "nope!");
@@ -108,6 +112,10 @@ int main(int argc, char** argv)
         auto zz0 = Syntropy::Ranges::At(p, 0);
         auto ww0 = Syntropy::Ranges::Slice(p, 0, 2);
         auto xxx0 = Syntropy::Ranges::Data(p);
+
+        // Syntropy::Ranges::ForEach(p, [](auto& x) {});
+
+        auto k = Syntropy::Ranges::AreEquivalent(p, q);
 
         system("pause");
     }

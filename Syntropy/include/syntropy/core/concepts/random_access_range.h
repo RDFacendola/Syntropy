@@ -195,49 +195,49 @@ namespace Syntropy::Ranges
     template <Concepts::RandomAccessRange TRange, typename TCount>
     [[nodiscard]] constexpr TRange Front(Immutable<TRange> range, Immutable<TCount> count) noexcept
     {
-        return Ranges::Slice(range, Templates::RangeCountType<TRange>{ 0 }, count);
+        return Details::RouteSlice(range, Templates::RangeCountType<TRange>{ 0 }, count);
     }
 
     template <Concepts::RandomAccessRange TRange, typename TCount>
     [[nodiscard]] constexpr TRange Back(Immutable<TRange> range, Immutable<TCount> count) noexcept
     {
-        return Ranges::Slice(range, Ranges::Count(range) - count, count);
+        return Details::RouteSlice(range, Details::RouteCount(range) - count, count);
     }
 
     template <Concepts::RandomAccessRange TRange, typename TCount>
     [[nodiscard]] constexpr TRange PopFront(Immutable<TRange> range, Immutable<TCount> count) noexcept
     {
-        return Ranges::Slice(range, count, Ranges::Count(range) - count);
+        return Details::RouteSlice(range, count, Details::RouteCount(range) - count);
     }
 
     template <Concepts::RandomAccessRange TRange, typename TCount>
     [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range, Immutable<TCount> count) noexcept
     {
-        return Ranges::Slice(range, Templates::RangeCountType<TRange>{ 0 }, Ranges::Count(range) - count);
+        return Details::RouteSlice(range, Templates::RangeCountType<TRange>{ 0 }, Details::RouteCount(range) - count);
     }
 
     template <Concepts::RandomAccessRange TRange>
     [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementReferenceType<TRange>, TRange> SliceFront(Immutable<TRange> range) noexcept
     {
-        return Tuples::MakeTuple(Ranges::Front(range), Ranges::PopFront(range));
+        return Tuples::MakeTuple(Details::RouteFront(range), Details::RoutePopFront(range));
     }
 
     template <Concepts::RandomAccessRange TRange>
     [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementReferenceType<TRange>, TRange> SliceBack(Immutable<TRange> range) noexcept
     {
-        return Tuples::MakeTuple(Ranges::Back(range), Ranges::PopBack(range));
+        return Tuples::MakeTuple(Details::RouteBack(range), Details::RoutePopBack(range));
     }
 
     template <Concepts::RandomAccessRange TRange, typename TCount>
     [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<TCount> count) noexcept
     {
-        return { Ranges::Front(range, count), Ranges::PopFront(range, count) };
+        return { Details::RouteFront(range, count), Details::RoutePopFront(range, count) };
     }
 
     template <Concepts::RandomAccessRange TRange, typename TCount>
     [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<TCount> count) noexcept
     {
-        return { Ranges::Back(range, count), Ranges::PopBack(range, count) };
+        return { Details::RouteBack(range, count), Details::RoutePopBack(range, count) };
     }
 
 }
