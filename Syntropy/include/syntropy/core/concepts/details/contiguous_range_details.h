@@ -18,8 +18,6 @@ namespace Syntropy::Ranges::Extensions
     /* CONTIGUOUS RANGE EXTENSIONS                                          */
     /************************************************************************/
 
-    // Functors to extend ranges support to custom types.
-
     /// \brief Access range's element storage.
     template <typename TType>
     struct Data;
@@ -35,21 +33,21 @@ namespace Syntropy::Ranges::Details
     /* DATA                                                                 */
     /************************************************************************/
 
-    /// \brief Custom extension.
+    /// \brief Invoke the method via a custom extension.
     template <typename TRange>
     inline auto InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::Data<TRange>{}(range))
     {
         return Ranges::Extensions::Data<TRange>{}(range);
     }
 
-    /// \brief Member-function.
+    /// \brief Invoke the method via member-function.
     template <typename TRange>
     inline auto InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.GetData())
     {
         return range.GetData();
     }
 
-    /// \brief Non-member function (via ADL).
+    /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRange>
     inline auto InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<0>) noexcept -> decltype(Data(range))
     {

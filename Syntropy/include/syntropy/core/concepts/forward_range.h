@@ -46,10 +46,10 @@ namespace Syntropy::Ranges::Concepts
     /* FORWARD RANGE                                                        */
     /************************************************************************/
 
-    /// \brief Range whose elements can be visited sequentially.
+    /// \brief Minimal interface for ranges whose elements can be visited sequentially.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept ForwardRange = requires(Immutable<TRange> range)
+    concept BaseForwardRange = requires(Immutable<TRange> range)
     {
         /// \brief Access range's first element.
         { Details::RouteFront(range) };
@@ -60,6 +60,11 @@ namespace Syntropy::Ranges::Concepts
         /// \brief Check whether the range is empty.
         { Details::RouteIsEmpty(range) };
     };
+
+    /// \brief Range whose elements can be visited sequentially.
+    /// \author Raffaele D. Facendola - November 2020.
+    template <typename TRange>
+    concept ForwardRange = BaseForwardRange<TRange>;
 
 }
 

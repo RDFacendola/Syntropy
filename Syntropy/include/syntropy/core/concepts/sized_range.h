@@ -30,7 +30,6 @@ namespace Syntropy::Ranges::Templates
     /// \brief Range's count type.
     template <typename TRange>
     using RangeCountType = Syntropy::Templates::RemoveConstReference<decltype(Details::RouteCount(Syntropy::Templates::Declval<TRange>()))>;
-
 }
 
 // ===========================================================================
@@ -41,7 +40,7 @@ namespace Syntropy::Ranges::Concepts
     /* SIZED RANGE                                                          */
     /************************************************************************/
 
-    /// \brief Range whose elements can be visited sequentially and whose size can be computed in constant time.
+    /// \brief Minimal interface for ranges whose elements can be visited sequentially and whose size can be computed in constant time.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept BaseSizedRange = requires(Immutable<TRange> range)
@@ -54,7 +53,6 @@ namespace Syntropy::Ranges::Concepts
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept SizedRange = BaseSizedRange<TRange> && ForwardRange<TRange>;
-
 }
 
 // ===========================================================================
@@ -90,13 +88,12 @@ namespace Syntropy::Ranges::Extensions
     /* SIZED RANGE EXTENSIONS                                               */
     /************************************************************************/
 
-    // Functors to extend ranges support to custom types.
-
     /// \brief Get range's elements count.
     template <typename TType>
     struct Count;
 
-    /// \brief Invokes a non-member function via ADL.
+    /// \brief Check whether a range is empty.
+    /// \remarks This extension adapts SizedRange type such that all its instances are also ForwardRanges.
     template <Concepts::BaseSizedRange TRange>
     struct IsEmpty<TRange>
     {
@@ -193,7 +190,6 @@ namespace Syntropy::Ranges::Extensions
     // Sized range extensions.
     // =======================
 
-    /// \brief Invokes a non-member function via ADL.
     template <Concepts::BaseSizedRange TRange>
     Bool IsEmpty<TRange>::operator()(Immutable<TRange> range) const noexcept
     {

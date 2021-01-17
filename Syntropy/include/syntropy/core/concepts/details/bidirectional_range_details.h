@@ -18,8 +18,6 @@ namespace Syntropy::Ranges::Extensions
     /* BIDIRECTIONAL RANGE EXTENSIONS                                       */
     /************************************************************************/
 
-    // Functors to extend ranges support to custom types.
-
     /// \brief Access range's last element.
     template <typename TType>
     struct Back;
@@ -39,21 +37,21 @@ namespace Syntropy::Ranges::Details
     /* BACK                                                                 */
     /************************************************************************/
 
-    /// \brief Custom extension.
+    /// \brief Invoke the method via a custom extension.
     template <typename TRange>
     auto InvokeBack(Immutable<TRange> range, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::Back<TRange>{}(range))
     {
         return Ranges::Extensions::Back<TRange>{}(range);
     }
 
-    /// \brief Member-function.
+    /// \brief Invoke the method via member-function.
     template <typename TRange>
     auto InvokeBack(Immutable<TRange> range, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.GetBack())
     {
         return range.GetBack();
     }
 
-    /// \brief Non-member function (via ADL).
+    /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRange>
     auto InvokeBack(Immutable<TRange> range, Syntropy::Templates::Priority<0>) noexcept -> decltype(Back(range))
     {
@@ -71,21 +69,21 @@ namespace Syntropy::Ranges::Details
     /* POP BACK                                                             */
     /************************************************************************/
 
-    /// \brief Custom extension.
+    /// \brief Invoke the method via a custom extension.
     template <typename TRange>
     auto InvokePopBack(Immutable<TRange> range, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::PopBack<TRange>{}(range))
     {
         return Ranges::Extensions::PopBack<TRange>{}(range);
     }
 
-    /// \brief Member-function.
+    /// \brief Invoke the method via member-function.
     template <typename TRange>
     auto InvokePopBack(Immutable<TRange> range, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.PopBack())
     {
         return range.PopBack();
     }
 
-    /// \brief Non-member function (via ADL).
+    /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRange>
     auto InvokePopBack(Immutable<TRange> range, Syntropy::Templates::Priority<0>) noexcept -> decltype(PopBack(range))
     {

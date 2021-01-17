@@ -27,7 +27,7 @@ namespace Syntropy::Ranges::Concepts
     /* BIDIRECTIONAL RANGE                                                  */
     /************************************************************************/
 
-    /// \brief Range whose elements can be visited sequentially in either direction.
+    /// \brief Minimal interface for ranges whose elements can be visited sequentially in either direction.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept BaseBidirectionalRange = requires(Immutable<TRange> range)
@@ -43,7 +43,6 @@ namespace Syntropy::Ranges::Concepts
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept BidirectionalRange = BaseBidirectionalRange<TRange> && ForwardRange<TRange>;
-
 }
 
 // ===========================================================================
@@ -66,7 +65,6 @@ namespace Syntropy::Ranges
     /// \remarks If the provided range is empty, the behavior of this method is undefined.
     template <Concepts::BidirectionalRange TRange>
     [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range) noexcept;
-
 }
 
 // ===========================================================================
@@ -76,8 +74,6 @@ namespace Syntropy::Ranges::Extensions
     /************************************************************************/
     /* BIDIRECTIONAL RANGE EXTENSIONS                                       */
     /************************************************************************/
-
-    // Functors to extend ranges support to custom types.
 
     /// \brief Access range's last element.
     template <typename TType>
@@ -112,7 +108,6 @@ namespace Syntropy::Ranges
     {
         return Details::RoutePopBack(range);
     }
-
 }
 
 // ===========================================================================

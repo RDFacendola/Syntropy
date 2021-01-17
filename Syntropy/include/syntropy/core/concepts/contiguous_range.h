@@ -27,7 +27,7 @@ namespace Syntropy::Ranges::Concepts
     /* CONTIGUOUS RANGE                                                     */
     /************************************************************************/
 
-    /// \brief Range whose elements are allocated contiguously.
+    /// \brief Minimal interface for ranges whose elements are allocated contiguously.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept BaseContiguousRange = requires(Immutable<TRange> range)
@@ -74,13 +74,13 @@ namespace Syntropy::Ranges::Extensions
     /* CONTIGUOUS RANGE EXTENSIONS                                          */
     /************************************************************************/
 
-    // Functors to extend ranges support to custom types.
-
     /// \brief Access range's element storage.
     template <typename TType>
     struct Data;
 
     /// \brief Access range's element by index.
+    /// \remarks Exceeding range boundaries results in undefined behavior.
+    /// \remarks This extension adapts RandomAccessRange type such that all its instances are also BidirectionalRanges and SizedRanges.
     template <Concepts::BaseContiguousRange TRange>
     struct At<TRange>
     {
@@ -89,6 +89,8 @@ namespace Syntropy::Ranges::Extensions
     };
 
     /// \brief Obtain a view to a sub-range.
+    /// \remarks Exceeding range boundaries results in undefined behavior.
+    /// \remarks This extension adapts RandomAccessRange type such that all its instances are also BidirectionalRanges and SizedRanges.
     template <Concepts::BaseContiguousRange TRange>
     struct Slice<TRange>
     {

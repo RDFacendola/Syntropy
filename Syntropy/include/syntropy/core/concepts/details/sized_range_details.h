@@ -18,8 +18,6 @@ namespace Syntropy::Ranges::Extensions
     /* SIZED RANGE EXTENSIONS                                               */
     /************************************************************************/
 
-    // Functors to extend ranges support to custom types.
-
     /// \brief Get range's elements count.
     template <typename TType>
     struct Count;
@@ -35,21 +33,21 @@ namespace Syntropy::Ranges::Details
     /* COUNT                                                                */
     /************************************************************************/
 
-    /// \brief Custom extension.
+    /// \brief Invoke the method via a custom extension.
     template <typename TRange>
     inline auto InvokeCount(Immutable<TRange> range, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::Count<TRange>{}(range))
     {
         return Ranges::Extensions::Count<TRange>{}(range);
     }
 
-    /// \brief Member-function.
+    /// \brief Invoke the method via member-function.
     template <typename TRange>
     inline auto InvokeCount(Immutable<TRange> range, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.GetCount())
     {
         return range.GetCount();
     }
 
-    /// \brief Non-member function (via ADL).
+    /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRange>
     inline auto InvokeCount(Immutable<TRange> range, Syntropy::Templates::Priority<0>) noexcept -> decltype(Count(range))
     {

@@ -18,8 +18,6 @@ namespace Syntropy::Ranges::Extensions
     /* RANDOM ACCESS RANGE EXTENSIONS                                       */
     /************************************************************************/
 
-    // Functors to extend ranges support to custom types.
-
     /// \brief Access range's element by index.
     template <typename TType>
     struct At;
@@ -39,28 +37,28 @@ namespace Syntropy::Ranges::Details
     /* AT                                                                   */
     /************************************************************************/
 
-    /// \brief Custom extension.
+    /// \brief Invoke the method via a custom extension.
     template <typename TRange, typename TIndex>
     inline auto InvokeAt(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<3>) noexcept -> decltype(Ranges::Extensions::At<TRange>{}(range, index))
     {
         return Ranges::Extensions::At<TRange>{}(range, index);
     }
 
-    /// \brief Member-operator.
+    /// \brief Invoke the method via member-operator.
     template <typename TRange, typename TIndex>
     inline auto InvokeAt(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<2>) noexcept -> decltype(range[index])
     {
         return range[index];
     }
 
-    /// \brief Member-function.
+    /// \brief Invoke the method via member-function.
     template <typename TRange, typename TIndex>
     inline auto InvokeAt(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.At(index))
     {
         return range.At(index);
     }
 
-    /// \brief Non-member function (via ADL).
+    /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRange, typename TIndex>
     inline auto InvokeAt(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<0>) noexcept -> decltype(At(range, index))
     {
@@ -78,21 +76,21 @@ namespace Syntropy::Ranges::Details
     /* SLICE                                                                */
     /************************************************************************/
 
-    /// \brief Custom extension.
+    /// \brief Invoke the method via a custom extension.
     template <typename TRange, typename TIndex, typename TCount>
     inline auto InvokeSlice(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::Slice<TRange>{}(range, index, count))
     {
         return Ranges::Extensions::Slice<TRange>{}(range, index, count);
     }
 
-    /// \brief Member-function.
+    /// \brief Invoke the method via member-function.
     template <typename TRange, typename TIndex, typename TCount>
     inline auto InvokeSlice(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.Slice(index, count))
     {
         return range.Slice(index, count);
     }
 
-    /// \brief Non-member function (via ADL).
+    /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRange, typename TIndex, typename TCount>
     inline auto InvokeSlice(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<0>) noexcept -> decltype(Slice(range, index, count))
     {

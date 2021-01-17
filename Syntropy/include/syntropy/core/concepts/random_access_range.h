@@ -28,7 +28,7 @@ namespace Syntropy::Ranges::Concepts
     /* RANDOM ACCESS RANGE                                                  */
     /************************************************************************/
 
-    /// \brief Range whose elements can be visited in any order.
+    /// \brief Minimal interface for ranges whose elements can be visited in any order.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept BaseRandomAccessRange = requires(Immutable<TRange> range, Immutable<Templates::RangeCountType<TRange>> index, Immutable<Templates::RangeCountType<TRange>> count)
@@ -47,7 +47,6 @@ namespace Syntropy::Ranges::Concepts
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept RandomAccessRange = BaseRandomAccessRange<TRange> && BidirectionalRange<TRange> && SizedRange<TRange>;
-
 }
 
 // ===========================================================================
@@ -120,38 +119,47 @@ namespace Syntropy::Ranges::Extensions
     /* RANDOM ACCESS RANGE EXTENSIONS                                       */
     /************************************************************************/
 
-    // Functors to extend ranges support to custom types.
-
     /// \brief Access range's element by index.
+    /// \remarks Exceeding range boundaries results in undefined behavior.
     template <typename TType>
     struct At;
 
     /// \brief Obtain a view to a sub-range.
+    /// \remarks Exceeding range boundaries results in undefined behavior.
+    /// \brief Obtain a view to a sub-range.
     template <typename TType>
     struct Slice;
 
-    /// \brief Invokes a non-member function via ADL.
+    /// \brief Access range's first element.
+    /// \remarks Accessing the first element of an empty range results in undefined behavior.
+    /// \remarks This extension adapts RandomAccessRange type such that all its instances are also BidirectionalRanges and SizedRanges.
     template <Concepts::BaseRandomAccessRange TRange>
     struct Front<TRange>
     {
         [[nodiscard]] decltype(auto) operator()(Immutable<TRange> range) const noexcept;
     };
 
-    /// \brief Invokes a non-member function via ADL.
+    /// \brief Discard range's first element and return the resulting range.
+    /// \remarks If the provided range is empty, the behavior of this method is undefined.
+    /// \remarks This extension adapts RandomAccessRange type such that all its instances are also BidirectionalRanges and SizedRanges.
     template <Concepts::BaseRandomAccessRange TRange>
     struct PopFront<TRange>
     {
         [[nodiscard]] TRange operator()(Immutable<TRange> range) const noexcept;
     };
 
-    /// \brief Invokes a non-member function via ADL.
+    /// \brief Access range's last element.
+    /// \remarks Accessing the last element of an empty range results in undefined behavior.
+    /// \remarks This extension adapts RandomAccessRange type such that all its instances are also BidirectionalRanges and SizedRanges.
     template <Concepts::BaseRandomAccessRange TRange>
     struct Back<TRange>
     {
         [[nodiscard]] decltype(auto) operator()(Immutable<TRange> range) const noexcept;
     };
 
-    /// \brief Invokes a non-member function via ADL.
+    /// \brief Discard range's last element and return the resulting range.
+    /// \remarks If the provided range is empty, the behavior of this method is undefined.
+    /// \remarks This extension adapts RandomAccessRange type such that all its instances are also BidirectionalRanges and SizedRanges.
     template <Concepts::BaseRandomAccessRange TRange>
     struct PopBack<TRange>
     {

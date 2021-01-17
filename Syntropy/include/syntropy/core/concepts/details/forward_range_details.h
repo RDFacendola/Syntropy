@@ -18,8 +18,6 @@ namespace Syntropy::Ranges::Extensions
     /* FORWARD RANGE EXTENSIONS                                             */
     /************************************************************************/
 
-    // Functors to extend ranges support to custom types.
-
     /// \brief Access range's first element.
     template <typename TType>
     struct Front;
@@ -43,21 +41,21 @@ namespace Syntropy::Ranges::Details
     /* FRONT                                                                */
     /************************************************************************/
 
-    /// \brief Custom extension.
+    /// \brief Invoke the method via a custom extension.
     template <typename TRange>
     auto InvokeFront(Immutable<TRange> range, Syntropy::Templates::Priority<2>) noexcept -> decltype(Syntropy::Ranges::Extensions::Front<TRange>{}(range))
     {
         return Syntropy::Ranges::Extensions::Front<TRange>{}(range);
     }
 
-    /// \brief Member-function.
+    /// \brief Invoke the method via member-function.
     template <typename TRange>
     auto InvokeFront(Immutable<TRange> range, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.GetFront())
     {
         return range.GetFront();
     }
 
-    /// \brief Non-member function (via ADL).
+    /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRange>
     auto InvokeFront(Immutable<TRange> range, Syntropy::Templates::Priority<0>) noexcept -> decltype(Front(range))
     {
@@ -75,6 +73,7 @@ namespace Syntropy::Ranges::Details
     /* POP FRONT                                                            */
     /************************************************************************/
 
+    /// \brief Invoke the method via a custom extension.
     template <typename TRange>
     auto InvokePopFront(Immutable<TRange> range, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::PopFront<TRange>{}(range))
     {
@@ -103,7 +102,7 @@ namespace Syntropy::Ranges::Details
     /* IS EMPTY                                                             */
     /************************************************************************/
 
-    /// \brief Custom extension.
+    /// \brief Invoke the method via a custom extension.
     template <typename TRange>
     inline auto InvokeIsEmpty(Immutable<TRange> range, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::IsEmpty<TRange>{}(range))
     {
