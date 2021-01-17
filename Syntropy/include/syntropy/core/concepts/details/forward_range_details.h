@@ -2,6 +2,8 @@
 /// \file forward_range_details.h
 /// \brief This header is part of the Syntropy core module. It contains implementation details about forward ranges.
 ///
+/// Machinery based on: https://wandbox.org/permlink/AB9uQxO2MymNDDtt
+///
 /// \author Raffaele D. Facendola - Jan 2021
 
 #pragma once
@@ -35,8 +37,43 @@ namespace Syntropy::Ranges::Extensions
 
 namespace Syntropy::Ranges::Details
 {
-    // Based on this amazing post: https://wandbox.org/permlink/AB9uQxO2MymNDDtt
+    /************************************************************************/
+    /* RANGE ITERATOR                                                       */
+    /************************************************************************/
 
+    /// \brief Wraps a range and adapt it for iteration via range-based for loop.
+    /// \author Raffaele D. Facendola - December 2020.
+    template <typename TRange>
+    class RangeIterator
+    {
+    public:
+
+        /// \brief Create an empty range.
+        constexpr RangeIterator() noexcept = default;
+
+        /// \brief Wrap a range for iteration.
+        constexpr RangeIterator(Immutable<TRange> range) noexcept;
+
+        /// \brief Access the front element.
+        [[nodiscard]] constexpr decltype(auto) operator*() const noexcept;
+
+        /// \brief Move to the next element.
+        constexpr Mutable<RangeIterator> operator++() noexcept;
+
+        /// \brief Check whether two iterators are equal.
+        [[nodiscard]] constexpr Bool operator==(Immutable<RangeIterator> other) const noexcept;
+
+    private:
+
+        /// \brief Iterable range.
+        TRange range_;
+    };
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Details
+{
     /************************************************************************/
     /* FRONT                                                                */
     /************************************************************************/
@@ -128,6 +165,42 @@ namespace Syntropy::Ranges::Details
     inline auto RouteIsEmpty(Immutable<TRange> range) noexcept -> decltype(InvokeIsEmpty(range, Syntropy::Templates::kPriority<2>))
     {
         return InvokeIsEmpty(range, Syntropy::Templates::kPriority<2>);
+    }
+
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // RangeIterator.
+    // ==============
+
+    template <typename TRange>
+    constexpr RangeIterator<TRange>::RangeIterator(Immutable<TRange> range) noexcept
+        : range_(range)
+    {
+
+    }
+
+    template <typename TRange>
+    [[nodiscard]] constexpr decltype(auto) RangeIterator<TRange>::operator*() const noexcept
+    {
+        return RouteFront(range_);
+    }
+
+    template <typename TRange>
+    constexpr Mutable<RangeIterator<TRange>> RangeIterator<TRange>::operator++() noexcept
+    {
+        range_ = RoutePopFront(range_);
+
+        return *this;
+    }
+
+    template <typename TRange>
+    [[nodiscard]] constexpr Bool RangeIterator<TRange>::operator==(Immutable<RangeIterator> other) const noexcept
+    {
+        SYNTROPY_ASSERT(RouteIsEmpty(other.range_));
+
+        return RouteIsEmpty(range_);
     }
 
 }

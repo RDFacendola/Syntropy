@@ -65,7 +65,6 @@ namespace Syntropy::Ranges::Concepts
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept ForwardRange = BaseForwardRange<TRange>;
-
 }
 
 // ===========================================================================
@@ -112,56 +111,20 @@ namespace Syntropy::Ranges
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
     constexpr Tuples::Tuple<TRange, URange> Swap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
-    /************************************************************************/
-    /* RANGE-BASED FOR                                                      */
-    /************************************************************************/
-
-    // RangeIterator.
-    // ==============
-
-    /// \brief Wraps a range and adapt it for iteration via range-based for loop.
-    /// \author Raffaele D. Facendola - December 2020.
-    template <Concepts::ForwardRange TRange>
-    class RangeIterator
-    {
-    public:
-
-        /// \brief Reference to a range element.
-        using TReference = Templates::RangeElementReferenceType<TRange>;
-
-        /// \brief Create an empty range.
-        constexpr RangeIterator() noexcept = default;
-
-        /// \brief Wrap a range for iteration.
-        constexpr RangeIterator(Immutable<TRange> range) noexcept;
-
-        /// \brief Access the front element.
-        [[nodiscard]] constexpr TReference operator*() const noexcept;
-
-        /// \brief Move to the next element.
-        constexpr Mutable<RangeIterator> operator++() noexcept;
-
-        /// \brief Check whether two iterators are equal.
-        [[nodiscard]] constexpr Bool operator==(Immutable<RangeIterator> other) const noexcept;
-
-    private:
-
-        /// \brief Iterable range.
-        TRange range_;
-    };
-
-    // Iterators.
-    // ==========
-
-    /// \brief Get an iterator to the first element in a range.
-    template <Concepts::ForwardRange TRange>
-    constexpr RangeIterator<TRange> begin(Immutable<TRange> range) noexcept;
-
-    /// \brief Get an iterator past the last element in a range.
-    template <Concepts::ForwardRange TRange>
-    constexpr RangeIterator<TRange> end(Immutable<TRange> range) noexcept;
-
 }
+
+// ===========================================================================
+
+// Iterators.
+// ==========
+
+/// \brief Get an iterator to the first element in a range.
+template <Syntropy::Ranges::Concepts::ForwardRange TRange>
+constexpr auto begin(Syntropy::Immutable<TRange> range) noexcept;
+
+/// \brief Get an iterator past the last element in a range.
+template <Syntropy::Ranges::Concepts::ForwardRange TRange>
+constexpr auto end(Syntropy::Immutable<TRange> range) noexcept;
 
 // ===========================================================================
 
@@ -277,54 +240,23 @@ namespace Syntropy::Ranges
         return { source , destination };
     }
 
-    // Range-based for.
-    // ================
+}
 
-    // RangeIterator.
+// ===========================================================================
 
-    template <Concepts::ForwardRange TRange>
-    constexpr RangeIterator<TRange>::RangeIterator(Immutable<TRange> range) noexcept
-        : range_(range)
-    {
 
-    }
+// Iterators.
 
-    template <Concepts::ForwardRange TRange>
-    [[nodiscard]] constexpr typename RangeIterator<TRange>::TReference RangeIterator<TRange>::operator*() const noexcept
-    {
-        return Ranges::Front(range_);
-    }
+template <Syntropy::Ranges::Concepts::ForwardRange TRange>
+constexpr auto begin(Syntropy::Immutable<TRange> range) noexcept
+{
+    return Syntropy::Ranges::Details::RangeIterator<TRange>{ range };
+}
 
-    template <Concepts::ForwardRange TRange>
-    constexpr Mutable<RangeIterator<TRange>> RangeIterator<TRange>::operator++() noexcept
-    {
-        range_ = Details::RoutePopFront(range_);
-
-        return *this;
-    }
-
-    template <Concepts::ForwardRange TRange>
-    [[nodiscard]] constexpr Bool RangeIterator<TRange>::operator==(Immutable<RangeIterator> other) const noexcept
-    {
-        SYNTROPY_ASSERT(Details::RouteIsEmpty(other.range_));
-
-        return Details::RouteIsEmpty(range_);
-    }
-
-    // Iterators.
-
-    template <Concepts::ForwardRange TRange>
-    constexpr RangeIterator<TRange> begin(Immutable<TRange> range) noexcept
-    {
-        return RangeIterator<TRange>{ range };
-    }
-
-    template <Concepts::ForwardRange TRange>
-    constexpr RangeIterator<TRange> end(Immutable<TRange> range) noexcept
-    {
-        return RangeIterator<TRange>{};
-    }
-
+template <Syntropy::Ranges::Concepts::ForwardRange TRange>
+constexpr auto end(Syntropy::Immutable<TRange> range) noexcept
+{
+    return Syntropy::Ranges::Details::RangeIterator<TRange>{};
 }
 
 // ===========================================================================
