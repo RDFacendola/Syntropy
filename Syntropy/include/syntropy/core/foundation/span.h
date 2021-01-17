@@ -67,7 +67,7 @@ namespace Syntropy::Ranges
         [[nodiscard]] constexpr TPointer GetData() const noexcept;
 
         /// \brief Get the number of elements in the span.
-        [[nodiscard]] constexpr Int GetSize() const noexcept;
+        [[nodiscard]] constexpr Int GetCount() const noexcept;
 
     private:
 
@@ -239,7 +239,7 @@ namespace Syntropy::Ranges
     }
 
     template <typename TType, typename TTraits>
-    [[nodiscard]] constexpr Int BaseSpan<TType, TTraits>::GetSize() const noexcept
+    [[nodiscard]] constexpr Int BaseSpan<TType, TTraits>::GetCount() const noexcept
     {
         return size_;
     }
@@ -266,13 +266,13 @@ namespace Syntropy::Ranges
     template <typename TType, typename TTraits>
     [[nodiscard]] constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
-        return { ToReadOnly(rhs.GetData()), rhs.GetSize() };
+        return { ToReadOnly(rhs.GetData()), rhs.GetCount() };
     }
 
     template <typename TType, typename TTraits>
     [[nodiscard]] constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
-        return { ToReadWrite(rhs.GetData()), rhs.GetSize() };
+        return { ToReadWrite(rhs.GetData()), rhs.GetCount() };
     }
 
     // Utilities.
