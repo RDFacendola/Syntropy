@@ -29,51 +29,71 @@ namespace Syntropy::Ranges::Extensions
 
 namespace Syntropy::Ranges::Details
 {
-    /************************************************************************/
-    /* CONTIGUOUS RANGE                                                     */
-    /************************************************************************/
-
     // Based on this amazing post: https://wandbox.org/permlink/AB9uQxO2MymNDDtt
 
-    // DataRouter.
-    // ============
+    /************************************************************************/
+    /* DATA ROUTER                                                          */
+    /************************************************************************/
+
+    template <typename TRange>
+    void Data(Immutable<TRange>) noexcept;
 
     /// \brief Route the "Data" function across different customization points.
-    class DataRouter
+    struct DataRouter
     {
-    public:
-
-        /// \brief Routes the invocation.
+        /// \brief Custom extension.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range))
-        {
-            return (*this)(range, Syntropy::Templates::kPriority<2>);
-        }
-
-    private:
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(Ranges::Extensions::Data<TRange>{}(range));
 
         /// \brief Member-function.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range.GetData())
-        {
-            return range.GetData();
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.GetData());
 
         /// \brief Non-member function (via ADL).
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(Data(range))
-        {
-            // VS2019 bug (possibly) - Cannot define this method outside its declaration.
-            return Data(range);
-        }
+        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Data(range));
 
-        /// \brief Custom extension.
+        /// \brief Routes the invocation.
         template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Ranges::Extensions::Data<TRange>{}(range))
-        {
-            return Ranges::Extensions::Data<TRange>{}(range);
-        }
+        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>));
     };
+
+}
+
+// ===========================================================================
+
+namespace Syntropy::Ranges::Details
+{
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // DataRouter.
+    // ===========
+
+    template <typename TRange>
+    auto DataRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(Ranges::Extensions::Data<TRange>{}(range))
+    {
+        return Ranges::Extensions::Data<TRange>{}(range);
+    }
+
+    template <typename TRange>
+    auto DataRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.GetData())
+    {
+        return range.GetData();
+    }
+
+    template <typename TRange>
+    auto DataRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Data(range))
+    {
+        return Data(range);
+    }
+
+    template <typename TRange>
+    auto DataRouter::operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>))
+    {
+        return (*this)(range, Syntropy::Templates::kPriority<2>);
+    }
 
 }
 
