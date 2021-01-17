@@ -31,16 +31,18 @@ namespace Syntropy::Ranges::Concepts
     /// \brief Minimal interface for ranges whose elements can be visited in any order.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept BaseRandomAccessRange = requires(Immutable<TRange> range, Immutable<Templates::RangeCountType<TRange>> index, Immutable<Templates::RangeCountType<TRange>> count)
+    concept BaseRandomAccessRange = requires(Immutable<TRange> range)
+    {
+        /// \brief Get range's elements count.
+        { Details::RouteCount(range) };
+    }
+    && requires(Immutable<TRange> range, Immutable<Templates::RangeCountType<TRange>> index, Immutable<Templates::RangeCountType<TRange>> count)
     {
         /// \brief Access range's element by index.
         { Details::RouteAt(range, index) };
 
         /// \brief Obtain a view to a sub-range.
         { Details::RouteSlice(range, index, count) };
-
-        /// \brief Get range's elements count.
-        { Details::RouteCount(range) };
     };
 
     /// \brief Range whose elements can be visited in any order.
@@ -63,7 +65,7 @@ namespace Syntropy::Ranges
     /// \brief Access range's element by index.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange, typename TIndex = Templates::RangeCountType<TRange>>
-    [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> At(Immutable<TRange> range, Immutable<TIndex> index) noexcept;
+    [[nodiscard]] constexpr decltype(auto) At(Immutable<TRange> range, Immutable<TIndex> index) noexcept;
 
     /// \brief Obtain a view to a sub-range.
     /// \remarks Exceeding range boundaries results in undefined behavior.
@@ -93,22 +95,22 @@ namespace Syntropy::Ranges
     /// \brief Slice a range returning the first element and a subrange to the remaining ones.
     /// \remarks Calling this method with an empty range results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementReferenceType<TRange>, TRange> SliceFront(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr auto SliceFront(Immutable<TRange> range) noexcept;
 
     /// \brief Slice a range returning the last element and a subrange to the remaining ones.
     /// \remarks Calling this method with an empty range results in undefined behavior.
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementReferenceType<TRange>, TRange> SliceBack(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr auto SliceBack(Immutable<TRange> range) noexcept;
 
     /// \brief Slice a range returning a subrange to the first count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange, typename TCount = Templates::RangeCountType<TRange>>
-    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<TCount> count) noexcept;
+    [[nodiscard]] constexpr auto SliceFront(Immutable<TRange> range, Immutable<TCount> count) noexcept;
 
     /// \brief Slice a range returning a subrange to the last count elements and another subrange to the remaining ones.
     /// \remarks Exceeding range boundaries results in undefined behavior.
     template <Concepts::RandomAccessRange TRange, typename TCount = Templates::RangeCountType<TRange>>
-    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<TCount> count) noexcept;
+    [[nodiscard]] constexpr auto SliceBack(Immutable<TRange> range, Immutable<TCount> count) noexcept;
 }
 
 // ===========================================================================
@@ -181,7 +183,7 @@ namespace Syntropy::Ranges
     // Random access range.
 
     template <Concepts::RandomAccessRange TRange, typename TIndex>
-    [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> At(Immutable<TRange> range, Immutable<TIndex> index) noexcept
+    [[nodiscard]] constexpr decltype(auto) At(Immutable<TRange> range, Immutable<TIndex> index) noexcept
     {
         return Details::RouteAt(range, index);
     }
@@ -217,27 +219,27 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementReferenceType<TRange>, TRange> SliceFront(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr auto SliceFront(Immutable<TRange> range) noexcept
     {
         return Tuples::MakeTuple(Details::RouteFront(range), Details::RoutePopFront(range));
     }
 
     template <Concepts::RandomAccessRange TRange>
-    [[nodiscard]] constexpr Tuples::Tuple<Templates::RangeElementReferenceType<TRange>, TRange> SliceBack(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr auto SliceBack(Immutable<TRange> range) noexcept
     {
         return Tuples::MakeTuple(Details::RouteBack(range), Details::RoutePopBack(range));
     }
 
     template <Concepts::RandomAccessRange TRange, typename TCount>
-    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceFront(Immutable<TRange> range, Immutable<TCount> count) noexcept
+    [[nodiscard]] constexpr auto SliceFront(Immutable<TRange> range, Immutable<TCount> count) noexcept
     {
-        return { Details::RouteFront(range, count), Details::RoutePopFront(range, count) };
+        return Tuples::MakeTuple(Details::RouteFront(range, count), Details::RoutePopFront(range, count));
     }
 
     template <Concepts::RandomAccessRange TRange, typename TCount>
-    [[nodiscard]] constexpr Tuples::Tuple<TRange, TRange> SliceBack(Immutable<TRange> range, Immutable<TCount> count) noexcept
+    [[nodiscard]] constexpr auto SliceBack(Immutable<TRange> range, Immutable<TCount> count) noexcept
     {
-        return { Details::RouteBack(range, count), Details::RoutePopBack(range, count) };
+        return Tuples::MakeTuple(Details::RouteBack(range, count), Details::RoutePopBack(range, count));
     }
 
 }

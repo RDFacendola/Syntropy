@@ -59,7 +59,7 @@ namespace Syntropy::Ranges
 
     /// \brief Access range's element storage.
     template <Concepts::ContiguousRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementPointerType<TRange> Data(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr auto Data(Immutable<TRange> range) noexcept;
 
     /// \brief Check whether lhs and rhs are equal.
     template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
@@ -113,7 +113,7 @@ namespace Syntropy::Ranges
     // Contiguous range.
 
     template <Concepts::ContiguousRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementPointerType<TRange> Data(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr auto Data(Immutable<TRange> range) noexcept
     {
         return Details::RouteData(range);
     }

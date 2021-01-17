@@ -65,7 +65,7 @@ namespace Syntropy::Ranges
 
     /// \brief Get range's elements count.
     template <Concepts::SizedRange TRange>
-    [[nodiscard]] constexpr Templates::RangeCountType<TRange> Count(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr auto Count(Immutable<TRange> range) noexcept;
 
     /// \brief Check whether lhs and rhs are equal.
     /// \remarks Equality implies equivalence, therefore if this method returns true AreEquivalent also returns true.
@@ -115,7 +115,7 @@ namespace Syntropy::Ranges
     // =====================
 
     template <Concepts::SizedRange TRange>
-    [[nodiscard]] constexpr Templates::RangeCountType<TRange> Count(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr auto Count(Immutable<TRange> range) noexcept
     {
         return Details::RouteCount(range);
     }

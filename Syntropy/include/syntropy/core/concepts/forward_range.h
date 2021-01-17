@@ -82,7 +82,7 @@ namespace Syntropy::Ranges
     /// \brief Access range's first element.
     /// \remarks Accessing the first element of an empty range results in undefined behavior.
     template <Concepts::ForwardRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> Front(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr decltype(auto) Front(Immutable<TRange> range) noexcept;
 
     /// \brief Discard range's first element and return the resulting range.
     /// \remarks If the provided range is empty, the behavior of this method is undefined.
@@ -200,7 +200,7 @@ namespace Syntropy::Ranges
     // Forward range.
 
     template <Concepts::ForwardRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> Front(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr decltype(auto) Front(Immutable<TRange> range) noexcept
     {
         return Details::RouteFront(range);
     }

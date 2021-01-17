@@ -59,7 +59,7 @@ namespace Syntropy::Ranges
     /// \brief Access range's last element.
     /// \remarks Accessing the last element of an empty range results in undefined behavior.
     template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> Back(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr decltype(auto) Back(Immutable<TRange> range) noexcept;
 
     /// \brief Discard range's last element and return the resulting range.
     /// \remarks If the provided range is empty, the behavior of this method is undefined.
@@ -98,7 +98,7 @@ namespace Syntropy::Ranges
     // Bidirectional range.
 
     template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> Back(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr decltype(auto) Back(Immutable<TRange> range) noexcept
     {
         return Details::RouteBack(range);
     }
