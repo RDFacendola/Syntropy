@@ -115,16 +115,16 @@ namespace Syntropy::Ranges
 
 // ===========================================================================
 
-// Iterators.
-// ==========
-
-/// \brief Get an iterator to the first element in a range.
-template <Syntropy::Ranges::Concepts::ForwardRange TRange>
-constexpr auto begin(Syntropy::Immutable<TRange> range) noexcept;
-
-/// \brief Get an iterator past the last element in a range.
-template <Syntropy::Ranges::Concepts::ForwardRange TRange>
-constexpr auto end(Syntropy::Immutable<TRange> range) noexcept;
+namespace Syntropy
+{
+    /// \brief Get an iterator to the first element in a range.
+    template <Ranges::Concepts::ForwardRange TRange>
+    constexpr auto begin(Immutable<TRange> range) noexcept;
+    
+    /// \brief Get an iterator past the last element in a range.
+    template <Ranges::Concepts::ForwardRange TRange>
+    constexpr auto end(Immutable<TRange> range) noexcept;
+}
 
 // ===========================================================================
 
@@ -244,19 +244,21 @@ namespace Syntropy::Ranges
 
 // ===========================================================================
 
-
-// Iterators.
-
-template <Syntropy::Ranges::Concepts::ForwardRange TRange>
-constexpr auto begin(Syntropy::Immutable<TRange> range) noexcept
+namespace Syntropy
 {
-    return Syntropy::Ranges::Details::RangeIterator<TRange>{ range };
-}
+    /// \brief Get an iterator to the first element in a range.
+    template <Ranges::Concepts::ForwardRange TRange>
+    constexpr auto begin(Immutable<TRange> range) noexcept
+    {
+        return Ranges::Details::RangeIterator<TRange>{ range };
+    }
 
-template <Syntropy::Ranges::Concepts::ForwardRange TRange>
-constexpr auto end(Syntropy::Immutable<TRange> range) noexcept
-{
-    return Syntropy::Ranges::Details::RangeIterator<TRange>{};
+    /// \brief Get an iterator past the last element in a range.
+    template <Ranges::Concepts::ForwardRange TRange>
+    constexpr auto end(Immutable<TRange> range) noexcept
+    {
+        return Ranges::Details::RangeIterator<TRange>{};
+    }
 }
 
 // ===========================================================================

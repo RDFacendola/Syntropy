@@ -159,14 +159,14 @@ namespace Syntropy::Ranges::Details
     template <typename TIndex>
     inline decltype(auto) ReverseRange<TRange>::At(Immutable<TIndex> index) const noexcept
     {
-        return Ranges::At(range_, Ranges::Count(range_) - index);
+        return Ranges::At(range_, Ranges::Count(range_) - index - TIndex{ 1 });
     }
 
     template <Ranges::Concepts::BidirectionalRange TRange>
     template <typename TIndex, typename TCount>
     inline auto ReverseRange<TRange>::Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept
     {
-        return ReverseRange<TRange>{ Ranges::Slice(range_, Ranges::Count(range_) - index, count) };
+        return ReverseRange<TRange>{ Ranges::Slice(range_, Ranges::Count(range_) - index - count, count) };
     }
 
     // Non-member functions.
