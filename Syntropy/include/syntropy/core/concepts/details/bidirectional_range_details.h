@@ -36,125 +36,69 @@ namespace Syntropy::Ranges::Details
     // Based on this amazing post: https://wandbox.org/permlink/AB9uQxO2MymNDDtt
 
     /************************************************************************/
-    /* BACK ROUTER                                                          */
+    /* BACK                                                                 */
     /************************************************************************/
 
+    /// \brief Custom extension.
     template <typename TRange>
-    void Back(Immutable<TRange>) noexcept;
-
-    /// \brief Route the "Back" function across different customization points.
-    struct BackRouter
-    {
-        /// \brief Custom extension.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(Ranges::Extensions::Back<TRange>{}(range));
-
-        /// \brief Member-function.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.GetBack());
-
-        /// \brief Non-member function (via ADL).
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Back(range));
-
-        /// \brief Routes the invocation.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>));
-    };
-
-    /************************************************************************/
-    /* POP BACK ROUTER                                                      */
-    /************************************************************************/
-
-    template <typename TRange>
-    void PopBack(Immutable<TRange>) noexcept;
-
-    /// \brief Route the "PopBack" function across different customization points.
-    struct PopBackRouter
-    {
-        /// \brief Custom extension.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(Ranges::Extensions::PopBack<TRange>{}(range));
-
-        /// \brief Member-function.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.PopBack());
-
-        /// \brief Non-member function (via ADL).
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(PopBack(range));
-
-        /// \brief Routes the invocation.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>));
-    };
-
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Details
-{
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // BackRouter.
-    // ===========
-
-    template <typename TRange>
-    inline auto BackRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(Ranges::Extensions::Back<TRange>{}(range))
+    auto InvokeBack(Immutable<TRange> range, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::Back<TRange>{}(range))
     {
         return Ranges::Extensions::Back<TRange>{}(range);
     }
 
+    /// \brief Member-function.
     template <typename TRange>
-    inline auto BackRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.GetBack())
+    auto InvokeBack(Immutable<TRange> range, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.GetBack())
     {
         return range.GetBack();
     }
 
+    /// \brief Non-member function (via ADL).
     template <typename TRange>
-    inline auto BackRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Back(range))
+    auto InvokeBack(Immutable<TRange> range, Syntropy::Templates::Priority<0>) noexcept -> decltype(Back(range))
     {
         return Back(range);
     }
 
+    /// \brief Routes the invocation.
     template <typename TRange>
-    inline auto BackRouter::operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>))
+    auto RouteBack(Immutable<TRange> range) noexcept -> decltype(InvokeBack(range, Syntropy::Templates::kPriority<2>))
     {
-        return (*this)(range, Syntropy::Templates::kPriority<2>);
+        return InvokeBack(range, Syntropy::Templates::kPriority<2>);
     }
 
-    // PopBackRouter.
-    // ==============
+    /************************************************************************/
+    /* POP BACK                                                             */
+    /************************************************************************/
 
+    /// \brief Custom extension.
     template <typename TRange>
-    inline auto PopBackRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(Ranges::Extensions::PopBack<TRange>{}(range))
+    auto InvokePopBack(Immutable<TRange> range, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::PopBack<TRange>{}(range))
     {
         return Ranges::Extensions::PopBack<TRange>{}(range);
     }
 
+    /// \brief Member-function.
     template <typename TRange>
-    inline auto PopBackRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.PopBack())
+    auto InvokePopBack(Immutable<TRange> range, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.PopBack())
     {
         return range.PopBack();
     }
 
+    /// \brief Non-member function (via ADL).
     template <typename TRange>
-    inline auto PopBackRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(PopBack(range))
+    auto InvokePopBack(Immutable<TRange> range, Syntropy::Templates::Priority<0>) noexcept -> decltype(PopBack(range))
     {
         return PopBack(range);
     }
 
+    /// \brief Routes the invocation.
     template <typename TRange>
-    inline auto PopBackRouter::operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>))
+    auto RoutePopBack(Immutable<TRange> range) noexcept -> decltype(InvokePopBack(range, Syntropy::Templates::kPriority<2>))
     {
-        return (*this)(range, Syntropy::Templates::kPriority<2>);
+        return InvokePopBack(range, Syntropy::Templates::kPriority<2>);
     }
 
 }
-
-
 
 // ===========================================================================

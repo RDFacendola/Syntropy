@@ -32,69 +32,36 @@ namespace Syntropy::Ranges::Details
     // Based on this amazing post: https://wandbox.org/permlink/AB9uQxO2MymNDDtt
 
     /************************************************************************/
-    /* DATA ROUTER                                                          */
+    /* DATA                                                                 */
     /************************************************************************/
 
+    /// \brief Custom extension.
     template <typename TRange>
-    void Data(Immutable<TRange>) noexcept;
-
-    /// \brief Route the "Data" function across different customization points.
-    struct DataRouter
-    {
-        /// \brief Custom extension.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(Ranges::Extensions::Data<TRange>{}(range));
-
-        /// \brief Member-function.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.GetData());
-
-        /// \brief Non-member function (via ADL).
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Data(range));
-
-        /// \brief Routes the invocation.
-        template <typename TRange>
-        auto operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>));
-    };
-
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Details
-{
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // DataRouter.
-    // ===========
-
-    template <typename TRange>
-    auto DataRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<2>) const noexcept -> decltype(Ranges::Extensions::Data<TRange>{}(range))
+    inline auto InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::Data<TRange>{}(range))
     {
         return Ranges::Extensions::Data<TRange>{}(range);
     }
 
+    /// \brief Member-function.
     template <typename TRange>
-    auto DataRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.GetData())
+    inline auto InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.GetData())
     {
         return range.GetData();
     }
 
+    /// \brief Non-member function (via ADL).
     template <typename TRange>
-    auto DataRouter::operator()(Immutable<TRange> range, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Data(range))
+    inline auto InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<0>) noexcept -> decltype(Data(range))
     {
         return Data(range);
     }
 
+    /// \brief Routes the invocation.
     template <typename TRange>
-    auto DataRouter::operator()(Immutable<TRange> range) const noexcept -> decltype((*this)(range, Syntropy::Templates::kPriority<2>))
+    inline auto RouteData(Immutable<TRange> range) noexcept -> decltype(InvokeData(range, Syntropy::Templates::kPriority<2>))
     {
-        return (*this)(range, Syntropy::Templates::kPriority<2>);
+        return InvokeData(range, Syntropy::Templates::kPriority<2>);
     }
-
 }
 
 // ===========================================================================

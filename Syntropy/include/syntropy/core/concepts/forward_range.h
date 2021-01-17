@@ -27,7 +27,7 @@ namespace Syntropy::Ranges::Templates
 
     /// \brief Range's element reference type.
     template <typename TRange>
-    using RangeElementReferenceType = decltype(Details::FrontRouter{}(Syntropy::Templates::Declval<TRange>()));
+    using RangeElementReferenceType = decltype(Details::RouteFront(Syntropy::Templates::Declval<TRange>()));
 
     /// \brief Range's element value type.
     template <typename TRange>
@@ -53,13 +53,13 @@ namespace Syntropy::Ranges::Concepts
         && requires(Immutable<TRange> range)
         {
             /// \brief Access range's first element.
-            { Details::FrontRouter{}(range) };
+            { Details::RouteFront(range) };
 
             /// \brief Discard range's first element and return the resulting range.
-            { Details::PopFrontRouter{}(range) };
+            { Details::RoutePopFront(range) };
 
             /// \brief Check whether the range is empty.
-            { Details::IsEmptyRouter{}(range) };
+            { Details::RouteIsEmpty(range) };
         };
 
 }
@@ -198,19 +198,19 @@ namespace Syntropy::Ranges
     template <Concepts::ForwardRange TRange>
     [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> Front(Immutable<TRange> range) noexcept
     {
-        return Details::FrontRouter{}(range);
+        return Details::RouteFront(range);
     }
 
     template <Concepts::ForwardRange TRange>
     [[nodiscard]] constexpr TRange PopFront(Immutable<TRange> range) noexcept
     {
-        return Details::PopFrontRouter{}(range);
+        return Details::RoutePopFront(range);
     }
 
     template <Concepts::ForwardRange TRange>
     [[nodiscard]] constexpr Bool IsEmpty(Immutable<TRange> range) noexcept
     {
-        return Details::IsEmptyRouter{}(range);
+        return Details::RouteIsEmpty(range);
     }
 
     template <Concepts::ForwardRange TRange, typename TFunction>

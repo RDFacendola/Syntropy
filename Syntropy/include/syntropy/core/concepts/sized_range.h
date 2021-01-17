@@ -29,7 +29,7 @@ namespace Syntropy::Ranges::Templates
 
     /// \brief Range's count type.
     template <typename TRange>
-    using RangeCountType = Syntropy::Templates::RemoveConstReference<decltype(Details::CountRouter{}(Syntropy::Templates::Declval<TRange>()))>;
+    using RangeCountType = Syntropy::Templates::RemoveConstReference<decltype(Details::RouteCount(Syntropy::Templates::Declval<TRange>()))>;
 
 }
 
@@ -48,7 +48,7 @@ namespace Syntropy::Ranges::Concepts
         && requires(Immutable<TRange> range)
         {
             /// \brief Get range's elements count.
-            { Details::CountRouter{}(range) };
+            { Details::RouteCount(range) };
         };
 
 }
@@ -112,7 +112,7 @@ namespace Syntropy::Ranges
     template <Concepts::SizedRange TRange>
     [[nodiscard]] constexpr Templates::RangeCountType<TRange> Count(Immutable<TRange> range) noexcept
     {
-        return Details::CountRouter{}(range);
+        return Details::RouteCount(range);
     }
 
     // Sized range.

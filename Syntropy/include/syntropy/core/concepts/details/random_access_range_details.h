@@ -36,132 +36,74 @@ namespace Syntropy::Ranges::Details
     // Based on this amazing post: https://wandbox.org/permlink/AB9uQxO2MymNDDtt
 
     /************************************************************************/
-    /* AT ROUTER                                                            */
+    /* AT                                                                   */
     /************************************************************************/
 
+    /// \brief Custom extension.
     template <typename TRange, typename TIndex>
-    void At(Immutable<TRange>, Immutable<TIndex>) noexcept;
-
-    /// \brief Route the "At" function across different customization points.
-    struct AtRouter
-    {
-        /// \brief Custom extension.
-        template <typename TRange, typename TIndex>
-        auto operator()(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<3>) const noexcept -> decltype(Ranges::Extensions::At<TRange>{}(range, index));
-
-        /// \brief Member-operator.
-        template <typename TRange, typename TIndex>
-        auto operator()(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range[index]);
-
-        /// \brief Member-function.
-        template <typename TRange, typename TIndex>
-        auto operator()(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.At(index));
-
-        /// \brief Non-member function (via ADL).
-        template <typename TRange, typename TIndex>
-        auto operator()(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<0>) const noexcept -> decltype(At(range, index));
-
-        /// \brief Routes the invocation.
-        template <typename TRange, typename TIndex>
-        auto operator()(Immutable<TRange> range, Immutable<TIndex> index) const noexcept -> decltype((*this)(range, index, Syntropy::Templates::kPriority<3>));
-    };
-
-    /************************************************************************/
-    /* SLICE ROUTER                                                         */
-    /************************************************************************/
-
-    template <typename TRange, typename TIndex, typename TCount>
-    void Slice(Immutable<TRange>, Immutable<TIndex>, Immutable<TCount>) noexcept;
-
-    /// \brief Route the "Slice" function across different customization points.
-    struct SliceRouter
-    {
-        /// \brief Custom extension.
-        template <typename TRange, typename TIndex, typename TCount>
-        auto operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<2>) const noexcept -> decltype(Ranges::Extensions::Slice<TRange>{}(range, index, count));
-
-        /// \brief Member-function.
-        template <typename TRange, typename TIndex, typename TCount>
-        auto operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.Slice(index, count));
-
-        /// \brief Non-member function (via ADL).
-        template <typename TRange, typename TIndex, typename TCount>
-        auto operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Slice(range, index, count));
-
-        /// \brief Routes the invocation.
-        template <typename TRange, typename TIndex, typename TCount>
-        auto operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count) const noexcept -> decltype((*this)(range, index, count, Syntropy::Templates::kPriority<2>));
-    };
-
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Details
-{
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // AtRouter.
-    // =========
-
-    template <typename TRange, typename TIndex>
-    inline auto AtRouter::operator()(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<3>) const noexcept -> decltype(Ranges::Extensions::At<TRange>{}(range, index))
+    inline auto InvokeAt(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<3>) noexcept -> decltype(Ranges::Extensions::At<TRange>{}(range, index))
     {
         return Ranges::Extensions::At<TRange>{}(range, index);
     }
 
+    /// \brief Member-operator.
     template <typename TRange, typename TIndex>
-    inline auto AtRouter::operator()(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<2>) const noexcept -> decltype(range[index])
+    inline auto InvokeAt(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<2>) noexcept -> decltype(range[index])
     {
         return range[index];
     }
 
+    /// \brief Member-function.
     template <typename TRange, typename TIndex>
-    inline auto AtRouter::operator()(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.At(index))
+    inline auto InvokeAt(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.At(index))
     {
         return range.At(index);
     }
 
+    /// \brief Non-member function (via ADL).
     template <typename TRange, typename TIndex>
-    inline auto AtRouter::operator()(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<0>) const noexcept -> decltype(At(range, index))
+    inline auto InvokeAt(Immutable<TRange> range, Immutable<TIndex> index, Syntropy::Templates::Priority<0>) noexcept -> decltype(At(range, index))
     {
         return At(range, index);
     }
 
+    /// \brief Routes the invocation.
     template <typename TRange, typename TIndex>
-    inline auto AtRouter::operator()(Immutable<TRange> range, Immutable<TIndex> index) const noexcept -> decltype((*this)(range, index, Syntropy::Templates::kPriority<3>))
+    inline auto RouteAt(Immutable<TRange> range, Immutable<TIndex> index) noexcept -> decltype(InvokeAt(range, index, Syntropy::Templates::kPriority<3>))
     {
-        return (*this)(range, index, Syntropy::Templates::kPriority<3>);
+        return InvokeAt(range, index, Syntropy::Templates::kPriority<3>);
     }
 
-    // SliceRouter.
-    // ============
+    /************************************************************************/
+    /* SLICE                                                                */
+    /************************************************************************/
 
+    /// \brief Custom extension.
     template <typename TRange, typename TIndex, typename TCount>
-    inline auto SliceRouter::operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<2>) const noexcept -> decltype(Ranges::Extensions::Slice<TRange>{}(range, index, count))
+    inline auto InvokeSlice(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<2>) noexcept -> decltype(Ranges::Extensions::Slice<TRange>{}(range, index, count))
     {
         return Ranges::Extensions::Slice<TRange>{}(range, index, count);
     }
 
     /// \brief Member-function.
     template <typename TRange, typename TIndex, typename TCount>
-    inline auto SliceRouter::operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<1>) const noexcept -> decltype(range.Slice(index, count))
+    inline auto InvokeSlice(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<1>) noexcept -> decltype(range.Slice(index, count))
     {
         return range.Slice(index, count);
     }
 
+    /// \brief Non-member function (via ADL).
     template <typename TRange, typename TIndex, typename TCount>
-    inline auto SliceRouter::operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<0>) const noexcept -> decltype(Slice(range, index, count))
+    inline auto InvokeSlice(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count, Syntropy::Templates::Priority<0>) noexcept -> decltype(Slice(range, index, count))
     {
         return Slice(range, index, count);
     }
 
+    /// \brief Routes the invocation.
     template <typename TRange, typename TIndex, typename TCount>
-    inline auto SliceRouter::operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count) const noexcept -> decltype((*this)(range, index, count, Syntropy::Templates::kPriority<2>))
+    inline auto RouteSlice(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count) noexcept -> decltype(InvokeSlice(range, index, count, Syntropy::Templates::kPriority<2>))
     {
-        return (*this)(range, index, count, Syntropy::Templates::kPriority<2>);
+        return InvokeSlice(range, index, count, Syntropy::Templates::kPriority<2>);
     }
 
 }

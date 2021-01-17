@@ -34,10 +34,10 @@ namespace Syntropy::Ranges::Concepts
         && requires(Immutable<TRange> range)
         {
             /// \brief Access range's last element.
-            { Details::BackRouter{}(range) };
+            { Details::RouteBack(range) };
 
             /// \brief Discard range's last element and return the resulting range.
-            { Details::PopBackRouter{}(range) };
+            { Details::RoutePopBack(range) };
         };
 
 }
@@ -100,13 +100,13 @@ namespace Syntropy::Ranges
     template <Concepts::BidirectionalRange TRange>
     [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> Back(Immutable<TRange> range) noexcept
     {
-        return Details::BackRouter{}(range);
+        return Details::RouteBack(range);
     }
 
     template <Concepts::BidirectionalRange TRange>
     [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range) noexcept
     {
-        return Details::PopBackRouter{}(range);
+        return Details::RoutePopBack(range);
     }
 
 }

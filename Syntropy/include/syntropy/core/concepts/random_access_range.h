@@ -35,10 +35,10 @@ namespace Syntropy::Ranges::Concepts
         && requires(Immutable<TRange> range, Immutable<Templates::RangeCountType<TRange>> index, Immutable<Templates::RangeCountType<TRange>> count)
         {
             /// \brief Access range's element by index.
-            { Details::AtRouter{}(range, index) };
+            { Details::RouteAt(range, index) };
 
             /// \brief Obtain a view to a sub-range.
-            { Details::SliceRouter{}(range, index, count) };
+            { Details::RouteSlice(range, index, count) };
         };
 
 }
@@ -140,13 +140,13 @@ namespace Syntropy::Ranges
     template <Concepts::RandomAccessRange TRange, typename TIndex>
     [[nodiscard]] constexpr Templates::RangeElementReferenceType<TRange> At(Immutable<TRange> range, Immutable<TIndex> index) noexcept
     {
-        return Details::AtRouter{}(range, index);
+        return Details::RouteAt(range, index);
     }
 
     template <Concepts::RandomAccessRange TRange, typename TIndex, typename TCount>
     [[nodiscard]] constexpr TRange Slice(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count) noexcept
     {
-        return Details::SliceRouter{}(range, index, count);
+        return Details::RouteSlice(range, index, count);
     }
 
     template <Concepts::RandomAccessRange TRange, typename TCount>

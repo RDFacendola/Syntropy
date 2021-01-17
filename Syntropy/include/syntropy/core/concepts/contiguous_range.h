@@ -34,7 +34,7 @@ namespace Syntropy::Ranges::Concepts
         && requires(Immutable<TRange> range)
         {
             /// \brief Access range's element storage.
-            { Details::DataRouter{}(range) };
+            { Details::RouteData(range) };
         };
 
 }
@@ -90,7 +90,7 @@ namespace Syntropy::Ranges
     template <Concepts::ContiguousRange TRange>
     [[nodiscard]] constexpr Templates::RangeElementPointerType<TRange> Data(Immutable<TRange> range) noexcept
     {
-        return Details::DataRouter{}(range);
+        return Details::RouteData(range);
     }
 
     template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
