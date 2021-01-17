@@ -73,7 +73,7 @@ namespace Syntropy::Memory
         [[nodiscard]] constexpr TPointer GetData() const noexcept;
 
         /// \brief Get the number of elements in the span.
-        [[nodiscard]] constexpr Bytes GetSize() const noexcept;
+        [[nodiscard]] constexpr Bytes GetCount() const noexcept;
 
     private:
 
@@ -280,7 +280,7 @@ namespace Syntropy::Memory
     }
 
     template <typename TTraits>
-    [[nodiscard]] constexpr Bytes BaseByteSpan<TTraits>::GetSize() const noexcept
+    [[nodiscard]] constexpr Bytes BaseByteSpan<TTraits>::GetCount() const noexcept
     {
         return size_;
     }
@@ -311,7 +311,7 @@ namespace Syntropy::Memory
     [[nodiscard]] inline BaseByteSpan<TTraits> Align(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Alignment> alignment) noexcept
     {
         auto begin = Align(lhs.GetData(), alignment);
-        auto end = lhs.data_() + lhs.GetSize();
+        auto end = lhs.data_() + lhs.GetCount();
 
         return { Math::Min(begin, end), end };
     }
@@ -319,7 +319,7 @@ namespace Syntropy::Memory
     template <typename TTraits>
     [[nodiscard]] inline BaseByteSpan<TTraits> Floor(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Bytes> size) noexcept
     {
-        auto floor_size = Math::Floor(lhs.GetSize(), size);
+        auto floor_size = Math::Floor(lhs.GetCount(), size);
 
         return Ranges::Front(lhs, floor_size);
     }
@@ -379,7 +379,7 @@ namespace Syntropy::Memory
             using TRangeElement = Ranges::Templates::RangeElementValueType<TRange>;
 
             auto data = FromTypelessPtr<TRangeElement>(rhs.GetData());
-            auto size = rhs.GetSize() / SizeOf<TRangeElement>();
+            auto size = rhs.GetCount() / SizeOf<TRangeElement>();
 
             return TRange{ data, size };
         }
@@ -394,7 +394,7 @@ namespace Syntropy::Memory
 
     [[nodiscard]] inline RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept
     {
-        return { Syntropy::ToReadWrite(rhs.GetData()), rhs.GetSize() };
+        return { Syntropy::ToReadWrite(rhs.GetData()), rhs.GetCount() };
     }
 
     // Utilities.
