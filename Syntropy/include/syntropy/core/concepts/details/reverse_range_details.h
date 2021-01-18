@@ -50,35 +50,35 @@ namespace Syntropy::Ranges::Details
 
         /// \brief Access range's first element.
         /// \remarks Accessing the first element of an empty range results in undefined behavior.
-        constexpr decltype(auto) GetFront() const noexcept;
+        [[nodiscard]] constexpr decltype(auto) GetFront() const noexcept;
 
         /// \brief Discard range's first element and return the resulting range.
         /// \remarks If the provided range is empty, the behavior of this method is undefined.
-        constexpr auto PopFront() const noexcept;
+        [[nodiscard]] constexpr auto PopFront() const noexcept;
 
         /// \brief Check whether the range is empty.
-        constexpr Bool IsEmpty() const noexcept;
+        [[nodiscard]] constexpr Bool IsEmpty() const noexcept;
 
         /// \brief Get range's elements count.
-        constexpr auto GetCount() const noexcept;
+        [[nodiscard]] constexpr auto GetCount() const noexcept;
 
         /// \brief Access range's last element.
         /// \remarks Accessing the last element of an empty range results in undefined behavior.
-        constexpr decltype(auto) GetBack() const noexcept;
+        [[nodiscard]] constexpr decltype(auto) GetBack() const noexcept;
 
         /// \brief Discard range's last element and return the resulting range.
         /// \remarks If the provided range is empty, the behavior of this method is undefined.
-        constexpr auto PopBack() const noexcept;
+        [[nodiscard]] constexpr auto PopBack() const noexcept;
 
         /// \brief Access range's element by index.
         /// \remarks Exceeding range boundaries results in undefined behavior.
         template <typename TIndex>
-        constexpr decltype(auto) At(Immutable<TIndex> index) const noexcept;
+        [[nodiscard]] constexpr decltype(auto) At(Immutable<TIndex> index) const noexcept;
 
         /// \brief Obtain a view to a sub-range.
         /// \remarks Exceeding range boundaries results in undefined behavior.
         template <typename TIndex, typename TCount>
-        constexpr auto Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept;
+        [[nodiscard]] constexpr auto Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept;
 
     private:
 
@@ -93,11 +93,11 @@ namespace Syntropy::Ranges::Details
 
     /// \brief Get a reversed range.
     template <Ranges::Concepts::BidirectionalRange TRange>
-    constexpr ReverseRange<TRange> Reverse(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr ReverseRange<TRange> Reverse(Immutable<TRange> range) noexcept;
 
     /// \brief Get a reversed range.
     template <Ranges::Concepts::BidirectionalRange TRange>
-    constexpr TRange Reverse(Immutable<ReverseRange<TRange>> range) noexcept;
+    [[nodiscard]] constexpr TRange Reverse(Immutable<ReverseRange<TRange>> range) noexcept;
 
 }
 
@@ -121,66 +121,66 @@ namespace Syntropy::Ranges::Details
     }
 
     template <Ranges::Concepts::BidirectionalRange TRange>
-    constexpr decltype(auto) ReverseRange<TRange>::GetFront() const noexcept
+    [[nodiscard]] constexpr decltype(auto) ReverseRange<TRange>::GetFront() const noexcept
     {
-        return Ranges::Details::RouteBack(range_);
+        return RouteBack(range_);
     }
 
     template <Ranges::Concepts::BidirectionalRange TRange>
-    constexpr auto ReverseRange<TRange>::PopFront() const noexcept
+    [[nodiscard]] constexpr auto ReverseRange<TRange>::PopFront() const noexcept
     {
-        return ReverseRange<TRange>{ Ranges::Details::RoutePopBack(range_) };
+        return ReverseRange<TRange>{ RoutePopBack(range_) };
     }
 
     template <Ranges::Concepts::BidirectionalRange TRange>
-    constexpr Bool ReverseRange<TRange>::IsEmpty() const noexcept
+    [[nodiscard]] constexpr Bool ReverseRange<TRange>::IsEmpty() const noexcept
     {
-        return Ranges::Details::RouteIsEmpty(range_);
+        return RouteIsEmpty(range_);
     }
 
     template <Ranges::Concepts::BidirectionalRange TRange>
-    constexpr auto ReverseRange<TRange>::GetCount() const noexcept
+    [[nodiscard]] constexpr auto ReverseRange<TRange>::GetCount() const noexcept
     {
-        return Ranges::Details::RouteCount(range_);
+        return RouteCount(range_);
     }
 
     template <Ranges::Concepts::BidirectionalRange TRange>
-    constexpr decltype(auto) ReverseRange<TRange>::GetBack() const noexcept
+    [[nodiscard]] constexpr decltype(auto) ReverseRange<TRange>::GetBack() const noexcept
     {
-        return Ranges::Details::RouteFront(range_);
+        return RouteFront(range_);
     }
 
     template <Ranges::Concepts::BidirectionalRange TRange>
-    constexpr auto ReverseRange<TRange>::PopBack() const noexcept
+    [[nodiscard]] constexpr auto ReverseRange<TRange>::PopBack() const noexcept
     {
-        return ReverseRange<TRange>{ Ranges::Details::RoutePopFront(range_) };
+        return ReverseRange<TRange>{ RoutePopFront(range_) };
     }
 
     template <Ranges::Concepts::BidirectionalRange TRange>
     template <typename TIndex>
-    constexpr decltype(auto) ReverseRange<TRange>::At(Immutable<TIndex> index) const noexcept
+    [[nodiscard]] constexpr decltype(auto) ReverseRange<TRange>::At(Immutable<TIndex> index) const noexcept
     {
-        return Ranges::Details::RouteAt(range_, Ranges::Details::RouteCount(range_) - index - TIndex{ 1 });
+        return RouteAt(range_, RouteCount(range_) - index - TIndex{ 1 });
     }
 
     template <Ranges::Concepts::BidirectionalRange TRange>
     template <typename TIndex, typename TCount>
-    constexpr auto ReverseRange<TRange>::Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept
+    [[nodiscard]] constexpr auto ReverseRange<TRange>::Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept
     {
-        return ReverseRange<TRange>{ Ranges::Details::RouteSlice(range_, Ranges::Details::RouteCount(range_) - index - count, count) };
+        return ReverseRange<TRange>{ RouteSlice(range_, RouteCount(range_) - index - count, count) };
     }
 
     // Non-member functions.
     // =====================
 
     template <Ranges::Concepts::BidirectionalRange TRange>
-    constexpr ReverseRange<TRange> Reverse(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr ReverseRange<TRange> Reverse(Immutable<TRange> range) noexcept
     {
         return ReverseRange<TRange>(range);
     }
 
     template <Ranges::Concepts::BidirectionalRange TRange>
-    constexpr  TRange Reverse(Immutable<ReverseRange<TRange>> range) noexcept
+    [[nodiscard]] constexpr  TRange Reverse(Immutable<ReverseRange<TRange>> range) noexcept
     {
         return range.range_;
     }

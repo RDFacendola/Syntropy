@@ -58,6 +58,7 @@ namespace Syntropy::Ranges
     // =================
 
     /// \brief Access range's element storage.
+    /// \remarks Accessing an empty range's storage results in undefined behavior.
     template <Concepts::ContiguousRange TRange>
     [[nodiscard]] constexpr auto Data(Immutable<TRange> range) noexcept;
 
