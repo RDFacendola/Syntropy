@@ -107,7 +107,7 @@ namespace Syntropy::Ranges::Details
     // Zip-range.
     // ==========
 
-    /// \brief Check whether lhs and rhs are equal.
+  /*  /// \brief Check whether lhs and rhs are equal.
     template <Ranges::Concepts::ContiguousRange... TRanges, Ranges::Concepts::ContiguousRange... URanges>
     [[nodiscard]] constexpr Bool AreEqual(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
 
@@ -117,7 +117,7 @@ namespace Syntropy::Ranges::Details
 
     /// \brief Compare two zip-ranges lexicographically.
     template <Ranges::Concepts::SizedRange... TRanges, Ranges::Concepts::SizedRange... URanges>
-    [[nodiscard]] constexpr Ordering Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;
+    [[nodiscard]] constexpr Ordering Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept;*/
 
     // Utilities.
     // ==========
@@ -217,7 +217,7 @@ namespace Syntropy::Ranges::Details
     {
         auto zip_min_count = [](Immutable<TRanges>... ranges)
         {
-            return Math::Min(static_cast<Templates::RangeCountType<ZipRange<TRanges...>>>(RouteCount(ranges))...);
+            return Math::Min(RouteCount(ranges)...);
         };
 
         return Tuples::Apply(zip_min_count, ranges_);
@@ -276,7 +276,7 @@ namespace Syntropy::Ranges::Details
     {
         auto zip_data = [](Immutable<TRanges>... ranges)
         {
-            return Tuples::Tuple<Templates::RangeElementPointerType<TRanges>...>{ RouteData(ranges)... };
+            return Tuples::MakeTuple( RouteData(ranges)... );
         };
 
         return Tuples::Apply(zip_data, ranges_);
@@ -285,24 +285,24 @@ namespace Syntropy::Ranges::Details
     // Non-member functions.
     // =====================
 
-    template <Concepts::ContiguousRange... TRanges, Concepts::ContiguousRange... URanges>
-    [[nodiscard]] constexpr Bool AreEqual(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
-    {
-        return AreEqual(Unzip(lhs), Unzip(rhs));
-    }
+    //template <Concepts::ContiguousRange... TRanges, Concepts::ContiguousRange... URanges>
+    //[[nodiscard]] constexpr Bool AreEqual(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
+    //{
+    //    return AreEqual(Unzip(lhs), Unzip(rhs));
+    //}
 
 
-    template <Concepts::SizedRange... TRanges, Concepts::SizedRange... URanges>
-    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
-    {
-        return AreEquivalent(Unzip(lhs), Unzip(rhs));
-    }
+    //template <Concepts::SizedRange... TRanges, Concepts::SizedRange... URanges>
+    //[[nodiscard]] constexpr Bool AreEquivalent(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
+    //{
+    //    return AreEquivalent(Unzip(lhs), Unzip(rhs));
+    //}
 
-    template <Concepts::SizedRange... TRanges, Concepts::SizedRange... URanges>
-    [[nodiscard]] constexpr Bool Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
-    {
-        return Compare(Unzip(rhs), Unzip(lhs));
-    }
+    //template <Concepts::SizedRange... TRanges, Concepts::SizedRange... URanges>
+    //[[nodiscard]] constexpr Bool Compare(Immutable<ZipRange<TRanges...>> lhs, Immutable<ZipRange<URanges...>> rhs) noexcept
+    //{
+    //    return Compare(Unzip(rhs), Unzip(lhs));
+    //}
 
     // Utilities.
 

@@ -79,18 +79,18 @@ int main(int argc, char** argv)
         static_assert(Syntropy::Ranges::Concepts::RandomAccessRange<TSpan>, "nope!");
         static_assert(Syntropy::Ranges::Concepts::ContiguousRange<TSpan>, "nope!");
 
-        // auto x0 = Syntropy::Ranges::Front(span);
-        //auto y0 = Syntropy::Ranges::PopFront(span);
-        //auto z0 = Syntropy::Ranges::IsEmpty(span);
-        //auto w0 = Syntropy::Ranges::Count(span);
-        //auto xx0 = Syntropy::Ranges::Back(span);
-        //auto yy0 = Syntropy::Ranges::PopBack(span);
-        //auto zz0 = Syntropy::Ranges::At(span, 0);
-        //auto ww0 = Syntropy::Ranges::Slice(span, 0, 2);
+        auto x0 = Syntropy::Ranges::Front(span);
+        auto y0 = Syntropy::Ranges::PopFront(span);
+        auto z0 = Syntropy::Ranges::IsEmpty(span);
+        auto w0 = Syntropy::Ranges::Count(span);
+        auto xx0 = Syntropy::Ranges::Back(span);
+        auto yy0 = Syntropy::Ranges::PopBack(span);
+        auto zz0 = Syntropy::Ranges::At(span, 0);
+        auto ww0 = Syntropy::Ranges::Slice(span, 0, 2);
 
         //for (auto e : span)
         //{
-        //    std::cout << Syntropy::Ranges::Get<0>(e) << ";" << Syntropy::Ranges::Get<1>(e) << "\n";
+        //    std::cout << Syntropy::Tuples::Get<0>(e) << ";" << Syntropy::Tuples::Get<1>(e) << "\n";
         //}
 
         system("pause");
