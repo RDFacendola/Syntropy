@@ -22,6 +22,7 @@
     <ClInclude Include="include\syntropy\core\concepts\details\bidirectional_range_details.h" />
     <ClInclude Include="include\syntropy\core\concepts\details\random_access_range_details.h" />
     <ClInclude Include="include\syntropy\core\concepts\details\contiguous_range_details.h" />
+    <ClInclude Include="include\syntropy\core\concepts\details\zip_range_details.h" />
     <ClInclude Include="include\syntropy\core\containers\fix_array.h" />
     <ClInclude Include="include\syntropy\core\reflection\type_id.h" />
     <ClInclude Include="include\syntropy\language\templates\priority.h" />
@@ -33,7 +34,7 @@
     <ClInclude Include="include\syntropy\core\concepts\reverse_range.h" />
     <ClInclude Include="include\syntropy\core\foundation\span.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
-    <ClInclude Include="include\syntropy\core\foundation\zip_range.h" />
+    <ClInclude Include="include\syntropy\core\concepts\zip_range.h" />
     <ClInclude Include="include\syntropy\core\support\details\event_details.h" />
     <ClInclude Include="include\syntropy\core\support\event.h" />
     <ClInclude Include="include\syntropy\core\support\visitor.h" />

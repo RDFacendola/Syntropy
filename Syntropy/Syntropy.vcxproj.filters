@@ -25,7 +25,6 @@
     <ClInclude Include="include\syntropy\core\support\visitor.h" />
     <ClInclude Include="include\syntropy\core\foundation\details\tuple_details.h" />
     <ClInclude Include="include\syntropy\core\foundation\tuple.h" />
-    <ClInclude Include="include\syntropy\core\foundation\zip_range.h" />
     <ClInclude Include="include\syntropy\core\foundation\span.h" />
     <ClInclude Include="include\syntropy\language\foundation\references.h" />
     <ClInclude Include="include\syntropy\language\foundation\pointers.h" />
@@ -63,6 +62,8 @@
     <ClInclude Include="include\syntropy\core\concepts\details\contiguous_range_details.h" />
     <ClInclude Include="include\syntropy\core\concepts\reverse_range.h" />
     <ClInclude Include="include\syntropy\core\concepts\details\reverse_range_details.h" />
+    <ClInclude Include="include\syntropy\core\concepts\details\zip_range_details.h" />
+    <ClInclude Include="include\syntropy\core\concepts\zip_range.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="include\syntropy\language\language.md" />

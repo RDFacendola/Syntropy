@@ -32,9 +32,9 @@
 #include "syntropy/core/concepts/random_access_range.h"
 #include "syntropy/core/concepts/contiguous_range.h"
 #include "syntropy/core/concepts/reverse_range.h"
+#include "syntropy/core/concepts/zip_range.h"
 
 #include "syntropy/core/foundation/tuple.h"
-#include "syntropy/core/foundation/zip_range.h"
 #include "syntropy/core/foundation/span.h"
 #include "syntropy/core/foundation/unique_ptr.h"
 
@@ -66,35 +66,32 @@ int main(int argc, char** argv)
         Syntropy::Int arr[] = { 1, 2, 3 };
         Syntropy::FixArray<Syntropy::Int, 3> arr2 = { 1,2,3 };
 
-        auto span = Syntropy::MakeSpan(arr);
-        auto bspan = Syntropy::Memory::MakeByteSpan(arr);
+        auto span1 = Syntropy::MakeSpan(arr);
+        auto span2 = Syntropy::MakeSpan(arr);
 
-        using TSpan = Syntropy::Templates::RemoveConstReference<decltype(span)>;
+        auto span = Syntropy::Ranges::Zip(span1, span2);
+
+        using TSpan = Syntropy::Templates::RemoveConstReference<decltype(span1)>;
 
         static_assert(Syntropy::Ranges::Concepts::ForwardRange<TSpan>, "nope!");
         static_assert(Syntropy::Ranges::Concepts::SizedRange<TSpan>, "nope!");
         static_assert(Syntropy::Ranges::Concepts::BidirectionalRange<TSpan>, "nope!");
         static_assert(Syntropy::Ranges::Concepts::RandomAccessRange<TSpan>, "nope!");
-        // static_assert(Syntropy::Ranges::Concepts::ContiguousRange<TSpan>, "nope!");
+        static_assert(Syntropy::Ranges::Concepts::ContiguousRange<TSpan>, "nope!");
 
-        auto x0 = Syntropy::Ranges::Front(span);
-        auto y0 = Syntropy::Ranges::PopFront(span);
-        auto z0 = Syntropy::Ranges::IsEmpty(span);
-        auto w0 = Syntropy::Ranges::Count(span);
-        auto xx0 = Syntropy::Ranges::Back(span);
-        auto yy0 = Syntropy::Ranges::PopBack(span);
-        auto zz0 = Syntropy::Ranges::At(span, 0);
-        auto ww0 = Syntropy::Ranges::Slice(span, 0, 2);
+        // auto x0 = Syntropy::Ranges::Front(span);
+        //auto y0 = Syntropy::Ranges::PopFront(span);
+        //auto z0 = Syntropy::Ranges::IsEmpty(span);
+        //auto w0 = Syntropy::Ranges::Count(span);
+        //auto xx0 = Syntropy::Ranges::Back(span);
+        //auto yy0 = Syntropy::Ranges::PopBack(span);
+        //auto zz0 = Syntropy::Ranges::At(span, 0);
+        //auto ww0 = Syntropy::Ranges::Slice(span, 0, 2);
 
-        for (auto e : span)
-        {
-            std::cout << e << "\n";
-        }
-
-        for (auto e : Syntropy::Ranges::Reverse(Syntropy::Ranges::Slice(span, 0, 2)))
-        {
-            std::cout << e << "\n";
-        }
+        //for (auto e : span)
+        //{
+        //    std::cout << Syntropy::Ranges::Get<0>(e) << ";" << Syntropy::Ranges::Get<1>(e) << "\n";
+        //}
 
         system("pause");
     }
