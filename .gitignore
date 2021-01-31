@@ -1,3 +1,5 @@
 build/
 projects/
 intermediates/
+
+*.DS_Store
