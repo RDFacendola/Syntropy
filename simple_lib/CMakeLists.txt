@@ -10,3 +10,5 @@ include_directories(${PROJECT_SOURCE_DIR}/include/)
 add_library(simple_lib STATIC
    src/simple_lib/simple_lib.cpp
 )
+
+#target_include_directories(simple_lib PUBLIC simple_lib/include)
