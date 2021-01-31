@@ -7,12 +7,14 @@
 
 #include <iostream>
 
+#include "simple_cxx20/simple_cxx20.h"
+
 int main()
 {
-   if constexpr(true)
-   {
-      std::cout << "Hello, Syntropy\n";
-   }
+   std::cout << "Hello, Syntropy\n";
+
+   std::cout << "Foo is FooConcept: " << FooConcept<Foo> << "\n";
+   std::cout << "Bar is FooConcept: " << FooConcept<Bar> << "\n";
 
    return 0;
 }
