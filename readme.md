@@ -1,3 +1,2 @@
 # Syntropy Engine
 
-Coming soon!
