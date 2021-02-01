@@ -1,8 +1,9 @@
 
 /// \file types.h
-/// \brief This header is part of Syntropy language module. It contains definitions for fundamental types.
-/// 
-/// \author Raffaele D. Facendola - Aug 2020
+/// \brief This header is part of Syntropy language module.
+///         It contains definitions for fundamental types.
+///
+/// \author Raffaele D. Facendola - August 2020
 
 #pragma once
 
@@ -39,7 +40,8 @@ namespace Syntropy
     /* FIXED-SIZE TYPES                                                     */
     /************************************************************************/
 
-    // Fixed-size integer types to reduce storage utilization. These types shall be converted to "Int" when evaluating expressions.
+    // Fixed-size integer types to reduce storage utilization.
+    //  These types shall be converted to "Int" when evaluating expressions.
 
     /// \brief Signed 8-bit integer value.
     enum class Fix8 : std::int8_t {};

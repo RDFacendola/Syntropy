@@ -1,6 +1,7 @@
 
 /// \file type_traits.h
-/// \brief This header is part of Syntropy language module. It contains definitions for type traits.
+/// \brief This header is part of Syntropy language module.
+///         It contains definitions for type traits.
 ///
 /// \author Raffaele D. Facendola - Nov 2020.
 

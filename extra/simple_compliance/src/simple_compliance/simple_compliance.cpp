@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "syntropy/language/foundation/types.h"
+#include "syntropy/language/foundation/foundation.h"
 
 int main()
 {

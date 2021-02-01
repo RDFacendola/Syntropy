@@ -1,8 +1,9 @@
 
 /// \file enumerations.h
-/// \brief This header is part of Syntropy language module. It contains definitions for enumeration types.
-/// 
-/// \author Raffaele D. Facendola - Dic 2020
+/// \brief This header is part of Syntropy language module.
+///         It contains definitions for enumeration types.
+///
+/// \author Raffaele D. Facendola - December 2020
 
 #pragma once
 
@@ -17,7 +18,8 @@ namespace Syntropy
     /* ENUMERATION TYPES                                                    */
     /************************************************************************/
 
-    // Fixed underlying types for enumeration classes. For fixed-size integers see Fix8, Fix16, Fix32, Fix64.
+    // Fixed underlying types for enumeration classes.
+    // For fixed-size integers see Fix8, Fix16, Fix32, Fix64.
 
     /// \brief 8-bit enum class type.
     /// \usage enum class MyEnum : Enum8 { ... };
