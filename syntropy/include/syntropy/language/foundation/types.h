@@ -41,7 +41,7 @@ namespace Syntropy
     /************************************************************************/
 
     // Fixed-size integer types to reduce storage utilization.
-    //  These types shall be converted to "Int" when evaluating expressions.
+    // These types shall be converted to "Int" when evaluating expressions.
 
     /// \brief Signed 8-bit integer value.
     enum class Fix8 : std::int8_t {};

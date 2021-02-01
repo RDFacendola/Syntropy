@@ -1,6 +1,8 @@
 
 /// \file ratio_details.h
-/// \brief This header is part of Syntropy language module. It contains implementation details about rational numbers template machinery.
+/// \brief This header is part of Syntropy language module.
+///        It contains implementation details about rational numbers template
+///        machinery.
 ///
 /// \author Raffaele D. Facendola - Sep 2020.
 
@@ -31,17 +33,23 @@ namespace Syntropy::Concepts::Details
     /* IS RATIO TYPE                                                        */
     /************************************************************************/
 
-    /// \brief Constant equal to true if TType is a specialization of Ratio, equal to false otherwise.
+    /// \brief Constant equal to true if TType is a specialization of Ratio,
+    ///        equal to false otherwise.
     template <typename TType>
-    inline constexpr Bool RatioTypeHelper = false;
+    inline constexpr
+    Bool RatioTypeHelper
+         = false;
 
     /// \brief Specialization for Ratio<>.
     template <Int VNumerator, Int VDenominator>
-    inline constexpr Bool RatioTypeHelper<Templates::Ratio<VNumerator, VDenominator>> = true;
+    inline constexpr
+    Bool RatioTypeHelper<Templates::Ratio<VNumerator, VDenominator>>
+         = true;
 
     /// \brief Types
     template <typename TType>
-    concept RatioType = RatioTypeHelper<TType>;
+    concept RatioType
+         = RatioTypeHelper<TType>;
 }
 
 // ===========================================================================
@@ -62,11 +70,13 @@ namespace Syntropy::Templates::Details
 
     /// \brief Reduced ratio numerator.
     template <Int VNumerator, Int VDenominator>
-    inline constexpr Int ReducedRatioNumerator = std::ratio<VNumerator, VDenominator>::num;
+    inline constexpr Int ReducedRatioNumerator
+         = std::ratio<VNumerator, VDenominator>::num;
 
     /// \brief Reduced ratio denominator.
     template <Int VNumerator, Int VDenominator>
-    inline constexpr Int ReducedRatioDenominator = std::ratio<VNumerator, VDenominator>::den;
+    inline constexpr Int ReducedRatioDenominator
+        = std::ratio<VNumerator, VDenominator>::den;
 
     /************************************************************************/
     /* COMMON RATIO                                                         */
@@ -74,11 +84,13 @@ namespace Syntropy::Templates::Details
 
     /// \brief Common ratio numerator.
     template <typename TRatio, typename URatio>
-    inline constexpr Int CommonRatioNumerator = Templates::GCD<TRatio::kNumerator, URatio::kNumerator>;
+    inline constexpr Int CommonRatioNumerator
+        = Templates::GCD<TRatio::kNumerator, URatio::kNumerator>;
 
     /// \brief Common ratio denominator.
     template <typename TRatio, typename URatio>
-    inline constexpr Int CommondRatioDenominator = Templates::LCM<TRatio::kDenominator, URatio::kDenominator>;
+    inline constexpr Int CommondRatioDenominator
+        = Templates::LCM<TRatio::kDenominator, URatio::kDenominator>;
 
     /************************************************************************/
     /* RATIO ARITHMETIC                                                     */
@@ -86,63 +98,84 @@ namespace Syntropy::Templates::Details
 
     /// \brief Ratio sum numerator.
     template <typename TRatio, typename URatio>
-    inline constexpr Int AddRatioNumerator = std::ratio_add<RatioHelper<TRatio>, RatioHelper<URatio>>::num;
+    inline constexpr
+    Int AddRatioNumerator
+        = std::ratio_add<RatioHelper<TRatio>, RatioHelper<URatio>>::num;
 
     /// \brief Ratio sum numerator.
     template <typename TRatio, typename URatio>
-    inline constexpr Int AddRatioDenominator = std::ratio_add<RatioHelper<TRatio>, RatioHelper<URatio>>::den;
+    inline constexpr Int AddRatioDenominator
+        = std::ratio_add<RatioHelper<TRatio>, RatioHelper<URatio>>::den;
 
     /// \brief Ratio difference numerator.
     template <typename TRatio, typename URatio>
-    inline constexpr Int SubtractRatioNumerator = std::ratio_subtract<RatioHelper<TRatio>, RatioHelper<URatio>>::num;
+    inline constexpr Int SubtractRatioNumerator
+        = std::ratio_subtract<RatioHelper<TRatio>, RatioHelper<URatio>>::num;
 
     /// \brief Ratio difference numerator.
     template <typename TRatio, typename URatio>
-    inline constexpr Int SubtractRatioDenominator = std::ratio_subtract<RatioHelper<TRatio>, RatioHelper<URatio>>::den;
+    inline constexpr Int SubtractRatioDenominator
+        = std::ratio_subtract<RatioHelper<TRatio>, RatioHelper<URatio>>::den;
 
     /// \brief Ratio product numerator.
     template <typename TRatio, typename URatio>
-    inline constexpr Int MultiplyRatioNumerator = std::ratio_multiply<RatioHelper<TRatio>, RatioHelper<URatio>>::num;
+    inline constexpr Int MultiplyRatioNumerator
+        = std::ratio_multiply<RatioHelper<TRatio>, RatioHelper<URatio>>::num;
 
     /// \brief Ratio product numerator.
     template <typename TRatio, typename URatio>
-    inline constexpr Int MultiplyRatioDenominator = std::ratio_multiply<RatioHelper<TRatio>, RatioHelper<URatio>>::den;
+    inline constexpr Int MultiplyRatioDenominator
+        = std::ratio_multiply<RatioHelper<TRatio>, RatioHelper<URatio>>::den;
 
     /// \brief Ratio quotient numerator.
     template <typename TRatio, typename URatio>
-    inline constexpr Int DivideRatioNumerator = std::ratio_divide<RatioHelper<TRatio>, RatioHelper<URatio>>::num;
+    inline constexpr Int DivideRatioNumerator
+        = std::ratio_divide<RatioHelper<TRatio>, RatioHelper<URatio>>::num;
 
     /// \brief Ratio quotient numerator.
     template <typename TRatio, typename URatio>
-    inline constexpr Int DivideRatioDenominator = std::ratio_divide<RatioHelper<TRatio>, RatioHelper<URatio>>::den;
+    inline constexpr Int DivideRatioDenominator
+        = std::ratio_divide<RatioHelper<TRatio>, RatioHelper<URatio>>::den;
 
     /************************************************************************/
     /* RATIO COMPARISON                                                     */
     /************************************************************************/
 
-    /// \brief Boolean constant equal to true if TRatio and URatio represent the same amount, equal to false otherwise.
+    /// \brief Boolean constant equal to true if TRatio and URatio represent
+    ///        the same amount, equal to false otherwise.
     template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioEqual = std::ratio_equal_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
+    inline constexpr Bool RatioEqual
+        = std::ratio_equal_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
 
-    /// \brief Boolean constant equal to true if TRatio and URatio don't represent the same amount, equal to false otherwise.
+    /// \brief Boolean constant equal to true if TRatio and URatio don't
+    ///        represent the same amount, equal to false otherwise.
     template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioNotEqual = std::ratio_not_equal_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
+    inline constexpr Bool RatioNotEqual
+        = std::ratio_not_equal_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
 
-    /// \brief Boolean constant equal to true if TRatio represents an amount smaller than URatio, equal to false otherwise.
+    /// \brief Boolean constant equal to true if TRatio represents an amount
+    ///        smaller than URatio, equal to false otherwise.
     template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioLess = std::ratio_less_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
+    inline constexpr Bool RatioLess
+        = std::ratio_less_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
 
-    /// \brief Boolean constant equal to true if TRatio represents an amount smaller-than or equal-to URatio, equal to false otherwise.
+    /// \brief Boolean constant equal to true if TRatio represents an amount
+    ///        smaller-than or equal-to URatio, equal to false otherwise.
     template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioLessEqual = std::ratio_less_equal_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
+    inline constexpr Bool RatioLessEqual
+        = std::ratio_less_equal_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
 
-    /// \brief Boolean constant equal to true if TRatio represents an amount greater than URatio, equal to false otherwise.
+    /// \brief Boolean constant equal to true if TRatio represents an amount
+    ///        greater than URatio, equal to false otherwise.
     template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioGreater = std::ratio_greater_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
+    inline constexpr Bool RatioGreater
+        = std::ratio_greater_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
 
-    /// \brief Boolean constant equal to true if TRatio represents an amount greater-than or equal-to URatio, equal to false otherwise.
+    /// \brief Boolean constant equal to true if TRatio represents an amount
+    ///        greater-than or equal-to URatio, equal to false otherwise.
     template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioGreaterEqual = std::ratio_greater_equal_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
+    inline constexpr Bool RatioGreaterEqual
+        = std::ratio_greater_equal_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
 }
 
 // ===========================================================================

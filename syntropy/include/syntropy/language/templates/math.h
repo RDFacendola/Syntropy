@@ -1,6 +1,7 @@
 
 /// \file math.h
-/// \brief This header is part of Syntropy language module. It contains math-related template metaprogramming definitions.
+/// \brief This header is part of Syntropy language module.
+///        It contains math-related template metaprogramming definitions.
 ///
 /// \author Raffaele D. Facendola - Sep 2020.
 

@@ -1,8 +1,11 @@
 
 /// \file priority.h
-/// \brief This header is part of Syntropy language module. It contains template definitions for priority type tags.
-/// 
-/// Customization point objects based on: https://quuxplusone.github.io/blog/2018/03/19/customization-points-for-functions/
+/// \brief This header is part of Syntropy language module.
+///        It contains template definitions for priority type tags.
+///
+/// Customization point objects based on:
+/// https://quuxplusone.github.io/blog/2018/03/19/
+/// customization-points-for-functions/
 ///
 /// \author Raffaele D. Facendola - Sep 2020.
 
@@ -18,11 +21,12 @@ namespace Syntropy::Templates
     /* PRIORITY                                                             */
     /************************************************************************/
 
-    /// \brief A compile-time tag-type used to sort an overload function set according to an explicit priority value.
+    /// \brief A compile-time tag-type used to sort an overload function
+    ///        set according to an explicit priority value.
     template <Int TPriority>
     struct Priority : Priority<TPriority - 1>
     {
-    
+
     };
 
     /// \brief Topmost priority tag type.
@@ -32,9 +36,11 @@ namespace Syntropy::Templates
 
     };
 
-    /// \brief Constant of the tag-type Priority used to sort an overload function set according to an explicit priority value.
+    /// \brief Constant of the tag-type Priority used to sort an overload
+    ///        function set according to an explicit priority value.
     template <Int TPriority>
-    inline constexpr Priority kPriority = Priority<TPriority>{};
+    inline constexpr Priority kPriority
+        = Priority<TPriority>{};
 
 }
 

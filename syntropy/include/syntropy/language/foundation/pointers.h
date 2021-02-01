@@ -60,7 +60,7 @@ namespace Syntropy
 
     /// \brief Convert rhs to a pointer to UType preserving constness.
     /// \remarks If the pointee type is not related to UType,
-    ///           the program is ill-formed.
+    ///          the program is ill-formed.
     template <typename TType, typename UType>
     constexpr BasePtr<TType> ToPtr(BasePtr<UType> rhs) noexcept;
 
@@ -70,19 +70,19 @@ namespace Syntropy
 
     /// \brief Convert rhs to a pointer to a typeless read-write object.
     /// \remarks If the pointee refers to a read-only object, accessing
-    ///           the result of this method results in undefined behavior.
+    ///          the result of this method results in undefined behavior.
     template <Concepts::MutableType TType>
     RWTypelessPtr ToTypelessPtr(BasePtr<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a strongly-typed read-only pointer type.
     /// \remarks If the pointee type is not related to TType, accessing
-    ///           the result of this method results in undefined behavior.
+    ///          the result of this method results in undefined behavior.
     template <typename TType>
     Ptr<TType> FromTypelessPtr(TypelessPtr rhs) noexcept;
 
     /// \brief Convert rhs to a strongly-typed read-write pointer type.
     /// \remarks If the pointee type is not related to TType, accessing the
-    ///           result of this method results in undefined behavior.
+    ///          result of this method results in undefined behavior.
     template <typename TType>
     RWPtr<TType> FromTypelessPtr(RWTypelessPtr rhs) noexcept;
 
@@ -96,23 +96,24 @@ namespace Syntropy
     /// \brief Convert rhs to a pointer to a read-write instance of type TType.
     ///
     /// The intended use for this method is to write a non-const implementation
-    ///  based on a const implementation, without duplicating associated code.
+    /// based on a const implementation, without duplicating associated code.
+    ///
     /// Such usage has the form: ToReadWrite(F(ToReadOnly(x)))
-    ///  where x is non-const and F(.) is a function.
+    /// where x is non-const and F(.) is a function.
     ///
     /// \remarks If rhs pointee doesn't refer to a read-writable instance,
     ///           accessing the result of this method results in undefined
     //            behavior.
     template <typename TType>
-    constexpr RWPtr<Templates::RemoveConst<TType>>
-        ToReadWrite(BasePtr<TType> rhs) noexcept;
+    constexpr auto ToReadWrite(BasePtr<TType> rhs) noexcept;
 
     // Utilities.
     // ==========
 
-    /// \brief Obtain the pointer to an instance of type TType.
+    /// \brief Obtain the pointer to an instance of type TType
+    ///
     /// The returned value is guaranteed to produce the actual address of rhs,
-    ///  even when operator& is overloaded.
+    /// even when operator& is overloaded.
     template <typename TType>
     constexpr BasePtr<TType> PtrOf(Reference<TType> rhs) noexcept;
 
@@ -174,8 +175,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr RWPtr<Templates::RemoveConst<TType>>
-        ToReadWrite(BasePtr<TType> rhs) noexcept
+    constexpr auto ToReadWrite(BasePtr<TType> rhs) noexcept
     {
         return const_cast<RWPtr<Templates::RemoveConst<TType>>>(rhs);
     }
