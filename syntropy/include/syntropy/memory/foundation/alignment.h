@@ -1,6 +1,7 @@
 
 /// \file alignment.h
-/// \brief This header is part of Syntropy memory module. It contains alignment-related definitions.
+/// \brief This header is part of Syntropy memory module.
+///        It contains alignment-related definitions.
 ///
 /// \author Raffaele D. Facendola - August 2018
 
@@ -29,45 +30,62 @@ namespace Syntropy::Memory
 
     /// \brief Get the alignment of rhs.
     template <typename TType>
-    [[nodiscard]] constexpr Alignment AlignmentOf(Immutable<TType> rhs) noexcept;
+    [[nodiscard]] constexpr
+    Alignment AlignmentOf(Immutable<TType> rhs) noexcept;
 
     /// \brief Get the alignment of TType.
     template <typename TType>
-    [[nodiscard]] constexpr Alignment AlignmentOf() noexcept;
+    [[nodiscard]] constexpr
+    Alignment AlignmentOf() noexcept;
 
-    /// \brief Get an alignment which is at least as large as that of every scalar type.
-    [[nodiscard]] constexpr Alignment MaxAlignment() noexcept;
+    /// \brief Get an alignment which is at least as large as that of every
+    ///        scalar type.
+    [[nodiscard]] constexpr
+    Alignment MaxAlignment() noexcept;
 
     /// \brief Check whether a pointer is aligned to a given boundary.
-    [[nodiscard]] Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
+    [[nodiscard]]
+    Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept;
 
-    /// \brief Move a byte pointer forwards until it gets aligned to a specified value.
-    [[nodiscard]] BytePtr Align(BytePtr pointer, Alignment alignment) noexcept;
+    /// \brief Move a byte pointer forwards until it gets aligned to a
+    ///        specified value.
+    [[nodiscard]]
+    BytePtr Align(BytePtr pointer, Alignment alignment) noexcept;
 
-    /// \brief Move a byte pointer forwards until it gets aligned to a specified value.
-    [[nodiscard]] RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept;
+    /// \brief Move a byte pointer forwards until it gets aligned to a
+    ///        specified value.
+    [[nodiscard]]
+    RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept;
 
-    /// \brief Move a byte pointer backwards until it gets aligned to a specified value.
-    [[nodiscard]] BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept;
+    /// \brief Move a byte pointer backwards until it gets aligned to
+    ///        a specified value.
+    [[nodiscard]]
+    BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept;
 
-    /// \brief Move a byte pointer backwards until it gets aligned to a specified value.
-    [[nodiscard]] RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept;
+    /// \brief Move a byte pointer backwards until it gets aligned to
+    ///        a specified value.
+    [[nodiscard]]
+    RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept;
 
     /************************************************************************/
     /* BITWISE OPERATIONS                                                   */
     /************************************************************************/
 
     /// \brief Shift an alignment value right.
-    [[nodiscard]] constexpr Mutable<Alignment> operator>>=(Mutable<Alignment> lhs, Int rhs) noexcept;
+    [[nodiscard]] constexpr
+    Mutable<Alignment> operator>>=(Mutable<Alignment> lhs, Int rhs) noexcept;
 
     /// \brief Shift an alignment value left.
-    [[nodiscard]] constexpr Mutable<Alignment> operator<<=(Mutable<Alignment> lhs, Int rhs) noexcept;
+    [[nodiscard]] constexpr
+    Mutable<Alignment> operator<<=(Mutable<Alignment> lhs, Int rhs) noexcept;
 
     /// \brief Shift an alignment value right.
-    [[nodiscard]] constexpr Alignment operator>>(Immutable<Alignment> lhs, Int rhs) noexcept;
+    [[nodiscard]] constexpr
+    Alignment operator>>(Immutable<Alignment> lhs, Int rhs) noexcept;
 
     /// \brief Shift an alignment value left.
-    [[nodiscard]] constexpr Alignment operator<<(Immutable<Alignment> lhs, Int rhs) noexcept;
+    [[nodiscard]] constexpr
+    Alignment operator<<(Immutable<Alignment> lhs, Int rhs) noexcept;
 
     /************************************************************************/
     /* CONVERSION                                                           */
@@ -98,7 +116,8 @@ namespace Syntropy::Memory::Literals
     /************************************************************************/
 
     /// \brief User-defined literal used to convert a number to Alignment type.
-    [[nodiscard]] constexpr Alignment operator "" _Alignment(std::size_t lhs) noexcept;
+    [[nodiscard]] constexpr
+    Alignment operator "" _Alignment(std::size_t lhs) noexcept;
 }
 
 // ===========================================================================
@@ -113,7 +132,8 @@ namespace Syntropy::Memory
     // =====================
 
     template <typename TType>
-    [[nodiscard]] constexpr Alignment AlignmentOf(Immutable<TType> rhs) noexcept
+    [[nodiscard]] constexpr
+    Alignment AlignmentOf(Immutable<TType> rhs) noexcept
     {
         return Alignment(std::align_val_t{ alignof(TType) });
     }
@@ -129,14 +149,16 @@ namespace Syntropy::Memory
         return Alignment(std::align_val_t{ alignof(std::max_align_t) });
     }
 
-    [[nodiscard]] inline Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept
+    [[nodiscard]] inline
+    Bool IsAlignedTo(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
         return !(ToAddress(pointer) & mask);
     }
 
-    [[nodiscard]] inline BytePtr Align(BytePtr pointer, Alignment alignment) noexcept
+    [[nodiscard]] inline
+    BytePtr Align(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -145,7 +167,8 @@ namespace Syntropy::Memory
         return FromAddress<Byte>(aligned);
     }
 
-    [[nodiscard]] inline RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept
+    [[nodiscard]] inline
+    RWBytePtr Align(RWBytePtr pointer, Alignment alignment) noexcept
     {
         using Syntropy::ToReadOnly;
         using Syntropy::ToReadWrite;
@@ -153,7 +176,8 @@ namespace Syntropy::Memory
         return ToReadWrite(Align(ToReadOnly(pointer), alignment));
     }
 
-    [[nodiscard]] inline BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept
+    [[nodiscard]] inline
+    BytePtr AlignDown(BytePtr pointer, Alignment alignment) noexcept
     {
         auto mask = ToInt(alignment) - 1;
 
@@ -162,7 +186,8 @@ namespace Syntropy::Memory
         return FromAddress<Byte>(aligned_pointer);
     }
 
-    [[nodiscard]] inline RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
+    [[nodiscard]] inline
+    RWBytePtr AlignDown(RWBytePtr pointer, Alignment alignment) noexcept
     {
         using Syntropy::ToReadOnly;
         using Syntropy::ToReadWrite;
@@ -173,26 +198,30 @@ namespace Syntropy::Memory
     // Bitwise operations.
     // ===================
 
-    [[nodiscard]] constexpr Mutable<Alignment> operator>>=(Mutable<Alignment> lhs, Int rhs) noexcept
+    [[nodiscard]] constexpr
+    Mutable<Alignment> operator>>=(Mutable<Alignment> lhs, Int rhs) noexcept
     {
         lhs = lhs >> rhs;
 
         return lhs;
     }
 
-    [[nodiscard]] constexpr Mutable<Alignment> operator<<=(Mutable<Alignment> lhs, Int rhs) noexcept
+    [[nodiscard]] constexpr
+    Mutable<Alignment> operator<<=(Mutable<Alignment> lhs, Int rhs) noexcept
     {
         lhs = lhs << rhs;
 
         return lhs;
     }
 
-    [[nodiscard]] constexpr Alignment operator>>(Immutable<Alignment> lhs, Int rhs) noexcept
+    [[nodiscard]] constexpr
+    Alignment operator>>(Immutable<Alignment> lhs, Int rhs) noexcept
     {
         return (rhs >= 0) ? ToAlignment(ToInt(lhs) >> rhs) : (lhs << -rhs);
     }
 
-    [[nodiscard]] constexpr Alignment operator<<(Immutable<Alignment> lhs, Int rhs) noexcept
+    [[nodiscard]] constexpr
+    Alignment operator<<(Immutable<Alignment> lhs, Int rhs) noexcept
     {
         return (rhs >= 0) ? ToAlignment(ToInt(lhs) << rhs) : (lhs >> -rhs);
     }
@@ -223,9 +252,9 @@ namespace Syntropy::Memory
     // Literals.
     // =========
 
-    [[nodiscard]] constexpr Alignment Literals::operator "" _Alignment(std::size_t lhs) noexcept
+    [[nodiscard]] constexpr
+    Alignment Literals::operator "" _Alignment(std::size_t lhs) noexcept
     {
         return Alignment(lhs);
     }
 }
-

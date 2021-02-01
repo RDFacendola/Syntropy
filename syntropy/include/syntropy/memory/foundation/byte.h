@@ -1,6 +1,7 @@
 
 /// \file byte.h
-/// \brief This header is part of Syntropy memory module. It contains definitions for byte definitions.
+/// \brief This header is part of Syntropy memory module.
+///        It contains definitions for byte definitions.
 ///
 /// \author Raffaele D. Facendola - Aug 2020
 
@@ -47,16 +48,21 @@ namespace Syntropy::Memory
     [[nodiscard]] BytePtr ToBytePtr(Ptr<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a read-write memory location.
-    /// \remarks If rhs doesn't refer to a mutable memory location, accessing the returned value results in undefined behavior.
+    /// \remarks If rhs doesn't refer to a mutable memory location, accessing
+    ///          the returned value results in undefined behavior.
     template <typename TType>
     [[nodiscard]] RWBytePtr ToBytePtr(RWPtr<TType> rhs) noexcept;
 
-    /// \brief Convert a raw-pointer to a strongly-typed read-only instance of TType.
+    /// \brief Convert a raw-pointer to a strongly-typed read-only
+    ///        instance of TType.
     template <typename TType>
     [[nodiscard]] Ptr<TType> FromBytePtr(BytePtr rhs) noexcept;
 
-    /// \brief Convert a raw-pointer to a strongly-typed read-write instance of TType.
-    /// \remarks If the raw-pointer doesn't refer to a read-writable memory location, accessing the returned value results in undefined behavior.
+    /// \brief Convert a raw-pointer to a strongly-typed read-write instance
+    ///        of TType.
+    /// \remarks If the raw-pointer doesn't refer to a read-writable memory
+    ///          location, accessing the returned value results in undefined
+    ///          behavior.
     template <typename TType>
     [[nodiscard]] RWPtr<TType> FromBytePtr(RWBytePtr rhs) noexcept;
 

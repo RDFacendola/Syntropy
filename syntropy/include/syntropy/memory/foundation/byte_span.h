@@ -1,6 +1,7 @@
 
 /// \file byte_span.h
-/// \brief This header is part of Syntropy memory module. It contains definitions for byte spans.
+/// \brief This header is part of Syntropy memory module.
+///        It contains definitions for byte spans.
 ///
 /// \author Raffaele D. Facendola - July 2020
 
@@ -45,10 +46,13 @@ namespace Syntropy::Memory
         /// \brief Create an empty byte span.
         constexpr BaseByteSpan(Null) noexcept;
 
-        /// \brief Create a byte span given a pointer to the first byte and span size.
-        constexpr BaseByteSpan(TPointer begin, Immutable<Bytes> size) noexcept;
+        /// \brief Create a byte span given a pointer to the first byte
+        ///        and span size.
+        constexpr
+        BaseByteSpan(TPointer begin, Immutable<Bytes> size) noexcept;
 
-        /// \brief Create a byte span given a pointer to both the first and past the last byte.
+        /// \brief Create a byte span given a pointer to both the first and
+        ///        past the last byte.
         constexpr BaseByteSpan(TPointer begin, TPointer end) noexcept;
 
         /// \brief Converting copy constructor.
@@ -60,14 +64,18 @@ namespace Syntropy::Memory
 
         /// \brief Copy assignment operator.
         template <typename UTraits>
-        constexpr Mutable<BaseByteSpan> operator=(Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
+        constexpr Mutable<BaseByteSpan>
+        operator=(Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
 
         ///  \brief Check whether the byte span is non-empty.
         [[nodiscard]] constexpr explicit operator Bool() const noexcept;
 
         /// \brief Access a byte by offset.
-        /// If the provided offset is not within the byte span the behavior of this method is undefined.
-        [[nodiscard]] constexpr TReference operator[](Immutable<Bytes> offset) const noexcept;
+        ///
+        /// If the provided offset is not within the byte span the behavior
+        /// of this method is undefined.
+        [[nodiscard]] constexpr
+        TReference operator[](Immutable<Bytes> offset) const noexcept;
 
         /// \brief Access the underlying storage.
         [[nodiscard]] constexpr TPointer GetData() const noexcept;
@@ -128,56 +136,82 @@ namespace Syntropy::Memory
 
     /// \brief Check whether lhs and rhs are equivalent.
     template <typename TTraits, typename UTraits>
-    [[nodiscard]] constexpr Bool operator==(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr
+    Bool operator==(Immutable<BaseByteSpan<TTraits>> lhs,
+                    Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
 
     /// \brief Compare two spans lexicographically.
     template <typename TTraits, typename UTraits>
-    [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr
+    Ordering operator<=>(Immutable<BaseByteSpan<TTraits>> lhs,
+                         Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
 
     // Alignment.
     // ==========
 
-    /// \brief Consume lhs from the front until its first byte is aligned to rhs or lhs is exhausted.
+    /// \brief Consume lhs from the front until its first byte is aligned to
+    ///        rhs or lhs is exhausted.
     template <typename TTraits>
-    [[nodiscard]] BaseByteSpan<TTraits> Align(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Alignment> alignment) noexcept;
+    [[nodiscard]]
+    BaseByteSpan<TTraits> Align(Immutable<BaseByteSpan<TTraits>> lhs,
+                                Immutable<Alignment> alignment) noexcept;
 
-    /// \brief Consume lhs from the back until its size is a multiple of size or lhs is exhausted.
+    /// \brief Consume lhs from the back until its size is a multiple of size
+    ///        or lhs is exhausted.
     template <typename TTraits>
-    [[nodiscard]] BaseByteSpan<TTraits> Floor(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Bytes> size) noexcept;
+    [[nodiscard]]
+    BaseByteSpan<TTraits> Floor(Immutable<BaseByteSpan<TTraits>> lhs,
+                                Immutable<Bytes> size) noexcept;
 
     // Conversions.
     // ============
 
     /// \brief Get the read-only object representation of rhs.
-    /// An object representation is the sequence of bytes starting from the object address.
-    /// If rhs type is not exactly TObject, the behavior of this method is undefined.
+    ///
+    /// An object representation is the sequence of bytes starting from the
+    /// object address.
+    ///
+    /// \remarks If rhs type is not exactly TObject, the behavior of this
+    ///          method is undefined.
     template <typename TObject>
     [[nodiscard]] ByteSpan BytesOf(Immutable<TObject> rhs) noexcept;
 
     /// \brief Get the read-write object representation of rhs.
-    /// An object representation is the sequence of bytes starting from the object address.
-    /// If rhs type is not exactly TObject, the behavior of this method is undefined.
+    ///
+    /// An object representation is the sequence of bytes starting from
+    /// the object address.
+    /// If rhs type is not exactly TObject, the behavior of this method
+    /// is undefined.
     template <typename TObject>
     [[nodiscard]] RWByteSpan BytesOf(Mutable<TObject> rhs) noexcept;
 
     /// \brief Get an object TObject from its object representation.
-    /// \remarks If rhs is not exactly TObject, accessing the returned value results in undefined behavior.
+    /// \remarks If rhs is not exactly TObject, accessing the returned value
+    ///          results in undefined behavior.
     template <typename TObject, typename TTraits>
-    [[nodiscard]] Reference<TObject> FromBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+    [[nodiscard]] Reference<TObject>
+    FromBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
 
-    /// \brief Get the object representation of bytes in the contiguous range rhs.
+    /// \brief Get the object representation of bytes in the contiguous
+    ///        range rhs.
     template <Ranges::Concepts::ContiguousRange TRange>
     [[nodiscard]] auto RangeBytesOf(Immutable<TRange> rhs) noexcept;
 
-    /// \brief Get the object representation of bytes in the contiguous range rhs.
-    /// \remarks The range-byte representation of a BaseByteSpan is the span itself.
+    /// \brief Get the object representation of bytes in the contiguous
+    ///        range rhs.
+    /// \remarks The range-byte representation of a BaseByteSpan is the
+    ///          span itself.
     template <typename TTraits>
-    [[nodiscard]] BaseByteSpan<TTraits> RangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+    [[nodiscard]] BaseByteSpan<TTraits>
+    RangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
 
-    /// \brief Get a contiguous range of strongly-typed elements from its range object representation.
-    /// \remarks If rhs is not exactly a range TRange, accessing the returned value results in undefined behavior.
+    /// \brief Get a contiguous range of strongly-typed elements from its
+    ///        range object representation.
+    /// \remarks If rhs is not exactly a range TRange, accessing the returned
+    ///          value results in undefined behavior.
     template <Ranges::Concepts::ContiguousRange TRange, typename TTraits>
-    [[nodiscard]] TRange FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
+    [[nodiscard]]
+    TRange FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
 
     // Access.
     // =======
@@ -186,23 +220,28 @@ namespace Syntropy::Memory
     [[nodiscard]] ByteSpan ToReadOnly(Immutable<ByteSpan> rhs) noexcept;
 
     /// \brief Convert rhs to a read-write byte span.
-    /// \remarks If the original memory location is not read-writable, accessing the returned values results in undefined behavior.
+    /// \remarks If the original memory location is not read-writable,
+    ///          accessing the returned values results in undefined behavior.
     [[nodiscard]] RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept;
 
     // Utilities.
     // ==========
 
     /// \brief Create a new byte span by deducing template from arguments.
-    [[nodiscard]] constexpr ByteSpan MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept;
+    [[nodiscard]] constexpr
+    ByteSpan MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept;
 
     /// \brief Create a new byte span by deducing template from arguments.
-    [[nodiscard]] constexpr ByteSpan MakeByteSpan(BytePtr begin, BytePtr end) noexcept;
+    [[nodiscard]] constexpr
+    ByteSpan MakeByteSpan(BytePtr begin, BytePtr end) noexcept;
 
     /// \brief Create a new byte span by deducing template from arguments.
-    [[nodiscard]] constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept;
+    [[nodiscard]] constexpr
+    RWByteSpan MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept;
 
     /// \brief Create a new byte span by deducing template from arguments.
-    [[nodiscard]] constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept;
+    [[nodiscard]] constexpr
+    RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept;
 
     /// \brief Create a new byte span by deducing template from arguments.
     template <typename TType, Int VSize>
@@ -228,7 +267,9 @@ namespace Syntropy::Memory
     }
 
     template <typename TTraits>
-    constexpr BaseByteSpan<TTraits>::BaseByteSpan(BaseByteSpan<TTraits>::TPointer begin, Immutable<Bytes> size) noexcept
+    constexpr BaseByteSpan<TTraits>
+    ::BaseByteSpan(BaseByteSpan<TTraits>::TPointer begin,
+                   Immutable<Bytes> size) noexcept
         : data_(begin)
         , size_(size)
     {
@@ -236,7 +277,9 @@ namespace Syntropy::Memory
     }
 
     template <typename TTraits>
-    constexpr BaseByteSpan<TTraits>::BaseByteSpan(BaseByteSpan<TTraits>::TPointer begin, BaseByteSpan<TTraits>::TPointer end) noexcept
+    constexpr BaseByteSpan<TTraits>
+    ::BaseByteSpan(BaseByteSpan<TTraits>::TPointer begin,
+                   BaseByteSpan<TTraits>::TPointer end) noexcept
         : BaseByteSpan(begin, ToBytes(end - begin))
     {
 
@@ -244,7 +287,8 @@ namespace Syntropy::Memory
 
     template <typename TTraits>
     template <typename UTraits>
-    constexpr BaseByteSpan<TTraits>::BaseByteSpan(Immutable<BaseByteSpan<UTraits>> rhs) noexcept
+    constexpr BaseByteSpan<TTraits>
+    ::BaseByteSpan(Immutable<BaseByteSpan<UTraits>> rhs) noexcept
         : data_(rhs.data_)
         , size_(rhs.size_)
     {
@@ -253,7 +297,8 @@ namespace Syntropy::Memory
 
     template <typename TTraits>
     template <typename UTraits>
-    constexpr Mutable<BaseByteSpan<TTraits>> BaseByteSpan<TTraits>::operator=(Immutable<BaseByteSpan<UTraits>> rhs) noexcept
+    constexpr Mutable<BaseByteSpan<TTraits>> BaseByteSpan<TTraits>
+    ::operator=(Immutable<BaseByteSpan<UTraits>> rhs) noexcept
     {
         data_ = rhs.data_;
         size_ = rhs.size_;
@@ -262,25 +307,29 @@ namespace Syntropy::Memory
     }
 
      template <typename TTraits>
-     [[nodiscard]] constexpr BaseByteSpan<TTraits>::operator Bool() const noexcept
+     [[nodiscard]] constexpr BaseByteSpan<TTraits>
+     ::operator Bool() const noexcept
      {
          return size_ > ToBytes(0);
      }
 
     template <typename TTraits>
-    [[nodiscard]] constexpr typename BaseByteSpan<TTraits>::TReference BaseByteSpan<TTraits>::operator[](Immutable<Bytes> offset) const noexcept
+    [[nodiscard]] constexpr typename BaseByteSpan<TTraits>::TReference
+    BaseByteSpan<TTraits>::operator[](Immutable<Bytes> offset) const noexcept
     {
         return data_[offset];
     }
 
     template <typename TTraits>
-    [[nodiscard]] constexpr typename BaseByteSpan<TTraits>::TPointer BaseByteSpan<TTraits>::GetData() const noexcept
+    [[nodiscard]] constexpr typename BaseByteSpan<TTraits>::TPointer
+    BaseByteSpan<TTraits>::GetData() const noexcept
     {
         return data_;
     }
 
     template <typename TTraits>
-    [[nodiscard]] constexpr Bytes BaseByteSpan<TTraits>::GetCount() const noexcept
+    [[nodiscard]] constexpr Bytes BaseByteSpan<TTraits>::
+    GetCount() const noexcept
     {
         return size_;
     }
@@ -292,13 +341,17 @@ namespace Syntropy::Memory
 
 
     template <typename TTraits, typename UTraits>
-    [[nodiscard]] constexpr Bool operator==(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Bool
+    operator==(Immutable<BaseByteSpan<TTraits>> lhs,
+                         Immutable<BaseByteSpan<UTraits>> rhs) noexcept
     {
         return Ranges::AreEquivalent(lhs, rhs);
     }
 
     template <typename TTraits, typename UTraits>
-    [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<BaseByteSpan<UTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Ordering
+    operator<=>(Immutable<BaseByteSpan<TTraits>> lhs,
+                Immutable<BaseByteSpan<UTraits>> rhs) noexcept
     {
         using namespace Ranges;
 
@@ -308,7 +361,9 @@ namespace Syntropy::Memory
     // Alignment.
 
     template <typename TTraits>
-    [[nodiscard]] inline BaseByteSpan<TTraits> Align(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Alignment> alignment) noexcept
+    [[nodiscard]] inline BaseByteSpan<TTraits>
+    Align(Immutable<BaseByteSpan<TTraits>> lhs,
+          Immutable<Alignment> alignment) noexcept
     {
         auto begin = Align(lhs.GetData(), alignment);
         auto end = lhs.data_() + lhs.GetCount();
@@ -317,7 +372,8 @@ namespace Syntropy::Memory
     }
 
     template <typename TTraits>
-    [[nodiscard]] inline BaseByteSpan<TTraits> Floor(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Bytes> size) noexcept
+    [[nodiscard]] inline BaseByteSpan<TTraits>
+    Floor(Immutable<BaseByteSpan<TTraits>> lhs, Immutable<Bytes> size) noexcept
     {
         auto floor_size = Math::Floor(lhs.GetCount(), size);
 
@@ -345,7 +401,8 @@ namespace Syntropy::Memory
     }
 
     template <typename TObject, typename TTraits>
-    [[nodiscard]] inline Reference<TObject> FromBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    [[nodiscard]] inline Reference<TObject>
+    FromBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
     {
         return *FromTypelessPtr<TObject>(rhs.GetData());
     }
@@ -353,7 +410,8 @@ namespace Syntropy::Memory
     template <Ranges::Concepts::ContiguousRange TRange>
     [[nodiscard]] inline auto RangeBytesOf(Immutable<TRange> rhs) noexcept
     {
-        using TRangeElement = typename Ranges::Templates::RangeElementValueType<TRange>;
+        using TRangeElement
+            = typename Ranges::Templates::RangeElementValueType<TRange>;
 
         auto data = ToBytePtr(Ranges::Data(rhs));
         auto size = SizeOf<TRangeElement>() * Ranges::Count(rhs);
@@ -362,13 +420,15 @@ namespace Syntropy::Memory
     }
 
     template <typename TTraits>
-    [[nodiscard]] inline BaseByteSpan<TTraits> RangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    [[nodiscard]] inline BaseByteSpan<TTraits>
+    RangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
     {
         return rhs;
     }
 
     template <Ranges::Concepts::ContiguousRange TRange, typename TTraits>
-    [[nodiscard]] inline TRange FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
+    [[nodiscard]] inline TRange
+    FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
     {
         if constexpr (Concepts::SameAs<TRange, BaseByteSpan<TTraits>>)
         {
@@ -376,7 +436,8 @@ namespace Syntropy::Memory
         }
         else
         {
-            using TRangeElement = Ranges::Templates::RangeElementValueType<TRange>;
+            using TRangeElement
+                = Ranges::Templates::RangeElementValueType<TRange>;
 
             auto data = FromTypelessPtr<TRangeElement>(rhs.GetData());
             auto size = rhs.GetCount() / SizeOf<TRangeElement>();
@@ -392,29 +453,34 @@ namespace Syntropy::Memory
         return rhs;
     }
 
-    [[nodiscard]] inline RWByteSpan ToReadWrite(Immutable<ByteSpan> rhs) noexcept
+    [[nodiscard]] inline RWByteSpan
+    ToReadWrite(Immutable<ByteSpan> rhs) noexcept
     {
         return { Syntropy::ToReadWrite(rhs.GetData()), rhs.GetCount() };
     }
 
     // Utilities.
 
-    [[nodiscard]] constexpr ByteSpan MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept
+    [[nodiscard]] constexpr
+    ByteSpan MakeByteSpan(BytePtr begin, Immutable<Bytes> size) noexcept
     {
         return { begin, size };
     }
 
-    [[nodiscard]] constexpr ByteSpan MakeByteSpan(BytePtr begin, BytePtr end) noexcept
+    [[nodiscard]] constexpr
+    ByteSpan MakeByteSpan(BytePtr begin, BytePtr end) noexcept
     {
         return { begin, end };
     }
 
-    [[nodiscard]] constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept
+    [[nodiscard]] constexpr
+    RWByteSpan MakeByteSpan(RWBytePtr begin, Immutable<Bytes> size) noexcept
     {
         return { begin, size };
     }
 
-    [[nodiscard]] constexpr RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept
+    [[nodiscard]] constexpr
+    RWByteSpan MakeByteSpan(RWBytePtr begin, RWBytePtr end) noexcept
     {
         return { begin, end };
     }
