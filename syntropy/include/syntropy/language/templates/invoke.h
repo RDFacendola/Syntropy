@@ -1,5 +1,6 @@
 
 /// \file invoke.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains definitions for functions and functors invocation.
 ///
@@ -23,8 +24,7 @@ namespace Syntropy::Templates
     ///        can be called with.
     /// If no matching element could be found, the program is ill-formed.
     template <typename TCallable>
-    using FunctionArguments
-        = Details::FunctionArguments<TCallable>;
+    using FunctionArguments = Details::FunctionArguments<TCallable>;
 
     /// \brief Provides indexed access to function arguments' types.
     template <Int VIndex, typename TCallable >
@@ -34,8 +34,7 @@ namespace Syntropy::Templates
     /// \brief Type alias for the return type of a callable object invocation
     ///        with provided arguments.
     template <typename TCallable, typename... TArguments>
-    using InvokeResult
-        = Details::InvokeResult<TCallable, TArguments...>;
+    using InvokeResult = Details::InvokeResult<TCallable, TArguments...>;
 
     /// \brief Invoke a callable object with provided arguments.
     template <typename TCallable, typename... TArguments>

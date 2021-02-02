@@ -1,5 +1,6 @@
 
 /// \file macro.h
+///
 /// \brief This header is part of Syntropy language module.
 ///         It contains macro definitions.
 ///
@@ -8,6 +9,7 @@
 #pragma once
 
 #include "syntropy/hal/hal_macro.h"
+
 #include "syntropy/language/templates/type_traits.h"
 
 // ===========================================================================
@@ -39,10 +41,10 @@ namespace Syntropy
     /// #undef MY_MACRO
     /// #define MY_MACRO(arg0, arg1) (arg0 + arg1)
     #define SYNTROPY_MACRO_DECLARATION(...) \
-    [](){ \
-        static_assert(Syntropy::Templates::AlwaysFalse<#__VA_ARGS__>, \
-        "Undefined macro!"); \
-    }
+        [](){ \
+            static_assert(Syntropy::Templates::AlwaysFalse<#__VA_ARGS__>, \
+            "Undefined macro!"); \
+        }
 
     /// \brief Expands to the current file name.
     #define SYNTROPY_FILE \

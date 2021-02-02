@@ -1,5 +1,6 @@
 
 /// \file debugger.h
+///
 /// \brief This header is part of the Syntropy diagnostic module.
 ///        It contains debugger functionalities.
 ///
@@ -34,7 +35,8 @@ namespace Syntropy::Diagnostics
     /************************************************************************/
 
     /// \brief Check whether the debugger is attached.
-    [[nodiscard]] Bool IsDebuggerAttached() noexcept;
+    [[nodiscard]] Bool
+    IsDebuggerAttached() noexcept;
 
 }
 

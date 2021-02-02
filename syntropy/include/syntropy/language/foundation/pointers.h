@@ -12,6 +12,7 @@
 #include <cstddef>
 
 #include "syntropy/language/foundation/references.h"
+
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/concepts.h"
 

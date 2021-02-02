@@ -55,25 +55,22 @@ namespace Syntropy::Templates
     ///        evaluates to false. Useful for static_assert that should always
     ///        trigger a compilation error.
     template <typename... TTypes>
-    inline constexpr Bool AlwaysFalse
-        = false;
+    inline constexpr Bool
+    AlwaysFalse = false;
 
     /// \brief Metafunction that maps a sequence of types to void.
     template <typename... TTypes>
-    using Void
-        = Details::Void<TTypes...>;
+    using Void = Details::Void<TTypes...>;
 
     /// \brief Type equal to TTrue if VCondition is true, equal to
     ///        TFalse otherwise.
     template <Bool VCondition, typename TTrue, typename TFalse>
-    using Conditional
-        = Details::Conditional<VCondition, TTrue, TFalse>;
+    using Conditional = Details::Conditional<VCondition, TTrue, TFalse>;
 
     /// \brief Type equal to TType if VEnable is true, otherwise
     ///        there's no such type.
     template <Bool VEnable>
-    using EnableIf
-        = Details::EnableIf<VEnable>;
+    using EnableIf = Details::EnableIf<VEnable>;
 
     /// \brief Boolean value equal to true if TExpression<TTypes...> is a
     ///        valid expression, false otherwise.
@@ -130,14 +127,12 @@ namespace Syntropy::Templates
     /// \brief Type equal to the type all types among TTypes can be
     ///        converted to.
     template <typename... TTypes>
-    using CommonType
-        = Details::CommonType<TTypes...>;
+    using CommonType = Details::CommonType<TTypes...>;
 
     /// \brief Type equal to the type all types among TTypes can be converted
     ///        or bound to.
     template <typename... TTypes>
-    using CommonReference
-        = Details::CommonReference<TTypes...>;
+    using CommonReference = Details::CommonReference<TTypes...>;
 
     /************************************************************************/
     /* TYPE TRANSFORM                                                       */
@@ -146,68 +141,57 @@ namespace Syntropy::Templates
     /// \brief Identity transform meant to establish non-deduced contexts in
     ///        template argument deduction.
     template <typename TType>
-    using Identity
-        = Details::Identity<TType>;
+    using Identity = Details::Identity<TType>;
 
     /// \brief Applies lvalue-to-rvalue, array-to-pointer, and
     ///        function-to-pointer implicit conversions to the type TType,
     ///        removes cv-qualifiers, and defines the resulting type as the
     ///        member typedef type.
     template <typename TType>
-    using Decay
-        = Details::Decay<TType>;
+    using Decay = Details::Decay<TType>;
 
     /// \brief Type equal to TType without const qualifier.
     template <typename TType>
-    using RemoveConst
-        = Details::RemoveConst<TType>;
+    using RemoveConst = Details::RemoveConst<TType>;
 
     /// \brief Type equal to TType with const qualifiers applied.
     template <typename TType>
-    using AddConst
-        = Details::AddConst<TType>;
+    using AddConst = Details::AddConst<TType>;
 
     /// \brief Type equal to TType without top-most reference if present, or
     ///        equal to TType otherwise.
     template <typename TType>
-    using RemoveReference
-        = Details::RemoveReference<TType>;
+    using RemoveReference = Details::RemoveReference<TType>;
 
     /// \brief Type equal to TType without top-most reference and qualifiers.
     template <typename TType>
-    using RemoveConstReference
-        = Details::RemoveConstReference<TType>;
+    using RemoveConstReference = Details::RemoveConstReference<TType>;
 
     /// \brief Type of an lvalue reference to TType if possible, or equal to
     ///        TType otherwise.
     /// This trait honors reference collapsing rule.
     template <typename TType>
-    using AddLValueReference
-        = Details::AddLValueReference<TType>;
+    using AddLValueReference = Details::AddLValueReference<TType>;
 
     /// \brief Type of an rvalue reference to TType if possible, or equal to
     ///        TType otherwise.
     /// This trait honors reference collapsing rule.
     template <typename TType>
-    using AddRValueReference
-        = Details::AddRValueReference<TType>;
+    using AddRValueReference = Details::AddRValueReference<TType>;
 
     /// \brief Type equal to TType with const lvalue reference applied.
     template <typename TType>
-    using AddLValueConstReference
-        = Details::AddLValueConstReference<TType>;
+    using AddLValueConstReference = Details::AddLValueConstReference<TType>;
 
     /// \brief Type equal to a pointer to TType if possible, or equal to TType
     ///        otherwise.
     template <typename TType>
-    using AddPointer
-        = Details::AddPointer<TType>;
+    using AddPointer = Details::AddPointer<TType>;
 
     /// \brief Type equal the pointee's type to TType if TType is a pointer
     ///        type, or equal to TType otherwise.
     template <typename TType>
-    using RemovePointer
-        = Details::RemovePointer<TType>;
+    using RemovePointer = Details::RemovePointer<TType>;
 
     /************************************************************************/
     /* DECLVAL                                                              */

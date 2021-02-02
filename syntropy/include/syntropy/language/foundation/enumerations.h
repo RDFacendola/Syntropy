@@ -1,5 +1,6 @@
 
 /// \file enumerations.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains definitions for enumeration types.
 ///

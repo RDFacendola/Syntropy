@@ -1,5 +1,6 @@
 
 /// \file concepts_details.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains implementation details of fundamental concepts
 ///         definitions.
@@ -20,7 +21,8 @@ namespace Syntropy
 {
     /// \brief Swap lhs with rhs.
     template <typename TType>
-    constexpr void Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
+    constexpr void
+    Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
 }
 
 // ===========================================================================
@@ -36,81 +38,66 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for void types.
     template<typename TType>
-    concept VoidType
-        = std::is_void_v<TType>;
+    concept VoidType = std::is_void_v<TType>;
 
     /// \brief Concept for null types.
     template<typename TType>
-    concept NullType
-        = std::is_null_pointer_v<TType>;
+    concept NullType = std::is_null_pointer_v<TType>;
 
     /// \brief Concept for enum types.
     template <typename TType>
-    concept EnumType
-        = std::is_enum_v<TType>;
+    concept EnumType = std::is_enum_v<TType>;
 
     /// \brief Concept for class types.
     template <typename TType>
-    concept ClassType
-        = std::is_class_v<TType>;
+    concept ClassType = std::is_class_v<TType>;
 
     /// \brief Concept for pointer types.
     template <typename TType>
-    concept PointerType
-        = std::is_pointer_v<TType>;
+    concept PointerType = std::is_pointer_v<TType>;
 
     /// \brief Concept for lvalue references.
     template <typename TType>
-    concept LValueReferenceType
-        = std::is_lvalue_reference_v<TType>;
+    concept LValueReferenceType = std::is_lvalue_reference_v<TType>;
 
     /// \brief Concept for rvalue references.
     template <typename TType>
-    concept RValueReferenceType
-        = std::is_rvalue_reference_v<TType>;
+    concept RValueReferenceType = std::is_rvalue_reference_v<TType>;
 
     /// \brief Concept for object types.
     template <typename TType>
-    concept ObjectType
-        = std::is_object_v<TType>;
+    concept ObjectType = std::is_object_v<TType>;
 
     // Properties concepts.
     // ====================
 
     /// \brief Concept for immutable types.
     template <typename TType>
-    concept ImmutableType
-        = std::is_const_v<TType>;
+    concept ImmutableType = std::is_const_v<TType>;
 
     /// \brief Concept for mutable types.
     template <typename TType>
-    concept MutableType
-        = !std::is_const_v<TType>;
+    concept MutableType = !std::is_const_v<TType>;
 
     /// \brief Concept for trivial types.
     template <typename TType>
-    concept TrivialType
-        = std::is_trivial_v<TType>;
+    concept TrivialType = std::is_trivial_v<TType>;
 
     /// \brief Concept for trivially-copyable types.
     template <typename TType>
-    concept TriviallyCopyableType
-        = std::is_trivially_copyable_v<TType>;
+    concept TriviallyCopyableType = std::is_trivially_copyable_v<TType>;
 
     /// \brief Concepts for standard-layout types.
     template <typename TType>
-    concept StandardLayoutType
-        = std::is_standard_layout_v<TType>;
+    concept StandardLayoutType = std::is_standard_layout_v<TType>;
 
     /// \brief Constant for polymorphic types.
     template <typename TType>
-    concept PolymorphicType
-        = std::is_polymorphic_v<TType>;
+    concept PolymorphicType = std::is_polymorphic_v<TType>;
 
     /// \brief Constant for final types.
     template <typename TType>
-    concept FinalType
-        = std::is_final_v<TType>;
+    concept FinalType = std::is_final_v<TType>;
 
     // Type operation concepts.
     // ========================
@@ -140,8 +127,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Constant equal to true if TType  default-constructible,
     ///        equal to false otherwise.
     template <typename TType>
-    concept DefaultConstructibleType
-        = std::is_default_constructible_v<TType>;
+    concept DefaultConstructibleType = std::is_default_constructible_v<TType>;
 
     /// \brief Constant equal to true if TType  trivially default
     ///        constructible, equal to false otherwise.
@@ -159,8 +145,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Constant equal to true if TType  copy-constructible,
     ///        equal to false otherwise.
     template <typename TType>
-    concept CopyConstructibleType
-        = std::is_copy_constructible_v<TType>;
+    concept CopyConstructibleType = std::is_copy_constructible_v<TType>;
 
     /// \brief Constant equal to true if TType  trivially-copy-constructible,
     ///        equal to false otherwise.
@@ -171,8 +156,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Constant equal to true if TType  move-constructible,
     ///        equal to false otherwise.
     template <typename TType>
-    concept MoveConstructibleType
-        = std::is_move_constructible_v<TType>;
+    concept MoveConstructibleType = std::is_move_constructible_v<TType>;
 
     /// \brief Constant equal to true if TType  trivially-move-constructible,
     ///        equal to false otherwise.
@@ -183,8 +167,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Constant equal to true if TType  copy-assignable,
     ///        equal to false otherwise.
     template <typename TType>
-    concept CopyAssignableType
-        = std::is_copy_assignable_v<TType>;
+    concept CopyAssignableType = std::is_copy_assignable_v<TType>;
 
     /// \brief Constant equal to true if TType  trivially-copy-constructible,
     ///        equal to false otherwise.
@@ -195,8 +178,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Constant equal to true if TType  move-assignable,
     ///        equal to false otherwise.
     template <typename TType>
-    concept MoveAssignableType
-        = std::is_move_assignable_v<TType>;
+    concept MoveAssignableType = std::is_move_assignable_v<TType>;
 
     /// \brief Constant equal to true if TType  trivially-move-constructible,
     ///        equal to false otherwise.
@@ -207,8 +189,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Constant equal to true if TType  assignable from UType
     ///        in unevaluated context, equal to false otherwise.
     template <typename TType, typename UType>
-    concept AssignableType
-        = std::is_assignable_v<TType, UType>;
+    concept AssignableType = std::is_assignable_v<TType, UType>;
 
     /// \brief Constant equal to true if TType can be constructed
     ///        by TArguments... arguments, equal to false otherwise.
@@ -256,8 +237,7 @@ namespace Syntropy::Concepts::Details
     /// or an array type of unknown bounds. It  not destructible also if its
     /// destructor is ill-formed in unevaluated context.
     template <typename TType>
-    concept DestructibleType
-        = std::is_destructible_v<TType>;
+    concept DestructibleType = std::is_destructible_v<TType>;
 
     /// \brief Constant equal to true if TType  both destructible and
     ///        trivially-destructible, equal to false otherwise.
@@ -283,28 +263,29 @@ namespace Syntropy::Concepts::Details
     ///        and vice-versa.
     template <typename TType, typename UType>
     concept SameAs
-        = std::is_same_v<TType, UType> && std::is_same_v<UType, TType>;
+         = std::is_same_v<TType, UType>
+        && std::is_same_v<UType, TType>;
 
     /// \brief Concept for types convertible to UType.
     template <typename TType, typename UType>
     concept ConvertibleTo
-        =  std::is_convertible_v<TType, UType>
+         = std::is_convertible_v<TType, UType>
         && requires(Templates::AddRValueReference<TType>(&function)())
-    {
-        static_cast<UType>(function());
-    };
+        {
+            static_cast<UType>(function());
+        };
 
     /// \brief Concept for types deriving from TBase ignoring
     ///        constant-qualifiers.
     template <typename TDerived, typename TBase>
     concept DerivedFrom
-        =  std::is_base_of_v<TBase, TDerived>
+         = std::is_base_of_v<TBase, TDerived>
         && std::is_convertible_v<Ptr<TDerived>, Ptr<TBase>>;
 
     /// \brief Concept for types that share a common reference type.
     template <typename TType, typename UType>
     concept CommonReferenceWith
-        =  SameAs<Templates::CommonReference<TType, UType>,
+         = SameAs<Templates::CommonReference<TType, UType>,
                   Templates::CommonReference<UType, TType>>
         && ConvertibleTo<TType, Templates::CommonReference<TType, UType>>
         && ConvertibleTo<UType, Templates::CommonReference<TType, UType>>;
@@ -312,30 +293,29 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for types that share a common type.
     template <typename TType, typename UType>
     concept CommonWith
-        =  SameAs<Templates::CommonType<TType, UType>,
+         = SameAs<Templates::CommonType<TType, UType>,
                   Templates::CommonType<UType, TType>>
         && requires
-    {
-        static_cast<Templates::CommonType<TType, UType>>(Declval<TType>());
-        static_cast<Templates::CommonType<TType, UType>>(Declval<UType>());
-    }
-    && CommonReferenceWith<Templates::AddLValueConstReference<TType>,
-                           Templates::AddLValueConstReference<UType>>
-    && CommonReferenceWith<Templates::AddLValueReference<
-                                Templates::CommonType<TType, UType>>,
-                           Templates::CommonReference<
-                                Templates::AddLValueConstReference<TType>,
-                                Templates::AddLValueConstReference<UType>>>;
+        {
+            static_cast<Templates::CommonType<TType, UType>>(Declval<TType>());
+            static_cast<Templates::CommonType<TType, UType>>(Declval<UType>());
+        }
+        && CommonReferenceWith<Templates::AddLValueConstReference<TType>,
+                               Templates::AddLValueConstReference<UType>>
+        && CommonReferenceWith<Templates::AddLValueReference<
+                                   Templates::CommonType<TType, UType>>,
+                               Templates::CommonReference<
+                                   Templates::AddLValueConstReference<TType>,
+                                   Templates::AddLValueConstReference<UType>>>;
 
     /// \brief Concept for boolean types.
     template <typename TType>
-    concept Boolean
-        = SameAs<TType, Bool>;
+    concept Boolean = SameAs<TType, Bool>;
 
     /// \brief Concept for signed integral number types.
     template <typename TType>
-    concept Integral =
-           SameAs<Templates::RemoveConstReference<TType>, Int>
+    concept Integral
+         = SameAs<Templates::RemoveConstReference<TType>, Int>
         || SameAs<TType, Fix8>
         || SameAs<TType, Fix16>
         || SameAs<TType, Fix32>
@@ -352,46 +332,45 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for an expression type which can be assigned from UType
     template <typename TType, typename UType>
     concept AssignableFrom
-        =  LValueReferenceType<TType>
+         = LValueReferenceType<TType>
         && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>,
                                Immutable<Templates::RemoveReference<UType>>>
         && requires(TType lhs, Forwarding<UType> rhs)
-           {
-               { lhs = Forward<UType>(rhs) } -> SameAs<TType>;
-           };
+        {
+            { lhs = Forward<UType>(rhs) } -> SameAs<TType>;
+        };
 
     /// \brief Concept for a type whose instances are swappable.
     template <typename TType>
     concept Swappable
         = requires(Mutable<TType> lhs, Mutable<TType> rhs)
-          {
-              Swap(lhs, rhs);
-          };
+        {
+            Swap(lhs, rhs);
+        };
 
     /// \brief Concept for a type whose instances can be swapped with
     ///        instances of type UType.
     template <typename TType, typename UType>
     concept SwappableWith
-        =  CommonReferenceWith<TType, UType>
+         = CommonReferenceWith<TType, UType>
         && requires(Forwarding<TType> lhs, Forwarding<UType> rhs)
-           {
-                Swap(Forward<TType>(lhs), Forward<TType>(rhs));
-                Swap(Forward<TType>(lhs), Forward<UType>(rhs));
-                Swap(Forward<UType>(rhs), Forward<TType>(rhs));
-                Swap(Forward<UType>(rhs), Forward<UType>(rhs));
-           };
+        {
+            Swap(Forward<TType>(lhs), Forward<TType>(rhs));
+            Swap(Forward<TType>(lhs), Forward<UType>(rhs));
+            Swap(Forward<UType>(rhs), Forward<TType>(rhs));
+            Swap(Forward<UType>(rhs), Forward<UType>(rhs));
+        };
 
     /// \brief Concept for types whose instances can safely be destroyed at
     ///        the end of their lifetime (including reference types).
     template <typename TType>
-    concept Destructible
-        = std::is_destructible_v<TType>;
+    concept Destructible = std::is_destructible_v<TType>;
 
     /// \brief Concept for types whose instances can be initialized with a set
     ///        of arguments TArgs....
     template <typename TType, typename... TArguments>
     concept ConstructibleFrom
-        =  Destructible<TType>
+         = Destructible<TType>
         && ConstructibleType<TType, TArguments...>;
 
     /// \brief Concept for types that can be value-initialized (T()),
@@ -399,7 +378,7 @@ namespace Syntropy::Concepts::Details
     ///        or default-initialized (T t).
     template <typename TType>
     concept DefaultInitializable
-        =  ConstructibleFrom<TType>
+         = ConstructibleFrom<TType>
         && requires { TType{}; }
         && requires { ::new (static_cast<void*>(nullptr)) TType; };
 
@@ -408,7 +387,7 @@ namespace Syntropy::Concepts::Details
     ///        direct-initialization and copy-initialization.
     template <typename TType>
     concept MoveConstructible
-        =  ConstructibleFrom<TType, TType>
+         = ConstructibleFrom<TType, TType>
         && ConvertibleTo<TType, TType>;
 
     /// \brief Concept for types that are either lvalue references or,
@@ -417,7 +396,7 @@ namespace Syntropy::Concepts::Details
     ///        after the copy.
     template <typename TType>
     concept CopyConstructible
-        =  MoveConstructible<TType>
+         = MoveConstructible<TType>
         && ConstructibleFrom<TType, Mutable<TType>>
         && ConvertibleTo<Mutable<TType>, TType>
         && ConstructibleFrom<TType, Immutable<TType>>
@@ -434,20 +413,20 @@ namespace Syntropy::Concepts::Details
     template <typename TType, typename UType>
     concept EqualityComparableWithHelper
          = requires(Immutable<Templates::RemoveReference<TType>> lhs,
-                   Immutable<Templates::RemoveReference<UType>>rhs)
-          {
-              /// \brief Compare lhs and rhs for equality.
-              { lhs == rhs } -> Boolean;
+                    Immutable<Templates::RemoveReference<UType>>rhs)
+         {
+             /// \brief Compare lhs and rhs for equality.
+             { lhs == rhs } -> Boolean;
 
-              /// \brief Compare lhs and rhs for inequality.
-              { lhs != rhs } -> Boolean;
+             /// \brief Compare lhs and rhs for inequality.
+             { lhs != rhs } -> Boolean;
 
-            /// \brief Compare rhs and lhs for equality.
-              { rhs == lhs } -> Boolean;
+             /// \brief Compare rhs and lhs for equality.
+             { rhs == lhs } -> Boolean;
 
-              /// \brief Compare rhs and lhs for inequality.
-              { rhs != lhs } -> Boolean;
-          };
+             /// \brief Compare rhs and lhs for inequality.
+             { rhs != lhs } -> Boolean;
+         };
 
     /// \brief Models a type TType for which the equality and
     ///        inequality operators are defined.
@@ -465,8 +444,8 @@ namespace Syntropy::Concepts::Details
         && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>,
                                Immutable<Templates::RemoveReference<UType>>>
         && EqualityComparable<Templates::CommonReference<
-            Immutable<Templates::RemoveReference<TType>>,
-            Immutable<Templates::RemoveReference<UType>>>>
+               Immutable<Templates::RemoveReference<TType>>,
+               Immutable<Templates::RemoveReference<UType>>>>
         && EqualityComparableWithHelper<TType, UType>;
 
     /// \brief Models a type TType for which the less-than, greater-than,
@@ -476,31 +455,31 @@ namespace Syntropy::Concepts::Details
     concept PartiallyOrderedWithHelper
         = requires(Immutable<Templates::RemoveReference<TType>> lhs,
                    Immutable<Templates::RemoveReference<UType>> rhs)
-          {
-              /// \brief Check whether lhs is less-than rhs.
-              { lhs < rhs } -> Boolean;
+        {
+            /// \brief Check whether lhs is less-than rhs.
+            { lhs < rhs } -> Boolean;
 
-              /// \brief Check whether lhs is greater-than rhs.
-              { lhs > rhs } -> Boolean;
+            /// \brief Check whether lhs is greater-than rhs.
+            { lhs > rhs } -> Boolean;
 
-              /// \brief Check whether lhs is less-than or equal-to rhs.
-              { lhs <= lhs } -> Boolean;
+            /// \brief Check whether lhs is less-than or equal-to rhs.
+            { lhs <= lhs } -> Boolean;
 
-              /// \brief Check whether lhs is greater-than or equal-to rhs.
-              { lhs >= lhs } -> Boolean;
+            /// \brief Check whether lhs is greater-than or equal-to rhs.
+            { lhs >= lhs } -> Boolean;
 
-              /// \brief Check whether rhs is less-than lhs.
-              { rhs < lhs } -> Boolean;
+            /// \brief Check whether rhs is less-than lhs.
+            { rhs < lhs } -> Boolean;
 
-              /// \brief Check whether rhs is greater-than lhs.
-              { rhs > lhs } -> Boolean;
+            /// \brief Check whether rhs is greater-than lhs.
+            { rhs > lhs } -> Boolean;
 
-              /// \brief Check whether rhs is less-than or equal-to lhs.
-              { rhs <= lhs } -> Boolean;
+            /// \brief Check whether rhs is less-than or equal-to lhs.
+            { rhs <= lhs } -> Boolean;
 
-              /// \brief Check whether rhs is greater-than or equal-to lhs.
-              { rhs >= lhs } -> Boolean;
-          };
+            /// \brief Check whether rhs is greater-than or equal-to lhs.
+            { rhs >= lhs } -> Boolean;
+        };
 
     /// \brief Models a type TType for which the less-than, greater-than,
     ///        less-than-or-equal-to and greater-than-or-equal-to
@@ -519,8 +498,8 @@ namespace Syntropy::Concepts::Details
         && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>,
                                Immutable<Templates::RemoveReference<UType>>>
         && PartiallyOrdered<Templates::CommonReference<
-            Immutable<Templates::RemoveReference<TType>>,
-            Immutable<Templates::RemoveReference<UType>>>>
+               Immutable<Templates::RemoveReference<TType>>,
+               Immutable<Templates::RemoveReference<UType>>>>
         && PartiallyOrderedWithHelper<TType, UType>;
 
     /// \brief Models a class TType which is both equality-comparable and
@@ -545,8 +524,8 @@ namespace Syntropy::Concepts::Details
         && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>,
                                Immutable<Templates::RemoveReference<UType>>>
         && TotallyOrdered<Templates::CommonReference<
-            Immutable<Templates::RemoveReference<TType>>,
-            Immutable<Templates::RemoveReference<UType>>>>
+               Immutable<Templates::RemoveReference<TType>>,
+               Immutable<Templates::RemoveReference<UType>>>>
         && TotallyOrderedWithHelper<TType, UType>;
 
     // Object concepts.
@@ -593,9 +572,9 @@ namespace Syntropy::Concepts::Details
     template <typename TCallable, typename... TArguments>
     concept Invocable
          = requires(Forwarding<TCallable> callable, TArguments&&... arguments)
-           {
-               Invoke(Forward<TCallable>, Forward<TArguments>(arguments)...);
-           };
+         {
+             Invoke(Forward<TCallable>, Forward<TArguments>(arguments)...);
+         };
 
     /// \brief Concept for callable types that can be called with a set of
     ///        arguments TArguments and preserve both callable object state
@@ -650,15 +629,14 @@ namespace Syntropy::Concepts::Details
     /// \brief Constant equal to true if TType is a specialization of
     ///        TTemplate, equal to false otherwise.
     template<typename TType, template <typename...> typename TTemplate>
-    constexpr Bool TemplateSpecializationOfHelper
-         = false;
+    constexpr Bool
+    TemplateSpecializationOfHelper = false;
 
     /// \brief Partial template specialization for
     ///        template specializations (duh...).
     template<template <typename...> typename TTemplate, typename... TTypes>
-    constexpr Bool TemplateSpecializationOfHelper<TTemplate<TTypes...>,
-                                                  TTemplate>
-         = true;
+    constexpr Bool
+    TemplateSpecializationOfHelper<TTemplate<TTypes...>, TTemplate> = true;
 
     /// \brief Concepts for types TType that are template specialization of
     ///        TTemplate.

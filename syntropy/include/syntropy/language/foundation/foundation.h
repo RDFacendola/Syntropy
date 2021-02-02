@@ -1,5 +1,6 @@
 
 /// \file foundation.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains fundamental definitions of types and functions.
 ///

@@ -1,5 +1,6 @@
 
 /// \file address.h
+///
 /// \brief This header is part of Syntropy memory module.
 ///        It contains definitions for numeric address values.
 ///
@@ -8,7 +9,9 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+
 #include "syntropy/language/support/compare.h"
+
 #include "syntropy/language/templates/type_traits.h"
 
 // ===========================================================================
@@ -33,22 +36,28 @@ namespace Syntropy::Memory
         using TPointer = typename TTraits::TPointer;
 
         /// \brief Create a null-address.
-        constexpr BaseAddress() noexcept = default;
+        constexpr
+        BaseAddress() noexcept = default;
 
         /// \brief Create a null-address.
-        constexpr BaseAddress(Null) noexcept;
+        constexpr
+        BaseAddress(Null) noexcept;
 
         /// \brief Create an address from a pointer.
-        constexpr BaseAddress(TPointer pointer) noexcept;
+        constexpr
+        BaseAddress(TPointer pointer) noexcept;
 
         /// \brief Create an address from its numeric value.
-        explicit constexpr BaseAddress(Int address) noexcept;
+        explicit constexpr
+        BaseAddress(Int address) noexcept;
 
         /// \brief Default copy-constructor.
-        constexpr const BaseAddress(Immutable<BaseAddress>) noexcept = default;
+        constexpr
+        BaseAddress(Immutable<BaseAddress>) noexcept = default;
 
         /// \brief Check whether the address refers to a valid location.
-        [[nodiscard]] explicit constexpr operator Bool() const noexcept;
+        [[nodiscard]] explicit constexpr
+        operator Bool() const noexcept;
 
     private:
 
@@ -124,18 +133,22 @@ namespace Syntropy::Memory
 
     /// \brief Get the numeric value of an address.
     template <typename TTraits>
-    [[nodiscard]] constexpr Int ToInt(BaseAddress<TTraits> rhs) noexcept;
+    [[nodiscard]] constexpr Int
+    ToInt(BaseAddress<TTraits> rhs) noexcept;
 
     /// \brief Get the address to a read-only memory location.
-    [[nodiscard]] Address ToAddress(TypelessPtr rhs) noexcept;
+    [[nodiscard]] Address
+    ToAddress(TypelessPtr rhs) noexcept;
 
     /// \brief Get the address to a read-write memory location.
-    [[nodiscard]] RWAddress ToAddress(RWTypelessPtr rhs) noexcept;
+    [[nodiscard]] RWAddress
+    ToAddress(RWTypelessPtr rhs) noexcept;
 
     /// \brief Convert an address to a strongly-typed read-only
     ///        instance of TType.
     template <typename TType>
-    [[nodiscard]] Ptr<TType> FromAddress(Address rhs) noexcept;
+    [[nodiscard]] Ptr<TType>
+    FromAddress(Address rhs) noexcept;
 
     /// \brief Convert an address to a strongly-typed read-write
     ///        instance of TType.
@@ -143,35 +156,36 @@ namespace Syntropy::Memory
     ///          location, accessing the returned value results in undefined
     ///          behavior.
     template <typename TType>
-    [[nodiscard]] RWPtr<TType> FromAddress(RWAddress rhs) noexcept;
+    [[nodiscard]] RWPtr<TType>
+    FromAddress(RWAddress rhs) noexcept;
 
     // Access.
     // =======
 
     /// \brief Convert rhs to an address to a read-only memory location.
     template <typename TTraits>
-    [[nodiscard]] constexpr
-    Address ToReadOnly(BaseAddress<TTraits> rhs) noexcept;
+    [[nodiscard]] constexpr Address
+    ToReadOnly(BaseAddress<TTraits> rhs) noexcept;
 
     /// \brief Convert rhs to an address to a read-write memory location.
     /// \remarks If rhs doesn't refer to a read-write memory location,
     ///          accessing the returned value results in undefined behavior.
     template <typename TTraits>
-    [[nodiscard]] constexpr
-    RWAddress ToReadWrite(BaseAddress<TTraits> rhs) noexcept;
+    [[nodiscard]] constexpr RWAddress
+    ToReadWrite(BaseAddress<TTraits> rhs) noexcept;
 
     // Utilities.
     // ==========
 
     /// \brief Create an address by deducing templates from arguments.
     template <typename TReference>
-    [[nodiscard]] constexpr
-    Address MakeAddress(Immutable<TReference> rhs) noexcept;
+    [[nodiscard]] constexpr Address
+    MakeAddress(Immutable<TReference> rhs) noexcept;
 
     /// \brief Create an address by deducing templates from arguments.
     template <typename TReference>
-    [[nodiscard]] constexpr
-    RWAddress MakeAddress(Mutable<TReference> rhs) noexcept;
+    [[nodiscard]] constexpr RWAddress
+    MakeAddress(Mutable<TReference> rhs) noexcept;
 
 }
 
@@ -187,20 +201,23 @@ namespace Syntropy::Memory
     // ============
 
     template <typename TTraits>
-    constexpr BaseAddress<TTraits>::BaseAddress(Null) noexcept
+    constexpr BaseAddress<TTraits>
+    ::BaseAddress(Null) noexcept
     {
 
     }
 
     template <typename TTraits>
-    constexpr BaseAddress<TTraits>::BaseAddress(TPointer pointer) noexcept
+    constexpr BaseAddress<TTraits>:
+    :BaseAddress(TPointer pointer) noexcept
         : address_(reinterpret_cast<Int>(pointer))
     {
 
     }
 
     template <typename TTraits>
-    constexpr BaseAddress<TTraits>::BaseAddress(Int address) noexcept
+    constexpr BaseAddress<TTraits>
+    ::BaseAddress(Int address) noexcept
         : address_(address)
     {
 
@@ -208,7 +225,8 @@ namespace Syntropy::Memory
 
     template <typename TTraits>
     [[nodiscard]] constexpr
-    BaseAddress<TTraits>::operator Bool() const noexcept
+    BaseAddress<TTraits>
+    ::operator Bool() const noexcept
     {
         return !!address_;
     }
@@ -219,8 +237,8 @@ namespace Syntropy::Memory
     // Arithmetic.
 
     template <typename TTraits>
-    [[nodiscard]] constexpr
-    BaseAddress<TTraits> operator+(BaseAddress<TTraits> lhs, Int rhs) noexcept
+    [[nodiscard]] constexpr BaseAddress<TTraits>
+    operator+(BaseAddress<TTraits> lhs, Int rhs) noexcept
     {
         using Syntropy::ToInt;
 
@@ -228,8 +246,8 @@ namespace Syntropy::Memory
     }
 
     template <typename TTraits>
-    [[nodiscard]] constexpr
-    BaseAddress<TTraits> operator-(BaseAddress<TTraits> lhs, Int rhs) noexcept
+    [[nodiscard]] constexpr BaseAddress<TTraits>
+    operator-(BaseAddress<TTraits> lhs, Int rhs) noexcept
     {
         using Syntropy::ToInt;
 
@@ -237,8 +255,8 @@ namespace Syntropy::Memory
     }
 
     template <typename TTraits>
-    [[nodiscard]] constexpr
-    BaseAddress<TTraits> operator&(BaseAddress<TTraits> lhs, Int rhs) noexcept
+    [[nodiscard]] constexpr BaseAddress<TTraits>
+    operator&(BaseAddress<TTraits> lhs, Int rhs) noexcept
     {
         using Syntropy::ToInt;
 
@@ -248,8 +266,8 @@ namespace Syntropy::Memory
     // Comparison.
 
     template <typename TTraits, typename UTraits>
-    [[nodiscard]] constexpr
-    Bool operator==(BaseAddress<TTraits> lhs,
+    [[nodiscard]] constexpr Bool
+    operator==(BaseAddress<TTraits> lhs,
                     BaseAddress<UTraits> rhs) noexcept
     {
         return ToInt(lhs) == ToInt(rhs);
@@ -265,19 +283,22 @@ namespace Syntropy::Memory
     // Conversions.
 
     template <typename TTraits>
-    [[nodiscard]] constexpr Int ToInt(BaseAddress<TTraits> rhs) noexcept
+    [[nodiscard]] constexpr Int
+    ToInt(BaseAddress<TTraits> rhs) noexcept
     {
         return rhs.address_;
     }
 
-    [[nodiscard]] inline Address ToAddress(TypelessPtr rhs) noexcept
+    [[nodiscard]] inline Address
+    ToAddress(TypelessPtr rhs) noexcept
     {
         using Syntropy::ToInt;
 
         return Address{ ToInt(reinterpret_cast<std::intptr_t>(rhs)) };
     }
 
-    [[nodiscard]] inline RWAddress ToAddress(RWTypelessPtr rhs) noexcept
+    [[nodiscard]] inline RWAddress
+    ToAddress(RWTypelessPtr rhs) noexcept
     {
         using Syntropy::ToInt;
 
@@ -285,13 +306,15 @@ namespace Syntropy::Memory
     }
 
     template <typename TType>
-    [[nodiscard]] inline Ptr<TType> FromAddress(Address rhs) noexcept
+    [[nodiscard]] inline Ptr<TType>
+    FromAddress(Address rhs) noexcept
     {
         return reinterpret_cast<Ptr<TType>>(ToInt(rhs));
     }
 
     template <typename TType>
-    [[nodiscard]] inline RWPtr<TType> FromAddress(RWAddress rhs) noexcept
+    [[nodiscard]] inline RWPtr<TType>
+    FromAddress(RWAddress rhs) noexcept
     {
         return reinterpret_cast<RWPtr<TType>>(ToInt(rhs));
     }
@@ -299,15 +322,15 @@ namespace Syntropy::Memory
     // Access.
 
     template <typename TTraits>
-    [[nodiscard]] constexpr
-    Address ToReadOnly(BaseAddress<TTraits> rhs) noexcept
+    [[nodiscard]] constexpr Address
+    ToReadOnly(BaseAddress<TTraits> rhs) noexcept
     {
         return Address{ ToInt(rhs) };
     }
 
     template <typename TTraits>
-    [[nodiscard]] constexpr
-    RWAddress ToReadWrite(BaseAddress<TTraits> rhs) noexcept
+    [[nodiscard]] constexpr RWAddress
+    ToReadWrite(BaseAddress<TTraits> rhs) noexcept
     {
         return RWAddress{ ToInt(rhs) };
     }
@@ -315,15 +338,15 @@ namespace Syntropy::Memory
     // Utilities.
 
     template <typename TReference>
-    [[nodiscard]] constexpr
-    Address MakeAddress(Immutable<TReference> rhs) noexcept
+    [[nodiscard]] constexpr Address
+    MakeAddress(Immutable<TReference> rhs) noexcept
     {
         return Address{ PtrOf(rhs) };
     }
 
     template <typename TReference>
-    [[nodiscard]] constexpr
-    RWAddress MakeAddress(Mutable<TReference> rhs) noexcept
+    [[nodiscard]] constexpr RWAddress
+    MakeAddress(Mutable<TReference> rhs) noexcept
     {
         return RWAddress{ PtrOf(rhs) };
     }

@@ -1,5 +1,6 @@
 
 /// \file sequence_details.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains implementation details of sequence-related type traits.
 ///
@@ -47,14 +48,12 @@ namespace Syntropy::Templates::Details
     /// \brief Helper alias template used to generate a contiguous sequence of
     ///        increasing integers, from 0 to VCount-1.
     template <Int VCount>
-    using MakeSequence
-        = typename MakeSequenceHelper<VCount>::Type;
+    using MakeSequence = typename MakeSequenceHelper<VCount>::Type;
 
     /// \brief Helper alias template used to convert a parameter pack to an
     ///        integer sequence of the same size.
     template <typename... TTypes>
-    using SequenceFor
-        = MakeSequence<sizeof...(TTypes)>;
+    using SequenceFor = MakeSequence<sizeof...(TTypes)>;
 
     // SequenceCat.
     // ============
@@ -95,9 +94,9 @@ namespace Syntropy::Templates::Details
     struct SequenceRepeatHelper
     {
         using Type
-            = SequenceCat<Sequence<VValue>,
-                          typename SequenceRepeatHelper<VValue,
-                                                        VRepeat - 1>::Type>;
+            = SequenceCat<
+                  Sequence<VValue>,
+                  typename SequenceRepeatHelper<VValue, VRepeat - 1>::Type>;
     };
 
     /// \brief Specialization for an empty sequence.
@@ -119,19 +118,21 @@ namespace Syntropy::Templates::Details
     /// \brief Constant equal to true if TSequence is a monotonically
     ///        increasing contiguous sequence, equal to false otherwise.
     template <typename TSequence>
-    inline constexpr Bool IsContiguousSequence;
+    inline constexpr Bool
+    IsContiguousSequence;
 
     /// \brief Partial specialization for sequences whose first two elements
     ///        are contiguous.
     template <Int VFirst, Int VSecond, Int... VSequence>
-    inline constexpr
-    Bool IsContiguousSequence<Sequence<VFirst, VSecond, VSequence...>>
+    inline constexpr Bool
+    IsContiguousSequence<Sequence<VFirst, VSecond, VSequence...>>
          = (VSecond == (VFirst+1))
         && IsContiguousSequence<Sequence<VSecond, VSequence...>>;
 
     /// \brief Partial specialization for 1-sequences. True by definition.
     template <Int VLast>
-    inline constexpr Bool IsContiguousSequence<Sequence<VLast>> = true;
+    inline constexpr Bool
+    IsContiguousSequence<Sequence<VLast>> = true;
 
 }
 

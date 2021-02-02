@@ -1,5 +1,6 @@
 
 /// \file byte.h
+///
 /// \brief This header is part of Syntropy memory module.
 ///        It contains definitions for byte definitions.
 ///
@@ -41,22 +42,26 @@ namespace Syntropy::Memory
 
     /// \brief Convert rhs to a byte value, truncating the result if needed.
     template <typename TNumber>
-    [[nodiscard]] constexpr Byte ToByte(TNumber rhs) noexcept;
+    [[nodiscard]] constexpr Byte
+    ToByte(TNumber rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a read-only memory location.
     template <typename TType>
-    [[nodiscard]] BytePtr ToBytePtr(Ptr<TType> rhs) noexcept;
+    [[nodiscard]] BytePtr
+    ToBytePtr(Ptr<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a read-write memory location.
     /// \remarks If rhs doesn't refer to a mutable memory location, accessing
     ///          the returned value results in undefined behavior.
     template <typename TType>
-    [[nodiscard]] RWBytePtr ToBytePtr(RWPtr<TType> rhs) noexcept;
+    [[nodiscard]] RWBytePtr
+    ToBytePtr(RWPtr<TType> rhs) noexcept;
 
     /// \brief Convert a raw-pointer to a strongly-typed read-only
     ///        instance of TType.
     template <typename TType>
-    [[nodiscard]] Ptr<TType> FromBytePtr(BytePtr rhs) noexcept;
+    [[nodiscard]] Ptr<TType>
+    FromBytePtr(BytePtr rhs) noexcept;
 
     /// \brief Convert a raw-pointer to a strongly-typed read-write instance
     ///        of TType.
@@ -64,7 +69,8 @@ namespace Syntropy::Memory
     ///          location, accessing the returned value results in undefined
     ///          behavior.
     template <typename TType>
-    [[nodiscard]] RWPtr<TType> FromBytePtr(RWBytePtr rhs) noexcept;
+    [[nodiscard]] RWPtr<TType>
+    FromBytePtr(RWBytePtr rhs) noexcept;
 
 }
 
@@ -82,31 +88,36 @@ namespace Syntropy::Memory
     // Conversions.
 
     template <typename TNumber>
-    [[nodiscard]] constexpr Byte ToByte(TNumber rhs) noexcept
+    [[nodiscard]] constexpr Byte
+    ToByte(TNumber rhs) noexcept
     {
         return static_cast<Byte>(rhs);
     }
 
     template <typename TType>
-    [[nodiscard]] inline BytePtr ToBytePtr(Ptr<TType> rhs) noexcept
+    [[nodiscard]] inline BytePtr
+    ToBytePtr(Ptr<TType> rhs) noexcept
     {
         return reinterpret_cast<BytePtr>(rhs);
     }
 
     template <typename TType>
-    [[nodiscard]] inline RWBytePtr ToBytePtr(RWPtr<TType> rhs) noexcept
+    [[nodiscard]] inline RWBytePtr
+    ToBytePtr(RWPtr<TType> rhs) noexcept
     {
         return const_cast<RWBytePtr>(reinterpret_cast<BytePtr>(rhs));
     }
 
     template <typename TType>
-    [[nodiscard]] inline Ptr<TType> FromBytePtr(BytePtr rhs) noexcept
+    [[nodiscard]] inline Ptr<TType>
+    FromBytePtr(BytePtr rhs) noexcept
     {
         return reinterpret_cast<Ptr<TType>>(rhs);
     }
 
     template <typename TType>
-    [[nodiscard]] inline RWPtr<TType> FromBytePtr(RWBytePtr rhs) noexcept
+    [[nodiscard]] inline RWPtr<TType>
+    FromBytePtr(RWBytePtr rhs) noexcept
     {
         return const_cast<RWPtr<TType>>(reinterpret_cast<Ptr<TType>>(rhs));
     }

@@ -1,5 +1,6 @@
 
 /// \file event_details.h
+///
 /// \brief This header is part of the Syntropy core module. It contains implementation details of events and listeners.
 ///
 /// \author Raffaele D. Facendola - 2017
@@ -32,7 +33,7 @@ namespace Syntropy::Details
 
         /// \brief No copy-constructor.
         EventHandler(Immutable<EventHandler> rhs) noexcept = delete;
-        
+
         /// \brief No move-constructor.
         EventHandler(Movable<EventHandler> rhs) noexcept = delete;
 
@@ -41,7 +42,7 @@ namespace Syntropy::Details
 
         /// \brief No copy-assignment operator.
         Mutable<EventHandler> operator=(Immutable<EventHandler> rhs) noexcept = delete;
-        
+
         /// \brief No move-assignment operator.
         Mutable<EventHandler> operator=(Movable<EventHandler> rhs) noexcept = delete;
 
@@ -269,7 +270,7 @@ namespace Syntropy::Details
     inline EventHandler::~EventHandler() noexcept
     {
         // Fix the event chain up before destruction.
-        
+
         if (next_event_)
         {
             next_event_->previous_event_ = previous_event_;

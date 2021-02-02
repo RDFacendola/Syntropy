@@ -1,5 +1,6 @@
 
 /// \file assert.h
+///
 /// \brief This header is part of the Syntropy diagnostic module.
 ///        It contains utility macros used to check for code invariants
 ///        and assertions.
@@ -9,6 +10,7 @@
 #pragma once
 
 #include "syntropy/language/preprocessor/macro.h"
+
 #include "syntropy/diagnostics/debugger.h"
 
 // ===========================================================================

@@ -1,5 +1,6 @@
 
 /// \file sequence.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains template definitions for sequences.
 ///

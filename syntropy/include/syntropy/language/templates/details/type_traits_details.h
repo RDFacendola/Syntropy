@@ -1,5 +1,6 @@
 
 /// \file traits_details.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains implementation details of type-traits machinery.
 ///
@@ -128,19 +129,21 @@ namespace Syntropy::Templates::Details
     /// \remarks If TType doesn't appear in TTypeList the program
     ///          is ill-formed.
     template <typename TType, typename TTypeList>
-    inline constexpr Int TypeListIndex;
+    inline constexpr Int
+    TypeListIndex;
 
     /// \brief Specialization for type lists.
     template <typename TType, typename... UTypes>
-    inline constexpr Int TypeListIndex<TType, TypeList<UTypes...>>
+    inline constexpr Int
+    TypeListIndex<TType, TypeList<UTypes...>>
          = sizeof...(UTypes)
-         - TypeListIndexHelper<TType, UTypes...>::kValue
-         - 1;
+         - TypeListIndexHelper<TType, UTypes...>::kValue - 1;
 
     /// \brief Integer constant equal to the number of types in a type list.
     /// \remarks If TTypeList isn't a TypeList the program is ill-formed.
     template <typename TTypeList>
-    inline constexpr Int TypeListRank;
+    inline constexpr Int
+    TypeListRank;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes>
@@ -184,14 +187,12 @@ namespace Syntropy::Templates::Details
     /// \brief Type equal to the type all types among TTypes can be
     ///        converted to.
     template <typename... TTypes>
-    using CommonType
-        = std::common_type_t<TTypes...>;
+    using CommonType = std::common_type_t<TTypes...>;
 
     /// \brief Type equal to the type all types among TTypes can be converted
     ///        or bound to.
     template <typename... TTypes>
-    using CommonReference
-        = std::common_reference_t<TTypes...>;
+    using CommonReference = std::common_reference_t<TTypes...>;
 
     /************************************************************************/
     /* TYPE TRANSFORM                                                       */
@@ -210,70 +211,60 @@ namespace Syntropy::Templates::Details
     /// \remarks The identity transform is meant to establish non-deduced
     ///          contexts in template argument deduction.
     template <typename TType>
-    using Identity
-        = typename IdentityHelper<TType>::Type;
+    using Identity = typename IdentityHelper<TType>::Type;
 
     /// \brief Applies lvalue-to-rvalue, array-to-pointer, and
     ///        function-to-pointer implicit conversions to the type TType,
     ///        removes cv-qualifiers, and defines the resulting type as the
     ///        member typedef type.
     template <typename TType>
-    using Decay
-        = std::decay_t<TType>;
+    using Decay = std::decay_t<TType>;
 
     /// \brief Type equal to TType without const qualifier.
     template <typename TType>
-    using RemoveConst
-        = std::remove_const_t<TType>;
+    using RemoveConst = std::remove_const_t<TType>;
 
     /// \brief Type equal to TType with const qualifiers applied.
     template <typename TType>
-    using AddConst
-        = std::add_const_t<TType>;
+    using AddConst = std::add_const_t<TType>;
 
     /// \brief Type equal to TType without top-most reference if present, or
     ///        equal to TType otherwise.
     template <typename TType>
-    using RemoveReference
-        = std::remove_reference_t<TType>;
+    using RemoveReference = std::remove_reference_t<TType>;
 
     /// \brief Type equal to TType without top-most reference and qualifiers.
     template <typename TType>
-    using RemoveConstReference
-    = std::remove_cvref_t<TType>;
+    using RemoveConstReference = std::remove_cvref_t<TType>;
 
     /// \brief Type of an lvalue reference to TType if possible, or equal to
     ///        TType otherwise.
     ///
     /// \remarks This trait honors reference collapsing rule.
     template <typename TType>
-    using AddLValueReference
-    = std::add_lvalue_reference_t<TType>;
+    using AddLValueReference = std::add_lvalue_reference_t<TType>;
 
     /// \brief Type of an rvalue reference to TType if possible, or equal to
     ///        TType otherwise.
     ///
     /// \remarks This trait honors reference collapsing rule.
     template <typename TType>
-    using AddRValueReference
-    = std::add_rvalue_reference_t<TType>;
+    using AddRValueReference = std::add_rvalue_reference_t<TType>;
 
     /// \brief Type equal to TType with const lvalue reference applied.
     template <typename TType>
     using AddLValueConstReference
-        = std::add_lvalue_reference_t <std::add_const_t<TType>>;
+        = std::add_lvalue_reference_t<std::add_const_t<TType>>;
 
     /// \brief Type equal to a pointer to TType if possible, or equal to
     ///        TType otherwise.
     template <typename TType>
-    using AddPointer
-        = std::add_pointer_t<TType>;
+    using AddPointer = std::add_pointer_t<TType>;
 
     /// \brief Type equal the pointee's type of TType if TType is a pointer
     ///        type, or equal to TType otherwise.
     template <typename TType>
-    using RemovePointer
-        = std::remove_pointer_t<TType>;
+    using RemovePointer = std::remove_pointer_t<TType>;
 
 }
 

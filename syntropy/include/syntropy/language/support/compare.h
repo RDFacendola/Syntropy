@@ -1,5 +1,6 @@
 
 /// \file compare.h
+///
 /// \brief This header is part of the Syntropy language module.
 ///        It contains definitions for comparisons.
 ///
@@ -215,8 +216,8 @@ namespace Syntropy::Concepts
     ///        against the (possibly different) type UType
     //         are consistent with a strong-ordering category.
     template <typename TType, typename UType>
-    concept ThreeWayComparableWith =
-        Details::ThreeWayComparableWith<TType, UType>;
+    concept ThreeWayComparableWith
+        = Details::ThreeWayComparableWith<TType, UType>;
 
 }
 

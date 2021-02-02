@@ -1,5 +1,6 @@
 
 /// \file ignore.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains definition for placeholders used to ignore
 ///        function arguments.
@@ -27,21 +28,24 @@ namespace Syntropy
     struct Ignore
     {
         /// \brief Construct from any argument number and types.
-        constexpr Ignore() noexcept = default;
+        constexpr
+        Ignore() noexcept = default;
 
         /// \brief Construct from any argument number and types.
         template <typename... TArguments>
-        constexpr Ignore(Forwarding<TArguments>...) noexcept;
+        constexpr
+        Ignore(Forwarding<TArguments>...) noexcept;
 
         /// \brief Assign from any argument number and types.
         template <typename... TArguments>
-        constexpr
-        Mutable<Ignore> operator=(Forwarding<TArguments>...) noexcept;
+        constexpr Mutable<Ignore>
+        operator=(Forwarding<TArguments>...) noexcept;
     };
 
     /// \brief Constant of the placeholder type Ignore used to
     ///        discard any number of arguments.
-    inline constexpr Ignore kIgnore = Ignore{};
+    inline constexpr
+    Ignore kIgnore = Ignore{};
 }
 
 // ===========================================================================
@@ -56,14 +60,15 @@ namespace Syntropy
     // =======
 
     template <typename... TArguments>
-    constexpr Ignore::Ignore(Forwarding<TArguments>...) noexcept
+    constexpr Ignore
+    ::Ignore(Forwarding<TArguments>...) noexcept
     {
 
     }
 
     template <typename... TArguments>
-    constexpr
-    Mutable<Ignore> Ignore::operator=(Forwarding<TArguments>...) noexcept
+    constexpr Mutable<Ignore> Ignore
+    ::operator=(Forwarding<TArguments>...) noexcept
     {
         return *this;
     }

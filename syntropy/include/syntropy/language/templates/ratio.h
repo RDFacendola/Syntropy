@@ -1,5 +1,6 @@
 
 /// \file ratio.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains rational numbers (ratios) template machinery.
 ///
@@ -82,8 +83,7 @@ namespace Syntropy::Templates
     /// \brief Boolean constant equal to true if TRatio and URatio represent
     ///        the same amount, equal to false otherwise.
     template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioEqual
-        = Details::RatioEqual<TRatio, URatio>;
+    inline constexpr Bool RatioEqual = Details::RatioEqual<TRatio, URatio>;
 
     /// \brief Boolean constant equal to true if TRatio and URatio don't
     ///        represent the same amount, equal to false otherwise.
@@ -94,8 +94,7 @@ namespace Syntropy::Templates
     /// \brief Boolean constant equal to true if TRatio represents an amount
     ///        smaller than URatio, equal to false otherwise.
     template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioLess
-        = Details::RatioLess<TRatio, URatio>;
+    inline constexpr Bool RatioLess = Details::RatioLess<TRatio, URatio>;
 
     /// \brief Boolean constant equal to true if TRatio represents an amount
     ///        smaller-than or equal-to URatio, equal to false otherwise.
@@ -106,8 +105,7 @@ namespace Syntropy::Templates
     /// \brief Boolean constant equal to true if TRatio represents an amount
     ///        greater than URatio, equal to false otherwise.
     template <typename TRatio, typename URatio>
-    inline constexpr Bool RatioGreater
-        = Details::RatioGreater<TRatio, URatio>;
+    inline constexpr Bool RatioGreater = Details::RatioGreater<TRatio, URatio>;
 
     /// \brief Boolean constant equal to true if TRatio represents an amount
     ///        greater-than or equal-to URatio, equal to false otherwise.

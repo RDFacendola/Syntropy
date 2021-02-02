@@ -1,5 +1,6 @@
 
 /// \file system_allocator.h
+///
 /// \brief This header is part of the Syntropy allocators module.
 ///        It contains definitions for allocators wrapping system heap memory.
 ///
@@ -70,8 +71,8 @@ namespace Syntropy::Memory
     // SystemAllocator.
     // ================
 
-    inline RWByteSpan SystemAllocator::Allocate(Bytes size,
-                                                Alignment alignment) noexcept
+    inline RWByteSpan SystemAllocator
+    ::Allocate(Bytes size, Alignment alignment) noexcept
     {
         auto size_value = static_cast<std::size_t>(ToInt(size));
         auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
@@ -86,8 +87,8 @@ namespace Syntropy::Memory
         return {};
     }
 
-    inline void SystemAllocator::Deallocate(Immutable<RWByteSpan> block,
-                                            Alignment alignment) noexcept
+    inline void SystemAllocator
+    ::Deallocate(Immutable<RWByteSpan> block, Alignment alignment) noexcept
     {
         auto alignment_value = static_cast<std::align_val_t>(ToInt(alignment));
 

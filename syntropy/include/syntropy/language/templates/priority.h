@@ -1,5 +1,6 @@
 
 /// \file priority.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains template definitions for priority type tags.
 ///
@@ -24,23 +25,16 @@ namespace Syntropy::Templates
     /// \brief A compile-time tag-type used to sort an overload function
     ///        set according to an explicit priority value.
     template <Int TPriority>
-    struct Priority : Priority<TPriority - 1>
-    {
-
-    };
+    struct Priority : Priority<TPriority - 1>{};
 
     /// \brief Topmost priority tag type.
     template <>
-    struct Priority<0>
-    {
-
-    };
+    struct Priority<0> {};
 
     /// \brief Constant of the tag-type Priority used to sort an overload
     ///        function set according to an explicit priority value.
     template <Int TPriority>
-    inline constexpr Priority kPriority
-        = Priority<TPriority>{};
+    inline constexpr Priority kPriority = Priority<TPriority>{};
 
 }
 

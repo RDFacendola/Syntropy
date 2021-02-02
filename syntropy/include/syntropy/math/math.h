@@ -1,5 +1,6 @@
 
 /// \file math.h
+///
 /// \brief This header is part of the Syntropy math module.
 ///        It contains generic mathematical functions.
 ///
@@ -31,42 +32,42 @@ namespace Syntropy::Math
 
     /// \brief Get the smallest integral number greater than or equal to rhs.
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    TNumber Ceil(TNumber rhs);
+    [[nodiscard]] constexpr TNumber
+    Ceil(TNumber rhs);
 
     /// \brief Get the largest integral number smaller than or equal to rhs.
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    TNumber Floor(TNumber rhs);
+    [[nodiscard]] constexpr TNumber
+    Floor(TNumber rhs);
 
     /// \brief Ceil a number to a multiple of another value.
     /// \return Returns the first number equal or greater than number which is
     ///         multiple of multiple.
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    TNumber Ceil(TNumber rhs, TNumber multiple);
+    [[nodiscard]] constexpr TNumber
+    Ceil(TNumber rhs, TNumber multiple);
 
     /// \brief Floor a number to a multiple.
     /// \return Returns the first number equal or lesser than number which is
     ///         multiple of multiple.
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    Number Floor(TNumber rhs, TNumber multiple);
+    [[nodiscard]] constexpr Number
+    Floor(TNumber rhs, TNumber multiple);
 
     /// \brief Divide lhs by rhs and ceil the result to the next integer value.
     /// \return Returns lhs divided by rhs, rounded up to the next
     ///        integer value.
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    auto DivCeil(TNumber lhs, TNumber rhs);
+    [[nodiscard]] constexpr auto
+    DivCeil(TNumber lhs, TNumber rhs);
 
     /// \brief Divide lhs by rhs and floor the result to the previous integer
     ///        value.
     /// \return Returns lhs divided by rhs, rounded down to the previous
     ///         integer value.
     template <typename TNumber>
-    [[nodiscard]] constexpr
-    auto DivFloor(TNumber lhs, TNumber rhs);
+    [[nodiscard]] constexpr auto
+    DivFloor(TNumber lhs, TNumber rhs);
 
 }
 
@@ -115,37 +116,43 @@ namespace Syntropy
     }
 
     template <typename TNumber>
-    [[nodiscard]] [[nodiscard]] constexpr TNumber Math::Ceil(TNumber rhs)
+    [[nodiscard]] constexpr TNumber
+    Math::Ceil(TNumber rhs)
     {
         return std::ceil(rhs);
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr TNumber Math::Floor(TNumber rhs)
+    [[nodiscard]] constexpr TNumber
+    Math::Floor(TNumber rhs)
     {
         return std::floor(rhs);
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr TNumber Math::Ceil(TNumber rhs, TNumber multiple)
+    [[nodiscard]] constexpr TNumber
+    Math::Ceil(TNumber rhs, TNumber multiple)
     {
         return DivCeil(rhs, multiple) * multiple;
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr TNumber Math::Floor(TNumber rhs, TNumber multiple)
+    [[nodiscard]] constexpr TNumber
+    Math::Floor(TNumber rhs, TNumber multiple)
     {
         return DivFloor(rhs, multiple) * multiple;
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr auto Math::DivCeil(TNumber lhs, TNumber rhs)
+    [[nodiscard]] constexpr auto
+    Math::DivCeil(TNumber lhs, TNumber rhs)
     {
         return DivFloor(lhs + rhs - TNumber{ 1 }, rhs);
     }
 
     template <typename TNumber>
-    [[nodiscard]] constexpr auto Math::DivFloor(TNumber lhs, TNumber rhs)
+    [[nodiscard]] constexpr auto
+    Math::DivFloor(TNumber lhs, TNumber rhs)
     {
         auto quotient = lhs / rhs;
         auto remainder = lhs % rhs;

@@ -1,5 +1,6 @@
 
 /// \file invoke_details.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains implementation details of invoke definitions.
 ///
@@ -11,6 +12,7 @@
 #include <functional>
 
 #include "syntropy/language/foundation/references.h"
+
 #include "syntropy/language/templates/type_traits.h"
 
 namespace Syntropy::Templates::Details
