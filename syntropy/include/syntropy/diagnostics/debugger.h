@@ -1,6 +1,7 @@
 
 /// \file debugger.h
-/// \brief This header is part of the Syntropy diagnostic module. It contains debugger functionalities.
+/// \brief This header is part of the Syntropy diagnostic module.
+///        It contains debugger functionalities.
 ///
 /// \author Raffaele D. Facendola - 2019
 
@@ -19,7 +20,8 @@ namespace Syntropy::Diagnostics
     /* MACROS                                                               */
     /************************************************************************/
 
-    /// \brief Causes the debugger to break if attached, or the application to terminate otherwise.
+    /// \brief Causes the debugger to break if attached, or the application
+    ///        to terminate otherwise.
 #define SYNTROPY_TRAP \
         SYNTROPY_MACRO_DECLARATION(empty)
 

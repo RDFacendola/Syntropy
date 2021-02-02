@@ -1,5 +1,6 @@
 
 /// \file references.h
+///
 /// \brief This header is part of Syntropy language module.
 ///        It contains definitions for reference types.
 ///
@@ -65,7 +66,8 @@ namespace Syntropy
 
     /// \brief Perform a copy of an instance by means of copy constructor.
     template <typename TType>
-    constexpr TType Copy(Immutable<TType> rhs) noexcept;
+    constexpr TType
+    Copy(Immutable<TType> rhs) noexcept;
 
     // Move.
     // =====
@@ -97,11 +99,13 @@ namespace Syntropy
     /// \brief Convert rhs to a reference to an immutable
     ///        instance of type TType.
     template <typename TType>
-    constexpr Immutable<TType> ToImmutable(Immutable<TType> rhs) noexcept;
+    constexpr Immutable<TType>
+    ToImmutable(Immutable<TType> rhs) noexcept;
 
     /// \brief Deleted overload to disallow rvalue arguments.
     template <typename TType>
-    constexpr void ToImmutable(Immovable<TType> rhs) noexcept = delete;
+    constexpr void
+    ToImmutable(Immovable<TType> rhs) noexcept = delete;
 
     /// \brief Convert rhs to a mutable reference to an instance of type TType.
     ///
@@ -114,16 +118,18 @@ namespace Syntropy
     ///          the result of this method results in undefined behavior.
     template <typename TType>
     constexpr Mutable<Templates::RemoveConst<TType>>
-        oMutable(Immutable<TType> rhs) noexcept;
+    ToMutable(Immutable<TType> rhs) noexcept;
 
     /// \brief Deleted overload to disallow rvalue arguments.
     template <typename TType>
-    constexpr TType ToMutable(Immovable<TType> rhs) noexcept = delete;
+    constexpr TType
+    ToMutable(Immovable<TType> rhs) noexcept = delete;
 
     /// \brief Convert rhs to a reference to an immovable instance
-    ///         of type TType.
+    ///        of type TType.
     template <typename TType>
-    constexpr Immovable<TType> ToImmovable(Immutable<TType> rhs) noexcept;
+    constexpr Immovable<TType>
+    ToImmovable(Immutable<TType> rhs) noexcept;
 
 }
 
@@ -141,7 +147,8 @@ namespace Syntropy
     // Copy.
 
     template <typename TType>
-    constexpr TType Copy(Immutable<TType> rhs) noexcept
+    constexpr TType
+    Copy(Immutable<TType> rhs) noexcept
     {
         return rhs;
     }
@@ -174,7 +181,8 @@ namespace Syntropy
     // Access.
 
     template <typename TType>
-    constexpr Immutable<TType> ToImmutable(Immutable<TType> rhs) noexcept
+    constexpr Immutable<TType>
+    ToImmutable(Immutable<TType> rhs) noexcept
     {
         return rhs;
     }
@@ -187,7 +195,8 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr Immovable<TType> ToImmovable(Immutable<TType> rhs) noexcept
+    constexpr Immovable<TType>
+    ToImmovable(Immutable<TType> rhs) noexcept
     {
         return static_cast<Immovable<TType>>(rhs);
     }

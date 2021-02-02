@@ -1,6 +1,7 @@
 
 /// \file hal_macro.h
-/// \brief This header is part of Syntropy hardware abstraction layer module. It contains platform-specific macros.
+/// \brief This header is part of Syntropy hardware abstraction layer module.
+///        It contains platform-specific macros.
 ///
 /// \author Raffaele D. Facendola - May 2020
 
@@ -19,8 +20,9 @@ namespace Syntropy
      /// \brief Expands to the current function name.
      #define SYNTROPY_HAL_FUNCTION \
          __FUNCTION__
- 
-     /// \brief Causes the debugger to break if attached, or the application to terminate otherwise.
+
+     /// \brief Causes the debugger to break if attached, or the application
+    ///         to terminate otherwise.
      #define SYNTROPY_HAL_TRAP \
          { __debugbreak(); }
 

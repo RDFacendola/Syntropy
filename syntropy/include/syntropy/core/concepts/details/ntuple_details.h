@@ -1,6 +1,7 @@
 
 /// \file ntuple_details.h
-/// \brief This header is part of Syntropy core module. It contains implementation details for n-tuples.
+/// \brief This header is part of Syntropy core module.
+///        It contains implementation details for n-tuples.
 ///
 /// \author Raffaele D. Facendola - 2020.
 
@@ -33,19 +34,23 @@ namespace Syntropy::Tuples::Templates::Details
     /************************************************************************/
 
     /// \brief Rank of a n-tuple.
-    template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
+    template <typename TType, typename UType
+        = Syntropy::Templates::RemoveConstReference<TType>>
     inline constexpr Int Rank = RankTypeTraits<UType>::kValue;
 
     /// \brief Type of the VIndex-th element of a n-tuple;
-    template <Int VIndex, typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
-    using ElementType = typename ElementTypeTraits<VIndex, UType>::Type;
+    template <Int VIndex, typename TType, typename UType
+        = Syntropy::Templates::RemoveConstReference<TType>>
+    using ElementType
+        = typename ElementTypeTraits<VIndex, UType>::Type;
 
     // HasElementTypes.
     // =====================
 
     /// \brief Detect whether TType provides index compile-time access to tuple elements' types.
     template <typename TType, typename TIndex>
-    using DetectElementType = decltype(Syntropy::Templates::Declval<ElementType<TIndex::kValue, TType>>());
+    using DetectElementType
+    = decltype(Syntropy::Templates::Declval<ElementType<TIndex::kValue, TType>>());
 
     /// \brief Constant equal to true if TType provides compile-time access to the VIndex-th element's type, equal to false otherwise.
     template <typename TType, Int VIndex>

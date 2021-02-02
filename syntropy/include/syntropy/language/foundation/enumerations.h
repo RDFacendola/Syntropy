@@ -1,7 +1,7 @@
 
 /// \file enumerations.h
 /// \brief This header is part of Syntropy language module.
-///         It contains definitions for enumeration types.
+///        It contains definitions for enumeration types.
 ///
 /// \author Raffaele D. Facendola - December 2020
 
