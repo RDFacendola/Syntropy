@@ -1,6 +1,9 @@
 
 /// \file ntuple.h
-/// \brief This header is part of the Syntropy core module. It contains definitions for N-tuples concepts and related functionalities.
+///
+/// \brief This header is part of the Syntropy core module.
+///        It contains definitions for N-tuples concepts and related
+///        functionalities.
 ///
 /// \author Raffaele D. Facendola - Nov 2020
 
@@ -24,8 +27,9 @@ namespace Syntropy::Tuples::Templates
     /************************************************************************/
     /* N-TUPLE                                                              */
     /************************************************************************/
-    
-    /// \brief Exposes a member integer kValue equal to the rank of the n-tuple.
+
+    /// \brief Exposes a member integer kValue equal to the rank of
+    ///        the n-tuple.
     template <typename TType>
     struct RankTypeTraits;
 
@@ -34,20 +38,29 @@ namespace Syntropy::Tuples::Templates
     struct ElementTypeTraits;
 
     /// \brief Rank of a n-tuple.
-    template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
-    inline constexpr Int Rank = RankTypeTraits<UType>::kValue;
+    template <typename TType, typename UType
+        = Syntropy::Templates::RemoveConstReference<TType>>
+    inline constexpr Int
+    Rank = RankTypeTraits<UType>::kValue;
 
     /// \brief Type of the VIndex-th element of a n-tuple.
-    template <Int VIndex, typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
+    template <Int VIndex, typename TType, typename UType
+        = Syntropy::Templates::RemoveConstReference<TType>>
     using ElementType = typename ElementTypeTraits<VIndex, UType>::Type;
 
-    /// \brief Constant equal to true if TType provides compile-time access to its element types, false otherwise.
-    template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
-    inline constexpr Bool HasElementTypes = Details::HasElementTypes<UType>;
+    /// \brief Constant equal to true if TType provides compile-time access
+    ///        to its element types, false otherwise.
+    template <typename TType, typename UType
+        = Syntropy::Templates::RemoveConstReference<TType>>
+    inline constexpr Bool
+    HasElementTypes = Details::HasElementTypes<UType>;
 
-    /// \brief Constant equal to true if TType provides access to all its Rank elements, false otherwise.
-    template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
-    inline constexpr Bool HasGetters = Details::HasGetters<UType>;
+    /// \brief Constant equal to true if TType provides access to all its
+    ///        Rank elements, false otherwise.
+    template <typename TType, typename UType
+        = Syntropy::Templates::RemoveConstReference<TType>>
+    inline constexpr Bool
+    HasGetters = Details::HasGetters<UType>;
 }
 
 // ===========================================================================
@@ -58,20 +71,23 @@ namespace Syntropy::Tuples::Concepts
     /* N-TUPLE                                                              */
     /************************************************************************/
 
-    /// \brief Concept for types that behave as tuples, providing indexed compile-time access to its elements.
-    template <typename TType, typename UType = Syntropy::Templates::RemoveConstReference<TType>>
+    /// \brief Concept for types that behave as tuples, providing indexed
+    ///        compile-time access to its elements.
+    template <typename TType, typename UType
+        = Syntropy::Templates::RemoveConstReference<TType>>
     concept NTuple = requires
     {
         /// \brief Rank of the tuple.
-        { Syntropy::Tuples::Templates::RankTypeTraits<UType>::kValue } -> Syntropy::Concepts::Integral;
-
+        { Syntropy::Tuples::Templates::RankTypeTraits<UType>::kValue }
+            -> Syntropy::Concepts::Integral;
     }
     && Templates::HasElementTypes<TType>
     && Templates::HasGetters<TType>;
 
     /// \brief Concept for reference types that behave as tuple.
-    /// \remarks This concept is especially useful when working with forwarding references to tuple types,
-    ///          where adding a reference would cause no type traits to be found.
+    /// \remarks This concept is especially useful when working with
+    ///          forwarding references to tuple types, where adding a
+    ///          reference would cause no type traits to be found.
     template <typename TType>
     concept NTupleReference = NTuple<Syntropy::Templates::Decay<TType>>;
 }
@@ -84,11 +100,15 @@ namespace Syntropy::Tuples::Templates
     /* N-TUPLE                                                              */
     /************************************************************************/
 
-    /// \brief Constant equal to true if all TNTuples have the same rank, false otherwise.
+    /// \brief Constant equal to true if all TNTuples have the same rank,
+    ///        false otherwise.
     template <Syntropy::Tuples::Concepts::NTuple... TNTuples>
-    inline constexpr Bool SameRank = Details::SameRank<Syntropy::Templates::RemoveConstReference<TNTuples>...>;
+    inline constexpr Bool
+    SameRank = Details::SameRank<
+        Syntropy::Templates::RemoveConstReference<TNTuples>...>;
 
-    /// \brief Generates a sequence that can be used to enumerate all elements in a given tuple.
+    /// \brief Generates a sequence that can be used to enumerate all elements
+    ///        in a given tuple.
     template <Syntropy::Tuples::Concepts::NTupleReference TTuple>
     using TupleSequenceFor = Syntropy::Templates::MakeSequence<Rank<TTuple>>;
 }
@@ -106,57 +126,76 @@ namespace Syntropy::Tuples
 
     /// \brief Check whether lhs and rhs are equal.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    [[nodiscard]] constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
+    [[nodiscard]] constexpr Bool
+    AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Check whether lhs and rhs are equivalent.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Compare two n-tuples lexicographically.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    [[nodiscard]] constexpr Ordering Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
+    [[nodiscard]] constexpr Ordering
+    Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     // Swap.
     // =====
 
     /// \brief Member-wise swap two tuples.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    requires ( Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr void Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
+    requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
+    constexpr void
+    wap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
     requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr TTuple Exchange(Mutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
+    constexpr TTuple
+    Exchange(Mutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
     requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr TTuple Exchange(Mutable<TTuple> lhs, Movable<UTuple> rhs) noexcept;
+    constexpr TTuple
+    Exchange(Mutable<TTuple> lhs, Movable<UTuple> rhs) noexcept;
 
     // Functional.
     // ===========
 
     /// \brief Invoke a function with arguments provided in form of n-tuple.
     template <typename TFunction, Concepts::NTupleReference TTuple>
-    constexpr decltype(auto) Apply(Forwarding<TFunction> function, Forwarding<TTuple> ntuple) noexcept;
+    constexpr decltype(auto)
+    Apply(Forwarding<TFunction> function, Forwarding<TTuple> ntuple) noexcept;
 
     /// \brief Invoke a function to each element in a n-tuple individually.
     template <typename TFunction, Concepts::NTupleReference TTuple>
-    constexpr void ForEachApply(Forwarding<TFunction> function, Forwarding<TTuple> ntuple) noexcept;
+    constexpr void
+    ForEachApply(Forwarding<TFunction> function,
+                 Forwarding<TTuple> ntuple) noexcept;
 
-    /// \brief Invoke a function to the VIndex-th element of each provided tuple at once.
-    template <Int VIndex, typename TFunction, Concepts::NTupleReference... TTuples>
-    constexpr decltype(auto) ProjectApply(Forwarding<TFunction> function, Forwarding<TTuples>... tuples) noexcept;
+    /// \brief Invoke a function to the VIndex-th element of each provided
+    ///        tuple at once.
+    template <Int VIndex,
+              typename TFunction,
+              Concepts::NTupleReference... TTuples>
+    constexpr decltype(auto)
+    ProjectApply(Forwarding<TFunction> function,
+                 Forwarding<TTuples>... tuples) noexcept;
 
-    /// \brief Invoke a function to each argument list generated by projecting the i-th element of all the provided tuples at once,
+    /// \brief Invoke a function to each argument list generated by projecting
+    ///        the i-th element of all the provided tuples at once,
     ///        for each index up to the minimum rank among those tuples.
     template <typename TFunction, Concepts::NTupleReference... TTuples>
-    constexpr void LockstepApply(Forwarding<TFunction> function, Forwarding<TTuples>... tuples) noexcept;
+    constexpr void
+    LockstepApply(Forwarding<TFunction> function,
+                  Forwarding<TTuples>... tuples) noexcept;
 
-    /// \brief Create a new instance of type TType using TTuple as constructor arguments.
+    /// \brief Create a new instance of type TType using TTuple as constructor
+    ///        arguments.
     template <typename TType, Concepts::NTupleReference TTuple>
-    [[nodiscard]] constexpr TType MakeFromTuple(Forwarding<TTuple> tuple) noexcept;
+    [[nodiscard]] constexpr TType
+    MakeFromTuple(Forwarding<TTuple> tuple) noexcept;
 }
 
 // ===========================================================================
@@ -198,16 +237,20 @@ namespace Syntropy::Tuples
     // Comparison.
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    [[nodiscard]] constexpr Bool AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
+    [[nodiscard]] constexpr Bool
+    AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
-        // In some implementations comparing two instances for identity is much faster than comparing them for equality.
-        // This function is left as a customization point for those implementations.
+        // In some implementations comparing two instances for identity
+        // is much faster than comparing them for equality.
+        // This function is left as a customization point for those
+        // implementations.
 
         return AreEquivalent(lhs, rhs);
     }
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    [[nodiscard]] constexpr Bool AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
+    [[nodiscard]] constexpr Bool
+    AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         using namespace Templates;
 
@@ -224,24 +267,33 @@ namespace Syntropy::Tuples
     }
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
-    [[nodiscard]] constexpr Ordering Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
+    [[nodiscard]] constexpr Ordering
+    Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         using namespace Templates;
 
         // Lexicographic compare between two tuple elements.
 
-        auto lexicographic_compare = [&lhs, &rhs]<Int VIndex>(Ordering compare_result, Syntropy::Templates::IntConstant<VIndex>)
-        {
-            return (compare_result == Ordering::kEquivalent) ? (Get<VIndex>(lhs) <=> Get<VIndex>(rhs)) : compare_result;
-        };
+        auto lexicographic_compare = [&lhs, &rhs]<Int VIndex>
+            (Ordering compare_result,
+             Syntropy::Templates::IntConstant<VIndex>)
+            {
+                return (compare_result == Ordering::kEquivalent)
+                    ? (Get<VIndex>(lhs) <=> Get<VIndex>(rhs))
+                    : compare_result;
+            };
 
         // Lexicographic compare between two same-rank tuples.
 
-        auto lockstep_lexicographic_compare = [&lexicographic_compare]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>) mutable
+        auto lockstep_lexicographic_compare
+            = [&lexicographic_compare]<Int... VIndex>
+                (Syntropy::Templates::Sequence<VIndex...>) mutable
         {
             auto compare_result = Ordering::kEquivalent;
 
-            ((compare_result = lexicographic_compare(compare_result, Syntropy::Templates::IntConstant<VIndex>{})), ...);
+            ((compare_result = lexicographic_compare(
+                compare_result,
+                Syntropy::Templates::IntConstant<VIndex>{})), ...);
 
             return compare_result;
         };
@@ -252,12 +304,15 @@ namespace Syntropy::Tuples
         {
             return lockstep_lexicographic_compare(TupleSequenceFor<TTuple>{});
         }
-        
+
         // 2) Left-to-right comparison.
 
         if constexpr (Rank<TTuple> < Rank<UTuple>)
         {
-            if (auto compare_result = lockstep_lexicographic_compare(TupleSequenceFor<TTuple>{}); compare_result != Ordering::kEquivalent)
+            if (auto compare_result
+                = lockstep_lexicographic_compare(
+                    TupleSequenceFor<TTuple>{});
+                compare_result != Ordering::kEquivalent)
             {
                 return compare_result;
             }
@@ -269,7 +324,10 @@ namespace Syntropy::Tuples
 
         if constexpr (Rank<TTuple> > Rank<UTuple>)
         {
-            if (auto compare_result = lockstep_lexicographic_compare(TupleSequenceFor<UTuple>{}); compare_result != Ordering::kEquivalent)
+            if (auto compare_result
+                = lockstep_lexicographic_compare(
+                    TupleSequenceFor<UTuple>{});
+                compare_result != Ordering::kEquivalent)
             {
                 return compare_result;
             }
@@ -282,25 +340,29 @@ namespace Syntropy::Tuples
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
     requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr void Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
+    constexpr void
+    Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
     {
         using namespace Templates;
 
-        auto memberwise_swap = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
-        {
-            (Swap(Get<VIndex>(lhs), Get<VIndex>(rhs)), ...);
-        };
+        auto memberwise_swap = [&]<Int... VIndex>
+            (Syntropy::Templates::Sequence<VIndex...>)
+            {
+                (Swap(Get<VIndex>(lhs), Get<VIndex>(rhs)), ...);
+            };
 
         return memberwise_swap(TupleSequenceFor<TTuple>{});
     }
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
     requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr TTuple Exchange(Mutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
+    constexpr TTuple
+    Exchange(Mutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
         using namespace Templates;
 
-        auto memberwise_exchange = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
+        auto memberwise_exchange = [&]<Int... VIndex>(
+            Syntropy::Templates::Sequence<VIndex...>)
         {
             using Syntropy::Exchange;
 
@@ -312,15 +374,18 @@ namespace Syntropy::Tuples
 
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
     requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr TTuple Exchange(Mutable<TTuple> lhs, Movable<UTuple> rhs) noexcept
+    constexpr TTuple
+    Exchange(Mutable<TTuple> lhs, Movable<UTuple> rhs) noexcept
     {
         using namespace Templates;
 
-        auto memberwise_exchange = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>) mutable
+        auto memberwise_exchange = [&]<Int... VIndex>(
+            Syntropy::Templates::Sequence<VIndex...>) mutable
         {
             using Syntropy::Exchange;
 
-            return TTuple{ Exchange(Get<VIndex>(lhs), Get<VIndex>(Move(rhs)))... };
+            return TTuple{ Exchange(Get<VIndex>(lhs),
+                                    Get<VIndex>(Move(rhs)))... };
         };
 
         return memberwise_exchange(TupleSequenceFor<TTuple>{});
@@ -329,33 +394,42 @@ namespace Syntropy::Tuples
     // Functional.
 
     template <typename TFunction, Concepts::NTupleReference TTuple>
-    constexpr decltype(auto) Apply(Forwarding<TFunction> function, Forwarding<TTuple> ntuple) noexcept
+    constexpr decltype(auto)
+    Apply(Forwarding<TFunction> function, Forwarding<TTuple> ntuple) noexcept
     {
         using namespace Templates;
 
-        auto apply = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
-        {
-            return function(Get<VIndex>(Forward<TTuple>(ntuple))...);
-        };
+        auto apply = [&]<Int... VIndex>
+            (Syntropy::Templates::Sequence<VIndex...>)
+            {
+                return function(Get<VIndex>(Forward<TTuple>(ntuple))...);
+            };
 
         return apply(TupleSequenceFor<TTuple>{});
     }
 
     template <typename TFunction, Concepts::NTupleReference TTuple>
-    constexpr void ForEachApply(Forwarding<TFunction> function, Forwarding<TTuple> ntuple) noexcept
+    constexpr void
+    ForEachApply(Forwarding<TFunction> function,
+                 Forwarding<TTuple> ntuple) noexcept
     {
         using namespace Templates;
 
-        auto for_each_apply = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
-        {
-            (function(Get<VIndex>(Forward<TTuple>(ntuple))), ...);
-        };
+        auto for_each_apply = [&]<Int... VIndex>
+            (Syntropy::Templates::Sequence<VIndex...>)
+            {
+                (function(Get<VIndex>(Forward<TTuple>(ntuple))), ...);
+            };
 
         for_each_apply(TupleSequenceFor<TTuple>{});
     }
 
-    template <Int VIndex, typename TFunction, Concepts::NTupleReference... TTuples>
-    constexpr decltype(auto) ProjectApply(Forwarding<TFunction> function, Forwarding<TTuples>... tuples) noexcept
+    template <Int VIndex,
+              typename TFunction,
+              Concepts::NTupleReference... TTuples>
+    constexpr decltype(auto)
+    ProjectApply(Forwarding<TFunction> function,
+                 Forwarding<TTuples>... tuples) noexcept
     {
         using namespace Templates;
 
@@ -363,29 +437,35 @@ namespace Syntropy::Tuples
     }
 
     template <typename TFunction, Concepts::NTupleReference... TTuples>
-    constexpr void LockstepApply(Forwarding<TFunction> function, Forwarding<TTuples>... tuples) noexcept
+    constexpr void
+    LockstepApply(Forwarding<TFunction> function,
+                  Forwarding<TTuples>... tuples) noexcept
     {
         using namespace Templates;
 
         constexpr auto kMinRank = Math::Min(Rank<TTuples>...);
 
-        auto lockstep_apply = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
-        {
-            (ProjectApply<VIndex>(Forward<TFunction>(function), tuples...), ...);
-        };
+        auto lockstep_apply = [&]<Int... VIndex>
+            (Syntropy::Templates::Sequence<VIndex...>)
+            {
+                (ProjectApply<VIndex>(Forward<TFunction>(function),
+                                      tuples...), ...);
+            };
 
         lockstep_apply(Syntropy::Templates::MakeSequence<kMinRank>{});
     }
 
     template <typename TType, Concepts::NTupleReference TTuple>
-    [[nodiscard]] constexpr TType MakeFromTuple(Forwarding<TTuple> tuple) noexcept
+    [[nodiscard]] constexpr TType
+    MakeFromTuple(Forwarding<TTuple> tuple) noexcept
     {
         using namespace Templates;
 
-        auto make_from_tuple = [&]<Int... VIndex>(Syntropy::Templates::Sequence<VIndex...>)
-        {
-            return TType(Get<VIndex>(Forward<TTuple>(tuple))...);
-        };
+        auto make_from_tuple = [&]<Int... VIndex>
+            (Syntropy::Templates::Sequence<VIndex...>)
+            {
+                return TType(Get<VIndex>(Forward<TTuple>(tuple))...);
+            };
 
         return make_from_tuple(Templates::TupleSequenceFor<TTuple>{});
     }
@@ -406,7 +486,8 @@ namespace std
     template <Syntropy::Tuples::Concepts::NTuple TTuple>
     struct std::tuple_size<TTuple>
     {
-        static constexpr std::size_t value = Syntropy::Tuples::Templates::Rank<TTuple>;
+        static constexpr std::size_t value
+            = Syntropy::Tuples::Templates::Rank<TTuple>;
     };
 
     template <std::size_t VIndex, Syntropy::Tuples::Concepts::NTuple TTuple>

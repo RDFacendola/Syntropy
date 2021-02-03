@@ -1,5 +1,6 @@
 
 /// \file contiguous_range_details.h
+///
 /// \brief This header is part of the Syntropy core module.
 ///        It contains implementation details about contiguous ranges.
 ///
@@ -37,8 +38,8 @@ namespace Syntropy::Ranges::Details
 
     /// \brief Invoke the method via a custom extension.
     template <typename TRange>
-    inline auto InvokeData(Immutable<TRange> range,
-                           Syntropy::Templates::Priority<2>)
+    inline auto
+    InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<2>)
        noexcept -> decltype(Ranges::Extensions::Data<TRange>{}(range))
     {
         return Ranges::Extensions::Data<TRange>{}(range);
@@ -46,8 +47,8 @@ namespace Syntropy::Ranges::Details
 
     /// \brief Invoke the method via member-function.
     template <typename TRange>
-    inline auto InvokeData(Immutable<TRange> range,
-                           Syntropy::Templates::Priority<1>)
+    inline auto
+    InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<1>)
        noexcept -> decltype(range.GetData())
     {
         return range.GetData();
@@ -55,8 +56,8 @@ namespace Syntropy::Ranges::Details
 
     /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRange>
-    inline auto InvokeData(Immutable<TRange> range,
-                           Syntropy::Templates::Priority<0>)
+    inline auto
+    InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<0>)
        noexcept -> decltype(Data(range))
     {
         return Data(range);
@@ -64,7 +65,8 @@ namespace Syntropy::Ranges::Details
 
     /// \brief Routes the invocation.
     template <typename TRange>
-    inline auto RouteData(Immutable<TRange> range)
+    inline auto
+    RouteData(Immutable<TRange> range)
         noexcept -> decltype(InvokeData(range,
                                         Syntropy::Templates::kPriority<2>))
     {

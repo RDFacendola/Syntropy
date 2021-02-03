@@ -1,6 +1,8 @@
 
 /// \file span.h
-/// \brief This header is part of Syntropy core module. It contains definition of spans.
+///
+/// \brief This header is part of Syntropy core module.
+/// It contains definition of spans.
 ///
 /// \author Raffaele D. Facendola - Jun 2020
 
@@ -34,40 +36,54 @@ namespace Syntropy
         using TReference = typename TTraits::TReference;
 
         /// \brief Create an empty span.
-        constexpr BaseSpan() noexcept = default;
+        constexpr
+        BaseSpan() noexcept = default;
 
         /// \brief Create an empty span.
-        constexpr BaseSpan(Null) noexcept;
+        constexpr
+        BaseSpan(Null) noexcept;
 
-        /// \brief Create a span given a pointer to the first element and their number.
-        constexpr BaseSpan(Immutable<TPointer> begin, Int size) noexcept;
+        /// \brief Create a span given a pointer to the first element
+        ///        and their number.
+        constexpr
+        BaseSpan(Immutable<TPointer> begin, Int size) noexcept;
 
-        /// \brief Create a span given a pointer to both the first and past the last element.
-        constexpr BaseSpan(Immutable<TPointer> begin, Immutable<TPointer> end) noexcept;
+        /// \brief Create a span given a pointer to both the first and
+        ///        past the last element.
+        constexpr
+        BaseSpan(Immutable<TPointer> begin, Immutable<TPointer> end) noexcept;
 
         /// \brief Converting copy constructor.
         template <typename UType, typename UTraits>
-        constexpr BaseSpan(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
+        constexpr
+        BaseSpan(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
 
         /// \brief Default destructor.
         ~BaseSpan() noexcept = default;
 
         /// \brief Copy assignment operator.
         template <typename UType, typename UTraits>
-        constexpr Mutable<BaseSpan> operator=(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
+        constexpr Mutable<BaseSpan>
+        operator=(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
 
         /// \brief Check whether the span is non-empty.
-        [[nodiscard]] constexpr explicit operator Bool() const noexcept;
+        [[nodiscard]] constexpr explicit
+        operator Bool() const noexcept;
 
         /// \brief Access an element by index.
-        /// If the provided index is not within the BaseSpan the behavior of this method is undefined.
-        [[nodiscard]] constexpr TReference operator[](Int index) const noexcept;
+        ///
+        /// If the provided index is not within the BaseSpan the behavior
+        /// of this method is undefined.
+        [[nodiscard]] constexpr TReference
+        operator[](Int index) const noexcept;
 
         /// \brief Access the underlying storage.
-        [[nodiscard]] constexpr TPointer GetData() const noexcept;
+        [[nodiscard]] constexpr TPointer
+        GetData() const noexcept;
 
         /// \brief Get the number of elements in the span.
-        [[nodiscard]] constexpr Int GetCount() const noexcept;
+        [[nodiscard]] constexpr Int
+        GetCount() const noexcept;
 
     private:
 
@@ -125,47 +141,61 @@ namespace Syntropy
     // =========
 
     /// \brief Check whether lhs and rhs are equivalent.
-    template <typename TType, typename TTraits, typename UType, typename UTraits>
-    [[nodiscard]] constexpr Bool operator==(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
+    template <typename TType, typename TTraits,
+              typename UType, typename UTraits>
+    [[nodiscard]] constexpr Bool
+    operator==(Immutable<BaseSpan<TType, TTraits>> lhs,
+               Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
 
     /// \brief Compare two spans lexicographically.
-    template <typename TType, typename TTraits, typename UType, typename UTraits>
-    [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
+    template <typename TType, typename TTraits,
+              typename UType, typename UTraits>
+    [[nodiscard]] constexpr Ordering
+    operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs,
+                Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
 
     // Access.
     // =======
 
     /// \brief Convert rhs to a read-only span.
     template <typename TType, typename TTraits>
-    [[nodiscard]] constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr Span<TType>
+    ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     /// \brief Convert rhs to a read-write span.
-    /// \remarks If the original span is not read-writable, accessing the returned values results in undefined behavior.
+    /// \remarks If the original span is not read-writable, accessing the
+    ///          returned values results in undefined behavior.
     template <typename TType, typename TTraits>
-    [[nodiscard]] constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
+    [[nodiscard]] constexpr RWSpan<TType>
+    ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept;
 
     // Utilities.
     // ==========
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    [[nodiscard]] constexpr Span<TType> MakeSpan(Ptr<TType> begin, Int size) noexcept;
+    [[nodiscard]] constexpr Span<TType>
+    MakeSpan(Ptr<TType> begin, Int size) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    [[nodiscard]] constexpr Span<TType> MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept;
+    [[nodiscard]] constexpr Span<TType>
+    MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    [[nodiscard]] constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, Int size) noexcept;
+    [[nodiscard]] constexpr RWSpan<TType>
+    MakeSpan(RWPtr<TType> begin, Int size) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
-    [[nodiscard]] constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept;
+    [[nodiscard]] constexpr RWSpan<TType>
+    MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType, Int VSize>
-    [[nodiscard]] constexpr auto MakeSpan(TType (&rhs)[VSize]) noexcept;
+    [[nodiscard]] constexpr auto
+    MakeSpan(TType (&rhs)[VSize]) noexcept;
 
 }
 
@@ -181,13 +211,16 @@ namespace Syntropy
     // ================
 
     template <typename TType, typename TTraits>
-    constexpr BaseSpan<TType, TTraits>::BaseSpan(Null) noexcept
+    constexpr BaseSpan<TType, TTraits>
+    ::BaseSpan(Null) noexcept
     {
 
     }
 
     template <typename TType, typename TTraits>
-    constexpr BaseSpan<TType, TTraits>::BaseSpan(Immutable<BaseSpan<TType, TTraits>::TPointer> begin, Int size) noexcept
+    constexpr BaseSpan<TType, TTraits>
+    ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::TPointer> begin,
+               Int size) noexcept
         : data_(begin)
         , count_(size)
     {
@@ -195,7 +228,9 @@ namespace Syntropy
     }
 
     template <typename TType, typename TTraits>
-    constexpr BaseSpan<TType, TTraits>::BaseSpan(Immutable<BaseSpan<TType, TTraits>::TPointer> begin, Immutable<BaseSpan<TType, TTraits>::TPointer> end) noexcept
+    constexpr BaseSpan<TType, TTraits>
+    ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::TPointer> begin,
+               Immutable<BaseSpan<TType, TTraits>::TPointer> end) noexcept
         : BaseSpan(begin, ToInt(end - begin))
     {
 
@@ -203,7 +238,8 @@ namespace Syntropy
 
     template <typename TType, typename TTraits>
     template <typename UType, typename UTraits>
-    constexpr BaseSpan<TType, TTraits>::BaseSpan(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
+    constexpr BaseSpan<TType, TTraits>
+    ::BaseSpan(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
         : data_(ToPtr<TType>(rhs.data_))
         , count_(rhs.count_)
     {
@@ -212,34 +248,41 @@ namespace Syntropy
 
     template <typename TType, typename TTraits>
     template <typename UType, typename UTraits>
-    constexpr Mutable<BaseSpan<TType, TTraits>> BaseSpan<TType, TTraits>::operator=(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
+    constexpr Mutable<BaseSpan<TType, TTraits>> BaseSpan<TType, TTraits>
+    ::operator=(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
         data_ = ToPtr<TType>(rhs.data_);
         count_ = rhs.count_;
 
         return *this;
     }
-    
+
     template <typename TType, typename TTraits>
-    [[nodiscard]] constexpr BaseSpan<TType, TTraits>::operator Bool() const noexcept
+    [[nodiscard]] constexpr BaseSpan<TType, TTraits>
+    ::operator Bool() const noexcept
     {
         return count_ > ToInt(0);
     }
 
     template <typename TType, typename TTraits>
-    [[nodiscard]] constexpr typename BaseSpan<TType, TTraits>::TReference BaseSpan<TType, TTraits>::operator[](Int index) const noexcept
+    [[nodiscard]] constexpr
+    typename BaseSpan<TType, TTraits>::TReference BaseSpan<TType, TTraits>
+    ::operator[](Int index) const noexcept
     {
         return data_[index];
     }
 
     template <typename TType, typename TTraits>
-    [[nodiscard]] constexpr typename BaseSpan<TType, TTraits>::TPointer BaseSpan<TType, TTraits>::GetData() const noexcept
+    [[nodiscard]] constexpr
+    typename BaseSpan<TType, TTraits>::TPointer BaseSpan<TType, TTraits>
+    ::GetData() const noexcept
     {
         return data_;
     }
 
     template <typename TType, typename TTraits>
-    [[nodiscard]] constexpr Int BaseSpan<TType, TTraits>::GetCount() const noexcept
+    [[nodiscard]] constexpr Int BaseSpan<TType, TTraits>
+    ::GetCount() const noexcept
     {
         return count_;
     }
@@ -249,14 +292,20 @@ namespace Syntropy
 
     // BaseSpan.
 
-    template <typename TType, typename TTraits, typename UType, typename UTraits>
-    [[nodiscard]] constexpr Bool operator==(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
+    template <typename TType, typename TTraits,
+              typename UType, typename UTraits>
+    [[nodiscard]] constexpr Bool
+    operator==(Immutable<BaseSpan<TType, TTraits>> lhs,
+               Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
         return Ranges::AreEquivalent(lhs, rhs);
     }
 
-    template <typename TType, typename TTraits, typename UType, typename UTraits>
-    [[nodiscard]] constexpr Ordering operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs, Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
+    template <typename TType, typename TTraits,
+              typename UType, typename UTraits>
+    [[nodiscard]] constexpr Ordering
+    operator<=>(Immutable<BaseSpan<TType, TTraits>> lhs,
+                Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
         return Ranges::Compare(lhs, rhs);
     }
@@ -264,13 +313,15 @@ namespace Syntropy
     // Conversion.
 
     template <typename TType, typename TTraits>
-    [[nodiscard]] constexpr Span<TType> ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Span<TType>
+    ToReadOnly(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return { ToReadOnly(rhs.GetData()), rhs.GetCount() };
     }
 
     template <typename TType, typename TTraits>
-    [[nodiscard]] constexpr RWSpan<TType> ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr RWSpan<TType>
+    ToReadWrite(Immutable<BaseSpan<TType, TTraits>> rhs) noexcept
     {
         return { ToReadWrite(rhs.GetData()), rhs.GetCount() };
     }
@@ -278,31 +329,36 @@ namespace Syntropy
     // Utilities.
 
     template <typename TType>
-    [[nodiscard]] constexpr Span<TType> MakeSpan(Ptr<TType> begin, Int size) noexcept
+    [[nodiscard]] constexpr Span<TType>
+    MakeSpan(Ptr<TType> begin, Int size) noexcept
     {
         return { begin, size };
     }
 
     template <typename TType>
-    [[nodiscard]] constexpr Span<TType> MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept
+    [[nodiscard]] constexpr Span<TType>
+    MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept
     {
         return { begin, end };
     }
 
     template <typename TType>
-    [[nodiscard]] constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, Int size) noexcept
+    [[nodiscard]] constexpr RWSpan<TType>
+    MakeSpan(RWPtr<TType> begin, Int size) noexcept
     {
         return { begin, size };
     }
 
     template <typename TType>
-    [[nodiscard]] constexpr RWSpan<TType> MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept
+    [[nodiscard]] constexpr RWSpan<TType>
+    MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept
     {
         return { begin, end };
     }
 
     template <typename TType, Int VSize>
-    [[nodiscard]] constexpr auto MakeSpan(TType(&rhs)[VSize]) noexcept
+    [[nodiscard]] constexpr auto
+    MakeSpan(TType(&rhs)[VSize]) noexcept
     {
         return MakeSpan(PtrOf(rhs[0]), VSize);
     }

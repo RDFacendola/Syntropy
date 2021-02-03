@@ -1,6 +1,8 @@
 
 /// \file type_id.h
-/// \brief This header is part of the Syntropy core module. It contains definitions for type identifiers.
+///
+/// \brief This header is part of the Syntropy core module.
+/// It contains definitions for type identifiers.
 ///
 /// \author Raffaele D. Facendola - January 2021
 
@@ -21,14 +23,17 @@ namespace Syntropy::Reflection
     /************************************************************************/
 
     /// \brief Opaque object used to identify a type.
-    /// \remarks Type ids account for reference and pointers types, not for qualifiers such as "const" or "volatile".
+    /// \remarks Type ids account for reference and pointers types, not for
+    ///          qualifiers such as "const" or "volatile".
     /// \author Raffaele D. Facendola - January 2021
     class TypeId
     {
 
-        friend Bool operator==(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept;
+        friend Bool
+        operator==(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept;
 
-        friend Ordering operator<=>(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept;
+        friend Ordering
+        operator<=>(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept;
 
         template <typename TType>
         friend TypeId TypeIdOf() noexcept;
@@ -61,16 +66,19 @@ namespace Syntropy::Reflection
     // ===========
 
     /// \brief Check whether lhs and rhs both refers to the same type.
-    Bool operator==(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept;
-    
+    Bool
+    operator==(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept;
+
     /// \brief Compare lhs and rhs.
-    Ordering operator<=>(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept;
+    Ordering
+    operator<=>(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept;
 
     // Utilities.
     // ==========
 
     /// \brief Get the dynamic type id of rhs.
-    /// \remarks If TType is not polymorphic, the returned value is equal to its static type id.
+    /// \remarks If TType is not polymorphic, the returned value is equal
+    ///          to its static type id.
     template <typename TType>
     TypeId TypeIdOf(Immutable<TType> rhs) noexcept;
 
@@ -113,12 +121,14 @@ namespace Syntropy::Reflection
     // Non-member functions.
     // =====================
 
-    inline Bool operator==(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept
+    inline Bool
+    operator==(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept
     {
         return (lhs.type_index_ == rhs.type_index_);
     }
 
-    inline Ordering operator<=>(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept
+    inline Ordering
+    operator<=>(Immutable<TypeId> lhs, Immutable<TypeId> rhs) noexcept
     {
         if (lhs.type_index_ < rhs.type_index_)
         {

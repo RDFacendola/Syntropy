@@ -1,9 +1,12 @@
 
 /// \file contiguous_range.h
-/// \brief This header is part of the Syntropy core module. It contains definitions for ranges whose elements are allocated contiguously.
 ///
-/// Ranges specifications based on the awesome https://www.slideshare.net/rawwell/iteratorsmustgo
-/// 
+/// \brief This header is part of the Syntropy core module. It contains
+///        definitions for ranges whose elements are allocated contiguously.
+///
+/// Ranges specifications based on the awesome
+/// https://www.slideshare.net/rawwell/iteratorsmustgo
+///
 /// \author Raffaele D. Facendola - Nov 2020
 /// \author Raffaele D. Facendola - Jan 2021
 
@@ -27,7 +30,8 @@ namespace Syntropy::Ranges::Concepts
     /* CONTIGUOUS RANGE                                                     */
     /************************************************************************/
 
-    /// \brief Minimal interface for ranges whose elements are allocated contiguously.
+    /// \brief Minimal interface for ranges whose elements are allocated
+    ///        contiguously.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept BaseContiguousRange = requires(Immutable<TRange> range)
@@ -42,7 +46,8 @@ namespace Syntropy::Ranges::Concepts
     /// \brief Range whose elements are allocated contiguously.
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept ContiguousRange = BaseContiguousRange<TRange> && RandomAccessRange<TRange>;
+    concept ContiguousRange
+        = BaseContiguousRange<TRange> && RandomAccessRange<TRange>;
 
 }
 
@@ -58,13 +63,18 @@ namespace Syntropy::Ranges
     // =================
 
     /// \brief Access range's element storage.
-    /// \remarks Accessing an empty range's storage results in undefined behavior.
+    ///
+    /// \remarks Accessing an empty range's storage results in
+    ///          undefined behavior.
     template <Concepts::ContiguousRange TRange>
-    [[nodiscard]] constexpr auto Data(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr auto
+    Data(Immutable<TRange> range) noexcept;
 
     /// \brief Check whether lhs and rhs are equal.
-    template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
-    [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    template <Concepts::ContiguousRange TRange,
+              Concepts::ContiguousRange URange>
+    [[nodiscard]] constexpr Bool
+    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 }
 
 // ===========================================================================
@@ -80,23 +90,32 @@ namespace Syntropy::Ranges::Extensions
     struct Data;
 
     /// \brief Access range's element by index.
+    ///
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    /// \remarks This extension adapts RandomAccessRange type such that all its instances are also BidirectionalRanges and SizedRanges.
+    /// \remarks This extension adapts RandomAccessRange type such that all its
+    ///          instances are also BidirectionalRanges and SizedRanges.
     template <Concepts::BaseContiguousRange TRange>
     struct At<TRange>
     {
         template <typename TIndex>
-        [[nodiscard]] decltype(auto) operator()(Immutable<TRange> range, Immutable<TIndex> index) const noexcept;
+        [[nodiscard]] decltype(auto)
+        operator()(Immutable<TRange> range,
+                   Immutable<TIndex> index) const noexcept;
     };
 
     /// \brief Obtain a view to a sub-range.
+    ///
     /// \remarks Exceeding range boundaries results in undefined behavior.
-    /// \remarks This extension adapts RandomAccessRange type such that all its instances are also BidirectionalRanges and SizedRanges.
+    /// \remarks This extension adapts RandomAccessRange type such that all its
+    ///          instances are also BidirectionalRanges and SizedRanges.
     template <Concepts::BaseContiguousRange TRange>
     struct Slice<TRange>
     {
         template <typename TIndex, typename TCount>
-        [[nodiscard]] TRange operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count) const noexcept;
+        [[nodiscard]] TRange
+        operator()(Immutable<TRange> range,
+                   Immutable<TIndex> index,
+                   Immutable<TCount> count) const noexcept;
     };
 }
 
@@ -114,17 +133,30 @@ namespace Syntropy::Ranges
     // Contiguous range.
 
     template <Concepts::ContiguousRange TRange>
-    [[nodiscard]] constexpr auto Data(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr auto
+    Data(Immutable<TRange> range) noexcept
     {
         return Details::RouteData(range);
     }
 
-    template <Concepts::ContiguousRange TRange, Concepts::ContiguousRange URange>
-    [[nodiscard]] constexpr Bool AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    template <Concepts::ContiguousRange TRange,
+              Concepts::ContiguousRange URange>
+    [[nodiscard]] constexpr Bool
+    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        return (PtrOf(lhs) == PtrOf(rhs)) 
-            && (Details::RouteCount(lhs) == Details::RouteCount(rhs)) 
-            && (Details::RouteIsEmpty(lhs) || (Details::RouteData(lhs) == Details::RouteData(rhs)));
+        auto same_instance
+            = (PtrOf(lhs) == PtrOf(rhs));
+
+        auto both_empty
+            = (Details::RouteIsEmpty(lhs);
+
+        auto same_data
+            = (Details::RouteData(lhs) == Details::RouteData(rhs));
+
+        auto same_count
+            = (Details::RouteCount(lhs) == Details::RouteCount(rhs));
+
+        return same_instance || (same_count && (both_empty || same_data));
     }
 }
 
@@ -141,14 +173,19 @@ namespace Syntropy::Ranges::Extensions
 
     template <Concepts::BaseContiguousRange TRange>
     template <typename TIndex>
-    [[nodiscard]] inline decltype(auto) At<TRange>::operator()(Immutable<TRange> range, Immutable<TIndex> index) const noexcept
+    [[nodiscard]] inline decltype(auto) At<TRange>
+    ::operator()(Immutable<TRange> range,
+                 Immutable<TIndex> index) const noexcept
     {
         return *(Details::RouteData(range) + index);
     }
 
     template <Concepts::BaseContiguousRange TRange>
     template <typename TIndex, typename TCount>
-    [[nodiscard]] inline TRange Slice<TRange>::operator()(Immutable<TRange> range, Immutable<TIndex> index, Immutable<TCount> count) const noexcept
+    [[nodiscard]] inline TRange Slice<TRange>
+    ::operator()(Immutable<TRange> range,
+                 Immutable<TIndex> index,
+                 Immutable<TCount> count) const noexcept
     {
         return { Details::RouteData(range) + index, count };
     };

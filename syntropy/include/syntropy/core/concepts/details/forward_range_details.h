@@ -1,5 +1,6 @@
 
 /// \file forward_range_details.h
+///
 /// \brief This header is part of the Syntropy core module.
 ///        It contains implementation details about forward ranges.
 ///

@@ -1,6 +1,8 @@
 
 /// \file event.h
-/// \brief This header is part of the Syntropy core module. It contains definitions for events that can be subscribed to.
+///
+/// \brief This header is part of the Syntropy core module.
+///        It contains definitions for events that can be subscribed to.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -17,7 +19,9 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Represents a listener bound to any number of events.
-    /// Event-listener relationships are automatically destroyed when either the event or the listener go out of scope.
+    ///
+    /// Event-listener relationships are automatically destroyed when either
+    /// the event or the listener go out of scope.
     /// \author Raffaele D. Facendola - May 2020.
     class Listener
     {
@@ -39,13 +43,16 @@ namespace Syntropy
         ~Listener() noexcept = default;
 
         /// \brief Default copy-assignment operator.
-        Mutable<Listener> operator=(Immutable<Listener> rhs) noexcept = default;
+        Mutable<Listener>
+        operator=(Immutable<Listener> rhs) noexcept = default;
 
         /// \brief Default move-assignment operator.
-        Mutable<Listener> operator=(Movable<Listener> rhs) noexcept = default;
+        Mutable<Listener>
+        operator=(Movable<Listener> rhs) noexcept = default;
 
         /// \brief Take ownership of all events bound to another listener.
-        Mutable<Listener> operator+=(Movable<Listener> rhs) noexcept;
+        Mutable<Listener>
+        operator+=(Movable<Listener> rhs) noexcept;
 
     private:
 
@@ -61,8 +68,11 @@ namespace Syntropy
     /* EVENT                                                                */
     /************************************************************************/
 
-    /// \brief Represents an event that can be notified to many listeners at once.
-    /// Listeners bound to an event are never propagated during copy but can be moved to and from.
+    /// \brief Represents an event that can be notified to many listeners
+    ///        at once.
+    ///
+    /// Listeners bound to an event are never propagated during copy but can
+    //  be moved to and from.
     /// \author Raffaele D. Facendola - May 2020.
     template <typename... TArguments>
     class Event
@@ -82,17 +92,22 @@ namespace Syntropy
         ~Event() noexcept = default;
 
         /// \brief Default copy-assignment operator.
-        Mutable<Event> operator=(Immutable<Event> rhs) noexcept = default;
+        Mutable<Event>
+        operator=(Immutable<Event> rhs) noexcept = default;
 
         /// \brief Default move-assignment operator.
-        Mutable<Event> operator=(Movable<Event> rhs) noexcept = default;
+        Mutable<Event>
+        operator=(Movable<Event> rhs) noexcept = default;
 
         /// \brief Notify subscribed listeners.
-        void Notify(Immutable<TArguments>... arguments) const noexcept;
+        void
+        Notify(Immutable<TArguments>... arguments) const noexcept;
 
-        /// \brief Subscribe to the event and return a listener object used to keep the relationship alive.
+        /// \brief Subscribe to the event and return a listener object used
+        ///        to keep the relationship alive.
         template <typename TDelegate>
-        [[nodiscard]] Listener Subscribe(Forwarding<TDelegate> delegate) const noexcept;
+        [[nodiscard]] Listener
+        Subscribe(Forwarding<TDelegate> delegate) const noexcept;
 
     private:
 
@@ -113,12 +128,14 @@ namespace Syntropy
     // Listener.
     // =========
 
-    inline Listener::Listener(Movable<Details::EventChain> event_chain) noexcept
+    inline Listener
+    ::Listener(Movable<Details::EventChain> event_chain) noexcept
     {
         events_ += Move(event_chain);
     }
 
-    inline Mutable<Listener> Listener::operator+=(Movable<Listener> rhs) noexcept
+    inline Mutable<Listener> Listener
+    ::operator+=(Movable<Listener> rhs) noexcept
     {
         events_ += Move(rhs.events_);
 
@@ -129,18 +146,19 @@ namespace Syntropy
     // ======
 
     template <typename... TArguments>
-    inline void Event<TArguments...>::Notify(Immutable<TArguments>... arguments) const noexcept
+    inline void Event<TArguments...>
+    ::Notify(Immutable<TArguments>... arguments) const noexcept
     {
         listeners_(arguments...);
     }
 
     template <typename... TArguments>
     template <typename TDelegate>
-    [[nodiscard]] inline Listener Event<TArguments...>::Subscribe(Forwarding<TDelegate> delegate) const noexcept
+    [[nodiscard]] inline Listener Event<TArguments...>
+    ::Subscribe(Forwarding<TDelegate> delegate) const noexcept
     {
         return listeners_.Emplace(Forward<TDelegate>(delegate));
     }
-
 
 }
 

@@ -1,7 +1,8 @@
 
 /// \file event_details.h
 ///
-/// \brief This header is part of the Syntropy core module. It contains implementation details of events and listeners.
+/// \brief This header is part of the Syntropy core module.
+///        It contains implementation details of events and listeners.
 ///
 /// \author Raffaele D. Facendola - 2017
 
@@ -38,13 +39,16 @@ namespace Syntropy::Details
         EventHandler(Movable<EventHandler> rhs) noexcept = delete;
 
         /// \brief Virtual destructor.
-        virtual ~EventHandler() noexcept;
+        virtual
+        ~EventHandler() noexcept;
 
         /// \brief No copy-assignment operator.
-        Mutable<EventHandler> operator=(Immutable<EventHandler> rhs) noexcept = delete;
+        Mutable<EventHandler>
+        operator=(Immutable<EventHandler> rhs) noexcept = delete;
 
         /// \brief No move-assignment operator.
-        Mutable<EventHandler> operator=(Movable<EventHandler> rhs) noexcept = delete;
+        Mutable<EventHandler>
+        operator=(Movable<EventHandler> rhs) noexcept = delete;
 
         /// \brief Destroy this handler.
         void Destroy() noexcept;
@@ -52,7 +56,8 @@ namespace Syntropy::Details
     private:
 
         /// \brief Clone this instance, linking it to the same listener chain.
-        [[nodiscard]] virtual RWUniquePtr<EventHandler> CloneListener() noexcept;
+        [[nodiscard]] virtual RWUniquePtr<EventHandler>
+        CloneListener() noexcept;
 
         /// \brief Next event.
         RWUniquePtr<EventHandler> next_event_;
@@ -89,20 +94,25 @@ namespace Syntropy::Details
         virtual ~ListenerHandler() noexcept;
 
         /// \brief No copy-assignment operator.
-        Mutable<ListenerHandler> operator=(Immutable<ListenerHandler> rhs) noexcept = delete;
+        Mutable<ListenerHandler>
+        operator=(Immutable<ListenerHandler> rhs) noexcept = delete;
 
         /// \brief No move-assignment operator.
-        Mutable<ListenerHandler> operator=(Movable<ListenerHandler> rhs) noexcept = delete;
+        Mutable<ListenerHandler>
+        operator=(Movable<ListenerHandler> rhs) noexcept = delete;
 
     private:
 
-        [[nodiscard]] virtual RWUniquePtr<EventHandler> CloneListener() noexcept override;
+        [[nodiscard]] virtual RWUniquePtr<EventHandler>
+        CloneListener() noexcept override;
 
         /// \brief Clone this instance.
-        [[nodiscard]] virtual RWUniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept;
+        [[nodiscard]] virtual RWUniquePtr<ListenerHandler<TArguments...>>
+        Clone() const noexcept;
 
         /// \brief Notify the delegate.
-        virtual void Notify(Immutable<TArguments>... arguments) const noexcept;
+        virtual void
+        Notify(Immutable<TArguments>... arguments) const noexcept;
 
         /// \brief Next listener.
         RWPtr<ListenerHandler> next_listener_{ nullptr };
@@ -116,10 +126,11 @@ namespace Syntropy::Details
     /* LISTENER DELEGATE                                                    */
     /************************************************************************/
 
-    /// \brief Represents a delegate called whenever an event is signaled to a listener.
+    /// \brief Represents a delegate called whenever an event is signaled
+    ///        to a listener.
     /// \author Raffaele D. Facendola - May 2020.
     template <typename TDelegate, typename... TArguments>
-    class ListenerHandlerDelegate: public ListenerHandler<TArguments...>
+    class ListenerHandlerDelegate : public ListenerHandler<TArguments...>
     {
     public:
 
@@ -128,25 +139,32 @@ namespace Syntropy::Details
         ListenerHandlerDelegate(Forwarding<UDelegate> delegate);
 
         /// \brief No copy-constructor.
-        ListenerHandlerDelegate(Immutable<ListenerHandlerDelegate> rhs) noexcept = delete;
+        ListenerHandlerDelegate(Immutable<ListenerHandlerDelegate> rhs)
+        noexcept = delete;
 
         /// \brief No move-constructor.
-        ListenerHandlerDelegate(Movable<ListenerHandlerDelegate> rhs) noexcept = delete;
+        ListenerHandlerDelegate(Movable<ListenerHandlerDelegate> rhs)
+        noexcept = delete;
 
         /// \brief Default virtual destructor.
-        virtual ~ListenerHandlerDelegate() noexcept = default;
+        virtual
+        ~ListenerHandlerDelegate() noexcept = default;
 
         /// \brief No copy-assignment operator.
-        Mutable<ListenerHandlerDelegate> operator=(Immutable<ListenerHandlerDelegate> rhs) noexcept = delete;
+        Mutable<ListenerHandlerDelegate>
+        operator=(Immutable<ListenerHandlerDelegate> rhs) noexcept = delete;
 
         /// \brief No move-assignment operator.
-        Mutable<ListenerHandlerDelegate> operator=(Movable<ListenerHandlerDelegate> rhs) noexcept = delete;
+        Mutable<ListenerHandlerDelegate>
+        operator=(Movable<ListenerHandlerDelegate> rhs) noexcept = delete;
 
     private:
 
-        [[nodiscard]] virtual RWUniquePtr<ListenerHandler<TArguments...>> Clone() const noexcept override;
+        [[nodiscard]] virtual RWUniquePtr<ListenerHandler<TArguments...>>
+        Clone() const noexcept override;
 
-        virtual void Notify(Immutable<TArguments>... arguments) const noexcept override;
+        virtual void
+        Notify(Immutable<TArguments>... arguments) const noexcept override;
 
         /// \brief Handler function.
         TDelegate delegate_;
@@ -179,24 +197,35 @@ namespace Syntropy::Details
         ~EventChain() noexcept;
 
         /// \brief Copy-assignment operator.
-        Mutable<EventChain> operator=(Immutable<EventChain> rhs) noexcept;
+        Mutable<EventChain>
+        operator=(Immutable<EventChain> rhs) noexcept;
 
         /// \brief Move-assignment operator.
-        Mutable<EventChain> operator=(Movable<EventChain> rhs) noexcept;
+        Mutable<EventChain>
+        operator=(Movable<EventChain> rhs) noexcept;
 
-        /// \brief Append an event chain to this one's, transferring its ownership.
-        Mutable<EventChain> operator+=(Movable<EventChain> rhs) noexcept;
+        /// \brief Append an event chain to this one's,
+        ///        transferring its ownership.
+        Mutable<EventChain>
+        operator+=(Movable<EventChain> rhs) noexcept;
 
     private:
 
-        /// \brief Link two event chains together and return the event chain that was unlinked as a result.
-        /// The behavior of this method is undefined if rhs is linked to an existing event chain.
-        static RWUniquePtr<EventHandler> Link(Mutable<EventHandler> lhs, RWUniquePtr<EventHandler> rhs) noexcept;
+        /// \brief Link two event chains together and return the event chain
+        ///        that was unlinked as a result.
+        ///
+        /// The behavior of this method is undefined if rhs is linked to an
+        /// existing event chain.
+        static RWUniquePtr<EventHandler>
+        Link(Mutable<EventHandler> lhs,
+             RWUniquePtr<EventHandler> rhs) noexcept;
 
         /// \brief Access the last event accessible from lhs.
-        [[nodiscard]] static Mutable<EventHandler> GetTail(Mutable<EventHandler> lhs) noexcept;
+        [[nodiscard]] static Mutable<EventHandler>
+        GetTail(Mutable<EventHandler> lhs) noexcept;
 
-        /// \brief Dummy event linked to each event a listener is subscribed to.
+        /// \brief Dummy event linked to each event a listener
+        ///        is subscribed to.
         EventHandler events_;
 
     };
@@ -225,31 +254,44 @@ namespace Syntropy::Details
         ~ListenerChain() noexcept;
 
         /// \brief Copy-assignment operator.
-        Mutable<ListenerChain> operator=(Immutable<ListenerChain> rhs) noexcept;
+        Mutable<ListenerChain>
+        operator=(Immutable<ListenerChain> rhs) noexcept;
 
         /// \brief Move-assignment operator.
-        Mutable<ListenerChain> operator=(Movable<ListenerChain> rhs) noexcept;
+        Mutable<ListenerChain>
+        operator=(Movable<ListenerChain> rhs) noexcept;
 
         /// \brief Notify the listener chain starting from this element.
-        void operator()(Immutable<TArguments>... arguments) const noexcept;
+        void
+        operator()(Immutable<TArguments>... arguments) const noexcept;
 
-        /// \brief Emplace a new listener to the chain and return the event chain associated to it.
+        /// \brief Emplace a new listener to the chain and return the event
+        ///        chain associated to it.
         template <typename TDelegate>
-        [[nodiscard]] EventChain Emplace(Forwarding<TDelegate> delegate) noexcept;
+        [[nodiscard]] EventChain
+        Emplace(Forwarding<TDelegate> delegate) noexcept;
 
     private:
 
-        /// \brief Link two listener chains together and return the listener chain that was unlinked as a result.
-        /// The behavior of this method is undefined if rhs is linked to an existing listener chain.
-        static RWPtr<ListenerHandler<TArguments...>> Link(Mutable<ListenerHandler<TArguments...>> lhs, RWPtr<ListenerHandler<TArguments...>> rhs) noexcept;
+        /// \brief Link two listener chains together and return the listener
+        ///        chain that was unlinked as a result.
+        ///
+        /// The behavior of this method is undefined if rhs is linked to an
+        /// existing listener chain.
+        static RWPtr<ListenerHandler<TArguments...>>
+        Link(Mutable<ListenerHandler<TArguments...>> lhs,
+             RWPtr<ListenerHandler<TArguments...>> rhs) noexcept;
 
         /// \brief Access the last listener accessible from lhs.
-        [[nodiscard]] static Mutable<ListenerHandler<TArguments...>> GetTail(Mutable<ListenerHandler<TArguments...>> lhs) noexcept;
+        [[nodiscard]] static Mutable<ListenerHandler<TArguments...>>
+        GetTail(Mutable<ListenerHandler<TArguments...>> lhs) noexcept;
 
         /// \brief Destroy all listeners accessible from lhs.
-        static void Destroy(RWPtr<ListenerHandler<TArguments...>> lhs) noexcept;
+        static void
+        Destroy(RWPtr<ListenerHandler<TArguments...>> lhs) noexcept;
 
-        /// \brief Dummy listener linked to each listener subscribed to an event.
+        /// \brief Dummy listener linked to each listener subscribed to
+        ///        an event.
         ListenerHandler<TArguments...> listeners_;
 
     };
@@ -267,7 +309,8 @@ namespace Syntropy::Details
     // EventHandler.
     // =============
 
-    inline EventHandler::~EventHandler() noexcept
+    inline EventHandler
+    ::~EventHandler() noexcept
     {
         // Fix the event chain up before destruction.
 
@@ -282,15 +325,20 @@ namespace Syntropy::Details
         }
     }
 
-    inline void EventHandler::Destroy() noexcept
+    inline void EventHandler
+    ::Destroy() noexcept
     {
         if (previous_event_)
         {
-            auto unique_this = Move(previous_event_->next_event_);      // Acquire ownership of self from the previous event and self-destroy when leaving this scope.
+            // Acquire ownership of self from the previous event and
+            // self-destroy when leaving this scope.
+
+            auto unique_this = Move(previous_event_->next_event_);
         }
     }
 
-    inline RWUniquePtr<EventHandler> EventHandler::CloneListener() noexcept
+    inline RWUniquePtr<EventHandler> EventHandler
+    ::CloneListener() noexcept
     {
         return {};
     }
@@ -299,7 +347,8 @@ namespace Syntropy::Details
     // ==============
 
     template <typename... TArguments>
-    inline ListenerHandler<TArguments...>::~ListenerHandler() noexcept
+    inline ListenerHandler<TArguments...>
+    ::~ListenerHandler() noexcept
     {
         // Fix the listener chain up before destruction.
 
@@ -315,7 +364,8 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    [[nodiscard]] RWUniquePtr<EventHandler> ListenerHandler<TArguments...>::CloneListener() noexcept
+    [[nodiscard]] RWUniquePtr<EventHandler> ListenerHandler<TArguments...>
+    ::CloneListener() noexcept
     {
         auto clone = Clone();
 
@@ -330,13 +380,16 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    [[nodiscard]] inline RWUniquePtr<ListenerHandler<TArguments...>> ListenerHandler<TArguments...>::Clone() const noexcept
+    [[nodiscard]] inline RWUniquePtr<ListenerHandler<TArguments...>>
+    ListenerHandler<TArguments...>
+    ::Clone() const noexcept
     {
         return {};
     }
 
     template <typename... TArguments>
-    inline void ListenerHandler<TArguments...>::Notify(Immutable<TArguments>... arguments) const noexcept
+    inline void ListenerHandler<TArguments...>
+    ::Notify(Immutable<TArguments>... arguments) const noexcept
     {
         // Base implementation: do nothing.
     }
@@ -346,20 +399,25 @@ namespace Syntropy::Details
 
     template <typename TDelegate, typename... TArguments>
     template <typename UDelegate>
-    inline ListenerHandlerDelegate<TDelegate, TArguments...>::ListenerHandlerDelegate(Forwarding<UDelegate> delegate)
+    inline ListenerHandlerDelegate<TDelegate, TArguments...>
+    ::ListenerHandlerDelegate(Forwarding<UDelegate> delegate)
         : delegate_(Forward<UDelegate>(delegate))
     {
 
     }
 
     template <typename TDelegate, typename... TArguments>
-    [[nodiscard]] inline RWUniquePtr<ListenerHandler<TArguments...>> ListenerHandlerDelegate<TDelegate, TArguments...>::Clone() const noexcept
+    [[nodiscard]] inline RWUniquePtr<ListenerHandler<TArguments...>>
+    ListenerHandlerDelegate<TDelegate, TArguments...>
+    ::Clone() const noexcept
     {
-        return MakeRWUnique<ListenerHandlerDelegate<TDelegate, TArguments...>>(delegate_);
+        return MakeRWUnique<ListenerHandlerDelegate<TDelegate,
+                                                    TArguments...>>(delegate_);
     }
 
     template <typename TDelegate, typename... TArguments>
-    inline void ListenerHandlerDelegate<TDelegate, TArguments...>::Notify(Immutable<TArguments>... arguments) const noexcept
+    inline void ListenerHandlerDelegate<TDelegate, TArguments...>
+    ::Notify(Immutable<TArguments>... arguments) const noexcept
     {
         delegate_(arguments...);
     }
@@ -367,33 +425,40 @@ namespace Syntropy::Details
     // EventChain.
     // ===========
 
-    inline EventChain::EventChain(RWUniquePtr<EventHandler> event) noexcept
+    inline EventChain
+    ::EventChain(RWUniquePtr<EventHandler> event) noexcept
     {
         Link(events_, Move(event));
     }
 
-    inline EventChain::EventChain(Immutable<EventChain> rhs) noexcept
+    inline EventChain
+    ::EventChain(Immutable<EventChain> rhs) noexcept
     {
         auto previous_event = &events_;
 
-        for (auto event = rhs.events_.next_event_.Get(); event; event = event->next_event_.Get())
+        auto first_event = rhs.events_.next_event_.Get();
+
+        for (auto event = first_event; event; event = event->next_event_.Get())
         {
             previous_event->next_event_ = event->CloneListener();
             previous_event = previous_event->next_event_.Get();
         }
     }
 
-    inline EventChain::EventChain(Movable<EventChain> rhs) noexcept
+    inline EventChain
+    ::EventChain(Movable<EventChain> rhs) noexcept
     {
         Link(events_, Link(rhs.events_, nullptr));
     }
 
-    inline EventChain::~EventChain() noexcept
+    inline EventChain
+    ::~EventChain() noexcept
     {
         Link(events_, nullptr);
     }
 
-    inline Mutable<EventChain> EventChain::operator=(Immutable<EventChain> rhs) noexcept
+    inline Mutable<EventChain> EventChain
+    ::operator=(Immutable<EventChain> rhs) noexcept
     {
         if (PtrOf(rhs) != this)
         {
@@ -405,14 +470,16 @@ namespace Syntropy::Details
         return *this;
     }
 
-    inline Mutable<EventChain> EventChain::operator=(Movable<EventChain> rhs) noexcept
+    inline Mutable<EventChain> EventChain
+    ::operator=(Movable<EventChain> rhs) noexcept
     {
         Link(events_, Link(rhs.events_, nullptr));
 
         return *this;
     }
 
-    inline Mutable<EventChain> EventChain::operator+=(Movable<EventChain> rhs) noexcept
+    inline Mutable<EventChain> EventChain
+    ::operator+=(Movable<EventChain> rhs) noexcept
     {
         if (PtrOf(rhs) != this)
         {
@@ -422,7 +489,8 @@ namespace Syntropy::Details
         return *this;
     }
 
-    inline RWUniquePtr<EventHandler> EventChain::Link(Mutable<EventHandler> lhs, RWUniquePtr<EventHandler> rhs) noexcept
+    inline RWUniquePtr<EventHandler> EventChain
+    ::Link(Mutable<EventHandler> lhs, RWUniquePtr<EventHandler> rhs) noexcept
     {
         SYNTROPY_ASSERT((!rhs) || (!rhs->previous_event_));
 
@@ -449,7 +517,8 @@ namespace Syntropy::Details
         return unlinked;
     }
 
-    [[nodiscard]] inline Mutable<EventHandler> EventChain::GetTail(Mutable<EventHandler> lhs) noexcept
+    [[nodiscard]] inline Mutable<EventHandler> EventChain
+    ::GetTail(Mutable<EventHandler> lhs) noexcept
     {
         auto tail = PtrOf(lhs);
 
@@ -462,29 +531,34 @@ namespace Syntropy::Details
     // ==============
 
     template <typename... TArguments>
-    inline ListenerChain<TArguments...>::ListenerChain(Immutable<ListenerChain> rhs) noexcept
+    inline ListenerChain<TArguments...>
+    ::ListenerChain(Immutable<ListenerChain> rhs) noexcept
     {
         // Do nothing: duplicating an event won't duplicate its listeners.
     }
 
     template <typename... TArguments>
-    inline ListenerChain<TArguments...>::ListenerChain(Movable<ListenerChain> rhs) noexcept
+    inline ListenerChain<TArguments...>
+    ::ListenerChain(Movable<ListenerChain> rhs) noexcept
     {
         Link(listeners_, Link(rhs.listeners_, nullptr));
     }
 
     template <typename... TArguments>
-    inline ListenerChain<TArguments...>::~ListenerChain() noexcept
+    inline ListenerChain<TArguments...>
+    ::~ListenerChain() noexcept
     {
         Destroy(Link(listeners_, nullptr));
     }
 
     template <typename... TArguments>
-    inline Mutable<ListenerChain<TArguments...>> ListenerChain<TArguments...>::operator=(Immutable<ListenerChain> rhs) noexcept
+    inline Mutable<ListenerChain<TArguments...>> ListenerChain<TArguments...>
+    ::operator=(Immutable<ListenerChain> rhs) noexcept
     {
         if (PtrOf(rhs) != this)
         {
-            // Duplicating an event won't duplicate its listeners: this method only destroys existing ones.
+            // Duplicating an event won't duplicate its listeners:
+            // this method only destroys existing ones.
 
             Destroy(Link(listeners_, nullptr));
         }
@@ -493,7 +567,8 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    inline Mutable<ListenerChain<TArguments...>> ListenerChain<TArguments...>::operator=(Movable<ListenerChain> rhs) noexcept
+    inline Mutable<ListenerChain<TArguments...>> ListenerChain<TArguments...>
+    ::operator=(Movable<ListenerChain> rhs) noexcept
     {
         Destroy(Link(listeners_, Link(rhs.listeners_, nullptr)));
 
@@ -501,9 +576,12 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    inline void ListenerChain<TArguments...>::operator()(Immutable<TArguments>... arguments) const noexcept
+    inline void ListenerChain<TArguments...>
+    ::operator()(Immutable<TArguments>... arguments) const noexcept
     {
-        for (auto listener = listeners_.next_listener_; listener; listener = listener->next_listener_)
+        for (auto listener = listeners_.next_listener_;
+             listener;
+             listener = listener->next_listener_)
         {
             listener->Notify(arguments...);
         }
@@ -511,9 +589,12 @@ namespace Syntropy::Details
 
     template <typename... TArguments>
     template <typename TDelegate>
-    [[nodiscard]] inline EventChain ListenerChain<TArguments...>::Emplace(Forwarding<TDelegate> delegate) noexcept
+    [[nodiscard]] inline EventChain ListenerChain<TArguments...>
+    ::Emplace(Forwarding<TDelegate> delegate) noexcept
     {
-        auto listener = MakeRWUnique<ListenerHandlerDelegate<TDelegate, TArguments...>>(Forward<TDelegate>(delegate));
+        using UDelegate = ListenerHandlerDelegate<TDelegate, TArguments...>;
+
+        auto listener = MakeRWUnique<UDelegate>(Forward<TDelegate>(delegate));
 
         Link(GetTail(listeners_), listener.Get());
 
@@ -521,7 +602,9 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    inline RWPtr<ListenerHandler<TArguments...>> ListenerChain<TArguments...>::Link(Mutable<ListenerHandler<TArguments...>> lhs, RWPtr<ListenerHandler<TArguments...>> rhs) noexcept
+    inline RWPtr<ListenerHandler<TArguments...>> ListenerChain<TArguments...>
+    ::Link(Mutable<ListenerHandler<TArguments...>> lhs,
+           RWPtr<ListenerHandler<TArguments...>> rhs) noexcept
     {
         SYNTROPY_ASSERT((!rhs) || (!rhs->previous_listener_));
 
@@ -549,7 +632,9 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    [[nodiscard]] inline Mutable<ListenerHandler<TArguments...>> ListenerChain<TArguments...>::GetTail(Mutable<ListenerHandler<TArguments...>> lhs) noexcept
+    [[nodiscard]] inline Mutable<ListenerHandler<TArguments...>>
+    ListenerChain<TArguments...>
+    ::GetTail(Mutable<ListenerHandler<TArguments...>> lhs) noexcept
     {
         auto tail = PtrOf(lhs);
 
@@ -559,7 +644,8 @@ namespace Syntropy::Details
     }
 
     template <typename... TArguments>
-    inline void ListenerChain<TArguments...>::Destroy(RWPtr<ListenerHandler<TArguments...>> lhs) noexcept
+    inline void ListenerChain<TArguments...>
+    ::Destroy(RWPtr<ListenerHandler<TArguments...>> lhs) noexcept
     {
         for (auto listener = lhs; listener;)
         {

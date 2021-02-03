@@ -1,9 +1,13 @@
 
 /// \file bidirectional_range.h
-/// \brief This header is part of the Syntropy core module. It contains definitions for ranges whose elements can be visited sequentially in either direction.
 ///
-/// Ranges specifications based on the awesome https://www.slideshare.net/rawwell/iteratorsmustgo
-/// 
+/// \brief This header is part of the Syntropy core module.
+///        It contains definitions for ranges whose elements can be visited
+///        sequentially in either direction.
+///
+/// Ranges specifications based on the awesome
+/// https://www.slideshare.net/rawwell/iteratorsmustgo
+///
 /// \author Raffaele D. Facendola - Nov 2020
 /// \author Raffaele D. Facendola - Jan 2021
 
@@ -27,7 +31,9 @@ namespace Syntropy::Ranges::Concepts
     /* BIDIRECTIONAL RANGE                                                  */
     /************************************************************************/
 
-    /// \brief Minimal interface for ranges whose elements can be visited sequentially in either direction.
+    /// \brief Minimal interface for ranges whose elements can be visited
+    ///        sequentially in either direction.
+    ///
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept BaseBidirectionalRange = requires(Immutable<TRange> range)
@@ -39,10 +45,13 @@ namespace Syntropy::Ranges::Concepts
         { Details::RoutePopBack(range) };
     };
 
-    /// \brief Range whose elements can be visited sequentially in either direction.
+    /// \brief Range whose elements can be visited sequentially in
+    ///        either direction.
+    ///
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
-    concept BidirectionalRange = BaseBidirectionalRange<TRange> && ForwardRange<TRange>;
+    concept BidirectionalRange
+        = BaseBidirectionalRange<TRange> && ForwardRange<TRange>;
 }
 
 // ===========================================================================
@@ -57,14 +66,20 @@ namespace Syntropy::Ranges
     // ====================
 
     /// \brief Access range's last element.
-    /// \remarks Accessing the last element of an empty range results in undefined behavior.
+    ///
+    /// \remarks Accessing the last element of an empty range
+    ///          results in undefined behavior.
     template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr decltype(auto) Back(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr decltype(auto)
+    Back(Immutable<TRange> range) noexcept;
 
     /// \brief Discard range's last element and return the resulting range.
-    /// \remarks If the provided range is empty, the behavior of this method is undefined.
+    ///
+    /// \remarks If the provided range is empty, the behavior of this
+    ///          method is undefined.
     template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range) noexcept;
+    [[nodiscard]] constexpr TRange
+    PopBack(Immutable<TRange> range) noexcept;
 }
 
 // ===========================================================================
@@ -98,13 +113,15 @@ namespace Syntropy::Ranges
     // Bidirectional range.
 
     template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr decltype(auto) Back(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr decltype(auto)
+    Back(Immutable<TRange> range) noexcept
     {
         return Details::RouteBack(range);
     }
 
     template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr TRange PopBack(Immutable<TRange> range) noexcept
+    [[nodiscard]] constexpr TRange
+    PopBack(Immutable<TRange> range) noexcept
     {
         return Details::RoutePopBack(range);
     }

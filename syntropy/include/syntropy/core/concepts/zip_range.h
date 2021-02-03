@@ -1,10 +1,8 @@
 
-/// \file
-/// zip_range.h
-
-/// \brief
-/// This header is part of the Syntropy core module. It contains definitions
-/// for adapters used to zip multiple ranges together.
+/// \file zip_range.h
+///
+/// \brief his header is part of the Syntropy core module. It contains
+/// definitions for adapters used to zip multiple ranges together.
 ///
 /// Ranges specifications based on the awesome
 /// https://www.slideshare.net/rawwell/iteratorsmustgo

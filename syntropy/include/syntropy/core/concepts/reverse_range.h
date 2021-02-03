@@ -1,11 +1,9 @@
 
-/// \file
-/// reverse_range.h
+/// \file reverse_range.h
 ///
-/// \brief
-/// This header is part of the Syntropy core module.
-/// It contains definitions for adapters used to iterate a range in reverse
-/// order.
+/// \brief This header is part of the Syntropy core module.
+///        it contains definitions for adapters used to iterate a range in
+///        reverse ordedr.
 ///
 /// Ranges specifications based on the awesome
 /// https://www.slideshare.net/rawwell/iteratorsmustgo
