@@ -1,7 +1,8 @@
 
 /// \file types.h
+///
 /// \brief This header is part of Syntropy language module.
-///         It contains definitions for fundamental types.
+///        It contains definitions for fundamental types.
 ///
 /// \author Raffaele D. Facendola - August 2020
 
@@ -15,19 +16,10 @@
 namespace Syntropy
 {
     /************************************************************************/
-    /* VALUE TYPES                                                          */
-    /************************************************************************/
-
-    /// \brief Constant value type.
-    template <typename TType>
-    using Const = const TType;
-
-    /************************************************************************/
     /* FUNDAMENTAL TYPES                                                    */
     /************************************************************************/
 
     /// \brief Boolean value.
-    /// \remarks Standard booleans bind also to numeric values.
     using Bool = bool;
 
     /// \brief 64-bit integer value.
@@ -35,6 +27,69 @@ namespace Syntropy
 
     /// \brief 32-bit single-precision floating point value.
     using Float = float;
+
+    /************************************************************************/
+    /* REFERENCE TYPES                                                      */
+    /************************************************************************/
+
+    /// \brief Reference to an immutable instance of TType.
+    template <typename TType>
+    using Immutable = const TType&;
+
+    /// \brief Reference to a mutable instance of TType.
+    template <typename TType>
+    using Mutable = TType&;
+
+    /// \brief Reference to an immutable instance of TType whose resources
+    ///        can be efficiently moved to another instance.
+    ///
+    /// \remarks This type is meant to be used as a mean of deleting functions
+    ///          overloads for which movable instances are not desiderable.
+    template <typename TType>
+    using Immovable = const TType&&;
+
+    /// \brief Reference to a mutable instance of TType whose resources
+    ///        can be efficiently moved to another instance.
+    template <typename TType>
+    using Movable = TType&&;
+
+    /************************************************************************/
+    /* POINTER TYPES                                                        */
+    /************************************************************************/
+
+    /// \brief Type of the nullptr constant.
+    using Null = std::nullptr_t;
+
+    /// \brief A non-owning pointer to an immutable instance of TType.
+    template <typename TType>
+    using Ptr = const TType*;
+
+    /// \brief A non-owning pointer to a mutable instance of TType.
+    template <typename TType>
+    using RWPtr = TType*;
+
+    /************************************************************************/
+    /* ENUMERATION TYPES                                                    */
+    /************************************************************************/
+
+    // Fixed underlying types for enumeration classes.
+    // For fixed-size integers see Fix8, Fix16, Fix32, Fix64.
+
+    /// \brief 8-bit enum class type.
+    /// \usage enum class MyEnum : Enum8 { ... };
+    using Enum8 = std::int8_t;
+
+    /// \brief 16-bit enum class type.
+    /// \usage enum class MyEnum : Enum16 { ... };
+    using Enum16 = std::int16_t;
+
+    /// \brief 32-bit enum class type.
+    /// \usage enum class MyEnum : Enum32 { ... };
+    using Enum32 = std::int32_t;
+
+    /// \brief 64-bit enum class type.
+    /// \usage enum class MyEnum : Enum64 { ... };
+    using Enum64 = std::int64_t;
 
     /************************************************************************/
     /* FIXED-SIZE TYPES                                                     */
@@ -56,114 +111,37 @@ namespace Syntropy
     enum class Fix64 : std::int64_t {};
 
     /************************************************************************/
-    /* TYPE CASTS                                                           */
+    /* TEMPLATE TYPES                                                       */
     /************************************************************************/
 
-    // Fundamental types.
-    // ==================
-
-    /// \brief Convert rhs to a boolean.
+    /// \brief Either an immutable or mutable instance of TType.
     template <typename TType>
-    constexpr Bool
-    ToBool(TType rhs) noexcept;
+    using Reference = TType&;
 
-    /// \brief Truncate rhs to an integer value.
-    template <typename TNumber>
-    constexpr Int
-    ToInt(TNumber rhs) noexcept;
-
-    /// \brief Convert rhs to a floating point value.
-    template <typename TNumber>
-    constexpr Float
-    ToFloat(TNumber rhs) noexcept;
-
-    // Fixed-size types.
-    // =================
-
-    /// \brief Cast rhs to a 8-bit integer value.
-    template <typename TNumber>
-    constexpr Fix8
-    ToFix8(TNumber rhs) noexcept;
-
-    /// \brief Cast rhs to a 16-bit integer value.
-    template <typename TNumber>
-    constexpr Fix16
-    ToFix16(TNumber rhs) noexcept;
-
-    /// \brief Cast rhs to a 32-bit integer value.
-    template <typename TNumber>
-    constexpr Fix32
-    ToFix32(TNumber rhs) noexcept;
-
-    /// \brief Cast rhs to a 64-bit integer value.
-    template <typename TNumber>
-    constexpr Fix64
-    ToFix64(TNumber rhs) noexcept;
-}
-
-// ===========================================================================
-
-namespace Syntropy
-{
-    /************************************************************************/
-    /* TYPE CASTS                                                           */
-    /************************************************************************/
-
-    // Fundamental types.
-    // ==================
-
+    /// \brief A forwarding reference that propagates movables as movables and
+    ///        mutables and immutables as either mutables, immutables
+    ///        or movables.
     template <typename TType>
-    constexpr Bool
-    ToBool(TType rhs) noexcept
-    {
-        return !!rhs;
-    }
+    using Forwarding = TType&&;
 
-    template <typename TNumber>
-    constexpr Int
-    ToInt(TNumber rhs) noexcept
-    {
-        return static_cast<Int>(rhs);
-    }
+    /// \brief A non-owning pointer to either an immutable or mutable
+    ///       instance of TType.
+    template <typename TType>
+    using BasePtr = TType*;
 
-    template <typename TNumber>
-    constexpr Float
-    ToFloat(TNumber rhs) noexcept
-    {
-        return static_cast<Float>(rhs);
-    }
+    /// \brief Constant value type.
+    template <typename TType>
+    using Const = const TType;
 
-    // Fixed-size types.
-    // =================
+    /************************************************************************/
+    /* TYPELESS POINTER TYPES                                               */
+    /************************************************************************/
 
-    template <typename TNumber>
-    constexpr Fix8
-    ToFix8(TNumber rhs) noexcept
-    {
-        return static_cast<Fix8>(rhs);
-    }
+    /// \brief A non-owning pointer to a typeless immutable instance.
+    using TypelessPtr = Ptr<void>;
 
-    template <typename TNumber>
-    constexpr Fix16
-    ToFix16(TNumber rhs) noexcept
-    {
-        return static_cast<Fix16>(rhs);
-    }
+    /// \brief A non-owning pointer to a typeless mutable instance.
+    using RWTypelessPtr = RWPtr<void>;
 
-    template <typename TNumber>
-    constexpr Fix32
-    ToFix32(TNumber rhs) noexcept
-    {
-        return static_cast<Fix32>(rhs);
-    }
-
-    template <typename TNumber>
-    constexpr Fix64
-    ToFix64(TNumber rhs) noexcept
-    {
-        return static_cast<Fix64>(rhs);
-    }
 
 }
-
-// ===========================================================================

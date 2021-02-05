@@ -1,7 +1,8 @@
 
 /// \file type_traits.h
+///
 /// \brief This header is part of Syntropy language module.
-///         It contains definitions for type traits.
+///        It contains definitions for type traits.
 ///
 /// \author Raffaele D. Facendola - Nov 2020.
 
@@ -57,6 +58,20 @@ namespace Syntropy::Templates
     template <typename... TTypes>
     inline constexpr Bool
     AlwaysFalse = false;
+
+    /// \brief Strucure which consume any template argument and result in the
+    //         program to be ill-formed.
+    template <typename... TTypes>
+    struct IllFormed
+    {
+        static_assert(AlwaysFalse<TTypes...>, "The program is ill-formed");
+
+        /// \brief Dummy boolean.
+        Bool kBool = false;
+
+        /// \brief Dummy integer.
+        Int kInt = -1;
+    };
 
     /// \brief Metafunction that maps a sequence of types to void.
     template <typename... TTypes>
@@ -119,20 +134,6 @@ namespace Syntropy::Templates
     template <Int VCount, typename TTypeList>
     using TypeListPopFront
         = Details::TypeListPopFront<VCount, TTypeList>;
-
-    /************************************************************************/
-    /* MISCELLANEOUS                                                        */
-    /************************************************************************/
-
-    /// \brief Type equal to the type all types among TTypes can be
-    ///        converted to.
-    template <typename... TTypes>
-    using CommonType = Details::CommonType<TTypes...>;
-
-    /// \brief Type equal to the type all types among TTypes can be converted
-    ///        or bound to.
-    template <typename... TTypes>
-    using CommonReference = Details::CommonReference<TTypes...>;
 
     /************************************************************************/
     /* TYPE TRANSFORM                                                       */
@@ -202,7 +203,21 @@ namespace Syntropy::Templates
     ///
     /// \remarks this function shall never be evaluated as it has no definition.
     template <typename TType>
-    Templates::AddRValueReference<TType> Declval() noexcept;
+    AddRValueReference<TType> Declval() noexcept;
+
+    /************************************************************************/
+    /* COMMON TYPE                                                          */
+    /************************************************************************/
+
+    /// \brief Type equal to the type all types among TTypes can be
+    ///        converted to.
+    template <typename... TTypes>
+    using CommonType = Details::CommonType<TTypes...>;
+
+    /// \brief Type equal to the type all types among TTypes can be converted
+    ///        or bound to.
+    template <typename... TTypes>
+    using CommonReference = Details::CommonReference<TTypes...>;
 
 }
 

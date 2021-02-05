@@ -1,0 +1,310 @@
+
+/// \file conversions.h
+///
+/// \brief This header is part of Syntropy language module.
+///        It contains definitions for fundamental types conversions.
+///
+/// \author Raffaele D. Facendola - February 2021
+
+#pragma once
+
+#include "syntropy/language/foundation/types.h"
+#include "syntropy/language/templates/type_traits.h"
+#include "syntropy/language/templates/concepts.h"
+
+// ===========================================================================
+
+namespace Syntropy
+{
+    /************************************************************************/
+    /* FUNDAMENTAL TYPES                                                    */
+    /************************************************************************/
+
+    /// \brief Convert rhs to a boolean.
+    template <typename TType>
+    constexpr Bool
+    ToBool(TType rhs) noexcept;
+
+    /// \brief Truncate rhs to an integer value.
+    template <typename TNumber>
+    constexpr Int
+    ToInt(TNumber rhs) noexcept;
+
+    /// \brief Convert rhs to a floating point value.
+    template <typename TNumber>
+    constexpr Float
+    ToFloat(TNumber rhs) noexcept;
+
+    /************************************************************************/
+    /* REFERENCE TYPES                                                      */
+    /************************************************************************/
+
+    /// \brief Convert rhs to a reference to an immutable
+    ///        instance of TType.
+    template <typename TType>
+    constexpr Immutable<TType>
+    ToImmutable(Immutable<TType> rhs) noexcept;
+
+    /// \brief Deleted overload to disallow movable arguments.
+    template <typename TType>
+    constexpr void
+    ToImmutable(Immovable<TType> rhs) noexcept = delete;
+
+    /// \brief Convert rhs to a mutable reference to an instance of TType.
+    ///
+    /// The intended use for this method is to write a non-const implementation
+    /// based on a const implementation, without duplicating code.
+    /// Such usage has the form: ToMutable(F(ToImmutable(x)))
+    /// where x is mutable and F(.) is a function.
+    ///
+    /// \remarks If rhs doesn't refer to a mutable object, accessing the
+    ///          returned value of this method results in undefined behavior.
+    template <typename TType>
+    constexpr Mutable<Templates::RemoveConst<TType>>
+    ToMutable(Immutable<TType> rhs) noexcept;
+
+    /// \brief Deleted overload to disallow movable arguments.
+    template <typename TType>
+    constexpr TType
+    ToMutable(Immovable<TType> rhs) noexcept = delete;
+
+    /// \brief Convert rhs to a reference to an immovable instance of TType.
+    template <typename TType>
+    constexpr Immovable<TType>
+    ToImmovable(Immutable<TType> rhs) noexcept;
+
+    /************************************************************************/
+    /* POINTER TYPES                                                        */
+    /************************************************************************/
+
+    /// \brief Convert rhs to a pointer to UType preserving constness.
+    ///
+    /// \remarks If the pointee type is not related to UType,
+    ///          the program is ill-formed.
+    template <typename TType, typename UType>
+    constexpr BasePtr<TType>
+    ToPtr(BasePtr<UType> rhs) noexcept;
+
+    /// \brief Convert rhs to a pointer to a read-only instance of TType.
+    template <typename TType>
+    constexpr Ptr<TType>
+    ToReadOnly(BasePtr<TType> rhs) noexcept;
+
+    /// \brief Convert rhs to a pointer to a read-write instance of TType.
+    ///
+    /// The intended use for this method is to write a non-const implementation
+    /// based on a const implementation, without duplicating code.
+    /// Such usage has the form: ToReadWrite(F(ToReadOnly(x)))
+    /// where x is mutable and F(.) is a function.
+    ///
+    /// \remarks If rhs doesn't point to a read-write object, accessing the
+    ///          returned value of this method results in undefined behavior.
+    template <typename TType>
+    constexpr auto
+    ToReadWrite(BasePtr<TType> rhs) noexcept;
+
+    /************************************************************************/
+    /* FIXED-SIZE TYPES                                                     */
+    /************************************************************************/
+
+    /// \brief Cast rhs to a 8-bit integer value.
+    template <typename TNumber>
+    constexpr Fix8
+    ToFix8(TNumber rhs) noexcept;
+
+    /// \brief Cast rhs to a 16-bit integer value.
+    template <typename TNumber>
+    constexpr Fix16
+    ToFix16(TNumber rhs) noexcept;
+
+    /// \brief Cast rhs to a 32-bit integer value.
+    template <typename TNumber>
+    constexpr Fix32
+    ToFix32(TNumber rhs) noexcept;
+
+    /// \brief Cast rhs to a 64-bit integer value.
+    template <typename TNumber>
+    constexpr Fix64
+    ToFix64(TNumber rhs) noexcept;
+
+    /************************************************************************/
+    /* TYPELESS POINTER TYPES                                               */
+    /************************************************************************/
+
+    /// \brief Convert rhs to a pointer to a typeless read-only object.
+    template <Concepts::ImmutableType TType>
+    TypelessPtr
+    ToTypelessPtr(BasePtr<TType> rhs) noexcept;
+
+    /// \brief Convert rhs to a pointer to a typeless read-write object.
+    ///
+    /// \remarks If the pointee refers to a read-only object, accessing
+    ///          the result of this method results in undefined behavior.
+    template <Concepts::MutableType TType>
+    RWTypelessPtr
+    ToTypelessPtr(BasePtr<TType> rhs) noexcept;
+
+    /// \brief Convert rhs to a strongly-typed read-only pointer type.
+    ///
+    /// \remarks If the pointee type is not related to TType, accessing
+    ///          the result of this method results in undefined behavior.
+    template <typename TType>
+    Ptr<TType>
+    FromTypelessPtr(TypelessPtr rhs) noexcept;
+
+    /// \brief Convert rhs to a strongly-typed read-write pointer type.
+    ///
+    /// \remarks If the pointee type is not related to TType, accessing the
+    ///          result of this method results in undefined behavior.
+    template <typename TType>
+    RWPtr<TType>
+    FromTypelessPtr(RWTypelessPtr rhs) noexcept;
+
+}
+
+// ===========================================================================
+
+namespace Syntropy
+{
+    /************************************************************************/
+    /* IMPLEMENTATION                                                       */
+    /************************************************************************/
+
+    // Fundamental types.
+    // ==================
+
+    template <typename TType>
+    constexpr Bool
+    ToBool(TType rhs) noexcept
+    {
+        return !!rhs;
+    }
+
+    template <typename TNumber>
+    constexpr Int
+    ToInt(TNumber rhs) noexcept
+    {
+        return static_cast<Int>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Float
+    ToFloat(TNumber rhs) noexcept
+    {
+        return static_cast<Float>(rhs);
+    }
+
+    // Reference types.
+    // ================
+
+    template <typename TType>
+    constexpr Immutable<TType>
+    ToImmutable(Immutable<TType> rhs) noexcept
+    {
+        return rhs;
+    }
+
+    template <typename TType>
+    constexpr Mutable<Templates::RemoveConst<TType>>
+    ToMutable(Immutable<TType> rhs) noexcept
+    {
+        return const_cast<Mutable<TType>>(rhs);
+    }
+
+    template <typename TType>
+    constexpr Immovable<TType>
+    ToImmovable(Immutable<TType> rhs) noexcept
+    {
+        return static_cast<Immovable<TType>>(rhs);
+    }
+
+    // Pointer types.
+    // ==============
+
+    template <typename TType, typename UType>
+    constexpr BasePtr<TType>
+    ToPtr(BasePtr<UType> rhs) noexcept
+    {
+        return static_cast<BasePtr<TType>>(rhs);
+    }
+
+    template <typename TType>
+    constexpr Ptr<TType>
+    ToReadOnly(BasePtr<TType> rhs) noexcept
+    {
+        return rhs;
+    }
+
+    template <typename TType>
+    constexpr auto
+    ToReadWrite(BasePtr<TType> rhs) noexcept
+    {
+        return const_cast<RWPtr<Templates::RemoveConst<TType>>>(rhs);
+    }
+
+    // Fixed-size types.
+    // =================
+
+    template <typename TNumber>
+    constexpr Fix8
+    ToFix8(TNumber rhs) noexcept
+    {
+        return static_cast<Fix8>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Fix16
+    ToFix16(TNumber rhs) noexcept
+    {
+        return static_cast<Fix16>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Fix32
+    ToFix32(TNumber rhs) noexcept
+    {
+        return static_cast<Fix32>(rhs);
+    }
+
+    template <typename TNumber>
+    constexpr Fix64
+    ToFix64(TNumber rhs) noexcept
+    {
+        return static_cast<Fix64>(rhs);
+    }
+
+    // Typeless pointer types.
+    // =======================
+
+    template <Concepts::MutableType TType>
+    inline TypelessPtr
+    ToTypelessPtr(BasePtr<TType> rhs) noexcept
+    {
+        return rhs;
+    }
+
+    template <Concepts::MutableType TType>
+    inline RWTypelessPtr
+    ToTypelessPtr(BasePtr<TType> rhs) noexcept
+    {
+        return const_cast<RWTypelessPtr>(rhs);
+    }
+
+    template <typename TType>
+    inline Ptr<TType>
+    FromTypelessPtr(TypelessPtr rhs) noexcept
+    {
+        return reinterpret_cast<Ptr<TType>>(rhs);
+    }
+
+    template <typename TType>
+    inline RWPtr<TType>
+    FromTypelessPtr(RWTypelessPtr rhs) noexcept
+    {
+        return reinterpret_cast<RWPtr<TType>>(rhs);
+    }
+
+
+}
+
+// ===========================================================================

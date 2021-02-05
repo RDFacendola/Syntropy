@@ -9,6 +9,5 @@
 #pragma once
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/foundation/references.h"
-#include "syntropy/language/foundation/pointers.h"
-#include "syntropy/language/foundation/enumerations.h"
+#include "syntropy/language/foundation/conversions.h"
+#include "syntropy/language/foundation/definitions.h"

@@ -11,7 +11,6 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
-#include "syntropy/language/foundation/enumerations.h"
 
 // ===========================================================================
 
@@ -21,8 +20,14 @@ namespace Syntropy::Templates
     /* FORWARD DECLARATIONS                                                 */
     /************************************************************************/
 
+    template <typename TType>
+    struct Alias;
+
     template <typename... TTypes>
     struct TypeList;
+
+    template <typename... Types>
+    struct IllFormed;
 }
 
 // ===========================================================================
@@ -130,7 +135,7 @@ namespace Syntropy::Templates::Details
     ///          is ill-formed.
     template <typename TType, typename TTypeList>
     inline constexpr Int
-    TypeListIndex;
+    TypeListIndex = IllFormed<TType, TTypeList>::kInt;
 
     /// \brief Specialization for type lists.
     template <typename TType, typename... UTypes>
@@ -143,7 +148,7 @@ namespace Syntropy::Templates::Details
     /// \remarks If TTypeList isn't a TypeList the program is ill-formed.
     template <typename TTypeList>
     inline constexpr Int
-    TypeListRank;
+    TypeListRank = IllFormed<TTypeList>::kInt;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes>
@@ -179,20 +184,6 @@ namespace Syntropy::Templates::Details
     template <Int VCount, typename TTypeList>
     using TypeListPopFront
         = typename Details::TypeListPopFrontHelper<VCount, TTypeList>::Type;
-
-    /************************************************************************/
-    /* MISCELLANEOUS                                                        */
-    /************************************************************************/
-
-    /// \brief Type equal to the type all types among TTypes can be
-    ///        converted to.
-    template <typename... TTypes>
-    using CommonType = std::common_type_t<TTypes...>;
-
-    /// \brief Type equal to the type all types among TTypes can be converted
-    ///        or bound to.
-    template <typename... TTypes>
-    using CommonReference = std::common_reference_t<TTypes...>;
 
     /************************************************************************/
     /* TYPE TRANSFORM                                                       */
@@ -265,6 +256,119 @@ namespace Syntropy::Templates::Details
     ///        type, or equal to TType otherwise.
     template <typename TType>
     using RemovePointer = std::remove_pointer_t<TType>;
+
+    /************************************************************************/
+    /* COMMON TYPE                                                          */
+    /************************************************************************/
+
+    // CommonType.
+    // ===========
+
+    template <typename TType>
+    AddRValueReference<TType> Declval() noexcept;
+
+    /// \brief Helper type trait for CommonType.
+    template <typename... TTypes>
+    struct CommonTypeHelper {};
+
+    /// \brief Type equal to the type all types among TTypes can be
+    ///        converted to.
+    template <typename... TTypes>
+    using CommonType = typename CommonTypeHelper<TTypes...>::Type;
+
+    // One type.
+
+    /// \brief Partial template specialization of CommonTypeHelper for a
+    ///        single type.
+    template <typename TType>
+    struct CommonTypeHelper<TType> : CommonTypeHelper<TType, TType> {};
+
+    // Two types.
+
+    /// \brief Type two types can be implicitly converted to.
+    template <typename TType, typename UType>
+    using CommonTypeHelperConvertible
+        = decltype(false ? Declval<TType>() : Declval<UType>());
+
+    /// \brief Exposes a member Type equal to the common type between TType
+    ///        and UType if such type exists, otherwise there's no such type.
+    template <typename TType, typename UType, typename = void>
+    struct CommonTypeHelper2{};
+
+    /// \brief Partial template specialization for types convertible to a
+    ///        common implicit type.
+    template <typename TType, typename UType>
+    struct CommonTypeHelper2<TType,
+                             UType,
+                             Void<CommonTypeHelperConvertible<TType, UType>>>
+        : Alias<CommonTypeHelperConvertible<TType, UType>> {};
+
+    /// \brief Partial template specialization of CommonTypeHelper for two
+    ///        types.
+    template <typename TFirst, typename TSecond>
+    struct CommonTypeHelper<TFirst, TSecond>
+        : CommonTypeHelper2<Decay<TFirst>, Decay<TSecond>> {};
+
+    // Three or more types.
+
+    template <typename TVoid,
+              typename TType,
+              typename UType,
+              typename... TTypes>
+    struct CommonTypeHelperN {};
+
+    template <typename TType, typename UType, typename... TTypes>
+    struct CommonTypeHelperN<
+        Void<CommonType<TType, UType>>, TType, UType, TTypes...>
+            : CommonType<CommonType<TType, UType>, TTypes...> {};
+
+    /// \brief Partial template specialization of CommonTypeHelper for three
+    ///        or more types.
+    template <typename TType, typename UType, typename... TTypes>
+    struct CommonTypeHelper<TType, UType, TTypes...>
+        : Alias<CommonTypeHelperN<void, TType, UType, TTypes...>> {};
+
+    // CommonReference.
+    // ================
+
+    /// \brief Helper type trait for CommonReference.
+    template <typename... TTypes>
+    struct CommonRefrenceHelper {};
+
+    /// \brief Type equal to the type all types among TTypes can be converted
+    ///        or bound to.
+    template <typename... TTypes>
+    using CommonReference = typename CommonRefrenceHelper<TTypes...>::Value;
+
+    // One type.
+
+    /// \brief Partial template specialization of CommonReferenceHelper for a
+    ///        single type.
+    template <typename TType>
+    struct CommonRefrenceHelper<TType> : Alias<TType> {};
+
+    // Two types.
+
+
+
+    // Three or more types.
+
+    template <typename TVoid,
+              typename TType,
+              typename UType,
+              typename... TTypes>
+    struct CommonRefrenceHelperN {};
+
+    template <typename TType, typename UType, typename... TTypes>
+    struct CommonRefrenceHelperN<
+        Void<CommonReference<TType, UType>>, TType, UType, TTypes...>
+            : CommonReference<CommonReference<TType, UType>, TTypes...> {};
+
+    /// \brief Partial template specialization of CommonReferenceHelper for
+    ///        three or more types.
+    template <typename TType, typename UType, typename... TTypes>
+    struct CommonRefrenceHelper<TType, UType, TTypes...>
+        : Alias<CommonRefrenceHelperN<void, TType, UType, TTypes...>> {};
 
 }
 

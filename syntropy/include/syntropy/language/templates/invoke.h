@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "syntropy/language/foundation/references.h"
+#include "syntropy/language/foundation/definitions.h"
 
 #include "syntropy/language/templates/details/invoke_details.h"
 

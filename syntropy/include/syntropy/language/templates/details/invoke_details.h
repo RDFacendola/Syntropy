@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <functional>
 
-#include "syntropy/language/foundation/references.h"
+#include "syntropy/language/foundation/definitions.h"
 
 #include "syntropy/language/templates/type_traits.h"
 

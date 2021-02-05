@@ -131,7 +131,7 @@ namespace Syntropy::Concepts
     concept TotallyOrdered = Details::TotallyOrdered<TType>;
 
     /// \brief Models a class TType which is both equality-comparable and
-    partially-ordered against the (possibly different) type UType.
+    ///        partially-ordered against the (possibly different) type UType.
     template <typename TType, typename UType>
     concept TotallyOrderedWith = Details::TotallyOrderedWith<TType, UType>;
 
