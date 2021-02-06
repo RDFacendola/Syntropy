@@ -4,13 +4,14 @@
 /// \brief This header is part of Syntropy language module.
 ///        It contains implementation details of type-traits machinery.
 ///
-/// \author Raffaele D. Facendola - Nov 2020.
+/// \author Raffaele D. Facendola - November 2020.
 
 #pragma once
 
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
+#include "syntropy/language/templates/templates.h"
 
 // ===========================================================================
 
@@ -20,14 +21,9 @@ namespace Syntropy::Templates
     /* FORWARD DECLARATIONS                                                 */
     /************************************************************************/
 
-    template <typename TType>
-    struct Alias;
-
     template <typename... TTypes>
     struct TypeList;
 
-    template <typename... Types>
-    struct IllFormed;
 }
 
 // ===========================================================================
@@ -38,56 +34,11 @@ namespace Syntropy::Templates::Details
     /* META                                                                 */
     /************************************************************************/
 
-    /// \brief Metafunction that maps a sequence of types to void.
-    template <typename... TTypes>
-    using Void = void;
-
     /// \brief Type equal to TTrue if VCondition is true, equal to TFalse
     ///        otherwise.
     template <Bool VCondition, typename TTrue, typename TFalse>
     using Conditional
         = std::conditional_t<VCondition, TTrue, TFalse>;
-
-    /// \brief Type equal to TType if VEnable is true, otherwise there's
-    ///        no such type.
-    template <Bool VEnable>
-    using EnableIf
-        = std::enable_if_t<VEnable>;
-
-    /// \brief If TExpression<TTypes...> is a valid expression, exposes a
-    ///        member value equal to true, otherwise exposes a member value
-    ///        equal to false.
-    /// Default trait for invalid expressions.
-    /// \see Based on std::experimental::is_detected.
-    template <typename TVoid,
-              template<typename...> typename TExpression,
-              typename... TTypes>
-    struct IsValidExpressionHelper
-    {
-        static constexpr Bool kValue = false;
-    };
-
-    /// \brief Partial specialization for valid expressions.
-    template <template<typename...> typename TExpression,
-              typename... TTypes>
-    struct IsValidExpressionHelper<Void<TExpression<TTypes...>>,
-                                   TExpression,
-                                   TTypes...>
-    {
-        static constexpr Bool kValue = true;
-    };
-
-    /// \brief Boolean value equal to true if TExpression<TTypes...>
-    ///        is a valid expression, false otherwise.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    inline constexpr Bool IsValidExpression
-        = IsValidExpressionHelper<void, TExpression, TTypes...>::kValue;
-
-    /// \brief If TExpression<TTypes> is a valid expression, exposes a member
-    ///        typedef equal to void, otherwise there's no such type.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    using EnableIfValidExpression
-        = EnableIf<IsValidExpression<TExpression, TTypes...>>;
 
     /************************************************************************/
     /* TYPE LIST                                                            */
@@ -135,7 +86,7 @@ namespace Syntropy::Templates::Details
     ///          is ill-formed.
     template <typename TType, typename TTypeList>
     inline constexpr Int
-    TypeListIndex = IllFormed<TType, TTypeList>::kInt;
+    TypeListIndex = IllFormed<Int, TType, TTypeList>::kValue;
 
     /// \brief Specialization for type lists.
     template <typename TType, typename... UTypes>
@@ -148,7 +99,7 @@ namespace Syntropy::Templates::Details
     /// \remarks If TTypeList isn't a TypeList the program is ill-formed.
     template <typename TTypeList>
     inline constexpr Int
-    TypeListRank = IllFormed<TTypeList>::kInt;
+    TypeListRank = IllFormed<Int, TTypeList>::kValue;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes>

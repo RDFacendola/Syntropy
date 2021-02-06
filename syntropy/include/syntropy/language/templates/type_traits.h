@@ -21,32 +21,10 @@ namespace Syntropy::Templates
     /* META                                                                 */
     /************************************************************************/
 
-    /// \brief Metafunction that maps a sequence of types to void.
-    template <typename... TTypes>
-    using Void = Details::Void<TTypes...>;
-
     /// \brief Type equal to TTrue if VCondition is true, equal to
     ///        TFalse otherwise.
     template <Bool VCondition, typename TTrue, typename TFalse>
     using Conditional = Details::Conditional<VCondition, TTrue, TFalse>;
-
-    /// \brief Type equal to TType if VEnable is true, otherwise
-    ///        there's no such type.
-    template <Bool VEnable>
-    using EnableIf = Details::EnableIf<VEnable>;
-
-    /// \brief Boolean value equal to true if TExpression<TTypes...> is a
-    ///        valid expression, false otherwise.
-    template <template<typename...> typename TExpression,
-              typename... TTypes>
-    inline constexpr Bool IsValidExpression
-        = Details::IsValidExpression<TExpression, TTypes...>;
-
-    /// \brief If TExpression<TTypes> is a valid expression, exposes a member
-    ///        typedef equal to void, otherwise there's no such type.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    using EnableIfValidExpression
-        = Details::EnableIfValidExpression<TExpression, TTypes...>;
 
     /************************************************************************/
     /* TYPE LIST                                                            */

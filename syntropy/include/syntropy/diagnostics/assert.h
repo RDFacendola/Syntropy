@@ -34,28 +34,6 @@ namespace Syntropy
 #define SYNTROPY_UNDEFINED_BEHAVIOR(condition, message) \
         SYNTROPY_MACRO_DECLARATION(condition)
 
-    /************************************************************************/
-    /* COMPILE-TIME DIAGNOSTICS                                             */
-    /************************************************************************/
-
-    /// \brief Boolean constant which consume any template argument and
-    ///        evaluates to false. Useful for static_assert that should always
-    ///        trigger a compilation error.
-    template <typename... TTypes>
-    inline constexpr Bool
-    AlwaysFalse = false;
-
-    /// \brief Strucure which consume any template argument and result in the
-    //         program to be ill-formed.
-    template <typename TType, typename... TTypes>
-    struct IllFormed
-    {
-        static_assert(AlwaysFalse<TTypes...>, "The program is ill-formed");
-
-        /// \brief Dummy value.
-        TType kValue = TType{};
-    };
-
 }
 
 // ===========================================================================
