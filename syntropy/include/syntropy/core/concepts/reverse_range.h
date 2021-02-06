@@ -33,20 +33,6 @@ namespace Syntropy::Ranges
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
-{
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // Non-member functions.
-    // =====================
-
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    auto Reverse(Immutable<TRange> range) noexcept
-    {
-        return Details::Reverse(range);
-    }
-}
+#include "reverse_range.inl"
 
 // ===========================================================================

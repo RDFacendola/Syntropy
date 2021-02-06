@@ -101,30 +101,6 @@ namespace Syntropy::Ranges::Extensions
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
-{
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // Non-member functions.
-    // =====================
-
-    // Bidirectional range.
-
-    template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr decltype(auto)
-    Back(Immutable<TRange> range) noexcept
-    {
-        return Details::RouteBack(range);
-    }
-
-    template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr TRange
-    PopBack(Immutable<TRange> range) noexcept
-    {
-        return Details::RoutePopBack(range);
-    }
-}
+#include "bidirectional_range.inl"
 
 // ===========================================================================
