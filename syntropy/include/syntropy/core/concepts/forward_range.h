@@ -19,7 +19,9 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/core/foundation/tuple.h"
 
-#include "syntropy/core/concepts/details/forward_range_details.h"
+// ===========================================================================
+
+#include "syntropy/core/concepts/details/forward_range.details.h"
 
 // ===========================================================================
 

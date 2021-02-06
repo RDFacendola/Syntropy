@@ -15,7 +15,9 @@
 
 #include "syntropy/core/concepts/ntuple.h"
 
-#include "syntropy/core/concepts/details/zip_range_details.h"
+// ===========================================================================
+
+#include "syntropy/core/concepts/details/zip_range.details.h"
 
 // ===========================================================================
 

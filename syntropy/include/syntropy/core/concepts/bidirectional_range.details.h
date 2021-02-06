@@ -1,8 +1,5 @@
 
-/// \file bidirectional_range_details.h
-///
-/// \brief This header is part of the Syntropy core module.
-///        It contains implementation details about bidirectional ranges.
+/// \file bidirectional_range.details.h
 ///
 /// \author Raffaele D. Facendola - Jan 2021
 

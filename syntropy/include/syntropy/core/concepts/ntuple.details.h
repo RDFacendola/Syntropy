@@ -1,8 +1,5 @@
 
-/// \file ntuple_details.h
-///
-/// \brief This header is part of Syntropy core module.
-///        It contains implementation details for n-tuples.
+/// \file ntuple.details.h
 ///
 /// \author Raffaele D. Facendola - 2020.
 

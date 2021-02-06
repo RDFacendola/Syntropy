@@ -1,8 +1,5 @@
 
-/// \file zip_range_details.h
-///
-/// \brief This header is part of the Syntropy core module.
-/// It contains implementation details about zip-ranges.
+/// \file zip_range.details.h
 ///
 /// \author Raffaele D. Facendola - Jan 2021
 

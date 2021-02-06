@@ -18,7 +18,9 @@
 
 #include "syntropy/math/math.h"
 
-#include "syntropy/core/concepts/details/ntuple_details.h"
+// ===========================================================================
+
+#include "syntropy/core/concepts/details/ntuple.details.h"
 
 // ===========================================================================
 

@@ -16,7 +16,9 @@
 
 #include "syntropy/core/concepts/bidirectional_range.h"
 
-#include "syntropy/core/concepts/details/reverse_range_details.h"
+// ===========================================================================
+
+#include "syntropy/core/concepts/details/reverse_range.details.h"
 
 // ===========================================================================
 

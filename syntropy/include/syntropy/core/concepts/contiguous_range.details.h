@@ -1,8 +1,5 @@
 
-/// \file contiguous_range_details.h
-///
-/// \brief This header is part of the Syntropy core module.
-///        It contains implementation details about contiguous ranges.
+/// \file contiguous_range.details.h
 ///
 /// \author Raffaele D. Facendola - Jan 2021
 
