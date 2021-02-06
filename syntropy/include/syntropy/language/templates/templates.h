@@ -10,8 +10,6 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/templates/details/templates_details.h"
-
 // ===========================================================================
 
 namespace Syntropy::Templates
@@ -51,32 +49,6 @@ namespace Syntropy::Templates
     /// \brief Integer constant.
     template <Int TValue>
     using IntConstant = Constant<Int, TValue>;
-
-    /************************************************************************/
-    /* SFINAE                                                               */
-    /************************************************************************/
-
-    /// \brief Metafunction that maps a sequence of types to void.
-    template <typename... TTypes>
-    using Void = Details::Void<TTypes...>;
-
-    /// \brief Type equal to TType if TEnable is true, otherwise
-    ///        there's no such type.
-    template <Bool TEnable>
-    using EnableIf = Details::EnableIf<TEnable>;
-
-    /// \brief Boolean value equal to true if TExpression<TTypes...> is a
-    ///        valid expression, false otherwise.
-    template <template<typename...> typename TExpression,
-              typename... TTypes>
-    inline constexpr Bool IsValidExpression
-        = Details::IsValidExpression<TExpression, TTypes...>;
-
-    /// \brief If TExpression<TTypes> is a valid expression, exposes a member
-    ///        typedef equal to void, otherwise there's no such type.
-    template <template<typename...> typename TExpression, typename... TTypes>
-    using EnableIfValidExpression
-        = Details::EnableIfValidExpression<TExpression, TTypes...>;
 
 }
 

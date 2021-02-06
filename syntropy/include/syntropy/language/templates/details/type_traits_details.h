@@ -11,8 +11,10 @@
 #include <type_traits>
 
 #include "syntropy/language/foundation/types.h"
+
 #include "syntropy/language/templates/templates.h"
 #include "syntropy/language/templates/diagnostics.h"
+#include "syntropy/language/templates/sfinae.h"
 
 // ===========================================================================
 

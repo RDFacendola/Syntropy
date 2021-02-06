@@ -1,10 +1,10 @@
 
-/// \file templates_details.h
+/// \file sfinae_details.h
 ///
 /// \brief This header is part of Syntropy language module.
-///        It contains implementation details of template.h.
+///        It contains implementation details of sfinae.h.
 ///
-/// \author Raffaele D. Facendola - Nov 2020.
+/// \author Raffaele D. Facendola - February 2021.
 
 #pragma once
 
