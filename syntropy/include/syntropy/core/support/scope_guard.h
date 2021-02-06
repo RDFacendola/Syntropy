@@ -79,60 +79,6 @@ namespace Syntropy
 
 // ===========================================================================
 
-namespace Syntropy
-{
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // ScopeGuard<TFunctor>.
-    // =====================
-
-    template <typename TFunctor>
-    inline ScopeGuard<TFunctor>
-    ::ScopeGuard(TFunctor functor) noexcept
-        : functor_(Move(functor))
-        , dismissed_(false)
-    {
-
-    }
-
-    template <typename TFunctor>
-    inline ScopeGuard<TFunctor>
-    ::ScopeGuard(Movable<ScopeGuard> other) noexcept
-        : functor_(Move(other.functor_))
-        , dismissed_(other.dismissed_)
-    {
-        other.Dismiss();
-    }
-
-    template <typename TFunctor>
-    inline ScopeGuard<TFunctor>
-    ::~ScopeGuard()
-    {
-        if (!dismissed_)
-        {
-            functor_();
-        }
-    }
-
-    template <typename TFunctor>
-    inline  void ScopeGuard<TFunctor>
-    ::Dismiss() noexcept
-    {
-        dismissed_ = true;
-    }
-
-    // Non-member function.
-    // ====================
-
-    template <typename TFunctor>
-    [[nodiscard]] inline ScopeGuard<TFunctor>
-    MakeScopeGuard(TFunctor functor) noexcept
-    {
-        return ScopeGuard<TFunctor>{ Move(functor) };
-    }
-
-}
+#include "scope_guard.inl"
 
 // ===========================================================================
