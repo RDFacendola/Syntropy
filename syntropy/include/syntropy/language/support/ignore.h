@@ -50,28 +50,6 @@ namespace Syntropy
 
 // ===========================================================================
 
-namespace Syntropy
-{
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // Ignore.
-    // =======
-
-    template <typename... TArguments>
-    constexpr Ignore
-    ::Ignore(Forwarding<TArguments>...) noexcept
-    {
-
-    }
-
-    template <typename... TArguments>
-    constexpr Mutable<Ignore> Ignore
-    ::operator=(Forwarding<TArguments>...) noexcept
-    {
-        return *this;
-    }
-}
+#include "ignore.inl"
 
 // ===========================================================================
