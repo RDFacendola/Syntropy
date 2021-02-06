@@ -1,5 +1,6 @@
 
 /// \file initializer_list.h
+///
 /// \brief This header is part of the Syntropy language module.
 ///        It contains definition for initializer lists.
 ///

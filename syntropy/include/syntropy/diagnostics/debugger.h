@@ -42,22 +42,6 @@ namespace Syntropy::Diagnostics
 
 // ===========================================================================
 
-namespace Syntropy::Diagnostics
-{
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // Macros.
-    // =======
-
-    #undef SYNTROPY_TRAP
-    #define SYNTROPY_TRAP \
-        SYNTROPY_HAL_TRAP
-
-    #undef SYNTROPY_BREAK
-    #define SYNTROPY_BREAK \
-        if(Syntropy::Diagnostics::IsDebuggerAttached()){ SYNTROPY_TRAP }
-}
+#include "debugger.inl"
 
 // ===========================================================================

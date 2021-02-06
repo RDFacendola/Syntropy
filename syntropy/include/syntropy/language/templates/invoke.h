@@ -47,23 +47,6 @@ namespace Syntropy::Templates
 
 // ===========================================================================
 
-namespace Syntropy::Templates
-{
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // Invoke.
-    // =======
-
-    template <typename TCallable, typename... TArguments>
-    constexpr InvokeResult<TCallable, TArguments...>
-    Invoke(Forwarding<TCallable> callable,
-           Forwarding<TArguments>... arguments) noexcept
-    {
-        return Details::Invoke(Forward<TCallable>(callable),
-                               Forward<TArguments>(arguments)...);
-    }
-}
+#include "invoke.inl"
 
 // ===========================================================================
