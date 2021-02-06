@@ -1,5 +1,5 @@
 
-/// \file forward_range_.details.h
+/// \file forward_range_.etails.inl
 ///
 /// \author Raffaele D. Facendola - Jan 2021
 
