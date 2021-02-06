@@ -1,9 +1,6 @@
 
 /// \file sfinae_details.h
 ///
-/// \brief This header is part of Syntropy language module.
-///        It contains implementation details of sfinae.h.
-///
 /// \author Raffaele D. Facendola - February 2021.
 
 #pragma once

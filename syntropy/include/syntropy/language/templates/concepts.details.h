@@ -1,9 +1,5 @@
 
-/// \file concepts_details.h
-///
-/// \brief This header is part of Syntropy language module.
-///        It contains implementation details of fundamental concepts
-///         definitions.
+/// \file concepts.details.h
 ///
 /// \author Raffaele D. Facendola - 2020.
 

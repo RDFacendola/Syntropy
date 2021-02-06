@@ -11,7 +11,10 @@
 #include "syntropy/language/foundation/types.h"
 
 #include "syntropy/language/templates/templates.h"
-#include "syntropy/language/templates/details/type_traits_details.h"
+
+// ===========================================================================
+
+#include "type_traits.details.h"
 
 // ===========================================================================
 

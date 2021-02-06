@@ -1,10 +1,7 @@
-
+#
 /// \file invoke_details.h
 ///
-/// \brief This header is part of Syntropy language module.
-///        It contains implementation details of invoke definitions.
-///
-/// \author Raffaele D. Facendola - Dec 2020.
+/// \author Raffaele D. Facendola - December 2020.
 
 #pragma once
 

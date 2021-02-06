@@ -10,7 +10,9 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/templates/details/ratio_details.h"
+// ===========================================================================
+
+#include "ratio.details.h"
 
 // ===========================================================================
 

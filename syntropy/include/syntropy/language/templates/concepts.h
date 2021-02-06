@@ -8,7 +8,9 @@
 
 #pragma once
 
-#include "syntropy/language/templates/details/concepts_details.h"
+// ===========================================================================
+
+#include "concepts.details.h"
 
 // ===========================================================================
 

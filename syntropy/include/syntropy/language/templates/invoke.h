@@ -10,7 +10,9 @@
 
 #include "syntropy/language/foundation/definitions.h"
 
-#include "syntropy/language/templates/details/invoke_details.h"
+// ===========================================================================
+
+#include "invoke.details.h"
 
 // ===========================================================================
 

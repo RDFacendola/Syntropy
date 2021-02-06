@@ -1,9 +1,6 @@
 
 /// \file sequence_details.h
 ///
-/// \brief This header is part of Syntropy language module.
-///        It contains implementation details of sequence-related type traits.
-///
 /// \author Raffaele D. Facendola - Sep 2020.
 
 #pragma once

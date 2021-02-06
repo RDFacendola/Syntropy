@@ -10,7 +10,9 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/templates/details/math_details.h"
+// ===========================================================================
+
+#include "math.details.h"
 
 // ===========================================================================
 

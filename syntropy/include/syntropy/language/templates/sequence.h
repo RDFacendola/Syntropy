@@ -10,7 +10,9 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/templates/details/sequence_details.h"
+// ===========================================================================
+
+#include "sequence.details.h"
 
 // ===========================================================================
 

@@ -1,9 +1,6 @@
 
 /// \file traits_details.h
 ///
-/// \brief This header is part of Syntropy language module.
-///        It contains implementation details of type-traits machinery.
-///
 /// \author Raffaele D. Facendola - November 2020.
 
 #pragma once

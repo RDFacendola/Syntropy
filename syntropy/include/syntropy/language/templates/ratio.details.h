@@ -1,10 +1,6 @@
 
 /// \file ratio_details.h
 ///
-/// \brief This header is part of Syntropy language module.
-///        It contains implementation details about rational numbers template
-///        machinery.
-///
 /// \author Raffaele D. Facendola - Sep 2020.
 
 #pragma once

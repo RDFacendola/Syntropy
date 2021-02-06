@@ -10,7 +10,9 @@
 
 #include "syntropy/language/foundation/types.h"
 
-#include "syntropy/language/templates/details/sfinae_details.h"
+// ===========================================================================
+
+#include "sfinae.details.h"
 
 // ===========================================================================
 
