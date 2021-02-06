@@ -1,10 +1,10 @@
 
-/// \file compare_details.h
+/// \file compare.details.h
 ///
 /// \brief This header is part of the Syntropy language module.
-///         It contains implementation details for comparisons.
+///        It contains implementation details of compare.h.
 ///
-/// \author Raffaele D. Facendola - Nov 2020
+/// \author Raffaele D. Facendola - November 2020
 
 #pragma once
 
@@ -103,34 +103,6 @@ namespace Syntropy::Concepts::Details
 
 // ===========================================================================
 
-namespace Syntropy::Details
-{
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // Conversions.
-    // ============
-
-    [[nodiscard]] constexpr ComparisonResult
-    ToComparisonResult(Immutable<std::strong_ordering> rhs) noexcept
-    {
-        if (rhs == std::strong_ordering::equivalent)
-        {
-            return Details::ComparisonResult::kEquivalent;
-        }
-
-        if (rhs == std::strong_ordering::greater)
-        {
-            return Details::ComparisonResult::kGreater;
-        }
-
-        /*if (rhs == std::strong_ordering::less)*/
-        {
-            return  Details::ComparisonResult::kLess;
-        }
-    }
-
-}
+#include "compare.details.inl"
 
 // ===========================================================================

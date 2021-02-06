@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/language/support/compare.h"
 
 int main()
 {

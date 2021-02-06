@@ -4,15 +4,17 @@
 /// \brief This header is part of the Syntropy language module.
 ///        It contains definitions for comparisons.
 ///
-/// \author Raffaele D. Facendola - Nov 2020
+/// \author Raffaele D. Facendola - November 2020
 
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/language/support/details/compare_details.h"
-
 #include <compare>
+
+// ===========================================================================
+
+#include "compare.details.h"
 
 // ===========================================================================
 
