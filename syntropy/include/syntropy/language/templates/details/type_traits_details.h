@@ -12,6 +12,7 @@
 
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/templates/templates.h"
+#include "syntropy/language/templates/diagnostics.h"
 
 // ===========================================================================
 
