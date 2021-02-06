@@ -19,11 +19,11 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/core/foundation/tuple.h"
 
-#include "syntropy/core/concepts/forward_range.h"
+#include "syntropy/core/ranges/forward_range.h"
 
 // ===========================================================================
 
-#include "syntropy/core/concepts/details/bidirectional_range.details.h"
+#include "bidirectional_range.details.h"
 
 // ===========================================================================
 

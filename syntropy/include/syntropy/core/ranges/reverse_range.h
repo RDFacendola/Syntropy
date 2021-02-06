@@ -14,7 +14,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/core/concepts/bidirectional_range.h"
+#include "syntropy/core/ranges/bidirectional_range.h"
 
 // ===========================================================================
 

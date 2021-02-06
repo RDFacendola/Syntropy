@@ -12,7 +12,7 @@
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/support/compare.h"
 
-#include "syntropy/core/concepts/contiguous_range.h"
+#include "syntropy/core/ranges/contiguous_range.h"
 
 // ===========================================================================
 

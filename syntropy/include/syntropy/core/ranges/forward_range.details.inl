@@ -5,10 +5,6 @@
 
 #pragma once
 
-#include "syntropy/language/foundation/foundation.h"
-
-#include "syntropy/language/templates/priority.h"
-
 // ===========================================================================
 
 namespace Syntropy::Ranges::Extensions

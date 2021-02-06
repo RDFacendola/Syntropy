@@ -21,7 +21,7 @@
 
 // ===========================================================================
 
-#include "syntropy/core/concepts/details/forward_range.details.h"
+#include "forward_range.details.h"
 
 // ===========================================================================
 

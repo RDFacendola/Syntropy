@@ -19,12 +19,12 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/core/foundation/tuple.h"
 
-#include "syntropy/core/concepts/bidirectional_range.h"
-#include "syntropy/core/concepts/sized_range.h"
+#include "syntropy/core/ranges/bidirectional_range.h"
+#include "syntropy/core/ranges/sized_range.h"
 
 // ===========================================================================
 
-#include "syntropy/core/concepts/details/random_access_range.details.h"
+#include "random_access_range.details.h"
 
 // ===========================================================================
 

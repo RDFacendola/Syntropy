@@ -18,11 +18,11 @@
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/core/foundation/tuple.h"
 
-#include "syntropy/core/concepts/random_access_range.h"
+#include "syntropy/core/ranges/random_access_range.h"
 
 // ===========================================================================
 
-#include "syntropy/core/concepts/details/contiguous_range.details.h"
+#include "contiguous_range.details.h"
 
 // ===========================================================================
 
