@@ -10,6 +10,7 @@
 
 #include "syntropy/language/foundation/types.h"
 
+#include "syntropy/language/templates/templates.h"
 #include "syntropy/language/templates/details/type_traits_details.h"
 
 // ===========================================================================
@@ -17,61 +18,8 @@
 namespace Syntropy::Templates
 {
     /************************************************************************/
-    /* FOUNDAMENTALS                                                        */
-    /************************************************************************/
-
-    /// \brief Exposes a member Type equal to TType.
-    template <typename TType>
-    struct Alias
-    {
-        using Type = TType;
-    };
-
-    /// \brief Exposes a member Value equal to VValue.
-    template <typename TType, TType VValue>
-    struct Constant
-    {
-        static constexpr TType kValue = VValue;
-    };
-
-    /// \brief Boolean constant.
-    template <Bool VValue>
-    using BoolConstant = Constant<Bool, VValue>;
-
-    /// \brief True boolean constant.
-    using True = BoolConstant<true>;
-
-    /// \brief False boolean constant.
-    using False = BoolConstant<false>;
-
-    /// \brief Integer constant.
-    template <Int VValue>
-    using IntConstant = Constant<Int, VValue>;
-
-    /************************************************************************/
     /* META                                                                 */
     /************************************************************************/
-
-    /// \brief Boolean constant which consume any template argument and
-    ///        evaluates to false. Useful for static_assert that should always
-    ///        trigger a compilation error.
-    template <typename... TTypes>
-    inline constexpr Bool
-    AlwaysFalse = false;
-
-    /// \brief Strucure which consume any template argument and result in the
-    //         program to be ill-formed.
-    template <typename... TTypes>
-    struct IllFormed
-    {
-        static_assert(AlwaysFalse<TTypes...>, "The program is ill-formed");
-
-        /// \brief Dummy boolean.
-        Bool kBool = false;
-
-        /// \brief Dummy integer.
-        Int kInt = -1;
-    };
 
     /// \brief Metafunction that maps a sequence of types to void.
     template <typename... TTypes>
