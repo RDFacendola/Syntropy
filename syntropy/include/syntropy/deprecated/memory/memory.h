@@ -35,19 +35,6 @@ namespace Syntropy::Memory
     template <typename TType>
     Int NumericAddressOf(Pointer<TType> pointer) noexcept;
 
-    /// \brief Copy a source memory region to a destination memory region. Neither span is exceed during the process.
-    /// \return Returns the bytes copied as a result of this call.
-    Bytes Copy(const RWByteSpan& destination, const ByteSpan& source);
-
-    /// \brief Copy a source memory region to a destination memory region repeating the source until destination span is exhausted. Neither span is exceed during the process.
-    void Repeat(const RWByteSpan& destination, const ByteSpan& source);
-
-    /// \brief Set a value to each byte in a destination span.
-    void Set(const RWByteSpan& destination, Byte value);
-
-    /// \brief Zero-out a memory region.
-    void Zero(const RWByteSpan& destination);
-
     /// \brief Gather data from one or more memory regions to fill a contiguous memory region sequentially. Neither span is exceeded during the process.
     /// \return Returns the bytes copied as a result of this call.
     Bytes Gather(const RWByteSpan& destination, InitializerList<ByteSpan> sources);
@@ -83,26 +70,6 @@ namespace Syntropy::Memory
     inline Int NumericAddressOf(Pointer<TType> pointer) noexcept
     {
         return reinterpret_cast<Int>(pointer);
-    }
-
-    inline void Repeat(const RWByteSpan& destination, const ByteSpan& source)
-    {
-        for (auto span = destination; !IsEmpty(span);)
-        {
-            auto count = Copy(span, source);
-
-            span = PopFront(span, ToInt(count));
-        }
-    }
-
-    inline void Set(const RWByteSpan& destination, Byte value)
-    {
-        std::memset(destination.GetData(), static_cast<int>(value), ToInt(Size(destination)));
-    }
-
-    inline void Zero(const RWByteSpan& destination)
-    {
-        Set(destination, Byte{ 0 });
     }
 
 }
