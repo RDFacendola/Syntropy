@@ -14,7 +14,7 @@ namespace Syntropy::Memory
     /************************************************************************/
 
     [[nodiscard]] inline Mutable<RWPtr<BaseAllocator>>
-    BaseAllocator::GetScopeAllocator() noexcept
+    BaseAllocator::GetAllocator() noexcept
     {
         static thread_local RWPtr<BaseAllocator> default_allocator_
             = PtrOf(GetSystemAllocator());
@@ -75,19 +75,19 @@ namespace Syntropy::Memory
     }
 
     [[nodiscard]] inline Mutable<BaseAllocator>
-    GetAllocator() noexcept
+    GetScopeAllocator() noexcept
     {
-        return *BaseAllocator::GetScopeAllocator();
+        return *BaseAllocator::GetAllocator();
     }
 
     inline Mutable<BaseAllocator>
     SetAllocator(Mutable<BaseAllocator> allocator) noexcept
     {
-        auto& previous_allocator = GetAllocator();
+        auto& scope_allocator = GetScopeAllocator();
 
-        BaseAllocator::GetScopeAllocator() = PtrOf(allocator);
+        BaseAllocator::GetAllocator() = PtrOf(allocator);
 
-        return previous_allocator;
+        return scope_allocator;
     }
 
 }

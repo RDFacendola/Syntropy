@@ -7,8 +7,7 @@
 
 #include <iostream>
 
-#include "syntropy/language/foundation/foundation.h"
-#include "syntropy/language/support/compare.h"
+#include "simple_compliance/bulk.h"
 
 int main()
 {

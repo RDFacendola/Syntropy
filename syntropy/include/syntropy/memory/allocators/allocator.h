@@ -70,7 +70,7 @@ namespace Syntropy::Memory
     /// \remarks The active allocator is used when an explicit allocator
     ///          cannot be supplied.
     [[nodiscard]] Mutable<BaseAllocator>
-    GetAllocator() noexcept;
+    GetScopeAllocator() noexcept;
 
     /// \brief Set the active thread-local allocator.
     /// \return Returns the previous allocator.
@@ -92,7 +92,7 @@ namespace Syntropy::Memory
         GetSystemAllocator() noexcept;
 
         friend Mutable<BaseAllocator>
-        GetAllocator() noexcept;
+        GetScopeAllocator() noexcept;
 
         friend Mutable<BaseAllocator>
         SetAllocator(Mutable<BaseAllocator>) noexcept;
@@ -132,7 +132,7 @@ namespace Syntropy::Memory
 
         /// \brief Get the active allocator in the current scope.
         [[nodiscard]] static Mutable<RWPtr<BaseAllocator>>
-        GetScopeAllocator() noexcept;
+        GetAllocator() noexcept;
 
     };
 
