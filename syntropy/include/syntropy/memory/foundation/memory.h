@@ -10,6 +10,9 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
+#include "syntropy/memory/foundation/byte.h"
+#include "syntropy/memory/foundation/byte_span.h"
+
 // ===========================================================================
 
 namespace Syntropy::Memory
@@ -38,7 +41,7 @@ namespace Syntropy::Memory
     /// \brief Zero-out a memory region.
     void
     Zero(Immutable<RWByteSpan> destination);
-    
+
 }
 
 // ===========================================================================

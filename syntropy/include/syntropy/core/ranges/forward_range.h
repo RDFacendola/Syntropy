@@ -16,8 +16,9 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 
+#include "syntropy/core/tuples/tuple.h"
+
 #include "syntropy/diagnostics/assert.h"
-#include "syntropy/core/foundation/tuple.h"
 
 // ===========================================================================
 
@@ -154,29 +155,6 @@ namespace Syntropy
     /// \brief Get an iterator past the last element in a range.
     template <Ranges::Concepts::ForwardRange TRange>
     constexpr auto end(Immutable<TRange> range) noexcept;
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* FORWARD RANGE EXTENSIONS                                             */
-    /************************************************************************/
-
-    // Functors to extend ranges support to custom types.
-
-    /// \brief Access range's first element.
-    template <typename TType>
-    struct Front;
-
-    /// \brief Discard range's first element and return the resulting range.
-    template <typename TType>
-    struct PopFront;
-
-    /// \brief Check whether a range is empty.
-    template <typename TType>
-    struct IsEmpty;
 }
 
 // ===========================================================================

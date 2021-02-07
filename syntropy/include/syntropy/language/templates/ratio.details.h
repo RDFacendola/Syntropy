@@ -183,7 +183,7 @@ namespace Syntropy::Templates::Details
     ///        greater-than or equal-to URatio, equal to false otherwise.
     template <typename TRatio, typename URatio>
     inline constexpr Bool
-    RatioGreaterEqua
+    RatioGreaterEqual
         = std::ratio_greater_equal_v<RatioHelper<TRatio>, RatioHelper<URatio>>;
 }
 

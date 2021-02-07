@@ -6,7 +6,9 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+
 #include "syntropy/language/templates/type_traits.h"
+#include "syntropy/language/templates/templates.h"
 
 // ===========================================================================
 
@@ -87,7 +89,8 @@ namespace Syntropy::Tuples::Templates::Details
     ///        VIndex-th element.
     template <typename TType, typename TIndex>
     using DetectTupleGetter
-        = decltype(Get<TIndex::kValue>(Syntropy::Templates::Declval<TType>()));
+        = decltype(Get<Syntropy::Templates::ConstantValueOf<TIndex>>(
+              Syntropy::Templates::Declval<TType>()));
 
     /// \brief Constant equal to true if TType provides compile-time access to
     ///        the VIndex-th element, equal to false otherwise.

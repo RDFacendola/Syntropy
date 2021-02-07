@@ -26,16 +26,14 @@ namespace Syntropy::Tuples::Details
               Syntropy::Templates::Sequence<VElementIndex...>)
              {
                  return MakeTuple(
-                    (Get<VElementIndex>(
-                        Get<VTupleIndex>(Forward<TTuple>(tuple))))...);
+                     Get<VElementIndex>(
+                         Get<VTupleIndex>(Forward<TTuple>(tuple)))...);
              };
 
         return tuple_cat(
             ForwardAsTuple(tuples...),
-            EnumerateTupleIndexes<
-                Syntropy::Templates::RemoveConstReference<TTuples>...>{},
-                EnumerateTupleElementIndexes<
-                    Syntropy::Templates::RemoveConstReference<TTuples>...>{});
+            EnumerateTupleIndexes<Syntropy::Templates::RemoveConstReference<TTuples>...>{},
+            EnumerateTupleElementIndexes<Syntropy::Templates::RemoveConstReference<TTuples>...>{});
     }
 
     // Flatten.

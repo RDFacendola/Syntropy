@@ -9,18 +9,7 @@
 
 #include "syntropy/language/templates/priority.h"
 
-// ===========================================================================
-
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* CONTIGUOUS RANGE EXTENSIONS                                          */
-    /************************************************************************/
-
-    /// \brief Access range's element storage.
-    template <typename TType>
-    struct Data;
-}
+#include "syntropy/core/ranges/range_extensions.h"
 
 // ===========================================================================
 

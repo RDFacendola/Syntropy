@@ -51,7 +51,7 @@ namespace Syntropy::Math
     /// \return Returns the first number equal or lesser than number which is
     ///         multiple of multiple.
     template <typename TNumber>
-    [[nodiscard]] constexpr Number
+    [[nodiscard]] constexpr TNumber
     Floor(TNumber rhs, TNumber multiple);
 
     /// \brief Divide lhs by rhs and ceil the result to the next integer value.

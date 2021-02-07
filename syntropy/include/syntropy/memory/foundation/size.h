@@ -217,6 +217,14 @@ namespace Syntropy::Memory
     /* CONVERSION                                                           */
     /************************************************************************/
 
+    /// \brief Convert an integer number to a data size amount
+    ///        (in TSize::Unit).
+    template <typename TSize,
+              Concepts::RatioType TUnitTo = typename TSize::Unit>
+    requires Concepts::SameAs<TSize, Size<TUnitTo>>
+    [[nodiscard]] constexpr TSize
+    ToSize(Int rhs) noexcept;
+
     /// \brief Convert a data size amount to integer (in TUnits).
     template <Concepts::RatioType TUnit>
     [[nodiscard]] constexpr Int
@@ -230,14 +238,6 @@ namespace Syntropy::Memory
     template <Concepts::RatioType TUnit>
     [[nodiscard]] constexpr Bytes
     ToBytes(Immutable<Size<TUnit>> rhs) noexcept;
-
-    /// \brief Convert an integer number to a data size amount
-    ///        (in TSize::Unit).
-    template <typename TSize,
-              Concepts::RatioType TUnitTo = typename TSize::Unit>
-    requires Concepts::SameAs<TSize, Size<TUnitTo>>
-    [[nodiscard]] constexpr TSize
-    ToSize(Int rhs) noexcept;
 
     /// \brief Convert a data size amount to another amount with different
     ///        units, rounding the result towards zero.
@@ -320,55 +320,55 @@ namespace Syntropy::Memory::Literals
     ///        to Bytes.
     /// \param number Number to convert.
     [[nodiscard]] constexpr Bytes
-    operator "" _Bytes(std::size_t lhs) noexcept;
+    operator "" _Bytes(IntLiteral lhs) noexcept;
 
     /// \brief User-defined literal used to declare a data size amount
     ///        in KiloBytes.
     /// \param number Number to convert.
     [[nodiscard]] constexpr KiloBytes
-    operator "" _KBytes(std::size_t lhs) noexcept;
+    operator "" _KBytes(IntLiteral lhs) noexcept;
 
     /// \brief User-defined literal used to declare a data size amount
     ///        in MegaBytes.
     /// \param number Number to convert.
     [[nodiscard]] constexpr MegaBytes
-    operator "" _MBytes(std::size_t lhs) noexcept;
+    operator "" _MBytes(IntLiteral lhs) noexcept;
 
     /// \brief User-defined literal used to declare a data size amount
     ///        in GigaBytes.
     /// \param number Number to convert.
     [[nodiscard]] constexpr GigaBytes
-    operator "" _GBytes(std::size_t lhs) noexcept;
+    operator "" _GBytes(IntLiteral lhs) noexcept;
 
     /// \brief User-defined literal used to declare a data size amount
     ///        in TeraBytes.
     /// \param number Number to convert.
     [[nodiscard]] constexpr TeraBytes
-    operator "" _TBytes(std::size_t lhs) noexcept;
+    operator "" _TBytes(IntLiteral lhs) noexcept;
 
     /// \brief User-defined literal used to declare a data size amount
     ///        in KibiBytes.
     /// \param number Number to convert.
     [[nodiscard]] constexpr KibiBytes
-    operator "" _KiBytes(std::size_t lhs) noexcept;
+    operator "" _KiBytes(IntLiteral lhs) noexcept;
 
     /// \brief User-defined literal used to declare a data size amount
     ///        in MebiBytes.
     /// \param number Number to convert.
     [[nodiscard]] constexpr MebiBytes
-    operator "" _MiBytes(std::size_t lhs) noexcept;
+    operator "" _MiBytes(IntLiteral lhs) noexcept;
 
     /// \brief User-defined literal used to declare a data size amount
     ///        in GibiBytes.
     /// \param number Number to convert.
     [[nodiscard]] constexpr GibiBytes
-    operator "" _GiBytes(std::size_t lhs) noexcept;
+    operator "" _GiBytes(IntLiteral lhs) noexcept;
 
     /// \brief User-defined literal used to declare a data size amount
     ///        in TebiBytes.
     /// \param number Number to convert.
     [[nodiscard]] constexpr TebiBytes
-    operator "" _TiBytes(std::size_t lhs) noexcept;
+    operator "" _TiBytes(IntLiteral lhs) noexcept;
 }
 
 // ===========================================================================

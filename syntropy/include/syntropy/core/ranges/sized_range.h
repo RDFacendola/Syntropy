@@ -15,11 +15,12 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
+#include "syntropy/language/support/compare.h"
 
 #include "syntropy/diagnostics/assert.h"
-#include "syntropy/core/foundation/tuple.h"
 
-#include "syntropy/core/concepts/forward_range.h"
+#include "syntropy/core/ranges/forward_range.h"
+#include "syntropy/core/ranges/range_extensions.h"
 
 // ===========================================================================
 
@@ -112,10 +113,6 @@ namespace Syntropy::Ranges::Extensions
     /************************************************************************/
     /* SIZED RANGE EXTENSIONS                                               */
     /************************************************************************/
-
-    /// \brief Get range's elements count.
-    template <typename TType>
-    struct Count;
 
     /// \brief Check whether a range is empty.
     ///

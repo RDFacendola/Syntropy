@@ -31,7 +31,7 @@ namespace Syntropy::Tuples
     ::Tuple(UnwindTag,
             Syntropy::Templates::Sequence<VIndexes...>,
             Forwarding<TTuple> tuple) noexcept
-        : Tuple(ElementwiseTag, Get<VIndexes>(Forward<TTuple>(tuple))...)
+        : Tuple(ElementwiseTag{}, Get<VIndexes>(Forward<TTuple>(tuple))...)
     {
 
     }

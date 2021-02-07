@@ -21,8 +21,8 @@ namespace Syntropy::Memory
     }
 
     template <typename TTraits>
-    constexpr BaseAddress<TTraits>:
-    :BaseAddress(TPointer pointer) noexcept
+    constexpr BaseAddress<TTraits>
+    ::BaseAddress(TPointer pointer) noexcept
         : address_(reinterpret_cast<Int>(pointer))
     {
 

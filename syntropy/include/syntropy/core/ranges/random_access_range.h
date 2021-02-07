@@ -17,10 +17,10 @@
 #include "syntropy/language/templates/concepts.h"
 
 #include "syntropy/diagnostics/assert.h"
-#include "syntropy/core/foundation/tuple.h"
 
 #include "syntropy/core/ranges/bidirectional_range.h"
 #include "syntropy/core/ranges/sized_range.h"
+#include "syntropy/core/ranges/range_extensions.h"
 
 // ===========================================================================
 
@@ -160,17 +160,6 @@ namespace Syntropy::Ranges::Extensions
     /************************************************************************/
     /* RANDOM ACCESS RANGE EXTENSIONS                                       */
     /************************************************************************/
-
-    /// \brief Access range's element by index.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <typename TType>
-    struct At;
-
-    /// \brief Obtain a view to a sub-range.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    /// \brief Obtain a view to a sub-range.
-    template <typename TType>
-    struct Slice;
 
     /// \brief Access range's first element.
     /// \remarks Accessing the first element of an empty range results in

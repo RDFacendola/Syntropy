@@ -9,18 +9,7 @@
 
 #include "syntropy/language/templates/priority.h"
 
-// ===========================================================================
-
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* SIZED RANGE EXTENSIONS                                               */
-    /************************************************************************/
-
-    /// \brief Get range's elements count.
-    template <typename TType>
-    struct Count;
-}
+#include "syntropy/core/ranges/range_extensions.h"
 
 // ===========================================================================
 

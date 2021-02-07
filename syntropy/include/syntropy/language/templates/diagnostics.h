@@ -33,7 +33,7 @@ namespace Syntropy::Templates
         static_assert(AlwaysFalse<TTypes...>, "The program is ill-formed");
 
         /// \brief Dummy value.
-        TType kValue = TType{};
+        static TType kValue = TType{};
     };
 
 }

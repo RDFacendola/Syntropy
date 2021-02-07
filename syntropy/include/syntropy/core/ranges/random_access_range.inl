@@ -120,8 +120,8 @@ namespace Syntropy::Ranges::Extensions
     /************************************************************************/
 
     template <Concepts::BaseRandomAccessRange TRange>
-    [[nodiscard]] inline decltype(auto)
-    Front<TRange>::operator()(Immutable<TRange> range) const noexcept
+    [[nodiscard]] inline decltype(auto) Front<TRange>
+    ::operator()(Immutable<TRange> range) const noexcept
     {
         using TCount = Templates::RangeCountType<TRange>;
 
@@ -129,7 +129,8 @@ namespace Syntropy::Ranges::Extensions
     }
 
     template <Concepts::BaseRandomAccessRange TRange>
-    [[nodiscard]] inline TRange PopFront<TRange>
+    [[nodiscard]] inline
+    TRange PopFront<TRange>
     ::operator()(Immutable<TRange> range) const noexcept
     {
         using TCount = Templates::RangeCountType<TRange>;
@@ -140,7 +141,8 @@ namespace Syntropy::Ranges::Extensions
     };
 
     template <Concepts::BaseRandomAccessRange TRange>
-    [[nodiscard]] inline decltype(auto) Back<TRange>
+    [[nodiscard]]
+    inline decltype(auto) Back<TRange>
     ::operator()(Immutable<TRange> range) const noexcept
     {
         using TCount = Templates::RangeCountType<TRange>;
@@ -150,7 +152,8 @@ namespace Syntropy::Ranges::Extensions
     };
 
     template <Concepts::BaseRandomAccessRange TRange>
-    [[nodiscard]] inline TRange PopBack<TRange>
+    [[nodiscard]]
+    inline TRange PopBack<TRange>
     ::operator()(Immutable<TRange> range) const noexcept
     {
         using TCount = Templates::RangeCountType<TRange>;

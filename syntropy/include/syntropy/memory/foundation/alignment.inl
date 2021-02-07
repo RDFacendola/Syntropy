@@ -144,13 +144,13 @@ namespace Syntropy::Memory
 // ===========================================================================
 
 namespace Syntropy::Memory::Literals
-{}
+{
     /************************************************************************/
     /* LITERALS                                                             */
     /************************************************************************/
 
     [[nodiscard]] constexpr Alignment
-    operator "" _Alignment(std::size_t lhs) noexcept
+    operator "" _Alignment(IntLiteral lhs) noexcept
     {
         return Alignment(lhs);
     }

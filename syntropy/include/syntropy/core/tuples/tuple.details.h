@@ -11,6 +11,7 @@
 #include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/language/templates/type_traits.h"
+#include "syntropy/language/templates/diagnostics.h"
 
 // ===========================================================================
 
@@ -70,7 +71,8 @@ namespace Syntropy::Tuples::Details
     ///        respective type UType, true otherwise.
     template <typename TTypeList, typename... UTypes>
     inline constexpr Bool
-    ExplicitIfTupleConvertingConstructor;
+    ExplicitIfTupleConvertingConstructor
+        = Syntropy::Templates::IllFormed<Bool, TTypeList, UTypes...>::kValue;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
@@ -85,7 +87,8 @@ namespace Syntropy::Tuples::Details
     ///        respective const-reference-qualified type UType, true otherwise.
     template <typename TTypeList, typename... UTypes>
     inline constexpr Bool
-    ExplicitIfTupleConvertingCopyConstructor;
+    ExplicitIfTupleConvertingCopyConstructor
+        = Syntropy::Templates::IllFormed<Bool, TTypeList, UTypes...>::kValue;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
@@ -101,7 +104,8 @@ namespace Syntropy::Tuples::Details
     ///        respective type UType, true otherwise.
     template <typename TTypeList, typename... UTypes>
     inline constexpr Bool
-    ExplicitIfTupleConvertingMoveConstructor;
+    ExplicitIfTupleConvertingMoveConstructor
+        = Syntropy::Templates::IllFormed<Bool, TTypeList, UTypes...>::kValue;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes, typename... UTypes>
@@ -146,14 +150,14 @@ namespace Syntropy::Tuples::Details
     template <typename TTypeList, typename... UTypeLists>
     inline constexpr Bool
     EnableIfTupleConvertingConstructorHelper<true, TTypeList, UTypeLists...>
-        = Syntropy::Concepts::ConstructibleType
+        = Syntropy::Concepts::ConstructibleType<
             TTypeList,
             Syntropy::Templates::AddRValueReference<UTypeLists>...>;
 
     /// \brief Enable converting tuple constructor.
     template <typename TTypeList, typename... UTypes>
     using EnableIfTupleConvertingConstructor
-        = RWPtr<Syntropy::Templates::EnableIf
+        = RWPtr<Syntropy::Templates::EnableIf<
             EnableIfTupleConvertingConstructorHelper<
                 Syntropy::Templates::TypeListRank<TTypeList>
                     == sizeof...(UTypes),
@@ -392,11 +396,9 @@ namespace Syntropy::Tuples::Details
     };
 
     /// \brief Generate a sequence that can be used to access tuple elements.
-    template <Concepts::NTupleReference TTuple,
-              Concepts::NTupleReference... TTuples>
+    template <Concepts::NTupleReference... TTuples>
     using EnumerateTupleElementIndexes
-        = typename EnumerateTupleElementIndexesHelper<TTuple,
-                                                      TTuples...>::Type;
+        = typename EnumerateTupleElementIndexesHelper<TTuples...>::Type;
 
     /// \brief Concatenate a set of tuples.
     template <Concepts::NTupleReference... TTuples>
@@ -420,6 +422,6 @@ namespace Syntropy::Tuples::Details
 
 // ===========================================================================
 
-#include "tuple_details.inl"
+#include "tuple.details.inl"
 
 // ===========================================================================

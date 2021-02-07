@@ -124,7 +124,7 @@ namespace Syntropy::Memory::Literals
 
     /// \brief User-defined literal used to convert a number to Alignment type.
     [[nodiscard]] constexpr
-    Alignment operator "" _Alignment(std::size_t lhs) noexcept;
+    Alignment operator "" _Alignment(IntLiteral lhs) noexcept;
 }
 
 // ===========================================================================

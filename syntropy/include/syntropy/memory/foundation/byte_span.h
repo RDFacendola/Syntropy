@@ -12,7 +12,7 @@
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/support/swap.h"
 
-#include "syntropy/core/concepts/contiguous_range.h"
+#include "syntropy/core/ranges/contiguous_range.h"
 
 #include "syntropy/math/math.h"
 
@@ -78,7 +78,7 @@ namespace Syntropy::Memory
         ///
         /// If the provided offset is not within the byte span the behavior
         /// of this method is undefined.
-        [[nodiscard]] constexpr Reference
+        [[nodiscard]] constexpr TReference
         operator[](Immutable<Bytes> offset) const noexcept;
 
         /// \brief Access the underlying storage.

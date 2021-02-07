@@ -7,6 +7,8 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
+#include "syntropy/language/templates/diagnostics.h"
+
 // ===========================================================================
 
 namespace Syntropy::Templates
@@ -116,7 +118,7 @@ namespace Syntropy::Templates::Details
     ///        increasing contiguous sequence, equal to false otherwise.
     template <typename TSequence>
     inline constexpr Bool
-    IsContiguousSequence;
+    IsContiguousSequence = IllFormed<Bool, TSequence>::kValue;
 
     /// \brief Partial specialization for sequences whose first two elements
     ///        are contiguous.

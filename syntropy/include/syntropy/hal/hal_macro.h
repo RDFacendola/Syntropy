@@ -15,27 +15,53 @@ namespace Syntropy
     /* MSVC COMPILER                                                        */
     /************************************************************************/
 
-    #ifdef _MSC_VER
+#ifdef _MSC_VER
 
      /// \brief Expands to the current function name.
      #define SYNTROPY_HAL_FUNCTION \
          __FUNCTION__
 
      /// \brief Causes the debugger to break if attached, or the application
-    ///         to terminate otherwise.
+     ///        to terminate otherwise.
      #define SYNTROPY_HAL_TRAP \
          { __debugbreak(); }
+
+#endif
+
+// ===========================================================================
+
+    /************************************************************************/
+    /* CLANG COMPILER                                                       */
+    /************************************************************************/
+
+#ifdef __clang__
+
+#include <signal.h>
+
+    /// \brief Expands to the current function name.
+    #define SYNTROPY_HAL_FUNCTION \
+        __func__
+
+    /// \brief Causes the debugger to break if attached, or the application
+    ///         to terminate otherwise.
+    #define SYNTROPY_HAL_TRAP \
+        { raise(SIGTRAP); }
+
+#endif
+
+// ===========================================================================
 
     /************************************************************************/
     /* UNKNOWN                                                              */
     /************************************************************************/
 
-    #else
-
+#ifndef SYNTROPY_HAL_FUNCTION
     #error "SYNTROPY_HAL_FUNCTION not implemented for this platform."
-    #error "SYNTROPY_HAL_TRAP not implemented for this platform."
+#endif
 
-    #endif
+#ifndef SYNTROPY_HAL_TRAP
+    #error "SYNTROPY_HAL_TRAP not implemented for this platform."
+#endif
 
 }
 

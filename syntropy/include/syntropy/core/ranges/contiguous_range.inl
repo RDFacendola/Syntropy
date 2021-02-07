@@ -33,7 +33,7 @@ namespace Syntropy::Ranges
             = (PtrOf(lhs) == PtrOf(rhs));
 
         auto both_empty
-            = (Details::RouteIsEmpty(lhs);
+            = (Details::RouteIsEmpty(lhs));
 
         auto same_data
             = (Details::RouteData(lhs) == Details::RouteData(rhs));

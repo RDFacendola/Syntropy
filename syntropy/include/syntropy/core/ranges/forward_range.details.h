@@ -9,26 +9,7 @@
 
 #include "syntropy/language/templates/priority.h"
 
-// ===========================================================================
-
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* FORWARD RANGE EXTENSIONS                                             */
-    /************************************************************************/
-
-    /// \brief Access range's first element.
-    template <typename TType>
-    struct Front;
-
-    /// \brief Discard range's first element and return the resulting range.
-    template <typename TType>
-    struct PopFront;
-
-    /// \brief Check whether a range is empty.
-    template <typename TType>
-    struct IsEmpty;
-}
+#include "syntropy/core/ranges/range_extensions.h"
 
 // ===========================================================================
 
@@ -204,14 +185,16 @@ namespace Syntropy::Ranges::Details
 
     template <typename TRange>
     [[nodiscard]] constexpr
-    decltype(auto) RangeIterator<TRange>::operator*() const noexcept
+    decltype(auto) RangeIterator<TRange>
+    ::operator*() const noexcept
     {
         return RouteFront(range_);
     }
 
     template <typename TRange>
     constexpr
-    Mutable<RangeIterator<TRange>> RangeIterator<TRange>::operator++() noexcept
+    Mutable<RangeIterator<TRange>> RangeIterator<TRange>
+    ::operator++() noexcept
     {
         range_ = RoutePopFront(range_);
 
@@ -219,8 +202,8 @@ namespace Syntropy::Ranges::Details
     }
 
     template <typename TRange>
-    [[nodiscard]] constexpr Bool RangeIterator<TRange
-    ::operator==(Immutable<RangeIterator> other) const noexcept
+    [[nodiscard]] constexpr Bool RangeIterator<TRange>
+    ::operator==(Immutable<RangeIterator<TRange>> other) const noexcept
     {
         SYNTROPY_ASSERT(RouteIsEmpty(other.range_));
 

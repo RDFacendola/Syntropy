@@ -9,22 +9,7 @@
 
 #include "syntropy/language/templates/priority.h"
 
-// ===========================================================================
-
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* BIDIRECTIONAL RANGE EXTENSIONS                                       */
-    /************************************************************************/
-
-    /// \brief Access range's last element.
-    template <typename TType>
-    struct Back;
-
-    /// \brief Discard range's last element and return the resulting range.
-    template <typename TType>
-    struct PopBack;
-}
+#include "syntropy/core/ranges/range_extensions.h"
 
 // ===========================================================================
 

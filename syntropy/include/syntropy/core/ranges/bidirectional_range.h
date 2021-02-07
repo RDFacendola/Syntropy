@@ -17,7 +17,6 @@
 #include "syntropy/language/templates/concepts.h"
 
 #include "syntropy/diagnostics/assert.h"
-#include "syntropy/core/foundation/tuple.h"
 
 #include "syntropy/core/ranges/forward_range.h"
 
@@ -82,23 +81,6 @@ namespace Syntropy::Ranges
     template <Concepts::BidirectionalRange TRange>
     [[nodiscard]] constexpr TRange
     PopBack(Immutable<TRange> range) noexcept;
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* BIDIRECTIONAL RANGE EXTENSIONS                                       */
-    /************************************************************************/
-
-    /// \brief Access range's last element.
-    template <typename TType>
-    struct Back;
-
-    /// \brief Discard range's last element and return the resulting range.
-    template <typename TType>
-    struct PopBack;
 }
 
 // ===========================================================================

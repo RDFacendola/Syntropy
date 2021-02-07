@@ -17,7 +17,7 @@
 
 // ===========================================================================
 
-#include "syntropy/core/foundation/details/tuple.details.h"
+#include "tuple.details.h"
 
 // ===========================================================================
 
@@ -40,25 +40,25 @@ namespace Syntropy::Tuples
     template <typename TElement, typename... TElements>
     struct Tuple<TElement, TElements...> : private Tuple<TElements...>
     {
-        template <Int VIndex, typename... TElements>
+        template <Int VIndex, typename... UElements>
         friend constexpr
-        Immutable<Templates::ElementType<VIndex, Tuple<TElements...>>>
-        Get(Immutable<Tuple<TElements...>> tuple) noexcept;
+        Immutable<Templates::ElementType<VIndex, Tuple<UElements...>>>
+        Get(Immutable<Tuple<UElements...>> tuple) noexcept;
 
-        template <Int VIndex, typename... TElements>
+        template <Int VIndex, typename... UElements>
         friend constexpr
-        Mutable<Templates::ElementType<VIndex, Tuple<TElements...>>>
-        Get(Mutable<Tuple<TElements...>> tuple) noexcept;
+        Mutable<Templates::ElementType<VIndex, Tuple<UElements...>>>
+        Get(Mutable<Tuple<UElements...>> tuple) noexcept;
 
-        template <Int VIndex, typename... TElements>
+        template <Int VIndex, typename... UElements>
         friend constexpr
-        Immovable<Templates::ElementType<VIndex, Tuple<TElements...>>>
-        Get(Immovable<Tuple<TElements...>> tuple) noexcept;
+        Immovable<Templates::ElementType<VIndex, Tuple<UElements...>>>
+        Get(Immovable<Tuple<UElements...>> tuple) noexcept;
 
-        template <Int VIndex, typename... TElements>
+        template <Int VIndex, typename... UElements>
         friend constexpr
-        Movable<Templates::ElementType<VIndex, Tuple<TElements...>>>
-        Get(Movable<Tuple<TElements...>> tuple) noexcept;
+        Movable<Templates::ElementType<VIndex, Tuple<UElements...>>>
+        Get(Movable<Tuple<UElements...>> tuple) noexcept;
 
     public:
 
@@ -139,7 +139,7 @@ namespace Syntropy::Tuples
             <ElementList, UElement, UElements...>)
         constexpr Tuple(Immutable<Tuple<UElement, UElements...>> rhs) noexcept
             : Tuple(UnwindTag{},
-                    Syntropy::Templates::SequenceFor<UElement, UElements...>,
+                    Syntropy::Templates::SequenceFor<UElement, UElements...>{},
                     rhs)
         {
 
@@ -156,7 +156,7 @@ namespace Syntropy::Tuples
             <ElementList, UElement, UElements...>)
          Tuple(Movable<Tuple<UElement, UElements...>> rhs) noexcept
             : Tuple(UnwindTag{},
-                    Syntropy::Templates::SequenceFor<UElement, UElements...>,
+                    Syntropy::Templates::SequenceFor<UElement, UElements...>{},
                     Move(rhs))
         {
 

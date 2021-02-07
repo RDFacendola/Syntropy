@@ -16,9 +16,9 @@
 #include "syntropy/language/templates/concepts.h"
 
 #include "syntropy/diagnostics/assert.h"
-#include "syntropy/core/foundation/tuple.h"
 
 #include "syntropy/core/ranges/random_access_range.h"
+#include "syntropy/core/ranges/range_extensions.h"
 
 // ===========================================================================
 
@@ -86,10 +86,6 @@ namespace Syntropy::Ranges::Extensions
     /************************************************************************/
     /* CONTIGUOUS RANGE EXTENSIONS                                          */
     /************************************************************************/
-
-    /// \brief Access range's element storage.
-    template <typename TType>
-    struct Data;
 
     /// \brief Access range's element by index.
     ///

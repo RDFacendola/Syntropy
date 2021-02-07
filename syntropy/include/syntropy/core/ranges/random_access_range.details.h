@@ -9,22 +9,7 @@
 
 #include "syntropy/language/templates/priority.h"
 
-// ===========================================================================
-
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* RANDOM ACCESS RANGE EXTENSIONS                                       */
-    /************************************************************************/
-
-    /// \brief Access range's element by index.
-    template <typename TType>
-    struct At;
-
-    /// \brief Obtain a view to a sub-range.
-    template <typename TType>
-    struct Slice;
-}
+#include "syntropy/core/ranges/range_extensions.h"
 
 // ===========================================================================
 

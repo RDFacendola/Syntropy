@@ -13,7 +13,8 @@ namespace Syntropy::Memory
     /* SIZE                                                                 */
     /************************************************************************/
 
-    template <Concepts::RatioType TUnit> onstexpr Size<TUnit>
+    template <Concepts::RatioType TUnit>
+    constexpr Size<TUnit>
     ::Size(Int count) noexcept
         : count_(count)
     {
@@ -222,6 +223,14 @@ namespace Syntropy::Memory
      /* CONVERSION                                                           */
      /************************************************************************/
 
+    template <typename TSize, Concepts::RatioType TUnitTo>
+    requires Concepts::SameAs<TSize, Size<TUnitTo>>
+    [[nodiscard]] constexpr TSize
+    ToSize(Int rhs) noexcept
+    {
+        return Size<TUnitTo>{ rhs };
+    }
+
     template <Concepts::RatioType TUnit>
     [[nodiscard]] constexpr Int
     ToInt(Immutable<Size<TUnit>> rhs) noexcept
@@ -240,14 +249,6 @@ namespace Syntropy::Memory
     ToBytes(Immutable<Size<TUnit>> rhs) noexcept
     {
         return ToSize<Bytes>(rhs);
-    }
-
-    template <typename TSize, Concepts::RatioType TUnitTo>
-    requires Concepts::SameAs<TSize, Size<TUnitTo>>
-    [[nodiscard]] constexpr TSize
-    ToSize(Int rhs) noexcept
-    {
-        return Size<TUnitTo>{ rhs };
     }
 
     template <typename TSize,
@@ -360,55 +361,55 @@ namespace Syntropy::Memory::Literals
     /************************************************************************/
 
     [[nodiscard]]  constexpr Bytes
-    ::operator "" _Bytes(std::size_t lhs) noexcept
+    operator "" _Bytes(IntLiteral lhs) noexcept
     {
         return Bytes(lhs);
     }
 
     [[nodiscard]] constexpr KiloBytes
-    ::operator "" _KBytes(std::size_t lhs) noexcept
+    operator "" _KBytes(IntLiteral lhs) noexcept
     {
         return KiloBytes(lhs);
     }
 
     [[nodiscard]] constexpr MegaBytes
-    ::operator "" _MBytes(std::size_t lhs) noexcept
+    operator "" _MBytes(IntLiteral lhs) noexcept
     {
         return MegaBytes(lhs);
     }
 
     [[nodiscard]] constexpr GigaBytes
-    ::operator "" _GBytes(std::size_t lhs) noexcept
+    operator "" _GBytes(IntLiteral lhs) noexcept
     {
         return GigaBytes(lhs);
     }
 
     [[nodiscard]] constexpr TeraBytes
-    ::operator "" _TBytes(std::size_t lhs) noexcept
+    operator "" _TBytes(IntLiteral lhs) noexcept
     {
         return TeraBytes(lhs);
     }
 
     [[nodiscard]] constexpr KibiBytes
-    ::operator "" _KiBytes(std::size_t lhs) noexcept
+    operator "" _KiBytes(IntLiteral lhs) noexcept
     {
         return KibiBytes(lhs);
     }
 
     [[nodiscard]] constexpr MebiBytes
-    ::operator "" _MiBytes(std::size_t lhs) noexcept
+    operator "" _MiBytes(IntLiteral lhs) noexcept
     {
         return MebiBytes(lhs);
     }
 
     [[nodiscard]] constexpr GibiBytes
-    ::operator "" _GiBytes(std::size_t lhs) noexcept
+    operator "" _GiBytes(IntLiteral lhs) noexcept
     {
         return GibiBytes(lhs);
     }
 
     [[nodiscard]] constexpr TebiBytes
-    ::operator "" _TiBytes(std::size_t lhs) noexcept
+    operator "" _TiBytes(IntLiteral lhs) noexcept
     {
         return TebiBytes(lhs);
     }

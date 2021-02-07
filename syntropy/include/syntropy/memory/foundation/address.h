@@ -27,8 +27,8 @@ namespace Syntropy::Memory
     template <typename TTraits>
     class BaseAddress
     {
-        template <typename TTraits>
-        friend constexpr Int ToInt(BaseAddress<TTraits> rhs) noexcept;
+        template <typename UTraits>
+        friend constexpr Int ToInt(BaseAddress<UTraits> rhs) noexcept;
 
     public:
 

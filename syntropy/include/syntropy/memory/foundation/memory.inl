@@ -8,6 +8,7 @@
 #include <cstring>
 
 #include "syntropy/language/foundation/foundation.h"
+#include "syntropy/core/ranges/forward_range.h"
 
 // ===========================================================================
 
@@ -20,20 +21,20 @@ namespace Syntropy::Memory
     inline void
     Repeat(const RWByteSpan& destination, const ByteSpan& source)
     {
-        for (auto span = destination; !IsEmpty(span);)
-        {
-            auto count = Copy(span, source);
-
-            span = PopFront(span, ToInt(count));
-        }
+        // for (auto span = destination; !Ranges::IsEmpty(span);)
+        // {
+        //     auto count = Copy(span, source);
+        //
+        //     span = Ranges::PopFront(span, ToInt(count));
+        // }
     }
 
     inline void
     Set(const RWByteSpan& destination, Byte value)
     {
-        std::memset(destination.GetData(),
-                    static_cast<int>(value),
-                    ToInt(Size(destination)));
+        // std::memset(destination.GetData(),
+        //             static_cast<int>(value),
+        //             ToInt(Ranges::Count(destination)));
     }
 
     inline void
