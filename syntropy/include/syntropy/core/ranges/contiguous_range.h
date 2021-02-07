@@ -77,6 +77,13 @@ namespace Syntropy::Ranges
               Concepts::ContiguousRange URange>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
+    /// \brief Check whether two contiguous range intersects.
+    template <Concepts::ContiguousRange TRange,
+              Concepts::ContiguousRange URange>
+    [[nodiscard]] constexpr Bool
+    Intersect(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
 }
 
 // ===========================================================================

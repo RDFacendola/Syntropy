@@ -22,12 +22,12 @@ namespace Syntropy::Math
 
     /// \brief Get the minimum element among first and rest.
     template <typename TValue, typename... TValues>
-    [[nodiscard]] constexpr Templates::CommonType<TValue, TValues...>
+    [[nodiscard]] constexpr auto
     Min(Immutable<TValue> first, Immutable<TValues>... rest) noexcept;
 
     /// \brief Get the maximum element among first and rest.
     template <typename TValue, typename... TValues>
-    [[nodiscard]] constexpr Templates::CommonType<TValue, TValues...>
+    [[nodiscard]] constexpr auto
     Max(Immutable<TValue> first, Immutable<TValues>... rest) noexcept;
 
     /// \brief Get the smallest integral number greater than or equal to rhs.

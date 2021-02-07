@@ -43,6 +43,25 @@ namespace Syntropy::Ranges
 
         return same_instance || (same_count && (both_empty || same_data));
     }
+
+    template <Concepts::ContiguousRange TRange,
+              Concepts::ContiguousRange URange>
+    [[nodiscard]] constexpr Bool
+    Intersect(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    {
+        using TCount = decltype(Ranges::Count(lhs));
+
+        auto lhs_count = Ranges::Count(lhs);
+        auto rhs_count = Ranges::Count(rhs);
+        auto lhs_data = Ranges::Data(lhs);
+        auto rhs_data = Ranges::Data(rhs);
+
+        return (lhs_count == TCount{ 0 })
+            || (rhs_count == TCount{ 0 })
+            || ((lhs_data < rhs_data + rhs_count)
+             && (rhs_data < lhs_data + lhs_count));
+    }
+
 }
 
 // ===========================================================================
