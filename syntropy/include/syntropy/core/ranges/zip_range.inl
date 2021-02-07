@@ -118,8 +118,6 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::ForwardRange... TRanges>
-    template <typename URange>
-    requires Concepts::ContiguousRange<URange>
     [[nodiscard]] constexpr auto ZipRange<TRanges...>
     ::GetData() const noexcept
     {
@@ -179,28 +177,28 @@ namespace Syntropy::Ranges
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
-    Get(Immutable<Details::ZipRange<TRanges...>> range) noexcept
+    Get(Immutable<ZipRange<TRanges...>> range) noexcept
     {
         return Tuples::Get<VIndex>(Unzip(range));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
-    Get(Mutable<Details::ZipRange<TRanges...>> range) noexcept
+    Get(Mutable<ZipRange<TRanges...>> range) noexcept
     {
         return Tuples::Get<VIndex>(Unzip(range));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
-    Get(Immovable<Details::ZipRange<TRanges...>> range) noexcept
+    Get(Immovable<ZipRange<TRanges...>> range) noexcept
     {
         return Tuples::Get<VIndex>(Unzip(range));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
-    Get(Movable<Details::ZipRange<TRanges...>> range) noexcept
+    Get(Movable<ZipRange<TRanges...>> range) noexcept
     {
         return Tuples::Get<VIndex>(Unzip(range));
     }

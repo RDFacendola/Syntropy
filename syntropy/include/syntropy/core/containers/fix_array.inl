@@ -15,8 +15,8 @@ namespace Syntropy
 
     template <typename TType, Int VSize, typename TTraits>
     template <typename... TTypes, typename>
-    constexpr BaseFixArray<TType, VSize, TTraits>:
-    :BaseFixArray(Forwarding<TTypes>... elements) noexcept
+    constexpr BaseFixArray<TType, VSize, TTraits>
+    ::BaseFixArray(Forwarding<TTypes>... elements) noexcept
         : elements_{ Forward<TTypes>(elements)... }
     {
 

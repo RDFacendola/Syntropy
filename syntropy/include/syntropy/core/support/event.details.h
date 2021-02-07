@@ -76,7 +76,7 @@ namespace Syntropy::Details
     template <typename... TArguments>
     class ListenerHandler : public EventHandler
     {
-        template <typename... TArguments>
+        template <typename... UArguments>
         friend class ListenerChain;
 
     public:

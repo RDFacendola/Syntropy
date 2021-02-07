@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "syntropy/language/foundation/foundation.h"
+
 // ===========================================================================
 
 #include "event.details.h"
@@ -49,8 +51,11 @@ namespace Syntropy
         operator=(Immutable<Listener> rhs) noexcept = default;
 
         /// \brief Default move-assignment operator.
+        ///
+        /// #BUG Arm-clang fails to recognize this as move-assignmen operator
+        ///      due to Movable<.>.
         Mutable<Listener>
-        operator=(Movable<Listener> rhs) noexcept = default;
+        operator=(Movable<Listener> rhs) noexcept /*= default*/;
 
         /// \brief Take ownership of all events bound to another listener.
         Mutable<Listener>

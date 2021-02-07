@@ -13,11 +13,8 @@
 
 #include "syntropy/language/foundation/foundation.h"
 
-#include "syntropy/core/concepts/ntuple.h"
-
-// ===========================================================================
-
-#include "zip_range.details.h"
+#include "syntropy/core/tuples/ntuple.h"
+#include "syntropy/core/ranges/forward_range.h"
 
 // ===========================================================================
 
@@ -36,9 +33,9 @@ namespace Syntropy::Ranges
     template <Concepts::ForwardRange... TRanges>
     class ZipRange
     {
-        template <Concepts::ForwardRange... TRanges>
+        template <Concepts::ForwardRange... URanges>
         friend constexpr auto
-        Unzip(Immutable<ZipRange<TRanges...>> range) noexcept;
+        Unzip(Immutable<ZipRange<URanges...>> range) noexcept;
 
     public:
 
@@ -116,8 +113,6 @@ namespace Syntropy::Ranges
         ///
         /// \remarks Accessing an empty range's storage results in
         ///          undefined behavior.
-        template <typename URange = TRange>
-        requires Concepts::ContiguousRange<URange>
         [[nodiscard]] constexpr auto
         GetData() const noexcept;
 
@@ -215,15 +210,15 @@ namespace Syntropy::Tuples::Templates
     /************************************************************************/
 
     /// \brief Partial template specialization for tuples.
-    template <Int VIndex, Syntropy::Concepts::ForwardRange... TRanges>
+    template <Int VIndex, Syntropy::Ranges::Concepts::ForwardRange... TRanges>
     struct ElementTypeTraits<VIndex,
-                             Syntropy::Ranges::Details::ZipRange<TRanges...>>
+                             Syntropy::Ranges::ZipRange<TRanges...>>
         : Syntropy::Templates::Alias<ElementType<VIndex,
                                      Tuples::Tuple<TRanges...>>> {};
 
     /// \brief Partial template specialization for tuples.
-    template <Syntropy::Concepts::ForwardRange... TRanges>
-    struct RankTypeTraits<Syntropy::Ranges::Details::ZipRange<TRanges...>>
+    template <Syntropy::Ranges::Concepts::ForwardRange... TRanges>
+    struct RankTypeTraits<Syntropy::Ranges::ZipRange<TRanges...>>
         : Syntropy::Templates::IntConstant<sizeof...(TRanges)> {};
 }
 

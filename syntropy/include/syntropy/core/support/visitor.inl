@@ -42,7 +42,7 @@ namespace Syntropy
         using TArgument = Templates::FunctionArgumentsElement<0, TFunction>;
         using TVisitable = Templates::RemoveReference<TArgument>;
 
-        if (type == Reflection::TypeIdOf(TVisitable))
+        if (type == Reflection::TypeIdOf<TVisitable>())
         {
             visitor(*FromTypelessPtr<TVisitable>(visitable));
             return true;

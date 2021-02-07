@@ -10,10 +10,8 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
-
-#include "syntropy/core/concepts/ntuple.h"
-
-#include "syntropy/core/foundation/span.h"
+#include "syntropy/core/tuples/ntuple.h"
+#include "syntropy/core/ranges/span.h"
 
 // ===========================================================================
 

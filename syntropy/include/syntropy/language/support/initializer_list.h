@@ -26,13 +26,13 @@ namespace Syntropy
     template <typename TElement>
     class InitializerList
     {
-        template <typename TElement>
-        friend constexpr RWPtr<TElement>
-        begin(Immutable<InitializerList<TElement>> rhs) noexcept;
+        template <typename UElement>
+        friend constexpr RWPtr<UElement>
+        begin(Immutable<InitializerList<UElement>> rhs) noexcept;
 
-        template <typename TElement>
-        friend constexpr RWPtr<TElement>
-        end(Immutable<InitializerList<TElement>> rhs) noexcept;
+        template <typename UElement>
+        friend constexpr RWPtr<UElement>
+        end(Immutable<InitializerList<UElement>> rhs) noexcept;
 
     public:
 

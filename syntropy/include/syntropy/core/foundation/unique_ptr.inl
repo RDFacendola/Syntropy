@@ -287,7 +287,7 @@ namespace Syntropy
     MakeUnique(Forwarding<TArguments>... arguments) noexcept
     {
         return MakeUniqueOnAllocator<TType>(
-            Memory::GetAllocator(),
+            Memory::GetScopeAllocator(),
             Forward<TArguments>(arguments)...);
     }
 
@@ -310,7 +310,7 @@ namespace Syntropy
     MakeRWUnique(Forwarding<TArguments>... arguments) noexcept
     {
         return ToReadWrite(
-            MakeUniqueOnAllocator<TType>(Memory::GetAllocator(),
+            MakeUniqueOnAllocator<TType>(Memory::GetScopeAllocator(),
                                          Forward<TArguments>(arguments)...));
     }
 

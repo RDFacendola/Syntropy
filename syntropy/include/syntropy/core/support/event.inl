@@ -20,6 +20,15 @@ namespace Syntropy
     }
 
     inline Mutable<Listener> Listener
+    ::operator=(Movable<Listener> rhs) noexcept
+    {
+        events_ = Move(rhs.events_);
+        rhs.events_ = {};
+        
+        return *this;
+    }
+
+    inline Mutable<Listener> Listener
     ::operator+=(Movable<Listener> rhs) noexcept
     {
         events_ += Move(rhs.events_);

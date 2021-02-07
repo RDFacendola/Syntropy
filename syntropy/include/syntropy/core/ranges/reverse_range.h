@@ -123,10 +123,6 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr TRange
     Reverse(Immutable<ReverseRange<TRange>> range) noexcept;
 
-    /// \brief Obtain a reversed range.
-    template <Concepts::BidirectionalRange TRange>
-    auto Reverse(Immutable<TRange> range) noexcept;
-
 }
 
 // ===========================================================================

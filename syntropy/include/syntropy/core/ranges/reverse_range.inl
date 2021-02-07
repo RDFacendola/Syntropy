@@ -99,11 +99,6 @@ namespace Syntropy::Ranges
         return range.range_;
     }
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    auto Reverse(Immutable<TRange> range) noexcept
-    {
-        return Details::Reverse(range);
-    }
 }
 
 // ===========================================================================
