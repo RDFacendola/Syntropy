@@ -13,6 +13,7 @@
 #include "syntropy/language/support/swap.h"
 
 #include "syntropy/core/ranges/contiguous_range.h"
+#include "syntropy/core/ranges/span.h"
 
 #include "syntropy/math/math.h"
 
@@ -25,82 +26,12 @@
 namespace Syntropy::Memory
 {
     /************************************************************************/
-    /* BASE BYTE SPAN                                                       */
+    /* BYTE SPAN                                                            */
     /************************************************************************/
 
-    /// \brief Represents a contiguous, non-owning, range of bytes.
-    /// \author Raffaele D. Facendola - December 2020.
+    /// \brief A contiguous sequence of bytes.
     template <typename TTraits>
-    class BaseByteSpan
-    {
-        template <typename UTraits>
-        friend class BaseByteSpan;
-        
-    public:
-
-        /// \brief Pointer type.
-        using TPointer = typename TTraits::TPointer;
-
-        /// \brief Reference type.
-        using TReference = typename TTraits::TReference;
-
-        /// \brief Create an empty byte span.
-        constexpr BaseByteSpan() noexcept = default;
-
-        /// \brief Create an empty byte span.
-        constexpr BaseByteSpan(Null) noexcept;
-
-        /// \brief Create a byte span given a pointer to the first byte
-        ///        and span size.
-        constexpr
-        BaseByteSpan(TPointer begin, Immutable<Bytes> size) noexcept;
-
-        /// \brief Create a byte span given a pointer to both the first and
-        ///        past the last byte.
-        constexpr
-        BaseByteSpan(TPointer begin, TPointer end) noexcept;
-
-        /// \brief Converting copy constructor.
-        template <typename UTraits>
-        constexpr
-        BaseByteSpan(Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
-
-        /// \brief Default destructor.
-        ~BaseByteSpan() noexcept = default;
-
-        /// \brief Copy assignment operator.
-        template <typename UTraits>
-        constexpr Mutable<BaseByteSpan>
-        operator=(Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
-
-        ///  \brief Check whether the byte span is non-empty.
-        [[nodiscard]] constexpr explicit
-        operator Bool() const noexcept;
-
-        /// \brief Access a byte by offset.
-        ///
-        /// If the provided offset is not within the byte span the behavior
-        /// of this method is undefined.
-        [[nodiscard]] constexpr TReference
-        operator[](Immutable<Bytes> offset) const noexcept;
-
-        /// \brief Access the underlying storage.
-        [[nodiscard]] constexpr TPointer
-        GetData() const noexcept;
-
-        /// \brief Get the number of elements in the span.
-        [[nodiscard]] constexpr Bytes
-        GetCount() const noexcept;
-
-    private:
-
-        /// \brief Pointer to the first element.
-        TPointer data_{ nullptr };
-
-        /// \brief Number of bytes in the span.
-        Bytes size_{ 0 };
-
-    };
+    using BaseByteSpan = BaseSpan<Byte, TTraits>;
 
     /************************************************************************/
     /* BYTE SPAN                                                            */
@@ -114,6 +45,9 @@ namespace Syntropy::Memory
 
         /// \brief Reference type.
         using TReference = Immutable<Byte>;
+
+        /// \brief Cardinality type.
+        using TCount = Bytes;
     };
 
     /// \brief Represents a span of read-only bytes.
@@ -131,6 +65,9 @@ namespace Syntropy::Memory
 
         /// \brief Reference type.
         using TReference = Mutable<Byte>;
+
+        /// \brief Cardinality type.
+        using TCount = Bytes;
     };
 
     /// \brief Represents a span of read-write bytes.
@@ -139,21 +76,6 @@ namespace Syntropy::Memory
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
-
-    // BaseByteSpan.
-    // =============
-
-    /// \brief Check whether lhs and rhs are equivalent.
-    template <typename TTraits, typename UTraits>
-    [[nodiscard]] constexpr Bool
-    operator==(Immutable<BaseByteSpan<TTraits>> lhs,
-               Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
-
-    /// \brief Compare two spans lexicographically.
-    template <typename TTraits, typename UTraits>
-    [[nodiscard]] constexpr Ordering
-    operator<=>(Immutable<BaseByteSpan<TTraits>> lhs,
-                Immutable<BaseByteSpan<UTraits>> rhs) noexcept;
 
     // Alignment.
     // ==========
@@ -224,19 +146,6 @@ namespace Syntropy::Memory
     template <Ranges::Concepts::ContiguousRange TRange, typename TTraits>
     [[nodiscard]] TRange
     FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept;
-
-    // Access.
-    // =======
-
-    /// \brief Convert rhs to a read-only byte span.
-    [[nodiscard]] ByteSpan
-    ToReadOnly(Immutable<ByteSpan> rhs) noexcept;
-
-    /// \brief Convert rhs to a read-write byte span.
-    /// \remarks If the original memory location is not read-writable,
-    ///          accessing the returned values results in undefined behavior.
-    [[nodiscard]] RWByteSpan
-    ToReadWrite(Immutable<ByteSpan> rhs) noexcept;
 
     // Utilities.
     // ==========

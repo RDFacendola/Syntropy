@@ -35,6 +35,9 @@ namespace Syntropy
         /// \brief Reference type.
         using TReference = typename TTraits::TReference;
 
+        /// \brief Type of the span cardinality.
+        using TCount = typename TTraits::TCount;
+
         /// \brief Create an empty span.
         constexpr
         BaseSpan() noexcept = default;
@@ -46,7 +49,7 @@ namespace Syntropy
         /// \brief Create a span given a pointer to the first element
         ///        and their number.
         constexpr
-        BaseSpan(Immutable<TPointer> begin, Int size) noexcept;
+        BaseSpan(Immutable<TPointer> begin, Immutable<TCount> size) noexcept;
 
         /// \brief Create a span given a pointer to both the first and
         ///        past the last element.
@@ -75,14 +78,14 @@ namespace Syntropy
         /// If the provided index is not within the BaseSpan the behavior
         /// of this method is undefined.
         [[nodiscard]] constexpr TReference
-        operator[](Int index) const noexcept;
+        operator[](Immutable<TCount> index) const noexcept;
 
         /// \brief Access the underlying storage.
         [[nodiscard]] constexpr TPointer
         GetData() const noexcept;
 
         /// \brief Get the number of elements in the span.
-        [[nodiscard]] constexpr Int
+        [[nodiscard]] constexpr Immutable<TCount>
         GetCount() const noexcept;
 
     private:
@@ -91,7 +94,7 @@ namespace Syntropy
         TPointer data_{ nullptr };
 
         /// \brief Number of elements in the span.
-        Int count_{ 0 };
+        TCount  count_{};
 
     };
 
@@ -108,6 +111,9 @@ namespace Syntropy
 
         /// \brief Reference type.
         using TReference = Immutable<TType>;
+
+        /// \brief Cardinality type.
+        using TCount = Int;
     };
 
     /// \brief Represents a span of read-only elements.
@@ -127,6 +133,9 @@ namespace Syntropy
 
         /// \brief Reference type.
         using TReference = Mutable<TType>;
+
+        /// \brief Cardinality type.
+        using TCount = Int;
     };
 
     /// \brief Represents a span of read-write elements.
@@ -173,9 +182,9 @@ namespace Syntropy
     // ==========
 
     /// \brief Create a new span by deducing template from arguments.
-    template <typename TType>
+    template <typename TType, typename TCount>
     [[nodiscard]] constexpr Span<TType>
-    MakeSpan(Ptr<TType> begin, Int size) noexcept;
+    MakeSpan(Ptr<TType> begin, Immutable<TCount> size) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
@@ -183,9 +192,9 @@ namespace Syntropy
     MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
-    template <typename TType>
+    template <typename TType, typename TCount>
     [[nodiscard]] constexpr RWSpan<TType>
-    MakeSpan(RWPtr<TType> begin, Int size) noexcept;
+    MakeSpan(RWPtr<TType> begin, Immutable<TCount> size) noexcept;
 
     /// \brief Create a new span by deducing template from arguments.
     template <typename TType>
@@ -198,5 +207,9 @@ namespace Syntropy
     MakeSpan(TType (&rhs)[VSize]) noexcept;
 
 }
+
+// ===========================================================================
+
+#include "span.inl"
 
 // ===========================================================================

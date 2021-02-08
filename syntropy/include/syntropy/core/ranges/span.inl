@@ -23,7 +23,7 @@ namespace Syntropy
     template <typename TType, typename TTraits>
     constexpr BaseSpan<TType, TTraits>
     ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::TPointer> begin,
-               Int size) noexcept
+               Immutable<BaseSpan<TType, TTraits>::TCount> size) noexcept
         : data_(begin)
         , count_(size)
     {
@@ -34,7 +34,7 @@ namespace Syntropy
     constexpr BaseSpan<TType, TTraits>
     ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::TPointer> begin,
                Immutable<BaseSpan<TType, TTraits>::TPointer> end) noexcept
-        : BaseSpan(begin, ToInt(end - begin))
+        : BaseSpan(begin, TCount{ end - begin })
     {
 
     }
@@ -64,13 +64,15 @@ namespace Syntropy
     [[nodiscard]] constexpr BaseSpan<TType, TTraits>
     ::operator Bool() const noexcept
     {
-        return count_ > ToInt(0);
+        return count_ > TCount{ 0 };
     }
 
     template <typename TType, typename TTraits>
     [[nodiscard]] constexpr
-    typename BaseSpan<TType, TTraits>::TReference BaseSpan<TType, TTraits>
-    ::operator[](Int index) const noexcept
+    typename BaseSpan<TType, TTraits>::TReference
+    BaseSpan<TType, TTraits>
+    ::operator[](Immutable<typename BaseSpan<TType, TTraits>::TCount> index)
+    const noexcept
     {
         return data_[index];
     }
@@ -84,7 +86,9 @@ namespace Syntropy
     }
 
     template <typename TType, typename TTraits>
-    [[nodiscard]] constexpr Int BaseSpan<TType, TTraits>
+    [[nodiscard]] constexpr
+    Immutable<typename BaseSpan<TType, TTraits>::TCount>
+    BaseSpan<TType, TTraits>
     ::GetCount() const noexcept
     {
         return count_;
@@ -134,10 +138,10 @@ namespace Syntropy
 
     // Utilities.
     // ==========
-    
-    template <typename TType>
+
+    template <typename TType, typename TCount>
     [[nodiscard]] constexpr Span<TType>
-    MakeSpan(Ptr<TType> begin, Int size) noexcept
+    MakeSpan(Ptr<TType> begin, Immutable<TCount> size) noexcept
     {
         return { begin, size };
     }
@@ -149,9 +153,9 @@ namespace Syntropy
         return { begin, end };
     }
 
-    template <typename TType>
+    template <typename TType, typename TCount>
     [[nodiscard]] constexpr RWSpan<TType>
-    MakeSpan(RWPtr<TType> begin, Int size) noexcept
+    MakeSpan(RWPtr<TType> begin, Immutable<TCount> size) noexcept
     {
         return { begin, size };
     }
