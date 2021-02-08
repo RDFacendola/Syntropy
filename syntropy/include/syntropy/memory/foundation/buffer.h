@@ -116,7 +116,7 @@ namespace Syntropy::Memory
         ~BaseBuffer() noexcept;
 
         /// \brief Access buffer data.
-        [[nodiscard]] Immutable<TData>
+        [[nodiscard]] TData
         GetData() const noexcept;
 
         /// \brief Get the number of bytes in the buffer.
@@ -148,7 +148,7 @@ namespace Syntropy::Memory
         RWPtr<BaseAllocator> allocator_{ nullptr };
 
         /// \brief Buffer data.
-        TSpan data_;
+        RWByteSpan data_;
 
         /// \brief BaseBuffer alignment.
         Alignment alignment_ = MaxAlignment();

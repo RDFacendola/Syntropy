@@ -33,6 +33,9 @@ namespace Syntropy::Memory
     template <typename TTraits>
     class BaseByteSpan
     {
+        template <typename UTraits>
+        friend class BaseByteSpan;
+        
     public:
 
         /// \brief Pointer type.

@@ -43,7 +43,7 @@ namespace Syntropy::Memory
         , data_(allocator.Allocate(size, alignment))
         , alignment_(alignment)
     {
-        SYNTROPY_ASSERT(Size(data_) == size);       // Out of memory?
+        SYNTROPY_ASSERT(data_.GetCount() == size);       // Out of memory?
     }
 
     template <typename TTraits>
@@ -147,7 +147,7 @@ namespace Syntropy::Memory
 
     template <typename TTraits>
     [[nodiscard]] inline
-    Immutable<typename BaseBuffer<TTraits>::TData> BaseBuffer<TTraits>
+    typename BaseBuffer<TTraits>::TData BaseBuffer<TTraits>
     ::GetData() const noexcept
     {
         return data_;
