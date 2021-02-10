@@ -35,10 +35,10 @@ namespace Syntropy::Memory
     public:
 
         /// \brief Type of the underlying span.
-        using TSpan = typename TTraits::TSpan;
+        using TSpan = typename TTraits::template TSpan<Byte>;
 
         /// \brief Type of the pointer to the underlying data.
-        using TData = typename TTraits::TData;
+        using TPointer = typename TSpan::TPointer;
 
         /// \brief Create a new empty buffer on the current allocator.
         ///
@@ -116,7 +116,7 @@ namespace Syntropy::Memory
         ~BaseBuffer() noexcept;
 
         /// \brief Access buffer data.
-        [[nodiscard]] TData
+        [[nodiscard]] TPointer
         GetData() const noexcept;
 
         /// \brief Get the number of bytes in the buffer.
@@ -162,11 +162,9 @@ namespace Syntropy::Memory
     /// \brief Traits for read-only buffers.
     struct BufferTraits
     {
-        /// \brief Span type
-        using TSpan = ByteSpan;
-
-        /// \brief Pointer type.
-        using TData = Ptr<Byte>;
+        /// \brief Span type.
+        template <typename TType>
+        using TSpan = Span<TType>;
     };
 
     /// \brief Represents a read-only buffer.
@@ -179,11 +177,9 @@ namespace Syntropy::Memory
     /// \brief Traits for read-write buffers.
     struct RWBufferTraits
     {
-        /// \brief Span type
-        using TSpan = RWByteSpan;
-
-        /// \brief Pointer type.
-        using TData = RWPtr<Byte>;
+        /// \brief Span type.
+        template <typename TType>
+        using TSpan = RWSpan<TType>;
     };
 
     /// \brief Represents a read-write buffer.

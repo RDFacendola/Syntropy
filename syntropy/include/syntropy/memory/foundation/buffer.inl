@@ -147,7 +147,7 @@ namespace Syntropy::Memory
 
     template <typename TTraits>
     [[nodiscard]] inline
-    typename BaseBuffer<TTraits>::TData BaseBuffer<TTraits>
+    typename BaseBuffer<TTraits>::TPointer BaseBuffer<TTraits>
     ::GetData() const noexcept
     {
         return data_;

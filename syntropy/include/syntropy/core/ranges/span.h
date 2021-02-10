@@ -27,6 +27,9 @@ namespace Syntropy
     template <typename TType, typename TTraits>
     class BaseSpan
     {
+        template <typename UType, typename UTraits>
+        friend class BaseSpan;
+        
     public:
 
         /// \brief Pointer type.
