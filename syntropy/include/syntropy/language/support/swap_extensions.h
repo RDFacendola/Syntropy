@@ -1,40 +1,35 @@
 
-/// \file swap.inl
+/// \file swap_extensions.h
+///
+/// \brief This header is part of the Syntropy language module.
+///        It contains definitions for swap-related customization point
+///        objects.
 ///
 /// \author Raffaele D. Facendola - February 2021
 
 #pragma once
 
+#include "syntropy/language/foundation/foundation.h"
+
+#include "syntropy/language/templates/priority.h"
+
 // ===========================================================================
 
-namespace Syntropy::Algorithm
+namespace Syntropy::Algorithm::Extensions
 {
     /************************************************************************/
     /* EXCHANGE                                                             */
     /************************************************************************/
 
-    template <typename TType, typename UType>
-    requires Concepts::AssignableFrom<Mutable<TType>, Forwarding<UType>>
-          && Concepts::MoveConstructible<TType>
-    [[nodiscard]] constexpr TType
-    Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept
-    {
-        return Details::RouteExchange(lhs, Forward<UType>(rhs));
-    }
+    template <typename TType, typename UType, typename = void>
+    struct Exchange;
 
     /************************************************************************/
     /* SWAP                                                                 */
     /************************************************************************/
 
-    template <typename TType>
-    requires Concepts::AssignableFrom<Mutable<TType>, Movable<TType>>
-          && Concepts::MoveConstructible<TType>
-    constexpr void
-    Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
-    {
-        Details::RouteSwap(lhs, rhs);
-    }
-
+    template <typename TType, typename = void>
+    struct Swap;
 }
 
 // ===========================================================================

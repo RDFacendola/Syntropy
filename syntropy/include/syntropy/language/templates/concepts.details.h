@@ -13,16 +13,6 @@
 
 // ===========================================================================
 
-namespace Syntropy
-{
-    /// \brief Swap lhs with rhs.
-    template <typename TType>
-    constexpr void
-    Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
-}
-
-// ===========================================================================
-
 namespace Syntropy::Concepts::Details
 {
     /************************************************************************/

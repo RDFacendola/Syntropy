@@ -3,7 +3,7 @@
 ///
 /// \brief This header is part of the Syntropy core module.
 ///        It contains definitions for range-related customization-point
-///        objects
+///        objects.
 ///
 /// \author Raffaele D. Facendola - February 2021.
 

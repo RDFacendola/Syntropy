@@ -99,8 +99,8 @@ namespace Syntropy::Ranges
         for (; !Details::RouteIsEmpty(source)
                && !Details::RouteIsEmpty(destination);)
         {
-            Swap(Details::RouteFront(source),
-                 Details::RouteFront(destination));
+            Algorithm::Swap(Details::RouteFront(source),
+                            Details::RouteFront(destination));
 
             source = Details::RoutePopFront(source);
             destination = Details::RoutePopFront(destination);
@@ -118,7 +118,7 @@ namespace Syntropy
     /************************************************************************/
     /* RANGE-BASED FOR LOOP                                                 */
     /************************************************************************/
-    
+
     /// \brief Get an iterator to the first element in a range.
     template <Ranges::Concepts::ForwardRange TRange>
     constexpr auto begin(Immutable<TRange> range) noexcept

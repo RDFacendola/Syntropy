@@ -148,7 +148,7 @@ namespace Syntropy::Tuples
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
     requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
     constexpr void
-    wap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
+    Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>

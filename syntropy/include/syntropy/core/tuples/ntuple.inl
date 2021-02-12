@@ -145,9 +145,8 @@ namespace Syntropy::Tuples
         auto memberwise_exchange = [&]<Int... VIndex>(
             Syntropy::Templates::Sequence<VIndex...>)
         {
-            using Syntropy::Exchange;
-
-            return TTuple{ Exchange(Get<VIndex>(lhs), Get<VIndex>(rhs))... };
+            return TTuple{ Algorithm::Exchange(Get<VIndex>(lhs),
+                                               Get<VIndex>(rhs))... };
         };
 
         return memberwise_exchange(TupleSequenceFor<TTuple>{});
@@ -163,10 +162,8 @@ namespace Syntropy::Tuples
         auto memberwise_exchange = [&]<Int... VIndex>(
             Syntropy::Templates::Sequence<VIndex...>) mutable
         {
-            using Syntropy::Exchange;
-
-            return TTuple{ Exchange(Get<VIndex>(lhs),
-                                    Get<VIndex>(Move(rhs)))... };
+            return TTuple{ Algorithm::Exchange(Get<VIndex>(lhs),
+                                               Get<VIndex>(Move(rhs)))... };
         };
 
         return memberwise_exchange(TupleSequenceFor<TTuple>{});

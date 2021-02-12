@@ -13,8 +13,23 @@
 
 // ===========================================================================
 
-namespace Syntropy
+#include "swap.details.h"
+
+// ===========================================================================
+
+namespace Syntropy::Algorithm
 {
+    /************************************************************************/
+    /* EXCHANGE                                                             */
+    /************************************************************************/
+
+    /// \brief Swap lhs with rhs and return the old value of lhs.
+    template <typename TType, typename UType = TType>
+    requires Concepts::AssignableFrom<Mutable<TType>, Forwarding<UType>>
+          && Concepts::MoveConstructible<TType>
+    [[nodiscard]] constexpr TType
+    Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
+
     /************************************************************************/
     /* SWAP                                                                 */
     /************************************************************************/
@@ -25,13 +40,6 @@ namespace Syntropy
           && Concepts::MoveConstructible<TType>
     constexpr void
     Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
-
-    /// \brief Swap lhs with rhs and return the old value of lhs.
-    template <typename TType, typename UType = TType>
-    requires Concepts::AssignableFrom<Mutable<TType>, Forwarding<UType>>
-          && Concepts::MoveConstructible<TType>
-    [[nodiscard]] constexpr TType
-    Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
 
 }
 
