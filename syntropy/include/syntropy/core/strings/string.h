@@ -48,7 +48,7 @@ namespace Syntropy::Strings
     private:
 
         /// \brief String characters.
-        Memory::RWBuffer characters_;
+        Memory::Buffer characters_;
 
     };
 

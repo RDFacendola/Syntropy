@@ -25,7 +25,7 @@ namespace Syntropy::Strings
     ::String(String::TCharacters<TSize> characters) noexcept
         : characters_(Memory::ToBytes(TSize))
     {
-        Memory::Copy(characters_.GetRange(), Memory::BytesOf(characters));
+        //Memory::Copy(characters_.GetRange(), Memory::BytesOf(characters));
     }
 
     [[nodiscard]] inline
@@ -41,7 +41,6 @@ namespace Syntropy::Strings
     {
         return characters_.GetAllocator();
     }
-
 
 }
 

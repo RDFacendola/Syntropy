@@ -7,6 +7,8 @@
 
 #include "syntropy/memory/foundation/memory.h"
 
+#include "syntropy/language/support/swap.h"
+
 // ===========================================================================
 
 namespace Syntropy::Memory
@@ -15,30 +17,24 @@ namespace Syntropy::Memory
     /* BASE BUFFER                                                          */
     /************************************************************************/
 
-    template <typename TTraits>
-    template <typename TThis>
-    inline BaseBuffer<TTraits>
-    ::BaseBuffer(Mutable<BaseAllocator> allocator) noexcept
-        : BaseBuffer(ToBytes(0), MaxAlignment(), allocator)
+    inline Buffer
+    ::Buffer(Mutable<BaseAllocator> allocator) noexcept
+        : Buffer(ToBytes(0), MaxAlignment(), allocator)
     {
 
     }
 
-    template <typename TTraits>
-    template <typename TThis>
-    inline BaseBuffer<TTraits>
-    ::BaseBuffer(Bytes size, Mutable<BaseAllocator> allocator) noexcept
-        : BaseBuffer(size, MaxAlignment(), allocator)
+    inline Buffer
+    ::Buffer(Bytes size, Mutable<BaseAllocator> allocator) noexcept
+        : Buffer(size, MaxAlignment(), allocator)
     {
 
     }
 
-    template <typename TTraits>
-    template <typename TThis>
-    inline BaseBuffer<TTraits>
-    ::BaseBuffer(Bytes size,
-                 Alignment alignment,
-                 Mutable<BaseAllocator> allocator) noexcept
+    inline Buffer
+    ::Buffer(Bytes size,
+             Alignment alignment,
+             Mutable<BaseAllocator> allocator) noexcept
         : allocator_(&allocator)
         , data_(allocator.Allocate(size, alignment))
         , alignment_(alignment)
@@ -46,162 +42,99 @@ namespace Syntropy::Memory
         SYNTROPY_ASSERT(data_.GetCount() == size);       // Out of memory?
     }
 
-    template <typename TTraits>
-    template <typename UTraits>
-    inline BaseBuffer<TTraits>
-    ::BaseBuffer(Immutable<BaseBuffer<UTraits>> rhs) noexcept
-        : BaseBuffer(rhs, rhs.GetAllocator())
+    inline Buffer
+    ::Buffer(Immutable<Buffer> rhs) noexcept
+        : Buffer(rhs, rhs.GetAllocator())
     {
 
     }
 
-    template <typename TTraits>
-    template <typename UTraits>
-    inline BaseBuffer<TTraits>
-    ::BaseBuffer(Immutable<BaseBuffer<UTraits>> rhs,
-                 Mutable<BaseAllocator> allocator) noexcept
-        : BaseBuffer(rhs.GetCount(), rhs.GetAlignment(), allocator)
+    inline Buffer
+    ::Buffer(Immutable<Buffer> rhs,
+             Mutable<BaseAllocator> allocator) noexcept
+        : Buffer(rhs.GetCount(), rhs.GetAlignment(), allocator)
     {
         Copy(data_, rhs.data_);
     }
 
-    template <typename TTraits>
-    template <typename UTraits>
-    inline BaseBuffer<TTraits>
-    ::BaseBuffer(Movable<BaseBuffer<UTraits>> rhs) noexcept
+    inline Buffer
+    ::Buffer(Movable<Buffer> rhs) noexcept
         : allocator_(rhs.allocator_)
         , alignment_(rhs.alignment_)
     {
-        if constexpr(Concepts::SameAs<decltype(data_), decltype(rhs.data_)>)
-        {
-            Syntropy::Swap(data_, rhs.data_);
-        }
-        else
-        {
-            data_ = Move(rhs.data_);
-            rhs.data_ = {};
-        }
+        Algorithm::Swap(data_, rhs.data_);
     }
 
-    template <typename TTraits>
-    template <typename UTraits>
-    inline BaseBuffer<TTraits>
-    ::BaseBuffer(Movable<BaseBuffer<UTraits>> rhs,
-                 Mutable<BaseAllocator> allocator) noexcept
-        : allocator_(allocator_)
-        , alignment_(rhs.alignment_)
-    {
-        // Either move or copy.
-
-        if (allocator_ == rhs.allocator_)
-        {
-            Syntropy::Swap(data_, rhs.data_);
-        }
-        else
-        {
-            Copy(data_, rhs.data_);
-        }
-    }
-
-    template <typename TTraits>
-    template <typename UTraits>
-    inline Mutable<BaseBuffer<TTraits>> BaseBuffer<TTraits>
-    ::operator=(Immutable<BaseBuffer<UTraits>> rhs) noexcept
+    inline Mutable<Buffer> Buffer
+    ::operator=(Immutable<Buffer> rhs) noexcept
     {
         if (this != &rhs)
         {
-            if (Size(*this) != Size(rhs))
+            if (GetCount() != rhs.GetCount())
             {
-                data_ = allocator_->Allocate(Size(rhs), rhs.GetAlignment());
+                data_ = allocator_->Allocate(rhs.GetCount(),
+                                             rhs.GetAlignment());
             }
 
-            Copy(data_, rhs.GetData());
+            Copy(data_, rhs.data_);
         }
 
         return *this;
     }
 
-    template <typename TTraits>
-    template <typename UTraits>
-    inline Mutable<BaseBuffer<TTraits>> BaseBuffer<TTraits>
-    ::operator=(Movable<BaseBuffer<UTraits>> rhs) noexcept
+    inline Mutable<Buffer> Buffer
+    ::operator=(Movable<Buffer> rhs) noexcept
     {
         if (allocator_ == rhs.allocator_)
         {
-            Swap(rhs);                          // Move by swap.
+            Algorithm::Swap(data_, rhs.data_);
+            Algorithm::Swap(alignment_, rhs.alignment_);
         }
         else
         {
-            *this = Copy(rhs);                  // Copy reference.
+            *this = rhs;
         }
 
         return *this;
     }
 
-    template <typename TTraits>
-    inline BaseBuffer<TTraits>
-    ::~BaseBuffer() noexcept
+    inline Buffer
+    ::~Buffer() noexcept
     {
-        allocator_->Deallocate(data_, alignment_);
+        if(allocator_)
+        {
+            allocator_->Deallocate(data_, alignment_);
+        }
     }
 
-    template <typename TTraits>
-    [[nodiscard]] inline
-    typename BaseBuffer<TTraits>::TPointer BaseBuffer<TTraits>
+    [[nodiscard]] inline BytePtr Buffer
     ::GetData() const noexcept
     {
-        return data_;
+        return data_.GetData();
     }
 
-    template <typename TTraits>
-    [[nodiscard]] inline Bytes BaseBuffer<TTraits>
+    [[nodiscard]] inline RWBytePtr Buffer
+    ::GetData() noexcept
+    {
+        return data_.GetData();
+    }
+
+    [[nodiscard]] inline Bytes Buffer
     ::GetCount() const noexcept
     {
         return data_.GetCount();
     }
 
-    template <typename TTraits>
-    [[nodiscard]] inline Immutable<Alignment> BaseBuffer<TTraits>
+    [[nodiscard]] inline Immutable<Alignment> Buffer
     ::GetAlignment() const noexcept
     {
         return alignment_;
     }
 
-    template <typename TTraits>
-    [[nodiscard]] inline Mutable<BaseAllocator> BaseBuffer<TTraits>
+    [[nodiscard]] inline Mutable<BaseAllocator> Buffer
     ::GetAllocator() const noexcept
     {
         return *allocator_;
-    }
-
-    template <typename TTraits>
-    [[nodiscard]] inline Immutable<typename BaseBuffer<TTraits>::TSpan>
-    BaseBuffer<TTraits>
-    ::GetRange() const noexcept
-    {
-        return data_;
-    }
-
-    template <typename TTraits>
-    inline void BaseBuffer<TTraits>
-    ::Swap(Mutable<BaseBuffer> rhs) noexcept
-    {
-        SYNTROPY_UNDEFINED_BEHAVIOR(allocator_ == rhs.allocator_,
-                                    "Buffers must share the same allocator.");
-
-        Syntropy::Swap(data_, rhs.data_);
-        Syntropy::Swap(alignment_, rhs.alignment_);
-    }
-
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    template <typename TTraits>
-    [[nodiscard]] Buffer
-    ToReadOnly(Movable<BaseBuffer<TTraits>> rhs) noexcept
-    {
-        return Buffer(Move(rhs));
     }
 
 }

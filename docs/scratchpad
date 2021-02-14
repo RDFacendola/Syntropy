@@ -1,0 +1,28 @@
+-> If sizeof...(T) is zero, there is no member type.
+-> If sizeof...(T) is one (i.e., T... contains only one type T0), the member type names the same type as T0.
+
+-> The simple common reference type of two reference types T1 and T2 is defined as follows:
+If T1 is cv1 X & and T2 is cv2 Y & (i.e., both are lvalue reference types): their simple common reference type is decltype(false? std::declval<cv12 X &>() : std::declval<cv12 Y &>()), where cv12 is the union of cv1 and cv2, if that type exists and is a reference type;
+If T1 and T2 are both rvalue reference types: if the simple common reference type of T1 & and T2 & (determined according to the previous bullet) exists, then let C denote that type's corresponding rvalue reference type. If std::is_convertible_v<T1, C> and std::is_convertible_v<T2, C> are both true, then the simple common reference type of T1 and T2 is C.
+Otherwise, one of the two types must be an lvalue reference type A & and the other must be an rvalue reference type B && (A and B might be cv-qualified). Let D denote the simple common reference type of A & and B const &, if any. If D exists and std::is_convertible_v<B&&, D> is true, then the simple common reference type is D.
+Otherwise, there's no simple common reference type.
+
+-> If sizeof...(T) is greater than two (i.e., T... consists of the types T1, T2,
+R...), then if std::common_reference_t<T1, T2> exists, the member type denotes
+std::common_reference_t<std::common_reference_t<T1, T2>, R...> if such a type
+exists. In all other cases, there is no member type.
+
+
+If sizeof...(T) is two (i.e., T... contains two types T1 and T2):
+If T1 and T2 are both reference types, and the simple common reference type S
+of T1 and T2 (as defined below) exists, then the member type type names S;
+Otherwise, if std::basic_common_reference<std::remove_cvref_t<T1>,
+std::remove_cvref_t<T2>, T1Q, T2Q>::type exists, where TiQ is a unary alias
+template such that TiQ<U> is U with the addition of Ti's cv- and reference
+qualifiers, then the member type type names that type;
+Otherwise, if decltype(false? val<T1>() : val<T2>()), where val is a function
+template template<class T> T val();, is a valid type, then the member type type
+names that type;
+Otherwise, if std::common_type_t<T1, T2> is a valid type, then the member type
+type names that type;
+Otherwise, there is no member type.

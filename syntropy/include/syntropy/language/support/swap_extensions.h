@@ -21,6 +21,7 @@ namespace Syntropy::Algorithm::Extensions
     /* EXCHANGE                                                             */
     /************************************************************************/
 
+    /// \brief Swap two elements and return the old value of the first.
     template <typename TType, typename UType, typename = void>
     struct Exchange;
 
@@ -28,6 +29,7 @@ namespace Syntropy::Algorithm::Extensions
     /* SWAP                                                                 */
     /************************************************************************/
 
+    /// \brief Swap two elements.
     template <typename TType, typename = void>
     struct Swap;
 }

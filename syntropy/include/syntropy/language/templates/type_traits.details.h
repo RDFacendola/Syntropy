@@ -298,10 +298,6 @@ namespace Syntropy::Templates::Details
     template <typename TType>
     struct CommonRefrenceHelper<TType> : Alias<TType> {};
 
-    // Two types.
-
-
-
     // Three or more types.
 
     template <typename TVoid,

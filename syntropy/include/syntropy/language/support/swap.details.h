@@ -58,10 +58,9 @@ namespace Syntropy::Algorithm::Details
     /// \brief Fall back to basic implementation.
     template <typename TType, typename UType>
     [[nodiscard]] constexpr
-    auto InvokeExchange(Mutable<TType> lhs,
-                        Forwarding<UType> rhs,
-                        Syntropy::Templates::Priority<0>)
-        noexcept -> decltype(Move(lhs))
+    TType InvokeExchange(Mutable<TType> lhs,
+                         Forwarding<UType> rhs,
+                         Syntropy::Templates::Priority<0>) noexcept
     {
         auto result = Move(lhs);
 
@@ -122,11 +121,10 @@ namespace Syntropy::Algorithm::Details
 
     /// \brief Fall back to basic implementation.
     template <typename TType>
-    [[nodiscard]] constexpr
-    auto InvokeSwap(Mutable<TType> lhs,
+    constexpr
+    void InvokeSwap(Mutable<TType> lhs,
                     Mutable<TType> rhs,
-                    Syntropy::Templates::Priority<0>)
-        noexcept -> decltype(RouteExchange(lhs, rhs))
+                    Syntropy::Templates::Priority<0>) noexcept
     {
         rhs = RouteExchange(lhs, rhs);
     }

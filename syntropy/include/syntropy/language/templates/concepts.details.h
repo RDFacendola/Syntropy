@@ -318,12 +318,9 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for an expression type which can be assigned from UType
     template <typename TType, typename UType>
     concept AssignableFrom
-         = LValueReferenceType<TType>
-        && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>,
-                               Immutable<Templates::RemoveReference<UType>>>
-        && requires(TType lhs, Forwarding<UType> rhs)
+        = requires(Mutable<TType> lhs, Forwarding<UType> rhs)
         {
-            { lhs = Forward<UType>(rhs) } -> SameAs<TType>;
+            { lhs = Forward<UType>(rhs) };
         };
 
     /// \brief Concept for a type whose instances are swappable.
