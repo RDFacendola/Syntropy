@@ -111,20 +111,66 @@ namespace Syntropy::Templates::Details
     /* TYPE TRANSFORM                                                       */
     /************************************************************************/
 
-    /// \brief Exposes a member type equal to TType.
-    /// \remarks The identity transform is meant to establish non-deduced
-    ///          contexts in template argument deduction.
+    /// \brief IdentityOf transform is meant to establish non-deduced
+    ///        contexts in template argument deduction.
     template <typename TType>
-    struct IdentityHelper
-    {
-        using Type = TType;
-    };
+    using IdentityOf = typename Alias<TType>::Type;
 
-    /// \brief Type equal to TType.
-    /// \remarks The identity transform is meant to establish non-deduced
-    ///          contexts in template argument deduction.
+    // =======================================================================
+
+    /// \brief Removes qualifiers and indirections and obtain the plain type
+    ///        name.
     template <typename TType>
-    using Identity = typename IdentityHelper<TType>::Type;
+    struct PlainOfHelper
+        : Alias<std::remove_cvref_t<TType>> {};
+
+    /// \brief Specialization for pointers. Recursive.
+    template <typename TType>
+    struct PlainOfHelper<TType*>
+        : PlainOfHelper<std::remove_cvref_t<TType>> {};
+
+    /// \brief Removes qualifiers and indirections and obtain the plain type
+    ///        name.
+    template <typename TType>
+    using PlainOf = typename PlainOfHelper<TType>::Type;
+
+    // =======================================================================
+
+    /// \brief Obtain a reference to a mutable instance of TType.
+    template <typename TType>
+    using MutableOf
+        = std::add_lvalue_reference_t<PlainOf<TType>>;
+
+    /// \brief Obtain a reference to an immutable instance of TType.
+    template <typename TType>
+    using ImmutableOf
+        = std::add_lvalue_reference_t<std::add_const_t<PlainOf<TType>>>;
+
+    /// \brief Obtain a reference to a mutable instance of TType whose
+    ///        resources can be efficiently moved to another instance.
+    template <typename TType>
+    using MovableOf
+        = std::add_rvalue_reference_t<PlainOf<TType>>;
+
+    /// \brief Obtain a reference to an immutable instance of TType whose
+    ///        resources can be efficiently moved to another instance.
+    template <typename TType>
+    using ImmovableOf
+        = std::add_rvalue_reference_t<std::add_const_t<PlainOf<TType>>>;
+
+    /// \brief Type equal to TType with const qualifiers applied.
+    template <typename TType>
+    using ReadOnlyOf = std::add_pointer_t<std::add_const_t<PlainOf<TType>>>;
+
+    /// \brief Type equal to TType without const qualifier.
+    template <typename TType>
+    using ReadWriteOf = std::add_pointer_t<PlainOf<TType>>;
+
+    /// \brief Convert a function type to a function pointer.
+    template <typename TFunction>
+    using FunctionOf = std::add_pointer_t<TFunction>;
+
+    // =======================================================================
 
     /// \brief Applies lvalue-to-rvalue, array-to-pointer, and
     ///        function-to-pointer implicit conversions to the type TType,
@@ -132,14 +178,6 @@ namespace Syntropy::Templates::Details
     ///        member typedef type.
     template <typename TType>
     using Decay = std::decay_t<TType>;
-
-    /// \brief Type equal to TType without const qualifier.
-    template <typename TType>
-    using RemoveConst = std::remove_const_t<TType>;
-
-    /// \brief Type equal to TType with const qualifiers applied.
-    template <typename TType>
-    using AddConst = std::add_const_t<TType>;
 
     /// \brief Type equal to TType without top-most reference if present, or
     ///        equal to TType otherwise.
@@ -173,11 +211,6 @@ namespace Syntropy::Templates::Details
     ///        TType otherwise.
     template <typename TType>
     using AddPointer = std::add_pointer_t<TType>;
-
-    /// \brief Type equal the pointee's type of TType if TType is a pointer
-    ///        type, or equal to TType otherwise.
-    template <typename TType>
-    using RemovePointer = std::remove_pointer_t<TType>;
 
     /************************************************************************/
     /* COMMON TYPE                                                          */

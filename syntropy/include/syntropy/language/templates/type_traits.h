@@ -45,10 +45,52 @@ namespace Syntropy::Templates
     /* TYPE TRANSFORM                                                       */
     /************************************************************************/
 
-    /// \brief Identity transform meant to establish non-deduced contexts in
+    /// \brief IdentityOf transform meant to establish non-deduced contexts in
     ///        template argument deduction.
     template <typename TType>
-    using Identity = Details::Identity<TType>;
+    using IdentityOf = Details::IdentityOf<TType>;
+
+    /// \brief Removes qualifiers and indirections and obtain the plain type
+    ///        name.
+    template <typename TType>
+    using PlainOf = Details::PlainOf<TType>;
+
+    /// \brief Obtain a reference to a mutable instance of TType.
+    template <typename TType>
+    using MutableOf = Details::MutableOf<TType>;
+
+    /// \brief Obtain a reference to an immutable instance of TType.
+    template <typename TType>
+    using ImmutableOf = Details::ImmutableOf<TType>;
+
+    /// \brief Obtain a reference to a mutable instance of TType whose
+    ///        resources can be efficiently moved to another instance.
+    template <typename TType>
+    using MovableOf = Details::MovableOf<TType>;
+
+    /// \brief Obtain a reference to an immutable instance of TType whose
+    ///        resources can be efficiently moved to another instance.
+    template <typename TType>
+    using ImmovableOf = Details::ImmovableOf<TType>;
+
+    /// \brief Obtain a pointer to an immutable instance of TType.
+    template <typename TType>
+    using ReadOnlyOf = Details::ReadOnlyOf<TType>;
+
+    /// \brief Obtain a pointer to a mutable instance of TType.
+    template <typename TType>
+    using ReadWriteOf = Details::ReadWriteOf<TType>;
+
+    /// \brief Convert a function type to a function pointer.
+    template <typename TFunction>
+    using FunctionOf = Details::FunctionOf<TFunction>;
+
+
+
+
+
+
+
 
     /// \brief Applies lvalue-to-rvalue, array-to-pointer, and
     ///        function-to-pointer implicit conversions to the type TType,
@@ -56,14 +98,6 @@ namespace Syntropy::Templates
     ///        member typedef type.
     template <typename TType>
     using Decay = Details::Decay<TType>;
-
-    /// \brief Type equal to TType without const qualifier.
-    template <typename TType>
-    using RemoveConst = Details::RemoveConst<TType>;
-
-    /// \brief Type equal to TType with const qualifiers applied.
-    template <typename TType>
-    using AddConst = Details::AddConst<TType>;
 
     /// \brief Type equal to TType without top-most reference if present, or
     ///        equal to TType otherwise.
@@ -94,11 +128,6 @@ namespace Syntropy::Templates
     ///        otherwise.
     template <typename TType>
     using AddPointer = Details::AddPointer<TType>;
-
-    /// \brief Type equal the pointee's type to TType if TType is a pointer
-    ///        type, or equal to TType otherwise.
-    template <typename TType>
-    using RemovePointer = Details::RemovePointer<TType>;
 
     /************************************************************************/
     /* DECLVAL                                                              */

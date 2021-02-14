@@ -16,27 +16,27 @@ namespace Syntropy
 
     /// \brief Minimal console style.
     /// \author Raffaele D. Facendola - June 2020.
-    class PlainConsoleStyle
+    class PlainOfConsoleStyle
     {
     public:
 
         /// \brief Default constructor.
-        PlainConsoleStyle() = default;
+        PlainOfConsoleStyle() = default;
 
         /// \brief Default copy constructor.
-        PlainConsoleStyle(const PlainConsoleStyle&) = default;
+        PlainOfConsoleStyle(const PlainOfConsoleStyle&) = default;
 
         /// \brief Default move constructor.
-        PlainConsoleStyle(PlainConsoleStyle&&) = default;
+        PlainOfConsoleStyle(PlainOfConsoleStyle&&) = default;
 
         /// \brief Default destructor.
-        ~PlainConsoleStyle() = default;
+        ~PlainOfConsoleStyle() = default;
 
         /// \brief Default copy-assignment operator.
-        PlainConsoleStyle& operator=(const PlainConsoleStyle&) = default;
+        PlainOfConsoleStyle& operator=(const PlainOfConsoleStyle&) = default;
 
         /// \brief Default move-assignment operator.
-        PlainConsoleStyle& operator=(PlainConsoleStyle&&) = default;
+        PlainOfConsoleStyle& operator=(PlainOfConsoleStyle&&) = default;
 
         /// \brief Push a section.
         String PushSection(const StringView& text) const;
@@ -50,14 +50,14 @@ namespace Syntropy
     /* IMPLEMENTATION                                                       */
     /************************************************************************/
 
-    // PlainConsoleStyle.
+    // PlainOfConsoleStyle.
 
-    inline String PlainConsoleStyle::PushSection(const StringView& text) const
+    inline String PlainOfConsoleStyle::PushSection(const StringView& text) const
     {
         return String{ text } + "\n\n";
     }
 
-    inline String PlainConsoleStyle::PopSection() const
+    inline String PlainOfConsoleStyle::PopSection() const
     {
         return "\n\n";
     }

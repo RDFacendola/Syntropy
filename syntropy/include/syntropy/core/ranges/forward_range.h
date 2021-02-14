@@ -34,7 +34,7 @@ namespace Syntropy::Ranges::Templates
 
     /// \brief Range's element reference type.
     template <typename TRange>
-    using RangeElementReferenceType= decltype(
+    using RangeElementReferenceType = decltype(
         Details::RouteFront(Syntropy::Templates::Declval<TRange>()));
 
     /// \brief Range's element value type.
@@ -42,10 +42,6 @@ namespace Syntropy::Ranges::Templates
     using RangeElementValueType = Syntropy::Templates::RemoveReference<
         RangeElementReferenceType<TRange>>;
 
-    /// \brief Range's element pointer type.
-    template <typename TRange>
-    using RangeElementPointerType = Syntropy::Templates::AddPointer<
-        RangeElementReferenceType<TRange>>;
 }
 
 // ===========================================================================

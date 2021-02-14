@@ -183,7 +183,7 @@ namespace Syntropy::Tuples
             Details::EnableIfTupleCopyAssignment<TSelfList> = nullptr>
         constexpr
         Mutable<Tuple> operator=(
-            Syntropy::Templates::Identity<Immutable<TSelf>> rhs) noexcept;
+            Syntropy::Templates::IdentityOf<Immutable<TSelf>> rhs) noexcept;
 
         /// \brief Move-assignment operator.
         template <
@@ -191,7 +191,7 @@ namespace Syntropy::Tuples
             typename TSelfList = ElementList,
             Details::EnableIfTupleMoveAssignment<TSelfList> = nullptr>
         constexpr Mutable<Tuple>
-        operator=(Syntropy::Templates::Identity<Movable<TSelf>> rhs) noexcept;
+        operator=(Syntropy::Templates::IdentityOf<Movable<TSelf>> rhs) noexcept;
 
         /// \brief Tuple converting copy-assignment operator.
         template <

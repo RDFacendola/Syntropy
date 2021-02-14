@@ -60,7 +60,7 @@ namespace Syntropy
     /// \remarks If rhs doesn't refer to a mutable object, accessing the
     ///          returned value of this method results in undefined behavior.
     template <typename TType>
-    constexpr Mutable<Templates::RemoveConst<TType>>
+    constexpr Mutable<Templates::ReadWriteOf<TType>>
     ToMutable(Immutable<TType> rhs) noexcept;
 
     /// \brief Deleted overload to disallow movable arguments.

@@ -46,7 +46,7 @@ namespace Syntropy
     }
 
     template <typename TType>
-    constexpr Mutable<Templates::RemoveConst<TType>>
+    constexpr Mutable<Templates::ReadWriteOf<TType>>
     ToMutable(Immutable<TType> rhs) noexcept
     {
         return const_cast<Mutable<TType>>(rhs);
@@ -81,7 +81,7 @@ namespace Syntropy
     constexpr auto
     ToReadWrite(BasePtr<TType> rhs) noexcept
     {
-        return const_cast<RWPtr<Templates::RemoveConst<TType>>>(rhs);
+        return const_cast<Templates::ReadWriteOf<TType>>(rhs);
     }
 
     /************************************************************************/

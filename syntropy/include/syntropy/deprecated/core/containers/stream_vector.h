@@ -197,7 +197,7 @@ namespace Syntropy
 
         /// \brief Vector streams.
         /// \remarks Constness is removed to cope with standard requirements. The stream is immutable from outside perspective, though.
-        std::tuple<Array<Templates::RemoveConst<TStreams>>...> streams_;
+        std::tuple<Array<Templates::ReadWriteOf<TStreams>>...> streams_;
     };
 
     /************************************************************************/

@@ -25,7 +25,7 @@ namespace Syntropy::Templates::Details
     /// Partial specialization for lambdas and callable objects.
     template <typename TCallable>
     struct FunctionArgumentsHelper
-        : FunctionArgumentsHelper<decltype(&Decay<TCallable>::operator())>
+        : FunctionArgumentsHelper<decltype(&FunctionOf<TCallable>::operator())>
     {
 
     };

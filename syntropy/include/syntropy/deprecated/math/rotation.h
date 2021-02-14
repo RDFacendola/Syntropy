@@ -51,7 +51,7 @@ namespace Syntropy
             Rotation operator-() const;
 
             /// \brief Check whether this rotation is an identity rotation.
-            Bool IsIdentity(Float epsilon = 0.01f) const;
+            Bool IsIdentityOf(Float epsilon = 0.01f) const;
 
             /// \brief Get the angle of rotation.
             Float GetAngle() const;
@@ -134,7 +134,7 @@ namespace Syntropy
         return quaternion_.xyz_ * FastInvSqrt(1.0f - quaternion_.w_ * quaternion_.w_);      // sin(theta) = sqrt(1 - cos(theta)^2)
     }
 
-    inline Bool Math::Rotation::IsIdentity(Float epsilon) const
+    inline Bool Math::Rotation::IsIdentityOf(Float epsilon) const
     {
         return Abs(quaternion_.w_) > (1.0f - epsilon);
     }

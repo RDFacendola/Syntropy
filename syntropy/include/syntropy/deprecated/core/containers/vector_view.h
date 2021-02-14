@@ -36,7 +36,7 @@ namespace Syntropy
 
         /// \brief Type of the underlying vector.
         /// Const elements are not supported: propagate the constness outside the container.
-        using TVector = ConditionalT<Templates::IsConst<TElement>, const Array<Templates::RemoveConst<TElement>>, Array<TElement>>;
+        using TVector = ConditionalT<Templates::IsConst<TElement>, const Array<Templates::ReadWriteOf<TElement>>, Array<TElement>>;
 
         /// \brief Type of a range in the vector view.
         using TRange = decltype(MakeRange(Declval<TVector&>()));
