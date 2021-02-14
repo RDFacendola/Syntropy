@@ -21,48 +21,25 @@
 namespace Syntropy::Templates
 {
     /************************************************************************/
-    /* META                                                                 */
-    /************************************************************************/
-
-    /// \brief Type equal to TTrue if VCondition is true, equal to
-    ///        TFalse otherwise.
-    template <Bool VCondition, typename TTrue, typename TFalse>
-    using Conditional = Details::Conditional<VCondition, TTrue, TFalse>;
-
-    /************************************************************************/
     /* TYPE LIST                                                            */
     /************************************************************************/
 
-    /// \brief Represents a ordered sequence of types.
-    /// \author Raffaele D. Facendola - August 2020.
-    template <typename... TTypes>
-    struct TypeList {};
-
-    /// \brief Integer constant equal to the index a type TType in TTypeList.
-    ///
-    /// \remarks If TType doesn't appear exactly once in TTypeList the
-    ///          program is ill-formed.
-    template <typename TType, typename TTypeList>
-    inline constexpr Int TypeListIndex
-        = Details::TypeListIndex<TType, TTypeList>;
-
-    /// \brief Integer constant equal to the number of types in a type list.
-    ///
-    /// \remarks If TTypeList isn't a TypeList the program is ill-formed.
+    /// \brief Get the numer of elements in a type list.
     template <typename TTypeList>
-    inline constexpr Int TypeListRank
-        = Details::TypeListRank<TTypeList>;
+    inline constexpr Int CountOf = Details::CountOf<TTypeList>;
 
-    /// \brief Provides indexed access to type list elements' types.
-    template <Int VIndex, typename TTypeList>
-    using TypeListElement
-        = Details::TypeListElement<VIndex, TTypeList>;
+    /// \brief Get the index of the first occurence of TType in TTypeList.
+    template <typename TType, typename TTypeList>
+    inline constexpr Int IndexOf = Details::IndexOf<TType, TTypeList>;
 
-    /// \brief Discards the first VCount elements in a type list and provides
-    ///        a type list with the remaining ones.
-    template <Int VCount, typename TTypeList>
-    using TypeListPopFront
-        = Details::TypeListPopFront<VCount, TTypeList>;
+    /// \brief Get the type of the TIndex-th element in TTypeList.
+    template <Int TIndex, typename TTypeList>
+    using ElementOf = Details::ElementOf<TIndex, TTypeList>;
+
+    /// \brief Drops the first TCount elements in a type list and return the
+    ///        remaining ones;
+    template <Int TCount, typename TTypeList>
+    using Drop = Details::Drop<TCount, TTypeList>;
 
     /************************************************************************/
     /* TYPE TRANSFORM                                                       */
@@ -147,6 +124,15 @@ namespace Syntropy::Templates
     ///        or bound to.
     template <typename... TTypes>
     using CommonReference = Details::CommonReference<TTypes...>;
+
+    /************************************************************************/
+    /* META                                                                 */
+    /************************************************************************/
+
+    /// \brief Type equal to TTrue if VCondition is true, equal to
+    ///        TFalse otherwise.
+    template <Bool VCondition, typename TTrue, typename TFalse>
+    using Conditional = Details::Conditional<VCondition, TTrue, TFalse>;
 
 }
 

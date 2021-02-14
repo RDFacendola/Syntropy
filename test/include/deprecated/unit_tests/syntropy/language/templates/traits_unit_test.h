@@ -256,25 +256,25 @@ namespace Syntropy::Templates::UnitTest
         SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::AssignableType<MoveAssignableFromFoo, Bar&&>), false);
     })
             
-    .TestCase("TypeListIndex returns the index of the first occurrence in a type list.", [](auto& fixture)
+    .TestCase("IndexOf returns the index of the first occurrence in a type list.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((TypeListIndex<Int, TypeList<Int, Float, Bool>>), 0);
-        SYNTROPY_UNIT_EQUAL((TypeListIndex<Int, TypeList<Float, Bool, Int>>), 2);
+        SYNTROPY_UNIT_EQUAL((IndexOf<Int, TypeList<Int, Float, Bool>>), 0);
+        SYNTROPY_UNIT_EQUAL((IndexOf<Int, TypeList<Float, Bool, Int>>), 2);
     })
 
-    .TestCase("TypeListElement returns the type of an element in a type list by index.", [](auto& fixture)
+    .TestCase("ElementOf returns the type of an element in a type list by index.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListElement<0, TypeList<Int, Float, Bool>>, Int>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListElement<1, TypeList<Int, Float, Bool>>, Float>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListElement<2, TypeList<Int, Float, Bool>>, Bool>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<ElementOf<0, TypeList<Int, Float, Bool>>, Int>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<ElementOf<1, TypeList<Int, Float, Bool>>, Float>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<ElementOf<2, TypeList<Int, Float, Bool>>, Bool>), true);
     })
 
-    .TestCase("Removing elements from a type list by means of TypeListPopFront return a new type list which is equal to the remaining elements in the original type list.", [](auto& fixture)
+    .TestCase("Removing elements from a type list by means of Drop return a new type list which is equal to the remaining elements in the original type list.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListPopFront<0, TypeList<Int, Float, Bool>>, TypeList<Int, Float, Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListPopFront<1, TypeList<Int, Float, Bool>>, TypeList<Float, Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListPopFront<2, TypeList<Int, Float, Bool>>, TypeList<Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<TypeListPopFront<3, TypeList<Int, Float, Bool>>, TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Drop<0, TypeList<Int, Float, Bool>>, TypeList<Int, Float, Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Drop<1, TypeList<Int, Float, Bool>>, TypeList<Float, Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Drop<2, TypeList<Int, Float, Bool>>, TypeList<Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Drop<3, TypeList<Int, Float, Bool>>, TypeList<>>), true);
     });
 
 }

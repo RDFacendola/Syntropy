@@ -28,10 +28,19 @@ namespace Syntropy::Templates
     };
 
     /************************************************************************/
+    /* TYPE LIST                                                            */
+    /************************************************************************/
+
+    /// \brief An ordered sequence of types.
+    /// \author Raffaele D. Facendola - August 2020.
+    template <typename... TTypes>
+    struct TypeList {};
+
+    /************************************************************************/
     /* CONSTANTS                                                            */
     /************************************************************************/
 
-    /// \brief Exposes a member Value equal to VValue.
+    /// \brief Exposes a member kValue equal to VValue.
     template <typename TType, TType TValue>
     struct Constant
     {
@@ -53,18 +62,18 @@ namespace Syntropy::Templates
     using False = BoolConstant<false>;
 
     /************************************************************************/
-    /* CONSTANT VALUE OF                                                    */
+    /* EVALUATE                                                             */
     /************************************************************************/
 
     /// \brief Constant equal to the value of the constant TConstant.
     /// \remarks If TConstant is not a specialization of Constant<>, the
     ///          program is ill-formed.
     template <typename TConstant>
-    inline constexpr auto ConstantValueOf = IllFormed<void, TConstant>::kValue;
+    inline constexpr auto Evaluate = IllFormed<void, TConstant>::kValue;
 
     /// \brief Partial specialization for Constants.
     template <typename TType, TType TValue>
-    inline constexpr TType ConstantValueOf<Constant<TType,TValue>> = TValue;
+    inline constexpr TType Evaluate<Constant<TType,TValue>> = TValue;
 
 }
 

@@ -31,7 +31,7 @@ namespace Syntropy::Templates
     /// \brief Provides indexed access to function arguments' types.
     template <Int VIndex, typename TCallable >
     using FunctionArgumentsElement
-        = TypeListElement<VIndex, FunctionArguments<TCallable>>;
+        = ElementOf<VIndex, FunctionArguments<TCallable>>;
 
     /// \brief Type alias for the return type of a callable object invocation
     ///        with provided arguments.

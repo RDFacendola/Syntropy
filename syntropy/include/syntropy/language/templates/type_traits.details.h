@@ -15,126 +15,97 @@
 
 // ===========================================================================
 
-namespace Syntropy::Templates
-{
-    /************************************************************************/
-    /* FORWARD DECLARATIONS                                                 */
-    /************************************************************************/
-
-    template <typename... TTypes>
-    struct TypeList;
-
-}
-
-// ===========================================================================
-
 namespace Syntropy::Templates::Details
 {
-    /************************************************************************/
-    /* META                                                                 */
-    /************************************************************************/
-
-    /// \brief Type equal to TTrue if VCondition is true, equal to TFalse
-    ///        otherwise.
-    template <Bool VCondition, typename TTrue, typename TFalse>
-    using Conditional
-        = std::conditional_t<VCondition, TTrue, TFalse>;
-
     /************************************************************************/
     /* TYPE LIST                                                            */
     /************************************************************************/
 
-    /// \brief Discards the first VCount elements in a type list and provides
-    ///        a type alias equal to a type list with the remaining elements.
-    template <Int VCount, typename TTypeList>
-    struct TypeListPopFrontHelper;
-
-    /// \brief Specialization for type lists.
-    template <Int VCount, typename TElement, typename... TElements>
-    struct TypeListPopFrontHelper<VCount, TypeList<TElement, TElements...>>
-        : TypeListPopFrontHelper<VCount - 1, TypeList<TElements...>>
-    {
-
-    };
-
-    /// \brief End of recursion.
-    template <typename TTypeList>
-    struct TypeListPopFrontHelper<0, TTypeList>
-    {
-        using Type = TTypeList;
-    };
-
-    /// \brief Discards the first element of a type list until the first
-    ///        element is equal to TType or the list is exhausted.
-    template <typename TType, typename TFirst, typename... UTypes>
-    struct TypeListIndexHelper : TypeListIndexHelper<TType, UTypes...> {};
-
-    /// \brief Specialization for type lists starting with TType.
-    template <typename TType, typename... UTypes>
-    struct TypeListIndexHelper<TType, TType, UTypes...>
-    {
-        static_assert((!std::is_same_v<TType, UTypes> && ...),
-                      "TType must appear exactly once in the type list.");
-
-        static constexpr Int kValue = sizeof...(UTypes);
-    };
-
-    /// \brief Integer constant equal to the index of the first occurrence
-    ///        TType in TTypeList.
-    ///
-    /// \remarks If TType doesn't appear in TTypeList the program
-    ///          is ill-formed.
-    template <typename TType, typename TTypeList>
-    inline constexpr Int
-    TypeListIndex = IllFormed<Int, TType, TTypeList>::kValue;
-
-    /// \brief Specialization for type lists.
-    template <typename TType, typename... UTypes>
-    inline constexpr Int
-    TypeListIndex<TType, TypeList<UTypes...>>
-         = sizeof...(UTypes)
-         - TypeListIndexHelper<TType, UTypes...>::kValue - 1;
-
-    /// \brief Integer constant equal to the number of types in a type list.
-    /// \remarks If TTypeList isn't a TypeList the program is ill-formed.
+    /// \brief Get the numer of elements in a type list.
     template <typename TTypeList>
     inline constexpr Int
-    TypeListRank = IllFormed<Int, TTypeList>::kValue;
+    CountOf = IllFormed<Int, TTypeList>::kValue;
 
     /// \brief Specialization for type lists.
     template <typename... TTypes>
-    inline constexpr Int TypeListRank<TypeList<TTypes...>>
+    inline constexpr Int CountOf<Syntropy::Templates::TypeList<TTypes...>>
         = sizeof...(TTypes);
 
-    /// \brief Provides indexed access to type list elements' types.
-    template <Int VIndex, typename TTypeList>
-    struct TypeListElementHelper;
+    // =======================================================================
+
+    /// \brief Discards elements from UTypes until the first element is equal
+    ///        to TType or the list is exhausted.
+    template <typename TType, typename TFirst, typename... UTypes>
+    struct IndexOfHelper : IndexOfHelper<TType, UTypes...> {};
+
+    /// \brief Specialization for type lists starting with TType.
+    template <typename TType, typename... UTypes>
+    struct IndexOfHelper<TType, TType, UTypes...>
+        : Constant<Int, sizeof...(UTypes)> {};
+
+    /// \brief Index of the first occurrence of TType in TTypeList.
+    template <typename TType, typename TTypeList>
+    inline constexpr Int
+    IndexOf = IllFormed<Int, TType, TTypeList>::kValue;
 
     /// \brief Specialization for type lists.
-    template <Int VIndex, typename TElement, typename... TElements>
-    struct TypeListElementHelper<VIndex, TypeList<TElement, TElements...>>
-        : TypeListElementHelper<VIndex - 1, TypeList<TElements...>>
+    template <typename TType, typename... UTypes>
+    inline constexpr Int
+    IndexOf<TType, TypeList<UTypes...>>
+         = sizeof...(UTypes)
+         - IndexOfHelper<TType, UTypes...>::kValue - 1;
+
+    // =======================================================================
+
+    /// \brief Get the type of the TIndex-th element in TTypeList.
+    template <Int TIndex, typename TTypeList>
+    struct ElementOfHelper;
+
+    /// \brief Specialization for type lists. Recursive.
+    template <Int TIndex, typename TElement, typename... TElements>
+    struct ElementOfHelper<TIndex, TypeList<TElement, TElements...>>
+        : ElementOfHelper<TIndex - 1, TypeList<TElements...>>
     {
 
     };
 
     /// \brief End of recursion.
     template <typename TElement, typename... TElements>
-    struct TypeListElementHelper<0, TypeList<TElement, TElements...>>
+    struct ElementOfHelper<0, TypeList<TElement, TElements...>>
     {
         using Type = TElement;
     };
 
-    /// \brief Provides indexed access to type list elements' types.
-    template <Int VIndex, typename TTypeList>
-    using TypeListElement
-        = typename TypeListElementHelper<VIndex, TTypeList>::Type;
+    /// \brief Get the type of the TIndex-th element in TTypeList.
+    template <Int TIndex, typename TTypeList>
+    using ElementOf = typename ElementOfHelper<TIndex, TTypeList>::Type;
 
-    /// \brief Discards the first VCount elements in a type list and provides
-    ///        a type alias equal to a type list with the remaining elements.
-    template <Int VCount, typename TTypeList>
-    using TypeListPopFront
-        = typename Details::TypeListPopFrontHelper<VCount, TTypeList>::Type;
+    // =======================================================================
+
+    /// \brief Drops the first TCount elements in a type list and return the
+    ///        remaining ones;
+    template <Int TCount, typename TTypeList>
+    struct DropHelper;
+
+    /// \brief Specialization for type lists.
+    template <Int TCount, typename TElement, typename... TElements>
+    struct DropHelper<TCount, TypeList<TElement, TElements...>>
+        : DropHelper<TCount - 1, TypeList<TElements...>>
+    {
+
+    };
+
+    /// \brief End of recursion.
+    template <typename TTypeList>
+    struct DropHelper<0, TTypeList>
+    {
+        using Type = TTypeList;
+    };
+
+    /// \brief Drops the first TCount elements in a type list and return the
+    ///        remaining ones;
+    template <Int TCount, typename TTypeList>
+    using Drop = typename Details::DropHelper<TCount, TTypeList>::Type;
 
     /************************************************************************/
     /* TYPE TRANSFORM                                                       */
@@ -317,6 +288,15 @@ namespace Syntropy::Templates::Details
     struct CommonRefrenceHelper<TType, UType, TTypes...>
         : Alias<CommonRefrenceHelperN<void, TType, UType, TTypes...>> {};
 
+    /************************************************************************/
+    /* META                                                                 */
+    /************************************************************************/
+
+    /// \brief Type equal to TTrue if VCondition is true, equal to TFalse
+    ///        otherwise.
+    template <Bool VCondition, typename TTrue, typename TFalse>
+    using Conditional
+        = std::conditional_t<VCondition, TTrue, TFalse>;
 }
 
 // ===========================================================================

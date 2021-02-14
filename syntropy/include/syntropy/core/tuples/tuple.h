@@ -398,7 +398,7 @@ namespace Syntropy::Tuples::Templates
     template <Int VIndex, typename... TElements>
     struct ElementTypeTraits<VIndex, Tuples::Tuple<TElements...>>
         : Syntropy::Templates::Alias<
-            Syntropy::Templates::TypeListElement<
+            Syntropy::Templates::ElementOf<
                 VIndex,
                 Syntropy::Templates::TypeList<TElements...>>> {};
 

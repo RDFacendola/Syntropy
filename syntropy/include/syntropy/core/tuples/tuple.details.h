@@ -159,7 +159,7 @@ namespace Syntropy::Tuples::Details
     using EnableIfTupleConvertingConstructor
         = RWPtr<Syntropy::Templates::EnableIf<
             EnableIfTupleConvertingConstructorHelper<
-                Syntropy::Templates::TypeListRank<TTypeList>
+                Syntropy::Templates::CountOf<TTypeList>
                     == sizeof...(UTypes),
                 TTypeList,
                 Syntropy::Templates::TypeList<UTypes>...>>>;
@@ -207,7 +207,7 @@ namespace Syntropy::Tuples::Details
     using EnableIfTupleConvertingCopyConstructor
         = RWPtr<Syntropy::Templates::EnableIf<
             EnableIfTupleConvertingCopyConstructorHelper<
-                Syntropy::Templates::TypeListRank<TTypeList>
+                Syntropy::Templates::CountOf<TTypeList>
                     == sizeof...(UTypes),
                 TTypeList,
                 Syntropy::Templates::TypeList<UTypes>...>>>;
@@ -252,7 +252,7 @@ namespace Syntropy::Tuples::Details
     using EnableIfTupleConvertingMoveConstructor
         = RWPtr<Syntropy::Templates::EnableIf<
             EnableIfTupleConvertingMoveConstructorHelper<
-                Syntropy::Templates::TypeListRank<TTypeList>
+                Syntropy::Templates::CountOf<TTypeList>
                     == sizeof...(UTypes),
                 TTypeList,
                 Syntropy::Templates::TypeList<UTypes>...>>>;

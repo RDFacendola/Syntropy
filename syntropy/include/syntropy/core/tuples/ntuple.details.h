@@ -89,7 +89,7 @@ namespace Syntropy::Tuples::Templates::Details
     ///        VIndex-th element.
     template <typename TType, typename TIndex>
     using DetectTupleGetter
-        = decltype(Get<Syntropy::Templates::ConstantValueOf<TIndex>>(
+        = decltype(Get<Syntropy::Templates::Evaluate<TIndex>>(
               Syntropy::Templates::Declval<TType>()));
 
     /// \brief Constant equal to true if TType provides compile-time access to

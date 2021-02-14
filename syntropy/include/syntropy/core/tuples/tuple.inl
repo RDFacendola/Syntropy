@@ -16,8 +16,7 @@ namespace Syntropy::Tuples
     template <typename TElement, typename... TElements>
     template <typename UElement, typename... UElements>
     constexpr Tuple<TElement, TElements...>
-    ::Tuple(ElementwiseTag,
-            Forwarding<UElement> element,
+    ::Tuple(ElementwiseTag,            Forwarding<UElement> element,
             Forwarding<UElements>... elements) noexcept
         : BaseClass(Forward<UElements>(elements)...)
         , element_(Forward<UElement>(element))
@@ -182,7 +181,7 @@ namespace Syntropy::Tuples
     [[nodiscard]] constexpr Immutable<TElement>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<
+        constexpr auto kIndex = Syntropy::Templates::IndexOf<
             TElement,
             Syntropy::Templates::TypeList<TElements...>>;
 
@@ -193,7 +192,7 @@ namespace Syntropy::Tuples
     [[nodiscard]] constexpr Mutable<TElement>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<
+        constexpr auto kIndex = Syntropy::Templates::IndexOf<
             TElement,
             Syntropy::Templates::TypeList<TElements...>>;
 
@@ -204,7 +203,7 @@ namespace Syntropy::Tuples
     [[nodiscard]] constexpr Immovable<TElement>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<
+        constexpr auto kIndex = Syntropy::Templates::IndexOf<
             TElement,
             Syntropy::Templates::TypeList<TElements...>>;
 
@@ -215,7 +214,7 @@ namespace Syntropy::Tuples
     [[nodiscard]] constexpr Movable<TElement>
     Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
-        constexpr auto kIndex = Syntropy::Templates::TypeListIndex<
+        constexpr auto kIndex = Syntropy::Templates::IndexOf<
             TElement,
             Syntropy::Templates::TypeList<TElements...>>;
 
