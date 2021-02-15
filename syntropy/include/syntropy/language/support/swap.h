@@ -25,8 +25,8 @@ namespace Syntropy::Algorithm
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <typename TType, typename UType = TType>
-    requires Concepts::AssignableFrom<Mutable<TType>, Forwarding<UType>>
-          && Concepts::MoveConstructibleType<TType>
+    requires Concepts::IsAssignableFrom<Mutable<TType>, Forwarding<UType>>
+          && Concepts::IsMoveConstructible<TType>
     [[nodiscard]] constexpr TType
     Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
 
@@ -36,8 +36,8 @@ namespace Syntropy::Algorithm
 
     /// \brief Swap lhs with rhs.
     template <typename TType>
-    requires Concepts::AssignableFrom<Mutable<TType>, Movable<TType>>
-          && Concepts::MoveConstructibleType<TType>
+    requires Concepts::IsAssignableFrom<Mutable<TType>, Movable<TType>>
+          && Concepts::IsMoveConstructible<TType>
     constexpr void
     Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
 

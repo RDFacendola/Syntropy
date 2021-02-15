@@ -109,42 +109,42 @@ namespace Syntropy::Concepts
 
     /// \brief Concepts for standard-layout types.
     template <typename TType>
-    concept StandardLayoutType = Details::StandardLayoutType<TType>;
+    concept IsStandardLayoutType = Details::IsStandardLayoutType<TType>;
 
     /// \brief Concept for default-constructible types.
     template <typename TType>
-    concept DefaultConstructibleType
-        = Details::DefaultConstructibleType<TType>;
+    concept IsDefaultConstructible
+        = Details::IsDefaultConstructible<TType>;
 
     /// \brief Concept for copy-constructible types.
     template <typename TType>
-    concept CopyConstructibleType = Details::CopyConstructibleType<TType>;
+    concept IsCopyConstructible = Details::IsCopyConstructible<TType>;
 
     /// \brief Concept for move-constructible types.
     template <typename TType>
-    concept MoveConstructibleType = Details::MoveConstructibleType<TType>;
+    concept IsMoveConstructible = Details::IsMoveConstructible<TType>;
 
     /// \brief Concept for types that can be constructed by TArguments... .
     template <typename TType, typename... TArguments>
-    concept ConstructibleFrom
-        = Details::ConstructibleFrom<TType, TArguments...>;
+    concept IsConstructibleFrom
+        = Details::IsConstructibleFrom<TType, TArguments...>;
 
     /// \brief Concept for copy-assignable types.
     template <typename TType>
-    concept CopyAssignableType = Details::CopyAssignableType<TType>;
+    concept IsCopyAssignable = Details::IsCopyAssignable<TType>;
 
     /// \brief Concept for move-assignable types.
     template <typename TType>
-    concept MoveAssignableType = Details::MoveAssignableType<TType>;
+    concept IsMoveAssignable = Details::IsMoveAssignable<TType>;
 
     /// \brief Concept for types that can be assigned from UType.
     template <typename TType, typename UType>
-    concept AssignableFrom = Details::AssignableFrom<TType, UType>;
+    concept IsAssignableFrom = Details::IsAssignableFrom<TType, UType>;
 
     /// \brief Concept for types whose instances can safely be destroyed at
     ///        the end of their lifetime.
     template <typename TType>
-    concept DestructibleType = Details::DestructibleType<TType>;
+    concept IsDestructible = Details::IsDestructible<TType>;
 
     // Trivial.
     // ========
@@ -276,18 +276,18 @@ namespace Syntropy::Concepts
     template <typename TType>
     concept Movable
          = IsObject<TType>
-        && MoveConstructibleType<TType>
-        && AssignableFrom<Mutable<TType>, TType>
+        && IsMoveConstructible<TType>
+        && IsAssignableFrom<Mutable<TType>, TType>
         && Swappable<TType>;
 
     /// \brief Concept for types that can be copied, moved and swapped.
     template <typename TType>
     concept Copyable
-         = CopyConstructibleType<TType>
+         = IsCopyConstructible<TType>
         && Movable<TType>
-        && AssignableFrom<Mutable<TType>, Mutable<TType>>
-        && AssignableFrom<Mutable<TType>, Immutable<TType>>
-        && AssignableFrom<Mutable<TType>, Const<TType>>;
+        && IsAssignableFrom<Mutable<TType>, Mutable<TType>>
+        && IsAssignableFrom<Mutable<TType>, Immutable<TType>>
+        && IsAssignableFrom<Mutable<TType>, Const<TType>>;
 
     /// \brief Concept for types that are both copyable and default
     ///        constructible.

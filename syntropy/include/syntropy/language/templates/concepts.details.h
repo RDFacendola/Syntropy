@@ -120,41 +120,41 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concepts for standard-layout types.
     template <typename TType>
-    concept StandardLayoutType = std::is_standard_layout_v<TType>;
+    concept IsStandardLayoutType = std::is_standard_layout_v<TType>;
 
     /// \brief Concept for default-constructible types.
     template <typename TType>
-    concept DefaultConstructibleType = std::is_default_constructible_v<TType>;
+    concept IsDefaultConstructible = std::is_default_constructible_v<TType>;
 
     /// \brief Concept for copy-constructible types.
     template <typename TType>
-    concept CopyConstructibleType = std::is_copy_constructible_v<TType>;
+    concept IsCopyConstructible = std::is_copy_constructible_v<TType>;
 
     /// \brief Concept for move-constructible types.
     template <typename TType>
-    concept MoveConstructibleType = std::is_move_constructible_v<TType>;
+    concept IsMoveConstructible = std::is_move_constructible_v<TType>;
 
     /// \brief Concept for types that can be constructed by TArguments... .
     template <typename TType, typename... TArguments>
-    concept ConstructibleFrom
+    concept IsConstructibleFrom
         = std::is_constructible_v<TType, TArguments...>;
 
     /// \brief Concept for copy-assignable types.
     template <typename TType>
-    concept CopyAssignableType = std::is_copy_assignable_v<TType>;
+    concept IsCopyAssignable = std::is_copy_assignable_v<TType>;
 
     /// \brief Concept for move-assignable types.
     template <typename TType>
-    concept MoveAssignableType = std::is_move_assignable_v<TType>;
+    concept IsMoveAssignable = std::is_move_assignable_v<TType>;
 
 /// \brief Concept for types that can be assigned from UType.
     template <typename TType, typename UType>
-    concept AssignableFrom = std::is_assignable_v<TType, UType>;
+    concept IsAssignableFrom = std::is_assignable_v<TType, UType>;
 
     /// \brief Concept for types whose instances can safely be destroyed at
     ///        the end of their lifetime (including reference types).
     template <typename TType>
-    concept DestructibleType = std::is_destructible_v<TType>;
+    concept IsDestructible = std::is_destructible_v<TType>;
 
     // Trivial.
     // ========
@@ -303,15 +303,15 @@ namespace Syntropy::Concepts::Details
     ///        or default-initialized (T t).
     template <typename TType>
     concept DefaultInitializable
-         = ConstructibleFrom<TType>
+         = IsConstructibleFrom<TType>
         && requires { TType{}; }
         && requires { ::new (static_cast<RWTypelessPtr>(nullptr)) TType; };
 
     /// \brief Concept for a type whose instances are swappable.
     template <typename TType>
     concept Swappable
-        = AssignableFrom<Mutable<TType>, Movable<TType>>
-       && MoveConstructibleType<TType>;
+        = IsAssignableFrom<Mutable<TType>, Movable<TType>>
+       && IsMoveConstructible<TType>;
 
     // Callable concepts.
     // ==================

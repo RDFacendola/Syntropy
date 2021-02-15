@@ -163,10 +163,10 @@ namespace Syntropy::UnitTest
         // [i] Explicit default ctor: Tuple<T> t{};
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<ExplicitDefaultConstructibleFoo>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::DefaultConstructibleType<ExplicitDefaultConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsDefaultConstructible<ExplicitDefaultConstructibleFoo>), true);
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<OptionalExplicitDefaultConstructibleFoo>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::DefaultConstructibleType<OptionalExplicitDefaultConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsDefaultConstructible<OptionalExplicitDefaultConstructibleFoo>), true);
     })
 
     .TestCase("A tuple is implicitly default constructible if all of its elements are explicitly default-constructible.", [](auto& fixture)
@@ -179,10 +179,10 @@ namespace Syntropy::UnitTest
         // [i] Implicit default ctor: Tuple<T> t = {};
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<ImplicitDefaultConstructibleFoo>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::DefaultConstructibleType<ImplicitDefaultConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsDefaultConstructible<ImplicitDefaultConstructibleFoo>), true);
 
         SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<OptionalImplicitDefaultConstructibleFoo>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::DefaultConstructibleType<OptionalImplicitDefaultConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsDefaultConstructible<OptionalImplicitDefaultConstructibleFoo>), true);
     })
 
     .TestCase("A tuple is explicitly direct-constructible if any of its elements is explicitly direct-constructible.", [](auto& fixture)
@@ -398,13 +398,13 @@ namespace Syntropy::UnitTest
     
     .TestCase("Empty tuples are trivially copy-assignable.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::CopyAssignableType<Tuple<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsCopyAssignable<Tuple<>>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::TriviallyCopyAssignableType<Tuple<>>), true);
     })
     
     .TestCase("Empty tuples are trivially move-assignable.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::MoveAssignableType<Tuple<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsMoveAssignable<Tuple<>>), true);
         SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::TriviallyMoveAssignableType<Tuple<>>), true);
     })
 
@@ -413,11 +413,11 @@ namespace Syntropy::UnitTest
         using MovableOnlyFoo = TupleTestFixture::MovableOnlyFoo;
         using CopyableOnlyFoo = TupleTestFixture::CopyableOnlyFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::CopyAssignableType<Tuple<Int, Float>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::CopyAssignableType<Tuple<Int, Float, CopyableOnlyFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsCopyAssignable<Tuple<Int, Float>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsCopyAssignable<Tuple<Int, Float, CopyableOnlyFoo>>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::CopyAssignableType<Tuple<Int, Float, MovableOnlyFoo >>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::CopyAssignableType<Tuple<Int, Float, MovableOnlyFoo, CopyableOnlyFoo >>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsCopyAssignable<Tuple<Int, Float, MovableOnlyFoo >>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsCopyAssignable<Tuple<Int, Float, MovableOnlyFoo, CopyableOnlyFoo >>), false);
     })
         
     .TestCase("Tuples with move-assignable elements are move-assignable themselves.", [](auto& fixture)
@@ -425,10 +425,10 @@ namespace Syntropy::UnitTest
         using MovableOnlyFoo = TupleTestFixture::MovableOnlyFoo;
         using CopyableOnlyFoo = TupleTestFixture::CopyableOnlyFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::MoveAssignableType<Tuple<Int, Float>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::MoveAssignableType<Tuple<Int, Float, MovableOnlyFoo>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::MoveAssignableType<Tuple<Int, Float, CopyableOnlyFoo>>), true);                     // Will fallback on the copy constructor.
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::MoveAssignableType<Tuple<Int, Float, MovableOnlyFoo, CopyableOnlyFoo >>), true);    // Will fallback on the copy constructor.
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsMoveAssignable<Tuple<Int, Float>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsMoveAssignable<Tuple<Int, Float, MovableOnlyFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsMoveAssignable<Tuple<Int, Float, CopyableOnlyFoo>>), true);                     // Will fallback on the copy constructor.
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsMoveAssignable<Tuple<Int, Float, MovableOnlyFoo, CopyableOnlyFoo >>), true);    // Will fallback on the copy constructor.
     })
 
     .TestCase("Copy-constructing and copy-assigning a tuple the same values produces two equal tuples.", [](auto& fixture)
