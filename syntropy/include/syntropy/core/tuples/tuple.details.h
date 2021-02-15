@@ -150,7 +150,7 @@ namespace Syntropy::Tuples::Details
     template <typename TTypeList, typename... UTypeLists>
     inline constexpr Bool
     EnableIfTupleConvertingConstructorHelper<true, TTypeList, UTypeLists...>
-        = Syntropy::Concepts::ConstructibleType<
+        = Syntropy::Concepts::ConstructibleFrom<
             TTypeList,
             Syntropy::Templates::AddRValueReference<UTypeLists>...>;
 
@@ -178,7 +178,7 @@ namespace Syntropy::Tuples::Details
     inline constexpr Bool
     EnableIfTupleConvertingCopyConstructorHelper
         <true, TTypeList, UTypeLists...>
-            = Syntropy::Concepts::ConstructibleType<
+            = Syntropy::Concepts::ConstructibleFrom<
                 TTypeList,
                 Syntropy::Templates::AddLValueConstReference<UTypeLists>...>;
 
@@ -191,11 +191,11 @@ namespace Syntropy::Tuples::Details
         true,
         Syntropy::Templates::TypeList<TType>,
         Syntropy::Templates::TypeList<UType>>
-             =  Syntropy::Concepts::ConstructibleType<TType,
+             =  Syntropy::Concepts::ConstructibleFrom<TType,
                                                      Immutable<UType>>
             && !Syntropy::Concepts::ConvertibleTo<Immutable<Tuple<UType>>,
                                                   TType>
-            && !Syntropy::Concepts::ConstructibleType<TType,
+            && !Syntropy::Concepts::ConstructibleFrom<TType,
                                                       Immutable<Tuple<UType>>>
             && !Syntropy::Concepts::SameAs<TType, UType>;
 
@@ -226,7 +226,7 @@ namespace Syntropy::Tuples::Details
     inline constexpr Bool
     EnableIfTupleConvertingMoveConstructorHelper
         <true, TTypeList, UTypeLists...>
-            = Syntropy::Concepts::ConstructibleType<
+            = Syntropy::Concepts::ConstructibleFrom<
                 TTypeList,
                 Syntropy::Templates::AddRValueReference<UTypeLists>...>;
 
@@ -239,7 +239,7 @@ namespace Syntropy::Tuples::Details
         true,
         Syntropy::Templates::TypeList<TType>,
         Syntropy::Templates::TypeList<UType>>
-             = Syntropy::Concepts::ConstructibleType<TType, Movable<UType>>
+             = Syntropy::Concepts::ConstructibleFrom<TType, Movable<UType>>
             && !Syntropy::Concepts::ConvertibleTo<Tuple<UType>, TType>
             && !Syntropy::Concepts::ConvertibleTo<TType, Tuple<UType>>
             && !Syntropy::Concepts::SameAs<TType, UType>;
@@ -288,7 +288,7 @@ namespace Syntropy::Tuples::Details
     using EnableIfTupleConvertingCopyAssignment
         = RWPtr<Syntropy::Templates::EnableIf<
              ! Syntropy::Concepts::SameAs<TTypeList, UTypeList>
-            && Syntropy::Concepts::AssignableType<
+            && Syntropy::Concepts::AssignableFrom<
                    Syntropy::Templates::AddLValueReference<TTypeList>,
                    Syntropy::Templates::AddLValueConstReference<UTypeList>>>>;
 
@@ -301,7 +301,7 @@ namespace Syntropy::Tuples::Details
     using EnableIfTupleConvertingMoveAssignment
         = RWPtr<Syntropy::Templates::EnableIf<
              ! Syntropy::Concepts::SameAs<TTypeList, UTypeList>
-            && Syntropy::Concepts::AssignableType<
+            && Syntropy::Concepts::AssignableFrom<
                 Syntropy::Templates::AddLValueReference<TTypeList>,
                 UTypeList>>>;
 

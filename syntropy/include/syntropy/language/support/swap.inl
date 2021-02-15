@@ -15,7 +15,7 @@ namespace Syntropy::Algorithm
 
     template <typename TType, typename UType>
     requires Concepts::AssignableFrom<Mutable<TType>, Forwarding<UType>>
-          && Concepts::MoveConstructible<TType>
+          && Concepts::MoveConstructibleType<TType>
     [[nodiscard]] constexpr TType
     Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept
     {
@@ -28,7 +28,7 @@ namespace Syntropy::Algorithm
 
     template <typename TType>
     requires Concepts::AssignableFrom<Mutable<TType>, Movable<TType>>
-          && Concepts::MoveConstructible<TType>
+          && Concepts::MoveConstructibleType<TType>
     constexpr void
     Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
     {

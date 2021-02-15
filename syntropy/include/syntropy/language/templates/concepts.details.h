@@ -16,8 +16,27 @@
 namespace Syntropy::Concepts::Details
 {
     /************************************************************************/
-    /* TYPE TRAITS                                                          */
+    /* CONCEPTS                                                             */
     /************************************************************************/
+
+    // Core concepts.
+    // ==============
+
+    /// \brief Concept for types which are exactly equal to UType.
+    template <typename TType, typename UType>
+    concept SameAs = std::is_same_v<TType, UType>;
+
+    /// \brief Concept for types convertible to UType.
+    template <typename TType, typename UType>
+    concept ConvertibleTo = std::is_convertible_v<TType, UType>;
+
+    /// \brief Concept for immutable types.
+    template <typename TType>
+    concept ImmutableType = std::is_const_v<TType>;
+
+    /// \brief Concept for mutable types.
+    template <typename TType>
+    concept MutableType = !std::is_const_v<TType>;
 
     // Type concepts.
     // ==============
@@ -54,299 +73,155 @@ namespace Syntropy::Concepts::Details
     template <typename TType>
     concept ObjectType = std::is_object_v<TType>;
 
+    // Fundamental types concepts.
+    // ===========================
+
+    /// \brief Concept for boolean types.
+    template <typename TType>
+    concept Boolean
+         = SameAs<Templates::ImmutableOf<TType>, Immutable<Bool>>;
+
+    /// \brief Concept for signed integral number types.
+    template <typename TType>
+    concept Integral
+         = SameAs<Templates::ImmutableOf<TType>, Immutable<Int>>
+        || SameAs<Templates::ImmutableOf<TType>, Immutable<Fix8>>
+        || SameAs<Templates::ImmutableOf<TType>, Immutable<Fix16>>
+        || SameAs<Templates::ImmutableOf<TType>, Immutable<Fix32>>
+        || SameAs<Templates::ImmutableOf<TType>, Immutable<Fix64>>
+        || SameAs<Templates::ImmutableOf<TType>, Immutable<Enum8>>
+        || SameAs<Templates::ImmutableOf<TType>, Immutable<Enum16>>
+        || SameAs<Templates::ImmutableOf<TType>, Immutable<Enum32>>
+        || SameAs<Templates::ImmutableOf<TType>, Immutable<Enum64>>;
+
+    /// \brief Concept for real number types.
+    template <typename TType>
+    concept Real
+         = SameAs<Templates::ImmutableOf<TType>, Immutable<Float>>;
+
+     // Polymorphism.
+     // =============
+
+     /// \brief Concept for types deriving from TBase ignoring
+     ///        constant-qualifiers.
+     template <typename TDerived, typename TBase>
+     concept DerivedFrom = std::is_base_of_v<TBase, TDerived>;
+
+     /// \brief Concept for polymorphic types.
+     template <typename TType>
+     concept PolymorphicType = std::is_polymorphic_v<TType>;
+
+     /// \brief Concept for final types.
+     template <typename TType>
+     concept FinalType = std::is_final_v<TType>;
+
     // Properties concepts.
     // ====================
-
-    /// \brief Concept for immutable types.
-    template <typename TType>
-    concept ImmutableType = std::is_const_v<TType>;
-
-    /// \brief Concept for mutable types.
-    template <typename TType>
-    concept MutableType = !std::is_const_v<TType>;
-
-    /// \brief Concept for trivial types.
-    template <typename TType>
-    concept TrivialType = std::is_trivial_v<TType>;
-
-    /// \brief Concept for trivially-copyable types.
-    template <typename TType>
-    concept TriviallyCopyableType = std::is_trivially_copyable_v<TType>;
 
     /// \brief Concepts for standard-layout types.
     template <typename TType>
     concept StandardLayoutType = std::is_standard_layout_v<TType>;
 
-    /// \brief Constant for polymorphic types.
+    /// \brief Concept for default-constructible types.
     template <typename TType>
-    concept PolymorphicType = std::is_polymorphic_v<TType>;
+    concept DefaultConstructibleType = std::is_default_constructible_v<TType>;
 
-    /// \brief Constant for final types.
+    /// \brief Concept for copy-constructible types.
     template <typename TType>
-    concept FinalType = std::is_final_v<TType>;
+    concept CopyConstructibleType = std::is_copy_constructible_v<TType>;
 
-    // Type operation concepts.
-    // ========================
+    /// \brief Concept for move-constructible types.
+    template <typename TType>
+    concept MoveConstructibleType = std::is_move_constructible_v<TType>;
+
+    /// \brief Concept for types that can be constructed by TArguments... .
+    template <typename TType, typename... TArguments>
+    concept ConstructibleFrom
+        = std::is_constructible_v<TType, TArguments...>;
+
+    /// \brief Concept for copy-assignable types.
+    template <typename TType>
+    concept CopyAssignableType = std::is_copy_assignable_v<TType>;
+
+    /// \brief Concept for move-assignable types.
+    template <typename TType>
+    concept MoveAssignableType = std::is_move_assignable_v<TType>;
+
+/// \brief Concept for types that can be assigned from UType.
+    template <typename TType, typename UType>
+    concept AssignableFrom = std::is_assignable_v<TType, UType>;
+
+    /// \brief Concept for types whose instances can safely be destroyed at
+    ///        the end of their lifetime (including reference types).
+    template <typename TType>
+    concept DestructibleType = std::is_destructible_v<TType>;
+
+    // Trivial.
+    // ========
+
+    /// \brief Concept for trivially default-constructible types.
+    template <typename TType>
+    concept TriviallyDefaultConstructibleType
+        = std::is_trivially_default_constructible_v<TType>;
+
+    /// \brief Concept for trivially copy-constructible types.
+    template <typename TType>
+    concept TriviallyCopyConstructibleType
+        = std::is_trivially_copy_constructible_v<TType>;
+
+    /// \brief Concept for trivially move-constructible types.
+    template <typename TType>
+    concept TriviallyMoveConstructibleType
+        = std::is_trivially_move_constructible_v<TType>;
+
+    /// \brief Concept for trivially copy-assignable types.
+    template <typename TType>
+    concept TriviallyCopyAssignableType
+        = std::is_trivially_copy_assignable_v<TType>;
+
+    /// \brief Concept for trivially move-assignable types.
+    template <typename TType>
+    concept TriviallyMoveAssignableType
+        = std::is_trivially_move_assignable_v<TType>;
+
+    /// \brief Concept for types whose instances can safely be destroyed at
+    ///        the end of their lifetime via trivial destructor.
+    template <typename TType>
+    concept TriviallyDestructibleType
+        = std::is_trivially_destructible_v<TType>;
+
+    /// \brief Concept for trivially-copyable types.
+    template <typename TType>
+    concept TriviallyCopyableType = std::is_trivially_copyable_v<TType>;
+
+    /// \brief Concept for trivial types.
+    template <typename TType>
+    concept TrivialType = std::is_trivial_v<TType>;
+
+    // Implicit.
+    // =========
 
     /// \brief Dummy method used to copy construct an instance.
     template <typename TType>
     void CopyConstruct(const TType&);
 
-    /// \brief Detect whether TType is implicitly default constructible from
-    ///        an empty list.
-    template <typename TType>
-    using DetectImplicitDefaultConstructor
-        = decltype(CopyConstruct<TType>({}));
-
-    /// \brief Detect whether TType is implicitly direct-constructible from
-    ///        a list of arguments.
-    template <typename TType, typename... TArguments>
-    using DetectImplicitDirectConstructor
-        = decltype(CopyConstruct<TType>({ Declval<TArguments>()... }));
-
-    /// \brief Detect whether an instance of TType can be compared equal to
-    ///        an instance of type UType.
-    template <typename TType, typename UType>
-    using DetectEqualityComparison
-        = decltype(Declval<TType>() == Declval<UType>());
-
-    /// \brief Constant equal to true if TType  default-constructible,
-    ///        equal to false otherwise.
-    template <typename TType>
-    concept DefaultConstructibleType = std::is_default_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  trivially default
-    ///        constructible, equal to false otherwise.
-    template <typename TType>
-    concept TriviallyDefaultConstructibleType
-        = std::is_trivially_default_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  implicitly default
-    ///        constructible, equal to false otherwise.
+    /// \brief Concept for types that can be implicitly default constructed
+    //         from an empty initializer list.
     template <typename TType>
     concept ImplicitlyDefaultConstructibleType
-        = Templates::IsValidExpression<DetectImplicitDefaultConstructor,
-                                       TType>;
+        = requires()
+        {
+            { CopyConstruct<TType>({}) };
+        };
 
-    /// \brief Constant equal to true if TType  copy-constructible,
-    ///        equal to false otherwise.
-    template <typename TType>
-    concept CopyConstructibleType = std::is_copy_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  trivially-copy-constructible,
-    ///        equal to false otherwise.
-    template <typename TType>
-    concept TriviallyCopyConstructibleType
-        = std::is_trivially_copy_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  move-constructible,
-    ///        equal to false otherwise.
-    template <typename TType>
-    concept MoveConstructibleType = std::is_move_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  trivially-move-constructible,
-    ///        equal to false otherwise.
-    template <typename TType>
-    concept TriviallyMoveConstructibleType
-        = std::is_trivially_move_constructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  copy-assignable,
-    ///        equal to false otherwise.
-    template <typename TType>
-    concept CopyAssignableType = std::is_copy_assignable_v<TType>;
-
-    /// \brief Constant equal to true if TType  trivially-copy-constructible,
-    ///        equal to false otherwise.
-    template <typename TType>
-    concept TriviallyCopyAssignableType
-        = std::is_trivially_copy_assignable_v<TType>;
-
-    /// \brief Constant equal to true if TType  move-assignable,
-    ///        equal to false otherwise.
-    template <typename TType>
-    concept MoveAssignableType = std::is_move_assignable_v<TType>;
-
-    /// \brief Constant equal to true if TType  trivially-move-constructible,
-    ///        equal to false otherwise.
-    template <typename TType>
-    concept TriviallyMoveAssignableType
-        = std::is_trivially_move_assignable_v<TType>;
-
-    /// \brief Constant equal to true if TType  assignable from UType
-    ///        in unevaluated context, equal to false otherwise.
-    template <typename TType, typename UType>
-    concept AssignableType = std::is_assignable_v<TType, UType>;
-
-    /// \brief Constant equal to true if TType can be constructed
-    ///        by TArguments... arguments, equal to false otherwise.
-    ///
-    /// The trait supports TypeLists in the form
-    /// Constructible<TypeList<A,B,C>,
-    ///               TypeList<a>,
-    ///               TypeList<b, bb>,
-    ///               TypeList<>>.
-    ///
-    /// TArguments must have the same exact rank as the number of elements
-    /// in TType, otherwise the program  ill-formed.
-    template <typename TType, typename... TArguments>
-    concept ConstructibleType
-        = std::is_constructible_v<TType, TArguments...>;
-
-    /// \brief Constant equal to true if TType can be constructed
-    ///        from an initializer lt of TArguments, equal to false otherwise.
-    ///
-    /// The trait supports TypeLists in the form
-    /// ImplicitlyConstructible<TypeList<A,B,C>,
-    ///                         TypeList<a>,
-    ///                         TypeList<b, bb>,
-    ///                         TypeList<>>.
-    ///
-    /// TArguments must have the same exact rank as the number of elements in
-    /// TType, otherwise the program  ill-formed.
-    ///
-    /// Given a function Foo(const TType&), TType is implicitly constructible
-    /// if calling Foo({arguments...}) is well-formed.
+    /// \brief Concept for types that can be implicitly direct-constructed
+    ///        from a initializer list.
     template <typename TType, typename... TArguments>
     concept ImplicitlyConstructibleType
-        = Templates::IsValidExpression<DetectImplicitDirectConstructor,
-                                       TType,
-                                       TArguments...>;
-
-    /// \brief Constant equal to true if TType  destructible,
-    ///        equal to false otherwise.
-    ///
-    /// A type is destructible if it  a reference type or,
-    /// if equal to an object-type, if calling its destructor
-    /// by means of t.~TType() in unevaluated context  well-formed.
-    ///
-    /// A type is *not* destructible if it  equal to void, a function type
-    /// or an array type of unknown bounds. It  not destructible also if its
-    /// destructor is ill-formed in unevaluated context.
-    template <typename TType>
-    concept DestructibleType = std::is_destructible_v<TType>;
-
-    /// \brief Constant equal to true if TType  both destructible and
-    ///        trivially-destructible, equal to false otherwise.
-    template <typename TType>
-    concept TriviallyDestructibleType
-        = std::is_trivially_destructible_v<TType>;
-
-    /// \brief Constant equal to true if an instance of type TType can be
-    ///        compared equal to an instance of type UType, equal to false
-    ///        otherwise.
-    template <typename TType, typename UType>
-    concept ComparableForEqualityType
-        = Templates::IsValidExpression<DetectEqualityComparison, TType, UType>;
-
-    /************************************************************************/
-    /* CONCEPTS                                                             */
-    /************************************************************************/
-
-    // Core language concepts.
-    // =======================
-
-    /// \brief Concept for types which are exactly equal to UType
-    ///        and vice-versa.
-    template <typename TType, typename UType>
-    concept SameAs
-         = std::is_same_v<TType, UType>
-        && std::is_same_v<UType, TType>;
-
-    /// \brief Concept for types convertible to UType.
-    template <typename TType, typename UType>
-    concept ConvertibleTo
-         = std::is_convertible_v<TType, UType>
-        && requires(Templates::AddRValueReference<TType>(&function)())
+        = requires()
         {
-            static_cast<UType>(function());
+            { CopyConstruct<TType>( { Declval<TArguments>()... }) };
         };
-
-    /// \brief Concept for types deriving from TBase ignoring
-    ///        constant-qualifiers.
-    template <typename TDerived, typename TBase>
-    concept DerivedFrom
-         = std::is_base_of_v<TBase, TDerived>
-        && std::is_convertible_v<Ptr<TDerived>, Ptr<TBase>>;
-
-    /// \brief Concept for boolean types.
-    template <typename TType>
-    concept Boolean = SameAs<TType, Bool>;
-
-    /// \brief Concept for signed integral number types.
-    template <typename TType>
-    concept Integral
-         = SameAs<Templates::RemoveConstReference<TType>, Int>
-        || SameAs<TType, Fix8>
-        || SameAs<TType, Fix16>
-        || SameAs<TType, Fix32>
-        || SameAs<TType, Fix64>
-        || SameAs<TType, Enum8>
-        || SameAs<TType, Enum16>
-        || SameAs<TType, Enum32>
-        || SameAs<TType, Enum64>;
-
-    /// \brief Concept for real number types.
-    template <typename TType>
-    concept Real = SameAs<TType, Float>;
-
-    /// \brief Concept for an expression type which can be assigned from UType
-    template <typename TType, typename UType>
-    concept AssignableFrom
-        = requires(Mutable<TType> lhs, Forwarding<UType> rhs)
-        {
-            { lhs = Forward<UType>(rhs) };
-        };
-
-    /// \brief Concept for a type whose instances are swappable.
-    template <typename TType>
-    concept Swappable
-        = requires(Mutable<TType> lhs, Mutable<TType> rhs)
-        {
-            Swap(lhs, rhs);
-        };
-
-    /// \brief Concept for types whose instances can safely be destroyed at
-    ///        the end of their lifetime (including reference types).
-    template <typename TType>
-    concept Destructible = std::is_destructible_v<TType>;
-
-    /// \brief Concept for types whose instances can be initialized with a set
-    ///        of arguments TArgs....
-    template <typename TType, typename... TArguments>
-    concept ConstructibleFrom
-         = Destructible<TType>
-        && ConstructibleType<TType, TArguments...>;
-
-    /// \brief Concept for types that can be value-initialized (T()),
-    ///        direct-list-initialized from and empty initializer list (T{})
-    ///        or default-initialized (T t).
-    template <typename TType>
-    concept DefaultInitializable
-         = ConstructibleFrom<TType>
-        && requires { TType{}; }
-        && requires { ::new (static_cast<void*>(nullptr)) TType; };
-
-    /// \brief Concept for types that are reference-type or object-type
-    ///        constructible from rvalue of the same type in both
-    ///        direct-initialization and copy-initialization.
-    template <typename TType>
-    concept MoveConstructible
-         = ConstructibleFrom<TType, TType>
-        && ConvertibleTo<TType, TType>;
-
-    /// \brief Concept for types that are either lvalue references or,
-    ///        if move-constructible, copy-constructible by means of direct
-    ///        and copy-initialization that leave the source unchanged
-    ///        after the copy.
-    template <typename TType>
-    concept CopyConstructible
-         = MoveConstructible<TType>
-        && ConstructibleFrom<TType, Mutable<TType>>
-        && ConvertibleTo<Mutable<TType>, TType>
-        && ConstructibleFrom<TType, Immutable<TType>>
-        && ConvertibleTo<Immutable<TType>, TType>
-        && ConstructibleFrom<TType, Const<TType>>
-        && ConvertibleTo<Const<TType>, TType>;
 
     // Comparison concepts.
     // ====================
@@ -405,41 +280,38 @@ namespace Syntropy::Concepts::Details
             { rhs >= lhs } -> Boolean;
         };
 
+    // Templates concepts.
+    // ===================
+
+    /// \brief Constant equal to true if TType is a specialization of
+    ///        TTemplate, equal to false otherwise.
+    template<typename TType, template <typename...> typename TTemplate>
+    constexpr Bool
+    TemplateSpecializationOf = false;
+
+    /// \brief Partial template specialization for
+    ///        template specializations (duh...).
+    template<template <typename...> typename TTemplate, typename... TTypes>
+    constexpr Bool
+    TemplateSpecializationOf<TTemplate<TTypes...>, TTemplate> = true;
+
     // Object concepts.
     // ================
 
-    /// \brief Concept for types that can be moved in and to (move constructed,
-    ///        move assigned and reference-swappable).
+    /// \brief Concept for types that can be value-initialized (T()),
+    ///        direct-list-initialized from and empty initializer list (T{})
+    ///        or default-initialized (T t).
     template <typename TType>
-    concept Movable
-         = ObjectType<TType>
-        && MoveConstructible<TType>
-        && AssignableFrom<Mutable<TType>, TType>
-        && Swappable<TType>;
+    concept DefaultInitializable
+         = ConstructibleFrom<TType>
+        && requires { TType{}; }
+        && requires { ::new (static_cast<RWTypelessPtr>(nullptr)) TType; };
 
-
-    /// \brief Concept for types that can be copied, moved and swapped.
+    /// \brief Concept for a type whose instances are swappable.
     template <typename TType>
-    concept Copyable
-         = CopyConstructible<TType>
-        && Movable<TType>
-        && AssignableFrom<Mutable<TType>, Mutable<TType>>
-        && AssignableFrom<Mutable<TType>, Immutable<TType>>
-        && AssignableFrom<Mutable<TType>, Const<TType>>;
-
-    /// \brief Concept for types that are both copyable and default
-    ///        constructible.
-    template <typename TType>
-    concept Semiregular
-         = Copyable<TType>
-         && DefaultInitializable<TType>;
-
-    /// \brief Concept for types that are copyable, default constructible and
-    ///        equality comparable.
-    template <typename TType>
-    concept Regular
-         = Semiregular<TType>
-        && EqualityComparableWith<TType, TType>;
+    concept Swappable
+        = AssignableFrom<Mutable<TType>, Movable<TType>>
+       && MoveConstructibleType<TType>;
 
     // Callable concepts.
     // ==================
@@ -452,74 +324,6 @@ namespace Syntropy::Concepts::Details
          {
              Invoke(Forward<TCallable>, Forward<TArguments>(arguments)...);
          };
-
-    /// \brief Concept for callable types that can be called with a set of
-    ///        arguments TArguments and preserve both callable object state
-    ///        and argument state.
-    template <typename TCallable, typename... TArguments>
-    concept RegularInvocable
-         = Invocable<TCallable, TArguments...>;
-
-    /// \brief Concept for callable types that can be called with a set of
-    ///        arguments TArguments and preserve both callable object state
-    ///        and argument state.
-    template <typename TPredicate, typename... TArguments>
-    concept Predicate
-         = RegularInvocable<TPredicate>
-        && Boolean<Templates::InvokeResult<TPredicate, TArguments...>>;
-
-    /// \brief Concept for callable types that define a binary
-    ///        relation between# TType and UType.
-    template <typename TPredicate, typename TType, typename UType>
-    concept Relation
-         = Predicate<TPredicate, TType, TType>
-        && Predicate<TPredicate, TType, UType>
-        && Predicate<TPredicate, UType, TType>
-        && Predicate<TPredicate, UType, UType>;
-
-    /// \brief Concept for predicates that define an equivalence relation
-    ///        between TType and UType.
-    ///
-    /// This concept requires that the equivalence relation is reflexive,
-    /// symmetric and transitive.
-    ///
-    /// \remarks The distinction between this and Relation is purely semantic.
-    template <typename TPredicate, typename TType, typename UType>
-    concept EquivalenceRelation
-        = Relation<TPredicate, TType, UType>;
-
-    /// \brief Concept for predicates which impose strict weak ordering on
-    //         their arguments.
-    ///
-    /// This concept requires that the predicate is irreflexive,
-    /// transitive and, given another predicate
-    /// E(a,b) : !P(a,b) && !P(b, a), E is transitive.
-    ///
-    /// \remarks The distinction between this and Relation is purely semantic.
-    template <typename TPredicate, typename TType, typename UType>
-    concept StrictWeakOrder
-        = Relation<TPredicate, TType, UType>;
-
-    // Type relationship.
-    // ==================
-
-    /// \brief Constant equal to true if TType is a specialization of
-    ///        TTemplate, equal to false otherwise.
-    template<typename TType, template <typename...> typename TTemplate>
-    constexpr Bool
-    TemplateSpecializationOfHelper = false;
-
-    /// \brief Partial template specialization for
-    ///        template specializations (duh...).
-    template<template <typename...> typename TTemplate, typename... TTypes>
-    constexpr Bool
-    TemplateSpecializationOfHelper<TTemplate<TTypes...>, TTemplate> = true;
-
-    /// \brief Concepts for types TType that are template specialization of
-    ///        TTemplate.
-    template<typename TType, template <typename...> typename TTemplate>
-    concept TemplateSpecializationOf
-         = TemplateSpecializationOfHelper<TType, TTemplate>;
 
 }
 
