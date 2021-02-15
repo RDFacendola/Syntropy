@@ -161,42 +161,42 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for trivially default-constructible types.
     template <typename TType>
-    concept TriviallyDefaultConstructibleType
+    concept IsTriviallyDefaultConstructible
         = std::is_trivially_default_constructible_v<TType>;
 
     /// \brief Concept for trivially copy-constructible types.
     template <typename TType>
-    concept TriviallyCopyConstructibleType
+    concept IsTriviallyCopyConstructible
         = std::is_trivially_copy_constructible_v<TType>;
 
     /// \brief Concept for trivially move-constructible types.
     template <typename TType>
-    concept TriviallyMoveConstructibleType
+    concept IsTriviallyMoveConstructible
         = std::is_trivially_move_constructible_v<TType>;
 
     /// \brief Concept for trivially copy-assignable types.
     template <typename TType>
-    concept TriviallyCopyAssignableType
+    concept IsTriviallyCopyAssignable
         = std::is_trivially_copy_assignable_v<TType>;
 
     /// \brief Concept for trivially move-assignable types.
     template <typename TType>
-    concept TriviallyMoveAssignableType
+    concept IsTriviallyMoveAssignable
         = std::is_trivially_move_assignable_v<TType>;
 
     /// \brief Concept for types whose instances can safely be destroyed at
     ///        the end of their lifetime via trivial destructor.
     template <typename TType>
-    concept TriviallyDestructibleType
+    concept IsTriviallyDestructible
         = std::is_trivially_destructible_v<TType>;
 
     /// \brief Concept for trivially-copyable types.
     template <typename TType>
-    concept TriviallyCopyableType = std::is_trivially_copyable_v<TType>;
+    concept IsTriviallyCopyable = std::is_trivially_copyable_v<TType>;
 
     /// \brief Concept for trivial types.
     template <typename TType>
-    concept TrivialType = std::is_trivial_v<TType>;
+    concept IsTrivial = std::is_trivial_v<TType>;
 
     // Implicit.
     // =========

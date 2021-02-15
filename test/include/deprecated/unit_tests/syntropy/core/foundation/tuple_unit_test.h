@@ -399,13 +399,13 @@ namespace Syntropy::UnitTest
     .TestCase("Empty tuples are trivially copy-assignable.", [](auto& fixture)
     {
         SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsCopyAssignable<Tuple<>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::TriviallyCopyAssignableType<Tuple<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsTriviallyCopyAssignable<Tuple<>>), true);
     })
     
     .TestCase("Empty tuples are trivially move-assignable.", [](auto& fixture)
     {
         SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsMoveAssignable<Tuple<>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::TriviallyMoveAssignableType<Tuple<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsTriviallyMoveAssignable<Tuple<>>), true);
     })
 
     .TestCase("Tuples with copy-assignable elements are copy-assignable themselves.", [](auto& fixture)

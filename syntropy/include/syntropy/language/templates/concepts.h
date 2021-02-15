@@ -151,42 +151,42 @@ namespace Syntropy::Concepts
 
     /// \brief Concept for trivially default-constructible types.
     template <typename TType>
-    concept TriviallyDefaultConstructibleType
-        = Details::TriviallyDefaultConstructibleType<TType>;
+    concept IsTriviallyDefaultConstructible
+        = Details::IsTriviallyDefaultConstructible<TType>;
 
     /// \brief Concept for trivially copy-constructible types.
     template <typename TType>
-    concept TriviallyCopyConstructibleType
-        = Details::TriviallyCopyConstructibleType<TType>;
+    concept IsTriviallyCopyConstructible
+        = Details::IsTriviallyCopyConstructible<TType>;
 
     /// \brief Concept for trivially move-constructible types.
     template <typename TType>
-    concept TriviallyMoveConstructibleType
-        = Details::TriviallyMoveConstructibleType<TType>;
+    concept IsTriviallyMoveConstructible
+        = Details::IsTriviallyMoveConstructible<TType>;
 
     /// \brief Concept for trivially copy-assignable types.
     template <typename TType>
-    concept TriviallyCopyAssignableType
-        = Details::TriviallyCopyAssignableType<TType>;
+    concept IsTriviallyCopyAssignable
+        = Details::IsTriviallyCopyAssignable<TType>;
 
     /// \brief Concept for trivially move-assignable types.
     template <typename TType>
-    concept TriviallyMoveAssignableType
-        = Details::TriviallyMoveAssignableType<TType>;
+    concept IsTriviallyMoveAssignable
+        = Details::IsTriviallyMoveAssignable<TType>;
 
     /// \brief Concept for types whose instances can safely be destroyed at
     ///        the end of their lifetime via trivial destructor.
     template <typename TType>
-    concept TriviallyDestructibleType
-        = Details::TriviallyDestructibleType<TType>;
+    concept IsTriviallyDestructible
+        = Details::IsTriviallyDestructible<TType>;
 
     /// \brief Concept for trivially-copyable types.
     template <typename TType>
-    concept TriviallyCopyableType = Details::TriviallyCopyableType<TType>;
+    concept IsTriviallyCopyable = Details::IsTriviallyCopyable<TType>;
 
     /// \brief Concept for trivial types.
     template <typename TType>
-    concept TrivialType = Details::TrivialType<TType>;
+    concept IsTrivial = Details::IsTrivial<TType>;
 
     // Implicit.
     // =========
