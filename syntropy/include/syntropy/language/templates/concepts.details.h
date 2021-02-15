@@ -208,7 +208,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for types that can be implicitly default constructed
     //         from an empty initializer list.
     template <typename TType>
-    concept ImplicitlyDefaultConstructibleType
+    concept IsImplicitlyDefaultConstructible
         = requires()
         {
             { CopyConstruct<TType>({}) };
@@ -217,7 +217,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for types that can be implicitly direct-constructed
     ///        from a initializer list.
     template <typename TType, typename... TArguments>
-    concept ImplicitlyConstructibleType
+    concept IsImplicitlyConstructibleFrom
         = requires()
         {
             { CopyConstruct<TType>( { Declval<TArguments>()... }) };
@@ -230,7 +230,7 @@ namespace Syntropy::Concepts::Details
     ///        operators against the (possibly different) type
     ///        UType are defined.
     template <typename TType, typename UType>
-    concept EqualityComparableWith
+    concept IsEqualityComparableWith
         = requires(Templates::ImmutableOf<TType> lhs,
                    Templates::ImmutableOf<UType> rhs)
         {
@@ -251,7 +251,7 @@ namespace Syntropy::Concepts::Details
     ///        less-than-or-equal-to and greater-than-or-equal-to operators
     ///        against the (possibly different) type UType are defined.
     template <typename TType, typename UType>
-    concept PartiallyOrderedWith
+    concept IsPartiallyOrderedWith
         = requires(Templates::ImmutableOf<TType> lhs,
                    Templates::ImmutableOf<UType> rhs)
         {
@@ -287,13 +287,13 @@ namespace Syntropy::Concepts::Details
     ///        TTemplate, equal to false otherwise.
     template<typename TType, template <typename...> typename TTemplate>
     constexpr Bool
-    TemplateSpecializationOf = false;
+    IsTemplateSpecializationOf = false;
 
     /// \brief Partial template specialization for
     ///        template specializations (duh...).
     template<template <typename...> typename TTemplate, typename... TTypes>
     constexpr Bool
-    TemplateSpecializationOf<TTemplate<TTypes...>, TTemplate> = true;
+    IsTemplateSpecializationOf<TTemplate<TTypes...>, TTemplate> = true;
 
     // Object concepts.
     // ================
@@ -302,14 +302,14 @@ namespace Syntropy::Concepts::Details
     ///        direct-list-initialized from and empty initializer list (T{})
     ///        or default-initialized (T t).
     template <typename TType>
-    concept DefaultInitializable
+    concept IsDefaultInitializable
          = IsConstructibleFrom<TType>
         && requires { TType{}; }
         && requires { ::new (static_cast<RWTypelessPtr>(nullptr)) TType; };
 
     /// \brief Concept for a type whose instances are swappable.
     template <typename TType>
-    concept Swappable
+    concept IsSwappable
         = IsAssignableFrom<Mutable<TType>, Movable<TType>>
        && IsMoveConstructible<TType>;
 
@@ -319,7 +319,7 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for callable types that can be called with a set of
     ///        arguments TArguments.
     template <typename TCallable, typename... TArguments>
-    concept Invocable
+    concept IsInvocable
          = requires(Forwarding<TCallable> callable, TArguments&&... arguments)
          {
              Invoke(Forward<TCallable>, Forward<TArguments>(arguments)...);

@@ -158,11 +158,11 @@ namespace Syntropy::Templates::UnitTest
         using OptionalExplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalExplicitDefaultConstructibleFoo;
         using OptionalImplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalImplicitDefaultConstructibleFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<ExplicitDefaultConstructibleFoo>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<ImplicitDefaultConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<ExplicitDefaultConstructibleFoo>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<ImplicitDefaultConstructibleFoo>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<OptionalExplicitDefaultConstructibleFoo>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<OptionalImplicitDefaultConstructibleFoo>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<OptionalExplicitDefaultConstructibleFoo>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<OptionalImplicitDefaultConstructibleFoo>), true);
     })
 
     .TestCase("Are implicitly default-constructible type-trait.", [](auto& fixture)
@@ -172,15 +172,15 @@ namespace Syntropy::Templates::UnitTest
         using OptionalExplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalExplicitDefaultConstructibleFoo;
         using OptionalImplicitDefaultConstructibleFoo = TraitsTestFixture::OptionalImplicitDefaultConstructibleFoo;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<ExplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<ImplicitDefaultConstructibleFoo, ExplicitDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<ImplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<TypeList<ExplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<TypeList<ImplicitDefaultConstructibleFoo, ExplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<TypeList<ImplicitDefaultConstructibleFoo, ImplicitDefaultConstructibleFoo>>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<OptionalExplicitDefaultConstructibleFoo, OptionalImplicitDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<OptionalImplicitDefaultConstructibleFoo, OptionalExplicitDefaultConstructibleFoo>>), false);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<OptionalImplicitDefaultConstructibleFoo, OptionalImplicitDefaultConstructibleFoo>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<TypeList<OptionalExplicitDefaultConstructibleFoo, OptionalImplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<TypeList<OptionalImplicitDefaultConstructibleFoo, OptionalExplicitDefaultConstructibleFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<TypeList<OptionalImplicitDefaultConstructibleFoo, OptionalImplicitDefaultConstructibleFoo>>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImplicitlyDefaultConstructibleType<TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImplicitlyDefaultConstructible<TypeList<>>), true);
     })
 
     .TestCase("Are copy-constructible type-trait.", [](auto& fixture)

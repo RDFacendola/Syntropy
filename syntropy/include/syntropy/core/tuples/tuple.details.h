@@ -52,7 +52,7 @@ namespace Syntropy::Tuples::Details
     template <typename... TTypes>
     inline constexpr Bool
     ExplicitIfTupleDefaultConstructor
-        = !Syntropy::Concepts::ImplicitlyDefaultConstructibleType<
+        = !Syntropy::Concepts::IsImplicitlyDefaultConstructible<
             Syntropy::Templates::TypeList<TTypes...>>;
 
     // (2)

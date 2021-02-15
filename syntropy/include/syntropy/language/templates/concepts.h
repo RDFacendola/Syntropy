@@ -194,14 +194,14 @@ namespace Syntropy::Concepts
     /// \brief Concept for types that can be implicitly default constructed
     //         from an empty initializer list.
     template <typename TType>
-    concept ImplicitlyDefaultConstructibleType
-        = Details::ImplicitlyDefaultConstructibleType<TType>;
+    concept IsImplicitlyDefaultConstructible
+        = Details::IsImplicitlyDefaultConstructible<TType>;
 
     /// \brief Concept for types that can be implicitly direct-constructed
     ///        from a initializer list.
     template <typename TType, typename... TArguments>
-    concept ImplicitlyConstructibleType
-        = Details::ImplicitlyConstructibleType<TType, TArguments...>;
+    concept IsImplicitlyConstructibleFrom
+        = Details::IsImplicitlyConstructibleFrom<TType, TArguments...>;
 
     // Comparison concepts.
     // ====================
@@ -210,28 +210,28 @@ namespace Syntropy::Concepts
     ///        operators are defined.
     template <typename TType>
     concept EqualityComparable
-        = Details::EqualityComparableWith<TType, TType>;
+        = Details::IsEqualityComparableWith<TType, TType>;
 
     /// \brief Models a type TType for which the equality and inequality
     ///        operators against the (possibly different) type UType
     ///        are defined.
     template <typename TType, typename UType>
-    concept EqualityComparableWith
-        = Details::EqualityComparableWith<TType, UType>;
+    concept IsEqualityComparableWith
+        = Details::IsEqualityComparableWith<TType, UType>;
 
     /// \brief Models a type TType for which the less-than, greater-than,
     ///        less-than-or-equal-to and greater-than-or-equal-to operators
     ///        are defined.
     template <typename TType>
     concept PartiallyOrdered
-        = Details::PartiallyOrderedWith<TType, TType>;
+        = Details::IsPartiallyOrderedWith<TType, TType>;
 
     /// \brief Models a type TType for which the less-than, greater-than,
     ///        less-than-or-equal-to and greater-than-or-equal-to operators
     ///        against the (possibly different) type UType are defined.
     template <typename TType, typename UType>
-    concept PartiallyOrderedWith
-        = Details::PartiallyOrderedWith<TType, UType>;
+    concept IsPartiallyOrderedWith
+        = Details::IsPartiallyOrderedWith<TType, UType>;
 
     /// \brief Models a class TType which is both equality-comparable and
     ///        partially-ordered.
@@ -244,8 +244,8 @@ namespace Syntropy::Concepts
     ///        partially-ordered against the (possibly different) type UType.
     template <typename TType, typename UType>
     concept TotallyOrderedWith
-        = EqualityComparableWith<TType, UType>
-       && PartiallyOrderedWith<TType, UType>;
+        = IsEqualityComparableWith<TType, UType>
+       && IsPartiallyOrderedWith<TType, UType>;
 
     // Templates concepts.
     // ===================
@@ -253,8 +253,8 @@ namespace Syntropy::Concepts
     /// \brief Concepts for types TType that are template specialization
     ///        of TTemplate.
     template<typename TType, template <typename...> typename TTemplate>
-    concept TemplateSpecializationOf
-        = Details::TemplateSpecializationOf<TType, TTemplate>;
+    concept IsTemplateSpecializationOf
+        = Details::IsTemplateSpecializationOf<TType, TTemplate>;
 
     // Object concepts.
     // ================
@@ -263,13 +263,13 @@ namespace Syntropy::Concepts
     ///        direct-list-initialized from and empty initializer list (T{})
     ///        or default-initialized (T t).
     template <typename TType>
-    concept DefaultInitializable
-        = Details::DefaultInitializable<TType>;
+    concept IsDefaultInitializable
+        = Details::IsDefaultInitializable<TType>;
 
     /// \brief Concept for a type whose instances are swappable.
     template <typename TType>
-    concept Swappable
-        = Details::Swappable<TType>;
+    concept IsSwappable
+        = Details::IsSwappable<TType>;
 
     /// \brief Concept for types that can be moved in and to (move constructed,
     ///        move assigned and reference-swappable).
@@ -278,7 +278,7 @@ namespace Syntropy::Concepts
          = IsObject<TType>
         && IsMoveConstructible<TType>
         && IsAssignableFrom<Mutable<TType>, TType>
-        && Swappable<TType>;
+        && IsSwappable<TType>;
 
     /// \brief Concept for types that can be copied, moved and swapped.
     template <typename TType>
@@ -294,14 +294,14 @@ namespace Syntropy::Concepts
     template <typename TType>
     concept Semiregular
          = Copyable<TType>
-         && DefaultInitializable<TType>;
+         && IsDefaultInitializable<TType>;
 
     /// \brief Concept for types that are copyable, default constructible and
     ///        equality comparable.
     template <typename TType>
     concept Regular
          = Semiregular<TType>
-        && EqualityComparableWith<TType, TType>;
+        && IsEqualityComparableWith<TType, TType>;
 
     // Callable concepts.
     // ==================
@@ -309,24 +309,24 @@ namespace Syntropy::Concepts
     /// \brief Concept for callable types that can be called with a set of
     ///        arguments TArguments.
     template <typename TCallable, typename... TArguments>
-    concept Invocable = Details::Invocable<TCallable, TArguments...>;
+    concept IsInvocable = Details::IsInvocable<TCallable, TArguments...>;
 
     /// \brief Concept for callable types that can be called with a set of
     ///        arguments TArguments and preserve both callable object state
     ///        and argument state.
     ///
-    /// \remarks The distinction between this and Invocable is purely semantic,
-    ///          as Invocable may not satisfy equality preservation.
+    /// \remarks The distinction between this and IsInvocable is purely semantic,
+    ///          as IsInvocable may not satisfy equality preservation.
     template <typename TCallable, typename... TArguments>
     concept RegularInvocable
-         = Invocable<TCallable, TArguments...>;
+         = IsInvocable<TCallable, TArguments...>;
 
     /// \brief Concept for callable types that can be called with a set of
     ///        arguments TArguments and preserve both callable object state
     ///        and argument state.
     template <typename TCallable, typename... TArguments>
     concept Predicate
-         = Invocable<TCallable, TArguments...>
+         = IsInvocable<TCallable, TArguments...>
         && Boolean<Templates::InvokeResult<TCallable, TArguments...>>;
 
     /// \brief Concept for callable types that define a binary relation
