@@ -65,40 +65,21 @@ namespace Syntropy::Concepts::Details
     // Three-way comparable.
     // =====================
 
-    /// \brief Models a class TType which is both equality-comparable and
-    ///        partially-ordered against the (possibly different) type UType.
-    template <typename TType, typename UType>
-    concept ThreeWayComparableWithHelper
-         = TotallyOrderedWith<TType, UType>
-        && requires(Immutable<Templates::RemoveReference<TType>> lhs,
-                    Immutable<Templates::RemoveReference<UType>> rhs)
-    {
-        /// \brief Compare lhs with rhs.
-        { lhs <=> rhs } -> SameAs<Ordering>;
-
-        /// \brief Compare rhs with lhs.
-        { rhs <=> lhs } -> SameAs<Ordering>;
-    };
-
-    /// \brief Models a totally-ordered class TType whose comparison results
-    ///        are consistent with a ordering category implied by TOrdering.
-    template <typename TType>
-    concept ThreeWayComparable = ThreeWayComparableWithHelper<TType, TType>;
-
     /// \brief Models a totally-ordered class TType whose comparison results
     ///        against the (possibly different) type UType are consistent with
     ///        a ordering category implied by TOrdering.
     template <typename TType, typename UType>
     concept ThreeWayComparableWith
-         = ThreeWayComparable<TType>
-        && ThreeWayComparable<UType>
-        && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>,
-                               Immutable<Templates::RemoveReference<UType>>>
-        && ThreeWayComparable<Templates::CommonReference<
-               Immutable<Templates::RemoveReference<TType>>,
-               Immutable<Templates::RemoveReference<UType>>>>
-        && ThreeWayComparableWithHelper<TType, UType>;
+        = TotallyOrderedWith<TType, UType>
+       && requires(Templates::ImmutableOf<TType> lhs,
+                   Templates::ImmutableOf<UType> rhs)
+    {
+       /// \brief Compare lhs with rhs.
+       { lhs <=> rhs } -> SameAs<Ordering>;
 
+       /// \brief Compare rhs with lhs.
+       { rhs <=> lhs } -> SameAs<Ordering>;
+    };
 }
 
 // ===========================================================================

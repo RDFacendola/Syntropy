@@ -37,14 +37,6 @@ namespace Syntropy::Concepts
     template <typename TDerived, typename TBase>
     concept DerivedFrom = Details::DerivedFrom<TDerived, TBase>;
 
-    /// \brief Concept for types that share a common reference type.
-    template <typename TType, typename UType>
-    concept CommonReferenceWith = Details::CommonReferenceWith<TType, UType>;
-
-    /// \brief Concept for types that share a common type.
-    template <typename TType, typename UType>
-    concept CommonWith = Details::CommonWith<TType, UType>;
-
     /// \brief Concept for boolean types.
     template <typename TType>
     concept Boolean = Details::Boolean<TType>;
@@ -64,11 +56,6 @@ namespace Syntropy::Concepts
     /// \brief Concept for a type whose instances are swappable.
     template <typename TType>
     concept Swappable = Details::Swappable<TType>;
-
-    /// \brief Concept for a type whose instances can be swapped with
-    ///        instances of type UType.
-    template <typename TType, typename UType>
-    concept SwappableWith = Details::SwappableWith<TType, UType>;
 
     /// \brief Concept for types whose instances can safely be destroyed at
     ///        the end of their lifetime (including reference types).
@@ -106,7 +93,8 @@ namespace Syntropy::Concepts
     /// \brief Models a type TType for which the equality and inequality
     ///        operators are defined.
     template <typename TType>
-    concept EqualityComparable = Details::EqualityComparable<TType>;
+    concept EqualityComparable
+        = Details::EqualityComparableWith<TType, TType>;
 
     /// \brief Models a type TType for which the equality and inequality
     ///        operators against the (possibly different) type UType
@@ -119,23 +107,29 @@ namespace Syntropy::Concepts
     ///        less-than-or-equal-to and greater-than-or-equal-to operators
     ///        are defined.
     template <typename TType>
-    concept PartiallyOrdered = Details::PartiallyOrdered<TType>;
+    concept PartiallyOrdered
+        = Details::PartiallyOrderedWith<TType, TType>;
 
     /// \brief Models a type TType for which the less-than, greater-than,
     ///        less-than-or-equal-to and greater-than-or-equal-to operators
     ///        against the (possibly different) type UType are defined.
     template <typename TType, typename UType>
-    concept PartiallyOrderedWith = Details::PartiallyOrderedWith<TType, UType>;
+    concept PartiallyOrderedWith
+        = Details::PartiallyOrderedWith<TType, UType>;
 
     /// \brief Models a class TType which is both equality-comparable and
     ///        partially-ordered.
     template <typename TType>
-    concept TotallyOrdered = Details::TotallyOrdered<TType>;
+    concept TotallyOrdered
+        = EqualityComparable<TType>
+       && PartiallyOrdered<TType>;
 
     /// \brief Models a class TType which is both equality-comparable and
     ///        partially-ordered against the (possibly different) type UType.
     template <typename TType, typename UType>
-    concept TotallyOrderedWith = Details::TotallyOrderedWith<TType, UType>;
+    concept TotallyOrderedWith
+        = EqualityComparableWith<TType, UType>
+       && PartiallyOrderedWith<TType, UType>;
 
     // Object concepts.
     // ================

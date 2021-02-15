@@ -141,20 +141,6 @@ namespace Syntropy::Templates
     AddRValueReference<TType> Declval() noexcept;
 
     /************************************************************************/
-    /* COMMON TYPE                                                          */
-    /************************************************************************/
-
-    /// \brief Type equal to the type all types among TTypes can be
-    ///        converted to.
-    template <typename... TTypes>
-    using CommonType = Details::CommonType<TTypes...>;
-
-    /// \brief Type equal to the type all types among TTypes can be converted
-    ///        or bound to.
-    template <typename... TTypes>
-    using CommonReference = Details::CommonReference<TTypes...>;
-
-    /************************************************************************/
     /* META                                                                 */
     /************************************************************************/
 

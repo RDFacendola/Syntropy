@@ -34,13 +34,13 @@ namespace Syntropy::Ranges::Templates
 
     /// \brief Range's element reference type.
     template <typename TRange>
-    using RangeElementReferenceType = decltype(
+    using RangeElementOf = decltype(
         Details::RouteFront(Syntropy::Templates::Declval<TRange>()));
 
     /// \brief Range's element value type.
     template <typename TRange>
     using RangeElementValueType = Syntropy::Templates::RemoveReference<
-        RangeElementReferenceType<TRange>>;
+        RangeElementOf<TRange>>;
 
 }
 

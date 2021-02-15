@@ -212,7 +212,8 @@ namespace Syntropy::Concepts
 
     /// \brief Models a totally-ordered class TType.
     template <typename TType>
-    concept ThreeWayComparable = Details::ThreeWayComparable<TType>;
+    concept ThreeWayComparable
+        = Details::ThreeWayComparableWith<TType, TType>;
 
     /// \brief Models a totally-ordered class TType whose comparison results
     ///        against the (possibly different) type UType

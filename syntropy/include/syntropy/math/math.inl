@@ -18,8 +18,7 @@ namespace Syntropy
     auto Math
     ::Min(Immutable<TValue> first, Immutable<TValues>... rest) noexcept
     {
-        auto min = Templates::RemoveConstReference<
-            Templates::CommonType<TValue, TValues...>>{ first };
+        auto min = first;
 
         auto fold = [&min]<typename UValue>(Immutable<UValue> value)
         {
@@ -36,8 +35,7 @@ namespace Syntropy
     auto Math
     ::Max(Immutable<TValue> first, Immutable<TValues>... rest) noexcept
     {
-        auto max = Templates::RemoveConstReference<
-            Templates::CommonType<TValue, TValues...>>{ first };
+        auto max = first;
 
         auto fold = [&max]<typename UValue>(Immutable<UValue> value)
         {

@@ -268,32 +268,6 @@ namespace Syntropy::Concepts::Details
          = std::is_base_of_v<TBase, TDerived>
         && std::is_convertible_v<Ptr<TDerived>, Ptr<TBase>>;
 
-    /// \brief Concept for types that share a common reference type.
-    template <typename TType, typename UType>
-    concept CommonReferenceWith
-         = SameAs<Templates::CommonReference<TType, UType>,
-                  Templates::CommonReference<UType, TType>>
-        && ConvertibleTo<TType, Templates::CommonReference<TType, UType>>
-        && ConvertibleTo<UType, Templates::CommonReference<TType, UType>>;
-
-    /// \brief Concept for types that share a common type.
-    template <typename TType, typename UType>
-    concept CommonWith
-         = SameAs<Templates::CommonType<TType, UType>,
-                  Templates::CommonType<UType, TType>>
-        && requires
-        {
-            static_cast<Templates::CommonType<TType, UType>>(Declval<TType>());
-            static_cast<Templates::CommonType<TType, UType>>(Declval<UType>());
-        }
-        && CommonReferenceWith<Templates::AddLValueConstReference<TType>,
-                               Templates::AddLValueConstReference<UType>>
-        && CommonReferenceWith<Templates::AddLValueReference<
-                                   Templates::CommonType<TType, UType>>,
-                               Templates::CommonReference<
-                                   Templates::AddLValueConstReference<TType>,
-                                   Templates::AddLValueConstReference<UType>>>;
-
     /// \brief Concept for boolean types.
     template <typename TType>
     concept Boolean = SameAs<TType, Bool>;
@@ -329,19 +303,6 @@ namespace Syntropy::Concepts::Details
         = requires(Mutable<TType> lhs, Mutable<TType> rhs)
         {
             Swap(lhs, rhs);
-        };
-
-    /// \brief Concept for a type whose instances can be swapped with
-    ///        instances of type UType.
-    template <typename TType, typename UType>
-    concept SwappableWith
-         = CommonReferenceWith<TType, UType>
-        && requires(Forwarding<TType> lhs, Forwarding<UType> rhs)
-        {
-            Swap(Forward<TType>(lhs), Forward<TType>(rhs));
-            Swap(Forward<TType>(lhs), Forward<UType>(rhs));
-            Swap(Forward<UType>(rhs), Forward<TType>(rhs));
-            Swap(Forward<UType>(rhs), Forward<UType>(rhs));
         };
 
     /// \brief Concept for types whose instances can safely be destroyed at
@@ -394,50 +355,30 @@ namespace Syntropy::Concepts::Details
     ///        operators against the (possibly different) type
     ///        UType are defined.
     template <typename TType, typename UType>
-    concept EqualityComparableWithHelper
-         = requires(Immutable<Templates::RemoveReference<TType>> lhs,
-                    Immutable<Templates::RemoveReference<UType>>rhs)
-         {
-             /// \brief Compare lhs and rhs for equality.
-             { lhs == rhs } -> Boolean;
-
-             /// \brief Compare lhs and rhs for inequality.
-             { lhs != rhs } -> Boolean;
-
-             /// \brief Compare rhs and lhs for equality.
-             { rhs == lhs } -> Boolean;
-
-             /// \brief Compare rhs and lhs for inequality.
-             { rhs != lhs } -> Boolean;
-         };
-
-    /// \brief Models a type TType for which the equality and
-    ///        inequality operators are defined.
-    template <typename TType>
-    concept EqualityComparable
-         = EqualityComparableWithHelper<TType, TType>;
-
-    /// \brief Models a type TType for which the equality and inequality
-    ///        operators against the (possibly different) type
-    ///        UType are defined.
-    template <typename TType, typename UType>
     concept EqualityComparableWith
-         = EqualityComparable<TType>
-        && EqualityComparable<UType>
-        && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>,
-                               Immutable<Templates::RemoveReference<UType>>>
-        && EqualityComparable<Templates::CommonReference<
-               Immutable<Templates::RemoveReference<TType>>,
-               Immutable<Templates::RemoveReference<UType>>>>
-        && EqualityComparableWithHelper<TType, UType>;
+        = requires(Templates::ImmutableOf<TType> lhs,
+                   Templates::ImmutableOf<UType> rhs)
+        {
+            /// \brief Compare lhs and rhs for equality.
+            { lhs == rhs } -> Boolean;
+
+            /// \brief Compare lhs and rhs for inequality.
+            { lhs != rhs } -> Boolean;
+
+            /// \brief Compare rhs and lhs for equality.
+            { rhs == lhs } -> Boolean;
+
+            /// \brief Compare rhs and lhs for inequality.
+            { rhs != lhs } -> Boolean;
+        };
 
     /// \brief Models a type TType for which the less-than, greater-than,
     ///        less-than-or-equal-to and greater-than-or-equal-to operators
     ///        against the (possibly different) type UType are defined.
     template <typename TType, typename UType>
-    concept PartiallyOrderedWithHelper
-        = requires(Immutable<Templates::RemoveReference<TType>> lhs,
-                   Immutable<Templates::RemoveReference<UType>> rhs)
+    concept PartiallyOrderedWith
+        = requires(Templates::ImmutableOf<TType> lhs,
+                   Templates::ImmutableOf<UType> rhs)
         {
             /// \brief Check whether lhs is less-than rhs.
             { lhs < rhs } -> Boolean;
@@ -463,53 +404,6 @@ namespace Syntropy::Concepts::Details
             /// \brief Check whether rhs is greater-than or equal-to lhs.
             { rhs >= lhs } -> Boolean;
         };
-
-    /// \brief Models a type TType for which the less-than, greater-than,
-    ///        less-than-or-equal-to and greater-than-or-equal-to
-    ///        operators are defined.
-    template <typename TType>
-    concept PartiallyOrdered
-         = PartiallyOrderedWithHelper<TType, TType>;
-
-    /// \brief Models a type TType for which the less-than, greater-than,
-    ///        less-than-or-equal-to and greater-than-or-equal-to operators
-    ///        against the (possibly different) type UType are defined.
-    template <typename TType, typename UType>
-    concept PartiallyOrderedWith
-         = PartiallyOrdered<TType>
-        && PartiallyOrdered<UType>
-        && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>,
-                               Immutable<Templates::RemoveReference<UType>>>
-        && PartiallyOrdered<Templates::CommonReference<
-               Immutable<Templates::RemoveReference<TType>>,
-               Immutable<Templates::RemoveReference<UType>>>>
-        && PartiallyOrderedWithHelper<TType, UType>;
-
-    /// \brief Models a class TType which is both equality-comparable and
-    ///        partially-ordered against the (possibly different) type UType.
-    template <typename TType, typename UType>
-    concept TotallyOrderedWithHelper
-         = EqualityComparableWith<TType, UType>
-        && PartiallyOrderedWith<TType, UType>;
-
-    /// \brief Models a class TType which is both equality-comparable
-    ///        and partially-ordered.
-    template <typename TType>
-    concept TotallyOrdered
-         = TotallyOrderedWithHelper<TType, TType>;
-
-    /// \brief Models a class TType which is both equality-comparable and
-    ///        partially-ordered against the (possibly different) type UType.
-    template <typename TType, typename UType>
-    concept TotallyOrderedWith
-         = TotallyOrdered<TType>
-        && TotallyOrdered<UType>
-        && CommonReferenceWith<Immutable<Templates::RemoveReference<TType>>,
-                               Immutable<Templates::RemoveReference<UType>>>
-        && TotallyOrdered<Templates::CommonReference<
-               Immutable<Templates::RemoveReference<TType>>,
-               Immutable<Templates::RemoveReference<UType>>>>
-        && TotallyOrderedWithHelper<TType, UType>;
 
     // Object concepts.
     // ================
@@ -545,7 +439,7 @@ namespace Syntropy::Concepts::Details
     template <typename TType>
     concept Regular
          = Semiregular<TType>
-        && EqualityComparable<TType>;
+        && EqualityComparableWith<TType, TType>;
 
     // Callable concepts.
     // ==================
