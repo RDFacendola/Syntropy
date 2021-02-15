@@ -79,7 +79,7 @@ namespace Syntropy::Concepts
 
     /// \brief Concept for boolean types.
     template <typename TType>
-    concept Boolean = Details::Boolean<TType>;
+    concept IsBoolean = Details::IsBoolean<TType>;
 
     /// \brief Concept for signed integral number types.
     template <typename TType>
@@ -94,7 +94,11 @@ namespace Syntropy::Concepts
 
     /// \brief Concept for types deriving from TBase.
     template <typename TDerived, typename TBase>
-    concept DerivedFrom = Details::DerivedFrom<TDerived, TBase>;
+    concept IsDerivedFrom = Details::IsDerivedFrom<TDerived, TBase>;
+
+    /// \brief Concept for types which are base classes for TDerived.
+    template <typename TBase, typename TDerived>
+    concept IsBaseOf = Details::IsDerivedFrom<TDerived, TBase>;
 
     /// \brief Constant for polymorphic types.
     template <typename TType>
@@ -113,8 +117,7 @@ namespace Syntropy::Concepts
 
     /// \brief Concept for default-constructible types.
     template <typename TType>
-    concept IsDefaultConstructible
-        = Details::IsDefaultConstructible<TType>;
+    concept IsDefaultConstructible = Details::IsDefaultConstructible<TType>;
 
     /// \brief Concept for copy-constructible types.
     template <typename TType>
@@ -327,7 +330,7 @@ namespace Syntropy::Concepts
     template <typename TCallable, typename... TArguments>
     concept Predicate
          = IsInvocable<TCallable, TArguments...>
-        && Boolean<Templates::InvokeResult<TCallable, TArguments...>>;
+        && IsBoolean<Templates::InvokeResult<TCallable, TArguments...>>;
 
     /// \brief Concept for callable types that define a binary relation
     ///        between TType and UType.

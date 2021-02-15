@@ -78,7 +78,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for boolean types.
     template <typename TType>
-    concept Boolean
+    concept IsBoolean
          = IsSame<Templates::ImmutableOf<TType>, Immutable<Bool>>;
 
     /// \brief Concept for signed integral number types.
@@ -105,7 +105,7 @@ namespace Syntropy::Concepts::Details
      /// \brief Concept for types deriving from TBase ignoring
      ///        constant-qualifiers.
      template <typename TDerived, typename TBase>
-     concept DerivedFrom = std::is_base_of_v<TBase, TDerived>;
+     concept IsDerivedFrom = std::is_base_of_v<TBase, TDerived>;
 
      /// \brief Concept for polymorphic types.
      template <typename TType>
@@ -235,16 +235,16 @@ namespace Syntropy::Concepts::Details
                    Templates::ImmutableOf<UType> rhs)
         {
             /// \brief Compare lhs and rhs for equality.
-            { lhs == rhs } -> Boolean;
+            { lhs == rhs } -> IsBoolean;
 
             /// \brief Compare lhs and rhs for inequality.
-            { lhs != rhs } -> Boolean;
+            { lhs != rhs } -> IsBoolean;
 
             /// \brief Compare rhs and lhs for equality.
-            { rhs == lhs } -> Boolean;
+            { rhs == lhs } -> IsBoolean;
 
             /// \brief Compare rhs and lhs for inequality.
-            { rhs != lhs } -> Boolean;
+            { rhs != lhs } -> IsBoolean;
         };
 
     /// \brief Models a type TType for which the less-than, greater-than,
@@ -256,28 +256,28 @@ namespace Syntropy::Concepts::Details
                    Templates::ImmutableOf<UType> rhs)
         {
             /// \brief Check whether lhs is less-than rhs.
-            { lhs < rhs } -> Boolean;
+            { lhs < rhs } -> IsBoolean;
 
             /// \brief Check whether lhs is greater-than rhs.
-            { lhs > rhs } -> Boolean;
+            { lhs > rhs } -> IsBoolean;
 
             /// \brief Check whether lhs is less-than or equal-to rhs.
-            { lhs <= lhs } -> Boolean;
+            { lhs <= lhs } -> IsBoolean;
 
             /// \brief Check whether lhs is greater-than or equal-to rhs.
-            { lhs >= lhs } -> Boolean;
+            { lhs >= lhs } -> IsBoolean;
 
             /// \brief Check whether rhs is less-than lhs.
-            { rhs < lhs } -> Boolean;
+            { rhs < lhs } -> IsBoolean;
 
             /// \brief Check whether rhs is greater-than lhs.
-            { rhs > lhs } -> Boolean;
+            { rhs > lhs } -> IsBoolean;
 
             /// \brief Check whether rhs is less-than or equal-to lhs.
-            { rhs <= lhs } -> Boolean;
+            { rhs <= lhs } -> IsBoolean;
 
             /// \brief Check whether rhs is greater-than or equal-to lhs.
-            { rhs >= lhs } -> Boolean;
+            { rhs >= lhs } -> IsBoolean;
         };
 
     // Templates concepts.
@@ -320,10 +320,10 @@ namespace Syntropy::Concepts::Details
     ///        arguments TArguments.
     template <typename TCallable, typename... TArguments>
     concept IsInvocable
-         = requires(Forwarding<TCallable> callable, TArguments&&... arguments)
-         {
-             Invoke(Forward<TCallable>, Forward<TArguments>(arguments)...);
-         };
+        = requires(Forwarding<TCallable> callable, TArguments&&... arguments)
+        {
+            Invoke(Forward<TCallable>, Forward<TArguments>(arguments)...);
+        };
 
 }
 
