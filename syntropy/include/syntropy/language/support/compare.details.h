@@ -75,10 +75,10 @@ namespace Syntropy::Concepts::Details
                    Templates::ImmutableOf<UType> rhs)
     {
        /// \brief Compare lhs with rhs.
-       { lhs <=> rhs } -> SameAs<Ordering>;
+       { lhs <=> rhs } -> IsSame<Ordering>;
 
        /// \brief Compare rhs with lhs.
-       { rhs <=> lhs } -> SameAs<Ordering>;
+       { rhs <=> lhs } -> IsSame<Ordering>;
     };
 }
 

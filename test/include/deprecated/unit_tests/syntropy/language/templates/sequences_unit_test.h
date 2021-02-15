@@ -28,19 +28,19 @@ namespace Syntropy::Templates::UnitTest
 
     .TestCase("MakeSequence<N> returns a contiguous integer sequence from 0 to N-1.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<MakeSequence<1>, Sequence<0>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<MakeSequence<5>, Sequence<0, 1, 2, 3, 4>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<MakeSequence<1>, Sequence<0>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<MakeSequence<5>, Sequence<0, 1, 2, 3, 4>>), true);
     })
 
     .TestCase("SequenceFor<T...> returns a contiguous integer sequence from 0 to sizeof...(T)", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<SequenceFor<Int, Float, Bool>, Sequence<0, 1, 2>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<SequenceFor<Int>, Sequence<0>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<SequenceFor<Int, Float, Bool>, Sequence<0, 1, 2>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<SequenceFor<Int>, Sequence<0>>), true);
     })
 
     .TestCase("SequenceFor returns an empty integer sequence if the parameter pack size is zero.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<SequenceFor<>, Sequence<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<SequenceFor<>, Sequence<>>), true);
     })
 
     .TestCase("IsContiguousSequence returns true for contiguous sequences and false otherwise.", [](auto& fixture)

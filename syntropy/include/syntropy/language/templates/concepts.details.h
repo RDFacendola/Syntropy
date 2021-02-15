@@ -24,11 +24,11 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for types which are exactly equal to UType.
     template <typename TType, typename UType>
-    concept SameAs = std::is_same_v<TType, UType>;
+    concept IsSame = std::is_same_v<TType, UType>;
 
     /// \brief Concept for types convertible to UType.
     template <typename TType, typename UType>
-    concept ConvertibleTo = std::is_convertible_v<TType, UType>;
+    concept IsConvertible = std::is_convertible_v<TType, UType>;
 
     /// \brief Concept for immutable types.
     template <typename TType>
@@ -43,23 +43,23 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for void types.
     template<typename TType>
-    concept VoidType = std::is_void_v<TType>;
+    concept IsVoid = std::is_void_v<TType>;
 
     /// \brief Concept for null types.
     template<typename TType>
-    concept NullType = std::is_null_pointer_v<TType>;
+    concept IsNull = std::is_null_pointer_v<TType>;
 
     /// \brief Concept for enum types.
     template <typename TType>
-    concept EnumType = std::is_enum_v<TType>;
+    concept IsEnum = std::is_enum_v<TType>;
 
     /// \brief Concept for class types.
     template <typename TType>
-    concept ClassType = std::is_class_v<TType>;
+    concept IsClass = std::is_class_v<TType>;
 
     /// \brief Concept for pointer types.
     template <typename TType>
-    concept PointerType = std::is_pointer_v<TType>;
+    concept IsPointer = std::is_pointer_v<TType>;
 
     /// \brief Concept for lvalue references.
     template <typename TType>
@@ -71,7 +71,7 @@ namespace Syntropy::Concepts::Details
 
     /// \brief Concept for object types.
     template <typename TType>
-    concept ObjectType = std::is_object_v<TType>;
+    concept IsObject = std::is_object_v<TType>;
 
     // Fundamental types concepts.
     // ===========================
@@ -79,25 +79,25 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for boolean types.
     template <typename TType>
     concept Boolean
-         = SameAs<Templates::ImmutableOf<TType>, Immutable<Bool>>;
+         = IsSame<Templates::ImmutableOf<TType>, Immutable<Bool>>;
 
     /// \brief Concept for signed integral number types.
     template <typename TType>
-    concept Integral
-         = SameAs<Templates::ImmutableOf<TType>, Immutable<Int>>
-        || SameAs<Templates::ImmutableOf<TType>, Immutable<Fix8>>
-        || SameAs<Templates::ImmutableOf<TType>, Immutable<Fix16>>
-        || SameAs<Templates::ImmutableOf<TType>, Immutable<Fix32>>
-        || SameAs<Templates::ImmutableOf<TType>, Immutable<Fix64>>
-        || SameAs<Templates::ImmutableOf<TType>, Immutable<Enum8>>
-        || SameAs<Templates::ImmutableOf<TType>, Immutable<Enum16>>
-        || SameAs<Templates::ImmutableOf<TType>, Immutable<Enum32>>
-        || SameAs<Templates::ImmutableOf<TType>, Immutable<Enum64>>;
+    concept IsIntegral
+         = IsSame<Templates::ImmutableOf<TType>, Immutable<Int>>
+        || IsSame<Templates::ImmutableOf<TType>, Immutable<Fix8>>
+        || IsSame<Templates::ImmutableOf<TType>, Immutable<Fix16>>
+        || IsSame<Templates::ImmutableOf<TType>, Immutable<Fix32>>
+        || IsSame<Templates::ImmutableOf<TType>, Immutable<Fix64>>
+        || IsSame<Templates::ImmutableOf<TType>, Immutable<Enum8>>
+        || IsSame<Templates::ImmutableOf<TType>, Immutable<Enum16>>
+        || IsSame<Templates::ImmutableOf<TType>, Immutable<Enum32>>
+        || IsSame<Templates::ImmutableOf<TType>, Immutable<Enum64>>;
 
     /// \brief Concept for real number types.
     template <typename TType>
-    concept Real
-         = SameAs<Templates::ImmutableOf<TType>, Immutable<Float>>;
+    concept IsReal
+         = IsSame<Templates::ImmutableOf<TType>, Immutable<Float>>;
 
      // Polymorphism.
      // =============
@@ -109,11 +109,11 @@ namespace Syntropy::Concepts::Details
 
      /// \brief Concept for polymorphic types.
      template <typename TType>
-     concept PolymorphicType = std::is_polymorphic_v<TType>;
+     concept IsPolymorphic = std::is_polymorphic_v<TType>;
 
      /// \brief Concept for final types.
      template <typename TType>
-     concept FinalType = std::is_final_v<TType>;
+     concept IsFinal = std::is_final_v<TType>;
 
     // Properties concepts.
     // ====================

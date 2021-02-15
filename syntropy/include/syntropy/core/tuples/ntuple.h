@@ -81,7 +81,7 @@ namespace Syntropy::Tuples::Concepts
     {
         /// \brief Rank of the tuple.
         { Syntropy::Tuples::Templates::RankTypeTraits<UType>::kValue }
-            -> Syntropy::Concepts::Integral;
+            -> Syntropy::Concepts::IsIntegral;
     }
     && Templates::HasElementTypes<TType>
     && Templates::HasGetters<TType>;

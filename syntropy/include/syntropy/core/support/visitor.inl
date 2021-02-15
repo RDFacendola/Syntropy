@@ -17,8 +17,8 @@ namespace Syntropy
     inline void Visitor
     ::Visit(TVisitable visitable) const noexcept
     {
-        if constexpr ( ! Concepts::PolymorphicType<TVisitable>
-                      || Concepts::FinalType<TVisitable>)
+        if constexpr ( ! Concepts::IsPolymorphic<TVisitable>
+                      || Concepts::IsFinal<TVisitable>)
         {
             VirtualVisit(PtrOf(visitable), Reflection::TypeIdOf(visitable));
         }

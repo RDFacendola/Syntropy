@@ -292,9 +292,9 @@ namespace Syntropy::UnitTest
 
     .TestCase("TupleElement trait is used to get the type a tuple element by index.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Templates::TupleElement<0, Tuple<Bool>>, Bool>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Templates::TupleElement<0, Tuple<Int, Float>>, Int>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Templates::TupleElement<1, Tuple<Int, Float>>, Float>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<Templates::TupleElement<0, Tuple<Bool>>, Bool>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<Templates::TupleElement<0, Tuple<Int, Float>>, Int>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<Templates::TupleElement<1, Tuple<Int, Float>>, Float>), true);
     })
 
     .TestCase("Tuples provide read-access by index to their elements.", [](auto& fixture)
@@ -346,10 +346,10 @@ namespace Syntropy::UnitTest
 
         scalar = 300;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<decltype(Get<const Int>(tuple_a)), const Int&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<decltype(Get<Int>(tuple_a)), Int&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<decltype(Get<Int&>(tuple_a)), Int&>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<decltype(Get<Float>(tuple_a)), float&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<decltype(Get<const Int>(tuple_a)), const Int&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<decltype(Get<Int>(tuple_a)), Int&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<decltype(Get<Int&>(tuple_a)), Int&>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<decltype(Get<Float>(tuple_a)), float&>), true);
 
         SYNTROPY_UNIT_EQUAL((Get<const Int>(tuple_a)), 100);
         SYNTROPY_UNIT_EQUAL((Get<Int>(ReadOnly(tuple_a))), 200);

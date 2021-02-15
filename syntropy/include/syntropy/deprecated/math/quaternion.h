@@ -33,7 +33,7 @@ namespace Syntropy
             /// \brief Imaginary part of the quaternion.
             Float3 xyz_;
 
-            /// \brief Real part of the quaternion.
+            /// \brief IsReal part of the quaternion.
             Float w_{};
 
             /// \brief Create an identity quaternion.

@@ -224,7 +224,7 @@ namespace Syntropy::Memory
      /************************************************************************/
 
     template <typename TSize, Concepts::RatioType TUnitTo>
-    requires Concepts::SameAs<TSize, Size<TUnitTo>>
+    requires Concepts::IsSame<TSize, Size<TUnitTo>>
     [[nodiscard]] constexpr TSize
     ToSize(Int rhs) noexcept
     {
@@ -254,7 +254,7 @@ namespace Syntropy::Memory
     template <typename TSize,
               Concepts::RatioType TUnitFrom,
               Concepts::RatioType TUnitTo>
-    requires Concepts::SameAs<TSize, Size<TUnitTo>>
+    requires Concepts::IsSame<TSize, Size<TUnitTo>>
     [[nodiscard]] constexpr TSize
     ToSize(Immutable<Size<TUnitFrom>> rhs) noexcept
     {

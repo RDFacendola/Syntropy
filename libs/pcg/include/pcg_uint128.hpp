@@ -263,11 +263,11 @@ public:
         // Nothing (else) to do
     }
 
-    template<class Integral,
-             typename std::enable_if<(std::is_integral<Integral>::value
-                                      && sizeof(Integral) <= sizeof(UIntX2))
+    template<class IsIntegral,
+             typename std::enable_if<(std::is_integral<IsIntegral>::value
+                                      && sizeof(IsIntegral) <= sizeof(UIntX2))
                                     >::type* = nullptr>
-    constexpr uint_x4(Integral v01)
+    constexpr uint_x4(IsIntegral v01)
 #if PCG_LITTLE_ENDIAN
        : d{UIntX2(v01),0UL}
 #else

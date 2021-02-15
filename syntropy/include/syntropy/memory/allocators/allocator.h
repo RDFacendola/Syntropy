@@ -34,7 +34,7 @@ namespace Syntropy::Concepts
           {
               // Allocating a memory block.
               {  allocator.Allocate(size, alignment) }
-                -> SameAs<Memory::RWByteSpan>;
+                -> IsSame<Memory::RWByteSpan>;
           }
         && requires(Mutable<TAllocator> allocator,
                     Immutable<Memory::RWByteSpan> block,

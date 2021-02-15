@@ -25,11 +25,11 @@ namespace Syntropy::Concepts
 
     /// \brief Concept for types which are exactly equal to UType.
     template <typename TType, typename UType>
-    concept SameAs = Details::SameAs<TType, UType>;
+    concept IsSame = Details::IsSame<TType, UType>;
 
     /// \brief Concept for types convertible to UType.
     template <typename TType, typename UType>
-    concept ConvertibleTo = Details::ConvertibleTo<TType, UType>;
+    concept IsConvertible = Details::IsConvertible<TType, UType>;
 
     /// \brief Concept for immutable types.
     template <typename TType>
@@ -44,23 +44,27 @@ namespace Syntropy::Concepts
 
     /// \brief Concept for void types.
     template<typename TType>
-    concept VoidType = Details::VoidType<TType>;
+    concept IsVoid = Details::IsVoid<TType>;
 
     /// \brief Concept for null types.
     template<typename TType>
-    concept NullType = Details::NullType<TType>;
+    concept IsNull = Details::IsNull<TType>;
 
     /// \brief Concept for enum types.
     template <typename TType>
-    concept EnumType = Details::EnumType<TType>;
+    concept IsEnum = Details::IsEnum<TType>;
 
     /// \brief Concept for class types.
     template <typename TType>
-    concept ClassType = Details::ClassType<TType>;
+    concept IsClass = Details::IsClass<TType>;
 
     /// \brief Concept for pointer types.
     template <typename TType>
-    concept PointerType = Details::PointerType<TType>;
+    concept IsPointer = Details::IsPointer<TType>;
+
+    /// \brief Concept for object types.
+    template <typename TType>
+    concept IsObject = Details::IsObject<TType>;
 
     /// \brief Concept for lvalue references.
     template <typename TType>
@@ -69,10 +73,6 @@ namespace Syntropy::Concepts
     /// \brief Concept for rvalue references.
     template <typename TType>
     concept RValueReferenceType = Details::RValueReferenceType<TType>;
-
-    /// \brief Concept for object types.
-    template <typename TType>
-    concept ObjectType = Details::ObjectType<TType>;
 
     // Fundamental types concepts.
     // ===========================
@@ -83,11 +83,11 @@ namespace Syntropy::Concepts
 
     /// \brief Concept for signed integral number types.
     template <typename TType>
-    concept Integral = Details::Integral<TType>;
+    concept IsIntegral = Details::IsIntegral<TType>;
 
     /// \brief Concept for real number types.
     template <typename TType>
-    concept Real = Details::Real<TType>;
+    concept IsReal = Details::IsReal<TType>;
 
     // Polymorphism.
     // =============
@@ -98,11 +98,11 @@ namespace Syntropy::Concepts
 
     /// \brief Constant for polymorphic types.
     template <typename TType>
-    concept PolymorphicType = Details::PolymorphicType<TType>;
+    concept IsPolymorphic = Details::IsPolymorphic<TType>;
 
     /// \brief Constant for final types.
     template <typename TType>
-    concept FinalType = Details::FinalType<TType>;
+    concept IsFinal = Details::IsFinal<TType>;
 
     // Properties concepts.
     // ====================
@@ -275,7 +275,7 @@ namespace Syntropy::Concepts
     ///        move assigned and reference-swappable).
     template <typename TType>
     concept Movable
-         = ObjectType<TType>
+         = IsObject<TType>
         && MoveConstructibleType<TType>
         && AssignableFrom<Mutable<TType>, TType>
         && Swappable<TType>;

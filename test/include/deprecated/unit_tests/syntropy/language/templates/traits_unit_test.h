@@ -225,17 +225,17 @@ namespace Syntropy::Templates::UnitTest
         using ConvertibleToFoo = TraitsTestFixture::ConvertibleToFoo;
         using ConvertibleToBar = TraitsTestFixture::ConvertibleToBar;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<>, TypeList<>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<Int>, TypeList<Float>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<Float>, TypeList<Int>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<Int, Float>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<Float, Int>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsConvertible<TypeList<>, TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsConvertible<TypeList<Int>, TypeList<Float>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsConvertible<TypeList<Float>, TypeList<Int>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsConvertible<Int, Float>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsConvertible<Float, Int>), true);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<ConvertibleToFoo, ConvertibleToBar>, TypeList<Foo, Bar>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<ConvertibleToFoo, ConvertibleToBar>, TypeList<Bar, Foo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsConvertible<TypeList<ConvertibleToFoo, ConvertibleToBar>, TypeList<Foo, Bar>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsConvertible<TypeList<ConvertibleToFoo, ConvertibleToBar>, TypeList<Bar, Foo>>), false);
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<Foo, Bar>, TypeList<ConstructibleFromFoo, ConstructibleFromBar>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ConvertibleTo<TypeList<Foo, Bar>, TypeList<ConstructibleFromBar, ConstructibleFromFoo>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsConvertible<TypeList<Foo, Bar>, TypeList<ConstructibleFromFoo, ConstructibleFromBar>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsConvertible<TypeList<Foo, Bar>, TypeList<ConstructibleFromBar, ConstructibleFromFoo>>), false);
         })
 
     .TestCase("Is assignable type-traits.", [](auto& fixture)
@@ -264,17 +264,17 @@ namespace Syntropy::Templates::UnitTest
 
     .TestCase("ElementOf returns the type of an element in a type list by index.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<ElementOf<0, TypeList<Int, Float, Bool>>, Int>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<ElementOf<1, TypeList<Int, Float, Bool>>, Float>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<ElementOf<2, TypeList<Int, Float, Bool>>, Bool>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<ElementOf<0, TypeList<Int, Float, Bool>>, Int>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<ElementOf<1, TypeList<Int, Float, Bool>>, Float>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<ElementOf<2, TypeList<Int, Float, Bool>>, Bool>), true);
     })
 
     .TestCase("Removing elements from a type list by means of Drop return a new type list which is equal to the remaining elements in the original type list.", [](auto& fixture)
     {
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Drop<0, TypeList<Int, Float, Bool>>, TypeList<Int, Float, Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Drop<1, TypeList<Int, Float, Bool>>, TypeList<Float, Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Drop<2, TypeList<Int, Float, Bool>>, TypeList<Bool>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::SameAs<Drop<3, TypeList<Int, Float, Bool>>, TypeList<>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<Drop<0, TypeList<Int, Float, Bool>>, TypeList<Int, Float, Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<Drop<1, TypeList<Int, Float, Bool>>, TypeList<Float, Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<Drop<2, TypeList<Int, Float, Bool>>, TypeList<Bool>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsSame<Drop<3, TypeList<Int, Float, Bool>>, TypeList<>>), true);
     });
 
 }
