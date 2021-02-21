@@ -9,7 +9,7 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/language/support/compare.h"
+#include "syntropy/core/support/compare.h"
 #include "syntropy/memory/allocators/allocator.h"
 #include "syntropy/memory/foundation/buffer.h"
 

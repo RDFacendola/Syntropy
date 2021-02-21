@@ -1,7 +1,7 @@
 
 /// \file compare.h
 ///
-/// \brief This header is part of the Syntropy language module.
+/// \brief This header is part of the Syntropy core module.
 ///        It contains definitions for comparisons.
 ///
 /// \author Raffaele D. Facendola - November 2020

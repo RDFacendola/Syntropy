@@ -28,6 +28,7 @@
 #include "syntropy/core/support/scope_guard.h"
 #include "syntropy/core/support/visitor.h"
 #include "syntropy/core/support/swap.h"
+#include "syntropy/core/support/compare.h"
 
 #include "syntropy/core/tuples/ntuple.h"
 #include "syntropy/core/tuples/tuple.h"
@@ -41,7 +42,7 @@
 #include "syntropy/language/foundation/definitions.h"
 #include "syntropy/language/foundation/types.h"
 #include "syntropy/language/preprocessor/macro.h"
-#include "syntropy/language/support/compare.h"
+
 #include "syntropy/language/support/ignore.h"
 #include "syntropy/language/support/initializer_list.h"
 #include "syntropy/language/templates/concepts.h"
