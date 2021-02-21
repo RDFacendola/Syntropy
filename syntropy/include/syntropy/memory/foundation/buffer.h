@@ -117,6 +117,28 @@ namespace Syntropy::Memory
 
     };
 
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    // Ranges.
+    // =======
+
+    /// \brief Get a read-only view to an immutable buffer.
+    ByteSpan ViewOf(Immutable<Buffer> buffer) noexcept;
+
+    /// \brief Get a read-only view to a mutable buffer.
+    ByteSpan ViewOf(Mutable<Buffer> buffer) noexcept;
+
+    /// \brief Get a read-write view to a mutable buffer.
+    RWByteSpan RWViewOf(Mutable<Buffer> buffer) noexcept;
+
+    /// \brief Prevent from getting a view to a temporary buffer.
+    void ViewOf(Immovable<Buffer> buffer) noexcept = delete;
+
+    /// \brief Prevent from getting a view to a temporary buffer.
+    void RWViewOf(Immovable<Buffer> buffer) noexcept = delete;
+
 }
 
 // ===========================================================================

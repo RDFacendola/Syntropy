@@ -23,6 +23,7 @@
 #include "syntropy/core/reflection/type_id.h"
 
 #include "syntropy/core/strings/string.h"
+#include "syntropy/core/strings/string_view.h"
 
 #include "syntropy/core/support/event.h"
 #include "syntropy/core/support/scope_guard.h"

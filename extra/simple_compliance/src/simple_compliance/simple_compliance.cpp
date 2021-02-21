@@ -9,15 +9,24 @@
 
 #include "simple_compliance/bulk.h"
 
+void Megaprint(Syntropy::Immutable<Syntropy::Strings::StringView> sv)
+{
+    std::cout << "hey!";
+}
+
 int main()
 {
    std::cout << "Hello, Syntropy\n";
 
-   Syntropy::Strings::String s = u8"ciao";
+   Syntropy::Strings::String s0 = u8"ciao℧";
+   Syntropy::Strings::String s1 = u8"ciao";
+   Syntropy::Strings::String s2 = u8"caio";
 
-   Syntropy::Int i = s.GetLength();
+   std::cout << (s1 == s2) << "\n";
+   std::cout << (s0 == u8"ciaoasd") << "\n";
+   std::cout << (u8"ciao℧" == s0) << "\n";
 
-   std::cout << i << "\n";
+   Megaprint(s0);
 
    return 0;
 }

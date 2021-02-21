@@ -137,6 +137,31 @@ namespace Syntropy::Memory
         return *allocator_;
     }
 
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
+
+    // Ranges.
+    // =======
+
+    inline ByteSpan
+    ViewOf(Immutable<Buffer> buffer) noexcept
+    {
+        return { buffer.GetData(), buffer.GetCount() };
+    }
+
+    inline ByteSpan
+    ViewOf(Mutable<Buffer> buffer) noexcept
+    {
+        return { buffer.GetData(), buffer.GetCount() };
+    }
+
+    inline RWByteSpan
+    RWViewOf(Mutable<Buffer> buffer) noexcept
+    {
+        return { buffer.GetData(), buffer.GetCount() };
+    }
+
 }
 
 // ===========================================================================
