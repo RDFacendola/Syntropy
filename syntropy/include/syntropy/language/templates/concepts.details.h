@@ -30,48 +30,35 @@ namespace Syntropy::Concepts::Details
     template <typename TType, typename UType>
     concept IsConvertible = std::is_convertible_v<TType, UType>;
 
-    /// \brief Concept for immutable types.
+    /// \brief Concept for immutable reference-types.
     template <typename TType>
-    concept ImmutableType = std::is_const_v<TType>;
+    concept IsImmutable
+        = IsSame<Syntropy::Templates::ImmutableOf<TType>, TType>;
 
-    /// \brief Concept for mutable types.
+    /// \brief Concept for mutable reference-types.
     template <typename TType>
-    concept MutableType = !std::is_const_v<TType>;
+    concept IsMutable
+        = IsSame<Syntropy::Templates::MutableOf<TType>, TType>;
 
-    // Type concepts.
-    // ==============
-
-    /// \brief Concept for void types.
-    template<typename TType>
-    concept IsVoid = std::is_void_v<TType>;
-
-    /// \brief Concept for null types.
-    template<typename TType>
-    concept IsNull = std::is_null_pointer_v<TType>;
-
-    /// \brief Concept for enum types.
+    /// \brief Concept for movable reerence-types.
     template <typename TType>
-    concept IsEnum = std::is_enum_v<TType>;
+    concept IsMovable
+        = IsSame<Syntropy::Templates::MovableOf<TType>, TType>;
 
-    /// \brief Concept for class types.
+    /// \brief Concept for immovable reference-types.
     template <typename TType>
-    concept IsClass = std::is_class_v<TType>;
-
-    /// \brief Concept for pointer types.
-    template <typename TType>
-    concept IsPointer = std::is_pointer_v<TType>;
+    concept IsImmovable
+        = IsSame<Syntropy::Templates::ImmovableOf<TType>, TType>;
 
     /// \brief Concept for lvalue references.
     template <typename TType>
-    concept LValueReferenceType = std::is_lvalue_reference_v<TType>;
+    concept IsReference
+        = IsSame<Syntropy::Templates::ReferenceOf<TType>, TType>;
 
     /// \brief Concept for rvalue references.
     template <typename TType>
-    concept RValueReferenceType = std::is_rvalue_reference_v<TType>;
-
-    /// \brief Concept for object types.
-    template <typename TType>
-    concept IsObject = std::is_object_v<TType>;
+    concept IsForwarding
+        = IsSame<Syntropy::Templates::ForwardingOf<TType>, TType>;
 
     // Fundamental types concepts.
     // ===========================
@@ -122,9 +109,23 @@ namespace Syntropy::Concepts::Details
     template <typename TType>
     concept IsStandardLayoutType = std::is_standard_layout_v<TType>;
 
+    /// \brief Concept for types that can be constructed by TArguments... .
+    template <typename TType, typename... TArguments>
+    concept IsConstructibleFrom
+        = std::is_constructible_v<TType, TArguments...>;
+
     /// \brief Concept for default-constructible types.
     template <typename TType>
     concept IsDefaultConstructible = std::is_default_constructible_v<TType>;
+
+    /// \brief Concept for types that can be value-initialized (T()),
+    ///        direct-list-initialized from and empty initializer list (T{})
+    ///        or default-initialized (T t).
+    template <typename TType>
+    concept IsDefaultInitializable
+         = IsConstructibleFrom<TType>
+        && requires { TType{}; }
+        && requires { ::new (static_cast<RWTypelessPtr>(nullptr)) TType; };
 
     /// \brief Concept for copy-constructible types.
     template <typename TType>
@@ -133,11 +134,6 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for move-constructible types.
     template <typename TType>
     concept IsMoveConstructible = std::is_move_constructible_v<TType>;
-
-    /// \brief Concept for types that can be constructed by TArguments... .
-    template <typename TType, typename... TArguments>
-    concept IsConstructibleFrom
-        = std::is_constructible_v<TType, TArguments...>;
 
     /// \brief Concept for copy-assignable types.
     template <typename TType>
@@ -226,9 +222,8 @@ namespace Syntropy::Concepts::Details
     // Comparison concepts.
     // ====================
 
-    /// \brief Models a type TType for which the equality and inequality
-    ///        operators against the (possibly different) type
-    ///        UType are defined.
+    /// \brief Concept for types which define both the equality and inequality
+    ///        operators against a possibily different type.
     template <typename TType, typename UType>
     concept IsEqualityComparableWith
         = requires(Templates::ImmutableOf<TType> lhs,
@@ -247,9 +242,9 @@ namespace Syntropy::Concepts::Details
             { rhs != lhs } -> IsBoolean;
         };
 
-    /// \brief Models a type TType for which the less-than, greater-than,
+    /// \brief Concept for types which define boh the less-than, greater-than,
     ///        less-than-or-equal-to and greater-than-or-equal-to operators
-    ///        against the (possibly different) type UType are defined.
+    ///        against a possibly different type.
     template <typename TType, typename UType>
     concept IsPartiallyOrderedWith
         = requires(Templates::ImmutableOf<TType> lhs,
@@ -294,36 +289,6 @@ namespace Syntropy::Concepts::Details
     template<template <typename...> typename TTemplate, typename... TTypes>
     constexpr Bool
     IsTemplateSpecializationOf<TTemplate<TTypes...>, TTemplate> = true;
-
-    // Object concepts.
-    // ================
-
-    /// \brief Concept for types that can be value-initialized (T()),
-    ///        direct-list-initialized from and empty initializer list (T{})
-    ///        or default-initialized (T t).
-    template <typename TType>
-    concept IsDefaultInitializable
-         = IsConstructibleFrom<TType>
-        && requires { TType{}; }
-        && requires { ::new (static_cast<RWTypelessPtr>(nullptr)) TType; };
-
-    /// \brief Concept for a type whose instances are swappable.
-    template <typename TType>
-    concept IsSwappable
-        = IsAssignableFrom<Mutable<TType>, Movable<TType>>
-       && IsMoveConstructible<TType>;
-
-    // Callable concepts.
-    // ==================
-
-    /// \brief Concept for callable types that can be called with a set of
-    ///        arguments TArguments.
-    template <typename TCallable, typename... TArguments>
-    concept IsInvocable
-        = requires(Forwarding<TCallable> callable, TArguments&&... arguments)
-        {
-            Invoke(Forward<TCallable>, Forward<TArguments>(arguments)...);
-        };
 
 }
 

@@ -17,6 +17,21 @@
 
 // ===========================================================================
 
+namespace Syntropy::Concepts
+{
+    /************************************************************************/
+    /* IS SWAPPABLE                                                         */
+    /************************************************************************/
+
+    /// \brief Concept for types whose instances are swappable.
+    template <typename TType>
+    concept IsSwappable
+        = IsAssignableFrom<Mutable<TType>, Movable<TType>>
+       && IsMoveConstructible<TType>;
+}
+
+// ===========================================================================
+
 namespace Syntropy::Algorithm
 {
     /************************************************************************/
@@ -35,9 +50,7 @@ namespace Syntropy::Algorithm
     /************************************************************************/
 
     /// \brief Swap lhs with rhs.
-    template <typename TType>
-    requires Concepts::IsAssignableFrom<Mutable<TType>, Movable<TType>>
-          && Concepts::IsMoveConstructible<TType>
+    template <Concepts::IsSwappable TType>
     constexpr void
     Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept;
 

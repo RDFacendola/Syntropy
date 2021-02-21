@@ -31,48 +31,29 @@ namespace Syntropy::Concepts
     template <typename TType, typename UType>
     concept IsConvertible = Details::IsConvertible<TType, UType>;
 
-    /// \brief Concept for immutable types.
+    /// \brief Concept for immutable reerence-types.
     template <typename TType>
-    concept ImmutableType = Details::ImmutableType<TType>;
+    concept IsImmutable = Details::IsImmutable<TType>;
 
-    /// \brief Concept for mutable types.
+    /// \brief Concept for mutable reference-types.
     template <typename TType>
-    concept MutableType = Details::MutableType<TType>;
+    concept IsMutable = Details::IsMutable<TType>;
 
-    // Type concepts.
-    // ==============
-
-    /// \brief Concept for void types.
-    template<typename TType>
-    concept IsVoid = Details::IsVoid<TType>;
-
-    /// \brief Concept for null types.
-    template<typename TType>
-    concept IsNull = Details::IsNull<TType>;
-
-    /// \brief Concept for enum types.
+    /// \brief Concept for movable reerence-types.
     template <typename TType>
-    concept IsEnum = Details::IsEnum<TType>;
+    concept IsMovable = Details::IsMovable<TType>;
 
-    /// \brief Concept for class types.
+    /// \brief Concept for immovable reference-types.
     template <typename TType>
-    concept IsClass = Details::IsClass<TType>;
+    concept IsImmovable = Details::IsImmovable<TType>;
 
-    /// \brief Concept for pointer types.
+    /// \brief Concept for
     template <typename TType>
-    concept IsPointer = Details::IsPointer<TType>;
-
-    /// \brief Concept for object types.
-    template <typename TType>
-    concept IsObject = Details::IsObject<TType>;
-
-    /// \brief Concept for lvalue references.
-    template <typename TType>
-    concept LValueReferenceType = Details::LValueReferenceType<TType>;
+    concept IsReference = Details::IsReference<TType>;
 
     /// \brief Concept for rvalue references.
     template <typename TType>
-    concept RValueReferenceType = Details::RValueReferenceType<TType>;
+    concept IsForwarding = Details::IsForwarding<TType>;
 
     // Fundamental types concepts.
     // ===========================
@@ -115,9 +96,20 @@ namespace Syntropy::Concepts
     template <typename TType>
     concept IsStandardLayoutType = Details::IsStandardLayoutType<TType>;
 
+    /// \brief Concept for types that can be constructed by TArguments... .
+    template <typename TType, typename... TArguments>
+    concept IsConstructibleFrom
+        = Details::IsConstructibleFrom<TType, TArguments...>;
+
     /// \brief Concept for default-constructible types.
     template <typename TType>
     concept IsDefaultConstructible = Details::IsDefaultConstructible<TType>;
+
+    /// \brief Concept for types that can be value-initialized (T()),
+    ///        direct-list-initialized from and empty initializer list (T{})
+    ///        or default-initialized (T t).
+    template <typename TType>
+    concept IsDefaultInitializable = Details::IsDefaultInitializable<TType>;
 
     /// \brief Concept for copy-constructible types.
     template <typename TType>
@@ -126,11 +118,6 @@ namespace Syntropy::Concepts
     /// \brief Concept for move-constructible types.
     template <typename TType>
     concept IsMoveConstructible = Details::IsMoveConstructible<TType>;
-
-    /// \brief Concept for types that can be constructed by TArguments... .
-    template <typename TType, typename... TArguments>
-    concept IsConstructibleFrom
-        = Details::IsConstructibleFrom<TType, TArguments...>;
 
     /// \brief Concept for copy-assignable types.
     template <typename TType>
@@ -209,137 +196,53 @@ namespace Syntropy::Concepts
     // Comparison concepts.
     // ====================
 
-    /// \brief Models a type TType for which the equality and inequality
-    ///        operators are defined.
+    /// \brief Concept for types which define both the equality and inequality
+    ///        operators.
     template <typename TType>
-    concept EqualityComparable
+    concept IsEqualityComparable
         = Details::IsEqualityComparableWith<TType, TType>;
 
-    /// \brief Models a type TType for which the equality and inequality
-    ///        operators against the (possibly different) type UType
-    ///        are defined.
+    /// \brief Concept for types which define both the equality and inequality
+    ///        operators against a possibily different type.
     template <typename TType, typename UType>
     concept IsEqualityComparableWith
         = Details::IsEqualityComparableWith<TType, UType>;
 
-    /// \brief Models a type TType for which the less-than, greater-than,
-    ///        less-than-or-equal-to and greater-than-or-equal-to operators
-    ///        are defined.
+    /// \brief Concept for types which define boh the less-than, greater-than,
+    ///        less-than-or-equal-to and greater-than-or-equal-to operators.
     template <typename TType>
-    concept PartiallyOrdered
+    concept IsPartiallyOrdered
         = Details::IsPartiallyOrderedWith<TType, TType>;
 
-    /// \brief Models a type TType for which the less-than, greater-than,
+    /// \brief Concept for types which define boh the less-than, greater-than,
     ///        less-than-or-equal-to and greater-than-or-equal-to operators
-    ///        against the (possibly different) type UType are defined.
+    ///        against a possibly different type.
     template <typename TType, typename UType>
     concept IsPartiallyOrderedWith
         = Details::IsPartiallyOrderedWith<TType, UType>;
 
-    /// \brief Models a class TType which is both equality-comparable and
+    /// \brief Concept for types which are both equality-comparable and
     ///        partially-ordered.
     template <typename TType>
-    concept TotallyOrdered
-        = EqualityComparable<TType>
-       && PartiallyOrdered<TType>;
+    concept IsOrdered
+        = IsEqualityComparable<TType>
+       && IsPartiallyOrdered<TType>;
 
-    /// \brief Models a class TType which is both equality-comparable and
-    ///        partially-ordered against the (possibly different) type UType.
+    /// \brief Concept for types which are both equality-comparable and
+    ///        partially-ordered against the a possibly different type.
     template <typename TType, typename UType>
-    concept TotallyOrderedWith
+    concept IsOrderedWith
         = IsEqualityComparableWith<TType, UType>
        && IsPartiallyOrderedWith<TType, UType>;
 
     // Templates concepts.
     // ===================
 
-    /// \brief Concepts for types TType that are template specialization
-    ///        of TTemplate.
+    /// \brief Concepts for types that are template specialization
+    ///        of a type template.
     template<typename TType, template <typename...> typename TTemplate>
     concept IsTemplateSpecializationOf
         = Details::IsTemplateSpecializationOf<TType, TTemplate>;
-
-    // Object concepts.
-    // ================
-
-    /// \brief Concept for types that can be value-initialized (T()),
-    ///        direct-list-initialized from and empty initializer list (T{})
-    ///        or default-initialized (T t).
-    template <typename TType>
-    concept IsDefaultInitializable
-        = Details::IsDefaultInitializable<TType>;
-
-    /// \brief Concept for a type whose instances are swappable.
-    template <typename TType>
-    concept IsSwappable
-        = Details::IsSwappable<TType>;
-
-    /// \brief Concept for types that can be moved in and to (move constructed,
-    ///        move assigned and reference-swappable).
-    template <typename TType>
-    concept Movable
-         = IsObject<TType>
-        && IsMoveConstructible<TType>
-        && IsAssignableFrom<Mutable<TType>, TType>
-        && IsSwappable<TType>;
-
-    /// \brief Concept for types that can be copied, moved and swapped.
-    template <typename TType>
-    concept Copyable
-         = IsCopyConstructible<TType>
-        && Movable<TType>
-        && IsAssignableFrom<Mutable<TType>, Mutable<TType>>
-        && IsAssignableFrom<Mutable<TType>, Immutable<TType>>
-        && IsAssignableFrom<Mutable<TType>, Const<TType>>;
-
-    /// \brief Concept for types that are both copyable and default
-    ///        constructible.
-    template <typename TType>
-    concept Semiregular
-         = Copyable<TType>
-         && IsDefaultInitializable<TType>;
-
-    /// \brief Concept for types that are copyable, default constructible and
-    ///        equality comparable.
-    template <typename TType>
-    concept Regular
-         = Semiregular<TType>
-        && IsEqualityComparableWith<TType, TType>;
-
-    // Callable concepts.
-    // ==================
-
-    /// \brief Concept for callable types that can be called with a set of
-    ///        arguments TArguments.
-    template <typename TCallable, typename... TArguments>
-    concept IsInvocable = Details::IsInvocable<TCallable, TArguments...>;
-
-    /// \brief Concept for callable types that can be called with a set of
-    ///        arguments TArguments and preserve both callable object state
-    ///        and argument state.
-    ///
-    /// \remarks The distinction between this and IsInvocable is purely semantic,
-    ///          as IsInvocable may not satisfy equality preservation.
-    template <typename TCallable, typename... TArguments>
-    concept RegularInvocable
-         = IsInvocable<TCallable, TArguments...>;
-
-    /// \brief Concept for callable types that can be called with a set of
-    ///        arguments TArguments and preserve both callable object state
-    ///        and argument state.
-    template <typename TCallable, typename... TArguments>
-    concept Predicate
-         = IsInvocable<TCallable, TArguments...>
-        && IsBoolean<Templates::InvokeResultOf<TCallable, TArguments...>>;
-
-    /// \brief Concept for callable types that define a binary relation
-    ///        between TType and UType.
-    template <typename TCallable, typename TType, typename UType>
-    concept Relation
-         = Predicate<TCallable, TType, TType>
-        && Predicate<TCallable, TType, UType>
-        && Predicate<TCallable, UType, TType>
-        && Predicate<TCallable, UType, UType>;
 
 }
 

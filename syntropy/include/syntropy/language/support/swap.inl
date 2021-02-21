@@ -26,9 +26,7 @@ namespace Syntropy::Algorithm
     /* SWAP                                                                 */
     /************************************************************************/
 
-    template <typename TType>
-    requires Concepts::IsAssignableFrom<Mutable<TType>, Movable<TType>>
-          && Concepts::IsMoveConstructible<TType>
+    template <Concepts::IsSwappable TType>
     constexpr void
     Swap(Mutable<TType> lhs, Mutable<TType> rhs) noexcept
     {

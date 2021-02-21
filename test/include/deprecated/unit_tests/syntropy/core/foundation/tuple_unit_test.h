@@ -306,10 +306,10 @@ namespace Syntropy::UnitTest
 
         scalar = 300;
 
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts:LValueReferenceType<decltype(Get<0>(tuple_a))>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImmutableType<Syntropy::Templates::QualifiedOf<decltype(Get<0>(tuple_a))>>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::RValueReferenceType<decltype(Get<1>(Move(tuple_a)))>), true);
-        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::ImmutableType<Syntropy::Templates::QualifiedOf<decltype(Get<1>(Move(tuple_a)))>>), false);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts:IsReference<decltype(Get<0>(tuple_a))>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImmutable<Syntropy::Templates::QualifiedOf<decltype(Get<0>(tuple_a))>>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsForwarding<decltype(Get<1>(Move(tuple_a)))>), true);
+        SYNTROPY_UNIT_EQUAL((Syntropy::Concepts::IsImmutable<Syntropy::Templates::QualifiedOf<decltype(Get<1>(Move(tuple_a)))>>), false);
 
         SYNTROPY_UNIT_EQUAL((Get<0>(tuple_a)), 100);
         SYNTROPY_UNIT_EQUAL((Get<1>(ReadOnly(tuple_a))), 200);

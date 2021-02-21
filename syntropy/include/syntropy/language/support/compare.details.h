@@ -70,7 +70,7 @@ namespace Syntropy::Concepts::Details
     ///        a ordering category implied by TOrdering.
     template <typename TType, typename UType>
     concept ThreeWayComparableWith
-        = TotallyOrderedWith<TType, UType>
+        = IsOrderedWith<TType, UType>
        && requires(Templates::ImmutableOf<TType> lhs,
                    Templates::ImmutableOf<UType> rhs)
     {

@@ -66,7 +66,7 @@ namespace Syntropy::Templates::UnitTest
             explicit OptionalExplicitDefaultConstructibleFoo(Int = 0) {};
         };
 
-        /// \brief Copyable struct definition.
+        /// \brief IsCopyable struct definition.
         struct CopyableFoo
         {
             CopyableFoo(const CopyableFoo&) = default;

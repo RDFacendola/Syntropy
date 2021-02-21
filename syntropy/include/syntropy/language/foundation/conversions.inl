@@ -120,14 +120,14 @@ namespace Syntropy
     /* TYPELESS POINTER TYPES                                               */
     /************************************************************************/
 
-    template <Concepts::MutableType TType>
+    template <Concepts::IsMutable TType>
     inline TypelessPtr
     ToTypelessPtr(BasePtr<TType> rhs) noexcept
     {
         return rhs;
     }
 
-    template <Concepts::MutableType TType>
+    template <Concepts::IsMutable TType>
     inline RWTypelessPtr
     ToTypelessPtr(BasePtr<TType> rhs) noexcept
     {
