@@ -40,7 +40,7 @@ namespace Syntropy
                Immutable<Reflection::TypeId> type) const noexcept
     {
         using TArgument = Templates::FunctionArgumentsElement<0, TFunction>;
-        using TVisitable = Templates::RemoveReference<TArgument>;
+        using TVisitable = Templates::QualifiedOf<TArgument>;
 
         if (type == Reflection::TypeIdOf<TVisitable>())
         {

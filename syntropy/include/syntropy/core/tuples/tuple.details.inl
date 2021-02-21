@@ -32,8 +32,8 @@ namespace Syntropy::Tuples::Details
 
         return tuple_cat(
             ForwardAsTuple(tuples...),
-            EnumerateTupleIndexes<Syntropy::Templates::RemoveConstReference<TTuples>...>{},
-            EnumerateTupleElementIndexes<Syntropy::Templates::RemoveConstReference<TTuples>...>{});
+            EnumerateTupleIndexes<Syntropy::Templates::UnqualifiedOf<TTuples>...>{},
+            EnumerateTupleElementIndexes<Syntropy::Templates::UnqualifiedOf<TTuples>...>{});
     }
 
     // Flatten.
@@ -58,7 +58,7 @@ namespace Syntropy::Tuples::Details
 
         return flat(Forward<TTuple>(tuple),
                     Templates::TupleSequenceFor<
-                        Syntropy::Templates::RemoveConstReference<TTuple>>{});
+                        Syntropy::Templates::UnqualifiedOf<TTuple>>{});
     }
 
     template <typename TElement>

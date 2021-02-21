@@ -60,7 +60,7 @@ namespace Syntropy
     /// \remarks If rhs doesn't refer to a mutable object, accessing the
     ///          returned value of this method results in undefined behavior.
     template <typename TType>
-    constexpr Mutable<Templates::ReadWriteOf<TType>>
+    constexpr Mutable<TType>
     ToMutable(Immutable<TType> rhs) noexcept;
 
     /// \brief Deleted overload to disallow movable arguments.
@@ -88,7 +88,7 @@ namespace Syntropy
     /// \brief Convert rhs to a pointer to a read-only instance of TType.
     template <typename TType>
     constexpr Ptr<TType>
-    ToReadOnly(BasePtr<TType> rhs) noexcept;
+    ToReadOnly(Ptr<TType> rhs) noexcept;
 
     /// \brief Convert rhs to a pointer to a read-write instance of TType.
     ///
@@ -100,8 +100,8 @@ namespace Syntropy
     /// \remarks If rhs doesn't point to a read-write object, accessing the
     ///          returned value of this method results in undefined behavior.
     template <typename TType>
-    constexpr auto
-    ToReadWrite(BasePtr<TType> rhs) noexcept;
+    constexpr RWPtr<TType>
+    ToReadWrite(Ptr<TType> rhs) noexcept;
 
     /************************************************************************/
     /* FIXED-SIZE TYPES                                                     */

@@ -41,26 +41,26 @@ namespace Syntropy::Tuples::Templates
 
     /// \brief Rank of a n-tuple.
     template <typename TType, typename UType
-        = Syntropy::Templates::RemoveConstReference<TType>>
+        = Syntropy::Templates::UnqualifiedOf<TType>>
     inline constexpr Int
     Rank = RankTypeTraits<UType>::kValue;
 
     /// \brief Type of the VIndex-th element of a n-tuple.
     template <Int VIndex, typename TType, typename UType
-        = Syntropy::Templates::RemoveConstReference<TType>>
+        = Syntropy::Templates::UnqualifiedOf<TType>>
     using ElementType = typename ElementTypeTraits<VIndex, UType>::Type;
 
     /// \brief Constant equal to true if TType provides compile-time access
     ///        to its element types, false otherwise.
     template <typename TType, typename UType
-        = Syntropy::Templates::RemoveConstReference<TType>>
+        = Syntropy::Templates::UnqualifiedOf<TType>>
     inline constexpr Bool
     HasElementTypes = Details::HasElementTypes<UType>;
 
     /// \brief Constant equal to true if TType provides access to all its
     ///        Rank elements, false otherwise.
     template <typename TType, typename UType
-        = Syntropy::Templates::RemoveConstReference<TType>>
+        = Syntropy::Templates::UnqualifiedOf<TType>>
     inline constexpr Bool
     HasGetters = Details::HasGetters<UType>;
 }
@@ -76,7 +76,7 @@ namespace Syntropy::Tuples::Concepts
     /// \brief Concept for types that behave as tuples, providing indexed
     ///        compile-time access to its elements.
     template <typename TType, typename UType
-        = Syntropy::Templates::RemoveConstReference<TType>>
+        = Syntropy::Templates::UnqualifiedOf<TType>>
     concept NTuple = requires
     {
         /// \brief Rank of the tuple.
@@ -91,7 +91,8 @@ namespace Syntropy::Tuples::Concepts
     ///          forwarding references to tuple types, where adding a
     ///          reference would cause no type traits to be found.
     template <typename TType>
-    concept NTupleReference = NTuple<Syntropy::Templates::Decay<TType>>;
+    concept NTupleReference
+        = NTuple<Syntropy::Templates::UnqualifiedOf<TType>>;
 }
 
 // ===========================================================================
@@ -107,7 +108,7 @@ namespace Syntropy::Tuples::Templates
     template <Syntropy::Tuples::Concepts::NTuple... TNTuples>
     inline constexpr Bool
     SameRank = Details::SameRank<
-        Syntropy::Templates::RemoveConstReference<TNTuples>...>;
+        Syntropy::Templates::UnqualifiedOf<TNTuples>...>;
 
     /// \brief Generates a sequence that can be used to enumerate all elements
     ///        in a given tuple.

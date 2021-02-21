@@ -36,7 +36,7 @@ namespace Syntropy::Tuples::Templates::Details
     /// \brief Rank of a n-tuple.
     template <
         typename TType,
-        typename UType = Syntropy::Templates::RemoveConstReference<TType>>
+        typename UType = Syntropy::Templates::UnqualifiedOf<TType>>
     inline constexpr Int
     Rank = RankTypeTraits<UType>::kValue;
 
@@ -44,7 +44,7 @@ namespace Syntropy::Tuples::Templates::Details
     template <
         Int VIndex,
         typename TType,
-        typename UType = Syntropy::Templates::RemoveConstReference<TType>>
+        typename UType = Syntropy::Templates::UnqualifiedOf<TType>>
     using ElementType = typename ElementTypeTraits<VIndex, UType>::Type;
 
     // HasElementTypes.

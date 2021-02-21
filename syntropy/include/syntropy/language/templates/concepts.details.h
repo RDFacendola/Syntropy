@@ -79,25 +79,25 @@ namespace Syntropy::Concepts::Details
     /// \brief Concept for boolean types.
     template <typename TType>
     concept IsBoolean
-         = IsSame<Templates::ImmutableOf<TType>, Immutable<Bool>>;
+         = IsSame<Templates::UnqualifiedOf<TType>, Bool>;
 
     /// \brief Concept for signed integral number types.
     template <typename TType>
     concept IsIntegral
-         = IsSame<Templates::ImmutableOf<TType>, Immutable<Int>>
-        || IsSame<Templates::ImmutableOf<TType>, Immutable<Fix8>>
-        || IsSame<Templates::ImmutableOf<TType>, Immutable<Fix16>>
-        || IsSame<Templates::ImmutableOf<TType>, Immutable<Fix32>>
-        || IsSame<Templates::ImmutableOf<TType>, Immutable<Fix64>>
-        || IsSame<Templates::ImmutableOf<TType>, Immutable<Enum8>>
-        || IsSame<Templates::ImmutableOf<TType>, Immutable<Enum16>>
-        || IsSame<Templates::ImmutableOf<TType>, Immutable<Enum32>>
-        || IsSame<Templates::ImmutableOf<TType>, Immutable<Enum64>>;
+         = IsSame<Templates::UnqualifiedOf<TType>, Int>
+        || IsSame<Templates::UnqualifiedOf<TType>, Fix8>
+        || IsSame<Templates::UnqualifiedOf<TType>, Fix16>
+        || IsSame<Templates::UnqualifiedOf<TType>, Fix32>
+        || IsSame<Templates::UnqualifiedOf<TType>, Fix64>
+        || IsSame<Templates::UnqualifiedOf<TType>, Enum8>
+        || IsSame<Templates::UnqualifiedOf<TType>, Enum16>
+        || IsSame<Templates::UnqualifiedOf<TType>, Enum32>
+        || IsSame<Templates::UnqualifiedOf<TType>, Enum64>;
 
     /// \brief Concept for real number types.
     template <typename TType>
     concept IsReal
-         = IsSame<Templates::ImmutableOf<TType>, Immutable<Float>>;
+         = IsSame<Templates::UnqualifiedOf<TType>, Float>;
 
      // Polymorphism.
      // =============

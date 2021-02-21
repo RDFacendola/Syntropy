@@ -19,27 +19,28 @@ namespace Syntropy
     /* DEFINITIONS                                                          */
     /************************************************************************/
 
-    /// \brief Perform a copy of rhs by means of copy constructor.
+    /// \brief Obtain an immutable reference to rhs.
     template <typename TType>
-    constexpr TType
+    constexpr Immutable<TType>
     Copy(Immutable<TType> rhs) noexcept;
 
-    /// \brief Indicate that rhs may be "moved from", allowing for efficient
-    ///        transfer of resources from rhs to another object.
+    /// \brief Obtain either a movable reference or an immovable reference to
+    ///        rhs, depending on whether rhs is mutable or immutable.
     template <typename TType>
-    constexpr Forwarding<Templates::RemoveReference<TType>>
+    constexpr Forwarding<Templates::QualifiedOf<TType>>
     Move(Forwarding<TType> rhs) noexcept;
 
-    /// \brief Forward mutables and immutables as either mutables, immutables
-    ///        or movables.
+    /// \brief Forward mutable references as mutable references and immutable
+    ///        references as immutable references.
     template <typename TType>
     constexpr Forwarding<TType>
-    Forward(Reference<Templates::RemoveReference<TType>> rhs) noexcept;
+    Forward(Reference<Templates::QualifiedOf<TType>> rhs) noexcept;
 
-    /// \brief Forward movables as movables.
+    /// \brief Forward movable reference as movable references and immovable
+    ///        references as immovable references.
     template <typename TType>
     constexpr Forwarding<TType>
-    Forward(Movable<Templates::RemoveReference<TType>> rhs) noexcept;
+    Forward(Forwarding<Templates::QualifiedOf<TType>> rhs) noexcept;
 
     /// \brief Obtain the pointer to an instance of TType, reardless of
     ///        whether the operator& was overloaded.

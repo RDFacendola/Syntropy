@@ -39,7 +39,7 @@ namespace Syntropy::Ranges::Templates
 
     /// \brief Range's element value type.
     template <typename TRange>
-    using RangeElementValueType = Syntropy::Templates::RemoveReference<
+    using RangeElementValueType = Syntropy::Templates::QualifiedOf<
         RangeElementOf<TRange>>;
 
 }

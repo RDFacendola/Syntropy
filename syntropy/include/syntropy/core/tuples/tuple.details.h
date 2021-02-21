@@ -152,7 +152,7 @@ namespace Syntropy::Tuples::Details
     EnableIfTupleConvertingConstructorHelper<true, TTypeList, UTypeLists...>
         = Syntropy::Concepts::IsConstructibleFrom<
             TTypeList,
-            Syntropy::Templates::AddRValueReference<UTypeLists>...>;
+            Syntropy::Templates::MovableOf<UTypeLists>...>;
 
     /// \brief Enable converting tuple constructor.
     template <typename TTypeList, typename... UTypes>
@@ -180,7 +180,7 @@ namespace Syntropy::Tuples::Details
         <true, TTypeList, UTypeLists...>
             = Syntropy::Concepts::IsConstructibleFrom<
                 TTypeList,
-                Syntropy::Templates::AddLValueConstReference<UTypeLists>...>;
+                Syntropy::Templates::ImmutableOf<UTypeLists>...>;
 
     /// \brief Specialization for 1-tuples. True if TType can be constructed
     ///        from UType and the overload doesn't reduce to a
@@ -228,7 +228,7 @@ namespace Syntropy::Tuples::Details
         <true, TTypeList, UTypeLists...>
             = Syntropy::Concepts::IsConstructibleFrom<
                 TTypeList,
-                Syntropy::Templates::AddRValueReference<UTypeLists>...>;
+                Syntropy::Templates::MovableOf<UTypeLists>...>;
 
     /// \brief Specialization for 1-tuples. True if TType can be constructed
     ///        from UType and the overload doesn't reduce to a
@@ -289,8 +289,8 @@ namespace Syntropy::Tuples::Details
         = RWPtr<Syntropy::Templates::EnableIf<
              ! Syntropy::Concepts::IsSame<TTypeList, UTypeList>
             && Syntropy::Concepts::IsAssignableFrom<
-                   Syntropy::Templates::AddLValueReference<TTypeList>,
-                   Syntropy::Templates::AddLValueConstReference<UTypeList>>>>;
+                   TTypeList,
+                   Syntropy::Templates::ImmutableOf<UTypeList>>>>;
 
     // (4)
 
@@ -302,7 +302,7 @@ namespace Syntropy::Tuples::Details
         = RWPtr<Syntropy::Templates::EnableIf<
              ! Syntropy::Concepts::IsSame<TTypeList, UTypeList>
             && Syntropy::Concepts::IsAssignableFrom<
-                Syntropy::Templates::AddLValueReference<TTypeList>,
+                TTypeList,
                 UTypeList>>>;
 
     /************************************************************************/

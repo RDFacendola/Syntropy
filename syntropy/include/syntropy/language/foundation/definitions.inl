@@ -14,29 +14,29 @@ namespace Syntropy
     /************************************************************************/
 
     template <typename TType>
-    constexpr TType
+    constexpr Immutable<TType>
     Copy(Immutable<TType> rhs) noexcept
     {
         return rhs;
     }
 
     template <typename TType>
-    constexpr Forwarding<Templates::RemoveReference<TType>>
+    constexpr Forwarding<Templates::QualifiedOf<TType>>
     Move(Forwarding<TType> rhs) noexcept
     {
-        return static_cast<Movable<Templates::RemoveReference<TType>>>(rhs);
+        return static_cast<Forwarding<Templates::QualifiedOf<TType>>>(rhs);
     }
 
     template <typename TType>
     constexpr Forwarding<TType>
-    Forward(Reference<Templates::RemoveReference<TType>> rhs) noexcept
+    Forward(Reference<Templates::QualifiedOf<TType>> rhs) noexcept
     {
         return static_cast<Forwarding<TType>>(rhs);
     }
 
     template <typename TType>
     constexpr Forwarding<TType>
-    Forward(Movable<Templates::RemoveReference<TType>> rhs) noexcept
+    Forward(Forwarding<Templates::QualifiedOf<TType>> rhs) noexcept
     {
         return static_cast<Forwarding<TType>>(rhs);
     }

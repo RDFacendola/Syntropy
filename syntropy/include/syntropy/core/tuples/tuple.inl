@@ -41,7 +41,7 @@ namespace Syntropy::Tuples
               Details::EnableIfTupleCopyAssignment<TSelfList>>
     constexpr
     Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>
-    ::operator=(Syntropy::Templates::IdentityOf<Immutable<TSelf>> rhs) noexcept
+    ::operator=(Syntropy::Templates::ExactOf<Immutable<TSelf>> rhs) noexcept
     {
         Tuples::LockstepApply([](auto& lhs_element, const auto& rhs_element)
         {
@@ -75,7 +75,7 @@ namespace Syntropy::Tuples
               Details::EnableIfTupleMoveAssignment<TSelfList>>
     constexpr Mutable<Tuple<TElement, TElements...>>
     Tuple<TElement, TElements...>
-    ::operator=(Syntropy::Templates::IdentityOf<Movable<TSelf>> rhs) noexcept
+    ::operator=(Syntropy::Templates::ExactOf<Movable<TSelf>> rhs) noexcept
     {
         Tuples::LockstepApply([](auto& lhs_element, auto&& rhs_element)
         {

@@ -68,6 +68,12 @@ namespace Syntropy
     template <typename TType>
     using RWPtr = TType*;
 
+    /// \brief A non-owning pointer to a typeless immutable instance.
+    using TypelessPtr = Ptr<void>;
+
+    /// \brief A non-owning pointer to a typeless mutable instance.
+    using RWTypelessPtr = RWPtr<void>;
+
     /************************************************************************/
     /* ENUMERATION TYPES                                                    */
     /************************************************************************/
@@ -139,16 +145,5 @@ namespace Syntropy
     /// \brief Constant value type.
     template <typename TType>
     using Const = const TType;
-
-    /************************************************************************/
-    /* TYPELESS POINTER TYPES                                               */
-    /************************************************************************/
-
-    /// \brief A non-owning pointer to a typeless immutable instance.
-    using TypelessPtr = Ptr<void>;
-
-    /// \brief A non-owning pointer to a typeless mutable instance.
-    using RWTypelessPtr = RWPtr<void>;
-
 
 }

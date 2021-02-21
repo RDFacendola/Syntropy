@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
         auto span = Syntropy::Ranges::Zip(span1, span2);
 
-        using TSpan = Syntropy::Templates::RemoveConstReference<decltype(span1)>;
+        using TSpan = Syntropy::Templates::UnqualifiedOf<decltype(span1)>;
 
         static_assert(Syntropy::Ranges::Concepts::ForwardRange<TSpan>, "nope!");
         static_assert(Syntropy::Ranges::Concepts::SizedRange<TSpan>, "nope!");

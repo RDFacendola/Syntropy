@@ -36,7 +36,7 @@ namespace Syntropy::Ranges::Templates
 
     /// \brief Range's count type.
     template <typename TRange>
-    using RangeCountType = Syntropy::Templates::RemoveConstReference<
+    using RangeCountType = Syntropy::Templates::UnqualifiedOf<
         decltype(Details::RouteCount(Syntropy::Templates::Declval<TRange>()))>;
 }
 

@@ -32,122 +32,75 @@ namespace Syntropy::Templates
     template <typename TType, typename TTypeList>
     inline constexpr Int IndexOf = Details::IndexOf<TType, TTypeList>;
 
-    /// \brief Get the type of the TIndex-th element in TTypeList.
+    /// \brief Get the type of an element in TTypeList, by index.
     template <Int TIndex, typename TTypeList>
     using ElementOf = Details::ElementOf<TIndex, TTypeList>;
-
-    /// \brief Drops the first TCount elements in a type list and return the
-    ///        remaining ones;
-    template <Int TCount, typename TTypeList>
-    using Drop = Details::Drop<TCount, TTypeList>;
 
     /************************************************************************/
     /* TYPE TRANSFORM                                                       */
     /************************************************************************/
 
-    /// \brief IdentityOf transform meant to establish non-deduced contexts in
-    ///        template argument deduction.
+    /// \brief Obtain the very same type of Type, establishing a non-deduced
+    ///        context during template argument deduction.
     template <typename TType>
-    using IdentityOf = Details::IdentityOf<TType>;
+    using ExactOf = Details::ExactOf<TType>;
 
-    /// \brief Removes qualifiers and indirections and obtain the plain type
-    ///        name.
+    /// \brief Obtain the value-type of TType without qualifiers.
     template <typename TType>
-    using PlainOf = Details::PlainOf<TType>;
+    using UnqualifiedOf = Details::UnqualifiedOf<TType>;
 
-    /// \brief Obtain a reference to a mutable instance of TType.
+    /// \brief Obtain the value-type of TType preserving existing qualifiers.
+    template <typename TType>
+    using QualifiedOf = Details::QualifiedOf<TType>;
+
+    /// \brief Obtain a reference-type to a mutable instance of TType.
     template <typename TType>
     using MutableOf = Details::MutableOf<TType>;
 
-    /// \brief Obtain a reference to an immutable instance of TType.
+    /// \brief Obtain a reference-type to an immutable instance of TType.
     template <typename TType>
     using ImmutableOf = Details::ImmutableOf<TType>;
 
-    /// \brief Obtain a reference to a mutable instance of TType whose
+    /// \brief Obtain a reference-type to a mutable instance of TType whose
     ///        resources can be efficiently moved to another instance.
     template <typename TType>
     using MovableOf = Details::MovableOf<TType>;
 
-    /// \brief Obtain a reference to an immutable instance of TType whose
+    /// \brief Obtain a reference-type to an immutable instance of TType whose
     ///        resources can be efficiently moved to another instance.
     template <typename TType>
     using ImmovableOf = Details::ImmovableOf<TType>;
 
-    /// \brief Obtain a pointer to an immutable instance of TType.
+    /// \brief Obtain the reference-type of TType preserving existing
+    ///        qualifiers.
+    ///
+    /// This type behaves as MutableOf<TType> if TType refers to a mutable
+    /// instance of TType or as Immutable<TType> otherwise.
     template <typename TType>
-    using ReadOnlyOf = Details::ReadOnlyOf<TType>;
+    using ReferenceOf = Details::ReferenceOf<TType>;
 
-    /// \brief Obtain a pointer to a mutable instance of TType.
+    /// \brief Obtain the forwarding-reference-type of TType preserving
+    ///        existing qualifiers.
+    ///
+    /// This type behaves as MovableOf<TType> if TType refers to a mutable
+    /// instance of TType or as ImmovableOf<TType> otherwise.
     template <typename TType>
-    using ReadWriteOf = Details::ReadWriteOf<TType>;
+    using ForwardingOf = Details::ForwardingOf<TType>;
 
     /// \brief Convert a function type to a function pointer.
     template <typename TFunction>
     using FunctionOf = Details::FunctionOf<TFunction>;
 
-
-
-
-
-
-
-
-    /// \brief Applies lvalue-to-rvalue, array-to-pointer, and
-    ///        function-to-pointer implicit conversions to the type TType,
-    ///        removes cv-qualifiers, and defines the resulting type as the
-    ///        member typedef type.
-    template <typename TType>
-    using Decay = Details::Decay<TType>;
-
-    /// \brief Type equal to TType without top-most reference if present, or
-    ///        equal to TType otherwise.
-    template <typename TType>
-    using RemoveReference = Details::RemoveReference<TType>;
-
-    /// \brief Type equal to TType without top-most reference and qualifiers.
-    template <typename TType>
-    using RemoveConstReference = Details::RemoveConstReference<TType>;
-
-    /// \brief Type of an lvalue reference to TType if possible, or equal to
-    ///        TType otherwise.
-    /// This trait honors reference collapsing rule.
-    template <typename TType>
-    using AddLValueReference = Details::AddLValueReference<TType>;
-
-    /// \brief Type of an rvalue reference to TType if possible, or equal to
-    ///        TType otherwise.
-    /// This trait honors reference collapsing rule.
-    template <typename TType>
-    using AddRValueReference = Details::AddRValueReference<TType>;
-
-    /// \brief Type equal to TType with const lvalue reference applied.
-    template <typename TType>
-    using AddLValueConstReference = Details::AddLValueConstReference<TType>;
-
-    /// \brief Type equal to a pointer to TType if possible, or equal to TType
-    ///        otherwise.
-    template <typename TType>
-    using AddPointer = Details::AddPointer<TType>;
-
     /************************************************************************/
     /* DECLVAL                                                              */
     /************************************************************************/
 
-    /// \brief Convert TType as a reference type, without calling any
-    ///        constructor.
+    /// \brief Obtain a forwarding-reference to an instance of type TType in
+    ///        unevaluated context.
     ///
     /// \remarks this function shall never be evaluated as it has no definition.
     template <typename TType>
-    AddRValueReference<TType> Declval() noexcept;
-
-    /************************************************************************/
-    /* META                                                                 */
-    /************************************************************************/
-
-    /// \brief Type equal to TTrue if VCondition is true, equal to
-    ///        TFalse otherwise.
-    template <Bool VCondition, typename TTrue, typename TFalse>
-    using Conditional = Details::Conditional<VCondition, TTrue, TFalse>;
+    ForwardingOf<TType> Declval() noexcept;
 
 }
 

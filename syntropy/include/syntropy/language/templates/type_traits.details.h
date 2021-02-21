@@ -80,147 +80,62 @@ namespace Syntropy::Templates::Details
     template <Int TIndex, typename TTypeList>
     using ElementOf = typename ElementOfHelper<TIndex, TTypeList>::Type;
 
-    // =======================================================================
-
-    /// \brief Drops the first TCount elements in a type list and return the
-    ///        remaining ones;
-    template <Int TCount, typename TTypeList>
-    struct DropHelper;
-
-    /// \brief Specialization for type lists.
-    template <Int TCount, typename TElement, typename... TElements>
-    struct DropHelper<TCount, TypeList<TElement, TElements...>>
-        : DropHelper<TCount - 1, TypeList<TElements...>>
-    {
-
-    };
-
-    /// \brief End of recursion.
-    template <typename TTypeList>
-    struct DropHelper<0, TTypeList>
-    {
-        using Type = TTypeList;
-    };
-
-    /// \brief Drops the first TCount elements in a type list and return the
-    ///        remaining ones;
-    template <Int TCount, typename TTypeList>
-    using Drop = typename Details::DropHelper<TCount, TTypeList>::Type;
-
     /************************************************************************/
     /* TYPE TRANSFORM                                                       */
     /************************************************************************/
 
-    /// \brief IdentityOf transform is meant to establish non-deduced
-    ///        contexts in template argument deduction.
+    /// \brief Obtain the very same type of Type, establishing a non-deduced
+    ///        context during template argument deduction.
     template <typename TType>
-    using IdentityOf = typename Alias<TType>::Type;
+    using ExactOf = typename Alias<TType>::Type;
 
-    // =======================================================================
-
-    /// \brief Removes qualifiers and indirections and obtain the plain type
-    ///        name.
+    /// \brief Obtain the value-type of TType without qualifiers.
     template <typename TType>
-    struct PlainOfHelper
-        : Alias<std::remove_cvref_t<TType>> {};
+    using UnqualifiedOf = std::remove_cvref_t<TType>;
 
-    /// \brief Specialization for pointers. Recursive.
+    /// \brief Obtain the value-type of TType preserving existing qualifiers.
     template <typename TType>
-    struct PlainOfHelper<TType*>
-        : PlainOfHelper<std::remove_cvref_t<TType>> {};
+    using QualifiedOf = std::remove_reference_t<TType>;
 
-    /// \brief Removes qualifiers and indirections and obtain the plain type
-    ///        name.
-    template <typename TType>
-    using PlainOf = typename PlainOfHelper<TType>::Type;
-
-    // =======================================================================
-
-    /// \brief Obtain a reference to a mutable instance of TType.
+    /// \brief Obtain a reference-type to a mutable instance of TType.
     template <typename TType>
     using MutableOf
-        = std::add_lvalue_reference_t<PlainOf<TType>>;
+        = std::add_lvalue_reference_t<UnqualifiedOf<TType>>;
 
-    /// \brief Obtain a reference to an immutable instance of TType.
+    /// \brief Obtain a reference-type to an immutable instance of TType.
     template <typename TType>
     using ImmutableOf
-        = std::add_lvalue_reference_t<std::add_const_t<PlainOf<TType>>>;
+        = std::add_lvalue_reference_t<std::add_const_t<UnqualifiedOf<TType>>>;
 
-    /// \brief Obtain a reference to a mutable instance of TType whose
+    /// \brief Obtain a reference-type to a mutable instance of TType whose
     ///        resources can be efficiently moved to another instance.
     template <typename TType>
     using MovableOf
-        = std::add_rvalue_reference_t<PlainOf<TType>>;
+        = std::add_rvalue_reference_t<UnqualifiedOf<TType>>;
 
-    /// \brief Obtain a reference to an immutable instance of TType whose
+    /// \brief Obtain a reference-type to an immutable instance of TType whose
     ///        resources can be efficiently moved to another instance.
     template <typename TType>
     using ImmovableOf
-        = std::add_rvalue_reference_t<std::add_const_t<PlainOf<TType>>>;
+        = std::add_rvalue_reference_t<std::add_const_t<UnqualifiedOf<TType>>>;
 
-    /// \brief Type equal to TType with const qualifiers applied.
+    /// \brief Obtain the reference-type of TType preserving existing
+    ///        qualifiers.
     template <typename TType>
-    using ReadOnlyOf = std::add_pointer_t<std::add_const_t<PlainOf<TType>>>;
+    using ReferenceOf = std::add_lvalue_reference_t<TType>;
 
-    /// \brief Type equal to TType without const qualifier.
+    /// \brief Obtain the forwarding-reference-type of TType preserving
+    ///        existing qualifiers.
+    ///
+    /// This transform honors reference collapse rule.
     template <typename TType>
-    using ReadWriteOf = std::add_pointer_t<PlainOf<TType>>;
+    using ForwardingOf = std::add_rvalue_reference_t<TType>;
+
 
     /// \brief Convert a function type to a function pointer.
     template <typename TFunction>
     using FunctionOf = std::add_pointer_t<TFunction>;
 
-    // =======================================================================
-
-    /// \brief Applies lvalue-to-rvalue, array-to-pointer, and
-    ///        function-to-pointer implicit conversions to the type TType,
-    ///        removes cv-qualifiers, and defines the resulting type as the
-    ///        member typedef type.
-    template <typename TType>
-    using Decay = std::decay_t<TType>;
-
-    /// \brief Type equal to TType without top-most reference if present, or
-    ///        equal to TType otherwise.
-    template <typename TType>
-    using RemoveReference = std::remove_reference_t<TType>;
-
-    /// \brief Type equal to TType without top-most reference and qualifiers.
-    template <typename TType>
-    using RemoveConstReference = std::remove_cvref_t<TType>;
-
-    /// \brief Type of an lvalue reference to TType if possible, or equal to
-    ///        TType otherwise.
-    ///
-    /// \remarks This trait honors reference collapsing rule.
-    template <typename TType>
-    using AddLValueReference = std::add_lvalue_reference_t<TType>;
-
-    /// \brief Type of an rvalue reference to TType if possible, or equal to
-    ///        TType otherwise.
-    ///
-    /// \remarks This trait honors reference collapsing rule.
-    template <typename TType>
-    using AddRValueReference = std::add_rvalue_reference_t<TType>;
-
-    /// \brief Type equal to TType with const lvalue reference applied.
-    template <typename TType>
-    using AddLValueConstReference
-        = std::add_lvalue_reference_t<std::add_const_t<TType>>;
-
-    /// \brief Type equal to a pointer to TType if possible, or equal to
-    ///        TType otherwise.
-    template <typename TType>
-    using AddPointer = std::add_pointer_t<TType>;
-
-    /************************************************************************/
-    /* META                                                                 */
-    /************************************************************************/
-
-    /// \brief Type equal to TTrue if VCondition is true, equal to TFalse
-    ///        otherwise.
-    template <Bool VCondition, typename TTrue, typename TFalse>
-    using Conditional
-        = std::conditional_t<VCondition, TTrue, TFalse>;
 }
 
 // ===========================================================================
