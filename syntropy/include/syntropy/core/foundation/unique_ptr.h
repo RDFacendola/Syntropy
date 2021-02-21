@@ -11,7 +11,6 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 #include "syntropy/language/support/compare.h"
-#include "syntropy/language/support/swap.h"
 
 #include "syntropy/diagnostics/assert.h"
 

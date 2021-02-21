@@ -1,7 +1,7 @@
 
 /// \file swap.h
 ///
-/// \brief This header is part of Syntropy language module.
+/// \brief This header is part of Syntropy core module.
 ///        It contains swapping-related definitions.
 ///
 /// \author Raffaele D. Facendola - 2020.

@@ -11,10 +11,11 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/support/compare.h"
-#include "syntropy/language/support/swap.h"
 #include "syntropy/language/templates/concepts.h"
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/sequence.h"
+
+#include "syntropy/core/support/swap.h"
 
 #include "syntropy/math/math.h"
 

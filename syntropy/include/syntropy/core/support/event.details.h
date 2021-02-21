@@ -9,7 +9,6 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/language/support/swap.h"
 
 #include "syntropy/core/foundation/unique_ptr.h"
 

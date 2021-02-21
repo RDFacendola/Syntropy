@@ -7,7 +7,7 @@
 
 #include "syntropy/memory/foundation/memory.h"
 
-#include "syntropy/language/support/swap.h"
+#include "syntropy/core/support/swap.h"
 
 // ===========================================================================
 

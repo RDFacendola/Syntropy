@@ -1,5 +1,5 @@
 
-/// \file swap.deails.h
+/// \file swap.details.h
 ///
 /// \author Raffaele D. Facendola - February 2021
 
@@ -8,7 +8,8 @@
 #include "syntropy/language/foundation/foundation.h"
 
 #include "syntropy/language/templates/priority.h"
-#include "syntropy/language/support/swap_extensions.h"
+
+#include "syntropy/core/support/swap_extensions.h"
 
 // ===========================================================================
 

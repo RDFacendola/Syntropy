@@ -9,7 +9,6 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
-#include "syntropy/language/support/swap.h"
 
 #include "syntropy/memory/foundation/byte_span.h"
 #include "syntropy/memory/foundation/size.h"
