@@ -24,8 +24,8 @@ namespace Syntropy::Templates::Details
     ///        callable object can be called with.
     /// Partial specialization for lambdas and callable objects.
     template <typename TCallable>
-    struct FunctionArgumentsHelper
-        : FunctionArgumentsHelper<decltype(&FunctionOf<TCallable>::operator())>
+    struct ArgumentsOfHelper
+        : ArgumentsOfHelper<decltype(&FunctionOf<TCallable>::operator())>
     {
 
     };
@@ -34,7 +34,7 @@ namespace Syntropy::Templates::Details
     ///        callable object can be called with.
     /// Partial specialization for non-const member functions.
     template <typename TCallable, typename TReturn, typename... TArguments>
-    struct FunctionArgumentsHelper<TReturn(TCallable::*)(TArguments...)>
+    struct ArgumentsOfHelper<TReturn(TCallable::*)(TArguments...)>
     {
         using Type = TypeList<TArguments...>;
     };
@@ -44,26 +44,26 @@ namespace Syntropy::Templates::Details
     ///
     /// Partial specialization for const member functions.
     template <typename TCallable, typename TReturn, typename... TArguments>
-    struct FunctionArgumentsHelper<TReturn(TCallable::*)(TArguments...) const>
+    struct ArgumentsOfHelper<TReturn(TCallable::*)(TArguments...) const>
     {
         using Type = TypeList<TArguments...>;
     };
 
-    /// \brief Type alias equal to the argument types a callable object can be
-    ///        called with.
+    /// \brief Type list equal to the argument types a callable object
+    ///        can be called with.
     ///
     /// If no matching element could be found, the program is ill-formed.
     template <typename TCallable>
-    using FunctionArguments
-        = typename FunctionArgumentsHelper<TCallable>::Type;
+    using ArgumentsOf
+        = typename ArgumentsOfHelper<TCallable>::Type;
 
     /// \brief Type alias for the return type of a callable object invocation.
     template <typename TCallable, typename... TArguments>
-    using InvokeResult
+    using InvokeResultOf
         = std::invoke_result_t<TCallable, TArguments...>;
 
     template <typename TCallable, typename... TArguments>
-    constexpr InvokeResult<TCallable, TArguments...>
+    constexpr InvokeResultOf<TCallable, TArguments...>
     Invoke(Forwarding<TCallable> callable,
            Forwarding<TArguments>... arguments) noexcept
     {

@@ -330,7 +330,7 @@ namespace Syntropy::Concepts
     template <typename TCallable, typename... TArguments>
     concept Predicate
          = IsInvocable<TCallable, TArguments...>
-        && IsBoolean<Templates::InvokeResult<TCallable, TArguments...>>;
+        && IsBoolean<Templates::InvokeResultOf<TCallable, TArguments...>>;
 
     /// \brief Concept for callable types that define a binary relation
     ///        between TType and UType.

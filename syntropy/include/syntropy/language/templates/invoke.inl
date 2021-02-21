@@ -14,7 +14,7 @@ namespace Syntropy::Templates
     /************************************************************************/
 
     template <typename TCallable, typename... TArguments>
-    constexpr InvokeResult<TCallable, TArguments...>
+    constexpr InvokeResultOf<TCallable, TArguments...>
     Invoke(Forwarding<TCallable> callable,
            Forwarding<TArguments>... arguments) noexcept
     {

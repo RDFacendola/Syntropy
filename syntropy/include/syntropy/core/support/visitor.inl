@@ -39,7 +39,7 @@ namespace Syntropy
                RWTypelessPtr visitable,
                Immutable<Reflection::TypeId> type) const noexcept
     {
-        using TArgument = Templates::FunctionArgumentsElement<0, TFunction>;
+        using TArgument = Templates::ArgumentOf<0, TFunction>;
         using TVisitable = Templates::QualifiedOf<TArgument>;
 
         if (type == Reflection::TypeIdOf<TVisitable>())

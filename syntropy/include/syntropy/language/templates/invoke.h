@@ -22,25 +22,25 @@ namespace Syntropy::Templates
     /* INVOKE                                                               */
     /************************************************************************/
 
-    /// \brief Type alias equal to the argument types a callable object
+    /// \brief Type list equal to the argument types a callable object
     ///        can be called with.
+    ///
     /// If no matching element could be found, the program is ill-formed.
     template <typename TCallable>
-    using FunctionArguments = Details::FunctionArguments<TCallable>;
+    using ArgumentsOf = Details::ArgumentsOf<TCallable>;
 
     /// \brief Provides indexed access to function arguments' types.
     template <Int VIndex, typename TCallable >
-    using FunctionArgumentsElement
-        = ElementOf<VIndex, FunctionArguments<TCallable>>;
+    using ArgumentOf = ElementOf<VIndex, ArgumentsOf<TCallable>>;
 
     /// \brief Type alias for the return type of a callable object invocation
     ///        with provided arguments.
     template <typename TCallable, typename... TArguments>
-    using InvokeResult = Details::InvokeResult<TCallable, TArguments...>;
+    using InvokeResultOf = Details::InvokeResultOf<TCallable, TArguments...>;
 
     /// \brief Invoke a callable object with provided arguments.
     template <typename TCallable, typename... TArguments>
-    constexpr InvokeResult<TCallable, TArguments...>
+    constexpr InvokeResultOf<TCallable, TArguments...>
     Invoke(Forwarding<TCallable> callable,
            Forwarding<TArguments>... arguments) noexcept;
 }
