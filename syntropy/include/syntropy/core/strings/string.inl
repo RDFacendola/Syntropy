@@ -95,7 +95,7 @@ namespace Syntropy::Strings
     // Ranges.
     // =======
 
-    inline StringView
+    [[nodiscard]] inline StringView
     ViewOf(Immutable<String> string) noexcept
     {
         return string;

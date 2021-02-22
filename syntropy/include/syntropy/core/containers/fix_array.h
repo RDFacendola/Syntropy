@@ -110,6 +110,14 @@ namespace Syntropy
         /// \brief Default destructor.
         ~BaseFixArray() noexcept = default;
 
+        /// \brief Implicit conversion to Span.
+        constexpr
+        operator Span<TType>() const noexcept;
+
+        /// \brief Implicit conversion to RWSpan.
+        constexpr
+        operator RWSpan<TType>() noexcept;
+
         /// \brief Access the array by index.
         [[nodiscard]] constexpr TReference
         operator[](Int index) noexcept;
@@ -226,18 +234,18 @@ namespace Syntropy
     operator<=>(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs,
                 Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
 
-    // Utilities.
-    // ==========
+    // Ranges.
+    // =======
 
-    /// \brief Get a full view of a read-write fix-array.
-    template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr RWSpan<TType>
-    RangeOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
-
-    /// \brief Get a full view of a read-only fix-array.
+    /// \brief Get a read-only view to a fix-array.
     template <typename TType, Int VSize, typename TTraits>
     [[nodiscard]] constexpr Span<TType>
-    RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept;
+    ViewOf(Immutable<BaseFixArray<TType, VSize, TTraits>> fix_array) noexcept;
+
+    /// \brief Get a read-write view to a fix-array.
+    template <typename TType, Int VSize, typename TTraits>
+    [[nodiscard]] constexpr RWSpan<TType>
+    ViewOf(Mutable<BaseFixArray<TType, VSize, TTraits>> fix_array) noexcept;
 
 }
 

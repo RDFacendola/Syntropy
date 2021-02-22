@@ -131,13 +131,16 @@ namespace Syntropy::Memory
     // =======
 
     /// \brief Get a read-only view to a buffer.
-    ByteSpan ViewOf(Immutable<Buffer> buffer) noexcept;
+    [[nodiscard]] ByteSpan
+    ViewOf(Immutable<Buffer> buffer) noexcept;
 
     /// \brief Get a read-write view to a buffer.
-    RWByteSpan ViewOf(Mutable<Buffer> buffer) noexcept;
+    [[nodiscard]] RWByteSpan
+    ViewOf(Mutable<Buffer> buffer) noexcept;
 
     /// \brief Prevent from getting a view to a temporary buffer.
-    void ViewOf(Immovable<Buffer> buffer) noexcept = delete;
+    void
+    ViewOf(Immovable<Buffer> buffer) noexcept = delete;
 
 }
 

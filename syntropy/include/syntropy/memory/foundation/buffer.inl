@@ -156,13 +156,13 @@ namespace Syntropy::Memory
     // Ranges.
     // =======
 
-    inline ByteSpan
+    [[nodiscard]] inline ByteSpan
     ViewOf(Immutable<Buffer> buffer) noexcept
     {
         return buffer;
     }
 
-    inline RWByteSpan
+    [[nodiscard]] inline RWByteSpan
     ViewOf(Mutable<Buffer> buffer) noexcept
     {
         return buffer;

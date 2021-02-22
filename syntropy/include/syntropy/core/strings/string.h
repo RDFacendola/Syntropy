@@ -107,10 +107,12 @@ namespace Syntropy::Strings
     // =======
 
     /// \brief Get a view to an immutable string.
-    StringView ViewOf(Immutable<String> string) noexcept;
+    [[nodiscard]] StringView
+    ViewOf(Immutable<String> string) noexcept;
 
     /// \brief Prevent from getting a view to a temporary string.
-    void ViewOf(Immovable<String> string) noexcept = delete;
+    void
+    ViewOf(Immovable<String> string) noexcept = delete;
 
 }
 

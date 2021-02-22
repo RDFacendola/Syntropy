@@ -50,7 +50,7 @@ namespace Syntropy
     BaseFixArray<TType, VSize, TTraits>
     ::operator=(Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept
     {
-        Ranges::Copy(RangeOf(rhs), RangeOf(*this));
+        Ranges::Copy(ViewOf(rhs), ViewOf(*this));
 
         return *this;
     }
@@ -61,9 +61,23 @@ namespace Syntropy
     BaseFixArray<TType, VSize, TTraits>
     ::operator=(Movable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept
     {
-        Ranges::Move(RangeOf(rhs), RangeOf(*this));
+        Ranges::Move(ViewOf(rhs), ViewOf(*this));
 
         return *this;
+    }
+
+    template <typename TType, Int VSize, typename TTraits>
+    constexpr BaseFixArray<TType, VSize, TTraits>
+    ::operator Span<TType>() const noexcept
+    {
+        return MakeSpan(elements_);
+    }
+
+    template <typename TType, Int VSize, typename TTraits>
+    constexpr BaseFixArray<TType, VSize, TTraits>
+    ::operator RWSpan<TType>() noexcept
+    {
+        return MakeSpan(elements_);
     }
 
     template <typename TType, Int VSize, typename TTraits>
@@ -169,7 +183,7 @@ namespace Syntropy
     operator==(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs,
                Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept
     {
-        return Ranges::AreEquivalent(RangeOf(lhs), RangeOf(rhs));
+        return Ranges::AreEquivalent(ViewOf(lhs), ViewOf(rhs));
     }
 
     template <typename TType, typename TTraits,
@@ -178,25 +192,26 @@ namespace Syntropy
     operator<=>(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs,
                 Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept
     {
-        return Ranges::Compare(RangeOf(lhs), RangeOf(rhs));
+        return Ranges::Compare(ViewOf(lhs), ViewOf(rhs));
     }
 
     // Utilities.
     // ==========
 
     template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr RWSpan<TType>
-    RangeOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr Span<TType>
+    ViewOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
     {
-        return MakeSpan(rhs.GetData(), rhs.GetSize());
+        return rhs;
     }
 
     template <typename TType, Int VSize, typename TTraits>
-    [[nodiscard]] constexpr Span<TType>
-    RangeOf(Immutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
+    [[nodiscard]] constexpr RWSpan<TType>
+    ViewOf(Mutable<BaseFixArray<TType, VSize, TTraits>> rhs) noexcept
     {
-        return MakeSpan(rhs.GetData(), rhs.GetSize());
+        return rhs;
     }
+
 }
 
 // ===========================================================================
