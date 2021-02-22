@@ -119,6 +119,18 @@ namespace Syntropy::Memory
         return data_;
     }
 
+    [[nodiscard]] constexpr Mutable<Byte> Buffer
+    ::operator[](Bytes offset) noexcept
+    {
+        return data_[offset];
+    }
+
+    [[nodiscard]] constexpr Immutable<Byte> Buffer
+    ::operator[](Bytes offset) const noexcept
+    {
+        return data_[offset];
+    }
+
     [[nodiscard]] inline BytePtr Buffer
     ::GetData() const noexcept
     {

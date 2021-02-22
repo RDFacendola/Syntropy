@@ -31,9 +31,6 @@ namespace Syntropy::Memory
     /// \author Raffaele D. Facendola - February 2017
     class Buffer
     {
-        friend Buffer
-        Exchange(Mutable<Buffer> lhs, Mutable<Buffer> rhs) noexcept;
-
     public:
 
         /// \brief Create a new empty buffer on the current allocator.
@@ -89,6 +86,14 @@ namespace Syntropy::Memory
 
         /// \brief Implicit conversion to RWByteSpan.
         operator RWByteSpan() noexcept;
+
+        /// \brief Access a byte by offset.
+        [[nodiscard]] constexpr Mutable<Byte>
+        operator[](Bytes offset) noexcept;
+
+        /// \brief Access a byte by offset.
+        [[nodiscard]] constexpr Immutable<Byte>
+        operator[](Bytes offset) const noexcept;
 
         /// \brief Access buffer data.
         [[nodiscard]] BytePtr

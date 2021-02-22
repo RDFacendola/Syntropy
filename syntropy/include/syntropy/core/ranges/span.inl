@@ -74,7 +74,7 @@ namespace Syntropy
     ::operator[](Immutable<typename BaseSpan<TType, TTraits>::TCount> index)
     const noexcept
     {
-        return data_[index];
+        return data_[ToInt(index)];
     }
 
     template <typename TType, typename TTraits>

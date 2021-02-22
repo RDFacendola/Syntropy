@@ -18,49 +18,18 @@
 namespace Syntropy
 {
     /************************************************************************/
-    /* FORWARD DECLARATIONS                                                 */
-    /************************************************************************/
-
-    template <typename TType, Int VSize, typename TTraits>
-    class BaseFixArray;
-
-    template <typename TType>
-    struct FixArrayTypeTraits;
-
-    template <typename TType>
-    struct RWFixArrayTypeTraits;
-
-    /************************************************************************/
-    /* ALIAS TYPES                                                          */
-    /************************************************************************/
-
-    /// \brief A fixed-size array of read-write elements.
-    template <typename TType, Int VSize>
-    using RWFixArray = BaseFixArray<TType, VSize, RWFixArrayTypeTraits<TType>>;
-
-    /// \brief A fixed-size array of read-only elements.
-    template <typename TType, Int VSize>
-    using FixArray = BaseFixArray<TType, VSize, FixArrayTypeTraits<TType>>;
-
-    /************************************************************************/
-    /* BASE FIX ARRAY                                                       */
+    /* FIX ARRAY                                                            */
     /************************************************************************/
 
     /// \brief Represents a fixed-size array of elements of the same type.
     /// \author Raffaele D. Facendola - January 2021
-    template <typename TType, Int VSize, typename TTraits>
-    class BaseFixArray
+    template <typename TType, Int TCount>
+    class FixArray
     {
-        template <typename UType, Int USize, typename UTraits>
-        friend class BaseFixArray;
-
     public:
 
-        /// \brief Mutable reference type.
-        using TReference = typename TTraits::TReference;
-
         /// \brief Default constructor.
-        constexpr BaseFixArray() = default;
+        constexpr FixArray() = default;
 
         /// \brief Direct constructor.
         ///
@@ -68,47 +37,31 @@ namespace Syntropy
         ///          the number of elements matches the array size.
         template <
             typename... TTypes,
-            typename = Templates::EnableIf<sizeof...(TTypes) == VSize>>
-        constexpr BaseFixArray(Forwarding<TTypes>... elements) noexcept;
+            typename = Templates::EnableIf<sizeof...(TTypes) == TCount>>
+        constexpr FixArray(Forwarding<TTypes>... elements) noexcept;
 
-        /// \brief Default copy constructor.
-        constexpr BaseFixArray(Immutable<BaseFixArray> rhs) noexcept = default;
-
-        /// \brief Default move constructor.
-        constexpr BaseFixArray(Movable<BaseFixArray> rhs) noexcept = default;
-
-        /// \brief Default copy-assignment operator.
-        constexpr Mutable<BaseFixArray>
-        operator=(Immutable<BaseFixArray> rhs) noexcept = default;
-
-        /// \brief Default move-assignment operator.
-        constexpr Mutable<BaseFixArray>
-        operator=(Movable<BaseFixArray> rhs) noexcept = default;
-
-        /// \brief Converting copy-constructor operator.
-        template <typename UType, typename UTraits>
+        /// \brief Converting copy-constructor.
+        template <typename UType>
         constexpr
-        BaseFixArray(
-            Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
+        FixArray(Immutable<FixArray<UType, TCount>> rhs) noexcept;
 
-        /// \brief Converting move-constructor operator.
-        template <typename UType, typename UTraits>
+        /// \brief Converting move-constructor.
+        template <typename UType>
         constexpr
-        BaseFixArray(
-            Movable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
+        FixArray(Movable<FixArray<UType, TCount>> rhs) noexcept;
 
         /// \brief Converting copy-assignment operator.
-        template <typename UType, typename UTraits>
-        constexpr Mutable<BaseFixArray>
-        operator=(Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
+        template <typename UType>
+        constexpr Mutable<FixArray>
+        operator=(Immutable<FixArray<UType, TCount>> rhs) noexcept;
 
         /// \brief Converting move-assignment operator.
-        template <typename UType, typename UTraits>
-        constexpr Mutable<BaseFixArray>
-        operator=(Movable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
+        template <typename UType>
+        constexpr Mutable<FixArray>
+        operator=(Movable<FixArray<UType, TCount>> rhs) noexcept;
 
         /// \brief Default destructor.
-        ~BaseFixArray() noexcept = default;
+        ~FixArray() noexcept = default;
 
         /// \brief Implicit conversion to Span.
         constexpr
@@ -119,7 +72,7 @@ namespace Syntropy
         operator RWSpan<TType>() noexcept;
 
         /// \brief Access the array by index.
-        [[nodiscard]] constexpr TReference
+        [[nodiscard]] constexpr Mutable<TType>
         operator[](Int index) noexcept;
 
         /// \brief Access the array by index.
@@ -136,7 +89,7 @@ namespace Syntropy
 
         /// \brief Get the number of elements in the array.
         [[nodiscard]] constexpr Int
-        GetSize() const noexcept;
+        GetCount() const noexcept;
 
     private:
 
@@ -147,43 +100,13 @@ namespace Syntropy
         /// \brief Construct a fix-array by unwinding another fix array.
         template<typename TFixArray, Int... VIndexes>
         constexpr
-        BaseFixArray(UnwindTag,
-                     Forwarding<TFixArray> other,
-                     Syntropy::Templates::Sequence<VIndexes...>) noexcept;
+        FixArray(UnwindTag,
+                 Forwarding<TFixArray> other,
+                 Syntropy::Templates::Sequence<VIndexes...>) noexcept;
 
         /// \brief Array elements.
-        TType elements_[VSize];
+        TType elements_[TCount];
 
-    };
-
-    /************************************************************************/
-    /* FIX ARRAY                                                            */
-    /************************************************************************/
-
-    /// \brief Traits for read-only fixed-size arrays.
-    template <typename TType>
-    struct FixArrayTypeTraits
-    {
-        /// \brief Pointer type.
-        using TPointer = Ptr<TType>;
-
-        /// \brief Reference type.
-        using TReference = Immutable<TType>;
-    };
-
-    /************************************************************************/
-    /* RW FIX ARRAY                                                         */
-    /************************************************************************/
-
-    /// \brief Traits for read-write fixed-size arrays.
-    template <typename TType>
-    struct RWFixArrayTypeTraits
-    {
-        /// \brief Pointer type.
-        using TPointer = RWPtr<TType>;
-
-        /// \brief Reference type.
-        using TReference = Mutable<TType>;
     };
 
     /************************************************************************/
@@ -193,60 +116,62 @@ namespace Syntropy
     // N-Tuple.
     // ========
 
-    /// \brief Access the VIndex-th element in a tuple.
+    /// \brief Access the VIndex-th element in a fix-array.
     /// \remarks The program is ill-formed if no such element exists.
-    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    template <Int TIndex, typename TType, Int TCount>
     [[nodiscard]] constexpr Immutable<TType>
-    Get(Immutable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept;
+    Get(Immutable<FixArray<TType, TCount>> fix_array) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple.
+    /// \brief Access the VIndex-th element in a fix-array.
     /// \remarks The program is ill-formed if no such element exists.
-    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    template <Int TIndex, typename TType, Int TCount>
     [[nodiscard]] constexpr Mutable<TType>
-    Get(Mutable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept;
+    Get(Mutable<FixArray<TType, TCount>> fix_array) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple.
+    /// \brief Access the VIndex-th element in a fix-arrayfix-array.
     /// \remarks The program is ill-formed if no such element exists.
-    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    template <Int TIndex, typename TType, Int TCount>
     [[nodiscard]] constexpr Immovable<TType>
-    Get(Immovable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept;
+    Get(Immovable<FixArray<TType, TCount>> fix_array) noexcept;
 
-    /// \brief Access the VIndex-th element in a tuple.
+    /// \brief Access the VIndex-th element in a fix-array.
     /// \remarks The program is ill-formed if no such element exists.
-    template <Int VIndex, typename TType, Int VSize, typename TTraits>
+    template <Int TIndex, typename TType, Int TCount>
     [[nodiscard]] constexpr Movable<TType>
-    Get(Movable<BaseFixArray<TType, VSize, TTraits>> tuple) noexcept;
+    Get(Movable<FixArray<TType, TCount>> fix_array) noexcept;
 
     // Comparison.
     // ===========
 
     /// \brief Check whether lhs and rhs are equivalent.
-    template <typename TType, typename TTraits,
-              typename UType, typename UTraits, Int VSize>
+    template <typename TType, typename UType, Int TCount>
     [[nodiscard]] constexpr Bool
-    operator==(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs,
-               Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
+    operator==(Immutable<FixArray<TType, TCount>> lhs,
+               Immutable<FixArray<UType, TCount>> rhs) noexcept;
 
     /// \brief Compare two spans lexicographically.
-    template <typename TType, typename TTraits,
-              typename UType, typename UTraits, Int VSize>
+    template <typename TType, typename UType, Int TCount>
     [[nodiscard]] constexpr Ordering
-    operator<=>(Immutable<BaseFixArray<TType, VSize, TTraits>> lhs,
-                Immutable<BaseFixArray<UType, VSize, UTraits>> rhs) noexcept;
+    operator<=>(Immutable<FixArray<TType, TCount>> lhs,
+                Immutable<FixArray<UType, TCount>> rhs) noexcept;
 
     // Ranges.
     // =======
 
     /// \brief Get a read-only view to a fix-array.
-    template <typename TType, Int VSize, typename TTraits>
+    template <typename TType, Int TCount>
     [[nodiscard]] constexpr Span<TType>
-    ViewOf(Immutable<BaseFixArray<TType, VSize, TTraits>> fix_array) noexcept;
+    ViewOf(Immutable<FixArray<TType, TCount>> fix_array) noexcept;
 
     /// \brief Get a read-write view to a fix-array.
-    template <typename TType, Int VSize, typename TTraits>
+    template <typename TType, Int TCount>
     [[nodiscard]] constexpr RWSpan<TType>
-    ViewOf(Mutable<BaseFixArray<TType, VSize, TTraits>> fix_array) noexcept;
+    ViewOf(Mutable<FixArray<TType, TCount>> fix_array) noexcept;
 
+    /// \brief Prevent from getting a view to a temporary array.
+    template <typename TType, Int TCount>
+    void
+    ViewOf(Immovable<FixArray<TType, TCount>> fix_array) noexcept = delete;
 }
 
 // ===========================================================================
@@ -258,14 +183,14 @@ namespace Syntropy::Tuples::Templates
     /************************************************************************/
 
     /// \brief Specialization for fix-arrays.
-    template <Int VIndex, typename TType, Int VSize, typename TTraits>
-    struct ElementTypeTraits<VIndex, BaseFixArray<TType, VSize, TTraits>>
+    template <Int TIndex, typename TType, Int TCount>
+    struct ElementTypeTraits<TIndex, FixArray<TType, TCount>>
         : Syntropy::Templates::Alias<TType> {};
 
     /// \brief Specialization for fix-arrays.
-    template <typename TType, Int VSize, typename TTraits>
-    struct RankTypeTraits<BaseFixArray<TType, VSize, TTraits>>
-        : Syntropy::Templates::IntConstant<VSize> {};
+    template <typename TType, Int TCount>
+    struct RankTypeTraits<FixArray<TType, TCount>>
+        : Syntropy::Templates::IntConstant<TCount> {};
 }
 
 // ===========================================================================
