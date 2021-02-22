@@ -107,6 +107,18 @@ namespace Syntropy::Memory
         }
     }
 
+    inline Buffer
+    ::operator ByteSpan() const noexcept
+    {
+        return data_;
+    }
+
+    inline Buffer
+    ::operator RWByteSpan() noexcept
+    {
+        return data_;
+    }
+
     [[nodiscard]] inline BytePtr Buffer
     ::GetData() const noexcept
     {
@@ -147,19 +159,13 @@ namespace Syntropy::Memory
     inline ByteSpan
     ViewOf(Immutable<Buffer> buffer) noexcept
     {
-        return { buffer.GetData(), buffer.GetCount() };
-    }
-
-    inline ByteSpan
-    ViewOf(Mutable<Buffer> buffer) noexcept
-    {
-        return { buffer.GetData(), buffer.GetCount() };
+        return buffer;
     }
 
     inline RWByteSpan
-    RWViewOf(Mutable<Buffer> buffer) noexcept
+    ViewOf(Mutable<Buffer> buffer) noexcept
     {
-        return { buffer.GetData(), buffer.GetCount() };
+        return buffer;
     }
 
 }

@@ -36,14 +36,14 @@ namespace Syntropy::Strings
     ::String(StringLiteral<TSize> characters) noexcept
         : code_points_(Memory::ToBytes(TSize))
     {
-        Memory::Copy(Memory::RWViewOf(code_points_),
+        Memory::Copy(code_points_,
                      Memory::MakeByteSpan(characters));
     }
 
     inline String
     ::operator StringView() const noexcept
     {
-        return ViewOf(*this);
+        return StringView{ code_points_ };
     }
 
     inline void String
@@ -98,7 +98,7 @@ namespace Syntropy::Strings
     inline StringView
     ViewOf(Immutable<String> string) noexcept
     {
-        return StringView{ string.GetCodePoints() };
+        return string;
     }
 
 }

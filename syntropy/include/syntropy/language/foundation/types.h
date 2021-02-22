@@ -123,7 +123,7 @@ namespace Syntropy
     /// \brief Type of a user-defined integer literal.
     using IntLiteral = unsigned long long;
 
-    /// \brief Type of the UTF-8 encoded string literal.
+    /// \brief Type of an UTF-8 encoded string literal.
     template <Int TSize>
     using StringLiteral = const char8_t(&)[TSize];
 

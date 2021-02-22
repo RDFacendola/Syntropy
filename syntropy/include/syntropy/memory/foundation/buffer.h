@@ -84,6 +84,12 @@ namespace Syntropy::Memory
         /// \brief Destructor.
         ~Buffer() noexcept;
 
+        /// \brief Implicit conversion to ByteSpan.
+        operator ByteSpan() const noexcept;
+
+        /// \brief Implicit conversion to RWByteSpan.
+        operator RWByteSpan() noexcept;
+
         /// \brief Access buffer data.
         [[nodiscard]] BytePtr
         GetData() const noexcept;
@@ -124,20 +130,14 @@ namespace Syntropy::Memory
     // Ranges.
     // =======
 
-    /// \brief Get a read-only view to an immutable buffer.
+    /// \brief Get a read-only view to a buffer.
     ByteSpan ViewOf(Immutable<Buffer> buffer) noexcept;
 
-    /// \brief Get a read-only view to a mutable buffer.
-    ByteSpan ViewOf(Mutable<Buffer> buffer) noexcept;
-
-    /// \brief Get a read-write view to a mutable buffer.
-    RWByteSpan RWViewOf(Mutable<Buffer> buffer) noexcept;
+    /// \brief Get a read-write view to a buffer.
+    RWByteSpan ViewOf(Mutable<Buffer> buffer) noexcept;
 
     /// \brief Prevent from getting a view to a temporary buffer.
     void ViewOf(Immovable<Buffer> buffer) noexcept = delete;
-
-    /// \brief Prevent from getting a view to a temporary buffer.
-    void RWViewOf(Immovable<Buffer> buffer) noexcept = delete;
 
 }
 
