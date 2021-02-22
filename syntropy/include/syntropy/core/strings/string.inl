@@ -46,12 +46,6 @@ namespace Syntropy::Strings
         return StringView{ code_points_ };
     }
 
-    inline void String
-    ::Swap(Movable<String> rhs) noexcept
-    {
-        Algorithm::Swap(code_points_, rhs.code_points_);
-    }
-
     [[nodiscard]] Memory::ByteSpan String
     ::GetCodePoints() const noexcept
     {
@@ -63,6 +57,12 @@ namespace Syntropy::Strings
     ::GetAllocator() const noexcept
     {
         return code_points_.GetAllocator();
+    }
+
+    inline void String
+    ::Swap(Movable<String> rhs) noexcept
+    {
+        Algorithm::Swap(code_points_, rhs.code_points_);
     }
 
     /************************************************************************/

@@ -91,6 +91,10 @@ namespace Syntropy
         [[nodiscard]] constexpr Int
         GetCount() const noexcept;
 
+        /// \brief Swap the content of two fix-array.
+        constexpr void
+        Swap(Movable<FixArray> rhs) noexcept;
+
     private:
 
         /// \brief Tag type used to construct a fix array by unwinding

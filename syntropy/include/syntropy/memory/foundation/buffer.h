@@ -9,6 +9,9 @@
 #pragma once
 
 #include "syntropy/language/foundation/foundation.h"
+
+#include "syntropy/diagnostics/assert.h"
+
 #include "syntropy/memory/allocators/allocator.h"
 #include "syntropy/memory/foundation/size.h"
 #include "syntropy/memory/foundation/alignment.h"
@@ -114,6 +117,13 @@ namespace Syntropy::Memory
         /// \brief Get buffer allocator.
         [[nodiscard]] Mutable<BaseAllocator>
         GetAllocator() const noexcept;
+
+        /// \brief Swap the content of two buffers.
+        ///
+        /// \remarks If the buffers don't share a common allocaor, the behavior
+        ///          of this method is undefined.
+        void
+        Swap(Movable<Buffer> rhs) noexcept;
 
     private:
 

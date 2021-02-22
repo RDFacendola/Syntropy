@@ -64,10 +64,6 @@ namespace Syntropy::Strings
         /// \brief Implicit conversion to StringView.
         operator StringView() const noexcept;
 
-        /// \brief Swap this string with another one.
-        void
-        Swap(Movable<String> rhs) noexcept;
-
         /// \brief Access the underlying code-points.
         [[nodiscard]] Memory::ByteSpan
         GetCodePoints() const noexcept;
@@ -75,6 +71,13 @@ namespace Syntropy::Strings
         /// \brief Get the allocator the string was allocated on.
         [[nodiscard]] Mutable<Memory::BaseAllocator>
         GetAllocator() const noexcept;
+
+        /// \brief Swap this string with another one.
+        ///
+        /// \remarks If the strings don't share a common allocaor, the behavior
+        ///          of this method is undefined.
+        void
+        Swap(Movable<String> rhs) noexcept;
 
     private:
 

@@ -128,6 +128,13 @@ namespace Syntropy
 
     }
 
+    template <typename TType, Int TCount>
+    constexpr void FixArray<TType, TCount>
+    ::Swap(Movable<FixArray<TType, TCount>> rhs) noexcept
+    {
+        Ranges::Swap(rhs, *this);
+    }
+
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/

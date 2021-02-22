@@ -9,6 +9,8 @@
 
 #include "syntropy/core/support/swap.h"
 
+#include "syntropy/diagnostics/assert.h"
+
 // ===========================================================================
 
 namespace Syntropy::Memory
@@ -159,6 +161,16 @@ namespace Syntropy::Memory
     ::GetAllocator() const noexcept
     {
         return *allocator_;
+    }
+
+    inline void Buffer
+    ::Swap(Movable<Buffer> rhs) noexcept
+    {
+        SYNTROPY_UNDEFINED_BEHAVIOR(allocator_ == rhs.allocator_,
+            "Both this and rhs must share the same allocator.");
+
+        Algorithm::Swap(data_, rhs.data_);
+        Algorithm::Swap(alignment_, rhs.alignment_);
     }
 
     /************************************************************************/
