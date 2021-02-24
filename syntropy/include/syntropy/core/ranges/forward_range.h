@@ -110,21 +110,21 @@ namespace Syntropy::Ranges
     constexpr void
     ForEach(Immutable<TRange> range, TFunction function) noexcept;
 
-    /// \brief Advance both ranges in lockstep, copy elements from lhs to
-    ///        rhs until either lhs or rhs is exhausted.
+    /// \brief Advance both ranges in lockstep, copy elements from the source
+    ///        range to the destination range until either is exhausted.
     /// \return Returns the ranges to the elements that were not copied: at
     ///         least one of the two is guaranteed to be empty.
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
     constexpr Tuples::Tuple<TRange, URange>
-    Copy(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    Copy(Immutable<TRange> destination, Immutable<URange> source) noexcept;
 
-    /// \brief Advance both ranges in lockstep, moving elements from lhs to
-    ///        rhs until either lhs or rhs is exhausted.
+    /// \brief Advance both ranges in lockstep, moving elements from the source
+    ///        range to the destination range until either is exhausted.
     /// \return Returns the ranges to the elements that were not copied: at
     ///         least one of the two is guaranteed to be empty.
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
     constexpr Tuples::Tuple<TRange, URange>
-    Move(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+    Move(Immutable<TRange> destination, Immutable<URange> source) noexcept;
 
     /// \brief Advance both ranges in lockstep, swapping elements from both
     ///        until either lhs or rhs is exhausted.

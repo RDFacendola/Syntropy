@@ -52,38 +52,39 @@ namespace Syntropy::Ranges
 
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
     constexpr Tuples::Tuple<TRange, URange>
-    Copy(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    Copy(Immutable<TRange> destination, Immutable<URange> source) noexcept
     {
-        auto source = lhs;
-        auto destination = rhs;
+        auto source_copy = source;
+        auto destination_copy = destination;
 
-        for (; !Details::RouteIsEmpty(source)
-               && !Details::RouteIsEmpty(destination);)
+        for (; !Details::RouteIsEmpty(source_copy)
+               && !Details::RouteIsEmpty(destination_copy);)
         {
-            Details::RouteFront(destination) = Details::RouteFront(source);
+            Details::RouteFront(destination_copy)
+                = Details::RouteFront(source_copy);
 
-            source = Details::RoutePopFront(source);
-            destination = Details::RoutePopFront(destination);
+            source_copy = Details::RoutePopFront(source_copy);
+            destination_copy = Details::RoutePopFront(destination_copy);
         }
 
-        return { source , destination };
+        return { destination_copy, source_copy };
     }
 
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
     constexpr Tuples::Tuple<TRange, URange>
-    Move(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    Move(Immutable<TRange> destination, Immutable<URange> source) noexcept
     {
-        auto source = lhs;
-        auto destination = rhs;
+        auto source_copy = source;
+        auto destination_copy = destination;
 
-        for (; !Details::RouteIsEmpty(source)
-               && !Details::RouteIsEmpty(destination);)
+        for (; !Details::RouteIsEmpty(source_copy)
+               && !Details::RouteIsEmpty(destination_copy);)
         {
-            Details::RouteFront(destination)
-                = Syntropy::Move(Details::RouteFront(source));
+            Details::RouteFront(destination_copy)
+                = Syntropy::Move(Details::RouteFront(source_copy));
 
-            source = Details::RoutePopFront(source);
-            destination = Details::RoutePopFront(destination);
+            source_copy = Details::RoutePopFront(source_copy);
+            destination_copy = Details::RoutePopFront(destination_copy);
         }
 
         return { source , destination };
@@ -93,20 +94,20 @@ namespace Syntropy::Ranges
     constexpr Tuples::Tuple<TRange, URange>
     Swap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        auto source = lhs;
-        auto destination = rhs;
+        auto left = lhs;
+        auto right = rhs;
 
-        for (; !Details::RouteIsEmpty(source)
-               && !Details::RouteIsEmpty(destination);)
+        for (; !Details::RouteIsEmpty(left)
+               && !Details::RouteIsEmpty(right);)
         {
-            Algorithm::Swap(Details::RouteFront(source),
-                            Details::RouteFront(destination));
+            Algorithm::Swap(Details::RouteFront(left),
+                            Details::RouteFront(right));
 
-            source = Details::RoutePopFront(source);
-            destination = Details::RoutePopFront(destination);
+            left = Details::RoutePopFront(left);
+            right = Details::RoutePopFront(right);
         }
 
-        return { source , destination };
+        return { left , right };
     }
 
 }
