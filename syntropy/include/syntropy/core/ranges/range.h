@@ -42,6 +42,21 @@ namespace Syntropy::Ranges::Concepts
 
 // ===========================================================================
 
+namespace Syntropy::Ranges::Templates
+{
+    /************************************************************************/
+    /* TYPE TRAITS                                                          */
+    /************************************************************************/
+
+    /// \brief Type of a range's view.
+    template <Ranges::Concepts::Range TRange>
+    using RangeViewTypeOf = decltype(
+        Details::RouteViewOf(Syntropy::Templates::Declval<TRange>()));
+
+}
+
+// ===========================================================================
+
 namespace Syntropy::Ranges
 {
     /************************************************************************/
@@ -53,7 +68,7 @@ namespace Syntropy::Ranges
 
     /// \brief Get a read-write view to a range' elements.
     template <Concepts::Range TRange>
-    [[nodiscard]] constexpr auto
+    [[nodiscard]] constexpr Templates::RangeViewTypeOf<TRange>
     ViewOf(Forwarding<TRange> range) noexcept;
 
 }
