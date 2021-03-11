@@ -28,22 +28,16 @@ namespace Syntropy::Ranges::Concepts
     ///        some order.
     /// \author Raffaele D. Facendola - March 2021.
     template <typename TRange>
-    concept BaseRange = requires(Immutable<TRange> range)
+    concept BaseRange = requires(Forwarding<TRange> range)
     {
-        /// \brief Get a read-only view to a range' elements.
-        { Details::RouteViewOf(range) };
-    }
-    || requires(Mutable<TRange> range)
-    {
-        /// \brief Get a read-write view to a range' elements.
-        { Details::RouteViewOf(range) };
+        /// \brief Get a view to a range' elements.
+        { Details::RouteViewOf(Forward<TRange>(range)) };
     };
 
     /// \brief Range whose elements can be visited in some order.
     /// \author Raffaele D. Facendola - March 2021.
     template <typename TRange>
     concept Range = BaseRange<TRange>;
-
 }
 
 // ===========================================================================

@@ -22,7 +22,6 @@ namespace Syntropy::Ranges
     {
         return Details::RouteViewOf(Forward<TRange>(range));
     }
-
 }
 
 // ===========================================================================
