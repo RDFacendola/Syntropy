@@ -10,6 +10,7 @@
 
 #include "syntropy/core/foundation/unique_ptr.h"
 
+#include "syntropy/core/ranges/range.h"
 #include "syntropy/core/ranges/bidirectional_range.h"
 #include "syntropy/core/ranges/contiguous_range.h"
 #include "syntropy/core/ranges/forward_range.h"
