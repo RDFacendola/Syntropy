@@ -24,7 +24,7 @@
 
 // ===========================================================================
 
-#include "random_access_range.details.h"
+#include "details/random_access_range.details.h"
 
 // ===========================================================================
 
@@ -212,6 +212,6 @@ namespace Syntropy::Ranges::Extensions
 
 // ===========================================================================
 
-#include "random_access_range.inl"
+#include "details/random_access_range.inl"
 
 // ===========================================================================

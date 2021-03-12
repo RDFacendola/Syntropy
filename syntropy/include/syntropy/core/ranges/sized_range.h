@@ -8,8 +8,8 @@
 /// Ranges specifications based on the awesome
 /// https://www.slideshare.net/rawwell/iteratorsmustgo
 ///
-/// \author Raffaele D. Facendola - Nov 2020
-/// \author Raffaele D. Facendola - Jan 2021
+/// \author Raffaele D. Facendola - November 2020
+/// \author Raffaele D. Facendola - January 2021
 
 #pragma once
 
@@ -24,7 +24,7 @@
 
 // ===========================================================================
 
-#include "sized_range.details.h"
+#include "details/sized_range.details.h"
 
 // ===========================================================================
 
@@ -127,6 +127,6 @@ namespace Syntropy::Ranges::Extensions
 
 // ===========================================================================
 
-#include "sized_range.inl"
+#include "details/sized_range.inl"
 
 // ===========================================================================

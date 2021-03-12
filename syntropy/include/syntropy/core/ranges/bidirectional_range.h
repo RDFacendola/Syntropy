@@ -8,8 +8,8 @@
 /// Ranges specifications based on the awesome
 /// https://www.slideshare.net/rawwell/iteratorsmustgo
 ///
-/// \author Raffaele D. Facendola - Nov 2020
-/// \author Raffaele D. Facendola - Jan 2021
+/// \author Raffaele D. Facendola - November 2020
+/// \author Raffaele D. Facendola - January 2021
 
 #pragma once
 
@@ -22,7 +22,7 @@
 
 // ===========================================================================
 
-#include "bidirectional_range.details.h"
+#include "details/bidirectional_range.details.h"
 
 // ===========================================================================
 
@@ -85,6 +85,6 @@ namespace Syntropy::Ranges
 
 // ===========================================================================
 
-#include "bidirectional_range.inl"
+#include "details/bidirectional_range.inl"
 
 // ===========================================================================

@@ -29,7 +29,7 @@ namespace Syntropy
     {
         template <typename UType, typename UTraits>
         friend class BaseSpan;
-        
+
     public:
 
         /// \brief Pointer type.
@@ -213,6 +213,6 @@ namespace Syntropy
 
 // ===========================================================================
 
-#include "span.inl"
+#include "details/span.inl"
 
 // ===========================================================================
