@@ -1,30 +1,15 @@
 
-/// \file forward_range_.etails.inl
+/// \file forward_range_.details.h
 ///
 /// \author Raffaele D. Facendola - Jan 2021
 
 #pragma once
 
-// ===========================================================================
+#include "syntropy/language/foundation/foundation.h"
 
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* FORWARD RANGE EXTENSIONS                                             */
-    /************************************************************************/
+#include "syntropy/language/templates/priority.h"
 
-    /// \brief Access range's first element.
-    template <typename TType>
-    struct Front;
-
-    /// \brief Discard range's first element and return the resulting range.
-    template <typename TType>
-    struct PopFront;
-
-    /// \brief Check whether a range is empty.
-    template <typename TType>
-    struct IsEmpty;
-}
+#include "syntropy/core/ranges/range_extensions.h"
 
 // ===========================================================================
 
@@ -63,12 +48,7 @@ namespace Syntropy::Ranges::Details
         /// \brief Iterable range.
         TRange range_;
     };
-}
 
-// ===========================================================================
-
-namespace Syntropy::Ranges::Details
-{
     /************************************************************************/
     /* FRONT                                                                */
     /************************************************************************/
@@ -183,46 +163,10 @@ namespace Syntropy::Ranges::Details
         return InvokeIsEmpty(range, Syntropy::Templates::kPriority<2>);
     }
 
-    /************************************************************************/
-    /* IMPLEMENTATION                                                       */
-    /************************************************************************/
-
-    // RangeIterator.
-    // ==============
-
-    template <typename TRange>
-    constexpr RangeIterator<TRange>
-    ::RangeIterator(Immutable<TRange> range) noexcept
-        : range_(range)
-    {
-
-    }
-
-    template <typename TRange>
-    [[nodiscard]] constexpr
-    decltype(auto) RangeIterator<TRange>::operator*() const noexcept
-    {
-        return RouteFront(range_);
-    }
-
-    template <typename TRange>
-    constexpr
-    Mutable<RangeIterator<TRange>> RangeIterator<TRange>::operator++() noexcept
-    {
-        range_ = RoutePopFront(range_);
-
-        return *this;
-    }
-
-    template <typename TRange>
-    [[nodiscard]] constexpr Bool RangeIterator<TRange
-    ::operator==(Immutable<RangeIterator> other) const noexcept
-    {
-        SYNTROPY_ASSERT(RouteIsEmpty(other.range_));
-
-        return RouteIsEmpty(range_);
-    }
-
 }
+
+// ===========================================================================
+
+#include "forward_range.details.inl"
 
 // ===========================================================================
