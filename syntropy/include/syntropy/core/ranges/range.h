@@ -14,7 +14,7 @@
 
 // ===========================================================================
 
-#include "range.details.h"
+#include "details/range.details.h"
 
 // ===========================================================================
 
@@ -66,7 +66,7 @@ namespace Syntropy::Ranges
     // Base range.
     // ===========
 
-    /// \brief Get a read-write view to a range' elements.
+    /// \brief Get a view to a range' elements.
     template <Concepts::Range TRange>
     [[nodiscard]] constexpr Templates::RangeViewTypeOf<TRange>
     ViewOf(Forwarding<TRange> range) noexcept;
@@ -93,6 +93,6 @@ namespace Syntropy
 
 // ===========================================================================
 
-#include "range.inl"
+#include "details/range.inl"
 
 // ===========================================================================

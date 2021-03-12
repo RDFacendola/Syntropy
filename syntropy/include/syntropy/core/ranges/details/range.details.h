@@ -35,9 +35,9 @@ namespace Syntropy::Ranges::Details
     template <typename TRange>
     auto InvokeViewOf(Forwarding<TRange> range,
                       Syntropy::Templates::Priority<1>)
-        noexcept -> decltype(range.GetViewOf())
+        noexcept -> decltype(range.GetView())
     {
-        return range.GetViewOf();
+        return range.GetView();
     }
 
     /// \brief Invoke the method via non-member function, possibly using ADL.
