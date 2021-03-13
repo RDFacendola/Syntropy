@@ -21,6 +21,19 @@
 namespace Syntropy::Ranges::Concepts
 {
     /************************************************************************/
+    /* RANGE VIEW                                                           */
+    /************************************************************************/
+
+    /// \brief Interface for range views which are used to access individual
+    ///        elements.
+    template <typename TRangeView>
+    concept RangeView = requires(Immutable<TRangeView> range_view)
+    {
+        /// \brief Access a view element via dereferencing operator.
+        { *range_view };
+    };
+
+    /************************************************************************/
     /* RANGE                                                                */
     /************************************************************************/
 
@@ -31,10 +44,10 @@ namespace Syntropy::Ranges::Concepts
     concept BaseRange = requires(Forwarding<TRange> range)
     {
         /// \brief Get a view to a range' elements.
-        { Details::RouteViewOf(Forward<TRange>(range)) };
+        { Details::RouteViewOf(Forward<TRange>(range)) } -> RangeView;
     };
 
-    /// \brief Range whose elements can be visited in some order.
+    /// \brief Collection of elements that can be visited in some order.
     /// \author Raffaele D. Facendola - March 2021.
     template <typename TRange>
     concept Range = BaseRange<TRange>;
@@ -53,6 +66,15 @@ namespace Syntropy::Ranges::Templates
     using RangeViewTypeOf = decltype(
         Details::RouteViewOf(Syntropy::Templates::Declval<TRange>()));
 
+    /// \brief Type of a ranges' elements.
+    template <Ranges::Concepts::Range TRange>
+    using RangeElementTypeOf = decltype(
+        *Syntropy::Templates::Declval<TRange>());
+
+    /// \brief Value type of a range's elements.
+    template <Ranges::Concepts::Range TRange>
+    using RangeElementValueTypeOf = Syntropy::Templates::QualifiedOf<
+        RangeElementTypeOf<TRange>>;
 }
 
 // ===========================================================================
@@ -63,8 +85,8 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Base range.
-    // ===========
+    // Range views.
+    // ============
 
     /// \brief Get a view to a range' elements.
     template <Concepts::Range TRange>

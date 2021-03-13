@@ -71,7 +71,7 @@ namespace Syntropy::Memory
     RangeBytesOf(Immutable<TRange> rhs) noexcept
     {
         using TRangeElement
-            = typename Ranges::Templates::RangeElementValueType<TRange>;
+            = typename Ranges::Templates::RangeElementValueTypeOf<TRange>;
 
         auto data = ToBytePtr(Ranges::Data(rhs));
         auto size = SizeOf<TRangeElement>() * Ranges::Count(rhs);
@@ -97,7 +97,7 @@ namespace Syntropy::Memory
         else
         {
             using TRangeElement
-                = Ranges::Templates::RangeElementValueType<TRange>;
+                = Ranges::Templates::RangeElementValueTypeOf<TRange>;
 
             auto data = FromTypelessPtr<TRangeElement>(rhs.GetData());
             auto size = rhs.GetCount() / SizeOf<TRangeElement>();

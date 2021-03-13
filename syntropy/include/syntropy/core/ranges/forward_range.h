@@ -16,6 +16,7 @@
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
 
+#include "syntropy/core/ranges/range.h"
 #include "syntropy/core/tuples/tuple.h"
 
 #include "syntropy/diagnostics/assert.h"
@@ -23,26 +24,6 @@
 // ===========================================================================
 
 #include "details/forward_range.details.h"
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Templates
-{
-    /************************************************************************/
-    /* TYPE TRAITS                                                          */
-    /************************************************************************/
-
-    /// \brief Range's element reference type.
-    template <typename TRange>
-    using RangeElementOf = decltype(
-        Details::RouteFront(Syntropy::Templates::Declval<TRange>()));
-
-    /// \brief Range's element value type.
-    template <typename TRange>
-    using RangeElementValueType = Syntropy::Templates::QualifiedOf<
-        RangeElementOf<TRange>>;
-
-}
 
 // ===========================================================================
 
