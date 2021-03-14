@@ -15,8 +15,18 @@
 
 namespace Syntropy::Ranges::Details
 {
-    // Based on this amazing post:
-    // https://wandbox.org/permlink/AB9uQxO2MymNDDtt
+    /************************************************************************/
+    /* FORWARD DECLARATIONS                                                 */
+    /************************************************************************/
+
+    template <Int TPriority>
+    using Priority = Syntropy::Templates::Priority<TPriority>;
+
+    template <typename TRangeView>
+    using ExtensionAt = Ranges::Extensions::At<TRangeView>;
+
+    template <typename TRangeView>
+    using ExtensionSlice = Ranges::Extensions::Slice<TRangeView>;
 
     /************************************************************************/
     /* AT                                                                   */
@@ -25,14 +35,12 @@ namespace Syntropy::Ranges::Details
     /// \brief Invoke the method via a custom extension.
     template <typename TRangeView, typename TIndex>
     inline auto
-    InvokeAt(
-        Immutable<TRangeView> range_view,
-        Immutable<TIndex> index,
-        Syntropy::Templates::Priority<3>)
-            noexcept -> decltype(
-                Ranges::Extensions::At<TRangeView>{}(range_view, index))
+    InvokeAt(Immutable<TRangeView> range_view,
+             Immutable<TIndex> index,
+             Priority<3>)
+             noexcept -> decltype(ExtensionAt<TRangeView>{}(range_view, index))
     {
-        return Ranges::Extensions::At<TRangeView>{}(range_view, index);
+        return ExtensionAt<TRangeView>{}(range_view, index);
     }
 
     /// \brief Invoke the method via member-operator.
@@ -40,7 +48,7 @@ namespace Syntropy::Ranges::Details
     inline auto
     InvokeAt(Immutable<TRangeView> range_view,
              Immutable<TIndex> index,
-             Syntropy::Templates::Priority<2>)
+             Priority<2>)
                 noexcept -> decltype(range_view[index])
     {
         return range_view[index];
@@ -51,7 +59,7 @@ namespace Syntropy::Ranges::Details
     inline auto
     InvokeAt(Immutable<TRangeView> range_view,
              Immutable<TIndex> index,
-             Syntropy::Templates::Priority<1>)
+             Priority<1>)
                 noexcept -> decltype(range_view.At(index))
     {
         return range_view.At(index);
@@ -62,7 +70,7 @@ namespace Syntropy::Ranges::Details
     inline auto
     InvokeAt(Immutable<TRangeView> range_view,
              Immutable<TIndex> index,
-             Syntropy::Templates::Priority<0>)
+             Priority<0>)
                 noexcept -> decltype(At(range_view, index))
     {
         return At(range_view, index);
@@ -85,19 +93,14 @@ namespace Syntropy::Ranges::Details
     /// \brief Invoke the method via a custom extension.
     template <typename TRangeView, typename TIndex, typename TCount>
     inline auto
-    InvokeSlice(
-        Immutable<TRangeView> range_view,
-        Immutable<TIndex> index,
-        Immutable<TCount> count,
-        Syntropy::Templates::Priority<2>)
-            noexcept -> decltype(
-                Ranges::Extensions::Slice<TRangeView>{}(range_view,
-                                                        index,
-                                                        count))
+    InvokeSlice(Immutable<TRangeView> range_view,
+                Immutable<TIndex> index,
+                Immutable<TCount> count,
+                Priority<2>)
+                    noexcept -> decltype(
+                ExtensionSlice<TRangeView>{}(range_view, index, count))
     {
-        return Ranges::Extensions::Slice<TRangeView>{}(range_view,
-                                                       index,
-                                                       count);
+        return ExtensionSlice<TRangeView>{}(range_view, index, count);
     }
 
     /// \brief Invoke the method via member-function.
@@ -106,7 +109,7 @@ namespace Syntropy::Ranges::Details
     InvokeSlice(Immutable<TRangeView> range_view,
                 Immutable<TIndex> index,
                 Immutable<TCount> count,
-                Syntropy::Templates::Priority<1>)
+                Priority<1>)
                     noexcept -> decltype(range_view.Slice(index, count))
     {
         return range_view.Slice(index, count);
@@ -119,7 +122,7 @@ namespace Syntropy::Ranges::Details
         Immutable<TRangeView> range_view,
         Immutable<TIndex> index,
         Immutable<TCount> count,
-        Syntropy::Templates::Priority<0>)
+        Priority<0>)
             noexcept -> decltype(Slice(range_view, index, count))
     {
         return Slice(range_view, index, count);
@@ -132,15 +135,12 @@ namespace Syntropy::Ranges::Details
                Immutable<TIndex> index,
                Immutable<TCount> count)
                    noexcept -> decltype(
-                       InvokeSlice(range_view,
-                                   index,
-                                   count,
-                                   Syntropy::Templates::kPriority<2>))
+                       InvokeSlice(range_view, index, count, Priority<2>{}))
     {
         return InvokeSlice(range_view,
                            index,
                            count,
-                           Syntropy::Templates::kPriority<2>);
+                           Priority<2>{});
     }
 
 }

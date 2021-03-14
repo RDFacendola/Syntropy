@@ -15,8 +15,15 @@
 
 namespace Syntropy::Ranges::Details
 {
-    // Based on this amazing post:
-    // https://wandbox.org/permlink/AB9uQxO2MymNDDtt
+    /************************************************************************/
+    /* FORWARD DECLARATIONS                                                 */
+    /************************************************************************/
+
+    template <Int TPriority>
+    using Priority = Syntropy::Templates::Priority<TPriority>;
+
+    template <typename TRangeView>
+    using ExtensionData = Ranges::Extensions::Data<TRangeView>;
 
     /************************************************************************/
     /* DATA                                                                 */
@@ -25,18 +32,16 @@ namespace Syntropy::Ranges::Details
     /// \brief Invoke the method via a custom extension.
     template <typename TRangeView>
     inline auto
-    InvokeData(Immutable<TRangeView> range_view,
-               Syntropy::Templates::Priority<2>)
-       noexcept -> decltype(Ranges::Extensions::Data<TRangeView>{}(range_view))
+    InvokeData(Immutable<TRangeView> range_view, Priority<2>)
+       noexcept -> decltype(ExtensionData<TRangeView>{}(range_view))
     {
-        return Ranges::Extensions::Data<TRangeView>{}(range_view);
+        return ExtensionData<TRangeView>{}(range_view);
     }
 
     /// \brief Invoke the method via member-function.
     template <typename TRangeView>
     inline auto
-    InvokeData(Immutable<TRangeView> range_view,
-               Syntropy::Templates::Priority<1>)
+    InvokeData(Immutable<TRangeView> range_view, Priority<1>)
        noexcept -> decltype(range_view.GetData())
     {
         return range_view.GetData();
@@ -45,8 +50,7 @@ namespace Syntropy::Ranges::Details
     /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRangeView>
     inline auto
-    InvokeData(Immutable<TRangeView> range_view,
-               Syntropy::Templates::Priority<0>)
+    InvokeData(Immutable<TRangeView> range_view, Priority<0>)
        noexcept -> decltype(Data(range_view))
     {
         return Data(range_view);
@@ -56,10 +60,9 @@ namespace Syntropy::Ranges::Details
     template <typename TRangeView>
     inline auto
     RouteData(Immutable<TRangeView> range_view)
-        noexcept -> decltype(InvokeData(range_view,
-                                        Syntropy::Templates::kPriority<2>))
+        noexcept -> decltype(InvokeData(range_view, Priority<2>{}))
     {
-        return InvokeData(range_view, Syntropy::Templates::kPriority<2>);
+        return InvokeData(range_view, Priority<2>{});
     }
 }
 

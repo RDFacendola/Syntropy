@@ -19,22 +19,33 @@ namespace Syntropy::Ranges::Details
     // https://wandbox.org/permlink/AB9uQxO2MymNDDtt
 
     /************************************************************************/
+    /* FORWARD DECLARATIONS                                                 */
+    /************************************************************************/
+
+    template <Int TPriority>
+    using Priority = Syntropy::Templates::Priority<TPriority>;
+
+    template <typename TRangeView>
+    using ExtensionBack = Ranges::Extensions::Back<TRangeView>;
+
+    template <typename TRangeView>
+    using ExtensionPopBack = Ranges::Extensions::PopBack<TRangeView>;
+
+    /************************************************************************/
     /* BACK                                                                 */
     /************************************************************************/
 
     /// \brief Invoke the method via a custom extension.
     template <typename TRangeView>
-    auto InvokeBack(Immutable<TRangeView> range_view,
-                    Syntropy::Templates::Priority<2>)
-        noexcept -> decltype(Ranges::Extensions::Back<TRangeView>{}(range_view))
+    auto InvokeBack(Immutable<TRangeView> range_view, Priority<2>)
+        noexcept -> decltype(ExtensionBack<TRangeView>{}(range_view))
     {
-        return Ranges::Extensions::Back<TRangeView>{}(range_view);
+        return ExtensionBack<TRangeView>{}(range_view);
     }
 
     /// \brief Invoke the method via member-function.
     template <typename TRangeView>
-    auto InvokeBack(Immutable<TRangeView> range_view,
-                    Syntropy::Templates::Priority<1>)
+    auto InvokeBack(Immutable<TRangeView> range_view, Priority<1>)
         noexcept -> decltype(range_view.GetBack())
     {
         return range_view.GetBack();
@@ -42,8 +53,7 @@ namespace Syntropy::Ranges::Details
 
     /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRangeView>
-    auto InvokeBack(Immutable<TRangeView> range_view,
-                    Syntropy::Templates::Priority<0>)
+    auto InvokeBack(Immutable<TRangeView> range_view, Priority<0>)
         noexcept -> decltype(Back(range_view))
     {
         return Back(range_view);
@@ -52,10 +62,9 @@ namespace Syntropy::Ranges::Details
     /// \brief Routes the invocation.
     template <typename TRangeView>
     auto RouteBack(Immutable<TRangeView> range_view)
-        noexcept -> decltype(InvokeBack(range_view,
-                                        Syntropy::Templates::kPriority<2>))
+        noexcept -> decltype(InvokeBack(range_view, Priority<2>{}))
     {
-        return InvokeBack(range_view, Syntropy::Templates::kPriority<2>);
+        return InvokeBack(range_view, Priority<2>{});
     }
 
     /************************************************************************/
@@ -64,17 +73,15 @@ namespace Syntropy::Ranges::Details
 
     /// \brief Invoke the method via a custom extension.
     template <typename TRangeView>
-    auto InvokePopBack(Immutable<TRangeView> range_view,
-                       Syntropy::Templates::Priority<2>)
-       noexcept -> decltype(Ranges::Extensions::PopBack<TRangeView>{}(range_view))
+    auto InvokePopBack(Immutable<TRangeView> range_view, Priority<2>)
+       noexcept -> decltype(ExtensionPopBack<TRangeView>{}(range_view))
     {
-        return Ranges::Extensions::PopBack<TRangeView>{}(range_view);
+        return ExtensionPopBack<TRangeView>{}(range_view);
     }
 
     /// \brief Invoke the method via member-function.
     template <typename TRangeView>
-    auto InvokePopBack(Immutable<TRangeView> range_view,
-                       Syntropy::Templates::Priority<1>)
+    auto InvokePopBack(Immutable<TRangeView> range_view, Priority<1>)
         noexcept -> decltype(range_view.PopBack())
     {
         return range_view.PopBack();
@@ -82,8 +89,7 @@ namespace Syntropy::Ranges::Details
 
     /// \brief Invoke the method via non-member function, possibly using ADL.
     template <typename TRangeView>
-    auto InvokePopBack(Immutable<TRangeView> range_view,
-                       Syntropy::Templates::Priority<0>)
+    auto InvokePopBack(Immutable<TRangeView> range_view, Priority<0>)
        noexcept -> decltype(PopBack(range_view))
     {
         return PopBack(range_view);
@@ -92,10 +98,9 @@ namespace Syntropy::Ranges::Details
     /// \brief Routes the invocation.
     template <typename TRangeView>
     auto RoutePopBack(Immutable<TRangeView> range_view)
-        noexcept -> decltype(InvokePopBack(range_view,
-                                           Syntropy::Templates::kPriority<2>))
+        noexcept -> decltype(InvokePopBack(range_view, Priority<2>{}))
     {
-        return InvokePopBack(range_view, Syntropy::Templates::kPriority<2>);
+        return InvokePopBack(range_view, Priority<2>{});
     }
 
 }
