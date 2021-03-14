@@ -1,8 +1,8 @@
 
 /// \file forward_range.inl
 ///
-/// \author Raffaele D. Facendola - Nov 2020
-/// \author Raffaele D. Facendola - Jan 2021
+/// \author Raffaele D. Facendola - November 2020
+/// \author Raffaele D. Facendola - January 2021
 
 #pragma once
 
@@ -14,35 +14,35 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Forward range.
-    // ==============
+    // Forward range view.
+    // ===================
 
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeView TRangeView>
     [[nodiscard]] constexpr decltype(auto)
-    Front(Immutable<TRange> range) noexcept
+    Front(Immutable<TRangeView> range_view) noexcept
     {
-        return Details::RouteFront(range);
+        return Details::RouteFront(range_view);
     }
 
-    template <Concepts::ForwardRange TRange>
-    [[nodiscard]] constexpr TRange
-    PopFront(Immutable<TRange> range) noexcept
+    template <Concepts::ForwardRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    PopFront(Immutable<TRangeView> range_view) noexcept
     {
-        return Details::RoutePopFront(range);
+        return Details::RoutePopFront(range_view);
     }
 
-    template <Concepts::ForwardRange TRange>
+    template <Concepts::ForwardRangeView TRangeView>
     [[nodiscard]] constexpr Bool
-    IsEmpty(Immutable<TRange> range) noexcept
+    IsEmpty(Immutable<TRangeView> range_view) noexcept
     {
-        return Details::RouteIsEmpty(range);
+        return Details::RouteIsEmpty(range_view);
     }
 
-    template <Concepts::ForwardRange TRange, typename TFunction>
+    template <Concepts::ForwardRangeView TRangeView, typename TFunction>
     constexpr void
-    ForEach(Immutable<TRange> range, TFunction function) noexcept
+    ForEach(Immutable<TRangeView> range_view, TFunction function) noexcept
     {
-        for (auto rest = range;
+        for (auto rest = range_view;
              !Details::RouteIsEmpty(rest);
              rest = Details::RoutePopFront(rest))
         {
@@ -50,15 +50,17 @@ namespace Syntropy::Ranges
         }
     }
 
-    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Tuples::Tuple<TRange, URange>
-    Copy(Immutable<TRange> destination, Immutable<URange> source) noexcept
+    template <Concepts::ForwardRangeView TRangeView,
+              Concepts::ForwardRangeView URangeView>
+    constexpr Tuples::Tuple<TRangeView, URangeView>
+    Copy(Immutable<TRangeView> destination,
+         Immutable<URangeView> source) noexcept
     {
         auto source_copy = source;
         auto destination_copy = destination;
 
-        for (; !Details::RouteIsEmpty(source_copy)
-               && !Details::RouteIsEmpty(destination_copy);)
+        for (; !Details::RouteIsEmpty(source_copy) &&
+               !Details::RouteIsEmpty(destination_copy);)
         {
             Details::RouteFront(destination_copy)
                 = Details::RouteFront(source_copy);
@@ -70,15 +72,17 @@ namespace Syntropy::Ranges
         return { destination_copy, source_copy };
     }
 
-    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Tuples::Tuple<TRange, URange>
-    Move(Immutable<TRange> destination, Immutable<URange> source) noexcept
+    template <Concepts::ForwardRangeView TRangeView,
+              Concepts::ForwardRangeView URangeView>
+    constexpr Tuples::Tuple<TRangeView, URangeView>
+    Move(Immutable<TRangeView> destination,
+         Immutable<URangeView> source) noexcept
     {
         auto source_copy = source;
         auto destination_copy = destination;
 
-        for (; !Details::RouteIsEmpty(source_copy)
-               && !Details::RouteIsEmpty(destination_copy);)
+        for (; !Details::RouteIsEmpty(source_copy) &&
+               !Details::RouteIsEmpty(destination_copy);)
         {
             Details::RouteFront(destination_copy)
                 = Syntropy::Move(Details::RouteFront(source_copy));
@@ -90,15 +94,16 @@ namespace Syntropy::Ranges
         return { source , destination };
     }
 
-    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Tuples::Tuple<TRange, URange>
-    Swap(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    template <Concepts::ForwardRangeView TRangeView,
+              Concepts::ForwardRangeView URangeView>
+    constexpr Tuples::Tuple<TRangeView, URangeView>
+    Swap(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept
     {
         auto left = lhs;
         auto right = rhs;
 
-        for (; !Details::RouteIsEmpty(left)
-               && !Details::RouteIsEmpty(right);)
+        for (; !Details::RouteIsEmpty(left) &&
+               !Details::RouteIsEmpty(right);)
         {
             Algorithm::Swap(Details::RouteFront(left),
                             Details::RouteFront(right));
@@ -120,18 +125,18 @@ namespace Syntropy
     /* RANGE-BASED FOR LOOP                                                 */
     /************************************************************************/
 
-    /// \brief Get an iterator to the first element in a range.
-    template <Ranges::Concepts::ForwardRange TRange>
-    constexpr auto begin(Immutable<TRange> range) noexcept
+    /// \brief Get an iterator to the first element in a range view.
+    template <Ranges::Concepts::ForwardRangeView TRangeView>
+    constexpr auto begin(Immutable<TRangeView> range_view) noexcept
     {
-        return Ranges::Details::RangeIterator<TRange>{ range };
+        return Ranges::Details::RangeViewIterator<TRangeView>{ range_view };
     }
 
-    /// \brief Get an iterator past the last element in a range.
-    template <Ranges::Concepts::ForwardRange TRange>
-    constexpr auto end(Immutable<TRange> range) noexcept
+    /// \brief Get an iterator past the last element in a range view.
+    template <Ranges::Concepts::ForwardRangeView TRangeView>
+    constexpr auto end(Immutable<TRangeView> range_view) noexcept
     {
-        return Ranges::Details::RangeIterator<TRange>{};
+        return Ranges::Details::RangeViewIterator<TRangeView>{};
     }
 }
 

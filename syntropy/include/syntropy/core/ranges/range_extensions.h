@@ -18,66 +18,69 @@ namespace Syntropy::Ranges::Extensions
     /************************************************************************/
 
     /// \brief Get a view to a range' elements
-    template <typename TType, typename = void>
+    template <typename TRange, typename = void>
     struct ViewOf;
 
     /************************************************************************/
-    /* FORWARD RANGE EXTENSIONS                                             */
+    /* FORWARD RANGE VIEW EXTENSIONS                                        */
     /************************************************************************/
 
-    /// \brief Access range's first element.
-    template <typename TType, typename = void>
+    /// \brief Access the first element in a range view.
+    template <typename TRangeView, typename = void>
     struct Front;
 
-    /// \brief Discard range's first element and return the resulting range.
-    template <typename TType, typename = void>
+    /// \brief Discard the first element in a range view and return a view to
+    ///        the remaining elements.
+    template <typename TRangeView, typename = void>
     struct PopFront;
 
-    /// \brief Check whether a range is empty.
-    template <typename TType, typename = void>
+    /// \brief Check whether a range view is empty.
+    template <typename TRangeView, typename = void>
     struct IsEmpty;
 
     /************************************************************************/
-    /* SIZED RANGE EXTENSIONS                                               */
+    /* SIZED RANGE VIEW EXTENSIONS                                          */
     /************************************************************************/
 
-    /// \brief Get range's elements count.
-    template <typename TType, typename = void>
+    /// \brief Get the number of elements in a range view.
+    template <typename TRangeView, typename = void>
     struct Count;
 
     /************************************************************************/
-    /* BIDIRECTIONAL RANGE EXTENSIONS                                       */
+    /* BIDIRECTIONAL VIEW RANGE EXTENSIONS                                  */
     /************************************************************************/
 
-    /// \brief Access range's last element.
-    template <typename TType, typename = void>
+    /// \brief Access the last element in a range view.
+    template <typename TRangeView, typename = void>
     struct Back;
 
-    /// \brief Discard range's last element and return the resulting range.
-    template <typename TType, typename = void>
+    /// \brief Discard the last element in a range view and return a view to
+    ///        the remaining elements.
+    template <typename TRangeView, typename = void>
     struct PopBack;
 
     /************************************************************************/
-    /* RANDOM ACCESS RANGE EXTENSIONS                                       */
+    /* RANDOM ACCESS RANGE VIEW EXTENSIONS                                  */
     /************************************************************************/
 
-    /// \brief Access range's element by index.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <typename TType, typename = void>
+    /// \brief Access an element of a range view by index.
+    ///
+    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    template <typename TRangeView, typename = void>
     struct At;
 
-    /// \brief Obtain a view to a sub-range.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    /// \brief Obtain a view to a sub-range.
-    template <typename TType, typename = void>
+    /// \brief Obtain a sub-range-view.
+    ///
+    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    template <typename TRangeView, typename = void>
     struct Slice;
 
     /************************************************************************/
-    /* CONTIGUOUS RANGE EXTENSIONS                                          */
+    /* CONTIGUOUS RANGE VIEW EXTENSIONS                                     */
     /************************************************************************/
 
-    /// \brief Access range's element storage.
-    template <typename TType, typename = void>
+    /// \brief Access the element storage of a range view.
+    template <typename TRangeView, typename = void>
     struct Data;
 
 }

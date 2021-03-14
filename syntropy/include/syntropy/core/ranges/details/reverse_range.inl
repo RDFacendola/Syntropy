@@ -8,76 +8,76 @@
 namespace Syntropy::Ranges
 {
     /************************************************************************/
-    /* REVERSE RANGE                                                        */
+    /* REVERSE RANGE VIEW                                                   */
     /************************************************************************/
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    template <Ranges::Concepts::BidirectionalRange URange>
-    constexpr ReverseRange<TRange>
-    ::ReverseRange(Immutable<URange> range) noexcept
-        : range_(range)
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    template <Ranges::Concepts::BidirectionalRangeView URangeView>
+    constexpr ReverseRange<TRangeView>
+    ::ReverseRange(Immutable<URangeView> range_view) noexcept
+        : range_view_(range_view)
     {
 
     }
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr decltype(auto) ReverseRange<TRange>
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr decltype(auto) ReverseRange<TRangeView>
     ::GetFront() const noexcept
     {
-        return RouteBack(range_);
+        return RouteBack(range_view_);
     }
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr auto ReverseRange<TRange>
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr auto ReverseRange<TRangeView>
     ::PopFront() const noexcept
     {
-        return ReverseRange<TRange>{ RoutePopBack(range_) };
+        return ReverseRange<TRangeView>{ RoutePopBack(range_view_) };
     }
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr Bool ReverseRange<TRange>
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr Bool ReverseRange<TRangeView>
     ::IsEmpty() const noexcept
     {
-        return RouteIsEmpty(range_);
+        return RouteIsEmpty(range_view_);
     }
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr auto ReverseRange<TRange>
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr auto ReverseRange<TRangeView>
     ::GetCount() const noexcept
     {
-        return RouteCount(range_);
+        return RouteCount(range_view_);
     }
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr decltype(auto) ReverseRange<TRange>
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr decltype(auto) ReverseRange<TRangeView>
     ::GetBack() const noexcept
     {
-        return RouteFront(range_);
+        return RouteFront(range_view_);
     }
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr auto ReverseRange<TRange>
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr auto ReverseRange<TRangeView>
     ::PopBack() const noexcept
     {
-        return ReverseRange<TRange>{ RoutePopFront(range_) };
+        return ReverseRange<TRangeView>{ RoutePopFront(range_view_) };
     }
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
     template <typename TIndex>
-    [[nodiscard]] constexpr decltype(auto) ReverseRange<TRange>
+    [[nodiscard]] constexpr decltype(auto) ReverseRange<TRangeView>
     ::At(Immutable<TIndex> index) const noexcept
     {
-        return RouteAt(range_, RouteCount(range_) - index - TIndex{ 1 });
+        return RouteAt(range_view_, RouteCount(range_view_) - index - TIndex{ 1 });
     }
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
     template <typename TIndex, typename TCount>
-    [[nodiscard]] constexpr auto ReverseRange<TRange>
+    [[nodiscard]] constexpr auto ReverseRange<TRangeView>
     ::Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept
     {
-        return ReverseRange<TRange>
+        return ReverseRange<TRangeView>
         {
-            RouteSlice(range_, RouteCount(range_) - index - count, count)
+            RouteSlice(range_view_, RouteCount(range_view_) - index - count, count)
         };
     }
 
@@ -85,18 +85,18 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr ReverseRange<TRange>
-    Reverse(Immutable<TRange> range) noexcept
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr ReverseRange<TRangeView>
+    Reverse(Immutable<TRangeView> range_view) noexcept
     {
-        return ReverseRange<TRange>(range);
+        return ReverseRange<TRangeView>(range_view);
     }
 
-    template <Ranges::Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr TRange
-    Reverse(Immutable<ReverseRange<TRange>> range) noexcept
+    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    Reverse(Immutable<ReverseRange<TRangeView>> range_view) noexcept
     {
-        return range.range_;
+        return range_view.range_view_;
     }
 
 }

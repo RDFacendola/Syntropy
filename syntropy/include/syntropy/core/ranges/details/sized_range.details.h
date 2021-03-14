@@ -23,40 +23,40 @@ namespace Syntropy::Ranges::Details
     /************************************************************************/
 
     /// \brief Invoke the method via a custom extension.
-    template <typename TRange>
+    template <typename TRangeView>
     inline auto
-    InvokeCount(Immutable<TRange> range, Syntropy::Templates::Priority<2>)
-        noexcept -> decltype(Ranges::Extensions::Count<TRange>{}(range))
+    InvokeCount(Immutable<TRangeView> range_view, Syntropy::Templates::Priority<2>)
+        noexcept -> decltype(Ranges::Extensions::Count<TRangeView>{}(range_view))
     {
-        return Ranges::Extensions::Count<TRange>{}(range);
+        return Ranges::Extensions::Count<TRangeView>{}(range_view);
     }
 
     /// \brief Invoke the method via member-function.
-    template <typename TRange>
+    template <typename TRangeView>
     inline auto
-    InvokeCount(Immutable<TRange> range, Syntropy::Templates::Priority<1>)
-        noexcept -> decltype(range.GetCount())
+    InvokeCount(Immutable<TRangeView> range_view, Syntropy::Templates::Priority<1>)
+        noexcept -> decltype(range_view.GetCount())
     {
-        return range.GetCount();
+        return range_view.GetCount();
     }
 
     /// \brief Invoke the method via non-member function, possibly using ADL.
-    template <typename TRange>
+    template <typename TRangeView>
     inline auto
-    InvokeCount(Immutable<TRange> range, Syntropy::Templates::Priority<0>)
-        noexcept -> decltype(Count(range))
+    InvokeCount(Immutable<TRangeView> range_view, Syntropy::Templates::Priority<0>)
+        noexcept -> decltype(Count(range_view))
     {
-        return Count(range);
+        return Count(range_view);
     }
 
     /// \brief Routes the invocation.
-    template <typename TRange>
+    template <typename TRangeView>
     inline auto
-    RouteCount(Immutable<TRange> range)
-        noexcept -> decltype(InvokeCount(range,
+    RouteCount(Immutable<TRangeView> range_view)
+        noexcept -> decltype(InvokeCount(range_view,
                                          Syntropy::Templates::kPriority<2>))
     {
-        return InvokeCount(range, Syntropy::Templates::kPriority<2>);
+        return InvokeCount(range_view, Syntropy::Templates::kPriority<2>);
     }
 
 }

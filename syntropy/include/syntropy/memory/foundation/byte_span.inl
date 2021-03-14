@@ -66,12 +66,12 @@ namespace Syntropy::Memory
         return *FromTypelessPtr<TObject>(rhs.GetData());
     }
 
-    template <Ranges::Concepts::ContiguousRange TRange>
+    template <Ranges::Concepts::ContiguousRangeView TRangeView>
     [[nodiscard]] inline auto
-    RangeBytesOf(Immutable<TRange> rhs) noexcept
+    RangeBytesOf(Immutable<TRangeView> rhs) noexcept
     {
         using TRangeElement
-            = typename Ranges::Templates::RangeElementValueTypeOf<TRange>;
+            = typename Ranges::Templates::RangeElementValueTypeOf<TRangeView>;
 
         auto data = ToBytePtr(Ranges::Data(rhs));
         auto size = SizeOf<TRangeElement>() * Ranges::Count(rhs);
@@ -86,23 +86,23 @@ namespace Syntropy::Memory
         return rhs;
     }
 
-    template <Ranges::Concepts::ContiguousRange TRange, typename TTraits>
-    [[nodiscard]] inline TRange
+    template <Ranges::Concepts::ContiguousRangeView TRangeView, typename TTraits>
+    [[nodiscard]] inline TRangeView
     FromRangeBytesOf(Immutable<BaseByteSpan<TTraits>> rhs) noexcept
     {
-        if constexpr (Concepts::IsSame<TRange, BaseByteSpan<TTraits>>)
+        if constexpr (Concepts::IsSame<TRangeView, BaseByteSpan<TTraits>>)
         {
             return rhs;
         }
         else
         {
             using TRangeElement
-                = Ranges::Templates::RangeElementValueTypeOf<TRange>;
+                = Ranges::Templates::RangeElementValueTypeOf<TRangeView>;
 
             auto data = FromTypelessPtr<TRangeElement>(rhs.GetData());
             auto size = rhs.GetCount() / SizeOf<TRangeElement>();
 
-            return TRange{ data, size };
+            return TRangeView{ data, size };
         }
     }
 

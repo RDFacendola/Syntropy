@@ -1,8 +1,8 @@
 
 /// \file sized_range.inl
 ///
-/// \author Raffaele D. Facendola - Nov 2020
-/// \author Raffaele D. Facendola - Jan 2021
+/// \author Raffaele D. Facendola - November 2020
+/// \author Raffaele D. Facendola - January 2021
 
 // ===========================================================================
 
@@ -12,23 +12,23 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    template <Concepts::SizedRange TRange>
+    template <Concepts::SizedRangeView TRangeView>
     [[nodiscard]] constexpr auto
-    Count(Immutable<TRange> range) noexcept
+    Count(Immutable<TRangeView> range_view) noexcept
     {
-        return Details::RouteCount(range);
+        return Details::RouteCount(range_view);
     }
 
-    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    template <Concepts::SizedRangeView TRangeView, Concepts::SizedRangeView URangeView>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    AreEqual(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept
     {
         return (PtrOf(lhs) == PtrOf(rhs));
     }
 
-    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    template <Concepts::SizedRangeView TRangeView, Concepts::SizedRangeView URangeView>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    AreEquivalent(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept
     {
         if (AreEqual(lhs, rhs))
         {
@@ -55,9 +55,9 @@ namespace Syntropy::Ranges
         return false;
     }
 
-    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
+    template <Concepts::SizedRangeView TRangeView, Concepts::SizedRangeView URangeView>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    Compare(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept
     {
         auto lhs_copy = lhs;
         auto rhs_copy = rhs;
@@ -102,13 +102,13 @@ namespace Syntropy::Ranges::Extensions
     /* SIZED RANGE EXTENSIONS                                               */
     /************************************************************************/
 
-    template <Concepts::BaseSizedRange TRange>
-    Bool IsEmpty<TRange>::operator()(Immutable<TRange> range) const noexcept
+    template <Concepts::BaseSizedRangeView TRangeView>
+    Bool IsEmpty<TRangeView>::operator()(Immutable<TRangeView> range_view) const noexcept
     {
         return
-            Details::RouteCount(range) == Templates::RangeCountType<TRange>{};
+            Details::RouteCount(range_view) == Templates::RangeCountType<TRangeView>{};
     }
-    
+
 }
 
 // ===========================================================================

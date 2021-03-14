@@ -14,20 +14,20 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Contiguous range.
-    // =================
+    // Contiguous range view.
+    // ======================
 
-    template <Concepts::ContiguousRange TRange>
+    template <Concepts::ContiguousRangeView TRangeView>
     [[nodiscard]] constexpr auto
-    Data(Immutable<TRange> range) noexcept
+    Data(Immutable<TRangeView> range_view) noexcept
     {
-        return Details::RouteData(range);
+        return Details::RouteData(range_view);
     }
 
-    template <Concepts::ContiguousRange TRange,
-              Concepts::ContiguousRange URange>
+    template <Concepts::ContiguousRangeView TRangeView,
+              Concepts::ContiguousRangeView URangeView>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    AreEqual(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept
     {
         auto same_instance
             = (PtrOf(lhs) == PtrOf(rhs));
@@ -44,10 +44,10 @@ namespace Syntropy::Ranges
         return same_instance || (same_count && (both_empty || same_data));
     }
 
-    template <Concepts::ContiguousRange TRange,
-              Concepts::ContiguousRange URange>
+    template <Concepts::ContiguousRangeView TRangeView,
+              Concepts::ContiguousRangeView URangeView>
     [[nodiscard]] constexpr Bool
-    Intersect(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
+    Intersect(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept
     {
         using TCount = decltype(Ranges::Count(lhs));
 
@@ -69,26 +69,26 @@ namespace Syntropy::Ranges
 namespace Syntropy::Ranges::Extensions
 {
     /************************************************************************/
-    /* CONTIGUOUS RANGE EXTENSIONS                                          */
+    /* CONTIGUOUS RANGE VIEW EXTENSIONS                                     */
     /************************************************************************/
 
-    template <Concepts::BaseContiguousRange TRange>
+    template <Concepts::BaseContiguousRangeView TRangeView>
     template <typename TIndex>
-    [[nodiscard]] inline decltype(auto) At<TRange>
-    ::operator()(Immutable<TRange> range,
+    [[nodiscard]] inline decltype(auto) At<TRangeView>
+    ::operator()(Immutable<TRangeView> range_view,
                  Immutable<TIndex> index) const noexcept
     {
-        return *(Details::RouteData(range) + index);
+        return *(Details::RouteData(range_view) + index);
     }
 
-    template <Concepts::BaseContiguousRange TRange>
+    template <Concepts::BaseContiguousRangeView TRangeView>
     template <typename TIndex, typename TCount>
-    [[nodiscard]] inline TRange Slice<TRange>
-    ::operator()(Immutable<TRange> range,
+    [[nodiscard]] inline TRangeView Slice<TRangeView>
+    ::operator()(Immutable<TRangeView> range_view,
                  Immutable<TIndex> index,
                  Immutable<TCount> count) const noexcept
     {
-        return { Details::RouteData(range) + index, count };
+        return { Details::RouteData(range_view) + index, count };
     };
 }
 

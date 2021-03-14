@@ -29,30 +29,31 @@
 namespace Syntropy::Ranges::Concepts
 {
     /************************************************************************/
-    /* BIDIRECTIONAL RANGE                                                  */
+    /* BIDIRECTIONAL RANGE VIEW                                             */
     /************************************************************************/
 
-    /// \brief Minimal interface for ranges whose elements can be visited
+    /// \brief Minimal interface for ranges views whose elements can be visited
     ///        sequentially in either direction.
     ///
     /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRange>
-    concept BaseBidirectionalRange = requires(Immutable<TRange> range)
+    template <typename TRangeView>
+    concept BaseBidirectionalRangeView = requires(Immutable<TRangeView> range_view)
     {
         /// \brief Access range's last element.
-        { Details::RouteBack(range) };
+        { Details::RouteBack(range_view) };
 
-        /// \brief Discard range's last element and return the resulting range.
-        { Details::RoutePopBack(range) };
+        /// \brief Discard range's last element and return the resulting
+        ///        view range.
+        { Details::RoutePopBack(range_view) };
     };
 
     /// \brief Range whose elements can be visited sequentially in
     ///        either direction.
     ///
     /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRange>
-    concept BidirectionalRange
-        = BaseBidirectionalRange<TRange> && ForwardRange<TRange>;
+    template <typename TRangeView>
+    concept BidirectionalRangeView
+        = BaseBidirectionalRangeView<TRangeView> && ForwardRangeView<TRangeView>;
 }
 
 // ===========================================================================
@@ -63,24 +64,25 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Bidirectional range.
-    // ====================
+    // Bidirectional range view.
+    // =========================
 
-    /// \brief Access range's last element.
+    /// \brief Access range view's last element.
     ///
     /// \remarks Accessing the last element of an empty range
     ///          results in undefined behavior.
-    template <Concepts::BidirectionalRange TRange>
+    template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr decltype(auto)
-    Back(Immutable<TRange> range) noexcept;
+    Back(Immutable<TRangeView> range_view) noexcept;
 
-    /// \brief Discard range's last element and return the resulting range.
+    /// \brief Discard range view's last element and return the resulting
+    ///        range view.
     ///
     /// \remarks If the provided range is empty, the behavior of this
     ///          method is undefined.
-    template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr TRange
-    PopBack(Immutable<TRange> range) noexcept;
+    template <Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    PopBack(Immutable<TRangeView> range_view) noexcept;
 }
 
 // ===========================================================================

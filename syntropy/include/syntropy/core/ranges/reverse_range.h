@@ -2,7 +2,7 @@
 /// \file reverse_range.h
 ///
 /// \brief This header is part of the Syntropy core module.
-///        it contains definitions for adapters used to iterate a range in
+///        it contains definitions for adapters used to iterate a range_view in
 ///        reverse ordedr.
 ///
 /// Ranges specifications based on the awesome
@@ -21,17 +21,17 @@
 namespace Syntropy::Ranges
 {
     /************************************************************************/
-    /* REVERSE RANGE                                                        */
+    /* REVERSE RANGE VIEW                                                   */
     /************************************************************************/
 
-    /// \brief Adapter class used to reverse a bidirectional range.
+    /// \brief Adapter class used to reverse bidirectional range_view views.
     /// \author Raffaele D. Facendola - November 2020.
-    template <Concepts::BidirectionalRange TRange>
+    template <Concepts::BidirectionalRangeView TRangeView>
     class ReverseRange
     {
-        template <Concepts::BidirectionalRange URange>
-        friend constexpr URange
-        Reverse(Immutable<ReverseRange<URange>> range) noexcept;
+                template <Concepts::BidirectionalRangeView URangeView>
+        friend constexpr URangeView
+        Reverse(Immutable<ReverseRange<URangeView>> range_view) noexcept;
 
     public:
 
@@ -43,10 +43,10 @@ namespace Syntropy::Ranges
         constexpr
         ReverseRange(Immutable<ReverseRange> rhs) = default;
 
-        /// \brief Create a new reverse range.
-        template <Concepts::BidirectionalRange URange = TRange>
+        /// \brief Create a new reverse range_view.
+        template <Concepts::BidirectionalRangeView URangeView = TRangeView>
         constexpr explicit
-        ReverseRange(Immutable<URange> range) noexcept;
+        ReverseRange(Immutable<URangeView> range_view) noexcept;
 
         /// \brief Default destructor.
         ~ReverseRange() = default;
@@ -55,57 +55,57 @@ namespace Syntropy::Ranges
         constexpr Mutable<ReverseRange>
         operator=(Immutable<ReverseRange> rhs) = default;
 
-        /// \brief Access range's first element.
+        /// \brief Access range_view's first element.
         ///
-        /// \remarks Accessing the first element of an empty range results
+        /// \remarks Accessing the first element of an empty range_view results
         ///          in undefined behavior.
         [[nodiscard]] constexpr decltype(auto)
         GetFront() const noexcept;
 
-        /// \brief Discard range's first element and return the resulting
-        ///        range.
+        /// \brief Discard range_view's first element and return the resulting
+        ///        range_view.
         ///
-        /// \remarks If the provided range is empty, the behavior of this
+        /// \remarks If the provided range_view is empty, the behavior of this
         ///          method is undefined.
         [[nodiscard]] constexpr auto
         PopFront() const noexcept;
 
-        /// \brief Check whether the range is empty.
+        /// \brief Check whether the range_view is empty.
         [[nodiscard]] constexpr Bool
         IsEmpty() const noexcept;
 
-        /// \brief Get range's elements count.
+        /// \brief Get range_view's elements count.
         [[nodiscard]] constexpr auto
         GetCount() const noexcept;
 
-        /// \brief Access range's last element.
-        /// \remarks Accessing the last element of an empty range results
+        /// \brief Access range_view's last element.
+        /// \remarks Accessing the last element of an empty range_view results
         ///          in undefined behavior.
         [[nodiscard]] constexpr decltype(auto)
         GetBack() const noexcept;
 
-        /// \brief Discard range's last element and return the resulting range.
-        /// \remarks If the provided range is empty, the behavior of this
+        /// \brief Discard range_view's last element and return the resulting range_view.
+        /// \remarks If the provided range_view is empty, the behavior of this
         ///          method is undefined.
         [[nodiscard]] constexpr auto
         PopBack() const noexcept;
 
-        /// \brief Access range's element by index.
-        /// \remarks Exceeding range boundaries results in undefined behavior.
+        /// \brief Access range_view's element by index.
+        /// \remarks Exceeding range_view boundaries results in undefined behavior.
         template <typename TIndex>
         [[nodiscard]] constexpr decltype(auto)
         At(Immutable<TIndex> index) const noexcept;
 
-        /// \brief Obtain a view to a sub-range.
-        /// \remarks Exceeding range boundaries results in undefined behavior.
+        /// \brief Obtain a view to a sub-range_view.
+        /// \remarks Exceeding range_view boundaries results in undefined behavior.
         template <typename TIndex, typename TCount>
         [[nodiscard]] constexpr auto
         Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept;
 
     private:
 
-        /// \brief Underlying range.
-        TRange range_;
+        /// \brief Underlying range_view.
+        TRangeView range_view_;
 
     };
 
@@ -113,15 +113,15 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Get a reversed range.
-    template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr ReverseRange<TRange>
-    Reverse(Immutable<TRange> range) noexcept;
+    /// \brief Get a reversed range_view.
+    template <Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr ReverseRange<TRangeView>
+    Reverse(Immutable<TRangeView> range_view) noexcept;
 
-    /// \brief Get a reversed range.
-    template <Concepts::BidirectionalRange TRange>
-    [[nodiscard]] constexpr TRange
-    Reverse(Immutable<ReverseRange<TRange>> range) noexcept;
+    /// \brief Get a reversed range_view.
+    template <Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    Reverse(Immutable<ReverseRange<TRangeView>> range_view) noexcept;
 
 }
 

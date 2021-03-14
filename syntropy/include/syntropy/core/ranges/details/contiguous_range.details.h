@@ -23,40 +23,43 @@ namespace Syntropy::Ranges::Details
     /************************************************************************/
 
     /// \brief Invoke the method via a custom extension.
-    template <typename TRange>
+    template <typename TRangeView>
     inline auto
-    InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<2>)
-       noexcept -> decltype(Ranges::Extensions::Data<TRange>{}(range))
+    InvokeData(Immutable<TRangeView> range_view,
+               Syntropy::Templates::Priority<2>)
+       noexcept -> decltype(Ranges::Extensions::Data<TRangeView>{}(range_view))
     {
-        return Ranges::Extensions::Data<TRange>{}(range);
+        return Ranges::Extensions::Data<TRangeView>{}(range_view);
     }
 
     /// \brief Invoke the method via member-function.
-    template <typename TRange>
+    template <typename TRangeView>
     inline auto
-    InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<1>)
-       noexcept -> decltype(range.GetData())
+    InvokeData(Immutable<TRangeView> range_view,
+               Syntropy::Templates::Priority<1>)
+       noexcept -> decltype(range_view.GetData())
     {
-        return range.GetData();
+        return range_view.GetData();
     }
 
     /// \brief Invoke the method via non-member function, possibly using ADL.
-    template <typename TRange>
+    template <typename TRangeView>
     inline auto
-    InvokeData(Immutable<TRange> range, Syntropy::Templates::Priority<0>)
-       noexcept -> decltype(Data(range))
+    InvokeData(Immutable<TRangeView> range_view,
+               Syntropy::Templates::Priority<0>)
+       noexcept -> decltype(Data(range_view))
     {
-        return Data(range);
+        return Data(range_view);
     }
 
     /// \brief Routes the invocation.
-    template <typename TRange>
+    template <typename TRangeView>
     inline auto
-    RouteData(Immutable<TRange> range)
-        noexcept -> decltype(InvokeData(range,
+    RouteData(Immutable<TRangeView> range_view)
+        noexcept -> decltype(InvokeData(range_view,
                                         Syntropy::Templates::kPriority<2>))
     {
-        return InvokeData(range, Syntropy::Templates::kPriority<2>);
+        return InvokeData(range_view, Syntropy::Templates::kPriority<2>);
     }
 }
 

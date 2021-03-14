@@ -31,36 +31,39 @@
 namespace Syntropy::Ranges::Concepts
 {
     /************************************************************************/
-    /* RANDOM ACCESS RANGE                                                  */
+    /* RANDOM ACCESS RANGE VIEW                                             */
     /************************************************************************/
 
-    /// \brief Minimal interface for ranges whose elements can be visited
+    /// \brief Minimal interface for range views whose elements can be visited
     ///        in any order.
+    ///
     /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRange>
-    concept BaseRandomAccessRange = requires(Immutable<TRange> range)
-    {
-        /// \brief Get range's elements count.
-        { Details::RouteCount(range) };
-    }
-    && requires(Immutable<TRange> range,
-                Immutable<Templates::RangeCountType<TRange>> index,
-                Immutable<Templates::RangeCountType<TRange>> count)
-    {
-        /// \brief Access range's element by index.
-        { Details::RouteAt(range, index) };
+    template <typename TRangeView>
+    concept BaseRandomAccessRangeView =
+        requires(Immutable<TRangeView> range_view)
+        {
+            /// \brief Get range view's elements count.
+            { Details::RouteCount(range_view) };
+        }
+        && requires(Immutable<TRangeView> range_view,
+                    Immutable<Templates::RangeCountType<TRangeView>> index,
+                    Immutable<Templates::RangeCountType<TRangeView>> count)
+        {
+            /// \brief Access range view's element by index.
+            { Details::RouteAt(range_view, index) };
 
-        /// \brief Obtain a view to a sub-range.
-        { Details::RouteSlice(range, index, count) };
-    };
+            /// \brief Obtain a range view to a sub-range-view.
+            { Details::RouteSlice(range_view, index, count) };
+        };
 
     /// \brief Range whose elements can be visited in any order.
+    ///
     /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRange>
-    concept RandomAccessRange
-         = BaseRandomAccessRange<TRange>
-        && BidirectionalRange<TRange>
-        && SizedRange<TRange>;
+    template <typename TRangeView>
+    concept RandomAccessRangeView
+         = BaseRandomAccessRangeView<TRangeView>
+        && BidirectionalRangeView<TRangeView>
+        && SizedRangeView<TRangeView>;
 }
 
 // ===========================================================================
@@ -71,86 +74,97 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Random access range.
-    // ====================
+    // Random access range view.
+    // =========================
 
-    /// \brief Access range's element by index.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange, typename TIndex
-        = Templates::RangeCountType<TRange>>
+    /// \brief Access range view's element by index.
+    ///
+    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRangeView TRangeView, typename TIndex
+        = Templates::RangeCountType<TRangeView>>
     [[nodiscard]] constexpr decltype(auto)
-    At(Immutable<TRange> range, Immutable<TIndex> index) noexcept;
+    At(Immutable<TRangeView> range_view, Immutable<TIndex> index) noexcept;
 
-    /// \brief Obtain a view to a sub-range.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange, typename TIndex
-        = Templates::RangeCountType<TRange>, typename TCount = TIndex>
-    [[nodiscard]] constexpr TRange
-    Slice(Immutable<TRange> range,
+    /// \brief Obtain a range view to a sub-range-view.
+    ///
+    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRangeView TRangeView, typename TIndex
+        = Templates::RangeCountType<TRangeView>, typename TCount = TIndex>
+    [[nodiscard]] constexpr TRangeView
+    Slice(Immutable<TRangeView> range_view,
           Immutable<TIndex> index,
           Immutable<TCount> count) noexcept;
 
-    /// \brief Take a number of elements from the range's front.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange, typename TCount
-        = Templates::RangeCountType<TRange>>
-    [[nodiscard]] constexpr TRange
-    Front(Immutable<TRange> range, Immutable<TCount> count) noexcept;
+    /// \brief Take a number of elements from the range view's front.
+    ///
+    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRangeView TRangeView, typename TCount
+        = Templates::RangeCountType<TRangeView>>
+    [[nodiscard]] constexpr TRangeView
+    Front(Immutable<TRangeView> range_view, Immutable<TCount> count) noexcept;
 
-    /// \brief Take a number of elements from the range's back.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange, typename TCount
-        = Templates::RangeCountType<TRange>>
-    [[nodiscard]] constexpr TRange
-    Back(Immutable<TRange> range, Immutable<TCount> count) noexcept;
+    /// \brief Take a number of elements from the range view's back.
+    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRangeView TRangeView, typename TCount
+        = Templates::RangeCountType<TRangeView>>
+    [[nodiscard]] constexpr TRangeView
+    Back(Immutable<TRangeView> range_view, Immutable<TCount> count) noexcept;
 
-    /// \brief Discard the first elements in a range and return the resulting
-    ///        subrange.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange, typename TCount
-        = Templates::RangeCountType<TRange>>
-    [[nodiscard]] constexpr TRange
-    PopFront(Immutable<TRange> range, Immutable<TCount> count) noexcept;
+    /// \brief Discard the first elements in a range view and return the
+    ///        resulting subrange.
+    ///
+    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRangeView TRangeView, typename TCount
+        = Templates::RangeCountType<TRangeView>>
+    [[nodiscard]] constexpr TRangeView
+    PopFront(Immutable<TRangeView> range_view,
+             Immutable<TCount> count) noexcept;
 
-    /// \brief Discard the last elements in a range and return the resulting
-    ///        subrange.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange, typename TCount
-        = Templates::RangeCountType<TRange>>
-    [[nodiscard]] constexpr TRange
-    PopBack(Immutable<TRange> range, Immutable<TCount> count) noexcept;
+    /// \brief Discard the last elements in a range view and return the
+    ///        resulting subrange.
+    ///
+    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRangeView TRangeView, typename TCount
+        = Templates::RangeCountType<TRangeView>>
+    [[nodiscard]] constexpr TRangeView
+    PopBack(Immutable<TRangeView> range_view,
+            Immutable<TCount> count) noexcept;
 
-    /// \brief Slice a range returning the first element and a subrange to
+    /// \brief Slice a range view returning the first element and a subrange to
     ///        the remaining ones.
-    /// \remarks Calling this method with an empty range results in undefined
-    ///          behavior.
-    template <Concepts::RandomAccessRange TRange>
+    ///
+    /// \remarks Calling this method with an empty range view results in
+    ///          undefined behavior.
+    template <Concepts::RandomAccessRangeView TRangeView>
     [[nodiscard]] constexpr auto
-    SliceFront(Immutable<TRange> range) noexcept;
+    SliceFront(Immutable<TRangeView> range_view) noexcept;
 
-    /// \brief Slice a range returning the last element and a subrange to the
-    ///        remaining ones.
-    /// \remarks Calling this method with an empty range results in undefined
-    ///          behavior.
-    template <Concepts::RandomAccessRange TRange>
+    /// \brief Slice a range view returning the last element and a subrange to
+    ///        the remaining ones.
+    ///
+    /// \remarks Calling this method with an empty range view results in
+    ///          undefined behavior.
+    template <Concepts::RandomAccessRangeView TRangeView>
     [[nodiscard]] constexpr auto
-    SliceBack(Immutable<TRange> range) noexcept;
+    SliceBack(Immutable<TRangeView> range_view) noexcept;
 
-    /// \brief Slice a range returning a subrange to the first count elements
-    ///        and another subrange to the remaining ones.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange, typename TCount
-        = Templates::RangeCountType<TRange>>
+    /// \brief Slice a range view returning a subrange to the first count
+    ///        elements and another subrange-view to the remaining ones.
+    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRangeView TRangeView, typename TCount
+        = Templates::RangeCountType<TRangeView>>
     [[nodiscard]] constexpr auto
-    SliceFront(Immutable<TRange> range, Immutable<TCount> count) noexcept;
+    SliceFront(Immutable<TRangeView> range_view,
+               Immutable<TCount> count) noexcept;
 
-    /// \brief Slice a range returning a subrange to the last count elements
-    ///        and another subrange to the remaining ones.
-    /// \remarks Exceeding range boundaries results in undefined behavior.
-    template <Concepts::RandomAccessRange TRange, typename TCount
-        = Templates::RangeCountType<TRange>>
+    /// \brief Slice a range view returning a subrange to the last count
+    ///        elements and another subrange to the remaining ones.
+    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    template <Concepts::RandomAccessRangeView TRangeView, typename TCount
+        = Templates::RangeCountType<TRangeView>>
     [[nodiscard]] constexpr auto
-    SliceBack(Immutable<TRange> range, Immutable<TCount> count) noexcept;
+    SliceBack(Immutable<TRangeView> range_view,
+              Immutable<TCount> count) noexcept;
 }
 
 // ===========================================================================
@@ -161,52 +175,54 @@ namespace Syntropy::Ranges::Extensions
     /* RANDOM ACCESS RANGE EXTENSIONS                                       */
     /************************************************************************/
 
-    /// \brief Access range's first element.
-    /// \remarks Accessing the first element of an empty range results in
+    /// \brief Access range view's first element.
+    /// \remarks Accessing the first element of an empty range view results in
     ///          undefined behavior.
-    /// \remarks This extension adapts RandomAccessRange type such that all
+    /// \remarks This extension adapts RandomAccessRangeView type such that all
     ///          its instances are also BidirectionalRanges and SizedRanges.
-    template <Concepts::BaseRandomAccessRange TRange>
-    struct Front<TRange>
+    template <Concepts::BaseRandomAccessRangeView TRangeView>
+    struct Front<TRangeView>
     {
         [[nodiscard]] decltype(auto)
-        operator()(Immutable<TRange> range) const noexcept;
+        operator()(Immutable<TRangeView> range_view) const noexcept;
     };
 
-    /// \brief Discard range's first element and return the resulting range.
-    /// \remarks If the provided range is empty, the behavior of this method
-    ///          is undefined.
-    /// \remarks This extension adapts RandomAccessRange type such that all
+    /// \brief Discard range view's first element and return the resulting
+    ///        range view.
+    /// \remarks If the provided range view is empty, the behavior of this
+    ///          method is undefined.
+    /// \remarks This extension adapts RandomAccessRangeView type such that all
     ///          its instances are also BidirectionalRanges and SizedRanges.
-    template <Concepts::BaseRandomAccessRange TRange>
-    struct PopFront<TRange>
+    template <Concepts::BaseRandomAccessRangeView TRangeView>
+    struct PopFront<TRangeView>
     {
-        [[nodiscard]] TRange
-        operator()(Immutable<TRange> range) const noexcept;
+        [[nodiscard]] TRangeView
+        operator()(Immutable<TRangeView> range_view) const noexcept;
     };
 
-    /// \brief Access range's last element.
-    /// \remarks Accessing the last element of an empty range results in
+    /// \brief Access range view's last element.
+    /// \remarks Accessing the last element of an empty range view results in
     ///          undefined behavior.
-    /// \remarks This extension adapts RandomAccessRange type such that all
+    /// \remarks This extension adapts RandomAccessRangeView type such that all
     ///          its instances are also BidirectionalRanges and SizedRanges.
-    template <Concepts::BaseRandomAccessRange TRange>
-    struct Back<TRange>
+    template <Concepts::BaseRandomAccessRangeView TRangeView>
+    struct Back<TRangeView>
     {
         [[nodiscard]] decltype(auto)
-        operator()(Immutable<TRange> range) const noexcept;
+        operator()(Immutable<TRangeView> range_view) const noexcept;
     };
 
-    /// \brief Discard range's last element and return the resulting range.
-    /// \remarks If the provided range is empty, the behavior of this method
-    ///          is undefined.
-    /// \remarks This extension adapts RandomAccessRange type such that all
+    /// \brief Discard range view's last element and return the resulting
+    ///        range.
+    /// \remarks If the provided range view is empty, the behavior of this
+    ///          method is undefined.
+    /// \remarks This extension adapts RandomAccessRangeView type such that all
     ///          its instances are also BidirectionalRanges and SizedRanges.
-    template <Concepts::BaseRandomAccessRange TRange>
-    struct PopBack<TRange>
+    template <Concepts::BaseRandomAccessRangeView TRangeView>
+    struct PopBack<TRangeView>
     {
-        [[nodiscard]] TRange
-        operator()(Immutable<TRange> range) const noexcept;
+        [[nodiscard]] TRangeView
+        operator()(Immutable<TRangeView> range_view) const noexcept;
     };
 }
 

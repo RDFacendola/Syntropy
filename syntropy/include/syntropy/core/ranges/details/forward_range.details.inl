@@ -1,5 +1,5 @@
 
-/// \file forward_range_.details.inl
+/// \file forward_range.details.inl
 ///
 /// \author Raffaele D. Facendola - January 2021
 
@@ -10,41 +10,42 @@
 namespace Syntropy::Ranges::Details
 {
     /************************************************************************/
-    /* RANGE ITERATOR                                                       */
+    /* RANGE VIEW ITERATOR                                                  */
     /************************************************************************/
 
-    template <typename TRange>
-    constexpr RangeIterator<TRange>
-    ::RangeIterator(Immutable<TRange> range) noexcept
-        : range_(range)
+    template <typename TRangeView>
+    constexpr RangeViewIterator<TRangeView>
+    ::RangeViewIterator(Immutable<TRangeView> range_view) noexcept
+        : range_view_(range_view)
     {
 
     }
 
-    template <typename TRange>
+    template <typename TRangeView>
     [[nodiscard]] constexpr
-    decltype(auto) RangeIterator<TRange>
+    decltype(auto) RangeViewIterator<TRangeView>
     ::operator*() const noexcept
     {
-        return RouteFront(range_);
+        return RouteFront(range_view_);
     }
 
-    template <typename TRange>
-    constexpr Mutable<RangeIterator<TRange>> RangeIterator<TRange>
+    template <typename TRangeView>
+    constexpr Mutable<RangeViewIterator<TRangeView>>
+    RangeViewIterator<TRangeView>
     ::operator++() noexcept
     {
-        range_ = RoutePopFront(range_);
+        range_view_ = RoutePopFront(range_view_);
 
         return *this;
     }
 
-    template <typename TRange>
-    [[nodiscard]] constexpr Bool RangeIterator<TRange>
-    ::operator==(Immutable<RangeIterator> other) const noexcept
+    template <typename TRangeView>
+    [[nodiscard]] constexpr Bool RangeViewIterator<TRangeView>
+    ::operator==(Immutable<RangeViewIterator> other) const noexcept
     {
-        SYNTROPY_ASSERT(RouteIsEmpty(other.range_));
+        SYNTROPY_ASSERT(RouteIsEmpty(other.range_view_));
 
-        return RouteIsEmpty(range_);
+        return RouteIsEmpty(range_view_);
     }
 
 }

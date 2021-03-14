@@ -23,59 +23,59 @@ namespace Syntropy::Ranges::Details
     /************************************************************************/
 
     /// \brief Invoke the method via a custom extension.
-    template <typename TRange, typename TIndex>
+    template <typename TRangeView, typename TIndex>
     inline auto
     InvokeAt(
-        Immutable<TRange> range,
+        Immutable<TRangeView> range_view,
         Immutable<TIndex> index,
         Syntropy::Templates::Priority<3>)
-            noexcept -> decltype(Ranges::Extensions::At<TRange>{}(range,
-                                                                  index))
+            noexcept -> decltype(
+                Ranges::Extensions::At<TRangeView>{}(range_view, index))
     {
-        return Ranges::Extensions::At<TRange>{}(range, index);
+        return Ranges::Extensions::At<TRangeView>{}(range_view, index);
     }
 
     /// \brief Invoke the method via member-operator.
-    template <typename TRange, typename TIndex>
+    template <typename TRangeView, typename TIndex>
     inline auto
-    InvokeAt(Immutable<TRange> range,
+    InvokeAt(Immutable<TRangeView> range_view,
              Immutable<TIndex> index,
              Syntropy::Templates::Priority<2>)
-                noexcept -> decltype(range[index])
+                noexcept -> decltype(range_view[index])
     {
-        return range[index];
+        return range_view[index];
     }
 
     /// \brief Invoke the method via member-function.
-    template <typename TRange, typename TIndex>
+    template <typename TRangeView, typename TIndex>
     inline auto
-    InvokeAt(Immutable<TRange> range,
+    InvokeAt(Immutable<TRangeView> range_view,
              Immutable<TIndex> index,
              Syntropy::Templates::Priority<1>)
-                noexcept -> decltype(range.At(index))
+                noexcept -> decltype(range_view.At(index))
     {
-        return range.At(index);
+        return range_view.At(index);
     }
 
     /// \brief Invoke the method via non-member function, possibly using ADL.
-    template <typename TRange, typename TIndex>
+    template <typename TRangeView, typename TIndex>
     inline auto
-    InvokeAt(Immutable<TRange> range,
+    InvokeAt(Immutable<TRangeView> range_view,
              Immutable<TIndex> index,
              Syntropy::Templates::Priority<0>)
-                noexcept -> decltype(At(range, index))
+                noexcept -> decltype(At(range_view, index))
     {
-        return At(range, index);
+        return At(range_view, index);
     }
 
     /// \brief Routes the invocation.
-    template <typename TRange, typename TIndex>
+    template <typename TRangeView, typename TIndex>
     inline auto
-    RouteAt(Immutable<TRange> range, Immutable<TIndex> index)
+    RouteAt(Immutable<TRangeView> range_view, Immutable<TIndex> index)
         noexcept -> decltype(
-            InvokeAt(range, index, Syntropy::Templates::kPriority<3>))
+            InvokeAt(range_view, index, Syntropy::Templates::kPriority<3>))
     {
-        return InvokeAt(range, index, Syntropy::Templates::kPriority<3>);
+        return InvokeAt(range_view, index, Syntropy::Templates::kPriority<3>);
     }
 
     /************************************************************************/
@@ -83,57 +83,61 @@ namespace Syntropy::Ranges::Details
     /************************************************************************/
 
     /// \brief Invoke the method via a custom extension.
-    template <typename TRange, typename TIndex, typename TCount>
+    template <typename TRangeView, typename TIndex, typename TCount>
     inline auto
     InvokeSlice(
-        Immutable<TRange> range,
+        Immutable<TRangeView> range_view,
         Immutable<TIndex> index,
         Immutable<TCount> count,
         Syntropy::Templates::Priority<2>)
             noexcept -> decltype(
-                Ranges::Extensions::Slice<TRange>{}(range, index, count))
+                Ranges::Extensions::Slice<TRangeView>{}(range_view,
+                                                        index,
+                                                        count))
     {
-        return Ranges::Extensions::Slice<TRange>{}(range, index, count);
+        return Ranges::Extensions::Slice<TRangeView>{}(range_view,
+                                                       index,
+                                                       count);
     }
 
     /// \brief Invoke the method via member-function.
-    template <typename TRange, typename TIndex, typename TCount>
+    template <typename TRangeView, typename TIndex, typename TCount>
     inline auto
-    InvokeSlice(Immutable<TRange> range,
+    InvokeSlice(Immutable<TRangeView> range_view,
                 Immutable<TIndex> index,
                 Immutable<TCount> count,
                 Syntropy::Templates::Priority<1>)
-                    noexcept -> decltype(range.Slice(index, count))
+                    noexcept -> decltype(range_view.Slice(index, count))
     {
-        return range.Slice(index, count);
+        return range_view.Slice(index, count);
     }
 
     /// \brief Invoke the method via non-member function, possibly using ADL.
-    template <typename TRange, typename TIndex, typename TCount>
+    template <typename TRangeView, typename TIndex, typename TCount>
     inline auto
     InvokeSlice(
-        Immutable<TRange> range,
+        Immutable<TRangeView> range_view,
         Immutable<TIndex> index,
         Immutable<TCount> count,
         Syntropy::Templates::Priority<0>)
-            noexcept -> decltype(Slice(range, index, count))
+            noexcept -> decltype(Slice(range_view, index, count))
     {
-        return Slice(range, index, count);
+        return Slice(range_view, index, count);
     }
 
     /// \brief Routes the invocation.
-    template <typename TRange, typename TIndex, typename TCount>
+    template <typename TRangeView, typename TIndex, typename TCount>
     inline auto
-    RouteSlice(Immutable<TRange> range,
+    RouteSlice(Immutable<TRangeView> range_view,
                Immutable<TIndex> index,
                Immutable<TCount> count)
                    noexcept -> decltype(
-                       InvokeSlice(range,
+                       InvokeSlice(range_view,
                                    index,
                                    count,
                                    Syntropy::Templates::kPriority<2>))
     {
-        return InvokeSlice(range,
+        return InvokeSlice(range_view,
                            index,
                            count,
                            Syntropy::Templates::kPriority<2>);
