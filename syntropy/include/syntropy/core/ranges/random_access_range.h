@@ -46,8 +46,8 @@ namespace Syntropy::Ranges::Concepts
             { Details::RouteCount(range_view) };
         }
         && requires(Immutable<TRangeView> range_view,
-                    Immutable<Templates::RangeCountType<TRangeView>> index,
-                    Immutable<Templates::RangeCountType<TRangeView>> count)
+                    Immutable<Templates::RangeViewCountType<TRangeView>> index,
+                    Immutable<Templates::RangeViewCountType<TRangeView>> count)
         {
             /// \brief Access range view's element by index.
             { Details::RouteAt(range_view, index) };
@@ -81,7 +81,7 @@ namespace Syntropy::Ranges
     ///
     /// \remarks Exceeding range view boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeView TRangeView, typename TIndex
-        = Templates::RangeCountType<TRangeView>>
+        = Templates::RangeViewCountType<TRangeView>>
     [[nodiscard]] constexpr decltype(auto)
     At(Immutable<TRangeView> range_view, Immutable<TIndex> index) noexcept;
 
@@ -89,7 +89,7 @@ namespace Syntropy::Ranges
     ///
     /// \remarks Exceeding range view boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeView TRangeView, typename TIndex
-        = Templates::RangeCountType<TRangeView>, typename TCount = TIndex>
+        = Templates::RangeViewCountType<TRangeView>, typename TCount = TIndex>
     [[nodiscard]] constexpr TRangeView
     Slice(Immutable<TRangeView> range_view,
           Immutable<TIndex> index,
@@ -99,14 +99,14 @@ namespace Syntropy::Ranges
     ///
     /// \remarks Exceeding range view boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount
-        = Templates::RangeCountType<TRangeView>>
+        = Templates::RangeViewCountType<TRangeView>>
     [[nodiscard]] constexpr TRangeView
     Front(Immutable<TRangeView> range_view, Immutable<TCount> count) noexcept;
 
     /// \brief Take a number of elements from the range view's back.
     /// \remarks Exceeding range view boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount
-        = Templates::RangeCountType<TRangeView>>
+        = Templates::RangeViewCountType<TRangeView>>
     [[nodiscard]] constexpr TRangeView
     Back(Immutable<TRangeView> range_view, Immutable<TCount> count) noexcept;
 
@@ -115,7 +115,7 @@ namespace Syntropy::Ranges
     ///
     /// \remarks Exceeding range view boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount
-        = Templates::RangeCountType<TRangeView>>
+        = Templates::RangeViewCountType<TRangeView>>
     [[nodiscard]] constexpr TRangeView
     PopFront(Immutable<TRangeView> range_view,
              Immutable<TCount> count) noexcept;
@@ -125,7 +125,7 @@ namespace Syntropy::Ranges
     ///
     /// \remarks Exceeding range view boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount
-        = Templates::RangeCountType<TRangeView>>
+        = Templates::RangeViewCountType<TRangeView>>
     [[nodiscard]] constexpr TRangeView
     PopBack(Immutable<TRangeView> range_view,
             Immutable<TCount> count) noexcept;
@@ -152,7 +152,7 @@ namespace Syntropy::Ranges
     ///        elements and another subrange-view to the remaining ones.
     /// \remarks Exceeding range view boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount
-        = Templates::RangeCountType<TRangeView>>
+        = Templates::RangeViewCountType<TRangeView>>
     [[nodiscard]] constexpr auto
     SliceFront(Immutable<TRangeView> range_view,
                Immutable<TCount> count) noexcept;
@@ -161,7 +161,7 @@ namespace Syntropy::Ranges
     ///        elements and another subrange to the remaining ones.
     /// \remarks Exceeding range view boundaries results in undefined behavior.
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount
-        = Templates::RangeCountType<TRangeView>>
+        = Templates::RangeViewCountType<TRangeView>>
     [[nodiscard]] constexpr auto
     SliceBack(Immutable<TRangeView> range_view,
               Immutable<TCount> count) noexcept;

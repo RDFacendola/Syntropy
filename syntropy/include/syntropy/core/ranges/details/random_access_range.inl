@@ -41,7 +41,7 @@ namespace Syntropy::Ranges
     {
         return Details::RouteSlice(
             range_view,
-            Templates::RangeCountType<TRangeView>{ 0 }, count);
+            Templates::RangeViewCountType<TRangeView>{ 0 }, count);
     }
 
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount>
@@ -70,7 +70,7 @@ namespace Syntropy::Ranges
     {
         return Details::RouteSlice(
             range_view,
-            Templates::RangeCountType<TRangeView>{ 0 },
+            Templates::RangeViewCountType<TRangeView>{ 0 },
             Details::RouteCount(range_view) - count);
     }
 
@@ -126,7 +126,7 @@ namespace Syntropy::Ranges::Extensions
     [[nodiscard]] inline decltype(auto) Front<TRangeView>
     ::operator()(Immutable<TRangeView> range_view) const noexcept
     {
-        using TCount = Templates::RangeCountType<TRangeView>;
+        using TCount = Templates::RangeViewCountType<TRangeView>;
 
         return Details::RouteAt(range_view, TCount{ 0 });
     }
@@ -136,7 +136,7 @@ namespace Syntropy::Ranges::Extensions
     TRangeView PopFront<TRangeView>
     ::operator()(Immutable<TRangeView> range_view) const noexcept
     {
-        using TCount = Templates::RangeCountType<TRangeView>;
+        using TCount = Templates::RangeViewCountType<TRangeView>;
 
         auto index = TCount{ 1 };
         auto count = Details::RouteCount(range_view) - index;
@@ -149,7 +149,7 @@ namespace Syntropy::Ranges::Extensions
     inline decltype(auto) Back<TRangeView>
     ::operator()(Immutable<TRangeView> range_view) const noexcept
     {
-        using TCount = Templates::RangeCountType<TRangeView>;
+        using TCount = Templates::RangeViewCountType<TRangeView>;
 
         auto count = Details::RouteCount(range_view) - TCount{ 1 };
 
@@ -161,7 +161,7 @@ namespace Syntropy::Ranges::Extensions
     inline TRangeView PopBack<TRangeView>
     ::operator()(Immutable<TRangeView> range_view) const noexcept
     {
-        using TCount = Templates::RangeCountType<TRangeView>;
+        using TCount = Templates::RangeViewCountType<TRangeView>;
 
         auto index = TCount{ 0 };
         auto count = Details::RouteCount(range_view) - TCount{ 1 };

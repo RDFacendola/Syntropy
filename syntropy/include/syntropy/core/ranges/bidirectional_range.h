@@ -37,23 +37,25 @@ namespace Syntropy::Ranges::Concepts
     ///
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRangeView>
-    concept BaseBidirectionalRangeView = requires(Immutable<TRangeView> range_view)
-    {
-        /// \brief Access range's last element.
-        { Details::RouteBack(range_view) };
+    concept BaseBidirectionalRangeView =
+        requires(Immutable<TRangeView> range_view)
+        {
+            /// \brief Access the last element in a range view.
+            { Details::RouteBack(range_view) };
 
-        /// \brief Discard range's last element and return the resulting
-        ///        view range.
-        { Details::RoutePopBack(range_view) };
-    };
+            /// \brief Discard the last element in a range view and return
+            ///        a view to the remaining elements.
+            { Details::RoutePopBack(range_view) };
+        };
 
-    /// \brief Range whose elements can be visited sequentially in
+    /// \brief Range view whose elements can be visited sequentially in
     ///        either direction.
     ///
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRangeView>
     concept BidirectionalRangeView
-        = BaseBidirectionalRangeView<TRangeView> && ForwardRangeView<TRangeView>;
+        = BaseBidirectionalRangeView<TRangeView> &&
+            ForwardRangeView<TRangeView>;
 }
 
 // ===========================================================================
@@ -67,19 +69,19 @@ namespace Syntropy::Ranges
     // Bidirectional range view.
     // =========================
 
-    /// \brief Access range view's last element.
+    /// \brief Access the last element in a range view.
     ///
-    /// \remarks Accessing the last element of an empty range
-    ///          results in undefined behavior.
+    /// \remarks Calling this method on an empty range results in undefined
+    ///          behavior.
     template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr decltype(auto)
     Back(Immutable<TRangeView> range_view) noexcept;
 
-    /// \brief Discard range view's last element and return the resulting
-    ///        range view.
+    /// \brief Discard the last element in a range view and return a view to
+    ///        the remaining elements.
     ///
-    /// \remarks If the provided range is empty, the behavior of this
-    ///          method is undefined.
+    /// \remarks Calling this method on an empty range results in undefined
+    ///          behavior.
     template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
     PopBack(Immutable<TRangeView> range_view) noexcept;

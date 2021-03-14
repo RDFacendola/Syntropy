@@ -39,14 +39,14 @@ namespace Syntropy::Ranges::Concepts
     template <typename TRangeView>
     concept BaseForwardRangeView = requires(Immutable<TRangeView> range_view)
     {
-        /// \brief Access range view's first element.
+        /// \brief Access the first element in a range view.
         { Details::RouteFront(range_view) };
 
-        /// \brief Discard range view's first element and return the resulting
-        ///        range_view.
+        /// \brief Discard the first element in a range view and return
+        ///        a view to the remaining elements.
         { Details::RoutePopFront(range_view) };
 
-        /// \brief Check whether the range view is empty.
+        /// \brief Check whether a range view is empty.
         { Details::RouteIsEmpty(range_view) };
     };
 
@@ -97,61 +97,64 @@ namespace Syntropy::Ranges
     // Forward range view.
     // ===================
 
-    /// \brief Access range view's first element.
-    /// \remarks Accessing the first element of an empty range view results
-    ///          in undefined behavior.
+    /// \brief Access the first element in a range view.
+    ///
+    /// \remarks Calling this method on an empty range results in undefined
+    ///          behavior.
     template <Concepts::ForwardRangeView TRangeView>
     [[nodiscard]] constexpr decltype(auto)
     Front(Immutable<TRangeView> range_view) noexcept;
 
-    /// \brief Discard range view's first element and return the resulting
-    ///        range view.
-    /// \remarks If the provided range view is empty, the behavior of this
-    ///          method is undefined.
+    /// \brief Discard the first element in a range view and return a view
+    ///        to the remaining elements.
+    ///
+    /// \remarks Calling this method on an empty range results in undefined
+    ///          behavior.
     template <Concepts::ForwardRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
     PopFront(Immutable<TRangeView> range_view) noexcept;
 
-    /// \brief Check whether the range view is empty.
+    /// \brief Check whether a range view is empty.
     template <Concepts::ForwardRangeView TRangeView>
     [[nodiscard]] constexpr Bool
     IsEmpty(Immutable<TRangeView> range_view) noexcept;
 
-    /// \brief Apply a function to each element in the range view.
-    template <Concepts::ForwardRangeView TRangeView, typename TFunction>
+    /// \brief Apply a function to each element in a range view.
+    template <Concepts::ForwardRangeView TRangeView,
+              typename TFunction>
     constexpr void
-    ForEach(Immutable<TRangeView> range_view, TFunction function) noexcept;
+    ForEach(Immutable<TRangeView> range_view,
+            TFunction function) noexcept;
 
     /// \brief Advance both range views in lockstep, copy elements from the
-    ///        source range view to the destination range view until either
-    ///        is exhausted.
-    /// \return Returns the range views to the elements that were not copied:
-    ///         at least one of the two is guaranteed to be empty.
+    ///        source to the destination until either is exhausted.
+    ///
+    /// \return Returns the number of copied elements.
     template <Concepts::ForwardRangeView TRangeView,
               Concepts::ForwardRangeView URangeView>
-    constexpr Tuples::Tuple<TRangeView, URangeView>
+    constexpr Int
     Copy(Immutable<TRangeView> destination,
          Immutable<URangeView> source) noexcept;
 
     /// \brief Advance both range views in lockstep, moving elements from the
-    ///        source range view to the destination range view until either is
-    ///        exhausted.
-    /// \return Returns the range views to the elements that were not copied:
-    ///         at least one of the two is guaranteed to be empty.
+    ///        source to the destination until either is exhausted.
+    ///
+    /// \return Returns the number of moved elements.
     template <Concepts::ForwardRangeView TRangeView,
               Concepts::ForwardRangeView URangeView>
-    constexpr Tuples::Tuple<TRangeView, URangeView>
+    constexpr Int
     Move(Immutable<TRangeView> destination,
          Immutable<URangeView> source) noexcept;
 
-    /// \brief Advance both range views in lockstep, swapping elements from
-    ///        both until either lhs or rhs is exhausted.
-    /// \return Returns the range views to the elements that were not swapped:
-    ///         at least one of the two is guaranteed to be empty.
+     /// \brief Advance both range views in lockstep, swapping elements
+     ///        between lhs and rhs until either is exhausted.
+     ///
+     /// \return Returns the number of moved elements.
     template <Concepts::ForwardRangeView TRangeView,
               Concepts::ForwardRangeView URangeView>
-    constexpr Tuples::Tuple<TRangeView, URangeView>
-    Swap(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept;
+    constexpr Int
+    Swap(Immutable<TRangeView> lhs,
+         Immutable<URangeView> rhs) noexcept;
 
 }
 

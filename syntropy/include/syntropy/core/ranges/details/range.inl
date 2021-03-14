@@ -25,26 +25,3 @@ namespace Syntropy::Ranges
 }
 
 // ===========================================================================
-
-namespace Syntropy
-{
-    /************************************************************************/
-    /* RANGE-BASED FOR LOOP                                                 */
-    /************************************************************************/
-
-    /// \brief Get an iterator to the first element in a range.
-    template <Ranges::Concepts::Range TRange>
-    constexpr auto begin(Forwarding<TRange> range) noexcept
-    {
-        return begin(Ranges::Details::RouteViewOf(Forward<TRange>(range)));
-    }
-
-    /// \brief Get an iterator past the last element in a range.
-    template <Ranges::Concepts::Range TRange>
-    constexpr auto end(Forwarding<TRange> range) noexcept
-    {
-        return end(Ranges::Details::RouteViewOf(Forward<TRange>(range)));
-    }
-}
-
-// ===========================================================================

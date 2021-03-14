@@ -36,17 +36,10 @@ namespace Syntropy::Memory
     /* BYTE SPAN                                                            */
     /************************************************************************/
 
-    /// \brief Tag for read-only byte spans.
-    struct ByteSpanTraits
+    /// \brief Traits for read-only byte spans.
+    struct ByteSpanTraits : BaseSpanTraits<BytePtr, Immutable<Byte>, Bytes>
     {
-        /// \brief Pointer type.
-        using TPointer = BytePtr;
 
-        /// \brief Reference type.
-        using TReference = Immutable<Byte>;
-
-        /// \brief Cardinality type.
-        using TCount = Bytes;
     };
 
     /// \brief Represents a span of read-only bytes.
@@ -56,17 +49,10 @@ namespace Syntropy::Memory
     /* RW BYTE SPAN                                                         */
     /************************************************************************/
 
-    /// \brief Tag for read-write byte spans.
-    struct RWByteSpanTraits
+    /// \brief Traits for read-write byte spans.
+    struct RWByteSpanTraits : BaseSpanTraits<RWBytePtr, Mutable<Byte>, Bytes>
     {
-        /// \brief Pointer type.
-        using TPointer = RWBytePtr;
 
-        /// \brief Reference type.
-        using TReference = Mutable<Byte>;
-
-        /// \brief Cardinality type.
-        using TCount = Bytes;
     };
 
     /// \brief Represents a span of read-write bytes.

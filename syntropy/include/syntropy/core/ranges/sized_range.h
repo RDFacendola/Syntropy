@@ -34,9 +34,9 @@ namespace Syntropy::Ranges::Templates
     /* TYPE TRAITS                                                          */
     /************************************************************************/
 
-    /// \brief Range's count type.
+    /// \brief Type of a range's cardinality.
     template <typename TRangeView>
-    using RangeCountType = Syntropy::Templates::UnqualifiedOf<decltype(
+    using RangeViewCountType = Syntropy::Templates::UnqualifiedOf<decltype(
         Details::RouteCount(Syntropy::Templates::Declval<TRangeView>()))>;
 }
 
@@ -62,8 +62,7 @@ namespace Syntropy::Ranges::Concepts
     /// \brief Range view whose elements can be visited sequentially and whose
     ///        size can be computed in constant time.
     ///
-    /// \author
-    /// Raffaele D. Facendola - November 2020.
+    /// \author Raffaele D. Facendola - November 2020.
     template <typename TRangeView>
     concept SizedRangeView = BaseSizedRangeView<TRangeView>
         && ForwardRangeView<TRangeView>;
@@ -77,21 +76,22 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Get range view's elements count.
+    /// \brief Get the number of elements in a range view.
     template <Concepts::SizedRangeView TRangeView>
     [[nodiscard]] constexpr auto
     Count(Immutable<TRangeView> range_view) noexcept;
 
-    /// \brief Check whether lhs and rhs are equal.
+    /// \brief Check whether elements in two range views are equal.
     ///
     /// \remarks Equality implies equivalence, therefore if this method returns
     ///          true AreEquivalent also returns true.
     template <Concepts::SizedRangeView TRangeView,
               Concepts::SizedRangeView URangeView>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept;
+    AreEqual(Immutable<TRangeView> lhs,
+             Immutable<URangeView> rhs) noexcept;
 
-    /// \brief Check whether lhs and rhs are equivalent.
+    /// \brief Check whether elements in two range views are equivalent.
     ///
     /// \remarks Equality implies equivalence but not the other way around!
     ///          If AreEqual returns false this method can either return true
@@ -106,7 +106,8 @@ namespace Syntropy::Ranges
     template <Concepts::SizedRangeView TRangeView,
               Concepts::SizedRangeView URangeView>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept;
+    Compare(Immutable<TRangeView> lhs,
+            Immutable<URangeView> rhs) noexcept;
 }
 
 // ===========================================================================
@@ -119,7 +120,7 @@ namespace Syntropy::Ranges::Extensions
 
     /// \brief Check whether a range view is empty.
     ///
-    /// \remarks This extension adapts SizedRangeViewRange type such that all
+    /// \remarks This extension adapts SizedRangeView type such that all
     ///          its instances are also ForwardRangeViews.
     template <Concepts::BaseSizedRangeView TRangeView>
     struct IsEmpty<TRangeView>

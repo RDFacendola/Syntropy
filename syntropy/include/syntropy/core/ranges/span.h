@@ -33,13 +33,13 @@ namespace Syntropy
     public:
 
         /// \brief Pointer type.
-        using TPointer = typename TTraits::TPointer;
+        using PointerType = typename TTraits::PointerType;
 
         /// \brief Reference type.
-        using TReference = typename TTraits::TReference;
+        using ReferenceType = typename TTraits::ReferenceType;
 
         /// \brief Type of the span cardinality.
-        using TCount = typename TTraits::TCount;
+        using CountType = typename TTraits::CountType;
 
         /// \brief Create an empty span.
         constexpr
@@ -52,12 +52,14 @@ namespace Syntropy
         /// \brief Create a span given a pointer to the first element
         ///        and their number.
         constexpr
-        BaseSpan(Immutable<TPointer> begin, Immutable<TCount> size) noexcept;
+        BaseSpan(Immutable<PointerType> begin,
+                 Immutable<CountType> size) noexcept;
 
         /// \brief Create a span given a pointer to both the first and
         ///        past the last element.
         constexpr
-        BaseSpan(Immutable<TPointer> begin, Immutable<TPointer> end) noexcept;
+        BaseSpan(Immutable<PointerType> begin,
+                 Immutable<PointerType> end) noexcept;
 
         /// \brief Converting copy constructor.
         template <typename UType, typename UTraits>
@@ -80,25 +82,43 @@ namespace Syntropy
         ///
         /// If the provided index is not within the BaseSpan the behavior
         /// of this method is undefined.
-        [[nodiscard]] constexpr TReference
-        operator[](Immutable<TCount> index) const noexcept;
+        [[nodiscard]] constexpr ReferenceType
+        operator[](Immutable<CountType> index) const noexcept;
 
         /// \brief Access the underlying storage.
-        [[nodiscard]] constexpr TPointer
+        [[nodiscard]] constexpr PointerType
         GetData() const noexcept;
 
         /// \brief Get the number of elements in the span.
-        [[nodiscard]] constexpr Immutable<TCount>
+        [[nodiscard]] constexpr Immutable<CountType>
         GetCount() const noexcept;
 
     private:
 
         /// \brief Pointer to the first element in the range.
-        TPointer data_{ nullptr };
+        PointerType data_{ nullptr };
 
         /// \brief Number of elements in the span.
-        TCount  count_{};
+        CountType count_{};
 
+    };
+
+    /************************************************************************/
+    /* BASE SPAN TRAITS                                                     */
+    /************************************************************************/
+
+    /// \brief Schema for base span traits.
+    template <typename TPointer, typename TReference, typename TCount>
+    struct BaseSpanTraits
+    {
+        /// \brief Pointer type.
+        using PointerType = TPointer;
+
+        /// \brief Reference type.
+        using ReferenceType = TReference;
+
+        /// \brief Cardinality type.
+        using CountType = TCount;
     };
 
     /************************************************************************/
@@ -107,16 +127,9 @@ namespace Syntropy
 
     /// \brief Traits for read-only spans.
     template <typename TType>
-    struct SpanTraits
+    struct SpanTraits : BaseSpanTraits<Ptr<TType>, Immutable<TType>, Int>
     {
-        /// \brief Pointer type.
-        using TPointer = Ptr<TType>;
 
-        /// \brief Reference type.
-        using TReference = Immutable<TType>;
-
-        /// \brief Cardinality type.
-        using TCount = Int;
     };
 
     /// \brief Represents a span of read-only elements.
@@ -129,16 +142,9 @@ namespace Syntropy
 
     /// \brief Traits for read-write spans.
     template <typename TType>
-    struct RWSpanTraits
+    struct RWSpanTraits : BaseSpanTraits<RWPtr<TType>, Mutable<TType>, Int>
     {
-        /// \brief Pointer type.
-        using TPointer = RWPtr<TType>;
 
-        /// \brief Reference type.
-        using TReference = Mutable<TType>;
-
-        /// \brief Cardinality type.
-        using TCount = Int;
     };
 
     /// \brief Represents a span of read-write elements.
@@ -184,27 +190,27 @@ namespace Syntropy
     // Utilities.
     // ==========
 
-    /// \brief Create a new span by deducing template from arguments.
+    /// \brief Create a read-only span by deducing template from arguments.
     template <typename TType, typename TCount>
     [[nodiscard]] constexpr Span<TType>
     MakeSpan(Ptr<TType> begin, Immutable<TCount> size) noexcept;
 
-    /// \brief Create a new span by deducing template from arguments.
+    /// \brief Create a read-only span by deducing template from arguments.
     template <typename TType>
     [[nodiscard]] constexpr Span<TType>
     MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept;
 
-    /// \brief Create a new span by deducing template from arguments.
+    /// \brief Create a read-write span by deducing template from arguments.
     template <typename TType, typename TCount>
     [[nodiscard]] constexpr RWSpan<TType>
     MakeSpan(RWPtr<TType> begin, Immutable<TCount> size) noexcept;
 
-    /// \brief Create a new span by deducing template from arguments.
+    /// \brief Create a read-write span by deducing template from arguments.
     template <typename TType>
     [[nodiscard]] constexpr RWSpan<TType>
     MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept;
 
-    /// \brief Create a new span by deducing template from arguments.
+    /// \brief Create a span from a C array.
     template <typename TType, Int VSize>
     [[nodiscard]] constexpr auto
     MakeSpan(TType (&rhs)[VSize]) noexcept;

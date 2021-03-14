@@ -1,8 +1,8 @@
 
 /// \file zip_range.h
 ///
-/// \brief his header is part of the Syntropy core module. It contains
-/// definitions for adapters used to zip multiple range_views together.
+/// \brief This header is part of the Syntropy core module. It contains
+///        definitions for adapters used to zip multiple range_views together.
 ///
 /// Ranges specifications based on the awesome
 /// https://www.slideshare.net/rawwell/iteratorsmustgo
@@ -24,10 +24,8 @@ namespace Syntropy::Ranges
     /* ZIP RANGE VIEW                                                       */
     /************************************************************************/
 
-    /// \brief Adapter class used to zip many range_views together.
+    /// \brief Adapter class used to tie many range views together.
     ///
-    /// The new range_view has elements equal to the Tuple consisting of each
-    /// element in each source range_view, tied together.
     /// \author Raffaele D. Facendola - November 2020.
     /// \author Raffaele D. Facendola - January 2021.
     template <Concepts::ForwardRangeView... TRangeViews>
@@ -47,7 +45,8 @@ namespace Syntropy::Ranges
         constexpr
         ZipRange(Immutable<ZipRange> rhs) noexcept = default;
 
-        /// \brief Create a new range_view by zipping together one or more range_views.
+        /// \brief Create a new range view by zipping together one or more
+        ///        range views.
         constexpr
         ZipRange(Immutable<TRangeViews>... range_views) noexcept;
 
@@ -58,64 +57,59 @@ namespace Syntropy::Ranges
         constexpr Mutable<ZipRange>
         operator=(Immutable<ZipRange> range_view) noexcept = default;
 
-        /// \brief Access range_view's first element.
+        /// \brief Access the first element in the view.
         ///
-        /// \remarks Accessing the first element of an empty range_view results
-        ///          in undefined behavior.
+        /// \remarks Undefined behavior if the view is empty.
         [[nodiscard]] constexpr decltype(auto)
         GetFront() const noexcept;
 
-        /// \brief Discard range_view's first element and return the resulting
-        ///        range_view.
+        /// \brief Discard the first element in the view and return a
+        ///        view to the remaining elements.
         ///
-        /// \remarks If the provided range_view is empty, the behavior of this
-        ///          method is undefined.
+        /// \remarks Undefined behavior if the view is empty.
         [[nodiscard]] constexpr auto
         PopFront() const noexcept;
 
-        /// \brief Check whether the range_view is empty.
+        /// \brief Check whether the view is empty.
         [[nodiscard]] constexpr Bool
         IsEmpty() const noexcept;
 
-        /// \brief Get range_view's elements count.
+        /// \brief Get the number of element.
         [[nodiscard]] constexpr auto
         GetCount() const noexcept;
 
-        /// \brief Access range_view's last element.
+        /// \brief Access the last element in the view.
         ///
-        /// \remarks Accessing the last element of an empty range_view results in
-        ///          undefined behavior.
+        /// \remarks Undefined behavior if the view is empty.
         [[nodiscard]] constexpr decltype(auto)
         GetBack() const noexcept;
 
-        /// \brief Discard range_view's last element and return the resulting range_view.
+        /// \brief Discard the last element in the view and return the
+        ///        view to the remaining elements.
         ///
-        /// \remarks If the provided range_view is empty, the behavior of this
-        ///          method is undefined.
+        /// \remarks Undefined behavior if the view is empty.
         [[nodiscard]] constexpr auto
         PopBack() const noexcept;
 
-        /// \brief Access range_view's element by index.
+        /// \brief Access a range view element by index.
         ///
-        /// \remarks Exceeding range_view boundaries results in undefined behavior.
+        /// \remarks Undefined behavior if range view boundaries are exceeded.
         template <typename TIndex>
         [[nodiscard]] constexpr decltype(auto)
         At(Immutable<TIndex> index) const noexcept;
 
-        /// \brief Obtain a view to a sub-range_view.
+        /// \brief Obtain a sub-range-view.
         ///
-        /// \remarks Exceeding range_view boundaries results in undefined behavior.
+        /// \remarks Undefined behavior if range view boundaries are exceeded.
         template <typename TIndex, typename TCount>
         [[nodiscard]] constexpr auto
         Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept;
 
-        /// \brief Access range_view's element storage.
+        /// \brief Access the storage of all tied range views.
         ///
-        /// \remarks Accessing an empty range_view's storage results in
-        ///          undefined behavior.
+        /// \remarks Undefined behavior if the view is empty.
         [[nodiscard]] constexpr auto
         GetData() const noexcept;
-
     private:
 
         /// \brief Underlying range_views.
@@ -138,63 +132,59 @@ namespace Syntropy::Ranges
     MakeZipRange(Immutable<TRangeViews>... range_views) noexcept;
 
     /// \brief Create a new ZipRange by deducing templates types from
-    ///        arguments provided
+    ///        provided arguments.
     template <Syntropy::Tuples::Concepts::NTuple TTuple>
     [[nodiscard]] constexpr auto
     MakeZipRangeFromTuple(Immutable<TTuple> range_views) noexcept;
 
-    /// \brief Access the individual range_views in a zip range_view.
+    /// \brief Unzip a zip range view, producing a tuple containing the
+    ///        individual range views.
+    ///
+    /// \remarks If the provided range view is not a ZipRange, the results is a
+    ///          tuple with a single element.
     template <Concepts::ForwardRangeView... TRangeViews>
     [[nodiscard]] constexpr auto
     Unzip(Immutable<ZipRange<TRangeViews...>> range_view) noexcept;
 
-    /// \brief Unzip a range_view, producing a tuple containing the individual
-    ///        range_views.
+    /// \brief Unzip a zip range view, producing a tuple containing the
+    ///        individual range views.
     ///
-    /// \remarks If the provided range_view is not a Zip-range_view, the results is a
+    /// \remarks If the provided range view is not a ZipRange, the results is a
     ///          tuple with a single element.
     template <Concepts::ForwardRangeView TRange>
     [[nodiscard]] constexpr auto
     Unzip(Immutable<TRange> range_view) noexcept;
 
-    /// \brief Create a new range_view by element-wise joining different range_views and
-    ///        flattening zip-range_views on the first level.
+    /// \brief Create a new ZipRange by element-wise joining different range
+    ///        views, flattening eventual ZipRanges on the first level.
     template <Concepts::ForwardRangeView... TRangeViews>
     [[nodiscard]] constexpr ZipRange<TRangeViews...>
     Zip(Immutable<TRangeViews>... range_views) noexcept;
 
-    /// \brief
-    /// Access the VIndex-th range_view in a zip-range_view.
+    /// \brief Access a zip range view by index.
     ///
-    /// \remarks
-    /// The program is ill-formed if no such range_view exists.
+    /// \remarks Ill-formed if the range view rank is exceeded.
     template <Int VIndex, Concepts::ForwardRangeView... TRangeViews>
     [[nodiscard]] constexpr decltype(auto)
     Get(Immutable<ZipRange<TRangeViews...>> range_view) noexcept;
 
-    /// \brief
-    /// Access the VIndex-th range_view in a zip-range_view.
+    /// \brief Access a zip range view by index.
     ///
-    /// \remarks
-    /// The program is ill-formed if no such range_view exists.
+    /// \remarks Ill-formed if the range view rank is exceeded.
     template <Int VIndex, Concepts::ForwardRangeView... TRangeViews>
     [[nodiscard]] constexpr decltype(auto)
     Get(Mutable<ZipRange<TRangeViews...>> range_view) noexcept;
 
-    /// \brief
-    /// Access the VIndex-th range_view in a zip-range_view.
+    /// \brief Access a zip range view by index.
     ///
-    /// \remarks
-    /// The program is ill-formed if no such range_view exists.
+    /// \remarks Ill-formed if the range view rank is exceeded.
     template <Int VIndex, Concepts::ForwardRangeView... TRangeViews>
     [[nodiscard]] constexpr decltype(auto)
     Get(Immovable<ZipRange<TRangeViews...>> range_view) noexcept;
 
-    /// \brief
-    /// Access the VIndex-th range_view in a zip-range_view.
+    /// \brief Access a zip range view by index.
     ///
-    /// \remarks
-    /// The program is ill-formed if no such range_view exists.
+    /// \remarks Ill-formed if the range view rank is exceeded.
     template <Int VIndex, Concepts::ForwardRangeView... TRangeViews>
     [[nodiscard]] constexpr decltype(auto)
     Get(Movable<ZipRange<TRangeViews...>> range_view) noexcept;
@@ -210,7 +200,8 @@ namespace Syntropy::Tuples::Templates
     /************************************************************************/
 
     /// \brief Partial template specialization for tuples.
-    template <Int VIndex, Syntropy::Ranges::Concepts::ForwardRangeView... TRangeViews>
+    template <Int VIndex,
+              Syntropy::Ranges::Concepts::ForwardRangeView... TRangeViews>
     struct ElementTypeTraits<VIndex,
                              Syntropy::Ranges::ZipRange<TRangeViews...>>
         : Syntropy::Templates::Alias<ElementType<VIndex,

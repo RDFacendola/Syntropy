@@ -106,7 +106,7 @@ namespace Syntropy::Ranges::Extensions
     Bool IsEmpty<TRangeView>::operator()(Immutable<TRangeView> range_view) const noexcept
     {
         return
-            Details::RouteCount(range_view) == Templates::RangeCountType<TRangeView>{};
+            Details::RouteCount(range_view) == Templates::RangeViewCountType<TRangeView>{};
     }
 
 }

@@ -38,9 +38,11 @@ namespace Syntropy::Ranges
         return Details::RouteIsEmpty(range_view);
     }
 
-    template <Concepts::ForwardRangeView TRangeView, typename TFunction>
+    template <Concepts::ForwardRangeView TRangeView,
+              typename TFunction>
     constexpr void
-    ForEach(Immutable<TRangeView> range_view, TFunction function) noexcept
+    ForEach(Immutable<TRangeView> range_view,
+            TFunction function) noexcept
     {
         for (auto rest = range_view;
              !Details::RouteIsEmpty(rest);
@@ -52,15 +54,17 @@ namespace Syntropy::Ranges
 
     template <Concepts::ForwardRangeView TRangeView,
               Concepts::ForwardRangeView URangeView>
-    constexpr Tuples::Tuple<TRangeView, URangeView>
+    constexpr Int
     Copy(Immutable<TRangeView> destination,
          Immutable<URangeView> source) noexcept
     {
         auto source_copy = source;
         auto destination_copy = destination;
+        auto count = ToInt(0);
 
         for (; !Details::RouteIsEmpty(source_copy) &&
-               !Details::RouteIsEmpty(destination_copy);)
+               !Details::RouteIsEmpty(destination_copy);
+               ++count)
         {
             Details::RouteFront(destination_copy)
                 = Details::RouteFront(source_copy);
@@ -69,20 +73,22 @@ namespace Syntropy::Ranges
             destination_copy = Details::RoutePopFront(destination_copy);
         }
 
-        return { destination_copy, source_copy };
+        return count;
     }
 
     template <Concepts::ForwardRangeView TRangeView,
               Concepts::ForwardRangeView URangeView>
-    constexpr Tuples::Tuple<TRangeView, URangeView>
+    constexpr Int
     Move(Immutable<TRangeView> destination,
          Immutable<URangeView> source) noexcept
     {
         auto source_copy = source;
         auto destination_copy = destination;
+        auto count = ToInt(0);
 
         for (; !Details::RouteIsEmpty(source_copy) &&
-               !Details::RouteIsEmpty(destination_copy);)
+               !Details::RouteIsEmpty(destination_copy);
+               ++count)
         {
             Details::RouteFront(destination_copy)
                 = Syntropy::Move(Details::RouteFront(source_copy));
@@ -91,19 +97,21 @@ namespace Syntropy::Ranges
             destination_copy = Details::RoutePopFront(destination_copy);
         }
 
-        return { source , destination };
+        return count;
     }
 
     template <Concepts::ForwardRangeView TRangeView,
               Concepts::ForwardRangeView URangeView>
-    constexpr Tuples::Tuple<TRangeView, URangeView>
+    constexpr Int
     Swap(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept
     {
         auto left = lhs;
         auto right = rhs;
+        auto count = ToInt(0);
 
         for (; !Details::RouteIsEmpty(left) &&
-               !Details::RouteIsEmpty(right);)
+               !Details::RouteIsEmpty(right);
+               ++count)
         {
             Algorithm::Swap(Details::RouteFront(left),
                             Details::RouteFront(right));
@@ -112,9 +120,8 @@ namespace Syntropy::Ranges
             right = Details::RoutePopFront(right);
         }
 
-        return { left , right };
+        return count;
     }
-
 }
 
 // ===========================================================================

@@ -32,18 +32,18 @@ namespace Syntropy::Ranges::Concepts
     /* CONTIGUOUS RANGE VIEW                                                */
     /************************************************************************/
 
-    /// \brief Minimal interface for range views whose elements are allocated
-    ///        contiguously.
+    /// \brief Minimal interface for views to ranges whose elements are
+    ////       allocated contiguously.
     ///
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRangeView>
     concept BaseContiguousRangeView =
         requires(Immutable<TRangeView> range_view)
         {
-            /// \brief Access range's element storage.
+            /// \brief Access a range elements' storage.
             { Details::RouteData(range_view) };
 
-            /// \brief Get range's elements count.
+            /// \brief Get the number of elements in a range view.
             { Details::RouteCount(range_view) };
         };
 
@@ -67,25 +67,27 @@ namespace Syntropy::Ranges
     // Contiguous range view.
     // ======================
 
-    /// \brief Access range view's element storage.
+    /// \brief Access a range elements' storage.
     ///
-    /// \remarks Accessing an empty range view's storage results in
-    ///          undefined behavior.
+    /// \remarks Calling this method on an empty range results in undefined
+    ///          behavior.
     template <Concepts::ContiguousRangeView TRangeView>
     [[nodiscard]] constexpr auto
     Data(Immutable<TRangeView> range) noexcept;
 
-    /// \brief Check whether lhs and rhs are equal.
+    /// \brief Check whether two range view elements are equal.
     template <Concepts::ContiguousRangeView TRangeView,
               Concepts::ContiguousRangeView URangeView>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept;
+    AreEqual(Immutable<TRangeView> lhs,
+             Immutable<URangeView> rhs) noexcept;
 
     /// \brief Check whether two contiguous range views intersects.
     template <Concepts::ContiguousRangeView TRangeView,
               Concepts::ContiguousRangeView URangeView>
     [[nodiscard]] constexpr Bool
-    Intersect(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept;
+    Intersect(Immutable<TRangeView> lhs,
+              Immutable<URangeView> rhs) noexcept;
 
 }
 
@@ -97,11 +99,12 @@ namespace Syntropy::Ranges::Extensions
     /* CONTIGUOUS RANGE VIEW EXTENSIONS                                     */
     /************************************************************************/
 
-    /// \brief Access range view's element by index.
+    /// \brief Access a range view element by index.
     ///
     /// \remarks Exceeding range view boundaries results in undefined behavior.
     /// \remarks This extension adapts RandomAccessRangeView type such that all
-    ///          its instances are also BidirectionalRanges and SizedRanges.
+    ///          its instances are also BidirectionalRangeViews and
+    ///          SizedRangesViews.
     template <Concepts::BaseContiguousRangeView TRangeView>
     struct At<TRangeView>
     {
@@ -111,11 +114,12 @@ namespace Syntropy::Ranges::Extensions
                    Immutable<TIndex> index) const noexcept;
     };
 
-    /// \brief Obtain a range view to a sub-range-view.
+    /// \brief Obtain a sub-range-view.
     ///
     /// \remarks Exceeding range view boundaries results in undefined behavior.
-    /// \remarks This extension adapts RandomAccessRange type such that all its
-    ///          instances are also BidirectionalRanges and SizedRanges.
+    /// \remarks This extension adapts RandomAccessRangeView type such that
+    ///          all its instances are also BidirectionalRangeViews and
+    ///          SizedRangeViews.
     template <Concepts::BaseContiguousRangeView TRangeView>
     struct Slice<TRangeView>
     {

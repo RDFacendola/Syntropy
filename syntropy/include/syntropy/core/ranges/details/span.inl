@@ -22,8 +22,8 @@ namespace Syntropy
 
     template <typename TType, typename TTraits>
     constexpr BaseSpan<TType, TTraits>
-    ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::TPointer> begin,
-               Immutable<BaseSpan<TType, TTraits>::TCount> size) noexcept
+    ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::PointerType> begin,
+               Immutable<BaseSpan<TType, TTraits>::CountType> size) noexcept
         : data_(begin)
         , count_(size)
     {
@@ -32,9 +32,9 @@ namespace Syntropy
 
     template <typename TType, typename TTraits>
     constexpr BaseSpan<TType, TTraits>
-    ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::TPointer> begin,
-               Immutable<BaseSpan<TType, TTraits>::TPointer> end) noexcept
-        : BaseSpan(begin, TCount{ end - begin })
+    ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::PointerType> begin,
+               Immutable<BaseSpan<TType, TTraits>::PointerType> end) noexcept
+        : BaseSpan(begin, CountType{ end - begin })
     {
 
     }
@@ -64,14 +64,14 @@ namespace Syntropy
     [[nodiscard]] constexpr BaseSpan<TType, TTraits>
     ::operator Bool() const noexcept
     {
-        return count_ > TCount{ 0 };
+        return count_ > CountType{ 0 };
     }
 
     template <typename TType, typename TTraits>
     [[nodiscard]] constexpr
-    typename BaseSpan<TType, TTraits>::TReference
+    typename BaseSpan<TType, TTraits>::ReferenceType
     BaseSpan<TType, TTraits>
-    ::operator[](Immutable<typename BaseSpan<TType, TTraits>::TCount> index)
+    ::operator[](Immutable<typename BaseSpan<TType, TTraits>::CountType> index)
     const noexcept
     {
         return data_[ToInt(index)];
@@ -79,7 +79,7 @@ namespace Syntropy
 
     template <typename TType, typename TTraits>
     [[nodiscard]] constexpr
-    typename BaseSpan<TType, TTraits>::TPointer BaseSpan<TType, TTraits>
+    typename BaseSpan<TType, TTraits>::PointerType BaseSpan<TType, TTraits>
     ::GetData() const noexcept
     {
         return data_;
@@ -87,7 +87,7 @@ namespace Syntropy
 
     template <typename TType, typename TTraits>
     [[nodiscard]] constexpr
-    Immutable<typename BaseSpan<TType, TTraits>::TCount>
+    Immutable<typename BaseSpan<TType, TTraits>::CountType>
     BaseSpan<TType, TTraits>
     ::GetCount() const noexcept
     {
