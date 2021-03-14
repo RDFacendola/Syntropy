@@ -51,8 +51,8 @@ namespace Syntropy::Ranges::Concepts
     ///
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRangeView>
-    concept ContiguousRangeView
-        = BaseContiguousRangeView<TRangeView> && RandomAccessRangeView<TRangeView>;
+    concept ContiguousRangeView = BaseContiguousRangeView<TRangeView>
+        && RandomAccessRangeView<TRangeView>;
 
 }
 
@@ -101,10 +101,9 @@ namespace Syntropy::Ranges::Extensions
 
     /// \brief Access a range view element by index.
     ///
-    /// \remarks Exceeding range view boundaries results in undefined behavior.
-    /// \remarks This extension adapts RandomAccessRangeView type such that all
-    ///          its instances are also BidirectionalRangeViews and
-    ///          SizedRangesViews.
+    /// \remarks Undefined behavior if range view boundaries are exceeded.
+    /// \remarks This extension adapts contiguous range views to meet
+    ///          random access range view concept.
     template <Concepts::BaseContiguousRangeView TRangeView>
     struct At<TRangeView>
     {
@@ -116,10 +115,9 @@ namespace Syntropy::Ranges::Extensions
 
     /// \brief Obtain a sub-range-view.
     ///
-    /// \remarks Exceeding range view boundaries results in undefined behavior.
-    /// \remarks This extension adapts RandomAccessRangeView type such that
-    ///          all its instances are also BidirectionalRangeViews and
-    ///          SizedRangeViews.
+    /// \remarks Undefined behavior if range view boundaries are exceeded.
+    /// \remarks This extension adapts contiguous range views to meet
+    ///          random access range view concept.
     template <Concepts::BaseContiguousRangeView TRangeView>
     struct Slice<TRangeView>
     {

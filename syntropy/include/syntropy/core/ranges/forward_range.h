@@ -72,13 +72,12 @@ namespace Syntropy::Ranges::Templates
     /// \brief Value type of a range's elements.
     template <typename TRangeView>
     using RangeViewElementValueTypeOf = Syntropy::Templates::QualifiedOf<
-            RangeViewElementTypeOf<TRangeView>>;
+        RangeViewElementTypeOf<TRangeView>>;
 
     /// \brief Type of a range's elements.
     template <Ranges::Concepts::Range TRange>
     using RangeElementTypeOf = decltype(
-        Details::RouteFront(
-            ViewOf(Syntropy::Templates::Declval<TRange>())));
+        Details::RouteFront(ViewOf(Syntropy::Templates::Declval<TRange>())));
 
     /// \brief Value type of a range's elements.
     template <Ranges::Concepts::Range TRange>
@@ -99,8 +98,7 @@ namespace Syntropy::Ranges
 
     /// \brief Access the first element in a range view.
     ///
-    /// \remarks Calling this method on an empty range results in undefined
-    ///          behavior.
+    /// \remarks Undefined behavior if the range view is empty.
     template <Concepts::ForwardRangeView TRangeView>
     [[nodiscard]] constexpr decltype(auto)
     Front(Immutable<TRangeView> range_view) noexcept;
@@ -108,8 +106,7 @@ namespace Syntropy::Ranges
     /// \brief Discard the first element in a range view and return a view
     ///        to the remaining elements.
     ///
-    /// \remarks Calling this method on an empty range results in undefined
-    ///          behavior.
+    /// \remarks Undefined behavior if the range view is empty.
     template <Concepts::ForwardRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
     PopFront(Immutable<TRangeView> range_view) noexcept;

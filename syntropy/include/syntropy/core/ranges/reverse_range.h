@@ -57,16 +57,14 @@ namespace Syntropy::Ranges
 
         /// \brief Access the first element in the view.
         ///
-        /// \remarks If this view is empty, calling this method results in
-        ///          undefined behavior.
+        /// \remarks Undefined behavior if the range view is empty.
         [[nodiscard]] constexpr decltype(auto)
         GetFront() const noexcept;
 
         /// \brief Discard the first element in the view and return the
         ///        view to the remaining elements.
         ///
-        /// \remarks If this view is empty, calling this method results in
-        ///          undefined behavior.
+        /// \remarks Undefined behavior if the range view is empty.
         [[nodiscard]] constexpr auto
         PopFront() const noexcept;
 
@@ -80,27 +78,26 @@ namespace Syntropy::Ranges
 
         /// \brief Access the last element in the view.
         ///
-        /// \remarks If this view is empty, calling this method results in
-        ///          undefined behavior.
+        /// \remarks Undefined behavior if the range view is empty.
         [[nodiscard]] constexpr decltype(auto)
         GetBack() const noexcept;
 
         /// \brief Discard the last element in the view and return the
         ///        view to the remaining elements.
         ///
-        /// \remarks If this view is empty, calling this method results in
-        ///          undefined behavior.
+        /// \remarks Undefined behavior if the range view is empty.
         [[nodiscard]] constexpr auto
         PopBack() const noexcept;
 
         /// \brief Access a range view element by index.
-        /// \remarks Exceeding view boundaries results in undefined behavior.
+        /// \remarks Undefined behavior if range view boundaries are exceeded.
         template <typename TIndex>
         [[nodiscard]] constexpr decltype(auto)
         At(Immutable<TIndex> index) const noexcept;
 
         /// \brief Obtain a sub-range-view.
-        /// \remarks Exceeding view boundaries results in undefined behavior.
+        ///
+        /// \remarks Undefined behavior if range view boundaries are exceeded.
         template <typename TIndex, typename TCount>
         [[nodiscard]] constexpr auto
         Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept;

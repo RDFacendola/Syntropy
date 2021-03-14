@@ -53,9 +53,8 @@ namespace Syntropy::Ranges::Concepts
     ///
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRangeView>
-    concept BidirectionalRangeView
-        = BaseBidirectionalRangeView<TRangeView> &&
-            ForwardRangeView<TRangeView>;
+    concept BidirectionalRangeView = BaseBidirectionalRangeView<TRangeView>
+        && ForwardRangeView<TRangeView>;
 }
 
 // ===========================================================================
@@ -71,8 +70,7 @@ namespace Syntropy::Ranges
 
     /// \brief Access the last element in a range view.
     ///
-    /// \remarks Calling this method on an empty range results in undefined
-    ///          behavior.
+    /// \remarks Undefined behavior if the range view is empty.
     template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr decltype(auto)
     Back(Immutable<TRangeView> range_view) noexcept;
@@ -80,8 +78,7 @@ namespace Syntropy::Ranges
     /// \brief Discard the last element in a range view and return a view to
     ///        the remaining elements.
     ///
-    /// \remarks Calling this method on an empty range results in undefined
-    ///          behavior.
+    /// \remarks Undefined behavior if the range view is empty.
     template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
     PopBack(Immutable<TRangeView> range_view) noexcept;
