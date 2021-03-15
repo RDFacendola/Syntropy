@@ -24,42 +24,42 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr decltype(auto) ReverseRange<TRangeView>
     ::GetFront() const noexcept
     {
-        return RouteBack(range_view_);
+        return Back(range_view_);
     }
 
     template <Ranges::Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr auto ReverseRange<TRangeView>
     ::PopFront() const noexcept
     {
-        return ReverseRange<TRangeView>{ RoutePopBack(range_view_) };
+        return ReverseRange<TRangeView>{ PopBack(range_view_) };
     }
 
     template <Ranges::Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr Bool ReverseRange<TRangeView>
     ::IsEmpty() const noexcept
     {
-        return RouteIsEmpty(range_view_);
+        return IsEmpty(range_view_);
     }
 
     template <Ranges::Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr auto ReverseRange<TRangeView>
     ::GetCount() const noexcept
     {
-        return RouteCount(range_view_);
+        return Count(range_view_);
     }
 
     template <Ranges::Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr decltype(auto) ReverseRange<TRangeView>
     ::GetBack() const noexcept
     {
-        return RouteFront(range_view_);
+        return Front(range_view_);
     }
 
     template <Ranges::Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr auto ReverseRange<TRangeView>
     ::PopBack() const noexcept
     {
-        return ReverseRange<TRangeView>{ RoutePopFront(range_view_) };
+        return ReverseRange<TRangeView>{ PopFront(range_view_) };
     }
 
     template <Ranges::Concepts::BidirectionalRangeView TRangeView>
@@ -67,7 +67,7 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr decltype(auto) ReverseRange<TRangeView>
     ::At(Immutable<TIndex> index) const noexcept
     {
-        return RouteAt(range_view_, RouteCount(range_view_) - index - TIndex{ 1 });
+        return At(range_view_, Count(range_view_) - index - TIndex{ 1 });
     }
 
     template <Ranges::Concepts::BidirectionalRangeView TRangeView>
@@ -77,7 +77,7 @@ namespace Syntropy::Ranges
     {
         return ReverseRange<TRangeView>
         {
-            RouteSlice(range_view_, RouteCount(range_view_) - index - count, count)
+            Slice(range_view_, Count(range_view_) - index - count, count)
         };
     }
 

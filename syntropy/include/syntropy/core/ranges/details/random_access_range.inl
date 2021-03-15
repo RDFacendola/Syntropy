@@ -21,7 +21,9 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr decltype(auto)
     At(Immutable<TRangeView> range_view, Immutable<TIndex> index) noexcept
     {
-        return Details::RouteAt(range_view, index);
+        using Details::RouteAt;
+
+        return RouteAt(range_view, index);
     }
 
     template <Concepts::RandomAccessRangeView TRangeView,
@@ -32,14 +34,18 @@ namespace Syntropy::Ranges
           Immutable<TIndex> index,
           Immutable<TCount> count) noexcept
     {
-        return Details::RouteSlice(range_view, index, count);
+        using Details::RouteSlice;
+
+        return RouteSlice(range_view, index, count);
     }
 
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount>
     [[nodiscard]] constexpr TRangeView
     Front(Immutable<TRangeView> range_view, Immutable<TCount> count) noexcept
     {
-        return Details::RouteSlice(
+        using Details::RouteSlice;
+
+        return RouteSlice(
             range_view,
             Templates::RangeViewCountType<TRangeView>{ 0 }, count);
     }
@@ -48,9 +54,12 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr TRangeView
     Back(Immutable<TRangeView> range_view, Immutable<TCount> count) noexcept
     {
-        return Details::RouteSlice(
+        using Details::RouteSlice;
+        using Details::RouteCount;
+
+        return RouteSlice(
             range_view,
-            Details::RouteCount(range_view) - count, count);
+            RouteCount(range_view) - count, count);
     }
 
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount>
@@ -58,38 +67,50 @@ namespace Syntropy::Ranges
     PopFront(Immutable<TRangeView> range_view,
              Immutable<TCount> count) noexcept
     {
-        return Details::RouteSlice(
+        using Details::RouteSlice;
+        using Details::RouteCount;
+
+        return RouteSlice(
             range_view,
             count,
-            Details::RouteCount(range_view) - count);
+            RouteCount(range_view) - count);
     }
 
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount>
     [[nodiscard]] constexpr TRangeView
     PopBack(Immutable<TRangeView> range_view, Immutable<TCount> count) noexcept
     {
-        return Details::RouteSlice(
+        using Details::RouteSlice;
+        using Details::RouteCount;
+
+        return RouteSlice(
             range_view,
             Templates::RangeViewCountType<TRangeView>{ 0 },
-            Details::RouteCount(range_view) - count);
+            RouteCount(range_view) - count);
     }
 
     template <Concepts::RandomAccessRangeView TRangeView>
     [[nodiscard]] constexpr auto
     SliceFront(Immutable<TRangeView> range_view) noexcept
     {
+        using Details::RouteFront;
+        using Details::RoutePopFront;
+
         return Tuples::MakeTuple(
-            Details::RouteFront(range_view),
-            Details::RoutePopFront(range_view));
+            RouteFront(range_view),
+            RoutePopFront(range_view));
     }
 
     template <Concepts::RandomAccessRangeView TRangeView>
     [[nodiscard]] constexpr auto
     SliceBack(Immutable<TRangeView> range_view) noexcept
     {
+        using Details::RouteBack;
+        using Details::RoutePopBack;
+
         return Tuples::MakeTuple(
-            Details::RouteBack(range_view),
-            Details::RoutePopBack(range_view));
+            RouteBack(range_view),
+            RoutePopBack(range_view));
     }
 
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount>
@@ -97,9 +118,12 @@ namespace Syntropy::Ranges
     SliceFront(Immutable<TRangeView> range_view,
                Immutable<TCount> count) noexcept
     {
+        using Details::RouteFront;
+        using Details::RoutePopFront;
+
         return Tuples::MakeTuple(
-            Details::RouteFront(range_view, count),
-            Details::RoutePopFront(range_view, count));
+            RouteFront(range_view, count),
+            RoutePopFront(range_view, count));
     }
 
     template <Concepts::RandomAccessRangeView TRangeView, typename TCount>
@@ -107,9 +131,12 @@ namespace Syntropy::Ranges
     SliceBack(Immutable<TRangeView> range_view,
               Immutable<TCount> count) noexcept
     {
+        using Details::RouteBack;
+        using Details::RoutePopBack;
+
         return Tuples::MakeTuple(
-            Details::RouteBack(range_view, count),
-            Details::RoutePopBack(range_view, count));
+            RouteBack(range_view, count),
+            RoutePopBack(range_view, count));
     }
 
 }
@@ -126,9 +153,11 @@ namespace Syntropy::Ranges::Extensions
     [[nodiscard]] inline decltype(auto) Front<TRangeView>
     ::operator()(Immutable<TRangeView> range_view) const noexcept
     {
+        using Details::RouteAt;
+
         using TCount = Templates::RangeViewCountType<TRangeView>;
 
-        return Details::RouteAt(range_view, TCount{ 0 });
+        return RouteAt(range_view, TCount{ 0 });
     }
 
     template <Concepts::BaseRandomAccessRangeView TRangeView>
@@ -136,12 +165,15 @@ namespace Syntropy::Ranges::Extensions
     TRangeView PopFront<TRangeView>
     ::operator()(Immutable<TRangeView> range_view) const noexcept
     {
+        using Details::RouteCount;
+        using Details::RouteSlice;
+
         using TCount = Templates::RangeViewCountType<TRangeView>;
 
         auto index = TCount{ 1 };
-        auto count = Details::RouteCount(range_view) - index;
+        auto count = RouteCount(range_view) - index;
 
-        return Details::RouteSlice(range_view, index, count);
+        return RouteSlice(range_view, index, count);
     };
 
     template <Concepts::BaseRandomAccessRangeView TRangeView>
@@ -149,11 +181,14 @@ namespace Syntropy::Ranges::Extensions
     inline decltype(auto) Back<TRangeView>
     ::operator()(Immutable<TRangeView> range_view) const noexcept
     {
+        using Details::RouteCount;
+        using Details::RouteAt;
+
         using TCount = Templates::RangeViewCountType<TRangeView>;
 
-        auto count = Details::RouteCount(range_view) - TCount{ 1 };
+        auto count = RouteCount(range_view) - TCount{ 1 };
 
-        return Details::RouteAt(range_view, count);
+        return RouteAt(range_view, count);
     };
 
     template <Concepts::BaseRandomAccessRangeView TRangeView>
@@ -161,12 +196,15 @@ namespace Syntropy::Ranges::Extensions
     inline TRangeView PopBack<TRangeView>
     ::operator()(Immutable<TRangeView> range_view) const noexcept
     {
+        using Details::RouteCount;
+        using Details::RouteSlice;
+
         using TCount = Templates::RangeViewCountType<TRangeView>;
 
         auto index = TCount{ 0 };
-        auto count = Details::RouteCount(range_view) - TCount{ 1 };
+        auto count = RouteCount(range_view) - TCount{ 1 };
 
-        return Details::RouteSlice(range_view, index, count);
+        return RouteSlice(range_view, index, count);
     }
 }
 

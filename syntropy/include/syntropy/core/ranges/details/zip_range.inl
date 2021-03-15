@@ -25,7 +25,7 @@ namespace Syntropy::Ranges
     {
         auto zip_front = [](Immutable<TRangeViews>... range_views)
         {
-            return Tuples::MakeTuple(RouteFront(range_views)...);
+            return Tuples::MakeTuple(Front(range_views)...);
         };
 
         return Tuples::Apply(zip_front, range_views_);
@@ -37,7 +37,10 @@ namespace Syntropy::Ranges
     {
         auto zip_pop_front = [](Immutable<TRangeViews>... range_views)
         {
-            return ZipRange<TRangeViews...>{ RoutePopFront(range_views)... };
+            return ZipRange<TRangeViews...>
+            {
+                Ranges::PopFront(range_views)...
+            };
         };
 
         return Tuples::Apply(zip_pop_front, range_views_);
@@ -49,7 +52,9 @@ namespace Syntropy::Ranges
     {
         auto zip_is_empty = [](Immutable<TRangeViews>... range_views)
         {
-            return (sizeof...(TRangeViews) == 0) || (RouteIsEmpty(range_views) || ...);
+            return (sizeof...(TRangeViews) == 0)
+                || (Ranges::IsEmpty(range_views)
+                || ...);
         };
 
         return Tuples::Apply(zip_is_empty, range_views_);
@@ -61,7 +66,7 @@ namespace Syntropy::Ranges
     {
         auto zip_min_count = [](Immutable<TRangeViews>... range_views)
         {
-            return Math::Min(RouteCount(range_views)...);
+            return Math::Min(Count(range_views)...);
         };
 
         return Tuples::Apply(zip_min_count, range_views_);
@@ -73,7 +78,7 @@ namespace Syntropy::Ranges
     {
         auto zip_back = [](Immutable<TRangeViews>... range_views)
         {
-            return Tuples::MakeTuple( RouteBack(range_views)... );
+            return Tuples::MakeTuple(Back(range_views)...);
         };
 
         return Tuples::Apply(zip_back, range_views_);
@@ -85,7 +90,10 @@ namespace Syntropy::Ranges
     {
         auto zip_pop_back = [](Immutable<TRangeViews>... range_views)
         {
-            return ZipRange<TRangeViews...>{ RoutePopBack(range_views)... };
+            return ZipRange<TRangeViews...>
+            {
+                Ranges::PopBack(range_views)...
+            };
         };
 
         return Tuples::Apply(zip_pop_back, range_views_);
@@ -98,7 +106,7 @@ namespace Syntropy::Ranges
     {
         auto zip_select = [index](Immutable<TRangeViews>... range_views)
         {
-            return Tuples::MakeTuple( RouteAt(range_views, index)... );
+            return Tuples::MakeTuple(Ranges::At(range_views, index)...);
         };
 
         return Tuples::Apply(zip_select, range_views_);
@@ -111,7 +119,10 @@ namespace Syntropy::Ranges
     {
         auto zip_select = [index, count](Immutable<TRangeViews>... range_views)
         {
-            return ZipRange<TRangeViews...>{ RouteSlice(range_views, index, count)... };
+            return ZipRange<TRangeViews...>
+            {
+                Ranges::Slice(range_views, index, count)...
+            };
         };
 
         return Tuples::Apply(zip_select, range_views_);
@@ -123,7 +134,7 @@ namespace Syntropy::Ranges
     {
         auto zip_data = [](Immutable<TRangeViews>... range_views)
         {
-            return Tuples::MakeTuple( RouteData(range_views)... );
+            return Tuples::MakeTuple( Data(range_views)... );
         };
 
         return Tuples::Apply(zip_data, range_views_);
@@ -150,8 +161,10 @@ namespace Syntropy::Ranges
                 return ZipRange(Tuples::Get<TIndex>(range_views)...);
             };
 
+        using RangeViewsType = decltype(range_views);
+
         return make_zip_range(
-            Syntropy::Tuples::Templates::TupleSequenceFor<decltype(range_views)>{});
+            Syntropy::Tuples::Templates::TupleSequenceFor<RangeViewsType>{});
     }
 
     template <Concepts::ForwardRangeView... TRangeViews>
@@ -172,7 +185,8 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr ZipRange<TRangeViews...>
     Zip(Immutable<TRangeViews>... range_views) noexcept
     {
-        return MakeZipRangeFromTuple(Tuples::Concatenate(Unzip(range_views)...));
+        return MakeZipRangeFromTuple(
+            Tuples::Concatenate(Unzip(range_views)...));
     }
 
     template <Int VIndex, Concepts::ForwardRangeView... TRangeViews>

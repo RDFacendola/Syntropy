@@ -18,14 +18,18 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr decltype(auto)
     Back(Immutable<TRangeView> range_view) noexcept
     {
-        return Details::RouteBack(range_view);
+        using Details::RouteBack;
+
+        return RouteBack(range_view);
     }
 
     template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
     PopBack(Immutable<TRangeView> range_view) noexcept
     {
-        return Details::RoutePopBack(range_view);
+        using Details::RoutePopBack;
+
+        return RoutePopBack(range_view);
     }
 }
 

@@ -20,7 +20,9 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr Templates::RangeViewTypeOf<TRange>
     ViewOf(Forwarding<TRange> range) noexcept
     {
-        return Details::RouteViewOf(Forward<TRange>(range));
+        using Details::RouteViewOf;
+
+        return RouteViewOf(Forward<TRange>(range));
     }
 }
 

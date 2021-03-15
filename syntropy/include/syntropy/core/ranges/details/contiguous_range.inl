@@ -27,39 +27,62 @@ namespace Syntropy::Ranges
     template <Concepts::ContiguousRangeView TRangeView,
               Concepts::ContiguousRangeView URangeView>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept
+    AreEqual(Immutable<TRangeView> lhs,
+             Immutable<URangeView> rhs) noexcept
     {
-        auto same_instance
-            = (PtrOf(lhs) == PtrOf(rhs));
+        using Details::RouteCount;
+        using Details::RouteData;
+        using Details::RouteIsEmpty;
 
-        auto both_empty
-            = (Details::RouteIsEmpty(lhs));
+        if(PtrOf(lhs) == PtrOf(rhs))
+        {
+            return true;
+        }
 
-        auto same_data
-            = (Details::RouteData(lhs) == Details::RouteData(rhs));
+        if(RouteIsEmpty(lhs) && RouteIsEmpty(rhs))
+        {
+            return true;
+        }
 
-        auto same_count
-            = (Details::RouteCount(lhs) == Details::RouteCount(rhs));
+        if(RouteCount(lhs) != RouteCount(rhs))
+        {
+            return false;
+        }
 
-        return same_instance || (same_count && (both_empty || same_data));
+        if(RouteData(lhs) == RouteData(rhs))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     template <Concepts::ContiguousRangeView TRangeView,
               Concepts::ContiguousRangeView URangeView>
     [[nodiscard]] constexpr Bool
-    Intersect(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept
+    Intersect(Immutable<TRangeView> lhs,
+              Immutable<URangeView> rhs) noexcept
     {
-        using TCount = decltype(Ranges::Count(lhs));
+        using Details::RouteCount;
+        using Details::RouteData;
+        using Details::RouteIsEmpty;
 
-        auto lhs_count = Ranges::Count(lhs);
-        auto rhs_count = Ranges::Count(rhs);
-        auto lhs_data = Ranges::Data(lhs);
-        auto rhs_data = Ranges::Data(rhs);
+        if(RouteIsEmpty(lhs) || RouteIsEmpty(rhs))
+        {
+            return true;    // Empty ranges intersects with everything.
+        }
 
-        return (lhs_count == TCount{ 0 })
-            || (rhs_count == TCount{ 0 })
-            || ((lhs_data < rhs_data + rhs_count)
-             && (rhs_data < lhs_data + lhs_count));
+        if(RouteData(lhs) > RouteData(rhs) + RouteCount(rhs))
+        {
+            return false;
+        }
+
+        if(RouteData(rhs) > RouteData(lhs) + RouteCount(lhs))
+        {
+            return false;
+        }
+
+        return true;
     }
 
 }
@@ -78,7 +101,9 @@ namespace Syntropy::Ranges::Extensions
     ::operator()(Immutable<TRangeView> range_view,
                  Immutable<TIndex> index) const noexcept
     {
-        return *(Details::RouteData(range_view) + index);
+        using Details::RouteData;
+
+        return *(RouteData(range_view) + index);
     }
 
     template <Concepts::BaseContiguousRangeView TRangeView>
@@ -88,7 +113,9 @@ namespace Syntropy::Ranges::Extensions
                  Immutable<TIndex> index,
                  Immutable<TCount> count) const noexcept
     {
-        return { Details::RouteData(range_view) + index, count };
+        using Details::RouteData;
+
+        return { RouteData(range_view) + index, count };
     };
 }
 
