@@ -27,10 +27,10 @@ namespace Syntropy::Ranges::Concepts
     /// \brief A collection of elements that can be visited in some order.
     /// \author Raffaele D. Facendola - March 2021.
     template <typename TRange>
-    concept Range = requires(Forwarding<TRange> range)
+    concept Range = requires(TRange range)
     {
         /// \brief Get a view to a range' elements.
-        { Details::RouteViewOf(Forward<TRange>(range)) };
+        { Details::RouteViewOf(range) };
     };
 }
 

@@ -9,24 +9,13 @@
 
 #include "simple_compliance/bulk.h"
 
-void Megaprint(Syntropy::Immutable<Syntropy::Strings::StringView> sv)
-{
-    std::cout << "hey!";
-}
-
 int main()
 {
    std::cout << "Hello, Syntropy\n";
 
-   Syntropy::Strings::String s0 = u8"ciao℧";
-   Syntropy::Strings::String s1 = u8"ciao";
-   Syntropy::Strings::String s2 = u8"caio";
+   auto fix_array = Syntropy::FixArray<int, 5>(0, 1, 2, 3, 4);
 
-   std::cout << (s1 == s2) << "\n";
-   std::cout << (s0 == u8"ciaoasd") << "\n";
-   std::cout << (u8"ciao℧" == s0) << "\n";
-
-   Megaprint(s0);
+   auto view = Syntropy::Ranges::ViewOf(fix_array);
 
    return 0;
 }
