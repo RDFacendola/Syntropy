@@ -22,12 +22,6 @@ namespace Syntropy::Ranges::Details
     template <Int TPriority>
     using Priority = Syntropy::Templates::Priority<TPriority>;
 
-    template <typename TRangeView>
-    using ExtensionAt = Ranges::Extensions::At<TRangeView>;
-
-    template <typename TRangeView>
-    using ExtensionSlice = Ranges::Extensions::Slice<TRangeView>;
-
     /************************************************************************/
     /* AT                                                                   */
     /************************************************************************/
@@ -38,9 +32,10 @@ namespace Syntropy::Ranges::Details
     InvokeAt(Immutable<TRangeView> range_view,
              Immutable<TIndex> index,
              Priority<3>)
-             noexcept -> decltype(ExtensionAt<TRangeView>{}(range_view, index))
+                noexcept -> decltype(
+                    Extensions::At<TRangeView>{}(range_view, index))
     {
-        return ExtensionAt<TRangeView>{}(range_view, index);
+        return Extensions::At<TRangeView>{}(range_view, index);
     }
 
     /// \brief Invoke the method via member-operator.
@@ -98,9 +93,9 @@ namespace Syntropy::Ranges::Details
                 Immutable<TCount> count,
                 Priority<2>)
                     noexcept -> decltype(
-                ExtensionSlice<TRangeView>{}(range_view, index, count))
+                Extensions::Slice<TRangeView>{}(range_view, index, count))
     {
-        return ExtensionSlice<TRangeView>{}(range_view, index, count);
+        return Extensions::Slice<TRangeView>{}(range_view, index, count);
     }
 
     /// \brief Invoke the method via member-function.

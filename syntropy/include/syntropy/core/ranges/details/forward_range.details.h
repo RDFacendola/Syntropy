@@ -22,15 +22,6 @@ namespace Syntropy::Ranges::Details
     template <Int TPriority>
     using Priority = Syntropy::Templates::Priority<TPriority>;
 
-    template <typename TRangeView>
-    using ExtensionFront = Ranges::Extensions::Front<TRangeView>;
-
-    template <typename TRangeView>
-    using ExtensionPopFront = Ranges::Extensions::PopFront<TRangeView>;
-
-    template <typename TRangeView>
-    using ExtensionIsEmpty = Ranges::Extensions::IsEmpty<TRangeView>;
-
     /************************************************************************/
     /* RANGE VIEW ITERATOR                                                  */
     /************************************************************************/
@@ -72,9 +63,9 @@ namespace Syntropy::Ranges::Details
     /// \brief Invoke the method via a custom extension.
     template <typename TRangeView>
     auto InvokeFront(Immutable<TRangeView> range_view, Priority<2>)
-        noexcept -> decltype(ExtensionFront<TRangeView>{}(range_view))
+        noexcept -> decltype(Extensions::Front<TRangeView>{}(range_view))
     {
-        return ExtensionFront<TRangeView>{}(range_view);
+        return Extensions::Front<TRangeView>{}(range_view);
     }
 
     /// \brief Invoke the method via member-function.
@@ -108,9 +99,9 @@ namespace Syntropy::Ranges::Details
     /// \brief Invoke the method via a custom extension.
     template <typename TRangeView>
     auto InvokePopFront(Immutable<TRangeView> range_view, Priority<2>)
-        noexcept -> decltype(ExtensionPopFront<TRangeView>{}(range_view))
+        noexcept -> decltype(Extensions::PopFront<TRangeView>{}(range_view))
     {
-        return ExtensionPopFront<TRangeView>{}(range_view);
+        return Extensions::PopFront<TRangeView>{}(range_view);
     }
 
     template <typename TRangeView>
@@ -141,9 +132,9 @@ namespace Syntropy::Ranges::Details
     /// \brief Invoke the method via a custom extension.
     template <typename TRangeView>
     inline auto InvokeIsEmpty(Immutable<TRangeView> range_view, Priority<2>)
-        noexcept -> decltype(ExtensionIsEmpty<TRangeView>{}(range_view))
+        noexcept -> decltype(Extensions::IsEmpty<TRangeView>{}(range_view))
     {
-        return ExtensionIsEmpty<TRangeView>{}(range_view);
+        return Extensions::IsEmpty<TRangeView>{}(range_view);
     }
 
     /// \brief Invokes a member function on the range view.

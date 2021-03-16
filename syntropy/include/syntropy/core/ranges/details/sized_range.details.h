@@ -22,9 +22,6 @@ namespace Syntropy::Ranges::Details
     template <Int TPriority>
     using Priority = Syntropy::Templates::Priority<TPriority>;
 
-    template <typename TRangeView>
-    using ExtensionCount = Ranges::Extensions::Count<TRangeView>;
-
     /************************************************************************/
     /* COUNT                                                                */
     /************************************************************************/
@@ -33,9 +30,9 @@ namespace Syntropy::Ranges::Details
     template <typename TRangeView>
     inline auto
     InvokeCount(Immutable<TRangeView> range_view, Priority<2>)
-        noexcept -> decltype(ExtensionCount<TRangeView>{}(range_view))
+        noexcept -> decltype(Extensions::Count<TRangeView>{}(range_view))
     {
-        return ExtensionCount<TRangeView>{}(range_view);
+        return Extensions::Count<TRangeView>{}(range_view);
     }
 
     /// \brief Invoke the method via member-function.

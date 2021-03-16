@@ -22,9 +22,6 @@ namespace Syntropy::Ranges::Details
     template <Int TPriority>
     using Priority = Syntropy::Templates::Priority<TPriority>;
 
-    template <typename TRangeView>
-    using ExtensionData = Ranges::Extensions::Data<TRangeView>;
-
     /************************************************************************/
     /* DATA                                                                 */
     /************************************************************************/
@@ -33,9 +30,9 @@ namespace Syntropy::Ranges::Details
     template <typename TRangeView>
     inline auto
     InvokeData(Immutable<TRangeView> range_view, Priority<2>)
-       noexcept -> decltype(ExtensionData<TRangeView>{}(range_view))
+       noexcept -> decltype(Extensions::Data<TRangeView>{}(range_view))
     {
-        return ExtensionData<TRangeView>{}(range_view);
+        return Extensions::Data<TRangeView>{}(range_view);
     }
 
     /// \brief Invoke the method via member-function.

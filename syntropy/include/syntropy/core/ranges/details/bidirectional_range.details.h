@@ -25,12 +25,6 @@ namespace Syntropy::Ranges::Details
     template <Int TPriority>
     using Priority = Syntropy::Templates::Priority<TPriority>;
 
-    template <typename TRangeView>
-    using ExtensionBack = Ranges::Extensions::Back<TRangeView>;
-
-    template <typename TRangeView>
-    using ExtensionPopBack = Ranges::Extensions::PopBack<TRangeView>;
-
     /************************************************************************/
     /* BACK                                                                 */
     /************************************************************************/
@@ -38,9 +32,9 @@ namespace Syntropy::Ranges::Details
     /// \brief Invoke the method via a custom extension.
     template <typename TRangeView>
     auto InvokeBack(Immutable<TRangeView> range_view, Priority<2>)
-        noexcept -> decltype(ExtensionBack<TRangeView>{}(range_view))
+        noexcept -> decltype(Extensions::Back<TRangeView>{}(range_view))
     {
-        return ExtensionBack<TRangeView>{}(range_view);
+        return Extensions::Back<TRangeView>{}(range_view);
     }
 
     /// \brief Invoke the method via member-function.
@@ -74,9 +68,9 @@ namespace Syntropy::Ranges::Details
     /// \brief Invoke the method via a custom extension.
     template <typename TRangeView>
     auto InvokePopBack(Immutable<TRangeView> range_view, Priority<2>)
-       noexcept -> decltype(ExtensionPopBack<TRangeView>{}(range_view))
+       noexcept -> decltype(Extensions::PopBack<TRangeView>{}(range_view))
     {
-        return ExtensionPopBack<TRangeView>{}(range_view);
+        return Extensions::PopBack<TRangeView>{}(range_view);
     }
 
     /// \brief Invoke the method via member-function.
