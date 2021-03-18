@@ -63,6 +63,20 @@ namespace Syntropy::Ranges::Concepts
     concept RandomAccessRangeView = BaseRandomAccessRangeView<TRangeView>
         && BidirectionalRangeView<TRangeView>
         && SizedRangeView<TRangeView>;
+
+    /************************************************************************/
+    /* RANDOM ACCESS RANGE                                                  */
+    /************************************************************************/
+
+    /// \brief Container whose elements can be visited in any order.
+    ///
+    /// \author Raffaele D. Facendola - March 2021.
+    template <typename TRange>
+    concept RandomAccessRange = requires(Immutable<TRange> range)
+    {
+        { ViewOf(range) } -> RandomAccessRangeView;
+    };
+
 }
 
 // ===========================================================================

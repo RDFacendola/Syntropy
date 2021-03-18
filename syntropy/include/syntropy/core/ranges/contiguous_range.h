@@ -54,6 +54,18 @@ namespace Syntropy::Ranges::Concepts
     concept ContiguousRangeView = BaseContiguousRangeView<TRangeView>
         && RandomAccessRangeView<TRangeView>;
 
+    /************************************************************************/
+    /* CONTIGUOUS RANGE                                                     */
+    /************************************************************************/
+
+    /// \brief Container whose elements are allocated contiguously.
+    ///
+    /// \author Raffaele D. Facendola - March 2021.
+    template <typename TRange>
+    concept ContiguousRange = requires(Immutable<TRange> range)
+    {
+        { ViewOf(range) } -> ContiguousRangeView;
+    };
 }
 
 // ===========================================================================

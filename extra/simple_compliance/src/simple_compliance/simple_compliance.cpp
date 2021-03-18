@@ -11,11 +11,24 @@
 
 int main()
 {
-   std::cout << "Hello, Syntropy\n";
+    std::cout << "Hello, Syntropy\n";
 
-   auto fix_array = Syntropy::FixArray<int, 5>(0, 1, 2, 3, 4);
+    auto fix_array = Syntropy::FixArray<int, 5>(10, 42, 2, 3, 4);
 
-   auto view = Syntropy::Ranges::ViewOf(fix_array);
+    static_assert(Syntropy::Ranges::Concepts::ForwardRange<decltype(fix_array)>,
+                 "Not a foward range, buddy!");
+
+    static_assert(Syntropy::Ranges::Concepts::SizedRange<decltype(fix_array)>,
+                   "Not a sized range, buddy!");
+
+    static_assert(Syntropy::Ranges::Concepts::BidirectionalRange<decltype(fix_array)>,
+                   "Not a bidirectional range, buddy!");
+
+    static_assert(Syntropy::Ranges::Concepts::RandomAccessRange<decltype(fix_array)>,
+                   "Not a random access range, buddy!");
+
+    static_assert(Syntropy::Ranges::Concepts::ContiguousRange<decltype(fix_array)>,
+                   "Not a contiguous range, buddy!");
 
    return 0;
 }

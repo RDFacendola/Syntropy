@@ -27,7 +27,7 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::ForwardRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
+    [[nodiscard]] constexpr auto
     PopFront(Immutable<TRangeView> range_view) noexcept
     {
         using Details::RoutePopFront;

@@ -55,6 +55,21 @@ namespace Syntropy::Ranges::Concepts
     template <typename TRangeView>
     concept BidirectionalRangeView = BaseBidirectionalRangeView<TRangeView>
         && ForwardRangeView<TRangeView>;
+
+    /************************************************************************/
+    /* BIDIRECTIONAL RANGE                                                  */
+    /************************************************************************/
+
+    /// \brief Container whose elements can be visited sequentially in either
+    ///        direction.
+    ///
+    /// \author Raffaele D. Facendola - March 2021.
+    template <typename TRange>
+    concept BidirectionalRange = requires(Immutable<TRange> range)
+    {
+        { ViewOf(range) } -> BidirectionalRangeView;
+    };
+
 }
 
 // ===========================================================================

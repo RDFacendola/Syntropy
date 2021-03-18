@@ -66,6 +66,20 @@ namespace Syntropy::Ranges::Concepts
     template <typename TRangeView>
     concept SizedRangeView = BaseSizedRangeView<TRangeView>
         && ForwardRangeView<TRangeView>;
+
+    /************************************************************************/
+    /* SIZED RANGE                                                          */
+    /************************************************************************/
+
+    /// \brief Container whose elements can be visited sequentially and whose
+    ///        size can be computed in constant time.
+    ///
+    /// \author Raffaele D. Facendola - March 2021.
+    template <typename TRange>
+    concept SizedRange = requires(Immutable<TRange> range)
+    {
+        { ViewOf(range) } -> SizedRangeView;
+    };
 }
 
 // ===========================================================================

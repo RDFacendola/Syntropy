@@ -54,6 +54,20 @@ namespace Syntropy::Ranges::Concepts
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRangeView>
     concept ForwardRangeView = BaseForwardRangeView<TRangeView>;
+
+    /************************************************************************/
+    /* FORWARD RANGE                                                        */
+    /************************************************************************/
+
+    /// \brief Container whose elements can be visited sequentially.
+    ///
+    /// \author Raffaele D. Facendola - March 2021.
+    template <typename TRange>
+    concept ForwardRange = requires(Immutable<TRange> range)
+    {
+        { ViewOf(range) } -> ForwardRangeView;
+    };
+
 }
 
 // ===========================================================================
@@ -108,7 +122,7 @@ namespace Syntropy::Ranges
     ///
     /// \remarks Undefined behavior if the range view is empty.
     template <Concepts::ForwardRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
+    [[nodiscard]] constexpr auto
     PopFront(Immutable<TRangeView> range_view) noexcept;
 
     /// \brief Check whether a range view is empty.
