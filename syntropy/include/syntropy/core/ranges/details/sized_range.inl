@@ -103,6 +103,14 @@ namespace Syntropy::Ranges
 
         return RouteIsEmpty(lhs_copy) ? Ordering::kLess : Ordering::kGreater;
     }
+
+    template <Concepts::SizedRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    ViewOf(Immutable<TRangeView> range_view) noexcept
+    {
+        return range_view;
+    }
+
 }
 
 // ===========================================================================

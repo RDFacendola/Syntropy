@@ -31,6 +31,14 @@ namespace Syntropy::Ranges
 
         return RoutePopBack(range_view);
     }
+
+    template <Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    ViewOf(Immutable<TRangeView> range_view) noexcept
+    {
+        return range_view;
+    }
+
 }
 
 // ===========================================================================

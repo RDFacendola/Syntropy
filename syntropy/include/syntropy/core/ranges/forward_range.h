@@ -167,6 +167,11 @@ namespace Syntropy::Ranges
     Swap(Immutable<TRangeView> lhs,
          Immutable<URangeView> rhs) noexcept;
 
+    /// \brief Idempotent range view.
+    template <Concepts::ForwardRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    ViewOf(Immutable<TRangeView> range_view) noexcept;
+
 }
 
 // ===========================================================================

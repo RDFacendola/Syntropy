@@ -139,6 +139,13 @@ namespace Syntropy::Ranges
             RoutePopBack(range_view, count));
     }
 
+    template <Concepts::RandomAccessRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    ViewOf(Immutable<TRangeView> range_view) noexcept
+    {
+        return range_view;
+    }
+
 }
 
 // ===========================================================================

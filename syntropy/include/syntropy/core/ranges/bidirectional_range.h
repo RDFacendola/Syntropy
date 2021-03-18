@@ -97,6 +97,12 @@ namespace Syntropy::Ranges
     template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
     PopBack(Immutable<TRangeView> range_view) noexcept;
+
+    /// \brief Idempotent range view.
+    template <Concepts::BidirectionalRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    ViewOf(Immutable<TRangeView> range_view) noexcept;
+
 }
 
 // ===========================================================================

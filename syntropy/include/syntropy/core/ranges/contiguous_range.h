@@ -101,6 +101,11 @@ namespace Syntropy::Ranges
     Intersect(Immutable<TRangeView> lhs,
               Immutable<URangeView> rhs) noexcept;
 
+    /// \brief Idempotent range view.
+    template <Concepts::ContiguousRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    ViewOf(Immutable<TRangeView> range_view) noexcept;
+
 }
 
 // ===========================================================================

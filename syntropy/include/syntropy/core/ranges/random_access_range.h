@@ -181,6 +181,12 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr auto
     SliceBack(Immutable<TRangeView> range_view,
               Immutable<TCount> count) noexcept;
+
+    /// \brief Idempotent range view.
+    template <Concepts::RandomAccessRangeView TRangeView>
+    [[nodiscard]] constexpr TRangeView
+    ViewOf(Immutable<TRangeView> range_view) noexcept;
+
 }
 
 // ===========================================================================
