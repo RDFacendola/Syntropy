@@ -61,24 +61,6 @@ namespace Syntropy::Ranges::Concepts
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
-{
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    // BidirectionalRangeView.
-    // =======================
-
-    /// \brief Idempotent range view.
-    template <Concepts::BidirectionalRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
-    ViewOf(Immutable<TRangeView> range_view) noexcept;
-
-}
-
-// ===========================================================================
-
 #include "details/bidirectional_range.inl"
 
 // ===========================================================================

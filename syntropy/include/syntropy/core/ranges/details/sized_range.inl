@@ -84,16 +84,6 @@ namespace Syntropy::Ranges
         return Ranges::IsEmpty(lhs_view) ? Ordering::kLess : Ordering::kGreater;
     }
 
-    // SizedRangeView.
-    // ===============
-
-    template <Concepts::SizedRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
-    ViewOf(Immutable<TRangeView> range_view) noexcept
-    {
-        return range_view;
-    }
-
 }
 
 // ===========================================================================

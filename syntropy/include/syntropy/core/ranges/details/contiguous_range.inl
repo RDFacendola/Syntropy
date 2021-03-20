@@ -76,16 +76,6 @@ namespace Syntropy::Ranges
         return true;
     }
 
-    // ContiguousRangeView.
-    // ====================
-
-    template <Concepts::ContiguousRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
-    ViewOf(Immutable<TRangeView> range_view) noexcept
-    {
-        return range_view;
-    }
-
 }
 
 // ===========================================================================

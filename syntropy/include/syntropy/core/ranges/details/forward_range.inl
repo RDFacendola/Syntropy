@@ -96,16 +96,6 @@ namespace Syntropy::Ranges
         return count;
     }
 
-    // ForwardRangeView.
-    // =================
-
-    template <Concepts::ForwardRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
-    ViewOf(Immutable<TRangeView> range_view) noexcept
-    {
-        return range_view;
-    }
-
 }
 
 // ===========================================================================

@@ -97,14 +97,6 @@ namespace Syntropy::Ranges
     constexpr Templates::RangeCountType<TRange>
     Swap(Immutable<TRange> lhs, Immutable<TRange> rhs) noexcept;
 
-    // ForwardRangeView.
-    // =================
-
-    /// \brief Idempotent range view.
-    template <Concepts::ForwardRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
-    ViewOf(Immutable<TRangeView> range_view) noexcept;
-
 }
 
 // ===========================================================================

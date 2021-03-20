@@ -89,14 +89,6 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr Ordering
     Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
-    // SizedRangeView.
-    // ===============
-
-    /// \brief Idempotent range view.
-    template <Concepts::SizedRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
-    ViewOf(Immutable<TRangeView> range_view) noexcept;
-
 }
 
 // ===========================================================================

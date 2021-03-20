@@ -75,13 +75,6 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr Bool
     Intersect(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
-    // ContiguousRangeView.
-    // ====================
-
-    /// \brief Idempotent range view.
-    template <Concepts::ContiguousRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
-    ViewOf(Immutable<TRangeView> range_view) noexcept;
 }
 
 // ===========================================================================

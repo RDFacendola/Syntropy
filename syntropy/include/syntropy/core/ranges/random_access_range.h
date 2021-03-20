@@ -57,24 +57,6 @@ namespace Syntropy::Ranges::Concepts
 
 // ===========================================================================
 
-namespace Syntropy::Ranges
-{
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    // RandomAccessRangeView.
-    // ======================
-
-    /// \brief Idempotent range view.
-    template <Concepts::RandomAccessRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
-    ViewOf(Immutable<TRangeView> range_view) noexcept;
-
-}
-
-// ===========================================================================
-
 #include "details/random_access_range.inl"
 
 // ===========================================================================

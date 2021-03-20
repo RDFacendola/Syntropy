@@ -10,19 +10,6 @@
 
 namespace Syntropy::Ranges
 {
-    /************************************************************************/
-    /* NON-MEMBER FUNCTIONS                                                 */
-    /************************************************************************/
-
-    // BidirectionalRangeView.
-    // =======================
-    
-    template <Concepts::BidirectionalRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
-    ViewOf(Immutable<TRangeView> range_view) noexcept
-    {
-        return range_view;
-    }
 
 }
 
