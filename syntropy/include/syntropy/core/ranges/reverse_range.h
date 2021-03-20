@@ -44,9 +44,9 @@ namespace Syntropy::Ranges
         ReverseRange(Immutable<ReverseRange> rhs) = default;
 
         /// \brief Create a new reverse range_view.
-        template <Concepts::BidirectionalRangeView URangeView = TRangeView>
+        template <Concepts::BidirectionalRange TRange = TRangeView>
         constexpr explicit
-        ReverseRange(Immutable<URangeView> range_view) noexcept;
+        ReverseRange(Immutable<TRange> range) noexcept;
 
         /// \brief Default destructor.
         ~ReverseRange() = default;
@@ -67,10 +67,6 @@ namespace Syntropy::Ranges
         /// \remarks Undefined behavior if the range view is empty.
         [[nodiscard]] constexpr auto
         PopFront() const noexcept;
-
-        /// \brief Check whether the view is empty.
-        [[nodiscard]] constexpr Bool
-        IsEmpty() const noexcept;
 
         /// \brief Get the number of element.
         [[nodiscard]] constexpr auto
@@ -95,28 +91,25 @@ namespace Syntropy::Ranges
         [[nodiscard]] constexpr decltype(auto)
         At(Immutable<TIndex> index) const noexcept;
 
-        /// \brief Obtain a sub-range-view.
-        ///
-        /// \remarks Undefined behavior if range view boundaries are exceeded.
-        template <typename TIndex, typename TCount>
-        [[nodiscard]] constexpr auto
-        Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept;
-
     private:
 
-        /// \brief Underlying range_view.
+        /// \brief Underlying range view.
         TRangeView range_view_;
 
     };
+
+    /// \brief Deduction guieds for SliceRange.
+    template<Concepts::BidirectionalRangeView TRangeView>
+    ReverseRange(Immutable<TRangeView>) -> ReverseRange<TRangeView>;
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
     /// \brief Get a reversed range view.
-    template <Concepts::BidirectionalRangeView TRangeView>
-    [[nodiscard]] constexpr ReverseRange<TRangeView>
-    Reverse(Immutable<TRangeView> range_view) noexcept;
+    template <Concepts::BidirectionalRange TRange>
+    [[nodiscard]] constexpr auto
+    Reverse(Immutable<TRange> range) noexcept;
 
     /// \brief Get a reversed range view.
     template <Concepts::BidirectionalRangeView TRangeView>

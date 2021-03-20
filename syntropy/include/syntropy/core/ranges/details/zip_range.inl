@@ -113,22 +113,6 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::ForwardRangeView... TRangeViews>
-    template <typename TIndex, typename TCount>
-    [[nodiscard]] constexpr auto ZipRange<TRangeViews...>
-    ::Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept
-    {
-        auto zip_select = [index, count](Immutable<TRangeViews>... range_views)
-        {
-            return ZipRange<TRangeViews...>
-            {
-                Ranges::Slice(range_views, index, count)...
-            };
-        };
-
-        return Tuples::Apply(zip_select, range_views_);
-    }
-
-    template <Concepts::ForwardRangeView... TRangeViews>
     [[nodiscard]] constexpr auto ZipRange<TRangeViews...>
     ::GetData() const noexcept
     {

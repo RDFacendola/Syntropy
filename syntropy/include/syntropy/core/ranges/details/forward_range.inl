@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "syntropy/core/support/swap.h"
+
 // ===========================================================================
 
 namespace Syntropy::Ranges
@@ -14,132 +16,88 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Forward range view.
-    // ===================
+    // ForwardRange.
+    // =============
 
-    template <Concepts::ForwardRangeView TRangeView>
-    [[nodiscard]] constexpr decltype(auto)
-    Front(Immutable<TRangeView> range_view) noexcept
-    {
-        using Details::RouteFront;
-
-        return RouteFront(range_view);
-    }
-
-    template <Concepts::ForwardRangeView TRangeView>
-    [[nodiscard]] constexpr auto
-    PopFront(Immutable<TRangeView> range_view) noexcept
-    {
-        using Details::RoutePopFront;
-
-        return RoutePopFront(range_view);
-    }
-
-    template <Concepts::ForwardRangeView TRangeView>
-    [[nodiscard]] constexpr Bool
-    IsEmpty(Immutable<TRangeView> range_view) noexcept
-    {
-        using Details::RouteIsEmpty;
-
-        return RouteIsEmpty(range_view);
-    }
-
-    template <Concepts::ForwardRangeView TRangeView,
-              typename TFunction>
+    template <Concepts::ForwardRange TRange, typename TFunction>
     constexpr void
-    ForEach(Immutable<TRangeView> range_view,
-            TFunction function) noexcept
+    ForEach(Immutable<TRange> range, TFunction function) noexcept
     {
-        using Details::RouteFront;
-        using Details::RoutePopFront;
-        using Details::RouteIsEmpty;
-
-        for (auto rest = range_view;
-             !RouteIsEmpty(rest);
-             rest = RoutePopFront(rest))
+        for (auto range_view = Ranges::ViewOf(range);
+             !Ranges::IsEmpty(range_view);
+             range_view = Ranges::PopFront(range_view))
         {
-            function(RouteFront(rest));
+            function(Ranges::Front(range_view));
         }
     }
 
-    template <Concepts::ForwardRangeView TRangeView,
-              Concepts::ForwardRangeView URangeView>
-    constexpr Int
-    Copy(Immutable<TRangeView> destination,
-         Immutable<URangeView> source) noexcept
+    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
+    constexpr Templates::RangeCountType<URange>
+    Copy(Immutable<TRange> destination, Immutable<URange> source) noexcept
     {
-        using Details::RouteFront;
-        using Details::RoutePopFront;
-        using Details::RouteIsEmpty;
+        auto source_view = Ranges::ViewOf(source);
+        auto destination_view = Ranges::ViewOf(destination);
+        auto count = Templates::RangeCountType<URange>{ 0 };
 
-        auto source_copy = source;
-        auto destination_copy = destination;
-        auto count = ToInt(0);
-
-        for (; !RouteIsEmpty(source_copy) &&
-               !RouteIsEmpty(destination_copy);
+        for (; !Ranges::IsEmpty(source_view) &&
+               !Ranges::IsEmpty(destination_view);
                ++count)
         {
-            RouteFront(destination_copy) = RouteFront(source_copy);
+            Ranges::Front(destination_view) = Ranges::Front(source_view);
 
-            source_copy = RoutePopFront(source_copy);
-            destination_copy = RoutePopFront(destination_copy);
+            source_view = Ranges::PopFront(source_view);
+            destination_view = Ranges::PopFront(destination_view);
         }
 
         return count;
     }
 
-    template <Concepts::ForwardRangeView TRangeView,
-              Concepts::ForwardRangeView URangeView>
-    constexpr Int
-    Move(Immutable<TRangeView> destination,
-         Immutable<URangeView> source) noexcept
+    template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
+    constexpr Templates::RangeCountType<URange>
+    Move(Immutable<TRange> destination, Immutable<URange> source) noexcept
     {
-        using Details::RouteFront;
-        using Details::RoutePopFront;
-        using Details::RouteIsEmpty;
+        auto source_view = Ranges::ViewOf(source);
+        auto destination_view = Ranges::ViewOf(destination);
+        auto count = Templates::RangeCountType<URange>{ 0 };
 
-        auto source_copy = source;
-        auto destination_copy = destination;
-        auto count = ToInt(0);
-
-        for (; !RouteIsEmpty(source_copy) &&
-               !RouteIsEmpty(destination_copy);
+        for (; !Ranges::IsEmpty(source_view) &&
+               !Ranges::IsEmpty(destination_view);
                ++count)
         {
-            RouteFront(destination_copy)
-                = Syntropy::Move(RouteFront(source_copy));
+            Ranges::Front(destination_view)
+                = Syntropy::Move(Ranges::Front(source_view));
 
-            source_copy = RoutePopFront(source_copy);
-            destination_copy = RoutePopFront(destination_copy);
+            source_view = Ranges::PopFront(source_view);
+            destination_view = Ranges::PopFront(destination_view);
         }
 
         return count;
     }
 
-    template <Concepts::ForwardRangeView TRangeView,
-              Concepts::ForwardRangeView URangeView>
-    constexpr Int
-    Swap(Immutable<TRangeView> lhs, Immutable<URangeView> rhs) noexcept
+    template <Concepts::ForwardRange TRange>
+    constexpr Templates::RangeCountType<TRange>
+    Swap(Immutable<TRange> lhs, Immutable<TRange> rhs) noexcept
     {
-        using Details::RouteFront;
-        using Details::RoutePopFront;
-        using Details::RouteIsEmpty;
+        auto lhs_view = Ranges::ViewOf(lhs);
+        auto rhs_view = Ranges::ViewOf(rhs);
+        auto count = Templates::RangeCountType<TRange>{ 0 };
 
-        auto left = lhs;
-        auto right = rhs;
-        auto count = ToInt(0);
-
-        for (; !RouteIsEmpty(left) && !RouteIsEmpty(right); ++count)
+        for (; !Ranges::IsEmpty(lhs_view) &&
+               !Ranges::IsEmpty(rhs_view);
+               ++count)
         {
-            Algorithm::Swap(RouteFront(left), RouteFront(right));
+            Algorithm::Swap(Ranges::Front(lhs_view),
+                            Ranges::Front(rhs_view));
 
-            left = RoutePopFront(left);
-            right = RoutePopFront(right);
+            lhs_view = Ranges::PopFront(lhs_view);
+            rhs_view = Ranges::PopFront(rhs_view);
         }
 
         return count;
     }
+
+    // ForwardRangeView.
+    // =================
 
     template <Concepts::ForwardRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
@@ -148,29 +106,6 @@ namespace Syntropy::Ranges
         return range_view;
     }
 
-}
-
-// ===========================================================================
-
-namespace Syntropy
-{
-    /************************************************************************/
-    /* RANGE-BASED FOR LOOP                                                 */
-    /************************************************************************/
-
-    /// \brief Get an iterator to the first element in a range view.
-    template <Ranges::Concepts::ForwardRangeView TRangeView>
-    constexpr auto begin(Immutable<TRangeView> range_view) noexcept
-    {
-        return Ranges::Details::RangeViewIterator<TRangeView>{ range_view };
-    }
-
-    /// \brief Get an iterator past the last element in a range view.
-    template <Ranges::Concepts::ForwardRangeView TRangeView>
-    constexpr auto end(Immutable<TRangeView> range_view) noexcept
-    {
-        return Ranges::Details::RangeViewIterator<TRangeView>{};
-    }
 }
 
 // ===========================================================================

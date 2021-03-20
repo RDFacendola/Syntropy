@@ -11,27 +11,12 @@
 namespace Syntropy::Ranges
 {
     /************************************************************************/
-    /* BIDIRECTIONAL RANGE VIEW EXTENSIONS                                  */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    template <Concepts::BidirectionalRangeView TRangeView>
-    [[nodiscard]] constexpr decltype(auto)
-    Back(Immutable<TRangeView> range_view) noexcept
-    {
-        using Details::RouteBack;
-
-        return RouteBack(range_view);
-    }
-
-    template <Concepts::BidirectionalRangeView TRangeView>
-    [[nodiscard]] constexpr TRangeView
-    PopBack(Immutable<TRangeView> range_view) noexcept
-    {
-        using Details::RoutePopBack;
-
-        return RoutePopBack(range_view);
-    }
-
+    // BidirectionalRangeView.
+    // =======================
+    
     template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
     ViewOf(Immutable<TRangeView> range_view) noexcept

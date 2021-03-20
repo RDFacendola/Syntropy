@@ -1,8 +1,8 @@
 
 /// \file contiguous_range.inl
 ///
-/// \author Raffaele D. Facendola - Nov 2020
-/// \author Raffaele D. Facendola - Jan 2021
+/// \author Raffaele D. Facendola - November 2020
+/// \author Raffaele D. Facendola - January 2021
 
 #pragma once
 
@@ -14,42 +14,33 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Contiguous range view.
-    // ======================
+    // ContiguousRange.
+    // ================
 
-    template <Concepts::ContiguousRangeView TRangeView>
-    [[nodiscard]] constexpr auto
-    Data(Immutable<TRangeView> range_view) noexcept
-    {
-        return Details::RouteData(range_view);
-    }
-
-    template <Concepts::ContiguousRangeView TRangeView,
-              Concepts::ContiguousRangeView URangeView>
+    template <Concepts::ContiguousRange TRange,
+              Concepts::ContiguousRange URange>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRangeView> lhs,
-             Immutable<URangeView> rhs) noexcept
+    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        using Details::RouteCount;
-        using Details::RouteData;
-        using Details::RouteIsEmpty;
-
         if(PtrOf(lhs) == PtrOf(rhs))
         {
             return true;
         }
 
-        if(RouteIsEmpty(lhs) && RouteIsEmpty(rhs))
+        auto lhs_view = Ranges::ViewOf(lhs);
+        auto rhs_view = Ranges::ViewOf(rhs);
+
+        if(Ranges::IsEmpty(lhs_view) && Ranges::IsEmpty(rhs_view))
         {
             return true;
         }
 
-        if(RouteCount(lhs) != RouteCount(rhs))
+        if(Ranges::Count(lhs_view) != Ranges::Count(rhs_view))
         {
             return false;
         }
 
-        if(RouteData(lhs) == RouteData(rhs))
+        if(Ranges::Data(lhs_view) == Ranges::Data(rhs_view))
         {
             return true;
         }
@@ -57,33 +48,36 @@ namespace Syntropy::Ranges
         return false;
     }
 
-    template <Concepts::ContiguousRangeView TRangeView,
-              Concepts::ContiguousRangeView URangeView>
+    template <Concepts::ContiguousRange TRange,
+              Concepts::ContiguousRange URange>
     [[nodiscard]] constexpr Bool
-    Intersect(Immutable<TRangeView> lhs,
-              Immutable<URangeView> rhs) noexcept
+    Intersect(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        using Details::RouteCount;
-        using Details::RouteData;
-        using Details::RouteIsEmpty;
+        auto lhs_view = Ranges::ViewOf(lhs);
+        auto rhs_view = Ranges::ViewOf(rhs);
 
-        if(RouteIsEmpty(lhs) || RouteIsEmpty(rhs))
+        if(Ranges::IsEmpty(lhs_view) || Ranges::IsEmpty(rhs_view))
         {
             return true;    // Empty ranges intersects with everything.
         }
 
-        if(RouteData(lhs) > RouteData(rhs) + RouteCount(rhs))
+        if(auto rhs_end = Ranges::Data(rhs_view) + Ranges::Count(rhs_view);
+           Ranges::Data(lhs_view) > rhs_end)
         {
             return false;
         }
 
-        if(RouteData(rhs) > RouteData(lhs) + RouteCount(lhs))
+        if(auto lhs_end = Ranges::Data(lhs_view) + Ranges::Count(lhs_view);
+           Ranges::Data(rhs_view) > lhs_end)
         {
             return false;
         }
 
         return true;
     }
+
+    // ContiguousRangeView.
+    // ====================
 
     template <Concepts::ContiguousRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
@@ -92,38 +86,6 @@ namespace Syntropy::Ranges
         return range_view;
     }
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* CONTIGUOUS RANGE VIEW EXTENSIONS                                     */
-    /************************************************************************/
-
-    template <Concepts::BaseContiguousRangeView TRangeView>
-    template <typename TIndex>
-    [[nodiscard]] inline decltype(auto) At<TRangeView>
-    ::operator()(Immutable<TRangeView> range_view,
-                 Immutable<TIndex> index) const noexcept
-    {
-        using Details::RouteData;
-
-        return *(RouteData(range_view) + index);
-    }
-
-    template <Concepts::BaseContiguousRangeView TRangeView>
-    template <typename TIndex, typename TCount>
-    [[nodiscard]] inline TRangeView Slice<TRangeView>
-    ::operator()(Immutable<TRangeView> range_view,
-                 Immutable<TIndex> index,
-                 Immutable<TCount> count) const noexcept
-    {
-        using Details::RouteData;
-
-        return { RouteData(range_view) + index, count };
-    };
 }
 
 // ===========================================================================

@@ -21,20 +21,20 @@ namespace Syntropy::Memory
     inline void
     Repeat(const RWByteSpan& destination, const ByteSpan& source)
     {
-        for (auto span = destination; !Ranges::IsEmpty(span);)
+        // for (auto span = destination; !Ranges::IsEmpty(span);)
         {
-            auto count = Copy(span, source);
+            // auto count = Copy(span, source);
 
-            span = Ranges::PopFront(span, count);
+            // span = Ranges::PopFront(span, count);
         }
     }
 
     inline void
     Set(const RWByteSpan& destination, Byte value)
     {
-        std::memset(destination.GetData(),
-                    static_cast<int>(value),
-                    ToInt(Ranges::Count(destination)));
+        // std::memset(destination.GetData(),
+        //            static_cast<int>(value),
+        //            ToInt(Ranges::Count(destination)));
     }
 
     inline void

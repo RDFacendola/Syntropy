@@ -19,7 +19,7 @@ namespace Syntropy::Memory
         {
             auto count = Copy(gather, source);
 
-            gather = PopFront(gather, ToInt(count));
+            // gather = PopFront(gather, ToInt(count));
         }
 
         return Size(ByteSpan{ destination.GetData(), gather.GetData() });
@@ -33,7 +33,7 @@ namespace Syntropy::Memory
         {
             auto count = Copy(destination, scatter);
 
-            scatter = PopFront(scatter, ToInt(count));
+            // scatter = PopFront(scatter, ToInt(count));
         }
 
         return Size(ByteSpan{ source.GetData(), scatter.GetData() });

@@ -11,88 +11,71 @@ namespace Syntropy::Ranges
     /* REVERSE RANGE VIEW                                                   */
     /************************************************************************/
 
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
-    template <Ranges::Concepts::BidirectionalRangeView URangeView>
+    template <Concepts::BidirectionalRangeView TRangeView>
+    template <Concepts::BidirectionalRange TRange>
     constexpr ReverseRange<TRangeView>
-    ::ReverseRange(Immutable<URangeView> range_view) noexcept
-        : range_view_(range_view)
+    ::ReverseRange(Immutable<TRange> range) noexcept
+        : range_view_(Ranges::ViewOf(range))
     {
 
     }
 
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr decltype(auto) ReverseRange<TRangeView>
     ::GetFront() const noexcept
     {
-        return Back(range_view_);
+        return Ranges::Back(range_view_);
     }
 
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr auto ReverseRange<TRangeView>
     ::PopFront() const noexcept
     {
-        return ReverseRange<TRangeView>{ PopBack(range_view_) };
+        return ReverseRange{ Ranges::PopBack(range_view_) };
     }
 
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
-    [[nodiscard]] constexpr Bool ReverseRange<TRangeView>
-    ::IsEmpty() const noexcept
-    {
-        return IsEmpty(range_view_);
-    }
-
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr auto ReverseRange<TRangeView>
     ::GetCount() const noexcept
     {
-        return Count(range_view_);
+        return Ranges::Count(range_view_);
     }
 
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr decltype(auto) ReverseRange<TRangeView>
     ::GetBack() const noexcept
     {
-        return Front(range_view_);
+        return Ranges::Front(range_view_);
     }
 
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr auto ReverseRange<TRangeView>
     ::PopBack() const noexcept
     {
-        return ReverseRange<TRangeView>{ PopFront(range_view_) };
+        return ReverseRange{ Ranges::PopFront(range_view_) };
     }
 
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    template <Concepts::BidirectionalRangeView TRangeView>
     template <typename TIndex>
     [[nodiscard]] constexpr decltype(auto) ReverseRange<TRangeView>
     ::At(Immutable<TIndex> index) const noexcept
     {
-        return At(range_view_, Count(range_view_) - index - TIndex{ 1 });
-    }
-
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
-    template <typename TIndex, typename TCount>
-    [[nodiscard]] constexpr auto ReverseRange<TRangeView>
-    ::Slice(Immutable<TIndex> index, Immutable<TCount> count) const noexcept
-    {
-        return ReverseRange<TRangeView>
-        {
-            Slice(range_view_, Count(range_view_) - index - count, count)
-        };
+        return Ranges::At(range_view_,
+                          Ranges::Count(range_view_) - index - TIndex{ 1 });
     }
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
-    [[nodiscard]] constexpr ReverseRange<TRangeView>
-    Reverse(Immutable<TRangeView> range_view) noexcept
+    template <Concepts::BidirectionalRange TRange>
+    [[nodiscard]] constexpr auto
+    Reverse(Immutable<TRange> range) noexcept
     {
-        return ReverseRange<TRangeView>(range_view);
+        return ReverseRange{ Ranges::ViewOf(range) };
     }
 
-    template <Ranges::Concepts::BidirectionalRangeView TRangeView>
+    template <Concepts::BidirectionalRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
     Reverse(Immutable<ReverseRange<TRangeView>> range_view) noexcept
     {

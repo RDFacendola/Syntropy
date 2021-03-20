@@ -9,15 +9,32 @@
 
 #include "simple_compliance/bulk.h"
 
+struct FooView
+{
+    Syntropy::Int GetFront() const noexcept
+    {
+        return 43;
+    }
+
+    FooView PopFront() const noexcept
+    {
+        return {};
+    }
+
+    Syntropy::Bool IsEmpty() const noexcept
+    {
+        return false;
+    }
+};
+
+struct Foo
+{
+
+};
+
 int main()
 {
     std::cout << "Hello, Syntropy\n";
-
-    auto fix_array = Syntropy::FixArray<int, 5>(10, 42, 2, 3, 4);
-
-    auto fix_array_view = Syntropy::Ranges::ViewOf(fix_array);
-
-    auto fix_array_view2 = Syntropy::Ranges::ViewOf(fix_array_view);
 
 
 

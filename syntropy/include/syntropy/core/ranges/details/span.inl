@@ -107,7 +107,8 @@ namespace Syntropy
     operator==(Immutable<BaseSpan<TType, TTraits>> lhs,
                Immutable<BaseSpan<UType, UTraits>> rhs) noexcept
     {
-        return Ranges::AreEquivalent(lhs, rhs);
+        // return Ranges::AreEquivalent(lhs, rhs);
+        return false;
     }
 
     template <typename TType, typename TTraits,

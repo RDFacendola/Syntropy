@@ -12,75 +12,55 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    template <Concepts::SizedRangeView TRangeView>
-    [[nodiscard]] constexpr auto
-    Count(Immutable<TRangeView> range_view) noexcept
-    {
-        using Details::RouteCount;
+    // SizedRange.
+    // ===========
 
-        return RouteCount(range_view);
-    }
-
-    template <Concepts::SizedRangeView TRangeView,
-              Concepts::SizedRangeView URangeView>
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRangeView> lhs,
-             Immutable<URangeView> rhs) noexcept
+    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
         return (PtrOf(lhs) == PtrOf(rhs));
     }
 
-    template <Concepts::SizedRangeView TRangeView,
-              Concepts::SizedRangeView URangeView>
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRangeView> lhs,
-                  Immutable<URangeView> rhs) noexcept
+    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        using Details::RouteCount;
-        using Details::RouteFront;
-        using Details::RouteIsEmpty;
-        using Details::RoutePopFront;
-
-        if (AreEqual(lhs, rhs))
+        if (Ranges::AreEqual(lhs, rhs))
         {
             return true;
         }
 
-        if (RouteCount(lhs) == RouteCount(rhs))
-        {
-            auto lhs_copy = lhs;
-            auto rhs_copy = rhs;
+        auto lhs_view = Ranges::ViewOf(lhs);
+        auto rhs_view = Ranges::ViewOf(rhs);
 
-            for (;   (!RouteIsEmpty(lhs_copy)) && (!RouteIsEmpty(rhs_copy))
-                  && (RouteFront(lhs_copy) == RouteFront(rhs_copy)); )
+        if (Ranges::Count(lhs_view) == Ranges::Count(rhs_view))
+        {
+            for (; (!Ranges::IsEmpty(lhs_view)) &&
+                   (!Ranges::IsEmpty(rhs_view)) &&
+                   (Ranges::Front(lhs_view) == Ranges::Front(rhs_view)); )
             {
-                lhs_copy = RoutePopFront(lhs_copy);
-                rhs_copy = RoutePopFront(rhs_copy);
+                lhs_view = Ranges::PopFront(lhs_view);
+                rhs_view = Ranges::PopFront(rhs_view);
             }
 
-            return RouteIsEmpty(lhs_copy);
+            return Ranges::IsEmpty(lhs_view);
         }
 
         return false;
     }
 
-    template <Concepts::SizedRangeView TRangeView,
-              Concepts::SizedRangeView URangeView>
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRangeView> lhs,
-            Immutable<URangeView> rhs) noexcept
+    Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept
     {
-        using Details::RouteCount;
-        using Details::RouteFront;
-        using Details::RouteIsEmpty;
-        using Details::RoutePopFront;
+        auto lhs_view = Ranges::ViewOf(lhs);
+        auto rhs_view = Ranges::ViewOf(rhs);
 
-        auto lhs_copy = lhs;
-        auto rhs_copy = rhs;
-
-        for (; !RouteIsEmpty(lhs_copy) && !RouteIsEmpty(rhs_copy); )
+        for (; !Ranges::IsEmpty(lhs_view) && !Ranges::IsEmpty(rhs_view); )
         {
-            auto compare = (RouteFront(lhs_copy) <=> RouteFront(rhs_copy));
+            auto compare =
+                (Ranges::Front(lhs_view) <=> Ranges::Front(rhs_view));
 
             if (compare == Ordering::kLess)
             {
@@ -92,43 +72,26 @@ namespace Syntropy::Ranges
                 return Ordering::kGreater;
             }
 
-            lhs_copy = RoutePopFront(lhs_copy);
-            rhs_copy = RoutePopFront(rhs_copy);
+            lhs_view = Ranges::PopFront(lhs_view);
+            rhs_view = Ranges::PopFront(rhs_view);
         }
 
-        if (RouteIsEmpty(lhs_copy) && RouteIsEmpty(rhs_copy))
+        if (Ranges::IsEmpty(lhs_view) && Ranges::IsEmpty(rhs_view))
         {
             return Ordering::kEquivalent;
         }
 
-        return RouteIsEmpty(lhs_copy) ? Ordering::kLess : Ordering::kGreater;
+        return Ranges::IsEmpty(lhs_view) ? Ordering::kLess : Ordering::kGreater;
     }
+
+    // SizedRangeView.
+    // ===============
 
     template <Concepts::SizedRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
     ViewOf(Immutable<TRangeView> range_view) noexcept
     {
         return range_view;
-    }
-
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* SIZED RANGE EXTENSIONS                                               */
-    /************************************************************************/
-
-    template <Concepts::BaseSizedRangeView TRangeView>
-    Bool IsEmpty<TRangeView>
-    ::operator()(Immutable<TRangeView> range_view) const noexcept
-    {
-        using Details::RouteCount;
-
-        return RouteCount(range_view) ==
-            Templates::RangeViewCountType<TRangeView>{};
     }
 
 }

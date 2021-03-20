@@ -24,11 +24,11 @@ namespace Syntropy::Memory
 
         if (size > Bytes{ 0 })
         {
-            auto destination_span = Ranges::Front(destination, size);
+            // auto destination_span = Ranges::Front(destination, size);
 
-            auto source_span = Ranges::Front(source, size);
+            // auto source_span = Ranges::Front(source, size);
 
-            if (!Ranges::Intersect(destination_span, source_span))
+            // if (!Ranges::Intersect(destination_span, source_span))
             {
                 // Faster copy for non-overlapping ranges.
 
@@ -36,7 +36,7 @@ namespace Syntropy::Memory
                             source.GetData(),
                             ToInt(size));
             }
-            else
+            //else
             {
                 // Slower copy for overlapping ranges.
 

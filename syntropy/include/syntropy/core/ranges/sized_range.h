@@ -15,30 +15,9 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/concepts.h"
-#include "syntropy/core/support/compare.h"
-
-#include "syntropy/diagnostics/assert.h"
 
 #include "syntropy/core/ranges/forward_range.h"
-#include "syntropy/core/ranges/range_extensions.h"
-
-// ===========================================================================
-
-#include "details/sized_range.details.h"
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Templates
-{
-    /************************************************************************/
-    /* TYPE TRAITS                                                          */
-    /************************************************************************/
-
-    /// \brief Type of a range's cardinality.
-    template <typename TRangeView>
-    using RangeViewCountType = Syntropy::Templates::UnqualifiedOf<decltype(
-        Details::RouteCount(Syntropy::Templates::Declval<TRangeView>()))>;
-}
+#include "syntropy/core/support/compare.h"
 
 // ===========================================================================
 
@@ -48,38 +27,33 @@ namespace Syntropy::Ranges::Concepts
     /* SIZED RANGE VIEW                                                     */
     /************************************************************************/
 
-    /// \brief Minimal interface for range views whose elements can be visited
+    /// \brief Concept for range views whose elements can be visited
     ///        sequentially and whose size can be computed in constant time.
     ///
     /// \author Raffaele D. Facendola - November 2020.
     template <typename TRangeView>
-    concept BaseSizedRangeView = requires(Immutable<TRangeView> range_view)
+    concept SizedRangeView = ForwardRangeView<TRangeView>
+        && requires(Immutable<TRangeView> range_view)
         {
             /// \brief Get range's elements count.
-            { Details::RouteCount(range_view) };
+            { Ranges::Count(range_view) };
         };
-
-    /// \brief Range view whose elements can be visited sequentially and whose
-    ///        size can be computed in constant time.
-    ///
-    /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRangeView>
-    concept SizedRangeView = BaseSizedRangeView<TRangeView>
-        && ForwardRangeView<TRangeView>;
 
     /************************************************************************/
     /* SIZED RANGE                                                          */
     /************************************************************************/
 
-    /// \brief Container whose elements can be visited sequentially and whose
-    ///        size can be computed in constant time.
+    /// \brief Concept for range whose elements can be visited sequentially and
+    ///        whose size can be computed in constant time.
     ///
     /// \author Raffaele D. Facendola - March 2021.
     template <typename TRange>
-    concept SizedRange = requires(Immutable<TRange> range)
-    {
-        { ViewOf(range) } -> SizedRangeView;
-    };
+    concept SizedRange = ForwardRange<TRange>
+        && requires(Immutable<TRange> range)
+        {
+            { Ranges::ViewOf(range) } -> SizedRangeView;
+        };
+
 }
 
 // ===========================================================================
@@ -90,63 +64,39 @@ namespace Syntropy::Ranges
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    /// \brief Get the number of elements in a range view.
-    template <Concepts::SizedRangeView TRangeView>
-    [[nodiscard]] constexpr auto
-    Count(Immutable<TRangeView> range_view) noexcept;
+    // SizedRange.
+    // ===========
 
     /// \brief Check whether elements in two range views are equal.
     ///
     /// \remarks Equality implies equivalence, therefore if this method returns
     ///          true AreEquivalent also returns true.
-    template <Concepts::SizedRangeView TRangeView,
-              Concepts::SizedRangeView URangeView>
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TRangeView> lhs,
-             Immutable<URangeView> rhs) noexcept;
+    AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     /// \brief Check whether elements in two range views are equivalent.
     ///
     /// \remarks Equality implies equivalence but not the other way around!
     ///          If AreEqual returns false this method can either return true
     ///          or false.
-    template <Concepts::SizedRangeView TRangeView,
-              Concepts::SizedRangeView URangeView>
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TRangeView> lhs,
-                  Immutable<URangeView> rhs) noexcept;
+    AreEquivalent(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
     /// \brief Compare two range views lexicographically.
-    template <Concepts::SizedRangeView TRangeView,
-              Concepts::SizedRangeView URangeView>
+    template <Concepts::SizedRange TRange, Concepts::SizedRange URange>
     [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TRangeView> lhs,
-            Immutable<URangeView> rhs) noexcept;
+    Compare(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
+
+    // SizedRangeView.
+    // ===============
 
     /// \brief Idempotent range view.
     template <Concepts::SizedRangeView TRangeView>
     [[nodiscard]] constexpr TRangeView
     ViewOf(Immutable<TRangeView> range_view) noexcept;
 
-}
-
-// ===========================================================================
-
-namespace Syntropy::Ranges::Extensions
-{
-    /************************************************************************/
-    /* SIZED RANGE EXTENSIONS                                               */
-    /************************************************************************/
-
-    /// \brief Check whether a range view is empty.
-    ///
-    /// \remarks This extension adapts SizedRangeView type such that all
-    ///          its instances are also ForwardRangeViews.
-    template <Concepts::BaseSizedRangeView TRangeView>
-    struct IsEmpty<TRangeView>
-    {
-        Bool operator()(Immutable<TRangeView> range_view) const noexcept;
-    };
 }
 
 // ===========================================================================
