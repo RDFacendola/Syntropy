@@ -63,7 +63,7 @@ namespace Syntropy::Ranges
     };
 
     /// \brief Deduction guieds for SliceRange.
-    template<Concepts::BidirectionalRangeView TRangeView>
+    template<Concepts::ForwardRangeView TRangeView>
     RangeViewIterator(Immutable<TRangeView>)) -> RangeViewIterator<TRangeView>;
 
 }

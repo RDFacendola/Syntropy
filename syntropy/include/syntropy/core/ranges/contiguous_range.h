@@ -22,34 +22,20 @@
 namespace Syntropy::Ranges::Concepts
 {
     /************************************************************************/
-    /* CONTIGUOUS RANGE VIEW                                                */
-    /************************************************************************/
-
-    /// \brief Concept for range views whose elements are allocated
-    ///        contiguously.
-    ///
-    /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRangeView>
-    concept ContiguousRangeView = RandomAccessRangeView<TRangeView>
-        && requires(Immutable<TRangeView> range_view)
-        {
-            /// \brief Access a range elements' storage.
-            { Ranges::Data(range_view) };
-        };
-
-    /************************************************************************/
     /* CONTIGUOUS RANGE                                                     */
     /************************************************************************/
 
     /// \brief Concept for ranges whose elements are allocated contiguously.
     ///
-    /// \author Raffaele D. Facendola - March 2021.
+    /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept ContiguousRange = RandomAccessRange<TRange>
         && requires(Immutable<TRange> range)
         {
-            { Ranges::ViewOf(range) } -> ContiguousRangeView;
+            /// \brief Access a range elements' storage.
+            { Ranges::Data(range) };
         };
+
 }
 
 // ===========================================================================
@@ -63,13 +49,13 @@ namespace Syntropy::Ranges
     // ContiguousRange.
     // ================
 
-    /// \brief Check whether two range view elements are equal.
+    /// \brief Check whether two ranges are equal.
     template <Concepts::ContiguousRange TRange,
               Concepts::ContiguousRange URange>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
-    /// \brief Check whether two contiguous range views intersects.
+    /// \brief Check whether two contiguous ranges intersects.
     template <Concepts::ContiguousRange TRange,
               Concepts::ContiguousRange URange>
     [[nodiscard]] constexpr Bool

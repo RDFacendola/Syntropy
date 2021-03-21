@@ -8,197 +8,197 @@
 namespace Syntropy::Ranges
 {
     /************************************************************************/
-    /* ZIP RANGE VIEW                                                       */
+    /* ZIP RANGE                                                            */
     /************************************************************************/
 
-    template <Concepts::ForwardRangeView... TRangeViews>
-    constexpr ZipRange<TRangeViews...>
-    ::ZipRange(Immutable<TRangeViews>... range_views) noexcept
-        : range_views_{ range_views... }
+    template <Concepts::ForwardRange... TRanges>
+    constexpr ZipRange<TRanges...>
+    ::ZipRange(Immutable<TRanges>... ranges) noexcept
+        : ranges_{ ranges... }
     {
 
     }
 
-    template <Concepts::ForwardRangeView... TRangeViews>
-    [[nodiscard]] constexpr decltype(auto) ZipRange<TRangeViews...>
+    template <Concepts::ForwardRange... TRanges>
+    [[nodiscard]] constexpr decltype(auto) ZipRange<TRanges...>
     ::GetFront() const noexcept
     {
-        auto zip_front = [](Immutable<TRangeViews>... range_views)
+        auto zip_front = [](Immutable<TRanges>... ranges)
         {
-            return Tuples::MakeTuple(Front(range_views)...);
+            return Tuples::MakeTuple(Front(ranges)...);
         };
 
-        return Tuples::Apply(zip_front, range_views_);
+        return Tuples::Apply(zip_front, ranges_);
     }
 
-    template <Concepts::ForwardRangeView... TRangeViews>
-    [[nodiscard]] constexpr auto ZipRange<TRangeViews...>
+    template <Concepts::ForwardRange... TRanges>
+    [[nodiscard]] constexpr auto ZipRange<TRanges...>
     ::PopFront() const noexcept
     {
-        auto zip_pop_front = [](Immutable<TRangeViews>... range_views)
+        auto zip_pop_front = [](Immutable<TRanges>... ranges)
         {
-            return ZipRange<TRangeViews...>
+            return ZipRange<TRanges...>
             {
-                Ranges::PopFront(range_views)...
+                Ranges::PopFront(ranges)...
             };
         };
 
-        return Tuples::Apply(zip_pop_front, range_views_);
+        return Tuples::Apply(zip_pop_front, ranges_);
     }
 
-    template <Concepts::ForwardRangeView... TRangeViews>
-    [[nodiscard]] constexpr Bool ZipRange<TRangeViews...>
+    template <Concepts::ForwardRange... TRanges>
+    [[nodiscard]] constexpr Bool ZipRange<TRanges...>
     ::IsEmpty() const noexcept
     {
-        auto zip_is_empty = [](Immutable<TRangeViews>... range_views)
+        auto zip_is_empty = [](Immutable<TRanges>... ranges)
         {
-            return (sizeof...(TRangeViews) == 0)
-                || (Ranges::IsEmpty(range_views)
+            return (sizeof...(TRanges) == 0)
+                || (Ranges::IsEmpty(ranges)
                 || ...);
         };
 
-        return Tuples::Apply(zip_is_empty, range_views_);
+        return Tuples::Apply(zip_is_empty, ranges_);
     }
 
-    template <Concepts::ForwardRangeView... TRangeViews>
-    [[nodiscard]] constexpr auto ZipRange<TRangeViews...>
+    template <Concepts::ForwardRange... TRanges>
+    [[nodiscard]] constexpr auto ZipRange<TRanges...>
     ::GetCount() const noexcept
     {
-        auto zip_min_count = [](Immutable<TRangeViews>... range_views)
+        auto zip_min_count = [](Immutable<TRanges>... ranges)
         {
-            return Math::Min(Count(range_views)...);
+            return Math::Min(Count(ranges)...);
         };
 
-        return Tuples::Apply(zip_min_count, range_views_);
+        return Tuples::Apply(zip_min_count, ranges_);
     }
 
-    template <Concepts::ForwardRangeView... TRangeViews>
-    [[nodiscard]] constexpr decltype(auto) ZipRange<TRangeViews...>
+    template <Concepts::ForwardRange... TRanges>
+    [[nodiscard]] constexpr decltype(auto) ZipRange<TRanges...>
     ::GetBack() const noexcept
     {
-        auto zip_back = [](Immutable<TRangeViews>... range_views)
+        auto zip_back = [](Immutable<TRanges>... ranges)
         {
-            return Tuples::MakeTuple(Back(range_views)...);
+            return Tuples::MakeTuple(Back(ranges)...);
         };
 
-        return Tuples::Apply(zip_back, range_views_);
+        return Tuples::Apply(zip_back, ranges_);
     }
 
-    template <Concepts::ForwardRangeView... TRangeViews>
-    [[nodiscard]] constexpr auto ZipRange<TRangeViews...>
+    template <Concepts::ForwardRange... TRanges>
+    [[nodiscard]] constexpr auto ZipRange<TRanges...>
     ::PopBack() const noexcept
     {
-        auto zip_pop_back = [](Immutable<TRangeViews>... range_views)
+        auto zip_pop_back = [](Immutable<TRanges>... ranges)
         {
-            return ZipRange<TRangeViews...>
+            return ZipRange<TRanges...>
             {
-                Ranges::PopBack(range_views)...
+                Ranges::PopBack(ranges)...
             };
         };
 
-        return Tuples::Apply(zip_pop_back, range_views_);
+        return Tuples::Apply(zip_pop_back, ranges_);
     }
 
-    template <Concepts::ForwardRangeView... TRangeViews>
+    template <Concepts::ForwardRange... TRanges>
     template <typename TIndex>
-    [[nodiscard]] constexpr decltype(auto) ZipRange<TRangeViews...>
+    [[nodiscard]] constexpr decltype(auto) ZipRange<TRanges...>
     ::At(Immutable<TIndex> index) const noexcept
     {
-        auto zip_select = [index](Immutable<TRangeViews>... range_views)
+        auto zip_select = [index](Immutable<TRanges>... ranges)
         {
-            return Tuples::MakeTuple(Ranges::At(range_views, index)...);
+            return Tuples::MakeTuple(Ranges::At(ranges, index)...);
         };
 
-        return Tuples::Apply(zip_select, range_views_);
+        return Tuples::Apply(zip_select, ranges_);
     }
 
-    template <Concepts::ForwardRangeView... TRangeViews>
-    [[nodiscard]] constexpr auto ZipRange<TRangeViews...>
+    template <Concepts::ForwardRange... TRanges>
+    [[nodiscard]] constexpr auto ZipRange<TRanges...>
     ::GetData() const noexcept
     {
-        auto zip_data = [](Immutable<TRangeViews>... range_views)
+        auto zip_data = [](Immutable<TRanges>... ranges)
         {
-            return Tuples::MakeTuple( Data(range_views)... );
+            return Tuples::MakeTuple( Data(ranges)... );
         };
 
-        return Tuples::Apply(zip_data, range_views_);
+        return Tuples::Apply(zip_data, ranges_);
     }
 
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    template <Concepts::ForwardRangeView... TRangeViews>
-    [[nodiscard]] constexpr ZipRange<TRangeViews...>
-    MakeZipRange(Immutable<TRangeViews>... range_views) noexcept
+    template <Concepts::ForwardRange... TRanges>
+    [[nodiscard]] constexpr ZipRange<TRanges...>
+    MakeZipRange(Immutable<TRanges>... ranges) noexcept
     {
-        return { range_views... };
+        return { ranges... };
     }
 
     template <Syntropy::Tuples::Concepts::NTuple TTuple>
     [[nodiscard]] constexpr auto
-    MakeZipRangeFromTuple(Immutable<TTuple> range_views) noexcept
+    MakeZipRangeFromTuple(Immutable<TTuple> ranges) noexcept
     {
         auto make_zip_range = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
             {
-                return ZipRange(Tuples::Get<TIndex>(range_views)...);
+                return ZipRange(Tuples::Get<TIndex>(ranges)...);
             };
 
-        using RangeViewsType = decltype(range_views);
+        using RangesType = decltype(ranges);
 
         return make_zip_range(
-            Syntropy::Tuples::Templates::TupleSequenceFor<RangeViewsType>{});
+            Syntropy::Tuples::Templates::TupleSequenceFor<RangesType>{});
     }
 
-    template <Concepts::ForwardRangeView... TRangeViews>
+    template <Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr auto
-    Unzip(Immutable<ZipRange<TRangeViews...>> range_view) noexcept
+    Unzip(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        return range_view.range_views_;
+        return range.ranges_;
     }
 
-    template <Concepts::ForwardRangeView TRange>
+    template <Concepts::ForwardRange TRange>
     [[nodiscard]] constexpr auto
-    Unzip(Immutable<TRange> range_view) noexcept
+    Unzip(Immutable<TRange> range) noexcept
     {
-        return Tuples::MakeTuple(range_view);
+        return Tuples::MakeTuple(range);
     }
 
-    template <Concepts::ForwardRangeView... TRangeViews>
-    [[nodiscard]] constexpr ZipRange<TRangeViews...>
-    Zip(Immutable<TRangeViews>... range_views) noexcept
+    template <Concepts::ForwardRange... TRanges>
+    [[nodiscard]] constexpr ZipRange<TRanges...>
+    Zip(Immutable<TRanges>... ranges) noexcept
     {
         return MakeZipRangeFromTuple(
-            Tuples::Concatenate(Unzip(range_views)...));
+            Tuples::Concatenate(Unzip(ranges)...));
     }
 
-    template <Int VIndex, Concepts::ForwardRangeView... TRangeViews>
+    template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
-    Get(Immutable<ZipRange<TRangeViews...>> range_view) noexcept
+    Get(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        return Tuples::Get<VIndex>(Unzip(range_view));
+        return Tuples::Get<VIndex>(Unzip(range));
     }
 
-    template <Int VIndex, Concepts::ForwardRangeView... TRangeViews>
+    template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
-    Get(Mutable<ZipRange<TRangeViews...>> range_view) noexcept
+    Get(Mutable<ZipRange<TRanges...>> range) noexcept
     {
-        return Tuples::Get<VIndex>(Unzip(range_view));
+        return Tuples::Get<VIndex>(Unzip(range));
     }
 
-    template <Int VIndex, Concepts::ForwardRangeView... TRangeViews>
+    template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
-    Get(Immovable<ZipRange<TRangeViews...>> range_view) noexcept
+    Get(Immovable<ZipRange<TRanges...>> range) noexcept
     {
-        return Tuples::Get<VIndex>(Unzip(range_view));
+        return Tuples::Get<VIndex>(Unzip(range));
     }
 
-    template <Int VIndex, Concepts::ForwardRangeView... TRangeViews>
+    template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
-    Get(Movable<ZipRange<TRangeViews...>> range_view) noexcept
+    Get(Movable<ZipRange<TRanges...>> range) noexcept
     {
-        return Tuples::Get<VIndex>(Unzip(range_view));
+        return Tuples::Get<VIndex>(Unzip(range));
     }
 
 }

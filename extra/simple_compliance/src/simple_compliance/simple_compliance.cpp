@@ -36,7 +36,7 @@ int main()
 {
     std::cout << "Hello, Syntropy\n";
 
-
+    auto foo = Foo{};
 
    return 0;
 }

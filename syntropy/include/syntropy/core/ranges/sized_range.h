@@ -24,34 +24,19 @@
 namespace Syntropy::Ranges::Concepts
 {
     /************************************************************************/
-    /* SIZED RANGE VIEW                                                     */
-    /************************************************************************/
-
-    /// \brief Concept for range views whose elements can be visited
-    ///        sequentially and whose size can be computed in constant time.
-    ///
-    /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRangeView>
-    concept SizedRangeView = ForwardRangeView<TRangeView>
-        && requires(Immutable<TRangeView> range_view)
-        {
-            /// \brief Get range's elements count.
-            { Ranges::Count(range_view) };
-        };
-
-    /************************************************************************/
     /* SIZED RANGE                                                          */
     /************************************************************************/
 
     /// \brief Concept for range whose elements can be visited sequentially and
     ///        whose size can be computed in constant time.
     ///
-    /// \author Raffaele D. Facendola - March 2021.
+    /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept SizedRange = ForwardRange<TRange>
         && requires(Immutable<TRange> range)
         {
-            { Ranges::ViewOf(range) } -> SizedRangeView;
+            /// \brief Get range's elements count.
+            { Ranges::Count(range) };
         };
 
 }
@@ -67,7 +52,7 @@ namespace Syntropy::Ranges
     // SizedRange.
     // ===========
 
-    /// \brief Check whether elements in two range views are equal.
+    /// \brief Check whether two ranges are element-wise equal.
     ///
     /// \remarks Equality implies equivalence, therefore if this method returns
     ///          true AreEquivalent also returns true.
@@ -75,7 +60,7 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TRange> lhs, Immutable<URange> rhs) noexcept;
 
-    /// \brief Check whether elements in two range views are equivalent.
+    /// \brief Check whether two ranges are element-wise equivalent.
     ///
     /// \remarks Equality implies equivalence but not the other way around!
     ///          If AreEqual returns false this method can either return true

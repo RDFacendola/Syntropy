@@ -23,38 +23,23 @@
 namespace Syntropy::Ranges::Concepts
 {
     /************************************************************************/
-    /* BIDIRECTIONAL RANGE VIEW                                             */
-    /************************************************************************/
-
-    /// \brief Concept for range views whose elements can be visited
-    ///        sequentially in either direction.
-    ///
-    /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRangeView>
-    concept BidirectionalRangeView = SizedRangeView<TRangeView>
-        && requires(Immutable<TRangeView> range_view)
-        {
-            /// \brief Access the last element in a range view.
-            { Ranges::Back(range_view) };
-
-            /// \brief Discard the last element in a range view and return
-            ///        a view to the remaining elements.
-            { Ranges::PopBack(range_view) };
-        };
-
-    /************************************************************************/
     /* BIDIRECTIONAL RANGE                                                  */
     /************************************************************************/
 
     /// \brief Concept for ranges whose elements can be visited sequentially
     ///        in either direction.
     ///
-    /// \author Raffaele D. Facendola - March 2021.
+    /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept BidirectionalRange = SizedRange<TRange>
         && requires(Immutable<TRange> range)
         {
-            { Ranges::ViewOf(range) } -> BidirectionalRangeView;
+            /// \brief Access the last element in a range.
+            { Ranges::Back(range) };
+
+            /// \brief Discard the last element in a range and return a range
+            ///        to the remaining elements.
+            { Ranges::PopBack(range) };
         };
 
 }

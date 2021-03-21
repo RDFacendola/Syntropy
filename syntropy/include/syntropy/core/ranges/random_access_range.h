@@ -23,34 +23,19 @@
 namespace Syntropy::Ranges::Concepts
 {
     /************************************************************************/
-    /* RANDOM ACCESS RANGE VIEW                                             */
-    /************************************************************************/
-
-    /// \brief Concept for range views whose elements can be visited
-    ///        in any order.
-    ///
-    /// \author Raffaele D. Facendola - November 2020.
-    template <typename TRangeView>
-    concept RandomAccessRangeView = BidirectionalRangeView<TRangeView>
-        && requires(Immutable<TRangeView> range_view,
-                    Immutable<Templates::RangeCountType<TRangeView>> index)
-        {
-            /// \brief Access range view's element by index.
-            { Ranges::At(range_view, index) };
-        };
-
-    /************************************************************************/
     /* RANDOM ACCESS RANGE                                                  */
     /************************************************************************/
 
     /// \brief Concept for ranges whose elements can be visited in any order.
     ///
-    /// \author Raffaele D. Facendola - March 2021.
+    /// \author Raffaele D. Facendola - November 2020.
     template <typename TRange>
     concept RandomAccessRange = BidirectionalRange<TRange>
-        && requires(Immutable<TRange> range)
+        && requires(Immutable<TRange> range,
+                    Immutable<Templates::RangeCountType<TRange>> index)
         {
-            { Ranges::ViewOf(range) } -> RandomAccessRangeView;
+            /// \brief Access range element by index.
+            { Ranges::At(range, index) };
         };
 
 }
