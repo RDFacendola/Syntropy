@@ -172,9 +172,10 @@ namespace Syntropy::Ranges::Details
     inline auto
     InvokeIsEmpty(Immutable<TRangeView> range_view, FallbackPriority) noexcept
         -> decltype(Details::RouteCount(range_view) ==
-                    RangeCountType<TRangeView>{})
+                    RangeCardinalityTypeOf<TRangeView>{})
     {
-        return Details::RouteCount(range_view) == RangeCountType<TRangeView>{};
+        return Details::RouteCount(range_view) ==
+            RangeCardinalityTypeOf<TRangeView>{};
     }
 
     template <typename TRangeView>
@@ -374,9 +375,11 @@ namespace Syntropy::Ranges::Details
     template <typename TRangeView>
     inline auto
     InvokeFront(Immutable<TRangeView> range_view, FallbackPriority) noexcept
-        -> decltype(Details::RouteAt(range_view, RangeCountType<TRangeView>{}))
+        -> decltype(Details::RouteAt(range_view,
+                                     RangeCardinalityTypeOf<TRangeView>{}))
     {
-        return Details::RouteAt(range_view, RangeCountType<TRangeView>{});
+        return Details::RouteAt(range_view,
+                                RangeCardinalityTypeOf<TRangeView>{});
     }
 
     template <typename TRangeView>
@@ -420,11 +423,13 @@ namespace Syntropy::Ranges::Details
     InvokeBack(Immutable<TRangeView> range_view, FallbackPriority) noexcept
         -> decltype(Details::RouteAt(
             range_view,
-            Details::RouteCount(range_view) - RangeCountType<TRangeView>{ 1 }))
+            Details::RouteCount(range_view) -
+                RangeCardinalityTypeOf<TRangeView>{ 1 }))
     {
         return Details::RouteAt(
             range_view,
-            Details::RouteCount(range_view) - RangeCountType<TRangeView>{ 1 });
+            Details::RouteCount(range_view) -
+                RangeCardinalityTypeOf<TRangeView>{ 1 });
     }
 
     template <typename TRangeView>
@@ -468,13 +473,15 @@ namespace Syntropy::Ranges::Details
     InvokePopFront(Immutable<TRangeView> range_view, FallbackPriority) noexcept
         -> decltype(Details::RouteSelect(
             range_view,
-            RangeCountType<TRangeView>{ 1 },
-            Details::RouteCount(range_view) - RangeCountType<TRangeView>{ 1 }))
+            RangeCardinalityTypeOf<TRangeView>{ 1 },
+            Details::RouteCount(range_view) -
+                RangeCardinalityTypeOf<TRangeView>{ 1 }))
     {
         return Details::RouteSelect(
             range_view,
-            RangeCountType<TRangeView>{ 1 },
-            Details::RouteCount(range_view) - RangeCountType<TRangeView>{ 1 });
+            RangeCardinalityTypeOf<TRangeView>{ 1 },
+            Details::RouteCount(range_view) -
+                RangeCardinalityTypeOf<TRangeView>{ 1 });
     }
 
     template <typename TRangeView>
@@ -518,13 +525,15 @@ namespace Syntropy::Ranges::Details
     InvokePopBack(Immutable<TRangeView> range_view, FallbackPriority) noexcept
         -> decltype(Details::RouteSelect(
             range_view,
-            RangeCountType<TRangeView>{ 0 },
-            Details::RouteCount(range_view) - RangeCountType<TRangeView>{ 1 }))
+            RangeCardinalityTypeOf<TRangeView>{ 0 },
+            Details::RouteCount(range_view)
+                - RangeCardinalityTypeOf<TRangeView>{ 1 }))
     {
         return Details::RouteSelect(
             range_view,
-            RangeCountType<TRangeView>{ 0 },
-            Details::RouteCount(range_view) - RangeCountType<TRangeView>{ 1 });
+            RangeCardinalityTypeOf<TRangeView>{ 0 },
+            Details::RouteCount(range_view)
+                - RangeCardinalityTypeOf<TRangeView>{ 1 });
     }
 
     template <typename TRangeView>

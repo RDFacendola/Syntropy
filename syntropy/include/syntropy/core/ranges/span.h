@@ -39,7 +39,7 @@ namespace Syntropy
         using ReferenceType = typename TTraits::ReferenceType;
 
         /// \brief Type of the span cardinality.
-        using CountType = typename TTraits::CountType;
+        using CardinalityType = typename TTraits::CardinalityType;
 
         /// \brief Create an empty span.
         constexpr
@@ -53,7 +53,7 @@ namespace Syntropy
         ///        and their number.
         constexpr
         BaseSpan(Immutable<PointerType> begin,
-                 Immutable<CountType> size) noexcept;
+                 Immutable<CardinalityType> size) noexcept;
 
         /// \brief Create a span given a pointer to both the first and
         ///        past the last element.
@@ -83,14 +83,14 @@ namespace Syntropy
         /// If the provided index is not within the BaseSpan the behavior
         /// of this method is undefined.
         [[nodiscard]] constexpr ReferenceType
-        operator[](Immutable<CountType> index) const noexcept;
+        operator[](Immutable<CardinalityType> index) const noexcept;
 
         /// \brief Access the underlying storage.
         [[nodiscard]] constexpr PointerType
         GetData() const noexcept;
 
         /// \brief Get the number of elements in the span.
-        [[nodiscard]] constexpr Immutable<CountType>
+        [[nodiscard]] constexpr Immutable<CardinalityType>
         GetCount() const noexcept;
 
     private:
@@ -99,7 +99,7 @@ namespace Syntropy
         PointerType data_{ nullptr };
 
         /// \brief Number of elements in the span.
-        CountType count_{};
+        CardinalityType count_{};
 
     };
 
@@ -108,7 +108,7 @@ namespace Syntropy
     /************************************************************************/
 
     /// \brief Schema for base span traits.
-    template <typename TPointer, typename TReference, typename TCount>
+    template <typename TPointer, typename TReference, typename TCardinality>
     struct BaseSpanTraits
     {
         /// \brief Pointer type.
@@ -118,7 +118,7 @@ namespace Syntropy
         using ReferenceType = TReference;
 
         /// \brief Cardinality type.
-        using CountType = TCount;
+        using CardinalityType = TCardinality;
     };
 
     /************************************************************************/
@@ -191,9 +191,9 @@ namespace Syntropy
     // ==========
 
     /// \brief Create a read-only span by deducing template from arguments.
-    template <typename TType, typename TCount>
+    template <typename TType, typename TCardinality>
     [[nodiscard]] constexpr Span<TType>
-    MakeSpan(Ptr<TType> begin, Immutable<TCount> size) noexcept;
+    MakeSpan(Ptr<TType> begin, Immutable<TCardinality> size) noexcept;
 
     /// \brief Create a read-only span by deducing template from arguments.
     template <typename TType>
@@ -201,9 +201,9 @@ namespace Syntropy
     MakeSpan(Ptr<TType> begin, Ptr<TType> end) noexcept;
 
     /// \brief Create a read-write span by deducing template from arguments.
-    template <typename TType, typename TCount>
+    template <typename TType, typename TCardinality>
     [[nodiscard]] constexpr RWSpan<TType>
-    MakeSpan(RWPtr<TType> begin, Immutable<TCount> size) noexcept;
+    MakeSpan(RWPtr<TType> begin, Immutable<TCardinality> size) noexcept;
 
     /// \brief Create a read-write span by deducing template from arguments.
     template <typename TType>

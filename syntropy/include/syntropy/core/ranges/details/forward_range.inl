@@ -32,12 +32,12 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Templates::RangeCountType<URange>
+    constexpr Templates::RangeCardinalityTypeOf<URange>
     Copy(Immutable<TRange> destination, Immutable<URange> source) noexcept
     {
         auto source_view = Ranges::ViewOf(source);
         auto destination_view = Ranges::ViewOf(destination);
-        auto count = Templates::RangeCountType<URange>{ 0 };
+        auto count = Templates::RangeCardinalityTypeOf<URange>{ 0 };
 
         for (; !Ranges::IsEmpty(source_view) &&
                !Ranges::IsEmpty(destination_view);
@@ -53,12 +53,12 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Templates::RangeCountType<URange>
+    constexpr Templates::RangeCardinalityTypeOf<URange>
     Move(Immutable<TRange> destination, Immutable<URange> source) noexcept
     {
         auto source_view = Ranges::ViewOf(source);
         auto destination_view = Ranges::ViewOf(destination);
-        auto count = Templates::RangeCountType<URange>{ 0 };
+        auto count = Templates::RangeCardinalityTypeOf<URange>{ 0 };
 
         for (; !Ranges::IsEmpty(source_view) &&
                !Ranges::IsEmpty(destination_view);
@@ -75,12 +75,12 @@ namespace Syntropy::Ranges
     }
 
     template <Concepts::ForwardRange TRange>
-    constexpr Templates::RangeCountType<TRange>
+    constexpr Templates::RangeCardinalityTypeOf<TRange>
     Swap(Immutable<TRange> lhs, Immutable<TRange> rhs) noexcept
     {
         auto lhs_view = Ranges::ViewOf(lhs);
         auto rhs_view = Ranges::ViewOf(rhs);
-        auto count = Templates::RangeCountType<TRange>{ 0 };
+        auto count = Templates::RangeCardinalityTypeOf<TRange>{ 0 };
 
         for (; !Ranges::IsEmpty(lhs_view) &&
                !Ranges::IsEmpty(rhs_view);

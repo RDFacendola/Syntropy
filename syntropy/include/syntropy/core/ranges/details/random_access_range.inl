@@ -17,39 +17,39 @@ namespace Syntropy::Ranges
     // RandomAccessRange.
     // ==================
 
-    template <Concepts::RandomAccessRange TRange, typename TCount>
+    template <Concepts::RandomAccessRange TRange, typename TCardinality>
     [[nodiscard]] constexpr auto
-    Front(Immutable<TRange> range, Immutable<TCount> count) noexcept
+    Front(Immutable<TRange> range, Immutable<TCardinality> count) noexcept
     {
         return Ranges::Select(Ranges::ViewOf(range),
-                             Templates::RangeCountType<TRange>{ 0 },
+                             Templates::RangeCardinalityTypeOf<TRange>{ 0 },
                              count);
     }
 
-    template <Concepts::RandomAccessRange TRange, typename TCount>
+    template <Concepts::RandomAccessRange TRange, typename TCardinality>
     [[nodiscard]] constexpr auto
-    Back(Immutable<TRange> range, Immutable<TCount> count) noexcept
+    Back(Immutable<TRange> range, Immutable<TCardinality> count) noexcept
     {
         return Ranges::Select(Ranges::ViewOf(range),
                               Ranges::Count(range) - count,
                               count);
     }
 
-    template <Concepts::RandomAccessRange TRange, typename TCount>
+    template <Concepts::RandomAccessRange TRange, typename TCardinality>
     [[nodiscard]] constexpr auto
-    PopFront(Immutable<TRange> range, Immutable<TCount> count) noexcept
+    PopFront(Immutable<TRange> range, Immutable<TCardinality> count) noexcept
     {
         return Ranges::Select(Ranges::ViewOf(range),
                               count,
                               Ranges::Count(range) - count);
     }
 
-    template <Concepts::RandomAccessRange TRange, typename TCount>
+    template <Concepts::RandomAccessRange TRange, typename TCardinality>
     [[nodiscard]] constexpr auto
-    PopBack(Immutable<TRange> range, Immutable<TCount> count) noexcept
+    PopBack(Immutable<TRange> range, Immutable<TCardinality> count) noexcept
     {
         return Ranges::Select(Ranges::ViewOf(range),
-                              Templates::RangeCountType<TRange>{ 0 },
+                              Templates::RangeCardinalityTypeOf<TRange>{ 0 },
                               Ranges::Count(range) - count);
     }
 
@@ -69,19 +69,19 @@ namespace Syntropy::Ranges
                                  Ranges::PopBack(range));
     }
 
-    template <Concepts::RandomAccessRange TRange, typename TCount>
+    template <Concepts::RandomAccessRange TRange, typename TCardinality>
     [[nodiscard]] constexpr auto
     SliceFront(Immutable<TRange> range,
-               Immutable<TCount> count) noexcept
+               Immutable<TCardinality> count) noexcept
     {
         return Tuples::MakeTuple(Ranges::Front(range, count),
                                  Ranges::PopFront(range, count));
     }
 
-    template <Concepts::RandomAccessRange TRange, typename TCount>
+    template <Concepts::RandomAccessRange TRange, typename TCardinality>
     [[nodiscard]] constexpr auto
     SliceBack(Immutable<TRange> range,
-              Immutable<TCount> count) noexcept
+              Immutable<TCardinality> count) noexcept
     {
         return Tuples::MakeTuple(Ranges::Back(range, count),
                                  Ranges::PopBack(range, count));

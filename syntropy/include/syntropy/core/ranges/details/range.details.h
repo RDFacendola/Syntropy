@@ -180,7 +180,7 @@ namespace Syntropy::Ranges::Details
 
     /// \brief Type of a range's cardinality.
     template <typename TRangeView>
-    using RangeCountType = Templates::UnqualifiedOf<decltype(
+    using RangeCardinalityTypeOf = Templates::UnqualifiedOf<decltype(
         RouteCount(Syntropy::Templates::Declval<TRangeView>()))>;
 
     /************************************************************************/
@@ -210,7 +210,7 @@ namespace Syntropy::Ranges::Details
     inline auto
     InvokeIsEmpty(Immutable<TRangeView> range_view, FallbackPriority) noexcept
         -> decltype(Details::RouteCount(range_view) ==
-                    RangeCountType<TRangeView>{});
+                    RangeCardinalityTypeOf<TRangeView>{});
 
     /// \brief Routes the invocation.
     template <typename TRangeView>
@@ -373,7 +373,7 @@ namespace Syntropy::Ranges::Details
     inline auto
     InvokeFront(Immutable<TRangeView> range_view, FallbackPriority) noexcept
         -> decltype(Details::RouteAt(range_view,
-                                     RangeCountType<TRangeView>{}));
+                                     RangeCardinalityTypeOf<TRangeView>{}));
 
     /// \brief Routes the invocation.
     template <typename TRangeView>
@@ -442,9 +442,10 @@ namespace Syntropy::Ranges::Details
     template <typename TRangeView>
     inline auto
     InvokePopFront(Immutable<TRangeView> range_view, FallbackPriority) noexcept
-        -> decltype(Details::RouteSelect(range_view,
-                                         RangeCountType<TRangeView>{ 1 },
-                                         --Details::RouteCount(range_view)));
+        -> decltype(Details::RouteSelect(
+            range_view,
+            RangeCardinalityTypeOf<TRangeView>{ 1 },
+            --Details::RouteCount(range_view)));
     /// \brief Routes the invocation.
     template <typename TRangeView>
     inline auto
@@ -477,9 +478,10 @@ namespace Syntropy::Ranges::Details
     template <typename TRangeView>
     inline auto
     InvokePopBack(Immutable<TRangeView> range_view, FallbackPriority) noexcept
-        -> decltype(Details::RouteSelect(range_view,
-                                         RangeCountType<TRangeView>{ 0 },
-                                         --Details::RouteCount(range_view)));
+        -> decltype(Details::RouteSelect(
+            range_view,
+            RangeCardinalityTypeOf<TRangeView>{ 0 },
+            --Details::RouteCount(range_view)));
 
     /// \brief Routes the invocation.
     template <typename TRangeView>

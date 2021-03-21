@@ -64,7 +64,7 @@ namespace Syntropy::Ranges
     ///
     /// \return Returns the number of copied elements.
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Templates::RangeCountType<URange>
+    constexpr Templates::RangeCardinalityTypeOf<URange>
     Copy(Immutable<TRange> destination, Immutable<URange> source) noexcept;
 
     /// \brief Advance both ranges in lockstep, moving elements from the
@@ -72,7 +72,7 @@ namespace Syntropy::Ranges
     ///
     /// \return Returns the number of moved elements.
     template <Concepts::ForwardRange TRange, Concepts::ForwardRange URange>
-    constexpr Templates::RangeCountType<URange>
+    constexpr Templates::RangeCardinalityTypeOf<URange>
     Move(Immutable<TRange> destination, Immutable<URange> source) noexcept;
 
      /// \brief Advance both ranges in lockstep, swapping elements
@@ -80,7 +80,7 @@ namespace Syntropy::Ranges
      ///
      /// \return Returns the number of moved elements.
     template <Concepts::ForwardRange TRange>
-    constexpr Templates::RangeCountType<TRange>
+    constexpr Templates::RangeCardinalityTypeOf<TRange>
     Swap(Immutable<TRange> lhs, Immutable<TRange> rhs) noexcept;
 
 }

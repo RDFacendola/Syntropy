@@ -23,7 +23,8 @@ namespace Syntropy
     template <typename TType, typename TTraits>
     constexpr BaseSpan<TType, TTraits>
     ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::PointerType> begin,
-               Immutable<BaseSpan<TType, TTraits>::CountType> size) noexcept
+               Immutable<BaseSpan<TType, TTraits>::CardinalityType> size)
+                   noexcept
         : data_(begin)
         , count_(size)
     {
@@ -34,7 +35,7 @@ namespace Syntropy
     constexpr BaseSpan<TType, TTraits>
     ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::PointerType> begin,
                Immutable<BaseSpan<TType, TTraits>::PointerType> end) noexcept
-        : BaseSpan(begin, CountType{ end - begin })
+        : BaseSpan(begin, CardinalityType{ end - begin })
     {
 
     }
@@ -64,14 +65,15 @@ namespace Syntropy
     [[nodiscard]] constexpr BaseSpan<TType, TTraits>
     ::operator Bool() const noexcept
     {
-        return count_ > CountType{ 0 };
+        return count_ > CardinalityType{ 0 };
     }
 
     template <typename TType, typename TTraits>
     [[nodiscard]] constexpr
     typename BaseSpan<TType, TTraits>::ReferenceType
     BaseSpan<TType, TTraits>
-    ::operator[](Immutable<typename BaseSpan<TType, TTraits>::CountType> index)
+    ::operator[](
+        Immutable<typename BaseSpan<TType, TTraits>::CardinalityType> index)
     const noexcept
     {
         return data_[ToInt(index)];
@@ -87,7 +89,7 @@ namespace Syntropy
 
     template <typename TType, typename TTraits>
     [[nodiscard]] constexpr
-    Immutable<typename BaseSpan<TType, TTraits>::CountType>
+    Immutable<typename BaseSpan<TType, TTraits>::CardinalityType>
     BaseSpan<TType, TTraits>
     ::GetCount() const noexcept
     {
