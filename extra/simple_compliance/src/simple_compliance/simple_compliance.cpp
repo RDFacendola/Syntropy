@@ -9,36 +9,12 @@
 
 #include "simple_compliance/bulk.h"
 
-struct FooView
-{
-    Syntropy::Int GetFront() const noexcept
-    {
-        return 43;
-    }
-
-    FooView PopFront() const noexcept
-    {
-        return {};
-    }
-
-    Syntropy::Bool IsEmpty() const noexcept
-    {
-        return false;
-    }
-};
-
-struct Foo
-{
-
-};
-
 int main()
 {
     std::cout << "Hello, Syntropy\n";
 
-    auto foo = Foo{};
 
-   return 0;
+    return 0;
 }
 
 // =========================================================================  //

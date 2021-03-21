@@ -21,15 +21,6 @@ namespace Syntropy::Ranges::Extensions
     template <typename TRange, typename = void>
     struct ViewOf;
 
-    /// \brief Access the first element in a range view.
-    template <typename TRangeView, typename = void>
-    struct Front;
-
-    /// \brief Discard the first element in a range view and return a view to
-    ///        the remaining elements.
-    template <typename TRangeView, typename = void>
-    struct PopFront;
-
     /// \brief Check whether a range view is empty.
     template <typename TRangeView, typename = void>
     struct IsEmpty;
@@ -38,9 +29,22 @@ namespace Syntropy::Ranges::Extensions
     template <typename TRangeView, typename = void>
     struct Count;
 
+    /// \brief Select a subrange o elements.
+    template <typename TRangeView, typename = void>
+    struct Select;
+
+    /// \brief Access the first element in a range view.
+    template <typename TRangeView, typename = void>
+    struct Front;
+
     /// \brief Access the last element in a range view.
     template <typename TRangeView, typename = void>
     struct Back;
+
+    /// \brief Discard the first element in a range view and return a view to
+    ///        the remaining elements.
+    template <typename TRangeView, typename = void>
+    struct PopFront;
 
     /// \brief Discard the last element in a range view and return a view to
     ///        the remaining elements.

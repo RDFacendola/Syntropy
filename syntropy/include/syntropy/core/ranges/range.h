@@ -38,63 +38,74 @@ namespace Syntropy::Ranges
     ViewOf(Forwarding<TRange> range) noexcept
         -> decltype(Details::RouteViewOf(Forward<TRange>(range)));
 
-    /// \brief Check whether a range view is empty.
+    /// \brief Check whether a range is empty.
     template <typename TRange>
     [[nodiscard]] constexpr Bool
     IsEmpty(Immutable<TRange> range) noexcept;
 
-    /// \brief Get the number of elements in a range view.
+    /// \brief Get the number of elements in a range.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     Count(Immutable<TRange> range) noexcept
         -> decltype(Details::RouteCount(Ranges::ViewOf(range)));
 
-    /// \brief Access the first element in a range view.
+    /// \brief Access the first element in a range.
     ///
-    /// \remarks Undefined behavior if the range view is empty.
+    /// \remarks Undefined behavior if the range is empty.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     Front(Immutable<TRange> range) noexcept
         -> decltype(Details::RouteFront(Ranges::ViewOf(range)));
 
-    /// \brief Access the last element in a range view.
+    /// \brief Access the last element in a range.
     ///
-    /// \remarks Undefined behavior if the range view is empty.
+    /// \remarks Undefined behavior if the range is empty.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     Back(Immutable<TRange> range) noexcept
         -> decltype(Details::RouteBack(Ranges::ViewOf(range)));
 
-    /// \brief Discard the first element in a range view and return a view
-    ///        to the remaining elements.
+    /// \brief Discard the first element in a range and return a range to the
+    ///        remaining elements.
     ///
-    /// \remarks Undefined behavior if the range view is empty.
+    /// \remarks Undefined behavior if the range is empty.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     PopFront(Immutable<TRange> range) noexcept
         -> decltype(Details::RoutePopFront(Ranges::ViewOf(range)));
 
-    /// \brief Discard the last element in a range view and return a view to
-    ///        the remaining elements.
+    /// \brief Discard the last element in a range and return a range to the
+    ///        remaining elements.
     ///
-    /// \remarks Undefined behavior if the range view is empty.
+    /// \remarks Undefined behavior if the range is empty.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     PopBack(Immutable<TRange> range) noexcept
         -> decltype(Details::RoutePopBack(Ranges::ViewOf(range)));
 
-    /// \brief Access range view's element by index.
+    /// \brief Access range element by index.
     ///
-    /// \remarks Exceeding range view boundaries results in undefined behavior.
+    /// \remarks Undefined behavior if range boundaries are exceeded.
     template <typename TRange, typename TIndex>
     [[nodiscard]] constexpr auto
     At(Immutable<TRange> range, Immutable<TIndex> index) noexcept
         -> decltype(Details::RouteAt(Ranges::ViewOf(range), index));
 
+    /// \brief Select a subrange of elements.
+    ///
+    /// \remarks Undefined behavior if range boundaries are exceeded.
+    template <typename TRange, typename TCardinality>
+    [[nodiscard]] constexpr auto
+    Select(Immutable<TRange> range,
+           Immutable<TCardinality> offset,
+           Immutable<TCardinality> count) noexcept
+        -> decltype(Details::RouteSelect(Ranges::ViewOf(range),
+                                         offset,
+                                         count));
+
     /// \brief Access a range elements' storage.
     ///
-    /// \remarks Calling this method on an empty range results in undefined
-    ///          behavior.
+    /// \remarks Undefined behavior if the range is empty.
     template <typename TRange>
     [[nodiscard]] constexpr auto
     Data(Immutable<TRange> range) noexcept

@@ -79,6 +79,16 @@ namespace Syntropy::Ranges
         return Details::RouteAt(Ranges::ViewOf(range), index);
     }
 
+    template <typename TRange, typename TCardinality>
+    [[nodiscard]] constexpr auto
+    Select(Immutable<TRange> range,
+           Immutable<TCardinality> offset,
+           Immutable<TCardinality> count) noexcept
+       -> decltype(Details::RouteSelect(Ranges::ViewOf(range), offset, count))
+    {
+        return Details::RouteSelect(Ranges::ViewOf(range), offset, count);
+    }
+    
     template <typename TRange>
     [[nodiscard]] constexpr auto
     Data(Immutable<TRange> range) noexcept
