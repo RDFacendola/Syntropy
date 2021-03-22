@@ -49,19 +49,19 @@ namespace Syntropy
         constexpr
         BaseSpan(Null) noexcept;
 
-        /// \brief Create a span given a pointer to the first element
-        ///        and their number.
+        /// \brief Create a span given a pointer to the first element and their
+        ///        count.
         constexpr
         BaseSpan(Immutable<PointerType> begin,
-                 Immutable<CardinalityType> size) noexcept;
+                 Immutable<CardinalityType> count) noexcept;
 
-        /// \brief Create a span given a pointer to both the first and
-        ///        past the last element.
+        /// \brief Create a span given a pointer to both the first and past the
+        ///        last element.
         constexpr
         BaseSpan(Immutable<PointerType> begin,
                  Immutable<PointerType> end) noexcept;
 
-        /// \brief Converting copy constructor.
+        /// \brief Converting copy-constructor.
         template <typename UType, typename UTraits>
         constexpr
         BaseSpan(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
@@ -69,7 +69,7 @@ namespace Syntropy
         /// \brief Default destructor.
         ~BaseSpan() noexcept = default;
 
-        /// \brief Copy assignment operator.
+        /// \brief Copy-assignment operator.
         template <typename UType, typename UTraits>
         constexpr Mutable<BaseSpan>
         operator=(Immutable<BaseSpan<UType, UTraits>> rhs) noexcept;
@@ -80,8 +80,7 @@ namespace Syntropy
 
         /// \brief Access an element by index.
         ///
-        /// If the provided index is not within the BaseSpan the behavior
-        /// of this method is undefined.
+        /// \remarks Undefined behavior if range boundaries are exceeded.
         [[nodiscard]] constexpr ReferenceType
         operator[](Immutable<CardinalityType> index) const noexcept;
 
@@ -92,6 +91,13 @@ namespace Syntropy
         /// \brief Get the number of elements in the span.
         [[nodiscard]] constexpr Immutable<CardinalityType>
         GetCount() const noexcept;
+
+        /// \brief Select a subrange of elements.
+        ///
+        /// \remarks Undefined behavior if range boundaries are exceeded.
+        [[nodiscard]] constexpr BaseSpan
+        Select(Immutable<CardinalityType> offset,
+               Immutable<CardinalityType> count) const noexcept;
 
     private:
 
@@ -193,7 +199,7 @@ namespace Syntropy
     /// \brief Create a read-only span by deducing template from arguments.
     template <typename TType, typename TCardinality>
     [[nodiscard]] constexpr Span<TType>
-    MakeSpan(Ptr<TType> begin, Immutable<TCardinality> size) noexcept;
+    MakeSpan(Ptr<TType> begin, Immutable<TCardinality> count) noexcept;
 
     /// \brief Create a read-only span by deducing template from arguments.
     template <typename TType>
@@ -203,7 +209,7 @@ namespace Syntropy
     /// \brief Create a read-write span by deducing template from arguments.
     template <typename TType, typename TCardinality>
     [[nodiscard]] constexpr RWSpan<TType>
-    MakeSpan(RWPtr<TType> begin, Immutable<TCardinality> size) noexcept;
+    MakeSpan(RWPtr<TType> begin, Immutable<TCardinality> count) noexcept;
 
     /// \brief Create a read-write span by deducing template from arguments.
     template <typename TType>
@@ -211,9 +217,9 @@ namespace Syntropy
     MakeSpan(RWPtr<TType> begin, RWPtr<TType> end) noexcept;
 
     /// \brief Create a span from a C array.
-    template <typename TType, Int VSize>
+    template <typename TType, Int VCount>
     [[nodiscard]] constexpr auto
-    MakeSpan(TType (&rhs)[VSize]) noexcept;
+    MakeSpan(TType (&rhs)[VCount]) noexcept;
 
 }
 

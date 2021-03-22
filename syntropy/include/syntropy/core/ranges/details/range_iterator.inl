@@ -13,36 +13,42 @@ namespace Syntropy::Ranges
     /* RANGE VIEW ITERATOR                                                  */
     /************************************************************************/
 
-    template <Concepts::ForwardRangeView TRangeView>
+    template <Concepts::ForwardRange TRangeView>
     template <Concepts::ForwardRange TRange>
-    constexpr RangeViewIterator<TRangeView>
-    ::RangeViewIterator(Immutable<TRange> range) noexcept
+    constexpr
+    RangeIterator<TRangeView>
+    ::RangeIterator(Immutable<TRange> range) noexcept
         : range_view_(Ranges::ViewOf(range))
     {
 
     }
 
-    template <typename TRangeView>
-    [[nodiscard]] constexpr
-    decltype(auto) RangeViewIterator<TRangeView>
+    template <Concepts::ForwardRange TRangeView>
+    [[nodiscard]] constexpr decltype(auto)
+    RangeIterator<TRangeView>
     ::operator*() const noexcept
     {
         return Ranges::Front(range_view_);
     }
 
-    template <typename TRangeView>
-    constexpr Mutable<RangeViewIterator<TRangeView>>
-    RangeViewIterator<TRangeView>
+    template <Concepts::ForwardRange TRangeView>
+    constexpr Mutable<RangeIterator<TRangeView>>
+    RangeIterator<TRangeView>
     ::operator++() noexcept
     {
-        range_view_ = Ranges::PopFront(range_view_);
+        // PopFront returns a RangeView<Blah>, whereas range_view_ is
+        // a BaseSpan!
+
+        auto range_view = Ranges::PopFront(range_view_);
+
+        range_view_ = range_view;
 
         return *this;
     }
 
-    template <typename TRangeView>
-    [[nodiscard]] constexpr Bool RangeViewIterator<TRangeView>
-    ::operator==(Immutable<RangeViewIterator> other) const noexcept
+    template <Concepts::ForwardRange TRangeView>
+    [[nodiscard]] constexpr Bool RangeIterator<TRangeView>
+    ::operator==(Immutable<RangeIterator> other) const noexcept
     {
         return Ranges::IsEmpty(range_view_);
     }
@@ -63,16 +69,19 @@ namespace Syntropy
     {
         auto range_view = Ranges::ViewOf(range);
 
-        return Ranges::RangeViewIterator{ range_view };
+        return Ranges::RangeIterator{ range_view };
     }
 
     /// \brief Get an iterator past the last element in a range view.
     template <Ranges::Concepts::ForwardRange TRange>
     constexpr auto end(Immutable<TRange> range) noexcept
     {
-        using RangeViewType = decltype(Ranges::ViewOf(range));
+        auto range_view = Ranges::ViewOf(range);
 
-        return Ranges::RangeViewIterator<RangeViewType>{};
+        using RangeViewType = Ranges::Templates::RangeViewTypeOf<TRange>;
+
+        // return Ranges::RangeIterator<RangeViewType>{};
+        return Ranges::RangeIterator{ range_view };
     }
 }
 

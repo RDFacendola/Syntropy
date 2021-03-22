@@ -23,10 +23,10 @@ namespace Syntropy
     template <typename TType, typename TTraits>
     constexpr BaseSpan<TType, TTraits>
     ::BaseSpan(Immutable<BaseSpan<TType, TTraits>::PointerType> begin,
-               Immutable<BaseSpan<TType, TTraits>::CardinalityType> size)
+               Immutable<BaseSpan<TType, TTraits>::CardinalityType> count)
                    noexcept
         : data_(begin)
-        , count_(size)
+        , count_(count)
     {
 
     }
@@ -96,6 +96,16 @@ namespace Syntropy
         return count_;
     }
 
+    template <typename TType, typename TTraits>
+    [[nodiscard]] constexpr
+    BaseSpan<TType, TTraits>
+    BaseSpan<TType, TTraits>
+    ::Select(Immutable<CardinalityType> offset,
+             Immutable<CardinalityType> count) const noexcept
+    {
+        return { data_ + offset, count };
+    }
+
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
@@ -143,9 +153,9 @@ namespace Syntropy
 
     template <typename TType, typename TCount>
     [[nodiscard]] constexpr Span<TType>
-    MakeSpan(Ptr<TType> begin, Immutable<TCount> size) noexcept
+    MakeSpan(Ptr<TType> begin, Immutable<TCount> count) noexcept
     {
-        return { begin, size };
+        return { begin, count };
     }
 
     template <typename TType>
@@ -157,9 +167,9 @@ namespace Syntropy
 
     template <typename TType, typename TCount>
     [[nodiscard]] constexpr RWSpan<TType>
-    MakeSpan(RWPtr<TType> begin, Immutable<TCount> size) noexcept
+    MakeSpan(RWPtr<TType> begin, Immutable<TCount> count) noexcept
     {
-        return { begin, size };
+        return { begin, count };
     }
 
     template <typename TType>
@@ -169,11 +179,11 @@ namespace Syntropy
         return { begin, end };
     }
 
-    template <typename TType, Int VSize>
+    template <typename TType, Int VCount>
     [[nodiscard]] constexpr auto
-    MakeSpan(TType(&rhs)[VSize]) noexcept
+    MakeSpan(TType(&rhs)[VCount]) noexcept
     {
-        return MakeSpan(PtrOf(rhs[0]), VSize);
+        return MakeSpan(PtrOf(rhs[0]), VCount);
     }
 
 }
