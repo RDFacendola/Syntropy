@@ -70,11 +70,11 @@ namespace Syntropy::Memory
     [[nodiscard]] inline auto
     RangeBytesOf(Immutable<TRange> rhs) noexcept
     {
-        using TRangeElement
-            = typename Ranges::Templates::RangeElementValueTypeOf<TRange>;
+        using RangeElementType
+            = typename Ranges::Templates::RangeElementTypeOf<TRange>;
 
         auto data = ToBytePtr(Ranges::Data(rhs));
-        auto size = SizeOf<TRangeElement>() * Ranges::Count(rhs);
+        auto size = SizeOf<RangeElementType>() * Ranges::Count(rhs);
 
         return MakeByteSpan( data, size );
     }
@@ -96,11 +96,11 @@ namespace Syntropy::Memory
         }
         else
         {
-            using TRangeElement
-                = Ranges::Templates::RangeElementValueTypeOf<TRange>;
+            using RangeElementType
+                = Ranges::Templates::RangeElementTypeOf<TRange>;
 
-            auto data = FromTypelessPtr<TRangeElement>(rhs.GetData());
-            auto size = rhs.GetCount() / SizeOf<TRangeElement>();
+            auto data = FromTypelessPtr<RangeElementType>(rhs.GetData());
+            auto size = rhs.GetCount() / SizeOf<RangeElementType>();
 
             return TRange{ data, size };
         }

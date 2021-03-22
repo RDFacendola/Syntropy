@@ -41,82 +41,6 @@ namespace Syntropy::Ranges::Details
     inline constexpr Templates::Priority kMaxPriority = ExtensionPriority{};
 
     /************************************************************************/
-    /* RANGE VIEW                                                           */
-    /************************************************************************/
-
-    /// \brief A view to a subrange of elements in a range.
-    ///
-    /// \author Raffaele D. Facendola - March 2021.
-    template <typename TRangeView, typename TCardinality>
-    class RangeView : public TRangeView
-    {
-    public:
-
-        /// \brief Default constructor.
-        constexpr
-        RangeView() noexcept = default;
-
-        constexpr
-        RangeView(Immutable<TRangeView> range_view,
-                  Immutable<TCardinality> offset,
-                  Immutable<TCardinality> count) noexcept;
-
-        /// \brief Default copy constructor.
-        constexpr
-        RangeView(Immutable<RangeView> rhs) noexcept = default;
-
-        /// \brief Default copy-assignment operator.
-        constexpr Mutable<RangeView>
-        operator=(Immutable<RangeView> rhs) noexcept = default;
-
-        /// \brief Default destructor.
-        ~RangeView() noexcept = default;
-
-        /// \brief Get the number of elements in the range.
-        [[nodiscard]] constexpr Immutable<TCardinality>
-        GetCount() const noexcept;
-
-        /// \brief Access a range element by index.
-        ///
-        /// \remarks Undefined behavior if range boundaries are exceeded.
-        [[nodiscard]] constexpr decltype(auto)
-        At(Immutable<TCardinality> index) const noexcept;
-
-        /// \brief Select a subrange of elements.
-        ///
-        /// \remarks Undefined behavior if range boundaries are exceeded.
-        [[nodiscard]] constexpr RangeView
-        Select(Immutable<TCardinality> offset,
-               Immutable<TCardinality> count) const noexcept;
-
-        /// \brief Access a range element's storage.
-        ///
-        /// \remarks Undefined behavior if the range is empty.
-        template <typename TThis = RangeView>
-        [[nodiscard]] constexpr decltype(auto)
-        GetData() const noexcept;
-
-    private:
-
-        /// \brief Underlying range view.
-        TRangeView range_view_;
-
-        /// \brief Offset from the range start.
-        TCardinality offset_{};
-
-        /// \brief Number of elements.
-        TCardinality count_{};
-
-    };
-
-    /// \brief Deduction guieds for SliceRange.
-    template<typename TRangeView, typename TCardinality>
-    RangeView(Immutable<TRangeView>,
-              Immutable<TCardinality>,
-              Immutable<TCardinality>)
-        -> RangeView<TRangeView, TCardinality>;
-
-    /************************************************************************/
     /* VIEW OF                                                              */
     /************************************************************************/
 
@@ -329,15 +253,6 @@ namespace Syntropy::Ranges::Details
                  NonMemberFunctionPriority)
         noexcept -> decltype(Select(range_view, offset, count));
 
-    /// \brief Fallback.
-    template <typename TRangeView, typename TCardinality>
-    inline auto
-    InvokeSelect(Immutable<TRangeView> range_view,
-                 Immutable<TCardinality> offset,
-                 Immutable<TCardinality> count,
-                 FallbackPriority) noexcept
-        -> decltype(Details::RouteData(range_view)[index]);
-
     /// \brief Routes the invocation.
     template <typename TRangeView, typename TCardinality>
     inline auto
@@ -445,7 +360,9 @@ namespace Syntropy::Ranges::Details
         -> decltype(Details::RouteSelect(
             range_view,
             RangeCardinalityTypeOf<TRangeView>{ 1 },
-            --Details::RouteCount(range_view)));
+            Details::RouteCount(range_view) -
+                RangeCardinalityTypeOf<TRangeView>{ 1 }));
+
     /// \brief Routes the invocation.
     template <typename TRangeView>
     inline auto
@@ -481,7 +398,8 @@ namespace Syntropy::Ranges::Details
         -> decltype(Details::RouteSelect(
             range_view,
             RangeCardinalityTypeOf<TRangeView>{ 0 },
-            --Details::RouteCount(range_view)));
+            Details::RouteCount(range_view) -
+                RangeCardinalityTypeOf<TRangeView>{ 1 }));
 
     /// \brief Routes the invocation.
     template <typename TRangeView>

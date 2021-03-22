@@ -10,57 +10,6 @@
 namespace Syntropy::Ranges::Details
 {
     /************************************************************************/
-    /* RANGE VIEW                                                           */
-    /************************************************************************/
-
-    template <typename TRangeView, typename TCardinality>
-    constexpr
-    RangeView<TRangeView, TCardinality>
-    ::RangeView(Immutable<TRangeView> range_view,
-                Immutable<TCardinality> offset,
-                Immutable<TCardinality> count) noexcept
-        : range_view_(range_view)
-        , offset_(offset)
-        , count_(count)
-    {
-
-    }
-
-    template <typename TRangeView, typename TCardinality>
-    [[nodiscard]] constexpr Immutable<TCardinality>
-    RangeView<TRangeView, TCardinality>
-    ::GetCount() const noexcept
-    {
-        return count_;
-    }
-
-    template <typename TRangeView, typename TCardinality>
-    [[nodiscard]] constexpr decltype(auto)
-    RangeView<TRangeView, TCardinality>
-    ::At(Immutable<TCardinality> index) const noexcept
-    {
-        return Details::RouteAt(index + offset_);
-    }
-
-    template <typename TRangeView, typename TCardinality>
-    [[nodiscard]] constexpr RangeView<TRangeView, TCardinality>
-    RangeView<TRangeView, TCardinality>
-    ::Select(Immutable<TCardinality> offset,
-             Immutable<TCardinality> count) const noexcept
-    {
-        return RangeView(range_view_, offset_ + offset, count);
-    }
-
-    template <typename TRangeView, typename TCardinality>
-    template <typename TThis>
-    [[nodiscard]] constexpr decltype(auto)
-    RangeView<TRangeView, TCardinality>
-    ::GetData() const noexcept
-    {
-        return Details::RouteData(range_view_) + offset_;
-    }
-
-    /************************************************************************/
     /* VIEW OF                                                              */
     /************************************************************************/
 
@@ -321,17 +270,6 @@ namespace Syntropy::Ranges::Details
         noexcept -> decltype(Select(range_view, offset, count))
     {
         return Select(range_view, offset, count);
-    }
-
-    template <typename TRangeView, typename TCardinality>
-    inline auto
-    InvokeSelect(Immutable<TRangeView> range_view,
-                 Immutable<TCardinality> offset,
-                 Immutable<TCardinality> count,
-                 FallbackPriority) noexcept
-        -> decltype(RangeView(range_view, offset, count))
-    {
-        return RangeView(range_view, offset, count);
     }
 
     template <typename TRangeView, typename TCardinality>

@@ -141,24 +141,20 @@ namespace Syntropy::Ranges::Templates
     /************************************************************************/
 
     /// \brief Type of a range's view.
-    template <Ranges::Concepts::Range TRange>
-    using RangeViewTypeOf = decltype(
-        Ranges::ViewOf(Syntropy::Templates::Declval<TRange>()));
+    template <typename TRange>
+    using RangeViewTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
+        Ranges::ViewOf(Syntropy::Templates::Declval<TRange>()))>;
 
     /// \brief Type of a range's cardinality.
-    template <typename TRangeView>
+    template <typename TRange>
     using RangeCardinalityTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
-        Ranges::Count(Syntropy::Templates::Declval<TRangeView>()))>;
+        Ranges::Count(Syntropy::Templates::Declval<TRange>()))>;
 
     /// \brief Type of a range elements.
-    template <typename TRangeView>
-    using RangeElementTypeOf = decltype(
-        Ranges::Front(Syntropy::Templates::Declval<TRangeView>()));
+    template <typename TRange>
+    using RangeElementTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
+        Ranges::Front(Syntropy::Templates::Declval<TRange>()))>;
 
-    /// \brief Value type of a range's elements.
-    template <typename TRangeView>
-    using RangeElementValueTypeOf = Syntropy::Templates::UnqualifiedOf<
-        RangeElementTypeOf<TRangeView>>;
 }
 
 // ===========================================================================
