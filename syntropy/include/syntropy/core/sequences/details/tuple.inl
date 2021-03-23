@@ -25,7 +25,7 @@ namespace Syntropy::Sequences
     }
 
     template <typename TElement, typename... TElements>
-    template<Concepts::NTupleReference TTuple, Int... VIndexes>
+    template<Concepts::SequenceReference TTuple, Int... VIndexes>
     constexpr Tuple<TElement, TElements...>
     ::Tuple(UnwindTag,
             Syntropy::Templates::Sequence<VIndexes...>,
@@ -130,7 +130,7 @@ namespace Syntropy::Sequences
         return Compare(lhs, rhs);
     }
 
-    // NTuple.
+    // Sequence.
     // =======
 
     template <Int VIndex, typename... TElements>
@@ -246,14 +246,14 @@ namespace Syntropy::Sequences
                    Forward<TElements>(elements)...);
     }
 
-    template <Concepts::NTupleReference... TSequences>
+    template <Concepts::SequenceReference... TSequences>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TSequences>... tuples) noexcept
     {
         return Details::Concatenate(Forward<TSequences>(tuples)...);
     }
 
-    template <Concepts::NTupleReference TTuple>
+    template <Concepts::SequenceReference TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept
     {

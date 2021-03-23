@@ -135,7 +135,7 @@ namespace Syntropy::Ranges
         return { ranges... };
     }
 
-    template <Syntropy::Sequences::Concepts::NTuple TTuple>
+    template <Syntropy::Sequences::Concepts::Sequence TTuple>
     [[nodiscard]] constexpr auto
     MakeZipRangeFromTuple(Immutable<TTuple> ranges) noexcept
     {

@@ -16,7 +16,7 @@ namespace Syntropy::Sequences
     // Comparison.
     // ===========
 
-    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
     [[nodiscard]] constexpr Bool
     AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
@@ -28,7 +28,7 @@ namespace Syntropy::Sequences
         return AreEquivalent(lhs, rhs);
     }
 
-    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
     [[nodiscard]] constexpr Bool
     AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
@@ -46,7 +46,7 @@ namespace Syntropy::Sequences
         }
     }
 
-    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
     [[nodiscard]] constexpr Ordering
     Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
     {
@@ -119,7 +119,7 @@ namespace Syntropy::Sequences
     // Swap.
     // =====
 
-    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
     requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
     constexpr void
     Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
@@ -135,7 +135,7 @@ namespace Syntropy::Sequences
         return memberwise_swap(TupleSequenceFor<TTuple>{});
     }
 
-    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
     requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
     constexpr TTuple
     Exchange(Mutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
@@ -152,7 +152,7 @@ namespace Syntropy::Sequences
         return memberwise_exchange(TupleSequenceFor<TTuple>{});
     }
 
-    template <Concepts::NTuple TTuple, Concepts::NTuple UTuple>
+    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
     requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
     constexpr TTuple
     Exchange(Mutable<TTuple> lhs, Movable<UTuple> rhs) noexcept
@@ -172,7 +172,7 @@ namespace Syntropy::Sequences
     // Functional.
     // ===========
 
-    template <typename TFunction, Concepts::NTupleReference TTuple>
+    template <typename TFunction, Concepts::SequenceReference TTuple>
     constexpr decltype(auto)
     Apply(Forwarding<TFunction> function, Forwarding<TTuple> ntuple) noexcept
     {
@@ -187,7 +187,7 @@ namespace Syntropy::Sequences
         return apply(TupleSequenceFor<TTuple>{});
     }
 
-    template <typename TFunction, Concepts::NTupleReference TTuple>
+    template <typename TFunction, Concepts::SequenceReference TTuple>
     constexpr void
     ForEachApply(Forwarding<TFunction> function,
                  Forwarding<TTuple> ntuple) noexcept
@@ -205,7 +205,7 @@ namespace Syntropy::Sequences
 
     template <Int VIndex,
               typename TFunction,
-              Concepts::NTupleReference... TSequences>
+              Concepts::SequenceReference... TSequences>
     constexpr decltype(auto)
     ProjectApply(Forwarding<TFunction> function,
                  Forwarding<TSequences>... tuples) noexcept
@@ -215,7 +215,7 @@ namespace Syntropy::Sequences
         return function(Get<VIndex>(Forward<TSequences>(tuples))...);
     }
 
-    template <typename TFunction, Concepts::NTupleReference... TSequences>
+    template <typename TFunction, Concepts::SequenceReference... TSequences>
     constexpr void
     LockstepApply(Forwarding<TFunction> function,
                   Forwarding<TSequences>... tuples) noexcept
@@ -234,7 +234,7 @@ namespace Syntropy::Sequences
         lockstep_apply(Syntropy::Templates::MakeSequence<kMinRank>{});
     }
 
-    template <typename TType, Concepts::NTupleReference TTuple>
+    template <typename TType, Concepts::SequenceReference TTuple>
     [[nodiscard]] constexpr TType
     MakeFromTuple(Forwarding<TTuple> tuple) noexcept
     {
@@ -259,26 +259,26 @@ namespace std
     /* STRUCTURED BINDINGS                                                  */
     /************************************************************************/
 
-    template <Syntropy::Sequences::Concepts::NTuple TTuple>
+    template <Syntropy::Sequences::Concepts::Sequence TTuple>
     struct std::tuple_size<TTuple>
     {
         static constexpr std::size_t value
             = Syntropy::Sequences::Templates::Rank<TTuple>;
     };
 
-    template <std::size_t VIndex, Syntropy::Sequences::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Sequences::Concepts::Sequence TTuple>
     struct std::tuple_element<VIndex, TTuple>
     {
         using type = Syntropy::Sequences::Templates::ElementType<VIndex, TTuple>;
     };
 
-    template <std::size_t VIndex, Syntropy::Sequences::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Sequences::Concepts::Sequence TTuple>
     decltype(auto) get(Syntropy::Immutable<TTuple> tuple)
     {
         return Get<VIndex>(tuple);
     }
 
-    template <std::size_t VIndex, Syntropy::Sequences::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Sequences::Concepts::Sequence TTuple>
     decltype(auto) get(Syntropy::Movable<TTuple> tuple)
     {
         return Get<VIndex>(Syntropy::Move(tuple));

@@ -170,7 +170,7 @@ namespace Syntropy::Sequences
               Forwarding<UElements>... elements) noexcept;
 
         /// \brief Construct a tuple unwinding another tuple elements.
-        template<Concepts::NTupleReference TTuple, Int... VIndexes>
+        template<Concepts::SequenceReference TTuple, Int... VIndexes>
         constexpr
         Tuple(UnwindTag,
               Syntropy::Templates::Sequence<VIndexes...>,
@@ -267,7 +267,7 @@ namespace Syntropy::Sequences
     operator<=>(Immutable<Tuple<TElements...>> lhs,
                 Immutable<Tuple<UElements...>> rhs) noexcept;
 
-    // NTuple.
+    // Sequence.
     // =======
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -351,12 +351,12 @@ namespace Syntropy::Sequences
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <Concepts::NTupleReference... TSequences>
+    template <Concepts::SequenceReference... TSequences>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TSequences>... tuples) noexcept;
 
     /// \brief Flatten a tuple recursively.
-    template <Concepts::NTupleReference TTuple>
+    template <Concepts::SequenceReference TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept;
 
