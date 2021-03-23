@@ -7,7 +7,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Tuples
+namespace Syntropy::Sequences
 {
     /************************************************************************/
     /* TUPLES                                                               */
@@ -205,24 +205,24 @@ namespace Syntropy::Tuples
 
     template <Int VIndex,
               typename TFunction,
-              Concepts::NTupleReference... TTuples>
+              Concepts::NTupleReference... TSequences>
     constexpr decltype(auto)
     ProjectApply(Forwarding<TFunction> function,
-                 Forwarding<TTuples>... tuples) noexcept
+                 Forwarding<TSequences>... tuples) noexcept
     {
         using namespace Templates;
 
-        return function(Get<VIndex>(Forward<TTuples>(tuples))...);
+        return function(Get<VIndex>(Forward<TSequences>(tuples))...);
     }
 
-    template <typename TFunction, Concepts::NTupleReference... TTuples>
+    template <typename TFunction, Concepts::NTupleReference... TSequences>
     constexpr void
     LockstepApply(Forwarding<TFunction> function,
-                  Forwarding<TTuples>... tuples) noexcept
+                  Forwarding<TSequences>... tuples) noexcept
     {
         using namespace Templates;
 
-        constexpr auto kMinRank = Math::Min(Rank<TTuples>...);
+        constexpr auto kMinRank = Math::Min(Rank<TSequences>...);
 
         auto lockstep_apply = [&]<Int... VIndex>
             (Syntropy::Templates::Sequence<VIndex...>)
@@ -259,26 +259,26 @@ namespace std
     /* STRUCTURED BINDINGS                                                  */
     /************************************************************************/
 
-    template <Syntropy::Tuples::Concepts::NTuple TTuple>
+    template <Syntropy::Sequences::Concepts::NTuple TTuple>
     struct std::tuple_size<TTuple>
     {
         static constexpr std::size_t value
-            = Syntropy::Tuples::Templates::Rank<TTuple>;
+            = Syntropy::Sequences::Templates::Rank<TTuple>;
     };
 
-    template <std::size_t VIndex, Syntropy::Tuples::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Sequences::Concepts::NTuple TTuple>
     struct std::tuple_element<VIndex, TTuple>
     {
-        using type = Syntropy::Tuples::Templates::ElementType<VIndex, TTuple>;
+        using type = Syntropy::Sequences::Templates::ElementType<VIndex, TTuple>;
     };
 
-    template <std::size_t VIndex, Syntropy::Tuples::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Sequences::Concepts::NTuple TTuple>
     decltype(auto) get(Syntropy::Immutable<TTuple> tuple)
     {
         return Get<VIndex>(tuple);
     }
 
-    template <std::size_t VIndex, Syntropy::Tuples::Concepts::NTuple TTuple>
+    template <std::size_t VIndex, Syntropy::Sequences::Concepts::NTuple TTuple>
     decltype(auto) get(Syntropy::Movable<TTuple> tuple)
     {
         return Get<VIndex>(Syntropy::Move(tuple));

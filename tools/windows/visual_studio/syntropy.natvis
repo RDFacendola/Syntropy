@@ -67,13 +67,13 @@
 
   <!-- Tuple -->
 
-  <Type Name="Syntropy::Tuples::Tuple&lt;&gt;">
+  <Type Name="Syntropy::Sequences::Tuple&lt;&gt;">
     <DisplayString IncludeView="payload"></DisplayString>
     <DisplayString ExcludeView="payload">Tuple ({*this,view(payload)})</DisplayString>
     <Expand/>
   </Type> 
   
-  <Type Name="Syntropy::Tuples::Tuple&lt;*&gt;">
+  <Type Name="Syntropy::Sequences::Tuple&lt;*&gt;">
     <DisplayString IncludeView="payload">{element_}</DisplayString>
     <DisplayString ExcludeView="payload">Tuple ({*this,view(payload)})</DisplayString>
 
@@ -82,7 +82,7 @@
     </Expand>
   </Type>
 
-  <Type Name="Syntropy::Tuples::Tuple&lt;*,*&gt;">
+  <Type Name="Syntropy::Sequences::Tuple&lt;*,*&gt;">
     <DisplayString IncludeView="payload">{element_}, {*((BaseClass*)this), view(payload)}</DisplayString>
     <DisplayString ExcludeView="payload">Tuple ({*this,view(payload)})</DisplayString>
     <Expand>

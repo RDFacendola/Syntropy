@@ -15,7 +15,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Tuples
+namespace Syntropy::Sequences
 {
     /************************************************************************/
     /* FORWARD DECLARATIONS                                                 */
@@ -28,9 +28,9 @@ namespace Syntropy::Tuples
     [[nodiscard]] constexpr Tuple<TElements...>
     MakeTuple(Forwarding<TElements>... elements) noexcept;
 
-    template <Concepts::NTupleReference... TTuples>
+    template <Concepts::NTupleReference... TSequences>
     [[nodiscard]] constexpr decltype(auto)
-    Concatenate(Forwarding<TTuples>... tuples) noexcept;
+    Concatenate(Forwarding<TSequences>... tuples) noexcept;
 
     template <Concepts::NTupleReference TTuple>
     [[nodiscard]] constexpr decltype(auto)
@@ -39,7 +39,7 @@ namespace Syntropy::Tuples
 
 // ===========================================================================
 
-namespace Syntropy::Tuples::Details
+namespace Syntropy::Sequences::Details
 {
     /************************************************************************/
     /* EXPLICIT IF - TUPLE CONSTRUCTOR                                      */
@@ -341,18 +341,18 @@ namespace Syntropy::Tuples::Details
     /// \brief Generate a sequence that can be used to access tuples.
     template <Int VIndex,
               Concepts::NTupleReference TTuple,
-              Concepts::NTupleReference... TTuples>
+              Concepts::NTupleReference... TSequences>
     struct EnumerateTupleIndexesHelper
     {
         using TupleSequence
             = typename EnumerateTupleIndexesHelper<VIndex, TTuple>::Type;
 
-        using TuplesSequence
+        using SequencesSequence
             = typename EnumerateTupleIndexesHelper<VIndex + 1,
-                                                   TTuples...>::Type;
+                                                   TSequences...>::Type;
 
         using Type
-            = Syntropy::Templates::SequenceCat<TupleSequence, TuplesSequence>;
+            = Syntropy::Templates::SequenceCat<TupleSequence, SequencesSequence>;
     };
 
     /// \brief Generate a sequence of VIndex repeated a number of times equal
@@ -366,25 +366,25 @@ namespace Syntropy::Tuples::Details
     };
 
     /// \brief Generate a sequence that can be used to access tuples.
-    template <Concepts::NTupleReference... TTuples>
+    template <Concepts::NTupleReference... TSequences>
     using EnumerateTupleIndexes
-        = typename EnumerateTupleIndexesHelper<0, TTuples...>::Type;
+        = typename EnumerateTupleIndexesHelper<0, TSequences...>::Type;
 
     // EnumerateTupleElementIndexes.
 
     /// \brief Generate a sequence that can be used to access tuple elements.
     template <Concepts::NTupleReference TTuple,
-              Concepts::NTupleReference... TTuples>
+              Concepts::NTupleReference... TSequences>
     struct EnumerateTupleElementIndexesHelper
     {
         using TupleSequence
             = typename EnumerateTupleElementIndexesHelper<TTuple>::Type;
 
-        using TuplesSequence
-            = typename EnumerateTupleElementIndexesHelper<TTuples...>::Type;
+        using SequencesSequence
+            = typename EnumerateTupleElementIndexesHelper<TSequences...>::Type;
 
         using Type
-            = Syntropy::Templates::SequenceCat<TupleSequence, TuplesSequence>;
+            = Syntropy::Templates::SequenceCat<TupleSequence, SequencesSequence>;
     };
 
     /// \brief Generate an increasing sequence from 0 to the rank of
@@ -396,14 +396,14 @@ namespace Syntropy::Tuples::Details
     };
 
     /// \brief Generate a sequence that can be used to access tuple elements.
-    template <Concepts::NTupleReference... TTuples>
+    template <Concepts::NTupleReference... TSequences>
     using EnumerateTupleElementIndexes
-        = typename EnumerateTupleElementIndexesHelper<TTuples...>::Type;
+        = typename EnumerateTupleElementIndexesHelper<TSequences...>::Type;
 
     /// \brief Concatenate a set of tuples.
-    template <Concepts::NTupleReference... TTuples>
+    template <Concepts::NTupleReference... TSequences>
     [[nodiscard]] constexpr decltype(auto)
-    Concatenate(Forwarding<TTuples>... tuples) noexcept;
+    Concatenate(Forwarding<TSequences>... tuples) noexcept;
 
     // Flatten.
     // ========

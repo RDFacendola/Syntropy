@@ -57,7 +57,7 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr auto
     SliceFront(Immutable<TRange> range) noexcept
     {
-        return Tuples::MakeTuple(Ranges::Front(range),
+        return Sequences::MakeTuple(Ranges::Front(range),
                                  Ranges::PopFront(range));
     }
 
@@ -65,7 +65,7 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr auto
     SliceBack(Immutable<TRange> range) noexcept
     {
-        return Tuples::MakeTuple(Ranges::Back(range),
+        return Sequences::MakeTuple(Ranges::Back(range),
                                  Ranges::PopBack(range));
     }
 
@@ -74,7 +74,7 @@ namespace Syntropy::Ranges
     SliceFront(Immutable<TRange> range,
                Immutable<TCardinality> count) noexcept
     {
-        return Tuples::MakeTuple(Ranges::Front(range, count),
+        return Sequences::MakeTuple(Ranges::Front(range, count),
                                  Ranges::PopFront(range, count));
     }
 
@@ -83,7 +83,7 @@ namespace Syntropy::Ranges
     SliceBack(Immutable<TRange> range,
               Immutable<TCardinality> count) noexcept
     {
-        return Tuples::MakeTuple(Ranges::Back(range, count),
+        return Sequences::MakeTuple(Ranges::Back(range, count),
                                  Ranges::PopBack(range, count));
     }
 

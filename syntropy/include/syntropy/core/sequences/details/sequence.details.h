@@ -12,7 +12,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Tuples::Templates
+namespace Syntropy::Sequences::Templates
 {
     /************************************************************************/
     /* FORWARD DECLARATIONS                                                 */
@@ -27,7 +27,7 @@ namespace Syntropy::Tuples::Templates
 
 // ===========================================================================
 
-namespace Syntropy::Tuples::Templates::Details
+namespace Syntropy::Sequences::Templates::Details
 {
     /************************************************************************/
     /* N-TUPLE                                                              */

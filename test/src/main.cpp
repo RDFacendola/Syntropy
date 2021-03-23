@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 
         //for (auto e : span)
         //{
-        //    std::cout << Syntropy::Tuples::Get<0>(e) << ";" << Syntropy::Tuples::Get<1>(e) << "\n";
+        //    std::cout << Syntropy::Sequences::Get<0>(e) << ";" << Syntropy::Sequences::Get<1>(e) << "\n";
         //}
 
         system("pause");

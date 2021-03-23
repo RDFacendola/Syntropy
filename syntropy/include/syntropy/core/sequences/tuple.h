@@ -21,7 +21,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Tuples
+namespace Syntropy::Sequences
 {
     /************************************************************************/
     /* TUPLE                                                                */
@@ -351,9 +351,9 @@ namespace Syntropy::Tuples
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <Concepts::NTupleReference... TTuples>
+    template <Concepts::NTupleReference... TSequences>
     [[nodiscard]] constexpr decltype(auto)
-    Concatenate(Forwarding<TTuples>... tuples) noexcept;
+    Concatenate(Forwarding<TSequences>... tuples) noexcept;
 
     /// \brief Flatten a tuple recursively.
     template <Concepts::NTupleReference TTuple>
@@ -388,7 +388,7 @@ namespace Syntropy::Tuples
 
 // ===========================================================================
 
-namespace Syntropy::Tuples::Templates
+namespace Syntropy::Sequences::Templates
 {
     /************************************************************************/
     /* TYPE TRAITS                                                          */
@@ -396,7 +396,7 @@ namespace Syntropy::Tuples::Templates
 
     /// \brief Partial template specialization for tuples.
     template <Int VIndex, typename... TElements>
-    struct ElementTypeTraits<VIndex, Tuples::Tuple<TElements...>>
+    struct ElementTypeTraits<VIndex, Sequences::Tuple<TElements...>>
         : Syntropy::Templates::Alias<
             Syntropy::Templates::ElementOf<
                 VIndex,
@@ -404,7 +404,7 @@ namespace Syntropy::Tuples::Templates
 
     /// \brief Partial template specialization for tuples.
     template <typename... TElements>
-    struct RankTypeTraits<Tuples::Tuple<TElements...>>
+    struct RankTypeTraits<Sequences::Tuple<TElements...>>
         : Syntropy::Templates::IntConstant<sizeof...(TElements)> {};
 }
 

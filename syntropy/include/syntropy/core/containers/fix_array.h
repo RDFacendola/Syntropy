@@ -180,7 +180,7 @@ namespace Syntropy
 
 // ===========================================================================
 
-namespace Syntropy::Tuples::Templates
+namespace Syntropy::Sequences::Templates
 {
     /************************************************************************/
     /* TUPLE TRAITS                                                         */

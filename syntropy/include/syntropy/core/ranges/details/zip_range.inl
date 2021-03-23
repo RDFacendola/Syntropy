@@ -25,10 +25,10 @@ namespace Syntropy::Ranges
     {
         auto zip_front = [](Immutable<TRanges>... ranges)
         {
-            return Tuples::MakeTuple(Front(ranges)...);
+            return Sequences::MakeTuple(Front(ranges)...);
         };
 
-        return Tuples::Apply(zip_front, ranges_);
+        return Sequences::Apply(zip_front, ranges_);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -43,7 +43,7 @@ namespace Syntropy::Ranges
             };
         };
 
-        return Tuples::Apply(zip_pop_front, ranges_);
+        return Sequences::Apply(zip_pop_front, ranges_);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -57,7 +57,7 @@ namespace Syntropy::Ranges
                 || ...);
         };
 
-        return Tuples::Apply(zip_is_empty, ranges_);
+        return Sequences::Apply(zip_is_empty, ranges_);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -69,7 +69,7 @@ namespace Syntropy::Ranges
             return Math::Min(Count(ranges)...);
         };
 
-        return Tuples::Apply(zip_min_count, ranges_);
+        return Sequences::Apply(zip_min_count, ranges_);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -78,10 +78,10 @@ namespace Syntropy::Ranges
     {
         auto zip_back = [](Immutable<TRanges>... ranges)
         {
-            return Tuples::MakeTuple(Back(ranges)...);
+            return Sequences::MakeTuple(Back(ranges)...);
         };
 
-        return Tuples::Apply(zip_back, ranges_);
+        return Sequences::Apply(zip_back, ranges_);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -96,7 +96,7 @@ namespace Syntropy::Ranges
             };
         };
 
-        return Tuples::Apply(zip_pop_back, ranges_);
+        return Sequences::Apply(zip_pop_back, ranges_);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -106,10 +106,10 @@ namespace Syntropy::Ranges
     {
         auto zip_select = [index](Immutable<TRanges>... ranges)
         {
-            return Tuples::MakeTuple(Ranges::At(ranges, index)...);
+            return Sequences::MakeTuple(Ranges::At(ranges, index)...);
         };
 
-        return Tuples::Apply(zip_select, ranges_);
+        return Sequences::Apply(zip_select, ranges_);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -118,10 +118,10 @@ namespace Syntropy::Ranges
     {
         auto zip_data = [](Immutable<TRanges>... ranges)
         {
-            return Tuples::MakeTuple( Data(ranges)... );
+            return Sequences::MakeTuple( Data(ranges)... );
         };
 
-        return Tuples::Apply(zip_data, ranges_);
+        return Sequences::Apply(zip_data, ranges_);
     }
 
     /************************************************************************/
@@ -135,20 +135,20 @@ namespace Syntropy::Ranges
         return { ranges... };
     }
 
-    template <Syntropy::Tuples::Concepts::NTuple TTuple>
+    template <Syntropy::Sequences::Concepts::NTuple TTuple>
     [[nodiscard]] constexpr auto
     MakeZipRangeFromTuple(Immutable<TTuple> ranges) noexcept
     {
         auto make_zip_range = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
             {
-                return ZipRange(Tuples::Get<TIndex>(ranges)...);
+                return ZipRange(Sequences::Get<TIndex>(ranges)...);
             };
 
         using RangesType = decltype(ranges);
 
         return make_zip_range(
-            Syntropy::Tuples::Templates::TupleSequenceFor<RangesType>{});
+            Syntropy::Sequences::Templates::TupleSequenceFor<RangesType>{});
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -162,7 +162,7 @@ namespace Syntropy::Ranges
     [[nodiscard]] constexpr auto
     Unzip(Immutable<TRange> range) noexcept
     {
-        return Tuples::MakeTuple(range);
+        return Sequences::MakeTuple(range);
     }
 
     template <Concepts::ForwardRange... TRanges>
@@ -170,35 +170,35 @@ namespace Syntropy::Ranges
     Zip(Immutable<TRanges>... ranges) noexcept
     {
         return MakeZipRangeFromTuple(
-            Tuples::Concatenate(Unzip(ranges)...));
+            Sequences::Concatenate(Unzip(ranges)...));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
     Get(Immutable<ZipRange<TRanges...>> range) noexcept
     {
-        return Tuples::Get<VIndex>(Unzip(range));
+        return Sequences::Get<VIndex>(Unzip(range));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
     Get(Mutable<ZipRange<TRanges...>> range) noexcept
     {
-        return Tuples::Get<VIndex>(Unzip(range));
+        return Sequences::Get<VIndex>(Unzip(range));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
     Get(Immovable<ZipRange<TRanges...>> range) noexcept
     {
-        return Tuples::Get<VIndex>(Unzip(range));
+        return Sequences::Get<VIndex>(Unzip(range));
     }
 
     template <Int VIndex, Concepts::ForwardRange... TRanges>
     [[nodiscard]] constexpr decltype(auto)
     Get(Movable<ZipRange<TRanges...>> range) noexcept
     {
-        return Tuples::Get<VIndex>(Unzip(range));
+        return Sequences::Get<VIndex>(Unzip(range));
     }
 
 }
