@@ -13,7 +13,7 @@
 #include "syntropy/language/templates/sequence.h"
 #include "syntropy/core/support/compare.h"
 
-#include "syntropy/core/tuples/ntuple.h"
+#include "syntropy/core/sequences/sequence.h"
 
 // ===========================================================================
 

@@ -33,8 +33,8 @@
 #include "syntropy/core/support/swap.h"
 #include "syntropy/core/support/compare.h"
 
-#include "syntropy/core/tuples/ntuple.h"
-#include "syntropy/core/tuples/tuple.h"
+#include "syntropy/core/sequences/sequence.h"
+#include "syntropy/core/sequences/tuple.h"
 
 #include "syntropy/diagnostics/assert.h"
 #include "syntropy/diagnostics/debugger.h"

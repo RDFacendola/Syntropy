@@ -1,5 +1,5 @@
 
-/// \file ntuple.h
+/// \file sequence.h
 ///
 /// \brief This header is part of the Syntropy core module.
 ///        It contains definitions for N-tuples concepts and related
@@ -21,7 +21,7 @@
 
 // ===========================================================================
 
-#include "details/ntuple.details.h"
+#include "details/sequence.details.h"
 
 // ===========================================================================
 
@@ -229,6 +229,6 @@ namespace std
 
 // ===========================================================================
 
-#include "details/ntuple.inl"
+#include "details/sequence.inl"
 
 // ===========================================================================
