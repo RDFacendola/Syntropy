@@ -1,7 +1,7 @@
 
 /// \file swap_extensions.h
 ///
-/// \brief This header is part of the Syntropy language module.
+/// \brief This header is part of the Syntropy core module.
 ///        It contains definitions for swap-related customization point
 ///        objects.
 ///
@@ -9,29 +9,22 @@
 
 #pragma once
 
-#include "syntropy/language/foundation/foundation.h"
-
-#include "syntropy/language/templates/priority.h"
-
 // ===========================================================================
 
 namespace Syntropy::Algorithm::Extensions
 {
     /************************************************************************/
-    /* EXCHANGE                                                             */
+    /* SWAP EXTENSIONS                                                      */
     /************************************************************************/
 
     /// \brief Swap two elements and return the old value of the first.
     template <typename TType, typename UType, typename = void>
     struct Exchange;
 
-    /************************************************************************/
-    /* SWAP                                                                 */
-    /************************************************************************/
-
     /// \brief Swap two elements.
     template <typename TType, typename = void>
     struct Swap;
+
 }
 
 // ===========================================================================

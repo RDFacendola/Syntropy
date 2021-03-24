@@ -10,8 +10,11 @@
 namespace Syntropy::Algorithm
 {
     /************************************************************************/
-    /* EXCHANGE                                                             */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
+
+    // Swap.
+    // =====
 
     template <typename TType, typename UType>
     requires Concepts::IsAssignableFrom<Mutable<TType>, Forwarding<UType>>
@@ -21,10 +24,6 @@ namespace Syntropy::Algorithm
     {
         return Details::RouteExchange(lhs, Forward<UType>(rhs));
     }
-
-    /************************************************************************/
-    /* SWAP                                                                 */
-    /************************************************************************/
 
     template <Concepts::IsSwappable TType>
     constexpr void

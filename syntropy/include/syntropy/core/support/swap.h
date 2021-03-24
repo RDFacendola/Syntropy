@@ -20,14 +20,13 @@
 namespace Syntropy::Concepts
 {
     /************************************************************************/
-    /* IS SWAPPABLE                                                         */
+    /* SWAP                                                                 */
     /************************************************************************/
 
     /// \brief Concept for types whose instances are swappable.
     template <typename TType>
-    concept IsSwappable
-        = IsAssignableFrom<Mutable<TType>, Movable<TType>>
-       && IsMoveConstructible<TType>;
+    concept IsSwappable = IsAssignableFrom<Mutable<TType>, Movable<TType>>
+        && IsMoveConstructible<TType>;
 }
 
 // ===========================================================================
@@ -35,8 +34,11 @@ namespace Syntropy::Concepts
 namespace Syntropy::Algorithm
 {
     /************************************************************************/
-    /* EXCHANGE                                                             */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
+
+    // Swap.
+    // =====
 
     /// \brief Swap lhs with rhs and return the old value of lhs.
     template <typename TType, typename UType = TType>
@@ -44,10 +46,6 @@ namespace Syntropy::Algorithm
           && Concepts::IsMoveConstructible<TType>
     [[nodiscard]] constexpr TType
     Exchange(Mutable<TType> lhs, Forwarding<UType> rhs) noexcept;
-
-    /************************************************************************/
-    /* SWAP                                                                 */
-    /************************************************************************/
 
     /// \brief Swap lhs with rhs.
     template <Concepts::IsSwappable TType>
