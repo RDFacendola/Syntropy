@@ -188,7 +188,7 @@ namespace Syntropy::Records::Templates
 
     /// \brief Specialization for fix-arrays.
     template <typename TType, Int TCount>
-    struct RecordRankTrait<FixArray<TType, TCount>>
+    struct RankTrait<FixArray<TType, TCount>>
         : Syntropy::Templates::IntConstant<TCount> {};
 }
 

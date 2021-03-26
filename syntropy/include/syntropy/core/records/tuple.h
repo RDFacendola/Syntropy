@@ -42,22 +42,22 @@ namespace Syntropy::Records
     {
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Immutable<Templates::RecordElementTypeOf<VIndex, Tuple<UElements...>>>
+        Immutable<Templates::ElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Immutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Mutable<Templates::RecordElementTypeOf<VIndex, Tuple<UElements...>>>
+        Mutable<Templates::ElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Mutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Immovable<Templates::RecordElementTypeOf<VIndex, Tuple<UElements...>>>
+        Immovable<Templates::ElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Immovable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Movable<Templates::RecordElementTypeOf<VIndex, Tuple<UElements...>>>
+        Movable<Templates::ElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Movable<Tuple<UElements...>> tuple) noexcept;
 
     public:
@@ -275,7 +275,7 @@ namespace Syntropy::Records
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
+    Immutable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -283,7 +283,7 @@ namespace Syntropy::Records
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
+    Mutable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -291,7 +291,7 @@ namespace Syntropy::Records
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
+    Immovable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -299,7 +299,7 @@ namespace Syntropy::Records
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
+    Movable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access an element of a tuple by type.
@@ -396,7 +396,7 @@ namespace Syntropy::Records::Templates
 
     /// \brief Partial template specialization for tuples.
     template <typename... TElements>
-    struct RecordRankTrait<Records::Tuple<TElements...>>
+    struct RankTrait<Records::Tuple<TElements...>>
         : Syntropy::Templates::IntConstant<sizeof...(TElements)> {};
 }
 

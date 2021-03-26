@@ -34,7 +34,7 @@ namespace Syntropy::Records::Templates
 
     /// \brief Exposes a member kValue equal to the rank of a record.
     template <typename TRecord>
-    struct RecordRankTrait
+    struct RankTrait
     {
         // Int kValue = <record rank>
     };
@@ -76,7 +76,7 @@ namespace Syntropy::Records::Concepts
     concept Record = requires
     {
         /// \brief Rank of the record.
-        { Records::Templates::RecordRankTrait<TRecord>::kValue }
+        { Records::Templates::RankTrait<TRecord>::kValue }
             -> Syntropy::Concepts::IsIntegral;
     };
 
@@ -97,25 +97,25 @@ namespace Syntropy::Records::Templates
 
     /// \brief Rank of a record.
     template <Concepts::Record TRecord>
-    inline constexpr Int RecordRankOf =
-        RecordRankTrait<TRecord>::kValue;
+    inline constexpr Int RankOf =
+        RankTrait<TRecord>::kValue;
 
     /// \brief Constant equal to true if two records have the same rank,
     ///        equal to false otherwise.
     template <Concepts::Record TRecord, Concepts::Record URecord>
-    inline constexpr Bool RecordSameRank =
-        (RecordRankOf<TRecord> == RecordRankOf<URecord>);
+    inline constexpr Bool SameRank =
+        (RankOf<TRecord> == RankOf<URecord>);
 
     /// \brief Type of a record element.
     template <Int TIndex, Concepts::Record TRecord>
-    using RecordElementTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
+    using ElementTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
         Records::Get<TIndex>(Syntropy::Templates::Declval<TRecord>()))>;
 
     /// \brief Generates a sequence that can be used to enumerate all
     ///        elements in a record.
     template <Concepts::Record TRecord>
-    using RecordEnumerationOf =
-        Syntropy::Templates::MakeSequence<RecordRankOf<TRecord>>;
+    using EnumerationSequenceOf =
+        Syntropy::Templates::MakeSequence<RankOf<TRecord>>;
 
 }
 
@@ -184,7 +184,7 @@ namespace Syntropy::Algorithm::Extensions
     /// \brief Swap two records and return the old value of the first.
     template <Records::Concepts::Record TRecord,
               Records::Concepts::Record URecord>
-    requires Records::Templates::RecordSameRank<TRecord, URecord>
+    requires Records::Templates::SameRank<TRecord, URecord>
     struct Exchange<TRecord, URecord>
     {
         constexpr TRecord
@@ -203,7 +203,7 @@ namespace Syntropy::Algorithm::Extensions
     /// \brief Check whether two records are equal.
     template <Records::Concepts::Record TRecord,
               Records::Concepts::Record URecord>
-    requires Records::Templates::RecordSameRank<TRecord, URecord>
+    requires Records::Templates::SameRank<TRecord, URecord>
     struct AreEqual<TRecord, URecord>
     {
         [[nodiscard]] constexpr Bool
@@ -214,7 +214,7 @@ namespace Syntropy::Algorithm::Extensions
     /// \brief Check whether two records are equivalent.
     template <Records::Concepts::Record TRecord,
               Records::Concepts::Record URecord>
-    requires Records::Templates::RecordSameRank<TRecord, URecord>
+    requires Records::Templates::SameRank<TRecord, URecord>
     struct AreEquivalent<TRecord, URecord>
     {
         [[nodiscard]] constexpr Bool
@@ -225,7 +225,7 @@ namespace Syntropy::Algorithm::Extensions
     /// \brief Compare two records.
     template <Records::Concepts::Record TRecord,
               Records::Concepts::Record URecord>
-    requires Records::Templates::RecordSameRank<TRecord, URecord>
+    requires Records::Templates::SameRank<TRecord, URecord>
     struct Compare<TRecord, URecord>
     {
         [[nodiscard]] constexpr Ordering

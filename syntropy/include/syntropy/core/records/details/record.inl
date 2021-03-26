@@ -38,7 +38,7 @@ namespace Syntropy::Records
                     Forward<TRecord>(record))...);
             };
 
-        return apply(Templates::RecordEnumerationOf<TRecord>{});
+        return apply(Templates::EnumerationSequenceOf<TRecord>{});
     }
 
     template <typename TFunction, Concepts::ForwardingRecord TRecord>
@@ -53,7 +53,7 @@ namespace Syntropy::Records
                     Forward<TRecord>(record))), ...);
             };
 
-        for_each_apply(Templates::RecordEnumerationOf<TRecord>{});
+        for_each_apply(Templates::EnumerationSequenceOf<TRecord>{});
     }
 
     template <Int TIndex,
@@ -72,7 +72,7 @@ namespace Syntropy::Records
                   Forwarding<TRecords>... records) noexcept
     {
         constexpr auto kMinRank
-            = Math::Min(Templates::RecordRankOf<TRecords>...);
+            = Math::Min(Templates::RankOf<TRecords>...);
 
         auto lockstep_apply = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
@@ -95,7 +95,7 @@ namespace Syntropy::Records
                     Records::Get<TIndex>(Forward<TRecord>(record))...);
             };
 
-        return make_from_record(Templates::RecordEnumerationOf<TRecord>{});
+        return make_from_record(Templates::EnumerationSequenceOf<TRecord>{});
     }
 
 }
@@ -121,12 +121,12 @@ namespace Syntropy::Algorithm::Extensions
                                  Records::Get<TIndex>(rhs)), ...);
             };
 
-        swap(Records::Templates::RecordEnumerationOf<TRecord>{});
+        swap(Records::Templates::EnumerationSequenceOf<TRecord>{});
     }
 
     template <Records::Concepts::Record TRecord,
               Records::Concepts::Record URecord>
-    requires Records::Templates::RecordSameRank<TRecord, URecord>
+    requires Records::Templates::SameRank<TRecord, URecord>
     constexpr TRecord
     Exchange<TRecord, URecord>::
     operator()(Mutable<TRecord> lhs, Immutable<URecord> rhs)
@@ -140,12 +140,12 @@ namespace Syntropy::Algorithm::Extensions
                                     Records::Get<TIndex>(rhs))... };
         };
 
-        return exchange(Records::Templates::RecordEnumerationOf<TRecord>{});
+        return exchange(Records::Templates::EnumerationSequenceOf<TRecord>{});
     }
 
     template <Syntropy::Records::Concepts::Record TRecord,
               Syntropy::Records::Concepts::Record URecord>
-    requires Records::Templates::RecordSameRank<TRecord, URecord>
+    requires Records::Templates::SameRank<TRecord, URecord>
     constexpr TRecord
     Exchange<TRecord, URecord>::
     operator()(Mutable<TRecord> lhs, Movable<URecord> rhs)
@@ -159,7 +159,7 @@ namespace Syntropy::Algorithm::Extensions
                                     Records::Get<TIndex>(Move(rhs)))... };
         };
 
-        return exchange(Records::Templates::RecordEnumerationOf<TRecord>{});
+        return exchange(Records::Templates::EnumerationSequenceOf<TRecord>{});
     }
 
     /************************************************************************/
@@ -168,7 +168,7 @@ namespace Syntropy::Algorithm::Extensions
 
     template <Records::Concepts::Record TRecord,
               Records::Concepts::Record URecord>
-    requires Records::Templates::RecordSameRank<TRecord, URecord>
+    requires Records::Templates::SameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEqual<TRecord, URecord>::
     operator()(Immutable<TRecord> lhs, Immutable<URecord> rhs)
@@ -186,7 +186,7 @@ namespace Syntropy::Algorithm::Extensions
 
     template <Records::Concepts::Record TRecord,
               Records::Concepts::Record URecord>
-    requires Records::Templates::RecordSameRank<TRecord, URecord>
+    requires Records::Templates::SameRank<TRecord, URecord>
     [[nodiscard]] constexpr Bool
     AreEquivalent<TRecord, URecord>::
     operator()(Immutable<TRecord> lhs, Immutable<URecord> rhs)
@@ -205,7 +205,7 @@ namespace Syntropy::Algorithm::Extensions
 
     template <Records::Concepts::Record TRecord,
               Records::Concepts::Record URecord>
-    requires Records::Templates::RecordSameRank<TRecord, URecord>
+    requires Records::Templates::SameRank<TRecord, URecord>
     [[nodiscard]] constexpr Ordering
     Compare<TRecord, URecord>::
     operator()(Immutable<TRecord> lhs, Immutable<URecord> rhs)
@@ -233,7 +233,7 @@ namespace Syntropy::Algorithm::Extensions
         };
 
         return lockstep_compare(
-            Records::Templates::RecordEnumerationOf<TRecord>{});
+            Records::Templates::EnumerationSequenceOf<TRecord>{});
     }
 
 }
@@ -250,7 +250,7 @@ namespace std
     struct std::tuple_size<TRecord>
     {
         static constexpr std::size_t value
-            = Syntropy::Records::Templates::RecordRankOf<TRecord>;
+            = Syntropy::Records::Templates::RankOf<TRecord>;
     };
 
     template <std::size_t TIndex,
@@ -258,7 +258,7 @@ namespace std
     struct std::tuple_element<TIndex, TRecord>
     {
         using type
-            = Syntropy::Records::Templates::RecordElementTypeOf<TIndex, TRecord>;
+            = Syntropy::Records::Templates::ElementTypeOf<TIndex, TRecord>;
     };
 
     template <std::size_t TIndex,

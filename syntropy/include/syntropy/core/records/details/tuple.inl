@@ -135,7 +135,7 @@ namespace Syntropy::Records
 
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
+    Immutable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
@@ -145,7 +145,7 @@ namespace Syntropy::Records
 
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
+    Mutable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
@@ -155,11 +155,11 @@ namespace Syntropy::Records
 
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
+    Immovable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
-        using TElement = Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>;
+        using TElement = Templates::ElementTypeOf<VIndex, Tuple<TElements...>>;
 
         return static_cast<Immovable<TElement>>(
                    static_cast<Immutable<TTupleBase>>(tuple).element_);
@@ -167,11 +167,11 @@ namespace Syntropy::Records
 
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
+    Movable<Templates::ElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
-        using TElement = Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>;
+        using TElement = Templates::ElementTypeOf<VIndex, Tuple<TElements...>>;
 
         return static_cast<Movable<TElement>>(
             static_cast<Mutable<TTupleBase>>(tuple).element_);

@@ -362,7 +362,7 @@ namespace Syntropy::Records::Details
     {
         using Type = Syntropy::Templates::SequenceRepeat<
             VIndex,
-            Templates::RecordRankOf<TTuple>>;
+            Templates::RankOf<TTuple>>;
     };
 
     /// \brief Generate a sequence that can be used to access tuples.
@@ -392,7 +392,7 @@ namespace Syntropy::Records::Details
     template <Concepts::ForwardingRecord TTuple>
     struct EnumerateTupleElementIndexesHelper<TTuple>
     {
-        using Type = Templates::RecordEnumerationOf<TTuple>;
+        using Type = Templates::EnumerationSequenceOf<TTuple>;
     };
 
     /// \brief Generate a sequence that can be used to access tuple elements.
