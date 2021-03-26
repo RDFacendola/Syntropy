@@ -46,29 +46,29 @@ namespace Syntropy::Records::Details
     /************************************************************************/
 
     /// \brief Custom extension.
-    template <Int TIndex, typename TSequence>
+    template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TSequence> sequence, ExtensionPriority)
-        noexcept -> decltype(Extensions::Get<TIndex, TSequence>{}(
-            Forward<TSequence>(sequence)));
+    InvokeGet(Forwarding<TRecord> sequence, ExtensionPriority)
+        noexcept -> decltype(Extensions::Get<TIndex, TRecord>{}(
+            Forward<TRecord>(sequence)));
 
     /// \brief Member-function.
-    template <Int TIndex, typename TSequence>
+    template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TSequence> sequence, MemberFunctionPriority)
+    InvokeGet(Forwarding<TRecord> sequence, MemberFunctionPriority)
         noexcept -> decltype(sequence.template Get<TIndex>());
 
     /// \brief Non-member function, possibly using ADL.
-    template <Int TIndex, typename TSequence>
+    template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TSequence> sequence, NonMemberFunctionPriority)
-        noexcept -> decltype(Get<TIndex>(Forward<TSequence>(sequence)));
+    InvokeGet(Forwarding<TRecord> sequence, NonMemberFunctionPriority)
+        noexcept -> decltype(Get<TIndex>(Forward<TRecord>(sequence)));
 
     /// \brief Routes the invocation.
-    template <Int TIndex, typename TSequence>
+    template <Int TIndex, typename TRecord>
     inline auto
-    RouteGet(Forwarding<TSequence> sequence)
-        noexcept -> decltype(InvokeGet<TIndex>(Forward<TSequence>(sequence),
+    RouteGet(Forwarding<TRecord> sequence)
+        noexcept -> decltype(InvokeGet<TIndex>(Forward<TRecord>(sequence),
                                                kMaxPriority));
 }
 

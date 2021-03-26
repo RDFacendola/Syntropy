@@ -28,11 +28,11 @@ namespace Syntropy::Records
     [[nodiscard]] constexpr Tuple<TElements...>
     MakeTuple(Forwarding<TElements>... elements) noexcept;
 
-    template <Concepts::ForwardingSequence... TRecords>
+    template <Concepts::ForwardingRecord... TRecords>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TRecords>... tuples) noexcept;
 
-    template <Concepts::ForwardingSequence TTuple>
+    template <Concepts::ForwardingRecord TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept;
 }
@@ -310,7 +310,7 @@ namespace Syntropy::Records::Details
     /************************************************************************/
 
     /// \brief Access a tuple base type by index.
-    template <Int VCount, Concepts::ForwardingSequence TTuple>
+    template <Int VCount, Concepts::ForwardingRecord TTuple>
     struct TupleBaseHelper;
 
     /// \brief Specialization for tuples.
@@ -319,14 +319,14 @@ namespace Syntropy::Records::Details
         : TupleBaseHelper<VCount - 1, Tuple<TElements...>> {};
 
     /// \brief End of recursion.
-    template <Concepts::ForwardingSequence TTuple>
+    template <Concepts::ForwardingRecord TTuple>
     struct TupleBaseHelper<0, TTuple>
     {
         using Type = TTuple;
     };
 
     /// \brief Access a tuple base type by index.
-    template <Int VCount, Concepts::ForwardingSequence TTuple>
+    template <Int VCount, Concepts::ForwardingRecord TTuple>
     using TupleBase = typename TupleBaseHelper<VCount, TTuple>::Type;
 
     /************************************************************************/
@@ -340,8 +340,8 @@ namespace Syntropy::Records::Details
 
     /// \brief Generate a sequence that can be used to access tuples.
     template <Int VIndex,
-              Concepts::ForwardingSequence TTuple,
-              Concepts::ForwardingSequence... TRecords>
+              Concepts::ForwardingRecord TTuple,
+              Concepts::ForwardingRecord... TRecords>
     struct EnumerateTupleIndexesHelper
     {
         using TupleSequence
@@ -357,24 +357,24 @@ namespace Syntropy::Records::Details
 
     /// \brief Generate a sequence of VIndex repeated a number of times equal
     ///        to the rank of TTuple.
-    template <Int VIndex, Concepts::ForwardingSequence TTuple>
+    template <Int VIndex, Concepts::ForwardingRecord TTuple>
     struct EnumerateTupleIndexesHelper<VIndex, TTuple>
     {
         using Type = Syntropy::Templates::SequenceRepeat<
             VIndex,
-            Templates::SequenceRankOf<TTuple>>;
+            Templates::RecordRankOf<TTuple>>;
     };
 
     /// \brief Generate a sequence that can be used to access tuples.
-    template <Concepts::ForwardingSequence... TRecords>
+    template <Concepts::ForwardingRecord... TRecords>
     using EnumerateTupleIndexes
         = typename EnumerateTupleIndexesHelper<0, TRecords...>::Type;
 
     // EnumerateTupleElementIndexes.
 
     /// \brief Generate a sequence that can be used to access tuple elements.
-    template <Concepts::ForwardingSequence TTuple,
-              Concepts::ForwardingSequence... TRecords>
+    template <Concepts::ForwardingRecord TTuple,
+              Concepts::ForwardingRecord... TRecords>
     struct EnumerateTupleElementIndexesHelper
     {
         using TupleSequence
@@ -389,19 +389,19 @@ namespace Syntropy::Records::Details
 
     /// \brief Generate an increasing sequence from 0 to the rank of
     ///        TTuple (excluded).
-    template <Concepts::ForwardingSequence TTuple>
+    template <Concepts::ForwardingRecord TTuple>
     struct EnumerateTupleElementIndexesHelper<TTuple>
     {
-        using Type = Templates::SequenceEnumerationOf<TTuple>;
+        using Type = Templates::RecordEnumerationOf<TTuple>;
     };
 
     /// \brief Generate a sequence that can be used to access tuple elements.
-    template <Concepts::ForwardingSequence... TRecords>
+    template <Concepts::ForwardingRecord... TRecords>
     using EnumerateTupleElementIndexes
         = typename EnumerateTupleElementIndexesHelper<TRecords...>::Type;
 
     /// \brief Concatenate a set of tuples.
-    template <Concepts::ForwardingSequence... TRecords>
+    template <Concepts::ForwardingRecord... TRecords>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TRecords>... tuples) noexcept;
 
@@ -409,7 +409,7 @@ namespace Syntropy::Records::Details
     // ========
 
     /// \brief Flatten a tuple recursively.
-    template <Concepts::ForwardingSequence TTuple>
+    template <Concepts::ForwardingRecord TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept;
 

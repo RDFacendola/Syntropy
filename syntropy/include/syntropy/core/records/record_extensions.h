@@ -18,7 +18,7 @@ namespace Syntropy::Records::Extensions
     /************************************************************************/
 
     /// \brief Access a sequence element by index.
-    template <Int TIndex, typename TSequence, typename = void>
+    template <Int TIndex, typename TRecord, typename = void>
     struct Get;
 
 }

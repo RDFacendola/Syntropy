@@ -13,38 +13,38 @@ namespace Syntropy::Records::Details
     /* GET                                                                  */
     /************************************************************************/
 
-    template <Int TIndex, typename TSequence>
+    template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TSequence> sequence, ExtensionPriority)
-        noexcept -> decltype(Extensions::Get<TIndex, TSequence>{}(
-            Forward<TSequence>(sequence)))
+    InvokeGet(Forwarding<TRecord> sequence, ExtensionPriority)
+        noexcept -> decltype(Extensions::Get<TIndex, TRecord>{}(
+            Forward<TRecord>(sequence)))
     {
-        return Extensions::Get<TIndex, TSequence>{}(Forward<TSequence>(sequence));
+        return Extensions::Get<TIndex, TRecord>{}(Forward<TRecord>(sequence));
     }
 
-    template <Int TIndex, typename TSequence>
+    template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TSequence> sequence, MemberFunctionPriority)
+    InvokeGet(Forwarding<TRecord> sequence, MemberFunctionPriority)
         noexcept -> decltype(sequence.template Get<TIndex>())
     {
         return sequence.template Get<TIndex>();
     }
 
-    template <Int TIndex, typename TSequence>
+    template <Int TIndex, typename TRecord>
     inline auto
-    InvokeGet(Forwarding<TSequence> sequence, NonMemberFunctionPriority)
-        noexcept -> decltype(Get<TIndex>(Forward<TSequence>(sequence)))
+    InvokeGet(Forwarding<TRecord> sequence, NonMemberFunctionPriority)
+        noexcept -> decltype(Get<TIndex>(Forward<TRecord>(sequence)))
     {
-        return Get<TIndex>(Forward<TSequence>(sequence));
+        return Get<TIndex>(Forward<TRecord>(sequence));
     }
 
-    template <Int TIndex, typename TSequence>
+    template <Int TIndex, typename TRecord>
     inline auto
-    RouteGet(Forwarding<TSequence> sequence)
-        noexcept -> decltype(InvokeGet<TIndex>(Forward<TSequence>(sequence),
+    RouteGet(Forwarding<TRecord> sequence)
+        noexcept -> decltype(InvokeGet<TIndex>(Forward<TRecord>(sequence),
                                                kMaxPriority))
     {
-        return InvokeGet<TIndex>(Forward<TSequence>(sequence), kMaxPriority);
+        return InvokeGet<TIndex>(Forward<TRecord>(sequence), kMaxPriority);
     }
 
 }

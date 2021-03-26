@@ -42,22 +42,22 @@ namespace Syntropy::Records
     {
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Immutable<Templates::SequenceElementTypeOf<VIndex, Tuple<UElements...>>>
+        Immutable<Templates::RecordElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Immutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Mutable<Templates::SequenceElementTypeOf<VIndex, Tuple<UElements...>>>
+        Mutable<Templates::RecordElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Mutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Immovable<Templates::SequenceElementTypeOf<VIndex, Tuple<UElements...>>>
+        Immovable<Templates::RecordElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Immovable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Movable<Templates::SequenceElementTypeOf<VIndex, Tuple<UElements...>>>
+        Movable<Templates::RecordElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Movable<Tuple<UElements...>> tuple) noexcept;
 
     public:
@@ -170,7 +170,7 @@ namespace Syntropy::Records
               Forwarding<UElements>... elements) noexcept;
 
         /// \brief Construct a tuple unwinding another tuple elements.
-        template<Concepts::ForwardingSequence TTuple, Int... VIndexes>
+        template<Concepts::ForwardingRecord TTuple, Int... VIndexes>
         constexpr
         Tuple(UnwindTag,
               Syntropy::Templates::Sequence<VIndexes...>,
@@ -267,7 +267,7 @@ namespace Syntropy::Records
     operator<=>(Immutable<Tuple<TElements...>> lhs,
                 Immutable<Tuple<UElements...>> rhs) noexcept;
 
-    // Sequence.
+    // Record.
     // =======
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -275,7 +275,7 @@ namespace Syntropy::Records
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
+    Immutable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -283,7 +283,7 @@ namespace Syntropy::Records
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
+    Mutable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -291,7 +291,7 @@ namespace Syntropy::Records
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
+    Immovable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -299,7 +299,7 @@ namespace Syntropy::Records
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
+    Movable<Templates::RecordElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access an element of a tuple by type.
@@ -351,12 +351,12 @@ namespace Syntropy::Records
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <Concepts::ForwardingSequence... TRecords>
+    template <Concepts::ForwardingRecord... TRecords>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TRecords>... tuples) noexcept;
 
     /// \brief Flatten a tuple recursively.
-    template <Concepts::ForwardingSequence TTuple>
+    template <Concepts::ForwardingRecord TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept;
 
