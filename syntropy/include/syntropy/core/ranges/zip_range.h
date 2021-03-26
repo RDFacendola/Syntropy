@@ -111,7 +111,7 @@ namespace Syntropy::Ranges
     private:
 
         /// \brief Underlying ranges.
-        Sequences::Tuple<TRanges...> ranges_;
+        Records::Tuple<TRanges...> ranges_;
 
     };
 
@@ -131,7 +131,7 @@ namespace Syntropy::Ranges
 
     /// \brief Create a new ZipRange by deducing templates types from
     ///        provided arguments.
-    template <Syntropy::Sequences::Concepts::Sequence TTuple>
+    template <Syntropy::Records::Concepts::Sequence TTuple>
     [[nodiscard]] constexpr auto
     MakeZipRangeFromTuple(Immutable<TTuple> ranges) noexcept;
 
@@ -191,7 +191,7 @@ namespace Syntropy::Ranges
 
 // ===========================================================================
 
-namespace Syntropy::Sequences::Templates
+namespace Syntropy::Records::Templates
 {
     /************************************************************************/
     /* NTUPLE TRAITS                                                        */
@@ -199,7 +199,7 @@ namespace Syntropy::Sequences::Templates
 
     /// \brief Partial template specialization for tuples.
     template <Syntropy::Ranges::Concepts::ForwardRange... TRanges>
-    struct SequenceRankTrait<Syntropy::Ranges::ZipRange<TRanges...>>
+    struct RecordRankTrait<Syntropy::Ranges::ZipRange<TRanges...>>
         : Syntropy::Templates::IntConstant<sizeof...(TRanges)> {};
 }
 

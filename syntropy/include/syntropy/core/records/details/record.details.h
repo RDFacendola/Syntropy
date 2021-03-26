@@ -14,7 +14,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Sequences::Details
+namespace Syntropy::Records::Details
 {
     /************************************************************************/
     /* CUSTOMIZATION-POINT-OBJECTS                                          */

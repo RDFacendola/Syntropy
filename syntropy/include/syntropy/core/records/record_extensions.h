@@ -11,7 +11,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Sequences::Extensions
+namespace Syntropy::Records::Extensions
 {
     /************************************************************************/
     /* SEQUENCE EXTENSIONS                                                  */

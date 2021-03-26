@@ -5,7 +5,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Sequences::Details
+namespace Syntropy::Records::Details
 {
     /************************************************************************/
     /* TUPLE                                                                */
@@ -14,9 +14,9 @@ namespace Syntropy::Sequences::Details
     // Concatenate.
     // =========
 
-    template <Concepts::ForwardingSequence... TSequences>
+    template <Concepts::ForwardingSequence... TRecords>
     [[nodiscard]] constexpr decltype(auto)
-    Concatenate(Forwarding<TSequences>... tuples) noexcept
+    Concatenate(Forwarding<TRecords>... tuples) noexcept
     {
         auto tuple_cat = [&]<Concepts::ForwardingSequence TTuple,
                              Int... VTupleIndex,
@@ -32,8 +32,8 @@ namespace Syntropy::Sequences::Details
 
         return tuple_cat(
             ForwardAsTuple(tuples...),
-            EnumerateTupleIndexes<Syntropy::Templates::UnqualifiedOf<TSequences>...>{},
-            EnumerateTupleElementIndexes<Syntropy::Templates::UnqualifiedOf<TSequences>...>{});
+            EnumerateTupleIndexes<Syntropy::Templates::UnqualifiedOf<TRecords>...>{},
+            EnumerateTupleElementIndexes<Syntropy::Templates::UnqualifiedOf<TRecords>...>{});
     }
 
     // Flatten.
@@ -46,7 +46,7 @@ namespace Syntropy::Sequences::Details
         // The argument is a tuple: flatten each element recursively and
         // eturn their concatenation.
 
-        using Syntropy::Sequences::Concatenate;
+        using Syntropy::Records::Concatenate;
 
         auto flat = [&]<Int... VTupleIndex>(
             Forwarding<TTuple> tuple,

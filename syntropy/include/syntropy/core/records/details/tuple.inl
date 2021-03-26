@@ -7,7 +7,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Sequences
+namespace Syntropy::Records
 {
     /************************************************************************/
     /* TUPLE                                                                */
@@ -43,7 +43,7 @@ namespace Syntropy::Sequences
     Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>
     ::operator=(Syntropy::Templates::ExactOf<Immutable<TSelf>> rhs) noexcept
     {
-        Sequences::LockstepApply([](auto& lhs_element, const auto& rhs_element)
+        Records::LockstepApply([](auto& lhs_element, const auto& rhs_element)
         {
             lhs_element = rhs_element;
         }, *this, rhs);
@@ -61,7 +61,7 @@ namespace Syntropy::Sequences
     Mutable<Tuple<TElement, TElements...>> Tuple<TElement, TElements...>
     ::operator=(Immutable<Tuple<UElements...>> rhs) noexcept
     {
-        Sequences::LockstepApply([](auto& lhs_element, const auto& rhs_element)
+        Records::LockstepApply([](auto& lhs_element, const auto& rhs_element)
         {
             lhs_element = rhs_element;
         }, *this, rhs);
@@ -77,7 +77,7 @@ namespace Syntropy::Sequences
     Tuple<TElement, TElements...>
     ::operator=(Syntropy::Templates::ExactOf<Movable<TSelf>> rhs) noexcept
     {
-        Sequences::LockstepApply([](auto& lhs_element, auto&& rhs_element)
+        Records::LockstepApply([](auto& lhs_element, auto&& rhs_element)
         {
             lhs_element = Move(rhs_element);
         }, *this, rhs);
@@ -95,7 +95,7 @@ namespace Syntropy::Sequences
     Tuple<TElement, TElements...>
     ::operator=(Movable<Tuple<UElements...>> rhs) noexcept
     {
-        Sequences::LockstepApply([](auto& lhs_element, auto&& rhs_element)
+        Records::LockstepApply([](auto& lhs_element, auto&& rhs_element)
         {
             lhs_element = Move(rhs_element);
         }, *this, rhs);
@@ -115,7 +115,7 @@ namespace Syntropy::Sequences
     operator==(Immutable<Tuple<TElements...>> lhs,
                Immutable<Tuple<UElements...>> rhs) noexcept
     {
-        using namespace Sequences;
+        using namespace Records;
 
         return AreEquivalent(lhs, rhs);
     }
@@ -125,7 +125,7 @@ namespace Syntropy::Sequences
     operator<=>(Immutable<Tuple<TElements...>> lhs,
                 Immutable<Tuple<UElements...>> rhs) noexcept
     {
-        using namespace Sequences;
+        using namespace Records;
 
         return Compare(lhs, rhs);
     }
@@ -246,11 +246,11 @@ namespace Syntropy::Sequences
                    Forward<TElements>(elements)...);
     }
 
-    template <Concepts::ForwardingSequence... TSequences>
+    template <Concepts::ForwardingSequence... TRecords>
     [[nodiscard]] constexpr decltype(auto)
-    Concatenate(Forwarding<TSequences>... tuples) noexcept
+    Concatenate(Forwarding<TRecords>... tuples) noexcept
     {
-        return Details::Concatenate(Forward<TSequences>(tuples)...);
+        return Details::Concatenate(Forward<TRecords>(tuples)...);
     }
 
     template <Concepts::ForwardingSequence TTuple>
@@ -269,7 +269,7 @@ namespace Syntropy::Sequences
     Swap(Mutable<Tuple<TElements...>> lhs,
          Mutable<Tuple<UElements...>> rhs) noexcept
     {
-        Sequences::Swap(lhs, rhs);
+        Records::Swap(lhs, rhs);
     }
 
     template <typename... TElements, typename... UElements>
@@ -278,7 +278,7 @@ namespace Syntropy::Sequences
     Exchange(Mutable<Tuple<TElements...>> lhs,
              Immutable<Tuple<UElements...>> rhs) noexcept
     {
-        return Sequences::Exchange(lhs, rhs);
+        return Records::Exchange(lhs, rhs);
     }
 
     template <typename... TElements, typename... UElements>
@@ -287,7 +287,7 @@ namespace Syntropy::Sequences
     Exchange(Mutable<Tuple<TElements...>> lhs,
              Movable<Tuple<UElements...>> rhs) noexcept
     {
-        return Sequences::Exchange(lhs, Move(rhs));
+        return Records::Exchange(lhs, Move(rhs));
     }
 
 }

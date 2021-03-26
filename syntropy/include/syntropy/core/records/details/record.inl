@@ -7,7 +7,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Sequences
+namespace Syntropy::Records
 {
     /************************************************************************/
     /* NON-MEMBER FUNCTIONS                                                 */
@@ -65,24 +65,24 @@ namespace Syntropy::Sequences
 
     template <Int TIndex,
               typename TFunction,
-              Concepts::ForwardingSequence... TSequences>
+              Concepts::ForwardingSequence... TRecords>
     constexpr decltype(auto)
     ProjectApply(Forwarding<TFunction> function,
-                 Forwarding<TSequences>... tuples) noexcept
+                 Forwarding<TRecords>... tuples) noexcept
     {
         using namespace Templates;
 
-        return function(Get<TIndex>(Forward<TSequences>(tuples))...);
+        return function(Get<TIndex>(Forward<TRecords>(tuples))...);
     }
 
-    template <typename TFunction, Concepts::ForwardingSequence... TSequences>
+    template <typename TFunction, Concepts::ForwardingSequence... TRecords>
     constexpr void
     LockstepApply(Forwarding<TFunction> function,
-                  Forwarding<TSequences>... tuples) noexcept
+                  Forwarding<TRecords>... tuples) noexcept
     {
         using namespace Templates;
 
-        constexpr auto kMinRank = Math::Min(SequenceRankOf<TSequences>...);
+        constexpr auto kMinRank = Math::Min(SequenceRankOf<TRecords>...);
 
         auto lockstep_apply = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
@@ -119,7 +119,7 @@ namespace Syntropy::Algorithm::Extensions
     /* SWAP EXTENSIONS                                                      */
     /************************************************************************/
 
-    template <Sequences::Concepts::Sequence TSequence>
+    template <Records::Concepts::Sequence TSequence>
     constexpr void
     Swap<TSequence>::
     operator()(Mutable<TSequence> lhs, Mutable<TSequence> rhs)
@@ -128,16 +128,16 @@ namespace Syntropy::Algorithm::Extensions
         auto swap = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
             {
-                (Algorithm::Swap(Sequences::Get<TIndex>(lhs),
-                                 Sequences::Get<TIndex>(rhs)), ...);
+                (Algorithm::Swap(Records::Get<TIndex>(lhs),
+                                 Records::Get<TIndex>(rhs)), ...);
             };
 
-        swap(Sequences::Templates::SequenceEnumerationOf<TSequence>{});
+        swap(Records::Templates::SequenceEnumerationOf<TSequence>{});
     }
 
-    template <Sequences::Concepts::Sequence TSequence,
-              Sequences::Concepts::Sequence USequence>
-    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    template <Records::Concepts::Sequence TSequence,
+              Records::Concepts::Sequence USequence>
+    requires Records::Templates::SequenceSameRank<TSequence, USequence>
     constexpr TSequence
     Exchange<TSequence, USequence>::
     operator()(Mutable<TSequence> lhs, Immutable<USequence> rhs)
@@ -147,16 +147,16 @@ namespace Syntropy::Algorithm::Extensions
             Syntropy::Templates::Sequence<TIndex...>)
         {
             return TSequence{
-                Algorithm::Exchange(Sequences::Get<TIndex>(lhs),
-                                    Sequences::Get<TIndex>(rhs))... };
+                Algorithm::Exchange(Records::Get<TIndex>(lhs),
+                                    Records::Get<TIndex>(rhs))... };
         };
 
-        return exchange(Sequences::Templates::SequenceEnumerationOf<TSequence>{});
+        return exchange(Records::Templates::SequenceEnumerationOf<TSequence>{});
     }
 
-    template <Syntropy::Sequences::Concepts::Sequence TSequence,
-              Syntropy::Sequences::Concepts::Sequence USequence>
-    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    template <Syntropy::Records::Concepts::Sequence TSequence,
+              Syntropy::Records::Concepts::Sequence USequence>
+    requires Records::Templates::SequenceSameRank<TSequence, USequence>
     constexpr TSequence
     Exchange<TSequence, USequence>::
     operator()(Mutable<TSequence> lhs, Movable<USequence> rhs)
@@ -166,20 +166,20 @@ namespace Syntropy::Algorithm::Extensions
             Syntropy::Templates::Sequence<TIndex...>) mutable
         {
             return TSequence{
-                Algorithm::Exchange(Sequences::Get<TIndex>(lhs),
-                                    Sequences::Get<TIndex>(Move(rhs)))... };
+                Algorithm::Exchange(Records::Get<TIndex>(lhs),
+                                    Records::Get<TIndex>(Move(rhs)))... };
         };
 
-        return exchange(Sequences::Templates::SequenceEnumerationOf<TSequence>{});
+        return exchange(Records::Templates::SequenceEnumerationOf<TSequence>{});
     }
 
     /************************************************************************/
     /* COMPARE EXTENSIONS                                                   */
     /************************************************************************/
 
-    template <Sequences::Concepts::Sequence TSequence,
-              Sequences::Concepts::Sequence USequence>
-    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    template <Records::Concepts::Sequence TSequence,
+              Records::Concepts::Sequence USequence>
+    requires Records::Templates::SequenceSameRank<TSequence, USequence>
     [[nodiscard]] constexpr Bool
     AreEqual<TSequence, USequence>::
     operator()(Immutable<TSequence> lhs, Immutable<USequence> rhs)
@@ -188,16 +188,16 @@ namespace Syntropy::Algorithm::Extensions
         auto are_equal = [&]<Int... TIndex>(
             Syntropy::Templates::Sequence<TIndex...>)
         {
-            return (Algorithm::AreEqual(Sequences::Get<TIndex>(lhs),
-                                        Sequences::Get<TIndex>(rhs)) && ...);
+            return (Algorithm::AreEqual(Records::Get<TIndex>(lhs),
+                                        Records::Get<TIndex>(rhs)) && ...);
         };
 
         return are_equal(lhs, rhs);
     }
 
-    template <Sequences::Concepts::Sequence TSequence,
-              Sequences::Concepts::Sequence USequence>
-    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    template <Records::Concepts::Sequence TSequence,
+              Records::Concepts::Sequence USequence>
+    requires Records::Templates::SequenceSameRank<TSequence, USequence>
     [[nodiscard]] constexpr Bool
     AreEquivalent<TSequence, USequence>::
     operator()(Immutable<TSequence> lhs, Immutable<USequence> rhs)
@@ -207,16 +207,16 @@ namespace Syntropy::Algorithm::Extensions
             Syntropy::Templates::Sequence<TIndex...>)
         {
             return (Algorithm::AreEquivalent(
-                Sequences::Get<TIndex>(lhs),
-                Sequences::Get<TIndex>(rhs)) && ...);
+                Records::Get<TIndex>(lhs),
+                Records::Get<TIndex>(rhs)) && ...);
         };
 
         return are_equal(lhs, rhs);
     }
 
-    template <Sequences::Concepts::Sequence TSequence,
-              Sequences::Concepts::Sequence USequence>
-    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    template <Records::Concepts::Sequence TSequence,
+              Records::Concepts::Sequence USequence>
+    requires Records::Templates::SequenceSameRank<TSequence, USequence>
     [[nodiscard]] constexpr Ordering
     Compare<TSequence, USequence>::
     operator()(Immutable<TSequence> lhs, Immutable<USequence> rhs)
@@ -226,8 +226,8 @@ namespace Syntropy::Algorithm::Extensions
             Ordering result, Syntropy::Templates::IntConstant<TIndex>)
         {
             return (result == Ordering::kEquivalent)
-                ? Algorithm::Compare(Sequences::Get<TIndex>(lhs),
-                                     Sequences::Get<TIndex>(rhs))
+                ? Algorithm::Compare(Records::Get<TIndex>(lhs),
+                                     Records::Get<TIndex>(rhs))
                 : result;
         };
 
@@ -243,7 +243,7 @@ namespace Syntropy::Algorithm::Extensions
             return result;
         };
 
-        return lockstep_compare(Sequences::Templates::SequenceEnumerationOf<TSequence>{});
+        return lockstep_compare(Records::Templates::SequenceEnumerationOf<TSequence>{});
     }
 
 }
@@ -256,30 +256,30 @@ namespace std
     /* STRUCTURED BINDINGS                                                  */
     /************************************************************************/
 
-    template <Syntropy::Sequences::Concepts::Sequence TSequence>
+    template <Syntropy::Records::Concepts::Sequence TSequence>
     struct std::tuple_size<TSequence>
     {
         static constexpr std::size_t value
-            = Syntropy::Sequences::Templates::SequenceRankOf<TSequence>;
+            = Syntropy::Records::Templates::SequenceRankOf<TSequence>;
     };
 
     template <std::size_t TIndex,
-              Syntropy::Sequences::Concepts::Sequence TSequence>
+              Syntropy::Records::Concepts::Sequence TSequence>
     struct std::tuple_element<TIndex, TSequence>
     {
         using type
-            = Syntropy::Sequences::Templates::SequenceElementTypeOf<TIndex, TSequence>;
+            = Syntropy::Records::Templates::SequenceElementTypeOf<TIndex, TSequence>;
     };
 
     template <std::size_t TIndex,
-              Syntropy::Sequences::Concepts::Sequence TSequence>
+              Syntropy::Records::Concepts::Sequence TSequence>
     decltype(auto) get(Syntropy::Immutable<TSequence> tuple)
     {
         return Get<TIndex>(tuple);
     }
 
     template <std::size_t TIndex,
-              Syntropy::Sequences::Concepts::Sequence TSequence>
+              Syntropy::Records::Concepts::Sequence TSequence>
     decltype(auto) get(Syntropy::Movable<TSequence> tuple)
     {
         return Get<TIndex>(Syntropy::Move(tuple));

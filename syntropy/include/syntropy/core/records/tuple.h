@@ -21,7 +21,7 @@
 
 // ===========================================================================
 
-namespace Syntropy::Sequences
+namespace Syntropy::Records
 {
     /************************************************************************/
     /* TUPLE                                                                */
@@ -351,9 +351,9 @@ namespace Syntropy::Sequences
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <Concepts::ForwardingSequence... TSequences>
+    template <Concepts::ForwardingSequence... TRecords>
     [[nodiscard]] constexpr decltype(auto)
-    Concatenate(Forwarding<TSequences>... tuples) noexcept;
+    Concatenate(Forwarding<TRecords>... tuples) noexcept;
 
     /// \brief Flatten a tuple recursively.
     template <Concepts::ForwardingSequence TTuple>
@@ -388,7 +388,7 @@ namespace Syntropy::Sequences
 
 // ===========================================================================
 
-namespace Syntropy::Sequences::Templates
+namespace Syntropy::Records::Templates
 {
     /************************************************************************/
     /* TYPE TRAITS                                                          */
@@ -396,7 +396,7 @@ namespace Syntropy::Sequences::Templates
 
     /// \brief Partial template specialization for tuples.
     template <typename... TElements>
-    struct SequenceRankTrait<Sequences::Tuple<TElements...>>
+    struct RecordRankTrait<Records::Tuple<TElements...>>
         : Syntropy::Templates::IntConstant<sizeof...(TElements)> {};
 }
 
