@@ -49,8 +49,8 @@ namespace Syntropy::Records
         auto for_each_apply = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
             {
-                (function(Records::Get<TIndex>(
-                    Forward<TRecord>(record))), ...);
+                (function(Records::Get<TIndex>(Forward<TRecord>(record))),
+                                               ...);
             };
 
         for_each_apply(Templates::EnumerationSequenceOf<TRecord>{});
@@ -71,8 +71,7 @@ namespace Syntropy::Records
     LockstepApply(Forwarding<TFunction> function,
                   Forwarding<TRecords>... records) noexcept
     {
-        constexpr auto kMinRank
-            = Math::Min(Templates::RankOf<TRecords>...);
+        constexpr auto kMinRank = Math::Min(Templates::RankOf<TRecords>...);
 
         auto lockstep_apply = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
@@ -91,8 +90,8 @@ namespace Syntropy::Records
         auto make_from_record = [&]<Int... TIndex>
             (Syntropy::Templates::Sequence<TIndex...>)
             {
-                return TType(
-                    Records::Get<TIndex>(Forward<TRecord>(record))...);
+                return TType(Records::Get<TIndex>(Forward<TRecord>(record))
+                             ...);
             };
 
         return make_from_record(Templates::EnumerationSequenceOf<TRecord>{});
@@ -249,27 +248,25 @@ namespace std
     template <Syntropy::Records::Concepts::Record TRecord>
     struct std::tuple_size<TRecord>
     {
-        static constexpr std::size_t value
-            = Syntropy::Records::Templates::RankOf<TRecord>;
+        static constexpr
+        std::size_t value = Syntropy::Records::Templates::RankOf<TRecord>;
     };
 
     template <std::size_t TIndex,
               Syntropy::Records::Concepts::Record TRecord>
     struct std::tuple_element<TIndex, TRecord>
     {
-        using type
-            = Syntropy::Records::Templates::ElementTypeOf<TIndex, TRecord>;
+        using type = Syntropy::Records::Templates::ElementTypeOf<TIndex,
+                                                                 TRecord>;
     };
 
-    template <std::size_t TIndex,
-              Syntropy::Records::Concepts::Record TRecord>
+    template <std::size_t TIndex, Syntropy::Records::Concepts::Record TRecord>
     decltype(auto) get(Syntropy::Immutable<TRecord> record)
     {
         return Get<TIndex>(record);
     }
 
-    template <std::size_t TIndex,
-              Syntropy::Records::Concepts::Record TRecord>
+    template <std::size_t TIndex, Syntropy::Records::Concepts::Record TRecord>
     decltype(auto) get(Syntropy::Movable<TRecord> record)
     {
         return Get<TIndex>(Syntropy::Move(record));
