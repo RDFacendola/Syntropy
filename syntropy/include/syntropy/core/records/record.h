@@ -1,5 +1,5 @@
 
-/// \file sequence.h
+/// \file record.h
 ///
 /// \brief This header is part of the Syntropy core module.
 ///        It contains definitions for N-tuples concepts and related
@@ -13,7 +13,7 @@
 #include "syntropy/core/support/compare.h"
 #include "syntropy/language/templates/concepts.h"
 #include "syntropy/language/templates/type_traits.h"
-#include "syntropy/language/templates/sequence.h"
+#include "syntropy/language/templates/record.h"
 
 #include "syntropy/core/support/swap.h"
 #include "syntropy/core/support/compare.h"
@@ -22,7 +22,7 @@
 
 // ===========================================================================
 
-#include "details/sequence.details.h"
+#include "details/record.details.h"
 
 // ===========================================================================
 
@@ -263,6 +263,6 @@ namespace std
 
 // ===========================================================================
 
-#include "details/sequence.inl"
+#include "details/record.inl"
 
 // ===========================================================================

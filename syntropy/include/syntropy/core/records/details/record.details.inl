@@ -1,5 +1,5 @@
 
-/// \file sequence.details.inl
+/// \file record.details.inl
 ///
 /// \author Raffaele D. Facendola - March 2021
 

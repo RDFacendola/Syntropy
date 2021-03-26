@@ -1,5 +1,5 @@
 
-/// \file ntuple.inl
+/// \file record.inl
 ///
 /// \author Raffaele D. Facendola - Nov 2020
 

@@ -1,5 +1,5 @@
 
-/// \file sequence_extensions.h
+/// \file record_extensions.h
 ///
 /// \brief This header is part of the Syntropy core module.
 ///        It contains definitions for sequence-related customization-point

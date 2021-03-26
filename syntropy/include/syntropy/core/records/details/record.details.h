@@ -1,5 +1,5 @@
 
-/// \file ntuple.details.h
+/// \file record.details.h
 ///
 /// \author Raffaele D. Facendola - 2020.
 
@@ -10,7 +10,7 @@
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/templates.h"
 
-#include "syntropy/core/records/sequence_extensions.h"
+#include "syntropy/core/records/record_extensions.h"
 
 // ===========================================================================
 
