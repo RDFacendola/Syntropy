@@ -16,6 +16,7 @@
 #include "syntropy/language/templates/sequence.h"
 
 #include "syntropy/core/support/swap.h"
+#include "syntropy/core/support/compare.h"
 
 #include "syntropy/math/math.h"
 
@@ -31,39 +32,34 @@ namespace Syntropy::Sequences::Templates
     /* SEQUENCE                                                             */
     /************************************************************************/
 
-    /// \brief Exposes a member integer kValue equal to the rank of
-    ///        the n-tuple.
-    template <typename TType>
-    struct RankTypeTraits;
+    /// \brief Exposes a member kValue equal to the rank of a sequence.
+    template <typename TSequence>
+    struct SequenceRankTrait
+    {
+        // Int kValue = <sequence rank>
+    };
 
-    /// \brief Provides indexed access to n-tuple elements' types.
-    template <Int VIndex, typename TType>
-    struct ElementTypeTraits;
+}
 
-    /// \brief Rank of a n-tuple.
-    template <typename TType, typename UType
-        = Syntropy::Templates::UnqualifiedOf<TType>>
-    inline constexpr Int
-    Rank = RankTypeTraits<UType>::kValue;
+// ===========================================================================
 
-    /// \brief Type of the VIndex-th element of a n-tuple.
-    template <Int VIndex, typename TType, typename UType
-        = Syntropy::Templates::UnqualifiedOf<TType>>
-    using ElementType = typename ElementTypeTraits<VIndex, UType>::Type;
+namespace Syntropy::Sequences
+{
+    /************************************************************************/
+    /* NON-MEMBER FUNCTIONS                                                 */
+    /************************************************************************/
 
-    /// \brief Constant equal to true if TType provides compile-time access
-    ///        to its element types, false otherwise.
-    template <typename TType, typename UType
-        = Syntropy::Templates::UnqualifiedOf<TType>>
-    inline constexpr Bool
-    HasElementTypes = Details::HasElementTypes<UType>;
+    // Sequence.
+    // =========
 
-    /// \brief Constant equal to true if TType provides access to all its
-    ///        Rank elements, false otherwise.
-    template <typename TType, typename UType
-        = Syntropy::Templates::UnqualifiedOf<TType>>
-    inline constexpr Bool
-    HasGetters = Details::HasGetters<UType>;
+    /// \brief Access an element in a sequence by index.
+    ///
+    /// \remarks Ill-formed if no such element exists.
+    template <Int TIndex, typename TSequence>
+    [[nodiscard]] constexpr auto
+    Get(Forwarding<TSequence> sequence) noexcept
+        -> decltype(Details::RouteGet<TIndex>(Forward<TSequence>(sequence)));
+
 }
 
 // ===========================================================================
@@ -74,26 +70,16 @@ namespace Syntropy::Sequences::Concepts
     /* SEQUENCE                                                             */
     /************************************************************************/
 
-    /// \brief Concept for types that behave as tuples, providing indexed
-    ///        compile-time access to its elements.
-    template <typename TType, typename UType
-        = Syntropy::Templates::UnqualifiedOf<TType>>
+    /// \brief Concept for a limited-size sequence, for which indexed
+    ///        compile-time access to its elements is provided.
+    template <typename TSequence>
     concept Sequence = requires
     {
-        /// \brief Rank of the tuple.
-        { Syntropy::Sequences::Templates::RankTypeTraits<UType>::kValue }
+        /// \brief Rank of the sequence.
+        { Sequences::Templates::SequenceRankTrait<TSequence>::kValue }
             -> Syntropy::Concepts::IsIntegral;
-    }
-    && Templates::HasElementTypes<TType>
-    && Templates::HasGetters<TType>;
+    };
 
-    /// \brief Concept for reference types that behave as tuple.
-    /// \remarks This concept is especially useful when working with
-    ///          forwarding references to tuple types, where adding a
-    ///          reference would cause no type traits to be found.
-    template <typename TType>
-    concept SequenceReference
-        = Sequence<Syntropy::Templates::UnqualifiedOf<TType>>;
 }
 
 // ===========================================================================
@@ -104,17 +90,28 @@ namespace Syntropy::Sequences::Templates
     /* SEQUENCE                                                             */
     /************************************************************************/
 
-    /// \brief Constant equal to true if all TNSequences have the same rank,
-    ///        false otherwise.
-    template <Syntropy::Sequences::Concepts::Sequence... TNSequences>
-    inline constexpr Bool
-    SameRank = Details::SameRank<
-        Syntropy::Templates::UnqualifiedOf<TNSequences>...>;
+    /// \brief Rank of a sequence.
+    template <Concepts::Sequence TSequence>
+    inline constexpr Int SequenceRankOf =
+        SequenceRankTrait<TSequence>::kValue;
 
-    /// \brief Generates a sequence that can be used to enumerate all elements
-    ///        in a given tuple.
-    template <Syntropy::Sequences::Concepts::SequenceReference TTuple>
-    using TupleSequenceFor = Syntropy::Templates::MakeSequence<Rank<TTuple>>;
+    /// \brief Constant equal to true if two sequeneces have the same rank,
+    ///        equal to false otherwise.
+    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    inline constexpr Bool SequenceSameRank =
+        (SequenceRankOf<TSequence> == SequenceRankOf<USequence>);
+
+    /// \brief Type of a sequence element.
+    template <Int TIndex, Concepts::Sequence TSequence>
+    using SequenceElementTypeOf = Syntropy::Templates::UnqualifiedOf<decltype(
+        Sequences::Get<TIndex>(Syntropy::Templates::Declval<TSequence>()))>;
+
+    /// \brief Generates a numeric sequence that can be used to enumerate all
+    ///        elements in a given sequence.
+    template <Concepts::Sequence TSequence>
+    using SequenceEnumerationOf =
+        Syntropy::Templates::MakeSequence<SequenceRankOf<TSequence>>;
+
 }
 
 // ===========================================================================
@@ -122,65 +119,23 @@ namespace Syntropy::Sequences::Templates
 namespace Syntropy::Sequences
 {
     /************************************************************************/
-    /* TUPLES                                                               */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Comparison.
-    // ===========
-
-    /// \brief Check whether lhs and rhs are equal.
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
-
-    /// \brief Check whether lhs and rhs are equivalent.
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
-
-    /// \brief Compare two n-tuples lexicographically.
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
-
-    // Swap.
-    // =====
-
-    /// \brief Member-wise swap two tuples.
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr void
-    Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept;
-
-    /// \brief Swap lhs with rhs and return the old value of lhs.
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr TTuple
-    Exchange(Mutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept;
-
-    /// \brief Swap lhs with rhs and return the old value of lhs.
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr TTuple
-    Exchange(Mutable<TTuple> lhs, Movable<UTuple> rhs) noexcept;
-
-    // Functional.
-    // ===========
-
     /// \brief Invoke a function with arguments provided in form of n-tuple.
-    template <typename TFunction, Concepts::SequenceReference TTuple>
+    template <typename TFunction, Concepts::SequenceReference TSequence>
     constexpr decltype(auto)
-    Apply(Forwarding<TFunction> function, Forwarding<TTuple> ntuple) noexcept;
+    Apply(Forwarding<TFunction> function, Forwarding<TSequence> ntuple) noexcept;
 
     /// \brief Invoke a function to each element in a n-tuple individually.
-    template <typename TFunction, Concepts::SequenceReference TTuple>
+    template <typename TFunction, Concepts::SequenceReference TSequence>
     constexpr void
     ForEachApply(Forwarding<TFunction> function,
-                 Forwarding<TTuple> ntuple) noexcept;
+                 Forwarding<TSequence> ntuple) noexcept;
 
-    /// \brief Invoke a function to the VIndex-th element of each provided
+    /// \brief Invoke a function to the TIndex-th element of each provided
     ///        tuple at once.
-    template <Int VIndex,
+    template <Int TIndex,
               typename TFunction,
               Concepts::SequenceReference... TSequences>
     constexpr decltype(auto)
@@ -195,11 +150,82 @@ namespace Syntropy::Sequences
     LockstepApply(Forwarding<TFunction> function,
                   Forwarding<TSequences>... tuples) noexcept;
 
-    /// \brief Create a new instance of type TType using TTuple as constructor
+    /// \brief Create a new instance of type TType using TSequence as constructor
     ///        arguments.
-    template <typename TType, Concepts::SequenceReference TTuple>
+    template <typename TType, Concepts::SequenceReference TSequence>
     [[nodiscard]] constexpr TType
-    MakeFromTuple(Forwarding<TTuple> tuple) noexcept;
+    MakeFromTuple(Forwarding<TSequence> tuple) noexcept;
+}
+
+// ===========================================================================
+
+namespace Syntropy::Algorithm::Extensions
+{
+    /************************************************************************/
+    /* SWAP EXTENSIONS                                                      */
+    /************************************************************************/
+
+    /// \brief Swap two elements.
+    template <Sequences::Concepts::Sequence TSequence>
+    struct Swap<TSequence>
+    {
+        constexpr void
+        operator()(Mutable<TSequence> lhs, Mutable<TSequence> rhs)
+        const noexcept;
+    };
+
+    /// \brief Swap two sequences and return the old value of the first.
+    template <Sequences::Concepts::Sequence TSequence,
+              Sequences::Concepts::Sequence USequence>
+    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    struct Exchange<TSequence, USequence>
+    {
+        constexpr void
+        operator()(Mutable<TSequence> lhs, Immutable<USequence> rhs)
+        const noexcept;
+
+        constexpr void
+        operator()(Mutable<TSequence> lhs, Movable<USequence> rhs)
+        const noexcept;
+    };
+
+    /************************************************************************/
+    /* COMPARE EXTENSIONS                                                   */
+    /************************************************************************/
+
+    /// \brief Check whether two sequences are equal.
+    template <Sequences::Concepts::Sequence TSequence,
+              Sequences::Concepts::Sequence USequence>
+    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    struct AreEqual<TSequence, USequence>
+    {
+        [[nodiscard]] constexpr Bool
+        operator()(Immutable<TSequence> lhs, Immutable<USequence> rhs)
+        const noexcept;
+    };
+
+    /// \brief Check whether two sequences are equivalent.
+    template <Sequences::Concepts::Sequence TSequence,
+              Sequences::Concepts::Sequence USequence>
+    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    struct AreEquivalent<TSequence, USequence>
+    {
+        [[nodiscard]] constexpr Bool
+        operator()(Immutable<TSequence> lhs, Immutable<USequence> rhs)
+        const noexcept;
+    };
+
+    /// \brief Compare two sequences.
+    template <Sequences::Concepts::Sequence TSequence,
+              Sequences::Concepts::Sequence USequence>
+    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    struct Compare<TSequence, USequence>
+    {
+        [[nodiscard]] constexpr Ordering
+        operator()(Immutable<TSequence> lhs, Immutable<USequence> rhs)
+        const noexcept;
+    };
+
 }
 
 // ===========================================================================
@@ -210,21 +236,24 @@ namespace std
     /* STRUCTURED BINDINGS                                                  */
     /************************************************************************/
 
-    /// \brief Size of a Sequence.
-    template <Syntropy::Sequences::Concepts::Sequence TTuple>
-    struct std::tuple_size<TTuple>;
+    /// \brief Rank of a Sequence.
+    template <Syntropy::Sequences::Concepts::Sequence TSequence>
+    struct std::tuple_size<TSequence>;
 
-    /// \brief Type of the VIndex-th element of a Syntropy::Tuple.
-    template <std::size_t VIndex, Syntropy::Sequences::Concepts::Sequence TTuple>
-    struct std::tuple_element<VIndex, TTuple>;
+    /// \brief Type of a sequence element, by index.
+    template <std::size_t TIndex,
+              Syntropy::Sequences::Concepts::Sequence TSequence>
+    struct std::tuple_element<TIndex, TSequence>;
 
-    /// \brief Get the VIndex-th element of a tuple.
-    template <std::size_t VIndex, Syntropy::Sequences::Concepts::Sequence TTuple>
-    decltype(auto) get(Syntropy::Immutable<TTuple> tuple);
+    /// \brief Access a sequence element, by index.
+    template <std::size_t TIndex,
+              Syntropy::Sequences::Concepts::Sequence TSequence>
+    decltype(auto) get(Syntropy::Immutable<TSequence> tuple);
 
-    /// \brief Get the VIndex-th element of a tuple.
-    template <std::size_t VIndex, Syntropy::Sequences::Concepts::Sequence TTuple>
-    decltype(auto) get(Syntropy::Movable<TTuple> tuple);
+    /// \brief Access a sequence element, by index..
+    template <std::size_t TIndex,
+              Syntropy::Sequences::Concepts::Sequence TSequence>
+    decltype(auto) get(Syntropy::Movable<TSequence> tuple);
 }
 
 // ===========================================================================

@@ -10,200 +10,60 @@
 namespace Syntropy::Sequences
 {
     /************************************************************************/
-    /* TUPLES                                                               */
+    /* NON-MEMBER FUNCTIONS                                                 */
     /************************************************************************/
 
-    // Comparison.
-    // ===========
+    // Sequence.
+    // =========
 
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    [[nodiscard]] constexpr Bool
-    AreEqual(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
+    template <Int TIndex, typename TSequence>
+    [[nodiscard]] constexpr auto
+    Get(Forwarding<TSequence> sequence) noexcept
+        -> decltype(Details::RouteGet<TIndex>(Forward<TSequence>(sequence)))
     {
-        // In some implementations comparing two instances for identity
-        // is much faster than comparing them for equality.
-        // This function is left as a customization point for those
-        // implementations.
-
-        return AreEquivalent(lhs, rhs);
+        return Details::RouteGet<TIndex>(Forward<TSequence>(sequence));
     }
 
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    [[nodiscard]] constexpr Bool
-    AreEquivalent(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
-    {
-        using namespace Templates;
 
-        // Early out if the two tuples have different ranks.
 
-        if constexpr (Rank<TTuple> != Rank<UTuple>)
-        {
-            return false;
-        }
-        else
-        {
-            return Compare(lhs, rhs) == Ordering::kEquivalent;
-        }
-    }
 
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    [[nodiscard]] constexpr Ordering
-    Compare(Immutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
-    {
-        using namespace Templates;
 
-        // Lexicographic compare between two tuple elements.
-
-        auto lexicographic_compare = [&lhs, &rhs]<Int VIndex>
-            (Ordering compare_result,
-             Syntropy::Templates::IntConstant<VIndex>)
-            {
-                return (compare_result == Ordering::kEquivalent)
-                    ? (Get<VIndex>(lhs) <=> Get<VIndex>(rhs))
-                    : compare_result;
-            };
-
-        // Lexicographic compare between two same-rank tuples.
-
-        auto lockstep_lexicographic_compare
-            = [&lexicographic_compare]<Int... VIndex>
-                (Syntropy::Templates::Sequence<VIndex...>) mutable
-        {
-            auto compare_result = Ordering::kEquivalent;
-
-            ((compare_result = lexicographic_compare(
-                compare_result,
-                Syntropy::Templates::IntConstant<VIndex>{})), ...);
-
-            return compare_result;
-        };
-
-        // 1) Same-rank comparison.
-
-        if constexpr (Rank<TTuple> == Rank<UTuple>)
-        {
-            return lockstep_lexicographic_compare(TupleSequenceFor<TTuple>{});
-        }
-
-        // 2) Left-to-right comparison.
-
-        if constexpr (Rank<TTuple> < Rank<UTuple>)
-        {
-            if (auto compare_result
-                = lockstep_lexicographic_compare(
-                    TupleSequenceFor<TTuple>{});
-                compare_result != Ordering::kEquivalent)
-            {
-                return compare_result;
-            }
-
-            return Ordering::kLess;
-        }
-
-        // 3) Right-to-left comparison.
-
-        if constexpr (Rank<TTuple> > Rank<UTuple>)
-        {
-            if (auto compare_result
-                = lockstep_lexicographic_compare(
-                    TupleSequenceFor<UTuple>{});
-                compare_result != Ordering::kEquivalent)
-            {
-                return compare_result;
-            }
-
-            return Ordering::kGreater;
-        }
-    }
-
-    // Swap.
-    // =====
-
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr void
-    Swap(Mutable<TTuple> lhs, Mutable<UTuple> rhs) noexcept
-    {
-        using namespace Templates;
-
-        auto memberwise_swap = [&]<Int... VIndex>
-            (Syntropy::Templates::Sequence<VIndex...>)
-            {
-                (Swap(Get<VIndex>(lhs), Get<VIndex>(rhs)), ...);
-            };
-
-        return memberwise_swap(TupleSequenceFor<TTuple>{});
-    }
-
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr TTuple
-    Exchange(Mutable<TTuple> lhs, Immutable<UTuple> rhs) noexcept
-    {
-        using namespace Templates;
-
-        auto memberwise_exchange = [&]<Int... VIndex>(
-            Syntropy::Templates::Sequence<VIndex...>)
-        {
-            return TTuple{ Algorithm::Exchange(Get<VIndex>(lhs),
-                                               Get<VIndex>(rhs))... };
-        };
-
-        return memberwise_exchange(TupleSequenceFor<TTuple>{});
-    }
-
-    template <Concepts::Sequence TTuple, Concepts::Sequence UTuple>
-    requires (Templates::Rank<TTuple> == Templates::Rank<UTuple>)
-    constexpr TTuple
-    Exchange(Mutable<TTuple> lhs, Movable<UTuple> rhs) noexcept
-    {
-        using namespace Templates;
-
-        auto memberwise_exchange = [&]<Int... VIndex>(
-            Syntropy::Templates::Sequence<VIndex...>) mutable
-        {
-            return TTuple{ Algorithm::Exchange(Get<VIndex>(lhs),
-                                               Get<VIndex>(Move(rhs)))... };
-        };
-
-        return memberwise_exchange(TupleSequenceFor<TTuple>{});
-    }
 
     // Functional.
     // ===========
 
-    template <typename TFunction, Concepts::SequenceReference TTuple>
+    template <typename TFunction, Concepts::SequenceReference TSequence>
     constexpr decltype(auto)
-    Apply(Forwarding<TFunction> function, Forwarding<TTuple> ntuple) noexcept
+    Apply(Forwarding<TFunction> function, Forwarding<TSequence> ntuple) noexcept
     {
         using namespace Templates;
 
-        auto apply = [&]<Int... VIndex>
-            (Syntropy::Templates::Sequence<VIndex...>)
+        auto apply = [&]<Int... TIndex>
+            (Syntropy::Templates::Sequence<TIndex...>)
             {
-                return function(Get<VIndex>(Forward<TTuple>(ntuple))...);
+                return function(Get<TIndex>(Forward<TSequence>(ntuple))...);
             };
 
-        return apply(TupleSequenceFor<TTuple>{});
+        return apply(Templates::SequenceEnumerationOf<TSequence>{});
     }
 
-    template <typename TFunction, Concepts::SequenceReference TTuple>
+    template <typename TFunction, Concepts::SequenceReference TSequence>
     constexpr void
     ForEachApply(Forwarding<TFunction> function,
-                 Forwarding<TTuple> ntuple) noexcept
+                 Forwarding<TSequence> ntuple) noexcept
     {
         using namespace Templates;
 
-        auto for_each_apply = [&]<Int... VIndex>
-            (Syntropy::Templates::Sequence<VIndex...>)
+        auto for_each_apply = [&]<Int... TIndex>
+            (Syntropy::Templates::Sequence<TIndex...>)
             {
-                (function(Get<VIndex>(Forward<TTuple>(ntuple))), ...);
+                (function(Get<TIndex>(Forward<TSequence>(ntuple))), ...);
             };
 
-        for_each_apply(TupleSequenceFor<TTuple>{});
+        for_each_apply(Templates::SequenceEnumerationOf<TSequence>{});
     }
 
-    template <Int VIndex,
+    template <Int TIndex,
               typename TFunction,
               Concepts::SequenceReference... TSequences>
     constexpr decltype(auto)
@@ -212,7 +72,7 @@ namespace Syntropy::Sequences
     {
         using namespace Templates;
 
-        return function(Get<VIndex>(Forward<TSequences>(tuples))...);
+        return function(Get<TIndex>(Forward<TSequences>(tuples))...);
     }
 
     template <typename TFunction, Concepts::SequenceReference... TSequences>
@@ -222,31 +82,163 @@ namespace Syntropy::Sequences
     {
         using namespace Templates;
 
-        constexpr auto kMinRank = Math::Min(Rank<TSequences>...);
+        constexpr auto kMinRank = Math::Min(SequenceRankOf<TSequences>...);
 
-        auto lockstep_apply = [&]<Int... VIndex>
-            (Syntropy::Templates::Sequence<VIndex...>)
+        auto lockstep_apply = [&]<Int... TIndex>
+            (Syntropy::Templates::Sequence<TIndex...>)
             {
-                (ProjectApply<VIndex>(Forward<TFunction>(function),
+                (ProjectApply<TIndex>(Forward<TFunction>(function),
                                       tuples...), ...);
             };
 
         lockstep_apply(Syntropy::Templates::MakeSequence<kMinRank>{});
     }
 
-    template <typename TType, Concepts::SequenceReference TTuple>
+    template <typename TType, Concepts::SequenceReference TSequence>
     [[nodiscard]] constexpr TType
-    MakeFromTuple(Forwarding<TTuple> tuple) noexcept
+    MakeFromTuple(Forwarding<TSequence> tuple) noexcept
     {
         using namespace Templates;
 
-        auto make_from_tuple = [&]<Int... VIndex>
-            (Syntropy::Templates::Sequence<VIndex...>)
+        auto make_from_tuple = [&]<Int... TIndex>
+            (Syntropy::Templates::Sequence<TIndex...>)
             {
-                return TType(Get<VIndex>(Forward<TTuple>(tuple))...);
+                return TType(Get<TIndex>(Forward<TSequence>(tuple))...);
             };
 
-        return make_from_tuple(Templates::TupleSequenceFor<TTuple>{});
+        return make_from_tuple(Templates::SequenceEnumerationOf<TSequence>{});
+    }
+
+}
+
+// ===========================================================================
+
+namespace Syntropy::Algorithm::Extensions
+{
+    /************************************************************************/
+    /* SWAP EXTENSIONS                                                      */
+    /************************************************************************/
+
+    template <Concepts::Sequence TSequence>
+    constexpr void
+    Swap<TSequence>::
+    operator()(Mutable<TSequence> lhs, Mutable<TSequence> rhs)
+    const noexcept
+    {
+        auto swap = [&]<Int... TIndex>
+            (Syntropy::Templates::Sequence<TIndex...>)
+            {
+                (Algorithm::Swap(Sequences::Get<TIndex>(lhs),
+                                 Sequences::Get<TIndex>(rhs)), ...);
+            };
+
+        swap(Templates::SequenceEnumerationOf<TSequence>{});
+    }
+
+    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    constexpr TSequence
+    Exchange<TSequence, USequence>::
+    operator()(Mutable<TSequence> lhs, Immutable<USequence> rhs)
+    const noexcept
+    {
+        auto exchange = [&]<Int... TIndex>(
+            Syntropy::Templates::Sequence<TIndex...>)
+        {
+            return TSequence{
+                Algorithm::Exchange(Sequences::Get<TIndex>(lhs),
+                                    Sequences::Get<TIndex>(rhs))... };
+        };
+
+        return exchange(Templates::SequenceEnumerationOf<TSequence>{});
+    }
+
+    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    constexpr TSequence
+    Exchange<TSequence, USequence>::
+    operator()(Mutable<TSequence> lhs, Movable<USequence> rhs)
+    const noexcept
+    {
+        auto exchange = [&]<Int... TIndex>(
+            Syntropy::Templates::Sequence<TIndex...>) mutable
+        {
+            return TSequence{
+                Algorithm::Exchange(Sequences::Get<TIndex>(lhs),
+                                    Sequences::Get<TIndex>(Move(rhs)))... };
+        };
+
+        return exchange(Templates::SequenceEnumerationOf<TSequence>{});
+    }
+
+    /************************************************************************/
+    /* COMPARE EXTENSIONS                                                   */
+    /************************************************************************/
+
+    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    [[nodiscard]] constexpr Bool
+    AreEqual<TSequence, USequence>::
+    operator()(Immutable<TSequence> lhs, Immutable<USequence> rhs)
+    const noexcept
+    {
+        auto are_equal = [&]<Int... TIndex>(
+            Syntropy::Templates::Sequence<TIndex...>)
+        {
+            return (Algorithm::AreEqual(Sequences::Get<TIndex>(lhs),
+                                        Sequences::Get<TIndex>(rhs)) && ...);
+        };
+
+        return are_equal(lhs, rhs);
+    }
+
+    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    [[nodiscard]] constexpr Bool
+    AreEquivalent<TSequence, USequence>::
+    operator()(Immutable<TSequence> lhs, Immutable<USequence> rhs)
+    const noexcept
+    {
+        auto are_equivalent = [&]<Int... TIndex>(
+            Syntropy::Templates::Sequence<TIndex...>)
+        {
+            return (Algorithm::AreEquivalent(
+                Sequences::Get<TIndex>(lhs),
+                Sequences::Get<TIndex>(rhs)) && ...);
+        };
+
+        return are_equal(lhs, rhs);
+    }
+
+    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
+    [[nodiscard]] constexpr Ordering
+    Compare<TSequence, USequence>::
+    operator()(Immutable<TSequence> lhs, Immutable<USequence> rhs)
+    const noexcept
+    {
+        auto compare = [&]<Int TIndex>(
+            Ordering result, Syntropy::Templates::IntConstant<TIndex>)
+        {
+            return (result == Ordering::kEquivalent)
+                ? Algorithm::Compare(Sequences::Get<TIndex>(lhs),
+                                     Sequences::Get<TIndex>(rhs))
+                : compare_result;
+        };
+
+        auto lockstep_compare = [&]<Int... TIndex>(
+            Syntropy::Templates::Sequence<TIndex...>)
+        {
+            auto result = Ordering::kEquivalent;
+
+            ((result = compare(
+                compare_result,
+                Syntropy::Templates::IntConstant<TIndex>{})), ...);
+
+            return compare_result;
+        };
+
+        return lockstep_compare(Templates::SequenceEnumerationOf<TSequence>{});
     }
 
 }
@@ -259,29 +251,33 @@ namespace std
     /* STRUCTURED BINDINGS                                                  */
     /************************************************************************/
 
-    template <Syntropy::Sequences::Concepts::Sequence TTuple>
-    struct std::tuple_size<TTuple>
+    template <Syntropy::Sequences::Concepts::Sequence TSequence>
+    struct std::tuple_size<TSequence>
     {
         static constexpr std::size_t value
-            = Syntropy::Sequences::Templates::Rank<TTuple>;
+            = Syntropy::Sequences::Templates::SequenceRankOf<TSequence>;
     };
 
-    template <std::size_t VIndex, Syntropy::Sequences::Concepts::Sequence TTuple>
-    struct std::tuple_element<VIndex, TTuple>
+    template <std::size_t TIndex,
+              Syntropy::Sequences::Concepts::Sequence TSequence>
+    struct std::tuple_element<TIndex, TSequence>
     {
-        using type = Syntropy::Sequences::Templates::ElementType<VIndex, TTuple>;
+        using type
+            = Syntropy::Sequences::Templates::ElementType<TIndex, TSequence>;
     };
 
-    template <std::size_t VIndex, Syntropy::Sequences::Concepts::Sequence TTuple>
-    decltype(auto) get(Syntropy::Immutable<TTuple> tuple)
+    template <std::size_t TIndex,
+              Syntropy::Sequences::Concepts::Sequence TSequence>
+    decltype(auto) get(Syntropy::Immutable<TSequence> tuple)
     {
-        return Get<VIndex>(tuple);
+        return Get<TIndex>(tuple);
     }
 
-    template <std::size_t VIndex, Syntropy::Sequences::Concepts::Sequence TTuple>
-    decltype(auto) get(Syntropy::Movable<TTuple> tuple)
+    template <std::size_t TIndex,
+              Syntropy::Sequences::Concepts::Sequence TSequence>
+    decltype(auto) get(Syntropy::Movable<TSequence> tuple)
     {
-        return Get<VIndex>(Syntropy::Move(tuple));
+        return Get<TIndex>(Syntropy::Move(tuple));
     }
 }
 

@@ -10,133 +10,66 @@
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/templates.h"
 
-// ===========================================================================
-
-namespace Syntropy::Sequences::Templates
-{
-    /************************************************************************/
-    /* FORWARD DECLARATIONS                                                 */
-    /************************************************************************/
-
-    template <typename TType>
-    struct RankTypeTraits;
-
-    template <Int VIndex, typename TType>
-    struct ElementTypeTraits;
-}
+#include "syntropy/core/sequences/sequence_extensions.h"
 
 // ===========================================================================
 
-namespace Syntropy::Sequences::Templates::Details
+namespace Syntropy::Sequences::Details
 {
     /************************************************************************/
-    /* N-TUPLE                                                              */
+    /* CUSTOMIZATION-POINT-OBJECTS                                          */
     /************************************************************************/
 
-    /// \brief Rank of a n-tuple.
-    template <
-        typename TType,
-        typename UType = Syntropy::Templates::UnqualifiedOf<TType>>
-    inline constexpr Int
-    Rank = RankTypeTraits<UType>::kValue;
+    // Core idea based on this amazing post:
+    // https://wandbox.org/permlink/AB9uQxO2MymNDDtt
 
-    /// \brief Type of the VIndex-th element of a n-tuple;
-    template <
-        Int VIndex,
-        typename TType,
-        typename UType = Syntropy::Templates::UnqualifiedOf<TType>>
-    using ElementType = typename ElementTypeTraits<VIndex, UType>::Type;
+    /// \brief Priority of a custom extension implementation.
+    using ExtensionPriority = Templates::Priority<4>;
 
-    // HasElementTypes.
-    // =====================
+    /// \brief Priority of a member-function implementation.
+    using MemberFunctionPriority = Templates::Priority<3>;
 
-    /// \brief Detect whether TType provides index compile-time access to
-    ///        tuple elements' types.
-    template <typename TType, typename TIndex>
-    using DetectElementType = decltype(
-        Syntropy::Templates::Declval<ElementType<TIndex::kValue, TType>>());
+    /// \brief Priority of a member-operator implementation.
+    using MemberOperatorPriority = Templates::Priority<2>;
 
-    /// \brief Constant equal to true if TType provides compile-time access
-    ///        to the VIndex-th element's type, equal to false otherwise.
-    template <typename TType, Int VIndex>
-    inline constexpr Bool HasTupleElementType
-        = Syntropy::Templates::IsValidExpression<
-            DetectElementType,
-            TType,
-            Syntropy::Templates::IntConstant<VIndex>>;
+    /// \brief Priority of a non-member-function implementation.
+    using NonMemberFunctionPriority = Templates::Priority<1>;
 
-    template <typename TType, Int VRank>
-    struct HasElementTypesHelper
-    {
-        static constexpr Bool kValue
-             = HasTupleElementType<TType, VRank - 1>
-            && HasElementTypesHelper<TType, VRank - 1>::kValue;
-    };
+    /// \brief Priority of a fallback implementation.
+    using FallbackPriority = Templates::Priority<0>;
 
-    template <typename TType>
-    struct HasElementTypesHelper<TType, 0> : Syntropy::Templates::True {};
+    /// \brief Highest priority among method implementations.
+    inline constexpr Templates::Priority kMaxPriority = ExtensionPriority{};
 
-    /// \brief Constant equal to true if TType provides compile-time access to
-    ///        its element types, false otherwise.
-    template <typename TType>
-    inline constexpr Bool HasElementTypes
-        = HasElementTypesHelper<TType, Rank<TType>>::kValue;
+    /************************************************************************/
+    /* GET                                                                  */
+    /************************************************************************/
 
-    // HasGetters.
-    // ===============
+    /// \brief Custom extension.
+    template <Int TIndex, typename TSequence>
+    inline auto
+    InvokeGet(Forwarding<TSequence> sequence, ExtensionPriority)
+        noexcept -> decltype(Extensions::Get<TIndex, TSequence>{}(
+            Forward<TSequence>(sequence)));
 
-    /// \brief Detect whether TType provides compile-time access to the
-    ///        VIndex-th element.
-    template <typename TType, typename TIndex>
-    using DetectTupleGetter
-        = decltype(Get<Syntropy::Templates::Evaluate<TIndex>>(
-              Syntropy::Templates::Declval<TType>()));
+    /// \brief Member-function.
+    template <Int TIndex, typename TSequence>
+    inline auto
+    InvokeGet(Forwarding<TSequence> sequence, MemberFunctionPriority)
+        noexcept -> decltype(sequence.template Get<TIndex>());
 
-    /// \brief Constant equal to true if TType provides compile-time access to
-    ///        the VIndex-th element, equal to false otherwise.
-    template <typename TType, Int VIndex>
-    inline constexpr Bool HasTupleGetter
-        = Syntropy::Templates::IsValidExpression<
-            DetectTupleGetter,
-            TType,
-            Syntropy::Templates::IntConstant<VIndex>>;
+    /// \brief Non-member function, possibly using ADL.
+    template <Int TIndex, typename TSequence>
+    inline auto
+    InvokeGet(Forwarding<TSequence> sequence, NonMemberFunctionPriority)
+        noexcept -> decltype(Get<TIndex>(Forward<TSequence>(sequence)));
 
-    template <typename TType, Int VRank>
-    struct HasGettersHelper
-    {
-        static constexpr Bool kValue
-             = HasTupleGetter<TType, VRank - 1>
-            && HasGettersHelper<TType, VRank - 1>::kValue;
-    };
-
-    template <typename TType>
-    struct HasGettersHelper<TType, 0> : Syntropy::Templates::True {};
-
-    /// \brief Constant equal to true if TType provides access to all its
-    ///        TupleRank elements, false otherwise.
-    template <typename TType>
-    inline constexpr Bool HasGetters
-        = HasGettersHelper<TType, Rank<TType>>::kValue;
-
-    // SameRank.
-    // =========
-
-    /// \brief Helper structure for SameRank trait.
-    template <typename TType, typename... TTypes>
-    struct SameRankHelper
-    {
-        static constexpr Bool kValue = ((Rank<TType> == Rank<TTypes>) && ...);
-    };
-
-    /// \brief Specialization for a single tuple.
-    template <typename TType>
-    struct SameRankHelper<TType> : Syntropy::Templates::True {};
-
-    /// \brief Constant equal to true if all TTypes have the same rank,
-    ///        false otherwise.
-    template <typename... TTypes>
-    inline constexpr Bool SameRank = SameRankHelper<TTypes...>::kValue;
-
+    /// \brief Routes the invocation.
+    template <Int TIndex, typename TSequence>
+    inline auto
+    RouteGet(Forwarding<TSequence> sequence)
+        noexcept -> decltype(InvokeGet<TIndex>(Forward<TSequence>(sequence),
+                                               kMaxPriority));
 }
 
 // ===========================================================================
