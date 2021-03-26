@@ -1,5 +1,5 @@
 
-/// \file tuple.inl
+    /// \file tuple.inl
 ///
 /// \author Raffaele D. Facendola - Sep 2020.
 
@@ -25,7 +25,7 @@ namespace Syntropy::Sequences
     }
 
     template <typename TElement, typename... TElements>
-    template<Concepts::SequenceReference TTuple, Int... VIndexes>
+    template<Concepts::ForwardingSequence TTuple, Int... VIndexes>
     constexpr Tuple<TElement, TElements...>
     ::Tuple(UnwindTag,
             Syntropy::Templates::Sequence<VIndexes...>,
@@ -135,7 +135,7 @@ namespace Syntropy::Sequences
 
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Templates::ElementType<VIndex, Tuple<TElements...>>>
+    Immutable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
@@ -145,7 +145,7 @@ namespace Syntropy::Sequences
 
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Templates::ElementType<VIndex, Tuple<TElements...>>>
+    Mutable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
@@ -155,11 +155,11 @@ namespace Syntropy::Sequences
 
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Templates::ElementType<VIndex, Tuple<TElements...>>>
+    Immovable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
-        using TElement = Templates::ElementType<VIndex, Tuple<TElements...>>;
+        using TElement = Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>;
 
         return static_cast<Immovable<TElement>>(
                    static_cast<Immutable<TTupleBase>>(tuple).element_);
@@ -167,11 +167,11 @@ namespace Syntropy::Sequences
 
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Templates::ElementType<VIndex, Tuple<TElements...>>>
+    Movable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept
     {
         using TTupleBase = Details::TupleBase<VIndex, Tuple<TElements...>>;
-        using TElement = Templates::ElementType<VIndex, Tuple<TElements...>>;
+        using TElement = Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>;
 
         return static_cast<Movable<TElement>>(
             static_cast<Mutable<TTupleBase>>(tuple).element_);
@@ -246,14 +246,14 @@ namespace Syntropy::Sequences
                    Forward<TElements>(elements)...);
     }
 
-    template <Concepts::SequenceReference... TSequences>
+    template <Concepts::ForwardingSequence... TSequences>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TSequences>... tuples) noexcept
     {
         return Details::Concatenate(Forward<TSequences>(tuples)...);
     }
 
-    template <Concepts::SequenceReference TTuple>
+    template <Concepts::ForwardingSequence TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept
     {

@@ -198,16 +198,8 @@ namespace Syntropy::Sequences::Templates
     /************************************************************************/
 
     /// \brief Partial template specialization for tuples.
-    template <Int VIndex,
-              Syntropy::Ranges::Concepts::ForwardRange... TRanges>
-    struct ElementTypeTraits<VIndex,
-                             Syntropy::Ranges::ZipRange<TRanges...>>
-        : Syntropy::Templates::Alias<ElementType<VIndex,
-                                     Sequences::Tuple<TRanges...>>> {};
-
-    /// \brief Partial template specialization for tuples.
     template <Syntropy::Ranges::Concepts::ForwardRange... TRanges>
-    struct RankTypeTraits<Syntropy::Ranges::ZipRange<TRanges...>>
+    struct SequenceRankTrait<Syntropy::Ranges::ZipRange<TRanges...>>
         : Syntropy::Templates::IntConstant<sizeof...(TRanges)> {};
 }
 

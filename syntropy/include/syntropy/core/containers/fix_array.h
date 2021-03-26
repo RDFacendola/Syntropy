@@ -187,13 +187,8 @@ namespace Syntropy::Sequences::Templates
     /************************************************************************/
 
     /// \brief Specialization for fix-arrays.
-    template <Int TIndex, typename TType, Int TCount>
-    struct ElementTypeTraits<TIndex, FixArray<TType, TCount>>
-        : Syntropy::Templates::Alias<TType> {};
-
-    /// \brief Specialization for fix-arrays.
     template <typename TType, Int TCount>
-    struct RankTypeTraits<FixArray<TType, TCount>>
+    struct SequenceRankTrait<FixArray<TType, TCount>>
         : Syntropy::Templates::IntConstant<TCount> {};
 }
 

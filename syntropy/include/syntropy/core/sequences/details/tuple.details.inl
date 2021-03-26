@@ -14,11 +14,11 @@ namespace Syntropy::Sequences::Details
     // Concatenate.
     // =========
 
-    template <Concepts::SequenceReference... TSequences>
+    template <Concepts::ForwardingSequence... TSequences>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TSequences>... tuples) noexcept
     {
-        auto tuple_cat = [&]<Concepts::SequenceReference TTuple,
+        auto tuple_cat = [&]<Concepts::ForwardingSequence TTuple,
                              Int... VTupleIndex,
                              Int... VElementIndex>
              (Forwarding<TTuple> tuple,
@@ -39,7 +39,7 @@ namespace Syntropy::Sequences::Details
     // Flatten.
     // ========
 
-    template <Concepts::SequenceReference TTuple>
+    template <Concepts::ForwardingSequence TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept
     {
@@ -57,7 +57,7 @@ namespace Syntropy::Sequences::Details
         };
 
         return flat(Forward<TTuple>(tuple),
-                    Templates::TupleSequenceFor<
+                    Templates::SequenceEnumerationOf<
                         Syntropy::Templates::UnqualifiedOf<TTuple>>{});
     }
 

@@ -42,22 +42,22 @@ namespace Syntropy::Sequences
     {
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Immutable<Templates::ElementType<VIndex, Tuple<UElements...>>>
+        Immutable<Templates::SequenceElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Immutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Mutable<Templates::ElementType<VIndex, Tuple<UElements...>>>
+        Mutable<Templates::SequenceElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Mutable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Immovable<Templates::ElementType<VIndex, Tuple<UElements...>>>
+        Immovable<Templates::SequenceElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Immovable<Tuple<UElements...>> tuple) noexcept;
 
         template <Int VIndex, typename... UElements>
         friend constexpr
-        Movable<Templates::ElementType<VIndex, Tuple<UElements...>>>
+        Movable<Templates::SequenceElementTypeOf<VIndex, Tuple<UElements...>>>
         Get(Movable<Tuple<UElements...>> tuple) noexcept;
 
     public:
@@ -170,7 +170,7 @@ namespace Syntropy::Sequences
               Forwarding<UElements>... elements) noexcept;
 
         /// \brief Construct a tuple unwinding another tuple elements.
-        template<Concepts::SequenceReference TTuple, Int... VIndexes>
+        template<Concepts::ForwardingSequence TTuple, Int... VIndexes>
         constexpr
         Tuple(UnwindTag,
               Syntropy::Templates::Sequence<VIndexes...>,
@@ -275,7 +275,7 @@ namespace Syntropy::Sequences
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immutable<Templates::ElementType<VIndex, Tuple<TElements...>>>
+    Immutable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Immutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -283,7 +283,7 @@ namespace Syntropy::Sequences
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Mutable<Templates::ElementType<VIndex, Tuple<TElements...>>>
+    Mutable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Mutable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -291,7 +291,7 @@ namespace Syntropy::Sequences
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Immovable<Templates::ElementType<VIndex, Tuple<TElements...>>>
+    Immovable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Immovable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access the VIndex-th element in a tuple.
@@ -299,7 +299,7 @@ namespace Syntropy::Sequences
     /// \remarks The program is ill-formed if no such element exists.
     template <Int VIndex, typename... TElements>
     [[nodiscard]] constexpr
-    Movable<Templates::ElementType<VIndex, Tuple<TElements...>>>
+    Movable<Templates::SequenceElementTypeOf<VIndex, Tuple<TElements...>>>
     Get(Movable<Tuple<TElements...>> tuple) noexcept;
 
     /// \brief Access an element of a tuple by type.
@@ -351,12 +351,12 @@ namespace Syntropy::Sequences
     ForwardAsTuple(Forwarding<TElements>... elements) noexcept;
 
     /// \brief Concatenate a set of tuples.
-    template <Concepts::SequenceReference... TSequences>
+    template <Concepts::ForwardingSequence... TSequences>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TSequences>... tuples) noexcept;
 
     /// \brief Flatten a tuple recursively.
-    template <Concepts::SequenceReference TTuple>
+    template <Concepts::ForwardingSequence TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept;
 
@@ -395,16 +395,8 @@ namespace Syntropy::Sequences::Templates
     /************************************************************************/
 
     /// \brief Partial template specialization for tuples.
-    template <Int VIndex, typename... TElements>
-    struct ElementTypeTraits<VIndex, Sequences::Tuple<TElements...>>
-        : Syntropy::Templates::Alias<
-            Syntropy::Templates::ElementOf<
-                VIndex,
-                Syntropy::Templates::TypeList<TElements...>>> {};
-
-    /// \brief Partial template specialization for tuples.
     template <typename... TElements>
-    struct RankTypeTraits<Sequences::Tuple<TElements...>>
+    struct SequenceRankTrait<Sequences::Tuple<TElements...>>
         : Syntropy::Templates::IntConstant<sizeof...(TElements)> {};
 }
 

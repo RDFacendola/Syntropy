@@ -32,7 +32,7 @@ namespace Syntropy::Sequences
     // Functional.
     // ===========
 
-    template <typename TFunction, Concepts::SequenceReference TSequence>
+    template <typename TFunction, Concepts::ForwardingSequence TSequence>
     constexpr decltype(auto)
     Apply(Forwarding<TFunction> function, Forwarding<TSequence> ntuple) noexcept
     {
@@ -47,7 +47,7 @@ namespace Syntropy::Sequences
         return apply(Templates::SequenceEnumerationOf<TSequence>{});
     }
 
-    template <typename TFunction, Concepts::SequenceReference TSequence>
+    template <typename TFunction, Concepts::ForwardingSequence TSequence>
     constexpr void
     ForEachApply(Forwarding<TFunction> function,
                  Forwarding<TSequence> ntuple) noexcept
@@ -65,7 +65,7 @@ namespace Syntropy::Sequences
 
     template <Int TIndex,
               typename TFunction,
-              Concepts::SequenceReference... TSequences>
+              Concepts::ForwardingSequence... TSequences>
     constexpr decltype(auto)
     ProjectApply(Forwarding<TFunction> function,
                  Forwarding<TSequences>... tuples) noexcept
@@ -75,7 +75,7 @@ namespace Syntropy::Sequences
         return function(Get<TIndex>(Forward<TSequences>(tuples))...);
     }
 
-    template <typename TFunction, Concepts::SequenceReference... TSequences>
+    template <typename TFunction, Concepts::ForwardingSequence... TSequences>
     constexpr void
     LockstepApply(Forwarding<TFunction> function,
                   Forwarding<TSequences>... tuples) noexcept
@@ -94,7 +94,7 @@ namespace Syntropy::Sequences
         lockstep_apply(Syntropy::Templates::MakeSequence<kMinRank>{});
     }
 
-    template <typename TType, Concepts::SequenceReference TSequence>
+    template <typename TType, Concepts::ForwardingSequence TSequence>
     [[nodiscard]] constexpr TType
     MakeFromTuple(Forwarding<TSequence> tuple) noexcept
     {
@@ -119,7 +119,7 @@ namespace Syntropy::Algorithm::Extensions
     /* SWAP EXTENSIONS                                                      */
     /************************************************************************/
 
-    template <Concepts::Sequence TSequence>
+    template <Sequences::Concepts::Sequence TSequence>
     constexpr void
     Swap<TSequence>::
     operator()(Mutable<TSequence> lhs, Mutable<TSequence> rhs)
@@ -132,10 +132,11 @@ namespace Syntropy::Algorithm::Extensions
                                  Sequences::Get<TIndex>(rhs)), ...);
             };
 
-        swap(Templates::SequenceEnumerationOf<TSequence>{});
+        swap(Sequences::Templates::SequenceEnumerationOf<TSequence>{});
     }
 
-    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    template <Sequences::Concepts::Sequence TSequence,
+              Sequences::Concepts::Sequence USequence>
     requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
     constexpr TSequence
     Exchange<TSequence, USequence>::
@@ -150,10 +151,11 @@ namespace Syntropy::Algorithm::Extensions
                                     Sequences::Get<TIndex>(rhs))... };
         };
 
-        return exchange(Templates::SequenceEnumerationOf<TSequence>{});
+        return exchange(Sequences::Templates::SequenceEnumerationOf<TSequence>{});
     }
 
-    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    template <Syntropy::Sequences::Concepts::Sequence TSequence,
+              Syntropy::Sequences::Concepts::Sequence USequence>
     requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
     constexpr TSequence
     Exchange<TSequence, USequence>::
@@ -168,14 +170,15 @@ namespace Syntropy::Algorithm::Extensions
                                     Sequences::Get<TIndex>(Move(rhs)))... };
         };
 
-        return exchange(Templates::SequenceEnumerationOf<TSequence>{});
+        return exchange(Sequences::Templates::SequenceEnumerationOf<TSequence>{});
     }
 
     /************************************************************************/
     /* COMPARE EXTENSIONS                                                   */
     /************************************************************************/
 
-    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    template <Sequences::Concepts::Sequence TSequence,
+              Sequences::Concepts::Sequence USequence>
     requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
     [[nodiscard]] constexpr Bool
     AreEqual<TSequence, USequence>::
@@ -192,7 +195,8 @@ namespace Syntropy::Algorithm::Extensions
         return are_equal(lhs, rhs);
     }
 
-    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    template <Sequences::Concepts::Sequence TSequence,
+              Sequences::Concepts::Sequence USequence>
     requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
     [[nodiscard]] constexpr Bool
     AreEquivalent<TSequence, USequence>::
@@ -210,7 +214,8 @@ namespace Syntropy::Algorithm::Extensions
         return are_equal(lhs, rhs);
     }
 
-    template <Concepts::Sequence TSequence, Concepts::Sequence USequence>
+    template <Sequences::Concepts::Sequence TSequence,
+              Sequences::Concepts::Sequence USequence>
     requires Sequences::Templates::SequenceSameRank<TSequence, USequence>
     [[nodiscard]] constexpr Ordering
     Compare<TSequence, USequence>::
@@ -223,7 +228,7 @@ namespace Syntropy::Algorithm::Extensions
             return (result == Ordering::kEquivalent)
                 ? Algorithm::Compare(Sequences::Get<TIndex>(lhs),
                                      Sequences::Get<TIndex>(rhs))
-                : compare_result;
+                : result;
         };
 
         auto lockstep_compare = [&]<Int... TIndex>(
@@ -232,13 +237,13 @@ namespace Syntropy::Algorithm::Extensions
             auto result = Ordering::kEquivalent;
 
             ((result = compare(
-                compare_result,
+                result,
                 Syntropy::Templates::IntConstant<TIndex>{})), ...);
 
-            return compare_result;
+            return result;
         };
 
-        return lockstep_compare(Templates::SequenceEnumerationOf<TSequence>{});
+        return lockstep_compare(Sequences::Templates::SequenceEnumerationOf<TSequence>{});
     }
 
 }
@@ -263,7 +268,7 @@ namespace std
     struct std::tuple_element<TIndex, TSequence>
     {
         using type
-            = Syntropy::Sequences::Templates::ElementType<TIndex, TSequence>;
+            = Syntropy::Sequences::Templates::SequenceElementTypeOf<TIndex, TSequence>;
     };
 
     template <std::size_t TIndex,

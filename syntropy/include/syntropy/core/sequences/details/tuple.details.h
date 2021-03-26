@@ -28,11 +28,11 @@ namespace Syntropy::Sequences
     [[nodiscard]] constexpr Tuple<TElements...>
     MakeTuple(Forwarding<TElements>... elements) noexcept;
 
-    template <Concepts::SequenceReference... TSequences>
+    template <Concepts::ForwardingSequence... TSequences>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TSequences>... tuples) noexcept;
 
-    template <Concepts::SequenceReference TTuple>
+    template <Concepts::ForwardingSequence TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept;
 }
@@ -310,7 +310,7 @@ namespace Syntropy::Sequences::Details
     /************************************************************************/
 
     /// \brief Access a tuple base type by index.
-    template <Int VCount, Concepts::SequenceReference TTuple>
+    template <Int VCount, Concepts::ForwardingSequence TTuple>
     struct TupleBaseHelper;
 
     /// \brief Specialization for tuples.
@@ -319,14 +319,14 @@ namespace Syntropy::Sequences::Details
         : TupleBaseHelper<VCount - 1, Tuple<TElements...>> {};
 
     /// \brief End of recursion.
-    template <Concepts::SequenceReference TTuple>
+    template <Concepts::ForwardingSequence TTuple>
     struct TupleBaseHelper<0, TTuple>
     {
         using Type = TTuple;
     };
 
     /// \brief Access a tuple base type by index.
-    template <Int VCount, Concepts::SequenceReference TTuple>
+    template <Int VCount, Concepts::ForwardingSequence TTuple>
     using TupleBase = typename TupleBaseHelper<VCount, TTuple>::Type;
 
     /************************************************************************/
@@ -340,8 +340,8 @@ namespace Syntropy::Sequences::Details
 
     /// \brief Generate a sequence that can be used to access tuples.
     template <Int VIndex,
-              Concepts::SequenceReference TTuple,
-              Concepts::SequenceReference... TSequences>
+              Concepts::ForwardingSequence TTuple,
+              Concepts::ForwardingSequence... TSequences>
     struct EnumerateTupleIndexesHelper
     {
         using TupleSequence
@@ -357,24 +357,24 @@ namespace Syntropy::Sequences::Details
 
     /// \brief Generate a sequence of VIndex repeated a number of times equal
     ///        to the rank of TTuple.
-    template <Int VIndex, Concepts::SequenceReference TTuple>
+    template <Int VIndex, Concepts::ForwardingSequence TTuple>
     struct EnumerateTupleIndexesHelper<VIndex, TTuple>
     {
         using Type = Syntropy::Templates::SequenceRepeat<
             VIndex,
-            Templates::Rank<TTuple>>;
+            Templates::SequenceRankOf<TTuple>>;
     };
 
     /// \brief Generate a sequence that can be used to access tuples.
-    template <Concepts::SequenceReference... TSequences>
+    template <Concepts::ForwardingSequence... TSequences>
     using EnumerateTupleIndexes
         = typename EnumerateTupleIndexesHelper<0, TSequences...>::Type;
 
     // EnumerateTupleElementIndexes.
 
     /// \brief Generate a sequence that can be used to access tuple elements.
-    template <Concepts::SequenceReference TTuple,
-              Concepts::SequenceReference... TSequences>
+    template <Concepts::ForwardingSequence TTuple,
+              Concepts::ForwardingSequence... TSequences>
     struct EnumerateTupleElementIndexesHelper
     {
         using TupleSequence
@@ -389,19 +389,19 @@ namespace Syntropy::Sequences::Details
 
     /// \brief Generate an increasing sequence from 0 to the rank of
     ///        TTuple (excluded).
-    template <Concepts::SequenceReference TTuple>
+    template <Concepts::ForwardingSequence TTuple>
     struct EnumerateTupleElementIndexesHelper<TTuple>
     {
-        using Type = Templates::TupleSequenceFor<TTuple>;
+        using Type = Templates::SequenceEnumerationOf<TTuple>;
     };
 
     /// \brief Generate a sequence that can be used to access tuple elements.
-    template <Concepts::SequenceReference... TSequences>
+    template <Concepts::ForwardingSequence... TSequences>
     using EnumerateTupleElementIndexes
         = typename EnumerateTupleElementIndexesHelper<TSequences...>::Type;
 
     /// \brief Concatenate a set of tuples.
-    template <Concepts::SequenceReference... TSequences>
+    template <Concepts::ForwardingSequence... TSequences>
     [[nodiscard]] constexpr decltype(auto)
     Concatenate(Forwarding<TSequences>... tuples) noexcept;
 
@@ -409,7 +409,7 @@ namespace Syntropy::Sequences::Details
     // ========
 
     /// \brief Flatten a tuple recursively.
-    template <Concepts::SequenceReference TTuple>
+    template <Concepts::ForwardingSequence TTuple>
     [[nodiscard]] constexpr decltype(auto)
     Flatten(Forwarding<TTuple> tuple) noexcept;
 
