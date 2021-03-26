@@ -10,7 +10,7 @@
 
 #include "syntropy/language/foundation/foundation.h"
 #include "syntropy/language/templates/type_traits.h"
-#include "syntropy/core/sequences/sequence.h"
+#include "syntropy/core/records/sequence.h"
 #include "syntropy/core/ranges/span.h"
 
 // ===========================================================================

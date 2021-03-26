@@ -10,7 +10,7 @@
 #include "syntropy/language/templates/type_traits.h"
 #include "syntropy/language/templates/templates.h"
 
-#include "syntropy/core/sequences/sequence_extensions.h"
+#include "syntropy/core/records/sequence_extensions.h"
 
 // ===========================================================================
 
